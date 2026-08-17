@@ -226,36 +226,44 @@ contribution are moved across the scaled net-charge inequality. -/
 def netCapWindowCost (threshold dischargeScale windowOrder : Nat) : Nat :=
   dischargeScale * (threshold * windowOrder - 2 * (windowOrder - 1)) + windowOrder
 
-/-- A uniform scale absorbing the density rounding and the `O(√n)` surplus. -/
+/-- A uniform scale absorbing the density rounding, the `O(√n)` surplus, and
+the cold-mass slack `4·rate·log₂n·T(n)` that `prop:p13-density` carries at node
+`[24]` after the cold branch closes. -/
 def netCapErrorScale
-    (threshold dischargeScale windowOrder windowRate surplusScale : Nat) : Nat :=
-  4 * (netCapWindowCost threshold dischargeScale windowOrder + windowRate * dischargeScale) *
+    (threshold dischargeScale windowOrder windowRate surplusScale slack : Nat) : Nat :=
+  4 * (netCapWindowCost threshold dischargeScale windowOrder +
+      netCapWindowCost threshold dischargeScale windowOrder * slack * windowRate +
+      windowRate * dischargeScale) *
     surplusScale
 
 /-- The exact finite predicate used for the manuscript's phrase "for all
 sufficiently large `n`" at the net-cap node. -/
 def SufficientlyLargeForNetCap
-    (threshold dischargeScale windowOrder windowRate surplusScale size : Nat) : Prop :=
+    (threshold dischargeScale windowOrder windowRate surplusScale slack size : Nat) : Prop :=
   let cost := netCapWindowCost threshold dischargeScale windowOrder
-  let errorScale := netCapErrorScale threshold dischargeScale windowOrder windowRate surplusScale
+  let errorScale :=
+    netCapErrorScale threshold dischargeScale windowOrder windowRate surplusScale slack
   2 * cost * threshold ≤ Nat.log2 size ∧
     (2 * errorScale) * (2 * errorScale) ≤ size ∧
       2 * errorScale < size
 
 /-- A symbolic uniform cutoff; no order table is evaluated. -/
 def netCapCutoff
-    (threshold dischargeScale windowOrder windowRate surplusScale : Nat) : Nat :=
+    (threshold dischargeScale windowOrder windowRate surplusScale slack : Nat) : Nat :=
   let cost := netCapWindowCost threshold dischargeScale windowOrder
-  let errorScale := netCapErrorScale threshold dischargeScale windowOrder windowRate surplusScale
+  let errorScale :=
+    netCapErrorScale threshold dischargeScale windowOrder windowRate surplusScale slack
   max (2 ^ (2 * cost * threshold))
     (max ((2 * errorScale) * (2 * errorScale)) (2 * errorScale + 1))
 
 theorem sufficientlyLargeForNetCap_of_cutoff
-    (threshold dischargeScale windowOrder windowRate surplusScale size : Nat)
-    (large : netCapCutoff threshold dischargeScale windowOrder windowRate surplusScale ≤ size) :
-    SufficientlyLargeForNetCap threshold dischargeScale windowOrder windowRate surplusScale size := by
+    (threshold dischargeScale windowOrder windowRate surplusScale slack size : Nat)
+    (large : netCapCutoff threshold dischargeScale windowOrder windowRate surplusScale slack ≤ size) :
+    SufficientlyLargeForNetCap threshold dischargeScale windowOrder windowRate surplusScale slack
+      size := by
   let cost := netCapWindowCost threshold dischargeScale windowOrder
-  let errorScale := netCapErrorScale threshold dischargeScale windowOrder windowRate surplusScale
+  let errorScale :=
+    netCapErrorScale threshold dischargeScale windowOrder windowRate surplusScale slack
   have powerLe : 2 ^ (2 * cost * threshold) ≤ size :=
     le_trans (le_max_left _ _) large
   have sizeNe : size ≠ 0 := by
@@ -272,25 +280,137 @@ theorem sufficientlyLargeForNetCap_of_cutoff
     omega
   exact ⟨logLarge, squareLe, pastError⟩
 
+/-- **Node `[56]` on the route-8 arm of `[146]`.**  `thm:cold-branch-quantitative-closure`:
+"if `θ < 1/78` then `τ(θ) < 3/13`", and `3/13 < 1/4` gives the net-deficiency cap
+`Δ_net(R) ≤ τ(θ) + o(1) < 1/4` without the density cap.  In exact finite form: the
+route-8 census reading `13·(s·p) < 3·(n − (s−2)·p)` (`def:cold-window-ledger`'s
+`τ(θ) < 3/13` cleared of denominators, at `s = δ·order − 2(order−1)`), together
+with `3·D ≤ 13` — the numerical `3/13 < 1/D` — and the sufficiently-large cutoff
+absorbing the `O(√n)` surplus term, gives the strict discharge-scaled cap. -/
+theorem strictCap_of_routeEightBelow_of_sufficientlyLarge
+    (threshold dischargeScale windowOrder windowRate surplusScale slack size packingCard
+      supportCard : Nat)
+    (windowOrderPos : 0 < windowOrder)
+    (threeLe : 3 ≤ threshold)
+    (dischargeLe : 3 * dischargeScale ≤ 13)
+    (windowRatePos : 0 < windowRate)
+    (large :
+      SufficientlyLargeForNetCap threshold dischargeScale windowOrder windowRate surplusScale slack
+        size)
+    (below :
+      13 * ((threshold * windowOrder - 2 * (windowOrder - 1)) * packingCard) <
+        3 * (size - (threshold * windowOrder - 2 * (windowOrder - 1) - 2) * packingCard))
+    (supportCardIdentity : windowOrder * packingCard + supportCard = size) :
+    dischargeScale *
+          (threshold * (windowOrder * packingCard) + surplusScale * Core.ceilSqrt size) <
+      dischargeScale * (2 * (windowOrder - 1) * packingCard) + supportCard := by
+  set stubs := threshold * windowOrder - 2 * (windowOrder - 1) with stubsDef
+  let cost := netCapWindowCost threshold dischargeScale windowOrder
+  let errorScale :=
+    netCapErrorScale threshold dischargeScale windowOrder windowRate surplusScale slack
+  let root := Core.ceilSqrt size
+  have large' :
+      2 * cost * threshold ≤ Nat.log2 size ∧
+        (2 * errorScale) * (2 * errorScale) ≤ size ∧
+          2 * errorScale < size := by
+    simpa [SufficientlyLargeForNetCap, cost, errorScale] using large
+  -- `δ·order = s + 2(order−1)` and `s ≥ order + 2`, from `3 ≤ δ`.
+  have threeOrder : 3 * windowOrder ≤ threshold * windowOrder :=
+    Nat.mul_le_mul_right windowOrder threeLe
+  have stubsEq : stubs + 2 * (windowOrder - 1) = threshold * windowOrder := by
+    rw [stubsDef]; omega
+  have stubsGe : windowOrder + 2 ≤ stubs := by
+    rw [stubsDef]; omega
+  -- The three products the arithmetic tracks.
+  set X := stubs * packingCard with Xdef
+  set Q := (stubs - 2) * packingCard with Qdef
+  set Y := windowOrder * packingCard with Ydef
+  set W := 2 * (windowOrder - 1) * packingCard with Wdef
+  have XQ : X = Q + 2 * packingCard := by
+    rw [Xdef, Qdef]
+    have : stubs = (stubs - 2) + 2 := by omega
+    conv_lhs => rw [this]
+    ring
+  have YQ : Y ≤ Q := by
+    rw [Ydef, Qdef]
+    exact Nat.mul_le_mul_right packingCard (by omega)
+  have DX : dischargeScale * X ≤ 4 * X :=
+    Nat.mul_le_mul_right X (by omega)
+  have sizePos : 0 < size := by have := large'.2.2; omega
+  -- `16·(D·s·p + order·p) < 15·n`, the room `τ(θ) < 3/13` leaves below `1/D`.
+  have gap : 16 * (dischargeScale * X + Y) < 15 * size := by
+    have below' : 13 * X < 3 * (size - Q) := below
+    omega
+  -- The surplus term: `16·D·S·√n < n`.
+  have costGe : 3 * dischargeScale + 1 ≤ cost := by
+    have stubsMul : dischargeScale * (windowOrder + 2) ≤ dischargeScale * stubs :=
+      Nat.mul_le_mul_left _ stubsGe
+    have orderMul : dischargeScale * 1 ≤ dischargeScale * windowOrder :=
+      Nat.mul_le_mul_left _ windowOrderPos
+    have costEq : cost = dischargeScale * stubs + windowOrder := rfl
+    rw [costEq, Nat.mul_add] at *
+    omega
+  have errorGe : 16 * (dischargeScale * surplusScale) ≤ errorScale := by
+    have rateD : dischargeScale ≤ windowRate * dischargeScale := by
+      calc dischargeScale = 1 * dischargeScale := (Nat.one_mul _).symm
+        _ ≤ windowRate * dischargeScale := Nat.mul_le_mul_right _ windowRatePos
+    have inner : 4 * dischargeScale ≤
+        cost + cost * slack * windowRate + windowRate * dischargeScale := by omega
+    have errorEq : errorScale =
+        4 * (cost + cost * slack * windowRate + windowRate * dischargeScale) *
+          surplusScale := rfl
+    rw [errorEq]
+    calc 16 * (dischargeScale * surplusScale)
+        = 4 * (4 * dischargeScale) * surplusScale := by ring
+      _ ≤ 4 * (cost + cost * slack * windowRate + windowRate * dischargeScale) *
+          surplusScale := by
+          exact Nat.mul_le_mul_right _ (Nat.mul_le_mul_left 4 inner)
+  have rootBound := Core.mul_ceilSqrt_le (2 * errorScale) 1 size (by simpa using large'.2.1)
+  have rootSmall : errorScale * root < size := by
+    dsimp [root] at rootBound ⊢
+    nlinarith [rootBound, large'.2.2]
+  have surplusSmall : 16 * (dischargeScale * (surplusScale * root)) < size := by
+    calc 16 * (dischargeScale * (surplusScale * root))
+        = (16 * (dischargeScale * surplusScale)) * root := by ring
+      _ ≤ errorScale * root := Nat.mul_le_mul_right root errorGe
+      _ < size := rootSmall
+  -- Assemble.
+  have expandLeft :
+      dischargeScale *
+          (threshold * (windowOrder * packingCard) + surplusScale * Core.ceilSqrt size) =
+        dischargeScale * X + dischargeScale * W + dischargeScale * (surplusScale * root) := by
+    have : threshold * (windowOrder * packingCard) = X + W := by
+      rw [Xdef, Wdef, ← Nat.mul_assoc, ← stubsEq]; ring
+    rw [this]; ring
+  rw [expandLeft]
+  have : dischargeScale * (2 * (windowOrder - 1) * packingCard) = dischargeScale * W := by
+    rw [Wdef]
+  rw [this]
+  omega
+
 /-- The exact arithmetic content of the paper's asymptotic net-cap step. -/
 theorem strictCap_of_densityCap_of_sufficientlyLarge
-    (threshold dischargeScale windowOrder windowRate surplusScale size packingCard supportCard : Nat)
+    (threshold dischargeScale windowOrder windowRate surplusScale slack size packingCard
+      supportCard : Nat)
     (windowOrderPos : 0 < windowOrder)
     (thresholdPos : 0 < threshold)
     (debitLe : 2 * (windowOrder - 1) ≤ threshold * windowOrder)
     (rateSlack :
       netCapWindowCost threshold dischargeScale windowOrder * threshold < 2 * windowRate)
     (large :
-      SufficientlyLargeForNetCap threshold dischargeScale windowOrder windowRate surplusScale size)
+      SufficientlyLargeForNetCap threshold dischargeScale windowOrder windowRate surplusScale slack
+        size)
     (densityCap :
       2 * (windowRate * Nat.log2 size * packingCard) ≤
-        (Nat.log2 size + 1) * (threshold * size + surplusScale * Core.ceilSqrt size))
+        (Nat.log2 size + 1) * (threshold * size + surplusScale * Core.ceilSqrt size) +
+          slack * (windowRate * Nat.log2 size) * (surplusScale * Core.ceilSqrt size))
     (supportCardIdentity : windowOrder * packingCard + supportCard = size) :
     dischargeScale *
           (threshold * (windowOrder * packingCard) + surplusScale * Core.ceilSqrt size) <
       dischargeScale * (2 * (windowOrder - 1) * packingCard) + supportCard := by
   let cost := netCapWindowCost threshold dischargeScale windowOrder
-  let errorScale := netCapErrorScale threshold dischargeScale windowOrder windowRate surplusScale
+  let errorScale :=
+    netCapErrorScale threshold dischargeScale windowOrder windowRate surplusScale slack
   let logarithm := Nat.log2 size
   let root := Core.ceilSqrt size
   have large' :
@@ -318,23 +438,33 @@ theorem strictCap_of_densityCap_of_sufficientlyLarge
     nlinarith [rootBound, large'.2.2]
   have errorBound :
       cost * (logarithm + 1) * (surplusScale * root) +
+          cost * (slack * (windowRate * logarithm) * (surplusScale * root)) +
           2 * windowRate * logarithm * (dischargeScale * surplusScale * root) ≤
-        2 * logarithm * (cost + windowRate * dischargeScale) * surplusScale * root := by
+        2 * logarithm * (cost + cost * slack * windowRate + windowRate * dischargeScale) *
+          surplusScale * root := by
     have successorLe : logarithm + 1 ≤ 2 * logarithm := by omega
     have first :
         cost * (logarithm + 1) * (surplusScale * root) ≤
           cost * (2 * logarithm) * (surplusScale * root) := by
       gcongr
+    have second :
+        cost * (slack * (windowRate * logarithm) * (surplusScale * root)) ≤
+          2 * (cost * slack * windowRate * logarithm * (surplusScale * root)) := by
+      nlinarith [Nat.zero_le (cost * slack * windowRate * logarithm * (surplusScale * root))]
     calc
       cost * (logarithm + 1) * (surplusScale * root) +
+            cost * (slack * (windowRate * logarithm) * (surplusScale * root)) +
             2 * windowRate * logarithm * (dischargeScale * surplusScale * root) ≤
           cost * (2 * logarithm) * (surplusScale * root) +
+            2 * (cost * slack * windowRate * logarithm * (surplusScale * root)) +
             2 * windowRate * logarithm * (dischargeScale * surplusScale * root) :=
-        Nat.add_le_add_right first _
-      _ = 2 * logarithm * (cost + windowRate * dischargeScale) * surplusScale * root := by ring
+        Nat.add_le_add_right (Nat.add_le_add first second) _
+      _ = 2 * logarithm * (cost + cost * slack * windowRate + windowRate * dischargeScale) *
+            surplusScale * root := by ring
   have errorStrict :
       2 *
             (cost * (logarithm + 1) * (surplusScale * root) +
+              cost * (slack * (windowRate * logarithm) * (surplusScale * root)) +
               2 * windowRate * logarithm * (dischargeScale * surplusScale * root)) <
         logarithm * size := by
     have multiplied : logarithm * (errorScale * root) < logarithm * size :=
@@ -347,12 +477,47 @@ theorem strictCap_of_densityCap_of_sufficientlyLarge
             (cost * packingCard + dischargeScale * surplusScale * root) <
         4 * windowRate * logarithm * size := by
     change 2 * cost * (2 * (windowRate * logarithm * packingCard)) ≤
-      2 * cost * ((logarithm + 1) * (threshold * size + surplusScale * root)) at densityScaled
-    nlinarith [densityScaled, gapAtSize, errorStrict]
+      2 * cost * ((logarithm + 1) * (threshold * size + surplusScale * root) +
+        slack * (windowRate * logarithm) * (surplusScale * root)) at densityScaled
+    have expandLeft :
+        4 * windowRate * logarithm *
+            (cost * packingCard + dischargeScale * surplusScale * root) =
+          2 * cost * (2 * (windowRate * logarithm * packingCard)) +
+            2 * (2 * windowRate * logarithm * (dischargeScale * surplusScale * root)) := by
+      ring
+    have expandRight :
+        2 * cost * ((logarithm + 1) * (threshold * size + surplusScale * root) +
+            slack * (windowRate * logarithm) * (surplusScale * root)) =
+          2 * (cost * threshold * (logarithm + 1)) * size +
+            2 * (cost * (logarithm + 1) * (surplusScale * root) +
+              cost * (slack * (windowRate * logarithm) * (surplusScale * root))) := by
+      ring
+    have expandGap :
+        (2 * (cost * threshold * (logarithm + 1)) + logarithm) * size =
+          2 * (cost * threshold * (logarithm + 1)) * size + logarithm * size := by
+      ring
+    have expandBudget :
+        4 * windowRate * logarithm * size = 2 * (2 * windowRate * logarithm) * size := by
+      ring
+    have expandError :
+        2 * (cost * (logarithm + 1) * (surplusScale * root) +
+              cost * (slack * (windowRate * logarithm) * (surplusScale * root)) +
+              2 * windowRate * logarithm * (dischargeScale * surplusScale * root)) =
+          2 * (cost * (logarithm + 1) * (surplusScale * root) +
+              cost * (slack * (windowRate * logarithm) * (surplusScale * root))) +
+            2 * (2 * windowRate * logarithm * (dischargeScale * surplusScale * root)) := by
+      ring
+    rw [expandLeft, expandBudget]
+    rw [expandRight] at densityScaled
+    rw [expandGap] at gapAtSize
+    rw [expandError] at errorStrict
+    omega
   have margin : cost * packingCard + dischargeScale * surplusScale * root < size := by
     have factorPos : 0 < 4 * windowRate * logarithm := by
-      have ratePos : 0 < windowRate := by nlinarith
-      positivity
+      have ratePos : 0 < windowRate := by
+        have := rateSlack
+        omega
+      exact Nat.mul_pos (Nat.mul_pos (by norm_num) ratePos) logarithmPos
     exact (Nat.mul_lt_mul_left factorPos).mp scaledMargin
   have split : threshold * windowOrder =
       2 * (windowOrder - 1) + (threshold * windowOrder - 2 * (windowOrder - 1)) := by
@@ -399,17 +564,19 @@ theorem strictCap_of_densityCap_of_sufficientlyLarge
 /-- Stub supply and the eventual density margin imply negative net charge. -/
 theorem negativeNetCharge_of_stubSupply_of_densityCap_of_sufficientlyLarge
     (object : FiniteObject.{u}) (support : Finset object.Vertex)
-    (threshold dischargeScale windowOrder windowRate surplusScale size packingCard : Nat)
+    (threshold dischargeScale windowOrder windowRate surplusScale slack size packingCard : Nat)
     (windowOrderPos : 0 < windowOrder)
     (thresholdPos : 0 < threshold)
     (debitLe : 2 * (windowOrder - 1) ≤ threshold * windowOrder)
     (rateSlack :
       netCapWindowCost threshold dischargeScale windowOrder * threshold < 2 * windowRate)
     (large :
-      SufficientlyLargeForNetCap threshold dischargeScale windowOrder windowRate surplusScale size)
+      SufficientlyLargeForNetCap threshold dischargeScale windowOrder windowRate surplusScale slack
+        size)
     (densityCap :
       2 * (windowRate * Nat.log2 size * packingCard) ≤
-        (Nat.log2 size + 1) * (threshold * size + surplusScale * Core.ceilSqrt size))
+        (Nat.log2 size + 1) * (threshold * size + surplusScale * Core.ceilSqrt size) +
+          slack * (windowRate * Nat.log2 size) * (surplusScale * Core.ceilSqrt size))
     (supportCardIdentity : windowOrder * packingCard + support.card = size)
     (stubSupply :
       object.positiveDeficiency support threshold +
@@ -420,7 +587,7 @@ theorem negativeNetCharge_of_stubSupply_of_densityCap_of_sufficientlyLarge
     (2 * (windowOrder - 1) * packingCard)
     (threshold * (windowOrder * packingCard) + surplusScale * Core.ceilSqrt size) stubSupply
   exact strictCap_of_densityCap_of_sufficientlyLarge threshold dischargeScale windowOrder
-    windowRate surplusScale size packingCard support.card windowOrderPos thresholdPos debitLe
+    windowRate surplusScale slack size packingCard support.card windowOrderPos thresholdPos debitLe
     rateSlack large densityCap supportCardIdentity
 
 /-- **`lem:netcharge-superadd`.**  The net charge of a region is the sum of the

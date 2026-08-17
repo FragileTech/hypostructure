@@ -1073,7 +1073,7 @@ The table records every named object in the proof-dependency diagram.  The \emph
 16 & [21] & Multi-scale window package & $c_{13}=118.108581006\ldots$ and \((c_{13}-o(1))p_{13}\log_2 n\) independently target-testable window coordinates & controls $P_{13}$ packing density & \cref{lem:p13-window-package}; \cref{app:curv-code} \\
 17 & [22]--[24] & $P_{13}$ density bound & after surplus-token routing supplies \cref{def:near-cubic-spine}, $\theta\le\theta_{\rm win}+o(1)$; high entropy gives $\theta\le0.01198542083\ldots+o(1)$ & window entropy overflow / window-only cap & \cref{lem:p13-window-package}, \cref{prop:p13-density} \\
 18 & [145]--[157] & Hot/cold window branch & if \(\theta<1/78\), route 8 closes; otherwise hot failure forces \(C\ge(\theta-\theta_{\rm win})n-o(n)\), \(b(\mathfrak S_{\rm cold})\ge13C-o(n)\), and \(N_{\rm germ}\ge13C/D_{\rm cold}-o(n)\); bounded germs route to hit, defect, handoff, route 8, same-interface table, or compression & no terminal cold residual after the spine estimate & \cref{def:cold-window-ledger,def:surviving-cold-branch,lem:hot-failure-cold-mass,def:cold-skeleton-excess,lem:cold-window-stub-excess,lem:cold-short-self-return-filter,def:cold-bounded-germ,def:cold-corridor-first-failure,lem:cold-corridor-first-failure,lem:cold-germ-extraction,lem:cold-bounded-germ-trichotomy,def:cold-same-interface-table,lem:cold-same-interface-table,lem:cold-increment-arithmetic,thm:cold-branch-quantitative-closure} \\
-19 & [17], [25]--[27] & Remainder $R$ & componentwise $P_{13}$-free and large & maximality of packing & \cref{sec:remainder} \\
+19 & [17], [25]--[27] & Remainder $R$ & large, componentwise $P_{13}$-free, and with empty internal $3$-core & maximality of packing and the HSS theorem & \cref{lem:remainder-empty-internal-3-core} \\
 20 & [28] & Positive deficiency & $\defp(X)=\sum_v\max(0,3-d_X(v))$ & high degree cannot cancel deficient vertices & \cref{def:deficiency-surplus} \\
 21 & [29] & External-incidence supply & $\defp(R)\le15p_{13}+o(n)$ and hence $\defp(R)-\sigma_R\le15p_{13}+o(n)$ & few windows give small supply & \cref{lem:stub-positive} \\
 22 & [30] & Wedge lower bound & componentwise \(W_2(C)\ge3|V(C)|-2\defp(C)\); with \(\defp(R)\le(\tau_{\rm win}+o(1))|R|\), this gives \(W_2(R)\ge\omega_{\rm win}|R|-o(|R|)\); high entropy gives \(\omega|R|-o(|R|)\) & degree-count proof & \cref{lem:wedge-lower} \\
@@ -1185,7 +1185,7 @@ Degree-3-critical / $1$--$3$ tree literature & Extremal graphs with no proper $\
 \endhead
 20 & Low $P_{13}$ density & Density {[24]} & after \cref{prop:nonnear-cubic-sharp-overload-routing} supplies \cref{def:near-cubic-spine}, $p_{13}\le \theta_{\rm win} n+o(n)$; high entropy gives $p_{13}\le0.01198542083\cdot n+o(n)$ & window-only entropy vs $B_{\mathrm{skel}}$; sharper high-entropy cap & \cref{lem:p13-window-package}, \cref{prop:p13-density}; \cref{eq:feasibility}; \cref{prop:entropy-high-theta}; final spine steps 1--2 \\
 21 & Forced remainder & Residual A {[25]} & $|R|\ge 0.83489768623\cdot n-o(n)$ & $=(1-13\theta)n$ & \cref{lem:stub-positive}, \cref{lem:wedge-lower}, invariant 28; all atom analysis \\
-22 & $P_{13}$-free atom condition & Residual A {[25]} & Components of $R$ are $P_{13}$-free, boundary-deficient & --- & Direct from \cref{thm:p13free}; \cref{lem:stub-positive}; \cref{lem:typeA-exclusion}, \cref{lem:typeB-exclusion} \\
+22 & $P_{13}$-free atom condition & Residual A {[25]} & Components of $R$ are $P_{13}$-free, have empty internal $3$-core, and are boundary-deficient & --- & \cref{lem:remainder-empty-internal-3-core,lem:stub-positive}; \cref{lem:typeA-exclusion}, \cref{lem:typeB-exclusion} \\
 23 & Window stub capacity & Stub accounting {[29]}; exact identity on the surplus branch {[135]} & Exact split \(e(R,W)+2e_\times(W)=15p_{13}+\sigma_W\); on the derived spine branch this gives \(e(R,W)\le15p_{13}+o(n)\) & \(15\) per window plus explicit window surplus & \cref{lem:exact-window-join-identity}, \cref{lem:surplus-aware-window-stub}, \cref{lem:stub-positive}; invariant 24 \\
 24 & Remainder deficiency density & Stub accounting {[29]}; surplus-branch form {[136]} & $\defp(R)\le 15p_{13}+O(\sqrt n)$ on the derived spine branch; before that estimate is supplied, \(\defp(R)-\sigma_R\le15p_{13}+\sigma_W-\sigma_R\) and no-negative-support forces \(\sigma_W-\sigma_R\ge(n-73p_{13})/4\) & \(15\theta\) aggregate plus window-join pressure & \cref{lem:stub-positive}, \cref{lem:surplus-aware-window-stub}, \cref{cor:global-window-join-pressure}; final spine step~3; \cref{prop:negative-net-charge}; \textbf{net-charge collision} (vs Type A/B output) \\
 \bottomrule
@@ -1432,6 +1432,7 @@ Ledger-invariant numbers and diagram-node numbers are separate namespaces.  The 
 \midrule
 \endhead
 \cref{cor:p13-exists} & REM & [15] \texttt{(p13free)} & \cref{thm:p13free} & A counterexample contains an induced $P_{13}$. & Entry to the window/remainder split. \\
+\cref{lem:remainder-empty-internal-3-core} & REM & [27] \texttt{(no3)} & maximality of $\mathcal P$; \cref{thm:p13free} & Every component of the fixed remainder $R$ is $P_{13}$-free and has empty internal $3$-core. & Normalizes the selected remainder for all later componentwise routing. \\
 \cref{lem:labels} & REM & [18] \texttt{(p13alg)} & inv 7, 25 & $399$ legal $P_{13}$ labels; zero-defect quotient through lengths $1,2,3$ is the identity. & The finite window-safety algebra. \\
 \cref{lem:curv-enum} & REM\slash CURV & [21] \texttt{(enum)} & inv 25, 26 & $432672/543958$ of safe wedges are curvature-positive. & Finite count feeding curvature supply. \\
 \cref{lem:stub-positive} & REM & [26] \texttt{(R)}, [29] \texttt{(stub)} & \cref{thm:p13free}, inv 21, 22 & Remainder ($\ge83.4\%$) gets $\le15$ incidences/window; \(\defp(R)\le15p_{13}+o(n)\) and \(\defp(R)-\sigma_R\le15p_{13}+o(n)\). & \textbf{Supply ceiling} of the final collision. \\
@@ -7219,7 +7220,32 @@ By the near-cubic window-only part of \cref{prop:p13-density},
 \[
 |R|\ge0.83489768623\ldots n-o(n).
 \]
-By the maximality of $\mathcal P$, the graph $R$ contains no induced $P_{13}$, since any such copy would extend $\mathcal P$; hence every component of $R$ is $P_{13}$-free.  We claim that no component of $R$ contains a subgraph of minimum degree at least $3$.  Indeed, suppose $H\subseteq R$ had $\delta(H)\ge3$.  Passing to the induced subgraph $G[V(H)]\supseteq H$ only adds edges, so $\delta(G[V(H)])\ge\delta(H)\ge3$; and $G[V(H)]$, being an induced subgraph of a $P_{13}$-free component of $R$, is itself $P_{13}$-free.  By \cref{thm:p13free}, $G[V(H)]$ then contains a power-of-two cycle, which is also a cycle of $G$, contradicting that $G$ is a counterexample.
+\begin{definition}[Internal \(3\)-core]\label[definition]{def:internal-3-core}
+For a graph or support \(X\), the \emph{internal \(3\)-core} of \(X\) is the
+maximal induced subgraph of \(X\) with minimum degree at least \(3\), obtained
+equivalently by repeatedly deleting vertices of internal degree at most \(2\).
+The internal \(3\)-core is \emph{empty} if no nonempty subgraph of \(X\) has
+minimum internal degree at least \(3\).
+\end{definition}
+
+\begin{lemma}[Empty internal \(3\)-core of the remainder]
+\label[lemma]{lem:remainder-empty-internal-3-core}
+Every component of \(R\) is \(P_{13}\)-free and has empty internal \(3\)-core.
+\end{lemma}
+
+\begin{proof}
+By maximality of \(\mathcal P\), the graph \(R\) contains no induced
+\(P_{13}\), since any such copy would extend \(\mathcal P\).  Hence every
+component of \(R\) is \(P_{13}\)-free.
+
+Suppose that a component \(C\) of \(R\) had a nonempty internal \(3\)-core.
+Then \(C\) would contain a subgraph \(H\) with \(\delta(H)\ge3\).  Passing to
+the induced subgraph \(G[V(H)]\supseteq H\) only adds edges, so
+\(\delta(G[V(H)])\ge3\).  Moreover, \(G[V(H)]\) is an induced subgraph of the
+\(P_{13}\)-free component \(C\), and is therefore \(P_{13}\)-free.  By
+\cref{thm:p13free}, \(G[V(H)]\) contains a power-of-two cycle.  This is also a
+cycle of \(G\), contrary to the counterexample assumption.
+\end{proof}
 
 \begin{figure}[t]
 \centering
@@ -8583,15 +8609,8 @@ Regardless of whether the high-entropy cap of
 \qquad
 |R|=n-13p=(1-13\theta)n\ge(1-13\theta_{\rm win})n-o(n).
 \]
-By maximality of the induced-$P_{13}$ packing, every component of $R$ is $P_{13}$-free.  By \cref{thm:p13free}, no component of $R$ has an internal subgraph of minimum degree at least $3$.
-
-\begin{definition}[Internal \(3\)-core]\label[definition]{def:internal-3-core}
-For a graph or support \(X\), the \emph{internal \(3\)-core} of \(X\) is the
-maximal induced subgraph of \(X\) with minimum degree at least \(3\), obtained
-equivalently by repeatedly deleting vertices of internal degree at most \(2\).
-The internal \(3\)-core is \emph{empty} if no nonempty subgraph of \(X\) has
-minimum internal degree at least \(3\).
-\end{definition}
+By \cref{lem:remainder-empty-internal-3-core}, every component of \(R\) is
+\(P_{13}\)-free and has empty internal \(3\)-core.
 
 The supply inequality \cref{lem:stub-positive} gives
 \[

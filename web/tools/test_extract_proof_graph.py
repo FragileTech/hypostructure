@@ -298,6 +298,15 @@ def test_erdos_external_theorem_reads_correctly() -> None:
     assert any("thm:p13free" in block["itemRefs"] for block in node["blocks"])
 
 
+def test_erdos_remainder_core_node_has_its_own_lemma() -> None:
+    key = "lem:remainder-empty-internal-3-core"
+    lemma = next(item for item in ERDOS["items"] if item["key"] == key)
+    assert "Every component of \\(R\\)" in lemma["statementLatex"]
+    assert "empty internal \\(3\\)-core" in lemma["statementLatex"]
+    node = next(node for node in ERDOS["nodes"] if node["id"] == "27")
+    assert key in node["itemRefs"]
+
+
 _REQUIRED_INVARIANTS = re.compile(r"\binv(?:ariants?)?\.?\s+([\d,\s\u2013-]+)", re.I)
 
 

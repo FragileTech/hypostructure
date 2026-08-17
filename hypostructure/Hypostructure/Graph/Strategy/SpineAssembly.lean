@@ -85,23 +85,6 @@ noncomputable instance typeAExitFiveClosed :
       _noExitFour, support, compressible⟩ := exitFive.down
     exact (uncompressible.down support) compressible
 
-/-- `def:exact-response-profile` at the concrete remainder entering node `[31]`. -/
-@[reducible] noncomputable def exactResponseProfile :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  exactResponseProfileRow data
-
-/-- `def:admissible-rank-quotient` on the exact profile entering node `[31]`. -/
-@[reducible] noncomputable def admissibleRankQuotient :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  admissibleRankQuotientRow (K .exactResponseProfile)
-    (K .admissibleRankQuotient) (by simp)
-    (fun _input fact => fact.down) (fun _input value => ⟨value⟩)
-
-/-- Nodes `[33]` and `[35]`: Branch D, entered with its certificate. -/
-@[reducible] noncomputable def branchDependence :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  branchDependenceRow data
-
 /-- Node `[52]`. -/
 @[reducible] noncomputable def entropyPackage :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
@@ -116,14 +99,6 @@ noncomputable instance typeAExitFiveClosed :
 @[reducible] noncomputable def netChargeLocalization :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   netChargeLocalizationRow data
-
-/-- Node `[60]`. -/
-@[reducible] noncomputable def windowJoinPressure :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  windowJoinPressureRow (K .netChargeNonNegative) (K .boundaryDemand)
-    (K .windowJoinPressure) (by simp)
-    (fun _input fact => fact.down) (fun _input fact => fact.down)
-    (fun _input value => ⟨value⟩)
 
 /-- Node `[61]`. -/
 @[reducible] noncomputable def negativeSupport :
@@ -210,113 +185,16 @@ cursor. -/
 
 end Rows
 
-/-- Node `[44]`: the repair identity on the whole-graph residual. -/
-@[reducible] noncomputable def repairIdentity :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  repairIdentityRow data
-
-/-- Node `[45]`: the global barrier after the repair identity. -/
-@[reducible] noncomputable def globalBarrier :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  globalBarrierRow data
-
-/-- **The terminal `[39]` closes against the selected object.**
-
-The `K .atomCompression` fact already contains the proper-support replacement
-derived at node `[38]` from its exact rank-reducing certificate.  This
-registration applies the paper's replacement lemma directly to that ledger
-fact; no certificate package or detached Branch-D closure theorem intervenes. -/
-noncomputable instance instIncompatibleAtomCompression :
-    Incompatible (Input BranchState Presentation presentation data)
-      (K .selection) (K .atomCompression) where
-  contradiction := fun residual selected compression => by
-    obtain ⟨_packing, _valid, quotient, _certificate, _complete, _inside,
-      replacement⟩ := compression.down
-    exact Graph.Strategy.InterfaceReplacement.not_replacementSupport
-      (Graph.MinimumDegreeAtLeast data.threshold) BranchState
-      (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
-      Presentation presentation
-      (Core.Target.ofPredicate _ (Graph.HasCycleWithLength data.LengthOK))
-      ((Graph.cycleTargetInterface data.LengthOK).coreInvariantWithPresentation
-        (Graph.MinimumDegreeAtLeast data.threshold) BranchState
-        Presentation presentation
-        (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold))
-      { G := residual.object, baseline := residual.baseline,
-        state := residual.branchState, avoids := selected.down.1,
-        minimal := selected.down.2 }
-      quotient.support replacement
-
-noncomputable instance instIncompatibleProperDelocalization :
-    Incompatible (Input BranchState Presentation presentation data)
-      (K .selection) (K .properDelocalization) where
-  contradiction := fun residual selected smearing => by
-    obtain ⟨_packing, _valid, quotient, _certificate, _complete, _outside,
-      _vertex, _vertexOutside, replacement⟩ := smearing.down
-    exact Graph.Strategy.InterfaceReplacement.not_replacementSupport
-      (Graph.MinimumDegreeAtLeast data.threshold) BranchState
-      (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
-      Presentation presentation
-      (Core.Target.ofPredicate _ (Graph.HasCycleWithLength data.LengthOK))
-      ((Graph.cycleTargetInterface data.LengthOK).coreInvariantWithPresentation
-        (Graph.MinimumDegreeAtLeast data.threshold) BranchState
-        Presentation presentation
-        (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold))
-      { G := residual.object, baseline := residual.baseline,
-        state := residual.branchState, avoids := selected.down.1,
-        minimal := selected.down.2 }
-      quotient.support replacement
-
-noncomputable instance instIncompatibleGlobalBarrier :
-    Incompatible (Input BranchState Presentation presentation data)
-      (K .selection) (K .globalBarrier) where
-  contradiction := fun residual selected barrier => by
-    obtain ⟨_packing, _valid, quotient, _certificate, reading⟩ := barrier.down
-    rcases reading with
-      replacement | ⟨representative, smaller, representativeBaseline, transfer⟩
-    · exact Graph.Strategy.InterfaceReplacement.not_replacementSupport
-        (Graph.MinimumDegreeAtLeast data.threshold) BranchState
-        (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
-        Presentation presentation
-        (Core.Target.ofPredicate _ (Graph.HasCycleWithLength data.LengthOK))
-        ((Graph.cycleTargetInterface data.LengthOK).coreInvariantWithPresentation
-          (Graph.MinimumDegreeAtLeast data.threshold) BranchState
-          Presentation presentation
-          (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold))
-        { G := residual.object, baseline := residual.baseline,
-          state := residual.branchState, avoids := selected.down.1,
-          minimal := selected.down.2 }
-        quotient.support replacement
-    · exact selected.down.1
-        (transfer (selected.down.2 representative smaller
-          representativeBaseline))
-
 noncomputable instance instImpossibleTypeBExcluded :
     Impossible (Input BranchState Presentation presentation data)
       (K .typeBExcluded) where
   contradiction := fun _residual excluded => excluded.down
 
-/-- **The terminal `[37]` is uninhabited**, at the spine's own key.
-
-The registration consumes the exact `K .contextDefect` value exposed by the
-framework closure boundary.  Its selected admissible quotient is
-context-universal, contradicting the concrete outside-context defect.  The
-caller then uses `closeImpossible` to append only the canonical closure fact to
-the same ledger. -/
-noncomputable instance instImpossibleContextDefect :
-    Impossible (Input BranchState Presentation presentation data)
-      (K .contextDefect) where
-  contradiction := fun _residual value => by
-    obtain ⟨_packing, _valid, _packingCard, _test, _determiners, quotient,
-      _supportData, _certificate, _minimal, left, right, identified,
-      outside, distinguishes⟩ := value.down
-    exact distinguishes
-      (quotient.contextUniversal left right identified outside)
-
 /-- The key index at the full-rank residual of node `[34]`, Residual B.  This
 is the index nodes `[47]` onwards extend; it is no longer an exit of the run. -/
 abbrev completedKeys : FactKeys (Input BranchState Presentation presentation data) :=
   [K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-    K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+    K .boundaryDemand, K .stubSupply,
     K .remainderNormalized, K .densityCap, K .barrierCap,
     K .windowPackageSeparated, K .surplusAtOrBelow,
     K .localAlgebra, K .maximalPacking, K .uncompressible, K .tightEndpoint,
@@ -330,7 +208,7 @@ that key is not in its type. -/
 abbrev curvatureRankDropKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   [K .curvatureRankDrop, K .curvatureTargetRank, K .wedgeSupply,
-    K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+    K .boundaryDemand, K .stubSupply,
     K .remainderNormalized, K .densityCap, K .barrierCap,
     K .windowPackageSeparated, K .surplusAtOrBelow,
     K .localAlgebra, K .maximalPacking, K .uncompressible, K .tightEndpoint,
@@ -431,7 +309,7 @@ window-join-pressure inequality and every incoming fact. -/
 abbrev residualCWindowJoinPressureKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .windowJoinPressure :: K .netChargeNonNegative ::
+  K .netChargeNonNegative ::
     residualCNetChargeLocalizationKeys known
 
 /-- The negative-support arm, carrying the selected connected support and every
@@ -1083,7 +961,6 @@ theorem complete_audit_facts
       [(name .curvatureFullRank),
         (name .curvatureTargetRank),
         (name .wedgeSupply),
-        (name .curvatureDemandFloor),
         (name .boundaryDemand),
         (name .stubSupply),
         (name .remainderNormalized),
@@ -1136,7 +1013,6 @@ theorem typeALowSurplus_audit_facts
         (name .curvatureFullRank) ::
         (name .curvatureTargetRank) ::
         (name .wedgeSupply) ::
-        (name .curvatureDemandFloor) ::
         (name .boundaryDemand) ::
         (name .stubSupply) ::
         (name .remainderNormalized) ::
@@ -1231,8 +1107,7 @@ theorem typeAUnsaturatedReceivers_audit_facts
                             (name .curvatureFullRank) ::
         (name .curvatureTargetRank) ::
           (name .wedgeSupply) ::
-            (name .curvatureDemandFloor) ::
-              (name .boundaryDemand) ::
+                  (name .boundaryDemand) ::
                 (name .stubSupply) ::
                   (name .remainderNormalized) ::
                     (name .densityCap) ::
@@ -1248,11 +1123,9 @@ theorem typeAUnsaturatedReceivers_audit_facts
                 (name .returnAvoidance) ::
                   [(name .selection)] := rfl
 
-/-- **The node-`[60]` exit records the pressure and not the negative support.**
-`cor:global-window-join-pressure` is what the branch on which no negative
-admissible support appears carries; `negativeSupport` is absent from its
-index. -/
-theorem windowJoinPressure_audit_accounts_for_every_fact
+/-- **The node-`[60]` exit records the nonnegative sign and not the negative
+support**: `negativeSupport` is absent from its index. -/
+theorem netChargeNonNegative_audit_accounts_for_every_fact
     {selected : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (history : ExactLedger (Input BranchState Presentation presentation data)
@@ -1342,7 +1215,6 @@ theorem contextDefect_audit_facts
         (name .curvatureRankDrop) ::
         (name .curvatureTargetRank) ::
         (name .wedgeSupply) ::
-        (name .curvatureDemandFloor) ::
         (name .boundaryDemand) ::
         (name .stubSupply) ::
         (name .remainderNormalized) ::

@@ -1,6 +1,8 @@
 import Hypostructure.Graph.Strategy.InterfaceReplacement
+import Hypostructure.Graph.DeclaredRankQuotient
 import Hypostructure.Graph.MinimumDegreeCycleTarget
 import Hypostructure.Graph.FinitePathSelection
+import Hypostructure.Graph.Contraction
 
 /-!
 # The cold return corridor: cut-states and the same-interface table
@@ -798,6 +800,84 @@ structure Corridor (object : FiniteObject.{u})
       (stubFoot object windows component
         (successorIndex (Nat.lt_of_lt_of_le Nat.zero_lt_two twoStubs) entry))
 
+/-! ### Outside components and the two-stub clause
+
+*"Delete the interiors of these windows and look at a connected component `K`
+of the remaining outside graph."*  An outside component is a set of non-window
+vertices, closed under adjacency to non-window vertices, and connected in the
+induced graph.  *"By `lem:bridgeless`, no such component has only one boundary
+stub, since that unique boundary edge would be a bridge of `G`."* -/
+
+/-- **A connected component `K` of the outside graph** `G − X_cold`. -/
+def IsOutsideComponent (object : FiniteObject.{u})
+    (windows component : Finset object.Vertex) : Prop :=
+  Disjoint component windows ∧
+    (∀ a ∈ component, ∀ b : object.Vertex, object.graph.Adj a b →
+      b ∉ windows → b ∈ component) ∧
+    ∀ left right : (object.induce component).Vertex,
+      (object.induce component).graph.Reachable left right
+
+/-- **`lem:bridgeless` at a component: a component owning a boundary stub owns
+at least two.**  The return of the stub's edge leaves `K` for the first time
+along some dart; that dart is a second boundary stub, distinct from the first
+because the return avoids the deleted edge. -/
+theorem two_le_boundaryStubs_length_of_bridgeless (object : FiniteObject.{u})
+    (windows component : Finset object.Vertex)
+    (outside : IsOutsideComponent object windows component)
+    (bridgeless : ∀ contraction : EdgeContraction object, contraction.HasReturn)
+    {stub : object.Vertex × object.Vertex}
+    (member : stub ∈ boundaryStubs object windows component) :
+    2 ≤ (boundaryStubs object windows component).length := by
+  classical
+  have isStub := (mem_boundaryStubs_iff object windows component stub).1 member
+  obtain ⟨footMem, windowMem, adjacent⟩ := isStub
+  let contraction : EdgeContraction object := ⟨stub.1, stub.2, adjacent⟩
+  obtain ⟨path⟩ := bridgeless contraction
+  have tailIn : stub.1 ∈ (↑component : Set object.Vertex) := footMem
+  have headOut : stub.2 ∉ (↑component : Set object.Vertex) := fun inside =>
+    Finset.disjoint_left.mp outside.1 inside windowMem
+  obtain ⟨dart, _, dartFst, dartSnd⟩ :=
+    path.1.exists_boundary_dart (↑component : Set object.Vertex) tailIn headOut
+  have dartAdj := (contraction.severed_adj).1 dart.adj
+  have sndWindow : dart.snd ∈ windows := by
+    by_contra notWindow
+    exact dartSnd (outside.2.1 dart.fst dartFst dart.snd dartAdj.1 notWindow)
+  have secondStub : (dart.fst, dart.snd) ∈ boundaryStubs object windows component :=
+    (mem_boundaryStubs_iff object windows component _).2
+      ⟨dartFst, sndWindow, dartAdj.1⟩
+  have distinct : (dart.fst, dart.snd) ≠ stub := by
+    intro same
+    apply dartAdj.2
+    rw [show dart.fst = stub.1 from congrArg Prod.fst same,
+      show dart.snd = stub.2 from congrArg Prod.snd same]
+  have twoCard : 2 ≤ (boundaryStubs object windows component).toFinset.card :=
+    Finset.one_lt_card.mpr
+      ⟨(dart.fst, dart.snd), List.mem_toFinset.mpr secondStub,
+        stub, List.mem_toFinset.mpr member, distinct⟩
+  exact twoCard.trans (List.toFinset_card_le _)
+
+/-- **The cold return corridor of every boundary stub of an outside
+component** exists: the two-stub clause is `lem:bridgeless` above, and the two
+outside feet are joined because `K` is connected. -/
+noncomputable def corridorOfOutsideComponent (object : FiniteObject.{u})
+    (windows component : Finset object.Vertex)
+    (outside : IsOutsideComponent object windows component)
+    (bridgeless : ∀ contraction : EdgeContraction object, contraction.HasReturn)
+    (entry : Fin (boundaryStubs object windows component).length) :
+    Corridor object windows component where
+  twoStubs := two_le_boundaryStubs_length_of_bridgeless object windows component
+    outside bridgeless (List.get_mem _ entry)
+  entry := entry
+  connected := outside.2.2 _ _
+
+@[simp] theorem corridorOfOutsideComponent_entry (object : FiniteObject.{u})
+    (windows component : Finset object.Vertex)
+    (outside : IsOutsideComponent object windows component)
+    (bridgeless : ∀ contraction : EdgeContraction object, contraction.HasReturn)
+    (entry : Fin (boundaryStubs object windows component).length) :
+    (corridorOfOutsideComponent object windows component outside bridgeless
+      entry).entry = entry := rfl
+
 namespace Corridor
 
 /-- The component has at least one boundary stub. -/
@@ -1374,6 +1454,118 @@ theorem compressibleSupport_of_not_distinguishing
     fun outside => (equivalent outside).symm⟩
 
 end BoundedGerm
+
+/-! ### The identification a cold germ records
+
+`lem:cold-same-interface-table`, neutral case: *"the quotient identifying the two
+same-interface representatives removes at least one declared branch-excess
+coordinate while preserving every coordinate needed by the target response.  By
+`def:admissible-rank-quotient`, such a proper-support target-complete quotient
+is admissible only when it has a strictly smaller proper representative … That
+representative satisfies the hypotheses of `lem:replacement`, and is forbidden
+by `cor:uncompressible`."*  And G2 (`lem:cold-bounded-germ-trichotomy`): *"the
+two local responses agree in the actual quotient but disagree in a compatible
+context.  By `lem:context-universality`, such an identification is not
+target-complete."*
+
+The *actual quotient* is `def:cold-corridor-first-failure`'s cold corridor
+state, "obtained from `ρ_T^ex(J)` by retaining exactly" the boundary-degree
+profile, the two active half-edges, the offsets and the declared coordinates
+carried by the active interface; on the cold branch it is one of the branch's
+admissible rank quotients (`def:cold-window-ledger`: a cold window is one whose
+declared package the canonical comparison does *not* retain label-injectively).
+`ColdGermIdentification` is that quotient, read at the germ's own proper support
+through the framework's `def:admissible-rank-quotient` object,
+`Graph.DeclaredQuotient`: it identifies the two representatives `Q[x,y]` and
+`E` as realizations and is rank-reducing on the declared family it acts on (it
+"removes at least one declared branch-excess coordinate").  Its two closure
+theorems below are exactly the manuscript's two refutations: G2 is impossible
+because the identifying quotient is context-universal (the argument of node
+`[37]`), and a rank-reducing admissible quotient of a proper support supplies
+the strictly smaller proper representative `lem:replacement` forbids (the
+argument of node `[39]`). -/
+
+/-- **The cold corridor state's identification of a germ's two representatives**,
+as an admissible rank quotient of the germ's proper support. -/
+structure ColdGermIdentification {S : DeclaredSignature}
+    {Baseline Target : FiniteObject.{u} → Prop} {object : FiniteObject.{u}}
+    (germ : BoundedGerm S Baseline Target object) : Type (u + 2) where
+  /-- The declared coordinates the state quotient acts on. -/
+  Coordinate : Type u
+  /-- The declared family carried by the germ's support. -/
+  family : Finset Coordinate
+  /-- The declared support of each coordinate. -/
+  coordinateSupport : Coordinate → Finset object.Vertex
+  /-- The admissible rank quotient (`def:admissible-rank-quotient`). -/
+  quotient : DeclaredQuotient Baseline Target object family coordinateSupport
+  /-- Its determination support is the germ's support. -/
+  supportEq : quotient.support = germ.support
+  /-- It removes a declared coordinate: rank-reducing on the family. -/
+  reducing : ¬ Set.InjOn quotient.label ↑family
+  /-- It identifies the two same-interface representatives, read as realizations
+  of the exact profile at the germ's support. -/
+  identifies : ∀ coordinate ∈ family,
+    quotient.value (cast (congrArg (fun support => BoundaryPiece
+        (Strategy.InterfaceReplacement.SupportAtom.boundary object support))
+        supportEq.symm) germ.piece) (quotient.label coordinate) =
+      quotient.value (cast (congrArg (fun support => BoundaryPiece
+        (Strategy.InterfaceReplacement.SupportAtom.boundary object support))
+        supportEq.symm) germ.canonical) (quotient.label coordinate)
+
+namespace ColdGermIdentification
+
+variable {S : DeclaredSignature} {Baseline Target : FiniteObject.{u} → Prop}
+variable {object : FiniteObject.{u}} {germ : BoundedGerm S Baseline Target object}
+
+/-- **G2 is impossible for an admissibly identified germ** (the argument of node
+`[37]`): the identifying quotient is context-universal on the pair it
+identifies, so no compatible context distinguishes `Q[x,y]` from `E`. -/
+theorem not_distinguishing (identification : ColdGermIdentification germ) :
+    ¬ germ.Distinguishing := by
+  rintro ⟨outside, distinguishes⟩
+  obtain ⟨quotient, supportEq, identifies⟩ :=
+    (⟨identification.quotient, identification.supportEq, identification.identifies⟩ :
+      ∃ quotient : DeclaredQuotient Baseline Target object identification.family
+          identification.coordinateSupport,
+        ∃ supportEq : quotient.support = germ.support,
+          ∀ coordinate ∈ identification.family,
+            quotient.value (cast (congrArg (fun support => BoundaryPiece
+                (Strategy.InterfaceReplacement.SupportAtom.boundary object support))
+                supportEq.symm) germ.piece) (quotient.label coordinate) =
+              quotient.value (cast (congrArg (fun support => BoundaryPiece
+                (Strategy.InterfaceReplacement.SupportAtom.boundary object support))
+                supportEq.symm) germ.canonical) (quotient.label coordinate))
+  revert identifies outside distinguishes
+  generalize hs : quotient.support = support at supportEq
+  subst supportEq
+  intro identifies outside distinguishes
+  simp only [cast_eq] at identifies
+  exact distinguishes (quotient.contextUniversal _ _ identifies outside)
+
+/-- **The neutral / G3 refutation** (the argument of node `[39]`): a rank-reducing
+admissible quotient of the germ's proper support supplies a strictly smaller
+proper representative, i.e. `ReplacementSupport` at that support, which
+`lem:replacement` (`K .replacementExclusion`) forbids. -/
+theorem replacementSupport (identification : ColdGermIdentification germ) :
+    Strategy.InterfaceReplacement.ReplacementSupport Baseline Target object
+      germ.support := by
+  have proper : ∃ vertex, vertex ∉ identification.quotient.support := by
+    rw [identification.supportEq]; exact germ.proper
+  have := identification.quotient.properRepresentative proper identification.reducing
+  rwa [identification.supportEq] at this
+
+/-- **`thm:cold-branch-quantitative-closure`, the closing step.**  Every candidate
+germ whose identification is admissible is forbidden: G1 by target avoidance,
+G2 by context-universality, and the remaining (neutral / length-changing silent)
+case by the replacement its rank reduction supplies.  Read together with
+`lem:replacement` on the ledger, no such germ exists. -/
+theorem false_of_replacementExclusion (identification : ColdGermIdentification germ)
+    (exclusion : ∀ support : Finset object.Vertex,
+      ¬ Strategy.InterfaceReplacement.ReplacementSupport Baseline Target object
+        support) : False :=
+  exclusion germ.support identification.replacementSupport
+
+end ColdGermIdentification
 
 /-- **A row of the same-interface cold table**, at a proper support of one
 object.

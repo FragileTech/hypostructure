@@ -46,6 +46,8 @@ import Hypostructure.Graph.Strategy.TypeAExitRun
 import Hypostructure.Graph.Strategy.SurplusRun
 import Hypostructure.Graph.Strategy.SpineContinuationRun
 import Hypostructure.Graph.Strategy.ColdCorridorRows
+import Hypostructure.Graph.Strategy.BranchDClosure
+import Hypostructure.Graph.Strategy.EntropyClosure
 import Hypostructure.Graph.ColdCorridor
 import Hypostructure.Graph.ColdFirstFailure
 import Hypostructure.Fixtures.ColdCorridorSignature

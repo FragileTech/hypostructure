@@ -1,5 +1,7 @@
 import HypostructureErdos64EG.Problem
 import Hypostructure.Graph.Strategy.SpineContinuationRun
+import Hypostructure.Graph.Strategy.BranchDClosure
+import Hypostructure.Graph.Strategy.EntropyClosure
 
 /-!
 # Final Erdős assembly boundary
@@ -1163,602 +1165,102 @@ noncomputable def selectedPrimitiveOverloadBridgeSublinearHistory
         selectedPrimitiveOverloadBridgeMassHistory,
         selectedPrimitiveOverloadBottleneckRouting, K_eq_iff])
 
-/-- Node `[22]`'s hot/cold decision on the separated package.
+/-- Node `[22]`: the canonical hot/cold partition (`def:cold-window-ledger`),
+then the live-hot entropy cap decision on `𝒫_hot`.
 
-The overflow cursor is the live-hot terminal `[23]`; the cap cursor is the
-literal no-arm residual forwarded toward `[24]` and the cold continuation. -/
+The comparison is formed from the current object's own registered quantities:
+`skeletonBudget` against `2 ^ (rate · scales · |𝒫_hot|)`.  The overflow cursor
+is the live-hot terminal `[23]`; the cap cursor is the literal no-arm residual
+forwarded toward `[24]` and the cold continuation. -/
 noncomputable def selectedBarrierDichotomy
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
-        K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :=
   let partitioned :=
     (hotColdPartitionRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) spineData).run
-      history (by simp [hotColdPartitionRow, K_eq_iff])
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      history (by simp [K_eq_iff])
   Decision.run partitioned (K .barrierCap) (K .barrierOverflow)
     `HypostructureErdos64EG.selectedBarrierDichotomy
-    (by
-      classical
-      obtain ⟨_positive, packing, valid, cardinality, maximal⟩ :=
-        (partitioned.get (K .maximalPacking)).down
-      have stable : ∀ family : Finset Nat,
-          partitioned.current.object.edgeCount ∈ family →
-            Graph.skeletonBudget partitioned.current.object ≤
-              Graph.variableEdgeBudget partitioned.current.object.vertexCount
-                family :=
+    (if overflow : Graph.skeletonBudget selected.object <
+        2 ^ (spineData.{u}.windowRate *
+          spineData.{u}.separatedScaleCount selected.object.vertexCount *
+          (canonicalHotWindows spineData.{u} selected.object).card) then
+      .inr ⟨overflow⟩
+    else
+      .inl ⟨Nat.le_of_not_lt overflow,
         fun _family member =>
-          Graph.skeletonBudget_le_variableEdgeBudget
-            partitioned.current.object member
-      by_cases overflow : Graph.skeletonBudget partitioned.current.object <
-          2 ^ (spineData.windowRate *
-            spineData.separatedScaleCount
-              partitioned.current.object.vertexCount * packing.card)
-      · exact .inr ⟨packing, valid, cardinality, maximal, overflow⟩
-      · exact .inl ⟨packing, valid, cardinality, maximal,
-          Nat.le_of_not_lt overflow, stable⟩)
-    (by simp [hotColdPartitionRow, K_eq_iff])
-    (by simp [hotColdPartitionRow, K_eq_iff])
+          Graph.skeletonBudget_le_variableEdgeBudget selected.object member⟩)
+    (by simp [K_eq_iff])
+    (by simp [K_eq_iff])
 
-/-- Nodes `[22]`--`[24]`, after the barrier cap arm. -/
+/-- Node `[23]`: the live-hot `P₁₃` window entropy overflow closes on the
+literal overflow residual.  `𝒫_hot` is retained in the canonical entropy
+comparison (`K .hotColdPartition`): its full package code
+`2 ^ (bits · |𝒫_hot|)` is realized canonically by labelled skeletons of the
+current class, `lem:skeleton-dominates` (`K .skeletonDominates`) bounds every
+canonical state count by the skeleton budget, and `lem:p13-window-package`
+(`K .windowPackageSeparated`) gives `rate · scales ≤ bits`; the overflow arm
+says the budget is below `2 ^ (rate · scales · |𝒫_hot|)`.  This is
+`lem:independent-target-entropy` on the incoming residual. -/
+noncomputable def selectedBarrierOverflowCloses
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .barrierOverflow, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration,
+        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) : False := by
+  have overflow := (history.get (K .barrierOverflow)).down
+  have split := (history.get (K .hotColdPartition)).down
+  have dominates := (history.get (K .skeletonDominates)).down
+  have package := (history.get (K .windowPackageSeparated)).down
+  obtain ⟨_valid, _attains, _maximal, hotFacts, _coldIff, _disjoint, _cover⟩ :=
+    split
+  obtain ⟨_hotSubset, ⟨State, stateOf, realized⟩, _hotMaximal⟩ := hotFacts
+  have realizedBound := dominates.2 State stateOf
+  obtain ⟨_packing, _packingValid, _packingCard, _packingMaximal,
+    _packageCard, _packagesDisjoint, _familyCard, rateLe, _⟩ := package
+  have exponentLe :
+      spineData.{u}.windowRate *
+          spineData.{u}.separatedScaleCount selected.object.vertexCount *
+          (canonicalHotWindows spineData.{u} selected.object).card ≤
+        windowPackageBits spineData.{u} selected.object *
+          (canonicalHotWindows spineData.{u} selected.object).card :=
+    Nat.mul_le_mul_right _ rateLe
+  have := (Nat.pow_le_pow_right (by norm_num) exponentLe).trans
+    (realized.trans realizedBound)
+  exact absurd this (Nat.not_le_of_lt overflow)
+
+/-- Node `[24]`: `prop:p13-density` "after closure" — on `[153]`'s bounded arm
+(the cold branch forces no germ), the window-only density cap with its exact
+`o(1)` is produced from `K .coldMass`, `K .coldMassBounded`,
+`K .coldAmbientCubic`, and the split, on the literal residual. -/
 noncomputable def selectedDensityBudget
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+      [K .coldMassBounded, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
+        K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
-        K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline,
-        K .returnAvoidance, K .selection]) :
+        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
-      [K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
-        K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking,
-        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+      [K .densityCap, K .coldMassBounded, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
+        K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
-  (densityBudgetRow (BranchState := BranchState)
-    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-    history (by simp [densityBudgetRow, K_eq_iff])
-
-/-- Nodes `[25]`--`[31]`, after the density cap path. -/
-noncomputable def selectedCompletedSpinePrefix
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .barrierCap, K .hotColdPartition, K .skeletonDominates,
-        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion,
-        K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
-        K .returnAvoidance, K .selection]) :
-    ExactLedger EGInput.{u} selected
-      [K .targetRankCircuit, K .curvatureTargetRank, K .functionalRankQuotient,
-        K .admissibleRankQuotient, K .exactResponseProfile, K .wedgeSupply,
-        K .stubSupply, K .boundaryDemand, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
-        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection] := by
-  let h1 := selectedDensityBudget history
-  let h2 :=
-    (remainderNormalizationRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      h1 (by simp [remainderNormalizationRow, selectedDensityBudget, K_eq_iff])
-  let h3 :=
-    (boundaryDemandRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      h2 (by
-        simp [boundaryDemandRow, remainderNormalizationRow, selectedDensityBudget,
-          K_eq_iff])
-  let h3Supply :=
-    (stubSupplyRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      h3 (by
-        simp [stubSupplyRow, boundaryDemandRow, remainderNormalizationRow,
-          selectedDensityBudget, K_eq_iff])
-  let h4 :=
-    (wedgeSupplyRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      h3Supply (by
-        simp [wedgeSupplyRow, stubSupplyRow, boundaryDemandRow, remainderNormalizationRow,
-          selectedDensityBudget, K_eq_iff])
-  let h5 :=
-    (exactResponseProfile (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      h4 (by
-        simp [exactResponseProfile, wedgeSupplyRow, stubSupplyRow, boundaryDemandRow,
-          remainderNormalizationRow, selectedDensityBudget, K_eq_iff])
-  let h6 :=
-    (admissibleRankQuotient (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      h5 (by
-        simp [admissibleRankQuotient, exactResponseProfile, wedgeSupplyRow, stubSupplyRow,
-          boundaryDemandRow, remainderNormalizationRow, selectedDensityBudget,
-          K_eq_iff])
-  let h7 :=
-    (functionalRankQuotientRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      h6 (by
-        simp [functionalRankQuotientRow, admissibleRankQuotient,
-          exactResponseProfile, wedgeSupplyRow, stubSupplyRow, boundaryDemandRow,
-          remainderNormalizationRow, selectedDensityBudget, K_eq_iff])
-  let h8 :=
-    (curvatureTargetRankRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      h7 (by
-        simp [curvatureTargetRankRow, functionalRankQuotientRow,
-          admissibleRankQuotient,
-          exactResponseProfile, wedgeSupplyRow, stubSupplyRow, boundaryDemandRow,
-          remainderNormalizationRow, selectedDensityBudget, K_eq_iff])
-  exact
-    (targetRankCircuitRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      h8 (by
-        simp [targetRankCircuitRow, curvatureTargetRankRow,
-          functionalRankQuotientRow, admissibleRankQuotient,
-          exactResponseProfile, wedgeSupplyRow, stubSupplyRow, boundaryDemandRow,
-          remainderNormalizationRow, selectedDensityBudget, K_eq_iff])
-
-/-- Node `[32]`, run on the completed near-cubic prefix. -/
-noncomputable def selectedCurvatureRankDichotomy
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .barrierCap, K .hotColdPartition, K .skeletonDominates,
-        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion,
-        K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
-        K .returnAvoidance, K .selection]) :
-    Decision
-      (K (BranchState := BranchState)
-        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-        (presentation := erdosReceiverLoadProfile) (data := spineData)
-        .curvatureRankDrop)
-      (K (BranchState := BranchState)
-        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-        (presentation := erdosReceiverLoadProfile) (data := spineData)
-        .curvatureFullRank)
-      (selectedCompletedSpinePrefix history) :=
-  curvatureRankDichotomy (data := spineData)
-    (selectedCompletedSpinePrefix history)
-    (by simp [selectedCompletedSpinePrefix, K_eq_iff])
-    (by simp [selectedCompletedSpinePrefix, K_eq_iff])
-
-/-- Nodes `[22]`--`[32]`, barrier-cap arm through the curvature-rank split. -/
-noncomputable def selectedBarrierCapCurvatureRankDichotomy
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .barrierCap, K .hotColdPartition, K .skeletonDominates,
-        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion,
-        K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
-        K .returnAvoidance, K .selection]) :
-    Decision
-      (K (BranchState := BranchState)
-        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-        (presentation := erdosReceiverLoadProfile) (data := spineData)
-        .curvatureRankDrop)
-      (K (BranchState := BranchState)
-        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-        (presentation := erdosReceiverLoadProfile) (data := spineData)
-        .curvatureFullRank)
-      (selectedCompletedSpinePrefix history) :=
-  selectedCurvatureRankDichotomy history
-
-/-- Branch D `[33]`--`[46]`, closing the rank-drop arm of node `[32]`. -/
-noncomputable def selectedRankDropCloses
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .curvatureRankDrop, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
-        K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
-        K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection]) : False := by
-  let afterDependence :=
-    (branchDependence (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by simp [branchDependence, K_eq_iff])
-  let contextDecision :=
-    contextValidityDichotomy (data := spineData) afterDependence
-      (by simp [branchDependence, K_eq_iff])
-      (by simp [branchDependence, K_eq_iff])
-  match contextDecision with
-  | .left defectHistory =>
-      let closedHistory :=
-        closeImpossible defectHistory (K .contextDefect) (by
-          simp [branchDependence, K_eq_iff])
-      exact closedHistory.elimClosed (by infer_instance)
-  | .right universalHistory =>
-      let atomDecision :=
-        atomCompressionDichotomy (data := spineData) universalHistory
-          (by simp [branchDependence, K_eq_iff])
-          (by simp [branchDependence, K_eq_iff])
-      match atomDecision with
-      | .left compressionHistory =>
-          let closedHistory :=
-            closeIncompatible compressionHistory (K .selection)
-              (K .atomCompression) (by simp [branchDependence, K_eq_iff])
-          exact closedHistory.elimClosed (by infer_instance)
-      | .right delocalizedHistory =>
-          let scopeDecision :=
-            delocalizationScopeDichotomy (data := spineData) delocalizedHistory
-              (by simp [branchDependence, K_eq_iff])
-              (by simp [branchDependence, K_eq_iff])
-          match scopeDecision with
-          | .left properHistory =>
-              let closedHistory :=
-                closeIncompatible properHistory (K .selection)
-                  (K .properDelocalization)
-                  (by simp [branchDependence, K_eq_iff])
-              exact closedHistory.elimClosed (by infer_instance)
-          | .right globalHistory =>
-              let afterRepair :=
-                (repairIdentity (BranchState := BranchState)
-                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                  (presentation := erdosReceiverLoadProfile)
-                  (data := spineData)).run globalHistory (by
-                    simp [repairIdentity, branchDependence, K_eq_iff])
-              let afterBarrier :=
-                (globalBarrier (BranchState := BranchState)
-                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                  (presentation := erdosReceiverLoadProfile)
-                  (data := spineData)).run afterRepair (by
-                    simp [globalBarrier, repairIdentity, branchDependence,
-                      K_eq_iff])
-              let closedHistory :=
-                closeIncompatible afterBarrier (K .selection)
-                (K .globalBarrier) (by
-                    simp [globalBarrier, repairIdentity, branchDependence,
-                      K_eq_iff])
-              exact closedHistory.elimClosed (by infer_instance)
-
-/-- Nodes `[21]`--`[46]`, forwarding node `[22]`'s cold cursor to the spine.
-
-As in the Type A decisions, the hot sibling is closed from its own cursor and
-the cold sibling is passed unchanged to its next atomic rows. -/
-noncomputable def selectedSeparatedFullRank
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
-        K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection]) :
-    ExactLedger EGInput.{u} selected
-      [K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
-        K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
-        K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection] := by
-  match selectedBarrierDichotomy history with
-  | .left capHistory =>
-      match selectedBarrierCapCurvatureRankDichotomy capHistory with
-      | .left dropHistory =>
-          exact False.elim (selectedRankDropCloses dropHistory)
-      | .right fullRankHistory =>
-          exact fullRankHistory
-  | .right overflowHistory =>
-      exact False.elim (selectedBarrierOverflowCloses overflowHistory)
-
-/-- Node `[48]`, on the full-rank arm of node `[32]`. -/
-noncomputable def selectedForcedCurvatureCost
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
-        K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
-        K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection]) :
-    ExactLedger EGInput.{u} selected
-      [K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
-        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection] :=
-  (forcedCurvatureCostRow (BranchState := BranchState)
-    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-    history (by simp [forcedCurvatureCostRow, K_eq_iff])
-
-/-- Node `[50]`, the entropy split after forced curvature cost. -/
-noncomputable def selectedRemainderEntropyDichotomy
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
-        K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
-        K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection]) :
-    Decision
-      (K (BranchState := BranchState)
-        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-        (presentation := erdosReceiverLoadProfile) (data := spineData)
-        .remainderEntropyHigh)
-      (K (BranchState := BranchState)
-        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-        (presentation := erdosReceiverLoadProfile) (data := spineData)
-        .remainderEntropyLow)
-      (selectedForcedCurvatureCost history) :=
-  remainderEntropyDichotomy (data := spineData)
-    (selectedForcedCurvatureCost history)
-    (K .remainderEntropyHigh) (K .remainderEntropyLow)
-    (fun high => ⟨high⟩)
-    (fun low => ⟨low⟩)
-    (by simp [selectedForcedCurvatureCost, K_eq_iff])
-    (by simp [selectedForcedCurvatureCost, K_eq_iff])
-
-/-- Nodes `[48]`--`[50]`, full-rank arm through the entropy split. -/
-noncomputable def selectedFullRankEntropyDichotomy
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
-        K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
-        K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection]) :
-    Decision
-      (K (BranchState := BranchState)
-        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-        (presentation := erdosReceiverLoadProfile) (data := spineData)
-        .remainderEntropyHigh)
-      (K (BranchState := BranchState)
-        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-        (presentation := erdosReceiverLoadProfile) (data := spineData)
-        .remainderEntropyLow)
-      (selectedForcedCurvatureCost history) :=
-  selectedRemainderEntropyDichotomy history
-
-/-- Nodes `[21]`--`[50]`, separated near-cubic arm through the entropy split. -/
-noncomputable def selectedSeparatedEntropyDichotomy
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
-        K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection]) :
-    Decision
-      (K (BranchState := BranchState)
-        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-        (presentation := erdosReceiverLoadProfile) (data := spineData)
-        .remainderEntropyHigh)
-      (K (BranchState := BranchState)
-        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-        (presentation := erdosReceiverLoadProfile) (data := spineData)
-        .remainderEntropyLow)
-      (selectedForcedCurvatureCost (selectedSeparatedFullRank history)) :=
-  selectedFullRankEntropyDichotomy (selectedSeparatedFullRank history)
-
-/-- Node `[52]`, on the high-entropy arm. -/
-noncomputable def selectedEntropyPackage
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .remainderEntropyHigh, K .forcedCurvatureCost,
-        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
-        K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
-        K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection]) :
-    ExactLedger EGInput.{u} selected
-      [K .entropyPackageDemand, K .remainderEntropyHigh,
-        K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
-        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection] :=
-  (entropyPackage (BranchState := BranchState)
-    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-    history (by simp [entropyPackage, K_eq_iff])
-
-/-- Node `[53]`, after the high-entropy package demand. -/
-noncomputable def selectedEntropyCapDichotomy
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .remainderEntropyHigh, K .forcedCurvatureCost,
-        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
-        K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
-        K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection]) :
-    Decision
-      (K (BranchState := BranchState)
-        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-        (presentation := erdosReceiverLoadProfile) (data := spineData)
-        .entropyCapActive)
-      (K (BranchState := BranchState)
-        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-        (presentation := erdosReceiverLoadProfile) (data := spineData)
-        .largeBudgetResidual)
-      (selectedEntropyPackage history) :=
-  entropyCapDichotomy (data := spineData)
-    (selectedEntropyPackage history)
-    (by simp [selectedEntropyPackage, K_eq_iff])
-    (by simp [selectedEntropyPackage, K_eq_iff])
-
-/-- Nodes `[52]`--`[53]`, high-entropy arm through the cap split. -/
-noncomputable def selectedHighEntropyCapDichotomy
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .remainderEntropyHigh, K .forcedCurvatureCost,
-        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
-        K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
-        K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection]) :
-    Decision
-      (K (BranchState := BranchState)
-        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-        (presentation := erdosReceiverLoadProfile) (data := spineData)
-        .entropyCapActive)
-      (K (BranchState := BranchState)
-        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-        (presentation := erdosReceiverLoadProfile) (data := spineData)
-        .largeBudgetResidual)
-      (selectedEntropyPackage history) :=
-  selectedEntropyCapDichotomy history
-
-/-- Nodes `[52]`--`[54]`, high-entropy arm reduced to the large-budget survivor. -/
-noncomputable def selectedHighEntropyLargeBudget
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .remainderEntropyHigh, K .forcedCurvatureCost,
-        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
-        K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
-        K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection]) :
-    ExactLedger EGInput.{u} selected
-      [K .largeBudgetResidual, K .entropyPackageDemand,
-        K .remainderEntropyHigh, K .forcedCurvatureCost,
-        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
-        K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
-        K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection] := by
-  match selectedHighEntropyCapDichotomy history with
-  | .left activeHistory =>
-      exact False.elim (selectedEntropyCapActiveCloses activeHistory)
-  | .right largeHistory =>
-      exact largeHistory
-
-/-- Node `[56]`, exact net-deficiency cap on the high-entropy Residual C arm. -/
-noncomputable def selectedHighEntropyNetDeficiencyCap
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .remainderEntropyHigh, K .forcedCurvatureCost,
-        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
-        K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
-        K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection]) :
-    ExactLedger EGInput.{u} selected
-      [K .netDeficiencyCap, K .largeBudgetResidual,
-        K .entropyPackageDemand, K .remainderEntropyHigh,
-        K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .skeletonDominates, K .windowPackageSeparated,
-        K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection] :=
-  (netDeficiencyCapRow (BranchState := BranchState)
-    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-    (selectedHighEntropyLargeBudget history)
-    (by simp [netDeficiencyCapRow, selectedHighEntropyLargeBudget, K_eq_iff])
-
-/-- Node `[55]`, on the low-entropy arm. -/
-noncomputable def selectedLowEntropyLargeBudget
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .remainderEntropyLow, K .forcedCurvatureCost,
-        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
-        K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
-        K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection]) :
-    ExactLedger EGInput.{u} selected
-      [K .largeBudgetResidual, K .remainderEntropyLow,
-        K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
-        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection] :=
-  (lowEntropyLargeBudgetRow (BranchState := BranchState)
-    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-    history (by simp [lowEntropyLargeBudgetRow, K_eq_iff])
-
-/-- Node `[56]`, exact net-deficiency cap on the low-entropy Residual C arm. -/
-noncomputable def selectedLowEntropyNetDeficiencyCap
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .remainderEntropyLow, K .forcedCurvatureCost,
-        K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
-        K .remainderNormalized, K .densityCap, K .barrierCap,
-        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
-        K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection]) :
-    ExactLedger EGInput.{u} selected
-      [K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
-        K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
-        K .densityCap, K .barrierCap, K .hotColdPartition,
-        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
-        K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection] :=
-  (netDeficiencyCapRow (BranchState := BranchState)
-    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-    (selectedLowEntropyLargeBudget history)
-    (by simp [netDeficiencyCapRow, selectedLowEntropyLargeBudget, K_eq_iff])
+  (densityBudgetRow (data := spineData)).run history (by simp [K_eq_iff])
 
 /-- Node `[60]`, the order-regime split on the low-entropy Residual C arm. -/
 noncomputable def selectedLowEntropyNetChargeOrderDichotomy
@@ -1766,7 +1268,7 @@ noncomputable def selectedLowEntropyNetChargeOrderDichotomy
     (history : ExactLedger EGInput.{u} selected
       [K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -1800,7 +1302,7 @@ noncomputable def selectedLowEntropyNetChargeCap
       [K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -1812,7 +1314,7 @@ noncomputable def selectedLowEntropyNetChargeCap
         K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -1831,7 +1333,7 @@ noncomputable def selectedLowEntropyNetChargeLocalization
       [K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -1842,8 +1344,7 @@ noncomputable def selectedLowEntropyNetChargeLocalization
       [K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -1865,7 +1366,7 @@ noncomputable def selectedLowEntropyNetChargeDichotomy
       [K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -1897,7 +1398,7 @@ noncomputable def selectedLowEntropyNetChargeNonNegativeCloses
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -1922,7 +1423,7 @@ noncomputable def selectedLowEntropyNegativeSupport
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -1934,8 +1435,7 @@ noncomputable def selectedLowEntropyNegativeSupport
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -1954,7 +1454,7 @@ noncomputable def selectedLowEntropyTypeSplitDichotomy
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -1987,7 +1487,7 @@ noncomputable def selectedLowEntropyNegativeSupportAfterNetChargeDichotomy
       [K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -1999,8 +1499,7 @@ noncomputable def selectedLowEntropyNegativeSupportAfterNetChargeDichotomy
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -2020,7 +1519,7 @@ noncomputable def selectedLowEntropyTypeSplitAfterNetChargeDichotomy
       [K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -2063,7 +1562,7 @@ noncomputable def selectedHighEntropyNetChargeOrderDichotomy
       [K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -2093,7 +1592,7 @@ noncomputable def selectedHighEntropyNetChargeOrderAfterCapDichotomy
     (history : ExactLedger EGInput.{u} selected
       [K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -2120,8 +1619,7 @@ noncomputable def selectedHighEntropyNetChargeCap
       [K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -2132,8 +1630,7 @@ noncomputable def selectedHighEntropyNetChargeCap
         K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -2151,8 +1648,7 @@ noncomputable def selectedHighEntropyNetChargeLocalization
       [K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -2163,7 +1659,7 @@ noncomputable def selectedHighEntropyNetChargeLocalization
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -2186,8 +1682,7 @@ noncomputable def selectedHighEntropyNetChargeDichotomy
       [K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -2218,8 +1713,7 @@ noncomputable def selectedHighEntropyNetChargeNonNegativeCloses
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -2243,8 +1737,7 @@ noncomputable def selectedHighEntropyNegativeSupport
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -2256,7 +1749,7 @@ noncomputable def selectedHighEntropyNegativeSupport
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -2276,8 +1769,7 @@ noncomputable def selectedHighEntropyTypeSplitDichotomy
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -2309,8 +1801,7 @@ noncomputable def selectedHighEntropyNegativeSupportAfterNetChargeDichotomy
       [K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -2322,7 +1813,7 @@ noncomputable def selectedHighEntropyNegativeSupportAfterNetChargeDichotomy
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -2343,8 +1834,7 @@ noncomputable def selectedHighEntropyTypeSplitAfterNetChargeDichotomy
       [K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -2387,8 +1877,7 @@ noncomputable def selectedLowEntropyTypeAReceiverRouting
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -2400,8 +1889,7 @@ noncomputable def selectedLowEntropyTypeAReceiverRouting
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -2421,8 +1909,7 @@ noncomputable def selectedLowEntropyTypeASaturationDichotomy
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -2456,8 +1943,7 @@ noncomputable def selectedLowEntropyTypeAPortReturn
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -2470,8 +1956,7 @@ noncomputable def selectedLowEntropyTypeAPortReturn
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -2492,8 +1977,7 @@ noncomputable def selectedLowEntropyTypeAVisibleEntryDichotomy
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -2529,7 +2013,7 @@ noncomputable def selectedHighEntropyTypeAReceiverRouting
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -2542,7 +2026,7 @@ noncomputable def selectedHighEntropyTypeAReceiverRouting
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -2563,7 +2047,7 @@ noncomputable def selectedHighEntropyTypeASaturationDichotomy
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -2599,7 +2083,7 @@ noncomputable def selectedHighEntropyTypeAPortReturn
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -2613,7 +2097,7 @@ noncomputable def selectedHighEntropyTypeAPortReturn
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -2635,7 +2119,7 @@ noncomputable def selectedHighEntropyTypeAVisibleEntryDichotomy
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -2674,8 +2158,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitFourDichotomy
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -2729,8 +2212,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitFourDichotomy
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -2784,8 +2266,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitFiveDichotomy
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -2822,8 +2303,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitFiveFree
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -2838,8 +2318,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitFiveFree
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -2871,8 +2350,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitSixDichotomy
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -2909,8 +2387,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitSixScopeDichotomy
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -2954,8 +2431,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitSixFree
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -2971,8 +2447,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitSixFree
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -3014,8 +2489,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitSevenDichotomy
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -3066,8 +2540,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitSevenHandoff
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -3085,8 +2558,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessExitSevenHandoff
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -3110,8 +2582,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessHandoffNormalForm
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -3129,8 +2600,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessHandoffNormalForm
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -3154,8 +2624,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessHandoffDegreeDichotomy
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -3188,8 +2657,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessHeavyLocalDichotomy
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -3207,8 +2675,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessHeavyLocalDichotomy
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -3234,8 +2701,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessDegreeFourProfile
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -3253,8 +2719,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessDegreeFourProfile
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -3278,8 +2743,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessHandoffAssignedSupport
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -3297,8 +2761,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessHandoffAssignedSupport
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -3321,8 +2784,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessRoute8ResidualProfile
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -3340,8 +2802,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessRoute8ResidualProfile
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -3365,8 +2826,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessRoute8GlobalSqueeze
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -3384,8 +2844,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessRoute8GlobalSqueeze
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -3409,8 +2868,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessRoute8BasinBurden
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -3429,8 +2887,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessRoute8BasinBurden
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -3455,8 +2912,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessRoute8LargeBudgetDeficit
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -3475,8 +2931,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessRoute8LargeBudgetDeficit
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -3501,8 +2956,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessRoute8CarrierCore
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -3522,8 +2976,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessRoute8CarrierCore
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -3549,8 +3002,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessRoute8SmallCoreCollapse
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -3570,8 +3022,7 @@ noncomputable def selectedLowEntropyTypeAFirstExcessRoute8SmallCoreCollapse
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -3594,8 +3045,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitFiveDichotomy
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -3633,8 +3083,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitFiveFree
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -3650,8 +3099,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitFiveFree
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -3684,8 +3132,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitSixDichotomy
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -3723,8 +3170,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitSixScopeDichotomy
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -3769,8 +3215,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitSixFree
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -3787,8 +3232,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitSixFree
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -3831,8 +3275,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitSevenDichotomy
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -3884,7 +3327,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitSevenHandoff
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow,
@@ -3903,7 +3346,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessExitSevenHandoff
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow,
@@ -3928,7 +3371,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessHandoffNormalForm
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow,
@@ -3947,7 +3390,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessHandoffNormalForm
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow,
@@ -3972,7 +3415,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessHandoffDegreeDichotomy
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow,
@@ -4006,7 +3449,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessHeavyLocalDichotomy
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow,
@@ -4025,7 +3468,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessHeavyLocalDichotomy
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow,
@@ -4052,7 +3495,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessDegreeFourProfile
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow,
@@ -4071,7 +3514,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessDegreeFourProfile
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow,
@@ -4096,7 +3539,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessHandoffAssignedSupport
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow,
@@ -4115,7 +3558,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessHandoffAssignedSupport
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow,
@@ -4139,7 +3582,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessRoute8ResidualProfile
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow,
@@ -4158,7 +3601,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessRoute8ResidualProfile
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow,
@@ -4183,7 +3626,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessRoute8GlobalSqueeze
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow,
@@ -4202,7 +3645,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessRoute8GlobalSqueeze
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow,
@@ -4227,7 +3670,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessRoute8BasinBurden
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow,
@@ -4247,7 +3690,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessRoute8BasinBurden
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow,
@@ -4273,7 +3716,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessRoute8LargeBudgetDeficit
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow,
@@ -4293,7 +3736,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessRoute8LargeBudgetDeficit
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow,
@@ -4319,7 +3762,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessRoute8CarrierCore
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow,
@@ -4340,7 +3783,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessRoute8CarrierCore
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow,
@@ -4367,7 +3810,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessRoute8SmallCoreCollapse
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow,
@@ -4388,7 +3831,7 @@ noncomputable def selectedHighEntropyTypeAFirstExcessRoute8SmallCoreCollapse
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow,
@@ -4409,8 +3852,7 @@ noncomputable def selectedLowEntropyTypeAExitFourFiniteDescent
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -4440,8 +3882,7 @@ noncomputable def selectedHighEntropyTypeAExitFourFiniteDescent
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -4469,8 +3910,7 @@ noncomputable def selectedLowEntropyTypeASaturatedHandoffSplitDichotomy
         K .netChargeNegative, K .netChargeLocalization, K .netChargeCap,
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -4545,8 +3985,7 @@ noncomputable def selectedHighEntropyTypeASaturatedHandoffSplitDichotomy
         K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -4622,8 +4061,7 @@ noncomputable def selectedLowEntropyTypeAVisibleExitFourDichotomy
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -4680,8 +4118,7 @@ noncomputable def selectedLowEntropyTypeASilentExitFourDichotomy
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -4736,7 +4173,7 @@ noncomputable def selectedHighEntropyTypeAVisibleExitFourDichotomy
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -4795,7 +4232,7 @@ noncomputable def selectedHighEntropyTypeASilentExitFourDichotomy
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -4889,8 +4326,7 @@ noncomputable def selectedLowEntropyTypeASilentExitFiveDichotomy
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -4928,8 +4364,7 @@ noncomputable def selectedLowEntropyTypeASilentExitFiveCloses
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -4964,8 +4399,7 @@ noncomputable def selectedLowEntropyTypeASilentExitFiveFree
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -4981,8 +4415,7 @@ noncomputable def selectedLowEntropyTypeASilentExitFiveFree
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5008,8 +4441,7 @@ noncomputable def selectedLowEntropyTypeASilentExitSixDichotomy
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5047,8 +4479,7 @@ noncomputable def selectedLowEntropyTypeASilentExitSixScopeDichotomy
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5094,8 +4525,7 @@ noncomputable def selectedLowEntropyTypeASilentExitSixProperCloses
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5120,8 +4550,7 @@ noncomputable def selectedLowEntropyTypeASilentExitSixGlobalCloses
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5146,8 +4575,7 @@ noncomputable def selectedLowEntropyTypeASilentExitSixFree
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5164,8 +4592,7 @@ noncomputable def selectedLowEntropyTypeASilentExitSixFree
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5197,8 +4624,7 @@ noncomputable def selectedLowEntropyTypeASilentExitSevenDichotomy
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5250,8 +4676,7 @@ noncomputable def selectedLowEntropyTypeASilentExitSevenHandoff
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5269,8 +4694,7 @@ noncomputable def selectedLowEntropyTypeASilentExitSevenHandoff
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5294,8 +4718,7 @@ noncomputable def selectedLowEntropyTypeASilentHandoffNormalForm
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5313,8 +4736,7 @@ noncomputable def selectedLowEntropyTypeASilentHandoffNormalForm
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5338,8 +4760,7 @@ noncomputable def selectedLowEntropyTypeASilentHandoffDegreeDichotomy
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5372,8 +4793,7 @@ noncomputable def selectedLowEntropyTypeASilentHeavyLocalDichotomy
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5391,8 +4811,7 @@ noncomputable def selectedLowEntropyTypeASilentHeavyLocalDichotomy
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5418,8 +4837,7 @@ noncomputable def selectedLowEntropyTypeASilentDegreeFourProfile
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5437,8 +4855,7 @@ noncomputable def selectedLowEntropyTypeASilentDegreeFourProfile
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5462,8 +4879,7 @@ noncomputable def selectedLowEntropyTypeASilentHandoffAssignedSupport
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5481,8 +4897,7 @@ noncomputable def selectedLowEntropyTypeASilentHandoffAssignedSupport
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5506,8 +4921,7 @@ noncomputable def selectedLowEntropyTypeASilentRoute8GlobalSqueeze
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5526,8 +4940,7 @@ noncomputable def selectedLowEntropyTypeASilentRoute8GlobalSqueeze
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5549,8 +4962,7 @@ noncomputable def selectedLowEntropyTypeAVisibleExitFiveDichotomy
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5588,8 +5000,7 @@ noncomputable def selectedLowEntropyTypeAVisibleExitFiveFree
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5605,8 +5016,7 @@ noncomputable def selectedLowEntropyTypeAVisibleExitFiveFree
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5639,8 +5049,7 @@ noncomputable def selectedLowEntropyTypeAVisibleExitSixDichotomy
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5678,8 +5087,7 @@ noncomputable def selectedLowEntropyTypeAVisibleExitSixScopeDichotomy
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5724,8 +5132,7 @@ noncomputable def selectedLowEntropyTypeAVisibleExitSixFree
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5742,8 +5149,7 @@ noncomputable def selectedLowEntropyTypeAVisibleExitSixFree
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5786,8 +5192,7 @@ noncomputable def selectedLowEntropyTypeAVisibleExitSevenDichotomy
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5839,8 +5244,7 @@ noncomputable def selectedLowEntropyTypeAVisibleExitSevenHandoff
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5858,8 +5262,7 @@ noncomputable def selectedLowEntropyTypeAVisibleExitSevenHandoff
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5883,8 +5286,7 @@ noncomputable def selectedLowEntropyTypeAVisibleHandoffNormalForm
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5902,8 +5304,7 @@ noncomputable def selectedLowEntropyTypeAVisibleHandoffNormalForm
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5927,8 +5328,7 @@ noncomputable def selectedLowEntropyTypeAVisibleHandoffDegreeDichotomy
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5961,8 +5361,7 @@ noncomputable def selectedLowEntropyTypeAVisibleHeavyLocalDichotomy
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -5980,8 +5379,7 @@ noncomputable def selectedLowEntropyTypeAVisibleHeavyLocalDichotomy
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6007,8 +5405,7 @@ noncomputable def selectedLowEntropyTypeAVisibleDegreeFourProfile
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6026,8 +5423,7 @@ noncomputable def selectedLowEntropyTypeAVisibleDegreeFourProfile
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6051,8 +5447,7 @@ noncomputable def selectedLowEntropyTypeAVisibleHandoffAssignedSupport
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6070,8 +5465,7 @@ noncomputable def selectedLowEntropyTypeAVisibleHandoffAssignedSupport
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6093,8 +5487,7 @@ noncomputable def selectedHighEntropyTypeASilentExitFiveDichotomy
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6133,8 +5526,7 @@ noncomputable def selectedHighEntropyTypeASilentExitFiveCloses
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6170,8 +5562,7 @@ noncomputable def selectedHighEntropyTypeASilentExitFiveFree
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6188,8 +5579,7 @@ noncomputable def selectedHighEntropyTypeASilentExitFiveFree
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6216,8 +5606,7 @@ noncomputable def selectedHighEntropyTypeASilentExitSixDichotomy
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6256,8 +5645,7 @@ noncomputable def selectedHighEntropyTypeASilentExitSixScopeDichotomy
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6304,8 +5692,7 @@ noncomputable def selectedHighEntropyTypeASilentExitSixProperCloses
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6331,8 +5718,7 @@ noncomputable def selectedHighEntropyTypeASilentExitSixGlobalCloses
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6358,8 +5744,7 @@ noncomputable def selectedHighEntropyTypeASilentExitSixFree
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6377,8 +5762,7 @@ noncomputable def selectedHighEntropyTypeASilentExitSixFree
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6411,8 +5795,7 @@ noncomputable def selectedHighEntropyTypeASilentExitSevenDichotomy
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6465,8 +5848,7 @@ noncomputable def selectedHighEntropyTypeASilentExitSevenHandoff
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6485,8 +5867,7 @@ noncomputable def selectedHighEntropyTypeASilentExitSevenHandoff
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6511,8 +5892,7 @@ noncomputable def selectedHighEntropyTypeASilentHandoffNormalForm
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6531,8 +5911,7 @@ noncomputable def selectedHighEntropyTypeASilentHandoffNormalForm
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6557,8 +5936,7 @@ noncomputable def selectedHighEntropyTypeASilentHandoffDegreeDichotomy
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6592,8 +5970,7 @@ noncomputable def selectedHighEntropyTypeASilentHeavyLocalDichotomy
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6612,8 +5989,7 @@ noncomputable def selectedHighEntropyTypeASilentHeavyLocalDichotomy
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6640,8 +6016,7 @@ noncomputable def selectedHighEntropyTypeASilentDegreeFourProfile
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6660,8 +6035,7 @@ noncomputable def selectedHighEntropyTypeASilentDegreeFourProfile
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6686,8 +6060,7 @@ noncomputable def selectedHighEntropyTypeASilentHandoffAssignedSupport
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6706,8 +6079,7 @@ noncomputable def selectedHighEntropyTypeASilentHandoffAssignedSupport
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6732,8 +6104,7 @@ noncomputable def selectedHighEntropyTypeASilentRoute8GlobalSqueeze
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6753,8 +6124,7 @@ noncomputable def selectedHighEntropyTypeASilentRoute8GlobalSqueeze
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6777,8 +6147,7 @@ noncomputable def selectedHighEntropyTypeAVisibleExitFiveDichotomy
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6817,8 +6186,7 @@ noncomputable def selectedHighEntropyTypeAVisibleExitFiveFree
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6835,8 +6203,7 @@ noncomputable def selectedHighEntropyTypeAVisibleExitFiveFree
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6870,8 +6237,7 @@ noncomputable def selectedHighEntropyTypeAVisibleExitSixDichotomy
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6910,8 +6276,7 @@ noncomputable def selectedHighEntropyTypeAVisibleExitSixScopeDichotomy
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6957,8 +6322,7 @@ noncomputable def selectedHighEntropyTypeAVisibleExitSixFree
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -6976,8 +6340,7 @@ noncomputable def selectedHighEntropyTypeAVisibleExitSixFree
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -7021,8 +6384,7 @@ noncomputable def selectedHighEntropyTypeAVisibleExitSevenDichotomy
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -7075,8 +6437,7 @@ noncomputable def selectedHighEntropyTypeAVisibleExitSevenHandoff
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -7095,8 +6456,7 @@ noncomputable def selectedHighEntropyTypeAVisibleExitSevenHandoff
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -7121,8 +6481,7 @@ noncomputable def selectedHighEntropyTypeAVisibleHandoffNormalForm
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -7141,8 +6500,7 @@ noncomputable def selectedHighEntropyTypeAVisibleHandoffNormalForm
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -7167,8 +6525,7 @@ noncomputable def selectedHighEntropyTypeAVisibleHandoffDegreeDichotomy
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -7202,8 +6559,7 @@ noncomputable def selectedHighEntropyTypeAVisibleHeavyLocalDichotomy
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -7222,8 +6578,7 @@ noncomputable def selectedHighEntropyTypeAVisibleHeavyLocalDichotomy
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -7250,8 +6605,7 @@ noncomputable def selectedHighEntropyTypeAVisibleDegreeFourProfile
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -7270,8 +6624,7 @@ noncomputable def selectedHighEntropyTypeAVisibleDegreeFourProfile
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -7296,8 +6649,7 @@ noncomputable def selectedHighEntropyTypeAVisibleHandoffAssignedSupport
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -7316,8 +6668,7 @@ noncomputable def selectedHighEntropyTypeAVisibleHandoffAssignedSupport
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -7335,8 +6686,7 @@ noncomputable def selectedLowEntropyTypeBNormalForm
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -7348,7 +6698,7 @@ noncomputable def selectedLowEntropyTypeBNormalForm
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -7371,7 +6721,7 @@ noncomputable def selectedHighEntropyTypeBNormalForm
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -7384,8 +6734,7 @@ noncomputable def selectedHighEntropyTypeBNormalForm
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -7407,8 +6756,7 @@ noncomputable def selectedLowEntropyTypeBLocalDichotomy
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -7421,7 +6769,7 @@ noncomputable def selectedLowEntropyTypeBLocalDichotomy
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -7442,8 +6790,7 @@ noncomputable def selectedLowEntropyTypeBHeavyFanCap
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -7456,8 +6803,7 @@ noncomputable def selectedLowEntropyTypeBHeavyFanCap
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -7481,8 +6827,7 @@ noncomputable def selectedLowEntropyTypeBDegreeFourFanCap
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -7495,7 +6840,7 @@ noncomputable def selectedLowEntropyTypeBDegreeFourFanCap
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -7516,8 +6861,7 @@ noncomputable def selectedLowEntropyTypeBDegreeFourProfile
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -7530,8 +6874,7 @@ noncomputable def selectedLowEntropyTypeBDegreeFourProfile
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -7556,7 +6899,7 @@ noncomputable def selectedHighEntropyTypeBLocalDichotomy
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -7570,8 +6913,7 @@ noncomputable def selectedHighEntropyTypeBLocalDichotomy
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -7592,7 +6934,7 @@ noncomputable def selectedHighEntropyTypeBHeavyFanCap
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -7607,7 +6949,7 @@ noncomputable def selectedHighEntropyTypeBHeavyFanCap
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -7633,7 +6975,7 @@ noncomputable def selectedHighEntropyTypeBDegreeFourFanCap
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -7647,8 +6989,7 @@ noncomputable def selectedHighEntropyTypeBDegreeFourFanCap
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -7669,7 +7010,7 @@ noncomputable def selectedHighEntropyTypeBDegreeFourProfile
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -7684,7 +7025,7 @@ noncomputable def selectedHighEntropyTypeBDegreeFourProfile
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -7710,8 +7051,7 @@ noncomputable def selectedLowEntropyTypeBFanCertificateDichotomy
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -7745,8 +7085,7 @@ noncomputable def selectedLowEntropyTypeBHeavyFanCertificateDichotomy
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -7776,7 +7115,7 @@ noncomputable def selectedLowEntropyTypeBCertificateResidualMass
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -7791,8 +7130,7 @@ noncomputable def selectedLowEntropyTypeBCertificateResidualMass
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -7815,7 +7153,7 @@ noncomputable def selectedLowEntropyTypeBDirectCycleDichotomy
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -7852,8 +7190,7 @@ noncomputable def selectedLowEntropyTypeBDirectCycleCloses
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -7878,7 +7215,7 @@ noncomputable def selectedLowEntropyTypeBDirectCycleFree
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -7893,8 +7230,7 @@ noncomputable def selectedLowEntropyTypeBDirectCycleFree
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -7917,8 +7253,7 @@ noncomputable def selectedLowEntropyTypeBB2AssignmentDichotomy
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -7954,7 +7289,7 @@ noncomputable def selectedLowEntropyTypeBB2AssignmentAfterDirectCycleDichotomy
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -7986,7 +7321,7 @@ noncomputable def selectedLowEntropyTypeBOverlapObstructionMass
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -8002,8 +7337,7 @@ noncomputable def selectedLowEntropyTypeBOverlapObstructionMass
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -8026,7 +7360,7 @@ noncomputable def selectedHighEntropyTypeBFanCertificateDichotomy
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -8062,7 +7396,7 @@ noncomputable def selectedHighEntropyTypeBHeavyFanCertificateDichotomy
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -8093,8 +7427,7 @@ noncomputable def selectedHighEntropyTypeBCertificateResidualMass
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -8109,7 +7442,7 @@ noncomputable def selectedHighEntropyTypeBCertificateResidualMass
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -8133,8 +7466,7 @@ noncomputable def selectedHighEntropyTypeBDirectCycleDichotomy
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -8171,7 +7503,7 @@ noncomputable def selectedHighEntropyTypeBDirectCycleCloses
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -8197,8 +7529,7 @@ noncomputable def selectedHighEntropyTypeBDirectCycleFree
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -8213,7 +7544,7 @@ noncomputable def selectedHighEntropyTypeBDirectCycleFree
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -8238,7 +7569,7 @@ noncomputable def selectedHighEntropyTypeBB2AssignmentDichotomy
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -8275,8 +7606,7 @@ noncomputable def selectedHighEntropyTypeBB2AssignmentAfterDirectCycleDichotomy
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -8307,8 +7637,7 @@ noncomputable def selectedHighEntropyTypeBOverlapObstructionMass
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -8324,7 +7653,7 @@ noncomputable def selectedHighEntropyTypeBOverlapObstructionMass
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -8347,8 +7676,7 @@ noncomputable def selectedLowEntropyDegreeFourFanCertificateDichotomy
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -8382,8 +7710,7 @@ noncomputable def selectedLowEntropyDegreeFourProfileFanCertificateDichotomy
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -8413,7 +7740,7 @@ noncomputable def selectedLowEntropyDegreeFourCertificateResidualMass
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -8428,8 +7755,7 @@ noncomputable def selectedLowEntropyDegreeFourCertificateResidualMass
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -8452,7 +7778,7 @@ noncomputable def selectedLowEntropyDegreeFourDirectCycleDichotomy
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -8489,8 +7815,7 @@ noncomputable def selectedLowEntropyDegreeFourDirectCycleCloses
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -8515,7 +7840,7 @@ noncomputable def selectedLowEntropyDegreeFourDirectCycleFree
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -8530,8 +7855,7 @@ noncomputable def selectedLowEntropyDegreeFourDirectCycleFree
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -8554,8 +7878,7 @@ noncomputable def selectedLowEntropyDegreeFourB2AssignmentDichotomy
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -8591,7 +7914,7 @@ noncomputable def selectedLowEntropyDegreeFourB2AssignmentAfterDirectCycleDichot
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -8623,7 +7946,7 @@ noncomputable def selectedLowEntropyDegreeFourOverlapObstructionMass
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -8639,8 +7962,7 @@ noncomputable def selectedLowEntropyDegreeFourOverlapObstructionMass
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -8663,7 +7985,7 @@ noncomputable def selectedHighEntropyDegreeFourFanCertificateDichotomy
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -8699,7 +8021,7 @@ noncomputable def selectedHighEntropyDegreeFourProfileFanCertificateDichotomy
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -8730,8 +8052,7 @@ noncomputable def selectedHighEntropyDegreeFourCertificateResidualMass
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -8746,7 +8067,7 @@ noncomputable def selectedHighEntropyDegreeFourCertificateResidualMass
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -8770,8 +8091,7 @@ noncomputable def selectedHighEntropyDegreeFourDirectCycleDichotomy
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -8808,7 +8128,7 @@ noncomputable def selectedHighEntropyDegreeFourDirectCycleCloses
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -8834,8 +8154,7 @@ noncomputable def selectedHighEntropyDegreeFourDirectCycleFree
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -8850,7 +8169,7 @@ noncomputable def selectedHighEntropyDegreeFourDirectCycleFree
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -8875,7 +8194,7 @@ noncomputable def selectedHighEntropyDegreeFourB2AssignmentDichotomy
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -8912,8 +8231,7 @@ noncomputable def selectedHighEntropyDegreeFourB2AssignmentAfterDirectCycleDicho
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -8944,8 +8262,7 @@ noncomputable def selectedHighEntropyDegreeFourOverlapObstructionMass
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -8961,7 +8278,7 @@ noncomputable def selectedHighEntropyDegreeFourOverlapObstructionMass
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -8986,7 +8303,7 @@ noncomputable def selectedLowEntropyTypeBB2ExclusionCharge
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -9004,7 +8321,7 @@ noncomputable def selectedLowEntropyTypeBB2ExclusionCharge
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -9048,7 +8365,7 @@ noncomputable def selectedLowEntropyTypeBExclusionDichotomy
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -9100,8 +8417,7 @@ noncomputable def selectedLowEntropyTypeBExcludedCloses
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -9124,7 +8440,7 @@ noncomputable def selectedLowEntropyTypeBExclusionResidual
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -9142,8 +8458,7 @@ noncomputable def selectedLowEntropyTypeBExclusionResidual
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -9167,8 +8482,7 @@ noncomputable def selectedHighEntropyTypeBB2ExclusionCharge
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -9185,8 +8499,7 @@ noncomputable def selectedHighEntropyTypeBB2ExclusionCharge
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -9229,8 +8542,7 @@ noncomputable def selectedHighEntropyTypeBExclusionDichotomy
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -9282,7 +8594,7 @@ noncomputable def selectedHighEntropyTypeBExcludedCloses
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -9306,8 +8618,7 @@ noncomputable def selectedHighEntropyTypeBExclusionResidual
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -9325,7 +8636,7 @@ noncomputable def selectedHighEntropyTypeBExclusionResidual
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -9350,7 +8661,7 @@ noncomputable def selectedLowEntropyDegreeFourB2ExclusionCharge
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -9368,7 +8679,7 @@ noncomputable def selectedLowEntropyDegreeFourB2ExclusionCharge
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -9412,7 +8723,7 @@ noncomputable def selectedLowEntropyDegreeFourExclusionDichotomy
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -9464,8 +8775,7 @@ noncomputable def selectedLowEntropyDegreeFourExcludedCloses
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -9488,7 +8798,7 @@ noncomputable def selectedLowEntropyDegreeFourExclusionResidual
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -9506,8 +8816,7 @@ noncomputable def selectedLowEntropyDegreeFourExclusionResidual
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -9532,8 +8841,7 @@ noncomputable def selectedHighEntropyDegreeFourB2ExclusionCharge
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -9550,8 +8858,7 @@ noncomputable def selectedHighEntropyDegreeFourB2ExclusionCharge
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -9594,8 +8901,7 @@ noncomputable def selectedHighEntropyDegreeFourExclusionDichotomy
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -9647,7 +8953,7 @@ noncomputable def selectedHighEntropyDegreeFourExcludedCloses
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -9671,8 +8977,7 @@ noncomputable def selectedHighEntropyDegreeFourExclusionResidual
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -9690,7 +8995,7 @@ noncomputable def selectedHighEntropyDegreeFourExclusionResidual
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -9718,8 +9023,7 @@ noncomputable def selectedLowEntropyTypeBExclusionResidualMass
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -9737,7 +9041,7 @@ noncomputable def selectedLowEntropyTypeBExclusionResidualMass
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -9764,7 +9068,7 @@ noncomputable def selectedHighEntropyTypeBExclusionResidualMass
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -9783,8 +9087,7 @@ noncomputable def selectedHighEntropyTypeBExclusionResidualMass
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -9809,8 +9112,7 @@ noncomputable def selectedLowEntropyDegreeFourExclusionResidualMass
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -9828,7 +9130,7 @@ noncomputable def selectedLowEntropyDegreeFourExclusionResidualMass
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -9855,7 +9157,7 @@ noncomputable def selectedHighEntropyDegreeFourExclusionResidualMass
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -9874,8 +9176,7 @@ noncomputable def selectedHighEntropyDegreeFourExclusionResidualMass
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -9898,7 +9199,7 @@ noncomputable def selectedLowEntropyTypeBExclusionMassAfterDichotomy
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -9917,7 +9218,7 @@ noncomputable def selectedLowEntropyTypeBExclusionMassAfterDichotomy
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -9939,8 +9240,7 @@ noncomputable def selectedHighEntropyTypeBExclusionMassAfterDichotomy
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -9958,8 +9258,7 @@ noncomputable def selectedHighEntropyTypeBExclusionMassAfterDichotomy
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -9980,7 +9279,7 @@ noncomputable def selectedLowEntropyDegreeFourExclusionMassAfterDichotomy
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -9999,7 +9298,7 @@ noncomputable def selectedLowEntropyDegreeFourExclusionMassAfterDichotomy
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .remainderEntropyLow, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -10021,8 +9320,7 @@ noncomputable def selectedHighEntropyDegreeFourExclusionMassAfterDichotomy
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -10040,8 +9338,7 @@ noncomputable def selectedHighEntropyDegreeFourExclusionMassAfterDichotomy
         K .netChargeCap, K .netChargeLarge, K .netDeficiencyCap, K .largeBudgetResidual,
         K .entropyPackageDemand, K .remainderEntropyHigh,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -10060,8 +9357,7 @@ noncomputable def selectedLowEntropyTypeAUnsaturatedCloses
         K .netChargeLocalization, K .netChargeCap, K .netChargeLarge,
         K .netDeficiencyCap, K .largeBudgetResidual, K .remainderEntropyLow,
         K .forcedCurvatureCost, K .curvatureFullRank,
-        K .curvatureTargetRank, K .wedgeSupply, K .curvatureDemandFloor,
-        K .boundaryDemand, K .stubSupply, K .remainderNormalized,
+        K .curvatureTargetRank, K .wedgeSupply, K .boundaryDemand, K .stubSupply, K .remainderNormalized,
         K .densityCap, K .barrierCap, K .hotColdPartition, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
@@ -10086,7 +9382,7 @@ noncomputable def selectedHighEntropyTypeAUnsaturatedCloses
         K .netDeficiencyCap, K .largeBudgetResidual, K .entropyPackageDemand,
         K .remainderEntropyHigh, K .forcedCurvatureCost,
         K .curvatureFullRank, K .curvatureTargetRank, K .wedgeSupply,
-        K .curvatureDemandFloor, K .boundaryDemand, K .stubSupply,
+        K .boundaryDemand, K .stubSupply,
         K .remainderNormalized, K .densityCap, K .barrierCap,
         K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
@@ -10152,9 +9448,14 @@ noncomputable def selectedColdHotEntropyDichotomy
   coldHotEntropyDichotomy (data := spineData) history
     (by simp [K_eq_iff]) (by simp [K_eq_iff])
 
-/-- Node `[149]`: publish the exact density cap on `[148]`'s overflow
-residual. -/
-noncomputable def selectedColdHotEntropyDensityCap
+/-- Node `[149]`: the live-hot entropy comparison closes on `[148]`'s literal
+overflow residual.  On the `[22]` cap arm the ledger already carries
+`2 ^ (rate·scales·|𝒫_hot|) ≤ skeletonBudget` (`K .barrierCap`); spending the
+skeleton budget against the near-cubic spine (`K .surplusAtOrBelow` and the
+standing baseline handshake) gives the exact finite cap
+`2·rate·scales·|𝒫_hot| ≤ (⌊log₂ n⌋+1)(δn + T(n))`, which the overflow arm
+denies.  This is `prop:p13-density`'s entropy step on the current residual. -/
+noncomputable def selectedColdHotEntropyCloses
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .coldHotEntropyOverflow, K .coldRoute8AtOrAbove,
@@ -10163,9 +9464,27 @@ noncomputable def selectedColdHotEntropyDensityCap
         K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection]) :=
-  (coldHotEntropyDensityCapRow (data := spineData)).run history
-    (by simp [K_eq_iff])
+        K .selection]) : False := by
+  have overflow := (history.get (K .coldHotEntropyOverflow)).down
+  have cap := (history.get (K .barrierCap)).down
+  have nearCubic := (history.get (K .surplusAtOrBelow)).down
+  have spine : spineData.{u}.threshold * selected.object.vertexCount ≤
+      2 * selected.object.edgeCount :=
+    Graph.baselineDegree_mul_vertexCount_le_two_mul_edgeCount selected.object
+      spineData.{u}.threshold fun vertex =>
+        le_trans selected.baseline (selected.object.minDegree_le_degree vertex)
+  have bound := Graph.two_mul_exponent_le_scale_mul_edgeBudget selected.object
+    (spineData.{u}.windowRate *
+      spineData.{u}.separatedScaleCount selected.object.vertexCount *
+      (canonicalHotWindows spineData.{u} selected.object).card)
+    spineData.{u}.threshold (spineData.{u}.surplusThreshold selected.object.vertexCount)
+    cap.1 spine spineData.{u}.three_le_threshold nearCubic
+  change coldSkeletonAllowance spineData.{u} selected.object <
+    coldWindowBitRate spineData.{u} selected.object *
+      (canonicalHotWindows spineData.{u} selected.object).card at overflow
+  simp only [coldSkeletonAllowance, coldWindowBitRate] at overflow
+  rw [Nat.mul_assoc] at overflow
+  exact absurd bound (Nat.not_le_of_lt overflow)
 
 /-- Node `[150]`: append the cold-mass inequality to `[148]`'s literal
 no-residual. -/
@@ -10208,6 +9527,234 @@ noncomputable def selectedColdStubExcess
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :=
   (coldStubExcessRow (data := spineData)).run history (by simp [K_eq_iff])
+
+/-- Node `[153]`: the exact finite germ-positivity comparison on the literal
+`[152]` residual (`2·perWindow·σ(G) < perWindow·C`); the linear arm forces a
+positive germ family (`lem:cold-germ-extraction`), the bounded arm continues to
+`[24]`. -/
+noncomputable def selectedColdMassDichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .coldStubExcess, K .coldAmbientCubic, K .coldMass, K .coldHotEntropyCap,
+        K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit, K .barrierCap,
+        K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .selection]) :=
+  coldMassDichotomy (data := spineData) history
+    (by simp [K_eq_iff]) (by simp [K_eq_iff])
+
+/-- `lem:bridgeless` on the literal `[153]` linear residual: the selected
+object has no bridge; every oriented edge has a return. -/
+noncomputable def selectedBridgeless
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
+        K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
+        K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (bridgelessRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run history
+    (by simp [K_eq_iff])
+
+/-- Node `[153]`, `def:cold-corridor-first-failure`: every boundary stub of every
+outside component of `X_cold` has its cold return corridor. -/
+noncomputable def selectedColdReturnCorridors
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
+        K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .coldReturnCorridors, K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
+        K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (coldReturnCorridorRow (data := spineData)).run history (by simp [K_eq_iff])
+
+/-- Node `[153]`, `lem:cold-corridor-first-failure`: cut-states and (F1)--(F5)
+routing on the literal linear residual. -/
+noncomputable def selectedColdFirstFailureRouting
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .coldReturnCorridors, K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
+        K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .coldCorridorState, K .coldFailureCycle, K .coldFailureDefect,
+        K .coldFailureCompression, K .coldFailureHandoff, K .coldFailureRouting,
+        K .coldReturnCorridors, K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
+        K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (coldFirstFailureRoutingRow (data := spineData)).run history (by simp [K_eq_iff])
+
+/-- Node `[153]`, `lem:cold-germ-extraction`: the exchange bound and the greedy
+extraction, on the routed residual. -/
+noncomputable def selectedColdGermExtraction
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .coldCorridorState, K .coldFailureCycle, K .coldFailureDefect,
+        K .coldFailureCompression, K .coldFailureHandoff, K .coldFailureRouting,
+        K .coldReturnCorridors, K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
+        K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .coldExchangeBound, K .coldGermExtraction,
+        K .coldCorridorState, K .coldFailureCycle, K .coldFailureDefect,
+        K .coldFailureCompression, K .coldFailureHandoff, K .coldFailureRouting,
+        K .coldReturnCorridors, K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
+        K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (coldGermExtractionRow (data := spineData)).run history (by simp [K_eq_iff])
+
+/-- Node `[153]`, `lem:cold-germ-extraction`: the (F5) candidate germ family of
+the selected branch-excess half-edges — its count, overlap bound, positivity
+(the `[153]` linear arm) and its extracted disjoint subfamily — on the literal
+extraction residual. -/
+noncomputable def selectedColdGermCandidates
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .coldExchangeBound, K .coldGermExtraction,
+        K .coldCorridorState, K .coldFailureCycle, K .coldFailureDefect,
+        K .coldFailureCompression, K .coldFailureHandoff, K .coldFailureRouting,
+        K .coldReturnCorridors, K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
+        K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .coldGermCandidates, K .coldExchangeBound, K .coldGermExtraction,
+        K .coldCorridorState, K .coldFailureCycle, K .coldFailureDefect,
+        K .coldFailureCompression, K .coldFailureHandoff, K .coldFailureRouting,
+        K .coldReturnCorridors, K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
+        K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (coldGermCandidatesRow (data := spineData)).run history (by simp [K_eq_iff])
+
+/-- Nodes `[154]`--`[156]`, `lem:cold-bounded-germ-trichotomy` and
+`lem:cold-increment-arithmetic` on the literal extracted residual. -/
+noncomputable def selectedColdGermTrichotomy
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected [K .coldGermCandidates, K .coldExchangeBound, K .coldGermExtraction,
+        K .coldCorridorState, K .coldFailureCycle, K .coldFailureDefect,
+        K .coldFailureCompression, K .coldFailureHandoff, K .coldFailureRouting,
+        K .coldReturnCorridors, K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
+        K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected [K .coldGermRealized, K .coldGermDistinguished, K .coldGermSilent,
+        K .coldGermRouted, K .coldGermCandidates, K .coldExchangeBound, K .coldGermExtraction,
+        K .coldCorridorState, K .coldFailureCycle, K .coldFailureDefect,
+        K .coldFailureCompression, K .coldFailureHandoff, K .coldFailureRouting,
+        K .coldReturnCorridors, K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
+        K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (coldGermTrichotomyRow (data := spineData)).run history (by simp [K_eq_iff])
+
+/-- Node `[157]`, `lem:cold-same-interface-table` with the short self-return
+filter, on the literal trichotomy residual. -/
+noncomputable def selectedColdSameInterfaceTable
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected [K .coldGermRealized, K .coldGermDistinguished, K .coldGermSilent,
+        K .coldGermRouted, K .coldGermCandidates, K .coldExchangeBound, K .coldGermExtraction,
+        K .coldCorridorState, K .coldFailureCycle, K .coldFailureDefect,
+        K .coldFailureCompression, K .coldFailureHandoff, K .coldFailureRouting,
+        K .coldReturnCorridors, K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
+        K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected [K .coldSameInterfaceTable, K .coldGermRealized, K .coldGermDistinguished, K .coldGermSilent,
+        K .coldGermRouted, K .coldGermCandidates, K .coldExchangeBound, K .coldGermExtraction,
+        K .coldCorridorState, K .coldFailureCycle, K .coldFailureDefect,
+        K .coldFailureCompression, K .coldFailureHandoff, K .coldFailureRouting,
+        K .coldReturnCorridors, K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
+        K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (coldSameInterfaceTableRow (data := spineData)).run history (by simp [K_eq_iff])
+
+/-- `thm:cold-branch-quantitative-closure`: no terminal cold residual remains;
+the branch is closed by routing to the target-defect and handoff ledgers. -/
+noncomputable def selectedColdBranchClosed
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected [K .coldSameInterfaceTable, K .coldGermRealized, K .coldGermDistinguished, K .coldGermSilent,
+        K .coldGermRouted, K .coldGermCandidates, K .coldExchangeBound, K .coldGermExtraction,
+        K .coldCorridorState, K .coldFailureCycle, K .coldFailureDefect,
+        K .coldFailureCompression, K .coldFailureHandoff, K .coldFailureRouting,
+        K .coldReturnCorridors, K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
+        K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected [K .coldBranchClosed, K .coldSameInterfaceTable, K .coldGermRealized, K .coldGermDistinguished, K .coldGermSilent,
+        K .coldGermRouted, K .coldGermCandidates, K .coldExchangeBound, K .coldGermExtraction,
+        K .coldCorridorState, K .coldFailureCycle, K .coldFailureDefect,
+        K .coldFailureCompression, K .coldFailureHandoff, K .coldFailureRouting,
+        K .coldReturnCorridors, K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
+        K .barrierCap, K .hotColdPartition, K .skeletonDominates,
+        K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
+        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (coldBranchClosedRow (data := spineData)).run history (by simp [K_eq_iff])
 
 noncomputable def openSelectedCounterexample
     (input : EGInput) (avoids : ¬ Target input.object) :
@@ -10329,55 +9876,442 @@ noncomputable def selectedStrictSurplusBranch
           | .right patternHistory =>
               exact selectedPrimitiveOverloadBridgeSublinearHistory patternHistory
 
+/-- Branch D, nodes `[35]`--`[46]`, on the literal `[33]` ledger of a spine
+arm: the context-validity test `[36]` with its target-defect terminal `[37]`,
+the atom-compression test `[38]` with its terminal `[39]`, the delocalization
+scope `[40]`/`[41]` with its proper-support terminal `[42]`, and the
+whole-graph route `[43]`--`[45]` closed at `[46]`.  Every terminal is a
+framework closure over the ledger of the arm against `K .selection`; the
+freshness of the keys committed along the way is decided on the arm's exact
+index at the call site. -/
+noncomputable def selectedRankDropCloses
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .branchDependence) known]
+    [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .selection) known]
+    (defectFresh : K .contextDefect ∉ known)
+    (universalFresh : K .contextUniversal ∉ known)
+    (compressionFresh : K .atomCompression ∉ known)
+    (delocalizedFresh : K .delocalizedSupport ∉ known)
+    (properFresh : K .properDelocalization ∉ known)
+    (globalFresh : K .globalDelocalization ∉ known)
+    (repairFresh : K .repairIdentity ∉ known)
+    (barrierFresh : K .globalBarrier ∉ known)
+    (closureFresh : closed ∉ known) : False := by
+  match contextValidityDichotomy (data := spineData) history defectFresh universalFresh with
+  | .left defectHistory =>
+      -- `[37]`: target-defective quotient — uninhabited (`lem:context-universality`).
+      exact (closeImpossible defectHistory (K .contextDefect)
+        (by simp [K_eq_iff, closureFresh])).elimClosed (by infer_instance)
+  | .right universalHistory =>
+      -- `[38]`: target-complete with a smaller proper representative?
+      match atomCompressionDichotomy (data := spineData) universalHistory
+          (by simp [K_eq_iff, compressionFresh]) (by simp [K_eq_iff, delocalizedFresh]) with
+      | .left compressionHistory =>
+          -- `[39]`: proper atom compression, forbidden by `cor:uncompressible`.
+          exact (closeIncompatible compressionHistory (K .selection)
+            (K .atomCompression) (by simp [K_eq_iff, closureFresh])).elimClosed
+            (by infer_instance)
+      | .right delocalizedHistory =>
+          -- `[40]`/`[41]`: the enlarged connected support `Z ⊋ C`; is `Z ⊊ G`?
+          match delocalizationScopeDichotomy (data := spineData) delocalizedHistory
+              (by simp [K_eq_iff, properFresh]) (by simp [K_eq_iff, globalFresh]) with
+          | .left properHistory =>
+              -- `[42]`: proper-support smearing closure (`lem:proper-smearing`).
+              exact (closeIncompatible properHistory (K .selection)
+                (K .properDelocalization) (by simp [K_eq_iff, closureFresh])).elimClosed
+                (by infer_instance)
+          | .right globalHistory =>
+              -- `[43]`--`[45]`: whole-graph delocalization, the `1`--`3` repair
+              -- identity, and the target/replacement/global-profile barrier.
+              let repaired :=
+                (repairIdentityRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) spineData).run
+                  globalHistory (by simp [K_eq_iff, repairFresh])
+              let barrier :=
+                (globalBarrierRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) spineData).run
+                  repaired (by simp [K_eq_iff, barrierFresh])
+              -- `[46]`: rank-drop branch closed (`lem:no-silent-global-smearing`).
+              exact (closeIncompatible barrier (K .selection) (K .globalBarrier)
+                (by simp [K_eq_iff, closureFresh])).elimClosed (by infer_instance)
+
+/-- **Nodes `[57]`--`[64]`: the large-budget net-charge split**, on the `[56]`
+residual of either spine arm.  `[57]` enters the asymptotic order regime and
+reads the large-budget net cap; `[58]` localizes the charge; `[59]` splits on the
+sign; the nonnegative arm is the `[60]` net-cap contradiction (cap gives
+`N₀(R) < 0`, the sibling gives `N₀(R) ≥ 0`); the negative arm selects a connected
+negative support `[61]` and `[62]` routes it to Type A `[63]` or Type B `[64]`.
+The small-order complement `[57]`, and the Type A / Type B continuations, are the
+next loud producers.  It is index-polymorphic over the arm's ledger, so both the
+density-cap and route-8 arms use the same definition. -/
+noncomputable def selectedNetChargeContinuation
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .netDeficiencyCap) known]
+    [FactKeys.Has (K .stubSupply) known]
+    [FactKeys.Has (K .maximalPacking) known]
+    (largeFresh : K .netChargeLarge ∉ known := by simp [K_eq_iff])
+    (smallFresh : K .netChargeSmall ∉ known := by simp [K_eq_iff])
+    (capFresh : K .netChargeCap ∉ known := by simp [K_eq_iff])
+    (locFresh : K .netChargeLocalization ∉ known := by simp [K_eq_iff])
+    (nonNegFresh : K .netChargeNonNegative ∉ known := by simp [K_eq_iff])
+    (negFresh : K .netChargeNegative ∉ known := by simp [K_eq_iff])
+    (supportFresh : K .negativeSupport ∉ known := by simp [K_eq_iff])
+    (typeAFresh : K .typeALowSurplus ∉ known := by simp [K_eq_iff])
+    (typeBFresh : K .typeBHighSurplus ∉ known := by simp [K_eq_iff]) : False := by
+  match netChargeOrderDichotomy (data := spineData) history largeFresh smallFresh with
+  | .right smallHistory =>
+      -- `[57]` small-order complement: outside the manuscript's asymptotic
+      -- regime; the finite-order residual is the next producer.
+      exact selectedNetChargeSmallOrder smallHistory
+  | .left largeHistory =>
+      -- `[57]`: the large-budget net cap on the literal `[56]` residual.
+      let capped :=
+        (netChargeCapRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          largeHistory (by simp [K_eq_iff, capFresh])
+      -- `[58]`: `lem:netcharge-superadd` localizes negative charge to a piece.
+      let localized :=
+        (netChargeLocalizationRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) spineData).run
+          capped (by simp [K_eq_iff, locFresh])
+      -- `[59]`: `N₀(R) ≥ 0?`
+      match netChargeDichotomy (data := spineData) localized
+          (by simp [K_eq_iff, nonNegFresh]) (by simp [K_eq_iff, negFresh]) with
+      | .left nonNegHistory =>
+          -- `[60]`: the net-cap contradiction on the same canonical maximal
+          -- packing.  The cap gives `N₀(R) < 0`; the sibling gives `N₀(R) ≥ 0`.
+          obtain ⟨_positive, packing, valid, cardinality, maximal⟩ :=
+            (nonNegHistory.get (K .maximalPacking)).down
+          have negative :=
+            (nonNegHistory.get (K .netChargeCap)).down packing valid cardinality
+          have nonnegative :=
+            (nonNegHistory.get (K .netChargeNonNegative)).down packing valid maximal
+          exact ((selected.object.not_negativeNetCharge_iff
+            (selected.object.remainderSupport packing) spineData.threshold
+            spineData.dischargeScale).mpr nonnegative) negative
+      | .right negativeHistory =>
+          -- `[61]`: select the connected negative support.
+          let support :=
+            (negativeSupportRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              negativeHistory (by simp [K_eq_iff, supportFresh])
+          -- `[62]`: high-degree surplus? Type A `[63]` / Type B `[64]`.
+          match typeSplitDichotomy (data := spineData) support
+              (by simp [K_eq_iff, typeAFresh]) (by simp [K_eq_iff, typeBFresh]) with
+          | .left typeAHistory =>
+              exact selectedTypeALowSurplusContinuation typeAHistory
+          | .right typeBHistory =>
+              exact selectedTypeBHighSurplusContinuation typeBHistory
+
+
+/-- The near-cubic branch after node `[19]`: node `[21]`, the `[22]` split and
+live-hot cap, and — on the cap arm, exactly as `[24]` prescribes — the cold
+branch `[145]`--`[157]` on the literal cap residual.  Both spine arms — `[146]`'s
+yes arm (`θ < 1/78`, node `[147]`: closed by the spine's route-8 closure with
+`K .coldRoute8Below` as its private-carrier inequality) and `[153]`'s bounded
+arm (`[24]`'s density cap) — run `[25]`--`[31]` on their literal residuals,
+decide `[32]` and enter `[33]` (Branch D) or `[34]` (Residual B); `[35]`--`[46]`
+and `[47]` onward fail loudly; the routed cold closure `[157]` fails loudly at
+its target-defect/handoff discharge. -/
 noncomputable def selectedNearCubicBranch
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection]) :
-    ExactLedger EGInput.{u} selected
-      [K .wedgeSupply, K .stubSupply, K .boundaryDemand,
-        K .remainderNormalized, K .densityCap,
-        K .barrierCap, K .hotColdPartition,
-        K .skeletonDominates, K .windowPackageSeparated,
-        K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking,
-        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection] := by
+        K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
   let enumerated := selectedNearCubicNode21 history
   match selectedBarrierDichotomy enumerated with
   | .left capHistory =>
-      let densityHistory := selectedDensityBudget capHistory
-      let remainderHistory :=
-        (remainderNormalizationRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          densityHistory (by
-            simp [remainderNormalizationRow, selectedDensityBudget, K_eq_iff])
-      let boundaryHistory :=
-        (boundaryDemandRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          remainderHistory (by
-            simp [boundaryDemandRow, remainderNormalizationRow,
-              selectedDensityBudget, K_eq_iff])
-      let stubHistory :=
-        (stubSupplyRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          boundaryHistory (by
-            simp [stubSupplyRow, boundaryDemandRow, remainderNormalizationRow,
-              selectedDensityBudget, K_eq_iff])
-      exact
-        (wedgeSupplyRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          stubHistory (by
-            simp [wedgeSupplyRow, stubSupplyRow, boundaryDemandRow,
-              remainderNormalizationRow, selectedDensityBudget, K_eq_iff])
+      let split := selectedColdWindowLedgerSplit capHistory
+      match selectedColdRoute8Dichotomy split with
+      | .left belowHistory =>
+          -- `[147]`: "If `θ < 1/78`, then `τ(θ) < 3/13` by
+          -- `def:cold-window-ledger`; this is exactly the private-carrier
+          -- inequality used in `thm:large-budget-route8-only`, so the route-8
+          -- branch closes."  The private-carrier inequality is
+          -- `K .coldRoute8Below` on this residual, and the closure it names is
+          -- the spine's own large-budget/route-8 closure (`[25]` → `[55]` →
+          -- `[63]` → `[110]`--`[124]`), which reads `τ < 1/4` at `[56]`/`[59]`
+          -- and `τ < 3/13` at `[122]` from that fact in place of `[24]`'s
+          -- density cap.  Run `[25]`--`[31]` on the literal `[146]` yes-residual;
+          -- `[32]` onward on it is the next producer.
+          let remainder :=
+            (remainderNormalizationRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              belowHistory (by simp [K_eq_iff])
+          let boundary :=
+            (boundaryDemandRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              remainder (by simp [K_eq_iff])
+          let stubSupply :=
+            (stubSupplyRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              boundary (by simp [K_eq_iff])
+          let wedge :=
+            (wedgeSupplyRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              stubSupply (by simp [K_eq_iff])
+          let rank :=
+            (curvatureTargetRankRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              wedge (by simp [K_eq_iff])
+          let circuit :=
+            (targetRankCircuitRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              rank (by simp [K_eq_iff])
+          -- `[32]`: the exact finite rank split at the canonical maximal packing.
+          match curvatureRankDichotomy (data := spineData) circuit
+              (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+          | .left dropHistory =>
+              -- `[33]`: Branch D, the rank-reducing curvature dependence with its
+              -- inclusion-minimal connected support; `[35]`--`[46]` on this
+              -- residual is the next producer.
+              let dependence :=
+                (branchDependenceRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) spineData).run
+                  dropHistory (by simp [K_eq_iff])
+              exact selectedRankDropCloses dependence
+                (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
+                (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
+                (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
+          | .right fullRankHistory =>
+          -- `[34]`: Residual B, no rank drop — `r_Ω(R) = W₂(R)` on the sibling
+          -- ledger.  `[47]`/`[48]`: `cor:forced-curvature-cost` from `lem:full-rank`
+          -- and `lem:wedge-lower`; `[49]`/`[50]`: the per-vertex remainder entropy
+          -- split of `prop:two-budget`.
+          let cost :=
+            (forcedCurvatureCostRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              fullRankHistory (by simp [K_eq_iff])
+          match remainderEntropyDichotomy (data := spineData) cost
+              (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+          | .left highHistory =>
+              -- `[51]`/`[52]`: the high-entropy remainder branch and the window plus
+              -- remainder accounting; `[53]`: the admissible entropy cap.
+              let package :=
+                (entropyPackageRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) spineData).run
+                  highHistory (by simp [K_eq_iff])
+              match entropyCapDichotomy (data := spineData) package
+                  (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+              | .left activeHistory =>
+                  -- `[54]`: the entropy cap closes (`prop:entropy-high-theta`).  The
+                  -- window package, remainder and forced-curvature bits "form one
+                  -- independently target-testable coordinate family": the framework asks
+                  -- whether that joint code is realized by the labelled skeletons of the
+                  -- current class (`def:target-rank`, the exact-code equality retained on
+                  -- the surviving hot residual).  Realized: the realized states exceed the
+                  -- skeleton budget (`lem:independent-target-entropy`,
+                  -- `lem:skeleton-dominates`).  Unrealized: the complementary residual,
+                  -- passed forward as `prop:two-budget` prescribes; its continuation is
+                  -- the next producer.
+                  match jointCodeDichotomy (data := spineData) activeHistory
+                      (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+                  | .left realizedHistory =>
+                      exact entropyCap_closes realizedHistory
+                  | .right unrealizedHistory =>
+                      exact selectedRouteEightJointCodeUnrealizedRouted unrealizedHistory
+              | .right largeHistory =>
+                  -- `[55]`: Residual C on the high-entropy arm.
+                  -- `[56]` on the route-8 arm: `Δ_net(R) < 1/4` from `τ(θ) < 3/13`
+              -- (`K .coldRoute8Below`), which is the density input of this arm.
+                  let netCap :=
+                    (routeEightNetDeficiencyCapRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                      largeHistory (by simp [K_eq_iff])
+                  -- `[57]` onward on this residual is the next producer.
+                  exact selectedNetChargeContinuation netCap
+          | .right lowHistory =>
+              -- `[55]`: Residual C on the low-entropy arm, routed forward unchanged.
+              let large :=
+                (lowEntropyLargeBudgetRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  lowHistory (by simp [K_eq_iff])
+              -- `[56]` on the route-8 arm: `Δ_net(R) < 1/4` from `τ(θ) < 3/13`
+              -- (`K .coldRoute8Below`), which is the density input of this arm.
+              let netCap :=
+                (routeEightNetDeficiencyCapRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  large (by simp [K_eq_iff])
+              -- `[57]` onward on this residual is the next producer.
+              exact selectedNetChargeContinuation netCap
+      | .right atOrAboveHistory =>
+          match selectedColdHotEntropyDichotomy atOrAboveHistory with
+          | .left overflowHistory =>
+              exact selectedColdHotEntropyCloses overflowHistory
+          | .right hotCapHistory =>
+              let mass := selectedColdMass hotCapHistory
+              let cubic := selectedColdAmbientCubic mass
+              let stubs := selectedColdStubExcess cubic
+              match selectedColdMassDichotomy stubs with
+              | .left linearHistory =>
+                  -- `[153]`: `lem:bridgeless`, the return corridors, first-failure
+                  -- routing, the exchange bound and extraction, and the (F5)
+                  -- candidate germ family on the linear residual; then `[154]`.
+                  let bridgeless := selectedBridgeless linearHistory
+                  let corridors := selectedColdReturnCorridors bridgeless
+                  let routed := selectedColdFirstFailureRouting corridors
+                  let extracted := selectedColdGermExtraction routed
+                  let candidates := selectedColdGermCandidates extracted
+                  let trichotomy := selectedColdGermTrichotomy candidates
+                  let table := selectedColdSameInterfaceTable trichotomy
+                  let closed := selectedColdBranchClosed table
+                  -- `thm:cold-branch-quantitative-closure`'s last step is not
+                  -- yet derivable here, for two exact reasons.  (a) The `[153]`
+                  -- (F5) candidates are `germOfSupport` germs whose second
+                  -- representative is the support's own piece, so each identifies
+                  -- `Q[x,y]` with itself: not realizing, not distinguishing,
+                  -- `δ = 0`, and not a `TableRow`; they realize none of the
+                  -- paper's outcomes, and `K .coldBranchClosed`
+                  -- (`NoTerminalColdResidual`) is vacuous on them.  Genuine (F5)
+                  -- representatives (repeat subcase: the shorter equal-state
+                  -- prefix; terminal subcase: the terminal exchange
+                  -- representative) are needed.  (b) The two routed outcomes —
+                  -- G2, a target-defective identification (sparse exit /
+                  -- Type A exit-(4) target-defect ledger), and table/(F4)
+                  -- handoff (Type B / route-8 ledgers) — are discharged by
+                  -- `def:surviving-cold-branch` (ii)–(v), ledgers of other
+                  -- branches that no fact of this residual carries.  No terminal
+                  -- is fabricated; the producer stays loud with exactly these
+                  -- inputs.
+                  exact selectedColdBranchRouted closed
+              | .right boundedHistory =>
+                  -- `[24]` → `[25]`--`[30]` on the literal bounded residual.
+                  let density := selectedDensityBudget boundedHistory
+                  let remainder :=
+                    (remainderNormalizationRow (BranchState := BranchState)
+                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                      density (by simp [K_eq_iff])
+                  let boundary :=
+                    (boundaryDemandRow (BranchState := BranchState)
+                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                      remainder (by simp [K_eq_iff])
+                  let stubSupply :=
+                    (stubSupplyRow (BranchState := BranchState)
+                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                      boundary (by simp [K_eq_iff])
+                  let wedge :=
+                    (wedgeSupplyRow (BranchState := BranchState)
+                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                      stubSupply (by simp [K_eq_iff])
+                  -- `[31]`: the curvature target-rank of the remainder and
+                  -- `lem:target-rank-circuit`, on the literal `[30]` residual.
+                  let rank :=
+                    (curvatureTargetRankRow (BranchState := BranchState)
+                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                      wedge (by simp [K_eq_iff])
+                  let circuit :=
+                    (targetRankCircuitRow (BranchState := BranchState)
+                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                      rank (by simp [K_eq_iff])
+                  -- `[32]`: the exact finite rank split at the canonical maximal packing.
+                  match curvatureRankDichotomy (data := spineData) circuit
+                      (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+                  | .left dropHistory =>
+                      -- `[33]`: Branch D, the rank-reducing curvature dependence with its
+                      -- inclusion-minimal connected support; `[35]`--`[46]` on this
+                      -- residual is the next producer.
+                      let dependence :=
+                        (branchDependenceRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile) spineData).run
+                          dropHistory (by simp [K_eq_iff])
+                      exact selectedRankDropCloses dependence
+                        (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
+                        (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
+                        (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
+                  | .right fullRankHistory =>
+                  -- `[34]`: Residual B, no rank drop — `r_Ω(R) = W₂(R)` on the sibling
+                  -- ledger.  `[47]`/`[48]`: `cor:forced-curvature-cost` from `lem:full-rank`
+                  -- and `lem:wedge-lower`; `[49]`/`[50]`: the per-vertex remainder entropy
+                  -- split of `prop:two-budget`.
+                  let cost :=
+                    (forcedCurvatureCostRow (BranchState := BranchState)
+                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                      fullRankHistory (by simp [K_eq_iff])
+                  match remainderEntropyDichotomy (data := spineData) cost
+                      (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+                  | .left highHistory =>
+                      -- `[51]`/`[52]`: the high-entropy remainder branch and the window plus
+                      -- remainder accounting; `[53]`: the admissible entropy cap.
+                      let package :=
+                        (entropyPackageRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile) spineData).run
+                          highHistory (by simp [K_eq_iff])
+                      match entropyCapDichotomy (data := spineData) package
+                          (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+                      | .left activeHistory =>
+                          -- `[54]`: the entropy cap closes (`prop:entropy-high-theta`).  The
+                          -- window package, remainder and forced-curvature bits "form one
+                          -- independently target-testable coordinate family": the framework asks
+                          -- whether that joint code is realized by the labelled skeletons of the
+                          -- current class (`def:target-rank`, the exact-code equality retained on
+                          -- the surviving hot residual).  Realized: the realized states exceed the
+                          -- skeleton budget (`lem:independent-target-entropy`,
+                          -- `lem:skeleton-dominates`).  Unrealized: the complementary residual,
+                          -- passed forward as `prop:two-budget` prescribes; its continuation is
+                          -- the next producer.
+                          match jointCodeDichotomy (data := spineData) activeHistory
+                              (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+                          | .left realizedHistory =>
+                              exact entropyCap_closes realizedHistory
+                          | .right unrealizedHistory =>
+                              exact selectedJointCodeUnrealizedRouted unrealizedHistory
+                      | .right largeHistory =>
+                          -- `[55]`: Residual C on the high-entropy arm.
+                          -- `[56]`: `Δ_net(R) ≤ τ_win + o(1) < 1/4` from `[24]`'s density cap.
+                          let netCap :=
+                            (netDeficiencyCapRow (BranchState := BranchState)
+                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                              largeHistory (by simp [K_eq_iff])
+                          -- `[57]` onward on this residual is the next producer.
+                          exact selectedNetChargeContinuation netCap
+                  | .right lowHistory =>
+                      -- `[55]`: Residual C on the low-entropy arm, routed forward unchanged.
+                      let large :=
+                        (lowEntropyLargeBudgetRow (BranchState := BranchState)
+                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                          lowHistory (by simp [K_eq_iff])
+                      -- `[56]`: `Δ_net(R) ≤ τ_win + o(1) < 1/4` from `[24]`'s density cap.
+                      let netCap :=
+                        (netDeficiencyCapRow (BranchState := BranchState)
+                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                          large (by simp [K_eq_iff])
+                      -- `[57]` onward on this residual is the next producer.
+                      exact selectedNetChargeContinuation netCap
   | .right overflowHistory =>
-      exact False.elim (selectedBarrierOverflowCloses overflowHistory)
-
+      exact selectedBarrierOverflowCloses overflowHistory
 
 /-- Selected-root closure, assembled directly from the exact-ledger rows. -/
 theorem selectedLedgerClosure

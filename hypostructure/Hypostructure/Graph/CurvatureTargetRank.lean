@@ -97,6 +97,180 @@ noncomputable def curvatureTargetRank
       quotient.LabelInjectiveOn ↑subfamily
   exact (family.powerset.filter survives).sup Finset.card
 
+/-- **Survival of the admissible quotient system** (`def:curvature-target-rank`):
+a subfamily of the raw curvature tests of a region survives when every
+admissible rank quotient that is functional on the declared family remains
+label-injective on it. -/
+def SurvivesCurvatureSystem
+    (Baseline Target : FiniteObject.{u} → Prop) (object : FiniteObject.{u})
+    (region : Finset object.Vertex)
+    (subfamily : Finset (object.InternalWedge region)) : Prop :=
+  ∀ quotient : CurvatureQuotient Baseline Target object region,
+    quotient.toRankQuotient.FunctionalOn ↑(object.internalWedgeFamily region) →
+      quotient.toRankQuotient.LabelInjectiveOn ↑subfamily
+
+section RankFacts
+
+variable (Baseline Target : FiniteObject.{u} → Prop) (object : FiniteObject.{u})
+variable (region : Finset object.Vertex)
+
+/-- The surviving subfamilies, as `curvatureTargetRank` filters them. -/
+noncomputable def survivingCurvatureSubfamilies :
+    Finset (Finset (object.InternalWedge region)) := by
+  classical
+  exact (object.internalWedgeFamily region).powerset.filter
+    (SurvivesCurvatureSystem Baseline Target object region)
+
+theorem mem_survivingCurvatureSubfamilies
+    (subfamily : Finset (object.InternalWedge region)) :
+    subfamily ∈ survivingCurvatureSubfamilies Baseline Target object region ↔
+      subfamily ⊆ object.internalWedgeFamily region ∧
+        SurvivesCurvatureSystem Baseline Target object region subfamily := by
+  classical
+  simp [survivingCurvatureSubfamilies, Finset.mem_filter, Finset.mem_powerset]
+
+theorem curvatureTargetRank_eq_sup :
+    object.curvatureTargetRank Baseline Target region =
+      (survivingCurvatureSubfamilies Baseline Target object region).sup Finset.card := by
+  classical
+  unfold curvatureTargetRank survivingCurvatureSubfamilies
+  refine congrArg (fun s : Finset (Finset (object.InternalWedge region)) =>
+    s.sup Finset.card) ?_
+  ext subfamily
+  simp only [Finset.mem_filter, Finset.mem_powerset]
+  constructor
+  · rintro ⟨subset, survives⟩
+    refine ⟨subset, fun quotient functional => ?_⟩
+    exact survives quotient.toRankQuotient ⟨⟨quotient, rfl⟩, functional⟩
+  · rintro ⟨subset, survives⟩
+    refine ⟨subset, fun quotient ⟨⟨declared, equal⟩, functional⟩ => ?_⟩
+    subst equal
+    exact survives declared functional
+
+/-- The empty subfamily survives every quotient. -/
+theorem survivesCurvatureSystem_empty :
+    SurvivesCurvatureSystem Baseline Target object region ∅ :=
+  fun _quotient _functional => by
+    simp [Core.TargetRank.RankQuotient.LabelInjectiveOn]
+
+/-- **`r_Ω` is attained**: some surviving subfamily has exactly `r_Ω` members. -/
+theorem exists_attaining_curvatureTargetRank :
+    ∃ independent ⊆ object.internalWedgeFamily region,
+      SurvivesCurvatureSystem Baseline Target object region independent ∧
+        independent.card = object.curvatureTargetRank Baseline Target region := by
+  classical
+  have nonempty : (survivingCurvatureSubfamilies Baseline Target object region).Nonempty :=
+    ⟨∅, (mem_survivingCurvatureSubfamilies Baseline Target object region ∅).2
+      ⟨Finset.empty_subset _, survivesCurvatureSystem_empty Baseline Target object region⟩⟩
+  obtain ⟨independent, member, equality⟩ :=
+    Finset.exists_mem_eq_sup _ nonempty Finset.card
+  obtain ⟨subset, survives⟩ :=
+    (mem_survivingCurvatureSubfamilies Baseline Target object region independent).1 member
+  refine ⟨independent, subset, survives, ?_⟩
+  rw [curvatureTargetRank_eq_sup]
+  exact equality.symm
+
+/-- **`r_Ω` is the maximum**: every surviving subfamily has at most `r_Ω`
+members. -/
+theorem card_le_curvatureTargetRank
+    {subfamily : Finset (object.InternalWedge region)}
+    (subset : subfamily ⊆ object.internalWedgeFamily region)
+    (survives : SurvivesCurvatureSystem Baseline Target object region subfamily) :
+    subfamily.card ≤ object.curvatureTargetRank Baseline Target region := by
+  classical
+  rw [curvatureTargetRank_eq_sup]
+  exact Finset.le_sup (f := Finset.card)
+    ((mem_survivingCurvatureSubfamilies Baseline Target object region subfamily).2
+      ⟨subset, survives⟩)
+
+/-- `r_Ω(X) ≤ |𝒲₂(X)|`. -/
+theorem curvatureTargetRank_le_card :
+    object.curvatureTargetRank Baseline Target region ≤
+      (object.internalWedgeFamily region).card := by
+  classical
+  rw [curvatureTargetRank_eq_sup]
+  refine Finset.sup_le fun subfamily member => ?_
+  exact Finset.card_le_card
+    ((mem_survivingCurvatureSubfamilies Baseline Target object region subfamily).1 member).1
+
+/-- **`lem:target-rank-circuit`, extraction step.**  If `independent` is a
+surviving subfamily of maximum size and `test` is a raw curvature test outside
+it, then some functional admissible rank quotient is label-injective on
+`independent` but not on `independent ∪ {test}`, and its functional clause
+supplies a finite subfamily of `independent` determining `test`. -/
+theorem exists_dependence_of_not_mem
+    {independent : Finset (object.InternalWedge region)}
+    (subset : independent ⊆ object.internalWedgeFamily region)
+    (survives : SurvivesCurvatureSystem Baseline Target object region independent)
+    (maximum : independent.card = object.curvatureTargetRank Baseline Target region)
+    {test : object.InternalWedge region}
+    (testMem : test ∈ object.internalWedgeFamily region)
+    (outside : test ∉ independent) :
+    ∃ determiners : Set (object.InternalWedge region),
+      determiners ⊆ ↑independent ∧ determiners.Finite ∧ test ∉ determiners ∧
+        ∃ quotient : CurvatureQuotient Baseline Target object region,
+          quotient.toRankQuotient.FunctionalOn ↑(object.internalWedgeFamily region) ∧
+            quotient.toRankQuotient.RankReducingOn
+              ↑(object.internalWedgeFamily region) ∧
+            quotient.toRankQuotient.Determines test determiners := by
+  classical
+  have notSurvive : ¬ SurvivesCurvatureSystem Baseline Target object region
+      (insert test independent) := by
+    intro survivesInsert
+    have le := card_le_curvatureTargetRank Baseline Target object region
+      (Finset.insert_subset testMem subset) survivesInsert
+    rw [Finset.card_insert_of_notMem outside] at le
+    omega
+  simp only [SurvivesCurvatureSystem, not_forall] at notSurvive
+  obtain ⟨quotient, functional, notInjective⟩ := notSurvive
+  have injective := survives quotient functional
+  have insertCoe : (↑(insert test independent) : Set (object.InternalWedge region)) =
+      insert test ↑independent := by
+    simp
+  rw [Core.TargetRank.RankQuotient.LabelInjectiveOn, insertCoe] at notInjective
+  obtain ⟨determiners, finite, determinersSubset, determines⟩ :=
+    functional (Finset.coe_subset.2 subset) testMem
+      (by simpa using outside) injective notInjective
+  refine ⟨determiners, determinersSubset, finite, fun mem => outside (determinersSubset mem),
+    quotient, functional, ?_, determines⟩
+  intro injectiveFamily
+  exact notInjective (injectiveFamily.mono (by
+    rw [← insertCoe]
+    exact Finset.coe_subset.2 (Finset.insert_subset testMem subset)))
+
+/-- **`lem:target-rank-circuit`, "in particular"**: if no proper target-dependence
+exists among the raw curvature tests, the whole family survives every
+functional admissible rank quotient. -/
+theorem survives_of_no_dependence
+    (noDependence : ¬ ∃ test ∈ object.internalWedgeFamily region,
+      ∃ determiners : Set (object.InternalWedge region),
+        determiners ⊆ ↑(object.internalWedgeFamily region) ∧ determiners.Finite ∧
+          test ∉ determiners ∧
+          ∃ quotient : CurvatureQuotient Baseline Target object region,
+            quotient.toRankQuotient.FunctionalOn ↑(object.internalWedgeFamily region) ∧
+              quotient.toRankQuotient.RankReducingOn
+                ↑(object.internalWedgeFamily region) ∧
+              quotient.toRankQuotient.Determines test determiners) :
+    SurvivesCurvatureSystem Baseline Target object region
+      (object.internalWedgeFamily region) := by
+  classical
+  by_contra notAll
+  obtain ⟨independent, subset, survives, maximum⟩ :=
+    exists_attaining_curvatureTargetRank Baseline Target object region
+  have proper : independent ≠ object.internalWedgeFamily region := by
+    rintro rfl
+    exact notAll survives
+  obtain ⟨test, testMem, outside⟩ :=
+    Finset.exists_of_ssubset (Finset.ssubset_iff_subset_ne.2 ⟨subset, proper⟩)
+  obtain ⟨determiners, determinersSubset, finite, notMem, quotient, functional, reducing,
+    determines⟩ := exists_dependence_of_not_mem Baseline Target object region subset survives
+      maximum testMem outside
+  exact noDependence ⟨test, testMem, determiners,
+    determinersSubset.trans (Finset.coe_subset.2 subset), finite, notMem, quotient,
+    functional, reducing, determines⟩
+
+end RankFacts
+
 end FiniteObject
 
 end Hypostructure.Graph
