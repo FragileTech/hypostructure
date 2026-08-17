@@ -11,7 +11,9 @@ import {
 } from "../graph-explorer";
 import { useProof } from "../hooks/useProof";
 import { useProofDocument } from "../hooks/useProofDocument";
+import { railPageClass, useSidebar } from "../hooks/useSidebar";
 import { ErrorPanel, LoadingPanel } from "../components/RequestPanels";
+import { SidebarRail } from "../components/SidebarRail";
 import { NotFoundPage } from "./NotFoundPage";
 
 /** The tables, in the order the paper prints them, under their own headings. */
@@ -31,6 +33,7 @@ export function TablesPage() {
   const navigate = useNavigate();
   const [parameters, setParameters] = useSearchParams();
   const request = useProofDocument(proof?.slug ?? "");
+  const sidebar = useSidebar("proof-explorer:tables-rail");
 
   const update = useCallback(
     (patch: Record<string, string | null>) => {
@@ -91,8 +94,8 @@ export function TablesPage() {
       }}
       onNode={(number) => explore(`step=${prefix}${number}`)}
     >
-      <div className="page page-tables">
-        <nav className="table-rail" aria-label="Tables">
+      <div className={railPageClass("page page-tables", sidebar)}>
+        <SidebarRail sidebar={sidebar} label="Tables" id="tables-rail" className="table-rail">
           <p className="table-rail-lead">
             The paper's own index of the argument. Every step number and every
             result links into the diagram.
@@ -118,7 +121,7 @@ export function TablesPage() {
               </ul>
             </div>
           ))}
-        </nav>
+        </SidebarRail>
 
         <TableView
           table={selected}

@@ -4,6 +4,7 @@
  */
 
 import { render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 
 import { MemoryRouter, Route, Routes } from "react-router-dom";
@@ -47,6 +48,24 @@ describe("the framework docs", () => {
     const rail = screen.getByRole("navigation", { name: "Hypostructure docs" });
     for (const group of DOCS_GROUPS) {
       expect(within(rail).getByRole("heading", { level: 2, name: group.title })).toBeInTheDocument();
+    }
+  });
+
+  it("keeps every page reachable when the rail is folded away", async () => {
+    // Folding is done in CSS, so the rail never leaves the document. That is
+    // what keeps a deep link landing on its entry, and what lets the two tests
+    // above stand unchanged.
+    show("/lean");
+    await userEvent.click(screen.getByRole("button", { name: "Contents" }));
+    const rail = screen.getByRole("navigation", { name: "Hypostructure docs" });
+    for (const group of DOCS_GROUPS) {
+      expect(within(rail).getByRole("heading", { level: 2, name: group.title })).toBeInTheDocument();
+    }
+    for (const page of DOCS_PAGES) {
+      expect(within(rail).getByRole("link", { name: page.title })).toHaveAttribute(
+        "href",
+        docsPath(page),
+      );
     }
   });
 
