@@ -227,7 +227,7 @@ describe("the landing page", () => {
     expect(section.querySelectorAll(".katex").length).toBeGreaterThan(10);
     expect(section.querySelectorAll(".katex-error")).toHaveLength(0);
     // The display equations are there as displays, not folded into the prose.
-    expect(section.querySelectorAll(".katex-display").length).toBeGreaterThanOrEqual(4);
+    expect(section.querySelectorAll(".katex-display").length).toBeGreaterThanOrEqual(3);
   });
 
   it("has a rail naming every part of the methodology, in order", () => {

@@ -1878,13 +1878,6 @@ body.has-rail-open {
   color: var(--ink-muted);
 }
 
-.methodology-source {
-  margin: 0;
-  max-width: 64ch;
-  font-size: 13.5px;
-  color: var(--ink-faint);
-}
-
 /* The rail sits in the page's left margin, so the text column keeps its width.
    The margin is (viewport − 1040px) / 2 minus the page padding; the rail needs
    about 260px of it (rail 220px, gap 40px), so it fits from 1500px up. */

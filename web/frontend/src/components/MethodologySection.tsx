@@ -18,7 +18,6 @@ export const METHODOLOGY_PARTS = [
   { id: "moves", title: "The proof moves" },
   { id: "iteration", title: "One iteration of the method" },
   { id: "proofs", title: "In the two proofs" },
-  { id: "progression", title: "In one line" },
 ] as const;
 
 type PartId = (typeof METHODOLOGY_PARTS)[number]["id"];
@@ -651,12 +650,6 @@ export function MethodologySection() {
           first step to the last. The organising principle can be stated in
           one sentence: a counterexample cannot avoid the conclusion for free,
           and the job of the proof is to make it pay until it cannot.
-        </p>
-        <p className="methodology-source">
-          After <em>Structural Exhaustion: An Auditable Method for Long-Form
-          LLM-Assisted Proof Development</em>, Guillem Duran-Ballester, 2026.
-          The method was distilled, after the fact, from the Erdős–Gyárfás
-          development, and then applied to Navier–Stokes.
         </p>
       </header>
 
@@ -1947,21 +1940,6 @@ export function MethodologySection() {
             </ul>
           </Part>
 
-          <Part id="progression">
-            <p>
-              To summarise, the whole method compresses to a progression:
-            </p>
-            <Latex
-              className="methodology-display"
-              value="\[\begin{aligned}\text{productive two-sided branches}&\Longrightarrow\text{typed structural obstructions},\\ \text{typed structural obstructions}&\Longrightarrow\text{recorded cumulative pressure},\\ \text{recorded cumulative pressure}&\Longrightarrow\text{one of the declared closure classes}.\end{aligned}\]"
-            />
-            <p>
-              One iterates until every branch carries either a declared
-              terminal certificate or an explicitly stated residual obligation.
-              The diagrams on this site are those trees; the tables are the
-              ledgers.
-            </p>
-          </Part>
         </div>
       </div>
     </section>
