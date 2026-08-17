@@ -21,6 +21,25 @@ if (!("ResizeObserver" in window)) {
   });
 }
 
+// jsdom does not implement matchMedia. The rail asks it which layout it is in;
+// always answering "wide" is the right default for the component tests, and the
+// sidebar tests replace this with a controllable one to reach the narrow case.
+if (!("matchMedia" in window)) {
+  Object.defineProperty(window, "matchMedia", {
+    writable: true,
+    value: (query: string) => ({
+      media: query,
+      matches: false,
+      onchange: null,
+      addEventListener() {},
+      removeEventListener() {},
+      addListener() {},
+      removeListener() {},
+      dispatchEvent: () => false,
+    }),
+  });
+}
+
 if (!("DOMMatrixReadOnly" in window)) {
   Object.defineProperty(window, "DOMMatrixReadOnly", {
     writable: true,

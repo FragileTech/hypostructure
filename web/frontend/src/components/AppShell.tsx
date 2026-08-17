@@ -105,12 +105,17 @@ export function AppShell() {
 
         {proof ? (
           <nav aria-label="Sections">
-            <NavLink to={`/${proof.slug}`} end>
-              Overview
-            </NavLink>
-            <NavLink to={`/${proof.slug}/explore`}>Explore the proof</NavLink>
-            <NavLink to={`/${proof.slug}/tables`}>Tables</NavLink>
-            <NavLink to={`/${proof.slug}/notation`}>Notation</NavLink>
+            {/* The sections scroll sideways on a narrow screen rather than
+                wrapping; the downloads menu stays outside that strip, so its
+                list is not clipped by the scroll container. */}
+            <div className="app-sections">
+              <NavLink to={`/${proof.slug}`} end>
+                Overview
+              </NavLink>
+              <NavLink to={`/${proof.slug}/explore`}>Explore the proof</NavLink>
+              <NavLink to={`/${proof.slug}/tables`}>Tables</NavLink>
+              <NavLink to={`/${proof.slug}/notation`}>Notation</NavLink>
+            </div>
             <PaperDownloads papers={proof.papers} />
           </nav>
         ) : null}

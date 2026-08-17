@@ -64,6 +64,12 @@ body,
   height: 100%;
 }
 
+/* No overflow-x guard on the root here on purpose: `clip` is not propagated to
+   the viewport, and `hidden` would be, which would make the viewport a scroll
+   container and quietly break every sticky descendant — the header and both
+   rails among them. The widths are kept honest at source instead: grid tracks
+   use minmax(min(Npx, 100%), 1fr), and long code is allowed to break. */
+
 body {
   margin: 0;
   background: var(--paper);
@@ -139,7 +145,8 @@ code {
   font-size: 12px;
 }
 
-.app-header nav {
+.app-header nav,
+.app-sections {
   display: flex;
   gap: 4px;
   flex-wrap: wrap;
@@ -161,6 +168,17 @@ code {
 .app-header nav a.active {
   background: var(--accent-soft);
   color: var(--accent);
+  font-weight: 600;
+}
+
+.app-header-end {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.framework-link a {
   font-weight: 600;
 }
 
@@ -243,6 +261,231 @@ code {
   width: 100%;
   margin: 0 auto;
   padding: clamp(24px, 5vw, 56px) clamp(16px, 4vw, 40px) 72px;
+}
+
+/* ------------------------------------------------------- collapsible rail -- */
+
+/* The chrome a table of contents folds away with. The rails themselves — their
+   headings, their entries — are further down, beside the sections they belong
+   to; only the folding lives here.
+
+   The two widths are registered so the fold can be animated: a plain custom
+   property is not interpolable. Where @property is unsupported the fold simply
+   snaps, which is no loss. */
+@property --rail-width {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 260px;
+}
+
+@property --rail-gap {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 32px;
+}
+
+.rail-shell {
+  position: sticky;
+  top: 76px;
+  max-height: calc(100vh - 100px);
+  /* A phone's URL bar retracts, and vh does not notice. */
+  max-height: calc(100dvh - 100px);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.rail-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  min-height: 32px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  color: var(--ink-faint);
+  font: inherit;
+  font-size: 11px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.rail-toggle:hover {
+  background: var(--surface-sunken);
+  color: var(--ink);
+}
+
+.rail-toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.rail-panel {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+/* Folded away. Visibility takes the rail out of the tab order and out of the
+   accessibility tree without touching the document, so every page of it stays
+   addressable — see the note in SidebarRail.tsx. */
+.is-rail-collapsed .rail-panel {
+  visibility: hidden;
+  overflow: hidden;
+}
+
+/* Folded, the toggle is all that is left: a glyph in the gutter to get back. */
+.is-rail-collapsed .rail-toggle-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+/* Both belong to the drawer, and the drawer only exists on a narrow screen. */
+.rail-scrim,
+.rail-close {
+  display: none;
+}
+
+body.has-rail-open {
+  overflow: hidden;
+}
+
+/* Too narrow for a column beside the article: the rail becomes a drawer over
+   it. Keep this breakpoint in step with RAIL_BREAKPOINT in hooks/useSidebar.ts.
+
+   The drawer is positioned against the viewport, which holds as long as no
+   ancestor takes a transform, a filter, or containment — none of .app,
+   .app-main or the pages do today. */
+@media (max-width: 900px) {
+  /* The page grids themselves drop to one column further down, after the rules
+     that set them up — a media query adds no specificity, so it has to. */
+
+  /* The shell stops being a column of its own: the toggle becomes a row of the
+     page above the article, and the two fixed children leave the flow. */
+  .rail-shell {
+    display: contents;
+  }
+
+  .rail-toggle {
+    min-height: 40px;
+    padding: 8px 14px;
+    margin-bottom: 4px;
+    justify-self: start;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--ink-muted);
+    font-size: 12px;
+  }
+
+  /* Folding is a desktop idea; down here the toggle always reads in full. */
+  .is-rail-collapsed .rail-toggle-label {
+    position: static;
+    width: auto;
+    height: auto;
+    clip-path: none;
+  }
+
+  .rail-scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 39;
+    background: rgb(0 0 0 / 45%);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 200ms ease,
+      visibility 0s linear 200ms;
+  }
+
+  .is-rail-open .rail-scrim {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 200ms ease;
+  }
+
+  .rail-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 40;
+    width: min(320px, 84vw);
+    max-height: none;
+    padding: 20px 16px calc(24px + env(safe-area-inset-bottom));
+    background: var(--surface);
+    border-right: 1px solid var(--line);
+    box-shadow: var(--shadow);
+    transform: translateX(-100%);
+    visibility: hidden;
+    /* Delayed, so the drawer is still visible while it slides out. */
+    transition:
+      transform 200ms ease,
+      visibility 0s linear 200ms;
+  }
+
+  .is-rail-open .rail-panel {
+    transform: none;
+    visibility: visible;
+    transition: transform 200ms ease;
+  }
+
+  /* A rail folded at a desk must not arrive here as a drawer that cannot open. */
+  .is-rail-collapsed .rail-panel {
+    visibility: inherit;
+    overflow-y: auto;
+  }
+
+  .rail-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 8px;
+    background: none;
+    color: var(--ink-muted);
+    cursor: pointer;
+  }
+
+  .rail-close:hover {
+    background: var(--surface-sunken);
+    color: var(--ink);
+  }
+
+  /* Keep the standfirst out from under the close button. */
+  .rail-panel .docs-rail-lead,
+  .rail-panel .table-rail-lead {
+    padding-right: 40px;
+  }
+
+  /* Room enough to hit with a thumb. */
+  .rail-panel a,
+  .rail-panel ul button {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 8px 12px;
+    font-size: 15px;
+  }
+
+  .rail-panel.table-rail ul button {
+    justify-content: space-between;
+  }
 }
 
 /* ------------------------------------------------------------- overview -- */
@@ -365,7 +608,7 @@ code {
   padding: 0;
   display: grid;
   gap: 12px;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
 }
 
 .panel-grid a {
@@ -512,6 +755,15 @@ code {
   min-width: 0;
 }
 
+/* Under 16px, Safari on iOS zooms the page when the field takes focus, and
+   never zooms back out. */
+@media (max-width: 900px) {
+  .field input,
+  .field select {
+    font-size: 16px;
+  }
+}
+
 .field-search {
   flex: 1 1 240px;
   max-width: 340px;
@@ -620,6 +872,7 @@ code {
   background: var(--surface);
   overflow-y: auto;
   max-height: calc(100vh - 60px);
+  max-height: calc(100dvh - 60px);
 }
 
 .explorer-empty {
@@ -655,7 +908,7 @@ code {
   list-style: none;
   display: grid;
   gap: 2px;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
 }
 
 .explorer-outline button {
@@ -1384,11 +1637,8 @@ code {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .spinner {
-    animation: none;
-  }
-}
+/* Reduced motion is honoured at the foot of this file, after every rule it has
+   to beat — a media query adds no specificity, so it has to come last. */
 
 /* ------------------------------------------------------------ responsive -- */
 
@@ -1404,6 +1654,7 @@ code {
 
   .explorer-canvas {
     min-height: 62vh;
+    min-height: 62dvh;
   }
 
   .explorer-detail {
@@ -1414,10 +1665,57 @@ code {
 }
 
 @media (max-width: 640px) {
+  /* Stacked, this header is four rows and a third of a phone's screen — too
+     much to also keep pinned. Let it wrap, scroll the sections sideways, and
+     scroll away with the page. */
   .app-header {
-    flex-direction: column;
+    position: static;
+    flex-wrap: wrap;
     align-items: flex-start;
     gap: 10px;
+  }
+
+  .app-header > nav,
+  .app-header-end {
+    width: 100%;
+  }
+
+  /* Both strips scroll sideways rather than wrapping, so the header is three
+     short rows instead of five tall ones. */
+  .app-sections,
+  .app-header-end {
+    flex: 1;
+    min-width: 0;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .app-sections::-webkit-scrollbar,
+  .app-header-end::-webkit-scrollbar {
+    display: none;
+  }
+
+  .app-sections a,
+  .app-header-end a {
+    white-space: nowrap;
+  }
+
+  .app-header-end .framework-link,
+  .app-header-end .proof-switcher {
+    flex: none;
+  }
+
+  /* The strapline is the first thing to go when there is no room for it. */
+  .app-mark small {
+    display: none;
+  }
+
+  .app-header nav a,
+  .paper-download {
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
   }
 
   .explorer-status {
@@ -1479,7 +1777,7 @@ code {
   padding: 0;
   display: grid;
   gap: 16px;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
 }
 
 .proof-grid a {
@@ -1584,6 +1882,7 @@ code {
   position: sticky;
   top: 84px;
   max-height: calc(100vh - 108px);
+  max-height: calc(100dvh - 108px);
   overflow-y: auto;
 }
 
@@ -1730,7 +2029,7 @@ code {
 /* The eight coordinates of a branch state. */
 .methodology-state {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
   gap: 8px 22px;
   margin: 4px 0 16px;
 }
@@ -1935,7 +2234,7 @@ code {
 .methodology-controls {
   display: grid;
   gap: 12px 24px;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
   margin: 4px 0 18px;
 }
 
@@ -1960,7 +2259,7 @@ code {
 /* The long form: each failure explained, then its discipline. Two columns
    where there is room, so the cards stay readable. */
 .methodology-controls-wide {
-  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(380px, 100%), 1fr));
   gap: 14px;
 }
 
@@ -1992,7 +2291,7 @@ code {
   padding: 0;
   display: grid;
   gap: 16px;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
 }
 
 .methodology-cases a {
@@ -2120,21 +2419,19 @@ code {
 /* --------------------------------------------------- the tables section -- */
 
 .page-tables {
+  --rail-width: clamp(230px, 22vw, 280px);
+  --rail-gap: clamp(16px, 3vw, 36px);
   display: grid;
-  grid-template-columns: minmax(230px, 280px) minmax(0, 1fr);
-  gap: clamp(16px, 3vw, 36px);
+  grid-template-columns: var(--rail-width) minmax(0, 1fr);
+  column-gap: var(--rail-gap);
   max-width: 1440px;
   width: 100%;
   margin: 0 auto;
   padding: clamp(20px, 3vw, 36px) clamp(16px, 3vw, 32px) 64px;
   align-items: start;
-}
-
-.table-rail {
-  position: sticky;
-  top: 76px;
-  max-height: calc(100vh - 100px);
-  overflow-y: auto;
+  transition:
+    --rail-width 180ms ease,
+    --rail-gap 180ms ease;
 }
 
 .table-rail-lead {
@@ -2158,7 +2455,7 @@ code {
   padding: 0;
 }
 
-.table-rail button {
+.table-rail ul button {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
@@ -2176,18 +2473,18 @@ code {
   cursor: pointer;
 }
 
-.table-rail button:hover {
+.table-rail ul button:hover {
   background: var(--surface-sunken);
   color: var(--ink);
 }
 
-.table-rail button.is-current {
+.table-rail ul button.is-current {
   background: var(--accent-soft);
   color: var(--accent);
   font-weight: 600;
 }
 
-.table-rail button small {
+.table-rail ul button small {
   flex: none;
   font-family: var(--mono);
   font-size: 10.5px;
@@ -2267,29 +2564,7 @@ code {
   font-size: 14px;
 }
 
-@media (max-width: 900px) {
-  .page-tables {
-    grid-template-columns: 1fr;
-  }
-
-  .table-rail {
-    position: static;
-    max-height: none;
-  }
-}
-
 /* --------------------------------------------------- lean framework docs -- */
-
-.app-header-end {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.framework-link a {
-  font-weight: 600;
-}
 
 .framework-callout {
   display: flex;
@@ -2327,21 +2602,27 @@ code {
 }
 
 .page-docs {
+  --rail-width: clamp(220px, 20vw, 260px);
+  --rail-gap: clamp(20px, 3vw, 44px);
   display: grid;
-  grid-template-columns: minmax(220px, 260px) minmax(0, 1fr);
-  gap: clamp(20px, 3vw, 44px);
+  grid-template-columns: var(--rail-width) minmax(0, 1fr);
+  column-gap: var(--rail-gap);
   max-width: 1280px;
   width: 100%;
   margin: 0 auto;
   padding: clamp(20px, 3vw, 36px) clamp(16px, 3vw, 32px) 64px;
   align-items: start;
+  transition:
+    --rail-width 180ms ease,
+    --rail-gap 180ms ease;
 }
 
-.docs-rail {
-  position: sticky;
-  top: 76px;
-  max-height: calc(100vh - 100px);
-  overflow-y: auto;
+/* Folded down to a gutter rather than to nothing, so the way back is always
+   on screen. */
+.page-docs.is-rail-collapsed,
+.page-tables.is-rail-collapsed {
+  --rail-width: 34px;
+  --rail-gap: clamp(12px, 2vw, 20px);
 }
 
 .docs-rail-lead {
@@ -2466,6 +2747,15 @@ code {
   white-space: nowrap;
 }
 
+/* A name like `ExactLedger.mapResidual` is wider than a phone, and holding it
+   on one line pushes the whole page sideways. Let it break down here. */
+@media (max-width: 900px) {
+  .lean-inline {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+
 .lean-code {
   margin: 12px 0 16px;
 }
@@ -2495,6 +2785,8 @@ code {
   font-family: var(--mono);
   font-size: 11px;
   color: var(--ink-faint);
+  /* A module path has nowhere to break on its own, and is wider than a phone. */
+  overflow-wrap: anywhere;
 }
 
 .tok-keyword {
@@ -2558,7 +2850,7 @@ code {
   margin: 12px 0 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
   gap: 12px;
 }
 
@@ -2750,17 +3042,50 @@ code {
 }
 
 @media (max-width: 900px) {
-  .page-docs {
-    grid-template-columns: 1fr;
-  }
-
-  .docs-rail {
-    position: static;
-    max-height: none;
+  /* No room for a column beside the article: the rail becomes a drawer over it
+     (see the collapsible-rail block) and the article takes the whole width.
+     This lives here, after both grids are declared, so that it wins. */
+  .page-docs,
+  .page-tables {
+    grid-template-columns: minmax(0, 1fr);
+    transition: none;
   }
 
   .framework-callout {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  /* Two 160px cards and a page title apiece do not fit across a phone, and
+     side by side they were pushing the whole page sideways. */
+  .docs-pager {
+    flex-direction: column;
+  }
+
+  .docs-pager a {
+    min-width: 0;
+  }
+
+  .docs-pager a.is-next {
+    margin-left: 0;
+    text-align: left;
+  }
+}
+
+/* --------------------------------------------------------- reduced motion -- */
+
+/* Last in the file on purpose: a media query adds no specificity, so these have
+   to come after the rules they turn off. Everything still happens — folding the
+   rail, opening the drawer — it just arrives rather than travels. */
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+
+  .page-docs,
+  .page-tables,
+  .rail-panel,
+  .rail-scrim {
+    transition: none;
   }
 }

@@ -22,6 +22,15 @@ The divider between the diagram and the detail column can be dragged to resize
 it; double-clicking it, or pressing `Home` while it has focus, restores the
 default, and the width is remembered.
 
+The left rail on the Hypostructure section and on the tables — the table of
+contents — folds away behind its **Contents** button, leaving the article the
+whole width; the button stays in the gutter to bring it back, and the choice is
+remembered per section. Below 900px the same button opens the rail as a drawer
+over the article instead, which closes on the backdrop, on `Escape`, and as soon
+as an entry is chosen. Both are `SidebarRail` (`frontend/src/components/`) over
+the `useSidebar` hook (`frontend/src/hooks/`); the rail is hidden in CSS rather
+than unmounted, so every page of it stays addressable.
+
 Nothing on the site is hand-written mathematics, with four stated exceptions:
 each proof's introduction, in `frontend/src/proofs/registry.ts`; the panel
 names and Erdős panel summaries in `web/tools/papers/`; the landing page's
