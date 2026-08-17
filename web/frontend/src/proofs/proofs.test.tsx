@@ -17,24 +17,37 @@ import {
   GraphExplorer,
   MathProvider,
   NodeDetailPanel,
+  RefereePanel,
+  refereeDossier,
   buildGraph,
   TableView,
   createReferenceResolver,
   indexDocument,
   parseLatex,
+  locate,
   traceFrom,
+  type ChapterSource,
   type ProofGraphDocument,
 } from "../graph-explorer";
-import { PROOFS } from "./registry";
+import { PROOFS, paperUrl, type ProofEntry } from "./registry";
 
 // Resolved from the Vitest root (web/frontend), which jsdom's import.meta cannot give.
-function load(slug: string): ProofGraphDocument {
-  return JSON.parse(
-    readFileSync(resolve(process.cwd(), `public/data/${slug}.json`), "utf8"),
-  ) as ProofGraphDocument;
+function readJson<T>(path: string): T {
+  return JSON.parse(readFileSync(resolve(process.cwd(), "public", path), "utf8")) as T;
 }
 
-const DOCUMENTS = new Map(PROOFS.map((proof) => [proof.slug, load(proof.slug)]));
+/** The document with its manuscripts' page maps attached, as the hook serves it. */
+function load(proof: ProofEntry): ProofGraphDocument {
+  const document = readJson<ProofGraphDocument>(`data/${proof.slug}.json`);
+  const sources: Record<string, ChapterSource> = {};
+  for (const paper of proof.papers) {
+    const map = readJson<ChapterSource>(`data/pages/${paper.file.replace(/\.pdf$/, "")}.json`);
+    sources[paper.chapter] = { title: paper.title, url: paperUrl(paper), pages: map.pages, labels: map.labels };
+  }
+  return { ...document, sources };
+}
+
+const DOCUMENTS = new Map(PROOFS.map((proof) => [proof.slug, load(proof)]));
 const ERDOS = DOCUMENTS.get("erdos-gyarfas")!;
 const NAVIER_STOKES = DOCUMENTS.get("navier-stokes")!;
 
@@ -54,6 +67,30 @@ function show(document: ProofGraphDocument, nodeId: string, focusItem: string | 
       resolveReference={references.resolve}
     >
       <NodeDetailPanel
+        document={document}
+        index={index}
+        node={node}
+        focusItem={focusItem}
+        onSelectNode={() => {}}
+        onSelectItem={() => {}}
+        onSelectInvariant={() => {}}
+      />
+    </MathProvider>,
+  );
+}
+
+/** The same step, read as a referee. */
+function showReferee(document: ProofGraphDocument, nodeId: string, focusItem: string | null = null) {
+  const index = indexDocument(document);
+  const node = index.nodeById.get(nodeId)!;
+  const references = createReferenceResolver(document, index, node.chapter);
+  return render(
+    <MathProvider
+      macros={document.macros}
+      onReference={() => {}}
+      resolveReference={references.resolve}
+    >
+      <RefereePanel
         document={document}
         index={index}
         node={node}
@@ -126,7 +163,32 @@ describe("the Erdos-Gyarfas branch test at [15]", () => {
     show(ERDOS, "15", "cor:p13-exists");
     expect(screen.getByText("What it does")).toBeInTheDocument();
     expect(screen.getByText("Its role in the argument")).toBeInTheDocument();
-    expect(screen.getByText(/cor:p13-exists · stated on line/)).toBeInTheDocument();
+    // The reader is sent to the page of the PDF, with the source line kept as
+    // the finer address.
+    const where = locate(ERDOS, "erdos-gyarfas", "cor:p13-exists")!;
+    const source = screen.getByText(/cor:p13-exists · stated on/);
+    const link = within(source).getByRole("link", { name: `page ${where.page} of The paper` });
+    expect(link).toHaveAttribute("href", `${paperUrl(PROOFS[0].papers[0])}#page=${where.page}`);
+    expect(source).toHaveTextContent(/\(line \d+ of the source\)/);
+  });
+
+  it("falls back to the source line when no page map is at hand", () => {
+    show({ ...ERDOS, sources: undefined }, "15", "cor:p13-exists");
+    expect(screen.getByText(/cor:p13-exists · stated on line \d+ of the paper/)).toBeInTheDocument();
+  });
+});
+
+describe("the page maps", () => {
+  it("place every result and display of every proof on a page of its PDF", () => {
+    for (const proof of PROOFS) {
+      const document = DOCUMENTS.get(proof.slug)!;
+      for (const record of [...document.items, ...document.equations]) {
+        const where = locate(document, record.chapter, record.key);
+        expect(where, record.key).toBeDefined();
+        expect(where!.page).toBeGreaterThanOrEqual(1);
+        expect(where!.page).toBeLessThanOrEqual(document.sources![record.chapter ?? proof.slug].pages);
+      }
+    }
   });
 });
 
@@ -137,6 +199,186 @@ describe("the Erdos-Gyarfas terminal at [124]", () => {
     expect(screen.getByText("How this leaf closes")).toBeInTheDocument();
     expect(screen.getByText("Closing condition")).toBeInTheDocument();
     expect(screen.getByText(/nothing — the branch ends here/)).toBeInTheDocument();
+  });
+});
+
+describe("referee mode", () => {
+  it("puts the evidence of a branch test first: standing, claim, state, cases", () => {
+    showReferee(ERDOS, "15");
+    const panel = screen.getByLabelText("Node 15");
+
+    // The strip says where the step stands, and is honest about silence.
+    const strip = within(panel).getByLabelText("Review status");
+    expect(within(strip).getByText("Manuscript").nextSibling).toHaveTextContent("yes");
+    expect(within(strip).getByText("Located").nextSibling).toHaveTextContent("yes");
+    expect(within(strip).getByText("Cases").nextSibling).toHaveTextContent("yes");
+    expect(within(strip).getByText("Lean").nextSibling).toHaveTextContent("not recorded");
+    expect(within(strip).getByText("Kernel").nextSibling).toHaveTextContent("not recorded");
+
+    // Then, in order, the claim, the state and the cases.
+    const headings = within(panel)
+      .getAllByRole("heading", { level: 3 })
+      .map((heading) => heading.textContent);
+    expect(headings.slice(0, 3)).toEqual(["Claim", "State at this step", "Cases 2"]);
+
+    const before = within(panel).getByText("Available before").parentElement!;
+    // Constraints 1..13 are tracked upstream of [15]; the split itself tracks none.
+    expect(within(before).getByTitle(/^Constraint 1:/)).toBeInTheDocument();
+    expect(within(before).getByTitle(/^Constraint 13:/)).toBeInTheDocument();
+    expect(within(panel).getByText("Establishes").parentElement).toHaveTextContent("none recorded");
+
+    const cases = within(panel).getAllByRole("row").slice(1);
+    expect(cases).toHaveLength(2);
+    expect(cases[0]).toHaveTextContent("yes");
+    expect(within(cases[0]).getByText("16")).toBeInTheDocument();
+    expect(cases[1]).toHaveTextContent("no");
+    expect(within(cases[1]).getByText("17")).toBeInTheDocument();
+    expect(within(panel).getByText(/records no separate argument that they exhaust/)).toBeInTheDocument();
+
+    // Its own result, what it builds on, and where it falls.
+    expect(within(panel).getAllByText("cor:p13-exists").length).toBeGreaterThan(0);
+    expect(within(panel).getByText("Rests on").parentElement).toHaveTextContent(/Hegde/);
+    expect(within(panel).getByText(/142 later steps/)).toBeInTheDocument();
+    const where = locate(ERDOS, "erdos-gyarfas", "cor:p13-exists")!;
+    expect(within(panel).getAllByText(`page ${where.page} of The paper`)[0]).toHaveAttribute(
+      "href",
+      `${paperUrl(PROOFS[0].papers[0])}#page=${where.page}`,
+    );
+  });
+
+  it("finds every declared input of every Erdős–Gyárfás step already on the table", () => {
+    // The paper's rule for its requirement rows, read along the diagram: a
+    // constraint a result names as input is tracked at that step or upstream,
+    // never only on a sibling branch — and every number named is a ledger row.
+    const index = indexDocument(ERDOS);
+    const stray = ERDOS.nodes.flatMap((node) => {
+      const { state } = refereeDossier(ERDOS, index, node);
+      return [
+        ...state.unavailable.map((invariant) => `[${node.id}] reads ${invariant.number} early`),
+        ...state.dangling.map((cited) => `[${node.id}] cites ${cited.number}`),
+      ];
+    });
+    expect(stray).toEqual([]);
+    // [135] supplies the exact window-join identity on the surplus branch, where
+    // the ledger already tracks the near-cubic estimates.
+    expect(
+      refereeDossier(ERDOS, index, index.nodeById.get("135")!).state.establishes.map(
+        (invariant) => invariant.number,
+      ),
+    ).toEqual([14, 15, 23]);
+  });
+
+  it("says the Navier–Stokes papers declare no per-result inputs, and flags nothing", () => {
+    const index = indexDocument(NAVIER_STOKES);
+    for (const node of NAVIER_STOKES.nodes) {
+      const { state } = refereeDossier(NAVIER_STOKES, index, node);
+      expect(state.recorded).toBe(false);
+      expect(state.reads).toEqual([]);
+      expect(state.unavailable).toEqual([]);
+      expect(state.dangling).toEqual([]);
+    }
+    showReferee(NAVIER_STOKES, "S2");
+    expect(screen.getByText("Reads").parentElement).toHaveTextContent("not recorded");
+  });
+
+  it("gives a leaf its closure, with the closing results to open", () => {
+    showReferee(ERDOS, "124");
+    const panel = screen.getByLabelText("Node 124");
+    expect(within(panel).getByRole("heading", { level: 3, name: "Closure" })).toBeInTheDocument();
+    expect(within(panel).getByText("If the result were false")).toBeInTheDocument();
+    expect(within(panel).getByText("Closing results")).toBeInTheDocument();
+    expect(within(panel).getByText("Reads").parentElement).not.toHaveTextContent("none recorded");
+    expect(within(panel).getByText("No later step")).toBeInTheDocument();
+    expect(within(panel).getByText(/nothing — the branch ends here/)).toBeInTheDocument();
+  });
+
+  it("degrades to what the source records on a paper without a dependency layer", () => {
+    showReferee(NAVIER_STOKES, "S2");
+    const panel = screen.getByLabelText("Node S2");
+    const strip = within(panel).getByLabelText("Review status");
+    expect(within(strip).getByText("Dependencies").nextSibling).toHaveTextContent("not recorded");
+    expect(within(panel).getAllByRole("row").length).toBeGreaterThan(1);
+  });
+
+  it("is what the explorer shows when asked to read as a referee", async () => {
+    const user = userEvent.setup();
+    const changes: Record<string, unknown>[] = [];
+    render(
+      <MemoryRouter>
+        <GraphExplorer
+          document={ERDOS}
+          state={{
+            selected: "15",
+            chapter: null,
+            group: null,
+            trace: "none",
+            query: "",
+            item: null,
+            mode: "referee",
+            constraint: null,
+          }}
+          onChange={(patch) => changes.push(patch)}
+        />
+      </MemoryRouter>,
+    );
+    // Queried by text: computing accessible names over the whole canvas trips jsdom.
+    expect(screen.getByText("Referee")).toHaveClass("is-active");
+    expect(screen.getByLabelText("Review status")).toBeInTheDocument();
+    expect(screen.queryByText("What this step does")).not.toBeInTheDocument();
+
+    await user.click(screen.getByText("Reader"));
+    expect(changes).toContainEqual({ mode: "reader" });
+  });
+
+  it("lights up a constraint from its chip, and puts the light out from the same chip", async () => {
+    const user = userEvent.setup();
+    const index = indexDocument(ERDOS);
+    const step = ERDOS.nodes.find((node) => node.invariantRefs.length)!;
+    const invariant = index.invariantById.get(step.invariantRefs[0])!;
+    const changes: Record<string, unknown>[] = [];
+    const explorer = (constraint: string | null) => (
+      <MemoryRouter>
+        <GraphExplorer
+          document={ERDOS}
+          state={{
+            selected: step.id,
+            chapter: null,
+            group: null,
+            trace: "none",
+            query: "",
+            item: null,
+            mode: "referee",
+            constraint,
+          }}
+          onChange={(patch) => changes.push(patch)}
+        />
+      </MemoryRouter>
+    );
+    const view = render(explorer(null));
+    const panel = view.container.querySelector(".node-detail-referee")!;
+    const chip = () =>
+      within(panel as HTMLElement)
+        .getAllByRole("button")
+        .find((button) => button.textContent?.startsWith(String(invariant.number)))!;
+
+    await user.click(chip());
+    expect(changes).toContainEqual({ constraint: invariant.id, query: "" });
+
+    // With the constraint lit, the chip reads as pressed and the toolbar offers to clear it.
+    view.rerender(explorer(invariant.id));
+    expect(chip()).toHaveAttribute("aria-pressed", "true");
+    expect(view.container.querySelectorAll(".proof-node.is-matched").length).toBe(
+      index.nodesByInvariant.get(invariant.id)!.length,
+    );
+    // The selected step stays legible even when the constraint dims the rest.
+    expect(view.container.querySelector(".proof-node.is-selected")).not.toHaveClass("is-dimmed");
+    expect(screen.getByRole("status")).toHaveTextContent("clear");
+
+    changes.length = 0;
+    await user.click(chip());
+    expect(changes).toContainEqual({ constraint: null, query: "" });
+    await user.click(within(screen.getByRole("status")).getByRole("button"));
+    expect(changes).toContainEqual({ constraint: null });
   });
 });
 
@@ -259,6 +501,32 @@ describe("references inside a statement", () => {
   });
 });
 
+describe("a reference to an auxiliary result", () => {
+  it("unfolds the statement as prose, with its mathematics rendered", async () => {
+    const user = userEvent.setup();
+    const index = indexDocument(ERDOS);
+    // A result no step claims, cited from one that a step does claim — the
+    // definition of a sparse surplus blocker, cited by the blocker ledger.
+    const auxiliary = index.itemByKey.get("def:surplus-blockers")!;
+    const citer = index.itemByKey.get("def:canonical-blocker-ledger")!;
+    expect(index.nodesByItem.get(auxiliary.key) ?? []).toHaveLength(0);
+    expect(citer.statementLatex).toContain(`{${auxiliary.key}}`);
+    const holder = index.nodesByItem.get(citer.key)![0];
+
+    showReferee(ERDOS, holder, citer.key);
+    const reference = screen.getAllByTitle(auxiliary.key)[0];
+    await user.click(reference);
+
+    const unfolded = document.querySelector(".latex-inline-reference")!;
+    expect(unfolded).not.toBeNull();
+    // Read by the LaTeX reader, not handed whole to KaTeX: maths renders and no
+    // raw delimiter or macro leaks into the text.
+    expect(unfolded.querySelector(".katex")).not.toBeNull();
+    expect(unfolded.textContent).not.toMatch(/\\\(|\\emph|\\begin/);
+    expect(unfolded.querySelector(".katex-error")).toBeNull();
+  });
+});
+
 describe("a reference to a numbered display", () => {
   it("unfolds the equation where it stands, without moving the reader", async () => {
     const user = userEvent.setup();
@@ -270,9 +538,8 @@ describe("a reference to a numbered display", () => {
 
     // The title names the display exactly, since the number shown is this
     // site's own count rather than the paper's.
-    const reference = screen.getByTitle(
-      `p0:eq:paper0-local-typeI-bound · line ${equation.sourceLine}`,
-    );
+    const where = locate(NAVIER_STOKES, equation.chapter, equation.key)!;
+    const reference = screen.getByTitle(`p0:eq:paper0-local-typeI-bound · page ${where.page}`);
     expect(reference).toHaveTextContent(`(${equation.number})`);
     expect(reference).toHaveAttribute("aria-expanded", "false");
     expect(document.querySelector(".latex-inline-reference")).toBeNull();
@@ -341,6 +608,8 @@ describe("the canvas with no step selected", () => {
             trace: "none",
             query: "",
             item: null,
+            mode: "reader",
+            constraint: null,
             ...state,
           }}
           onChange={() => {}}

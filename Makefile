@@ -12,11 +12,16 @@ ERDOS_TARGET := HypostructureErdos64EG
 NPM ?= npm
 WEB_DIR := web
 WEB_FRONTEND := $(WEB_DIR)/frontend
-WEB_DATA := $(WEB_FRONTEND)/public/data/erdos-gyarfas.json
+WEB_DATA := $(WEB_FRONTEND)/public/data/erdos-gyarfas.json \
+            $(WEB_FRONTEND)/public/data/pages/original_erdos_64_proof.json
 WEB_SOURCES := to_formalize/original_erdos_64_proof.tex \
                to_formalize/proof_setup.tex \
                to_formalize/type_I_residual_closure.tex \
-               to_formalize/type_II_regularity.tex
+               to_formalize/type_II_regularity.tex \
+               to_formalize/original_erdos_64_proof.aux \
+               to_formalize/proof_setup.aux \
+               to_formalize/type_I_residual_closure.aux \
+               to_formalize/type_II_regularity.aux
 WEB_TOOLS := $(wildcard $(WEB_DIR)/tools/*.py) $(wildcard $(WEB_DIR)/tools/papers/*.py)
 
 # The sealed-frontend run/export targets (`ab`, `ab-json`, `erdos-json`) drove
@@ -40,7 +45,7 @@ help:
 	  '  make mathlib-cache   Fetch prebuilt Mathlib artifacts' \
 	  '' \
 	  '  make web             Serve the interactive proof explorer' \
-	  '  make web-data        Re-extract both proof diagrams from the manuscripts' \
+	  '  make web-data        Re-extract both proof diagrams and page maps from the manuscripts' \
 	  '  make web-build       Produce the static site in web/frontend/dist' \
 	  '  make web-test        Typecheck and test the explorer'
 
@@ -99,12 +104,15 @@ $(WEB_FRONTEND)/node_modules: $(WEB_FRONTEND)/package.json
 
 web-install: $(WEB_FRONTEND)/node_modules
 
-# The diagrams, statements and constants are read out of the manuscripts.
-$(WEB_DATA): $(WEB_SOURCES) $(WEB_TOOLS)
+# The diagrams, statements and constants are read out of the manuscripts; the
+# page each label lands on, out of the .aux files their PDFs were built with.
+$(WEB_DATA) &: $(WEB_SOURCES) $(WEB_TOOLS)
 	$(PYTHON) $(WEB_DIR)/tools/extract_proof_graph.py
+	$(PYTHON) $(WEB_DIR)/tools/extract_page_map.py
 
 web-data:
 	$(PYTHON) $(WEB_DIR)/tools/extract_proof_graph.py
+	$(PYTHON) $(WEB_DIR)/tools/extract_page_map.py
 	$(PYTHON) $(WEB_DIR)/tools/test_extract_proof_graph.py
 
 web: web-install $(WEB_DATA)

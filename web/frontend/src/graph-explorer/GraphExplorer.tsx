@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import {
   Background,
   Controls,
@@ -12,7 +12,8 @@ import {
 import "@xyflow/react/dist/style.css";
 
 import { Latex, MathProvider } from "./Latex";
-import { NodeDetailPanel } from "./NodeDetailPanel";
+import { NodeDetailPanel, type NodeDetailPanelProps } from "./NodeDetailPanel";
+import { RefereePanel } from "./RefereePanel";
 import { SHAPE_NAMES, nodeTypes } from "./ProofFlowNode";
 import { boundsOf, buildGraph, type ProofFlowNode } from "./buildGraph";
 import { createReferenceResolver } from "./references";
@@ -20,7 +21,7 @@ import { indexDocument } from "./index-document";
 import { buildSearchIndex, matchNodes } from "./search";
 import { traceFrom } from "./trace";
 import { useDetailWidth } from "./useDetailWidth";
-import type { ProofGraphDocument, TraceDirection } from "./types";
+import type { ExplorerMode, ProofGraphDocument, TraceDirection } from "./types";
 
 /** Grow a rectangle about its centre until it is at least the given size. */
 function expand(
@@ -45,6 +46,15 @@ const TRACE_OPTIONS: { value: TraceDirection; label: string; hint: string }[] = 
   { value: "both", label: "Both", hint: "The full branch through this step" },
 ];
 
+const MODE_OPTIONS: { value: ExplorerMode; label: string; hint: string }[] = [
+  { value: "reader", label: "Reader", hint: "What each step does, then the results behind it" },
+  {
+    value: "referee",
+    label: "Referee",
+    hint: "Evidence first: the claim, the state it may assume, its cases and its impact",
+  },
+];
+
 export interface ExplorerState {
   selected: string | null;
   chapter: string | null;
@@ -52,6 +62,10 @@ export interface ExplorerState {
   trace: TraceDirection;
   query: string;
   item: string | null;
+  /** How the detail column reads a step. */
+  mode: ExplorerMode;
+  /** A standing constraint to light up on the canvas: every step that tracks it. */
+  constraint: string | null;
 }
 
 export interface GraphExplorerProps {
@@ -103,6 +117,11 @@ function Framing({
   return null;
 }
 
+/** The detail column, read one way or the other. */
+function DetailPanel({ mode, ...props }: NodeDetailPanelProps & { mode: ExplorerMode }) {
+  return mode === "referee" ? <RefereePanel {...props} /> : <NodeDetailPanel {...props} />;
+}
+
 export function GraphExplorer({ document, state, onChange }: GraphExplorerProps) {
   const index = useMemo(() => indexDocument(document), [document]);
   const searchIndex = useMemo(
@@ -110,7 +129,6 @@ export function GraphExplorer({ document, state, onChange }: GraphExplorerProps)
     [document, index],
   );
 
-  const [invariantFilter, setInvariantFilter] = useState<string | null>(null);
   const detail = useDetailWidth(`proof-explorer:${document.id}:detail-width`);
 
   const selectedNode = state.selected ? index.nodeById.get(state.selected) : undefined;
@@ -121,12 +139,12 @@ export function GraphExplorer({ document, state, onChange }: GraphExplorerProps)
   );
 
   const matchedIds = useMemo(() => {
-    if (invariantFilter) {
-      return new Set(index.nodesByInvariant.get(invariantFilter) ?? []);
+    if (state.constraint) {
+      return new Set(index.nodesByInvariant.get(state.constraint) ?? []);
     }
     const matched = matchNodes(searchIndex, state.query);
     return matched.size ? matched : null;
-  }, [invariantFilter, index, searchIndex, state.query]);
+  }, [index, searchIndex, state.constraint, state.query]);
 
   const { nodes, edges } = useMemo(
     () =>
@@ -181,6 +199,18 @@ export function GraphExplorer({ document, state, onChange }: GraphExplorerProps)
       onChange({ selected: id, item: null, ...reveal(id) });
     },
     [onChange, reveal],
+  );
+
+  /**
+   * Light up every step tracking a constraint, or put the light out again when
+   * the same chip is pressed a second time. Search and the constraint share the
+   * canvas highlight, so one always replaces the other.
+   */
+  const toggleInvariant = useCallback(
+    (id: string) => {
+      onChange({ constraint: state.constraint === id ? null : id, query: "" });
+    },
+    [onChange, state.constraint],
   );
 
   const references = useMemo(
@@ -240,7 +270,7 @@ export function GraphExplorer({ document, state, onChange }: GraphExplorerProps)
       onReference={openReference}
       resolveReference={references.resolve}
     >
-      <div className="explorer">
+      <div className={`explorer${state.mode === "referee" ? " is-referee" : ""}`}>
         <div className="explorer-toolbar">
           <label className="field field-search">
             <span>Search the proof</span>
@@ -248,10 +278,7 @@ export function GraphExplorer({ document, state, onChange }: GraphExplorerProps)
               type="search"
               value={state.query}
               placeholder="entropy cap, route 8, Mersenne…"
-              onChange={(event) => {
-                setInvariantFilter(null);
-                onChange({ query: event.target.value });
-              }}
+              onChange={(event) => onChange({ query: event.target.value, constraint: null })}
             />
           </label>
 
@@ -298,6 +325,23 @@ export function GraphExplorer({ document, state, onChange }: GraphExplorerProps)
             </select>
           </label>
 
+          <fieldset className="field field-mode">
+            <legend>Read as</legend>
+            <div className="segmented">
+              {MODE_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  title={option.hint}
+                  className={state.mode === option.value ? "is-active" : ""}
+                  onClick={() => onChange({ mode: option.value })}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </fieldset>
+
           <fieldset className="field field-trace">
             <legend>Follow the branch</legend>
             <div className="segmented">
@@ -316,10 +360,14 @@ export function GraphExplorer({ document, state, onChange }: GraphExplorerProps)
           </fieldset>
 
           <div className="explorer-status" role="status">
-            {invariantFilter ? (
-              <button type="button" className="chip chip-clear" onClick={() => setInvariantFilter(null)}>
-                Constraint {index.invariantById.get(invariantFilter)?.number ?? invariantFilter} ·{" "}
-                {matchCount} steps · clear
+            {state.constraint ? (
+              <button
+                type="button"
+                className="chip chip-clear"
+                onClick={() => onChange({ constraint: null })}
+              >
+                Constraint {index.invariantById.get(state.constraint)?.number ?? state.constraint} ·{" "}
+                {matchCount} {matchCount === 1 ? "step" : "steps"} · clear
               </button>
             ) : matchedIds ? (
               <span>
@@ -400,17 +448,16 @@ export function GraphExplorer({ document, state, onChange }: GraphExplorerProps)
 
           <aside className="explorer-detail">
             {selectedNode ? (
-              <NodeDetailPanel
+              <DetailPanel
+                mode={state.mode}
                 document={document}
                 index={index}
                 node={selectedNode}
                 focusItem={state.item}
+                activeInvariant={state.constraint}
                 onSelectNode={selectNode}
                 onSelectItem={(item) => onChange({ item })}
-                onSelectInvariant={(id) => {
-                  setInvariantFilter(id);
-                  onChange({ query: "" });
-                }}
+                onSelectInvariant={toggleInvariant}
               />
             ) : (
               <div className="explorer-empty">
@@ -419,8 +466,9 @@ export function GraphExplorer({ document, state, onChange }: GraphExplorerProps)
                   <Latex value={scope.summary} />
                 </p>
                 <p>
-                  Pick a step to see what it asserts, which results stand behind
-                  it, and where the argument goes next — or start at{" "}
+                  {state.mode === "referee"
+                    ? "Pick a step to see its claim, the state it may assume, its evidence and what depends on it — or start at "
+                    : "Pick a step to see what it asserts, which results stand behind it, and where the argument goes next — or start at "}
                   <button
                     type="button"
                     className="chip chip-node"

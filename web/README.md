@@ -162,6 +162,21 @@ figure caption is kept separately, for the node-level detail it adds.
 to a *range* of steps rather than to one, those are kept apart as block context
 and listed separately, so a single step never claims everything its block uses.
 
+**A step can be read two ways.** The default reading opens with what the step
+does, then the results behind it. *Referee mode* — the "Read as" toggle in the
+toolbar, `?mode=referee` in the address — reorders the same facts as evidence:
+a status strip along the dimensions a referee keeps apart (manuscript present,
+placed on a page, dependencies mapped, cases or closure recorded, Lean, kernel,
+wired, local, external input, human review — each said as "not recorded" when
+the document is silent), then the claim, the standing constraints available
+before / read / established at the step (reads are the inputs the paper's own
+requirement rows declare; a constraint read where nothing upstream tracks it,
+or a number the ledger does not list, is flagged), the cases of a branch test as drawn,
+the closure of a leaf, the results, what arrives, what falls downstream, and
+where each result sits in the PDF. Everything is derived from the document; the
+Lean and review dimensions read an optional `review` side-car keyed by step,
+which no host supplies yet.
+
 `make web-data` also runs the structural checks: numbering without gaps in each
 paper, every arrow resolving, the whole diagram connected, every cross-reference
 pointing at a result that exists, and each proof's expected shape.
@@ -224,6 +239,7 @@ usable on their own:
 | --- | --- |
 | `GraphExplorer` | the whole workbench; view state is yours to own, so it can live in the URL |
 | `NodeDetailPanel` | the display unit for one step, on its own |
+| `RefereePanel` / `refereeDossier` | the same step read as a referee, and the derivation behind it |
 | `indexDocument` | lookup tables for steps, results, panels, papers, constraints and arrows |
 | `traceFrom` | walk a branch upstream, downstream or both |
 | `buildGraph` / `boundsOf` | lay the document out for the canvas, and frame part of it |

@@ -171,6 +171,60 @@ export interface NamedConstant {
   establishedIn: string[];
 }
 
+/** Where one label of a manuscript lands, in the source and in the PDF. */
+export interface LabelLocation {
+  /** 1-based line of the `\\label` in the LaTeX source. */
+  line: number | null;
+  /** 1-based page of the PDF the label was built into. */
+  page: number | null;
+  /** The number the paper prints for it, e.g. `13.4`. */
+  number: string | null;
+  /** The PDF's own named destination for it, e.g. `theorem.13.4`. */
+  anchor: string | null;
+}
+
+/**
+ * A manuscript as the reader can open it: the served PDF and the page each of
+ * its labels lands on. Supplied by the host, one per chapter, from the page
+ * maps `web/tools/extract_page_map.py` writes.
+ */
+export interface ChapterSource {
+  /** How the host names the PDF, e.g. `Setup`. */
+  title: string;
+  /** URL of the PDF. */
+  url: string;
+  pages: number;
+  /** Keyed by the raw label, without any chapter prefix. */
+  labels: Record<string, LabelLocation>;
+}
+
+/**
+ * How a step stands under review, along the dimensions a referee keeps apart:
+ * whether the manuscript's Lean encoding exists, whether the kernel accepts it,
+ * whether it is wired into the assembly, whether its proof is residual-local,
+ * whether it leans on an external input, and whether a person has read it. Each
+ * is its own answer; a step can be human-checked with its Lean port pending.
+ */
+export type ReviewState = "verified" | "partial" | "absent";
+
+export interface NodeReview {
+  lean?: ReviewState;
+  kernel?: ReviewState;
+  wired?: ReviewState;
+  local?: ReviewState;
+  external?: ReviewState;
+  human?: ReviewState;
+  note?: string;
+}
+
+/**
+ * The review layer of a proof, keyed by node id. Supplied by the host as a
+ * side-car, like `sources`; the explorer says "not recorded" where it is absent.
+ */
+export interface ProofReview {
+  nodes: Record<string, NodeReview>;
+}
+
 export interface ProofGraphDocument {
   id: string;
   title: string;
@@ -181,6 +235,13 @@ export interface ProofGraphDocument {
   macros: Record<string, string>;
   /** Present when the proof is written across more than one manuscript. */
   chapters?: ProofChapter[];
+  /**
+   * The PDFs behind the chapters, keyed by chapter id (the slug when there is
+   * one chapter), when the host has them. Lets a result say which page it is on.
+   */
+  sources?: Record<string, ChapterSource>;
+  /** How each step stands under review, when the host has recorded it. */
+  review?: ProofReview;
   groups: ProofGroup[];
   nodes: ProofNode[];
   edges: ProofEdge[];
@@ -190,6 +251,9 @@ export interface ProofGraphDocument {
   constants: NamedConstant[];
   tables: ProofTable[];
 }
+
+/** How the detail column reads a step: as a reader, or as a referee. */
+export type ExplorerMode = "reader" | "referee";
 
 /** Direction to follow when highlighting the branches around a node. */
 export type TraceDirection = "upstream" | "downstream" | "both" | "none";

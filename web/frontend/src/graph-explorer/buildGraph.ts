@@ -108,7 +108,10 @@ export function buildGraph(
         selected: node.id === selectedId,
         traced,
         matched,
-        dimmed: (hasTrace && !traced) || (hasSearch && !matched),
+        // The selected step is never dimmed: a filter that hid the step you
+        // just clicked would make every click look like it did nothing.
+        dimmed:
+          node.id !== selectedId && ((hasTrace && !traced) || (hasSearch && !matched)),
       },
     };
   });

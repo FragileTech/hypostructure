@@ -20,6 +20,9 @@
   --code-string: #2f7d52;
   --code-name: #1f5c8b;
   --code-sort: #a2681a;
+  --ok: #2f7d52;
+  --warn: #a2681a;
+  --bad: #a83a32;
   --shadow: 0 1px 2px rgb(27 28 30 / 6%), 0 8px 24px rgb(27 28 30 / 6%);
   --radius: 10px;
   --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
@@ -49,6 +52,9 @@
     --code-string: #71c295;
     --code-name: #7fb6e0;
     --code-sort: #d9a86a;
+    --ok: #71c295;
+    --warn: #d9a86a;
+    --bad: #e07b73;
     --shadow: 0 1px 2px rgb(0 0 0 / 40%), 0 10px 30px rgb(0 0 0 / 35%);
     color-scheme: dark;
   }
@@ -1293,6 +1299,13 @@ body.has-rail-open {
   align-self: flex-start;
 }
 
+/* The constraint lit up on the canvas; pressing it again puts the light out. */
+.chip-invariant.is-active {
+  background: color-mix(in srgb, var(--decision) 22%, var(--surface-sunken));
+  border-color: var(--decision);
+  color: var(--ink);
+}
+
 .chip-clear {
   color: var(--accent);
   border-color: var(--accent);
@@ -1507,6 +1520,16 @@ body.has-rail-open {
   margin: 14px 0 0;
   font-family: var(--mono);
   font-size: 11px;
+  color: var(--ink-faint);
+}
+
+.item-source a {
+  color: var(--accent);
+  text-decoration: underline dotted;
+  text-underline-offset: 2px;
+}
+
+.item-source-line {
   color: var(--ink-faint);
 }
 
@@ -2396,6 +2419,13 @@ body.has-rail-open {
   letter-spacing: 0.04em;
 }
 
+/* An auxiliary result unfolded where it is cited: prose, read at body size. */
+.latex-inline-statement {
+  display: block;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
 .latex-inline-reference small {
   display: block;
   margin-top: 4px;
@@ -3088,4 +3118,192 @@ body.has-rail-open {
   .rail-scrim {
     transition: none;
   }
+}
+
+/* -------------------------------------------------------------- referee -- */
+
+/* The step as a referee reads it: evidence first, each answer's standing
+   marked, and "not recorded" said plainly where the document is silent. */
+
+.review-strip {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+}
+
+.review-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--ink-muted);
+  padding: 2px 8px 2px 6px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.review-mark {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ink-faint);
+  flex: none;
+}
+
+.review-label {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.review-value {
+  color: var(--ink-faint);
+}
+
+.review-check.is-yes .review-mark {
+  background: var(--ok);
+}
+
+.review-check.is-partial .review-mark {
+  background: var(--warn);
+}
+
+.review-check.is-no .review-mark {
+  background: var(--bad);
+}
+
+/* Silence is not failure: an unrecorded dimension is drawn hollow, not red. */
+.review-check.is-unrecorded {
+  border-style: dashed;
+}
+
+.review-check.is-unrecorded .review-mark {
+  background: transparent;
+  box-shadow: inset 0 0 0 1.5px var(--ink-faint);
+}
+
+.review-check.is-unrecorded .review-label {
+  color: var(--ink-muted);
+}
+
+.referee-claim > p {
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.referee-state-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 0 0 8px;
+}
+
+.referee-state-row .branch-items {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.referee-state-row.is-empty {
+  align-items: baseline;
+}
+
+.chip-invariant-name {
+  font-family: var(--sans);
+  font-weight: 400;
+  color: var(--ink-muted);
+}
+
+.referee-flag {
+  margin: 4px 0 0;
+  padding: 8px 10px;
+  border-left: 3px solid var(--warn);
+  background: var(--surface-sunken);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  font-size: 13px;
+  color: var(--ink);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
+}
+
+.referee-cases table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin: 0 0 8px;
+}
+
+.referee-cases th {
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ink-faint);
+  font-weight: 600;
+  padding: 0 8px 6px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.referee-cases td {
+  padding: 7px 8px 7px 0;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.referee-cases td em {
+  color: var(--ink-faint);
+}
+
+.chip-node-label {
+  font-family: var(--sans);
+  font-weight: 400;
+  color: var(--ink-muted);
+  text-align: left;
+}
+
+.referee-impact-summary {
+  font-size: 13px;
+  color: var(--ink-muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
+  margin: 8px 0;
+}
+
+.referee-blocks {
+  margin-top: 10px;
+}
+
+.referee-sources ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.referee-sources li {
+  font-size: 13px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  align-items: baseline;
+}
+
+.referee-sources a {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.referee-source-items {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
 }

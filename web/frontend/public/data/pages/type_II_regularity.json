@@ -1,0 +1,3908 @@
+{
+ "pdf": "type_II_regularity.pdf",
+ "tex": "to_formalize/type_II_regularity.tex",
+ "chapter": "type-ii",
+ "pages": 323,
+ "labels": {
+  "def:canonical-chart-notation": {
+   "line": 202,
+   "page": 5,
+   "number": "1.1",
+   "anchor": "definition.1.1"
+  },
+  "rem:r13-whole-space-norm-scope": {
+   "line": 235,
+   "page": 5,
+   "number": "1.2",
+   "anchor": "remark.1.2"
+  },
+  "subsec:branch-contract-provenance": {
+   "line": 246,
+   "page": 5,
+   "number": "1.1",
+   "anchor": "subsection.1.1"
+  },
+  "tab:branch-contract-provenance": {
+   "line": 281,
+   "page": 7,
+   "number": "1",
+   "anchor": "table.1"
+  },
+  "prop:branch-contract-discharge": {
+   "line": 444,
+   "page": 11,
+   "number": "1.3",
+   "anchor": "proposition.1.3"
+  },
+  "sec:typeII-proof-architecture": {
+   "line": 526,
+   "page": 12,
+   "number": "2",
+   "anchor": "section.2"
+  },
+  "subsec:typeII-diagram-map": {
+   "line": 563,
+   "page": 12,
+   "number": "2.1",
+   "anchor": "subsection.2.1"
+  },
+  "tab:typeII-proof-diagram-map": {
+   "line": 576,
+   "page": 12,
+   "number": "2",
+   "anchor": "table.2"
+  },
+  "subsec:typeII-proof-diagram": {
+   "line": 641,
+   "page": 14,
+   "number": "2.2",
+   "anchor": "subsection.2.2"
+  },
+  "fig:typeII-proof-flow-part-i": {
+   "line": 707,
+   "page": 15,
+   "number": "1",
+   "anchor": "figure.1"
+  },
+  "fig:typeII-proof-flow-part-ii": {
+   "line": 805,
+   "page": 16,
+   "number": "2",
+   "anchor": "figure.2"
+  },
+  "fig:typeII-proof-flow-part-iii": {
+   "line": 865,
+   "page": 17,
+   "number": "3",
+   "anchor": "figure.3"
+  },
+  "fig:typeII-proof-flow-part-iv": {
+   "line": 920,
+   "page": 18,
+   "number": "4",
+   "anchor": "figure.4"
+  },
+  "fig:typeII-proof-flow-part-v": {
+   "line": 960,
+   "page": 19,
+   "number": "5",
+   "anchor": "figure.5"
+  },
+  "fig:typeII-proof-flow-part-vi": {
+   "line": 1002,
+   "page": 20,
+   "number": "6",
+   "anchor": "figure.6"
+  },
+  "fig:typeII-proof-flow-part-vii": {
+   "line": 1047,
+   "page": 21,
+   "number": "7",
+   "anchor": "figure.7"
+  },
+  "fig:typeII-proof-flow-part-viii": {
+   "line": 1088,
+   "page": 22,
+   "number": "8",
+   "anchor": "figure.8"
+  },
+  "fig:typeII-proof-flow-part-ix": {
+   "line": 1160,
+   "page": 23,
+   "number": "9",
+   "anchor": "figure.9"
+  },
+  "fig:typeII-proof-flow-part-x": {
+   "line": 1215,
+   "page": 24,
+   "number": "10",
+   "anchor": "figure.10"
+  },
+  "fig:typeII-proof-flow-part-xi": {
+   "line": 1273,
+   "page": 25,
+   "number": "11",
+   "anchor": "figure.11"
+  },
+  "fig:typeII-proof-flow-part-xii": {
+   "line": 1327,
+   "page": 26,
+   "number": "12",
+   "anchor": "figure.12"
+  },
+  "subsec:typeII-detailed-dependency": {
+   "line": 1334,
+   "page": 27,
+   "number": "2.3",
+   "anchor": "subsection.2.3"
+  },
+  "tab:typeII-proof-node-ledger": {
+   "line": 1348,
+   "page": 28,
+   "number": "3",
+   "anchor": "table.3"
+  },
+  "subsec:typeII-retained-obstruction-ledger": {
+   "line": 1774,
+   "page": 35,
+   "number": "2.4",
+   "anchor": "subsection.2.4"
+  },
+  "tab:typeII-retained-obstruction-ledger": {
+   "line": 1787,
+   "page": 35,
+   "number": "4",
+   "anchor": "table.4"
+  },
+  "subsec:typeII-branch-closure-ledger": {
+   "line": 1843,
+   "page": 35,
+   "number": "2.5",
+   "anchor": "subsection.2.5"
+  },
+  "tab:typeII-branch-closure-ledger": {
+   "line": 1859,
+   "page": 36,
+   "number": "5",
+   "anchor": "table.5"
+  },
+  "sec:single-core-criterion": {
+   "line": 1936,
+   "page": 39,
+   "number": "3",
+   "anchor": "section.3"
+  },
+  "def:bounded-window-limit": {
+   "line": 1961,
+   "page": 39,
+   "number": "3.1",
+   "anchor": "definition.3.1"
+  },
+  "def:strict-selected-window-typeII-branch": {
+   "line": 1973,
+   "page": 39,
+   "number": "3.2",
+   "anchor": "definition.3.2"
+  },
+  "rem:strict-selected-window-vs-physical-typeII": {
+   "line": 1982,
+   "page": 39,
+   "number": "3.3",
+   "anchor": "remark.3.3"
+  },
+  "def:single-core-branch": {
+   "line": 1996,
+   "page": 39,
+   "number": "3.4",
+   "anchor": "definition.3.4"
+  },
+  "def:localized-dissipation": {
+   "line": 2029,
+   "page": 40,
+   "number": "3.5",
+   "anchor": "definition.3.5"
+  },
+  "thm:local-concentration-dichotomy": {
+   "line": 2048,
+   "page": 40,
+   "number": "3.6",
+   "anchor": "theorem.3.6"
+  },
+  "prop:selected-window-branch-reduction": {
+   "line": 2082,
+   "page": 40,
+   "number": "3.7",
+   "anchor": "proposition.3.7"
+  },
+  "prop:representation-input": {
+   "line": 2112,
+   "page": 41,
+   "number": "3.8",
+   "anchor": "proposition.3.8"
+  },
+  "lem:pressure-oscillation-localization": {
+   "line": 2160,
+   "page": 41,
+   "number": "3.9",
+   "anchor": "lemma.3.9"
+  },
+  "prop:selected-window-compactness": {
+   "line": 2198,
+   "page": 42,
+   "number": "3.10",
+   "anchor": "proposition.3.10"
+  },
+  "rem:bounded-modulation": {
+   "line": 2397,
+   "page": 44,
+   "number": "3.11",
+   "anchor": "remark.3.11"
+  },
+  "lem:pressure-stability": {
+   "line": 2407,
+   "page": 44,
+   "number": "3.12",
+   "anchor": "lemma.3.12"
+  },
+  "lem:zero-dissipation": {
+   "line": 2454,
+   "page": 44,
+   "number": "3.13",
+   "anchor": "lemma.3.13"
+  },
+  "lem:constant-limit": {
+   "line": 2480,
+   "page": 45,
+   "number": "3.14",
+   "anchor": "lemma.3.14"
+  },
+  "lem:persistence": {
+   "line": 2503,
+   "page": 45,
+   "number": "3.15",
+   "anchor": "lemma.3.15"
+  },
+  "lem:zero-contradiction": {
+   "line": 2519,
+   "page": 45,
+   "number": "3.16",
+   "anchor": "lemma.3.16"
+  },
+  "lem:nonzero-contradiction": {
+   "line": 2546,
+   "page": 45,
+   "number": "3.17",
+   "anchor": "lemma.3.17"
+  },
+  "thm:single-core-criterion": {
+   "line": 2562,
+   "page": 46,
+   "number": "3.18",
+   "anchor": "theorem.3.18"
+  },
+  "sec:repaired-gauge-construction": {
+   "line": 2618,
+   "page": 47,
+   "number": "4",
+   "anchor": "section.4"
+  },
+  "sec:repaired-gauge-setup": {
+   "line": 2619,
+   "page": 47,
+   "number": "4.1",
+   "anchor": "subsection.4.1"
+  },
+  "def:single-core-hypotheses": {
+   "line": 2650,
+   "page": 47,
+   "number": "4.1",
+   "anchor": "definition.4.1"
+  },
+  "sec:preliminary-frame": {
+   "line": 2720,
+   "page": 48,
+   "number": "4.2",
+   "anchor": "subsection.4.2"
+  },
+  "prop:prelim-frame": {
+   "line": 2733,
+   "page": 48,
+   "number": "4.3",
+   "anchor": "proposition.4.3"
+  },
+  "def:prelim-profile": {
+   "line": 2801,
+   "page": 49,
+   "number": "4.4",
+   "anchor": "definition.4.4"
+  },
+  "sec:canonical-renormalized-change": {
+   "line": 2811,
+   "page": 49,
+   "number": "4.3",
+   "anchor": "subsection.4.3"
+  },
+  "sec:chart-domain-localization": {
+   "line": 2829,
+   "page": 49,
+   "number": "4.4",
+   "anchor": "subsection.4.4"
+  },
+  "prop:compact-support-transport": {
+   "line": 2846,
+   "page": 49,
+   "number": "4.5",
+   "anchor": "proposition.4.5"
+  },
+  "eq:domain-buffer": {
+   "line": 2859,
+   "page": 50,
+   "number": "1",
+   "anchor": "equation.1"
+  },
+  "rem:domain-buffer-entry": {
+   "line": 2918,
+   "page": 50,
+   "number": "4.6",
+   "anchor": "remark.4.6"
+  },
+  "sec:chart-local-quantity-transfer": {
+   "line": 2928,
+   "page": 50,
+   "number": "4.5",
+   "anchor": "subsection.4.5"
+  },
+  "prop:local-transfer": {
+   "line": 2966,
+   "page": 51,
+   "number": "4.7",
+   "anchor": "proposition.4.7"
+  },
+  "sec:local-repaired-gauge-map": {
+   "line": 3012,
+   "page": 51,
+   "number": "4.6",
+   "anchor": "subsection.4.6"
+  },
+  "def:strong-translation-admissible-gauge-class": {
+   "line": 3047,
+   "page": 52,
+   "number": "4.8",
+   "anchor": "definition.4.8"
+  },
+  "lem:strong-gauge-chart-entry-test": {
+   "line": 3130,
+   "page": 52,
+   "number": "4.9",
+   "anchor": "lemma.4.9"
+  },
+  "lem:gauge-differentiability-entry": {
+   "line": 3131,
+   "page": 52,
+   "number": "4.9",
+   "anchor": "lemma.4.9"
+  },
+  "def:gauge-action": {
+   "line": 3153,
+   "page": 53,
+   "number": "4.10",
+   "anchor": "definition.4.10"
+  },
+  "def:gauge-map": {
+   "line": 3165,
+   "page": 53,
+   "number": "4.11",
+   "anchor": "definition.4.11"
+  },
+  "def:gauge-nondeg": {
+   "line": 3181,
+   "page": 53,
+   "number": "4.12",
+   "anchor": "definition.4.12"
+  },
+  "lem:weighted-finite": {
+   "line": 3192,
+   "page": 53,
+   "number": "4.13",
+   "anchor": "lemma.4.13"
+  },
+  "lem:gauge-covariance": {
+   "line": 3224,
+   "page": 53,
+   "number": "4.14",
+   "anchor": "lemma.4.14"
+  },
+  "lem:weighted-gauge-C1-strong-chart": {
+   "line": 3247,
+   "page": 54,
+   "number": "4.15",
+   "anchor": "lemma.4.15"
+  },
+  "lem:weighted-translation-differentiability": {
+   "line": 3248,
+   "page": 54,
+   "number": "4.15",
+   "anchor": "lemma.4.15"
+  },
+  "prop:gauge-map-C1-regularity": {
+   "line": 3263,
+   "page": 54,
+   "number": "4.16",
+   "anchor": "proposition.4.16"
+  },
+  "prop:full-jacobian": {
+   "line": 3288,
+   "page": 54,
+   "number": "4.17",
+   "anchor": "proposition.4.17"
+  },
+  "eq:gauge-jacobian-scale-scale": {
+   "line": 3318,
+   "page": 54,
+   "number": "2",
+   "anchor": "equation.2"
+  },
+  "eq:gauge-jacobian-scale-translation": {
+   "line": 3322,
+   "page": 54,
+   "number": "3",
+   "anchor": "equation.3"
+  },
+  "eq:gauge-jacobian-moment-scale": {
+   "line": 3325,
+   "page": 54,
+   "number": "4",
+   "anchor": "equation.4"
+  },
+  "eq:gauge-jacobian-moment-translation": {
+   "line": 3328,
+   "page": 54,
+   "number": "5",
+   "anchor": "equation.5"
+  },
+  "thm:quantitative-gauge-jacobian-invertibility": {
+   "line": 3362,
+   "page": 55,
+   "number": "4.18",
+   "anchor": "proposition.4.18"
+  },
+  "sec:repaired-gauge-time-selection": {
+   "line": 3482,
+   "page": 56,
+   "number": "4.7",
+   "anchor": "subsection.4.7"
+  },
+  "def:admissible-gauge-path": {
+   "line": 3484,
+   "page": 56,
+   "number": "4.19",
+   "anchor": "definition.4.19"
+  },
+  "prop:preliminary-correction": {
+   "line": 3507,
+   "page": 57,
+   "number": "4.20",
+   "anchor": "proposition.4.20"
+  },
+  "def:repaired-chart": {
+   "line": 3530,
+   "page": 57,
+   "number": "4.21",
+   "anchor": "definition.4.21"
+  },
+  "thm:repaired-existence": {
+   "line": 3542,
+   "page": 57,
+   "number": "4.22",
+   "anchor": "theorem.4.22"
+  },
+  "sec:repaired-gauge-pressure-decomposition": {
+   "line": 3589,
+   "page": 58,
+   "number": "4.8",
+   "anchor": "subsection.4.8"
+  },
+  "lem:pressure-eq": {
+   "line": 3590,
+   "page": 58,
+   "number": "4.24",
+   "anchor": "lemma.4.24"
+  },
+  "thm:pressure-decomp": {
+   "line": 3620,
+   "page": 58,
+   "number": "4.25",
+   "anchor": "theorem.4.25"
+  },
+  "rem:pressure-time": {
+   "line": 3705,
+   "page": 59,
+   "number": "4.26",
+   "anchor": "remark.4.26"
+  },
+  "sec:differentiated-gauge-modulation": {
+   "line": 3717,
+   "page": 59,
+   "number": "4.9",
+   "anchor": "subsection.4.9"
+  },
+  "def:mod-diff-row": {
+   "line": 3718,
+   "page": 59,
+   "number": "4.27",
+   "anchor": "definition.4.27"
+  },
+  "eq:mod-row": {
+   "line": 3726,
+   "page": 59,
+   "number": "6",
+   "anchor": "equation.6"
+  },
+  "lem:diff-f": {
+   "line": 3744,
+   "page": 59,
+   "number": "4.28",
+   "anchor": "lemma.4.28"
+  },
+  "lem:profile-direction": {
+   "line": 3759,
+   "page": 59,
+   "number": "4.29",
+   "anchor": "lemma.4.29"
+  },
+  "thm:repaired-gauge-modulation-system": {
+   "line": 3788,
+   "page": 60,
+   "number": "4.30",
+   "anchor": "theorem.4.30"
+  },
+  "sec:renormalized-suitable-structure": {
+   "line": 3843,
+   "page": 60,
+   "number": "4.10",
+   "anchor": "subsection.4.10"
+  },
+  "lem:ac-chart-tests": {
+   "line": 3845,
+   "page": 60,
+   "number": "4.32",
+   "anchor": "lemma.4.32"
+  },
+  "prop:ren-suitable": {
+   "line": 3897,
+   "page": 61,
+   "number": "4.33",
+   "anchor": "proposition.4.33"
+  },
+  "sec:repaired-gauge-subsequence-stability": {
+   "line": 3980,
+   "page": 62,
+   "number": "4.11",
+   "anchor": "subsection.4.11"
+  },
+  "prop:repaired-gauge-subsequence-stability": {
+   "line": 3981,
+   "page": 62,
+   "number": "4.34",
+   "anchor": "proposition.4.34"
+  },
+  "sec:repaired-gauge-representation-theorems": {
+   "line": 4066,
+   "page": 63,
+   "number": "4.12",
+   "anchor": "subsection.4.12"
+  },
+  "thm:chart-repaired-gauge-representation": {
+   "line": 4068,
+   "page": 63,
+   "number": "4.35",
+   "anchor": "theorem.4.35"
+  },
+  "thm:pressure-modulation-representation": {
+   "line": 4111,
+   "page": 63,
+   "number": "4.36",
+   "anchor": "theorem.4.36"
+  },
+  "thm:compact-window-representation": {
+   "line": 4141,
+   "page": 64,
+   "number": "4.37",
+   "anchor": "theorem.4.37"
+  },
+  "sec:multibubble-cascade-exclusion": {
+   "line": 4188,
+   "page": 65,
+   "number": "5",
+   "anchor": "section.5"
+  },
+  "def:active-frame": {
+   "line": 4300,
+   "page": 66,
+   "number": "5.3",
+   "anchor": "definition.5.3"
+  },
+  "def:frame-relations": {
+   "line": 4320,
+   "page": 66,
+   "number": "5.4",
+   "anchor": "definition.5.4"
+  },
+  "def:terminal-frame": {
+   "line": 4345,
+   "page": 67,
+   "number": "5.5",
+   "anchor": "definition.5.5"
+  },
+  "def:local-multibubble": {
+   "line": 4366,
+   "page": 67,
+   "number": "5.6",
+   "anchor": "definition.5.6"
+  },
+  "def:active-family": {
+   "line": 4380,
+   "page": 67,
+   "number": "5.7",
+   "anchor": "definition.5.7"
+  },
+  "def:compound-profile": {
+   "line": 4417,
+   "page": 68,
+   "number": "5.8",
+   "anchor": "definition.5.8"
+  },
+  "lem:finite-active-profile-count": {
+   "line": 4437,
+   "page": 68,
+   "number": "5.9",
+   "anchor": "lemma.5.9"
+  },
+  "lem:parameter-partition": {
+   "line": 4467,
+   "page": 68,
+   "number": "5.10",
+   "anchor": "lemma.5.10"
+  },
+  "thm:minimal-bad-extraction": {
+   "line": 4499,
+   "page": 69,
+   "number": "5.11",
+   "anchor": "theorem.5.11"
+  },
+  "lem:escaping-l3": {
+   "line": 4544,
+   "page": 69,
+   "number": "5.12",
+   "anchor": "lemma.5.12"
+  },
+  "lem:separated-vanish": {
+   "line": 4619,
+   "page": 70,
+   "number": "5.13",
+   "anchor": "lemma.5.13"
+  },
+  "lem:outer-vanish": {
+   "line": 4684,
+   "page": 71,
+   "number": "5.14",
+   "anchor": "lemma.5.14"
+  },
+  "lem:compactness-failure": {
+   "line": 4744,
+   "page": 72,
+   "number": "5.15",
+   "anchor": "lemma.5.15"
+  },
+  "def:admissible-terminal": {
+   "line": 4808,
+   "page": 73,
+   "number": "5.16",
+   "anchor": "definition.5.16"
+  },
+  "rem:terminal-perturbative-interface": {
+   "line": 4862,
+   "page": 73,
+   "number": "5.17",
+   "anchor": "remark.5.17"
+  },
+  "thm:terminal-decoupling": {
+   "line": 4875,
+   "page": 74,
+   "number": "5.18",
+   "anchor": "theorem.5.18"
+  },
+  "def:scale-rigid-branch": {
+   "line": 5025,
+   "page": 75,
+   "number": "5.19",
+   "anchor": "definition.5.19"
+  },
+  "thm:same-point-reduction": {
+   "line": 5087,
+   "page": 76,
+   "number": "5.20",
+   "anchor": "theorem.5.20"
+  },
+  "thm:separated-point-reduction": {
+   "line": 5225,
+   "page": 78,
+   "number": "5.21",
+   "anchor": "theorem.5.21"
+  },
+  "prop:local-single-core-exclusion": {
+   "line": 5283,
+   "page": 78,
+   "number": "5.22",
+   "anchor": "proposition.5.22"
+  },
+  "rem:scale-rigidity-discharge": {
+   "line": 5305,
+   "page": 79,
+   "number": "5.23",
+   "anchor": "remark.5.23"
+  },
+  "rem:scale-rigid-inputs-automatic": {
+   "line": 5337,
+   "page": 79,
+   "number": "5.24",
+   "anchor": "remark.5.24"
+  },
+  "lem:bounded-window-vmo-pressure": {
+   "line": 5354,
+   "page": 79,
+   "number": "5.25",
+   "anchor": "lemma.5.25"
+  },
+  "lem:bounded-window-ckn-smallness": {
+   "line": 5515,
+   "page": 81,
+   "number": "5.26",
+   "anchor": "lemma.5.26"
+  },
+  "lem:scale-rigid-bounded-limit-exit": {
+   "line": 5569,
+   "page": 82,
+   "number": "5.27",
+   "anchor": "theorem.5.27"
+  },
+  "lem:scale-rigid-pressure-modulation-stability": {
+   "line": 5623,
+   "page": 82,
+   "number": "5.28",
+   "anchor": "lemma.5.28"
+  },
+  "lem:scale-rigid-chart-comparability": {
+   "line": 5734,
+   "page": 83,
+   "number": "5.29",
+   "anchor": "lemma.5.29"
+  },
+  "lem:scale-rigid-two-sided-ckn-transfer": {
+   "line": 5798,
+   "page": 84,
+   "number": "5.30",
+   "anchor": "lemma.5.30"
+  },
+  "lem:scale-rigid-ckn-in-gauge": {
+   "line": 5879,
+   "page": 85,
+   "number": "5.31",
+   "anchor": "lemma.5.31"
+  },
+  "lem:scale-rigid-scaled-pressure-decay": {
+   "line": 5921,
+   "page": 86,
+   "number": "5.32",
+   "anchor": "lemma.5.32"
+  },
+  "lem:scale-rigid-dyadic-ckn-persistence": {
+   "line": 5980,
+   "page": 86,
+   "number": "5.33",
+   "anchor": "lemma.5.33"
+  },
+  "lem:scale-rigid-exterior-pressure-routing": {
+   "line": 6030,
+   "page": 87,
+   "number": "5.34",
+   "anchor": "lemma.5.34"
+  },
+  "lem:scale-rigid-pressure-core-activation": {
+   "line": 6062,
+   "page": 87,
+   "number": "5.35",
+   "anchor": "lemma.5.35"
+  },
+  "lem:scale-rigid-active-core-capture": {
+   "line": 6148,
+   "page": 88,
+   "number": "5.36",
+   "anchor": "lemma.5.36"
+  },
+  "lem:scale-rigid-no-subconcentration-bounded": {
+   "line": 6193,
+   "page": 89,
+   "number": "5.37",
+   "anchor": "lemma.5.37"
+  },
+  "thm:scale-rigid-single-core-compatibility": {
+   "line": 6301,
+   "page": 90,
+   "number": "5.38",
+   "anchor": "theorem.5.38"
+  },
+  "lem:scale-rigid-degenerate-jacobian": {
+   "line": 6344,
+   "page": 91,
+   "number": "5.39",
+   "anchor": "lemma.5.39"
+  },
+  "thm:scale-rigid-stratum-decomposition": {
+   "line": 6427,
+   "page": 91,
+   "number": "5.40",
+   "anchor": "theorem.5.40"
+  },
+  "lem:scale-rigid-refinement-terminates": {
+   "line": 6471,
+   "page": 92,
+   "number": "5.41",
+   "anchor": "lemma.5.41"
+  },
+  "prop:scale-rigidity-discharged": {
+   "line": 6583,
+   "page": 93,
+   "number": "5.42",
+   "anchor": "proposition.5.42"
+  },
+  "prop:terminal-admissibility-active-frames": {
+   "line": 6645,
+   "page": 94,
+   "number": "5.43",
+   "anchor": "proposition.5.43"
+  },
+  "thm:local-multibubble-cascade-exclusion": {
+   "line": 6746,
+   "page": 95,
+   "number": "5.44",
+   "anchor": "theorem.5.44"
+  },
+  "cor:multi-removal": {
+   "line": 6824,
+   "page": 96,
+   "number": "5.45",
+   "anchor": "corollary.5.45"
+  },
+  "sec:rough-core-exclusion": {
+   "line": 6843,
+   "page": 97,
+   "number": "6",
+   "anchor": "section.6"
+  },
+  "prop:renormalized-local-energy-inequality": {
+   "line": 6853,
+   "page": 97,
+   "number": "6.1",
+   "anchor": "proposition.6.1"
+  },
+  "eq:local-energy": {
+   "line": 6860,
+   "page": 97,
+   "number": "7",
+   "anchor": "equation.7"
+  },
+  "lem:finite-measure-l3-to-l2": {
+   "line": 6932,
+   "page": 98,
+   "number": "6.2",
+   "anchor": "lemma.6.2"
+  },
+  "lem:pressure-means": {
+   "line": 6950,
+   "page": 98,
+   "number": "6.3",
+   "anchor": "lemma.6.3"
+  },
+  "lem:buffered-caccioppoli-cutoff": {
+   "line": 6982,
+   "page": 98,
+   "number": "6.4",
+   "anchor": "lemma.6.4"
+  },
+  "cor:outer-inner": {
+   "line": 7220,
+   "page": 101,
+   "number": "6.6",
+   "anchor": "corollary.6.6"
+  },
+  "cor:rough-core": {
+   "line": 7240,
+   "page": 101,
+   "number": "6.7",
+   "anchor": "corollary.6.7"
+  },
+  "sec:scale-collapse-cost": {
+   "line": 7295,
+   "page": 102,
+   "number": "7",
+   "anchor": "section.7"
+  },
+  "eq:renorm-ns": {
+   "line": 7343,
+   "page": 102,
+   "number": "8",
+   "anchor": "equation.8"
+  },
+  "eq:log-scale-convention": {
+   "line": 7400,
+   "page": 103,
+   "number": "9",
+   "anchor": "equation.9"
+  },
+  "eq:Phi-properties": {
+   "line": 7414,
+   "page": 103,
+   "number": "10",
+   "anchor": "equation.10"
+  },
+  "def:finite-cost-branch": {
+   "line": 7456,
+   "page": 103,
+   "number": "7.3",
+   "anchor": "definition.7.3"
+  },
+  "sec:scale-cost-elementary-alternative": {
+   "line": 7470,
+   "page": 103,
+   "number": "7.2",
+   "anchor": "subsection.7.2"
+  },
+  "lem:finite-infinite": {
+   "line": 7472,
+   "page": 103,
+   "number": "7.4",
+   "anchor": "lemma.7.4"
+  },
+  "lem:compact-scale-logarithmic-identity": {
+   "line": 7512,
+   "page": 104,
+   "number": "7.5",
+   "anchor": "lemma.7.5"
+  },
+  "thm:nonvanishing-core-infinite-collapse-cost": {
+   "line": 7542,
+   "page": 104,
+   "number": "7.6",
+   "anchor": "theorem.7.6"
+  },
+  "sec:finite-cost": {
+   "line": 7631,
+   "page": 105,
+   "number": "7.4",
+   "anchor": "subsection.7.4"
+  },
+  "thm:cost-exclusion": {
+   "line": 7633,
+   "page": 105,
+   "number": "7.7",
+   "anchor": "theorem.7.7"
+  },
+  "lem:absolute-cost": {
+   "line": 7648,
+   "page": 105,
+   "number": "7.8",
+   "anchor": "lemma.7.8"
+  },
+  "cor:absolute-cost-exclusion": {
+   "line": 7682,
+   "page": 105,
+   "number": "7.9",
+   "anchor": "corollary.7.9"
+  },
+  "sec:autonomous-reduced-limit": {
+   "line": 7700,
+   "page": 106,
+   "number": "7.5",
+   "anchor": "subsection.7.5"
+  },
+  "def:thick-autonomous-windows": {
+   "line": 7719,
+   "page": 106,
+   "number": "7.11",
+   "anchor": "definition.7.11"
+  },
+  "lem:negative-parameter": {
+   "line": 7748,
+   "page": 106,
+   "number": "7.13",
+   "anchor": "lemma.7.13"
+  },
+  "prop:selected-window-suitable-estimates": {
+   "line": 7792,
+   "page": 107,
+   "number": "7.14",
+   "anchor": "proposition.7.14"
+  },
+  "prop:selected-window-derived": {
+   "line": 7838,
+   "page": 107,
+   "number": "7.15",
+   "anchor": "corollary.7.15"
+  },
+  "lem:selected-window-mass-floor": {
+   "line": 7852,
+   "page": 107,
+   "number": "7.16",
+   "anchor": "lemma.7.16"
+  },
+  "lem:retained-selected-window-mass-floor": {
+   "line": 7853,
+   "page": 107,
+   "number": "7.16",
+   "anchor": "lemma.7.16"
+  },
+  "lem:window-time-regularity": {
+   "line": 7881,
+   "page": 108,
+   "number": "7.17",
+   "anchor": "lemma.7.17"
+  },
+  "lem:autonomous-window-compactness": {
+   "line": 7973,
+   "page": 109,
+   "number": "7.18",
+   "anchor": "lemma.7.18"
+  },
+  "lem:pressure-compatibility": {
+   "line": 8052,
+   "page": 110,
+   "number": "7.19",
+   "anchor": "lemma.7.19"
+  },
+  "thm:autonomous-limit": {
+   "line": 8089,
+   "page": 110,
+   "number": "7.20",
+   "anchor": "theorem.7.20"
+  },
+  "eq:autonomous-limit": {
+   "line": 8100,
+   "page": 110,
+   "number": "11",
+   "anchor": "equation.11"
+  },
+  "eq:weak-n": {
+   "line": 8170,
+   "page": 111,
+   "number": "12",
+   "anchor": "equation.12"
+  },
+  "sec:branch-closure": {
+   "line": 8489,
+   "page": 114,
+   "number": "7.6",
+   "anchor": "subsection.7.6"
+  },
+  "thm:core-retention": {
+   "line": 8495,
+   "page": 114,
+   "number": "7.22",
+   "anchor": "theorem.7.22"
+  },
+  "thm:autonomous-modulation-selection": {
+   "line": 8530,
+   "page": 114,
+   "number": "7.23",
+   "anchor": "theorem.7.23"
+  },
+  "thm:scale-collapse-stratification": {
+   "line": 8551,
+   "page": 114,
+   "number": "7.24",
+   "anchor": "theorem.7.24"
+  },
+  "def:retained-compact-scale-collapse-state": {
+   "line": 8596,
+   "page": 115,
+   "number": "7.25",
+   "anchor": "definition.7.25"
+  },
+  "lem:retained-scale-collapse-first-failure": {
+   "line": 8622,
+   "page": 115,
+   "number": "7.26",
+   "anchor": "lemma.7.26"
+  },
+  "def:selected-scale-collapse-compactness-package": {
+   "line": 8658,
+   "page": 116,
+   "number": "7.27",
+   "anchor": "definition.7.27"
+  },
+  "lem:spacetime-active-core-floor-suffices": {
+   "line": 8709,
+   "page": 116,
+   "number": "7.28",
+   "anchor": "lemma.7.28"
+  },
+  "lem:selected-compactness-aubin-lions": {
+   "line": 8763,
+   "page": 117,
+   "number": "7.29",
+   "anchor": "lemma.7.29"
+  },
+  "lem:regular-singular-compact-limit-routing": {
+   "line": 8903,
+   "page": 119,
+   "number": "7.30",
+   "anchor": "lemma.7.30"
+  },
+  "lem:selected-compactness-pressure-only-routing": {
+   "line": 9030,
+   "page": 120,
+   "number": "7.31",
+   "anchor": "lemma.7.31"
+  },
+  "lem:selected-compactness-defect-label": {
+   "line": 9099,
+   "page": 121,
+   "number": "7.32",
+   "anchor": "lemma.7.32"
+  },
+  "lem:selected-compactness-comparable-defect": {
+   "line": 9169,
+   "page": 122,
+   "number": "7.33",
+   "anchor": "lemma.7.33"
+  },
+  "thm:selected-compactness-failure-routed": {
+   "line": 9192,
+   "page": 122,
+   "number": "7.34",
+   "anchor": "theorem.7.34"
+  },
+  "lem:autonomous-scale-collapse-is-scale-rigid": {
+   "line": 9248,
+   "page": 123,
+   "number": "7.35",
+   "anchor": "lemma.7.35"
+  },
+  "thm:scale-collapse-first-failure-closure": {
+   "line": 9314,
+   "page": 123,
+   "number": "7.36",
+   "anchor": "theorem.7.36"
+  },
+  "thm:compact-scale-collapse-rigidity-discharged": {
+   "line": 9357,
+   "page": 124,
+   "number": "7.37",
+   "anchor": "theorem.7.37"
+  },
+  "thm:scale-collapse-alternatives": {
+   "line": 9398,
+   "page": 124,
+   "number": "7.38",
+   "anchor": "theorem.7.38"
+  },
+  "sec:c6-c7-cost-exclusion": {
+   "line": 9433,
+   "page": 126,
+   "number": "8",
+   "anchor": "section.8"
+  },
+  "def:critical-tightness": {
+   "line": 9442,
+   "page": 126,
+   "number": "8.1",
+   "anchor": "definition.8.1"
+  },
+  "lem:global-l3-compactness-tightness": {
+   "line": 9454,
+   "page": 126,
+   "number": "8.2",
+   "anchor": "lemma.8.2"
+  },
+  "def:compact-core-vanishing-remainder": {
+   "line": 9488,
+   "page": 126,
+   "number": "8.3",
+   "anchor": "definition.8.3"
+  },
+  "lem:core-remainder-tightness": {
+   "line": 9505,
+   "page": 126,
+   "number": "8.4",
+   "anchor": "lemma.8.4"
+  },
+  "def:no-splitting-condition": {
+   "line": 9542,
+   "page": 127,
+   "number": "8.5",
+   "anchor": "definition.8.5"
+  },
+  "lem:no-splitting-gives-core-rem": {
+   "line": 9556,
+   "page": 127,
+   "number": "8.6",
+   "anchor": "lemma.8.6"
+  },
+  "cor:no-splitting-critical-tightness": {
+   "line": 9574,
+   "page": 127,
+   "number": "8.7",
+   "anchor": "corollary.8.7"
+  },
+  "def:finite-profile-tight": {
+   "line": 9586,
+   "page": 127,
+   "number": "8.8",
+   "anchor": "definition.8.8"
+  },
+  "lem:finite-profile-tight": {
+   "line": 9605,
+   "page": 127,
+   "number": "8.9",
+   "anchor": "lemma.8.9"
+  },
+  "def:compact-param-realization": {
+   "line": 9632,
+   "page": 128,
+   "number": "8.10",
+   "anchor": "definition.8.10"
+  },
+  "lem:compact-realization-tight": {
+   "line": 9651,
+   "page": 128,
+   "number": "8.11",
+   "anchor": "lemma.8.11"
+  },
+  "thm:critical-tightness-criteria": {
+   "line": 9668,
+   "page": 128,
+   "number": "8.12",
+   "anchor": "theorem.8.12"
+  },
+  "cor:critical-tightness-reduces-alternatives": {
+   "line": 9687,
+   "page": 128,
+   "number": "8.13",
+   "anchor": "corollary.8.13"
+  },
+  "lem:uniform-pressure-from-c3": {
+   "line": 9704,
+   "page": 128,
+   "number": "8.14",
+   "anchor": "lemma.8.14"
+  },
+  "prop:uniform-windowed-gradient": {
+   "line": 9759,
+   "page": 129,
+   "number": "8.15",
+   "anchor": "proposition.8.15"
+  },
+  "cor:windowed-h1": {
+   "line": 9866,
+   "page": 130,
+   "number": "8.16",
+   "anchor": "corollary.8.16"
+  },
+  "cor:windowed-h1-exclusion-tail": {
+   "line": 9888,
+   "page": 131,
+   "number": "8.17",
+   "anchor": "corollary.8.17"
+  },
+  "def:modmatrix-schur": {
+   "line": 9919,
+   "page": 131,
+   "number": "8.18",
+   "anchor": "definition.8.18"
+  },
+  "lem:modmatrix-inverse": {
+   "line": 9946,
+   "page": 131,
+   "number": "8.19",
+   "anchor": "lemma.8.19"
+  },
+  "lem:gauge-nondeg-schur": {
+   "line": 9999,
+   "page": 132,
+   "number": "8.20",
+   "anchor": "lemma.8.20"
+  },
+  "def:scale-force-pieces": {
+   "line": 10023,
+   "page": 132,
+   "number": "8.21",
+   "anchor": "definition.8.21"
+  },
+  "lem:scale-force-decomp": {
+   "line": 10043,
+   "page": 132,
+   "number": "8.22",
+   "anchor": "lemma.8.22"
+  },
+  "lem:scale-nonlinear-from-l4": {
+   "line": 10071,
+   "page": 132,
+   "number": "8.23",
+   "anchor": "lemma.8.23"
+  },
+  "cor:scale-force-bound": {
+   "line": 10117,
+   "page": 133,
+   "number": "8.24",
+   "anchor": "corollary.8.24"
+  },
+  "lem:bounded-mod-from-system": {
+   "line": 10140,
+   "page": 133,
+   "number": "8.25",
+   "anchor": "lemma.8.25"
+  },
+  "prop:windowed-h1-from-modulation": {
+   "line": 10177,
+   "page": 133,
+   "number": "8.26",
+   "anchor": "proposition.8.26"
+  },
+  "cor:windowed-control-update": {
+   "line": 10201,
+   "page": 134,
+   "number": "8.27",
+   "anchor": "corollary.8.27"
+  },
+  "thm:windowed-h1-failure-exclusion": {
+   "line": 10219,
+   "page": 134,
+   "number": "8.28",
+   "anchor": "theorem.8.28"
+  },
+  "lem:translation-constraint-forcing": {
+   "line": 10261,
+   "page": 134,
+   "number": "8.29",
+   "anchor": "lemma.8.29"
+  },
+  "rem:translation-gradient-input": {
+   "line": 10403,
+   "page": 136,
+   "number": "8.30",
+   "anchor": "remark.8.30"
+  },
+  "def:weighted-scale-forcing": {
+   "line": 10415,
+   "page": 136,
+   "number": "8.31",
+   "anchor": "definition.8.31"
+  },
+  "lem:scale-component-weighted-forcing": {
+   "line": 10433,
+   "page": 136,
+   "number": "8.32",
+   "anchor": "lemma.8.32"
+  },
+  "cor:pointwise-modulation-forcing": {
+   "line": 10460,
+   "page": 136,
+   "number": "8.33",
+   "anchor": "corollary.8.33"
+  },
+  "cor:pointwise-modulation-inputs": {
+   "line": 10479,
+   "page": 136,
+   "number": "8.34",
+   "anchor": "corollary.8.34"
+  },
+  "lem:window-l1-forcing-modulation": {
+   "line": 10509,
+   "page": 137,
+   "number": "8.35",
+   "anchor": "lemma.8.35"
+  },
+  "lem:unit-window-selection": {
+   "line": 10562,
+   "page": 137,
+   "number": "8.36",
+   "anchor": "lemma.8.36"
+  },
+  "cor:unit-window-selection": {
+   "line": 10625,
+   "page": 138,
+   "number": "8.37",
+   "anchor": "corollary.8.37"
+  },
+  "lem:product-form-window-modulation": {
+   "line": 10662,
+   "page": 138,
+   "number": "8.38",
+   "anchor": "lemma.8.38"
+  },
+  "lem:window-translation-forcing": {
+   "line": 10696,
+   "page": 139,
+   "number": "8.39",
+   "anchor": "lemma.8.39"
+  },
+  "rem:window-translation-input": {
+   "line": 10764,
+   "page": 139,
+   "number": "8.40",
+   "anchor": "remark.8.40"
+  },
+  "lem:window-scale-forcing": {
+   "line": 10776,
+   "page": 140,
+   "number": "8.41",
+   "anchor": "lemma.8.41"
+  },
+  "lem:window-modulation-forcing": {
+   "line": 10813,
+   "page": 140,
+   "number": "8.42",
+   "anchor": "lemma.8.42"
+  },
+  "cor:selected-window-modulation": {
+   "line": 10850,
+   "page": 140,
+   "number": "8.43",
+   "anchor": "corollary.8.43"
+  },
+  "def:scale-force-components": {
+   "line": 10873,
+   "page": 141,
+   "number": "8.44",
+   "anchor": "definition.8.44"
+  },
+  "lem:scale-force-decomposition-window": {
+   "line": 10896,
+   "page": 141,
+   "number": "8.45",
+   "anchor": "lemma.8.45"
+  },
+  "lem:scale-components-control": {
+   "line": 10934,
+   "page": 141,
+   "number": "8.46",
+   "anchor": "lemma.8.46"
+  },
+  "def:singular-weight-convective-ibp": {
+   "line": 10973,
+   "page": 142,
+   "number": "8.47",
+   "anchor": "definition.8.47"
+  },
+  "lem:convective-scale-force": {
+   "line": 10987,
+   "page": 142,
+   "number": "8.48",
+   "anchor": "lemma.8.48"
+  },
+  "def:annular-convective-regularity": {
+   "line": 11064,
+   "page": 142,
+   "number": "8.49",
+   "anchor": "definition.8.49"
+  },
+  "lem:annular-regularity-ibp": {
+   "line": 11078,
+   "page": 143,
+   "number": "8.50",
+   "anchor": "lemma.8.50"
+  },
+  "cor:reduced-window-scale-force": {
+   "line": 11196,
+   "page": 144,
+   "number": "8.51",
+   "anchor": "corollary.8.51"
+  },
+  "cor:scale-component-alternatives": {
+   "line": 11220,
+   "page": 144,
+   "number": "8.52",
+   "anchor": "corollary.8.52"
+  },
+  "def:cost-phase-order": {
+   "line": 11250,
+   "page": 144,
+   "number": "8.53",
+   "anchor": "definition.8.53"
+  },
+  "def:retained-local-cost-state-data": {
+   "line": 11303,
+   "page": 145,
+   "number": "8.54",
+   "anchor": "definition.8.54"
+  },
+  "def:predivergence-validation-rows": {
+   "line": 11333,
+   "page": 145,
+   "number": "8.55",
+   "anchor": "definition.8.55"
+  },
+  "def:cost-exclusion-conclusion": {
+   "line": 11346,
+   "page": 146,
+   "number": "8.56",
+   "anchor": "definition.8.56"
+  },
+  "def:local-cost-to-exclusion-data": {
+   "line": 11356,
+   "page": 146,
+   "number": "8.57",
+   "anchor": "definition.8.57"
+  },
+  "def:energy-controlled-validated-cost": {
+   "line": 11388,
+   "page": 146,
+   "number": "8.58",
+   "anchor": "definition.8.58"
+  },
+  "def:local-monotonicity-carrier": {
+   "line": 11412,
+   "page": 146,
+   "number": "8.59",
+   "anchor": "definition.8.59"
+  },
+  "lem:monotonicity-carrier-gives-cost-to-exclusion-data": {
+   "line": 11447,
+   "page": 147,
+   "number": "8.60",
+   "anchor": "lemma.8.60"
+  },
+  "lem:fixed-monotonicity-gives-cost-to-exclusion-data": {
+   "line": 11490,
+   "page": 147,
+   "number": "8.61",
+   "anchor": "lemma.8.61"
+  },
+  "lem:moving-monotonicity-gives-cost-to-exclusion-data": {
+   "line": 11575,
+   "page": 148,
+   "number": "8.62",
+   "anchor": "lemma.8.62"
+  },
+  "lem:corrected-monotonicity-bounds-cost": {
+   "line": 11653,
+   "page": 149,
+   "number": "8.63",
+   "anchor": "lemma.8.63"
+  },
+  "thm:local-cost-to-exclusion": {
+   "line": 11687,
+   "page": 149,
+   "number": "8.64",
+   "anchor": "theorem.8.64"
+  },
+  "def:cost-exclusion-data": {
+   "line": 11717,
+   "page": 150,
+   "number": "8.65",
+   "anchor": "definition.8.65"
+  },
+  "lem:canonical-cost-compatibility": {
+   "line": 11754,
+   "page": 150,
+   "number": "8.66",
+   "anchor": "lemma.8.66"
+  },
+  "lem:comparable-cost-compatibility": {
+   "line": 11810,
+   "page": 151,
+   "number": "8.67",
+   "anchor": "lemma.8.67"
+  },
+  "lem:local-cost-well-posed": {
+   "line": 11856,
+   "page": 151,
+   "number": "8.68",
+   "anchor": "lemma.8.68"
+  },
+  "lem:local-modulation-integrability": {
+   "line": 11923,
+   "page": 152,
+   "number": "8.69",
+   "anchor": "lemma.8.69"
+  },
+  "lem:local-state-data-local-l2": {
+   "line": 11965,
+   "page": 153,
+   "number": "8.70",
+   "anchor": "proposition.8.70"
+  },
+  "cor:compact-window-data-cost-well-posed": {
+   "line": 12006,
+   "page": 153,
+   "number": "8.71",
+   "anchor": "corollary.8.71"
+  },
+  "prop:active-scaling-stability-package": {
+   "line": 12043,
+   "page": 153,
+   "number": "8.72",
+   "anchor": "proposition.8.72"
+  },
+  "lem:no-unrecorded-cost-escape": {
+   "line": 12097,
+   "page": 154,
+   "number": "8.73",
+   "anchor": "lemma.8.73"
+  },
+  "thm:carrier-validation-retained-stratum": {
+   "line": 12211,
+   "page": 156,
+   "number": "8.74",
+   "anchor": "theorem.8.74"
+  },
+  "prop:local-cost-exclusion-data-verification": {
+   "line": 12254,
+   "page": 156,
+   "number": "8.75",
+   "anchor": "proposition.8.75"
+  },
+  "def:classwise-retained-compact-coverage": {
+   "line": 12312,
+   "page": 157,
+   "number": "8.76",
+   "anchor": "definition.8.76"
+  },
+  "thm:classwise-retained-compact-coverage": {
+   "line": 12322,
+   "page": 157,
+   "number": "8.77",
+   "anchor": "theorem.8.77"
+  },
+  "rem:uniform-cost-scope": {
+   "line": 12353,
+   "page": 157,
+   "number": "8.78",
+   "anchor": "remark.8.78"
+  },
+  "def:abstract-cost-exclusion-applicability": {
+   "line": 12368,
+   "page": 157,
+   "number": "8.79",
+   "anchor": "definition.8.79"
+  },
+  "lem:abstract-cost-exclusion": {
+   "line": 12397,
+   "page": 158,
+   "number": "8.80",
+   "anchor": "lemma.8.80"
+  },
+  "thm:pointwise-cost-exclusion": {
+   "line": 12422,
+   "page": 158,
+   "number": "8.81",
+   "anchor": "theorem.8.81"
+  },
+  "cor:retained-stratum-cost-exclusion": {
+   "line": 12452,
+   "page": 158,
+   "number": "8.82",
+   "anchor": "corollary.8.82"
+  },
+  "def:compact-cost-adjacent-closure": {
+   "line": 12468,
+   "page": 159,
+   "number": "8.83",
+   "anchor": "definition.8.83"
+  },
+  "cor:uniform-cost-exclusion": {
+   "line": 12481,
+   "page": 159,
+   "number": "8.84",
+   "anchor": "corollary.8.84"
+  },
+  "def:cost-exclusion-missing-hypotheses": {
+   "line": 12500,
+   "page": 159,
+   "number": "8.85",
+   "anchor": "definition.8.85"
+  },
+  "lem:missing-hypotheses-not-alternatives": {
+   "line": 12521,
+   "page": 159,
+   "number": "8.86",
+   "anchor": "lemma.8.86"
+  },
+  "def:precarrier-validated-compact-channel": {
+   "line": 12542,
+   "page": 159,
+   "number": "8.87",
+   "anchor": "definition.8.87"
+  },
+  "def:carrier-subidentities": {
+   "line": 12574,
+   "page": 160,
+   "number": "8.88",
+   "anchor": "definition.8.88"
+  },
+  "lem:suitable-energy-gives-carrier-subidentities": {
+   "line": 12600,
+   "page": 160,
+   "number": "8.89",
+   "anchor": "lemma.8.89"
+  },
+  "def:fixed-carrier-closure-package": {
+   "line": 12634,
+   "page": 160,
+   "number": "8.90",
+   "anchor": "definition.8.90"
+  },
+  "def:moving-carrier-closure-package": {
+   "line": 12658,
+   "page": 161,
+   "number": "8.91",
+   "anchor": "definition.8.91"
+  },
+  "thm:noncarrier-exits-route": {
+   "line": 12692,
+   "page": 161,
+   "number": "8.92",
+   "anchor": "theorem.8.92"
+  },
+  "thm:precarrier-reduces-to-carrier": {
+   "line": 12754,
+   "page": 162,
+   "number": "8.93",
+   "anchor": "theorem.8.93"
+  },
+  "thm:fixed-carrier-closure": {
+   "line": 12783,
+   "page": 162,
+   "number": "8.94",
+   "anchor": "theorem.8.94"
+  },
+  "thm:moving-carrier-closure": {
+   "line": 12833,
+   "page": 163,
+   "number": "8.95",
+   "anchor": "theorem.8.95"
+  },
+  "lem:precarrier-finite-local-energy": {
+   "line": 12886,
+   "page": 163,
+   "number": "8.96",
+   "anchor": "lemma.8.96"
+  },
+  "lem:nested-moving-carrier-comparison": {
+   "line": 12931,
+   "page": 164,
+   "number": "8.97",
+   "anchor": "lemma.8.97"
+  },
+  "def:finite-error-carrier-selection": {
+   "line": 12983,
+   "page": 164,
+   "number": "8.98",
+   "anchor": "definition.8.98"
+  },
+  "def:annular-finite-error-selection": {
+   "line": 13014,
+   "page": 165,
+   "number": "8.99",
+   "anchor": "definition.8.99"
+  },
+  "def:componentwise-annular-finite-error": {
+   "line": 13035,
+   "page": 165,
+   "number": "8.100",
+   "anchor": "definition.8.100"
+  },
+  "rem:componentwise-annular-residual": {
+   "line": 13069,
+   "page": 165,
+   "number": "8.101",
+   "anchor": "remark.8.101"
+  },
+  "lem:componentwise-gives-annular-finite-error": {
+   "line": 13100,
+   "page": 166,
+   "number": "8.102",
+   "anchor": "lemma.8.102"
+  },
+  "thm:finite-error-selection-reduced-to-annular": {
+   "line": 13133,
+   "page": 166,
+   "number": "8.103",
+   "anchor": "theorem.8.103"
+  },
+  "thm:carrier-completion-reduced-to-finite-error": {
+   "line": 13155,
+   "page": 166,
+   "number": "8.104",
+   "anchor": "theorem.8.104"
+  },
+  "thm:carrier-package-closes-precarrier": {
+   "line": 13195,
+   "page": 167,
+   "number": "8.105",
+   "anchor": "theorem.8.105"
+  },
+  "def:carrier-estimate-completion": {
+   "line": 13217,
+   "page": 167,
+   "number": "8.106",
+   "anchor": "definition.8.106"
+  },
+  "cor:finite-error-selection-gives-carrier-completion": {
+   "line": 13226,
+   "page": 167,
+   "number": "8.107",
+   "anchor": "corollary.8.107"
+  },
+  "cor:annular-finite-error-selection-gives-carrier-completion": {
+   "line": 13248,
+   "page": 167,
+   "number": "8.108",
+   "anchor": "corollary.8.108"
+  },
+  "thm:adjacent-closure-reduced-to-carrier-completion": {
+   "line": 13267,
+   "page": 167,
+   "number": "8.109",
+   "anchor": "theorem.8.109"
+  },
+  "def:stratified-moving-carrier-routing": {
+   "line": 13300,
+   "page": 168,
+   "number": "8.110",
+   "anchor": "definition.8.110"
+  },
+  "rem:stratified-moving-routing": {
+   "line": 13374,
+   "page": 169,
+   "number": "8.111",
+   "anchor": "remark.8.111"
+  },
+  "def:moving-test-family": {
+   "line": 13399,
+   "page": 169,
+   "number": "8.112",
+   "anchor": "definition.8.112"
+  },
+  "lem:successful-moving-test-family": {
+   "line": 13412,
+   "page": 169,
+   "number": "8.113",
+   "anchor": "lemma.8.113"
+  },
+  "lem:retained-pressure-tail-windowwise": {
+   "line": 13447,
+   "page": 170,
+   "number": "8.114",
+   "anchor": "lemma.8.114"
+  },
+  "lem:windowwise-tight-radius-schedule": {
+   "line": 13533,
+   "page": 170,
+   "number": "8.115",
+   "anchor": "lemma.8.115"
+  },
+  "lem:windowwise-shell-pressure-translation": {
+   "line": 13606,
+   "page": 171,
+   "number": "8.116",
+   "anchor": "lemma.8.116"
+  },
+  "cor:windowwise-only-transition-and-scale-remain": {
+   "line": 13748,
+   "page": 173,
+   "number": "8.117",
+   "anchor": "corollary.8.117"
+  },
+  "def:windowwise-transition-routing": {
+   "line": 13773,
+   "page": 173,
+   "number": "8.118",
+   "anchor": "definition.8.118"
+  },
+  "def:windowwise-positive-scale-routing": {
+   "line": 13788,
+   "page": 173,
+   "number": "8.119",
+   "anchor": "definition.8.119"
+  },
+  "def:normalized-carrier-blocks": {
+   "line": 13817,
+   "page": 173,
+   "number": "8.120",
+   "anchor": "definition.8.120"
+  },
+  "lem:closed-carrier-diagnostics": {
+   "line": 13853,
+   "page": 174,
+   "number": "8.121",
+   "anchor": "lemma.8.121"
+  },
+  "lem:carrier-state-compactness-labels": {
+   "line": 13901,
+   "page": 174,
+   "number": "8.122",
+   "anchor": "lemma.8.122"
+  },
+  "lem:nonintegrable-component-certificate": {
+   "line": 13941,
+   "page": 175,
+   "number": "8.123",
+   "anchor": "lemma.8.123"
+  },
+  "lem:transition-carrier-label-is-exterior": {
+   "line": 14032,
+   "page": 176,
+   "number": "8.124",
+   "anchor": "lemma.8.124"
+  },
+  "lem:transition-carrier-state-stratification": {
+   "line": 14033,
+   "page": 176,
+   "number": "8.124",
+   "anchor": "lemma.8.124"
+  },
+  "thm:windowwise-transition-routing-certificate": {
+   "line": 14090,
+   "page": 177,
+   "number": "8.125",
+   "anchor": "theorem.8.125"
+  },
+  "cor:windowwise-transition-routing-holds": {
+   "line": 14120,
+   "page": 177,
+   "number": "8.126",
+   "anchor": "corollary.8.126"
+  },
+  "lem:positive-scale-carrier-core-realization": {
+   "line": 14133,
+   "page": 177,
+   "number": "8.127",
+   "anchor": "lemma.8.127"
+  },
+  "thm:positive-scale-certificate-enters-scale-rigid": {
+   "line": 14226,
+   "page": 178,
+   "number": "8.128",
+   "anchor": "theorem.8.128"
+  },
+  "lem:positive-scale-work-stratification": {
+   "line": 14245,
+   "page": 178,
+   "number": "8.129",
+   "anchor": "lemma.8.129"
+  },
+  "thm:windowwise-positive-scale-routing-certificate": {
+   "line": 14279,
+   "page": 179,
+   "number": "8.130",
+   "anchor": "theorem.8.130"
+  },
+  "cor:windowwise-positive-scale-routing-holds": {
+   "line": 14310,
+   "page": 179,
+   "number": "8.131",
+   "anchor": "corollary.8.131"
+  },
+  "rem:windowwise-routing-discharged": {
+   "line": 14323,
+   "page": 179,
+   "number": "8.132",
+   "anchor": "remark.8.132"
+  },
+  "thm:windowwise-routing-gives-stratified-routing": {
+   "line": 14346,
+   "page": 179,
+   "number": "8.133",
+   "anchor": "theorem.8.133"
+  },
+  "cor:adjacent-closure-reduced-to-windowwise-routing": {
+   "line": 14401,
+   "page": 180,
+   "number": "8.134",
+   "anchor": "corollary.8.134"
+  },
+  "lem:ambient-noncarrier-exits-close": {
+   "line": 14443,
+   "page": 180,
+   "number": "8.135",
+   "anchor": "lemma.8.135"
+  },
+  "lem:ambient-carrier-applicability": {
+   "line": 14516,
+   "page": 181,
+   "number": "8.136",
+   "anchor": "lemma.8.136"
+  },
+  "lem:ambient-negative-drift-branch": {
+   "line": 14555,
+   "page": 182,
+   "number": "8.137",
+   "anchor": "lemma.8.137"
+  },
+  "thm:ambient-adjacent-closure-branchwise": {
+   "line": 14609,
+   "page": 182,
+   "number": "8.138",
+   "anchor": "theorem.8.138"
+  },
+  "cor:ambient-adjacent-wrapper-discharged": {
+   "line": 14646,
+   "page": 183,
+   "number": "8.139",
+   "anchor": "corollary.8.139"
+  },
+  "rem:retained-cost-divergence-phase6": {
+   "line": 14659,
+   "page": 183,
+   "number": "8.140",
+   "anchor": "remark.8.140"
+  },
+  "sec:terminal-profile-decoupling-exterior": {
+   "line": 14672,
+   "page": 184,
+   "number": "9",
+   "anchor": "section.9"
+  },
+  "def:active-critical-profile-data": {
+   "line": 14715,
+   "page": 184,
+   "number": "9.1",
+   "anchor": "definition.9.1"
+  },
+  "lem:finite-terminal-state-count": {
+   "line": 14745,
+   "page": 184,
+   "number": "9.2",
+   "anchor": "lemma.9.2"
+  },
+  "lem:compound-same-point": {
+   "line": 14791,
+   "page": 185,
+   "number": "9.3",
+   "anchor": "lemma.9.3"
+  },
+  "lem:same-point-rescaled-form": {
+   "line": 14884,
+   "page": 186,
+   "number": "9.4",
+   "anchor": "lemma.9.4"
+  },
+  "lem:same-point-outer-vanish": {
+   "line": 14928,
+   "page": 187,
+   "number": "9.5",
+   "anchor": "lemma.9.5"
+  },
+  "thm:same-point-scale-separation": {
+   "line": 14964,
+   "page": 187,
+   "number": "9.6",
+   "anchor": "theorem.9.6"
+  },
+  "lem:separated-centers-vanish": {
+   "line": 15012,
+   "page": 188,
+   "number": "9.7",
+   "anchor": "lemma.9.7"
+  },
+  "def:multipoint-decoupling": {
+   "line": 15101,
+   "page": 188,
+   "number": "9.8",
+   "anchor": "definition.9.8"
+  },
+  "thm:multibubble-frame-reduction": {
+   "line": 15123,
+   "page": 189,
+   "number": "9.9",
+   "anchor": "theorem.9.9"
+  },
+  "lem:local-perturbation": {
+   "line": 15176,
+   "page": 189,
+   "number": "9.10",
+   "anchor": "lemma.9.10"
+  },
+  "lem:same-point-outer-static": {
+   "line": 15251,
+   "page": 190,
+   "number": "9.11",
+   "anchor": "lemma.9.11"
+  },
+  "lem:pressure-kernel-tail": {
+   "line": 15282,
+   "page": 190,
+   "number": "9.12",
+   "anchor": "lemma.9.12"
+  },
+  "def:terminal-nonlinear-decoupling": {
+   "line": 15403,
+   "page": 192,
+   "number": "9.13",
+   "anchor": "definition.9.13"
+  },
+  "thm:terminal-decoupling-implies-local-decoupling": {
+   "line": 15441,
+   "page": 192,
+   "number": "9.14",
+   "anchor": "theorem.9.14"
+  },
+  "def:terminal-active-frame": {
+   "line": 15481,
+   "page": 192,
+   "number": "9.15",
+   "anchor": "definition.9.15"
+  },
+  "thm:terminal-windowed-profile-completeness": {
+   "line": 15518,
+   "page": 193,
+   "number": "9.16",
+   "anchor": "theorem.9.16"
+  },
+  "rem:terminal-completeness-replacement": {
+   "line": 15571,
+   "page": 193,
+   "number": "9.17",
+   "anchor": "remark.9.17"
+  },
+  "lem:terminal-velocity-decoupling": {
+   "line": 15580,
+   "page": 193,
+   "number": "9.18",
+   "anchor": "lemma.9.18"
+  },
+  "lem:terminal-h1-bounds": {
+   "line": 15621,
+   "page": 194,
+   "number": "9.19",
+   "anchor": "lemma.9.19"
+  },
+  "lem:terminal-stress-decoupling": {
+   "line": 15668,
+   "page": 194,
+   "number": "9.20",
+   "anchor": "lemma.9.20"
+  },
+  "lem:nested-ball-harmonic-tail": {
+   "line": 15713,
+   "page": 195,
+   "number": "9.21",
+   "anchor": "lemma.9.21"
+  },
+  "lem:harmonic-cross-pressure-routing": {
+   "line": 15780,
+   "page": 195,
+   "number": "9.22",
+   "anchor": "lemma.9.22"
+  },
+  "lem:terminal-pressure-decoupling": {
+   "line": 15854,
+   "page": 196,
+   "number": "9.23",
+   "anchor": "lemma.9.23"
+  },
+  "lem:terminal-linear-residual": {
+   "line": 15919,
+   "page": 197,
+   "number": "9.24",
+   "anchor": "lemma.9.24"
+  },
+  "lem:terminal-modulation-compatibility": {
+   "line": 16016,
+   "page": 198,
+   "number": "9.25",
+   "anchor": "lemma.9.25"
+  },
+  "lem:terminal-scale-collapse-admissibility": {
+   "line": 16049,
+   "page": 198,
+   "number": "9.26",
+   "anchor": "lemma.9.26"
+  },
+  "thm:terminal-nonlinear-decoupling": {
+   "line": 16091,
+   "page": 198,
+   "number": "9.27",
+   "anchor": "theorem.9.27"
+  },
+  "cor:multibubble-exclusion-terminal": {
+   "line": 16144,
+   "page": 199,
+   "number": "9.28",
+   "anchor": "corollary.9.28"
+  },
+  "lem:kato-estimates": {
+   "line": 16177,
+   "page": 199,
+   "number": "9.29",
+   "anchor": "lemma.9.29"
+  },
+  "lem:spacetime-small-terminal-residual": {
+   "line": 16241,
+   "page": 200,
+   "number": "9.30",
+   "anchor": "lemma.9.30"
+  },
+  "thm:small-data-critical": {
+   "line": 16371,
+   "page": 201,
+   "number": "9.31",
+   "anchor": "theorem.9.31"
+  },
+  "cor:small-profiles-perturbative": {
+   "line": 16396,
+   "page": 201,
+   "number": "9.32",
+   "anchor": "corollary.9.32"
+  },
+  "thm:active-profile-mass-floor": {
+   "line": 16411,
+   "page": 202,
+   "number": "9.33",
+   "anchor": "theorem.9.33"
+  },
+  "def:exterior-ckn-quantity": {
+   "line": 16479,
+   "page": 202,
+   "number": "9.34",
+   "anchor": "definition.9.34"
+  },
+  "thm:terminal-ckn-regularity": {
+   "line": 16506,
+   "page": 203,
+   "number": "9.35",
+   "anchor": "theorem.9.35"
+  },
+  "def:no-exterior-concentration-stratum": {
+   "line": 16545,
+   "page": 203,
+   "number": "9.36",
+   "anchor": "definition.9.36"
+  },
+  "def:exterior-concentration-branch": {
+   "line": 16560,
+   "page": 203,
+   "number": "9.37",
+   "anchor": "definition.9.37"
+  },
+  "lem:exterior-test-dichotomy": {
+   "line": 16584,
+   "page": 203,
+   "number": "9.38",
+   "anchor": "lemma.9.38"
+  },
+  "thm:exterior-stratification": {
+   "line": 16604,
+   "page": 204,
+   "number": "9.39",
+   "anchor": "theorem.9.39"
+  },
+  "lem:exterior-ckn-cover": {
+   "line": 16638,
+   "page": 204,
+   "number": "9.40",
+   "anchor": "lemma.9.40"
+  },
+  "lem:exterior-pressure-localization": {
+   "line": 16678,
+   "page": 204,
+   "number": "9.41",
+   "anchor": "lemma.9.41"
+  },
+  "thm:exterior-regularity-no-concentration": {
+   "line": 16720,
+   "page": 205,
+   "number": "9.42",
+   "anchor": "theorem.9.42"
+  },
+  "lem:core-exterior-decomposition": {
+   "line": 16764,
+   "page": 205,
+   "number": "9.43",
+   "anchor": "lemma.9.43"
+  },
+  "lem:exterior-velocity-vanishes": {
+   "line": 16833,
+   "page": 206,
+   "number": "9.44",
+   "anchor": "lemma.9.44"
+  },
+  "lem:exterior-pressure-vanishes": {
+   "line": 16871,
+   "page": 206,
+   "number": "9.45",
+   "anchor": "lemma.9.45"
+  },
+  "lem:positive-distance-exterior": {
+   "line": 16924,
+   "page": 207,
+   "number": "9.46",
+   "anchor": "lemma.9.46"
+  },
+  "thm:exterior-regular-removal": {
+   "line": 16981,
+   "page": 208,
+   "number": "9.47",
+   "anchor": "theorem.9.47"
+  },
+  "cor:exterior-annulus-alternative": {
+   "line": 17006,
+   "page": 208,
+   "number": "9.48",
+   "anchor": "corollary.9.48"
+  },
+  "lem:exterior-ckn-carrier-or-pressure-route": {
+   "line": 17029,
+   "page": 208,
+   "number": "9.49",
+   "anchor": "lemma.9.49"
+  },
+  "lem:positive-distance-sources-core-perturbative": {
+   "line": 17064,
+   "page": 208,
+   "number": "9.50",
+   "anchor": "lemma.9.50"
+  },
+  "lem:exterior-profile-decouples-from-core": {
+   "line": 17139,
+   "page": 209,
+   "number": "9.51",
+   "anchor": "lemma.9.51"
+  },
+  "lem:separated-exterior-core-is-multicore": {
+   "line": 17188,
+   "page": 210,
+   "number": "9.52",
+   "anchor": "lemma.9.52"
+  },
+  "lem:exterior-finite-scale-packing": {
+   "line": 17216,
+   "page": 210,
+   "number": "9.53",
+   "anchor": "lemma.9.53"
+  },
+  "lem:exterior-scale-center-compactification": {
+   "line": 17249,
+   "page": 210,
+   "number": "9.54",
+   "anchor": "lemma.9.54"
+  },
+  "lem:dyadic-exterior-occupation-selection": {
+   "line": 17291,
+   "page": 211,
+   "number": "9.55",
+   "anchor": "lemma.9.55"
+  },
+  "lem:exterior-same-point-cascade-routing": {
+   "line": 17357,
+   "page": 212,
+   "number": "9.56",
+   "anchor": "lemma.9.56"
+  },
+  "lem:noncompact-exterior-dyadic-selection": {
+   "line": 17383,
+   "page": 212,
+   "number": "9.57",
+   "anchor": "lemma.9.57"
+  },
+  "lem:noncompact-exterior-structural-route": {
+   "line": 17423,
+   "page": 212,
+   "number": "9.58",
+   "anchor": "lemma.9.58"
+  },
+  "lem:noncompact-exterior-routes-to-structural-row": {
+   "line": 17424,
+   "page": 212,
+   "number": "9.58",
+   "anchor": "lemma.9.58"
+  },
+  "lem:exterior-scale-collapse-rebased": {
+   "line": 17465,
+   "page": 213,
+   "number": "9.59",
+   "anchor": "lemma.9.59"
+  },
+  "lem:fixed-annular-stress-ckn-dichotomy": {
+   "line": 17507,
+   "page": 213,
+   "number": "9.60",
+   "anchor": "lemma.9.60"
+  },
+  "lem:far-field-harmonic-tail-routes-to-dyadic-carrier": {
+   "line": 17546,
+   "page": 214,
+   "number": "9.61",
+   "anchor": "lemma.9.61"
+  },
+  "lem:compact-local-state-factor": {
+   "line": 17638,
+   "page": 215,
+   "number": "9.62",
+   "anchor": "lemma.9.62"
+  },
+  "lem:normalized-defect-atomic-or-diffuse": {
+   "line": 17705,
+   "page": 216,
+   "number": "9.63",
+   "anchor": "lemma.9.63"
+  },
+  "lem:residual-selected-time-support-transfer": {
+   "line": 17760,
+   "page": 216,
+   "number": "9.64",
+   "anchor": "lemma.9.64"
+  },
+  "lem:pressure-defect-support-realization": {
+   "line": 17833,
+   "page": 217,
+   "number": "9.65",
+   "anchor": "lemma.9.65"
+  },
+  "thm:pressure-defect-compactification-support-transfer": {
+   "line": 17938,
+   "page": 218,
+   "number": "9.66",
+   "anchor": "theorem.9.66"
+  },
+  "lem:nested-pressure-only-well-founded": {
+   "line": 18007,
+   "page": 219,
+   "number": "9.67",
+   "anchor": "lemma.9.67"
+  },
+  "lem:diffuse-pressure-only-not-terminal": {
+   "line": 18065,
+   "page": 220,
+   "number": "9.68",
+   "anchor": "lemma.9.68"
+  },
+  "lem:affine-harmonic-pressure-absorption": {
+   "line": 18112,
+   "page": 220,
+   "number": "9.69",
+   "anchor": "lemma.9.69"
+  },
+  "lem:exterior-pressure-only-not-terminal": {
+   "line": 18229,
+   "page": 222,
+   "number": "9.70",
+   "anchor": "lemma.9.70"
+  },
+  "lem:exterior-routing-locality-audit": {
+   "line": 18290,
+   "page": 222,
+   "number": "9.71",
+   "anchor": "lemma.9.71"
+  },
+  "thm:exterior-concentration-routed": {
+   "line": 18324,
+   "page": 223,
+   "number": "9.72",
+   "anchor": "theorem.9.72"
+  },
+  "cor:exterior-concentration-exit-discharged": {
+   "line": 18396,
+   "page": 224,
+   "number": "9.73",
+   "anchor": "corollary.9.73"
+  },
+  "sec:corrected-monotonicity-scale-drift": {
+   "line": 18410,
+   "page": 225,
+   "number": "10",
+   "anchor": "section.10"
+  },
+  "def:cost-hypotheses": {
+   "line": 18427,
+   "page": 225,
+   "number": "10.1",
+   "anchor": "definition.10.1"
+  },
+  "def:cost-divergence-exclusion-conclusion": {
+   "line": 18455,
+   "page": 225,
+   "number": "10.2",
+   "anchor": "definition.10.2"
+  },
+  "lem:scale-energy-data": {
+   "line": 18467,
+   "page": 225,
+   "number": "10.3",
+   "anchor": "lemma.10.3"
+  },
+  "lem:cost-identification": {
+   "line": 18484,
+   "page": 225,
+   "number": "10.4",
+   "anchor": "lemma.10.4"
+  },
+  "lem:parabolic-class": {
+   "line": 18501,
+   "page": 226,
+   "number": "10.5",
+   "anchor": "lemma.10.5"
+  },
+  "def:corrected-monotonicity-input": {
+   "line": 18517,
+   "page": 226,
+   "number": "10.6",
+   "anchor": "definition.10.6"
+  },
+  "lem:caccioppoli-not-monotonicity": {
+   "line": 18541,
+   "page": 226,
+   "number": "10.7",
+   "anchor": "lemma.10.7"
+  },
+  "prop:cost-divergence-exclusion": {
+   "line": 18557,
+   "page": 226,
+   "number": "10.8",
+   "anchor": "proposition.10.8"
+  },
+  "eq:fixed-local-energy": {
+   "line": 18603,
+   "page": 227,
+   "number": "13",
+   "anchor": "equation.13"
+  },
+  "def:fixed-error-density": {
+   "line": 18606,
+   "page": 227,
+   "number": "10.9",
+   "anchor": "definition.10.9"
+  },
+  "thm:fixed-corrected-monotonicity": {
+   "line": 18637,
+   "page": 227,
+   "number": "10.11",
+   "anchor": "theorem.10.11"
+  },
+  "cor:fixed-input": {
+   "line": 18699,
+   "page": 228,
+   "number": "10.12",
+   "anchor": "corollary.10.12"
+  },
+  "rem:fixed-tail-subconditions": {
+   "line": 18713,
+   "page": 228,
+   "number": "10.13",
+   "anchor": "remark.10.13"
+  },
+  "def:direct-fixed-data": {
+   "line": 18735,
+   "page": 228,
+   "number": "10.14",
+   "anchor": "definition.10.14"
+  },
+  "thm:fixed-cost-criterion": {
+   "line": 18744,
+   "page": 228,
+   "number": "10.15",
+   "anchor": "theorem.10.15"
+  },
+  "def:compact-cost-replacement": {
+   "line": 18757,
+   "page": 228,
+   "number": "10.16",
+   "anchor": "definition.10.16"
+  },
+  "thm:compact-cost-criterion": {
+   "line": 18770,
+   "page": 229,
+   "number": "10.17",
+   "anchor": "theorem.10.17"
+  },
+  "def:moving-error-density": {
+   "line": 18803,
+   "page": 229,
+   "number": "10.18",
+   "anchor": "definition.10.18"
+  },
+  "thm:moving-corrected-monotonicity": {
+   "line": 18823,
+   "page": 229,
+   "number": "10.19",
+   "anchor": "theorem.10.19"
+  },
+  "def:summable-moving-errors": {
+   "line": 18880,
+   "page": 230,
+   "number": "10.20",
+   "anchor": "definition.10.20"
+  },
+  "lem:summable-moving-errors": {
+   "line": 18899,
+   "page": 230,
+   "number": "10.21",
+   "anchor": "lemma.10.21"
+  },
+  "def:summable-tightness": {
+   "line": 18911,
+   "page": 230,
+   "number": "10.22",
+   "anchor": "definition.10.22"
+  },
+  "def:moving-cost-compatibility": {
+   "line": 18925,
+   "page": 230,
+   "number": "10.23",
+   "anchor": "definition.10.23"
+  },
+  "thm:moving-replacement": {
+   "line": 18938,
+   "page": 230,
+   "number": "10.24",
+   "anchor": "theorem.10.24"
+  },
+  "def:negative-drift": {
+   "line": 18965,
+   "page": 231,
+   "number": "10.25",
+   "anchor": "definition.10.25"
+  },
+  "lem:finite-negative-drift": {
+   "line": 18987,
+   "page": 231,
+   "number": "10.26",
+   "anchor": "lemma.10.26"
+  },
+  "thm:finite-infinite-scale-negative": {
+   "line": 19005,
+   "page": 231,
+   "number": "10.27",
+   "anchor": "theorem.10.27"
+  },
+  "lem:repaired-gauge-logarithmic-scale-identity": {
+   "line": 19024,
+   "page": 231,
+   "number": "10.28",
+   "anchor": "lemma.10.28"
+  },
+  "thm:core-floor-scale-drift-obstruction": {
+   "line": 19053,
+   "page": 232,
+   "number": "10.29",
+   "anchor": "theorem.10.29"
+  },
+  "cor:scale-drift-alternatives": {
+   "line": 19098,
+   "page": 232,
+   "number": "10.30",
+   "anchor": "corollary.10.30"
+  },
+  "def:scale-collapse-cost": {
+   "line": 19115,
+   "page": 232,
+   "number": "10.31",
+   "anchor": "definition.10.31"
+  },
+  "def:scale-collapse-cost-compatibility": {
+   "line": 19135,
+   "page": 232,
+   "number": "10.32",
+   "anchor": "definition.10.32"
+  },
+  "thm:scale-collapse-drift-cost": {
+   "line": 19150,
+   "page": 233,
+   "number": "10.33",
+   "anchor": "theorem.10.33"
+  },
+  "cor:scale-collapse-drift-exclusion": {
+   "line": 19167,
+   "page": 233,
+   "number": "10.34",
+   "anchor": "corollary.10.34"
+  },
+  "def:absolute-scale-cost": {
+   "line": 19181,
+   "page": 233,
+   "number": "10.35",
+   "anchor": "definition.10.35"
+  },
+  "lem:scale-drift-absolute": {
+   "line": 19196,
+   "page": 233,
+   "number": "10.36",
+   "anchor": "lemma.10.36"
+  },
+  "cor:absolute-scale-cost-criterion": {
+   "line": 19216,
+   "page": 233,
+   "number": "10.37",
+   "anchor": "corollary.10.37"
+  },
+  "thm:moving-cutoff-scale-collapse-alternative": {
+   "line": 19229,
+   "page": 233,
+   "number": "10.38",
+   "anchor": "theorem.10.38"
+  },
+  "subsec:cost-divergence-canonical-schedule": {
+   "line": 19254,
+   "page": 234,
+   "number": "10.6",
+   "anchor": "subsection.10.6"
+  },
+  "lem:corrected-energy-nonnegative": {
+   "line": 19267,
+   "page": 234,
+   "number": "10.39",
+   "anchor": "lemma.10.39"
+  },
+  "lem:corrected-monotonicity-versus-divergent-cost": {
+   "line": 19307,
+   "page": 234,
+   "number": "10.40",
+   "anchor": "lemma.10.40"
+  },
+  "thm:cost-divergence-routing-dichotomy": {
+   "line": 19352,
+   "page": 235,
+   "number": "10.41",
+   "anchor": "theorem.10.41"
+  },
+  "thm:cost-divergence-exclusion-discharged": {
+   "line": 19454,
+   "page": 236,
+   "number": "10.42",
+   "anchor": "theorem.10.42"
+  },
+  "cor:cost-divergence-exclusion-unconditional": {
+   "line": 19523,
+   "page": 236,
+   "number": "10.43",
+   "anchor": "corollary.10.43"
+  },
+  "rem:cost-divergence-conclusion-status": {
+   "line": 19566,
+   "page": 237,
+   "number": "10.44",
+   "anchor": "remark.10.44"
+  },
+  "lem:cost-divergence-closure-order": {
+   "line": 19593,
+   "page": 237,
+   "number": "10.45",
+   "anchor": "lemma.10.45"
+  },
+  "subsec:ac-repaired-gauge-renormalized-equations": {
+   "line": 19640,
+   "page": 237,
+   "number": "10.7",
+   "anchor": "subsection.10.7"
+  },
+  "def:ac-initial-concentration-chart": {
+   "line": 19649,
+   "page": 238,
+   "number": "10.46",
+   "anchor": "definition.10.46"
+  },
+  "lem:initial-renormalized-equation": {
+   "line": 19692,
+   "page": 238,
+   "number": "10.47",
+   "anchor": "lemma.10.47"
+  },
+  "def:ac-repaired-gauge-path": {
+   "line": 19751,
+   "page": 239,
+   "number": "10.48",
+   "anchor": "definition.10.48"
+  },
+  "lem:repaired-physical-chart": {
+   "line": 19774,
+   "page": 239,
+   "number": "10.49",
+   "anchor": "lemma.10.49"
+  },
+  "lem:canonical-final-change-identities": {
+   "line": 19856,
+   "page": 240,
+   "number": "10.50",
+   "anchor": "lemma.10.50"
+  },
+  "lem:repaired-modulation-coefficients": {
+   "line": 19911,
+   "page": 240,
+   "number": "10.51",
+   "anchor": "lemma.10.51"
+  },
+  "thm:canonical-repaired-gauge-equation": {
+   "line": 19986,
+   "page": 241,
+   "number": "10.52",
+   "anchor": "theorem.10.52"
+  },
+  "eq:canonical-repaired-gauge-equation": {
+   "line": 19991,
+   "page": 241,
+   "number": "14",
+   "anchor": "equation.14"
+  },
+  "lem:pressure-reconstruction-under-charts": {
+   "line": 20025,
+   "page": 241,
+   "number": "10.53",
+   "anchor": "lemma.10.53"
+  },
+  "lem:critical-lp-scaling": {
+   "line": 20074,
+   "page": 242,
+   "number": "10.54",
+   "anchor": "lemma.10.54"
+  },
+  "lem:ac-chart-regularity": {
+   "line": 20108,
+   "page": 242,
+   "number": "10.55",
+   "anchor": "lemma.10.55"
+  },
+  "thm:ac-repaired-gauge-consequences": {
+   "line": 20128,
+   "page": 242,
+   "number": "10.56",
+   "anchor": "theorem.10.56"
+  },
+  "cor:representation-inputs-repaired-gauge": {
+   "line": 20169,
+   "page": 242,
+   "number": "10.57",
+   "anchor": "corollary.10.57"
+  },
+  "subsec:ac-suitable-local-caccioppoli": {
+   "line": 20199,
+   "page": 243,
+   "number": "10.8",
+   "anchor": "subsection.10.8"
+  },
+  "def:suitable-repaired-gauge-typeII-branch": {
+   "line": 20202,
+   "page": 243,
+   "number": "10.58",
+   "anchor": "definition.10.58"
+  },
+  "lem:ac-pullback-local-energy": {
+   "line": 20227,
+   "page": 243,
+   "number": "10.59",
+   "anchor": "lemma.10.59"
+  },
+  "lem:suitable-gauge-pressure-modulation": {
+   "line": 20387,
+   "page": 245,
+   "number": "10.60",
+   "anchor": "lemma.10.60"
+  },
+  "thm:canonical-local-caccioppoli": {
+   "line": 20413,
+   "page": 245,
+   "number": "10.61",
+   "anchor": "theorem.10.61"
+  },
+  "eq:canonical-local-caccioppoli": {
+   "line": 20423,
+   "page": 245,
+   "number": "15",
+   "anchor": "equation.15"
+  },
+  "cor:no-independent-caccioppoli-obstruction-ac-suitable": {
+   "line": 20536,
+   "page": 247,
+   "number": "10.62",
+   "anchor": "corollary.10.62"
+  },
+  "def:suitable-physical-hypotheses": {
+   "line": 20560,
+   "page": 247,
+   "number": "10.63",
+   "anchor": "definition.10.63"
+  },
+  "lem:renormalized-lei": {
+   "line": 20587,
+   "page": 247,
+   "number": "10.64",
+   "anchor": "lemma.10.64"
+  },
+  "lem:caccioppoli-from-renormalized-lei": {
+   "line": 20692,
+   "page": 248,
+   "number": "10.65",
+   "anchor": "lemma.10.65"
+  },
+  "prop:caccioppoli-regularity-criterion": {
+   "line": 20745,
+   "page": 249,
+   "number": "10.66",
+   "anchor": "proposition.10.66"
+  },
+  "cor:caccioppoli-windowed-control": {
+   "line": 20761,
+   "page": 249,
+   "number": "10.67",
+   "anchor": "corollary.10.67"
+  },
+  "def:critical-ns-profile-decomposition-local": {
+   "line": 20784,
+   "page": 250,
+   "number": "10.68",
+   "anchor": "definition.10.68"
+  },
+  "rem:terminal-l3-interface": {
+   "line": 20842,
+   "page": 250,
+   "number": "10.69",
+   "anchor": "remark.10.69"
+  },
+  "subsec:discharge-critical-ns-profile-decomposition": {
+   "line": 20857,
+   "page": 251,
+   "number": "10.10",
+   "anchor": "section*.2"
+  },
+  "lem:interior-time-selection": {
+   "line": 20860,
+   "page": 251,
+   "number": "10.70",
+   "anchor": "lemma.10.70"
+  },
+  "lem:l3-profile-extraction-cited": {
+   "line": 20904,
+   "page": 251,
+   "number": "10.71",
+   "anchor": "lemma.10.71"
+  },
+  "lem:critical-mass-decoupling": {
+   "line": 20944,
+   "page": 252,
+   "number": "10.72",
+   "anchor": "lemma.10.72"
+  },
+  "lem:local-no-cancellation-retained-decomposition": {
+   "line": 21050,
+   "page": 253,
+   "number": "10.73",
+   "anchor": "lemma.10.73"
+  },
+  "lem:residual-concentration-visible": {
+   "line": 21152,
+   "page": 254,
+   "number": "10.74",
+   "anchor": "lemma.10.74"
+  },
+  "lem:active-parameter-chart-tail": {
+   "line": 21188,
+   "page": 254,
+   "number": "10.75",
+   "anchor": "lemma.10.75"
+  },
+  "lem:compact-chart-active-packing": {
+   "line": 21294,
+   "page": 255,
+   "number": "10.76",
+   "anchor": "lemma.10.76"
+  },
+  "lem:retained-frame-maximality": {
+   "line": 21433,
+   "page": 257,
+   "number": "10.77",
+   "anchor": "lemma.10.77"
+  },
+  "lem:terminal-local-critical-mass-routing": {
+   "line": 21509,
+   "page": 258,
+   "number": "10.78",
+   "anchor": "lemma.10.78"
+  },
+  "cor:no-unclassified-compact-limit-obstruction": {
+   "line": 21563,
+   "page": 259,
+   "number": "10.79",
+   "anchor": "corollary.10.79"
+  },
+  "prop:residual-spike-routing": {
+   "line": 21612,
+   "page": 259,
+   "number": "10.80",
+   "anchor": "proposition.10.80"
+  },
+  "thm:terminal-adjacent-label-routing": {
+   "line": 21745,
+   "page": 261,
+   "number": "10.81",
+   "anchor": "theorem.10.81"
+  },
+  "thm:residual-mass-admissible-state": {
+   "line": 21798,
+   "page": 262,
+   "number": "10.82",
+   "anchor": "theorem.10.82"
+  },
+  "lem:heat-flow-kato-smallness": {
+   "line": 21896,
+   "page": 263,
+   "number": "10.83",
+   "anchor": "lemma.10.83"
+  },
+  "lem:nonlinear-profile-evolution-cited": {
+   "line": 21918,
+   "page": 263,
+   "number": "10.84",
+   "anchor": "lemma.10.84"
+  },
+  "lem:profile-exhaustion-by-diagonal-extraction": {
+   "line": 21941,
+   "page": 263,
+   "number": "10.85",
+   "anchor": "lemma.10.85"
+  },
+  "thm:local-residual-exhaustion": {
+   "line": 21973,
+   "page": 264,
+   "number": "10.86",
+   "anchor": "theorem.10.86"
+  },
+  "thm:critical-ns-profile-decomposition-discharged": {
+   "line": 22033,
+   "page": 264,
+   "number": "10.87",
+   "anchor": "theorem.10.87"
+  },
+  "rem:profile-decomposition-status": {
+   "line": 22059,
+   "page": 265,
+   "number": "10.88",
+   "anchor": "remark.10.88"
+  },
+  "def:bounded-critical-terminal-sequences": {
+   "line": 22068,
+   "page": 265,
+   "number": "10.89",
+   "anchor": "definition.10.89"
+  },
+  "thm:kato-small-data-critical-stability": {
+   "line": 22087,
+   "page": 265,
+   "number": "10.90",
+   "anchor": "theorem.10.90"
+  },
+  "def:small-data-critical-stability": {
+   "line": 22136,
+   "page": 266,
+   "number": "10.91",
+   "anchor": "definition.10.91"
+  },
+  "cor:kato-gives-small-data-stability": {
+   "line": 22145,
+   "page": 266,
+   "number": "10.92",
+   "anchor": "corollary.10.92"
+  },
+  "subsec:discharge-retained-compact-tests": {
+   "line": 22159,
+   "page": 266,
+   "number": "10.10",
+   "anchor": "section*.3"
+  },
+  "lem:logarithmic-tail-shell-realization": {
+   "line": 22162,
+   "page": 266,
+   "number": "10.93",
+   "anchor": "lemma.10.93"
+  },
+  "thm:logarithmic-tail-support-transfer": {
+   "line": 22259,
+   "page": 267,
+   "number": "10.94",
+   "anchor": "theorem.10.94"
+  },
+  "thm:minimal-mesoscopic-extraction": {
+   "line": 22313,
+   "page": 268,
+   "number": "10.95",
+   "anchor": "theorem.10.95"
+  },
+  "thm:young-variance-strong-compactness": {
+   "line": 22365,
+   "page": 268,
+   "number": "10.96",
+   "anchor": "theorem.10.96"
+  },
+  "lem:diffuse-shell-visible-residual": {
+   "line": 22412,
+   "page": 269,
+   "number": "10.97",
+   "anchor": "lemma.10.97"
+  },
+  "lem:strong-diffuse-tail-limit-row": {
+   "line": 22505,
+   "page": 270,
+   "number": "10.98",
+   "anchor": "lemma.10.98"
+  },
+  "thm:coherent-critical-tail-closure": {
+   "line": 22588,
+   "page": 271,
+   "number": "10.99",
+   "anchor": "theorem.10.99"
+  },
+  "def:windowed-critical-tightness": {
+   "line": 22635,
+   "page": 271,
+   "number": "10.100",
+   "anchor": "definition.10.100"
+  },
+  "lem:timeslice-l3-persistence": {
+   "line": 22659,
+   "page": 272,
+   "number": "10.101",
+   "anchor": "remark.10.101"
+  },
+  "lem:diffuse-timeslice-tail-spacetime-row": {
+   "line": 22668,
+   "page": 272,
+   "number": "10.102",
+   "anchor": "lemma.10.102"
+  },
+  "lem:critical-tightness-failure-row": {
+   "line": 22724,
+   "page": 273,
+   "number": "10.103",
+   "anchor": "lemma.10.103"
+  },
+  "lem:retained-tightness-routing": {
+   "line": 22725,
+   "page": 273,
+   "number": "10.103",
+   "anchor": "lemma.10.103"
+  },
+  "lem:diffuse-critical-tail-row-closed": {
+   "line": 22800,
+   "page": 273,
+   "number": "10.104",
+   "anchor": "lemma.10.104"
+  },
+  "lem:windowed-h1-from-integrated-modulation": {
+   "line": 22839,
+   "page": 274,
+   "number": "10.105",
+   "anchor": "lemma.10.105"
+  },
+  "lem:modulation-window-bound-or-exit": {
+   "line": 22907,
+   "page": 275,
+   "number": "10.106",
+   "anchor": "lemma.10.106"
+  },
+  "lem:retained-h1-routing": {
+   "line": 22941,
+   "page": 275,
+   "number": "10.107",
+   "anchor": "lemma.10.107"
+  },
+  "thm:retained-compact-tests-closed": {
+   "line": 23008,
+   "page": 276,
+   "number": "10.108",
+   "anchor": "theorem.10.108"
+  },
+  "cor:compact-test-closure-discharged": {
+   "line": 23035,
+   "page": 276,
+   "number": "10.109",
+   "anchor": "corollary.10.109"
+  },
+  "subsec:thin-negative-drift-closure": {
+   "line": 23051,
+   "page": 276,
+   "number": "10.11",
+   "anchor": "subsection.10.11"
+  },
+  "def:thin-negative-drift-occupation-blocks": {
+   "line": 23067,
+   "page": 277,
+   "number": "10.110",
+   "anchor": "definition.10.110"
+  },
+  "def:canonical-thin-drift-schedule": {
+   "line": 23091,
+   "page": 277,
+   "number": "10.111",
+   "anchor": "definition.10.111"
+  },
+  "lem:terminal-unit-drift-window-admissibility": {
+   "line": 23103,
+   "page": 277,
+   "number": "10.112",
+   "anchor": "lemma.10.112"
+  },
+  "lem:thin-drift-diffuse-blocks": {
+   "line": 23150,
+   "page": 278,
+   "number": "10.113",
+   "anchor": "lemma.10.113"
+  },
+  "lem:small-negative-drift-perturbative": {
+   "line": 23208,
+   "page": 278,
+   "number": "10.114",
+   "anchor": "lemma.10.114"
+  },
+  "lem:admissible-drift-window-active-core": {
+   "line": 23289,
+   "page": 279,
+   "number": "10.115",
+   "anchor": "lemma.10.115"
+  },
+  "lem:vanishing-negative-drift-forcing-absorbed": {
+   "line": 23342,
+   "page": 280,
+   "number": "10.116",
+   "anchor": "lemma.10.116"
+  },
+  "lem:diffuse-thin-drift-routes": {
+   "line": 23395,
+   "page": 280,
+   "number": "10.117",
+   "anchor": "lemma.10.117"
+  },
+  "thm:thin-negative-drift-closed": {
+   "line": 23501,
+   "page": 281,
+   "number": "10.118",
+   "anchor": "theorem.10.118"
+  },
+  "subsec:discharge-typeII-analytic-data": {
+   "line": 23551,
+   "page": 282,
+   "number": "10.12",
+   "anchor": "subsection.10.12"
+  },
+  "lem:typeII-concentration-extraction-routes": {
+   "line": 23564,
+   "page": 282,
+   "number": "10.119",
+   "anchor": "lemma.10.119"
+  },
+  "lem:typeII-scale-alternative-routes": {
+   "line": 23611,
+   "page": 283,
+   "number": "10.120",
+   "anchor": "lemma.10.120"
+  },
+  "lem:typeII-profile-data-routes": {
+   "line": 23632,
+   "page": 283,
+   "number": "10.121",
+   "anchor": "lemma.10.121"
+  },
+  "thm:typeII-analytic-data-exhaustive": {
+   "line": 23715,
+   "page": 284,
+   "number": "10.122",
+   "anchor": "theorem.10.122"
+  },
+  "cor:typeII-analytic-data-exhaustiveness-discharged": {
+   "line": 23775,
+   "page": 284,
+   "number": "10.123",
+   "anchor": "corollary.10.123"
+  },
+  "def:terminal-critical-profile-input-hypotheses": {
+   "line": 23803,
+   "page": 285,
+   "number": "10.124",
+   "anchor": "definition.10.124"
+  },
+  "def:terminal-critical-profile-hypotheses": {
+   "line": 23818,
+   "page": 285,
+   "number": "10.125",
+   "anchor": "definition.10.125"
+  },
+  "thm:terminal-critical-local-compactness": {
+   "line": 23827,
+   "page": 285,
+   "number": "10.126",
+   "anchor": "theorem.10.126"
+  },
+  "cor:profile-completeness-from-critical-hypotheses": {
+   "line": 23852,
+   "page": 285,
+   "number": "10.127",
+   "anchor": "corollary.10.127"
+  },
+  "rem:terminal-compactness-boundary": {
+   "line": 23864,
+   "page": 285,
+   "number": "10.128",
+   "anchor": "remark.10.128"
+  },
+  "def:terminal-sequences-sampled-from-orbit": {
+   "line": 23874,
+   "page": 285,
+   "number": "10.129",
+   "anchor": "definition.10.129"
+  },
+  "lem:critical-symmetry-preserves-l3": {
+   "line": 23891,
+   "page": 285,
+   "number": "10.130",
+   "anchor": "lemma.10.130"
+  },
+  "thm:bounded-terminal-sequences-from-l3": {
+   "line": 23913,
+   "page": 286,
+   "number": "10.131",
+   "anchor": "theorem.10.131"
+  },
+  "thm:terminal-boundedness-alternatives": {
+   "line": 23936,
+   "page": 286,
+   "number": "10.132",
+   "anchor": "theorem.10.132"
+  },
+  "def:terminal-coordinate-frame-construction": {
+   "line": 23964,
+   "page": 286,
+   "number": "10.133",
+   "anchor": "definition.10.133"
+  },
+  "thm:terminal-coordinate-frame-construction-profile-selection": {
+   "line": 23976,
+   "page": 286,
+   "number": "10.134",
+   "anchor": "theorem.10.134"
+  },
+  "thm:terminal-coordinate-frames-sampled": {
+   "line": 23998,
+   "page": 287,
+   "number": "10.135",
+   "anchor": "theorem.10.135"
+  },
+  "thm:representation-gives-terminal-orbit-sampling": {
+   "line": 24018,
+   "page": 287,
+   "number": "10.136",
+   "anchor": "theorem.10.136"
+  },
+  "cor:failure-terminal-orbit-sampling": {
+   "line": 24037,
+   "page": 287,
+   "number": "10.137",
+   "anchor": "corollary.10.137"
+  },
+  "def:abstract-final-data": {
+   "line": 24051,
+   "page": 287,
+   "number": "10.138",
+   "anchor": "definition.10.138"
+  },
+  "thm:abstract-final-typeII": {
+   "line": 24080,
+   "page": 288,
+   "number": "10.139",
+   "anchor": "theorem.10.139"
+  },
+  "def:expanded-terminal-data": {
+   "line": 24104,
+   "page": 288,
+   "number": "10.140",
+   "anchor": "definition.10.140"
+  },
+  "lem:terminal-critical-tightness": {
+   "line": 24126,
+   "page": 288,
+   "number": "10.141",
+   "anchor": "lemma.10.141"
+  },
+  "lem:terminal-windowed-h1": {
+   "line": 24144,
+   "page": 288,
+   "number": "10.142",
+   "anchor": "lemma.10.142"
+  },
+  "lem:expanded-to-abstract": {
+   "line": 24158,
+   "page": 288,
+   "number": "10.143",
+   "anchor": "lemma.10.143"
+  },
+  "thm:expanded-terminal-typeII": {
+   "line": 24180,
+   "page": 289,
+   "number": "10.144",
+   "anchor": "theorem.10.144"
+  },
+  "thm:expanded-terminal-data-branchwise": {
+   "line": 24210,
+   "page": 289,
+   "number": "10.146",
+   "anchor": "theorem.10.146"
+  },
+  "cor:expanded-terminal-wrapper-discharged": {
+   "line": 24299,
+   "page": 290,
+   "number": "10.147",
+   "anchor": "corollary.10.147"
+  },
+  "sec:typeII-assembly": {
+   "line": 24313,
+   "page": 291,
+   "number": "11",
+   "anchor": "section.11"
+  },
+  "def:local-typeII-sequence": {
+   "line": 24346,
+   "page": 291,
+   "number": "11.2",
+   "anchor": "definition.11.2"
+  },
+  "thm:local-typeI-typeII-dichotomy": {
+   "line": 24363,
+   "page": 291,
+   "number": "11.3",
+   "anchor": "theorem.11.3"
+  },
+  "thm:repaired-gauge-representation": {
+   "line": 24386,
+   "page": 291,
+   "number": "11.4",
+   "anchor": "theorem.11.4"
+  },
+  "thm:single-core": {
+   "line": 24412,
+   "page": 292,
+   "number": "11.5",
+   "anchor": "theorem.11.5"
+  },
+  "thm:multibubble": {
+   "line": 24431,
+   "page": 292,
+   "number": "11.6",
+   "anchor": "theorem.11.6"
+  },
+  "thm:rough-core": {
+   "line": 24447,
+   "page": 292,
+   "number": "11.7",
+   "anchor": "theorem.11.7"
+  },
+  "thm:scale-cost": {
+   "line": 24461,
+   "page": 292,
+   "number": "11.8",
+   "anchor": "theorem.11.8"
+  },
+  "thm:scale-stratification": {
+   "line": 24472,
+   "page": 292,
+   "number": "11.9",
+   "anchor": "theorem.11.9"
+  },
+  "lem:compact-core-dissipation-dichotomy": {
+   "line": 24503,
+   "page": 293,
+   "number": "11.10",
+   "anchor": "lemma.11.10"
+  },
+  "lem:bounded-window-local-regularization": {
+   "line": 24560,
+   "page": 293,
+   "number": "11.11",
+   "anchor": "lemma.11.11"
+  },
+  "lem:bounded-selected-window-local-regularity": {
+   "line": 24561,
+   "page": 293,
+   "number": "11.11",
+   "anchor": "lemma.11.11"
+  },
+  "lem:reselection-tree-support-realization": {
+   "line": 24623,
+   "page": 294,
+   "number": "11.13",
+   "anchor": "lemma.11.13"
+  },
+  "lem:diffuse-reselection-tree-row-closed": {
+   "line": 24677,
+   "page": 295,
+   "number": "11.14",
+   "anchor": "lemma.11.14"
+  },
+  "lem:bounded-window-reselection-well-founded": {
+   "line": 24733,
+   "page": 296,
+   "number": "11.15",
+   "anchor": "lemma.11.15"
+  },
+  "thm:bounded-selected-window-physical-routing": {
+   "line": 24806,
+   "page": 297,
+   "number": "11.16",
+   "anchor": "theorem.11.16"
+  },
+  "thm:bounded-window-physical-closure": {
+   "line": 24807,
+   "page": 297,
+   "number": "11.16",
+   "anchor": "theorem.11.16"
+  },
+  "thm:ordered-local-state-space-exhaustion": {
+   "line": 24846,
+   "page": 297,
+   "number": "11.17",
+   "anchor": "theorem.11.17"
+  },
+  "thm:ordered-state-space-exhaustion": {
+   "line": 24847,
+   "page": 297,
+   "number": "11.17",
+   "anchor": "theorem.11.17"
+  },
+  "thm:state-decomposition": {
+   "line": 24961,
+   "page": 298,
+   "number": "11.18",
+   "anchor": "theorem.11.18"
+  },
+  "prop:state-elimination": {
+   "line": 24993,
+   "page": 299,
+   "number": "11.19",
+   "anchor": "proposition.11.19"
+  },
+  "def:physical-local-typeII-germ": {
+   "line": 25043,
+   "page": 299,
+   "number": "11.20",
+   "anchor": "definition.11.20"
+  },
+  "def:covered-local-typeII-entry": {
+   "line": 25058,
+   "page": 299,
+   "number": "11.21",
+   "anchor": "definition.11.21"
+  },
+  "lem:physical-typeII-germ-admissible": {
+   "line": 25073,
+   "page": 299,
+   "number": "11.22",
+   "anchor": "lemma.11.22"
+  },
+  "lem:physical-typeII-germ-concentration-sequence": {
+   "line": 25101,
+   "page": 300,
+   "number": "11.23",
+   "anchor": "lemma.11.23"
+  },
+  "lem:no-extra-outside-class-row": {
+   "line": 25125,
+   "page": 300,
+   "number": "11.24",
+   "anchor": "lemma.11.24"
+  },
+  "thm:physical-typeII-covered-entry": {
+   "line": 25148,
+   "page": 300,
+   "number": "11.25",
+   "anchor": "theorem.11.25"
+  },
+  "cor:covered-class-entry-discharged": {
+   "line": 25186,
+   "page": 301,
+   "number": "11.26",
+   "anchor": "corollary.11.26"
+  },
+  "rem:covered-entry-scope": {
+   "line": 25199,
+   "page": 301,
+   "number": "11.27",
+   "anchor": "remark.11.27"
+  },
+  "subsec:remaining-exit-closures": {
+   "line": 25217,
+   "page": 301,
+   "number": "11.5",
+   "anchor": "subsection.11.5"
+  },
+  "lem:bounded-modulation-defect-routing": {
+   "line": 25232,
+   "page": 301,
+   "number": "11.28",
+   "anchor": "lemma.11.28"
+  },
+  "thm:autonomous-modulation-failure-closed": {
+   "line": 25333,
+   "page": 302,
+   "number": "11.29",
+   "anchor": "theorem.11.29"
+  },
+  "lem:canonical-identity-cost-available": {
+   "line": 25442,
+   "page": 303,
+   "number": "11.30",
+   "anchor": "lemma.11.30"
+  },
+  "lem:canonical-cost-channel-available": {
+   "line": 25443,
+   "page": 303,
+   "number": "11.30",
+   "anchor": "lemma.11.30"
+  },
+  "lem:canonical-cost-available": {
+   "line": 25444,
+   "page": 303,
+   "number": "11.30",
+   "anchor": "lemma.11.30"
+  },
+  "thm:noncanonical-cost-routing-closed": {
+   "line": 25470,
+   "page": 304,
+   "number": "11.31",
+   "anchor": "theorem.11.31"
+  },
+  "lem:pressure-only-critical-mass-routing": {
+   "line": 25622,
+   "page": 305,
+   "number": "11.32",
+   "anchor": "lemma.11.32"
+  },
+  "thm:active-core-loss-closed": {
+   "line": 25693,
+   "page": 306,
+   "number": "11.33",
+   "anchor": "theorem.11.33"
+  },
+  "lem:acyclic-terminal-ledger": {
+   "line": 25794,
+   "page": 308,
+   "number": "11.34",
+   "anchor": "lemma.11.34"
+  },
+  "def:remaining-named-exits": {
+   "line": 25829,
+   "page": 308,
+   "number": "11.35",
+   "anchor": "definition.11.35"
+  },
+  "cor:remaining-named-exits-closed": {
+   "line": 25882,
+   "page": 308,
+   "number": "11.36",
+   "anchor": "corollary.11.36"
+  },
+  "thm:unconditional-no-typeII": {
+   "line": 25897,
+   "page": 309,
+   "number": "11.37",
+   "anchor": "theorem.11.37"
+  },
+  "thm:unconditional-no-typeII-discharged": {
+   "line": 25956,
+   "page": 309,
+   "number": "11.38",
+   "anchor": "theorem.11.38"
+  },
+  "thm:local-typeII-exclusion": {
+   "line": 25977,
+   "page": 309,
+   "number": "11.39",
+   "anchor": "theorem.11.39"
+  },
+  "cor:final-local-dichotomy": {
+   "line": 25996,
+   "page": 310,
+   "number": "11.40",
+   "anchor": "corollary.11.40"
+  },
+  "sec:c1-c5-pde-translation": {
+   "line": 26063,
+   "page": 312,
+   "number": "A",
+   "anchor": "appendix.A"
+  },
+  "def:c1-admissible-typeII-class": {
+   "line": 26074,
+   "page": 312,
+   "number": "A.1",
+   "anchor": "definition.A.1"
+  },
+  "def:c1-typeII-analytic-data": {
+   "line": 26091,
+   "page": 312,
+   "number": "A.2",
+   "anchor": "definition.A.2"
+  },
+  "def:c1-exhaustion-failures": {
+   "line": 26113,
+   "page": 312,
+   "number": "A.3",
+   "anchor": "definition.A.3"
+  },
+  "thm:c1-typeII-branch-exhaustion": {
+   "line": 26130,
+   "page": 312,
+   "number": "A.4",
+   "anchor": "theorem.A.4"
+  },
+  "cor:c1-ordered-exhaustion": {
+   "line": 26153,
+   "page": 313,
+   "number": "A.5",
+   "anchor": "corollary.A.5"
+  },
+  "def:c2-raw-chart": {
+   "line": 26179,
+   "page": 313,
+   "number": "A.6",
+   "anchor": "definition.A.6"
+  },
+  "lem:c2-raw-renormalized-equation": {
+   "line": 26207,
+   "page": 313,
+   "number": "A.7",
+   "anchor": "lemma.A.7"
+  },
+  "def:c2-repaired-gauge-realization": {
+   "line": 26264,
+   "page": 314,
+   "number": "A.8",
+   "anchor": "definition.A.8"
+  },
+  "def:c2-representation": {
+   "line": 26284,
+   "page": 314,
+   "number": "A.9",
+   "anchor": "definition.A.9"
+  },
+  "thm:c2-representation-implication": {
+   "line": 26300,
+   "page": 314,
+   "number": "A.10",
+   "anchor": "theorem.A.10"
+  },
+  "def:c2-representation-failures": {
+   "line": 26321,
+   "page": 314,
+   "number": "A.11",
+   "anchor": "definition.A.11"
+  },
+  "cor:c2-ordered-representation": {
+   "line": 26333,
+   "page": 315,
+   "number": "A.12",
+   "anchor": "corollary.A.12"
+  },
+  "def:c2r-minimal-representation-data": {
+   "line": 26349,
+   "page": 315,
+   "number": "A.13",
+   "anchor": "definition.A.13"
+  },
+  "lem:c2r-chart-raw-orbit": {
+   "line": 26383,
+   "page": 315,
+   "number": "A.14",
+   "anchor": "lemma.A.14"
+  },
+  "lem:c2r-pressure-pullback": {
+   "line": 26412,
+   "page": 315,
+   "number": "A.15",
+   "anchor": "lemma.A.15"
+  },
+  "lem:c2r-forced-modulation": {
+   "line": 26448,
+   "page": 316,
+   "number": "A.16",
+   "anchor": "lemma.A.16"
+  },
+  "thm:c2r-minimal-representation": {
+   "line": 26504,
+   "page": 316,
+   "number": "A.17",
+   "anchor": "theorem.A.17"
+  },
+  "def:c2r-minimal-failures": {
+   "line": 26520,
+   "page": 316,
+   "number": "A.18",
+   "anchor": "definition.A.18"
+  },
+  "cor:c2r-ordered-classification": {
+   "line": 26533,
+   "page": 317,
+   "number": "A.19",
+   "anchor": "corollary.A.19"
+  },
+  "lem:c3-spatially-constant-retained-limit-bounded": {
+   "line": 26550,
+   "page": 317,
+   "number": "A.20",
+   "anchor": "lemma.A.20"
+  },
+  "thm:c3-local-retained-mass-cost-divergence": {
+   "line": 26624,
+   "page": 318,
+   "number": "A.21",
+   "anchor": "theorem.A.21"
+  },
+  "def:c4-localized-cost": {
+   "line": 26695,
+   "page": 318,
+   "number": "A.22",
+   "anchor": "definition.A.22"
+  },
+  "def:c4-cost-comparison": {
+   "line": 26712,
+   "page": 319,
+   "number": "A.23",
+   "anchor": "definition.A.23"
+  },
+  "lem:c4-identity-cost": {
+   "line": 26729,
+   "page": 319,
+   "number": "A.24",
+   "anchor": "lemma.A.24"
+  },
+  "thm:c4-cost-comparison": {
+   "line": 26749,
+   "page": 319,
+   "number": "A.25",
+   "anchor": "theorem.A.25"
+  },
+  "def:c5-compact-tests": {
+   "line": 26809,
+   "page": 320,
+   "number": "A.26",
+   "anchor": "definition.A.26"
+  },
+  "def:c5-compact-typeII-data": {
+   "line": 26842,
+   "page": 320,
+   "number": "A.27",
+   "anchor": "definition.A.27"
+  },
+  "def:c5-precompact-routed-exits": {
+   "line": 26858,
+   "page": 320,
+   "number": "A.28",
+   "anchor": "definition.A.28"
+  },
+  "lem:c5-precompact-data-routing": {
+   "line": 26872,
+   "page": 320,
+   "number": "A.29",
+   "anchor": "lemma.A.29"
+  },
+  "lem:c5-uniform-retained-active-window-mass": {
+   "line": 26919,
+   "page": 321,
+   "number": "A.30",
+   "anchor": "lemma.A.30"
+  },
+  "lem:c5-retained-upper-estimates-aubin-lions": {
+   "line": 26973,
+   "page": 321,
+   "number": "A.31",
+   "anchor": "lemma.A.31"
+  },
+  "lem:c5-retained-data-supply-aubin-lions": {
+   "line": 27081,
+   "page": 323,
+   "number": "A.32",
+   "anchor": "lemma.A.32"
+  },
+  "lem:c5-compact-positive-excluded": {
+   "line": 27148,
+   "page": 323,
+   "number": "A.33",
+   "anchor": "lemma.A.33"
+  }
+ }
+}

@@ -9,11 +9,12 @@ export interface Reference {
   /** True when clicking it should move the reader somewhere. */
   actionable: boolean;
   /**
-   * Mathematics to reveal in place rather than navigate to — used for a
-   * reference to a numbered display, where jumping away mid-sentence would lose
-   * the reader's place.
+   * Something to reveal in place rather than navigate to, where jumping away
+   * mid-sentence would lose the reader's place: the body of a numbered display
+   * (`math`, handed to KaTeX as it stands) or the full statement of an
+   * auxiliary result (`statement`, prose with maths inside, read like any other).
    */
-  preview?: string;
+  preview?: { kind: "math" | "statement"; source: string };
   /** Shown under a revealed preview, naming exactly what it is. */
   note?: string;
 }
@@ -108,13 +109,13 @@ function InlineReference({
   label,
   title,
   note,
-  latex,
+  preview,
   macros,
 }: {
   label: string;
   title: string;
   note?: string;
-  latex: string;
+  preview: NonNullable<Reference["preview"]>;
   macros: Record<string, string>;
 }) {
   const [open, setOpen] = useState(false);
@@ -132,10 +133,14 @@ function InlineReference({
       </button>
       {open ? (
         <span className="latex-inline-reference">
-          <span
-            className="latex-math is-display"
-            dangerouslySetInnerHTML={{ __html: renderMath(latex, true, macros) }}
-          />
+          {preview.kind === "math" ? (
+            <span
+              className="latex-math is-display"
+              dangerouslySetInnerHTML={{ __html: renderMath(preview.source, true, macros) }}
+            />
+          ) : (
+            <Latex value={preview.source} className="latex-inline-statement" />
+          )}
           {note ? <small>{note}</small> : null}
         </span>
       ) : null}
@@ -183,7 +188,7 @@ function SegmentView({
             label={label}
             title={reference.note ?? segment.key}
             note={reference.note}
-            latex={reference.preview}
+            preview={reference.preview}
             macros={macros}
           />
         );

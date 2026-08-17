@@ -4,6 +4,7 @@ import { buildGraph } from "./buildGraph";
 import { indexDocument } from "./index-document";
 import { latexToPlainText, parseLatex } from "./latex";
 import { layoutGraph } from "./layout";
+import { refereeDossier, requiredInvariantNumbers } from "./referee";
 import { buildSearchIndex, matchNodes } from "./search";
 import { TEST_DOCUMENT } from "./test-document";
 import { traceFrom } from "./trace";
@@ -51,6 +52,147 @@ describe("traceFrom", () => {
   it("is empty when there is nothing to trace", () => {
     expect(traceFrom(edges, null, "both").nodeIds.size).toBe(0);
     expect(traceFrom(edges, "1", "none").nodeIds.size).toBe(0);
+  });
+});
+
+describe("refereeDossier", () => {
+  const index = indexDocument(TEST_DOCUMENT);
+  const at = (id: string) => refereeDossier(TEST_DOCUMENT, index, index.nodeById.get(id)!);
+
+  it("says what a step may assume, reads and establishes", () => {
+    // Evenness is first tracked at 1 and again at 2, and declared an input of
+    // the halving lemma by its requirement row.
+    const start = at("1").state;
+    expect(start.recorded).toBe(true);
+    expect(start.before).toEqual([]);
+    expect(start.establishes.map((invariant) => invariant.id)).toEqual(["one:1"]);
+
+    const split = at("2").state;
+    expect(split.before.map((invariant) => invariant.id)).toEqual(["one:1"]);
+    expect(split.reads.map((invariant) => invariant.id)).toEqual(["one:1"]);
+    expect(split.unavailable).toEqual([]);
+
+    // Step 4 reads it through the same lemma, and it was tracked upstream.
+    const onward = at("4").state;
+    expect(onward.before.map((invariant) => invariant.id)).toEqual(["one:1"]);
+    expect(onward.establishes).toEqual([]);
+    expect(onward.unavailable).toEqual([]);
+  });
+
+  it("flags a constraint read where nothing upstream tracked it", () => {
+    const document = {
+      ...TEST_DOCUMENT,
+      nodes: TEST_DOCUMENT.nodes.map((node) =>
+        node.id === "1" || node.id === "2" ? { ...node, invariantRefs: [] } : node,
+      ),
+    };
+    const dossier = refereeDossier(document, indexDocument(document), document.nodes[3]);
+    expect(dossier.state.unavailable.map((invariant) => invariant.id)).toEqual(["one:1"]);
+  });
+
+  it("does not read the ledger's used-by column as an input", () => {
+    // Without requirement rows the document declares no inputs, and the used-by
+    // column — which names the results that introduce a constraint as readily
+    // as those that rely on it — must not stand in for them.
+    const document = {
+      ...TEST_DOCUMENT,
+      items: TEST_DOCUMENT.items.map((item) => ({ ...item, requires: undefined })),
+    };
+    const state = refereeDossier(document, indexDocument(document), document.nodes[1]).state;
+    expect(state.recorded).toBe(false);
+    expect(state.reads).toEqual([]);
+    expect(state.unavailable).toEqual([]);
+  });
+
+  it("does not call a constraint unavailable when the ledger places it nowhere", () => {
+    const document = {
+      ...TEST_DOCUMENT,
+      nodes: TEST_DOCUMENT.nodes.map((node) => ({ ...node, invariantRefs: [] })),
+      invariants: TEST_DOCUMENT.invariants.map((invariant) => ({ ...invariant, nodes: [] })),
+    };
+    const state = refereeDossier(document, indexDocument(document), document.nodes[1]).state;
+    expect(state.reads.map((invariant) => invariant.id)).toEqual(["one:1"]);
+    expect(state.unavailable).toEqual([]);
+  });
+
+  it("reports a cited constraint the ledger does not list", () => {
+    const document = {
+      ...TEST_DOCUMENT,
+      items: TEST_DOCUMENT.items.map((item) =>
+        item.key === "lem:halving" ? { ...item, requires: "inv 1, 7" } : item,
+      ),
+    };
+    const state = refereeDossier(document, indexDocument(document), document.nodes[1]).state;
+    expect(state.reads.map((invariant) => invariant.id)).toEqual(["one:1"]);
+    expect(state.dangling).toEqual([{ number: 7, items: ["lem:halving"] }]);
+  });
+
+  it("lists the cases of a branch test as drawn", () => {
+    const { cases, checks } = at("2");
+    expect(cases?.branches.map(({ edge, target }) => [edge.branch, target?.id])).toEqual([
+      ["yes", "3"],
+      ["no", "4"],
+    ]);
+    expect(cases?.unlabelled).toBe(0);
+    expect(checks.find((check) => check.id === "branch")?.state).toBe("yes");
+    expect(at("4").cases).toBeUndefined();
+  });
+
+  it("carries the closure of a leaf with its closing results", () => {
+    const { closure, checks } = at("3");
+    expect(closure?.dossier.closingResult).toBe("definition of an odd number");
+    expect(closure?.closingItems.map((item) => item.key)).toEqual(["def:even"]);
+    expect(checks.find((check) => check.id === "branch")?.state).toBe("yes");
+    // The other leaf has no closure row, and the panel must say so rather than fail.
+    expect(at("6").closure).toBeUndefined();
+    expect(at("6").checks.find((check) => check.id === "branch")?.state).toBe("unrecorded");
+  });
+
+  it("measures what falls downstream", () => {
+    const { impact } = at("2");
+    expect(impact.downstreamCount).toBe(4);
+    expect(impact.terminals.map((node) => node.id).sort()).toEqual(["3", "6"]);
+    expect(impact.alsoUsedAt).toEqual(["4"]);
+    expect(at("6").impact.downstreamCount).toBe(0);
+  });
+
+  it("names the results a step builds on, beyond its own", () => {
+    expect(at("2").evidence.builds.map((item) => item.key)).toEqual(["def:even"]);
+    expect(at("2").evidence.items.map((item) => item.key)).toEqual(["lem:halving"]);
+  });
+
+  it("reports the review dimensions the document does not record as such", () => {
+    const checks = at("2").checks;
+    const state = (id: string) => checks.find((check) => check.id === id)?.state;
+    expect(state("manuscript")).toBe("yes");
+    expect(state("dependencies")).toBe("yes");
+    expect(state("located")).toBe("unrecorded"); // no page maps on the toy
+    expect(state("lean")).toBe("unrecorded");
+    expect(state("kernel")).toBe("unrecorded");
+    expect(state("human")).toBe("unrecorded");
+  });
+
+  it("reads a review side-car when the host supplies one", () => {
+    const document = {
+      ...TEST_DOCUMENT,
+      review: { nodes: { "2": { lean: "verified" as const, kernel: "partial" as const, human: "absent" as const } } },
+    };
+    const checks = refereeDossier(document, indexDocument(document), document.nodes[1]).checks;
+    const state = (id: string) => checks.find((check) => check.id === id)?.state;
+    expect(state("lean")).toBe("yes");
+    expect(state("kernel")).toBe("partial");
+    expect(state("human")).toBe("no");
+    expect(state("wired")).toBe("unrecorded");
+  });
+});
+
+describe("requiredInvariantNumbers", () => {
+  it("reads the numbers a requirement names", () => {
+    expect(requiredInvariantNumbers("inv 4, 8, 25; \\cref{lem:x}")).toEqual([4, 8, 25]);
+    expect(requiredInvariantNumbers("invariants 20--24")).toEqual([20, 21, 22, 23, 24]);
+    expect(requiredInvariantNumbers("inv. 3 and \\cref{lem:y}")).toEqual([3]);
+    expect(requiredInvariantNumbers("def:even")).toEqual([]);
+    expect(requiredInvariantNumbers(undefined)).toEqual([]);
   });
 });
 

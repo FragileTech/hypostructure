@@ -1,13 +1,19 @@
 import { useCallback, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 
-import { GraphExplorer, type ExplorerState, type TraceDirection } from "../graph-explorer";
+import {
+  GraphExplorer,
+  type ExplorerMode,
+  type ExplorerState,
+  type TraceDirection,
+} from "../graph-explorer";
 import { useProof } from "../hooks/useProof";
 import { useProofDocument } from "../hooks/useProofDocument";
 import { LoadingPanel, ErrorPanel } from "../components/RequestPanels";
 import { NotFoundPage } from "./NotFoundPage";
 
 const TRACE_VALUES: TraceDirection[] = ["none", "upstream", "downstream", "both"];
+const MODE_VALUES: ExplorerMode[] = ["reader", "referee"];
 
 const KEYS: Record<keyof ExplorerState, string> = {
   selected: "step",
@@ -16,10 +22,13 @@ const KEYS: Record<keyof ExplorerState, string> = {
   trace: "trace",
   query: "q",
   item: "result",
+  mode: "mode",
+  constraint: "constraint",
 };
 
-function readState(parameters: URLSearchParams): ExplorerState {
+export function readState(parameters: URLSearchParams): ExplorerState {
   const trace = parameters.get(KEYS.trace) as TraceDirection | null;
+  const mode = parameters.get(KEYS.mode) as ExplorerMode | null;
   return {
     selected: parameters.get(KEYS.selected),
     chapter: parameters.get(KEYS.chapter),
@@ -29,6 +38,10 @@ function readState(parameters: URLSearchParams): ExplorerState {
     trace: trace && TRACE_VALUES.includes(trace) ? trace : "none",
     query: parameters.get(KEYS.query) ?? "",
     item: parameters.get(KEYS.item),
+    // Reading is the default; a referee asks for the other view, and the link
+    // carries it so a view can be handed on.
+    mode: mode && MODE_VALUES.includes(mode) ? mode : "reader",
+    constraint: parameters.get(KEYS.constraint),
   };
 }
 
@@ -45,7 +58,9 @@ export function ExplorePage() {
           const next = new URLSearchParams(current);
           for (const [field, value] of Object.entries(patch)) {
             const key = KEYS[field as keyof ExplorerState];
-            if (value === null || value === "" || (field === "trace" && value === "none")) {
+            const isDefault =
+              (field === "trace" && value === "none") || (field === "mode" && value === "reader");
+            if (value === null || value === "" || isDefault) {
               next.delete(key);
             } else {
               next.set(key, String(value));

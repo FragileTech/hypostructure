@@ -8,6 +8,20 @@
 
 export { GraphExplorer, type ExplorerState, type GraphExplorerProps } from "./GraphExplorer";
 export { NodeDetailPanel, type NodeDetailPanelProps } from "./NodeDetailPanel";
+export { RefereePanel } from "./RefereePanel";
+export {
+  refereeDossier,
+  requiredInvariantNumbers,
+  type RefereeDossier,
+  type RefereeState,
+  type RefereeCases,
+  type RefereeClosure,
+  type RefereeEvidence,
+  type RefereeImpact,
+  type RefereeSource,
+  type ReviewCheck,
+} from "./referee";
+export { BranchList, ItemDisclosure, KIND_ORDER, KIND_HEADINGS, KIND_LABELS } from "./DetailParts";
 export { TableView, type TableViewProps } from "./TableView";
 export { ProofFlowNode, SHAPE_NAMES, nodeTypes } from "./ProofFlowNode";
 export { Latex, MathProvider, type Reference } from "./Latex";
@@ -18,5 +32,6 @@ export { layoutGraph, type LayoutBox, type LayoutLink, type LayoutOptions } from
 export { traceFrom, type Trace } from "./trace";
 export { buildSearchIndex, matchNodes, nodeSearchText } from "./search";
 export { createReferenceResolver } from "./references";
+export { locate, type SourceLocation } from "./locate";
 export { useDetailWidth, clampDetailWidth, DEFAULT_DETAIL_WIDTH } from "./useDetailWidth";
 export type * from "./types";

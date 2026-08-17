@@ -1,4 +1,5 @@
 import type { Reference } from "./Latex";
+import { locate } from "./locate";
 import type { ProofGraphDocument, ProofIndex } from "./types";
 
 /**
@@ -39,19 +40,22 @@ export function createReferenceResolver(
         : {
             label: item.title || item.key.replace(/^.*?\//, ""),
             actionable: false,
-            preview: item.statementLatex,
+            preview: { kind: "statement", source: item.statementLatex },
           };
     }
 
     const equation = lookup(index.equationByKey, key);
     if (equation) {
       // The number is this site's own, counted over the displays the paper
-      // labels; the key and line say exactly which display it is.
+      // labels; the key and place say exactly which display it is.
+      const where = locate(document, equation.chapter, equation.key);
       return {
         label: `(${equation.number})`,
         actionable: false,
-        preview: equation.latex,
-        note: `${equation.key.replace(/^.*?\//, "")} · line ${equation.sourceLine}`,
+        preview: { kind: "math", source: equation.latex },
+        note: `${equation.key.replace(/^.*?\//, "")} · ${
+          where ? `page ${where.page}` : `line ${equation.sourceLine}`
+        }`,
       };
     }
 

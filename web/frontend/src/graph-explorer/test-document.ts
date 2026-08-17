@@ -170,7 +170,7 @@ export const TEST_DOCUMENT: ProofGraphDocument = {
         "If $n$ is even, so that \\eqref{eq:halving} holds, then $n/2$ is an integer.",
       plain: "Halving an even number lands on an integer.",
       role: "Lets the argument recurse.",
-      requires: "def:even",
+      requires: "inv 1; \\cref{def:even}",
       requiresItems: ["def:even"],
       sourceLine: 20,
     },

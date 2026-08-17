@@ -28,11 +28,24 @@ export interface PaperFile {
   file: string;
   /** How the header names it; short, since several may sit side by side. */
   title: string;
+  /**
+   * The chapter of the extracted document this manuscript is, as its items and
+   * equations name it in `chapter`; the slug for a one-manuscript proof.
+   */
+  chapter: string;
 }
 
 /** Where a manuscript's PDF is served from. */
 export function paperUrl(paper: PaperFile): string {
   return `${import.meta.env.BASE_URL}papers/${paper.file}`;
+}
+
+/**
+ * Where a manuscript's page map is served from: the page every label of the
+ * PDF lands on, written by `web/tools/extract_page_map.py`.
+ */
+export function pageMapUrl(paper: PaperFile): string {
+  return `${import.meta.env.BASE_URL}data/pages/${paper.file.replace(/\.pdf$/, "")}.json`;
 }
 
 export const PROOFS: ProofEntry[] = [
@@ -44,7 +57,7 @@ export const PROOFS: ProofEntry[] = [
       "Does every graph with minimum degree three contain a cycle whose length is a power of two?",
     tagline:
       "Erdős and Gyárfás asked this in 1995. One manuscript, 157 steps, answered by contradiction.",
-    papers: [{ file: "original_erdos_64_proof.pdf", title: "The paper" }],
+    papers: [{ file: "original_erdos_64_proof.pdf", title: "The paper", chapter: "erdos-gyarfas" }],
     overview: [
       "Erdős and Gyárfás asked this in 1995. The paper this site accompanies answers yes, and it does so by contradiction: assume a counterexample exists, take the smallest one, and squeeze it until nothing is left. The argument is long, and it branches. This is a way to walk it.",
       "A cycle of length $2^k$ exists exactly when some edge has a return path of length $2^k-1$ — a Mersenne number. That turns a question about geometry into one about arithmetic, and it is the target the whole proof aims at. If a minimal counterexample $G$ exists, then no edge of it has such a return, and every later step is a consequence of that single prohibition.",
@@ -60,9 +73,9 @@ export const PROOFS: ProofEntry[] = [
     tagline:
       "Three manuscripts, 333 steps, closing every way a local singularity could form.",
     papers: [
-      { file: "proof_setup.pdf", title: "Setup" },
-      { file: "type_I_residual_closure.pdf", title: "Type I residual" },
-      { file: "type_II_regularity.pdf", title: "Type II regularity" },
+      { file: "proof_setup.pdf", title: "Setup", chapter: "setup" },
+      { file: "type_I_residual_closure.pdf", title: "Type I residual", chapter: "type-i" },
+      { file: "type_II_regularity.pdf", title: "Type II regularity", chapter: "type-ii" },
     ],
     overview: [
       "Suppose a finite-energy suitable weak solution does go singular at some point in space and time. The local Caffarelli–Kohn–Nirenberg theory says a positive amount of critical mass must concentrate there. The argument this site accompanies takes that concentration apart, and shows every way it could happen is impossible.",

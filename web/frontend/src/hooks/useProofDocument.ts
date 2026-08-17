@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 
 import type { ProofGraphDocument } from "../graph-explorer";
 import { loadProofDocument } from "../proofs/document";
+import { loadProofSources } from "../proofs/pages";
+import { findProof } from "../proofs/registry";
 
 export type DocumentState =
   | { status: "loading" }
@@ -18,8 +20,11 @@ export function useProofDocument(slug: string): DocumentState {
 
     let active = true;
     setState({ status: "loading" });
-    loadProofDocument(slug).then(
-      (document) => active && setState({ status: "ready", document }),
+    // The PDFs' page maps ride along so a result can say which page it is on;
+    // they are a convenience, so a failure there leaves the document intact.
+    const proof = findProof(slug);
+    Promise.all([loadProofDocument(slug), proof ? loadProofSources(proof) : {}]).then(
+      ([document, sources]) => active && setState({ status: "ready", document: { ...document, sources } }),
       (error: Error) => active && setState({ status: "error", error }),
     );
     return () => {

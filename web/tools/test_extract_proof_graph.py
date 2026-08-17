@@ -16,6 +16,7 @@ import pytest  # noqa: E402
 from papers import SPECS  # noqa: E402
 from papers import navier_stokes  # noqa: E402
 from proof_graph import build_document  # noqa: E402
+from extract_page_map import build_page_map  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -24,6 +25,13 @@ ERDOS = DOCUMENTS["erdos-gyarfas"]
 NAVIER_STOKES = DOCUMENTS["navier-stokes"]
 
 every = pytest.mark.parametrize("document", DOCUMENTS.values(), ids=list(DOCUMENTS))
+
+# One page map per manuscript, keyed by the chapter id its records carry.
+PAGE_MAPS = {
+    chapter.id: build_page_map(chapter, REPO_ROOT)
+    for spec in SPECS.values()
+    for chapter in spec.chapters
+}
 
 
 # --------------------------------------------------------------- every proof --
@@ -290,6 +298,66 @@ def test_erdos_external_theorem_reads_correctly() -> None:
     assert any("thm:p13free" in block["itemRefs"] for block in node["blocks"])
 
 
+_REQUIRED_INVARIANTS = re.compile(r"\binv(?:ariants?)?\.?\s+([\d,\s\u2013-]+)", re.I)
+
+
+def required_invariants(requires: str) -> set[int]:
+    """The ledger numbers a Requires cell names, e.g. ``inv 4, 8, 25`` or ``20--24``."""
+    numbers: set[int] = set()
+    for match in _REQUIRED_INVARIANTS.finditer(requires or ""):
+        for part in match.group(1).split(","):
+            part = part.strip()
+            span = re.fullmatch(r"(\d+)\s*[\u2013-]+\s*(\d+)", part)
+            if span:
+                numbers.update(range(int(span.group(1)), int(span.group(2)) + 1))
+            elif part.isdigit():
+                numbers.add(int(part))
+    return numbers
+
+
+def test_erdos_requires_only_constraints_tracked_upstream() -> None:
+    """The paper's own rule for its requirement rows, checked along the diagram.
+
+    Every ``inv N`` a result's Requires cell names must be a ledger row, and must
+    be tracked at the step the result is attached to or at some step upstream of
+    it — never only on a sibling branch. A referee reading a step then sees each
+    declared input already on the table.
+    """
+    invariants = {row["number"]: row for row in ERDOS["invariants"]}
+    tracked_at: dict[str, set[int]] = {node["id"]: set() for node in ERDOS["nodes"]}
+    for row in ERDOS["invariants"]:
+        for node_id in row["nodes"]:
+            tracked_at[node_id].add(row["number"])
+
+    incoming: dict[str, list[str]] = {}
+    for edge in ERDOS["edges"]:
+        incoming.setdefault(edge["target"], []).append(edge["source"])
+
+    def available(node_id: str) -> set[int]:
+        seen = {node_id}
+        queue = [node_id]
+        while queue:
+            for source in incoming.get(queue.pop(), []):
+                if source not in seen:
+                    seen.add(source)
+                    queue.append(source)
+        return set().union(*(tracked_at[step] for step in seen))
+
+    items = {item["key"]: item for item in ERDOS["items"]}
+    dangling: list[str] = []
+    early: list[str] = []
+    for node in ERDOS["nodes"]:
+        on_hand = available(node["id"])
+        for key in node["itemRefs"]:
+            for number in required_invariants(items[key].get("requires", "")):
+                if number not in invariants:
+                    dangling.append(f"{key} cites inv {number}")
+                elif number not in on_hand:
+                    early.append(f"[{node['id']}] {key} requires inv {number}, tracked at {invariants[number]['nodes']}")
+    assert sorted(set(dangling)) == []
+    assert early == []
+
+
 # --------------------------------------------------------- the Navier-Stokes --
 
 
@@ -323,6 +391,50 @@ def test_navier_stokes_summaries_come_from_the_manuscripts() -> None:
     assert len(NAVIER_STOKES["groups"]) == 23
     for group in NAVIER_STOKES["groups"]:
         assert group["summary"].strip()
+
+
+# ---------------------------------------------------------------- page maps --
+
+
+def _raw_key(key: str) -> str:
+    """The label as written in the paper: multi-chapter proofs prefix it."""
+    return key.split("/", 1)[1] if "/" in key else key
+
+
+@every
+def test_every_stated_result_has_a_page_in_its_pdf(document) -> None:
+    for collection in ("items", "equations"):
+        for record in document[collection]:
+            page_map = PAGE_MAPS[record["chapter"]]
+            entry = page_map["labels"].get(_raw_key(record["key"]))
+            assert entry, record["key"]
+            # The graph records the ``\\begin`` line; the label follows it, at
+            # the end of the display in the case of a long equation.
+            assert 0 <= entry["line"] - record["sourceLine"] <= 20, record["key"]
+            assert entry["page"] and 1 <= entry["page"] <= page_map["pages"], record["key"]
+
+
+@pytest.mark.parametrize("page_map", PAGE_MAPS.values(), ids=list(PAGE_MAPS))
+def test_page_maps_are_complete_and_consistent(page_map) -> None:
+    assert page_map["pdf"].endswith(".pdf") and page_map["pages"] > 0
+    labels = page_map["labels"]
+    assert labels
+    # Every label of the source landed on a page of this build, and vice versa.
+    assert all(entry["line"] and entry["page"] for entry in labels.values())
+    # Numbered results are placed in reading order: a later line is never on
+    # an earlier page, up to the slack a page break inside a statement allows.
+    theorems = sorted(
+        (entry["line"], entry["page"])
+        for entry in labels.values()
+        if (entry["anchor"] or "").startswith("theorem.")
+    )
+    for (_, before), (_, after) in zip(theorems, theorems[1:]):
+        assert after >= before - 1
+
+
+def test_the_page_maps_name_the_pdfs_the_site_serves() -> None:
+    served = {path.name for path in (REPO_ROOT / "web" / "frontend" / "public" / "papers").glob("*.pdf")}
+    assert {page_map["pdf"] for page_map in PAGE_MAPS.values()} <= served
 
 
 def test_navier_stokes_papers_are_joined() -> None:

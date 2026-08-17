@@ -1,0 +1,1664 @@
+{
+ "pdf": "proof_setup.pdf",
+ "tex": "to_formalize/proof_setup.tex",
+ "chapter": "setup",
+ "pages": 100,
+ "labels": {
+  "sec:local-typeI-proof-architecture": {
+   "line": 217,
+   "page": 5,
+   "number": "1",
+   "anchor": "section.1"
+  },
+  "subsec:local-typeI-diagram-map": {
+   "line": 258,
+   "page": 6,
+   "number": "1.1",
+   "anchor": "subsection.1.1"
+  },
+  "tab:local-typeI-proof-diagram-map": {
+   "line": 271,
+   "page": 6,
+   "number": "1",
+   "anchor": "table.1"
+  },
+  "subsec:local-typeI-proof-diagram": {
+   "line": 293,
+   "page": 7,
+   "number": "1.2",
+   "anchor": "subsection.1.2"
+  },
+  "fig:local-typeI-proof-flow-entry": {
+   "line": 351,
+   "page": 8,
+   "number": "1",
+   "anchor": "figure.1"
+  },
+  "fig:local-typeI-proof-flow-exhaustion": {
+   "line": 433,
+   "page": 9,
+   "number": "2",
+   "anchor": "figure.2"
+  },
+  "subsec:local-typeI-node-audit": {
+   "line": 440,
+   "page": 10,
+   "number": "1.3",
+   "anchor": "subsection.1.3"
+  },
+  "tab:local-typeI-proof-node-ledger": {
+   "line": 453,
+   "page": 10,
+   "number": "2",
+   "anchor": "table.2"
+  },
+  "subsec:local-typeI-monotone-ledger": {
+   "line": 591,
+   "page": 12,
+   "number": "1.4",
+   "anchor": "subsection.1.4"
+  },
+  "tab:local-typeI-monotone-ledger": {
+   "line": 604,
+   "page": 12,
+   "number": "3",
+   "anchor": "table.3"
+  },
+  "subsec:local-typeI-closure-ledger": {
+   "line": 638,
+   "page": 12,
+   "number": "1.5",
+   "anchor": "subsection.1.5"
+  },
+  "tab:local-typeI-branch-closure-ledger": {
+   "line": 651,
+   "page": 13,
+   "number": "4",
+   "anchor": "table.4"
+  },
+  "p0:lem:temporal-cutoff": {
+   "line": 821,
+   "page": 15,
+   "number": "3.3",
+   "anchor": "lemma.3.3"
+  },
+  "p0:prop:critical-scaling": {
+   "line": 918,
+   "page": 16,
+   "number": "4.3",
+   "anchor": "proposition.4.3"
+  },
+  "p0:thm:ckn": {
+   "line": 1000,
+   "page": 17,
+   "number": "5.1",
+   "anchor": "theorem.5.1"
+  },
+  "p0:thm:velocity-ckn": {
+   "line": 1020,
+   "page": 17,
+   "number": "5.2",
+   "anchor": "theorem.5.2"
+  },
+  "p0:prop:vanishing-rescaled": {
+   "line": 1056,
+   "page": 18,
+   "number": "5.4",
+   "anchor": "proposition.5.4"
+  },
+  "p0:thm:no-concentration": {
+   "line": 1079,
+   "page": 18,
+   "number": "5.5",
+   "anchor": "theorem.5.5"
+  },
+  "p0:cor:escape": {
+   "line": 1099,
+   "page": 18,
+   "number": "5.6",
+   "anchor": "corollary.5.6"
+  },
+  "p0:lem:positive-concentration": {
+   "line": 1120,
+   "page": 18,
+   "number": "6.1",
+   "anchor": "lemma.6.1"
+  },
+  "p0:def:positive-concentration-sequence": {
+   "line": 1145,
+   "page": 19,
+   "number": "6.2",
+   "anchor": "definition.6.2"
+  },
+  "p0:prop:compactness-persistence": {
+   "line": 1161,
+   "page": 19,
+   "number": "6.3",
+   "anchor": "proposition.6.3"
+  },
+  "p0:prop:velocity-persistence": {
+   "line": 1210,
+   "page": 19,
+   "number": "6.5",
+   "anchor": "proposition.6.5"
+  },
+  "p0:prop:local-alternative": {
+   "line": 1226,
+   "page": 19,
+   "number": "6.6",
+   "anchor": "proposition.6.6"
+  },
+  "p0:thm:singular-positive": {
+   "line": 1255,
+   "page": 20,
+   "number": "6.7",
+   "anchor": "theorem.6.7"
+  },
+  "p0:cor:velocity-concentration": {
+   "line": 1273,
+   "page": 20,
+   "number": "6.8",
+   "anchor": "corollary.6.8"
+  },
+  "p0:prop:concentration-package": {
+   "line": 1301,
+   "page": 20,
+   "number": "6.9",
+   "anchor": "proposition.6.9"
+  },
+  "p0:sec:auto-no-escape": {
+   "line": 1330,
+   "page": 20,
+   "number": "7",
+   "anchor": "section.7"
+  },
+  "p0:def:finite-energy-typeI-paper0": {
+   "line": 1356,
+   "page": 21,
+   "number": "7.1",
+   "anchor": "definition.7.1"
+  },
+  "p0:eq:paper0-global-typeI": {
+   "line": 1365,
+   "page": 21,
+   "number": "7.1",
+   "anchor": "equation.7.1"
+  },
+  "p0:lem:uloc-typeI-propagation": {
+   "line": 1401,
+   "page": 21,
+   "number": "7.2",
+   "anchor": "lemma.7.2"
+  },
+  "p0:eq:unit-typeI-envelope": {
+   "line": 1406,
+   "page": 21,
+   "number": "7.2",
+   "anchor": "equation.7.2"
+  },
+  "p0:eq:unit-uloc-initial": {
+   "line": 1411,
+   "page": 21,
+   "number": "7.3",
+   "anchor": "equation.7.3"
+  },
+  "p0:eq:unit-uloc-bound": {
+   "line": 1418,
+   "page": 21,
+   "number": "7.4",
+   "anchor": "equation.7.4"
+  },
+  "p0:eq:alpha-typeI-trivial": {
+   "line": 1435,
+   "page": 22,
+   "number": "7.5",
+   "anchor": "equation.7.5"
+  },
+  "p0:eq:lei-unit-estimate": {
+   "line": 1456,
+   "page": 22,
+   "number": "7.6",
+   "anchor": "equation.7.6"
+  },
+  "p0:eq:cubic-unit-bound": {
+   "line": 1468,
+   "page": 22,
+   "number": "7.7",
+   "anchor": "equation.7.7"
+  },
+  "p0:eq:local-pressure-unit": {
+   "line": 1493,
+   "page": 22,
+   "number": "7.8",
+   "anchor": "equation.7.8"
+  },
+  "p0:eq:harmonic-pressure-unit": {
+   "line": 1513,
+   "page": 23,
+   "number": "7.9",
+   "anchor": "equation.7.9"
+  },
+  "p0:eq:harmonic-pressure-flux-unit": {
+   "line": 1524,
+   "page": 23,
+   "number": "7.10",
+   "anchor": "equation.7.10"
+  },
+  "p0:eq:pressure-flux-unit": {
+   "line": 1530,
+   "page": 23,
+   "number": "7.11",
+   "anchor": "equation.7.11"
+  },
+  "p0:rem:state-space-stratification": {
+   "line": 1551,
+   "page": 23,
+   "number": "7.3",
+   "anchor": "remark.7.3"
+  },
+  "p0:prop:auto-terminal-A": {
+   "line": 1565,
+   "page": 23,
+   "number": "7.4",
+   "anchor": "proposition.7.4"
+  },
+  "p0:eq:auto-A-bound": {
+   "line": 1570,
+   "page": 23,
+   "number": "7.12",
+   "anchor": "equation.7.12"
+  },
+  "p0:eq:auto-E-bound": {
+   "line": 1575,
+   "page": 23,
+   "number": "7.13",
+   "anchor": "equation.7.13"
+  },
+  "p0:thm:auto-velocity-no-escape": {
+   "line": 1622,
+   "page": 24,
+   "number": "7.5",
+   "anchor": "theorem.7.5"
+  },
+  "p0:eq:auto-no-escape": {
+   "line": 1629,
+   "page": 24,
+   "number": "7.14",
+   "anchor": "equation.7.14"
+  },
+  "p0:cor:auto-paperI-admissibility": {
+   "line": 1683,
+   "page": 25,
+   "number": "7.6",
+   "anchor": "corollary.7.6"
+  },
+  "p0:def:typeI-concentration": {
+   "line": 1719,
+   "page": 25,
+   "number": "8.1",
+   "anchor": "definition.8.1"
+  },
+  "p0:def:typeII-alternative": {
+   "line": 1734,
+   "page": 25,
+   "number": "8.2",
+   "anchor": "definition.8.2"
+  },
+  "p0:thm:typeI-typeII-dichotomy": {
+   "line": 1747,
+   "page": 25,
+   "number": "8.3",
+   "anchor": "theorem.8.3"
+  },
+  "p0:sec:local-typeI-terminal-reduction-paper0": {
+   "line": 1783,
+   "page": 26,
+   "number": "9",
+   "anchor": "section.9"
+  },
+  "p0:def:paper0-admissible-local-typeI-sequence": {
+   "line": 1803,
+   "page": 26,
+   "number": "9.1",
+   "anchor": "definition.9.1"
+  },
+  "p0:prop:paper0-local-typeI-terminal-compactness": {
+   "line": 1824,
+   "page": 26,
+   "number": "9.2",
+   "anchor": "proposition.9.2"
+  },
+  "p0:eq:paper0-local-typeI-bound": {
+   "line": 1833,
+   "page": 26,
+   "number": "9.1",
+   "anchor": "equation.9.1"
+  },
+  "p0:eq:paper0-local-typeI-rescaling": {
+   "line": 1838,
+   "page": 26,
+   "number": "9.2",
+   "anchor": "equation.9.2"
+  },
+  "p0:eq:paper0-local-typeI-Linfty": {
+   "line": 1851,
+   "page": 26,
+   "number": "9.3",
+   "anchor": "equation.9.3"
+  },
+  "p0:eq:paper0-local-typeI-Seregin-bounds": {
+   "line": 1857,
+   "page": 26,
+   "number": "9.4",
+   "anchor": "equation.9.4"
+  },
+  "p0:lem:terminal-A-from-weak-serrin": {
+   "line": 1987,
+   "page": 28,
+   "number": "9.3",
+   "anchor": "lemma.9.3"
+  },
+  "p0:thm:local-weak-serrin-typeI": {
+   "line": 2064,
+   "page": 29,
+   "number": "9.4",
+   "anchor": "theorem.9.4"
+  },
+  "p0:cor:paper0-local-typeI-admissible": {
+   "line": 2127,
+   "page": 29,
+   "number": "9.5",
+   "anchor": "corollary.9.5"
+  },
+  "p0:lem:paper0-local-typeI-into-terminal-dichotomy": {
+   "line": 2150,
+   "page": 30,
+   "number": "9.6",
+   "anchor": "lemma.9.6"
+  },
+  "p0:eq:paper0-local-typeI-away-mass": {
+   "line": 2161,
+   "page": 30,
+   "number": "9.5",
+   "anchor": "equation.9.5"
+  },
+  "p0:lem:local-seregin-extraction": {
+   "line": 2188,
+   "page": 30,
+   "number": "9.7",
+   "anchor": "lemma.9.7"
+  },
+  "p0:prop:local-typeI-entry-final-assembly": {
+   "line": 2232,
+   "page": 31,
+   "number": "9.8",
+   "anchor": "proposition.9.8"
+  },
+  "p0:cor:paper0-local-typeII-after-local-typeI-reduction": {
+   "line": 2277,
+   "page": 31,
+   "number": "9.9",
+   "anchor": "corollary.9.9"
+  },
+  "p1:sec:introduction": {
+   "line": 2341,
+   "page": 32,
+   "number": "10",
+   "anchor": "section.10"
+  },
+  "p1:eq:NS": {
+   "line": 2347,
+   "page": 32,
+   "number": "10.1",
+   "anchor": "equation.10.1"
+  },
+  "p1:eq:type-I-bound": {
+   "line": 2354,
+   "page": 32,
+   "number": "10.2",
+   "anchor": "equation.10.2"
+  },
+  "p1:eq:centered": {
+   "line": 2392,
+   "page": 32,
+   "number": "10.3",
+   "anchor": "equation.10.3"
+  },
+  "p1:eq:nonvanishing": {
+   "line": 2401,
+   "page": 33,
+   "number": "10.4",
+   "anchor": "equation.10.4"
+  },
+  "p1:thm:extraction": {
+   "line": 2429,
+   "page": 33,
+   "number": "10.1",
+   "anchor": "theorem.10.1"
+  },
+  "p1:thm:remaining-criterion": {
+   "line": 2470,
+   "page": 33,
+   "number": "10.2",
+   "anchor": "theorem.10.2"
+  },
+  "p1:sec:two-entry-points": {
+   "line": 2542,
+   "page": 34,
+   "number": "10.6",
+   "anchor": "subsection.10.6"
+  },
+  "p1:sec:prelim": {
+   "line": 2601,
+   "page": 35,
+   "number": "11",
+   "anchor": "section.11"
+  },
+  "p1:def:terminal-singular": {
+   "line": 2615,
+   "page": 35,
+   "number": "11.1",
+   "anchor": "definition.11.1"
+  },
+  "p1:def:suitable": {
+   "line": 2625,
+   "page": 35,
+   "number": "11.2",
+   "anchor": "definition.11.2"
+  },
+  "p1:eq:lei": {
+   "line": 2638,
+   "page": 35,
+   "number": "11.1",
+   "anchor": "equation.11.1"
+  },
+  "p1:def:suitable-leray-hopf": {
+   "line": 2657,
+   "page": 35,
+   "number": "11.3",
+   "anchor": "definition.11.3"
+  },
+  "p1:eq:C-D-def": {
+   "line": 2678,
+   "page": 36,
+   "number": "11.2",
+   "anchor": "equation.11.2"
+  },
+  "p1:eq:C-D-def-2": {
+   "line": 2682,
+   "page": 36,
+   "number": "11.3",
+   "anchor": "equation.11.3"
+  },
+  "p1:eq:E-I-def": {
+   "line": 2688,
+   "page": 36,
+   "number": "11.4",
+   "anchor": "equation.11.4"
+  },
+  "p1:def:admissible-type-I": {
+   "line": 2692,
+   "page": 36,
+   "number": "11.4",
+   "anchor": "definition.11.4"
+  },
+  "p1:eq:velocity-no-escape": {
+   "line": 2711,
+   "page": 36,
+   "number": "11.5",
+   "anchor": "equation.11.5"
+  },
+  "p1:lem:A-seq-no-escape": {
+   "line": 2732,
+   "page": 36,
+   "number": "11.6",
+   "anchor": "lemma.11.6"
+  },
+  "p1:prop:local-velocity-concentration": {
+   "line": 2789,
+   "page": 37,
+   "number": "11.7",
+   "anchor": "proposition.11.7"
+  },
+  "p1:lem:scaling": {
+   "line": 2810,
+   "page": 37,
+   "number": "11.8",
+   "anchor": "lemma.11.8"
+  },
+  "p1:lem:gauges": {
+   "line": 2879,
+   "page": 38,
+   "number": "11.9",
+   "anchor": "lemma.11.9"
+  },
+  "p1:sec:blowup-compactness": {
+   "line": 2909,
+   "page": 38,
+   "number": "12",
+   "anchor": "section.12"
+  },
+  "p1:eq:type-I-pointwise": {
+   "line": 2914,
+   "page": 38,
+   "number": "12.1",
+   "anchor": "equation.12.1"
+  },
+  "p1:eq:rescaled-sequence": {
+   "line": 2920,
+   "page": 38,
+   "number": "12.2",
+   "anchor": "equation.12.2"
+  },
+  "p1:lem:inherited-bound": {
+   "line": 2930,
+   "page": 38,
+   "number": "12.1",
+   "anchor": "lemma.12.1"
+  },
+  "p1:lem:pressure": {
+   "line": 2959,
+   "page": 39,
+   "number": "12.2",
+   "anchor": "lemma.12.2"
+  },
+  "p1:lem:gauge-compatibility": {
+   "line": 3093,
+   "page": 40,
+   "number": "12.3",
+   "anchor": "lemma.12.3"
+  },
+  "p1:lem:pressure-atlas": {
+   "line": 3134,
+   "page": 41,
+   "number": "12.4",
+   "anchor": "lemma.12.4"
+  },
+  "p1:rem:pressure-atlas": {
+   "line": 3168,
+   "page": 41,
+   "number": "12.5",
+   "anchor": "remark.12.5"
+  },
+  "p1:lem:energy-diss": {
+   "line": 3180,
+   "page": 41,
+   "number": "12.6",
+   "anchor": "lemma.12.6"
+  },
+  "p1:lem:time-derivative": {
+   "line": 3231,
+   "page": 42,
+   "number": "12.7",
+   "anchor": "lemma.12.7"
+  },
+  "p1:prop:compactness": {
+   "line": 3301,
+   "page": 43,
+   "number": "12.8",
+   "anchor": "proposition.12.8"
+  },
+  "p1:lem:limit-equation": {
+   "line": 3355,
+   "page": 43,
+   "number": "12.9",
+   "anchor": "lemma.12.9"
+  },
+  "p1:lem:suitability": {
+   "line": 3390,
+   "page": 43,
+   "number": "12.10",
+   "anchor": "lemma.12.10"
+  },
+  "p1:lem:limit-bound": {
+   "line": 3443,
+   "page": 44,
+   "number": "12.11",
+   "anchor": "lemma.12.11"
+  },
+  "p1:prop:ancient-limit": {
+   "line": 3462,
+   "page": 44,
+   "number": "12.12",
+   "anchor": "proposition.12.12"
+  },
+  "p1:sec:nontriviality": {
+   "line": 3473,
+   "page": 44,
+   "number": "13",
+   "anchor": "section.13"
+  },
+  "p1:lem:scale-selection": {
+   "line": 3485,
+   "page": 45,
+   "number": "13.1",
+   "anchor": "lemma.13.1"
+  },
+  "p1:eq:selected-lower-bound": {
+   "line": 3493,
+   "page": 45,
+   "number": "13.1",
+   "anchor": "equation.13.1"
+  },
+  "p1:prop:nonzero": {
+   "line": 3523,
+   "page": 45,
+   "number": "13.2",
+   "anchor": "proposition.13.2"
+  },
+  "p1:sec:seregin": {
+   "line": 3553,
+   "page": 46,
+   "number": "14",
+   "anchor": "section.14"
+  },
+  "p1:rem:centered-gauge": {
+   "line": 3570,
+   "page": 46,
+   "number": "14.1",
+   "anchor": "remark.14.1"
+  },
+  "p1:lem:centered-pullback-identities": {
+   "line": 3579,
+   "page": 46,
+   "number": "14.2",
+   "anchor": "lemma.14.2"
+  },
+  "p1:lem:renormalized-equation": {
+   "line": 3607,
+   "page": 46,
+   "number": "14.3",
+   "anchor": "lemma.14.3"
+  },
+  "p1:lem:smoothness": {
+   "line": 3637,
+   "page": 47,
+   "number": "14.4",
+   "anchor": "lemma.14.4"
+  },
+  "p1:cor:classical-type-I-bound": {
+   "line": 3670,
+   "page": 47,
+   "number": "14.5",
+   "anchor": "corollary.14.5"
+  },
+  "p1:lem:renorm-bounds": {
+   "line": 3693,
+   "page": 47,
+   "number": "14.6",
+   "anchor": "lemma.14.6"
+  },
+  "p1:lem:centered-local-energy": {
+   "line": 3724,
+   "page": 48,
+   "number": "14.7",
+   "anchor": "lemma.14.7"
+  },
+  "p1:rem:no-global-tightness": {
+   "line": 3774,
+   "page": 48,
+   "number": "14.8",
+   "anchor": "remark.14.8"
+  },
+  "p1:def:admissible-type-I-extraction": {
+   "line": 3783,
+   "page": 48,
+   "number": "14.9",
+   "anchor": "definition.14.9"
+  },
+  "p1:def:seregin-limit": {
+   "line": 3797,
+   "page": 48,
+   "number": "14.10",
+   "anchor": "definition.14.10"
+  },
+  "p1:cor:raw-extracted-nonzero": {
+   "line": 3809,
+   "page": 48,
+   "number": "14.11",
+   "anchor": "corollary.14.11"
+  },
+  "p1:lem:compact-to-invariant-nonzero": {
+   "line": 3824,
+   "page": 49,
+   "number": "14.12",
+   "anchor": "lemma.14.12"
+  },
+  "p1:eq:invariant-nonvanishing": {
+   "line": 3830,
+   "page": 49,
+   "number": "14.1",
+   "anchor": "equation.14.1"
+  },
+  "p1:def:raw-generated-seregin-space": {
+   "line": 3852,
+   "page": 49,
+   "number": "14.13",
+   "anchor": "definition.14.13"
+  },
+  "p1:def:seregin-collection": {
+   "line": 3853,
+   "page": 49,
+   "number": "14.13",
+   "anchor": "definition.14.13"
+  },
+  "p1:def:mild-stratum": {
+   "line": 3900,
+   "page": 49,
+   "number": "14.14",
+   "anchor": "definition.14.14"
+  },
+  "p1:rem:generated-hull": {
+   "line": 3925,
+   "page": 50,
+   "number": "14.15",
+   "anchor": "remark.14.15"
+  },
+  "p1:lem:raw-generated-closure-stability": {
+   "line": 3936,
+   "page": 50,
+   "number": "14.16",
+   "anchor": "lemma.14.16"
+  },
+  "p1:lem:mild-stratum-stability": {
+   "line": 3964,
+   "page": 50,
+   "number": "14.17",
+   "anchor": "lemma.14.17"
+  },
+  "p1:cor:normalized-nonzero": {
+   "line": 4009,
+   "page": 51,
+   "number": "14.19",
+   "anchor": "corollary.14.19"
+  },
+  "p1:sec:classes": {
+   "line": 4042,
+   "page": 51,
+   "number": "15",
+   "anchor": "section.15"
+  },
+  "p1:def:small-class": {
+   "line": 4061,
+   "page": 51,
+   "number": "15.1",
+   "anchor": "definition.15.1"
+  },
+  "p1:def:stationary-class": {
+   "line": 4072,
+   "page": 51,
+   "number": "15.2",
+   "anchor": "definition.15.2"
+  },
+  "p1:def:tight-class": {
+   "line": 4081,
+   "page": 51,
+   "number": "15.3",
+   "anchor": "definition.15.3"
+  },
+  "p1:eq:L3-tightness": {
+   "line": 4087,
+   "page": 51,
+   "number": "15.1",
+   "anchor": "equation.15.1"
+  },
+  "p1:def:known-structure-decay-class": {
+   "line": 4099,
+   "page": 51,
+   "number": "15.4",
+   "anchor": "definition.15.4"
+  },
+  "p1:lem:structure-centering": {
+   "line": 4143,
+   "page": 52,
+   "number": "15.6",
+   "anchor": "lemma.15.6"
+  },
+  "p1:def:remaining-class": {
+   "line": 4163,
+   "page": 52,
+   "number": "15.7",
+   "anchor": "definition.15.7"
+  },
+  "p1:rem:single-vs-collection": {
+   "line": 4203,
+   "page": 53,
+   "number": "15.10",
+   "anchor": "remark.15.10"
+  },
+  "p1:prop:exhaustion": {
+   "line": 4213,
+   "page": 53,
+   "number": "15.11",
+   "anchor": "proposition.15.11"
+  },
+  "p1:sec:liouville": {
+   "line": 4260,
+   "page": 53,
+   "number": "16",
+   "anchor": "section.16"
+  },
+  "p1:lem:centered-stokes-estimates": {
+   "line": 4263,
+   "page": 53,
+   "number": "16.1",
+   "anchor": "lemma.16.1"
+  },
+  "p1:rem:oseen-Linfty": {
+   "line": 4314,
+   "page": 53,
+   "number": "16.2",
+   "anchor": "remark.16.2"
+  },
+  "p1:lem:mild-representation": {
+   "line": 4322,
+   "page": 54,
+   "number": "16.3",
+   "anchor": "lemma.16.3"
+  },
+  "p1:lem:small-liouville": {
+   "line": 4343,
+   "page": 54,
+   "number": "16.4",
+   "anchor": "lemma.16.4"
+  },
+  "p1:lem:stationary-profile": {
+   "line": 4388,
+   "page": 54,
+   "number": "16.5",
+   "anchor": "lemma.16.5"
+  },
+  "p1:lem:galilean-trivial-zero": {
+   "line": 4414,
+   "page": 54,
+   "number": "16.6",
+   "anchor": "lemma.16.6"
+  },
+  "p1:thm:classical-classes": {
+   "line": 4433,
+   "page": 55,
+   "number": "16.7",
+   "anchor": "theorem.16.7"
+  },
+  "p1:thm:tight-liouville": {
+   "line": 4459,
+   "page": 55,
+   "number": "16.8",
+   "anchor": "theorem.16.8"
+  },
+  "p1:thm:known-structure-decay-liouville": {
+   "line": 4474,
+   "page": 55,
+   "number": "16.9",
+   "anchor": "theorem.16.9"
+  },
+  "p1:prop:known-class-exclusion": {
+   "line": 4500,
+   "page": 55,
+   "number": "16.10",
+   "anchor": "proposition.16.10"
+  },
+  "p1:sec:criterion": {
+   "line": 4527,
+   "page": 56,
+   "number": "17",
+   "anchor": "section.17"
+  },
+  "p1:hyp:no-remainder": {
+   "line": 4543,
+   "page": 56,
+   "number": "17.1",
+   "anchor": "theorem.17.1"
+  },
+  "p1:rem:companion-paper": {
+   "line": 4585,
+   "page": 56,
+   "number": "17.2",
+   "anchor": "remark.17.2"
+  },
+  "p1:rem:type-I-residual-interface": {
+   "line": 4594,
+   "page": 56,
+   "number": "17.3",
+   "anchor": "remark.17.3"
+  },
+  "p1:cor:remainder-rigidity": {
+   "line": 4607,
+   "page": 56,
+   "number": "17.4",
+   "anchor": "corollary.17.4"
+  },
+  "p1:prop:remainder-equivalence": {
+   "line": 4622,
+   "page": 57,
+   "number": "17.5",
+   "anchor": "proposition.17.5"
+  },
+  "p1:app:centered-symmetries": {
+   "line": 4670,
+   "page": 57,
+   "number": "18",
+   "anchor": "section.18"
+  },
+  "p1:lem:tau-translation": {
+   "line": 4672,
+   "page": 57,
+   "number": "18.1",
+   "anchor": "lemma.18.1"
+  },
+  "p1:prop:no-cascade": {
+   "line": 4702,
+   "page": 57,
+   "number": "18.2",
+   "anchor": "proposition.18.2"
+  },
+  "p2:sec:introduction": {
+   "line": 4784,
+   "page": 59,
+   "number": "19",
+   "anchor": "section.19"
+  },
+  "p2:eq:centered": {
+   "line": 4791,
+   "page": 59,
+   "number": "19.1",
+   "anchor": "equation.19.1"
+  },
+  "p2:eq:L3-tightness": {
+   "line": 4800,
+   "page": 59,
+   "number": "19.2",
+   "anchor": "equation.19.2"
+  },
+  "p2:eq:L3-bound": {
+   "line": 4805,
+   "page": 59,
+   "number": "19.3",
+   "anchor": "equation.19.3"
+  },
+  "p2:rem:auxiliary-dynamical-material": {
+   "line": 4824,
+   "page": 59,
+   "number": "19.1",
+   "anchor": "remark.19.1"
+  },
+  "p2:rem:paper-I-III-interface": {
+   "line": 4837,
+   "page": 60,
+   "number": "19.2",
+   "anchor": "remark.19.2"
+  },
+  "p2:thm:tight-compactness-intro": {
+   "line": 4938,
+   "page": 61,
+   "number": "19.3",
+   "anchor": "theorem.19.3"
+  },
+  "p2:thm:minimal-tight-intro": {
+   "line": 4974,
+   "page": 61,
+   "number": "19.4",
+   "anchor": "theorem.19.4"
+  },
+  "p2:thm:tight-liouville-intro": {
+   "line": 4995,
+   "page": 62,
+   "number": "19.5",
+   "anchor": "theorem.19.5"
+  },
+  "p2:sec:centered-topology": {
+   "line": 5059,
+   "page": 62,
+   "number": "20",
+   "anchor": "section.20"
+  },
+  "p2:eq:projected": {
+   "line": 5071,
+   "page": 62,
+   "number": "20.1",
+   "anchor": "equation.20.1"
+  },
+  "p2:eq:OU-semigroup": {
+   "line": 5080,
+   "page": 63,
+   "number": "20.2",
+   "anchor": "equation.20.2"
+  },
+  "p2:lem:centered-stokes-kernel": {
+   "line": 5091,
+   "page": 63,
+   "number": "20.1",
+   "anchor": "lemma.20.1"
+  },
+  "p2:eq:stokes-adjoint-estimate": {
+   "line": 5093,
+   "page": 63,
+   "number": "20.3",
+   "anchor": "equation.20.3"
+  },
+  "p2:def:mild": {
+   "line": 5151,
+   "page": 63,
+   "number": "20.2",
+   "anchor": "definition.20.2"
+  },
+  "p2:eq:mild": {
+   "line": 5158,
+   "page": 63,
+   "number": "20.4",
+   "anchor": "equation.20.4"
+  },
+  "p2:def:local-smooth-topology": {
+   "line": 5198,
+   "page": 64,
+   "number": "20.3",
+   "anchor": "definition.20.3"
+  },
+  "p2:sec:smoothing-compactness": {
+   "line": 5224,
+   "page": 64,
+   "number": "21",
+   "anchor": "section.21"
+  },
+  "p2:lem:mild-smoothing": {
+   "line": 5228,
+   "page": 64,
+   "number": "21.1",
+   "anchor": "lemma.21.1"
+  },
+  "p2:lem:local-pressure": {
+   "line": 5285,
+   "page": 65,
+   "number": "21.2",
+   "anchor": "lemma.21.2"
+  },
+  "p2:lem:pressure-reconstruction": {
+   "line": 5325,
+   "page": 65,
+   "number": "21.3",
+   "anchor": "lemma.21.3"
+  },
+  "p2:lem:mild-limit": {
+   "line": 5429,
+   "page": 66,
+   "number": "21.4",
+   "anchor": "lemma.21.4"
+  },
+  "p2:prop:bounded-compactness": {
+   "line": 5486,
+   "page": 67,
+   "number": "21.5",
+   "anchor": "proposition.21.5"
+  },
+  "p2:sec:tightness-rigidity": {
+   "line": 5505,
+   "page": 67,
+   "number": "22",
+   "anchor": "section.22"
+  },
+  "p2:def:L3-tight": {
+   "line": 5509,
+   "page": 67,
+   "number": "22.1",
+   "anchor": "definition.22.1"
+  },
+  "p2:lem:tight-closure": {
+   "line": 5526,
+   "page": 68,
+   "number": "22.2",
+   "anchor": "lemma.22.2"
+  },
+  "p2:eq:stationary-profile": {
+   "line": 5593,
+   "page": 68,
+   "number": "22.1",
+   "anchor": "equation.22.1"
+  },
+  "p2:thm:stationary-limits-tight": {
+   "line": 5601,
+   "page": 68,
+   "number": "22.3",
+   "anchor": "theorem.22.3"
+  },
+  "p2:thm:NRS": {
+   "line": 5635,
+   "page": 69,
+   "number": "22.4",
+   "anchor": "theorem.22.4"
+  },
+  "p2:sec:minimal-elements": {
+   "line": 5649,
+   "page": 69,
+   "number": "23",
+   "anchor": "section.23"
+  },
+  "p2:def:closed-normalized": {
+   "line": 5653,
+   "page": 69,
+   "number": "23.1",
+   "anchor": "definition.23.1"
+  },
+  "p2:eq:local-nonzero": {
+   "line": 5663,
+   "page": 69,
+   "number": "23.1",
+   "anchor": "equation.23.1"
+  },
+  "p2:lem:time-centering": {
+   "line": 5683,
+   "page": 69,
+   "number": "23.2",
+   "anchor": "lemma.23.2"
+  },
+  "p2:lem:nonzero-stability": {
+   "line": 5701,
+   "page": 70,
+   "number": "23.3",
+   "anchor": "lemma.23.3"
+  },
+  "p2:lem:lsc-size": {
+   "line": 5722,
+   "page": 70,
+   "number": "23.4",
+   "anchor": "lemma.23.4"
+  },
+  "p2:thm:minimal-existence": {
+   "line": 5750,
+   "page": 70,
+   "number": "23.5",
+   "anchor": "theorem.23.5"
+  },
+  "p2:def:tight-normalized-collection": {
+   "line": 5809,
+   "page": 71,
+   "number": "23.6",
+   "anchor": "definition.23.6"
+  },
+  "p2:prop:tight-closed-normalized": {
+   "line": 5842,
+   "page": 71,
+   "number": "23.7",
+   "anchor": "proposition.23.7"
+  },
+  "p2:sec:compact-hulls": {
+   "line": 5861,
+   "page": 71,
+   "number": "24",
+   "anchor": "section.24"
+  },
+  "p2:def:trajectory-hull": {
+   "line": 5878,
+   "page": 72,
+   "number": "24.1",
+   "anchor": "definition.24.1"
+  },
+  "p2:thm:compact-hull": {
+   "line": 5889,
+   "page": 72,
+   "number": "24.2",
+   "anchor": "theorem.24.2"
+  },
+  "p2:cor:tightness-on-hulls": {
+   "line": 5919,
+   "page": 72,
+   "number": "24.3",
+   "anchor": "corollary.24.3"
+  },
+  "p2:def:compact-invariant": {
+   "line": 5943,
+   "page": 72,
+   "number": "24.4",
+   "anchor": "definition.24.4"
+  },
+  "p2:lem:action-continuity": {
+   "line": 5953,
+   "page": 72,
+   "number": "24.5",
+   "anchor": "lemma.24.5"
+  },
+  "p2:prop:minimal-subset": {
+   "line": 5983,
+   "page": 73,
+   "number": "24.6",
+   "anchor": "proposition.24.6"
+  },
+  "p2:lem:zero-trajectory": {
+   "line": 6002,
+   "page": 73,
+   "number": "24.7",
+   "anchor": "lemma.24.7"
+  },
+  "p2:sec:measures-covariance": {
+   "line": 6014,
+   "page": 73,
+   "number": "25",
+   "anchor": "section.25"
+  },
+  "p2:thm:KB": {
+   "line": 6021,
+   "page": 73,
+   "number": "25.1",
+   "anchor": "theorem.25.1"
+  },
+  "p2:cor:nonzero-support": {
+   "line": 6074,
+   "page": 74,
+   "number": "25.2",
+   "anchor": "corollary.25.2"
+  },
+  "p2:thm:statistical-identity": {
+   "line": 6088,
+   "page": 74,
+   "number": "25.3",
+   "anchor": "theorem.25.3"
+  },
+  "p2:eq:statistical-identity": {
+   "line": 6092,
+   "page": 74,
+   "number": "25.1",
+   "anchor": "equation.25.1"
+  },
+  "p2:thm:barycenter-covariance": {
+   "line": 6171,
+   "page": 75,
+   "number": "25.4",
+   "anchor": "theorem.25.4"
+  },
+  "p2:eq:barycenter-covariance": {
+   "line": 6187,
+   "page": 75,
+   "number": "25.2",
+   "anchor": "equation.25.2"
+  },
+  "p2:sec:endpoint-L3-closure": {
+   "line": 6258,
+   "page": 76,
+   "number": "26",
+   "anchor": "section.26"
+  },
+  "p2:eq:physical-pullback": {
+   "line": 6270,
+   "page": 76,
+   "number": "26.1",
+   "anchor": "equation.26.1"
+  },
+  "p2:eq:physical-pressure-pullback": {
+   "line": 6275,
+   "page": 76,
+   "number": "26.2",
+   "anchor": "equation.26.2"
+  },
+  "p2:lem:physical-pullback": {
+   "line": 6287,
+   "page": 76,
+   "number": "26.1",
+   "anchor": "lemma.26.1"
+  },
+  "p2:eq:physical-NS": {
+   "line": 6291,
+   "page": 76,
+   "number": "26.3",
+   "anchor": "equation.26.3"
+  },
+  "p2:lem:L3-pullback-invariance": {
+   "line": 6353,
+   "page": 77,
+   "number": "26.2",
+   "anchor": "lemma.26.2"
+  },
+  "p2:eq:L3-pullback-invariance": {
+   "line": 6355,
+   "page": 77,
+   "number": "26.4",
+   "anchor": "equation.26.4"
+  },
+  "p2:lem:tail-tight-sequence-L3": {
+   "line": 6374,
+   "page": 77,
+   "number": "26.3",
+   "anchor": "lemma.26.3"
+  },
+  "p2:lem:physical-mild": {
+   "line": 6404,
+   "page": 77,
+   "number": "26.4",
+   "anchor": "lemma.26.4"
+  },
+  "p2:thm:AB-endpoint": {
+   "line": 6515,
+   "page": 78,
+   "number": "26.5",
+   "anchor": "theorem.26.5"
+  },
+  "p2:rem:AB-quantitative": {
+   "line": 6533,
+   "page": 79,
+   "number": "26.6",
+   "anchor": "remark.26.6"
+  },
+  "p2:rem:AB-notation": {
+   "line": 6542,
+   "page": 79,
+   "number": "26.7",
+   "anchor": "remark.26.7"
+  },
+  "p2:thm:tight-liouville": {
+   "line": 6551,
+   "page": 79,
+   "number": "26.8",
+   "anchor": "theorem.26.8"
+  },
+  "p2:sec:tight-liouville-interface": {
+   "line": 6599,
+   "page": 79,
+   "number": "27",
+   "anchor": "section.27"
+  },
+  "p2:thm:no-tight-normalized-collection": {
+   "line": 6604,
+   "page": 79,
+   "number": "27.1",
+   "anchor": "theorem.27.1"
+  },
+  "p2:def:tight-class-input": {
+   "line": 6631,
+   "page": 80,
+   "number": "27.2",
+   "anchor": "definition.27.2"
+  },
+  "p2:cor:tight-input-for-paper-I": {
+   "line": 6638,
+   "page": 80,
+   "number": "27.3",
+   "anchor": "corollary.27.3"
+  },
+  "p3:eq:NS": {
+   "line": 6697,
+   "page": 81,
+   "number": "28.1",
+   "anchor": "equation.28.1"
+  },
+  "p3:eq:typeI": {
+   "line": 6703,
+   "page": 81,
+   "number": "28.2",
+   "anchor": "equation.28.2"
+  },
+  "p3:thm:axisymmetric-liouville": {
+   "line": 6783,
+   "page": 82,
+   "number": "28.1",
+   "anchor": "theorem.28.1"
+  },
+  "p3:thm:weighted-vorticity-vanishing-intro": {
+   "line": 6810,
+   "page": 82,
+   "number": "28.2",
+   "anchor": "theorem.28.2"
+  },
+  "p3:thm:typeI-consequences": {
+   "line": 6825,
+   "page": 82,
+   "number": "28.3",
+   "anchor": "theorem.28.3"
+  },
+  "p3:sec:typeI": {
+   "line": 6873,
+   "page": 83,
+   "number": "29",
+   "anchor": "section.29"
+  },
+  "p3:def:typeI-ancient": {
+   "line": 6878,
+   "page": 83,
+   "number": "29.1",
+   "anchor": "definition.29.1"
+  },
+  "p3:eq:mild-formula": {
+   "line": 6883,
+   "page": 83,
+   "number": "29.1",
+   "anchor": "equation.29.1"
+  },
+  "p3:def:nonzero-typeI-limit": {
+   "line": 6894,
+   "page": 83,
+   "number": "29.2",
+   "anchor": "definition.29.2"
+  },
+  "p3:lem:nonzero-typeI-limit": {
+   "line": 6902,
+   "page": 83,
+   "number": "29.3",
+   "anchor": "lemma.29.3"
+  },
+  "p3:eq:self-similar": {
+   "line": 6913,
+   "page": 84,
+   "number": "29.2",
+   "anchor": "equation.29.2"
+  },
+  "p3:lem:self-similar-equation": {
+   "line": 6924,
+   "page": 84,
+   "number": "29.4",
+   "anchor": "lemma.29.4"
+  },
+  "p3:eq:centered": {
+   "line": 6928,
+   "page": 84,
+   "number": "29.3",
+   "anchor": "equation.29.3"
+  },
+  "p3:lem:structure-preserved": {
+   "line": 7004,
+   "page": 84,
+   "number": "29.5",
+   "anchor": "lemma.29.5"
+  },
+  "p3:lem:time-shift": {
+   "line": 7045,
+   "page": 85,
+   "number": "29.6",
+   "anchor": "lemma.29.6"
+  },
+  "p3:sec:axisymmetric-liouville-theorems": {
+   "line": 7105,
+   "page": 86,
+   "number": "30",
+   "anchor": "section.30"
+  },
+  "p3:lem:spatial-constant-mild": {
+   "line": 7134,
+   "page": 86,
+   "number": "30.2",
+   "anchor": "lemma.30.2"
+  },
+  "p3:lem:patch-constants": {
+   "line": 7148,
+   "page": 86,
+   "number": "30.3",
+   "anchor": "lemma.30.3"
+  },
+  "p3:lem:galilean-typeI-zero": {
+   "line": 7167,
+   "page": 86,
+   "number": "30.4",
+   "anchor": "lemma.30.4"
+  },
+  "p3:rem:axi-citations": {
+   "line": 7187,
+   "page": 86,
+   "number": "30.5",
+   "anchor": "remark.30.5"
+  },
+  "p3:thm:knss-noswirl": {
+   "line": 7202,
+   "page": 86,
+   "number": "30.6",
+   "anchor": "theorem.30.6"
+  },
+  "p3:thm:knss-pointwise": {
+   "line": 7244,
+   "page": 87,
+   "number": "30.7",
+   "anchor": "theorem.30.7"
+  },
+  "p3:thm:lzz": {
+   "line": 7299,
+   "page": 88,
+   "number": "30.8",
+   "anchor": "theorem.30.8"
+  },
+  "p3:thm:lrz": {
+   "line": 7355,
+   "page": 88,
+   "number": "30.9",
+   "anchor": "theorem.30.9"
+  },
+  "p3:sec:axisymmetric-consequences": {
+   "line": 7405,
+   "page": 89,
+   "number": "31",
+   "anchor": "section.31"
+  },
+  "p3:prop:noswirl-typeI": {
+   "line": 7409,
+   "page": 89,
+   "number": "31.1",
+   "anchor": "proposition.31.1"
+  },
+  "p3:prop:pointwise-typeI": {
+   "line": 7427,
+   "page": 89,
+   "number": "31.2",
+   "anchor": "proposition.31.2"
+  },
+  "p3:rem:pointwise-r-infty": {
+   "line": 7459,
+   "page": 89,
+   "number": "31.3",
+   "anchor": "remark.31.3"
+  },
+  "p3:prop:lp-swirl-typeI": {
+   "line": 7471,
+   "page": 89,
+   "number": "31.4",
+   "anchor": "proposition.31.4"
+  },
+  "p3:prop:periodic-swirl-typeI": {
+   "line": 7509,
+   "page": 90,
+   "number": "31.5",
+   "anchor": "proposition.31.5"
+  },
+  "p3:sec:weighted-vorticity": {
+   "line": 7537,
+   "page": 90,
+   "number": "32",
+   "anchor": "section.32"
+  },
+  "p3:eq:weighted-vorticity": {
+   "line": 7551,
+   "page": 90,
+   "number": "32.1",
+   "anchor": "equation.32.1"
+  },
+  "p3:eq:lambda": {
+   "line": 7558,
+   "page": 90,
+   "number": "32.2",
+   "anchor": "equation.32.2"
+  },
+  "p3:thm:gw-small-data": {
+   "line": 7580,
+   "page": 91,
+   "number": "32.1",
+   "anchor": "theorem.32.1"
+  },
+  "p3:thm:gallay": {
+   "line": 7580,
+   "page": 91,
+   "number": "32.1",
+   "anchor": "theorem.32.1"
+  },
+  "p3:def:gw-anchored-condition": {
+   "line": 7624,
+   "page": 91,
+   "number": "32.2",
+   "anchor": "definition.32.2"
+  },
+  "p3:def:weighted-vorticity-condition": {
+   "line": 7624,
+   "page": 91,
+   "number": "32.2",
+   "anchor": "definition.32.2"
+  },
+  "p3:lem:local-weighted-vorticity-persistence": {
+   "line": 7678,
+   "page": 92,
+   "number": "32.3",
+   "anchor": "lemma.32.3"
+  },
+  "p3:lem:gw-bounded-physical-pullback": {
+   "line": 7813,
+   "page": 93,
+   "number": "32.4",
+   "anchor": "lemma.32.4"
+  },
+  "p3:lem:anchored-gw-physical-comparison": {
+   "line": 7945,
+   "page": 94,
+   "number": "32.5",
+   "anchor": "lemma.32.5"
+  },
+  "p3:lem:anchored-gw-transform": {
+   "line": 8059,
+   "page": 95,
+   "number": "32.6",
+   "anchor": "lemma.32.6"
+  },
+  "p3:prop:gw-anchored-typeI-zero": {
+   "line": 8172,
+   "page": 97,
+   "number": "32.7",
+   "anchor": "proposition.32.7"
+  },
+  "p3:sec:summary": {
+   "line": 8292,
+   "page": 98,
+   "number": "33",
+   "anchor": "section.33"
+  },
+  "p3:thm:typeI-zero-hypotheses": {
+   "line": 8297,
+   "page": 98,
+   "number": "33.1",
+   "anchor": "theorem.33.1"
+  },
+  "p3:cor:structured-hypotheses-nonzero-blowup": {
+   "line": 8321,
+   "page": 98,
+   "number": "33.2",
+   "anchor": "corollary.33.2"
+  },
+  "p3:thm:stated-hypotheses-zero": {
+   "line": 8339,
+   "page": 98,
+   "number": "33.3",
+   "anchor": "theorem.33.3"
+  },
+  "p1:sec:final-assembly": {
+   "line": 8378,
+   "page": 100,
+   "number": "33.3",
+   "anchor": "section*.16"
+  },
+  "p1:thm:final-assembly": {
+   "line": 8393,
+   "page": 100,
+   "number": "34.1",
+   "anchor": "theorem.34.1"
+  }
+ }
+}

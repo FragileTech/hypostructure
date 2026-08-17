@@ -9,21 +9,21 @@
 \contentsline {paragraph}{External inputs (black boxes).}{27}{section*.23}%
 \contentsline {paragraph}{Block I: minimality and target algebra (invariants 1--8).}{27}{section*.24}%
 \contentsline {paragraph}{Block II: degree, rank, sparsity (invariants 9--19).}{28}{section*.25}%
-\contentsline {paragraph}{Block III: induced $P_{13}$ packing and forced remainder (invariants 20--24).}{28}{section*.26}%
+\contentsline {paragraph}{Block III: induced $P_{13}$ packing and forced remainder (invariants 20--24).}{29}{section*.26}%
 \contentsline {paragraph}{Block IV: curvature constraints (invariants 25--29).}{29}{section*.27}%
-\contentsline {paragraph}{Block V: carrier / cycle-space constraints (invariants 30--38).}{29}{section*.28}%
+\contentsline {paragraph}{Block V: carrier / cycle-space constraints (invariants 30--38).}{30}{section*.28}%
 \contentsline {paragraph}{Block VI: curvature-rank routing and two-budget machinery.}{30}{section*.29}%
-\contentsline {paragraph}{Block VII: large-budget residual and local exclusion (the spine's terminus).}{30}{section*.30}%
+\contentsline {paragraph}{Block VII: large-budget residual and local exclusion (the spine's terminus).}{31}{section*.30}%
 \contentsline {paragraph}{Spine dependency summary (the load path through route 8).}{34}{section*.31}%
-\contentsline {paragraph}{Stage legend.}{34}{section*.33}%
+\contentsline {paragraph}{Stage legend.}{35}{section*.33}%
 \contentsline {paragraph}{Setup and target algebra.}{35}{section*.34}%
 \contentsline {paragraph}{Minimality and replacement.}{35}{section*.35}%
 \contentsline {paragraph}{Entropy / skeleton budget.}{35}{section*.36}%
 \contentsline {paragraph}{$P_{13}$ packing and forced remainder.}{37}{section*.37}%
-\contentsline {paragraph}{Curvature supply, rank, two-budget.}{37}{section*.38}%
+\contentsline {paragraph}{Curvature supply, rank, two-budget.}{38}{section*.38}%
 \contentsline {paragraph}{Large-budget residual and local exclusion (terminus).}{38}{section*.39}%
 \contentsline {paragraph}{Invariant $\to $ lemmas reverse index (impact analysis).}{43}{section*.40}%
-\contentsline {paragraph}{Fast gap-check usage.}{45}{section*.41}%
+\contentsline {paragraph}{Fast gap-check usage.}{46}{section*.41}%
 \contentsline {section}{\numberline {2}Target cycles as Mersenne returns}{46}{section.2}%
 \contentsline {paragraph}{Framework branch table.}{47}{section*.43}%
 \contentsline {section}{\numberline {3}Minimality and replacement}{47}{section.3}%

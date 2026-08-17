@@ -1,42 +1,9 @@
-import { Fragment, useEffect, useRef } from "react";
+import { Fragment } from "react";
 
+import { BranchList, ItemDisclosure, KIND_HEADINGS, KIND_ORDER } from "./DetailParts";
 import { Latex } from "./Latex";
 import { SHAPE_NAMES } from "./ProofFlowNode";
-import type {
-  ItemKind,
-  ProofEdge,
-  ProofGraphDocument,
-  ProofIndex,
-  ProofItem,
-  ProofNode,
-} from "./types";
-
-const KIND_ORDER: ItemKind[] = [
-  "theorem",
-  "proposition",
-  "lemma",
-  "corollary",
-  "definition",
-  "remark",
-];
-
-const KIND_HEADINGS: Record<ItemKind, string> = {
-  theorem: "Theorems",
-  proposition: "Propositions",
-  lemma: "Lemmas",
-  corollary: "Corollaries",
-  definition: "Definitions",
-  remark: "Remarks",
-};
-
-const KIND_LABELS: Record<ItemKind, string> = {
-  theorem: "Theorem",
-  proposition: "Proposition",
-  lemma: "Lemma",
-  corollary: "Corollary",
-  definition: "Definition",
-  remark: "Remark",
-};
+import type { ProofGraphDocument, ProofIndex, ProofItem, ProofNode } from "./types";
 
 export interface NodeDetailPanelProps {
   document: ProofGraphDocument;
@@ -47,6 +14,9 @@ export interface NodeDetailPanelProps {
   onSelectNode: (id: string) => void;
   /** Called when a result is opened, so the view stays linkable. */
   onSelectItem: (key: string) => void;
+  /** The constraint currently lit up on the canvas, if any. */
+  activeInvariant?: string | null;
+  /** Called when a constraint chip is pressed; pressing the active one clears it. */
   onSelectInvariant: (id: string) => void;
 }
 
@@ -59,6 +29,7 @@ export function NodeDetailPanel({
   index,
   node,
   focusItem,
+  activeInvariant,
   onSelectNode,
   onSelectItem,
   onSelectInvariant,
@@ -201,6 +172,7 @@ export function NodeDetailPanel({
                 <ItemDisclosure
                   key={item.key}
                   item={item}
+                  document={document}
                   index={index}
                   focus={focusItem === item.key}
                   onOpen={onSelectItem}
@@ -236,6 +208,7 @@ export function NodeDetailPanel({
                     <ItemDisclosure
                       key={item.key}
                       item={item}
+                      document={document}
                       index={index}
                       focus={focusItem === item.key}
                       onOpen={onSelectItem}
@@ -279,9 +252,14 @@ export function NodeDetailPanel({
               <li key={invariant.id}>
                 <button
                   type="button"
-                  className="chip chip-invariant"
+                  className={`chip chip-invariant${activeInvariant === invariant.id ? " is-active" : ""}`}
+                  aria-pressed={activeInvariant === invariant.id}
                   onClick={() => onSelectInvariant(invariant.id)}
-                  title="Show every step that tracks this constraint"
+                  title={
+                    activeInvariant === invariant.id
+                      ? "Stop highlighting the steps that track this constraint"
+                      : "Show every step that tracks this constraint"
+                  }
                 >
                   {invariant.number}
                 </button>
@@ -306,182 +284,5 @@ export function NodeDetailPanel({
         {node.tikzId ? `, drawn as “${node.tikzId}”` : ""}.
       </footer>
     </article>
-  );
-}
-
-function BranchList({
-  title,
-  edges,
-  endpoint,
-  index,
-  onSelectNode,
-}: {
-  title: string;
-  edges: ProofEdge[];
-  endpoint: "source" | "target";
-  index: ProofIndex;
-  onSelectNode: (id: string) => void;
-}) {
-  if (!edges.length) {
-    return (
-      <p className="branch-row is-empty">
-        <span className="branch-title">{title}</span>
-        <span className="branch-none">
-          {endpoint === "source" ? "nothing — the argument starts here" : "nothing — the branch ends here"}
-        </span>
-      </p>
-    );
-  }
-
-  return (
-    <p className="branch-row">
-      <span className="branch-title">{title}</span>
-      <span className="branch-items">
-        {edges.map((edge) => {
-          const otherId = edge[endpoint];
-          const other = index.nodeById.get(otherId);
-          return (
-            <button
-              key={edge.id}
-              type="button"
-              className={`branch-chip branch-${edge.kind}`}
-              onClick={() => onSelectNode(otherId)}
-              title={other ? undefined : otherId}
-            >
-              <span className="branch-chip-number">{otherId}</span>
-              {edge.branch ? (
-                <span className="branch-chip-condition">
-                  <Latex value={edge.branch} />
-                </span>
-              ) : null}
-              {other ? (
-                <span className="branch-chip-label">
-                  <Latex value={other.label} />
-                </span>
-              ) : null}
-            </button>
-          );
-        })}
-      </span>
-    </p>
-  );
-}
-
-/**
- * One result, collapsed to its name until asked for.
- *
- * The disclosure keeps its own open state so several can be read side by side;
- * `focus` only forces this one open, which is what a cross-reference does.
- */
-function ItemDisclosure({
-  item,
-  index,
-  focus,
-  onOpen,
-  onSelectNode,
-}: {
-  item: ProofItem;
-  index: ProofIndex;
-  focus: boolean;
-  onOpen: (key: string) => void;
-  onSelectNode: (id: string) => void;
-}) {
-  const element = useRef<HTMLDetailsElement>(null);
-
-  useEffect(() => {
-    if (!focus || !element.current) return;
-    element.current.open = true;
-    element.current.scrollIntoView({ block: "nearest", behavior: "smooth" });
-  }, [focus]);
-
-  const appearsAt = index.nodesByItem.get(item.key) ?? [];
-  const requires = (item.requiresItems ?? [])
-    .map((key) => index.itemByKey.get(key))
-    .filter((required): required is ProofItem => Boolean(required));
-
-  return (
-    <details
-      ref={element}
-      className="item"
-      onToggle={(event) => {
-        if ((event.currentTarget as HTMLDetailsElement).open) onOpen(item.key);
-      }}
-    >
-      <summary>
-        <span className="item-kind">{KIND_LABELS[item.kind]}</span>
-        <span className="item-title">
-          {item.title ? <Latex value={item.title} /> : <code>{item.key}</code>}
-        </span>
-        {item.stage ? <span className="item-stage">{item.stage}</span> : null}
-      </summary>
-
-      <div className="item-body">
-        <blockquote className="item-statement">
-          <Latex value={item.statementLatex} />
-        </blockquote>
-
-        {item.proofLatex ? (
-          <details className="item-proof">
-            <summary>Proof</summary>
-            <div>
-              <Latex value={item.proofLatex} />
-            </div>
-          </details>
-        ) : null}
-
-        {item.plain ? (
-          <div className="item-note">
-            <h5>What it does</h5>
-            <p>
-              <Latex value={item.plain} />
-            </p>
-          </div>
-        ) : null}
-
-        {item.role ? (
-          <div className="item-note">
-            <h5>Its role in the argument</h5>
-            <p>
-              <Latex value={item.role} />
-            </p>
-          </div>
-        ) : null}
-
-        {requires.length ? (
-          <div className="item-note">
-            <h5>Builds on</h5>
-            <p className="item-chips">
-              {requires.map((required) => (
-                <span className="chip chip-quiet" key={required.key}>
-                  {required.title || required.key}
-                </span>
-              ))}
-            </p>
-          </div>
-        ) : null}
-
-        {appearsAt.length > 1 ? (
-          <div className="item-note">
-            <h5>Also used at</h5>
-            <p className="item-chips">
-              {appearsAt.map((id) => (
-                <button
-                  key={id}
-                  type="button"
-                  className="chip chip-node"
-                  onClick={() => onSelectNode(id)}
-                >
-                  {id}
-                </button>
-              ))}
-            </p>
-          </div>
-        ) : null}
-
-        <p className="item-source">
-          {item.key} · stated on line {item.sourceLine} of the paper
-        </p>
-      </div>
-    </details>
   );
 }
