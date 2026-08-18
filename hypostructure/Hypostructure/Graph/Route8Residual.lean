@@ -1,6 +1,8 @@
 import Hypostructure.Graph.CanonicalSupportSelection
 import Hypostructure.Graph.Route8Closure
 import Hypostructure.Graph.TraceCoordinateSystem
+import Hypostructure.Graph.CanonicalRealization
+import Hypostructure.Graph.MinimumDegreeCycleTarget
 
 /-!
 # Route-8 presented entries at one object
@@ -466,9 +468,120 @@ noncomputable def eventOfBase (object : FiniteObject.{u})
               walk := event.certificate.walk
               isCycle := event.certificate.isCycle }
 
+/-- **`\rho_u(B_u)|_D` realized at the object.**
+
+The vertices a set of declared coordinates keeps alive: the union of their
+declared supports.  A coordinate the restriction forgets stops contributing its
+declared support to the reading, which is precisely what
+`def:typeA-route8-carriers` forgets when it passes from `\mathcal C` to
+`\mathcal C \setminus \{c\}`. -/
+noncomputable def retainedVertices (object : FiniteObject.{u})
+    (support : Finset object.Vertex)
+    (retained : Finset (TraceCoordinateSystem.Base.Coordinate object support)) :
+    Finset object.Vertex := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  exact retained.biUnion (TraceCoordinateSystem.Base.declaredSupport object support)
+
+/-- **The basin piece a set of declared coordinates presents.**
+
+`def:typeA-route8-carriers`: a `D`-restriction retains "the full boundary degree
+profile" and, apart from that profile, exactly the declared coordinates carried
+inside `D`; "thus every carrier restriction is taken inside the original
+boundary-degree fibre".  An edge incident with a labelled boundary vertex is
+therefore owned by every restriction, and only the internal edges follow the
+retained declared supports. -/
+noncomputable def retainedBasinPiece (object : FiniteObject.{u})
+    (basin retained : Finset object.Vertex) :
+    BoundaryPiece
+      (Strategy.InterfaceReplacement.SupportAtom.boundary object basin) where
+  Internal :=
+    Strategy.InterfaceReplacement.SupportAtom.PieceInternal object basin
+  internalVertices := by
+    letI : FinEnum object.Vertex := object.vertices
+    exact FinEnum.Subtype.finEnum fun vertex =>
+      vertex ∈ basin ∧
+        vertex ∉
+          Strategy.InterfaceReplacement.SupportAtom.cutBoundary object basin
+  graph :=
+    SimpleGraph.comap
+        (Strategy.InterfaceReplacement.SupportAtom.pieceDecode object basin)
+        object.graph ⊓
+      SimpleGraph.fromRel fun left right =>
+        left.isLeft = true ∨ right.isLeft = true ∨
+          (Strategy.InterfaceReplacement.SupportAtom.pieceDecode object basin
+              left ∈ retained ∧
+            Strategy.InterfaceReplacement.SupportAtom.pieceDecode object basin
+              right ∈ retained)
+  decideAdj := Classical.decRel _
+
+/-- Every restriction keeps the basin's own boundary-degree profile. -/
+theorem retainedBasinPiece_boundaryDegreeProfile (object : FiniteObject.{u})
+    (basin retained : Finset object.Vertex) :
+    (retainedBasinPiece object basin retained).boundaryDegreeProfile =
+      (Strategy.InterfaceReplacement.SupportAtom.piece object
+        basin).boundaryDegreeProfile := by
+  funext vertex
+  simp only [BoundaryPiece.boundaryDegreeProfile, BoundaryPiece.boundaryDegree,
+    FiniteObject.degree_eq_ncard_neighborSet]
+  congr 1
+  ext other
+  simp only [SimpleGraph.mem_neighborSet]
+  constructor
+  · intro adjacent
+    exact adjacent.1
+  · intro adjacent
+    exact ⟨adjacent, fun same => adjacent.ne (congrArg _ same),
+      Or.inl (Or.inl rfl)⟩
+
+/-- **The reading a set of declared coordinates presents at the basin.**
+
+This is the manuscript's response state `\rho_u(B_u)` restricted to the retained
+declared coordinates: the basin's own boundaried piece with exactly the internal
+edges the retained declared supports own, replaced by *the* canonical piece of
+its cut state (`def:proper-quotient-representative`, `Graph/CanonicalRealization`).
+
+Two clauses of `def:typeA-route8-carriers` are theorems about it rather than
+assumptions: the restriction stays inside the original boundary-degree fibre
+(`retainedPiece_boundaryDegreeProfile` composed with the canonical
+representative's own profile clause -- see `ofTraceBasin_boundaryDegreeProfile`),
+and it is a response quotient of the same interface, so it can be tested against
+the unrestricted reading by an outside context. -/
+noncomputable def retainedReading (object : FiniteObject.{u})
+    (support basin : Finset object.Vertex) (threshold : Nat)
+    (LengthOK : Nat → Prop)
+    (retained : Finset (TraceCoordinateSystem.Base.Coordinate object support)) :
+    BoundaryPiece
+      (Strategy.InterfaceReplacement.SupportAtom.boundary object basin) :=
+  (CanonicalPiece.cutStateRepresentative
+    (minimumDegreeAtLeast_isomorphismInvariant threshold)
+    (cycleTargetInterface LengthOK).isomorphismInvariant
+    (retainedBasinPiece object basin
+      (retainedVertices object support retained))).toPiece
+
+/-- **Every restriction of the reading has the basin's boundary-degree
+profile.**  `def:typeA-route8-carriers`: *"every carrier restriction is taken
+inside the original boundary-degree fibre"*. -/
+theorem retainedReading_boundaryDegreeProfile (object : FiniteObject.{u})
+    (support basin : Finset object.Vertex) (threshold : Nat)
+    (LengthOK : Nat → Prop)
+    (retained : Finset (TraceCoordinateSystem.Base.Coordinate object support)) :
+    (retainedReading object support basin threshold LengthOK
+        retained).boundaryDegreeProfile =
+      (Strategy.InterfaceReplacement.SupportAtom.piece object
+        basin).boundaryDegreeProfile := by
+  rw [retainedReading]
+  refine Eq.trans ?_
+    (retainedBasinPiece_boundaryDegreeProfile object basin
+      (retainedVertices object support retained))
+  exact (CanonicalPiece.cutStateRepresentative_reading
+    (minimumDegreeAtLeast_isomorphismInvariant threshold)
+    (cycleTargetInterface LengthOK).isomorphismInvariant _).1
+
 /-- The graph-owned presented entry assigned to a selected trace basin.  The
 coordinate family, values, supports and target events are all read from the
-declared trace-coordinate system of the selected support. -/
+declared trace-coordinate system of the selected support, and the reading of a
+retained coordinate set is the canonical realization
+`retainedReading` of `\rho_u(B_u)|_D`. -/
 noncomputable def ofTraceBasin (object : FiniteObject.{u})
     (support basin : Finset object.Vertex) (threshold : Nat)
     (LengthOK : Nat → Prop) : PresentedEntry object where
@@ -477,12 +590,34 @@ noncomputable def ofTraceBasin (object : FiniteObject.{u})
   Coordinate := TraceCoordinateSystem.Base.Coordinate object support
   coordinateDecEq := TraceCoordinateSystem.Base.coordinateDecEq object support
   coordinates := (TraceCoordinateSystem.Base.schedule object support).toFinset
-  Value := fun _ => PUnit.{u + 1}
-  value := fun _ => PUnit.unit
+  Value := fun coordinate =>
+    ULift.{u} (TraceCoordinateSystem.Base.Value object support coordinate)
+  value := fun coordinate =>
+    ULift.up (TraceCoordinateSystem.Base.value object support coordinate)
   declaredSupport := TraceCoordinateSystem.Base.declaredSupport object support
   event? := eventOfBase object support LengthOK
-  state := fun _ =>
-    Strategy.InterfaceReplacement.SupportAtom.piece object basin
+  state := retainedReading object support basin threshold LengthOK
+
+/-- **Every carrier restriction of a presented trace-basin entry sits in the
+basin's own boundary-degree fibre.**  This is the clause node `[124]` consumes:
+a carrier-deletion quotient of the entry preserves the boundary-degree profile,
+so it is a *response quotient* and therefore a legitimate member of the
+canonical exit-`(4)` family `\mathcal Q_4(w)`. -/
+theorem ofTraceBasin_boundaryDegreeProfile (object : FiniteObject.{u})
+    (support basin : Finset object.Vertex) (threshold : Nat)
+    (LengthOK : Nat → Prop)
+    (left right :
+      Finset (TraceCoordinateSystem.Base.Coordinate object support)) :
+    ((ofTraceBasin object support basin threshold LengthOK).state
+        left).boundaryDegreeProfile =
+      ((ofTraceBasin object support basin threshold LengthOK).state
+        right).boundaryDegreeProfile := by
+  show (retainedReading object support basin threshold LengthOK
+      left).boundaryDegreeProfile =
+    (retainedReading object support basin threshold LengthOK
+      right).boundaryDegreeProfile
+  rw [retainedReading_boundaryDegreeProfile,
+    retainedReading_boundaryDegreeProfile]
 
 end PresentedEntry
 
