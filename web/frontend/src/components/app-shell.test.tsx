@@ -43,6 +43,13 @@ describe("the header", () => {
     expect(screen.getAllByRole("link", { name: "Lean Framework" }).length).toBeGreaterThan(0);
   });
 
+  it("offers the methodology from every page, pointing at the landing page", () => {
+    show("/erdos-gyarfas");
+    expect(screen.getByRole("link", { name: "Methodology" })).toHaveAttribute("href", "/");
+    show("/lean");
+    expect(screen.getAllByRole("link", { name: "Methodology" }).length).toBeGreaterThan(0);
+  });
+
   it("shows no proof sections on the framework docs", () => {
     show("/lean");
     expect(screen.queryByRole("navigation", { name: "Sections" })).toBeNull();

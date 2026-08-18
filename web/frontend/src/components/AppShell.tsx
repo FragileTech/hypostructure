@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 
+import { METHODOLOGY_ID, scrollToMethodology } from "./MethodologySection";
 import { DOCS_ROOT } from "../docs/registry";
 import { useProof } from "../hooks/useProof";
 import { PROOFS, paperUrl, type PaperFile } from "../proofs/registry";
@@ -121,8 +122,20 @@ export function AppShell() {
         ) : null}
 
         <div className="app-header-end">
-          <nav className="framework-link" aria-label="Framework">
+          <nav className="framework-link" aria-label="Reference">
             <NavLink to={DOCS_ROOT}>Lean Framework</NavLink>
+            {/* The account lives on the landing page; going there carries the
+                request to jump to it, and an in-place click still scrolls. */}
+            <NavLink
+              to="/"
+              end
+              state={{ scrollTo: METHODOLOGY_ID }}
+              onClick={() => {
+                if (pathname === "/") scrollToMethodology();
+              }}
+            >
+              Methodology
+            </NavLink>
           </nav>
           <nav className="proof-switcher" aria-label="Proof">
           {PROOFS.map((entry) => (

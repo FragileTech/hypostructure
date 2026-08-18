@@ -4,6 +4,9 @@ import { Link } from "react-router-dom";
 import { Latex } from "../graph-explorer";
 import { findProof } from "../proofs/registry";
 
+/** The element the whole account is anchored at. */
+export const METHODOLOGY_ID = "methodology";
+
 /** The parts of the account, in reading order; the rail is built from this. */
 export const METHODOLOGY_PARTS = [
   { id: "philosophy", title: "Structure has a cost" },
@@ -623,13 +626,23 @@ function RepairDiagram() {
   );
 }
 
+/**
+ * The site uses a hash router, so an `href="#methodology"` would be read as a
+ * route. Anything pointing at the account jumps to it by hand instead.
+ */
+export function scrollToMethodology() {
+  document
+    .getElementById(METHODOLOGY_ID)
+    ?.scrollIntoView?.({ behavior: "smooth", block: "start" });
+}
+
 /** The landing page account of the shared proof architecture. */
 export function MethodologySection() {
   const erdos = findProof("erdos-gyarfas");
   const navier = findProof("navier-stokes");
 
   return (
-    <section id="methodology" className="methodology" aria-labelledby="methodology-title">
+    <section id={METHODOLOGY_ID} className="methodology" aria-labelledby="methodology-title">
       <header className="methodology-header">
         <p className="hero-eyebrow">The methodology</p>
         <h2 id="methodology-title">Structural Exhaustion</h2>

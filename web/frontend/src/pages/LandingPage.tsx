@@ -1,18 +1,24 @@
-import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 
-import { MethodologySection } from "../components/MethodologySection";
+import {
+  METHODOLOGY_ID,
+  MethodologySection,
+  scrollToMethodology,
+} from "../components/MethodologySection";
 import { DOCS_ROOT } from "../docs/registry";
 import { PROOFS } from "../proofs/registry";
 
-/**
- * The site uses a hash router, so an `href="#methodology"` would be read as a
- * route. The jump is done by hand instead.
- */
-function scrollToMethodology() {
-  document.getElementById("methodology")?.scrollIntoView({ behavior: "smooth", block: "start" });
-}
-
 export function LandingPage() {
+  // The header offers the methodology from every page; arriving from there
+  // lands here first and asks, through the navigation state, for the jump.
+  const { state, key } = useLocation();
+  useEffect(() => {
+    if ((state as { scrollTo?: string } | null)?.scrollTo === METHODOLOGY_ID) {
+      scrollToMethodology();
+    }
+  }, [state, key]);
+
   return (
     <div className="page page-landing">
       <header className="hero">
