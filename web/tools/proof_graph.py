@@ -118,6 +118,9 @@ SHAPE_BY_STYLE = {
     "nobox": "assertion",
     "dec": "decision",
     "term": "terminal",
+    # A red ellipse is a terminal the paper leaves open: an outcome no ledger
+    # fact of the current object contradicts. Kept as a terminal, and flagged.
+    "open": "terminal",
     # A dashed ellipse is not a new node: it is a copy of the numbered terminal
     # named inside it, drawn where an arrow needs to reach a closure that lives
     # in another panel.
@@ -125,6 +128,7 @@ SHAPE_BY_STYLE = {
 }
 
 GHOST_STYLES = {"route"}
+OPEN_STYLES = {"open"}
 
 _NODE_DECL = re.compile(r"\\node\[([^\]]*)\]\s*\(([^)]*)\)\s*")
 _NODE_NUMBER = re.compile(r"\\textbf\{\[(\d+)\]\}[~\s]*")
@@ -181,15 +185,15 @@ def parse_nodes(picture: str) -> tuple[dict[str, dict[str, Any]], dict[str, str]
             ghosts.add(tikz_id)
             continue
 
-        nodes.setdefault(
-            node_id,
-            {
-                "number": node_id,
-                "tikzId": tikz_id,
-                "shape": shape,
-                "label": _NODE_NUMBER.sub("", label, count=1).strip(),
-            },
-        )
+        record: dict[str, Any] = {
+            "number": node_id,
+            "tikzId": tikz_id,
+            "shape": shape,
+            "label": _NODE_NUMBER.sub("", label, count=1).strip(),
+        }
+        if style in OPEN_STYLES:
+            record["open"] = True
+        nodes.setdefault(node_id, record)
 
     return nodes, by_tikz, ghosts
 
@@ -680,6 +684,13 @@ def _read_chapter(chapter: ChapterSpec, root: Path) -> dict[str, Any]:
 
     _apply_map(text, chapter, panels)
 
+    # A later panel may redraw a closure that lives in an earlier one, under the
+    # same number and in the ordinary terminal style (Part XII of the
+    # Erdős–Gyárfás paper redraws the dyadic cycle [155] of Part XI). That is
+    # the same step, not a second one: the first drawing keeps it and later
+    # copies only supply endpoints for their panel's arrows.
+    drawn: set[str] = set()
+
     for panel in panels:
         groups.append(
             {
@@ -691,6 +702,9 @@ def _read_chapter(chapter: ChapterSpec, root: Path) -> dict[str, Any]:
             }
         )
         for record in panel.nodes.values():
+            if record["number"] in drawn:
+                continue
+            drawn.add(record["number"])
             nodes.append(
                 {
                     **record,

@@ -45,6 +45,9 @@ def test_nodes_are_unique_and_belong_to_a_panel(document) -> None:
     for node in document["nodes"]:
         assert node["group"] in panels, node["id"]
         assert node["shape"] in {"assertion", "decision", "terminal"}
+        # Only a terminal can be left open, and the flag is only written when set.
+        if "open" in node:
+            assert node["open"] is True and node["shape"] == "terminal", node["id"]
 
 
 @every
@@ -272,14 +275,125 @@ def test_navier_stokes_publishes_four_tables_per_paper() -> None:
     assert audit["headers"][0] == "Node"
 
 
-def test_erdos_has_all_157_steps_across_eleven_panels() -> None:
-    assert len(ERDOS["nodes"]) == 157
-    assert len(ERDOS["groups"]) == 11
+def test_erdos_has_all_180_steps_across_twelve_panels() -> None:
+    assert len(ERDOS["nodes"]) == 180
+    assert len(ERDOS["groups"]) == 12
     assert "chapters" not in ERDOS
     shapes = [node["shape"] for node in ERDOS["nodes"]]
-    assert shapes.count("assertion") == 91
-    assert shapes.count("decision") == 39
-    assert shapes.count("terminal") == 27
+    assert shapes.count("assertion") == 102
+    assert shapes.count("decision") == 45
+    assert shapes.count("terminal") == 33
+    # The paper's red-ellipse style is declared but no node is drawn with it.
+    assert not [node["id"] for node in ERDOS["nodes"] if node.get("open")]
+
+
+def test_erdos_dense_packing_residual_is_part_xii() -> None:
+    """The realization test [158] sits in Part I; its no-edge opens Part XII."""
+    by_id = {node["id"]: node for node in ERDOS["nodes"]}
+    assert by_id["158"]["group"] == "fig:proof-diagram-part-i"
+    assert by_id["158"]["shape"] == "decision"
+    for number in range(159, 173):
+        assert by_id[str(number)]["group"] == "fig:proof-diagram-part-xii", number
+    for number in ("160", "163", "170"):
+        assert by_id[number]["shape"] == "decision", number
+    for number in ("164", "168", "171", "172"):
+        assert by_id[number]["shape"] == "terminal", number
+
+    arrows = {(edge["source"], edge["target"]): edge for edge in ERDOS["edges"]}
+    assert arrows[("21", "158")]["kind"] == "flow"
+    assert arrows[("158", "22")]["branch"] == "yes"
+    assert arrows[("158", "159")]["kind"] == "continuation"
+    assert arrows[("158", "159")]["branch"].startswith("no")
+    assert arrows[("159", "160")]["kind"] == "flow"
+    assert arrows[("160", "161")]["branch"] == "yes"
+    assert arrows[("160", "162")]["branch"] == "no"
+    assert ("162", "163") in arrows and ("162", "164") in arrows
+    assert arrows[("161", "25")]["kind"] == "continuation"
+    # The neutral germ [163]: replacement route and two-strand route.
+    assert arrows[("163", "165")]["branch"] == "no"
+    assert arrows[("163", "167")]["branch"] == "yes"
+    assert arrows[("165", "166")]["kind"] == "flow"
+    assert arrows[("166", "169")]["kind"] == "flow"
+    assert arrows[("169", "170")]["kind"] == "flow"
+    assert arrows[("170", "171")]["branch"] == "yes"
+    assert arrows[("170", "172")]["branch"] == "no"
+    assert arrows[("167", "168")]["branch"] == "survives"
+    # Part XII redraws the dyadic cycle [155] of Part XI; it is one node.
+    assert arrows[("167", "155")]["branch"] == "closed"
+    assert by_id["155"]["group"] == "fig:proof-diagram-part-xi"
+    assert sum(1 for node in ERDOS["nodes"] if node["id"] == "155") == 1
+
+    # Each new step carries the result the dependency table attributes to it.
+    assert by_id["158"]["itemRefs"] == ["def:window-realization-test"]
+    assert by_id["160"]["itemRefs"] == ["lem:dense-deficiency-routing"]
+    assert by_id["162"]["itemRefs"] == ["lem:dense-cold-pass"]
+    assert by_id["163"]["itemRefs"] == ["def:neutral-equal-length-germ"]
+    assert by_id["164"]["itemRefs"] == ["def:all-cold-comparison"]
+    assert by_id["165"]["itemRefs"] == ["lem:refined-minimality-swap"]
+    assert by_id["167"]["itemRefs"] == ["lem:two-strand-check"]
+    assert by_id["168"]["itemRefs"] == ["lem:symmetric-pair-endpoint"]
+    assert "def:blocked-class" in by_id["169"]["itemRefs"]
+    assert "def:barrier-overlap-system" in by_id["170"]["itemRefs"]
+    items = {item["key"]: item for item in ERDOS["items"]}
+    assert items["lem:dense-cold-pass"]["proofLatex"]
+    assert items["rem:dense-residual-status"]["kind"] == "remark"
+    for key in (
+        "lem:scale-additivity",
+        "lem:blocked-graphs-compress",
+        "lem:system-increment-arithmetic",
+        "lem:barrier-failure-overlap",
+        "lem:window-system-realizability",
+        "lem:serial-system-sumset",
+        "lem:remainder-glue-injection",
+        "lem:neutral-germ-symmetry",
+    ):
+        assert items[key]["kind"] == "lemma" and items[key]["proofLatex"], key
+    assert items["def:serial-window-system"]["kind"] == "definition"
+
+
+def test_erdos_exact_collision_test_sits_in_part_v() -> None:
+    """[173]--[177] expand the no-edge of the exact collision test in place."""
+    by_id = {node["id"]: node for node in ERDOS["nodes"]}
+    for number in range(173, 178):
+        assert by_id[str(number)]["group"] == "fig:proof-diagram-part-v", number
+    assert by_id["173"]["shape"] == by_id["175"]["shape"] == "decision"
+    assert by_id["176"]["shape"] == "terminal"
+
+    arrows = {(edge["source"], edge["target"]): edge for edge in ERDOS["edges"]}
+    assert arrows[("57", "173")]["kind"] == "flow"
+    assert arrows[("173", "58")]["branch"] == "yes"
+    assert arrows[("173", "174")]["branch"] == "no"
+    assert arrows[("174", "175")]["kind"] == "flow"
+    assert arrows[("175", "176")]["branch"] == "no"
+    assert arrows[("175", "177")]["branch"] == "yes"
+    assert arrows[("177", "65")]["kind"] == "continuation"
+    assert ("57", "58") not in arrows
+
+    assert by_id["173"]["itemRefs"] == ["lem:exact-collision-test"]
+    assert by_id["175"]["itemRefs"] == ["lem:absorbed-germ-fan-data"]
+
+
+def test_erdos_pair_code_residual_sits_in_part_x() -> None:
+    """The entropy counts of [131] and [137] are branch tests; failure opens [178]."""
+    by_id = {node["id"]: node for node in ERDOS["nodes"]}
+    for number in ("178", "179", "180"):
+        assert by_id[number]["group"] == "fig:proof-diagram-part-x", number
+    assert by_id["180"]["shape"] == "terminal"
+
+    arrows = {(edge["source"], edge["target"]): edge for edge in ERDOS["edges"]}
+    assert arrows[("131", "178")]["kind"] == "flow"
+    assert arrows[("131", "178")]["branch"] == "count fails"
+    assert arrows[("137", "178")]["kind"] == "continuation"
+    assert arrows[("137", "178")]["branch"].endswith("continue at [178]")
+    assert arrows[("178", "179")]["kind"] == "flow"
+    assert arrows[("179", "180")]["kind"] == "flow"
+
+    assert by_id["178"]["itemRefs"] == ["def:pair-overlap-system"]
+    assert by_id["179"]["itemRefs"] == ["lem:pair-system-realizability"]
+    assert by_id["180"]["itemRefs"] == ["lem:pair-system-increment-arithmetic"]
+    items = {item["key"]: item for item in ERDOS["items"]}
+    for key in ("lem:pair-failure-overlap", "lem:pair-count-or-arithmetic"):
+        assert items[key]["kind"] == "lemma" and items[key]["proofLatex"], key
 
 
 def test_erdos_ledger_and_constants() -> None:

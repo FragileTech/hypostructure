@@ -102,11 +102,12 @@ theorem sum_eq_sum_components {Weight : Type w} [AddCommMonoid Weight]
 variable {threshold dischargeScale : Nat}
 variable {packing : Finset (Finset object.Vertex)}
 variable {piece : TypeBRefinedSupport.CanonicalPiece object packing}
+variable {demands : Finset object.Vertex}
 
 /-- A canonical component is literally contained in the one remaining core. -/
 theorem refinedComponent_subset_remainingCore
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece)
+      piece demands)
     (component : Connected.Component object ledger.remainingCore) :
     Connected.vertices object ledger.remainingCore component ⊆
       ledger.remainingCore := by
@@ -117,7 +118,7 @@ theorem refinedComponent_subset_remainingCore
 /-- A post-ledger component remains in the incoming assigned support. -/
 theorem refinedComponent_subset_piece
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece)
+      piece demands)
     (component : Connected.Component object ledger.remainingCore) :
     Connected.vertices object ledger.remainingCore component ⊆ piece.vertices := by
   intro vertex member
@@ -128,7 +129,7 @@ theorem refinedComponent_subset_piece
 /-- A component in the canonical order is connected in the ambient object. -/
 theorem refinedComponent_connected
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece)
+      piece demands)
     (component : Connected.Component object ledger.remainingCore)
     (member : component ∈ Connected.order object ledger.remainingCore) :
     Connected.ConnectedOn object
@@ -139,7 +140,7 @@ theorem refinedComponent_connected
 /-- B2(d) is inherited by every canonical remainder component. -/
 theorem refinedComponent_has_no_highCentre
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece)
+      piece demands)
     (component : Connected.Component object ledger.remainingCore)
     {vertex : object.Vertex}
     (member : vertex ∈ Connected.vertices object ledger.remainingCore component) :
@@ -153,7 +154,7 @@ lies in one canonical post-ledger component.  This replaces the former raw
 count of deleted neighbouring vertices. -/
 noncomputable def refinedComponentReserveUnits
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece)
+      piece demands)
     (component : Connected.Component object ledger.remainingCore) :
     Finset (OrdinaryDeficiencyReserve.Carrier object) :=
   OrdinaryDeficiencyReserve.anchorFibre ledger.remainingReserve
@@ -161,7 +162,7 @@ noncomputable def refinedComponentReserveUnits
 
 theorem refinedComponentReserveUnits_subset
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece)
+      piece demands)
     (component : Connected.Component object ledger.remainingCore) :
     refinedComponentReserveUnits ledger component ⊆ ledger.remainingReserve :=
   OrdinaryDeficiencyReserve.anchorFibre_subset _ _
@@ -170,14 +171,14 @@ theorem refinedComponentReserveUnits_subset
 capacity `2s`; packed-window incidences have half capacity `s`. -/
 noncomputable def refinedComponentReserve
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece)
+      piece demands)
     (component : Connected.Component object ledger.remainingCore) : Int :=
   OrdinaryDeficiencyReserve.capacity dischargeScale
     (refinedComponentReserveUnits ledger component)
 
 theorem refinedComponentReserve_nonneg
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece)
+      piece demands)
     (component : Connected.Component object ledger.remainingCore) :
     0 ≤ refinedComponentReserve ledger component := by
   exact OrdinaryDeficiencyReserve.capacity_nonnegative _ _
@@ -187,7 +188,7 @@ incidence supplied by `lem:stub-positive`; it is not stored as an authored
 capacity ledger. -/
 noncomputable def refinedComponentWindowStubReserve
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece)
+      piece demands)
     (component : Connected.Component object ledger.remainingCore) : Int :=
   ((dischargeScale * object.boundaryIncidence
     (Connected.vertices object ledger.remainingCore component) : Nat) : Int)
@@ -197,7 +198,7 @@ ordinary reserve anchored in that component together with its literal boundary
 stub reserve. -/
 theorem refinedComponent_positiveDeficiency_supplied
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece)
+      piece demands)
     (component : Connected.Component object ledger.remainingCore)
     (baseline : ∀ vertex : object.Vertex, threshold ≤ object.degree vertex) :
     ((dischargeScale * object.positiveDeficiency
@@ -223,14 +224,14 @@ theorem refinedComponent_positiveDeficiency_supplied
 core. -/
 noncomputable def refinedRemainingReserveUnits
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece) :
+      piece demands) :
     Finset (OrdinaryDeficiencyReserve.Carrier object) :=
   OrdinaryDeficiencyReserve.anchorFibre ledger.remainingReserve
     ledger.remainingCore
 
 theorem refinedRemainingReserveUnits_subset
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece) :
+      piece demands) :
     refinedRemainingReserveUnits ledger ⊆ ledger.remainingReserve :=
   OrdinaryDeficiencyReserve.anchorFibre_subset _ _
 
@@ -238,7 +239,7 @@ theorem refinedRemainingReserveUnits_subset
 the fibres anchored in its canonical connected components. -/
 theorem refinedRemainingReserveUnits_eq_biUnion_components
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece) :
+      piece demands) :
     refinedRemainingReserveUnits ledger =
       (Connected.order object ledger.remainingCore).toFinset.biUnion
         fun component => refinedComponentReserveUnits ledger component := by
@@ -274,7 +275,7 @@ theorem refinedRemainingReserveUnits_eq_biUnion_components
 /-- Exact capacity additivity over the canonical connected components. -/
 theorem refinedRemainingReserveCapacity_eq_sum_components
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece) :
+      piece demands) :
     OrdinaryDeficiencyReserve.capacity dischargeScale
         (refinedRemainingReserveUnits ledger) =
       ∑ component ∈ (Connected.order object ledger.remainingCore).toFinset,
@@ -289,7 +290,7 @@ theorem refinedRemainingReserveCapacity_eq_sum_components
 /-- The indexed reserve split used downstream is literal and lossless. -/
 theorem consumed_union_remainingReserve
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece) :
+      piece demands) :
     ledger.consumedReserveUnits ∪ ledger.remainingReserve =
       object.ordinaryDeficiencyReserve threshold packing piece.vertices :=
   ledger.consumed_union_remainingReserve
@@ -298,11 +299,11 @@ theorem consumed_union_remainingReserve
 canonical connected components of the remainder. -/
 theorem refinedCoreChargePartition
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece) :
+      piece demands) :
     ∑ vertex ∈ piece.vertices,
         TypeBRefinedSupport.scaledCoreCharge object threshold dischargeScale
           piece.vertices vertex =
-      (∑ vertex ∈ ledger.removedVertices,
+      (∑ vertex ∈ ledger.removedVertices ∩ piece.vertices,
         TypeBRefinedSupport.scaledCoreCharge object threshold dischargeScale
           piece.vertices vertex) +
       ((Connected.order object ledger.remainingCore).map fun component =>
@@ -310,15 +311,13 @@ theorem refinedCoreChargePartition
           TypeBRefinedSupport.scaledCoreCharge object threshold dischargeScale
           piece.vertices vertex).sum := by
   classical
-  have removedSubset : ledger.removedVertices ⊆ piece.vertices := by
-    change TypeBRefinedSupport.centres object threshold piece.vertices ∪
-      ledger.chargedVertexSupport ⊆ piece.vertices
-    exact fun {_vertex} member => (Finset.mem_union.mp member).elim
-      (fun centre => TypeBRefinedSupport.centres_subset centre)
-      (fun charged => ledger.chargedVertexSupport_subset charged)
-  have complement : piece.vertices \ ledger.remainingCore = ledger.removedVertices := by
-    rw [TypeBRefinedSupport.DisjointLedger.remainingCore]
-    exact Finset.sdiff_sdiff_eq_self removedSubset
+  have complement : piece.vertices \ ledger.remainingCore =
+      ledger.removedVertices ∩ piece.vertices := by
+    rw [TypeBRefinedSupport.DisjointLedger.remainingCore,
+      TypeBRefinedSupport.DisjointLedger.removedVertices]
+    ext vertex
+    simp only [Finset.mem_sdiff, Finset.mem_inter, Finset.mem_union, not_and, not_not]
+    tauto
   have split := Finset.sum_sdiff ledger.remainingCore_subset
     (f := fun vertex => TypeBRefinedSupport.scaledCoreCharge object threshold
       dischargeScale piece.vertices vertex)
@@ -331,9 +330,9 @@ theorem refinedCoreChargePartition
 /-- Exact augmented-ledger decomposition over the same remainder. -/
 theorem refinedAugmentedLedgerPartition
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece) :
+      piece demands) :
     TypeBRefinedSupport.augmentedLedger object threshold dischargeScale piece.vertices =
-      (∑ vertex ∈ ledger.removedVertices,
+      (∑ vertex ∈ ledger.removedVertices ∩ piece.vertices,
         TypeBRefinedSupport.scaledCoreCharge object threshold dischargeScale
           piece.vertices vertex) +
       ((Connected.order object ledger.remainingCore).map fun component =>
@@ -343,7 +342,7 @@ theorem refinedAugmentedLedgerPartition
       ∑ centre ∈ TypeBRefinedSupport.centres object threshold piece.vertices,
         TypeBRefinedSupport.scaledCentreCharge object threshold dischargeScale
           centre := by
-  rw [TypeBRefinedSupport.augmentedLedger, refinedCoreChargePartition ledger]
+  rw [TypeBRefinedSupport.augmentedLedger_eq, refinedCoreChargePartition ledger]
 
 /-! ## `lem:typeB-postledger-core-hygiene` -/
 
@@ -367,7 +366,7 @@ theorem hereditarilyTargetUncompressible_of_subset
 
 theorem refinedComponent_ambientSurplus_eq_zero
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece)
+      piece demands)
     (component : Connected.Component object ledger.remainingCore) :
     object.ambientSurplus
       (Connected.vertices object ledger.remainingCore component) threshold = 0 := by
@@ -400,7 +399,7 @@ an inherited admissibility fact or a theorem of the canonical B2 ledger. -/
 structure PostLedgerComponent
     (presentation : TypeAB.Presentation.{u})
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece)
+      piece demands)
     (component : Connected.Component object ledger.remainingCore) : Prop where
   componentMember : component ∈ Connected.order object ledger.remainingCore
   containedInRemainingCore :
@@ -447,7 +446,7 @@ particular component; hygiene itself neither assumes nor manufactures it. -/
 theorem PostLedgerComponent.typeASupportInput_of_negative
     {presentation : TypeAB.Presentation.{u}}
     {ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece}
+      piece demands}
     {component : Connected.Component object ledger.remainingCore}
     (componentData : PostLedgerComponent presentation ledger component)
     (negative : object.NegativeNetCharge
@@ -470,7 +469,7 @@ the same remainder-normalization fact excludes every baseline sub-support. -/
 theorem PostLedgerComponent.exists_traceTo
     {presentation : TypeAB.Presentation.{u}}
     {ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece}
+      piece demands}
     {component : Connected.Component object ledger.remainingCore}
     (componentData : PostLedgerComponent presentation ledger component)
     {source : object.Vertex}
@@ -490,7 +489,7 @@ post-ledger component.  The receiver is selected by the existing
 theorem PostLedgerComponent.receiverRouting
     {presentation : TypeAB.Presentation.{u}}
     {ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece}
+      piece demands}
     {component : Connected.Component object ledger.remainingCore}
     (componentData : PostLedgerComponent presentation ledger component) :
     ∀ source ∈ Connected.vertices object ledger.remainingCore component,
@@ -519,7 +518,7 @@ unsaturated-discharge inequality on that same canonical component. -/
 theorem PostLedgerComponent.nonnegative_or_saturatedReceiver
     {presentation : TypeAB.Presentation.{u}}
     {ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece}
+      piece demands}
     {component : Connected.Component object ledger.remainingCore}
     (componentData : PostLedgerComponent presentation ledger component)
     (baseline : ∀ vertex : object.Vertex, threshold ≤ object.degree vertex) :
@@ -583,7 +582,7 @@ from the same `ledger`. -/
 theorem postLedgerCoreHygiene
     (presentation : TypeAB.Presentation.{u})
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece)
+      piece demands)
     (component : Connected.Component object ledger.remainingCore)
     (componentMember : component ∈ Connected.order object ledger.remainingCore)
     (baselineDegree : threshold = presentation.baselineDegree)

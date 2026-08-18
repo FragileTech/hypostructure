@@ -7,7 +7,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 import katex from "katex";
-import { render, screen, within } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeAll, describe, expect, it } from "vitest";
 
@@ -110,6 +110,12 @@ describe.each([...DOCUMENTS])("the %s document", (_slug, document) => {
     expect(document.source.files.length).toBeGreaterThan(0);
   });
 
+  it("marks a step open only when it is a terminal", () => {
+    for (const node of document.nodes) {
+      if (node.open) expect(node.shape).toBe("terminal");
+    }
+  });
+
   it("is one connected argument", () => {
     expect(traceFrom(document.edges, document.nodes[0].id, "both").nodeIds.size).toBe(
       document.nodes.length,
@@ -202,6 +208,25 @@ describe("the Erdos-Gyarfas terminal at [124]", () => {
   });
 });
 
+describe("the Erdos-Gyarfas neutral germ at [163]", () => {
+  it("is now a branch test in Part XII, and the paper leaves no outcome open", () => {
+    const node = ERDOS.nodes.find((candidate) => candidate.id === "163")!;
+    expect(node.open).toBeUndefined();
+    expect(node.shape).toBe("decision");
+    expect(node.group).toBe("fig:proof-diagram-part-xii");
+    expect(ERDOS.nodes.filter((candidate) => candidate.open)).toEqual([]);
+
+    show(ERDOS, "163");
+    expect(screen.getByText("Branch test")).toBeInTheDocument();
+    expect(screen.queryByText("Open")).not.toBeInTheDocument();
+    cleanup();
+
+    showReferee(ERDOS, "163");
+    expect(screen.getByLabelText("Node 163")).toBeInTheDocument();
+    expect(screen.queryByText(/draws this outcome as open/)).not.toBeInTheDocument();
+  });
+});
+
 describe("referee mode", () => {
   it("puts the evidence of a branch test first: standing, claim, state, cases", () => {
     showReferee(ERDOS, "15");
@@ -238,7 +263,7 @@ describe("referee mode", () => {
     // Its own result, what it builds on, and where it falls.
     expect(within(panel).getAllByText("cor:p13-exists").length).toBeGreaterThan(0);
     expect(within(panel).getByText("Rests on").parentElement).toHaveTextContent(/Hegde/);
-    expect(within(panel).getByText(/142 later steps/)).toBeInTheDocument();
+    expect(within(panel).getByText(/165 later steps/)).toBeInTheDocument();
     const where = locate(ERDOS, "erdos-gyarfas", "cor:p13-exists")!;
     expect(within(panel).getAllByText(`page ${where.page} of The paper`)[0]).toHaveAttribute(
       "href",

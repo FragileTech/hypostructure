@@ -507,6 +507,116 @@ set_option maxHeartbeats 800000 in
           exact ⟨candidates, disjointFamily, candidateFamily, extracted, count⟩⟩
         .nil)
 
+/-! ## Nodes `[174]`--`[177]`, `lem:absorbed-germ-fan-data`: the absorbed-germ split
+
+On the absorbed-germ residual (`[173]`'s no arm) the linear cold count of
+`[174]` is not needed by the extraction: node `[175]` decides, per the selected
+branch-excess half-edges of the ambient-cubic cold windows, whether some
+first-failure exchange germ has a subcubic support.  If one does, the candidate
+family of `lem:cold-germ-extraction` is positive and the germs are routed as in
+`[153]`--`[157]` (node `[176]`); if none does, every selected corridor meets a
+vertex of degree above the threshold — a heavy centre by node `[10]` — and the
+half-edge is decorated handoff fan data for Type B (node `[177]`,
+`K .absorbedGermFanData`).  This is that decision on the literal residual; its
+yes arm publishes exactly `K .coldGermCandidates` (the count clause is
+`selected_le_candidates`, the overlap clause `candidateGerms_overlap_le`, the
+positivity the decision itself, the extraction `K .coldGermExtraction`). -/
+noncomputable def absorbedGermDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger
+      (Input BranchState Presentation presentation data) current known)
+    [FactKeys.Has (K .bridgeless) known]
+    [FactKeys.Has (K .coldWindowLedgerSplit) known]
+    [FactKeys.Has (K .coldGermExtraction) known]
+    (candidatesFresh : K .coldGermCandidates ∉ known)
+    (absorbedFresh : K .absorbedGermFanData ∉ known) :
+    Decision (K .coldGermCandidates) (K .absorbedGermFanData) previous := by
+  classical
+  let bridgeless := (previous.get (K .bridgeless)).down
+  let split := (previous.get (K .coldWindowLedgerSplit)).down
+  let extraction := (previous.get (K .coldGermExtraction)).down
+  let object := current.object
+  have three := data.threshold_eq_three
+  have baseline3 : Graph.MinimumDegreeAtLeast 3 object := by
+    have := current.baseline
+    change Graph.MinimumDegreeAtLeast data.threshold object at this
+    rw [three] at this
+    exact this
+  have large : 2 < object.vertexCount :=
+    Graph.ColdCorridor.two_lt_vertexCount_of_minDegree baseline3
+  let packing := canonicalWindowPacking data object
+  let cold := canonicalColdWindows data object
+  let cubic := cold.filter (AmbientCubicWindow data object)
+  let candidates := Graph.ColdCorridor.candidateGerms data.coldSignature 3
+    (Graph.HasCycleWithLength data.LengthOK) object cubic baseline3 bridgeless large
+  exact Decision.run previous (K .coldGermCandidates) (K .absorbedGermFanData)
+    `Hypostructure.Graph.Strategy.Spine.absorbedGermDichotomy
+    (if positive : 0 < candidates.card then
+      .inl ⟨by
+        have cubicSub : cubic ⊆ packing :=
+          (Finset.filter_subset _ _).trans Finset.sdiff_subset
+        have valid : object.IsWindowPacking data.windowOrder packing := split.1
+        have induced : ∀ window ∈ cubic, object.InducesWindow data.windowOrder window :=
+          fun window member => valid.1 window (cubicSub member)
+        have disjoint : ∀ left ∈ cubic, ∀ right ∈ cubic, left ≠ right →
+            Disjoint left right :=
+          fun left leftMem right rightMem => valid.2 left (cubicSub leftMem) right
+            (cubicSub rightMem)
+        have windowsCubic : ∀ vertex ∈ Graph.ColdCorridor.windowsOf object cubic,
+            object.degree vertex = 3 := by
+          intro vertex member
+          obtain ⟨window, windowMem, vertexMem⟩ :=
+            (Graph.ColdCorridor.mem_windowsOf object cubic vertex).1 member
+          have := (Finset.mem_filter.1 windowMem).2 vertex vertexMem
+          rw [three] at this
+          exact this
+        have perWindowEq : Graph.ColdCorridor.branchExcessOf (coldExternalStubCount data) =
+            3 * data.windowOrder - 2 * (data.windowOrder - 1) - 2 := by
+          simp only [Graph.ColdCorridor.branchExcessOf, coldExternalStubCount, three]
+        change ColdExchangeBoundStatement data object ∧
+          Graph.ColdCorridor.ColdGermExtractionLocal data.coldSignature
+            data.threshold (Graph.MinimumDegreeAtLeast data.threshold)
+            (Graph.HasCycleWithLength data.LengthOK) object at extraction
+        rw [three] at extraction
+        change ColdGermCandidatesStatement data object
+        simp only [ColdGermCandidatesStatement]
+        rw [three]
+        have count := Graph.ColdCorridor.selected_le_candidates data.coldSignature
+          (Graph.HasCycleWithLength data.LengthOK) object cubic baseline3 bridgeless large
+          induced disjoint windowsCubic
+        rw [← perWindowEq] at count
+        have candidateFamily : Graph.ColdCorridor.CandidateGermFamily data.coldSignature 3
+            (Graph.MinimumDegreeAtLeast 3) (Graph.HasCycleWithLength data.LengthOK)
+            object candidates := by
+          refine ⟨positive, ?_⟩
+          intro candidate member
+          have overlap := Graph.ColdCorridor.candidateGerms_overlap_le data.coldSignature
+            (Graph.HasCycleWithLength data.LengthOK) object cubic baseline3 bridgeless large
+            candidate member
+          convert overlap using 2
+          exact Finset.filter_congr_decidable _ _ _
+        obtain ⟨disjointFamily, extracted⟩ := extraction.2 candidates candidateFamily
+        exact ⟨candidates, disjointFamily, candidateFamily, extracted, count⟩⟩
+    else
+      .inr ⟨by
+        change AbsorbedGermFanDataStatement data object
+        simp only [AbsorbedGermFanDataStatement]
+        rw [three]
+        intro baseline' bridgeless' large' stub
+        have empty : candidates = ∅ := Finset.card_eq_zero.1 (Nat.eq_zero_of_not_pos positive)
+        by_contra none
+        push_neg at none
+        have member : Graph.ColdCorridor.stubGerm data.coldSignature 3
+            (Graph.HasCycleWithLength data.LengthOK) object cubic baseline3 bridgeless large
+              stub ∈ candidates := by
+          simp only [candidates, Graph.ColdCorridor.candidateGerms, Finset.mem_filter,
+            Finset.mem_image, Finset.mem_attach, true_and]
+          exact ⟨⟨stub, rfl⟩, none⟩
+        rw [empty] at member
+        exact Finset.notMem_empty _ member⟩)
+    candidatesFresh absorbedFresh
+
 /-! ## Nodes `[154]`--`[156]`, `lem:cold-bounded-germ-trichotomy` and
 `lem:cold-increment-arithmetic`
 
@@ -607,6 +717,173 @@ survive their smear and are routed the same way; and the table is finite. -/
           rfl,
           fun Handoff row => row.increment_eq_zero⟩⟩
         .nil)
+
+/-! ## Node `[167]`: the stub structure of the ambient-cubic cold windows
+
+`lem:cold-window-stub-excess` counted `15` external stubs per ambient-cubic
+window; here they are located: the two path endpoints carry `δ − 1` stubs each
+and every interior vertex carries `δ − 2` (`Graph/WindowStubStructure.lean`).
+This is what the symmetric-pair analysis of the dense residual charges: two
+internally disjoint strands leaving one attachment vertex need two stubs there,
+so a genuine symmetric strand pair (`[167]`) attaches only at endpoints, a window
+carries at most one, and the `(order − 2)(δ − 2)` interior stubs are asymmetric
+single-stub attachments. -/
+@[reducible] noncomputable def coldWindowStubStructureRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.coldWindowStubStructure
+    { Requires := [K .coldWindowLedgerSplit]
+      Produces := [K .coldWindowStubStructure]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let split := (inputs.get (K .coldWindowLedgerSplit)).down
+      .cons (key := K .coldWindowStubStructure)
+        ⟨by
+          classical
+          intro window member
+          have windowMem : window ∈ canonicalWindowPacking data inputs.current.object :=
+            Finset.sdiff_subset (Finset.mem_filter.1 member).1
+          have cubic : ∀ vertex ∈ window, inputs.current.object.degree vertex = data.threshold :=
+            (Finset.mem_filter.1 member).2
+          have induces : inputs.current.object.InducesWindow data.windowOrder window :=
+            split.1.1 window windowMem
+          obtain ⟨ends, endsSubset, endsCard, interior, endpoints⟩ :=
+            Graph.FiniteObject.exists_ends_externalNeighbours window
+              data.three_le_windowOrder induces cubic
+          exact ⟨ends, endsSubset, endsCard, interior, endpoints,
+            Graph.FiniteObject.interior_stubs_le_asymmetric window
+              data.three_le_windowOrder induces cubic⟩⟩
+        .nil)
+
+/-! ## Node `[169]`, `def:blocked-class`: the trivial neutral germ residual
+
+*"On the trivial neutral germ residual, `G ∈ 𝓑(𝒫)`, and every window of `G` is
+blocked at every scale."*  The row publishes exactly that: the object's own
+labelled skeleton has the baseline minimum degree, contains every packed window
+at its labelled position, and — the object having no accepted cycle at all
+(`K .selection`) — no accepted cycle passes through a window; and the blocked
+class is dominated by the skeleton budget (`lem:skeleton-dominates`,
+`rem:blocked-class-checks` (a): the class is the *near-cubic* one).  Nodes
+`[170]`--`[172]` (`lem:scale-additivity`, `lem:blocked-graphs-compress`,
+`lem:system-increment-arithmetic`) are stated over this class. -/
+@[reducible] noncomputable def blockedClassRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.blockedClassMember
+    { Requires := [K .selection, K .coldWindowLedgerSplit]
+      Produces := [K .blockedClassMember]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let avoids := (inputs.get (K .selection)).down.1
+      let split := (inputs.get (K .coldWindowLedgerSplit)).down
+      .cons (key := K .blockedClassMember)
+        ⟨Graph.BlockedClass.minDegree_objectSkeleton inputs.current.object data.threshold
+            inputs.current.baseline,
+          Graph.BlockedClass.objectSkeleton_blocked inputs.current.object data.windowOrder
+            data.LengthOK (canonicalWindowPacking data inputs.current.object) split.1 avoids,
+          Graph.BlockedClass.card_blocked_le_skeletonBudget inputs.current.object
+            data.threshold data.windowOrder data.LengthOK _⟩
+        .nil)
+
+/-! ## Node `[163]`, `lem:neutral-germ-symmetry`: the symmetry split
+
+A neutral equal-length terminal germ carries no target information; it is a
+symmetry.  The manuscript splits it by the nature of its second representative:
+either `E` is a canonical replacement piece different from the corridor piece
+`Q[x,y]` (node `[165]`, closed by the refined minimality of
+`lem:refined-minimality-swap`), or every neutral germ has `E = Q[x,y]` (the
+state that minimality forces; on it the neutral row exchanges nothing, and a
+genuine second *strand* is excluded at interior selected half-edges by the stub
+structure `[167]`--`[168]`).  This is that decision on the literal residual. -/
+noncomputable def neutralGermSymmetryDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger
+      (Input BranchState Presentation presentation data) current known)
+    [FactKeys.Has (K .coldWindowStubStructure) known]
+    (properFresh : K .coldProperNeutralGerm ∉ known)
+    (trivialFresh : K .coldTrivialNeutralGerms ∉ known) :
+    Decision (K .coldProperNeutralGerm) (K .coldTrivialNeutralGerms) previous := by
+  classical
+  let _structure := (previous.get (K .coldWindowStubStructure)).down
+  exact Decision.run previous (K .coldProperNeutralGerm) (K .coldTrivialNeutralGerms)
+    `Hypostructure.Graph.Strategy.Spine.neutralGermSymmetryDichotomy
+    (if proper : ∃ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) current.object,
+        germ.Neutral ∧
+          Graph.CanonicalPiece.Precedes (germCanonicalRepresentative data germ)
+            germ.piece.toCanonical then
+      .inl ⟨proper⟩
+    else
+      .inr ⟨by
+        intro germ neutral precedes
+        exact proper ⟨germ, neutral, precedes⟩⟩)
+    properFresh trivialFresh
+
+/-! ## `lem:refined-minimality-swap`, the size split of the canonical replacement
+
+On the residual where a neutral germ has a canonical replacement piece
+`E ≠ Q[x,y]`, the fixed canonical order compares sizes first: either `E` has
+strictly fewer internal vertices — then exchanging `Q` for `E` is a strictly
+smaller counterexample and the `[4]` minimality closes (node `[165]`) — or `E`
+has the same size, which is the tie-break of node `[166]`. -/
+noncomputable def canonicalSwapSizeDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger
+      (Input BranchState Presentation presentation data) current known)
+    [FactKeys.Has (K .coldProperNeutralGerm) known]
+    (smallerFresh : K .coldCanonicalSwapSmaller ∉ known)
+    (sameFresh : K .coldCanonicalSwapSameSize ∉ known) :
+    Decision (K .coldCanonicalSwapSmaller) (K .coldCanonicalSwapSameSize) previous := by
+  classical
+  let _proper := (previous.get (K .coldProperNeutralGerm)).down
+  exact Decision.run previous (K .coldCanonicalSwapSmaller) (K .coldCanonicalSwapSameSize)
+    `Hypostructure.Graph.Strategy.Spine.canonicalSwapSizeDichotomy
+    (if smaller : ∃ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) current.object,
+        germ.Neutral ∧
+          (germCanonicalRepresentative data germ).size < germ.piece.internalVertexCount then
+      .inl ⟨smaller⟩
+    else
+      .inr ⟨by
+        intro germ neutral lt
+        exact smaller ⟨germ, neutral, lt⟩⟩)
+    smallerFresh sameFresh
+
+/-! ## The route-8 rate failure, `rem:route8-carrier-margin` read exactly
+
+When the private-carrier rate `τ < 3/13` of node `[120]` fails on a residual that
+already carries the hot/cold ledger of the fixed packing, the manuscript's
+delicate density interval (row 2 of `tab:cold-branch-ledger`) is handled by the
+hot/cold pass; in exact form its residue is decided by the cold family: if the
+cold family is nonempty, the failure is carried by cold windows whose selected
+corridors are charged as in `[174]`--`[177]` (absorbed germs or genuine germs);
+if it is empty, every packed window is hot at the exact skeleton budget and the
+rate still fails — the exact budget-edge corner.  This is that decision on the
+literal residual. -/
+noncomputable def coldFamilyDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger
+      (Input BranchState Presentation presentation data) current known)
+    [FactKeys.Has (K .coldWindowLedgerSplit) known]
+    (positiveFresh : K .coldFamilyPositive ∉ known)
+    (emptyFresh : K .coldFamilyEmpty ∉ known) :
+    Decision (K .coldFamilyPositive) (K .coldFamilyEmpty) previous := by
+  classical
+  let _split := (previous.get (K .coldWindowLedgerSplit)).down
+  exact Decision.run previous (K .coldFamilyPositive) (K .coldFamilyEmpty)
+    `Hypostructure.Graph.Strategy.Spine.coldFamilyDichotomy
+    (if positive : 0 < (canonicalColdWindows data current.object).card then
+      .inl ⟨positive⟩
+    else
+      .inr ⟨Nat.eq_zero_of_not_pos positive⟩)
+    positiveFresh emptyFresh
 
 /-! ## `thm:cold-branch-quantitative-closure`: no terminal cold residual
 

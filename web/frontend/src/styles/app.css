@@ -15,6 +15,7 @@
   --decision: #a2681a;
   --terminal: #2f7d52;
   --continuation: #7a52a0;
+  --open: #c0392b;
   --code-keyword: #8a3b6b;
   --code-comment: #6f7a6a;
   --code-string: #2f7d52;
@@ -47,6 +48,7 @@
     --decision: #d9a86a;
     --terminal: #71c295;
     --continuation: #b393d8;
+    --open: #ef6f63;
     --code-keyword: #d98cc0;
     --code-comment: #8b9587;
     --code-string: #71c295;
@@ -982,6 +984,12 @@ body.has-rail-open {
   border-radius: 999px;
 }
 
+.shape-open {
+  color: var(--open);
+  border-width: 2px;
+  border-radius: 999px;
+}
+
 .shape-continuation {
   color: var(--continuation);
   border-style: dashed;
@@ -1028,6 +1036,32 @@ body.has-rail-open {
   background: color-mix(in srgb, var(--terminal) 9%, var(--surface));
 }
 
+/* An open terminal: drawn in red by the source, and here. */
+.proof-node-open .proof-node-shape {
+  border-color: var(--open);
+  border-width: 2px;
+  background: color-mix(in srgb, var(--open) 9%, var(--surface));
+}
+
+.proof-node-open .proof-node-label {
+  color: var(--open);
+}
+
+.proof-node-open-tag {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 5px;
+  border: 1px solid var(--open);
+  border-radius: 999px;
+  font-family: var(--mono);
+  font-size: 9px;
+  line-height: 1.5;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--open);
+  vertical-align: 1px;
+}
+
 .proof-node-body {
   position: relative;
   display: flex;
@@ -1053,6 +1087,10 @@ body.has-rail-open {
 
 .proof-node-terminal .proof-node-number {
   background: var(--terminal);
+}
+
+.proof-node-open .proof-node-number {
+  background: var(--open);
 }
 
 .proof-node-label {
@@ -1172,6 +1210,12 @@ body.has-rail-open {
 .badge-terminal {
   color: var(--terminal);
   border-color: var(--terminal);
+}
+
+.badge-open {
+  color: var(--open);
+  border-color: var(--open);
+  background: color-mix(in srgb, var(--open) 9%, var(--surface));
 }
 
 .node-detail-statement {

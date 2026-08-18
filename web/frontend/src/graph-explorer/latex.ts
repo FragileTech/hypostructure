@@ -168,31 +168,36 @@ function findClose(source: string, from: number, close: string): number {
   return -1;
 }
 
+/** The index of the `}` closing the group whose `{` sits at `open`, or -1. */
+function closingBrace(source: string, open: number): number {
+  let depth = 0;
+  let cursor = open;
+  while (cursor < source.length) {
+    const char = source[cursor];
+    if (char === "\\") {
+      cursor += 2;
+      continue;
+    }
+    if (char === "{") depth += 1;
+    else if (char === "}") {
+      depth -= 1;
+      if (depth === 0) return cursor;
+    }
+    cursor += 1;
+  }
+  return -1;
+}
+
+/** The colour argument of a `\textcolor`, e.g. `{red}`. */
+const COLOUR_ARGUMENT = /^\{[a-zA-Z!0-9]+\}/;
+
 function unwrapTextMacros(source: string): string {
   let result = source;
   for (const name of TEXT_MACROS) {
     const marker = `\\${name}{`;
     let index = result.indexOf(marker);
     while (index >= 0) {
-      let depth = 0;
-      let cursor = index + marker.length - 1;
-      let end = -1;
-      while (cursor < result.length) {
-        const char = result[cursor];
-        if (char === "\\") {
-          cursor += 2;
-          continue;
-        }
-        if (char === "{") depth += 1;
-        else if (char === "}") {
-          depth -= 1;
-          if (depth === 0) {
-            end = cursor;
-            break;
-          }
-        }
-        cursor += 1;
-      }
+      const end = closingBrace(result, index + marker.length - 1);
       if (end < 0) break;
       result =
         result.slice(0, index) +
@@ -200,6 +205,20 @@ function unwrapTextMacros(source: string): string {
         result.slice(end + 1);
       index = result.indexOf(marker);
     }
+  }
+  // `\textcolor{red}{...}` marks the open nodes in one paper; the text stays,
+  // the colour is said by the node's own open status.
+  const colour = "\\textcolor";
+  let index = result.indexOf(colour);
+  while (index >= 0) {
+    const argument = COLOUR_ARGUMENT.exec(result.slice(index + colour.length));
+    if (!argument) break;
+    const open = index + colour.length + argument[0].length;
+    if (result[open] !== "{") break;
+    const end = closingBrace(result, open);
+    if (end < 0) break;
+    result = result.slice(0, index) + result.slice(open + 1, end) + result.slice(end + 1);
+    index = result.indexOf(colour);
   }
   return result;
 }

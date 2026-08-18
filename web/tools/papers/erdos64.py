@@ -1,4 +1,4 @@
-"""The Erdős–Gyárfás paper: one manuscript, eleven diagram panels."""
+"""The Erdős–Gyárfás paper: one manuscript, twelve diagram panels."""
 
 from __future__ import annotations
 
@@ -16,13 +16,16 @@ PART_TITLES = {
     "fig:proof-diagram-part-ix": "Part IX - Route-8 pressure descent",
     "fig:proof-diagram-part-x": "Part X - Sparse surplus accounting",
     "fig:proof-diagram-part-xi": "Part XI - The hot/cold window interface",
+    "fig:proof-diagram-part-xii": "Part XII - The dense-packing residual",
 }
 
 # Continuation arrows in this manuscript name a later node rather than repeating
 # it, and the joins are stated in the figure captions rather than drawn.
-# Source: the captions of Parts I-XI.
+# Source: the captions of Parts I-XII (Part V also joins [177] to Type B [65]).
 CONTINUATIONS = (
     ("20", "125", "surplus-pair accounting branch, expanded in Part X"),
+    ("158", "159", "no: dense-packing residual, expanded in Part XII"),
+    ("161", "25", "deficiency cap in place of [24]: enters Residual A in Part II"),
     ("22", "145", "no: cold branch, expanded in Part XI"),
     ("153", "24", "bounded: density-cap return to Part I"),
     ("25", "26", "Residual A continues in Part II"),
@@ -31,6 +34,7 @@ CONTINUATIONS = (
     ("56", "57", "the large-budget net cap continues in Part V"),
     ("63", "86", "Type A, expanded in Part VIII"),
     ("64", "65", "Type B, expanded in Part VI"),
+    ("177", "65", "decorated handoff fan data enter Type B in Part VI"),
     ("68", "78", "no: the degree-four branch, expanded in Part VII"),
     ("77", "110", "route-8 cores continue in Part IX"),
     ("108", "66", "exit 7 hands off to Type B"),
@@ -70,9 +74,13 @@ PART_SUMMARIES = {
         "residual."
     ),
     "fig:proof-diagram-part-v": (
-        "Localizes the surviving residual. Its net charge is non-negative globally, so if "
-        "the books are to fail they must fail somewhere in particular: a connected support "
-        "of negative net charge. Whether that support carries high-degree surplus decides "
+        "Localizes the surviving residual. The large-budget net cap is first put through "
+        "the exact collision test: if it fails, the selected cold corridors were charged to "
+        "high-degree vertices, and restoring that charge either exhibits a genuine germ, "
+        "closed by the cold-window and dense-residual routes, or supplies decorated handoff "
+        "fan data to Type B. If it holds, the net charge is non-negative globally, so if the "
+        "books are to fail they must fail somewhere in particular: a connected support of "
+        "negative net charge. Whether that support carries high-degree surplus decides "
         "which of the two local analyses claims it."
     ),
     "fig:proof-diagram-part-vi": (
@@ -104,7 +112,10 @@ PART_SUMMARIES = {
         "The excess surplus is extracted as ports and charged through a ledger of blockers "
         "and capacity tokens that counts each blocked pair exactly once. Overloading any "
         "token class forces a geometric structure that either exits or caps the surplus, "
-        "which is what puts the graph on the near-cubic spine."
+        "which is what puts the graph on the near-cubic spine. The two entropy counts are "
+        "branch tests: when either fails, the pair-code unrealized residual is closed by "
+        "structural accounting, a minimal overlap obstruction uncrossed into a serial demand "
+        "system whose increment arithmetic yields a dyadic hit or a periodic carrier."
     ),
     "fig:proof-diagram-part-xi": (
         "Handles the cold windows set aside at the hot/cold split. If the packing is sparse "
@@ -112,6 +123,20 @@ PART_SUMMARIES = {
         "family of cold windows, each contributing stub excess. Extracting bounded germs "
         "from that excess leaves three shapes, and all three either produce the target cycle "
         "or compress."
+    ),
+    "fig:proof-diagram-part-xii": (
+        "Expands the no-edge of the realization test [158]: the dense packings, where the "
+        "joint window package of the fixed maximal packing is not realized by the labelled "
+        "skeleton class. If the deficiency test passes, the residual enters the "
+        "negative-net-charge collision with a deficiency cap in place of the density cap; "
+        "otherwise the hot/cold pass is run again on the dense residual, and every closure "
+        "of that pass fires as before. The all-cold arm closes by the remainder glue. The "
+        "neutral equal-length germ splits on whether its second strand is genuine: if not, "
+        "swapping the canonical replacement in gives a same-size counterexample, so refined "
+        "minimality forces the trivial neutral residual, which closes by compression when "
+        "the conditional savings are additive and by the serial-system increment arithmetic "
+        "otherwise; if so, a finite two-strand check either finds a dyadic cycle or leaves a "
+        "pair attached only at endpoints, which is not a selected interior half-edge."
     ),
 }
 
@@ -134,7 +159,7 @@ CHAPTER = ChapterSpec(
     source="to_formalize/original_erdos_64_proof.tex",
     title="Powers of two in graphs of minimum degree three",
     short_title="The proof",
-    description="A single manuscript, drawn as eleven dependency panels.",
+    description="A single manuscript, drawn as twelve dependency panels.",
     diagrams=(
         "\\subsection*{Proof-dependency diagram}",
         "\\subsection*{Detailed dependency table}",

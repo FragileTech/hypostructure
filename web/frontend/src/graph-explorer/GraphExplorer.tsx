@@ -124,6 +124,7 @@ function DetailPanel({ mode, ...props }: NodeDetailPanelProps & { mode: Explorer
 
 export function GraphExplorer({ document, state, onChange }: GraphExplorerProps) {
   const index = useMemo(() => indexDocument(document), [document]);
+  const hasOpenNodes = useMemo(() => document.nodes.some((node) => node.open), [document]);
   const searchIndex = useMemo(
     () => buildSearchIndex(document, index),
     [document, index],
@@ -426,6 +427,12 @@ export function GraphExplorer({ document, state, onChange }: GraphExplorerProps)
                   {SHAPE_NAMES[shape]}
                 </li>
               ))}
+              {hasOpenNodes ? (
+                <li>
+                  <span className="shape-swatch shape-open" aria-hidden="true" />
+                  Open outcome
+                </li>
+              ) : null}
               <li>
                 <span className="shape-swatch shape-continuation" aria-hidden="true" />
                 Continues in another panel

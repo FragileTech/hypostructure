@@ -1338,7 +1338,7 @@ export function MethodologySection() {
               its own record of hypotheses, exclusions and spent budgets;
               residuals are routed across panels to consumers defined
               elsewhere; and the terminal closures sit at the ends of many
-              distinct paths: 157 numbered steps in the Erdős–Gyárfás
+              distinct paths: 164 numbered steps in the Erdős–Gyárfás
               argument and 333 across the three Navier–Stokes developments. On such
               an object the questions that matter are positional ones: which
               branch am I on, what has been established on it (and nothing

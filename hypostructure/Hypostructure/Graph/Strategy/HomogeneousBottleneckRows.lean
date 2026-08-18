@@ -287,6 +287,138 @@ append the resulting Type-B handoff fact to the same ledger. -/
             · exact handoff⟩)
         .nil)
 
+/-! ## Node `[144]`, the bottleneck arm routed: the pattern's own bottleneck
+
+`K .bottleneckRouting`/`K .typeBHandoff` are `lem:same-token-bottleneck-routing`
+at *every* declared routed bottleneck.  Entering Type B needs the pattern's
+*own* one: *"two distinct edges `π₁, π₂ ∈ 𝓜` have the same routing label ... we
+obtain two distinct selected surplus demands ... Consider the two routing germs
+from the carrier of `t` toward those two selected demands"* — the declared
+connector germs `def:same-token-routing-germs` gives, read off the certified
+presentation (`CapacityPresentation.routedBottleneck`).  The manuscript then
+splits on the separator's degree: *"If `d_G(z) = 3` ... a cubic first separator
+cannot survive"* (its reading is absorbed, the sparse exits (b)–(d)); otherwise
+*"the high-degree separator `z`, together with the separated connector tails
+from `z` to the two selected surplus demands, is exactly the decorated handoff
+data of `def:decorated-fan-envelope`"*.  That split is the decision below; the
+delocalization reading (d) of the cubic arm is refuted here by minimality, so the
+cubic arm carries only the target-defect/target-complete readings. -/
+
+/-- **Node `[144]`, the bottleneck arm routed at the pattern's declared
+bottleneck**: the high-degree separator gives the decorated Type B handoff fan
+envelope on a canonical remainder piece of the presentation's maximal packing
+(`K .typeBFanEnvelope`, the Type B `[65]`/`[66]` entry on the bare envelope);
+the cubic separator's absorbed reading is the other arm. -/
+noncomputable def patternRoutedBottleneckDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger (Input BranchState Presentation presentation data)
+      current known)
+    [FactKeys.Has (K .homogeneousBottleneckPattern) known]
+    [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .uncompressible) known]
+    (envelopeFresh : K .typeBFanEnvelope ∉ known)
+    (cubicFresh : K .cubicBottleneckSeparator ∉ known) :
+    Decision (K .typeBFanEnvelope) (K .cubicBottleneckSeparator) previous := by
+  classical
+  letI := data.boundaryProfileFintype
+  refine Decision.run previous (K .typeBFanEnvelope) (K .cubicBottleneckSeparator)
+    `Hypostructure.Graph.Strategy.Spine.patternRoutedBottleneckDichotomy
+    (Classical.choice ?_) envelopeFresh cubicFresh
+  have pattern := (ExactLedger.get previous (K .homogeneousBottleneckPattern)).down
+  have selection := (ExactLedger.get previous (K .selection)).down
+  have uncompressible := (ExactLedger.get previous (K .uncompressible)).down.1
+  simp only [Holds] at pattern selection uncompressible ⊢
+  obtain ⟨presentation, ledger, token, _tokenMem, role, structured⟩ := pattern
+  -- The role-homogeneous pattern of size `L_geom`, in either shape.
+  obtain ⟨pattern, inside, shaped, large⟩ :
+      ∃ pattern ⊆ ledger.presented.roleFibre token role,
+        (Graph.PatternFamily.IsMatching pattern ∨
+          ∃ centre, Graph.PatternFamily.IsStar pattern centre) ∧
+        Graph.SameTokenRoutingGerms.patternBound
+          (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+            (Graph.WindowCurvature.Label data.windowOrder)) ≤ pattern.card := by
+    rcases structured with ⟨pattern, inside, matching, large⟩ |
+      ⟨centre, pattern, inside, star, large⟩
+    · exact ⟨pattern, inside, Or.inl matching, large⟩
+    · exact ⟨pattern, inside, Or.inr ⟨centre, star⟩, large⟩
+  -- The pigeonhole: two distinct edges, hence two distinct selected demands.
+  obtain ⟨first, firstMem, second, secondMem, _distinctEdges, _sameLabel,
+      left, leftMem, right, rightMem, distinct⟩ :=
+    Graph.SameTokenRoutingGerms.exists_routed_demands pattern
+      (fun _ => data.routingLabelWitness)
+      (fun edge member => ledger.presented.pairs_roleFibre token role edge (inside member))
+      shaped large
+  -- Both edges are charged to `t`: `Θ_cap` is the ledger's eligibility.
+  have chargesOf : ∀ pair ∈ ledger.presented.roleFibre token role,
+      Graph.FiniteObject.Charges presentation.activation presentation.carrier
+        data.threshold presentation.packing token pair := by
+    intro pair member
+    have inFibre := Graph.PatternFamily.roleFibre_subset _ _ _ member
+    exact Graph.CanonicalFibreLedger.applies_canonicalLabel
+      (Finset.mem_filter.1 inFibre).2
+  let bottleneck := presentation.routedBottleneck data.threshold token first second
+    (chargesOf first (inside firstMem)) (chargesOf second (inside secondMem))
+    left leftMem right rightMem distinct
+  obtain ⟨component, componentMem, supportEq⟩ :=
+    presentation.routedBottleneck_core data.threshold token first second
+      (chargesOf first (inside firstMem)) (chargesOf second (inside secondMem))
+      left leftMem right rightMem distinct
+  -- Exit `(3)` is denied on the selected object: a label collision at the
+  -- packing is an accepted cycle.
+  have denied : ∀ centre first second : current.object.Vertex,
+      ¬ handoffAbsorbing data current.object presentation.packing centre first second :=
+    fun _ _ _ collision => selection.1
+      (Graph.WindowLabelCollision.hasCycleWithLength_of_labelCollision
+        data.degenerateClosureRejected collision)
+  by_cases high : handoffHighDegree current.object bottleneck.separation.separator
+  · -- `d_G(z) ≥ 4`: the separator and the two separated tails are the envelope.
+    let envelope := Graph.DecoratedHandoff.envelopeOfSeparation
+      (LengthOK := data.LengthOK) (HighDegree := handoffHighDegree current.object)
+      (Absorbing := handoffAbsorbing data current.object presentation.packing)
+      bottleneck.separation bottleneck.armLeft bottleneck.armRight
+      bottleneck.armLeftIssued bottleneck.armRightIssued bottleneck.armLeftChain
+      bottleneck.armRightChain bottleneck.armLeftNodup bottleneck.armRightNodup
+      bottleneck.armLeftLands bottleneck.armRightLands bottleneck.armLeftInterior
+      bottleneck.armRightInterior high selection.1
+      (denied _ _ _) (denied _ _ _)
+    have coreEq : envelope.core =
+        current.object.pieceSupport
+          (current.object.remainderSupport presentation.packing) component := by
+      simpa [envelope, Graph.DecoratedHandoff.envelopeOfSeparation] using supportEq
+    have windowFree : handoffWindowFree data current.object envelope.core := by
+      intro window subset windowInduces
+      have inside : window ⊆ current.object.remainderSupport presentation.packing := by
+        rw [coreEq] at subset
+        exact subset.trans (current.object.pieceSupport_subset _ component)
+      exact current.object.not_inducesWindow_of_subset_remainderSupport
+        presentation.packingMeets inside windowInduces
+    refine ⟨.inl ⟨⟨presentation.packing, presentation.packingValid,
+      presentation.packingMeets, component, componentMem, envelope, coreEq, ?_,
+      Graph.DecoratedHandoff.admissible_of_envelope selection.1 windowFree
+        uncompressible⟩⟩⟩
+    simp [envelope, Graph.DecoratedHandoff.envelopeOfSeparation]
+  · -- `d_G(z) = 3`: no unused ambient incidence, so the reading is absorbed
+    -- (`lem:same-token-bottleneck-routing`); the delocalization reading is a
+    -- strictly smaller baseline object with the target, refuted by minimality.
+    have cubic : current.object.degree bottleneck.separation.separator = 3 := by
+      have lower := current.baseline.trans
+        (current.object.minDegree_le_degree bottleneck.separation.separator)
+      have three := data.threshold_eq_three
+      simp only [handoffHighDegree, not_lt] at high
+      omega
+    have absorbed := Graph.DecoratedHandoff.absorbed_of_internal
+      (Graph.HasCycleWithLength data.LengthOK) bottleneck.reading
+      (Graph.SameTokenRoutingGerms.Delocalizes
+        (Graph.MinimumDegreeAtLeast data.threshold)
+        (Graph.HasCycleWithLength data.LengthOK) current.object)
+      (bottleneck.separation.separator_notMem_cutBoundary cubic)
+    refine ⟨.inr ⟨⟨bottleneck, high, ?_⟩⟩⟩
+    rcases absorbed with defect | complete | ⟨representative, smaller, baseline, transfer⟩
+    · exact Or.inl defect
+    · exact Or.inr (Or.inl complete)
+    · exact absurd (transfer (selection.2 representative smaller baseline)) selection.1
+
 /-! ## Nodes `[131]`, `[137]` and `[138]`: the entropy count, the certified capacity
 ledger, and the square-root surplus estimate
 

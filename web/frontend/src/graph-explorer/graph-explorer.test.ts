@@ -148,6 +148,17 @@ describe("refereeDossier", () => {
     expect(at("6").checks.find((check) => check.id === "branch")?.state).toBe("unrecorded");
   });
 
+  it("reports a leaf the source leaves open as unclosed, not as unrecorded", () => {
+    const document = {
+      ...TEST_DOCUMENT,
+      nodes: TEST_DOCUMENT.nodes.map((node) => (node.id === "6" ? { ...node, open: true } : node)),
+    };
+    const dossier = refereeDossier(document, indexDocument(document), document.nodes[5]);
+    const branch = dossier.checks.find((check) => check.id === "branch");
+    expect(branch?.state).toBe("no");
+    expect(branch?.detail).toMatch(/open/);
+  });
+
   it("measures what falls downstream", () => {
     const { impact } = at("2");
     expect(impact.downstreamCount).toBe(4);
@@ -297,6 +308,16 @@ describe("parseLatex", () => {
   it("unwraps text-only formatting", () => {
     expect(parseLatex("\\emph{dyadic-safe} paths")).toEqual([
       { kind: "text", value: "dyadic-safe paths" },
+    ]);
+  });
+
+  it("keeps the text of a coloured span and drops the colour", () => {
+    expect(parseLatex("germ; \\textcolor{red}{open node [163]}")).toEqual([
+      { kind: "text", value: "germ; open node [163]" },
+    ]);
+    expect(parseLatex("\\textcolor{red}{[163] \\texttt{(neutral)}}", { nodes: true })).toEqual([
+      { kind: "node", id: "163" },
+      { kind: "text", value: " (neutral)" },
     ]);
   });
 

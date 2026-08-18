@@ -50,8 +50,32 @@ theorem jointPackageDemand_le_retainedCode (object : Graph.FiniteObject.{u})
     jointPackageDemand data object ≤
       retainedCode data object (canonicalHotWindows data object) := by
   unfold jointPackageDemand retainedCode
-  refine Nat.mul_le_mul_right _ (Nat.mul_le_mul_right _ ?_)
-  exact Nat.pow_le_pow_right (by omega) (Nat.mul_le_mul_right _ rateLe)
+  calc 2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
+          (canonicalHotWindows data object).card) *
+        remainderStates data object (canonicalWindowPacking data object)
+      ≤ 2 ^ (windowPackageBits data object * (canonicalHotWindows data object).card) *
+          remainderStates data object (canonicalWindowPacking data object) :=
+        Nat.mul_le_mul_right _
+          (Nat.pow_le_pow_right (by omega) (Nat.mul_le_mul_right _ rateLe))
+    _ = 2 ^ (windowPackageBits data object * (canonicalHotWindows data object).card) *
+          remainderStates data object (canonicalWindowPacking data object) * 1 := by
+        rw [Nat.mul_one]
+    _ ≤ 2 ^ (windowPackageBits data object * (canonicalHotWindows data object).card) *
+          remainderStates data object (canonicalWindowPacking data object) *
+        2 ^ (data.curvatureCost *
+          remainderCurvatureTargetRank data object (canonicalWindowPacking data object)) :=
+        Nat.mul_le_mul_left _ Nat.one_le_two_pow
+
+/-- **The remainder-only demand is within the budget** (`RemainderGlue`): with no
+hot window retained, the joint demand of `[52]`--`[53]` is the remainder class of
+the fixed maximal packing, which glues injectively into the object's labelled
+skeleton class. -/
+theorem jointPackageDemand_le_skeletonBudget_of_allCold (object : Graph.FiniteObject.{u})
+    (allCold : canonicalHotWindows data object = ∅) :
+    jointPackageDemand data object ≤ Graph.skeletonBudget object := by
+  unfold jointPackageDemand
+  rw [allCold, Finset.card_empty, Nat.mul_zero, pow_zero, Nat.one_mul]
+  exact Graph.RemainderGlue.remainderStateCount_le_skeletonBudget _ _ _ _
 
 /-- **The terminal `[54]`** (`prop:entropy-high-theta`), on the residual whose
 canonical comparison retains the hot family's code: the joint demand is at most
@@ -78,6 +102,23 @@ theorem entropyCap_closes
   have demandLe := jointPackageDemand_le_retainedCode (data := data) current.object rateLe
   have rangeLe := dominates.2 State stateOf
   exact absurd (le_trans demandLe (le_trans codeLe rangeLe)) (Nat.not_le.mpr active)
+
+/-- **The terminal `[54]` on the all-cold residual.**  When the canonical
+comparison retains no window (`𝒫_hot = ∅`, `def:curvature-target-rank`'s
+"complementary cold residual"), the joint demand is the remainder class alone,
+which the glue `H ↦ G[R := H]` bounds by the labelled skeleton budget
+(`lem:skeleton-dominates` at `def:remainder-entropy`'s inherited vertex set and
+edge count), while `eq:entropy-cap` says the budget is strictly smaller. -/
+theorem entropyCap_closes_of_allCold
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (history : ExactLedger
+      (Input BranchState Presentation presentation data) current known)
+    [FactKeys.Has (K .entropyCapActive) known]
+    (allCold : canonicalHotWindows data current.object = ∅) : False := by
+  have active := (history.get (K .entropyCapActive)).down
+  exact absurd (jointPackageDemand_le_skeletonBudget_of_allCold (data := data)
+    current.object allCold) (Nat.not_le.mpr active)
 
 /-- The retained-code clause of `K .hotColdPartition` at the residual's own hot
 family: either the hot family's code is realized, or every window is cold

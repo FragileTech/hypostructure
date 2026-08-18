@@ -195,10 +195,11 @@ def validate(repo_root: Path) -> None:
         if number in node_rows:
             raise AuditError(f"duplicate node row [{number}]")
         node_rows[number] = row
-    expected_nodes = set(range(1, 158))
+    max_node = max(int(number) for number in re.findall(r"\\textbf\{\[(\d+)\]\}", tex))
+    expected_nodes = set(range(1, max_node + 1))
     if set(node_rows) != expected_nodes:
         raise AuditError(
-            f"node table must contain exactly [1]-[157]; "
+            f"node table must contain exactly [1]-[{max_node}]; "
             f"missing={sorted(expected_nodes - set(node_rows))}, "
             f"extra={sorted(set(node_rows) - expected_nodes)}"
         )

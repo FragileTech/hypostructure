@@ -155,7 +155,7 @@ theorem augmentedLedger_add_card_centres (object : FiniteObject.{u})
       rw [Finset.sum_neg_distrib, ← Nat.cast_sum, ← Finset.mul_sum,
         sum_centres_surplus object threshold piece]
     rw [inner]
-  rw [augmentedLedger, core, centres]
+  rw [augmentedLedger_eq, core, centres]
   ring
 
 /-- **The consumed consequence of `(B-ledger)`.**  `Ĉh_B(X) ≥ 0` gives
@@ -210,8 +210,9 @@ theorem nonNegativeNetCharge_of_disjointLedger_remainingCore_nonneg_of_selectedE
     {threshold dischargeScale : Nat}
     {packing : Finset (Finset object.Vertex)}
     {piece : TypeBRefinedSupport.CanonicalPiece object packing}
+    {demands : Finset object.Vertex}
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece)
+      piece demands)
     (exact : ledger.ExactAugmentedLedgerRefinement)
     (selectedNonnegative : 0 ≤ ledger.selectedEntryPayment₂)
     (remainingNonnegative :
@@ -219,31 +220,47 @@ theorem nonNegativeNetCharge_of_disjointLedger_remainingCore_nonneg_of_selectedE
         scaledCoreCharge object threshold dischargeScale piece.vertices vertex) :
     object.NonNegativeNetCharge piece.vertices threshold dischargeScale := by
   classical
+  -- The assigned centres inside the core contribute at least `−1` each as
+  -- core vertices, which their `¼` (here the count of all assigned centres)
+  -- absorbs.
   have centreCoreNonnegative :
-      0 ≤ ∑ centre ∈ TypeBRefinedSupport.centres object threshold piece.vertices,
-        (scaledCoreCharge object threshold dischargeScale piece.vertices centre +
-          1) := by
-    refine Finset.sum_nonneg ?_
-    intro centre _member
-    rw [scaledCoreCharge]
-    have nonneg :
-        (0 : Int) ≤
-          ((dischargeScale *
-            (threshold - object.internalDegree piece.vertices centre) : Nat) :
-            Int) := Int.natCast_nonneg _
+      0 ≤ (∑ centre ∈ demands ∩ piece.vertices,
+        scaledCoreCharge object threshold dischargeScale piece.vertices centre) +
+          (demands.card : Int) := by
+    have pointwise : ∀ centre ∈ demands ∩ piece.vertices,
+        (-1 : Int) ≤ scaledCoreCharge object threshold dischargeScale piece.vertices centre := by
+      intro centre _member
+      rw [scaledCoreCharge]
+      have nonneg :
+          (0 : Int) ≤
+            ((dischargeScale *
+              (threshold - object.internalDegree piece.vertices centre) : Nat) :
+              Int) := Int.natCast_nonneg _
+      linarith
+    have sumBound := Finset.sum_le_sum pointwise
+    rw [Finset.sum_const, nsmul_eq_mul, mul_neg, mul_one] at sumBound
+    have cardLe : ((demands ∩ piece.vertices).card : Int) ≤ (demands.card : Int) := by
+      exact_mod_cast Finset.card_le_card Finset.inter_subset_left
     linarith
   have doubled :
       0 ≤ 2 *
-        (augmentedLedger object threshold dischargeScale piece.vertices +
-          ((TypeBRefinedSupport.centres object threshold piece.vertices).card :
-            Int)) := by
+        (TypeBRefinedSupport.augmentedLedgerWith object threshold dischargeScale
+            piece.vertices demands + (demands.card : Int)) := by
     rw [exact.partition]
     nlinarith
+  have assignedNonnegative :
+      0 ≤ TypeBRefinedSupport.augmentedLedgerWith object threshold dischargeScale
+          piece.vertices demands + (demands.card : Int) := by
+    nlinarith
+  -- `def:typeB-assigned-ledger`: with the core's own high centres among the
+  -- assigned ones, the own-centre ledger dominates.
   have ledgerNonnegative :
       0 ≤ augmentedLedger object threshold dischargeScale piece.vertices +
         ((TypeBRefinedSupport.centres object threshold piece.vertices).card :
-          Int) := by
-    nlinarith
+          Int) :=
+    le_trans assignedNonnegative
+      (TypeBRefinedSupport.augmentedLedgerWith_add_card_le object threshold
+        dischargeScale piece.vertices demands ledger.centres_subset)
   exact nonNegativeNetCharge_of_augmentedLedger_add_centres_nonneg object
     threshold dischargeScale piece.vertices ledgerNonnegative
 
@@ -253,8 +270,9 @@ theorem nonNegativeNetCharge_of_disjointLedger_remainingCore_nonneg
     {threshold dischargeScale : Nat}
     {packing : Finset (Finset object.Vertex)}
     {piece : TypeBRefinedSupport.CanonicalPiece object packing}
+    {demands : Finset object.Vertex}
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece)
+      piece demands)
     (exact : ledger.ExactAugmentedLedgerRefinement)
     (remainingNonnegative :
       0 ≤ ∑ vertex ∈ ledger.remainingCore,
@@ -295,8 +313,9 @@ theorem disjointLedger_exactAugmentedLedgerRefinement
     {threshold dischargeScale : Nat}
     {packing : Finset (Finset object.Vertex)}
     {piece : TypeBRefinedSupport.CanonicalPiece object packing}
+    {demands : Finset object.Vertex}
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece) :
+      piece demands) :
     ledger.ExactAugmentedLedgerRefinement :=
   ledger.exactAugmentedLedgerRefinement
 
@@ -306,9 +325,10 @@ theorem disjointLedger_entry_refines
     {threshold dischargeScale : Nat}
     {packing : Finset (Finset object.Vertex)}
     {piece : TypeBRefinedSupport.CanonicalPiece object packing}
+    {demands : Finset object.Vertex}
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece) (hub : object.Vertex)
-    (member : hub ∈ TypeBRefinedSupport.centres object threshold piece.vertices) :
+      piece demands) (hub : object.Vertex)
+    (member : hub ∈ demands) :
     (ledger.choice.entry hub member).EntryRefines threshold dischargeScale
       piece hub :=
   ledger.entry_refines hub member
@@ -429,7 +449,7 @@ theorem neg_centreAllowance_le_augmentedLedger (object : FiniteObject.{u})
       ring
     rw [Finset.sum_congr rfl pointwise, Finset.sum_add_distrib, Finset.sum_const,
       nsmul_eq_mul, mul_one]
-  rw [augmentedLedger, splitCore, allowance, ← centreCharges]
+  rw [augmentedLedger_eq, splitCore, allowance, ← centreCharges]
   linarith [offCentres, centreCoreSum]
 
 

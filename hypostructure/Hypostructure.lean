@@ -51,6 +51,8 @@ import Hypostructure.Graph.Strategy.EntropyClosure
 import Hypostructure.Graph.Strategy.TypeBClosure
 import Hypostructure.Graph.ColdCorridor
 import Hypostructure.Graph.ColdFirstFailure
+import Hypostructure.Graph.SerialSystemArithmetic
+import Hypostructure.Graph.BlockedClass
 import Hypostructure.Fixtures.ColdCorridorSignature
 import Hypostructure.Fixtures.ColdCorridorLedger
 import Hypostructure.Fixtures.ColdCorridorConstruction
@@ -123,6 +125,7 @@ import Hypostructure.Graph.SameTokenRoutingGerms
 import Hypostructure.Graph.SparseUpperEnvelope
 import Hypostructure.Graph.PortResponseSupport
 import Hypostructure.Graph.SparseEntropySandwich
+import Hypostructure.Graph.SparsePressureLedger
 import Hypostructure.Graph.SparsePairResponse
 import Hypostructure.Graph.SurplusBlockers
 import Hypostructure.Graph.DeclaredRankQuotient
@@ -140,6 +143,8 @@ import Hypostructure.Graph.AnchoredReturnCompletion
 import Hypostructure.Graph.WindowCurvatureAlgebra
 import Hypostructure.Graph.WindowCurvatureEnumeration
 import Hypostructure.Graph.WindowCurvatureCode
+import Hypostructure.Graph.TwoStrandEnumeration
+import Hypostructure.Graph.WindowStubStructure
 import Hypostructure.Graph.WindowLabelCollision
 import Hypostructure.Graph.SurplusClasswiseOverload
 

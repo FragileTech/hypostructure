@@ -464,6 +464,29 @@ theorem isSome_capacityCharge
     · simp
   · simp
 
+/-- **`Θ_cap` is undefined off `Π_blk`.**  A pair with no blocker has no
+canonical blocker, hence an empty declared support, so none of the four clauses
+fires: this is `def:capacity-token-ledger`'s *"a free pair has no canonical
+blocker and therefore no support"*, and it is what makes an empty-obstruction
+presentation charge no pair at all. -/
+theorem capacityCharge_eq_none_of_blockers_eq_empty
+    {pair : Finset (object.Vertex × object.Vertex)}
+    (empty : activation.blockers pair = ∅) :
+    capacityCharge activation presentation threshold packing pair = none := by
+  classical
+  have blockerNone : canonicalBlocker activation pair = none := by
+    simp [canonicalBlocker, empty]
+  have supportEmpty : chargeSupport activation presentation pair = ∅ := by
+    simp [chargeSupport, blockerNone]
+  have windowNone : windowJoinChoice activation presentation packing pair = none := by
+    simp [windowJoinChoice, supportEmpty]
+  have crossNone : crossWindowChoice activation presentation packing pair = none := by
+    simp [crossWindowChoice, supportEmpty]
+  have vertexNone :
+      remainderVertexChoice activation presentation threshold packing pair = none := by
+    simp [remainderVertexChoice, supportEmpty]
+  simp [capacityCharge, windowNone, crossNone, vertexNone, blockerNone]
+
 /-! ## The token ledger at `Θ_cap`, and `def:same-token-patterns` -/
 
 /-- The declared token alphabet: `𝔗_cap` in the object's own enumeration. -/

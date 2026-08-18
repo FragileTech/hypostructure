@@ -142,7 +142,7 @@ theorem globalLocalReflectionACE
   centresIndependent := by
     intro left leftMem right rightMem different adjacent
     have rightHigh : IsHighCentre object threshold right :=
-      (Finset.mem_filter.mp (obstruction.demands_subset rightMem)).2
+      obstruction.demands_high right rightMem
     have rightTight : object.degree right = threshold :=
       (normalForms left leftMem).neighbourTight adjacent
     exact (Nat.ne_of_gt rightHigh) rightTight

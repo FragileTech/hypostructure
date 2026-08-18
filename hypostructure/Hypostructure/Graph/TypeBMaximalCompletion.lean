@@ -30,6 +30,7 @@ variable {object : FiniteObject.{u}}
 variable {threshold dischargeScale : Nat}
 variable {packing : Finset (Finset object.Vertex)}
 variable {piece : TypeBRefinedSupport.CanonicalPiece object packing}
+variable {demands : Finset object.Vertex}
 
 noncomputable section
 
@@ -39,7 +40,7 @@ local instance objectVertexDecidableEq : DecidableEq object.Vertex :=
 /-- One component of the literal post-B2(a)--(c) remaining core. -/
 abbrev RemainingComponent
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece) :=
+      piece demands) :=
   Connected.Component object ledger.remainingCore
 
 /-- The concrete graph data produced by Type A exit `(7)` on one canonical
@@ -48,7 +49,7 @@ envelope below is computed from this separation by the paper's
 `lem:typeA-high-degree-handoff` constructor. -/
 structure ComponentExitSeven
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece)
+      piece demands)
     (component : RemainingComponent ledger)
     (LengthOK : Nat -> Prop)
     (HighDegree : object.Vertex -> Prop)
@@ -88,7 +89,7 @@ structure ComponentExitSeven
 namespace ComponentExitSeven
 
 variable {ledger : TypeBRefinedSupport.DisjointLedger object threshold
-  dischargeScale piece}
+  dischargeScale piece demands}
 variable {component : RemainingComponent ledger}
 variable {LengthOK : Nat -> Prop}
 variable {HighDegree : object.Vertex -> Prop}
@@ -149,7 +150,7 @@ end ComponentExitSeven
 occurred. -/
 abbrev SelectedComponent
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece)
+      piece demands)
     (components : Finset (RemainingComponent ledger)) :=
   {component // component ∈ components}
 
@@ -163,7 +164,7 @@ noncomputable def groupedOfComponentExitSeven
     {HighDegree : object.Vertex -> Prop}
     {Absorbing : object.Vertex -> object.Vertex -> object.Vertex -> Prop}
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece)
+      piece demands)
     (components : Finset (RemainingComponent ledger))
     (production : ∀ component : SelectedComponent ledger components,
       ComponentExitSeven ledger component.1 LengthOK HighDegree Absorbing)
@@ -201,7 +202,7 @@ variable {Uncompressible WindowFree : Finset object.Vertex -> Prop}
 variable {HighDegree : object.Vertex -> Prop}
 variable {Absorbing : object.Vertex -> object.Vertex -> object.Vertex -> Prop}
 variable (ledger : TypeBRefinedSupport.DisjointLedger object threshold
-  dischargeScale piece)
+  dischargeScale piece demands)
 variable (components : Finset (RemainingComponent ledger))
 variable (production : ∀ component : SelectedComponent ledger components,
   ComponentExitSeven ledger component.1 LengthOK HighDegree Absorbing)

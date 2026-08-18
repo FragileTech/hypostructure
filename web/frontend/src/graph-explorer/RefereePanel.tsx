@@ -190,7 +190,11 @@ export function RefereePanel({
       ) : node.shape === "terminal" ? (
         <section className="node-detail-section referee-closure">
           <h3>Closure</h3>
-          <p className="node-detail-hint">The closure table has no row for this leaf.</p>
+          <p className="node-detail-hint">
+            {node.open
+              ? "The source draws this outcome as open: no closure is claimed for it."
+              : "The closure table has no row for this leaf."}
+          </p>
         </section>
       ) : null}
 

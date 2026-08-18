@@ -64,6 +64,11 @@ export function NodeDetailPanel({
           <span className={`badge badge-shape badge-${node.shape}`}>
             {SHAPE_NAMES[node.shape]}
           </span>
+          {node.open ? (
+            <span className="badge badge-open" title="The source leaves this outcome open">
+              Open
+            </span>
+          ) : null}
           {chapter ? (
             <span className="badge badge-chapter">{chapter.shortTitle}</span>
           ) : null}

@@ -1835,13 +1835,15 @@ noncomputable def remainderEntropyDichotomy
               data.entropyDenominator data.windowOrder data.threshold
               (current.object.positiveDeficiency
                 (current.object.remainderSupport packing) data.threshold)
+              (current.object.internalEdgeCount
+                (current.object.remainderSupport packing))
               (current.object.remainderSupport packing).card
       · exact .inl ⟨high⟩
       · refine .inr ⟨?_⟩
         push Not at high
         obtain ⟨packing, valid, below⟩ := high
         exact ⟨packing, valid,
-          (Graph.not_atLeastEntropyRate_iff _ _ _ _ _ _).mp below⟩)
+          (Graph.not_atLeastEntropyRate_iff _ _ _ _ _ _ _).mp below⟩)
     highFresh lowFresh
 
 
@@ -1962,10 +1964,12 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
 
 /-! ## Node `[56]`, the large-budget net-deficiency cap (route-8 arm).
 
-On the `[147]` arm the sufficiently-large hypothesis of `prop:negative-net-charge`
-is read from `K .coldRoute8Below` -- the route-8 census inequality
-`13·(s·p) < 3·(n − (s−2)p)`, i.e. `τ(θ) < 3/13 < 1/4` -- rather than from the
-density cap, and gives the same conditional strict cap. -/
+On the `[147]` arm the strict cap of `prop:negative-net-charge` is read from
+`K .coldRoute8Below` -- the route-8 carrier inequality `τ(θ) < 3/13 < 1/4` in
+its exact form `(δs+1)·(stubs·p + T(n)) + δ·F·s·T(n) < δ·(n − order·p)` -- rather
+than from the density cap; it implies the cap
+`s·(δ·order·p + T(n)) < s·2(order−1)·p + |R|` outright, with the surplus
+allowance already inside the route-8 inequality. -/
 omit [FactSystem (Input BranchState Presentation presentation data)] in
 @[reducible] noncomputable def routeEightNetDeficiencyCapRow :
     @AtomicStrategy (Input BranchState Presentation presentation data) _
@@ -1992,41 +1996,44 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
         (show Value BranchState Presentation presentation data
             .netDeficiencyCap inputs.current from
           ⟨by
-            intro packing valid cardinality large
-            have below' : 13 * ((data.threshold * data.windowOrder -
-                  2 * (data.windowOrder - 1)) * packing.card) <
-                3 * (inputs.current.object.vertexCount -
-                  (data.threshold * data.windowOrder - 2 * (data.windowOrder - 1) - 2) *
-                    packing.card) := by
-              have canonicalCard :
-                  (canonicalWindowPacking data inputs.current.object).card =
-                    inputs.current.object.windowPackingNumber data.windowOrder :=
-                (Classical.choose_spec
-                  (inputs.current.object.exists_windowPacking_card_eq data.windowOrder)).2
-              change Graph.ColdCorridor.TauBelow (coldExternalStubCount data) 3 13
-                (canonicalWindowPacking data inputs.current.object).card
-                inputs.current.object.vertexCount at below
-              rw [canonicalCard, ← cardinality] at below
-              exact below
+            intro packing valid cardinality _large
+            have canonicalCard :
+                (canonicalWindowPacking data inputs.current.object).card =
+                  inputs.current.object.windowPackingNumber data.windowOrder :=
+              (Classical.choose_spec
+                (inputs.current.object.exists_windowPacking_card_eq data.windowOrder)).2
+            change (data.threshold * data.dischargeScale + 1) *
+                (coldExternalStubCount data *
+                  (canonicalWindowPacking data inputs.current.object).card +
+                  data.surplusThreshold inputs.current.object.vertexCount) +
+                data.threshold * (data.bridgeMassFactor * data.dischargeScale *
+                  data.surplusThreshold inputs.current.object.vertexCount) <
+              data.threshold * (inputs.current.object.vertexCount -
+                data.windowOrder * (canonicalWindowPacking data inputs.current.object).card)
+              at below
+            rw [canonicalCard, ← cardinality] at below
             have cardinality' :
-                data.windowOrder * packing.card +
-                    (inputs.current.object.remainderSupport packing).card =
-                  inputs.current.object.vertexCount := by
-              simpa [Nat.add_comm] using
-                inputs.current.object.remainderSupport_card_add_eq valid
-            have dischargeLe : 3 * data.dischargeScale ≤ 13 := by
-              have := data.highCentreDeficitSlack
-              rw [data.threshold_eq_three] at this
-              omega
-            have ratePos : 0 < data.windowRate := by
-              have := data.netCapRateSlack
-              omega
-            exact Graph.FiniteObject.strictCap_of_routeEightBelow_of_sufficientlyLarge
-              data.threshold data.dischargeScale data.windowOrder data.windowRate
-              data.spineScale data.densitySlack inputs.current.object.vertexCount packing.card
-              (inputs.current.object.remainderSupport packing).card
-              data.windowOrder_pos data.three_le_threshold dischargeLe ratePos
-              large below' cardinality'⟩)
+                (inputs.current.object.remainderSupport packing).card +
+                    data.windowOrder * packing.card =
+                  inputs.current.object.vertexCount :=
+              inputs.current.object.remainderSupport_card_add_eq valid
+            have remEq : inputs.current.object.vertexCount -
+                data.windowOrder * packing.card =
+                (inputs.current.object.remainderSupport packing).card := by omega
+            have three := data.threshold_eq_three
+            simp only [coldExternalStubCount, Data.surplusThreshold] at below ⊢
+            rw [three, remEq] at below
+            rw [three]
+            obtain ⟨o, ho⟩ : ∃ o, data.windowOrder = o + 1 :=
+              ⟨data.windowOrder - 1, by have := data.windowOrder_pos; omega⟩
+            rw [ho] at below ⊢
+            have stubsEq : 3 * (o + 1) - 2 * (o + 1 - 1) = o + 3 := by omega
+            rw [stubsEq] at below
+            simp only [Nat.add_sub_cancel] at below ⊢
+            nlinarith [below, Nat.zero_le ((o + 3) * packing.card),
+              Nat.zero_le (data.spineScale * Core.ceilSqrt inputs.current.object.vertexCount),
+              Nat.zero_le (data.bridgeMassFactor * data.dischargeScale *
+                (data.spineScale * Core.ceilSqrt inputs.current.object.vertexCount))]⟩)
         .nil)
     0 0
 
@@ -2095,20 +2102,184 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
         .nil)
     0 0
 
+/-! ## Nodes `[120]`--`[122]`, the private-carrier rate of the route-8 census
+
+`rem:route8-carrier-margin`, `prop:typeA-route8-carrier-reduction`: the rate
+`(δs+1)·|∂R| + δ·F·s·T(n) < δ·|R|` (`τ < 3/13` with the `o(|R|)` allowances of the
+near-cubic spine).  On the `[147]` arm it is exactly `K .coldRoute8Below` read
+through `|∂R| = e(R,W) ≤ stubs·p + σ_W ≤ stubs·p + T(n)`
+(`lem:surplus-aware-window-stub`, `Route8.card_cutEdges_eq_boundaryIncidence`,
+`σ_W ≤ σ(G) ≤ T(n)`).  On the other spine arms it is decided
+(`route8RateDichotomy`): the density cap decides it only for sufficiently large
+`n`, and the dense arm's `τ < 1/4` does not decide it at all — the manuscript's
+delicate density interval (row 2 of `tab:cold-branch-ledger`). -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def route8RateFromColdBelowRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.route8RateFromColdBelow
+    { Requires := [K .coldRoute8Below, K .surplusAtOrBelow]
+      Produces := [K .route8Rate]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let below := (inputs.get (K .coldRoute8Below)).down
+      let ceiling := (inputs.get (K .surplusAtOrBelow)).down
+      .cons (key := K .route8Rate)
+        (show Value BranchState Presentation presentation data
+            .route8Rate inputs.current from
+          ⟨by
+            set object := inputs.current.object with hobj
+            set packing := canonicalWindowPacking data object with hpack
+            have valid : object.IsWindowPacking data.windowOrder packing :=
+              (Classical.choose_spec
+                (object.exists_windowPacking_card_eq data.windowOrder)).1
+            have baseline : ∀ vertex : object.Vertex, data.threshold ≤ object.degree vertex :=
+              fun vertex => le_trans inputs.current.baseline
+                (object.minDegree_le_degree vertex)
+            -- `lem:surplus-aware-window-stub`'s capacity link, read off the object
+            -- (the same derivation node `[28]` publishes).
+            have capacity := object.boundaryIncidence_add_internal_mass_le valid baseline
+            have windowSurplus :
+                object.ambientSurplus (Graph.FiniteObject.windowSupport packing)
+                    data.threshold ≤ data.surplusThreshold object.vertexCount :=
+              le_trans (object.ambientSurplus_le_degreeSurplus _ data.threshold baseline)
+                ceiling
+            have supplyEq := Graph.Route8Census.card_supply object packing
+            have remainder := object.remainderSupport_card_add_eq valid
+            change (data.threshold * data.dischargeScale + 1) *
+                (coldExternalStubCount data * packing.card +
+                  data.surplusThreshold object.vertexCount) +
+                data.threshold * (data.bridgeMassFactor * data.dischargeScale *
+                  data.surplusThreshold object.vertexCount) <
+              data.threshold * (object.vertexCount - data.windowOrder * packing.card) at below
+            change (data.threshold * data.dischargeScale + 1) *
+                (Graph.Route8Census.supply object packing).card +
+                data.threshold * (data.bridgeMassFactor * data.dischargeScale *
+                  data.surplusThreshold object.vertexCount) <
+              data.threshold * (object.remainderSupport packing).card
+            rw [supplyEq]
+            have remEq : object.vertexCount - data.windowOrder * packing.card =
+                (object.remainderSupport packing).card := by omega
+            rw [remEq] at below
+            have debit : 2 * (data.windowOrder - 1) ≤ data.threshold * data.windowOrder := by
+              have := data.three_le_threshold
+              have := Nat.mul_le_mul_right data.windowOrder this
+              omega
+            have prod : coldExternalStubCount data * packing.card =
+                data.threshold * (data.windowOrder * packing.card) -
+                  2 * (data.windowOrder - 1) * packing.card := by
+              simp only [coldExternalStubCount]
+              rw [Nat.sub_mul, Nat.mul_assoc]
+            have debit' : 2 * (data.windowOrder - 1) * packing.card ≤
+                data.threshold * (data.windowOrder * packing.card) := by
+              have := Nat.mul_le_mul_right packing.card debit
+              rw [Nat.mul_assoc data.threshold] at this
+              exact this
+            have supplyLe : object.boundaryIncidence (object.remainderSupport packing) ≤
+                coldExternalStubCount data * packing.card +
+                  data.surplusThreshold object.vertexCount := by
+              rw [prod]
+              omega
+            have := Nat.mul_le_mul_left (data.threshold * data.dischargeScale + 1) supplyLe
+            omega⟩)
+        .nil)
+    0 0
+
+/-! The rate reading as a decision (`rem:route8-carrier-margin` on an arm whose
+density fact does not decide it): `K .route8Rate` or its exact complement. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+noncomputable def route8RateDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : @FactKeys (Input BranchState Presentation presentation data)
+      _ (factSystem BranchState Presentation presentation data)}
+    (previous :
+      @ExactLedger (Input BranchState Presentation presentation data)
+        _ (factSystem BranchState Presentation presentation data) current known)
+    [@Core.Residual.FactKeys.Has
+      (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data)
+      (K .selection) known]
+    (rateFresh : K .route8Rate ∉ known)
+    (failsFresh : K .route8RateFails ∉ known) :
+    @Decision (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data) current known
+      (K .route8Rate) (K .route8RateFails) previous :=
+  @Decision.run (Input BranchState Presentation presentation data) _
+    (factSystem BranchState Presentation presentation data) current known
+    previous (K .route8Rate) (K .route8RateFails)
+    `Hypostructure.Graph.Strategy.Spine.route8RateDichotomy
+    (by
+      classical
+      let _selected := (@ExactLedger.get
+        (Input BranchState Presentation presentation data) _
+        (factSystem BranchState Presentation presentation data)
+        current known previous (K .selection)).down
+      exact if rate : Graph.Route8Census.Rate current.object
+          (canonicalWindowPacking data current.object) data.threshold data.dischargeScale
+          (data.bridgeMassFactor * data.dischargeScale *
+            data.surplusThreshold current.object.vertexCount) then
+        .inl ⟨rate⟩
+      else
+        .inr ⟨rate⟩)
+    rateFresh failsFresh
+
+/-! Nodes `[111]`--`[113]`, `[120]`: the census is its two readings on one
+ledger. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def route8CensusRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.route8Census
+    { Requires := [K .route8Deficit, K .route8Rate]
+      Produces := [K .route8Census]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let deficit := (inputs.get (K .route8Deficit)).down
+      let rate := (inputs.get (K .route8Rate)).down
+      .cons (key := K .route8Census)
+        (show Value BranchState Presentation presentation data
+            .route8Census inputs.current from ⟨⟨deficit, rate⟩⟩)
+        .nil)
+    0 0
+
 /-! ## Node `[52]`: window plus remainder accounting
 
 `prop:two-budget` (a) and the high-entropy half of `prop:p13-density`.  The
-window package of node `[21]`, the remainder states of node `[51]`, and the
-forced curvature coordinates of node `[48]` are one target-testable family, and
-`eq:feasibility` compares the states it realizes against the near-cubic
-skeleton budget.
+window package of node `[21]` and the remainder states of node `[51]` are one
+target-testable family, and `eq:feasibility` compares the states it realizes
+against the near-cubic skeleton budget.  The forced curvature cost of node
+`[48]` is `def:Theta`'s sharpening, which `rem:closure-robust` says the closure
+does not need and which is realized by remainder graphs already counted in the
+remainder class; it is not a further factor of the demand.
 
 This row commits the *demand* side of that comparison, exactly: raising the
 joint demand to the `d`-th power clears the `1/d` the entropy split carries, and
 substituting the high-entropy arm's own `n^{|R|} ≤ |𝒢(R)|^d` for the remainder
-factor gives the manuscript's `2^{rate·p}·n^{|R|/d}·2^{c_Ω·r_Ω(R)}`.  No
-independence hypothesis is used to state a lower bound on what the branch has to
-distinguish; the budget side is node `[53]`'s comparison. -/
+factor gives the manuscript's `2^{rate·p}·n^{|R|/d}`.  No independence
+hypothesis is used to state a lower bound on what the branch has to distinguish;
+the budget side is node `[53]`'s comparison. -/
 @[reducible] noncomputable def entropyPackageRow
     (data : Data.{u}) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
@@ -2129,8 +2300,8 @@ distinguish; the budget side is node `[53]`'s comparison. -/
             have high :=
               (inputs.get (K .remainderEntropyHigh)).down
                 (canonicalWindowPacking data inputs.current.object) packingSpec.1
-            rw [jointPackageDemand, mul_pow, mul_pow]
-            exact Nat.mul_le_mul (Nat.mul_le_mul (le_refl _) high) (le_refl _)⟩)
+            rw [jointPackageDemand, mul_pow]
+            exact Nat.mul_le_mul (le_refl _) high⟩)
         .nil)
 
 /-! ## Node `[53]`: the admissible entropy cap, and its terminal `[54]`
@@ -2175,109 +2346,49 @@ noncomputable def entropyCapDichotomy
       · exact .inr ⟨Or.inl (Nat.le_of_not_lt active)⟩)
     activeFresh largeFresh
 
-/-! ## Node `[57]`: enter the asymptotic order regime
+/-! ## Node `[57]` = `[173]`: the exact collision test
 
-`prop:negative-net-charge` and node `[56]`'s cap hold "for all sufficiently
-large `n`" (the manuscript's standing convention).  This is the exhaustive
-pointwise decision of that regime on the registered exact predicate: the yes arm
-is where the large-budget net cap is read; the no arm is the finite-order
-complement, which the manuscript's asymptotic argument does not cover. -/
+`lem:exact-collision-test`.  Node `[56]`'s collision is an inequality of the
+current object — with the actual surpluses, the actual hot and cold window
+counts, and the exact skeleton budget — and node `[173]` decides it on the
+object: `def⁺(R) − σ_R < |R|/s` at every maximal packing (`NegativeNetCharge`),
+which is exactly `K .netChargeCap`.  Its yes arm continues at `[58]`; its no arm
+is the absorbed-germ residual `[174]` (`K .exactCollisionFails`).  No condition
+on `n` is used (`rem:no-sufficient-order`): the sufficient-order reading of
+node `[57]` and the cap row that consumed it are gone. -/
 omit [FactSystem (Input BranchState Presentation presentation data)] in
-noncomputable def netChargeOrderDichotomy
+noncomputable def exactCollisionDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : @FactKeys (Input BranchState Presentation presentation data)
       _ (factSystem BranchState Presentation presentation data)}
     (previous :
       @ExactLedger (Input BranchState Presentation presentation data)
         _ (factSystem BranchState Presentation presentation data) current known)
-    [@FactKeys.Has (Input BranchState Presentation presentation data) _
-      (factSystem BranchState Presentation presentation data)
-      (K .netDeficiencyCap) known]
-    (largeFresh : K .netChargeLarge ∉ known)
-    (smallFresh : K .netChargeSmall ∉ known) :
+    (capFresh : K .netChargeCap ∉ known)
+    (failsFresh : K .exactCollisionFails ∉ known) :
     @Decision (Input BranchState Presentation presentation data) _
       (factSystem BranchState Presentation presentation data) current known
-      (K .netChargeLarge) (K .netChargeSmall) previous :=
+      (K .netChargeCap) (K .exactCollisionFails) previous :=
   @Decision.run (Input BranchState Presentation presentation data) _
     (factSystem BranchState Presentation presentation data) current known
-    previous (K .netChargeLarge) (K .netChargeSmall)
-    `Hypostructure.Graph.Strategy.Spine.netChargeOrderDichotomy
+    previous (K .netChargeCap) (K .exactCollisionFails)
+    `Hypostructure.Graph.Strategy.Spine.exactCollisionDichotomy
     (by
       classical
-      have _cap :=
-        (@ExactLedger.get (Input BranchState Presentation presentation data) _
-          (factSystem BranchState Presentation presentation data)
-          current known previous (K .netDeficiencyCap)).down
-      exact if large : Graph.FiniteObject.SufficientlyLargeForNetCap data.threshold
-          data.dischargeScale data.windowOrder data.windowRate
-          data.spineScale data.densitySlack current.object.vertexCount then
-        .inl ⟨large⟩
+      exact if holds : ∀ packing : Finset (Finset current.object.Vertex),
+          current.object.IsWindowPacking data.windowOrder packing →
+            packing.card = current.object.windowPackingNumber data.windowOrder →
+              current.object.NegativeNetCharge (current.object.remainderSupport packing)
+                data.threshold data.dischargeScale then
+        .inl ⟨holds⟩
       else
-        .inr ⟨large⟩)
-    largeFresh smallFresh
-
-/-! ## Node `[57]`: the large-budget net cap
-
-`prop:negative-net-charge`'s conclusion.  Reading node `[56]`'s conditional
-strict cap (`K .netDeficiencyCap`, produced on either arm) at the large-order
-regime, together with the surplus-aware stub supply of node `[29]`, gives that
-every maximal-packing remainder has negative net charge.  This row appends
-exactly that; it reads the cap rather than re-deriving it, so it is
-arm-agnostic. -/
-omit [FactSystem (Input BranchState Presentation presentation data)] in
-@[reducible] noncomputable def netChargeCapRow :
-    @AtomicStrategy (Input BranchState Presentation presentation data) _
-      (instFactSystem (BranchState := BranchState)
-        (Presentation := Presentation) (presentation := presentation)
-        (data := data)) :=
-  letI : FactSystem (Input BranchState Presentation presentation data) :=
-    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
-      (presentation := presentation) (data := data)
-  @factOnly (Input BranchState Presentation presentation data) _
-    (instFactSystem (BranchState := BranchState)
-      (Presentation := Presentation) (presentation := presentation)
-      (data := data))
-    `Hypostructure.Graph.Strategy.Spine.netChargeCap
-    { Requires := [K .netDeficiencyCap, K .stubSupply, K .netChargeLarge]
-      Produces := [K .netChargeCap]
-      requiresUnique := by simp [K_eq_iff]
-      producesUnique := by simp
-      producesNonempty := by simp }
-    (fun inputs =>
-      .cons (key := K .netChargeCap)
-        (show Value BranchState Presentation presentation data
-            .netChargeCap inputs.current from
-          ⟨by
-            simp only [Holds]
-            intro packing valid cardinality
-            have supply :
-                inputs.current.object.positiveDeficiency
-                      (inputs.current.object.remainderSupport packing)
-                      data.threshold +
-                    2 * (data.windowOrder - 1) * packing.card ≤
-                  data.threshold * (data.windowOrder * packing.card) +
-                    data.surplusThreshold inputs.current.object.vertexCount :=
-              (inputs.get (K .stubSupply)).down packing valid
-            have supply' :
-                inputs.current.object.positiveDeficiency
-                      (inputs.current.object.remainderSupport packing) data.threshold +
-                    2 * (data.windowOrder - 1) * packing.card ≤
-                  data.threshold * (data.windowOrder * packing.card) +
-                    data.spineScale * Core.ceilSqrt inputs.current.object.vertexCount := by
-              simpa [Data.surplusThreshold] using supply
-            have strictCap :=
-              (inputs.get (K .netDeficiencyCap)).down packing valid cardinality
-                (inputs.get (K .netChargeLarge)).down
-            exact Graph.FiniteObject.negativeNetCharge_of_stubSupply_of_strictCap
-              inputs.current.object (inputs.current.object.remainderSupport packing)
-              data.threshold data.dischargeScale
-              (2 * (data.windowOrder - 1) * packing.card)
-              (data.threshold * (data.windowOrder * packing.card) +
-                data.spineScale * Core.ceilSqrt inputs.current.object.vertexCount)
-              supply' strictCap⟩)
-        .nil)
-    0 0
-
+        .inr ⟨by
+          push_neg at holds
+          obtain ⟨packing, valid, cardinality, notNegative⟩ := holds
+          exact ⟨packing, valid, cardinality,
+            (Graph.FiniteObject.not_negativeNetCharge_iff current.object _ _ _).1
+              notNegative⟩⟩)
+    capFresh failsFresh
 
 /-! ## Nodes `[57]`--`[58]`: net charge and its localization
 
@@ -2570,10 +2681,8 @@ noncomputable def heavyCentreDichotomy
     [@FactKeys.Has (Input BranchState Presentation presentation data) _
       (factSystem BranchState Presentation presentation data)
       (K .cubicBaseline) known]
-    (heavyFresh :
-      ¬ List.Mem (K .typeBHeavyCentre) known)
-    (degreeFourFresh :
-      ¬ List.Mem (K .typeBDegreeFourCentres) known) :
+    (heavyFresh : K .typeBHeavyCentre ∉ known)
+    (degreeFourFresh : K .typeBDegreeFourCentres ∉ known) :
     @Decision (Input BranchState Presentation presentation data) _
       (factSystem BranchState Presentation presentation data) current known
       (K .typeBHeavyCentre) (K .typeBDegreeFourCentres) previous :=
@@ -2710,35 +2819,62 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.typeBAssignedSupport
     { Requires := [K .typeBHighSurplus]
-      Produces := [K .typeBAssignedSupport]
+      Produces := [K .typeBAssignedSupport, K .typeBFanEntry]
       requiresUnique := by simp
-      producesUnique := by simp
+      producesUnique := by simp [K_eq_iff]
       producesNonempty := by simp }
     (fun inputs =>
       let typeB := (inputs.get (K .typeBHighSurplus)).down
+      -- `σ(X) = Σ_{v ∈ X}(d_G(v) − δ) > 0` forces a vertex above the baseline:
+      -- otherwise every summand is zero.
+      let highCentre : ∀ packing component,
+          inputs.current.object.IsWindowPacking data.windowOrder packing →
+          0 < inputs.current.object.ambientSurplus
+            (inputs.current.object.pieceSupport
+              (inputs.current.object.remainderSupport packing) component)
+            data.threshold →
+          ∃ centre ∈ inputs.current.object.pieceSupport
+              (inputs.current.object.remainderSupport packing) component,
+            Graph.IsHighCentre inputs.current.object data.threshold centre := by
+        intro packing component _valid positive
+        classical
+        by_contra none
+        push Not at none
+        have zero : inputs.current.object.ambientSurplus
+            (inputs.current.object.pieceSupport
+              (inputs.current.object.remainderSupport packing) component)
+            data.threshold = 0 := by
+          unfold Graph.FiniteObject.ambientSurplus
+          refine Finset.sum_eq_zero fun vertex member => ?_
+          have := none vertex member
+          simp only [Graph.IsHighCentre, not_lt] at this
+          omega
+        omega
       .cons (key := K .typeBAssignedSupport)
         (show Value BranchState Presentation presentation data
             .typeBAssignedSupport inputs.current from
           ⟨by
-            classical
             obtain ⟨packing, valid, maximal, component, present, charge, positive⟩ :=
               typeB
-            refine ⟨packing, valid, maximal, component, present, charge, positive, ?_⟩
-            -- `σ(X) = Σ_{v ∈ X}(d_G(v) − δ) > 0` forces a vertex above the
-            -- baseline: otherwise every summand is zero.
-            by_contra none
-            push Not at none
-            have zero : inputs.current.object.ambientSurplus
-                (inputs.current.object.pieceSupport
-                  (inputs.current.object.remainderSupport packing) component)
-                data.threshold = 0 := by
-              unfold Graph.FiniteObject.ambientSurplus
-              refine Finset.sum_eq_zero fun vertex member => ?_
-              have := none vertex member
-              simp only [Graph.IsHighCentre, not_lt] at this
-              omega
-            omega⟩)
-        .nil)
+            exact ⟨packing, valid, maximal, component, present, charge, positive,
+              highCentre packing component valid positive⟩⟩)
+        (.cons (key := K .typeBFanEntry)
+          (show Value BranchState Presentation presentation data
+              .typeBFanEntry inputs.current from
+            ⟨by
+              classical
+              obtain ⟨packing, valid, maximal, component, present, charge, positive⟩ :=
+                typeB
+              obtain ⟨centre, member, high⟩ := highCentre packing component valid positive
+              refine ⟨packing, valid, maximal, component, present,
+                Graph.TypeBRefinedSupport.centres inputs.current.object data.threshold
+                  (inputs.current.object.pieceSupport
+                    (inputs.current.object.remainderSupport packing) component),
+                Or.inl ⟨charge, positive, rfl⟩, ?_, ?_⟩
+              · exact ⟨centre, Graph.TypeBRefinedSupport.mem_centres.2 ⟨member, high⟩⟩
+              · intro vertex vertexMem
+                exact (Graph.TypeBRefinedSupport.mem_centres.1 vertexMem).2⟩)
+          .nil))
     0 0
 
 omit [FactSystem (Input BranchState Presentation presentation data)] in
@@ -2968,7 +3104,7 @@ noncomputable def fanCertificateDichotomy
     [@FactKeys.Has (Input BranchState Presentation presentation data) _
       (instFactSystem (BranchState := BranchState)
         (Presentation := Presentation) (presentation := presentation)
-        (data := data)) (K .typeBAssignedSupport) known]
+        (data := data)) (K .typeBFanEntry) known]
     (markedFresh : K .fanCertificateMarked ∉ known)
     (residualFresh : K .fanCertificateResidual ∉ known) :
     @Decision (Input BranchState Presentation presentation data) _
@@ -2984,24 +3120,21 @@ noncomputable def fanCertificateDichotomy
     (by
       classical
       apply Classical.choice
-      obtain ⟨packing, valid, maximal, component, present, charge, positive, _centres⟩ :=
-        (ExactLedger.get previous (K .typeBAssignedSupport)).down
-      let piece := current.object.pieceSupport
-        (current.object.remainderSupport packing) component
+      obtain ⟨packing, valid, maximal, component, present, centres, assigned,
+        _nonempty, high⟩ := (ExactLedger.get previous (K .typeBFanEntry)).down
       by_cases marked :
-          ∀ centre ∈ piece,
-            Graph.IsHighCentre current.object data.threshold centre →
+          ∀ centre ∈ centres,
             Nonempty (Graph.FanCertificateLabelling current.object
               data.windowOrder centre)
-      · exact ⟨.inl ⟨packing, valid, maximal, component, present, charge, positive,
+      · exact ⟨.inl ⟨packing, valid, maximal, component, present, centres, assigned,
           marked⟩⟩
       · refine ⟨.inr ⟨?_⟩⟩
         -- Not every assigned centre is marked, so one of them is a
         -- fan-certificate residual centre.
         push Not at marked
-        obtain ⟨centre, member, high, unmarked⟩ := marked
-        exact ⟨packing, valid, maximal, component, present, charge, positive,
-          centre, member, high, unmarked⟩)
+        obtain ⟨centre, member, unmarked⟩ := marked
+        exact ⟨packing, valid, maximal, component, present, centres, assigned,
+          centre, member, high centre member, unmarked⟩)
     markedFresh residualFresh
 
 /-! ## Node `[74]`/`[82]`: the hybrid B1 fan ledger
@@ -3051,15 +3184,14 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     (fun inputs => Classical.choice <| by
       let avoids := (inputs.get (K .selection)).down.1
       let cap := (inputs.get (K .fanCertificateCap)).down
-      obtain ⟨packing, valid, maximal, component, present, charge, positive,
+      obtain ⟨packing, valid, maximal, component, present, centres, assigned,
           marked⟩ := (inputs.get (K .fanCertificateMarked)).down
       exact ⟨.cons (key := K .typeBHybridEntry)
-        (⟨packing, valid, maximal, component, present,
-          charge, positive,
+        (⟨packing, valid, maximal, component, present, centres, assigned,
           fun centre member high envelope windowSupport => by
             -- The marked fan's cap, and with it the manuscript's `k ≤ 8`.
             obtain ⟨marking⟩ :=
-              marked centre member high
+              marked centre member
             have slack :
                 inputs.current.object.degree centre + 1 ≤
                   data.dischargeScale * data.threshold :=
@@ -3209,18 +3341,16 @@ noncomputable def directCycleDichotomy
     (by
       classical
       apply Classical.choice
-      obtain ⟨packing, valid, maximal, component, present, charge,
-        positive, _marked⟩ := (ExactLedger.get previous (K .fanCertificateMarked)).down
-      let piece := current.object.pieceSupport
-        (current.object.remainderSupport packing) component
+      obtain ⟨packing, valid, maximal, component, present, centres, assigned,
+        _marked⟩ := (ExactLedger.get previous (K .fanCertificateMarked)).down
       by_cases configuration :
-          ∃ centre ∈ piece,
+          ∃ centre ∈ centres,
             Graph.IsHighCentre current.object data.threshold centre ∧
               Graph.TypeBDirectCycle.DirectCycleConfiguration current.object
                 data.windowOrder data.LengthOK packing centre
-      · exact ⟨.inl ⟨packing, valid, maximal, component, present, charge, positive,
+      · exact ⟨.inl ⟨packing, valid, maximal, component, present, centres, assigned,
             configuration⟩⟩
-      · exact ⟨.inr ⟨packing, valid, maximal, component, present, charge, positive,
+      · exact ⟨.inr ⟨packing, valid, maximal, component, present, centres, assigned,
             fun centre member high present =>
               configuration ⟨centre, member, high, present⟩⟩⟩)
     cycleFresh freeFresh
@@ -3262,6 +3392,10 @@ noncomputable def b2AssignmentDichotomy
       (instFactSystem (BranchState := BranchState)
         (Presentation := Presentation) (presentation := presentation)
         (data := data)) (K .typeBDirectCycleFree) known]
+    [@FactKeys.Has (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) (K .typeBFanEntry) known]
     (choiceFresh : K .typeBB2Choice ∉ known)
     (obstructionFresh : K .typeBOverlapObstruction ∉ known) :
     @Decision (Input BranchState Presentation presentation data) _
@@ -3277,17 +3411,25 @@ noncomputable def b2AssignmentDichotomy
     (by
       classical
       apply Classical.choice
-      obtain ⟨packing, valid, maximal, component, componentMem, negative,
-        positive, _directFree⟩ :=
-        (ExactLedger.get previous (K .typeBDirectCycleFree)).down
+      -- The B2 disjoint choice is a question about the assigned Type B
+      -- support `X = (Y_X, H_X)` of `[65]`/`[66]` (`def:typeB-assigned-ledger`:
+      -- the counted core with its assigned centres in either manuscript form);
+      -- the direct-cycle-free fact of `[72]` places the row on its branch.
+      let _directFree := ExactLedger.get previous (K .typeBDirectCycleFree)
+      obtain ⟨packing, valid, maximal, component, componentMem, centres, assigned,
+        _nonempty, _high⟩ :=
+        (ExactLedger.get previous (K .typeBFanEntry)).down
       let canonicalPiece :
           Graph.TypeBRefinedSupport.CanonicalPiece current.object packing :=
         ⟨component, componentMem⟩
+      have assigned' : TypeBAssignedCentres data current.object packing
+          canonicalPiece.vertices centres := assigned
       rcases Graph.TypeBRefinedSupport.b2_or_overlap current.object
-          data.threshold data.dischargeScale canonicalPiece with
+          data.threshold data.dischargeScale canonicalPiece centres
+          (TypeBAssignedCentres.high data current.object assigned') with
         choice | obstruction
-      · exact ⟨.inl ⟨packing, valid, maximal, canonicalPiece, negative, positive, choice⟩⟩
-      · exact ⟨.inr ⟨packing, valid, maximal, canonicalPiece, negative, positive,
+      · exact ⟨.inl ⟨packing, valid, maximal, canonicalPiece, centres, assigned', choice⟩⟩
+      · exact ⟨.inr ⟨packing, valid, maximal, canonicalPiece, centres, assigned',
             obstruction⟩⟩)
     choiceFresh obstructionFresh
 
@@ -3331,12 +3473,14 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       .cons (key := K .typeBDisjointLedger)
         (⟨by
           classical
-          obtain ⟨packing, valid, maximal, canonicalPiece, negative, positive,
+          obtain ⟨packing, valid, maximal, canonicalPiece, centres, assigned,
             choice⟩ := choiceFact
           let ledger : Graph.TypeBRefinedSupport.DisjointLedger
               inputs.current.object data.threshold data.dischargeScale
-                canonicalPiece :=
-            ⟨Classical.choice choice⟩
+                canonicalPiece centres :=
+            ⟨Classical.choice choice,
+              TypeBAssignedCentres.high data inputs.current.object assigned,
+              TypeBAssignedCentres.centres_subset data inputs.current.object assigned⟩
           have noBaselineSubsupport : ∀ support : Finset inputs.current.object.Vertex,
               support ⊆ inputs.current.object.remainderSupport packing →
                 ¬ Graph.MinimumDegreeAtLeast data.threshold
@@ -3444,7 +3588,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
               exact Graph.TypeBMaximalCompletion.Grouped.mem_centres_iff
                 ledger components production avoids windowFree
                 uncompressibleFact centre
-          exact ⟨packing, valid, maximal, canonicalPiece, negative, positive,
+          exact ⟨packing, valid, maximal, canonicalPiece, centres, assigned,
             ledger, ledger.exactAugmentedLedgerRefinement,
             componentFacts, groupedCoverage⟩⟩)
         .nil)
@@ -3577,10 +3721,10 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       let residual := inputs.get (K .fanCertificateResidual)
       .cons (key := K .fanCertificateResidualMass) (by
         refine ⟨?_⟩
-        obtain ⟨packing, valid, maximal, component, componentMem, negative,
-          positive, centre, centreMem, high, empty⟩ := residual.down
-        exact ⟨packing, valid, maximal, component, componentMem, negative,
-          positive, centre, centreMem, high, empty, fun envelope =>
+        obtain ⟨packing, valid, maximal, component, componentMem, centres, assigned,
+          centre, centreMem, high, empty⟩ := residual.down
+        exact ⟨packing, valid, maximal, component, componentMem, centres, assigned,
+          centre, centreMem, high, empty, fun envelope =>
             Graph.TypeBEnvelopeCharge.envelopeNegativePart_le envelope high
               data.bridgeMassSlack⟩)
       .nil)
@@ -3609,11 +3753,12 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       let residual := inputs.get (K .typeBOverlapObstruction)
       .cons (key := K .typeBOverlapObstructionMass) (by
         refine ⟨?_⟩
-        obtain ⟨packing, valid, maximal, canonicalPiece, negative, positive,
+        obtain ⟨packing, valid, maximal, canonicalPiece, centres, assigned,
           obstruction⟩ := residual.down
-        exact ⟨packing, valid, maximal, canonicalPiece, negative, positive,
-          obstruction, fun centre _member high envelope =>
-            Graph.TypeBEnvelopeCharge.envelopeNegativePart_le envelope high
+        exact ⟨packing, valid, maximal, canonicalPiece, centres, assigned,
+          obstruction, fun centre member envelope =>
+            Graph.TypeBEnvelopeCharge.envelopeNegativePart_le envelope
+              (TypeBAssignedCentres.high data inputs.current.object assigned centre member)
               data.bridgeMassSlack⟩)
       .nil)
     0 0
@@ -3643,12 +3788,14 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
         classical
         refine ⟨?_⟩
         have residualFact := residual.down
-        obtain ⟨packing, _packingValid, _packingMaximal, canonicalPiece,
-          _negative, _surplus, ledger, exact, _postLedger, negative⟩ :=
+        obtain ⟨packing, packingValid, packingMaximal, canonicalPiece,
+          centres, assigned, ledger, exact, _postLedger, negative⟩ :=
           residualFact
-        exact ⟨packing, canonicalPiece, ledger, exact, negative,
-          fun centre _member high envelope =>
-            Graph.TypeBEnvelopeCharge.envelopeNegativePart_le envelope high
+        exact ⟨packing, packingValid, packingMaximal, canonicalPiece, centres, assigned,
+          ledger, exact, negative,
+          fun centre member envelope =>
+            Graph.TypeBEnvelopeCharge.envelopeNegativePart_le envelope
+              (TypeBAssignedCentres.high data inputs.current.object assigned centre member)
               data.bridgeMassSlack⟩)
       .nil)
     0 0
@@ -3679,12 +3826,9 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       let _ledgerFact := inputs.get (K .typeBDisjointLedger)
       .cons (key := K .typeBSelectedFanCharge)
         (⟨by
-          intro packing canonicalPiece ledger _exact
+          intro packing canonicalPiece centres ledger _exact
           have hLocalEntry :
-              ∀ centre
-                  (member : centre ∈ Graph.TypeBRefinedSupport.centres
-                    inputs.current.object data.threshold
-                    canonicalPiece.vertices),
+              ∀ centre (member : centre ∈ centres),
                 (ledger.choice.entry centre member).IsCandidate data.threshold
                   data.dischargeScale canonicalPiece centre := by
             intro centre member
@@ -3730,10 +3874,10 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       let localCharge := (inputs.get (K .typeBSelectedFanCharge)).down
       .cons (key := K .typeBExclusionCharge)
         (⟨by
-          intro packing canonicalPiece ledger exact remainingNonnegative
+          intro packing canonicalPiece centres ledger exact remainingNonnegative
           have selectedNonnegative :
               (0 : Int) ≤ ledger.selectedEntryPayment₂ :=
-            (localCharge packing canonicalPiece ledger exact).2
+            (localCharge packing canonicalPiece centres ledger exact).2
           exact
             Graph.TypeBEnvelopeCharge.nonNegativeNetCharge_of_disjointLedger_remainingCore_nonneg_of_selectedEntryPayment₂_nonnegative
               (object := inputs.current.object) ledger exact
@@ -3777,22 +3921,27 @@ noncomputable def typeBExclusionDichotomy
     (by
       classical
       apply Classical.choice
-      obtain ⟨packing, valid, maximal, canonicalPiece, negative, surplus,
+      obtain ⟨packing, valid, maximal, canonicalPiece, centres, assigned,
         ledger, exact, postLedger, _groupedCoverage⟩ :=
         (ExactLedger.get previous (K .typeBDisjointLedger)).down
+      -- Both manuscript forms of the assigned support carry the negative net
+      -- charge of the counted core (`def:typeB-assigned-ledger`).
+      have negative : current.object.NegativeNetCharge canonicalPiece.vertices
+          data.threshold data.dischargeScale := by
+        rcases assigned with ⟨negative, _, _⟩ | ⟨negative, _, _⟩ <;> exact negative
       let charge := ∑ vertex ∈ ledger.remainingCore,
         Graph.TypeBRefinedSupport.scaledCoreCharge current.object
           data.threshold data.dischargeScale canonicalPiece.vertices vertex
       by_cases clean : (0 : Int) ≤ charge
       · have nonnegative :=
           (ExactLedger.get previous (K .typeBExclusionCharge)).down
-            packing canonicalPiece ledger exact clean
+            packing canonicalPiece centres ledger exact clean
         have contradiction :=
           (current.object.not_negativeNetCharge_iff canonicalPiece.vertices
             data.threshold data.dischargeScale).mpr nonnegative negative
         exact ⟨.inl ⟨contradiction⟩⟩
-      · exact ⟨.inr ⟨packing, valid, maximal, canonicalPiece,
-          negative, surplus, ledger, exact, postLedger, by simpa [charge] using clean⟩⟩)
+      · exact ⟨.inr ⟨packing, valid, maximal, canonicalPiece, centres, assigned,
+          ledger, exact, postLedger, by simpa [charge] using clean⟩⟩)
     closedFresh residualFresh
 
 /-! ## Node `[88]`: the routing and threshold algebra of a Type A support
@@ -4292,9 +4441,9 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.typeBDecoratedAssignedSupport
     { Requires := [K .typeAExitSevenHandoff]
-      Produces := [K .typeBDecoratedAssignedSupport]
+      Produces := [K .typeBDecoratedAssignedSupport, K .typeBFanEntry]
       requiresUnique := by simp
-      producesUnique := by simp
+      producesUnique := by simp [K_eq_iff]
       producesNonempty := by simp }
     (fun inputs =>
       let handoff := (inputs.get (K .typeAExitSevenHandoff)).down
@@ -4311,7 +4460,26 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
               fun centre member =>
                 ⟨envelope.assigned_nonempty centre member,
                   envelope.assigned_adj centre member⟩⟩⟩⟩
-        .nil)
+        (.cons (key := K .typeBFanEntry)
+          -- Node `[66]`: the decorated envelope enters the common Type B fan
+          -- support with the decorations as its assigned centres
+          -- (`def:typeB-assigned-ledger`, `lem:decorated-fan-admissibility`).
+          ⟨by
+            obtain ⟨packing, valid, maximal, component, present, negative, zero,
+              _receiver, _isReceiver, _peeled, _peeledSubset, _saturated, _noExitFour,
+              _noCompression, _noDelocalization, envelope, coreEq, nonempty,
+              _admissible⟩ := handoff
+            have three := data.threshold_eq_three
+            refine ⟨packing, valid, maximal, component, present, envelope.decorations,
+              Or.inr ⟨negative, zero, envelope, coreEq, rfl, nonempty,
+                fun centre member =>
+                  ⟨envelope.assigned_nonempty centre member,
+                    envelope.assigned_adj centre member⟩⟩,
+              nonempty, fun centre member => ?_⟩
+            have high := envelope.decorations_high centre member
+            simp only [Graph.IsHighCentre, three]
+            exact high⟩
+          .nil))
     0 0
 
 omit [FactSystem (Input BranchState Presentation presentation data)] in
@@ -4483,6 +4651,316 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           exact (presented.toEntry
             (Graph.HasCycleWithLength data.LengthOK)).smallCoreCollapseFacts⟩⟩ .nil)
     0 0
+
+/-! ## Node `[117]`: the two-carrier decision on the object-level census
+
+`prop:typeA-route8-carrier-reduction`, at the indexed route-8 entries of the
+extracted Type A collection `𝒳_A` (`Graph.Route8Census.entries`: the
+`(piece, receiver, silent-excess load)` triples with their selected trace basins
+and canonical essential cores).  The manuscript's "some entry has `π_𝒳(ξ) ≤ 2`?"
+is decided exhaustively; the yes arm carries the two-carrier entry to nodes
+`[118]`--`[124]`, the no arm carries "every entry has more than `δ` private
+essential carriers" to the private-carrier census `[119]`--`[122]`, which
+`K .route8Census` (deficit and rate) refutes. -/
+/-! ## Node `[111]`, the global squeeze as the all-pieces classification
+
+`thm:branch-kill` and `lem:typeA-unified-deficit` sum the canonical decomposition
+of the remainder piece by piece: a negative piece with no ambient surplus is a
+Type A piece whose deficit is carried by silent-excess entries provided it is
+silent-first (no saturated receiver has a completion port carrying `s` visible
+returns — node `[93]`'s no arm at that piece), and a negative piece with surplus
+is a Type B bridge component (`lem:typeB-bridge-deficit-bound`).  That
+classification is a property of the residual and is decided on it: the yes arm
+carries the deficit reading `|R| ≤ N_basin + s·|∂R| + F·s·T(n)`
+(`Graph.Route8Deficit.deficit_of_classification`); the no arm is a negative piece
+that is visible-first Type A (`lem:typeA-visible-entry`) or a Type B piece outside
+the bridge residual (`prop:typeB-bridge-reduction`), carried as its own branch. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+noncomputable def route8PieceClassificationDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : @FactKeys (Input BranchState Presentation presentation data)
+      _ (factSystem BranchState Presentation presentation data)}
+    (previous :
+      @ExactLedger (Input BranchState Presentation presentation data)
+        _ (factSystem BranchState Presentation presentation data) current known)
+    [@Core.Residual.FactKeys.Has
+      (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data)
+      (K .route8SmallCoreCollapse) known]
+    (classifiedFresh : K .route8PiecesClassified ∉ known)
+    (unclassifiedFresh : K .route8UnclassifiedPiece ∉ known) :
+    @Decision (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data) current known
+      (K .route8PiecesClassified) (K .route8UnclassifiedPiece) previous :=
+  @Decision.run (Input BranchState Presentation presentation data) _
+    (factSystem BranchState Presentation presentation data) current known
+    previous (K .route8PiecesClassified) (K .route8UnclassifiedPiece)
+    `Hypostructure.Graph.Strategy.Spine.route8PieceClassificationDichotomy
+    (by
+      classical
+      -- Decided on the `[116]` residual; read that literal predecessor fact.
+      let _collapse := (@ExactLedger.get
+        (Input BranchState Presentation presentation data) _
+        (factSystem BranchState Presentation presentation data)
+        current known previous (K .route8SmallCoreCollapse)).down
+      exact if classified : Graph.Route8Deficit.PieceClassification current.object
+          (canonicalWindowPacking data current.object) data.threshold
+          data.dischargeScale then
+        .inl ⟨classified⟩
+      else
+        .inr ⟨classified⟩)
+    classifiedFresh unclassifiedFresh
+
+/-! Nodes `[111]`--`[113]`, the deficit reading of the census
+(`def:typeA-large-budget-deficit` with `lem:typeA-route8-burden` and
+`thm:branch-kill` substituted): on the classified residual,
+`|R| ≤ N_basin + s·|∂R| + F·s·T(n)`, from the receiver routing of node `[88]`
+at every zero-surplus piece, the near-cubic surplus bound, and the piece-by-piece
+sum of `Graph.Route8Deficit`. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def route8DeficitRow
+    : @AtomicStrategy (Input BranchState Presentation presentation data) _
+        (instFactSystem (BranchState := BranchState)
+          (Presentation := Presentation) (presentation := presentation)
+          (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.route8Deficit
+    { Requires := [K .route8PiecesClassified, K .typeAReceiverRouting,
+        K .surplusAtOrBelow]
+      Produces := [K .route8Deficit]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let classified := (inputs.get (K .route8PiecesClassified)).down
+      let routing := (inputs.get (K .typeAReceiverRouting)).down
+      let surplus := (inputs.get (K .surplusAtOrBelow)).down
+      .cons (key := K .route8Deficit)
+        ⟨by
+          classical
+          have baseline : ∀ vertex : inputs.current.object.Vertex,
+              data.threshold ≤ inputs.current.object.degree vertex := fun vertex =>
+            le_trans inputs.current.baseline
+              (inputs.current.object.minDegree_le_degree vertex)
+          have packingSpec := Classical.choose_spec
+            (inputs.current.object.exists_windowPacking_card_eq data.windowOrder)
+          have valid : inputs.current.object.IsWindowPacking data.windowOrder
+              (canonicalWindowPacking data inputs.current.object) := packingSpec.1
+          have maximal : ∀ window : Finset inputs.current.object.Vertex,
+              inputs.current.object.InducesWindow data.windowOrder window →
+              ∃ member ∈ canonicalWindowPacking data inputs.current.object,
+                ¬ Disjoint window member := fun window induces =>
+            inputs.current.object.exists_mem_not_disjoint_of_card_eq
+              data.windowOrder_pos valid packingSpec.2 induces
+          exact Graph.Route8Deficit.deficit_of_classification inputs.current.object
+            (canonicalWindowPacking data inputs.current.object) data.threshold
+            data.dischargeScale data.bridgeMassFactor
+            (data.surplusThreshold inputs.current.object.vertexCount)
+            data.dischargeScale_pos data.bridgeMassSlack baseline
+            (fun piece inside surplusZero vertex member full =>
+              (routing (canonicalWindowPacking data inputs.current.object) valid maximal
+                piece inside surplusZero).1 vertex member full)
+            surplus classified⟩
+        .nil)
+    0 0
+
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+noncomputable def route8CarrierDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : @FactKeys (Input BranchState Presentation presentation data)
+      _ (factSystem BranchState Presentation presentation data)}
+    (previous :
+      @ExactLedger (Input BranchState Presentation presentation data)
+        _ (factSystem BranchState Presentation presentation data) current known)
+    [@Core.Residual.FactKeys.Has
+      (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data)
+      (K .route8Census) known]
+    (twoFresh : K .route8TwoCarrierEntry ∉ known)
+    (noTwoFresh : K .route8NoTwoCarrierEntry ∉ known) :
+    @Decision (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data) current known
+      (K .route8TwoCarrierEntry) (K .route8NoTwoCarrierEntry) previous :=
+  @Decision.run (Input BranchState Presentation presentation data) _
+    (factSystem BranchState Presentation presentation data) current known
+    previous (K .route8TwoCarrierEntry) (K .route8NoTwoCarrierEntry)
+    `Hypostructure.Graph.Strategy.Spine.route8CarrierDichotomy
+    (by
+      classical
+      -- Node `[117]` is decided on the census residual; read that literal
+      -- predecessor fact.
+      let _census := (@ExactLedger.get
+        (Input BranchState Presentation presentation data) _
+        (factSystem BranchState Presentation presentation data)
+        current known previous (K .route8Census)).down
+      exact if two : ∃ index ∈ Graph.Route8Census.entries current.object
+            (canonicalWindowPacking data current.object) data.threshold
+            data.dischargeScale,
+          Graph.Route8Census.TwoCarrierEntry current.object
+            (canonicalWindowPacking data current.object) data.threshold
+            data.dischargeScale data.LengthOK index then
+        .inl ⟨two⟩
+      else
+        .inr ⟨fun index member twoCarrier => two ⟨index, member, twoCarrier⟩⟩)
+    twoFresh noTwoFresh
+
+/-! ## Node `[118]`: the two-carrier entry is a true route-8 entry or target-defect
+
+`thm:large-budget-route8-only`: "If that two-carrier entry is a route-8 entry,
+then `prop:typeA-route8-closure-from-nogo` applies … If instead the entry is
+target-defect, then `lem:typeA-pressure-is-exit4-peel` makes its pressure token a
+canonical exit-`(4)` witness for its routed load."  The split is decided on the
+selected two-carrier entry of `K .route8TwoCarrierEntry`: either its load has no
+exit-`(4)` witness at its own receiver (`def:typeA-true-route8-residual`) or it
+has one. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+noncomputable def route8EntryKindDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : @FactKeys (Input BranchState Presentation presentation data)
+      _ (factSystem BranchState Presentation presentation data)}
+    (previous :
+      @ExactLedger (Input BranchState Presentation presentation data)
+        _ (factSystem BranchState Presentation presentation data) current known)
+    [@Core.Residual.FactKeys.Has
+      (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data)
+      (K .route8TwoCarrierEntry) known]
+    (trueFresh : K .route8TrueTwoCarrierEntry ∉ known)
+    (defectFresh : K .route8TargetDefectTwoCarrierEntry ∉ known) :
+    @Decision (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data) current known
+      (K .route8TrueTwoCarrierEntry) (K .route8TargetDefectTwoCarrierEntry) previous :=
+  @Decision.run (Input BranchState Presentation presentation data) _
+    (factSystem BranchState Presentation presentation data) current known
+    previous (K .route8TrueTwoCarrierEntry) (K .route8TargetDefectTwoCarrierEntry)
+    `Hypostructure.Graph.Strategy.Spine.route8EntryKindDichotomy
+    (by
+      classical
+      let twoCarrier := (@ExactLedger.get
+        (Input BranchState Presentation presentation data) _
+        (factSystem BranchState Presentation presentation data)
+        current known previous (K .route8TwoCarrierEntry)).down
+      exact if trueEntry : ∃ index ∈ Graph.Route8Census.entries current.object
+            (canonicalWindowPacking data current.object) data.threshold
+            data.dischargeScale,
+          Graph.Route8Census.TwoCarrierEntry current.object
+            (canonicalWindowPacking data current.object) data.threshold
+            data.dischargeScale data.LengthOK index ∧
+          ¬ ∃ witness : Graph.ExitFour.Witness (Graph.HasCycleWithLength data.LengthOK)
+              index.1 data.threshold index.2.1 ∅,
+            witness.load = index.2.2 then
+        .inl ⟨trueEntry⟩
+      else
+        .inr ⟨by
+          obtain ⟨index, member, two⟩ := twoCarrier
+          refine ⟨index, member, two, ?_⟩
+          by_contra noWitness
+          exact trueEntry ⟨index, member, two, noWitness⟩⟩)
+    trueFresh defectFresh
+
+/-! ## Node `[123]`: `thm:large-budget-route8-only`, the pressure descent
+
+The manuscript's deterministic procedure on the object-level census
+(`Graph/Route8Pressure`): from the empty peeling, a stage with the stage rate
+`(δs+1)|∂R| + δ·slack + δ|P₄| < δ|R|` (`def:typeA-peeling-reduced-ledger`'s
+`D̃_A^{P₄} ≥ (¼ − τ)|R| − o(|R|)`) has a two-carrier entry of the peeled ledger
+(`lem:typeA-peeling-reduced-reduction`); a target-defect entry — its load carries
+an exit-(4) witness at its receiver with the current peeled loads
+(`lem:typeA-pressure-is-exit4-peel`) — is peeled and the number of unpeeled entries
+drops (`lem:typeA-exit4-finite-descent`, `Λ₄`); the procedure therefore ends at a
+stage with a true (route-8) two-carrier entry, sent to node `[124]`, or at a stage
+where the stage rate fails.  The row reads the census (`[111]`--`[113]`, `[120]`)
+and publishes the procedure's outcome; the decision after it splits the two ends. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def route8PeelingDescentRow
+    : @AtomicStrategy (Input BranchState Presentation presentation data) _
+        (instFactSystem (BranchState := BranchState)
+          (Presentation := Presentation) (presentation := presentation)
+          (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.route8PeelingDescent
+    { Requires := [K .route8Census]
+      Produces := [K .route8PeelingDescent]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let census := (inputs.get (K .route8Census)).down
+      .cons (key := K .route8PeelingDescent)
+        (show Value BranchState Presentation presentation data
+            .route8PeelingDescent inputs.current from
+          ⟨Graph.Route8Pressure.descent_of_census inputs.current.object
+            (canonicalWindowPacking data inputs.current.object) data.threshold
+            data.dischargeScale
+            (data.bridgeMassFactor * data.dischargeScale *
+              data.surplusThreshold inputs.current.object.vertexCount)
+            data.LengthOK (le_trans (by norm_num) data.three_le_threshold) census.1⟩)
+        .nil)
+    0 0
+
+/-! The end of the procedure: a stage with a true two-carrier entry of the peeled
+ledger — transported to the census's true-entry fact `K .route8TrueTwoCarrierEntry`
+(`Graph.Route8Pressure.trueEntry_transport`), the entry of node `[124]` — or a
+stage where the stage rate fails (`K .route8PeelingSaturated`). -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+noncomputable def route8PeelingOutcomeDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : @FactKeys (Input BranchState Presentation presentation data)
+      _ (factSystem BranchState Presentation presentation data)}
+    (previous :
+      @ExactLedger (Input BranchState Presentation presentation data)
+        _ (factSystem BranchState Presentation presentation data) current known)
+    [@Core.Residual.FactKeys.Has
+      (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data)
+      (K .route8PeelingDescent) known]
+    (trueFresh : K .route8TrueTwoCarrierEntry ∉ known)
+    (saturatedFresh : K .route8PeelingSaturated ∉ known) :
+    @Decision (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data) current known
+      (K .route8TrueTwoCarrierEntry) (K .route8PeelingSaturated) previous :=
+  @Decision.run (Input BranchState Presentation presentation data) _
+    (factSystem BranchState Presentation presentation data) current known
+    previous (K .route8TrueTwoCarrierEntry) (K .route8PeelingSaturated)
+    `Hypostructure.Graph.Strategy.Spine.route8PeelingOutcomeDichotomy
+    (by
+      classical
+      let outcome := (@ExactLedger.get
+        (Input BranchState Presentation presentation data) _
+        (factSystem BranchState Presentation presentation data)
+        current known previous (K .route8PeelingDescent)).down
+      exact if trueEntry : ∃ index ∈ Graph.Route8Census.entries current.object
+            (canonicalWindowPacking data current.object) data.threshold
+            data.dischargeScale,
+          Graph.Route8Census.TwoCarrierEntry current.object
+            (canonicalWindowPacking data current.object) data.threshold
+            data.dischargeScale data.LengthOK index ∧
+          ¬ ∃ witness : Graph.ExitFour.Witness (Graph.HasCycleWithLength data.LengthOK)
+              index.1 data.threshold index.2.1 ∅,
+            witness.load = index.2.2 then
+        .inl ⟨trueEntry⟩
+      else
+        .inr ⟨by
+          obtain ⟨final, chain, ends⟩ := outcome
+          refine ⟨final, chain, ?_⟩
+          rcases ends with ⟨_rate, index, isTrue⟩ | saturated
+          · exact absurd ⟨index, Graph.Route8Pressure.trueEntry_transport current.object
+              (canonicalWindowPacking data current.object) data.threshold
+              data.dischargeScale data.LengthOK final.toFinset isTrue⟩ trueEntry
+          · exact saturated⟩)
+    trueFresh saturatedFresh
 
 omit [FactSystem (Input BranchState Presentation presentation data)] in
 @[reducible] noncomputable def route8TwoCarrierReductionRow

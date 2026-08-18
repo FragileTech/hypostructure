@@ -71,6 +71,11 @@ export interface ProofNode {
   /** The node's own text, as written in the diagram. May contain LaTeX math. */
   label: string;
   shape: NodeShape;
+  /**
+   * True for a terminal the source leaves open: an outcome it draws (in red)
+   * as not yet contradicted, rather than closed. Absent otherwise.
+   */
+  open?: boolean;
   group: string;
   /** One-line statement of what this step establishes. */
   overview: string;

@@ -37,43 +37,49 @@ namespace Hypostructure.Graph
 
 universe u
 
-/-- **`𝒢(X)` of `def:remainder-entropy`.**  The labelled simple graphs on a
-fixed vertex count carrying the two constraints a normalized remainder has:
-window-freeness at the registered order, and no subregion at the registered
-baseline.
-
-The vertex count is the only thing the class knows about the branch's actual
-remainder — `def:remainder-entropy`'s "every candidate carries the same
-inherited vertex set". -/
-def RemainderClass (order threshold deficiencyCap size : Nat) : Type :=
+/-- **`𝒢(X)` of `def:remainder-entropy`.**  The labelled simple graphs on the
+inherited vertex set carrying "the remainder constraints already imposed on the
+branch": subcubicity on the atom part (every degree at most the registered
+baseline), window-freeness at the registered order (componentwise
+`P₁₃`-freeness), no subregion at the registered baseline (no internal `3`-core),
+positive deficiency at most the inherited cap, and — "every candidate carries
+the same inherited vertex set, so the density comparison is equivalently the
+comparison of its net-deficiency numerator with the inherited one" — the
+inherited edge count.  The last constraint is the branch's *glue*: a candidate
+with the inherited edge count replaces the object's own remainder inside the
+object without changing the vertex or edge count, which is what makes `𝒢(X)`
+a subclass of the labelled skeleton class `𝒢_{n,m}` (`RemainderGlue`). -/
+def RemainderClass (order threshold deficiencyCap edgeCount size : Nat) : Type :=
   {member : LabelledOn size //
+    (∀ vertex : Fin size, member.toFiniteObject.degree vertex ≤ threshold) ∧
     (∀ support : Finset (Fin size),
       ¬ member.toFiniteObject.InducesWindow order support) ∧
     (∀ support : Finset (Fin size),
       ¬ MinimumDegreeAtLeast threshold (member.toFiniteObject.induce support)) ∧
     member.toFiniteObject.positiveDeficiency
-      (Finset.univ : Finset (Fin size)) threshold ≤ deficiencyCap}
+      (Finset.univ : Finset (Fin size)) threshold ≤ deficiencyCap ∧
+    Nat.card member.graph.edgeSet = edgeCount}
 
 namespace RemainderClass
 
-instance instFinite (order threshold deficiencyCap size : Nat) :
-    Finite (RemainderClass order threshold deficiencyCap size) :=
+instance instFinite (order threshold deficiencyCap edgeCount size : Nat) :
+    Finite (RemainderClass order threshold deficiencyCap edgeCount size) :=
   Subtype.finite
 
 end RemainderClass
 
 /-- **`|𝒢(X)|`.**  The only quantity `def:remainder-entropy` ever consumes. -/
 noncomputable def remainderStateCount
-    (order threshold deficiencyCap size : Nat) : Nat :=
-  Nat.card (RemainderClass order threshold deficiencyCap size)
+    (order threshold deficiencyCap edgeCount size : Nat) : Nat :=
+  Nat.card (RemainderClass order threshold deficiencyCap edgeCount size)
 
 /-- `𝒢(X)` sits inside the ambient labelled class on the same vertex count, so
 its count never exceeds `|𝒢_{|R|}|`.  This is the containment
 `lem:skeleton-dominates` is stated against; nothing here needs its sharper
 near-cubic form. -/
 theorem remainderStateCount_le_card_labelledOn
-    (order threshold deficiencyCap size : Nat) :
-    remainderStateCount order threshold deficiencyCap size ≤
+    (order threshold deficiencyCap edgeCount size : Nat) :
+    remainderStateCount order threshold deficiencyCap edgeCount size ≤
       Nat.card (LabelledOn size) := by
   classical
   exact Nat.card_le_card_of_injective (fun member => member.val)
@@ -86,22 +92,24 @@ exponentiating base two gives `n ^ |R| ≤ |𝒢| ^ d`, which is this predicate.
 The manuscript's own high-entropy display is its left-hand side: the realized
 remainder states number at least `2^{η(R)|R|} ≥ n^{|R|/d}`. -/
 def AtLeastEntropyRate
-    (ambientOrder denominator order threshold deficiencyCap size : Nat) :
+    (ambientOrder denominator order threshold deficiencyCap edgeCount size : Nat) :
     Prop :=
   ambientOrder ^ size ≤
-    remainderStateCount order threshold deficiencyCap size ^ denominator
+    remainderStateCount order threshold deficiencyCap edgeCount size ^ denominator
 
 /-- The low-entropy side, the exact negation. -/
 def BelowEntropyRate
-    (ambientOrder denominator order threshold deficiencyCap size : Nat) :
+    (ambientOrder denominator order threshold deficiencyCap edgeCount size : Nat) :
     Prop :=
-  remainderStateCount order threshold deficiencyCap size ^ denominator <
+  remainderStateCount order threshold deficiencyCap edgeCount size ^ denominator <
     ambientOrder ^ size
 
 theorem not_atLeastEntropyRate_iff
-    (ambientOrder denominator order threshold deficiencyCap size : Nat) :
-    ¬ AtLeastEntropyRate ambientOrder denominator order threshold deficiencyCap size ↔
-      BelowEntropyRate ambientOrder denominator order threshold deficiencyCap size :=
+    (ambientOrder denominator order threshold deficiencyCap edgeCount size : Nat) :
+    ¬ AtLeastEntropyRate ambientOrder denominator order threshold deficiencyCap
+        edgeCount size ↔
+      BelowEntropyRate ambientOrder denominator order threshold deficiencyCap
+        edgeCount size :=
   Nat.not_le
 
 end Hypostructure.Graph

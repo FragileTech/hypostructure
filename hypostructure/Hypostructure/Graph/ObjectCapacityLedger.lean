@@ -2,6 +2,7 @@ import Hypostructure.Graph.GrainedTokenBudget
 import Hypostructure.Graph.CapacityTokenAssignment
 import Hypostructure.Graph.SameTokenBottleneckRouting
 import Hypostructure.Graph.WindowTargetPackage
+import Hypostructure.Graph.NetCharge
 
 /-!
 # The capacity-token ledger of an object, and the statements read off it
@@ -86,6 +87,40 @@ structure CapacityPresentation (object : FiniteObject.{u}) (order : Nat) where
     ∃ member ∈ packing, ¬ Disjoint support member
   /-- `ρ_t`, the same-token role of a blocked pair. -/
   role : Finset (object.Vertex × object.Vertex) → Role
+  /-- **`def:same-token-routing-germs`' declared routed configuration.**  *"A
+  routing germ of `π` at `t` is one of the declared connector germs in
+  `Z(π;t,r)` which starts at the primitive carrier of `t` and ends at one of the
+  two selected port supports."*  For a token `t` and two distinct selected
+  surplus demands `p ∈ π₁`, `q ∈ π₂` of two pairs charged to `t` — the two
+  demands `lem:same-token-bottleneck-routing` routes — the presentation
+  declares the two connector germs from `κ(t)` toward `T(p)`, `T(q)`, their
+  first separator `z` and the switch support's declared reading
+  (`SameTokenRoutingGerms.RoutedBottleneck`).  It is declared at the bare
+  predicates; the high-degree and absorbing predicates the routing lemma reads
+  it at are the branch's, and the branch supplies them. -/
+  routedBottleneck : ∀ (threshold : Nat) (token : FiniteObject.CapacityToken object)
+    (first second : Finset (object.Vertex × object.Vertex)),
+    FiniteObject.Charges activation carrier threshold packing token first →
+    FiniteObject.Charges activation carrier threshold packing token second →
+    ∀ left, left ∈ first → ∀ right, right ∈ second → left ≠ right →
+      SameTokenRoutingGerms.RoutedBottleneck object
+        (fun vertex => 3 < object.degree vertex) (fun _ _ _ => False)
+  /-- **`def:decorated-fan-envelope`: the counted core is a connected remainder
+  core.**  The selected support the declared germs land in is a canonical piece
+  of the remainder of `𝒫`: `Y ⊆ R` is connected, and by `packingMeets` it is
+  `P₁₃`-free — which is where the routed envelope's window-free core comes
+  from. -/
+  routedBottleneck_core : ∀ (threshold : Nat) (token : FiniteObject.CapacityToken object)
+    (first second : Finset (object.Vertex × object.Vertex))
+    (chargesFirst : FiniteObject.Charges activation carrier threshold packing token first)
+    (chargesSecond : FiniteObject.Charges activation carrier threshold packing token second)
+    (left : object.Vertex × object.Vertex) (leftMem : left ∈ first)
+    (right : object.Vertex × object.Vertex) (rightMem : right ∈ second)
+    (distinct : left ≠ right),
+    ∃ component ∈ object.canonicalPieces (object.remainderSupport packing),
+      (routedBottleneck threshold token first second chargesFirst chargesSecond
+        left leftMem right rightMem distinct).support =
+        object.pieceSupport (object.remainderSupport packing) component
 
 namespace CapacityPresentation
 
@@ -113,6 +148,18 @@ noncomputable def canonical (object : FiniteObject.{u}) (order : Nat)
   let packing := (object.exists_windowPacking_card_eq order).choose
   have valid := (object.exists_windowPacking_card_eq order).choose_spec.1
   have maximal := (object.exists_windowPacking_card_eq order).choose_spec.2
+  -- The empty activation blocks nothing, so `Θ_cap` charges no pair.
+  have uncharged : ∀ (threshold : Nat) (token : FiniteObject.CapacityToken object)
+      (pair : Finset (object.Vertex × object.Vertex)),
+      ¬ FiniteObject.Charges activation carrier threshold packing token pair := by
+    intro threshold token pair charges
+    have empty : activation.blockers pair = ∅ := by
+      ext blocker
+      simp [activation, FiniteObject.DemandActivation.blockers,
+        FiniteObject.DemandActivation.sharedItems]
+    have := FiniteObject.capacityCharge_eq_none_of_blockers_eq_empty activation carrier
+      threshold packing empty
+    simp [FiniteObject.Charges, this] at charges
   exact {
     Coordinate := ULift.{u} (Fin 0)
     Chord := ULift.{u} (Fin 0)
@@ -128,7 +175,11 @@ noncomputable def canonical (object : FiniteObject.{u}) (order : Nat)
     packingMaximal := maximal
     packingMeets := fun support window =>
       object.exists_mem_not_disjoint_of_card_eq orderPos valid maximal window
-    role := fun _ => default }
+    role := fun _ => default
+    routedBottleneck := fun threshold token first _ chargesFirst _ _ _ _ _ _ =>
+      absurd chargesFirst (uncharged threshold token first)
+    routedBottleneck_core := fun threshold token first _ chargesFirst _ _ _ _ _ _ =>
+      absurd chargesFirst (uncharged threshold token first) }
 
 /-- **The remainder of `𝒫` is window-free.**
 

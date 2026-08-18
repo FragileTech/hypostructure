@@ -312,17 +312,21 @@ export function refereeDossier(
               ? "partial"
               : "no"
           : node.shape === "terminal"
-            ? closure
-              ? "yes"
-              : "unrecorded"
+            ? node.open
+              ? "no"
+              : closure
+                ? "yes"
+                : "unrecorded"
             : "na",
       detail:
         node.shape === "decision"
           ? `${outgoing.length} arrows out, ${cases!.unlabelled} without a condition`
           : node.shape === "terminal"
-            ? closure
-              ? "The closure table records how this leaf closes"
-              : "The closure table has no row for this leaf"
+            ? node.open
+              ? "The source draws this leaf as open: no closure is claimed"
+              : closure
+                ? "The closure table records how this leaf closes"
+                : "The closure table has no row for this leaf"
             : "",
     },
     reviewCheck("lean", "Lean", review),

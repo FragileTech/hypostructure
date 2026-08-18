@@ -15,6 +15,7 @@ export function ProofFlowNode({ data }: NodeProps<FlowNode>) {
   const className = [
     "proof-node",
     `proof-node-${node.shape}`,
+    node.open ? "proof-node-open" : "",
     selected ? "is-selected" : "",
     traced ? "is-traced" : "",
     matched ? "is-matched" : "",
@@ -24,13 +25,14 @@ export function ProofFlowNode({ data }: NodeProps<FlowNode>) {
     .join(" ");
 
   return (
-    <div className={className}>
+    <div className={className} data-open={node.open ? "true" : undefined}>
       <Handle type="target" position={Position.Top} />
       <span className="proof-node-shape" aria-hidden="true" />
       <span className="proof-node-body">
         <span className="proof-node-number">{node.id}</span>
         <span className="proof-node-label">
           <Latex value={node.label} />
+          {node.open ? <span className="proof-node-open-tag">open</span> : null}
         </span>
       </span>
       <Handle type="source" position={Position.Bottom} />
