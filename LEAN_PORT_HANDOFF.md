@@ -95,6 +95,9 @@ Full library builds; Assembly has zero non-loud errors; audit checks pass. Porte
   two-carrier decision; `[118]` entry-kind split), Type B `[64]`–`[85]` on the
   common assigned-centre ledger, `[144]`→Type B bottleneck rows.
 - Strict branch `[125]`–`[144]`, with `[131]`/`[137]` no-arms → `[178]`–`[180]`.
+- `[170]` scale-additivity decision and `[171]` compression closure
+  (`lem:scale-additivity`, `lem:blocked-graphs-compress`) on the `[169]` residual
+  of the dense-packing branch; `[172]` is an open producer (§5.2).
 - Dense residual `[159]`–`[169]`: deficiency decision `[160]`/`[161]`, dense pass
   `[162]`, symmetry decision `[163]`, canonical-realization operator + `[165]`
   smaller-swap closure, `[167]` two-strand enumeration, `[168]` endpoint stub
@@ -113,6 +116,8 @@ class), `Route8Census.lean`, `Route8Deficit.lean`, `ExitFourFamily.lean`,
 (`CanonicalPiece`, `Precedes`, `canonicalRepresentative`,
 `cutStateRepresentative`, `swap_smaller_counterexample`),
 `SparsePressureLedger.lean`, `TypeBCanonicalB2.lean`, `TypeBEnvelopeCharge.lean`,
+`BarrierOverlapSystem.lean` (the `[18]` label algebra on skeletons),
+`Strategy/BlockedCompressionRows.lean`,
 `Strategy/BranchDClosure.lean`, `EntropyClosure.lean`, `TypeBClosure.lean`.
 
 ## 5. Open producers and how to close each
@@ -137,30 +142,80 @@ decomposition are unchanged by the swap — state it at the germ's atom);
 (3) close the same-size arm from `K .selection` (refined) — index-polymorphic
 `False`.
 
-### 5.2 `selectedScaleAdditivityDichotomy` — `[170]`→`[171]`/`[172]` (2 sites)
+### 5.2 `selectedBarrierOverlapSerialSystem` — `[172]`; `selectedDenseJointCodeOverflow`; `selectedAbsorbedGermBlockedResidual`
 Paper: `lem:scale-additivity`, `lem:blocked-graphs-compress`, `def:barrier-overlap-system`,
 `lem:barrier-failure-overlap`, `def:serial-window-system`,
 `lem:window-system-realizability`, `lem:serial-system-sumset`,
-`lem:system-increment-arithmetic`.
-Exists: `BlockedClass.lean` (`𝓑(𝒫)`, `G ∈ 𝓑`, `card 𝓑 ≤ budget`),
-`SerialSystemArithmetic.lean` (`System`, `System.spectrum`, `Spectrum.exists_pow_realized`),
-`ColdIncrementArithmetic.lean` (doubling-orbit criterion), `CanonicalRealization`.
-Missing object: the `[18]` label algebra **with responses on skeletons** — the
-barrier state `(S,A,T)` of a window at a dyadic scale as a function of a
-labelled skeleton (`Graph/PackedWindowRealization.lean` `Skeleton`), its
-a-priori range `W_{a,b}` and surviving set `F_{a,b}` (registered presentation
-data, `app:curv-code`).
-Steps: (1) define barrier states on `Skeleton n m` and the conditional fibres
-of `def:barrier-overlap-system`; (2) `[170]` `Decision.run`: additivity ⇒
-`[171]` encoding bound `card 𝓑 ≤ budget·2^{-(c₁₃-o(1))p log n} < 1` for
-`θ>θ_win` (contradiction with `G ∈ 𝓑`); non-additive ⇒ `[172]`: minimal
-same-scale overlap obstruction (`lem:barrier-failure-overlap`), uncrossing to a
-serial window system via `cutStateRepresentative` (`lem:window-system-realizability`
-(i)–(v): dyadic hit / G2 / G3 / Type A/B interface / serial system), multi-generator
-Frobenius filling (`lem:serial-system-sumset`, `g = gcd`, `C_sys`) into
-`System.spectrum`, then `exists_pow_realized` ⇒ dyadic hit (`K .selection`) or
-periodic carrier routed as G2 (`instImpossibleContextDefect`) / G3
-(`K .replacementExclusion`) / Type A/B interfaces.
+`lem:system-increment-arithmetic`, `def:window-realization-test`.
+
+**Done — `[170]`.**  `Graph/BarrierOverlapSystem.lean` is the `[18]` label
+algebra with responses on skeletons: `labelAt` (`app:curv-code`'s label of an
+outside vertex at a positioned window); `CompletionSupport`, the definition's own
+support for a packed window — the two *outside* arms (`armsOutside`) whose
+endpoints are the window incidences the state reads, and the edge-rooted
+Mersenne completion *through* that window (`completionThroughWindow`,
+`lem:p13-window-package`: "at each remaining scale, the target tester is the
+corresponding edge-rooted Mersenne completion through the window");
+`barrierState`, `outsideEdges`, `Coordinate` (one exposure coordinate per packed
+window per separated dyadic scale), `code`; and `ConditionalFibre`,
+`def:barrier-overlap-system`'s fibre conditional on the outside record and on
+every barrier state exposed before the coordinate in the canonical encoding
+order `blockedEncodingRank` (scale by scale, window by window).  `W_{a,b}` and
+`F_{a,b}` are the registered certified table's `safeProduct`/`flatProduct`; no
+numeral is written.
+
+`scaleAdditivityDichotomy` (`Decision.run`, keys `blockedScaleAdditive` 320 /
+`blockedBarrierOverlap` 321) decides `lem:scale-additivity` **verbatim and
+nothing else** — the conditional fibre bound, or its exact complement.  The
+lemma's other two steps (the code's injectivity, the uncompressed baseline) are
+asserted by the manuscript inside `lem:blocked-graphs-compress`, so they are not
+arms of this decision.  Run by `selectedScaleAdditivityDichotomy` on the literal
+`[169]` residual at both its sites.
+
+**Done — `[171]`.**  `lem:scale-additivity`'s conclusion is that the conditional
+savings *add*: `γ_{a,b} = log₂(W_{a,b}/F_{a,b})` counts independently
+target-testable coordinates (`lem:p13-window-package`: "for one window the
+package supplies `(Σγ − o(1))log₂n` independently target-testable coordinates"),
+so they add to `c₁₃·L` per packed window — the registered `windowPackageBits` —
+and the additive arm carries `lem:blocked-graphs-compress`'s display
+
+    card 𝓑(𝒫) · 2^{c₁₃ p₁₃ log₂ n} ≤ card 𝒢_{n,m}.
+
+`blockedClassCompressionCloses` reads that with `def:blocked-class`'s last
+sentence (`objectSkeletonMember ∈ 𝓑(𝒫)`) and the `[159]` display
+`2^{c₁₃p₁₃log₂n} > card 𝒢_{n,m}`, which `denseOrJointCodeOverflow` reads off
+`K .windowPackageUnrealized` with `lem:skeleton-dominates` — no assignment of
+states to labelled skeletons beats the identity, whose range is the whole class.
+`card 𝓑(𝒫) < 1`, so `𝓑(𝒫) = ∅` and `G ∈ 𝓑(𝒫)` is impossible.  A direct `False`
+from `history.get`; no hypotheses, no allowance, no numeral.
+
+**One arm left on the `[158]` key.**  `K .windowPackageUnrealized` is
+`¬ WindowFamilyRealized`, which states `def:window-realization-test`'s own
+clause *together with* `def:cold-window-ledger`/`def:curvature-target-rank`'s
+retained-code clause (node `[22]`).  Its negation therefore also covers the
+joint-code overflow — node `[53]`'s comparison, not `[159]` — which is the named
+producer `selectedDenseJointCodeOverflow`.  Unbundling `[158]` into the two
+manuscript statements removes that arm; the three consumers of
+`K .windowPackageRealized` (`selectedColdLinearCloses` and the two `[54]`
+all-cold closures) must then read node `[21]`'s retention from `K .hotColdPartition`
+instead.  Same reason the absorbed-germ chain, which reaches `[169]` from both
+arms of `[158]`, cannot run `[171]` (`selectedAbsorbedGermBlockedResidual`).
+
+**`[172]` `selectedBarrierOverlapSerialSystem`** — the non-additive arm, now
+exactly `lem:barrier-failure-overlap`'s input.  Missing:
+`lem:barrier-failure-overlap` (a minimal overlap obstruction with connected
+overlap support) and `lem:window-system-realizability` (i)–(v) (the local
+uncrossing via `cutStateRepresentative`), then the multi-generator Frobenius
+filling of `lem:serial-system-sumset` into `System.spectrum`.  The arithmetic
+core is built (`SerialSystemArithmetic.lean` `exists_pow_realized`,
+`ColdIncrementArithmetic.lean`), so once a scale-spanning system exists the
+closure is `exists_pow_realized` against `K .selection`, with the
+periodic-carrier arm routed as G2 / G3 / Type A/B interfaces.  Shared port with
+`[179]`/`[180]` (§5.3).
+
+**Soundness note**: the completion support is not yet required to be a *simple*
+cycle, and `def:barrier-overlap-system`'s second half (the overlap relation,
+`𝒮(𝒰)`, the minimal obstruction) is not built; that half is `[172]`'s input.
 
 ### 5.3 `selectedSparsePairSerialSystem` — `[178]`–`[180]` (2 sites)
 Paper: `def:pair-overlap-system`, `lem:pair-failure-overlap`,

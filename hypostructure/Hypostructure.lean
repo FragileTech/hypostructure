@@ -53,6 +53,7 @@ import Hypostructure.Graph.ColdCorridor
 import Hypostructure.Graph.ColdFirstFailure
 import Hypostructure.Graph.SerialSystemArithmetic
 import Hypostructure.Graph.BlockedClass
+import Hypostructure.Graph.BarrierOverlapSystem
 import Hypostructure.Fixtures.ColdCorridorSignature
 import Hypostructure.Fixtures.ColdCorridorLedger
 import Hypostructure.Fixtures.ColdCorridorConstruction

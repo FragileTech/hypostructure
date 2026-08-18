@@ -9,6 +9,7 @@ import Hypostructure.Graph.SkeletonBudget
 import Hypostructure.Graph.RemainderGlue
 import Hypostructure.Graph.WindowPacking
 import Hypostructure.Graph.WindowStubStructure
+import Hypostructure.Graph.BarrierOverlapSystem
 import Hypostructure.Graph.WindowRemainder
 import Hypostructure.Graph.CapacityTokenAssignment
 import Hypostructure.Graph.FanCertificate
@@ -890,6 +891,16 @@ inductive Key where
   maximal packing (near-cubic, windows present, no accepted cycle through a
   window), and `card 𝓑(𝒫) ≤ skeletonBudget`. -/
   | blockedClassMember
+  /-- Node `[170]`, `lem:scale-additivity`: on the blocked class of the fixed
+  packing the conditional savings of the barrier states add at every fixed
+  scale -- the barrier code is injective, every conditional fibre is within the
+  surviving count `F_{a,b}` of the registered barrier list, and the outside code
+  against the a-priori range is dominated by the labelled skeleton class. -/
+  | blockedScaleAdditive
+  /-- Node `[170]`, the exact complement (`lem:barrier-failure-overlap`): the
+  conditional saving fails to add at some fixed scale, so the current
+  conditional fibre contains a minimal barrier overlap obstruction. -/
+  | blockedBarrierOverlap
   /-- Node `[177]`, `lem:absorbed-germ-fan-data` (ii): on the absorbed-germ
   residual no selected branch-excess half-edge has a subcubic first-failure
   support — every selected corridor meets a vertex of degree above the
@@ -1767,6 +1778,141 @@ live-hot alternatives; this fact performs neither decision. -/
 def ColdWindowLedgerStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
   HotColdWindowStatement data object
+
+/-! ## Nodes `[170]`--`[172]`: the barrier states of the blocked class
+
+`lem:scale-additivity` reads the `(a,b)`-barrier state of a packed window at a
+separated dyadic scale as a function of the labelled skeleton
+(`Graph/BarrierOverlapSystem.lean`), and `lem:blocked-graphs-compress` encodes a
+member of `𝓑(𝒫)` as its outside edges together with all those states.  The
+a-priori range `W_{a,b}` and the surviving set `F_{a,b}` are the two columns of
+the *registered* certified barrier table (`data.windowBarrier`), and the
+aggregate saving `c₁₃ = Σ_{a,b} γ_{a,b}` is that table's registered
+`binaryRateFloor` (`data.windowRate`); no constant is written here. -/
+
+/-- The packed windows at their labelled positions. -/
+noncomputable def blockedWindowLabels (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) :
+    Finset (Finset (Fin object.vertexCount)) :=
+  Graph.BlockedClass.windowLabels object (canonicalWindowPacking data object)
+
+/-- `𝓑(𝒫)` at the object, the class `def:blocked-class` fixes. -/
+@[reducible] noncomputable def blockedClassAt (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Type :=
+  Graph.BlockedClass.Blocked object.vertexCount object.edgeCount data.threshold
+    data.windowOrder data.LengthOK (blockedWindowLabels data object)
+
+/-- The exposure coordinates of `lem:blocked-graphs-compress`: one per packed
+window per separated dyadic scale. -/
+@[reducible] noncomputable def blockedCoordinate (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Type :=
+  Graph.BarrierSystem.Coordinate (blockedWindowLabels data object)
+    (data.separatedScaleCount object.vertexCount)
+
+/-- The registered barrier table's own leg pair `(a,b)` of a row. -/
+noncomputable def barrierLegs (data : Data.{u}) :
+    data.windowBarrier.Index -> Nat × Nat :=
+  fun row =>
+    (data.windowBarrier.table.counts.leftLength row,
+      data.windowBarrier.table.counts.rightLength row)
+
+/-- `lem:blocked-graphs-compress`'s encoding map at the object. -/
+noncomputable def blockedBarrierCode (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) :
+    blockedClassAt data object ->
+      Finset (Sym2 (Fin object.vertexCount)) ×
+        (blockedCoordinate data object ->
+          Graph.BarrierSystem.RowStates data.windowOrder data.windowBarrier.Index) :=
+  fun member =>
+    Graph.BarrierSystem.code data.windowOrder (blockedWindowLabels data object)
+      (data.separatedScaleCount object.vertexCount) (barrierLegs data)
+      member.1.1.1
+
+/-- `F_{a,b}` over the whole registered barrier list: the surviving states. -/
+noncomputable def blockedSurvivingCount (data : Data.{u}) : Nat := by
+  letI := data.windowBarrier.indexFintype
+  exact Core.Finite.CertifiedTableAggregation.flatProduct data.windowBarrier.table
+
+/-- `W_{a,b}` over the whole registered barrier list: the a-priori range. -/
+noncomputable def blockedAprioriCount (data : Data.{u}) : Nat := by
+  letI := data.windowBarrier.indexFintype
+  exact Core.Finite.CertifiedTableAggregation.safeProduct data.windowBarrier.table
+
+/-- **The canonical encoding order of `lem:blocked-graphs-compress`**: "scale by
+scale from `2^{j₁}` to `2^{j_L}` and window by window".  The scale is the major
+key, so every coordinate of a smaller scale — and, at the tested scale, every
+window before this one — is exposed first.  This is the order
+`def:barrier-overlap-system` conditions on. -/
+noncomputable def blockedEncodingRank (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : blockedCoordinate data object -> Nat :=
+  fun coordinate =>
+    (Fintype.equivFin _ coordinate.1).1 +
+      coordinate.2.1 * Fintype.card {window // window ∈ blockedWindowLabels data object}
+
+theorem blockedEncodingRank_injective (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) :
+    Function.Injective (blockedEncodingRank data object) := by
+  classical
+  rintro ⟨leftWindow, leftScale⟩ ⟨rightWindow, rightScale⟩ same
+  simp only [blockedEncodingRank] at same
+  have leftLt : (Fintype.equivFin _ leftWindow).1 <
+      Fintype.card {window // window ∈ blockedWindowLabels data object} :=
+    (Fintype.equivFin _ leftWindow).2
+  have rightLt : (Fintype.equivFin _ rightWindow).1 <
+      Fintype.card {window // window ∈ blockedWindowLabels data object} :=
+    (Fintype.equivFin _ rightWindow).2
+  have positive : 0 < Fintype.card {window // window ∈ blockedWindowLabels data object} :=
+    Nat.lt_of_le_of_lt (Nat.zero_le _) leftLt
+  have modEq := congrArg (· % Fintype.card {window // window ∈ blockedWindowLabels data object}) same
+  have divEq := congrArg (· / Fintype.card {window // window ∈ blockedWindowLabels data object}) same
+  simp only [Nat.add_mul_mod_self_right, Nat.mod_eq_of_lt leftLt,
+    Nat.mod_eq_of_lt rightLt] at modEq
+  simp only [Nat.add_mul_div_right _ _ positive, Nat.div_eq_of_lt leftLt,
+    Nat.div_eq_of_lt rightLt, Nat.zero_add] at divEq
+  have windowEq : leftWindow = rightWindow :=
+    (Fintype.equivFin _).injective (Fin.ext modEq)
+  have scaleEq : leftScale = rightScale := Fin.ext divEq
+  rw [windowEq, scaleEq]
+
+/-- **`lem:scale-additivity`, node `[170]`, verbatim.**  The lemma's dichotomy is
+one clause: "the `(a,b)`-barrier state of `P` at scale `2^j` lies in a set of
+relative size at most `F_{a,b}/W_{a,b}` of its a-priori range … *or* the current
+graph is closed by `lem:system-increment-arithmetic`", and its proof repeats it —
+"if every conditional fibre has relative size at most `F_{a,b}/W_{a,b}`,
+multiplication of the conditional fibre sizes gives the claimed saving;
+otherwise `lem:barrier-failure-overlap` supplies a minimal local overlap
+obstruction".
+
+So this is exactly `def:barrier-overlap-system`'s conditional fibre
+(`Graph.BarrierSystem.ConditionalFibre`), conditional on the edges outside
+the window interiors and on every barrier state exposed before the coordinate in
+the canonical encoding order `blockedEncodingRank` (scale by scale, window by
+window), bounded by the surviving count of the registered barrier list.
+
+The lemma's conclusion is the second conjunct: "hence the conditional savings
+`γ_{a,b}` add over the barriers `(a,b)`, over the `L` scales, and over the `p`
+windows".  `γ_{a,b} = log₂(W_{a,b}/F_{a,b})` counts *independently
+target-testable coordinates* (`lem:p13-window-package`: "for one window the
+package supplies `(Σγ − o(1))log₂n` independently target-testable
+coordinates"), so the savings add to `c₁₃·L` per packed window — the registered
+`windowPackageBits` — and `lem:blocked-graphs-compress` is exactly
+`card 𝓑(𝒫) · 2^{c₁₃p₁₃log₂n} ≤ card 𝒢_{n,m}`.  The class on the right is the
+*near-cubic* one, `𝒢^{δ≥3}_{n,m}`: `rem:blocked-class-checks` (a) — "the entropy
+step therefore has to be read in the class of labelled graphs with minimum
+degree at least three … this is the structure not charged by `C(C(n,2),m)`".
+No numeral occurs: the rate is the certified table's own compounded floor. -/
+def BlockedScaleAdditivityStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  (∀ (member₀ : blockedClassAt data object)
+      (coordinate : blockedCoordinate data object),
+    Nat.card (Graph.BarrierSystem.ConditionalFibre (blockedBarrierCode data object)
+        (blockedEncodingRank data object) member₀ coordinate) ≤
+      blockedSurvivingCount data) ∧
+    Nat.card (blockedClassAt data object) *
+        2 ^ (windowPackageBits data object *
+          (canonicalWindowPacking data object).card) ≤
+      Nat.card (Graph.BlockedClass.NearCubicSkeleton object.vertexCount
+        object.edgeCount data.threshold)
 
 /-- The external-stub count of an ambient baseline-degree window.  For the
 Erdős presentation this evaluates to `15`; no numerical value is written into
@@ -3547,21 +3693,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- from the tail back to the head after the edge is deleted.
       (∀ contraction : Graph.EdgeContraction object, contraction.HasReturn)
   | .windowPackageRealized, object =>
-      -- `lem:p13-window-package`: "the canonical multi-scale package attached to
-      -- `𝒫` contains a family `𝓘_win` of independently target-testable
-      -- coordinates … the package is the disjoint union of the packages attached
-      -- to the distinct packed windows"; `def:target-rank`: independently
-      -- target-testable means "its target responses realize `2^k` distinct
-      -- target-complete states"; `prop:p13-density`: "all target-complete window
-      -- states are realized by labelled near-cubic skeletons under
-      -- `def:near-cubic-spine`".  Stated at the fixed maximal packing as the
-      -- retention of its whole package family in the canonical comparison
-      -- (`WindowFamilyRealized`, the same predicate `def:cold-window-ledger`'s
-      -- hot/cold split at node `[22]` uses), so that, by `def:cold-window-ledger`,
-      -- every packed window is hot and `𝒫_cold = ∅`.
       WindowFamilyRealized data object (canonicalWindowPacking data object)
   | .windowPackageUnrealized, object =>
-      -- The exact complement of `K .windowPackageRealized` on the same object.
       ¬ WindowFamilyRealized data object (canonicalWindowPacking data object)
   | .denseDeficiencyBelow, object =>
       DenseDeficiencyBelowStatement data object
@@ -3630,6 +3763,10 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             data.threshold data.windowOrder data.LengthOK
             (Graph.BlockedClass.windowLabels object (canonicalWindowPacking data object))) ≤
           Graph.skeletonBudget object
+  | .blockedScaleAdditive, object =>
+      BlockedScaleAdditivityStatement data object
+  | .blockedBarrierOverlap, object =>
+      ¬ BlockedScaleAdditivityStatement data object
   | .absorbedGermFanData, object =>
       AbsorbedGermFanDataStatement data object
   | .coldFamilyPositive, object =>
@@ -5655,6 +5792,8 @@ def label : Key → String
   | .coldCanonicalSwapSmaller => "coldCanonicalSwapSmaller"
   | .coldCanonicalSwapSameSize => "coldCanonicalSwapSameSize"
   | .blockedClassMember => "blockedClassMember"
+  | .blockedScaleAdditive => "blockedScaleAdditive"
+  | .blockedBarrierOverlap => "blockedBarrierOverlap"
   | .absorbedGermFanData => "absorbedGermFanData"
   | .coldFamilyPositive => "coldFamilyPositive"
   | .coldFamilyEmpty => "coldFamilyEmpty"
@@ -5881,6 +6020,8 @@ example : label .coldTrivialNeutralGerms = "coldTrivialNeutralGerms" := rfl
 example : label .coldCanonicalSwapSmaller = "coldCanonicalSwapSmaller" := rfl
 example : label .coldCanonicalSwapSameSize = "coldCanonicalSwapSameSize" := rfl
 example : label .blockedClassMember = "blockedClassMember" := rfl
+example : label .blockedScaleAdditive = "blockedScaleAdditive" := rfl
+example : label .blockedBarrierOverlap = "blockedBarrierOverlap" := rfl
 example : label .coldHandoffTransfer = "coldHandoffTransfer" := rfl
 example : label .coldGermExtraction = "coldGermExtraction" := rfl
 example : label .coldPositiveGerm = "coldPositiveGerm" := rfl
@@ -6043,6 +6184,8 @@ def idx : Key → Nat
   | .coldCanonicalSwapSmaller => 244
   | .coldCanonicalSwapSameSize => 245
   | .blockedClassMember => 238
+  | .blockedScaleAdditive => 320
+  | .blockedBarrierOverlap => 321
   | .absorbedGermFanData => 235
   | .coldFamilyPositive => 236
   | .coldFamilyEmpty => 237
@@ -6270,6 +6413,8 @@ def ofIdx : Nat → Key
   | 244 => .coldCanonicalSwapSmaller
   | 245 => .coldCanonicalSwapSameSize
   | 238 => .blockedClassMember
+  | 320 => .blockedScaleAdditive
+  | 321 => .blockedBarrierOverlap
   | 235 => .absorbedGermFanData
   | 236 => .coldFamilyPositive
   | 237 => .coldFamilyEmpty
@@ -6526,6 +6671,10 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldCanonicalSwapSameSize") 245
   | .blockedClassMember =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "blockedClassMember") 238
+  | .blockedScaleAdditive =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "blockedScaleAdditive") 320
+  | .blockedBarrierOverlap =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "blockedBarrierOverlap") 321
   | .absorbedGermFanData =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "absorbedGermFanData") 235
   | .coldFamilyPositive =>

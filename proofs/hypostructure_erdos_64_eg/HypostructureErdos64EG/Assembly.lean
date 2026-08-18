@@ -4,6 +4,7 @@ import Hypostructure.Graph.Strategy.BranchDClosure
 import Hypostructure.Graph.Strategy.EntropyClosure
 import Hypostructure.Graph.Strategy.TypeBClosure
 import Hypostructure.Graph.Strategy.TypeAExitRun
+import Hypostructure.Graph.Strategy.BlockedCompressionRows
 
 /-!
 # Final Erdős assembly boundary
@@ -3152,6 +3153,66 @@ noncomputable def selectedTypeBHighSurplusContinuation
               residualHistory (by simp [K_eq_iff, certificateMassFresh])
           exact selectedTypeBRoute8Continuation mass (by simp [K_eq_iff, branchKillFresh])
 
+/-- **Nodes `[170]`--`[172]`, `lem:scale-additivity`.**  On the trivial neutral
+germ residual of `[169]` (`K .blockedClassMember`, `def:blocked-class`), decide
+whether the conditional savings of the barrier states add at every fixed scale.
+
+*Additive* (`[171]`): `lem:blocked-graphs-compress` encodes every member of
+`𝓑(𝒫)` as its outside edges together with all barrier states, paying
+`log₂ W_{a,b} − γ_{a,b}` bits per coordinate, so
+`card 𝓑(𝒫) · W^N ≤ |𝒢_{n,m}| · F^N`.  Only the conditional fibre bound is this
+decision's arm; the lemma's other two steps — the code's injectivity and the
+uncompressed baseline — the manuscript asserts in the proof, and they enter the
+closure as its own hypotheses (the loud producers
+`selectedBlockedBarrierCodeInjectivity`, `selectedBlockedBarrierBaseline`).
+The density hypothesis is the
+dense-packing residual `[159]` itself: by `def:window-realization-test` the
+no-branch of `[158]` is `2^{c₁₃p₁₃log₂n} > |𝒢_{n,m}|`, which
+`denseOrJointCodeOverflow` reads off `K .windowPackageUnrealized` together with
+`lem:skeleton-dominates` (`K .skeletonDominates`: no assignment of states to
+labelled skeletons beats the identity).  On that display
+`blockedClassCompressionCloses` gives `card 𝓑(𝒫) < 1`, contradicting
+`G ∈ 𝓑(𝒫)`.  The complementary half of the same reading — the *joint* retained
+code (window package with the remainder states and the exact curvature code)
+overflowing the budget while the window package alone does not — is node
+`[53]`'s comparison on this residual and is the named producer.
+
+*Not additive* (`[172]`): `lem:barrier-failure-overlap` supplies a minimal
+same-scale barrier overlap obstruction with connected overlap support; the
+uncrossing of `lem:window-system-realizability` (i)--(v) turns it into a
+scale-spanning serial window system, `lem:serial-system-sumset` fills its
+spectrum, and `lem:system-increment-arithmetic` closes it.  That uncrossing is
+the next producer. -/
+noncomputable def selectedScaleAdditivityDichotomy
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .blockedClassMember) known]
+    [FactKeys.Has (K .windowPackageUnrealized) known]
+    [FactKeys.Has (K .skeletonDominates) known]
+    (additiveFresh : K .blockedScaleAdditive ∉ known := by simp [K_eq_iff])
+    (overlapFresh : K .blockedBarrierOverlap ∉ known := by simp [K_eq_iff]) :
+    False := by
+  match scaleAdditivityDichotomy (data := spineData) history additiveFresh overlapFresh with
+  | .left additiveHistory =>
+      -- `[171]`, `lem:blocked-graphs-compress`: `lem:scale-additivity`'s savings
+      -- `card 𝓑(𝒫) · 2^{c₁₃p₁₃log₂n} ≤ card 𝒢_{n,m}` against the `[159]` display
+      -- `2^{c₁₃p₁₃log₂n} > card 𝒢_{n,m}` give `card 𝓑(𝒫) < 1`, and
+      -- `def:blocked-class` puts `G` in `𝓑(𝒫)`.
+      rcases denseOrJointCodeOverflow (data := spineData) additiveHistory with dense | overflow
+      · exact blockedClassCompressionCloses (data := spineData) additiveHistory dense
+      · -- `K .windowPackageUnrealized` states `def:window-realization-test`'s
+        -- no-branch together with `def:cold-window-ledger`'s retained-code
+        -- clause, so its negation also covers the joint-code overflow, which is
+        -- node `[53]`'s comparison and not `[159]`.  Unbundling the `[158]` key
+        -- into the two manuscript statements removes this arm entirely.
+        exact selectedDenseJointCodeOverflow additiveHistory overflow
+  | .right overlapHistory =>
+      -- `[172]`: the minimal same-scale overlap obstruction of
+      -- `lem:barrier-failure-overlap`; the missing lemma is
+      -- `lem:window-system-realizability` (the local uncrossing (i)--(v) into a
+      -- scale-spanning serial window system), which feeds
+      -- `lem:serial-system-sumset` and `SerialSystem.Spectrum.exists_pow_realized`.
+      exact selectedBarrierOverlapSerialSystem overlapHistory
 /-- **Nodes `[174]`--`[177]`, `lem:absorbed-germ-fan-data`: the absorbed-germ
 residual**, index-polymorphic over any residual carrying the hot/cold ledger of
 the fixed packing.  Its cold windows' selected branch-excess corridors were
@@ -3248,15 +3309,20 @@ noncomputable def selectedAbsorbedGermResidual
           let blocked :=
             (blockedClassRow (data := spineData)).run trivialHistory
               (by simp [K_eq_iff, absorbedBlockedFresh])
-          -- `[170]`--`[172]`: `lem:scale-additivity` decides, on the literal
-          -- residual, whether the conditional savings of the barrier states add
-          -- at every fixed scale (`[171]` `lem:blocked-graphs-compress`) or a
-          -- fixed-scale overlap system exists (`[172]`, closed by
-          -- `lem:window-system-realizability` + `lem:serial-system-sumset` +
-          -- `lem:system-increment-arithmetic`, `SerialSystem.Spectrum.exists_pow_realized`).
-          -- Its statement needs the barrier states of a skeleton at a scale
-          -- (`def:barrier-overlap-system`); that row is the next producer.
-          exact selectedScaleAdditivityDichotomy blocked
+          -- `[170]`--`[172]` are the manuscript's continuation of `[169]` *on the
+          -- dense-packing residual* `[159]`: `[171]`'s compression closes only
+          -- against `def:window-realization-test`'s no-branch
+          -- `2^{c₁₃p₁₃log₂n} > |𝒢_{n,m}|`.  The absorbed-germ chain reaches
+          -- `[169]` from both arms of `[158]`, so `K .windowPackageUnrealized` is
+          -- not on this ledger, and on the realized arm the display is false.
+          -- The missing lemma is `lem:absorbed-germ-fan-data`'s own dense reading:
+          -- the absorbed-germ residual carries `def:window-realization-test`'s
+          -- no-branch, which the manuscript states only for `[159]`.
+          -- `[170]`--`[172]` are the manuscript's continuation of `[169]` on the
+          -- dense-packing residual `[159]`, whose display `[171]` consumes.  The
+          -- absorbed-germ chain reaches `[169]` from both arms of `[158]`, so
+          -- that display is not on this ledger.
+          exact selectedAbsorbedGermBlockedResidual blocked
   | .right absorbedHistory =>
       -- `[177]`: every selected corridor meets a heavy centre; the half-edges
       -- are decorated handoff fan data (`lem:typeA-high-degree-handoff`,
@@ -4088,8 +4154,9 @@ noncomputable def selectedNearCubicBranch
                   -- complementary cold residual; its treatment is the next producer.
                   rcases hotFamily_retained_or_cold activeHistory with retained | cold
                   · exact entropyCap_closes activeHistory retained
-                  · exact absurd (WindowFamilyRealized.mono (Finset.empty_subset _)
-                      (activeHistory.get (K .windowPackageRealized)).down) cold.2
+                  · -- `[54]` on the all-cold residual: the joint demand is the remainder
+                    -- class alone, which glues into the skeleton budget.
+                    exact entropyCap_closes_of_allCold activeHistory cold.1
               | .right largeHistory =>
                   -- `[55]`: Residual C on the high-entropy arm.
                   -- `[56]` on the route-8 arm: `Δ_net(R) < 1/4` from `τ(θ) < 3/13`
@@ -4240,8 +4307,9 @@ noncomputable def selectedNearCubicBranch
                           -- complementary cold residual; its treatment is the next producer.
                           rcases hotFamily_retained_or_cold activeHistory with retained | cold
                           · exact entropyCap_closes activeHistory retained
-                          · exact absurd (WindowFamilyRealized.mono (Finset.empty_subset _)
-                              (activeHistory.get (K .windowPackageRealized)).down) cold.2
+                          · -- `[54]` on the all-cold residual: the joint demand is the remainder
+                            -- class alone, which glues into the skeleton budget.
+                            exact entropyCap_closes_of_allCold activeHistory cold.1
                       | .right largeHistory =>
                           -- `[55]`: Residual C on the high-entropy arm.
                           -- `[56]`: `Δ_net(R) ≤ τ_win + o(1) < 1/4` from `[24]`'s density cap.
