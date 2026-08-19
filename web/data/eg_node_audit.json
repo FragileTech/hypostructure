@@ -51,7 +51,7 @@
    "on_probed_closed_arm": true
   },
   "6": {
-   "producer": "`returnAvoidanceRow` (SpineRows.lean:110), run at Assembly.lean:73\u201379",
+   "producer": "`returnAvoidanceRow` (SpineRows.lean:110)",
    "fidelity": "FAITHFUL-TRIVIAL",
    "fidelity_note": "The paper resolves this diamond in one sentence with no case split \u2014 the standing counterexample condition already gives R_e(G) \u2229 Mers = \u2205 at every oriented edge, so the branch table records it as \u201cClosed by lem:return-equivalence\u201d, not decided. Refuting the arm uniformly over all darts is stronger than deciding it; a `Decision` here would be the divergence.",
    "complete": "YES",
@@ -61,7 +61,7 @@
    "on_probed_closed_arm": true
   },
   "7": {
-   "producer": "`returnAvoidanceRow` (SpineRows.lean:110); the construction is `hasCycleWithLength_iff_hasEdgeRootedReturn` (RootedReturn.lean:317)",
+   "producer": "\u2014 (no live declaration)",
    "fidelity": "FAITHFUL-TRIVIAL",
    "fidelity_note": "An uninhabited terminal the paper refutes rather than constructs at, and which the manuscript itself files under \u201cTrivial / external-input leaves \u2026 Pure bookkeeping \u2026 definitional\u201d (tex:17262, 17455). Lean closes it by the same cycle-restoration construction in contrapositive position: `not_hasCycleWithLength_iff_returnLengthSets_disjoint` rewrites through `hasCycleWithLength_iff_hasEdgeRootedReturn` before taking `.mp`.",
    "complete": "YES",
@@ -101,13 +101,13 @@
    "on_probed_closed_arm": true
   },
   "11": {
-   "producer": "\u2014 (no live declaration)",
-   "fidelity": "ABSENT",
-   "fidelity_note": "no `Holds` branch states `lem:degree-profile-fibres`; the only realization is the detached `Graph.Response.profile_ne_not_targetComplete` (Response.lean:52\u201360), consumed by no row.",
-   "complete": "N/A",
-   "local": "NO",
-   "api": "N/A",
-   "difference": "Node contributes no proposition to any declaration's type.",
+   "producer": "`Response.profile_ne_not_targetComplete` (Response.lean:52); `DeclaredQuotient.fibrewise` (DeclaredRankQuotient.lean:215); consumed on the spine through `selectedEntryPrefix` (Assembly.lean:65)",
+   "fidelity": "FAITHFUL-TRIVIAL",
+   "fidelity_note": "`lem:degree-profile-fibres` is stipulated, not proved: `def:boundary-degree-profile` declares all response states fibrewise over d_\u2202 and `def:target-complete-quotient` makes profile preservation clause (a), so the paper's five-line proof just unfolds it. Lean carries it as the `profile_eq` field of `Response.TargetComplete` and the `fibrewise` field of `DeclaredQuotient`, with `profile_ne_not_targetComplete` (Response.lean:52) the one-step projection. The field is genuinely consumed \u2014 it closes the profile-mismatch disjunct of `SparseSurplusExit.targetDefect` at NamedSurplusExits.lean:123, builds `TargetCompleteAt` at SpineRows.lean:1576, and drives `AttemptedQuotient.route`'s profile test. On the spine the operative use is the first clause of `ReplacementSupport`, `replacement.boundaryDegreeProfile = piece.boundaryDegreeProfile`.",
+   "complete": "YES",
+   "local": "NO \u2014 the fibre clause is a universal over boundary pieces, as at [12]/[36]",
+   "api": "OK",
+   "difference": "`def:boundaried-gluing` is realized term for term: `Boundary`/`BoundaryPiece` build the injective boundary labelling into the carrier rather than asserting it, and `boundaryDegreeProfile` is the piece-internal degree the paper writes.",
    "on_probed_closed_arm": true
   },
   "12": {

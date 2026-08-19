@@ -17298,12 +17298,12 @@
     "note": "FAITHFUL — `threshold < degree` is degree ≥ 4 at threshold 3."
    },
    "11": {
-    "lean": "absent",
-    "kernel": "absent",
-    "wired": "absent",
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "verified",
     "local": "absent",
-    "fidelity": "absent",
-    "note": "ABSENT — no `Holds` branch states `lem:degree-profile-fibres`; the only realization is the detached `Graph.Response.profile_ne_not_targetComplete` (Response.lean:52–60), consumed by no row."
+    "fidelity": "verified",
+    "note": "FAITHFUL-TRIVIAL — `lem:degree-profile-fibres` is stipulated, not proved: `def:boundary-degree-profile` declares all response states fibrewise over d_∂ and `def:target-complete-quotient` makes profile preservation clause (a), so the paper's five-line proof just unfolds it. Lean carries it as the `profile_eq` field of `Response.TargetComplete` and the `fibrewise` field of `DeclaredQuotient`, with `profile_ne_not_targetComplete` (Response.lean:52) the one-step projection. The field is genuinely consumed — it closes the profile-mismatch disjunct of `SparseSurplusExit.targetDefect` at NamedSurplusExits.lean:123, builds `TargetCompleteAt` at SpineRows.lean:1576, and drives `AttemptedQuotient.route`'s profile test. On the spine the operative use is the first clause of `ReplacementSupport`, `replacement.boundaryDegreeProfile = piece.boundaryDegreeProfile`."
    },
    "12": {
     "lean": "verified",
