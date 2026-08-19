@@ -502,9 +502,9 @@
   },
   "51": {
    "producer": "`remainderEntropyDichotomy` (SpineRows.lean:1806), `.left` arm",
-   "fidelity": "ABSENT",
-   "fidelity_note": "`lem:translates-independent` has no declaration; `prop:two-budget` branch (b) is not formalized.",
-   "complete": "N/A",
+   "fidelity": "FAITHFUL-TRIVIAL",
+   "fidelity_note": "A branch-arm box whose content is `prop:two-budget` (a); the paper's proof of the arm is one sentence \u2014 \u201cThe condition \u03b7(R) \u2265 (1/10)log\u2082n and its negation partition all remainders.\u201d The key is that display in cleared integer form and is the sole `Requires` of [52]. The three-way split collapses by the paper's own `rem:positive-fraction` and `rem:closure-robust`, and structurally because `forcedCurvatureCost` is on the ledger *before* the split, on both arms \u2014 so routing the low arm to Residual C drops nothing.",
+   "complete": "YES",
    "local": "YES",
    "api": "OK",
    "difference": "`lowEntropyLargeBudgetRow` routes the entire low-entropy arm to Residual C, collapsing the manuscript's three-way split into two.",
@@ -762,8 +762,8 @@
   },
   "77": {
    "producer": "`selectedTypeBRoute8Continuation` (Assembly.lean:1798)",
-   "fidelity": "ABSENT",
-   "fidelity_note": "Commits no key and states no proposition; the body after one row-run is `exact selectedLargeBudgetPressureCensus killed`.",
+   "fidelity": "PLUMBING",
+   "fidelity_note": "The manuscript's Detailed dependency table assigns [77] no row and no label \u2014 it is a cross-figure continuation box like [63], [64], [109], [20], [177]. Lean renders it as a handoff that runs [76]'s row and passes the residual on, which is the correct shape. Its tail reaches the undefined `selectedLargeBudgetPressureCensus`, but that gap belongs to [123].",
    "complete": "NO: `selectedLargeBudgetPressureCensus`",
    "local": "N/A",
    "api": "OK",
@@ -868,7 +868,8 @@
    "local": "N/A",
    "api": "N/A",
    "difference": "Genuinely absent, not an annotation gap. The chain runs [86]\u2192[88] directly; nothing downstream needs the bound, so nothing is unsound.",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": false,
+   "blocked_by": "nothing \u2014 every consumer traced; the one citation is in the resilience appendix, which itself says \u201cit does not by itself close that residual\u201d. A paper-side orientation remark, not a gap in the argument."
   },
   "88": {
    "producer": "`typeAReceiverRoutingRow` (SpineRows.lean:3973)",
@@ -1152,8 +1153,8 @@
   },
   "116": {
    "producer": "`route8SmallCoreCollapseRow` (SpineRows.lean:4626)",
-   "fidelity": "ABSENT",
-   "fidelity_note": "The manuscript's conclusion is \u201cone of exits (4)\u2013(7) occurs\u201d; the Lean formula contains no reference to any exit.",
+   "fidelity": "SURROGATE-TRIVIAL",
+   "fidelity_note": "The cut-parity mechanism is genuinely formalized, but the statement stops one step short: `Alternatives` is a caller-supplied arbitrary `Prop` gated behind a `minimality` hypothesis that `Route8.PresentedEntry` has no field to supply, and both consumers discard it. Not a faithful schema \u2014 `def:typeA-trace-basin` stipulates the (a)\u2013(d) \u2194 exits (4)\u2013(7) dictionary in the definition itself, and the exits exist in Lean, so the consequent was expressible. Consequence: because \u03b1 \u2265 2 is never established, \u201ctwo-support\u201d in Lean means few private carriers, not the manuscript's two essential incidences.",
    "complete": "YES",
    "local": "NO",
    "api": "OK",
@@ -1238,7 +1239,8 @@
    "local": "NO",
    "api": "N/A",
    "difference": "Missing: instantiate `Route8.terminalTwoCarrierNoGo` at the selected census entry. Every ingredient is proved; only the construction and wiring are absent.",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": false,
+   "blocked_by": "`selectedRouteEightTrueTwoCarrierEntry` (Assembly.lean:1757, 1783). The would-be producing chain is also degenerate: one conjunct is an unconditional theorem and the sibling arm is its pointwise negation."
   },
   "125": {
    "producer": "`selectedSparseSurplusSurvivor` (Assembly.lean:151); `sparseSurplusSurvivorRow` (HomogeneousBottleneckRows.lean:195)",
@@ -1462,9 +1464,9 @@
   },
   "147": {
    "producer": "\u2014 (no kernel-clean declaration)",
-   "fidelity": "ABSENT",
-   "fidelity_note": "No declaration carries the route-8 private-incidence collision closure; the \u03b8<1/78 arm re-routes `K .coldRoute8Below` into the [25]\u2192[55]\u2192[56] spine closure.",
-   "complete": "N/A",
+   "fidelity": "FAITHFUL-TRIVIAL",
+   "fidelity_note": "The re-routing is the manuscript's own treatment: \u201cIf \u03b8 < 1/78, then \u03c4(\u03b8) < 3/13 by def:cold-window-ledger; this is exactly the private-support inequality used in thm:large-budget-route8-only, so the route-8 branch closes\u201d (tex:7309). The Part XI caption says the *existing* inequality closes at [147]; there is no separate private-carrier argument to be missing. The conversion is not free \u2014 `route8RateFromColdBelowRow` discharges the boundary-incidence supply reading.",
+   "complete": "YES",
    "local": "N/A",
    "api": "N/A",
    "difference": "Covered only by the tainted umbrella.",
@@ -1658,7 +1660,8 @@
    "local": "N/A",
    "api": "N/A",
    "difference": "Missing: a `lexicographicProgress` extended to (vertexCount, edgeCount, \u03a6). Graph/Progress.lean carries only the first two.",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": false,
+   "blocked_by": "`selectedDenseSameSizeCanonicalSwap` (Assembly.lean:3493, 4269). `lexicographicProgress` carries only (vertexCount, edgeCount); the canonical-atom order `CanonicalPiece.Precedes` exists but is unused for \u03a6."
   },
   "167": {
    "producer": "\u2014 (no live declaration)",
@@ -1668,7 +1671,8 @@
    "local": "NO",
    "api": "N/A",
    "difference": "The manuscript's `survivors 13 40` instantiation is performed nowhere. `coldWindowStubStructureRow`'s doc comment mis-labels itself node [167].",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": false,
+   "blocked_by": "nothing by name \u2014 `TwoStrandEnumeration.lean` is real and `decide`-checked but imported only by the aggregate root; Assembly names it in a comment. Its own `three_zero_survives` shows the finite check cannot close the case alone, so it must compose with [168]."
   },
   "168": {
    "producer": "`coldWindowStubStructureRow` (ColdCorridorRows.lean:731)",
@@ -1718,7 +1722,8 @@
    "local": "NO",
    "api": "N/A",
    "difference": "Even a future producer cannot use `K .blockedBarrierOverlap` as-is: it is \u00ac(A \u2227 B) where the lemma needs \u00acA.",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": false,
+   "blocked_by": "`selectedBarrierOverlapSerialSystem` (Assembly.lean:3390). The input does not exist as data either: the key is the bare negation of [170], with no obstruction object attached."
   },
   "173": {
    "producer": "`exactCollisionDichotomy` (SpineRows.lean:2360)",
@@ -1788,7 +1793,8 @@
    "local": "N/A",
    "api": "N/A",
    "difference": "Entirely unimplemented. D_sp and \u2113_ret appear nowhere.",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": false,
+   "blocked_by": "`selectedSparsePairSerialSystem` (Assembly.lean:1420, 1446). Nothing between \u201c\u00acadditive\u201d and a `SerialSystem.System` exists."
   },
   "180": {
    "producer": "\u2014 (no live declaration)",
@@ -1798,13 +1804,15 @@
    "local": "NO",
    "api": "N/A",
    "difference": "Do not mistake `SerialSystemArithmetic.lean`'s docstring, which names [172] and [180], for coverage.",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": false,
+   "blocked_by": "`selectedSparsePairSerialSystem`. The \u2115 arithmetic `Spectrum.exists_pow_realized` is proved but unreachable \u2014 no `Spectrum` is built from a graph and `Realized` is never `HasCycleWithLength`. The periodic-response-class disjunct has no counterpart at all."
   }
  },
  "method": "Node -> manuscript label from the manuscript Detailed dependency table; label -> Spine.Key from the Holds branches; key -> producer from Produces manifests, rowManifest and Decision arms. Completeness is judged per producer, never per enclosing declaration.",
  "gates": {
   "fidelity": "Gate B: does the producer publish the manuscript statement",
   "complete": "does this node\u2019s own producer reach a referenced-but-undefined declaration",
-  "on_probed_closed_arm": "Arm closure is a MEASUREMENT, not a property of the node. A node's arm can pass through a declaration that is tainted by its OTHER arms, so declaration cleanliness cannot decide it; only a composed probe (the root-to-closure term with every sibling arm replaced by `trivial`, then `#print axioms`) can. Five such probes have been run \u2014 the closures at [23], [133], [138], [149] and Branch D ([36]\u2013[46], via `selectedSpineToLargeBudget`, which is itself kernel-clean so every arm inside it is stub-free) \u2014 covering these 68 nodes. Everything else marked `partial` has a finished producer whose arm simply has not been probed -- that is unmeasured, not failing."
+  "on_probed_closed_arm": "Arm closure is a MEASUREMENT, not a property of the node. A node's arm can pass through a declaration that is tainted by its OTHER arms, so declaration cleanliness cannot decide it; only a composed probe (the root-to-closure term with every sibling arm replaced by `trivial`, then `#print axioms`) can. Five such probes have been run \u2014 the closures at [23], [133], [138], [149] and Branch D ([36]\u2013[46], via `selectedSpineToLargeBudget`, which is itself kernel-clean so every arm inside it is stub-free) \u2014 covering these 68 nodes. Everything else marked `partial` has a finished producer whose arm simply has not been probed -- that is unmeasured, not failing.",
+  "blocked_by": "For an ABSENT node: what stands between the manuscript's content and the ledger. Distinguishes a step whose only route runs through a referenced-but-undefined declaration from a paper-side remark that nothing downstream consumes."
  }
 }

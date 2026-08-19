@@ -323,6 +323,24 @@ def test_a_node_that_states_nothing_claims_no_arm() -> None:
             assert states[node]["wired"] != "verified", node
 
 
+def test_every_absent_node_says_what_blocks_it() -> None:
+    """ABSENT is a verdict about the tree, so it must name what stands in the way.
+
+    It distinguishes a step whose only route runs through a referenced-but-undefined
+    declaration from a paper-side remark that nothing downstream consumes -- [87] is
+    the latter and must not read as a hole in the argument.
+    """
+    from lean_review import load_audit
+
+    audit = load_audit(REPO_ROOT)["nodes"]
+    states = ERDOS["review"]["nodes"]
+    for node, entry in audit.items():
+        if entry["fidelity"] == "ABSENT":
+            assert entry.get("blocked_by"), node
+            assert "Blocked by:" in states[node]["note"], node
+    assert audit["87"]["blocked_by"].startswith("nothing")
+
+
 def test_faithful_triviality_is_not_reported_as_a_defect() -> None:
     """A trivial proof is faithful when the paper's own step is immediate.
 

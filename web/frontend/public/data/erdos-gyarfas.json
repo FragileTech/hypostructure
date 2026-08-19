@@ -17618,12 +17618,12 @@
     "note": "FAITHFUL — `n^{|R|} ≤ |𝒢(R)|^d` is η ≥ (1/d)log₂n cleared of logarithm and division; arms are literal negations."
    },
    "51": {
-    "lean": "absent",
-    "kernel": "absent",
-    "wired": "absent",
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "verified",
     "local": "verified",
-    "fidelity": "absent",
-    "note": "ABSENT — `lem:translates-independent` has no declaration; `prop:two-budget` branch (b) is not formalized."
+    "fidelity": "verified",
+    "note": "FAITHFUL-TRIVIAL — A branch-arm box whose content is `prop:two-budget` (a); the paper's proof of the arm is one sentence — “The condition η(R) ≥ (1/10)log₂n and its negation partition all remainders.” The key is that display in cleared integer form and is the sole `Requires` of [52]. The three-way split collapses by the paper's own `rem:positive-fraction` and `rem:closure-robust`, and structurally because `forcedCurvatureCost` is on the ledger *before* the split, on both arms — so routing the low arm to Residual C drops nothing."
    },
    "52": {
     "lean": "verified",
@@ -17826,12 +17826,12 @@
     "note": "SURROGATE-TRIVIAL — `thm:branch-kill`'s proof is ~25 lines with an explicit slack ε and a four-way case analysis. The manuscript's step is the conclusion “no survivor”; the Lean fact re-asserts the two premises, i.e. the situation the theorem refutes. | API: ⚠ `largeBudgetRoute8ClosedRow` binds and discards both `branchKillClosed` and `typeBBridgeSublinear`"
    },
    "77": {
-    "lean": "absent",
+    "lean": "verified",
     "kernel": "absent",
     "wired": "absent",
     "local": "absent",
-    "fidelity": "absent",
-    "note": "ABSENT — Commits no key and states no proposition; the body after one row-run is `exact selectedLargeBudgetPressureCensus killed`."
+    "fidelity": "partial",
+    "note": "PLUMBING — The manuscript's Detailed dependency table assigns [77] no row and no label — it is a cross-figure continuation box like [63], [64], [109], [20], [177]. Lean renders it as a handoff that runs [76]'s row and passes the residual on, which is the correct shape. Its tail reaches the undefined `selectedLargeBudgetPressureCensus`, but that gap belongs to [123]."
    },
    "78": {
     "lean": "verified",
@@ -17911,7 +17911,7 @@
     "wired": "absent",
     "local": "absent",
     "fidelity": "absent",
-    "note": "ABSENT — No `Spine.Key` mentions diameter, BFS layering, or a cardinality bound on a Type A piece; `6142` occurs nowhere."
+    "note": "ABSENT — No `Spine.Key` mentions diameter, BFS layering, or a cardinality bound on a Type A piece; `6142` occurs nowhere. | Blocked by: nothing — every consumer traced; the one citation is in the resilience appendix, which itself says “it does not by itself close that residual”. A paper-side orientation remark, not a gap in the argument."
    },
    "88": {
     "lean": "verified",
@@ -18138,12 +18138,12 @@
     "note": "WEAKER — No dichotomy on `entry.alpha ≤ 1` is committed anywhere; what is committed is an implication schema whose consequent is a caller-supplied arbitrary `Alternatives : Prop`."
    },
    "116": {
-    "lean": "absent",
+    "lean": "verified",
     "kernel": "verified",
     "wired": "partial",
     "local": "absent",
-    "fidelity": "absent",
-    "note": "ABSENT — The manuscript's conclusion is “one of exits (4)–(7) occurs”; the Lean formula contains no reference to any exit."
+    "fidelity": "partial",
+    "note": "SURROGATE-TRIVIAL — The cut-parity mechanism is genuinely formalized, but the statement stops one step short: `Alternatives` is a caller-supplied arbitrary `Prop` gated behind a `minimality` hypothesis that `Route8.PresentedEntry` has no field to supply, and both consumers discard it. Not a faithful schema — `def:typeA-trace-basin` stipulates the (a)–(d) ↔ exits (4)–(7) dictionary in the definition itself, and the exits exist in Lean, so the consequent was expressible. Consequence: because α ≥ 2 is never established, “two-support” in Lean means few private carriers, not the manuscript's two essential incidences."
    },
    "117": {
     "lean": "verified",
@@ -18207,7 +18207,7 @@
     "wired": "absent",
     "local": "absent",
     "fidelity": "absent",
-    "note": "ABSENT — Both arms call `selectedRouteEightTrueTwoCarrierEntry`. The dead-code chain that would produce it is provably degenerate: one conjunct is a tautology and the sibling arm is its negation."
+    "note": "ABSENT — Both arms call `selectedRouteEightTrueTwoCarrierEntry`. The dead-code chain that would produce it is provably degenerate: one conjunct is a tautology and the sibling arm is its negation. | Blocked by: `selectedRouteEightTrueTwoCarrierEntry` (Assembly.lean:1757, 1783). The would-be producing chain is also degenerate: one conjunct is an unconditional theorem and the sibling arm is its pointwise negation."
    },
    "125": {
     "lean": "verified",
@@ -18386,12 +18386,12 @@
     "note": "FAITHFUL — At the registered values the arm is 234p < 3n − 109·T(n), i.e. p/n < 1/78 − o(1), with |∂R| ≤ 15p+σ_W and the Type B bridge mass made explicit."
    },
    "147": {
-    "lean": "absent",
-    "kernel": "absent",
-    "wired": "absent",
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
     "local": "absent",
-    "fidelity": "absent",
-    "note": "ABSENT — No declaration carries the route-8 private-incidence collision closure; the θ<1/78 arm re-routes `K .coldRoute8Below` into the [25]→[55]→[56] spine closure."
+    "fidelity": "verified",
+    "note": "FAITHFUL-TRIVIAL — The re-routing is the manuscript's own treatment: “If θ < 1/78, then τ(θ) < 3/13 by def:cold-window-ledger; this is exactly the private-support inequality used in thm:large-budget-route8-only, so the route-8 branch closes” (tex:7309). The Part XI caption says the *existing* inequality closes at [147]; there is no separate private-carrier argument to be missing. The conversion is not free — `route8RateFromColdBelowRow` discharges the boundary-incidence supply reading."
    },
    "148": {
     "lean": "verified",
@@ -18543,7 +18543,7 @@
     "wired": "absent",
     "local": "absent",
     "fidelity": "absent",
-    "note": "ABSENT — Q = E appears only as a case assumption; the case the manuscript actually closes is punted to an undefined producer."
+    "note": "ABSENT — Q = E appears only as a case assumption; the case the manuscript actually closes is punted to an undefined producer. | Blocked by: `selectedDenseSameSizeCanonicalSwap` (Assembly.lean:3493, 4269). `lexicographicProgress` carries only (vertexCount, edgeCount); the canonical-atom order `CanonicalPiece.Precedes` exists but is unused for Φ."
    },
    "167": {
     "lean": "absent",
@@ -18551,7 +18551,7 @@
     "wired": "absent",
     "local": "absent",
     "fidelity": "absent",
-    "note": "ABSENT — `TwoStrandEnumeration.lean` exists and is `decide`-checked but is imported only by the aggregate root; no Strategy file, no key, no Assembly declaration mentions it."
+    "note": "ABSENT — `TwoStrandEnumeration.lean` exists and is `decide`-checked but is imported only by the aggregate root; no Strategy file, no key, no Assembly declaration mentions it. | Blocked by: nothing by name — `TwoStrandEnumeration.lean` is real and `decide`-checked but imported only by the aggregate root; Assembly names it in a comment. Its own `three_zero_survives` shows the finite check cannot close the case alone, so it must compose with [168]."
    },
    "168": {
     "lean": "verified",
@@ -18591,7 +18591,7 @@
     "wired": "absent",
     "local": "absent",
     "fidelity": "absent",
-    "note": "ABSENT — Discharged by an undefined producer. `SerialSystemArithmetic.lean` is imported only by the aggregate root; `BarrierOverlapSystem.lean` defines no obstruction and no uncrossing."
+    "note": "ABSENT — Discharged by an undefined producer. `SerialSystemArithmetic.lean` is imported only by the aggregate root; `BarrierOverlapSystem.lean` defines no obstruction and no uncrossing. | Blocked by: `selectedBarrierOverlapSerialSystem` (Assembly.lean:3390). The input does not exist as data either: the key is the bare negation of [170], with no obstruction object attached."
    },
    "173": {
     "lean": "verified",
@@ -18647,7 +18647,7 @@
     "wired": "absent",
     "local": "absent",
     "fidelity": "absent",
-    "note": "ABSENT — No key, no row, no `Produces` manifest mentions a pair serial system. `SerialSystem.Spectrum` is deliberately graph-free and never instantiated."
+    "note": "ABSENT — No key, no row, no `Produces` manifest mentions a pair serial system. `SerialSystem.Spectrum` is deliberately graph-free and never instantiated. | Blocked by: `selectedSparsePairSerialSystem` (Assembly.lean:1420, 1446). Nothing between “¬additive” and a `SerialSystem.System` exists."
    },
    "180": {
     "lean": "absent",
@@ -18655,7 +18655,7 @@
     "wired": "absent",
     "local": "absent",
     "fidelity": "absent",
-    "note": "ABSENT — The ℕ arithmetic core `Spectrum.exists_pow_realized` is proved, but no `Spectrum` is ever constructed from a graph, `ScaleSpanning` is never discharged, and `S.Realized` is never connected to the target."
+    "note": "ABSENT — The ℕ arithmetic core `Spectrum.exists_pow_realized` is proved, but no `Spectrum` is ever constructed from a graph, `ScaleSpanning` is never discharged, and `S.Realized` is never connected to the target. | Blocked by: `selectedSparsePairSerialSystem`. The ℕ arithmetic `Spectrum.exists_pow_realized` is proved but unreachable — no `Spectrum` is built from a graph and `Realized` is never `HasCycleWithLength`. The periodic-response-class disjunct has no counterpart at all."
    }
   }
  }

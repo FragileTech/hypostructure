@@ -98,6 +98,8 @@ def build_review(repo_root: Path) -> dict | None:
             "fidelity": _state(fidelity in _FAITHFUL, partial=fidelity in _PARTIAL),
             "note": f"{fidelity} — {entry['fidelity_note']}",
         }
+        if entry.get("blocked_by"):
+            row["note"] += f" | Blocked by: {entry['blocked_by']}"
         if not api.startswith(("OK", "N/A")):
             row["note"] += f" | API: {api}"
         nodes[str(number)] = row
