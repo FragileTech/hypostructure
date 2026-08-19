@@ -472,8 +472,8 @@
   },
   "48": {
    "producer": "`forcedCurvatureCostRow` (SpineRows.lean:1746)",
-   "fidelity": "WEAKER",
-   "fidelity_note": "Only the K_win half; the K = 5.89262883286\u2026 high-entropy second display of `cor:forced-curvature-cost` has no counterpart.",
+   "fidelity": "FAITHFUL",
+   "fidelity_note": "Re-checked against the manuscript's proof and the control flow. `cor:forced-curvature-cost`'s second display, K = c_\u03a9\u00b7\u03c9 = 5.89262883286\u2026, is genuinely absent \u2014 but it is dispensable for the argument Lean runs. [54]'s yes arm terminates in `False` (Assembly.lean:4014) and its no arm is Residual C; dropping the `2^(c_\u03a9\u00b7r_\u03a9)` factor only shrinks `jointPackageDemand`, so the yes arm is entered less often and every diverted object lands on `K .largeBudgetResidual`, which `rem:closure-robust` states is closed at K = 0. The K_win half that Lean does carry is the one the closure uses. What is missing is the paper's displayed arithmetic \u2014 K, \u0398(n), 1.4, 116.808581006 \u2014 which belongs to `eq:entropy-cap`'s numerical presentation, not to the closure. Same category as the absent decimals at [24] and [30].",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
