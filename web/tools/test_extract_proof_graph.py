@@ -379,7 +379,7 @@ def test_erdos_dense_packing_residual_is_part_xii() -> None:
     assert arrows[("160", "162")]["branch"] == "no"
     assert ("162", "163") in arrows and ("162", "164") in arrows
     assert arrows[("161", "25")]["kind"] == "continuation"
-    # The neutral germ [163]: replacement route and two-strand route.
+    # The neutral configuration [163]: replacement route and two-strand route.
     assert arrows[("163", "165")]["branch"] == "no"
     assert arrows[("163", "167")]["branch"] == "yes"
     assert arrows[("165", "166")]["kind"] == "flow"
@@ -388,7 +388,7 @@ def test_erdos_dense_packing_residual_is_part_xii() -> None:
     assert arrows[("170", "171")]["branch"] == "yes"
     assert arrows[("170", "172")]["branch"] == "no"
     assert arrows[("167", "168")]["branch"] == "survives"
-    # Part XII redraws the dyadic cycle [155] of Part XI; it is one node.
+    # Part XII redraws the power-of-two cycle [155] of Part XI; it is one node.
     assert arrows[("167", "155")]["branch"] == "closed"
     assert by_id["155"]["group"] == "fig:proof-diagram-part-xi"
     assert sum(1 for node in ERDOS["nodes"] if node["id"] == "155") == 1

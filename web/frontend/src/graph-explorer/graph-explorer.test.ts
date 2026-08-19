@@ -317,14 +317,14 @@ describe("parseLatex", () => {
   });
 
   it("unwraps text-only formatting", () => {
-    expect(parseLatex("\\emph{dyadic-safe} paths")).toEqual([
-      { kind: "text", value: "dyadic-safe paths" },
+    expect(parseLatex("\\emph{target-safe} paths")).toEqual([
+      { kind: "text", value: "target-safe paths" },
     ]);
   });
 
   it("keeps the text of a coloured span and drops the colour", () => {
-    expect(parseLatex("germ; \\textcolor{red}{open node [163]}")).toEqual([
-      { kind: "text", value: "germ; open node [163]" },
+    expect(parseLatex("configuration; \\textcolor{red}{open node [163]}")).toEqual([
+      { kind: "text", value: "configuration; open node [163]" },
     ]);
     expect(parseLatex("\\textcolor{red}{[163] \\texttt{(neutral)}}", { nodes: true })).toEqual([
       { kind: "node", id: "163" },

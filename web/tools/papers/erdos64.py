@@ -6,14 +6,14 @@ from proof_graph import ChapterSpec, ProofSpec, TableSpec
 
 PART_TITLES = {
     "fig:proof-diagram-part-i": "Part I - Counterexample selection to the P13 packing",
-    "fig:proof-diagram-part-ii": "Part II - The remainder and its curvature rank",
+    "fig:proof-diagram-part-ii": "Part II - The remainder and its obstruction rank",
     "fig:proof-diagram-part-iii": "Part III - Branch D: rank-reducing dependence",
     "fig:proof-diagram-part-iv": "Part IV - Full rank and the two-budget split",
     "fig:proof-diagram-part-v": "Part V - Net charge and the Type A / Type B split",
     "fig:proof-diagram-part-vi": "Part VI - Type B fan analysis",
     "fig:proof-diagram-part-vii": "Part VII - Type B, degree-four centers",
     "fig:proof-diagram-part-viii": "Part VIII - Type A receiver ladder and exits 1-7",
-    "fig:proof-diagram-part-ix": "Part IX - Route-8 pressure descent",
+    "fig:proof-diagram-part-ix": "Part IX - Route-8 demand descent",
     "fig:proof-diagram-part-x": "Part X - Sparse surplus accounting",
     "fig:proof-diagram-part-xi": "Part XI - The hot/cold window interface",
     "fig:proof-diagram-part-xii": "Part XII - The dense-packing residual",
@@ -57,17 +57,17 @@ PART_SUMMARIES = {
     "fig:proof-diagram-part-ii": (
         "Measures the remainder. It is large, contains no cubic core of its own, and its "
         "deficiency is bounded by what the windows can supply. Counting the wedges it must "
-        "contain gives a lower bound on curvature, and the panel ends on the question the "
-        "next two turn on: whether that curvature has full rank."
+        "contain gives a lower bound on two-step obstruction, and the panel ends on the question the "
+        "next two turn on: whether that obstruction rank is full."
     ),
     "fig:proof-diagram-part-iii": (
-        "Takes the branch where curvature rank drops. A drop means some curvature test is "
+        "Takes the branch where obstruction rank drops. A drop means some obstruction test is "
         "redundant, and the redundancy has to be visible somewhere: in a quotient that is "
-        "defective, in an atom that compresses, or spread across a support. Each case "
+        "defective, in a boundaried piece that compresses, or in an enlarged support. Each case "
         "contradicts minimality or the replacement lemma, so the whole branch closes here."
     ),
     "fig:proof-diagram-part-iv": (
-        "Takes the complementary branch, where curvature has full rank and so costs the "
+        "Takes the complementary branch, where obstruction rank is full and so costs the "
         "remainder a definite amount. The argument then splits on how much entropy the "
         "remainder has: a low-entropy remainder is repetitive enough that the cost closes "
         "it under the entropy cap, while a high-entropy one survives into the large-budget "
@@ -76,7 +76,7 @@ PART_SUMMARIES = {
     "fig:proof-diagram-part-v": (
         "Localizes the surviving residual. The large-budget net cap is first put through "
         "the exact collision test: if it fails, the selected cold corridors were charged to "
-        "high-degree vertices, and restoring that charge either exhibits a genuine germ, "
+        "high-degree vertices, and restoring that charge either exhibits a genuine bounded configuration, "
         "closed by the cold-window and dense-residual routes, or supplies decorated handoff "
         "fan data to Type B. If it holds, the net charge is non-negative globally, so if the "
         "books are to fail they must fail somewhere in particular: a connected support of "
@@ -103,8 +103,8 @@ PART_SUMMARIES = {
     ),
     "fig:proof-diagram-part-ix": (
         "Closes route 8, the last way out. The burden it carries forces many basins, while "
-        "the private carriers each entry needs force few; the two bounds are incompatible "
-        "unless some entry has only two carriers. That case is exactly the one already "
+        "the private response supports each entry needs force few; the two bounds are incompatible "
+        "unless some entry has only two supports. That case is exactly the one already "
         "peeled away earlier, so it cannot occur here either."
     ),
     "fig:proof-diagram-part-x": (
@@ -115,12 +115,12 @@ PART_SUMMARIES = {
         "which is what puts the graph on the near-cubic spine. The two entropy counts are "
         "branch tests: when either fails, the pair-code unrealized residual is closed by "
         "structural accounting, a minimal overlap obstruction uncrossed into a serial demand "
-        "system whose increment arithmetic yields a dyadic hit or a periodic carrier."
+        "system whose increment arithmetic yields a power-of-two hit or a periodic response class."
     ),
     "fig:proof-diagram-part-xi": (
         "Handles the cold windows set aside at the hot/cold split. If the packing is sparse "
-        "enough the carrier inequality closes it; otherwise the hot failure forces a linear "
-        "family of cold windows, each contributing stub excess. Extracting bounded germs "
+        "enough the response-support inequality closes it; otherwise the hot failure forces a linear "
+        "family of cold windows, each contributing stub excess. Extracting bounded configurations "
         "from that excess leaves three shapes, and all three either produce the target cycle "
         "or compress."
     ),
@@ -131,11 +131,11 @@ PART_SUMMARIES = {
         "negative-net-charge collision with a deficiency cap in place of the density cap; "
         "otherwise the hot/cold pass is run again on the dense residual, and every closure "
         "of that pass fires as before. The all-cold arm closes by the remainder glue. The "
-        "neutral equal-length germ splits on whether its second strand is genuine: if not, "
+        "neutral equal-length configuration splits on whether its second strand is genuine: if not, "
         "swapping the canonical replacement in gives a same-size counterexample, so refined "
         "minimality forces the trivial neutral residual, which closes by compression when "
         "the conditional savings are additive and by the serial-system increment arithmetic "
-        "otherwise; if so, a finite two-strand check either finds a dyadic cycle or leaves a "
+        "otherwise; if so, a finite two-strand check either finds a power-of-two cycle or leaves a "
         "pair attached only at endpoints, which is not a selected interior half-edge."
     ),
 }
@@ -208,7 +208,7 @@ CHAPTER = ChapterSpec(
             outcome=4,
             sources=5,
         ),
-        # The carrier block (constraints 30-38) omits the Budget column.
+        # The response-support block (constraints 30-38) omits the Budget column.
         TableSpec(
             start=LEDGER_START,
             stop=LEDGER_STOP,

@@ -686,7 +686,7 @@ def _read_chapter(chapter: ChapterSpec, root: Path) -> dict[str, Any]:
 
     # A later panel may redraw a closure that lives in an earlier one, under the
     # same number and in the ordinary terminal style (Part XII of the
-    # Erdős–Gyárfás paper redraws the dyadic cycle [155] of Part XI). That is
+    # Erdős–Gyárfás paper redraws the power-of-two cycle [155] of Part XI). That is
     # the same step, not a second one: the first drawing keeps it and later
     # copies only supply endpoints for their panel's arrows.
     drawn: set[str] = set()

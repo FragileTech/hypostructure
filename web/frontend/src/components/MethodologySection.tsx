@@ -161,7 +161,7 @@ export const PROOF_MOVES: ProofMove[] = [
     origin: "minimal counterexample; representative / protrusion replacement",
     what: "Take the counterexample minimal under a well-founded order and use it in two disciplined ways: a deletion branch, when removing a piece keeps the hypotheses and shrinks the object, and a replacement branch, where context universality of the substitute is proved before sizes are compared.",
     eg: {
-      text: "A lexicographically minimal counterexample with no proper 3-core; boundaried atoms, the replacement lemma, and hereditary target-uncompressibility. In particular, no proper atom admits a target-complete compression.",
+      text: "A lexicographically minimal counterexample with no proper 3-core; boundaried pieces, the replacement lemma, and hereditary target-uncompressibility. In particular, no proper piece admits a target-complete compression.",
       steps: ["4", "8", "13", "14"],
     },
     ns: {
@@ -174,7 +174,7 @@ export const PROOF_MOVES: ProofMove[] = [
     origin: "Myhill–Nerode context equivalence",
     what: "A piece is typed by its target-relevant responses to every compatible outside context. Equal type licenses replacement; the first component on which two types differ is a defect and is routed as information.",
     eg: {
-      text: "Boundary degree profiles, context universality and the exact response profiles of atoms; the cold same-interface table, whose rows are indexed by profile, stubs, offsets and target response.",
+      text: "Boundary degree profiles, context universality and the exact response profiles of boundaried pieces; the cold same-interface table, whose rows are indexed by profile, stubs, offsets and target response.",
       steps: ["11", "12", "36", "38"],
     },
     ns: {
@@ -187,7 +187,7 @@ export const PROOF_MOVES: ProofMove[] = [
     origin: "discharging (four-colour architecture)",
     what: "Name the demands, the eligible payers, a canonical assignment with an explicit tie-break, and each payer's certified capacity, in that order. Summing the local obligations gives the global inequality.",
     eg: {
-      text: "The surplus-token ledger (blockers, capacity tokens, primitive carriers) and the Type A receiver discharging, in which each receiver's charge is its missing-port count less one quarter.",
+      text: "The surplus-token ledger (blockers, capacity tokens, primitive blocker supports) and the Type A receiver discharging, in which each receiver's charge is its missing-port count less one quarter.",
       steps: ["134", "136", "91"],
     },
     ns: {
@@ -225,7 +225,7 @@ export const PROOF_MOVES: ProofMove[] = [
     origin: "exchange / switching arguments",
     what: "Compare two structures with the same interface over a finite context generator. A context may realize the target or distinguish the structures. If neither occurs, replace the larger structure with the smaller one.",
     eg: {
-      text: "The cold bounded-germ trichotomy (hit-realized, hit-distinguished, or silent), together with the switch and theta germs of bounded increment.",
+      text: "The cold bounded-configuration trichotomy (hit-realized, hit-distinguished, or silent), together with the switch and theta configurations of bounded increment.",
       steps: ["154", "155", "156", "157"],
     },
     ns: {
@@ -238,7 +238,7 @@ export const PROOF_MOVES: ProofMove[] = [
     origin: "pigeonhole; the pumping lemma",
     what: "Along a long chain of finitely typed states some exact type repeats. Equal exact type lets the segment between be removed, which minimality forbids; different types yield a first distinguishing context.",
     eg: {
-      text: "Trace-basin profiles, cold corridors, periodic carriers and the same-interface table; on the entropy side, one dominant rooted type pumped into a linear family of independent translates.",
+      text: "Trace-basin profiles, cold corridors, periodic response classes and the same-interface table; on the entropy side, one dominant rooted type pumped into a linear family of independent translates.",
       steps: ["50", "51", "157"],
     },
     ns: {
@@ -325,7 +325,7 @@ export const PROOF_MOVES: ProofMove[] = [
     name: "Rank forcing",
     what: "Define a target-relative rank on the family of tests before any budget is spent. A rank drop is structure and is routed; on the full-rank branch the budget is charged once, on certified independent coordinates.",
     eg: {
-      text: "Curvature rank: full curvature rank is forced before entropy is charged, and rank drops are routed to target defect, proper compression or delocalization.",
+      text: "Obstruction rank: full two-step obstruction rank is forced before entropy is charged, and rank drops are routed to target defect, proper compression or support dependence.",
       steps: ["31", "32", "34", "47"],
     },
     ns: {
@@ -337,7 +337,7 @@ export const PROOF_MOVES: ProofMove[] = [
     name: "Whole-object exact types",
     what: "The degenerate case with no outside context: the closed type is computed as explicit finite data, and two whole objects are identified only on literal equality of that data.",
     eg: {
-      text: "Whole-graph exact response profiles in the no-silent-global-smearing branch.",
+      text: "Whole-graph exact response profiles in the whole-graph support-dependence branch.",
       steps: ["43", "45"],
     },
     ns: {
@@ -793,7 +793,7 @@ export function MethodologySection() {
                 proved separately. When demand exceeds capacity,
                 some payer is overloaded, and an overloaded class typically
                 yields a homogeneous family, a matching, a star or a chain. Thus
-                quantitative pressure is converted back into structure, which
+                quantitative load is converted back into structure, which
                 is exactly what one wants.
               </p>
               <p>
@@ -1315,7 +1315,7 @@ export function MethodologySection() {
               budgets in entropy and surplus, the PDE proof in scale-collapse
               cost and retained mass; one side classifies pieces by 399 window
               labels, the other by ten residual strata and a four-row exit
-              ledger; one compresses by replacing an atom, the other by passing
+              ledger; one compresses by replacing a boundaried piece, the other by passing
               to a limit and returning along an ancestry map. In both cases the
               proof tests the target locally, uses minimality, compares by
               type, charges, takes the first failure, pumps, extracts from an
@@ -1628,7 +1628,7 @@ export function MethodologySection() {
                     invariant and adds “the hot cap failed” as a fact. This
                     forces a linear amount of cold mass, then a stub excess,
                     then a first-failure extraction along cold corridors, and
-                    finally the bounded-germ trichotomy of hit, defect or
+                    finally the bounded-configuration trichotomy of hit, defect or
                     compression, with a finite same-interface table for the
                     ties. The cold branch has no terminal residual.
                   </p>
@@ -1740,7 +1740,7 @@ export function MethodologySection() {
                 <dd>
                   The positive invariants admitted by the both-sides test and
                   accumulated along the invariant ladder, including full
-                  curvature rank, the near-cubic spine estimate, and a retained active core.
+                  obstruction rank, the near-cubic spine estimate, and a retained active core.
                 </dd>
               </div>
               <div>

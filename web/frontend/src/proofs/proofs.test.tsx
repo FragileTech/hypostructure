@@ -208,7 +208,7 @@ describe("the Erdos-Gyarfas terminal at [124]", () => {
   });
 });
 
-describe("the Erdos-Gyarfas neutral germ at [163]", () => {
+describe("the Erdos-Gyarfas neutral configuration at [163]", () => {
   it("is now a branch test in Part XII, and the paper leaves no outcome open", () => {
     const node = ERDOS.nodes.find((candidate) => candidate.id === "163")!;
     expect(node.open).toBeUndefined();
