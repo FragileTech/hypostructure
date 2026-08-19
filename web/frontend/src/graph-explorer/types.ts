@@ -212,7 +212,9 @@ export interface ChapterSource {
  *   referenced-but-undefined declaration. Judged per producer: a large
  *   declaration runs many branch arms, and an unfinished sibling arm says
  *   nothing about this step.
- * - `wired` — the arm through this step was probed stub-free end to end.
+ * - `wired` — the arm through this step was *probed* stub-free end to end. A
+ *   measurement, not a property: an arm can pass through a declaration that is
+ *   unfinished on its other arms, so `partial` means unprobed, not failing.
  * - `local` — the proposition is about the literal active residual rather
  *   than a detached universal.
  * - `fidelity` — the producer publishes the *manuscript's* statement. This is

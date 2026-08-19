@@ -17252,7 +17252,7 @@
    "5": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL — `shiftedAcceptedSet` is definitionally `MersenneSet`; j≥2 bound present."
@@ -17260,7 +17260,7 @@
    "6": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL-TRIVIAL — The paper resolves this diamond in one sentence with no case split — the standing counterexample condition already gives R_e(G) ∩ Mers = ∅ at every oriented edge, so the branch table records it as “Closed by lem:return-equivalence”, not decided. Refuting the arm uniformly over all darts is stronger than deciding it; a `Decision` here would be the divergence."
@@ -17268,7 +17268,7 @@
    "7": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "absent",
     "fidelity": "verified",
     "note": "FAITHFUL-TRIVIAL — An uninhabited terminal the paper refutes rather than constructs at, and which the manuscript itself files under “Trivial / external-input leaves … Pure bookkeeping … definitional” (tex:17262, 17455). Lean closes it by the same cycle-restoration construction in contrapositive position: `not_hasCycleWithLength_iff_returnLengthSets_disjoint` rewrites through `hasCycleWithLength_iff_hasEdgeRootedReturn` before taking `.mp`."
@@ -17276,7 +17276,7 @@
    "8": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL — `¬(3 ≤ minDegree H)` over ℕ is δ(H)≤2; admits any lex-decreasing embedded copy, so marginally stronger."
@@ -17284,7 +17284,7 @@
    "9": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL — `∀ dart, deg fst = threshold ∨ deg snd = threshold`."
@@ -17292,7 +17292,7 @@
    "10": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL — `threshold < degree` is degree ≥ 4 at threshold 3."
@@ -17300,7 +17300,7 @@
    "11": {
     "lean": "absent",
     "kernel": "absent",
-    "wired": "absent",
+    "wired": "verified",
     "local": "absent",
     "fidelity": "absent",
     "note": "ABSENT — no `Holds` branch states `lem:degree-profile-fibres`; the only realization is the detached `Graph.Response.profile_ne_not_targetComplete` (Response.lean:52–60), consumed by no row."
@@ -17308,7 +17308,7 @@
    "12": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "absent",
     "fidelity": "verified",
     "note": "FAITHFUL-TRIVIAL — `lem:context-universality`'s proof is two sentences opening “This is precisely the meaning of target-completeness”; the de Morgan step is the paper's step."
@@ -17316,7 +17316,7 @@
    "13": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "STRONGER — Verified sound: hypothesis (iii) is redundant given the paper's own `profile_T` definition, and (iv)/(v) are replaced by the derived forms the manuscript's proof actually uses (tex:5873, 5878). The saving lands at the downstream construction sites — `BoundedGerm` and the same-interface rows carry no no-dyadic-cycle field, an obligation the framework has no machinery to state. Doc comment SpineRows.lean:290-303 wrongly says “five hypotheses”; there are four."
@@ -17324,7 +17324,7 @@
    "14": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL — first assertion of `cor:uncompressible`, inheriting [13]'s strengthening."
@@ -17332,7 +17332,7 @@
    "15": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL — `0 < windowPackingNumber 13`, i.e. `cor:p13-exists`."
@@ -17340,7 +17340,7 @@
    "16": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL — hypotheses are exactly `3 ≤ minDegree` and `InducedPathFree object 13`; conclusion's length predicate is the manuscript's Pow. Threshold bridge discharged at 3 ≤ 3, no slack."
@@ -17348,7 +17348,7 @@
    "17": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL — `windowPackingNumber` is the manuscript's p₁₃; maximality derived from attainment, not assumed."
@@ -17356,7 +17356,7 @@
    "18": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "absent",
     "fidelity": "verified",
     "note": "FAITHFUL-TRIVIAL — The trivial conjuncts re-export the manuscript's own definitions of C_s and Ω₂, for which the paper proves nothing; the 399 count it does prove is a real kernel `decide`."
@@ -17364,7 +17364,7 @@
    "19": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL — σ(G) > C_sp·⌈√n⌉ vs ≤, on the object's own handshake quantities; arms exhaustive and exclusive."
@@ -17380,7 +17380,7 @@
    "21": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "partial",
     "note": "WEAKER — `c_Ω = log₂(543958/111286)` is never asserted anywhere in Lean; `data.curvatureCost` is the integer `binaryRowRateFloor`. The enumeration fact's final clause is `logb(X/Y) = logb(X/Y)`. `windowPackageSeparated` and `skeletonDominates` are faithful and load-bearing."
@@ -17388,7 +17388,7 @@
    "22": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "absent",
     "fidelity": "partial",
     "note": "WEAKER — `WindowFamilyRealized` (SpineVocabulary.lean:1634) is trivially satisfied by `State := Skeleton, stateOf := id`, collapsing to a counting comparison; the manuscript's injectivity/independence claim is absent. `hotColdPartitionRow` has `Requires := []` and its proof is `Classical.choose_spec`, so it is true of every finite object."
@@ -18212,7 +18212,7 @@
    "125": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL — All five manuscript exits (a)–(e) are the five constructors of `SparseSurplusExit`, each refuted from `K .selection` and `K .replacementExclusion`."
@@ -18220,7 +18220,7 @@
    "126": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL-TRIVIAL — `lem:sparse-slack-surplus`'s own proof is a three-line substitution of the abbreviation λ. σ = n−6−2λ is the same equation after substitution, not dropped content."
@@ -18228,7 +18228,7 @@
    "127": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL — |𝒫_exc| = σ(G) plus the degree conditions rendered as `threshold < d`, `d = threshold`, `|shoulders| = threshold − 1`."
@@ -18236,7 +18236,7 @@
    "128": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "partial",
     "note": "WEAKER — Clauses (a)–(d) are faithful with non-trivial witnesses, but canonicity is not modelled: Lean asserts only `Nonempty`, and `pairResponseActivation` rebuilds supports with `Classical.choice`."
@@ -18244,7 +18244,7 @@
    "129": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "partial",
     "note": "SURROGATE-TRIVIAL — The manuscript earns E_spine ≤ C_E·n from the window and high-entropy packages, conditionally. Lean fabricates B₀(n) empty-support coordinates so the deficit is identically 0."
@@ -18252,7 +18252,7 @@
    "130": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL — Faithful to the hypothesis dichotomy of `lem:sparse-pair-dependence-exit`, decided by excluded middle on survival of ℛ_Π under functional declared quotients."
@@ -18260,7 +18260,7 @@
    "131": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "partial",
     "fidelity": "partial",
     "note": "WEAKER — None of the annotated facts is the diagram's inequality. `Graph.entropySandwich` and `freeCount_le_of_sandwich` exist but are invoked by no row. `freePairEntropyDichotomy` case-splits on the sandwich; the manuscript derives it."
@@ -18268,7 +18268,7 @@
    "132": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "partial",
     "note": "WEAKER — In `∃ pair ∈ pairs, P` the binder `pair` does not occur free in `P`; the statement is `pairs.Nonempty ∧ (a blocker exists somewhere)`, not “π has a blocker”. The proof picks an arbitrary member."
@@ -18284,7 +18284,7 @@
    "134": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "partial",
     "note": "SURROGATE-TRIVIAL — `def:canonical-blocker-ledger` ranges over pairs of distinct demands; `DemandActivation.blockers` unions over `pair ×ˢ pair` with no distinctness filter, so the diagonal makes every pair blocked and Π_free empty."
@@ -18292,7 +18292,7 @@
    "135": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL — `e(R,W) + 24p + 2e_×(W) = 39p + σ_W` is `lem:exact-window-join-identity` exactly; also carries `m + 2 ≤ (δ−1)n` as an extra conjunct."
@@ -18300,7 +18300,7 @@
    "136": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL — Supply identity, token ledger and role-fibre refinement all match their manuscript labels in subtraction-free form."
@@ -18308,7 +18308,7 @@
    "137": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "absent",
     "fidelity": "partial",
     "note": "DIVERGENT — This is a row producing the charge partition, not the coupled-excess decision the diagram states; its content is the hypothesis-free `Graph.roleFibrePartitionStatement` (ObjectCapacityLedger.lean:772), true of every object."
@@ -18372,7 +18372,7 @@
    "145": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "partial",
     "note": "PLUMBING — A diagram continuation box; both labels are definitions. The hot/cold split is formalized once, at [22]."
@@ -18380,7 +18380,7 @@
    "146": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL — At the registered values the arm is 234p < 3n − 109·T(n), i.e. p/n < 1/78 − o(1), with |∂R| ≤ 15p+σ_W and the Type B bridge mass made explicit."
@@ -18396,7 +18396,7 @@
    "148": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL — 2·118·⌊log₂n⌋·|𝒫_hot| ≤ (⌊log₂n⌋+1)(3n + C_sp⌈√n⌉) is c_hot·|𝒫_hot|·log₂n ≤ (3/2)n·log₂n + o(n log n) cleared of division."
@@ -18476,7 +18476,7 @@
    "158": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "partial",
     "note": "WEAKER — The existential places no condition on `stateOf`, so it collapses to a pure counting comparison. `def:window-realization-test` requires an assignment of target-complete states; that clause is absent."

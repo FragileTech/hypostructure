@@ -76,8 +76,13 @@ def build_review(repo_root: Path) -> dict | None:
             # This node's own producer is finished.
             "kernel": _state(complete.startswith("YES"), partial=complete.startswith("YES ")),
             # The arm through this node was probed stub-free end to end.
+            # This is a measurement, not a property: an arm can pass through a
+            # declaration that is tainted by its *other* arms, so declaration
+            # cleanliness cannot decide it -- only a composed probe can. Nodes
+            # marked partial have a finished producer on an unprobed arm; that
+            # is unmeasured, not failing.
             "wired": _state(
-                entry["probed_closed_arm"],
+                entry["on_probed_closed_arm"],
                 partial=complete.startswith("YES"),
             ),
             # The proposition is about the literal active residual.

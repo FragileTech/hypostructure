@@ -8,7 +8,7 @@
    "local": "N/A",
    "api": "OK",
    "difference": "`EGTarget` re-declared at Assembly.lean:36\u201338, duplicating the unused `Problem.target`.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "2": {
    "producer": "`target_closure_of_selectedLedgerClosure` (Assembly.lean:1226)",
@@ -18,7 +18,7 @@
    "local": "N/A",
    "api": "OK",
    "difference": "Not a ledger dichotomy; must not be read as one.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "3": {
    "producer": "`target_closure_of_selectedLedgerClosure` (Assembly.lean:1226)",
@@ -28,7 +28,7 @@
    "local": "N/A",
    "api": "OK",
    "difference": "\u2014",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "4": {
    "producer": "`openSelectedCounterexample` (Assembly.lean:1196)",
@@ -38,7 +38,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "\u03b4(G)\u22653 is not in the fact; it is carried by `ProblemInput.baseline` on the residual.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "5": {
    "producer": "`returnAvoidanceRow` (SpineRows.lean:110), run at Assembly.lean:73\u201379",
@@ -48,7 +48,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Transports node [4]'s fact through a framework iff; proves nothing new.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "6": {
    "producer": "`returnAvoidanceRow` (SpineRows.lean:110), run at Assembly.lean:73\u201379",
@@ -58,7 +58,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Diagram diamond is structurally collapsed in Lean.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "7": {
    "producer": "`returnAvoidanceRow` (SpineRows.lean:110); the construction is `hasCycleWithLength_iff_hasEdgeRootedReturn` (RootedReturn.lean:317)",
@@ -68,7 +68,7 @@
    "local": "N/A",
    "api": "N/A",
    "difference": "Proved in the framework, never consumed.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "8": {
    "producer": "`noProperBaselineRow` (SpineRows.lean:147), run at Assembly.lean:80\u201385",
@@ -78,7 +78,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Subgraph is embedded, not a literal subset; injectivity discharged.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "9": {
    "producer": "`deletionCriticalityRow` (SpineRows.lean:192)",
@@ -88,7 +88,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Derived from `K .noProperBaseline`, not from the manuscript's edge-minimality step.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "10": {
    "producer": "`deletionCriticalityRow` (SpineRows.lean:192), key `.slackIndependent`",
@@ -98,7 +98,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "[9] and [10] are one row producing two keys; they cannot fail independently.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "11": {
    "producer": "\u2014 (no live declaration)",
@@ -108,7 +108,7 @@
    "local": "NO",
    "api": "N/A",
    "difference": "Node contributes no proposition to any declaration's type.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "12": {
    "producer": "`interfaceReplacementRow` (SpineRows.lean:393), 2nd conjunct of `K .uncompressible`",
@@ -118,7 +118,7 @@
    "local": "NO",
    "api": "OK",
    "difference": "Second coverer `selectedRankDropCloses` (Assembly.lean:1528, clean) is [36]/[37] material, not this lemma.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "13": {
    "producer": "`replacementExclusionRow` (SpineRows.lean:305)",
@@ -128,7 +128,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Pieces indexed by connected vertex supports rather than abstract T-boundaried decompositions.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "14": {
    "producer": "`interfaceReplacementRow` (SpineRows.lean:393), 1st conjunct",
@@ -138,7 +138,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "`K .uncompressible` bundles this substantive clause with the vacuous [12] clause under one key.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "15": {
    "producer": "`obstructionPackingRow` (SpineRows.lean:446)",
@@ -148,7 +148,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Not a `Decision.run`; the branch is a `by_contra` inside the executor (SpineRows.lean:479\u2013487).",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "16": {
    "producer": "`axiom p13Free_hasPowerOfTwoCycle` (WindowAlgebra.lean:45), via `spineData.freeForcesTarget`",
@@ -158,7 +158,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The single declared axiom of the development. Its presence downstream is correct, not a defect.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "17": {
    "producer": "`obstructionPackingRow` (SpineRows.lean:446)",
@@ -168,7 +168,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Establishes only the P\u2081\u2083-free half of `lem:remainder-empty-internal-3-core`; the empty-internal-3-core half is [27] material.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "18": {
    "producer": "`localAlgebraRow` (SpineRows.lean:498)",
@@ -178,7 +178,7 @@
    "local": "NO",
    "api": "OK",
    "difference": "`Holds .localAlgebra` takes `_object` and ignores it: a detached universal statement.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "19": {
    "producer": "`selectedSurplusDichotomy` (Assembly.lean:127)",
@@ -188,7 +188,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Carries 31 manuscript labels; the Lean node establishes only the split. All routing content is on the [20] arm, whose declaration is tainted.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "20": {
    "producer": "`selectedSurplusDichotomy` (Assembly.lean:127); `selectedSparseSurplusSurvivor` (:151)",
@@ -198,7 +198,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "What is missing is the closure of the branch, not the node.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "21": {
    "producer": "`selectedNearCubicNode21` (Assembly.lean:1262)",
@@ -208,7 +208,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "`barrierEnumerationRow` and `skeletonDominatesRow` have `Requires := []` and are true of every object.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "22": {
    "producer": "`selectedBarrierDichotomy` (Assembly.lean:681)",
@@ -218,7 +218,7 @@
    "local": "NO (in substance)",
    "api": "OK",
    "difference": "The hot/cold split carries no information about the residual; \ud835\udcab_hot is defined as the maximal realized subfamily, so the question is answered by construction.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "23": {
    "producer": "`selectedBarrierOverflowCloses` (Assembly.lean:718)",
@@ -228,7 +228,7 @@
    "local": "NO",
    "api": "OK",
    "difference": "Doc comment claims this is `lem:independent-target-entropy` on the incoming residual. It is not; no such premise is consumed.",
-   "probed_closed_arm": true
+   "on_probed_closed_arm": true
   },
   "24": {
    "producer": "`selectedDensityBudget` (Assembly.lean:762)",
@@ -238,7 +238,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Only the window-only bound of `prop:p13-density` is on the ledger.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "25": {
    "producer": "`remainderNormalizationRow` (SpineRows.lean:868)",
@@ -248,7 +248,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Missing `(1\u221213\u03b8_win)n \u2212 o(n) \u2264 |R|`, derivable from `K .densityCap` but nowhere derived.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "26": {
    "producer": "`remainderNormalizationRow` (SpineRows.lean:868)",
@@ -258,7 +258,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "One fact covers [25] and [26]; they are not two independent obligations.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "27": {
    "producer": "`remainderNormalizationRow` (SpineRows.lean:868), 2nd conjunct",
@@ -268,7 +268,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "\u2014",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "28": {
    "producer": "`boundaryDemandRow` (SpineRows.lean:916)",
@@ -278,7 +278,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The definition is the faithful part; the accompanying inequality belongs to `lem:surplus-aware-window-stub`, a different label.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "29": {
    "producer": "`stubSupplyRow` (SpineRows.lean:963)",
@@ -288,7 +288,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The \u03c3_R form is not separately carried; a consumer must re-derive it.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "30": {
    "producer": "`wedgeSupplyRow` (SpineRows.lean:1036)",
@@ -298,7 +298,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Sharper high-entropy arm absent outright.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "31": {
    "producer": "`curvatureTargetRankRow` (SpineRows.lean:1114)",
@@ -308,7 +308,7 @@
    "local": "NO",
    "api": "OK",
    "difference": "Reads `K .remainderNormalized` and discards it. `def:target-rank`'s 2^k realization has no counterpart (the manuscript also only asserts it).",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "32": {
    "producer": "`targetRankCircuitRow` (SpineRows.lean:1174), `curvatureRankDichotomy` (:1249)",
@@ -318,7 +318,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Stricter than the diagram's `\u2212 o(W\u2082)`, which enlarges Branch D's obligation (safe).",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "33": {
    "producer": "`branchDependenceRow` (SpineRows.lean:1353)",
@@ -328,7 +328,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Clause (d) discharged degenerately (`supportData := family`).",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "34": {
    "producer": "`curvatureRankDichotomy` (SpineRows.lean:1249), right arm",
@@ -338,7 +338,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Produced by the dichotomy, not by `lem:full-rank`'s argument. Same fact as [47]; not two obligations.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "35": {
    "producer": "`branchDependenceRow` (SpineRows.lean:1353)",
@@ -348,7 +348,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Exhaustiveness comes from `by_cases`, so the geometric content is never established; [35] has no formal content beyond [33].",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "36": {
    "producer": "`contextValidityDichotomy` (SpineRows.lean:1439)",
@@ -358,7 +358,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Faithful to the manuscript, where case (i) is definitionally empty too. `lem:degree-profile-fibres` is likewise the `fibrewise` field, not a proved lemma.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "37": {
    "producer": "`closeImpossible` + `instImpossibleContextDefect` (BranchDClosure.lean:42\u201350)",
@@ -368,7 +368,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Siblings [39],[42],[46] carry real content; [37] alone does not.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "38": {
    "producer": "`atomCompressionDichotomy` (SpineRows.lean:1525)",
@@ -378,7 +378,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The manuscript's arbitrary proper piece C is instantiated as the entire remainder support; inclusion-minimality of the certificate support is dropped from the key.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "39": {
    "producer": "`closeIncompatible` + `instIncompatibleAtomCompression` (BranchDClosure.lean:56)",
@@ -388,7 +388,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Uses the one-way `ReplacementSupport`, correct per `lem:replacement`; not the two-way compression statement.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "40": {
    "producer": "`atomCompressionDichotomy` (SpineRows.lean:1525), `K .delocalizedSupport`",
@@ -398,7 +398,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Z is never proved connected anywhere.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "41": {
    "producer": "`delocalizationScopeDichotomy` (SpineRows.lean:1619)",
@@ -408,7 +408,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The scope test is on Z, but the replacement derived is at `quotient.support`.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "42": {
    "producer": "`closeIncompatible` + `instIncompatibleProperDelocalization` (BranchDClosure.lean:79)",
@@ -418,7 +418,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Not unsound (properness of Z implies properness of the certificate support), but `lem:proper-smearing` at Z is not what was formalized.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "43": {
    "producer": "`delocalizationScopeDichotomy` (SpineRows.lean:1619), `K .globalDelocalization`",
@@ -428,7 +428,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "This gap is what lets [45] be derived without ever using the Z = G clause.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "44": {
    "producer": "`repairIdentityRow` (SpineRows.lean:1693); `OneThreeRepair.Component.identity` (:169)",
@@ -438,7 +438,7 @@
    "local": "NO",
    "api": "OK",
    "difference": "Dead fact: the consumer `globalBarrierRow` discards it as `_repairIdentity` (SpineRows.lean:1725).",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "45": {
    "producer": "`globalBarrierRow` (SpineRows.lean:1710)",
@@ -448,7 +448,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Both representative clauses are structure fields of `DeclaredQuotient`: the representative is supplied by the definition, never constructed.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "46": {
    "producer": "`closeIncompatible` + `instIncompatibleGlobalBarrier` (BranchDClosure.lean:103)",
@@ -458,7 +458,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Weakness inherited from [43]/[45]: the closed case is never distinguished from the proper case, so [46] would close identically from any rank-reducing certificate.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "47": {
    "producer": "`curvatureRankDichotomy` (SpineRows.lean:1249), right arm",
@@ -468,7 +468,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Same fact as [34]; the two nodes are not separately witnessed in Lean.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "48": {
    "producer": "`forcedCurvatureCostRow` (SpineRows.lean:1746)",
@@ -478,7 +478,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Dead fact: the sole reader `remainderEntropyDichotomy` (SpineRows.lean:1824) binds it as `let _cost` and discards it.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "49": {
    "producer": "`Graph.remainderStateCount` (RemainderEntropy.lean:71); `Spine.remainderStates` (SpineVocabulary.lean:1550)",
@@ -488,7 +488,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "`lem:dominant-type` is absent entirely; no declaration resembles it.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "50": {
    "producer": "`remainderEntropyDichotomy` (SpineRows.lean:1806)",
@@ -498,7 +498,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Decided by excluded middle, so it establishes nothing about the graph beyond exhaustiveness.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "51": {
    "producer": "`remainderEntropyDichotomy` (SpineRows.lean:1806), `.left` arm",
@@ -508,7 +508,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "`lowEntropyLargeBudgetRow` routes the entire low-entropy arm to Residual C, collapsing the manuscript's three-way split into two.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "52": {
    "producer": "`entropyPackageRow` (SpineRows.lean:2283)",
@@ -518,7 +518,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Also divergent from the diagram: no \u03b8, no p\u2081\u2083-density, no 1.5\u00b7n\u00b7log\u2082n. Its own consumer discards it as `_packageDemand`.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "53": {
    "producer": "`entropyCapDichotomy` (SpineRows.lean:2318)",
@@ -528,7 +528,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The omission makes the yes arm harder to enter, which is routing-safe but is not the manuscript's \u03b8 > \u0398(n) test.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "54": {
    "producer": "`entropyCap_closes` (EntropyClosure.lean:85); `entropyCap_closes_of_allCold` (:113)",
@@ -538,7 +538,7 @@
    "local": "YES",
    "api": "FLAG \u2014 `entropyCap_closes` and friends are absent from `allowed-api.md` and it takes an `ExactLedger` argument; the catalog is demonstrably stale, so this is unresolved rather than a proven violation.",
    "difference": "[48]'s forced cost is not an input. Inside the clean declaration [54] does not always close: the non-retained arm is returned to the caller and only the tainted umbrella discharges it.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "55": {
    "producer": "`entropyCapDichotomy` no-arm; `lowEntropyLargeBudgetRow` (SpineRows.lean:1857)",
@@ -548,7 +548,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Merges the manuscript's branches (b) and (c). Whether `K .densityCap` is on the ledger at [55] on the \u03c4<1/4 path is unresolved.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "56": {
    "producer": "`netDeficiencyCapRow` (SpineRows.lean:1891)",
@@ -558,7 +558,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Produced three times, consumed zero times: its only other appearance is an unused `Has` binder at Assembly.lean:3610. The [56]\u2192[57] edge carries no data.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "57": {
    "producer": "`exactCollisionDichotomy` (SpineRows.lean:2360)",
@@ -568,7 +568,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "`K .netChargeLarge`, referenced at SpineAssembly.lean:128, is not a `Spine.Key` constructor at all.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "58": {
    "producer": "`netChargeLocalizationRow` (SpineRows.lean:2409)",
@@ -578,7 +578,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Unconditional (`Requires := []`), so it carries no branch information; its consumer discards it.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "59": {
    "producer": "`netChargeDichotomy` (SpineRows.lean:2437)",
@@ -588,7 +588,7 @@
    "local": "YES",
    "api": "\u26a0 `K .netChargeLocalization` bound as `_localization` and never used",
    "difference": "The yes arm is provably uninhabited on the incoming ledger.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "60": {
    "producer": "inlined arm, Assembly.lean:3783\u20133794",
@@ -598,7 +598,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "A duplicate `instIncompatibleNetChargeCapNonNegative` (SpineAssembly.lean:183) documents itself as node [60], but that file does not compile, is imported by nothing, and has no `.olean`.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "61": {
    "producer": "`negativeSupportRow` (SpineRows.lean:2486)",
@@ -608,7 +608,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The one place where `K .netChargeLocalization` is actually consumed.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "62": {
    "producer": "`typeSplitDichotomy` (SpineRows.lean:2528)",
@@ -618,7 +618,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The Type A arm is an existential over all packings and pieces, so its witness need not be the support [61] selected; the doc comment claims otherwise.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "63": {
    "producer": "`typeSplitDichotomy` (SpineRows.lean:2528), no arm",
@@ -628,7 +628,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Judge the header complete and the Part VIII expansion incomplete.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "64": {
    "producer": "`typeSplitDichotomy` (SpineRows.lean:2528), yes arm",
@@ -638,7 +638,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The [64]-entry Type B keys are a distinct family from the [66] decorated keys; merging them double-counts [65]\u2013[85].",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "65": {
    "producer": "`typeBDecoratedAssignedSupportRow` (SpineRows.lean:4430); `typeBAssignedSupportRow` (:2808)",
@@ -648,7 +648,7 @@
    "local": "NO",
    "api": "OK",
    "difference": "Produced on two lanes with two different propositions; the annotation names only one.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "66": {
    "producer": "`typeAExitSevenHandoffRow` (SpineRows.lean:4374)",
@@ -658,7 +658,7 @@
    "local": "NO",
    "api": "OK",
    "difference": "The [66] clause is a comment inside a different file's row; the annotated declaration produces a key the vocabulary labels node [108].",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "67": {
    "producer": "`highCentreNormalFormRow` (SpineRows.lean:2623); `cubicBaselineRow` (:2600)",
@@ -668,7 +668,7 @@
    "local": "NO",
    "api": "\u26a0 `cubicBaselineRow` declares `Requires := [K .selection]` and discards it",
    "difference": "Independence of high centres follows from clause (a) rather than being stated.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "68": {
    "producer": "`heavyCentreDichotomy` (SpineRows.lean:2668); `typeBFanDegreeDichotomy` (:2881)",
@@ -678,7 +678,7 @@
    "local": "NO",
    "api": "OK",
    "difference": "The two lanes commit different keys for the same diagram box.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "69": {
    "producer": "`heavyCentreLocalDichotomyRow` (SpineRows.lean:2751)",
@@ -688,7 +688,7 @@
    "local": "NO",
    "api": "OK",
    "difference": "One of the strongest nodes in the development: HighCentrePorts.lean matches the manuscript line for line.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "70": {
    "producer": "`fanCertificateCapRow` (SpineRows.lean:3053)",
@@ -698,7 +698,7 @@
    "local": "NO",
    "api": "OK",
    "difference": "Cleanest constant projection in the development. Says nothing at an unmarked centre, matching the manuscript's conditional form.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "71": {
    "producer": "`fanCertificateDichotomy` (SpineRows.lean:3093)",
@@ -708,7 +708,7 @@
    "local": "NO",
    "api": "OK",
    "difference": "Identical Lean decision to [80].",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "72": {
    "producer": "`directCycleDichotomy` (SpineRows.lean:3314); `b2AssignmentDichotomy` (:3380)",
@@ -718,7 +718,7 @@
    "local": "NO",
    "api": "\u26a0 `b2AssignmentDichotomy` binds `K .typeBDirectCycleFree` and discards it, re-deriving its support from `K .typeBFanEntry`",
    "difference": "The node's two halves are not provably about the same support.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "73": {
    "producer": "`b2AssignmentDichotomy` (SpineRows.lean:3380), right arm",
@@ -728,7 +728,7 @@
    "local": "NO",
    "api": "OK",
    "difference": "The clause function discards `centres`, so the obstruction is not tied to the assigned centre set that failed.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "74": {
    "producer": "`hybridEntryRow` (SpineRows.lean:3166); `typeBExclusionDichotomy` (:3890)",
@@ -738,7 +738,7 @@
    "local": "NO",
    "api": "\u26a0 `typeBSelectedFanChargeRow` declares three `Requires` and uses none",
    "difference": "The ledger never records N\u2080(X) \u2265 0, only that the branch is dead. `hybridEntryRow` is proved and never consumed.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "75": {
    "producer": "`fanCertificateResidualMassRow` (SpineRows.lean:3702) and two siblings",
@@ -748,7 +748,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Byte-for-byte the same Lean facts as [84].",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "76": {
    "producer": "`branchKillClosedRow` (SpineRows.lean:3676)",
@@ -758,7 +758,7 @@
    "local": "YES",
    "api": "\u26a0 `largeBudgetRoute8ClosedRow` binds and discards both `branchKillClosed` and `typeBBridgeSublinear`",
    "difference": "The node's real content is in `typeBExclusionDichotomy` + `instImpossibleTypeBExcluded`, not here.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "77": {
    "producer": "`selectedTypeBRoute8Continuation` (Assembly.lean:1798)",
@@ -768,7 +768,7 @@
    "local": "N/A",
    "api": "OK",
    "difference": "The EG-NODE annotation is the sole basis for any claim of coverage.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "78": {
    "producer": "`typeBFanDegreeDichotomy` (SpineRows.lean:2881); `heavyCentreDichotomy` (:2668)",
@@ -778,7 +778,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "`lem:triangular-shoulder-completion` and `prop:triangular-port-typeB-routing` have no live declaration.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "79": {
    "producer": "`typeBFanDegreeFourProfileRow` (SpineRows.lean:2984); `degreeFourProfileRow` (:3242)",
@@ -788,7 +788,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "`def:triangular-fan-core`, `lem:triangular-port-return`, `lem:triangular-first-landing`, `lem:triangular-cross-shoulder` have no live declaration; the `TypeBDegreeFour` namespace exists only inside doc comments.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "80": {
    "producer": "`fanCertificateDichotomy` (SpineRows.lean:3093)",
@@ -798,7 +798,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "`lem:triangular-first-landing` has no live declaration.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "81": {
    "producer": "`b2AssignmentDichotomy` (SpineRows.lean:3380)",
@@ -808,7 +808,7 @@
    "local": "YES",
    "api": "\u26a0 `K .typeBDirectCycleFree` bound and unused",
    "difference": "The single largest fidelity gap in Part VII. Identical decision to [72].",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "82": {
    "producer": "`typeBExclusionChargeRow` (SpineRows.lean:3854); `typeBExclusionDichotomy` (:3890)",
@@ -818,7 +818,7 @@
    "local": "NO",
    "api": "\u26a0 three discarded `Requires` in `typeBSelectedFanChargeRow`",
    "difference": "The certificate-closed alternative is not a separate case anywhere.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "83": {
    "producer": "`b2AssignmentDichotomy` (SpineRows.lean:3380), right arm",
@@ -828,7 +828,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "\u201cc \u2265 2\u201d is not recorded anywhere; the key discards `centres`.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "84": {
    "producer": "same rows as [75], plus `bridgeFanMassRow` (SpineRows.lean:3604) and `typeBBridgeSublinearRow` (:3652)",
@@ -838,7 +838,7 @@
    "local": "NO",
    "api": "\u26a0 `bridgeFanMassRow` discards `K .typeBHandoff`, making its fact a generic property; `largeBudgetRoute8ClosedRow` discards the sublinearity, so it is never spent",
    "difference": "Byte-for-byte the same content as [75].",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "85": {
    "producer": "`branchKillClosedRow` (SpineRows.lean:3676)",
@@ -848,7 +848,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Same Lean facts as [76].",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "86": {
    "producer": "`typeSplitDichotomy` (SpineRows.lean:2540), left arm",
@@ -858,7 +858,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "`selectedTypeALowSurplusContinuation` consumes the key; it does not produce it.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "87": {
    "producer": "\u2014 (no live declaration)",
@@ -868,7 +868,7 @@
    "local": "N/A",
    "api": "N/A",
    "difference": "Genuinely absent, not an annotation gap. The chain runs [86]\u2192[88] directly; nothing downstream needs the bound, so nothing is unsound.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "88": {
    "producer": "`typeAReceiverRoutingRow` (SpineRows.lean:3973)",
@@ -878,7 +878,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The row's contentful half is routing totality (`lem:typeA-receiver-loads`), which is not what node [88] states.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "89": {
    "producer": "`typeASaturationDichotomy` (SpineRows.lean:4045)",
@@ -888,7 +888,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "`lem:bridgeless` does not enter here.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "90": {
    "producer": "`typeASaturationDichotomy` (SpineRows.lean:4045), right arm",
@@ -898,7 +898,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Truncated subtraction would have weakened it at q = 0; this form does not.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "91": {
    "producer": "`typeAUnsaturatedDischargeRow` (SpineRows.lean:4095)",
@@ -908,7 +908,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Depends only on [88]'s contentful first conjunct, so [88]'s vacuity does not undermine it.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "92": {
    "producer": "`selectedTypeALowSurplusContinuation` (Assembly.lean:3116\u20133122)",
@@ -918,7 +918,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "One of the few fully closed lanes: terminates in `False` without reaching any undefined producer. Closes by inline `omega` rather than `closeImpossible`.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "93": {
    "producer": "`typeAVisibleEntryDichotomy` (SpineRows.lean:4181); `typeAPortReturnRow` (:4327)",
@@ -928,7 +928,7 @@
    "local": "\u26a0 the guard fact is a detached universal over every support/receiver/port",
    "api": "\u26a0 `typeAPortReturnRow` binds `K .typeAReceiverRouting` as `_routing` and discards it",
    "difference": "`lem:bridgeless` enters the Type A lane here, inlined via `exists_anchoredReturn` \u2014 a second independent derivation alongside `bridgelessRow`.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "94": {
    "producer": "`typeAVisibleEntryDichotomy` (SpineRows.lean:4181), right arm",
@@ -938,7 +938,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Stronger than a plain complement.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "95": {
    "producer": "`typeAExitOneDichotomy` (SpineRows.lean:5203)",
@@ -948,7 +948,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The doc comment claims returns are quantified through any completion port; that is false of the formula.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "96": {
    "producer": "`typeAExitOneReturnClosed` (TypeAExitRun.lean:76)",
@@ -958,7 +958,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "\u2014",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "97": {
    "producer": "`typeAExitTwoDichotomy` (SpineRows.lean:5276)",
@@ -968,7 +968,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The no arm is port-local, as at [95].",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "98": {
    "producer": "`typeAExitTwoThetaClosed` (TypeAExitRun.lean:171)",
@@ -978,7 +978,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "\u2014",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "99": {
    "producer": "`typeAExitThreeDichotomy` (SpineRows.lean:5357)",
@@ -988,7 +988,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "A global property of the packing conjoined with the receiver configuration, not a receiver exit. `labelCollision_iff_not_safe` is stated only for the concrete power-of-two predicate.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "100": {
    "producer": "`typeAExitThreeCollisionClosed` (TypeAExitRun.lean:275)",
@@ -998,7 +998,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "\u2014",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "101": {
    "producer": "`typeAExitFourDichotomy` (SpineRows.lean:5547)",
@@ -1008,7 +1008,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "\u201cThe canonical quotient is target-defective\u201d became \u201csome quotient exists and some unrelated boundary pair is target-defective\u201d.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "102": {
    "producer": "`typeAExitFourPeelingStepRow` (SpineRows.lean:5630)",
@@ -1018,7 +1018,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The descent is correct; the charge reading of the peel is undermined by [101]'s detached defect.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "103": {
    "producer": "`typeAExitFiveDichotomy` (SpineRows.lean:5813)",
@@ -1028,7 +1028,7 @@
    "local": "NO",
    "api": "OK",
    "difference": "The `by_cases` splits on a proposition the ledger has already decided.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "104": {
    "producer": "`typeAExitFiveClosed` (TypeAExitRun.lean:298)",
@@ -1038,7 +1038,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "[103]+[104] do not test the manuscript's exit (5), which is a compression produced by the current state's response data.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "105": {
    "producer": "`typeAExitSixDichotomy` (SpineRows.lean:5864)",
@@ -1048,7 +1048,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "`presented.support = piece` pins it to the active residual.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "106": {
    "producer": "`typeAExitSixScopeDichotomy` (SpineRows.lean:5907); instances TypeAExitRun.lean:310,320",
@@ -1058,7 +1058,7 @@
    "local": "\u26a0 the two arm propositions are object-level existentials",
    "api": "OK",
    "difference": "\u2014",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "107": {
    "producer": "`typeAExitSevenDichotomy` (SpineRows.lean:5949)",
@@ -1068,7 +1068,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "`handoffAbsorbing` ignores its three vertex arguments and returns a packing-level collision \u2014 a weakening of the per-switch absorption condition.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "108": {
    "producer": "`typeAExitSevenHandoffRow` (SpineRows.lean:4374)",
@@ -1078,7 +1078,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "\u2014",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "109": {
    "producer": "`typeAExitSevenDichotomy` (SpineRows.lean:5949), right arm",
@@ -1088,7 +1088,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Two lanes produce [109]; only one is discharged.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "110": {
    "producer": "`route8ResidualProfileRow` (SpineRows.lean:4486)",
@@ -1098,7 +1098,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "A re-labelling of [109].",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "111": {
    "producer": "`route8GlobalSqueezeRow` (SpineRows.lean:4517)",
@@ -1108,7 +1108,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "No extraction of \ud835\udcb3_A exists in the formalization at all.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "112": {
    "producer": "`route8BasinBurdenRow` (SpineRows.lean:4543)",
@@ -1118,7 +1118,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The `lem:typeA-reduced-silent-residual` step the manuscript needs is skipped.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "113": {
    "producer": "`route8LargeBudgetDeficitRow` (SpineRows.lean:4570)",
@@ -1128,7 +1128,7 @@
    "local": "YES",
    "api": "\u26a0 the second `Requires` is redundant and does no work",
    "difference": "\u03c4_win appears nowhere in `Spine.Data` or in any `Holds` branch.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "114": {
    "producer": "`route8CarrierCoreRow` (SpineRows.lean:4596)",
@@ -1138,7 +1138,7 @@
    "local": "NO",
    "api": "OK",
    "difference": "The theorem's content is genuine and matches the manuscript; what is missing is the binding of `presented` to the residual's own entry.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "115": {
    "producer": "`route8SmallCoreCollapseRow` (SpineRows.lean:4626)",
@@ -1148,7 +1148,7 @@
    "local": "\u26a0 universal over every `PresentedEntry`, never instantiated at a census entry",
    "api": "OK",
    "difference": "The produced fact is never consumed.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "116": {
    "producer": "`route8SmallCoreCollapseRow` (SpineRows.lean:4626)",
@@ -1158,7 +1158,7 @@
    "local": "NO",
    "api": "OK",
    "difference": "Missing: `alpha \u2264 1 \u2192 (ExitFour \u2228 Five \u2228 Six \u2228 Seven)` at the entry's receiver.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "117": {
    "producer": "`route8CarrierDichotomy` (SpineRows.lean:4774)",
@@ -1168,7 +1168,7 @@
    "local": "YES",
    "api": "\u26a0 `K .route8Census` bound and discarded, so this declaration proves none of `prop:typeA-route8-carrier-reduction`",
    "difference": "`route8TwoCarrierReductionRow` is dead code.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "118": {
    "producer": "`route8CarrierDichotomy` (SpineRows.lean:4774); `route8EntryKindDichotomy` (:4823)",
@@ -1178,7 +1178,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "No closed path leaves [118].",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "119": {
    "producer": "`route8CarrierDichotomy` (SpineRows.lean:4774), right arm",
@@ -1188,7 +1188,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "\u2014",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "120": {
    "producer": "`Route8Census.false_of_noTwoCarrier` (Route8Census.lean:238), inline at Assembly.lean:1725",
@@ -1198,7 +1198,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "3/13 appears nowhere as a constant; it is (\u03b4\u00b7s+1) against \u03b4. `route8PrivateCarrierContradictionRow` is dead code.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "121": {
    "producer": "`route8DeficitRow` (SpineRows.lean:4736)",
@@ -1208,7 +1208,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "\u2014",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "122": {
    "producer": "`Route8.privateCarrierCensus_contradiction` (Route8CarrierCore.lean:445)",
@@ -1218,7 +1218,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The decimal check is carried as an assumed branch fact; \u03c4_win's numeric value never appears.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "123": {
    "producer": "`route8PeelingDescentRow` (SpineRows.lean:4881)",
@@ -1228,7 +1228,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "`route8PressureDescentRow` is dead code.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "124": {
    "producer": "\u2014 (no live declaration)",
@@ -1238,7 +1238,7 @@
    "local": "NO",
    "api": "N/A",
    "difference": "Missing: instantiate `Route8.terminalTwoCarrierNoGo` at the selected census entry. Every ingredient is proved; only the construction and wiring are absent.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "125": {
    "producer": "`selectedSparseSurplusSurvivor` (Assembly.lean:151); `sparseSurplusSurvivorRow` (HomogeneousBottleneckRows.lean:195)",
@@ -1248,7 +1248,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "`NamedSurplusExits.lean:68\u201372` claims exit (c) uses `CompressibleSupport` \u201cnot the one-way `ReplacementSupport`\u201d; the constructor takes `ReplacementSupport`. Comment is false, code direction is the safe one.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "126": {
    "producer": "`sparseSlackSurplusRow` (SurplusRows.lean:66)",
@@ -1258,7 +1258,7 @@
    "local": "YES (nominally)",
    "api": "OK",
    "difference": "The diagram's other half `m \u2264 2n\u22122` is not on this branch; \u03bb is dropped, so `\u03c3 = n\u22126\u22122\u03bb` is stated nowhere.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "127": {
    "producer": "`activeSurplusFamilyRow` (SurplusRows.lean:103)",
@@ -1268,7 +1268,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Consumes `K .slackIndependent` exactly as the manuscript uses `lem:deletion-critical`.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "128": {
    "producer": "`sparsePortActivationRow` (SurplusRows.lean:150)",
@@ -1278,7 +1278,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The \u201ccanonical\u201d in \u201ccanonical activation\u201d is unproven.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "129": {
    "producer": "`selectedBaselineSpineDemand` (Assembly.lean:214); `baselineSpineDemandRow` (SurplusRows.lean:212)",
@@ -1288,7 +1288,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Load-bearing weakness of the block: [131], [137] and [138] all consume a deficit that was chosen, not derived.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "130": {
    "producer": "`selectedPairResponseIndependenceDichotomy` (Assembly.lean:238)",
@@ -1298,7 +1298,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The diagram's \u201cblocker-free?\u201d is not the predicate split on; blocker-freeness appears only at [132].",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "131": {
    "producer": "`selectedMixedSparseSpineDependence` (:254), `selectedExactCubicBaselineBudget` (:280), `selectedIncrementalSkeletonRoom` (:307), `selectedSkeletonDominates` (:335)",
@@ -1308,7 +1308,7 @@
    "local": "MIXED \u2014 three of the four rows have `Requires := []` and are universal arithmetic.",
    "api": "OK",
    "difference": "The declaration that states the sandwich carries no EG-NODE annotation; the only annotated declaration containing it is the tainted umbrella.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "132": {
    "producer": "`selectedBlockedPairRoutingDichotomy` (Assembly.lean:363)",
@@ -1318,7 +1318,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Discards `FunctionalOn`; the manuscript's circuit argument runs on a functional quotient. The per-pair attribution [134] is built on rests on a non-pair-specific certificate.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "133": {
    "producer": "`selectedSparsePairExitCloses` (Assembly.lean:388)",
@@ -1328,7 +1328,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The dependency table assigns blocker-ledger labels to this node; the Lean rests on `def:named-surplus-exits` and `lem:sparse-pair-dependence-exit`.",
-   "probed_closed_arm": true
+   "on_probed_closed_arm": true
   },
   "134": {
    "producer": "`selectedCanonicalPairFacts` (Assembly.lean:404); `canonicalPairLedgerRow` (SurplusRows.lean:642)",
@@ -1338,7 +1338,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Counting identities are faithful; the blocked/free split they partition is degenerate. Clause (f) is structurally absent (`chordObstructions := fun _ => \u2205`); (d)/(e) are installed on exactly one pair.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "135": {
    "producer": "`selectedExactWindowJoinPressure` (Assembly.lean:433); `exactWindowJoinPressureRow` (SurplusRows.lean:677)",
@@ -1348,7 +1348,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "`cor:global-window-join-pressure` is in the node's label set but is established nowhere in this chain.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "136": {
    "producer": "`selectedCapacityTokenFacts` (Assembly.lean:460); `capacityTokenLedgerRow` (SurplusRows.lean:714)",
@@ -1358,7 +1358,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The witness uses `Chord := PEmpty`, so clause (f) is structurally impossible; with [134] the certified \u03a0_blk is all of `portPairSchedule`. Existentially quantified, so it commits to some activation, not the canonical one.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "137": {
    "producer": "`selectedRoleFibrePartition` (Assembly.lean:1322)",
@@ -1368,7 +1368,7 @@
    "local": "NO",
    "api": "OK",
    "difference": "Its declared requirement is a discarded binding. The actual `D_all > 0?` decision (`coupledExcessDichotomy`, HomogeneousBottleneckRows.lean:642) is faithful but reachable only inside the tainted umbrella.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "138": {
    "producer": "`selectedSpineSurplusEstimateCloses` (Assembly.lean:493)",
@@ -1378,7 +1378,7 @@
    "local": "YES (trivially)",
    "api": "OK",
    "difference": "The mathematical substance (`surplus_le_scale_of_capped`, SparsePressureLedger.lean:108) is reachable only through the tainted umbrella.",
-   "probed_closed_arm": true
+   "on_probed_closed_arm": true
   },
   "139": {
    "producer": "`windowOverloadClassDichotomy` (HomogeneousBottleneckRows.lean:19)",
@@ -1388,7 +1388,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Its output feeds only [140], which is never read; the yes/no answer has no effect on the closure.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "140": {
    "producer": "`windowIncidenceAuditRow` (HomogeneousBottleneckRows.lean:90)",
@@ -1398,7 +1398,7 @@
    "local": "\u26a0 universal over all presentations",
    "api": "\u26a0 `Requires` bound and discarded",
    "difference": "Never consumed. Its own docstring concedes \u201cNothing about the class is used in the proof.\u201d",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "141": {
    "producer": "`remainderOverloadClassDichotomy` (HomogeneousBottleneckRows.lean:697)",
@@ -1408,7 +1408,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The key name `remainderClassAbsent` is misleading: its `Holds` is the primitive-class overload.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "142": {
    "producer": "`remainderSurplusAuditRow` (HomogeneousBottleneckRows.lean:112)",
@@ -1418,7 +1418,7 @@
    "local": "\u26a0",
    "api": "\u26a0 `Requires` bound and discarded",
    "difference": "Never consumed.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "143": {
    "producer": "`primitiveClassOverloadRow` (HomogeneousBottleneckRows.lean:156)",
@@ -1428,7 +1428,7 @@
    "local": "YES",
    "api": "\u26a0 the audit row's `Requires` is bound and discarded",
    "difference": "Never consumed.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "144": {
    "producer": "`selectedBottleneckDischarge` (Assembly.lean:518)",
@@ -1438,7 +1438,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Reached identically from all three of [139]/[141]/[143]'s arms, so the class dispatch is inert.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "145": {
    "producer": "`selectedColdWindowLedgerSplit` (Assembly.lean:786); `coldWindowLedgerSplitRow` (ColdCorridorRows.lean:72)",
@@ -1448,7 +1448,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The quantitative half of `def:cold-window-ledger` is not here.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "146": {
    "producer": "`selectedColdRoute8Dichotomy` (Assembly.lean:809); `coldRoute8Dichotomy` (ColdCorridorRows.lean:27)",
@@ -1458,7 +1458,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The `_split` binding is discarded: the decision does not depend on the split's content.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "147": {
    "producer": "\u2014 (no kernel-clean declaration)",
@@ -1468,7 +1468,7 @@
    "local": "N/A",
    "api": "N/A",
    "difference": "Covered only by the tainted umbrella.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "148": {
    "producer": "`selectedColdHotEntropyDichotomy` (Assembly.lean:824)",
@@ -1478,7 +1478,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The left arm is dead: the right arm is provable outright from the ledger, which is exactly what [149] shows.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "149": {
    "producer": "`selectedColdHotEntropyCloses` (Assembly.lean:844)",
@@ -1488,7 +1488,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Consumes no cold-branch fact: it re-runs the [22]/[23] entropy comparison against the hot windows, and the arm it closes is provably empty.",
-   "probed_closed_arm": true
+   "on_probed_closed_arm": true
   },
   "150": {
    "producer": "`selectedColdMass` (Assembly.lean:874); `coldMassRow` (ColdCorridorRows.lean:86)",
@@ -1498,7 +1498,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The manuscript's numerical corollaries at \u03b8=1/78 and \u03b8=1/73 are not formalized.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "151": {
    "producer": "`selectedColdAmbientCubic` (Assembly.lean:889); `coldAmbientCubicRow` (ColdCorridorRows.lean:123)",
@@ -1508,7 +1508,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The only node in [145]\u2013[152] with real graph-theoretic work.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "152": {
    "producer": "`selectedColdStubExcess` (Assembly.lean:904); `coldStubExcessRow` (ColdCorridorRows.lean:219)",
@@ -1518,7 +1518,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "`ColdAmbientCubicStubExcessStatement` (SpineVocabulary.lean:2130\u20132137) is separately vacuous: `\u2203 excess, excess = <rhs>`.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "153": {
    "producer": "`selectedColdMassDichotomy` (Assembly.lean:921)",
@@ -1528,7 +1528,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Vacuity root: `germOfSupport` (ColdGermFamily.lean:260\u2013277) sets `canonical := piece` and `record := Record.trivial`, so every constructed germ has increment 0, is never Distinguishing and is always Neutral. N_germ counts trivial germs.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "154": {
    "producer": "`selectedColdGermTrichotomy` (Assembly.lean:1072); `coldGermTrichotomyRow` (ColdCorridorRows.lean:630)",
@@ -1538,7 +1538,7 @@
    "local": "PARTIAL",
    "api": "OK",
    "difference": "Requires only `K .selection` and `K .uncompressible`; nothing ties it to the [153] extracted family.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "155": {
    "producer": "`coldGermTrichotomyRow` (ColdCorridorRows.lean:630), `K .coldGermRealized` 1st conjunct",
@@ -1548,7 +1548,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The manuscript's G1 quantifies over compatible live completions and window offsets; Lean quantifies over the trivial completion only.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "156": {
    "producer": "`coldGermTrichotomyRow` (ColdCorridorRows.lean:630), keys `.coldGermDistinguished`, `.coldGermRouted`",
@@ -1558,7 +1558,7 @@
    "local": "PARTIAL",
    "api": "OK",
    "difference": "Vacuously true on everything the branch constructs. \u201cexit (4), or handoff\u201d has no formal counterpart.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "157": {
    "producer": "`selectedColdSameInterfaceTable` (Assembly.lean:1100); `coldSameInterfaceTableRow` (ColdCorridorRows.lean:694)",
@@ -1568,7 +1568,7 @@
    "local": "PARTIAL",
    "api": "OK",
    "difference": "Two of five conjuncts are trivial: `tableBound = Fintype.card Record` is `rfl`, and `row.increment = 0` is immediate from the `equalLength` field.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "158": {
    "producer": "`selectedWindowPackageRealizationDichotomy` (Assembly.lean:1296)",
@@ -1578,7 +1578,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Sound as a branch test; the fidelity risk is on consumers of the yes arm. The decision is inlined in Assembly.lean rather than exported from a row module.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "159": {
    "producer": "`denseOrJointCodeOverflow` (BlockedCompressionRows.lean:64); `blockedClassCompressionCloses` (:101)",
@@ -1588,7 +1588,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Assembly.lean:3504 admits this in-source.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "160": {
    "producer": "inline `Decision.run` (Assembly.lean:4104\u20134113)",
@@ -1598,7 +1598,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Inlined in the umbrella rather than declared, so `#print axioms` on it inherits the umbrella's taint.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "161": {
    "producer": "`denseNetDeficiencyCapRow` (SpineRows.lean:2049)",
@@ -1608,7 +1608,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The [24] density row is correctly not run on this arm.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "162": {
    "producer": "the `.right` arm of `selectedNearCubicBranch` (Assembly.lean:4148+)",
@@ -1618,7 +1618,7 @@
    "local": "YES",
    "api": "\u26a0 the [22] decision is re-derived inline rather than reusing `selectedBarrierDichotomy` \u2014 two decision sites for one node",
    "difference": "Because [160] tests the supply bound, the residual entered is strictly larger than the manuscript's.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "163": {
    "producer": "`neutralGermSymmetryDichotomy` (ColdCorridorRows.lean:800)",
@@ -1628,7 +1628,7 @@
    "local": "YES",
    "api": "\u26a0 `_structure` bound and discarded",
    "difference": "`germ.Neutral` is the trichotomy's G3, missing `def:neutral-equal-length-germ`'s `increment = 0`; `LengthChanging` exists and is unused.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "164": {
    "producer": "`entropyCap_closes_of_allCold` (EntropyClosure.lean:112)",
@@ -1638,7 +1638,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Clause-by-clause correspondence of `RemainderClass` with `def:remainder-entropy`'s five glue constraints is unresolved.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "165": {
    "producer": "`selectedCanonicalSwapCloses` (Assembly.lean:1481)",
@@ -1648,7 +1648,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The manuscript's actual step is the sibling `K .coldCanonicalSwapSameSize`, whose consumer `selectedDenseSameSizeCanonicalSwap` is an undefined frontier producer \u2014 the taint source at Assembly.lean:3493 and 4269. `K .coldCanonicalSwapSmaller` is unsatisfiable on constructed germs, so the decision always takes the frontier arm.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "166": {
    "producer": "\u2014 (no live declaration)",
@@ -1658,7 +1658,7 @@
    "local": "N/A",
    "api": "N/A",
    "difference": "Missing: a `lexicographicProgress` extended to (vertexCount, edgeCount, \u03a6). Graph/Progress.lean carries only the first two.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "167": {
    "producer": "\u2014 (no live declaration)",
@@ -1668,7 +1668,7 @@
    "local": "NO",
    "api": "N/A",
    "difference": "The manuscript's `survivors 13 40` instantiation is performed nowhere. `coldWindowStubStructureRow`'s doc comment mis-labels itself node [167].",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "168": {
    "producer": "`coldWindowStubStructureRow` (ColdCorridorRows.lean:731)",
@@ -1678,7 +1678,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Has a producer \u2014 the missing annotation is an annotation gap, not a coverage gap. The exclusion of symmetric pairs is asserted only in a prose comment.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "169": {
    "producer": "`blockedClassRow` (ColdCorridorRows.lean:770)",
@@ -1688,7 +1688,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "`IsBlocked.blocked` is discharged from `K .selection` alone, so it carries no window-specific information.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "170": {
    "producer": "`scaleAdditivityDichotomy` (BlockedCompressionRows.lean:34)",
@@ -1698,7 +1698,7 @@
    "local": "YES",
    "api": "\u26a0 `_blocked` bound and discarded",
    "difference": "[172] is therefore entered under a strictly weaker hypothesis than `lem:barrier-failure-overlap` needs.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "171": {
    "producer": "`blockedClassCompressionCloses` (BlockedCompressionRows.lean:101)",
@@ -1708,7 +1708,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Assembly.lean:3336\u20133339 names `selectedBlockedBarrierCodeInjectivity` and `selectedBlockedBarrierBaseline` as the carrying producers; neither exists in the sources, and neither is on the 14-item list.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "172": {
    "producer": "\u2014 (no live declaration)",
@@ -1718,7 +1718,7 @@
    "local": "NO",
    "api": "N/A",
    "difference": "Even a future producer cannot use `K .blockedBarrierOverlap` as-is: it is \u00ac(A \u2227 B) where the lemma needs \u00acA.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "173": {
    "producer": "`exactCollisionDichotomy` (SpineRows.lean:2360)",
@@ -1728,7 +1728,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The same key pair serves [57] and [173], so a coverage table keyed on declarations double-counts.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "174": {
    "producer": "`exactCollisionDichotomy` (SpineRows.lean:2360), `.inr` arm",
@@ -1738,7 +1738,7 @@
    "local": "YES",
    "api": "OK \u2014 but it declares no `Requires` and consumes no prior fact",
    "difference": "\u2014",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "175": {
    "producer": "`absorbedGermDichotomy` (ColdCorridorRows.lean:524)",
@@ -1748,7 +1748,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Vacuity risk: if the ambient-cubic cold family is empty the no arm is vacuously true.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "176": {
    "producer": "`absorbedGermDichotomy` (ColdCorridorRows.lean:524), `.inl` arm",
@@ -1758,7 +1758,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Do not read the \u201cclosed by [154]\u2013[157], [165]\u2013[168]\u201d annotation as evidence of closure.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "177": {
    "producer": "`absorbedGermDichotomy` (ColdCorridorRows.lean:524), `.inr` arm",
@@ -1768,7 +1768,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Vacuous whenever the selected-stub set is empty.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "178": {
    "producer": "`freePairEntropyDichotomy` (HomogeneousBottleneckRows.lean:510); `blockedPairEntropyDichotomy` (:584)",
@@ -1778,7 +1778,7 @@
    "local": "YES",
    "api": "\u26a0 both dichotomies bind and discard a required fact",
    "difference": "\u2014",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "179": {
    "producer": "\u2014 (no live declaration)",
@@ -1788,7 +1788,7 @@
    "local": "N/A",
    "api": "N/A",
    "difference": "Entirely unimplemented. D_sp and \u2113_ret appear nowhere.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   },
   "180": {
    "producer": "\u2014 (no live declaration)",
@@ -1798,12 +1798,13 @@
    "local": "NO",
    "api": "N/A",
    "difference": "Do not mistake `SerialSystemArithmetic.lean`'s docstring, which names [172] and [180], for coverage.",
-   "probed_closed_arm": false
+   "on_probed_closed_arm": false
   }
  },
  "method": "Node -> manuscript label from the manuscript Detailed dependency table; label -> Spine.Key from the Holds branches; key -> producer from Produces manifests, rowManifest and Decision arms. Completeness is judged per producer, never per enclosing declaration.",
  "gates": {
   "fidelity": "Gate B: does the producer publish the manuscript statement",
-  "complete": "does this node\u2019s own producer reach a referenced-but-undefined declaration"
+  "complete": "does this node\u2019s own producer reach a referenced-but-undefined declaration",
+  "on_probed_closed_arm": "Arm closure is a MEASUREMENT, not a property of the node. A node's arm can pass through a declaration that is tainted by its OTHER arms, so declaration cleanliness cannot decide it; only a composed probe (the root-to-closure term with every sibling arm replaced by `trivial`, then `#print axioms`) can. Four such probes have been run, covering these 37 nodes. Everything else marked `partial` has a finished producer whose arm simply has not been probed -- that is unmeasured, not failing."
  }
 }

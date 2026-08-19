@@ -332,7 +332,7 @@ export function refereeDossier(
     reviewCheck("lean", "Producer exists", review),
     reviewCheck("kernel", "Producer finished", review),
     reviewCheck("fidelity", "Matches manuscript", review),
-    reviewCheck("wired", "Arm closed", review),
+    reviewCheck("wired", "Arm probed closed", review),
     reviewCheck("local", "Residual-local", review),
     reviewCheck("external", "External input", review),
     reviewCheck("human", "Human review", review),
