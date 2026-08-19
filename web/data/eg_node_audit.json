@@ -248,7 +248,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Missing `(1\u221213\u03b8_win)n \u2212 o(n) \u2264 |R|`, derivable from `K .densityCap` but nowhere derived.",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "26": {
    "producer": "`remainderNormalizationRow` (SpineRows.lean:868)",
@@ -258,7 +258,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "One fact covers [25] and [26]; they are not two independent obligations.",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "27": {
    "producer": "`remainderNormalizationRow` (SpineRows.lean:868), 2nd conjunct",
@@ -268,7 +268,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "\u2014",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "28": {
    "producer": "`boundaryDemandRow` (SpineRows.lean:916)",
@@ -278,7 +278,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The definition is the faithful part; the accompanying inequality belongs to `lem:surplus-aware-window-stub`, a different label.",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "29": {
    "producer": "`stubSupplyRow` (SpineRows.lean:963)",
@@ -288,7 +288,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The \u03c3_R form is not separately carried; a consumer must re-derive it.",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "30": {
    "producer": "`wedgeSupplyRow` (SpineRows.lean:1036)",
@@ -298,7 +298,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Sharper high-entropy arm absent outright.",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "31": {
    "producer": "`curvatureTargetRankRow` (SpineRows.lean:1114)",
@@ -308,7 +308,7 @@
    "local": "NO",
    "api": "OK",
    "difference": "Reads `K .remainderNormalized` and discards it. `def:target-rank`'s 2^k realization has no counterpart (the manuscript also only asserts it).",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "32": {
    "producer": "`targetRankCircuitRow` (SpineRows.lean:1174), `curvatureRankDichotomy` (:1249)",
@@ -318,7 +318,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Stricter than the diagram's `\u2212 o(W\u2082)`, which enlarges Branch D's obligation (safe).",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "33": {
    "producer": "`branchDependenceRow` (SpineRows.lean:1353)",
@@ -328,7 +328,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Clause (d) discharged degenerately (`supportData := family`).",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "34": {
    "producer": "`curvatureRankDichotomy` (SpineRows.lean:1249), right arm",
@@ -338,7 +338,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Produced by the dichotomy, not by `lem:full-rank`'s argument. Same fact as [47]; not two obligations.",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "35": {
    "producer": "`branchDependenceRow` (SpineRows.lean:1353)",
@@ -348,7 +348,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Exhaustiveness comes from `by_cases`, so the geometric content is never established; [35] has no formal content beyond [33].",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "36": {
    "producer": "`contextValidityDichotomy` (SpineRows.lean:1439)",
@@ -358,7 +358,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Faithful to the manuscript, where case (i) is definitionally empty too. `lem:degree-profile-fibres` is likewise the `fibrewise` field, not a proved lemma.",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "37": {
    "producer": "`closeImpossible` + `instImpossibleContextDefect` (BranchDClosure.lean:42\u201350)",
@@ -368,7 +368,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Siblings [39],[42],[46] carry real content; [37] alone does not.",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "38": {
    "producer": "`atomCompressionDichotomy` (SpineRows.lean:1525)",
@@ -378,7 +378,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The manuscript's arbitrary proper piece C is instantiated as the entire remainder support; inclusion-minimality of the certificate support is dropped from the key.",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "39": {
    "producer": "`closeIncompatible` + `instIncompatibleAtomCompression` (BranchDClosure.lean:56)",
@@ -388,7 +388,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Uses the one-way `ReplacementSupport`, correct per `lem:replacement`; not the two-way compression statement.",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "40": {
    "producer": "`atomCompressionDichotomy` (SpineRows.lean:1525), `K .delocalizedSupport`",
@@ -398,7 +398,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Z is never proved connected anywhere.",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "41": {
    "producer": "`delocalizationScopeDichotomy` (SpineRows.lean:1619)",
@@ -408,7 +408,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The scope test is on Z, but the replacement derived is at `quotient.support`.",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "42": {
    "producer": "`closeIncompatible` + `instIncompatibleProperDelocalization` (BranchDClosure.lean:79)",
@@ -418,7 +418,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Not unsound (properness of Z implies properness of the certificate support), but `lem:proper-smearing` at Z is not what was formalized.",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "43": {
    "producer": "`delocalizationScopeDichotomy` (SpineRows.lean:1619), `K .globalDelocalization`",
@@ -428,7 +428,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "This gap is what lets [45] be derived without ever using the Z = G clause.",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "44": {
    "producer": "`repairIdentityRow` (SpineRows.lean:1693); `OneThreeRepair.Component.identity` (:169)",
@@ -438,7 +438,7 @@
    "local": "NO",
    "api": "OK",
    "difference": "Dead fact: the consumer `globalBarrierRow` discards it as `_repairIdentity` (SpineRows.lean:1725).",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "45": {
    "producer": "`globalBarrierRow` (SpineRows.lean:1710)",
@@ -448,7 +448,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Both representative clauses are structure fields of `DeclaredQuotient`: the representative is supplied by the definition, never constructed.",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "46": {
    "producer": "`closeIncompatible` + `instIncompatibleGlobalBarrier` (BranchDClosure.lean:103)",
@@ -458,7 +458,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Weakness inherited from [43]/[45]: the closed case is never distinguished from the proper case, so [46] would close identically from any rank-reducing certificate.",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "47": {
    "producer": "`curvatureRankDichotomy` (SpineRows.lean:1249), right arm",
@@ -468,7 +468,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Same fact as [34]; the two nodes are not separately witnessed in Lean.",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "48": {
    "producer": "`forcedCurvatureCostRow` (SpineRows.lean:1746)",
@@ -478,7 +478,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Dead fact: the sole reader `remainderEntropyDichotomy` (SpineRows.lean:1824) binds it as `let _cost` and discards it.",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "49": {
    "producer": "`Graph.remainderStateCount` (RemainderEntropy.lean:71); `Spine.remainderStates` (SpineVocabulary.lean:1550)",
@@ -488,7 +488,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "`lem:dominant-type` is absent entirely; no declaration resembles it.",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "50": {
    "producer": "`remainderEntropyDichotomy` (SpineRows.lean:1806)",
@@ -498,7 +498,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Decided by excluded middle, so it establishes nothing about the graph beyond exhaustiveness.",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "51": {
    "producer": "`remainderEntropyDichotomy` (SpineRows.lean:1806), `.left` arm",
@@ -508,7 +508,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "`lowEntropyLargeBudgetRow` routes the entire low-entropy arm to Residual C, collapsing the manuscript's three-way split into two.",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "52": {
    "producer": "`entropyPackageRow` (SpineRows.lean:2283)",
@@ -518,7 +518,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Also divergent from the diagram: no \u03b8, no p\u2081\u2083-density, no 1.5\u00b7n\u00b7log\u2082n. Its own consumer discards it as `_packageDemand`.",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "53": {
    "producer": "`entropyCapDichotomy` (SpineRows.lean:2318)",
@@ -528,7 +528,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "The omission makes the yes arm harder to enter, which is routing-safe but is not the manuscript's \u03b8 > \u0398(n) test.",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "54": {
    "producer": "`entropyCap_closes` (EntropyClosure.lean:85); `entropyCap_closes_of_allCold` (:113)",
@@ -538,7 +538,7 @@
    "local": "YES",
    "api": "FLAG \u2014 `entropyCap_closes` and friends are absent from `allowed-api.md` and it takes an `ExactLedger` argument; the catalog is demonstrably stale, so this is unresolved rather than a proven violation.",
    "difference": "[48]'s forced cost is not an input. Inside the clean declaration [54] does not always close: the non-retained arm is returned to the caller and only the tainted umbrella discharges it.",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "55": {
    "producer": "`entropyCapDichotomy` no-arm; `lowEntropyLargeBudgetRow` (SpineRows.lean:1857)",
@@ -548,7 +548,7 @@
    "local": "YES",
    "api": "OK",
    "difference": "Merges the manuscript's branches (b) and (c). Whether `K .densityCap` is on the ledger at [55] on the \u03c4<1/4 path is unresolved.",
-   "on_probed_closed_arm": false
+   "on_probed_closed_arm": true
   },
   "56": {
    "producer": "`netDeficiencyCapRow` (SpineRows.lean:1891)",
@@ -1805,6 +1805,6 @@
  "gates": {
   "fidelity": "Gate B: does the producer publish the manuscript statement",
   "complete": "does this node\u2019s own producer reach a referenced-but-undefined declaration",
-  "on_probed_closed_arm": "Arm closure is a MEASUREMENT, not a property of the node. A node's arm can pass through a declaration that is tainted by its OTHER arms, so declaration cleanliness cannot decide it; only a composed probe (the root-to-closure term with every sibling arm replaced by `trivial`, then `#print axioms`) can. Four such probes have been run, covering these 37 nodes. Everything else marked `partial` has a finished producer whose arm simply has not been probed -- that is unmeasured, not failing."
+  "on_probed_closed_arm": "Arm closure is a MEASUREMENT, not a property of the node. A node's arm can pass through a declaration that is tainted by its OTHER arms, so declaration cleanliness cannot decide it; only a composed probe (the root-to-closure term with every sibling arm replaced by `trivial`, then `#print axioms`) can. Five such probes have been run \u2014 the closures at [23], [133], [138], [149] and Branch D ([36]\u2013[46], via `selectedSpineToLargeBudget`, which is itself kernel-clean so every arm inside it is stub-free) \u2014 covering these 68 nodes. Everything else marked `partial` has a finished producer whose arm simply has not been probed -- that is unmeasured, not failing."
  }
 }

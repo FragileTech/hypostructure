@@ -17412,7 +17412,7 @@
    "25": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "partial",
     "note": "WEAKER — P₁₃-freeness is present and stronger than componentwise; “R is large” is not stated. No `remainderLarge`/`remainderMass` key exists."
@@ -17420,7 +17420,7 @@
    "26": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "partial",
     "note": "WEAKER — Same fact as [25]; Lean does not distinguish the two nodes."
@@ -17428,7 +17428,7 @@
    "27": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL — Empty internal 3-core over induced sub-supports; empty-support case handled honestly; the proof really uses target avoidance through the HSS route."
@@ -17436,7 +17436,7 @@
    "28": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL — `∑_{v∈X}(δ ∸ d_X(v))` is `∑ max{0,3−d}`; `ambientSurplus` matches σ(X)."
@@ -17444,7 +17444,7 @@
    "29": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL — def⁺(R) + 24p ≤ 39p + C_sp⌈√n⌉; direction, strictness and error term all match. Stated for every packing, so formally stronger."
@@ -17452,7 +17452,7 @@
    "30": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "partial",
     "note": "WEAKER — Conjunct 1 is stronger than the manuscript; conjunct 2 is [29] substituted in. The density conversion `15p₁₃ ≤ (τ_win+o(1))|R|` is missing, without which the diagram's ω_win bound does not follow."
@@ -17460,7 +17460,7 @@
    "31": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "absent",
     "fidelity": "verified",
     "note": "FAITHFUL-TRIVIAL — All five labels are definitions with no proof; the first real theorem is `lem:target-rank-circuit` at the next row."
@@ -17468,7 +17468,7 @@
    "32": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL — Exact finite comparison r_Ω < W₂ vs r_Ω = W₂; exhaustiveness genuine via `Nat.le_antisymm`. `targetRankCircuit` is substantively proved."
@@ -17476,7 +17476,7 @@
    "33": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL — Inclusion-minimal support with the determined coordinate held fixed; minimality upgraded to genuine ⊂-minimality."
@@ -17484,7 +17484,7 @@
    "34": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "STRONGER — Verified sound: the paper concludes “Hence r_Omega(R) = W_2(R), which implies the stated weaker bound” (tex:8987-8992), and r_Omega <= W_2 holds by construction from `def:curvature-target-rank`. Buys decidability — the [32] split stays a plain `Nat` comparison closing by `Nat.le_antisymm`; an asymptotic threshold would need a chosen slack witness. No cost: `r < W_2` is the manuscript's own Branch D threshold (tex:8780-8783)."
@@ -17492,7 +17492,7 @@
    "35": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "partial",
     "note": "WEAKER — Identical fact to [33]; no second declaration. `lem:separated-testers` has no Lean counterpart at all."
@@ -17500,7 +17500,7 @@
    "36": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL-TRIVIAL — `def:admissible-rank-quotient` builds target-completeness into the objects the routing lemma quantifies over, so case (i) is definitionally empty in the paper and is drawn as an immediately-closed terminal."
@@ -17508,7 +17508,7 @@
    "37": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL-TRIVIAL — A terminal with no proof environment in the paper at all; closed by `def:target-complete-compression` itself. The asymmetry with [39]/[42]/[46] mirrors the paper's."
@@ -17516,7 +17516,7 @@
    "38": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL — Yes arm is case (ii)'s conclusion, no arm is case (iii)'s entry `C ⊊ Z`; properness genuinely earned."
@@ -17524,7 +17524,7 @@
    "39": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL — `not_replacementSupport` refutes the smaller proper representative at the selected minimal counterexample."
@@ -17532,7 +17532,7 @@
    "40": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "partial",
     "note": "WEAKER — Establishes only `C ⊂ Z` with `Z := quotient.support ∪ C`. Missing: `ConnectedOn object Z` and the inclusion-minimality clause."
@@ -17540,7 +17540,7 @@
    "41": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL — `∃ v ∉ Z` vs `∀ v ∈ Z` over `object.Vertex` is exactly `Z ⊊ G` vs `Z = G`."
@@ -17548,7 +17548,7 @@
    "42": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "partial",
     "note": "WEAKER — Derives `ReplacementSupport … object quotient.support`, not at Z. Missing: `ReplacementSupport … object (delocalizationSupport …)`."
@@ -17556,7 +17556,7 @@
    "43": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "partial",
     "note": "WEAKER — Records Z = V(G) but not that the quotient is of the closed exact profile. Missing: `∀ vertex, vertex ∈ quotient.support`."
@@ -17564,7 +17564,7 @@
    "44": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "absent",
     "fidelity": "partial",
     "note": "WEAKER — The arithmetic identity s = p−2+2β−σ is genuine and proved, but nothing asserts that a delayed compensation component of Z is a `OneThreeRepair.Component`."
@@ -17572,7 +17572,7 @@
    "45": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "partial",
     "note": "WEAKER — Produced without using its stated hypothesis: `_covers` is discarded and `localize` branches on the scope of `quotient.support`, not Z. As written the fact follows from any rank-reducing declared certificate on any arm."
@@ -17580,7 +17580,7 @@
    "46": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL — Refutes both disjuncts against `K .selection`; the profile-inclusion argument is the manuscript's."
@@ -17588,7 +17588,7 @@
    "47": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "STRONGER — Same Lean fact as [34]; the manuscript files [34], [46] and [47] under one diagram row. Its consumer `forcedCurvatureCostRow` uses only `rankEq.ge`, so the equality's `<=` half is unused in practice."
@@ -17596,7 +17596,7 @@
    "48": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "partial",
     "note": "WEAKER — Only the K_win half; the K = 5.89262883286… high-entropy second display of `cor:forced-curvature-cost` has no counterpart."
@@ -17604,7 +17604,7 @@
    "49": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "partial",
     "note": "WEAKER — `RemainderClass` omits the subcubicity conjunct of `def:remainder-entropy`; dropping it enlarges 𝒢(R), safe for the high-entropy arm and unsafe for the low."
@@ -17612,7 +17612,7 @@
    "50": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL — `n^{|R|} ≤ |𝒢(R)|^d` is η ≥ (1/d)log₂n cleared of logarithm and division; arms are literal negations."
@@ -17620,7 +17620,7 @@
    "51": {
     "lean": "absent",
     "kernel": "absent",
-    "wired": "absent",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "absent",
     "note": "ABSENT — `lem:translates-independent` has no declaration; `prop:two-budget` branch (b) is not formalized."
@@ -17628,7 +17628,7 @@
    "52": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL-TRIVIAL — The paper's step is the one-sentence addition of two already-established bit contributions; the substantive comparison is [53], which Lean performs."
@@ -17636,7 +17636,7 @@
    "53": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "partial",
     "note": "WEAKER — Omits the `2^(c_Ω·r_Ω(R))` factor: a two-term comparison where `eq:entropy-cap` is three-term. Nothing named Θ(n), 1.4 or 116.808581006 exists in Lean."
@@ -17644,7 +17644,7 @@
    "54": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "partial",
     "note": "WEAKER — `jointPackageDemand_le_retainedCode` (:50) discards the curvature factor via `Nat.one_le_two_pow`; `dominates.2` holds for every map out of a finite type. The closure goes through for any values of c_Ω, K, Θ(n), 1/10, θ. | API: FLAG — `entropyCap_closes` and friends are absent from `allowed-api.md` and it takes an `ExactLedger` argument; the catalog is demonstrably stale, so this is unresolved rather than a proven violation."
@@ -17652,7 +17652,7 @@
    "55": {
     "lean": "verified",
     "kernel": "verified",
-    "wired": "partial",
+    "wired": "verified",
     "local": "verified",
     "fidelity": "partial",
     "note": "WEAKER — `LargeBudgetResidual` contains no θ, no p₁₃ and no window-density statement; the θ bound lives in the separate `K .densityCap`, which this key neither contains nor requires."
