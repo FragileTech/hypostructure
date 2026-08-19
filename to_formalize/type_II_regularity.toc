@@ -88,4 +88,6 @@
 \contentsline {subsection}{\tocsubsection {}{A.4}{Local Retained Mass Cost Divergence}}{317}{subsection.A.4}%
 \contentsline {subsection}{\tocsubsection {}{A.5}{Localized cost and the Type II scale-exclusion condition}}{318}{subsection.A.5}%
 \contentsline {subsection}{\tocsubsection {}{A.6}{Local compact-cost classification}}{320}{subsection.A.6}%
-\contentsline {section}{\tocsection {Appendix}{}{References}}{325}{section*.4}%
+\contentsline {section}{\tocsection {Appendix}{}{A note on human--AI collaboration}}{324}{section*.4}%
+\contentsline {section}{A note on human--AI collaboration}{324}{section*.4}%
+\contentsline {section}{\tocsection {Appendix}{}{References}}{326}{section*.5}%

@@ -27173,6 +27173,80 @@ stratum, \cref{cor:retained-stratum-cost-exclusion} gives the Type II
 exclusion conclusion.
 \end{proof}
 
+\section*{A note on human--AI collaboration}
+\addcontentsline{toc}{section}{A note on human--AI collaboration}
+
+This paper grew out of a collaboration between the author and several AI
+systems, principally Claude Fable 5, GPT-5.4, GPT-5.5, and GPT-5.6-Sol.
+
+This project began as a personal effort by the author to learn partial
+differential equations, to understand what singularities are and which
+structural mechanisms permit them to form, and to study how large language
+models fail when reasoning about mathematics.  Because the subject was
+initially unfamiliar to him, part of the aim was to develop a working protocol
+for detecting hallucinations and avoiding reliance on arguments that he could
+not independently follow.  The author asked GPT-5.4 to identify difficult
+problems together with recent progress on them and selected the Navier--Stokes
+regularity problem because it is a paradigmatic example of failure of
+compactness.
+
+The work proceeded through an iterative dialogue.  The author proposed
+possible approaches in natural language and asked the models to explain why
+they were insufficient, how they related to methods in the literature, and
+what singular or noncompact scenario would obstruct them.  These obstruction
+scenarios became the input to subsequent rounds of questions.  The author
+repeatedly requested elementary explanations or formulations in terms familiar
+to an AI and machine-learning engineer, with emphasis on the purpose of each
+analytic technique and on the structural features of a possible singularity
+that the current argument had not yet controlled.
+
+The dialogue was then converted into mathematical manuscripts through repeated
+rounds of expansion and revision with GPT-5.5, Claude Opus 4.8, Claude Fable 5,
+and GPT-5.6-Sol.  The author asked the models to replace informal descriptions
+with PDE statements, expand every step that he did not understand, and produce
+proof-flow diagrams, hypothesis ledgers, and audit tables that made the
+dependencies of the argument visible.  He subsequently developed a
+red-teaming protocol that searched systematically for missing hypotheses,
+unsupported compactness passages, unclosed residual profiles, and other errors.
+When a possible gap was identified, the repair protocol introduced a separate
+branch for the missing case and attempted to close it through further
+literature-based reductions and structural refinements.  The point at which
+these reviews stopped producing new objections was treated as a reason to move
+to stricter node-by-node auditing, rather than as a certificate of correctness.
+
+The resulting proof architecture was encoded in an interactive proof explorer
+and a node-by-node audit framework.  These tools treat the proof as a
+data-processing pipeline whose nodes record the hypotheses, conclusions, and
+retained structural facts available at each point in the argument.  Their
+purpose is to make compactness passages, case splits, and transfers between
+local and global statements explicit, and to allow each step to be inspected
+independently.
+
+The underlying framework was originally designed for combinatorial problems
+and was subsequently redesigned as reusable infrastructure for PDE arguments.
+Formalization is the next stage of the project.  The analysis is consistently
+expressed through local PDE statements and explicit transfers between local
+states; this locality simplifies the formalization by giving individual nodes
+modular interfaces and permits the resulting code to be reused across the
+three Navier--Stokes manuscripts.
+
+The author's role throughout was to select the problem and research direction,
+propose and revise ideas, request explanations and obstruction scenarios,
+design the review and repair protocols, construct the proof-tracking framework,
+and decide how identified gaps should be routed through the argument.  The AI
+systems supplied literature-oriented explanations, counterexamples and
+obstruction profiles, mathematical formulations, proof drafts, diagrams,
+reviews, and repairs.  This division of labor reflects the actual development
+of the manuscript: the author did not begin as an expert in PDE, and the
+argument emerged through repeated attempts to make every step explicit enough
+for him to question, organize, and check.  The author also abstracted this
+process into a replicable protocol for decomposing difficult problems into
+sequences of standard moves drawn from the literature.  The protocol is
+designed to use the models' strengths in searching, reformulating, and
+iterating over possible arguments while mitigating recurrent failures in
+hypothesis tracking, global consistency, compactness arguments, and the
+verification of individual steps.
+
 \clearpage
 \bibliographystyle{alpha}
 \bibliography{type_II_regularity}

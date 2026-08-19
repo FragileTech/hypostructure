@@ -103,39 +103,33 @@ used in the proof are reproduced with code in the appendix.
 \setcounter{section}{-1}
 \section{Architecture of the proof}\label{sec:architecture}
 
-This preliminary section records the logical architecture of the proof before
-the local machinery is introduced.  Its role is to
-identify the invariant interfaces through which the later lemmas communicate:
-the target algebra, the $P_{13}$ window decomposition, the surplus-token
-routing branch, the obstruction-rank budget, and the final net-charge
-obstruction.
-
-The proof is organized as a routing argument over a fixed lexicographically minimal
-counterexample $G$.  The load path is
+This section gives a proof-level overview before the local constructions are
+introduced.  We describe the argument in standard graph-theoretic terms and
+refer to the formal definitions whenever the manuscript uses specialized
+terminology.  Fix throughout a lexicographically minimal counterexample $G$.
+The main reductions are
 \[
 \begin{aligned}
 &\text{minimal counterexample}\\
-&\Rightarrow \text{Mersenne-safe target algebra}\\
-&\Rightarrow \text{target-uncompressible boundaried pieces}\\
-&\Rightarrow \text{low-density induced-}P_{13}\text{ windows and a large remainder }R\\
-&\Rightarrow \text{sparse surplus-token discharge, Type B handoff, or the near-cubic spine}\\
-&\Rightarrow \text{full obstruction rank or a routed rank defect}\\
-&\Rightarrow \text{two-budget entropy closure or large-budget residual}\\
-&\Rightarrow \text{negative local net charge}\\
-&\Rightarrow \text{Type A or Type B local obstruction}\\
-&\Rightarrow \text{terminal two-support route-8 obstruction}\\
-&\Rightarrow \text{two-support route-8 exclusion.}
+&\Rightarrow \text{no edge-rooted return path has Mersenne length}\\
+&\Rightarrow \text{no proper boundaried subgraph has a smaller equivalent replacement}\\
+&\Rightarrow \text{a maximal packing of induced }P_{13}\text{'s and a }P_{13}\text{-free remainder }R\\
+&\Rightarrow \text{a near-cubic graph, or a forbidden cycle or high-degree local configuration}\\
+&\Rightarrow \text{independent local cycle tests, or a dependence excluded by replacement}\\
+&\Rightarrow \text{an entropy bound, or a remainder with small normalized degree deficit}\\
+&\Rightarrow \text{a connected piece of negative charge}\\
+&\Rightarrow \text{a subcubic boundary configuration or a high-degree fan}\\
+&\Rightarrow \text{a terminal boundary-incidence configuration}\\
+&\Rightarrow \text{a contradiction.}
 \end{aligned}
 \]
-Each implication is implemented by a named result in the body of the paper, and
-the proof-dependency diagram in \cref{sec:intro} records the same load path at
-node level.
+The four phases below identify the results proving these implications.  The
+proof-dependency diagrams in \cref{sec:intro} give the corresponding
+node-by-node expansion.
 
-\paragraph{Phase 1: target algebra and minimality.}
-This phase recasts a global cycle question as local length bookkeeping, and
-then uses minimality to rule out any smaller graph with the same obstruction.
-The geometric target is a cycle of length $2^k$.  The first reduction replaces
-that target by an edge-rooted arithmetic predicate: by
+\paragraph{Phase 1: edge-rooted return lengths and minimal replacement.}
+The first step expresses the desired cycle through the length of a path
+returning to an oriented edge.  By
 \cref{lem:return-equivalence}, a power-of-two cycle exists precisely when some
 oriented edge has a simple return of length in
 \[
@@ -146,136 +140,169 @@ Thus the counterexample condition is expressed as
 R_e(G)\cap \Mers=\varnothing
 \qquad\text{for every oriented edge }e .
 \]
-This converts power-of-two cycle avoidance into a local embedding constraint.  The
-replacement layer then treats a connected support only through the boundary
-data visible to outside contexts.  The degree-profile fibres,
-context-universality, and replacement lemma
-(\cref{lem:replacement}) imply that no proper boundaried piece of the minimal
-counterexample is target-compressible; this is recorded as
-\cref{cor:uncompressible}.  This uncompressibility statement is the formal
-minimality lever used whenever a local dependence, quotient, or replacement
-would otherwise preserve all target hazards.
+To use minimality locally, a connected subgraph is retained together with its
+boundary vertices and the operation of gluing it to an outside graph
+(\cref{def:boundaried-gluing,def:atom}).  Two such pieces are compared only
+when their boundary degrees agree (\cref{def:boundary-degree-profile}) and
+when every compatible outside graph gives the same answer to the
+power-of-two-cycle question.  The manuscript calls the resulting exact
+boundary response \emph{target-complete}; see
+\cref{def:target-complete-quotient}.  Context universality and the replacement
+lemma show that a proper piece of $G$ cannot have a smaller piece with the
+same boundary response and degree data
+(\cref{lem:context-universality,lem:replacement,cor:uncompressible}).  This is
+the form of minimality used later whenever local cycle tests become dependent.
 
-\paragraph{Phase 2: $P_{13}$ windows, surplus tokens, and the forced remainder.}
-This phase separates the graph into controlled short paths and the part left
-over, then records the elementary constraints each side imposes on the other.
-The single load-bearing external theorem at this stage is the Hegde--Sandeep--Shashank
-$P_{13}$-free theorem, stated as \cref{thm:p13free}.  Since $G$ has no power-of-two cycle, $G$ contains an induced $P_{13}$.  A maximal vertex-disjoint family of
-induced $P_{13}$ subgraphs is removed, producing a packing of windows and a
-remainder $R$ whose components are $P_{13}$-free by maximality.
+\paragraph{Phase 2: packing induced $P_{13}$ paths and bounding their density.}
+The external input is the Hegde--Sandeep--Shashank theorem
+\cref{thm:p13free}.  Since $G$ has minimum degree at least three and contains
+no power-of-two cycle, it contains an induced $P_{13}$.  Choose a maximal
+vertex-disjoint family $\mathcal P$ of induced $P_{13}$'s.  We call its
+members \emph{windows}, solely as shorthand for these packed paths.  Removing
+their vertices leaves a graph $R$ whose components are $P_{13}$-free by
+maximality.
 
-The window family is quantitative rather than cosmetic.  Its legal boundary
-states are governed by the finite $P_{13}$ label algebra and the two-step obstruction
-enumeration.  Before any normalized near-cubic budget is used, the
-surplus-token branch tests whether the surplus above cubic is too large.
-\Cref{prop:nonnear-cubic-sharp-overload-routing} exhausts that branch: a
-survivor either realizes a sparse surplus exit, supplies decorated Type B fan
-data, or satisfies the near-cubic spine estimate of
-\cref{def:near-cubic-spine}.  On the branch where that estimate is available,
-the skeleton normalization
+If $P=v_0\ldots v_{12}$ is a packed path and $x\notin V(P)$, its attachment
+to $P$ is the subset of positions $i$ for which $xv_i$ is an edge.  Pairs of
+positions at forbidden distances immediately create cycles of length four or
+eight; the remaining attachment sets and the analogous tests involving a
+short outside path form the finite enumeration in
+\cref{lem:labels,lem:p13-window-package}.  The exact degree count across all
+packed paths is
+\[
+e(R,W)+2e_\times(W)=15p_{13}+\sigma_W,
+\]
+with the notation and identity given in
+\cref{def:window-remainder-surplus-split,lem:exact-window-join-identity}.
+
+Before normalizing the edge count, the proof separates the case in which the
+total degree surplus
+\(\sigma(G)=\sum_v(d_G(v)-3)\) is large.  The exhaustive alternative
+\cref{prop:nonnear-cubic-sharp-overload-routing} gives either a power-of-two
+cycle, a smaller boundary-equivalent replacement or support dependence, a
+high-degree fan passed to the local analysis, or
+\(\sigma(G)=O(\!\sqrt n)\).  The last condition is called the
+\emph{near-cubic spine} in \cref{def:near-cubic-spine}; it implies
 \[
 B_{\mathrm{skel}}=\frac32 n\log_2 n+o(n\log n),
 \]
-applies.  Too many independent windows would then spend more entropy than the
-skeleton can supply.  This gives the window-only cap
+for the number of labelled graphs under consideration.
+
+No independence between distinct windows is assumed.  At a fixed scale,
+either their conditional restrictions multiply, or their failure to do so
+produces a minimal connected overlap
+(\cref{lem:barrier-failure-overlap}).  The overlap can be uncrossed into a
+serial chain of alternative corridor paths
+(\cref{lem:window-system-realizability}).  Sums of their length increments
+then contain long arithmetic progressions
+(\cref{lem:serial-system-sumset}); the arithmetic alternative in
+\cref{lem:system-increment-arithmetic} yields either a power-of-two cycle or
+a periodic boundary response already excluded by contextual distinction,
+replacement, or the local structural alternatives.  Thus the restrictions
+are additive exactly in the case where they are counted independently; see
+\cref{lem:scale-additivity,lem:blocked-graphs-compress}.  This proves the cap
 \[
 \theta=\frac{p_{13}}{n}\le \theta_{\rm win}+o(1)
 =0.01270017798\ldots+o(1),
 \]
-while the high-entropy branch has the sharper
-$0.01198542083\ldots$ cap in \cref{prop:p13-density}.  Consequently the
-remainder occupies a fixed linear proportion of the graph, and the external
-incidences of the windows bound the positive deficiency available in $R$.
+and the sharper high-entropy cap $0.01198542083\ldots$ in
+\cref{prop:p13-density}.  In particular, $R$ contains a fixed positive
+proportion of the vertices, while the displayed incidence identity bounds the
+positive degree deficiency that the packed paths can supply to it.
 
-\paragraph{Phase 3: obstruction rank and the two-budget split.}
-This phase places the overlapping constraints into one numerical accounting
-system, so that avoiding one restriction forces a compensating cost elsewhere.
-The remainder $R$ is large, componentwise $P_{13}$-free, and boundary-deficient.
-Its length-two wedges provide the raw two-step obstruction tests.  The argument first
-proves a supply lower bound for these tests and then separates raw tests from
-chargeable entropy by passing through target-rank.  A rank drop is not charged
-as entropy; it is routed through target defect, target-complete proper-support
-compression, or whole-graph dependence.  The target-defect, proper-compression,
-and proper-support-dependence routes are closed by the target algebra,
-uncompressibility, and proper-support lemmas.  The whole-graph dependence
-route is closed by the exact-response profile and closed-exactness argument of
+\paragraph{Phase 3: independent local cycle tests and the entropy alternative.}
+Each length-two path in $R$ supplies a local test for completing a
+power-of-two cycle through the rest of the graph.  The obstruction rank
+$r_\Omega(R)$ is, by definition, the largest independent family of these
+tests; see \cref{def:curvature-target-rank}.  A rank loss cannot simply be
+discarded.  On a proper subgraph it makes the boundary response distinguishable
+by an outside graph, permits a smaller boundary-equivalent replacement, or
+enlarges the support of the dependence.  These alternatives contradict the
+return-length condition, \cref{cor:uncompressible}, or the proper-support
+dependence lemmas.  A dependence using all of $G$ is excluded by retaining the
+exact labelled cycle-response data; see
 \cref{def:exact-response-profile,def:admissible-rank-quotient,lem:no-silent-global-smearing}.
-Thus the surviving branch has full obstruction rank,
+Consequently the surviving case has
 \[
 r_\Omega(R)\ge W_2(R)-o(W_2(R)),
 \]
 as stated in \cref{lem:full-rank}.
 
-Full obstruction rank imposes a forced linear cost.  The two-budget routing
-(\cref{prop:two-budget}) uses this cost only after the rank-forcing step has
-made the coordinates independent.  If the remaining non-obstruction budget is
-smaller than the forced obstruction cost, the entropy cap closes the branch.  If
-not, the proof enters the large-budget residual, where the same window and
-remainder estimates yield
+For the relevant family of possible remainders, entropy means the logarithm
+of the number of labelled possibilities per vertex
+(\cref{def:remainder-entropy}).  The exhaustive split in
+\cref{prop:two-budget} has three cases.  High entropy gives the sharper packing
+bound above.  In the repetitive low-entropy case, one local type occurs often
+enough to supply a linear independent family of cycle tests, whose forced cost
+exceeds the remaining count.  The nonrepetitive low-entropy case is retained
+for the degree calculation.  In that last case the window and remainder
+estimates give
 \[
 \Delta_{\mathrm{net}}(R)
 =\frac{\defp(R)-\sigma_R}{|R|}
 \le \tau_{\rm win}+o(1)<\frac14 .
 \]
+Here $\defp(R)$ is the sum of the positive boundary-degree deficits and
+$\sigma_R$ is the degree surplus assigned to $R$.
 
-\paragraph{Phase 4: net charge and local exclusion.}
-This phase turns the global accounting deficit into a deficient connected
-piece, and then proves that the possible local shapes cannot realize it.
-The large-budget residual is converted into a local obstruction through the net
-charge
+\paragraph{Phase 4: localizing the degree deficit and excluding connected pieces.}
+The graph $R$ is decomposed into connected pieces together with the surplus
+units assigned to them.  Such a piece is called \emph{admissible} when it has
+the inherited $P_{13}$-free, boundary-degree, contextual, and minimality
+properties listed in \cref{def:admissible}.  Its net charge is
 \[
 \No(X)=\defp(X)-\sigma(X)-\frac14|V(X)|
 \]
-on connected admissible supports.  By
-\cref{prop:negative-net-charge}, the global inequality
-$\Delta_{\mathrm{net}}(R)<1/4$ forces a connected admissible support $X$ with
+as defined in \cref{def:net-charge}.  By \cref{prop:negative-net-charge}, the
+global inequality $\Delta_{\mathrm{net}}(R)<1/4$ forces a connected
+admissible piece $X$ with
 \[
 \No(X)<0 .
 \]
-The local analysis then proves that, outside the named residual classes, no
-such $X$ is constructible.  If $X$ has no ambient surplus, it is a bounded
-low-deficiency $P_{13}$-free boundaried piece.  Its raw receiver thresholds are first
-computed as $4,8,12$; saturated exits (1)--(3), (5), and (6) are closed by the
-target, compression, and support-dependence machinery, exit (4) is routed through
-the target-defect peeling step, exit (7) is handed to the decorated Type B fan
-branch, and exit (8) is reduced to target-complete-minimal trace-support
-entries with the quantitative burden of
-\cref{lem:typeA-route8-burden}.  After these handoffs the remaining
-unsaturated branch gives the $3,7,11$ discharging inequality of
-\cref{lem:typeA-exclusion}.
-If $X$ carries high-degree surplus, the high-degree vertices are forced into a
-fan-safe configuration.  A fan center with a certificate labelling is
-certificate-marked; the structural label-packing cap and its spectral form give
-the local certificate-closed fan charge.  A high-degree center without such a
-labelling is a fan-certificate residual center and is routed directly to the
-fan-mass ledger.  For certificate-marked centers, the positive-deficit fan branch
-is paid locally by the hybrid B1 incidence ledger of
-\cref{lem:typeB-hybrid-B1}.  Summing the certificate-closed and B1 entries
-across different fan centers requires the refined support ledger B2 of
-\cref{def:typeB-bridge-statements}; once that ledger is available,
-\cref{lem:typeB-exclusion} and \cref{prop:typeB-bridge-reduction} close the
-support.  Failure of B2 gives a minimal Type B overlap obstruction.  By
-\cref{lem:typeB-global-local-reflection}, that overlap obstruction still carries
-contextual target safety, high-degree separation, window-stub capacity, and
-replacement/support-dependence routing.  The fan-mass closure of
-\cref{prop:typeB-bridge-sublinear} charges fan-certificate residual centers and
-B2 failures to their assigned surplus units.  At this point of the main route,
-the surplus-token branch has either already closed or supplied the near-cubic
-spine estimate, so those disjoint units have total size \(O(\sqrt n)\).  Type B
-bridge residuals are therefore sublinear in total negative charge and cannot
-carry the linear net-charge deficit on the surviving route.  The route-8 response-support
-reduction then isolates the terminal two-support obstruction class of
-\cref{def:typeA-terminal-two-carrier}, which is ruled out by the local exclusion
-theorem \cref{thm:typeA-two-carrier-nogo}.
 
-\paragraph{Redundancy and checkability.}
-The proof is deliberately organized with parallel closures.  The entropy cap,
-the obstruction-rank squeeze, and the net-charge collision are arithmetically
-distinct; a numerical repair in one layer does not erase the formal content of
-the other layers.  The appendices record the finite enumerations and the
-resilience table for the intermediate branches.  Thus each routed branch leaves
-a specified residual class rather than an unspecified gap, and every residual
-retains the standing invariants accumulated along the load path above.
+There are two local cases.  First suppose that $X$ contains no vertex of
+degree greater than three in $G$ (a \emph{Type A support} in
+\cref{def:typeA-support}).  A boundary vertex $w$ with internal degree at most
+two has deficit $q(w)=3-d_X(w)$.  The canonical trace assigns each internal
+degree-three vertex to such a boundary vertex; the number assigned to $w$ is
+its \emph{receiver load}, defined in \cref{def:typeA-receiver-load}.  If some
+load is at least $4q(w)$, the eight exhaustive outcomes of
+\cref{def:typeA-saturated-exits} give a forbidden cycle, an outside context
+that distinguishes two boundary responses, a smaller equivalent replacement,
+a support dependence, a high-degree fan, or the final minimal boundary data.
+If no load is saturated, the elementary $3,7,11$ discharging estimate gives
+nonnegative charge; see \cref{lem:typeA-exclusion}.
+
+Now suppose that $X$ contains a high-degree vertex (the \emph{Type B case}).
+High-degree vertices are independent, and their degree-three neighbours form
+the fans specified in \cref{def:typeB-fan-safe,def:marked-typeB-fan}.  The
+attachment restrictions either construct a power-of-two cycle or bound the
+deficit of an individual fan.  Positive fan deficits are paid by distinct
+noncentral incidences, as proved in \cref{lem:typeB-hybrid-B1}.  When incidences
+belonging to different fans overlap, the minimal overlap retains the same
+outside-context and replacement properties; the exact alternatives are stated
+in \cref{def:typeB-bridge-statements}.  The total contribution of failed or
+overlapping fan configurations is at most a constant times $\sigma(G)$ by
+\cref{prop:typeB-bridge-sublinear}, and hence is $O(\!\sqrt n)$.  It cannot
+account for the linear negative charge required in the surviving case.
+
+After these exclusions, the only remaining object is a minimal set of at most
+two private boundary incidences that preserves the power-of-two-cycle response
+under every compatible outside graph.  We call it here the \emph{terminal
+boundary-incidence obstruction}; its formal manuscript name and precise
+minimality conditions are given in \cref{def:typeA-terminal-two-carrier}.  The
+local theorem \cref{thm:typeA-two-carrier-nogo} proves that it cannot occur.
+
+\paragraph{How the alternatives close.}
+The counting, rank, and degree arguments are separate checks on the same
+minimal counterexample.  The packing count bounds how many induced paths can
+occur; the rank argument prevents dependent local cycle tests from being
+counted as independent information; and the charge argument localizes any
+remaining degree deficit.  Every exceptional case is passed to a stated
+structural lemma, and the finite enumerations used there are recorded in the
+appendices.  Thus the overview above is an exhaustive sequence of alternatives,
+not an assumption that the local restrictions are probabilistically
+independent.
 
 
 \section{Introduction and overview of the proof}\label{sec:intro}
@@ -17476,6 +17503,90 @@ Net charge & $\defp(R)-\sigma(R)\ge0.25\cdot|R|$ & $\defp(R)-\sigma_R=\defp(R)-\
 \end{tabular}
 \end{center}
 \noindent The shared ancestor of both forms is invariant~24 (\cref{lem:stub-positive}, diagram node {[29]}), the exact incidence-counting leaf.
+
+\section*{A note on human--AI collaboration}
+\addcontentsline{toc}{section}{A note on human--AI collaboration}
+
+This paper grew out of a collaboration between the author and several AI
+systems, principally Claude Fable 5, GPT-5.4, GPT-5.5, and GPT-5.6-Sol.
+
+This project began as a personal effort by the author to learn graph theory and
+to study how large language models fail when reasoning about mathematics.
+Because the subject was initially unfamiliar to him, part of the aim was to
+develop a working protocol for detecting hallucinations and avoiding reliance
+on arguments that he could not independently follow.  The author asked
+GPT-5.4 to identify difficult problems together with recent progress on them,
+and selected the Erd\H{o}s--Gy\'arf\'as conjecture and the
+Hegde--Sandeep--Shashank theorem for $P_{13}$-free graphs as the starting
+point.
+
+The first stage proceeded through an iterative dialogue.  The author proposed
+possible approaches in natural language and asked the model to explain why
+they were insufficient and how they related to methods in the literature.  He
+then asked what a counterexample to each proposed approach would have to look
+like.  The resulting examples became the input to the next round of questions.
+In particular, the author repeatedly requested explanations at an elementary
+level or in terms familiar to an AI and machine-learning engineer, with
+emphasis on the purpose of each technique and on the structural properties of
+the graph that the current argument had not yet controlled.  This process
+continued for approximately two weeks, until the models no longer produced
+further counterexamples to the developing strategy.
+
+The next stage converted the dialogue into a mathematical manuscript.  The
+author asked GPT-5.5 to translate the accumulated discussion into LaTeX and
+carried out more than fifty rounds of revision.  In each round, he asked the
+model to replace informal descriptions with mathematical statements, expand
+steps that he did not understand, and construct proof-flow diagrams and other
+figures that made the dependencies of the argument visible.  He then continued
+the process for approximately one hundred rounds with GPT-5.5 and Claude Opus
+4.8.  Over these iterations, the proof strategy acquired a coherent global
+organization, and the models became able to track the argument using the same
+tables and diagrams that the author used to follow it.
+
+The author subsequently developed a red-teaming protocol in which GPT-5.5 and
+Claude Opus 4.8 were asked to search systematically for missing hypotheses,
+unsupported transitions, and other errors.  When a possible gap was identified,
+the repair protocol introduced a separate branch for the missing case and
+attempted to close it using the same cycle of counterexamples, explanations,
+and structural refinements.  After Claude Fable 5 and GPT-5.6-Sol became
+available, the author repeated this red-teaming process roughly fifty more
+times.  The additional gaps found in these reviews were addressed through
+further manual steering of the models.  The point at which the reviews stopped
+producing new objections was treated as a reason to move to a stricter form of
+checking, rather than as a certificate of correctness.
+
+For that purpose, the author designed a Lean framework and an interactive proof
+explorer.  The framework represented the proof as a data-processing pipeline
+whose nodes record the mathematical facts available at each point in the proof
+tree.  Its purpose was to make the transfer of hypotheses and conclusions
+explicit and to allow individual proof steps to be inspected independently.
+The framework was rewritten four times to mitigate recurring failure modes
+encountered when GPT-5.6-Sol attempted to port the argument to Lean.
+
+Once this infrastructure was in place, the author asked Claude Fable 5 to
+translate the proof into Lean so that remaining inconsistencies could be
+exposed and repaired.  This process increased the proof architecture from 157
+to 180 nodes as gaps were found and new branches were added to close them by
+the same general strategy.  The node-by-node translation is ongoing: each node
+is being formalized separately in order to force the models to account for its
+hypotheses, dependencies, and conclusion within a modular proof state.
+
+The author's role throughout was to select the problem and research direction,
+propose and revise ideas, request explanations and counterexamples, design the
+review and repair protocols, construct the proof-tracking framework, and decide
+how identified gaps should be routed through the argument.  The AI systems
+supplied literature-oriented explanations, counterexamples to proposed
+approaches, mathematical formulations, proof drafts, diagrams, reviews,
+repairs, and Lean translations.  This division of labor reflects the actual
+development of the manuscript: the author did not begin as an expert in graph
+theory, and the proof emerged through repeated attempts to make every step
+explicit enough for him to question, organize, and check.  The author also
+abstracted this process into a replicable protocol for decomposing difficult
+problems into sequences of standard moves drawn from the literature.  The
+protocol is designed to use the models' strengths in searching, reformulating,
+and iterating over possible arguments while mitigating recurrent failures in
+hypothesis tracking, global consistency, and the verification of individual
+steps.
 
 \begin{thebibliography}{9}
 

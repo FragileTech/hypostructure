@@ -1,9 +1,9 @@
 \contentsline {section}{\numberline {0}Architecture of the proof}{2}{section.0}%
-\contentsline {paragraph}{Phase 1: target algebra and minimality.}{3}{section*.2}%
-\contentsline {paragraph}{Phase 2: $P_{13}$ windows, surplus tokens, and the forced remainder.}{3}{section*.3}%
-\contentsline {paragraph}{Phase 3: obstruction rank and the two-budget split.}{4}{section*.4}%
-\contentsline {paragraph}{Phase 4: net charge and local exclusion.}{4}{section*.5}%
-\contentsline {paragraph}{Redundancy and checkability.}{5}{section*.6}%
+\contentsline {paragraph}{Phase 1: edge-rooted return lengths and minimal replacement.}{3}{section*.2}%
+\contentsline {paragraph}{Phase 2: packing induced $P_{13}$ paths and bounding their density.}{3}{section*.3}%
+\contentsline {paragraph}{Phase 3: independent local cycle tests and the entropy alternative.}{4}{section*.4}%
+\contentsline {paragraph}{Phase 4: localizing the degree deficit and excluding connected pieces.}{4}{section*.5}%
+\contentsline {paragraph}{How the alternatives close.}{5}{section*.6}%
 \contentsline {section}{\numberline {1}Introduction and overview of the proof}{5}{section.1}%
 \contentsline {paragraph}{Conventions.}{7}{section*.7}%
 \contentsline {paragraph}{External inputs (black boxes).}{29}{section*.24}%
@@ -83,3 +83,4 @@
 \contentsline {paragraph}{External-input closures for partial degradation cells.}{252}{section*.92}%
 \contentsline {paragraph}{Summary: the degradation ladder.}{254}{section*.93}%
 \contentsline {paragraph}{Cross-check against the demand $>$ supply collision.}{255}{section*.94}%
+\contentsline {section}{A note on human--AI collaboration}{256}{section*.95}%

@@ -1,1 +1,0 @@
-"""Hypostructure documentation application."""

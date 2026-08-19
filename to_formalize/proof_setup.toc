@@ -142,4 +142,6 @@
 \contentsline {section}{\tocsection {}{}{Part V. Final Assembly: Local Type I Exclusion}}{100}{section*.16}%
 \contentsline {subsection}{\tocsubsection {}{}{Overview}}{100}{section*.17}%
 \contentsline {section}{\tocsection {}{34}{Final assembly}}{100}{section.34}%
-\contentsline {section}{\tocsection {}{}{References}}{102}{section*.18}%
+\contentsline {section}{\tocsection {}{}{A note on human--AI collaboration}}{102}{section*.18}%
+\contentsline {section}{A note on human--AI collaboration}{102}{section*.18}%
+\contentsline {section}{\tocsection {}{}{References}}{103}{section*.19}%

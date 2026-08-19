@@ -15,13 +15,17 @@ machine-checked. The repository contains three things:
    tables and cross-references behind every step. Live at
    <https://fragiletech.github.io/hypostructure/>.
 3. **The Lean 4 framework** ([`hypostructure/`](hypostructure/)) and its first application
-   ([`proofs/hypostructure_erdos_64_eg/`](proofs/hypostructure_erdos_64_eg/)): a typed
-   representation of branch state in which the elaborator, not a referee, checks which
-   facts are available on which branch and which obligations remain.
+   ([`proofs/hypostructure_erdos_64_eg/`](proofs/hypostructure_erdos_64_eg/)): a language
+   for writing structural-exhaustion proofs in which the state of a branch — the residual
+   problem still open and the facts established so far — is part of the type of every
+   step. Steps declare what they read and what they establish, compose only where the
+   branch actually supplies their hypotheses, and carry their constraints forward to the
+   point of use; the elaborator checks all of it, so a completed assembly is a machine
+   verification that the case analysis is exhaustive and every branch closes.
 
-The mathematics lives in the manuscripts; nothing here qualifies or replaces them. What
-the tooling adds is a mechanical record of *how each result is used*: which branch it
-closes and which facts were on hand when it did.
+The mathematics lives in the manuscripts and the ongoing lean formalization. The tooling adds is a mechanical record
+of *how each result is used*: which branch it closes and which facts were on hand when it did, and is meant to provide
+a more comfortable interface for understanding and auditing the proofs and their formalization in Lean
 
 ## The method
 
@@ -38,9 +42,9 @@ table of the proof moves.
 `make web` serves it locally; `make web-build` produces a static `web/frontend/dist/`.
 There is no backend. Two proofs are published:
 
-| Proof | Manuscripts | Size |
-| --- | --- | --- |
-| Erdős–Gyárfás | `original_erdos_64_proof.tex` | 157 steps, 11 panels |
+| Proof | Manuscripts | Size                           |
+| --- | --- |--------------------------------|
+| Erdős–Gyárfás | `original_erdos_64_proof.tex` | 180 steps, 12 panels           |
 | Navier–Stokes | `proof_setup.tex`, `type_I_residual_closure.tex`, `type_II_regularity.tex` | 333 steps, 23 panels, 3 papers |
 
 For each proof the site offers:
@@ -57,7 +61,7 @@ For each proof the site offers:
   node-by-node audit, requirements) as written, with every step number and `\cref`
   linked into the diagram.
 - **Notation** — the constants, glossary and macros of each paper.
-- **Hypostructure docs** (`/#/lean`) — a hand-written reference for the Lean framework:
+- **Hypostructure docs** (`/#/lean`) — a reference for the Lean framework:
   the ledger, defining a problem, assembling a proof, and verbatim API signatures.
 
 Everything except the introductions, panel names, methodology section, and Lean docs is
@@ -108,15 +112,16 @@ make web-test          # extractor assertions, typecheck, frontend suite
 
 ## Implementation status
 
-This is work in progress. As of this writing:
+This is work in progress. Everything below was checked against a build of the
+current tree on 2026-08-19.
 
-| Component | Status |
-| --- | --- |
-| Manuscripts | Erdős–Gyárfás and the three Navier–Stokes papers are complete drafts with chapter-1 diagrams, ledgers and audit tables; the methodology papers are the reference. |
-| Proof explorer | Both proofs published, all features above live; the referee mode's Lean/review dimensions read a side-car that no host supplies yet. |
-| Framework core | `ExactLedger`, `AtomicCT`, problem registration, fixtures and gates are live and are the only API; the legacy layered API has been removed (`LEGACY_REMOVAL_AUDIT.md`). |
-| Erdős–Gyárfás in Lean | Partial. Rows are ported one diagram node at a time onto exact ledgers; the entry spine, surplus dichotomy, Type-B normal-form and degree-four blocks are kernel-checked and wired, later blocks are in progress, and per the audit the full `Assembly` build does not yet close end to end. Every ported row depends only on `propext`, `Classical.choice`, `Quot.sound`. |
-| Navier–Stokes in Lean | Not started; queued after the Erdős–Gyárfás application, in manuscript dependency order. |
+| Component | Status                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| --- |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Manuscripts | Erdős–Gyárfás and the three Navier–Stokes papers are complete drafts with chapter-1 diagrams, ledgers and audit tables; the methodology papers are the reference.                                                                                                                                                                                                                                                                                                                   |
+| Proof explorer | Both proofs published, all features above live, `make web-test` green (196 tests). Referee mode's Lean and review dimensions are now supplied for the Erdős–Gyárfás proof from the checked-in 180-node audit (`web/data/eg_node_audit.json`, folded into the site data by `web/tools/lean_review.py`); the Navier–Stokes document carries no such side-car yet.                                                                                                                     |
+| Framework core | Builds. `ExactLedger`, `AtomicCT`, problem registration and the fixtures are live and are the only API; Ongoing deprecation of stale code. Implementing the high level API of problem-independent proof moves is pending.                                                                                                                                                                                                                                                           |
+| Erdős–Gyárfás in Lean | Advanced, not closed. Of the 180 diagram nodes, 173 have a Lean producer and 156 kernel-check clean against a tracer planted at the unfinished frontier; on manuscript fidelity 146 publish the paper's own statement, 27 publish something weaker, plumbing or divergent, and 7 are absent; 68 sit on an arm probed stub-free end to end. `make erdos-build` still fails: `Assembly.lean` names 14 undefined frontier producers, so `erdos_64` does not yet type-check end to end. |
+| Navier–Stokes in Lean | Not started; queued after the Erdős–Gyárfás application, in manuscript dependency order.                                                                                                                                                                                                                                                                                                                                                                                            |
 
 The authoritative per-fact and per-node record is
 [`Assembly_node_audit.md`](Assembly_node_audit.md): one row per labeled manuscript
