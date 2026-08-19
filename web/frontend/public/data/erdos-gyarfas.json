@@ -17382,16 +17382,16 @@
     "kernel": "verified",
     "wired": "verified",
     "local": "verified",
-    "fidelity": "partial",
-    "note": "WEAKER — `c_Ω = log₂(543958/111286)` is never asserted anywhere in Lean; `data.curvatureCost` is the integer `binaryRowRateFloor`. The enumeration fact's final clause is `logb(X/Y) = logb(X/Y)`. `windowPackageSeparated` and `skeletonDominates` are faithful and load-bearing."
+    "fidelity": "verified",
+    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. The counts are in the tree: `Certificate.lean:6036`/`:6265` index 16 are 543958 and 111286, tied to the enumeration predicate by `storedSafe_eq`/`storedFlat_eq`, so the existential asserts all three of `lem:curv-enum`'s displays. The `logb` clause closing by `rfl` is the paper's own “the entropy value is then the elementary calculation”."
    },
    "22": {
     "lean": "verified",
     "kernel": "verified",
     "wired": "verified",
     "local": "absent",
-    "fidelity": "partial",
-    "note": "WEAKER — `WindowFamilyRealized` (SpineVocabulary.lean:1634) is trivially satisfied by `State := Skeleton, stateOf := id`, collapsing to a counting comparison; the manuscript's injectivity/independence claim is absent. `hotColdPartitionRow` has `Requires := []` and its proof is `Classical.choose_spec`, so it is true of every finite object."
+    "fidelity": "verified",
+    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. `def:window-realization-test` *defines* realization as a counting statement and gives the paper's own “equivalently θ > θ_win”; tex:7351 says the sentence “is a branch test, not an assertion”. The injectivity content is at [21], where the paper proves it, and [22] is entitled to read it. This settles the question that also spanned [23], [52] and [158]."
    },
    "23": {
     "lean": "verified",
@@ -17406,16 +17406,16 @@
     "kernel": "verified",
     "wired": "partial",
     "local": "verified",
-    "fidelity": "partial",
-    "note": "WEAKER — θ ≤ θ_win + o(1) is faithful and genuinely derived, at the full `windowPackingNumber`. The high-entropy cap θ ≤ 0.01198542083… + o(1) is stated by no fact key."
+    "fidelity": "verified",
+    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. The sharper cap cannot be derived here in the manuscript either — its proof runs through `prop:two-budget`, nodes [49]–[52] — so placing it at [24] would be a forward reference. `eq:feasibility` is in the tree at the node that proves it."
    },
    "25": {
     "lean": "verified",
     "kernel": "verified",
     "wired": "verified",
     "local": "verified",
-    "fidelity": "partial",
-    "note": "WEAKER — P₁₃-freeness is present and stronger than componentwise; “R is large” is not stated. No `remainderLarge`/`remainderMass` key exists."
+    "fidelity": "verified",
+    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. “R is large” is carried forward from [24], not derived here: `lem:remainder-empty-internal-3-core` states only componentwise P₁₃-freeness and the empty internal 3-core, both of which Lean proves and more strongly."
    },
    "26": {
     "lean": "verified",
@@ -17423,7 +17423,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "partial",
-    "note": "WEAKER — Same fact as [25]; Lean does not distinguish the two nodes."
+    "note": "PLUMBING — A continuation box: the diagram arrow reads “from [25]” and the dependency table gives [17], [25]–[27] one row and one label. Not distinguishing it from [25] is correct."
    },
    "27": {
     "lean": "verified",
@@ -17454,8 +17454,8 @@
     "kernel": "verified",
     "wired": "verified",
     "local": "verified",
-    "fidelity": "partial",
-    "note": "WEAKER — Conjunct 1 is stronger than the manuscript; conjunct 2 is [29] substituted in. The density conversion `15p₁₃ ≤ (τ_win+o(1))|R|` is missing, without which the diagram's ω_win bound does not follow."
+    "fidelity": "verified",
+    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. The density conversion is in the tree in exact form at the node that consumes it — `strictCap_of_densityCap_of_sufficientlyLarge` yields 4·15p₁₃ < |R| + o(n), the integer form of τ(θ) < 1/4. [30]'s consumer substitutes r_Ω = W₂ and never needs the normalized ω_win form."
    },
    "31": {
     "lean": "verified",
@@ -17495,7 +17495,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "partial",
-    "note": "WEAKER — Identical fact to [33]; no second declaration. `lem:separated-testers` has no Lean counterpart at all."
+    "note": "PLUMBING — A continuation box: the arrow reads “from [33]” with identical text. `lem:separated-testers` is cited in no proof body anywhere in the manuscript, and its only stated consequence is what [36] performs."
    },
    "36": {
     "lean": "verified",
@@ -17534,8 +17534,8 @@
     "kernel": "verified",
     "wired": "verified",
     "local": "verified",
-    "fidelity": "partial",
-    "note": "WEAKER — Establishes only `C ⊂ Z` with `Z := quotient.support ∪ C`. Missing: `ConnectedOn object Z` and the inclusion-minimality clause."
+    "fidelity": "verified",
+    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. Connectivity is the `DeclaredQuotient.connected` field, and inclusion-minimality is on the incoming ledger at `K .branchDependence`/`K .contextUniversal` — re-stating it would violate the transport discipline. The union is not the paper's Z; `quotient.support` is."
    },
    "41": {
     "lean": "verified",
@@ -17550,8 +17550,8 @@
     "kernel": "verified",
     "wired": "verified",
     "local": "verified",
-    "fidelity": "partial",
-    "note": "WEAKER — Derives `ReplacementSupport … object quotient.support`, not at Z. Missing: `ReplacementSupport … object (delocalizationSupport …)`."
+    "fidelity": "verified",
+    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. The paper's Z is the support the quotient is defined on, and `delocalizationSupport` is never the domain of any quotient. `ReplacementSupport … quotient.support` is the manuscript's step."
    },
    "43": {
     "lean": "verified",
@@ -17566,8 +17566,8 @@
     "kernel": "verified",
     "wired": "verified",
     "local": "absent",
-    "fidelity": "partial",
-    "note": "WEAKER — The arithmetic identity s = p−2+2β−σ is genuine and proved, but nothing asserts that a delayed compensation component of Z is a `OneThreeRepair.Component`."
+    "fidelity": "verified",
+    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. “Is a repair network” is stipulated by `def:repair-network-terms`, and its content is exactly `Component`'s fields. The dead-fact complaint is exculpated: `lem:smearing-support-repair` is never consumed arithmetically in the manuscript either — it is invariant 35, a routing record."
    },
    "45": {
     "lean": "verified",
@@ -17606,8 +17606,8 @@
     "kernel": "verified",
     "wired": "verified",
     "local": "verified",
-    "fidelity": "partial",
-    "note": "WEAKER — `RemainderClass` omits the subcubicity conjunct of `def:remainder-entropy`; dropping it enlarges 𝒢(R), safe for the high-entropy arm and unsafe for the low."
+    "fidelity": "verified",
+    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. The allegedly missing subcubicity conjunct is the first line of `RemainderClass`. All four paper clauses are present plus an extra; the two deviations tighten rather than drop, so 𝒢(R) shrinks and the high arm is safe."
    },
    "50": {
     "lean": "verified",
@@ -17638,24 +17638,24 @@
     "kernel": "verified",
     "wired": "verified",
     "local": "verified",
-    "fidelity": "partial",
-    "note": "WEAKER — Omits the `2^(c_Ω·r_Ω(R))` factor: a two-term comparison where `eq:entropy-cap` is three-term. Nothing named Θ(n), 1.4 or 116.808581006 exists in Lean."
+    "fidelity": "verified",
+    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. `eq:entropy-cap` as displayed is itself two-term, and the K-term is what the manuscript removes here: the invariant table assigns `rem:closure-robust` to [54] with the gloss “Closure already holds at K=0”."
    },
    "54": {
     "lean": "verified",
     "kernel": "verified",
     "wired": "verified",
     "local": "verified",
-    "fidelity": "partial",
-    "note": "WEAKER — `jointPackageDemand_le_retainedCode` (:50) discards the curvature factor via `Nat.one_le_two_pow`; `dominates.2` holds for every map out of a finite type. The closure goes through for any values of c_Ω, K, Θ(n), 1/10, θ. | API: FLAG — `entropyCap_closes` and friends are absent from `allowed-api.md` and it takes an `ExactLedger` argument; the catalog is demonstrably stale, so this is unresolved rather than a proven violation."
+    "fidelity": "verified",
+    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. The curvature factor is not discarded — `retainedCode` contains `2^(curvatureCost · remainderCurvatureTargetRank)`, and `Nat.one_le_two_pow` enlarges the retained-code side, strengthening the hypothesis. The non-retained arm is discharged by every caller. | API: FLAG — `entropyCap_closes` and friends are absent from `allowed-api.md` and it takes an `ExactLedger` argument; the catalog is demonstrably stale, so this is unresolved rather than a proven violation."
    },
    "55": {
     "lean": "verified",
     "kernel": "verified",
     "wired": "verified",
     "local": "verified",
-    "fidelity": "partial",
-    "note": "WEAKER — `LargeBudgetResidual` contains no θ, no p₁₃ and no window-density statement; the θ bound lives in the separate `K .densityCap`, which this key neither contains nor requires."
+    "fidelity": "verified",
+    "note": "FAITHFUL-TRIVIAL — The diagram box advertises θ ≤ θ_win + o(1), but the paper proves nothing here — it re-cites `prop:p13-density`. Lean does the same, and the bound is consumed at [56] where the manuscript consumes it."
    },
    "56": {
     "lean": "verified",
@@ -17862,8 +17862,8 @@
     "kernel": "verified",
     "wired": "partial",
     "local": "verified",
-    "fidelity": "partial",
-    "note": "DIVERGENT — The manuscript asks “c ≤ 1, or c ≥ 2 with a B2 disjoint ledger”. The `c ≤ 1` alternative is nowhere in the formula; no declaration proves `c ≤ 1 → HasDisjointChoice`. | API: ⚠ `K .typeBDirectCycleFree` bound and unused"
+    "fidelity": "verified",
+    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. The `c ≤ 1` alternative is the `.certificate` constructor of `CandidateData`, with `IsCertificateClosed` defined as `scaledDeficit ≤ 0` — the paper's own “equivalently c ≤ 1 when k ≤ 7”. A top-level implication would be the unfaithful rendering. | API: ⚠ `K .typeBDirectCycleFree` bound and unused"
    },
    "82": {
     "lean": "verified",
@@ -17974,8 +17974,8 @@
     "kernel": "verified",
     "wired": "partial",
     "local": "verified",
-    "fidelity": "partial",
-    "note": "WEAKER — The no arm is only “∃ package, ∀ return through package.outside, ¬accepted”; it does not say exit (1) fails at every completion port."
+    "fidelity": "verified",
+    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. The manuscript's exit (1) is stated at the port fixed by [93], not port-universally. On the quantifier that matters Lean is stronger: no anchored return at all through that port is Mersenne."
    },
    "96": {
     "lean": "verified",
@@ -18006,8 +18006,8 @@
     "kernel": "verified",
     "wired": "partial",
     "local": "verified",
-    "fidelity": "partial",
-    "note": "DIVERGENT — The collision clause mentions only the object, window order, length predicate and packing; the bound `package` — hence `receiver` and `piece` — is existentially bound and never used inside it."
+    "fidelity": "verified",
+    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. A local collision is a fortiori a `LabelCollision` at the same packing, so the manuscript's case is covered; the no arm carries the stronger `LabelCollisionFree`. The unused binder costs nothing because the configuration is conjoined on both arms."
    },
    "100": {
     "lean": "verified",
@@ -18022,8 +18022,8 @@
     "kernel": "verified",
     "wired": "partial",
     "local": "verified",
-    "fidelity": "partial",
-    "note": "WEAKER — `Graph.ExitFour.Witness` carries `boundary`/`left`/`right`/`targetDefect` with no field tying them to the object, the quotient or the load, and the defect is supplied for any same-profile pair by the already-committed `K .uncompressible`."
+    "fidelity": "verified",
+    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. `family`, `generated` and `declared` are all tied to the object and the load. The unlinked `left`/`right` are exactly how `def:typeA-exit4-peeling` lists them — stipulated alongside q, not derived."
    },
    "102": {
     "lean": "verified",
@@ -18086,8 +18086,8 @@
     "kernel": "verified",
     "wired": "partial",
     "local": "verified",
-    "fidelity": "partial",
-    "note": "WEAKER — Faithful as the negative half of exit (8), but `def:typeA-silent-core-residual`'s positive data — trace basins, unpaid silent vertices, connector bands — appears nowhere."
+    "fidelity": "verified",
+    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. A definition-introducing node with no manuscript proof step. The positive tuple exists and is consumed downstream: trace basins at `Route8Residual.TraceBasin`, silent excess at [112], connector bands at `SignatureClause.connectorBand`."
    },
    "110": {
     "lean": "verified",
@@ -18103,15 +18103,15 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "partial",
-    "note": "WEAKER — Neither the collection 𝒳_A, nor D_A, nor the carrying inequality occurs; both conjuncts are already on the incoming ledger."
+    "note": "PLUMBING — The invariant table gives [111] one label, glossed “*defines* the Type A route-8 deficit”. Both quantitative statements about D_A are assigned to [112]/[113]. D_A itself exists as `TypeBEnvelopeCharge.route8Deficit`."
    },
    "112": {
     "lean": "verified",
     "kernel": "verified",
     "wired": "partial",
     "local": "verified",
-    "fidelity": "partial",
-    "note": "WEAKER — The second conjunct is byte-for-byte node [94]'s `K .typeAVisibleFirstExcess`. No sum over a collection, no 𝒰_X(w), no trace-basin indexing."
+    "fidelity": "verified",
+    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. The collection-level content is in `route8DeficitRow` under `K .route8Deficit`: `Route8Census.entries` is 𝒰_X(w) indexed by (u,B_u), `silentMass` is the double sum, and `Route8Census.Deficit` is proved and spent at `false_of_noTwoCarrier`."
    },
    "113": {
     "lean": "verified",
@@ -18134,8 +18134,8 @@
     "kernel": "verified",
     "wired": "partial",
     "local": "partial",
-    "fidelity": "partial",
-    "note": "WEAKER — No dichotomy on `entry.alpha ≤ 1` is committed anywhere; what is committed is an implication schema whose consequent is a caller-supplied arbitrary `Alternatives : Prop`."
+    "fidelity": "verified",
+    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. `Alternatives` is continuation-passing over the trace basin's own minimality clause — the paper does not derive the exit disjunction either, it reads it off `def:typeA-trace-basin`. The cut-parity content is proved."
    },
    "116": {
     "lean": "verified",
@@ -18238,8 +18238,8 @@
     "kernel": "verified",
     "wired": "verified",
     "local": "verified",
-    "fidelity": "partial",
-    "note": "WEAKER — Clauses (a)–(d) are faithful with non-trivial witnesses, but canonicity is not modelled: Lean asserts only `Nonempty`, and `pairResponseActivation` rebuilds supports with `Classical.choice`."
+    "fidelity": "verified",
+    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. The manuscript fixes a canonical choice as notation and proves nothing about lexicographic-firstness. Lean has a real deterministic selector: `canonicalReturn` is `FinitePathSelection.selectOfReachable` with a schedule-minimality field."
    },
    "129": {
     "lean": "verified",
@@ -18262,8 +18262,8 @@
     "kernel": "verified",
     "wired": "verified",
     "local": "partial",
-    "fidelity": "partial",
-    "note": "WEAKER — None of the annotated facts is the diagram's inequality. `Graph.entropySandwich` and `freeCount_le_of_sandwich` exist but are invoked by no row. `freePairEntropyDichotomy` case-splits on the sandwich; the manuscript derives it."
+    "fidelity": "verified",
+    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. `freeCount_le_of_sandwich` is invoked twice on the live path. And the case split is the manuscript's own: tex:1044 calls the [131] and free-side-[137] entropy counts “branch tests, exactly as at [158]”."
    },
    "132": {
     "lean": "verified",
@@ -18310,8 +18310,8 @@
     "kernel": "verified",
     "wired": "verified",
     "local": "absent",
-    "fidelity": "partial",
-    "note": "DIVERGENT — This is a row producing the charge partition, not the coupled-excess decision the diagram states; its content is the hypothesis-free `Graph.roleFibrePartitionStatement` (ObjectCapacityLedger.lean:772), true of every object."
+    "fidelity": "verified",
+    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. The verdict graded one of three covering declarations. `coupledExcessDichotomy` performs the D_all > 0 decision, matching the caption arm for arm; `RoleFibrePartitionStatement` is a combinatorial identity, unconditional in the manuscript too."
    },
    "138": {
     "lean": "verified",
@@ -18334,8 +18334,8 @@
     "kernel": "verified",
     "wired": "partial",
     "local": "partial",
-    "fidelity": "partial",
-    "note": "WEAKER — The payload is the detached `Graph.classAuditStatement`, whose proof binds and discards the class hypothesis; the same term proves all three class instances. | API: ⚠ `Requires` bound and discarded"
+    "fidelity": "verified",
+    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. `lem:same-token-matching-star` is proved for an arbitrary graph and instantiated three times, and `cor:homogeneous-same-token-caps-close` says so. One term proving all three instances is the faithful mirror. Unconsumed, but the content reaches [137] and [144] by two other routes. | API: ⚠ `Requires` bound and discarded"
    },
    "141": {
     "lean": "verified",
@@ -18350,8 +18350,8 @@
     "kernel": "verified",
     "wired": "partial",
     "local": "partial",
-    "fidelity": "partial",
-    "note": "WEAKER — Identical defect to [140]. | API: ⚠ `Requires` bound and discarded"
+    "fidelity": "verified",
+    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. Same as [140]: one class-agnostic lemma, three instantiations. | API: ⚠ `Requires` bound and discarded"
    },
    "143": {
     "lean": "verified",
@@ -18430,16 +18430,16 @@
     "kernel": "verified",
     "wired": "partial",
     "local": "verified",
-    "fidelity": "partial",
-    "note": "WEAKER — `b(𝔖_cold)` is never formed and s(P) is never computed from `object.degree`; the proof is 13 × the [151] inequality and is true for any constant in place of 13."
+    "fidelity": "verified",
+    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. `coldExternalStubCount` is the paper's 39−24; 13 is nowhere a numeral. `b(P) := max{0,s(P)−2}` is the paper's definition and ℕ truncated subtraction is that. s(P) is computed from `object.degree`, and `b(𝔖_cold)` is formed by `card_allSelectedStubs`."
    },
    "153": {
     "lean": "verified",
     "kernel": "verified",
     "wired": "partial",
     "local": "verified",
-    "fidelity": "partial",
-    "note": "WEAKER — Publishes only the scalar (13+B_cold)σ(G) < 13C; the germ-count bound is in `selectedColdGermCandidates` (Assembly.lean:1041), which is annotated `EG-NODE none`."
+    "fidelity": "verified",
+    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. The germ-count bound is present and proved by `selected_le_candidates`; the earlier pass measured coverage by the `EG-NODE` comment, which reads `none` while the docstring correctly says “Node [153]”. Annotation defect only."
    },
    "154": {
     "lean": "verified",
@@ -18462,24 +18462,24 @@
     "kernel": "verified",
     "wired": "partial",
     "local": "partial",
-    "fidelity": "partial",
-    "note": "WEAKER — `.coldGermDistinguished` is faithful; `.coldGermRouted` is restricted to `germ.increment < 0`. Missing: the `0 < germ.increment` half."
+    "fidelity": "verified",
+    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. “Exit (4), or handoff” is the name of the ledger the defect lands in, already excluded by `def:surviving-cold-branch`. The sign guard matches the manuscript's own orientation convention and is what the G3 descent needs."
    },
    "157": {
     "lean": "verified",
     "kernel": "verified",
     "wired": "partial",
     "local": "partial",
-    "fidelity": "partial",
-    "note": "WEAKER — The compression step is executed, but its premise is a structure field of `TableRow` (`admissible`). Nothing anywhere constructs a `TableRow`, so the closure is never discharged against the residual."
+    "fidelity": "verified",
+    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. “Nothing constructs a `TableRow`” is the manuscript's shape too — the paper never exhibits a row; the working lemma is “every row is routed” and the consumer negates existentials. `admissible` is `def:admissible-rank-quotient`, cited as a definition at exactly this point."
    },
    "158": {
     "lean": "verified",
     "kernel": "verified",
     "wired": "verified",
     "local": "verified",
-    "fidelity": "partial",
-    "note": "WEAKER — The existential places no condition on `stateOf`, so it collapses to a pure counting comparison. `def:window-realization-test` requires an assignment of target-complete states; that clause is absent."
+    "fidelity": "verified",
+    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. The collapse to a counting comparison is the manuscript's own reading, stated twice in the same paragraph; since any assignment's range is at most its domain, target-completeness cannot tighten the test."
    },
    "159": {
     "lean": "verified",
@@ -18510,8 +18510,8 @@
     "kernel": "absent",
     "wired": "absent",
     "local": "verified",
-    "fidelity": "partial",
-    "note": "WEAKER — Structurally faithful, but `K .denseDeficiencyAtOrAbove` is produced and never consumed: nothing on this arm uses τ(θ) ≥ 1/4. | API: ⚠ the [22] decision is re-derived inline rather than reusing `selectedBarrierDichotomy` — two decision sites for one node"
+    "fidelity": "verified",
+    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. The unconsumed hypothesis is the manuscript's own finding: `lem:dense-cold-pass`'s proof says the density sentence is not among the facts the pass uses. The larger residual is sound, and the pass is valid on it precisely because it never reads that sentence. | API: ⚠ the [22] decision is re-derived inline rather than reusing `selectedBarrierDichotomy` — two decision sites for one node"
    },
    "163": {
     "lean": "verified",
@@ -18598,8 +18598,8 @@
     "kernel": "verified",
     "wired": "partial",
     "local": "verified",
-    "fidelity": "partial",
-    "note": "WEAKER — The yes arm is faithful; the no arm asserts only the bare negation, with no cold-window lower bound and no placement on [153]'s bounded arm."
+    "fidelity": "verified",
+    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. The complaint is [174]'s content. [173] is the test, and Lean decides the object-exact form, which the manuscript's bounded surrogate implies — so the yes arm is the weaker hypothesis and the no arm is stronger."
    },
    "174": {
     "lean": "verified",
@@ -18622,8 +18622,8 @@
     "kernel": "absent",
     "wired": "absent",
     "local": "verified",
-    "fidelity": "partial",
-    "note": "WEAKER — The fact produced is the germ-extraction count, not “closed”."
+    "fidelity": "verified",
+    "note": "FAITHFUL-TRIVIAL — The closure is performed in the arm's continuation by precisely the six lemmas the manuscript names, ending in the published `K .coldBranchClosed`. The earlier pass read only the `Decision`'s produced key."
    },
    "177": {
     "lean": "verified",
