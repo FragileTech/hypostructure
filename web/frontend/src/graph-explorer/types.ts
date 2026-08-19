@@ -204,11 +204,23 @@ export interface ChapterSource {
 }
 
 /**
- * How a step stands under review, along the dimensions a referee keeps apart:
- * whether the manuscript's Lean encoding exists, whether the kernel accepts it,
- * whether it is wired into the assembly, whether its proof is residual-local,
- * whether it leans on an external input, and whether a person has read it. Each
- * is its own answer; a step can be human-checked with its Lean port pending.
+ * How a step stands under review, along the dimensions a referee keeps apart.
+ * Each is its own answer, and passing one never implies another:
+ *
+ * - `lean` — a producer for this step exists at all.
+ * - `kernel` — that producer is finished, i.e. it does not reach a
+ *   referenced-but-undefined declaration. Judged per producer: a large
+ *   declaration runs many branch arms, and an unfinished sibling arm says
+ *   nothing about this step.
+ * - `wired` — the arm through this step was probed stub-free end to end.
+ * - `local` — the proposition is about the literal active residual rather
+ *   than a detached universal.
+ * - `fidelity` — the producer publishes the *manuscript's* statement. This is
+ *   the one a kernel check cannot see: a row stating something weaker than its
+ *   manuscript label still composes and still closes. A trivial proof counts as
+ *   faithful when the paper's own step is equally immediate.
+ * - `external` — the step leans on a declared external input.
+ * - `human` — a person has read it. Left unrecorded where none has.
  */
 export type ReviewState = "verified" | "partial" | "absent";
 
@@ -217,6 +229,7 @@ export interface NodeReview {
   kernel?: ReviewState;
   wired?: ReviewState;
   local?: ReviewState;
+  fidelity?: ReviewState;
   external?: ReviewState;
   human?: ReviewState;
   note?: string;

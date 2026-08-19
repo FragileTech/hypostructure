@@ -114,7 +114,13 @@ export function buildGraph(
         // just clicked would make every click look like it did nothing.
         dimmed:
           node.id !== selectedId && ((hasTrace && !traced) || (hasSearch && !matched)),
-        verified: reviewNodes?.[node.id]?.kernel === "verified",
+        // Green only when the step's own producer is finished *and* it
+        // publishes the manuscript's statement. "Compiles" alone is not a
+        // verification claim: a row stating something weaker than its
+        // manuscript label still composes and still closes.
+        verified:
+          reviewNodes?.[node.id]?.kernel === "verified" &&
+          reviewNodes?.[node.id]?.fidelity === "verified",
       },
     };
   });

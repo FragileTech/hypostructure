@@ -292,28 +292,51 @@ def test_erdos_review_sidecar_covers_all_nodes() -> None:
         assert entry["kernel"] in valid, f"node {nid}: kernel={entry['kernel']}"
 
 
-def test_review_states_come_from_the_axiom_audit() -> None:
-    """A node is verified only when every declaration covering it is proved."""
-    from lean_review import ASSEMBLY_REL, load_audit, parse_annotations
+def test_review_states_come_from_the_node_audit() -> None:
+    """Every dimension is read from the 180-node audit, never inferred."""
+    from lean_review import load_audit
 
-    clean, tainted = load_audit(REPO_ROOT)
-    covers = parse_annotations(REPO_ROOT / ASSEMBLY_REL)
+    audit = load_audit(REPO_ROOT)["nodes"]
     states = ERDOS["review"]["nodes"]
 
-    by_node: dict[int, set[str]] = {}
-    for decl, nodes in covers.items():
-        for node in nodes:
-            by_node.setdefault(node, set()).add(decl)
-
     for node in range(1, 181):
-        citing = by_node.get(node, set()) & (clean | tainted)
-        state = states[str(node)]["kernel"]
-        if not citing:
-            assert state == "absent", node
-        elif citing <= clean:
-            assert state == "verified", node
-        else:
-            assert state == "partial", node
+        entry = audit[str(node)]
+        row = states[str(node)]
+        # A producer exists iff the audit found one.
+        assert row["lean"] == ("absent" if entry["fidelity"] == "ABSENT" else "verified"), node
+        # Completeness is judged per producer, never per enclosing declaration.
+        assert row["kernel"] == (
+            "verified" if entry["complete"].startswith("YES") else "absent"
+        ), node
+        # The fidelity verdict carries into the note, so a reader sees why.
+        assert row["note"].startswith(entry["fidelity"]), node
+
+
+def test_faithful_triviality_is_not_reported_as_a_defect() -> None:
+    """A trivial proof is faithful when the paper's own step is immediate.
+
+    These nodes were each checked against the manuscript's proof of the step:
+    the paper proves nothing more, so the Lean triviality is inherited rather
+    than manufactured and must read as verified.
+    """
+    from lean_review import load_audit
+
+    audit = load_audit(REPO_ROOT)["nodes"]
+    states = ERDOS["review"]["nodes"]
+    for node in (12, 18, 23, 31, 36, 37, 52, 88, 104, 114, 126, 138, 154, 155):
+        assert audit[str(node)]["fidelity"] == "FAITHFUL-TRIVIAL", node
+        assert states[str(node)]["fidelity"] == "verified", node
+
+
+def test_surrogate_triviality_is_reported_as_a_defect() -> None:
+    """Triviality manufactured by a weakened statement is not verified."""
+    from lean_review import load_audit
+
+    audit = load_audit(REPO_ROOT)["nodes"]
+    states = ERDOS["review"]["nodes"]
+    for node in (76, 85, 103, 113, 129, 134):
+        assert audit[str(node)]["fidelity"] == "SURROGATE-TRIVIAL", node
+        assert states[str(node)]["fidelity"] == "partial", node
 
 
 def test_axiom_audit_is_a_kernel_result_not_a_transcript() -> None:
@@ -329,20 +352,38 @@ def test_axiom_audit_is_a_kernel_result_not_a_transcript() -> None:
     assert not set(report["frontier_stubs"]) & set(report["clean"])
 
 
-def test_every_declaration_carries_a_node_annotation() -> None:
-    """EG-NODE annotations are the only node<->declaration mapping we trust."""
-    from lean_review import ASSEMBLY_REL
+def test_node_coverage_is_not_derived_from_comments() -> None:
+    """`-- EG-NODE` comments are not a trustworthy node<->declaration mapping.
 
-    text = (REPO_ROOT / ASSEMBLY_REL).read_text(encoding="utf-8")
-    declared = re.findall(
-        r"^(?:noncomputable\s+)?(?:private\s+)?(?:def|theorem|lemma|abbrev)\s+"
-        r"([A-Za-z0-9_']+)",
-        text,
-        re.MULTILINE,
-    )
-    annotated = re.findall(r"^-- EG-NODE (?:\[\d+\]|none)", text, re.MULTILINE)
-    # Every declaration is preceded by at least one annotation line.
-    assert len(annotated) >= len(declared)
+    They are unreliable in both directions: declarations that implement a node
+    carry none, and one umbrella claims 44 nodes it merely runs. The audit
+    resolves node -> producer through the manuscript's own dependency table and
+    the fact vocabulary instead, so nothing in the review pipeline may parse
+    them.
+    """
+    source = (REPO_ROOT / "web/tools/lean_review.py").read_text(encoding="utf-8")
+    assert "EG-NODE" not in source.replace("``-- EG-NODE``", "").replace(
+        "-- EG-NODE", "", 1
+    ) or "parse_annotations" not in source
+    assert "parse_annotations" not in source
+
+
+def test_every_node_records_a_producer_or_says_it_has_none() -> None:
+    """No node is left without an answer, and 'absent' is stated, not implied."""
+    from lean_review import load_audit
+
+    audit = load_audit(REPO_ROOT)["nodes"]
+    assert len(audit) == 180
+    for node in range(1, 181):
+        entry = audit[str(node)]
+        assert entry["fidelity"], node
+        assert entry["complete"], node
+        if entry["fidelity"] == "ABSENT":
+            # ABSENT means no proposition is established. A branch cursor may
+            # still exist -- node [51] carries the high-entropy arm but states
+            # no lemma -- so the absence is recorded in the note, not inferred
+            # from the producer field being empty.
+            assert entry["fidelity_note"], node
 
 
 def test_erdos_has_all_180_steps_across_twelve_panels() -> None:

@@ -1,108 +1,96 @@
-"""Per-node Lean verification status for the Erdos-Gyarfas proof.
+"""Per-node review status for the Erdos-Gyarfas proof.
 
-Two inputs, both produced by reading or running the code -- never by
-reading prose:
+Read from ``web/data/eg_node_audit.json``, the exhaustive 180-node audit.
+Nothing here parses ``-- EG-NODE`` comments or infers coverage from prose:
+those annotations are unreliable in both directions (declarations that
+implement a node carry none, and one umbrella claims 44 nodes it merely
+runs), so the audit resolves node -> producer through the manuscript's own
+dependency table and the fact vocabulary instead.
 
-*Which declarations are proved* comes from :mod:`lean_axiom_audit`, which
-builds the package with tracer stubs standing in for the unfinished
-frontier producers and runs ``#print axioms`` on every declaration.  A
-declaration is clean when the tracer does not appear in its axiom list.
+Two independent questions are kept apart, because passing one never implies
+the other:
 
-*Which nodes a declaration covers* comes from ``-- EG-NODE [n] label``
-annotations carried in Assembly.lean directly above each declaration.
-Those annotations record what the declaration's rows and produced fact
-keys actually establish, cross-referenced against the manuscript's node
-labels.  Prose doc comments are not parsed: they cite invariant numbers
-and neighbouring residuals in the same ``[n]`` syntax, so they cannot
-distinguish coverage from reference.
+*Does the node's own producer reach a referenced-but-undefined declaration?*
+That is ``complete``, and it is judged per producer.  A large declaration
+runs many branch arms; one unfinished sibling arm says nothing about whether
+this node's row is finished.
 
-A node is *verified* when it is covered and every covering declaration is
-clean; *partial* when covered but some covering declaration is tainted;
-*absent* when no declaration covers it.
+*Does the producer publish the manuscript's statement?*  That is ``fidelity``
+(Gate B).  Because ``FactSystem`` values are data-free, all mathematical
+content lives in the ``Holds`` proposition, so a row stating something weaker
+than its manuscript label still composes and still closes.  A kernel check
+cannot see the difference.
+
+A trivial proof is only a defect when the manuscript proves real content at
+that node.  ``FAITHFUL-TRIVIAL`` marks the steps whose paper proof is itself
+immediate -- those read as verified.  ``SURROGATE-TRIVIAL`` marks the ones
+whose triviality is manufactured by a weakened statement.
 """
 
 from __future__ import annotations
 
 import json
-import re
 from pathlib import Path
 
-ASSEMBLY_REL = Path(
-    "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly.lean"
-)
-AUDIT_REL = Path("web/data/eg_axiom_audit.json")
+AUDIT_REL = Path("web/data/eg_node_audit.json")
 
 NODE_COUNT = 180
 
-#: ``-- EG-NODE [12] context-universality for target-complete identifications``
-_ANNOTATION_RE = re.compile(r"^\s*--\s*EG-NODE\s*\[(\d{1,3})\]\s*(.*)$")
-
-_DECL_RE = re.compile(
-    r"^(?:noncomputable\s+)?(?:private\s+)?(?:def|theorem|lemma|abbrev)\s+"
-    r"([A-Za-z0-9_']+)",
-)
+#: Gate B verdicts that mean the producer publishes the manuscript's statement.
+_FAITHFUL = {"FAITHFUL", "FAITHFUL-TRIVIAL", "STRONGER"}
+#: Verdicts that mean it publishes something, but not the manuscript's claim.
+_PARTIAL = {"WEAKER", "DIVERGENT", "SURROGATE-TRIVIAL", "PLUMBING", "VACUOUS"}
 
 
-def load_audit(repo_root: Path) -> tuple[frozenset[str], frozenset[str]] | None:
-    """The clean and tainted declaration sets from the kernel audit."""
+def load_audit(repo_root: Path) -> dict | None:
     path = repo_root / AUDIT_REL
     if not path.exists():
         return None
-    report = json.loads(path.read_text(encoding="utf-8"))
-    return frozenset(report["clean"]), frozenset(report["tainted"])
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
-def parse_annotations(path: Path) -> dict[str, dict[int, str]]:
-    """``{decl: {node_id: manuscript label}}`` from ``EG-NODE`` annotations.
-
-    An annotation block sits immediately above the declaration it
-    describes, separated from it only by the doc comment (if any).
-    """
-    lines = path.read_text(encoding="utf-8").splitlines()
-
-    result: dict[str, dict[int, str]] = {}
-    pending: dict[int, str] = {}
-    for line in lines:
-        annotation = _ANNOTATION_RE.match(line)
-        if annotation:
-            node = int(annotation.group(1))
-            if 1 <= node <= NODE_COUNT:
-                pending[node] = annotation.group(2).strip()
-            continue
-        declaration = _DECL_RE.match(line)
-        if declaration:
-            if pending:
-                result.setdefault(declaration.group(1), {}).update(pending)
-            pending = {}
-    return result
+def _state(ok: bool, partial: bool = False) -> str:
+    return "verified" if ok else ("partial" if partial else "absent")
 
 
 def build_review(repo_root: Path) -> dict | None:
-    """The ``review`` side-car: one lean/kernel state per manuscript node."""
-    assembly = repo_root / ASSEMBLY_REL
+    """The ``review`` side-car: one row of dimensions per manuscript node."""
     audit = load_audit(repo_root)
-    if not assembly.exists() or audit is None:
+    if audit is None:
         return None
-    clean, tainted = audit
-
-    covers = parse_annotations(assembly)
-
-    #: node -> declarations that establish it
-    by_node: dict[int, set[str]] = {}
-    for decl, nodes in covers.items():
-        for node in nodes:
-            by_node.setdefault(node, set()).add(decl)
+    entries = audit["nodes"]
 
     nodes: dict[str, dict[str, str]] = {}
-    for node in range(1, NODE_COUNT + 1):
-        citing = by_node.get(node, set())
-        known = citing & (clean | tainted)
-        if not known:
-            state = "absent"
-        elif known <= clean:
-            state = "verified"
-        else:
-            state = "partial"
-        nodes[str(node)] = {"lean": state, "kernel": state}
+    for number in range(1, NODE_COUNT + 1):
+        entry = entries.get(str(number))
+        if entry is None:
+            continue
+        fidelity = entry["fidelity"]
+        complete = entry["complete"]
+        local = entry["local"]
+        api = entry["api"]
+
+        row: dict[str, str] = {
+            # A producer exists at all.
+            "lean": _state(fidelity != "ABSENT"),
+            # This node's own producer is finished.
+            "kernel": _state(complete.startswith("YES"), partial=complete.startswith("YES ")),
+            # The arm through this node was probed stub-free end to end.
+            "wired": _state(
+                entry["probed_closed_arm"],
+                partial=complete.startswith("YES"),
+            ),
+            # The proposition is about the literal active residual.
+            "local": _state(
+                local.startswith("YES"),
+                partial=local.startswith(("PARTIAL", "MIXED", "⚠")),
+            ),
+            # Only the canonical ExactLedger path is used.
+            "fidelity": _state(fidelity in _FAITHFUL, partial=fidelity in _PARTIAL),
+            "note": f"{fidelity} — {entry['fidelity_note']}",
+        }
+        if not api.startswith(("OK", "N/A")):
+            row["note"] += f" | API: {api}"
+        nodes[str(number)] = row
 
     return {"nodes": nodes}

@@ -329,10 +329,11 @@ export function refereeDossier(
                 : "The closure table has no row for this leaf"
             : "",
     },
-    reviewCheck("lean", "Lean", review),
-    reviewCheck("kernel", "Kernel", review),
-    reviewCheck("wired", "Wired", review),
-    reviewCheck("local", "Local", review),
+    reviewCheck("lean", "Producer exists", review),
+    reviewCheck("kernel", "Producer finished", review),
+    reviewCheck("fidelity", "Matches manuscript", review),
+    reviewCheck("wired", "Arm closed", review),
+    reviewCheck("local", "Residual-local", review),
     reviewCheck("external", "External input", review),
     reviewCheck("human", "Human review", review),
   ];

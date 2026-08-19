@@ -280,7 +280,9 @@ describe("buildGraph", () => {
   it("sets verified from the review sidecar", () => {
     const withReview = {
       ...TEST_DOCUMENT,
-      review: { nodes: { "2": { kernel: "verified" as const } } },
+      // The badge needs both gates: a finished producer that publishes the
+      // manuscript's statement. "Compiles" alone is not a verification claim.
+      review: { nodes: { "2": { kernel: "verified" as const, fidelity: "verified" as const } } },
     };
     const { nodes } = buildGraph(withReview);
     const byId = new Map(nodes.map((n) => [n.id, n.data]));

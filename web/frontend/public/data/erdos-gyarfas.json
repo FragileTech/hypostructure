@@ -17219,723 +17219,1443 @@
   "nodes": {
    "1": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "absent",
+    "fidelity": "verified",
+    "note": "FAITHFUL — pinned `OfficialStatement` quantifies over exactly finite simple graphs; defeq to `IndexedCycleStatement 3 (·≥2) (2^·)`."
    },
    "2": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "absent",
+    "fidelity": "verified",
+    "note": "FAITHFUL — split is `by_cases hasTarget : Target object`, not a `Decision.run`; no fact keys are involved."
    },
    "3": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "absent",
+    "fidelity": "verified",
+    "note": "FAITHFUL — trivial arm: `exact hasTarget`."
    },
    "4": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `Holds .selection` = target avoidance ∧ lex-minimality over `(|V|,|E|)`; existence by `wellFounded_smaller.has_min`."
    },
    "5": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `shiftedAcceptedSet` is definitionally `MersenneSet`; j≥2 bound present."
    },
    "6": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL-TRIVIAL — The paper resolves this diamond in one sentence with no case split — the standing counterexample condition already gives R_e(G) ∩ Mers = ∅ at every oriented edge, so the branch table records it as “Closed by lem:return-equivalence”, not decided. Refuting the arm uniformly over all darts is stronger than deciding it; a `Decision` here would be the divergence."
    },
    "7": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "absent",
+    "fidelity": "verified",
+    "note": "FAITHFUL-TRIVIAL — An uninhabited terminal the paper refutes rather than constructs at, and which the manuscript itself files under “Trivial / external-input leaves … Pure bookkeeping … definitional” (tex:17262, 17455). Lean closes it by the same cycle-restoration construction in contrapositive position: `not_hasCycleWithLength_iff_returnLengthSets_disjoint` rewrites through `hasCycleWithLength_iff_hasEdgeRootedReturn` before taking `.mp`."
    },
    "8": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `¬(3 ≤ minDegree H)` over ℕ is δ(H)≤2; admits any lex-decreasing embedded copy, so marginally stronger."
    },
    "9": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `∀ dart, deg fst = threshold ∨ deg snd = threshold`."
    },
    "10": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `threshold < degree` is degree ≥ 4 at threshold 3."
    },
    "11": {
-    "lean": "verified",
-    "kernel": "verified"
+    "lean": "absent",
+    "kernel": "absent",
+    "wired": "absent",
+    "local": "absent",
+    "fidelity": "absent",
+    "note": "ABSENT — no `Holds` branch states `lem:degree-profile-fibres`; the only realization is the detached `Graph.Response.profile_ne_not_targetComplete` (Response.lean:52–60), consumed by no row."
    },
    "12": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "absent",
+    "fidelity": "verified",
+    "note": "FAITHFUL-TRIVIAL — `lem:context-universality`'s proof is two sentences opening “This is precisely the meaning of target-completeness”; the de Morgan step is the paper's step."
    },
    "13": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "STRONGER — Verified sound: hypothesis (iii) is redundant given the paper's own `profile_T` definition, and (iv)/(v) are replaced by the derived forms the manuscript's proof actually uses (tex:5873, 5878). The saving lands at the downstream construction sites — `BoundedGerm` and the same-interface rows carry no no-dyadic-cycle field, an obligation the framework has no machinery to state. Doc comment SpineRows.lean:290-303 wrongly says “five hypotheses”; there are four."
    },
    "14": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — first assertion of `cor:uncompressible`, inheriting [13]'s strengthening."
    },
    "15": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `0 < windowPackingNumber 13`, i.e. `cor:p13-exists`."
    },
    "16": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — hypotheses are exactly `3 ≤ minDegree` and `InducedPathFree object 13`; conclusion's length predicate is the manuscript's Pow. Threshold bridge discharged at 3 ≤ 3, no slack."
    },
    "17": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `windowPackingNumber` is the manuscript's p₁₃; maximality derived from attainment, not assumed."
    },
    "18": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "absent",
+    "fidelity": "verified",
+    "note": "FAITHFUL-TRIVIAL — The trivial conjuncts re-export the manuscript's own definitions of C_s and Ω₂, for which the paper proves nothing; the 399 count it does prove is a real kernel `decide`."
    },
    "19": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — σ(G) > C_sp·⌈√n⌉ vs ≤, on the object's own handshake quantities; arms exhaustive and exclusive."
    },
    "20": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — Branch header. σ(G) > C_sp·⌈√n⌉ with C_sp projected; [125] refutes all five named exits individually."
    },
    "21": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — `c_Ω = log₂(543958/111286)` is never asserted anywhere in Lean; `data.curvatureCost` is the integer `binaryRowRateFloor`. The enumeration fact's final clause is `logb(X/Y) = logb(X/Y)`. `windowPackageSeparated` and `skeletonDominates` are faithful and load-bearing."
    },
    "22": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "absent",
+    "fidelity": "partial",
+    "note": "WEAKER — `WindowFamilyRealized` (SpineVocabulary.lean:1634) is trivially satisfied by `State := Skeleton, stateOf := id`, collapsing to a counting comparison; the manuscript's injectivity/independence claim is absent. `hotColdPartitionRow` has `Requires := []` and its proof is `Classical.choose_spec`, so it is true of every finite object."
    },
    "23": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "verified",
+    "local": "absent",
+    "fidelity": "verified",
+    "note": "FAITHFUL-TRIVIAL — The manuscript's [23] is precisely the claim that this arm cannot be inhabited, and it is empty in the paper by the same chain, because the paper also defines a window as hot only when its package is retained. Contested: an independent read holds that the trivially-satisfiable `WindowFamilyRealized` existential is a surrogate for the paper's realization sentence — see [22]."
    },
    "24": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — θ ≤ θ_win + o(1) is faithful and genuinely derived, at the full `windowPackingNumber`. The high-entropy cap θ ≤ 0.01198542083… + o(1) is stated by no fact key."
    },
    "25": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — P₁₃-freeness is present and stronger than componentwise; “R is large” is not stated. No `remainderLarge`/`remainderMass` key exists."
    },
    "26": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — Same fact as [25]; Lean does not distinguish the two nodes."
    },
    "27": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — Empty internal 3-core over induced sub-supports; empty-support case handled honestly; the proof really uses target avoidance through the HSS route."
    },
    "28": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `∑_{v∈X}(δ ∸ d_X(v))` is `∑ max{0,3−d}`; `ambientSurplus` matches σ(X)."
    },
    "29": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — def⁺(R) + 24p ≤ 39p + C_sp⌈√n⌉; direction, strictness and error term all match. Stated for every packing, so formally stronger."
    },
    "30": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — Conjunct 1 is stronger than the manuscript; conjunct 2 is [29] substituted in. The density conversion `15p₁₃ ≤ (τ_win+o(1))|R|` is missing, without which the diagram's ω_win bound does not follow."
    },
    "31": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "absent",
+    "fidelity": "verified",
+    "note": "FAITHFUL-TRIVIAL — All five labels are definitions with no proof; the first real theorem is `lem:target-rank-circuit` at the next row."
    },
    "32": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — Exact finite comparison r_Ω < W₂ vs r_Ω = W₂; exhaustiveness genuine via `Nat.le_antisymm`. `targetRankCircuit` is substantively proved."
    },
    "33": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — Inclusion-minimal support with the determined coordinate held fixed; minimality upgraded to genuine ⊂-minimality."
    },
    "34": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "STRONGER — Verified sound: the paper concludes “Hence r_Omega(R) = W_2(R), which implies the stated weaker bound” (tex:8987-8992), and r_Omega <= W_2 holds by construction from `def:curvature-target-rank`. Buys decidability — the [32] split stays a plain `Nat` comparison closing by `Nat.le_antisymm`; an asymptotic threshold would need a chosen slack witness. No cost: `r < W_2` is the manuscript's own Branch D threshold (tex:8780-8783)."
    },
    "35": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — Identical fact to [33]; no second declaration. `lem:separated-testers` has no Lean counterpart at all."
    },
    "36": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL-TRIVIAL — `def:admissible-rank-quotient` builds target-completeness into the objects the routing lemma quantifies over, so case (i) is definitionally empty in the paper and is drawn as an immediately-closed terminal."
    },
    "37": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL-TRIVIAL — A terminal with no proof environment in the paper at all; closed by `def:target-complete-compression` itself. The asymmetry with [39]/[42]/[46] mirrors the paper's."
    },
    "38": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — Yes arm is case (ii)'s conclusion, no arm is case (iii)'s entry `C ⊊ Z`; properness genuinely earned."
    },
    "39": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `not_replacementSupport` refutes the smaller proper representative at the selected minimal counterexample."
    },
    "40": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — Establishes only `C ⊂ Z` with `Z := quotient.support ∪ C`. Missing: `ConnectedOn object Z` and the inclusion-minimality clause."
    },
    "41": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `∃ v ∉ Z` vs `∀ v ∈ Z` over `object.Vertex` is exactly `Z ⊊ G` vs `Z = G`."
    },
    "42": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — Derives `ReplacementSupport … object quotient.support`, not at Z. Missing: `ReplacementSupport … object (delocalizationSupport …)`."
    },
    "43": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — Records Z = V(G) but not that the quotient is of the closed exact profile. Missing: `∀ vertex, vertex ∈ quotient.support`."
    },
    "44": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "absent",
+    "fidelity": "partial",
+    "note": "WEAKER — The arithmetic identity s = p−2+2β−σ is genuine and proved, but nothing asserts that a delayed compensation component of Z is a `OneThreeRepair.Component`."
    },
    "45": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — Produced without using its stated hypothesis: `_covers` is discarded and `localize` branches on the scope of `quotient.support`, not Z. As written the fact follows from any rank-reducing declared certificate on any arm."
    },
    "46": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — Refutes both disjuncts against `K .selection`; the profile-inclusion argument is the manuscript's."
    },
    "47": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "STRONGER — Same Lean fact as [34]; the manuscript files [34], [46] and [47] under one diagram row. Its consumer `forcedCurvatureCostRow` uses only `rankEq.ge`, so the equality's `<=` half is unused in practice."
    },
    "48": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — Only the K_win half; the K = 5.89262883286… high-entropy second display of `cor:forced-curvature-cost` has no counterpart."
    },
    "49": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — `RemainderClass` omits the subcubicity conjunct of `def:remainder-entropy`; dropping it enlarges 𝒢(R), safe for the high-entropy arm and unsafe for the low."
    },
    "50": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `n^{|R|} ≤ |𝒢(R)|^d` is η ≥ (1/d)log₂n cleared of logarithm and division; arms are literal negations."
    },
    "51": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "absent",
+    "kernel": "absent",
+    "wired": "absent",
+    "local": "verified",
+    "fidelity": "absent",
+    "note": "ABSENT — `lem:translates-independent` has no declaration; `prop:two-budget` branch (b) is not formalized."
    },
    "52": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL-TRIVIAL — The paper's step is the one-sentence addition of two already-established bit contributions; the substantive comparison is [53], which Lean performs."
    },
    "53": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — Omits the `2^(c_Ω·r_Ω(R))` factor: a two-term comparison where `eq:entropy-cap` is three-term. Nothing named Θ(n), 1.4 or 116.808581006 exists in Lean."
    },
    "54": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — `jointPackageDemand_le_retainedCode` (:50) discards the curvature factor via `Nat.one_le_two_pow`; `dominates.2` holds for every map out of a finite type. The closure goes through for any values of c_Ω, K, Θ(n), 1/10, θ. | API: FLAG — `entropyCap_closes` and friends are absent from `allowed-api.md` and it takes an `ExactLedger` argument; the catalog is demonstrably stale, so this is unresolved rather than a proven violation."
    },
    "55": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — `LargeBudgetResidual` contains no θ, no p₁₃ and no window-density statement; the θ bound lives in the separate `K .densityCap`, which this key neither contains nor requires."
    },
    "56": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — 73p + 4C_sp√n < n is the cleared form of def⁺(R) − σ_R < |R|/4; not vacuous (an explicit cutoff satisfies the guard)."
    },
    "57": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "STRONGER — Verified sound. The substantive win is decidability: this is `rem:no-sufficient-order` (tex:7678-7688) — an o(n)-bearing proxy could not be placed under an `if`, and the largeness threshold would remain a hypothesis, as it still is at [56]. Cost: the yes arm is no longer derived from the [22]/[24]/[29] supply chain, so `K .netDeficiencyCap` is orphaned and Lean records nowhere why the yes arm is the generic one."
    },
    "58": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — s·def⁺(X) < |V(X)| + s·σ(X) is N₀(X) < 0 cleared; backed by three exact sum identities over canonical pieces."
    },
    "59": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — Exhaustive split, but informationally redundant: `K .netChargeCap` and `K .maximalPacking` already yield the no arm and refute the yes arm. | API: ⚠ `K .netChargeLocalization` bound as `_localization` and never used"
    },
    "60": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — A genuine contradiction: `K .maximalPacking` supplies one packing that is both of maximum cardinality and maximal, so both facts are read at the same remainder."
    },
    "61": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `prop:negative-net-charge`'s conclusion with packing maximality retained; connectivity recoverable from canonical-piece membership."
    },
    "62": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — σ(X) = 0 vs σ(X) > 0, exhaustive by `Nat.eq_zero_or_pos`."
    },
    "63": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — Entry header for Part VIII; states the Type A entry condition."
    },
    "64": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — σ(X) > 0 is the Type B entry; the yes-arm construction uses the [61] witness."
    },
    "65": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "absent",
+    "wired": "absent",
+    "local": "absent",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `def:decorated-fan-envelope`'s (Y,H); every clause discharged from an actual `Envelope` field."
    },
    "66": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "absent",
+    "wired": "absent",
+    "local": "absent",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `Admissible` has four real fields; `windowFree` is derived from packing maximality, not assumed."
    },
    "67": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "absent",
+    "fidelity": "verified",
+    "note": "FAITHFUL — All three normal-form clauses proved from the dart law and the two quadrilaterals. `cubicBaseline`'s own `Holds` is `data.threshold = 3` — a numeral bridge, vacuous alone. | API: ⚠ `cubicBaselineRow` declares `Requires := [K .selection]` and discards it"
    },
    "68": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "absent",
+    "fidelity": "verified",
+    "note": "FAITHFUL — The no arm is committed in positive form (`degree = 4`) and derived by `omega`, not assumed."
    },
    "69": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "absent",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `cor:heavy-center-local-dichotomy` verbatim including the “in particular three” clause; `FanCompatible` carries all of `def:fan-compatible-open-ports`' conditions as fields, so the existential is not cheap."
    },
    "70": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "absent",
+    "fidelity": "verified",
+    "note": "FAITHFUL — No numeral 8: the bound is `fanPackingCap` computed from the registered window order, and it is proved (`degree_le_fanPackingCap`), not a structure field."
    },
    "71": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "absent",
+    "wired": "absent",
+    "local": "absent",
+    "fidelity": "verified",
+    "note": "FAITHFUL — Scoped to the assigned centres of a Type B support, which is `def:marked-typeB-fan`'s own scope."
    },
    "72": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "absent",
+    "wired": "absent",
+    "local": "absent",
+    "fidelity": "verified",
+    "note": "FAITHFUL — The cycle arm genuinely closes; `HasDisjointChoice` unfolds to B2's actual content. | API: ⚠ `b2AssignmentDichotomy` binds `K .typeBDirectCycleFree` and discards it, re-deriving its support from `K .typeBFanEntry`"
    },
    "73": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "absent",
+    "wired": "absent",
+    "local": "absent",
+    "fidelity": "verified",
+    "note": "FAITHFUL — Minimality is real: built by `exists_min_image` over failing subfamilies, with nonemptiness forced by `hasDisjointChoice_empty`."
    },
    "74": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "absent",
+    "wired": "absent",
+    "local": "absent",
+    "fidelity": "verified",
+    "note": "FAITHFUL — The B1 incidence payment is real. `typeBExcluded := False` is derived at commitment, not a vacuity bug. | API: ⚠ `typeBSelectedFanChargeRow` declares three `Requires` and uses none"
    },
    "75": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `lem:typeB-bridge-deficit-bound`'s per-centre charge subtraction-free. Caveat: the inequality holds at every high centre of every object; only the residual-naming conjunct is branch-specific."
    },
    "76": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "absent",
+    "wired": "absent",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "SURROGATE-TRIVIAL — `thm:branch-kill`'s proof is ~25 lines with an explicit slack ε and a four-way case analysis. The manuscript's step is the conclusion “no survivor”; the Lean fact re-asserts the two premises, i.e. the situation the theorem refutes. | API: ⚠ `largeBudgetRoute8ClosedRow` binds and discards both `branchKillClosed` and `typeBBridgeSublinear`"
    },
    "77": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "absent",
+    "kernel": "absent",
+    "wired": "absent",
+    "local": "absent",
+    "fidelity": "absent",
+    "note": "ABSENT — Commits no key and states no proposition; the body after one row-run is `exact selectedLargeBudgetPressureCensus killed`."
    },
    "78": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `degree centre = data.threshold + 1` is d_G(h) = 4; the split is exhaustive."
    },
    "79": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — Centre surplus 1, 0 ≤ c ≤ 4, and D_B = c − 7/4 cleared of denominators, so nothing writes 7/4 and nothing rounds."
    },
    "80": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — Identical Lean decision to [71]; there is no degree-4-specific certificate question in the formalization."
    },
    "81": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "DIVERGENT — The manuscript asks “c ≤ 1, or c ≥ 2 with a B2 disjoint ledger”. The `c ≤ 1` alternative is nowhere in the formula; no declaration proves `c ≤ 1 → HasDisjointChoice`. | API: ⚠ `K .typeBDirectCycleFree` bound and unused"
    },
    "82": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "absent",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `prop:typeB-bridge-reduction`'s conclusion under the exact ledger refinement; the closing arm is a legitimate refutation. | API: ⚠ three discarded `Requires` in `typeBSelectedFanChargeRow`"
    },
    "83": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `lem:typeB-bridge-to-overlap` with genuine minimality."
    },
    "84": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "absent",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `prop:typeB-bridge-sublinear`'s M_B ≤ 16σ(G) in registered numbers. | API: ⚠ `bridgeFanMassRow` discards `K .typeBHandoff`, making its fact a generic property; `largeBudgetRoute8ClosedRow` discards the sublinearity, so it is never spent"
    },
    "85": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "absent",
+    "wired": "absent",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "SURROGATE-TRIVIAL — `prop:typeB-bridge-sublinear` is a real estimate M_B ≤ 8S_B ≤ 16σ(G) = o(|R|). The statement exists in Lean but its producers are run by no assembly, and even the unrun row omits the comparison against |R|."
    },
    "86": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `NegativeNetCharge` with `ambientSurplus = 0` is exactly s·def⁺(X) < |X|, i.e. def⁺(X) < |X|/4 at the registered s."
    },
    "87": {
     "lean": "absent",
-    "kernel": "absent"
+    "kernel": "absent",
+    "wired": "absent",
+    "local": "absent",
+    "fidelity": "absent",
+    "note": "ABSENT — No `Spine.Key` mentions diameter, BFS layering, or a cardinality bound on a Type A piece; `6142` occurs nowhere."
    },
    "88": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL-TRIVIAL — The manuscript does not derive H₀/H₁/H₂: 4q(w) is already the definition of saturation in `def:typeA-receiver-load`, and the lemma re-indexes it. The 3/7/11 capacities are [90]/[91]."
    },
    "89": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `Saturated` is `s·missingPorts ≤ routedLoad`, i.e. L(w) ≥ s·q(w); a genuine `by_cases` on that existential."
    },
    "90": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `1 + L ≤ s·q` is the correct ℕ encoding of L ≤ s·q − 1, and it is proved from the negation via `not_saturated_iff`, not assumed."
    },
    "91": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — |V(X)| ≤ 4·def⁺(X) is `lem:typeA-unsaturated-discharge`; the discharging argument is real, and both `Requires` are used."
    },
    "92": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — A genuine arithmetic contradiction between two facts about the same piece (a single ledger value destructured, so no quantifier slippage)."
    },
    "93": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "partial",
+    "fidelity": "verified",
+    "note": "FAITHFUL — Not vacuous: the port-return row commits that every completion port has an anchored return, which is the guard the docstring names. | API: ⚠ `typeAPortReturnRow` binds `K .typeAReceiverRouting` as `_routing` and discards it"
    },
    "94": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — |X| ≤ Σ silentExcess + s·def⁺(X) is `lem:typeA-silent-excess-count` without subtraction, and it carries the silence witness too."
    },
    "95": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — The no arm is only “∃ package, ∀ return through package.outside, ¬accepted”; it does not say exit (1) fails at every completion port."
    },
    "96": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — A real closure requiring the return-equivalence construction, not a restatement of a prior fact."
    },
    "97": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `ExitTwoThrough` packages two receiver-entry returns with internal disjointness and acceptance — `def:typeA-saturated-exits` (2) verbatim."
    },
    "98": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — Builds an actual cycle of accepted length, contradicting the selection."
    },
    "99": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "DIVERGENT — The collision clause mentions only the object, window order, length predicate and packing; the bound `package` — hence `receiver` and `piece` — is existentially bound and never used inside it."
    },
    "100": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — Genuinely builds the cycle of length s + 2 + |i − j|."
    },
    "101": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — `Graph.ExitFour.Witness` carries `boundary`/`left`/`right`/`targetDefect` with no field tying them to the object, the quotient or the load, and the defect is supplied for any same-profile pair by the already-committed `K .uncompressible`."
    },
    "102": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `residualLoad` drops by exactly one and `nextPeeled` stays inside `routedLoads`: `lem:typeA-exit4-discharge` in integral form."
    },
    "103": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "absent",
+    "fidelity": "partial",
+    "note": "SURROGATE-TRIVIAL — The manuscript's exit (5) tests the trace basin's declared coordinates and its discharge is two-case. Lean replaced it with a global compressibility claim the ledger had already decided, which silently deletes the second case."
    },
    "104": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL-TRIVIAL — The manuscript's own discharge of the proper-piece case is literally “it contradicts `cor:uncompressible`”, with no intervening construction."
    },
    "105": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `Route8.Delocalization` carries strict enlargement, two distinct identified coordinates, and the minimality clause."
    },
    "106": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "partial",
+    "fidelity": "verified",
+    "note": "FAITHFUL — Genuine terminal closure; both arms die, by replacement exclusion and by minimality plus transfer."
    },
    "107": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `HandoffProduced` requires an actual `Envelope` whose core is the selected piece."
    },
    "108": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — All four `Admissible` clauses; `windowFree` derived from packing maximality; all three `Requires` used."
    },
    "109": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — Faithful as the negative half of exit (8), but `def:typeA-silent-core-residual`'s positive data — trace basins, unpaid silent vertices, connector bands — appears nowhere."
    },
    "110": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "PLUMBING — Exit (8) is a clause of a definition with no proof; the row re-keys the [107]-no fact. The manuscript's content for this node enters the ledger at [114]."
    },
    "111": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — Neither the collection 𝒳_A, nor D_A, nor the carrying inequality occurs; both conjuncts are already on the incoming ledger."
    },
    "112": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — The second conjunct is byte-for-byte node [94]'s `K .typeAVisibleFirstExcess`. No sum over a collection, no 𝒰_X(w), no trace-basin indexing."
    },
    "113": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "SURROGATE-TRIVIAL — The manuscript's [113] is a numeric lower bound on D_A with τ_win; Lean conjoins the residual-C branch flag instead. τ_win, D_A and the 0.0873 coefficient occur nowhere in the sources. | API: ⚠ the second `Requires` is redundant and does no work"
    },
    "114": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "absent",
+    "fidelity": "verified",
+    "note": "FAITHFUL-TRIVIAL — Core existence, minimality, deletion-defect and forgotten-coordinate are all forced by the canonical minimization that defines 𝒞_ess; the paper says nothing is assumed."
    },
    "115": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "partial",
+    "fidelity": "partial",
+    "note": "WEAKER — No dichotomy on `entry.alpha ≤ 1` is committed anywhere; what is committed is an implication schema whose consequent is a caller-supplied arbitrary `Alternatives : Prop`."
    },
    "116": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "absent",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "absent",
+    "fidelity": "absent",
+    "note": "ABSENT — The manuscript's conclusion is “one of exits (4)–(7) occurs”; the Lean formula contains no reference to any exit."
    },
    "117": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — At δ = 3 the condition is π ≤ 2, exactly clause (T4). | API: ⚠ `K .route8Census` bound and discarded, so this declaration proves none of `prop:typeA-route8-carrier-reduction`"
    },
    "118": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "absent",
+    "wired": "absent",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — Faithful for the state itself; clause (T5) is not attached on the live path and its row is dead code."
    },
    "119": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `¬(π ≤ δ−1)` is π ≥ 3, discharged explicitly by `privateCarrierLower_of_noTwoCarrier`."
    },
    "120": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — 3·N_basin ≤ |∂R| = def⁺(R) via `card_supply`; the rate half is the census `Rate` conjunct."
    },
    "121": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `|R| ≤ N_basin + s|∂R| + slack` is `N_basin ≥ 4(1/4 − τ)|R| − o(|R|)` cleared of denominators."
    },
    "122": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — Exactly panel IV of the squeeze figure; pure ℕ arithmetic."
    },
    "123": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "absent",
+    "wired": "absent",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `PeelChain` requires each peel to be a two-carrier target-defect entry at a stage satisfying `StageRate`, with termination by strict decrease."
    },
    "124": {
     "lean": "absent",
-    "kernel": "absent"
+    "kernel": "absent",
+    "wired": "absent",
+    "local": "absent",
+    "fidelity": "absent",
+    "note": "ABSENT — Both arms call `selectedRouteEightTrueTwoCarrierEntry`. The dead-code chain that would produce it is provably degenerate: one conjunct is a tautology and the sibling arm is its negation."
    },
    "125": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — All five manuscript exits (a)–(e) are the five constructors of `SparseSurplusExit`, each refuted from `K .selection` and `K .replacementExclusion`."
    },
    "126": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL-TRIVIAL — `lem:sparse-slack-surplus`'s own proof is a three-line substitution of the abbreviation λ. σ = n−6−2λ is the same equation after substitution, not dropped content."
    },
    "127": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — |𝒫_exc| = σ(G) plus the degree conditions rendered as `threshold < d`, `d = threshold`, `|shoulders| = threshold − 1`."
    },
    "128": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — Clauses (a)–(d) are faithful with non-trivial witnesses, but canonicity is not modelled: Lean asserts only `Nonempty`, and `pairResponseActivation` rebuilds supports with `Classical.choice`."
    },
    "129": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "SURROGATE-TRIVIAL — The manuscript earns E_spine ≤ C_E·n from the window and high-entropy packages, conditionally. Lean fabricates B₀(n) empty-support coordinates so the deficit is identically 0."
    },
    "130": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — Faithful to the hypothesis dichotomy of `lem:sparse-pair-dependence-exit`, decided by excluded middle on survival of ℛ_Π under functional declared quotients."
    },
    "131": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "partial",
+    "fidelity": "partial",
+    "note": "WEAKER — None of the annotated facts is the diagram's inequality. `Graph.entropySandwich` and `freeCount_le_of_sandwich` exist but are invoked by no row. `freePairEntropyDichotomy` case-splits on the sandwich; the manuscript derives it."
    },
    "132": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — In `∃ pair ∈ pairs, P` the binder `pair` does not occur free in `P`; the statement is `pairs.Nonempty ∧ (a blocker exists somewhere)`, not “π has a blocker”. The proof picks an arbitrary member."
    },
    "133": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "verified",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `K .sparseSurplusSurvivor` is literally the negation of `K .sparsePairExit`; the closure is ¬P applied to P. The cleanest closure in the development."
    },
    "134": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "SURROGATE-TRIVIAL — `def:canonical-blocker-ledger` ranges over pairs of distinct demands; `DemandActivation.blockers` unions over `pair ×ˢ pair` with no distinctness filter, so the diagonal makes every pair blocked and Π_free empty."
    },
    "135": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — `e(R,W) + 24p + 2e_×(W) = 39p + σ_W` is `lem:exact-window-join-identity` exactly; also carries `m + 2 ≤ (δ−1)n` as an extra conjunct."
    },
    "136": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — Supply identity, token ledger and role-fibre refinement all match their manuscript labels in subtraction-free form."
    },
    "137": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "absent",
+    "fidelity": "partial",
+    "note": "DIVERGENT — This is a row producing the charge partition, not the coupled-excess decision the diagram states; its content is the hypothesis-free `Graph.roleFibrePartitionStatement` (ObjectCapacityLedger.lean:772), true of every object."
    },
    "138": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "verified",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL-TRIVIAL — The paper defines [19]'s threshold and the surplus branch's conclusion to be the same bound, so the contradiction is by construction there too. The real content lives in the rows producing `K .spineSurplusEstimate`."
    },
    "139": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — Re-packs the identical witness tuple under the class hypothesis."
    },
    "140": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "partial",
+    "fidelity": "partial",
+    "note": "WEAKER — The payload is the detached `Graph.classAuditStatement`, whose proof binds and discards the class hypothesis; the same term proves all three class instances. | API: ⚠ `Requires` bound and discarded"
    },
    "141": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "STRONGER — Verified sound; the trichotomy is definitional in the paper too. Justified by faithfulness rather than simplification — the manuscript's [143] is a positive node. The formal saving is about one lemma application, offset by a pure relabel row and a duplicated key; `Graph.overloadClassExhaustive` is dead code because the dichotomy re-inlines it."
    },
    "142": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "partial",
+    "fidelity": "partial",
+    "note": "WEAKER — Identical defect to [140]. | API: ⚠ `Requires` bound and discarded"
    },
    "143": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "PLUMBING — The [141]-no arm already carries the primitive-class verdict; this row hands the same proposition to the audit under the required name. The manuscript has no corresponding step. | API: ⚠ the audit row's `Requires` is bound and discarded"
    },
    "144": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "absent",
+    "wired": "absent",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — The caps arm genuinely closes; the pattern arm's routing is proved by the manuscript's own pigeonhole, and `RoutedBottleneck.outcome` is a real theorem."
    },
    "145": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "PLUMBING — A diagram continuation box; both labels are definitions. The hot/cold split is formalized once, at [22]."
    },
    "146": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — At the registered values the arm is 234p < 3n − 109·T(n), i.e. p/n < 1/78 − o(1), with |∂R| ≤ 15p+σ_W and the Type B bridge mass made explicit."
    },
    "147": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "absent",
+    "kernel": "absent",
+    "wired": "absent",
+    "local": "absent",
+    "fidelity": "absent",
+    "note": "ABSENT — No declaration carries the route-8 private-incidence collision closure; the θ<1/78 arm re-routes `K .coldRoute8Below` into the [25]→[55]→[56] spine closure."
    },
    "148": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — 2·118·⌊log₂n⌋·|𝒫_hot| ≤ (⌊log₂n⌋+1)(3n + C_sp⌈√n⌉) is c_hot·|𝒫_hot|·log₂n ≤ (3/2)n·log₂n + o(n log n) cleared of division."
    },
    "149": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "verified",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — The bridge `two_mul_exponent_le_scale_mul_edgeBudget` (SkeletonBudget.lean:425) is genuine: it goes through the m! in C(C(n,2),m) and the base-conversion, and fails for weaker premises."
    },
    "150": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — Subtraction-free equivalent of C ≥ (θ − θ_win)n − o(n); the cardinality identity |𝒫| = |𝒫_hot| + C is derived inside the executor."
    },
    "151": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — An explicit injection from non-ambient-cubic cold windows into strictly-above-baseline vertices, bounded by `degreeSurplus`. Done concretely rather than asserted."
    },
    "152": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — `b(𝔖_cold)` is never formed and s(P) is never computed from `object.degree`; the proof is 13 × the [151] inequality and is true for any constant in place of 13."
    },
    "153": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — Publishes only the scalar (13+B_cold)σ(G) < 13C; the germ-count bound is in `selectedColdGermCandidates` (Assembly.lean:1041), which is annotated `EG-NODE none`."
    },
    "154": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "partial",
+    "fidelity": "verified",
+    "note": "FAITHFUL-TRIVIAL — The manuscript's exhaustiveness argument is “G3 is the complement”, asserted in one sentence with no supporting work."
    },
    "155": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL-TRIVIAL — The paper's G1 proof is two lines ending “This contradicts the definition of a counterexample”; the Lean proof is the same single appeal."
    },
    "156": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "partial",
+    "fidelity": "partial",
+    "note": "WEAKER — `.coldGermDistinguished` is faithful; `.coldGermRouted` is restricted to `germ.increment < 0`. Missing: the `0 < germ.increment` half."
    },
    "157": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "partial",
+    "fidelity": "partial",
+    "note": "WEAKER — The compression step is executed, but its premise is a structure field of `TableRow` (`admissible`). Nothing anywhere constructs a `TableRow`, so the closure is never discharged against the residual."
    },
    "158": {
     "lean": "verified",
-    "kernel": "verified"
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — The existential places no condition on `stateOf`, so it collapses to a pure counting comparison. `def:window-realization-test` requires an assignment of target-complete states; that clause is absent."
    },
    "159": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "absent",
+    "wired": "absent",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — The manuscript's single display is recovered only as the left disjunct; `K .windowPackageUnrealized` bundles two manuscript statements."
    },
    "160": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — 4·(15p + T(n)) < |R| is τ(θ) < 1/4 with the exact √n allowance; def⁺(R) is replaced by [29]'s supply bound, so the yes arm implies the manuscript's test."
    },
    "161": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — Exactly “the deficiency cap in place of [24]”: the canonical-packing inequality generalized to every maximal packing."
    },
    "162": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "absent",
+    "wired": "absent",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — Structurally faithful, but `K .denseDeficiencyAtOrAbove` is produced and never consumed: nothing on this arm uses τ(θ) ≥ 1/4. | API: ⚠ the [22] decision is re-derived inline rather than reusing `selectedBarrierDichotomy` — two decision sites for one node"
    },
    "163": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "DIVERGENT — Lean splits by the canonical order `Precedes`; the graph-realizability of the second strand — the literal diagram question — is never tested, and the `.inr` arm is [166]/[169], not [167]. | API: ⚠ `_structure` bound and discarded"
    },
    "164": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — A real injection H ↦ G[R:=H] with `glue_injective`, not an axiom."
    },
    "165": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "DIVERGENT — The manuscript's [165] is the same-size case, closed by refining node [4]'s order to (|V|,|E|,Φ). The Lean declaration closes the strictly-smaller-vertex-count case, which needs no refinement."
    },
    "166": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "absent",
+    "kernel": "absent",
+    "wired": "absent",
+    "local": "absent",
+    "fidelity": "absent",
+    "note": "ABSENT — Q = E appears only as a case assumption; the case the manuscript actually closes is punted to an undefined producer."
    },
    "167": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "absent",
+    "kernel": "absent",
+    "wired": "absent",
+    "local": "absent",
+    "fidelity": "absent",
+    "note": "ABSENT — `TwoStrandEnumeration.lean` exists and is `decide`-checked but is imported only by the aggregate root; no Strategy file, no key, no Assembly declaration mentions it."
    },
    "168": {
-    "lean": "absent",
-    "kernel": "absent"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — Faithful for the hypothesis half; neither of `lem:symmetric-pair-endpoint`'s conclusions is stated."
    },
    "169": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "verified",
+    "note": "FAITHFUL — Faithful for the first two conjuncts. The third, `card (Blocked …) ≤ skeletonBudget`, is vacuous: its proof takes no hypotheses and holds of every object."
    },
    "170": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "DIVERGENT — The second conjunct is [171]'s conclusion bundled into [170]'s decided proposition, so [171] is assumed rather than derived and the no arm fires when only that half fails. | API: ⚠ `_blocked` bound and discarded"
    },
    "171": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — The arithmetic is the manuscript's |𝓑(𝒫)| < 1, but the compression inequality is read straight off `K .blockedScaleAdditive` rather than proved."
    },
    "172": {
     "lean": "absent",
-    "kernel": "absent"
+    "kernel": "absent",
+    "wired": "absent",
+    "local": "absent",
+    "fidelity": "absent",
+    "note": "ABSENT — Discharged by an undefined producer. `SerialSystemArithmetic.lean` is imported only by the aggregate root; `BarrierOverlapSystem.lean` defines no obstruction and no uncrossing."
    },
    "173": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — The yes arm is faithful; the no arm asserts only the bare negation, with no cold-window lower bound and no placement on [153]'s bounded arm."
    },
    "174": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — Exactly ¬`K .netChargeCap`. The C lower bound and the bounded-arm placement are derived nowhere; nothing connects the collision failure to the cold family."
    },
    "175": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — The manuscript's [175] is a per-half-edge dichotomy; Lean decides one global question, so on a mixed residual the heavy-centre half-edges are never routed to Type B."
    },
    "176": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "absent",
+    "wired": "absent",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — The fact produced is the germ-extraction count, not “closed”."
    },
    "177": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "absent",
+    "wired": "absent",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — Only the first sentence of case (ii). Neighbours cubic, the two incidences, separated connector tails, decorated handoff fan data and the Type B entry are all unstated."
    },
    "178": {
-    "lean": "partial",
-    "kernel": "partial"
+    "lean": "verified",
+    "kernel": "absent",
+    "wired": "absent",
+    "local": "verified",
+    "fidelity": "partial",
+    "note": "WEAKER — Only the bare negation of the two sandwich statements. `lem:pair-failure-overlap`'s minimal pair overlap obstruction is absent; no key for it exists. | API: ⚠ both dichotomies bind and discard a required fact"
    },
    "179": {
     "lean": "absent",
-    "kernel": "absent"
+    "kernel": "absent",
+    "wired": "absent",
+    "local": "absent",
+    "fidelity": "absent",
+    "note": "ABSENT — No key, no row, no `Produces` manifest mentions a pair serial system. `SerialSystem.Spectrum` is deliberately graph-free and never instantiated."
    },
    "180": {
     "lean": "absent",
-    "kernel": "absent"
+    "kernel": "absent",
+    "wired": "absent",
+    "local": "absent",
+    "fidelity": "absent",
+    "note": "ABSENT — The ℕ arithmetic core `Spectrum.exists_pow_realized` is proved, but no `Spectrum` is ever constructed from a graph, `ScaleSpanning` is never discharged, and `S.Realized` is never connected to the target."
    }
   }
  }

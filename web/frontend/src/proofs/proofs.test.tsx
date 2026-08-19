@@ -237,8 +237,11 @@ describe("referee mode", () => {
     expect(within(strip).getByText("Manuscript").nextSibling).toHaveTextContent("yes");
     expect(within(strip).getByText("Located").nextSibling).toHaveTextContent("yes");
     expect(within(strip).getByText("Cases").nextSibling).toHaveTextContent("yes");
-    expect(within(strip).getByText("Lean").nextSibling).toHaveTextContent("yes");
-    expect(within(strip).getByText("Kernel").nextSibling).toHaveTextContent("yes");
+    expect(within(strip).getByText("Producer exists").nextSibling).toHaveTextContent("yes");
+    expect(within(strip).getByText("Producer finished").nextSibling).toHaveTextContent("yes");
+    // The dimension a kernel check cannot answer: does the producer publish the
+    // manuscript's statement? [15] is `cor:p13-exists`, and it does.
+    expect(within(strip).getByText("Matches manuscript").nextSibling).toHaveTextContent("yes");
 
     // Then, in order, the claim, the state and the cases.
     const headings = within(panel)
