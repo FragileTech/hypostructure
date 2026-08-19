@@ -17300,7 +17300,7 @@
    "11": {
     "lean": "absent",
     "kernel": "absent",
-    "wired": "verified",
+    "wired": "absent",
     "local": "absent",
     "fidelity": "absent",
     "note": "ABSENT — no `Holds` branch states `lem:degree-profile-fibres`; the only realization is the detached `Graph.Response.profile_ne_not_targetComplete` (Response.lean:52–60), consumed by no row."
@@ -17620,7 +17620,7 @@
    "51": {
     "lean": "absent",
     "kernel": "absent",
-    "wired": "verified",
+    "wired": "absent",
     "local": "verified",
     "fidelity": "absent",
     "note": "ABSENT — `lem:translates-independent` has no declaration; `prop:two-budget` branch (b) is not formalized."

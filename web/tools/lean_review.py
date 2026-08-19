@@ -81,8 +81,12 @@ def build_review(repo_root: Path) -> dict | None:
             # cleanliness cannot decide it -- only a composed probe can. Nodes
             # marked partial have a finished producer on an unprobed arm; that
             # is unmeasured, not failing.
+            # A node that establishes no proposition cannot claim membership
+            # of the arm that runs past it: [11] and [51] sit on probed arms
+            # and contribute nothing to them, so the arm is closed despite
+            # them rather than through them.
             "wired": _state(
-                entry["on_probed_closed_arm"],
+                entry["on_probed_closed_arm"] and fidelity != "ABSENT",
                 partial=complete.startswith("YES"),
             ),
             # The proposition is about the literal active residual.

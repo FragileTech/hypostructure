@@ -312,6 +312,17 @@ def test_review_states_come_from_the_node_audit() -> None:
         assert row["note"].startswith(entry["fidelity"]), node
 
 
+def test_a_node_that_states_nothing_claims_no_arm() -> None:
+    """An arm running past an empty node is closed despite it, not through it."""
+    from lean_review import load_audit
+
+    audit = load_audit(REPO_ROOT)["nodes"]
+    states = ERDOS["review"]["nodes"]
+    for node, entry in audit.items():
+        if entry["fidelity"] == "ABSENT":
+            assert states[node]["wired"] != "verified", node
+
+
 def test_faithful_triviality_is_not_reported_as_a_defect() -> None:
     """A trivial proof is faithful when the paper's own step is immediate.
 
