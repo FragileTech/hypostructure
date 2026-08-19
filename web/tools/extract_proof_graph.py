@@ -20,6 +20,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
+from lean_review import build_review  # noqa: E402
 from papers import SPECS  # noqa: E402
 from proof_graph import build_document  # noqa: E402
 
@@ -29,6 +30,10 @@ DEFAULT_OUT = REPO_ROOT / "web" / "frontend" / "public" / "data"
 
 def write(slug: str, out_dir: Path) -> dict:
     document = build_document(SPECS[slug], REPO_ROOT)
+    if slug == "erdos-gyarfas":
+        review = build_review(REPO_ROOT)
+        if review:
+            document["review"] = review
     out_dir.mkdir(parents=True, exist_ok=True)
     path = out_dir / f"{slug}.json"
     path.write_text(json.dumps(document, indent=1, ensure_ascii=False) + "\n", encoding="utf-8")

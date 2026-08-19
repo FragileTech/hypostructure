@@ -5,6 +5,7 @@ Run with ``python -m pytest web/tools`` or ``python web/tools/test_extract_proof
 
 from __future__ import annotations
 
+import json
 import re
 import sys
 from pathlib import Path
@@ -21,6 +22,13 @@ from extract_page_map import build_page_map  # noqa: E402
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 DOCUMENTS = {slug: build_document(spec, REPO_ROOT) for slug, spec in SPECS.items()}
+
+from lean_review import build_review  # noqa: E402
+
+_review = build_review(REPO_ROOT)
+if _review:
+    DOCUMENTS["erdos-gyarfas"]["review"] = _review
+
 ERDOS = DOCUMENTS["erdos-gyarfas"]
 NAVIER_STOKES = DOCUMENTS["navier-stokes"]
 
@@ -273,6 +281,68 @@ def test_navier_stokes_publishes_four_tables_per_paper() -> None:
     )
     assert len(audit["rows"]) == 159
     assert audit["headers"][0] == "Node"
+
+
+def test_erdos_review_sidecar_covers_all_nodes() -> None:
+    review = ERDOS["review"]
+    assert len(review["nodes"]) == 180
+    valid = {"verified", "partial", "absent"}
+    for nid, entry in review["nodes"].items():
+        assert entry["lean"] in valid, f"node {nid}: lean={entry['lean']}"
+        assert entry["kernel"] in valid, f"node {nid}: kernel={entry['kernel']}"
+
+
+def test_review_states_come_from_the_axiom_audit() -> None:
+    """A node is verified only when every declaration covering it is proved."""
+    from lean_review import ASSEMBLY_REL, load_audit, parse_annotations
+
+    clean, tainted = load_audit(REPO_ROOT)
+    covers = parse_annotations(REPO_ROOT / ASSEMBLY_REL)
+    states = ERDOS["review"]["nodes"]
+
+    by_node: dict[int, set[str]] = {}
+    for decl, nodes in covers.items():
+        for node in nodes:
+            by_node.setdefault(node, set()).add(decl)
+
+    for node in range(1, 181):
+        citing = by_node.get(node, set()) & (clean | tainted)
+        state = states[str(node)]["kernel"]
+        if not citing:
+            assert state == "absent", node
+        elif citing <= clean:
+            assert state == "verified", node
+        else:
+            assert state == "partial", node
+
+
+def test_axiom_audit_is_a_kernel_result_not_a_transcript() -> None:
+    """The report must name the tracer and account for every declaration."""
+    report = json.loads((REPO_ROOT / "web/data/eg_axiom_audit.json").read_text())
+    assert report["tracer"] == "frontierGap"
+    assert not report["unreported"], report["unreported"]
+    assert len(report["clean"]) + len(report["tainted"]) == report["declarations"]
+    # The public theorem still depends on the unfinished producers.
+    assert "erdos_64" in report["tainted"]
+    # Every frontier stub is an identifier Assembly.lean references but nothing defines.
+    assert report["frontier_stubs"]
+    assert not set(report["frontier_stubs"]) & set(report["clean"])
+
+
+def test_every_declaration_carries_a_node_annotation() -> None:
+    """EG-NODE annotations are the only node<->declaration mapping we trust."""
+    from lean_review import ASSEMBLY_REL
+
+    text = (REPO_ROOT / ASSEMBLY_REL).read_text(encoding="utf-8")
+    declared = re.findall(
+        r"^(?:noncomputable\s+)?(?:private\s+)?(?:def|theorem|lemma|abbrev)\s+"
+        r"([A-Za-z0-9_']+)",
+        text,
+        re.MULTILINE,
+    )
+    annotated = re.findall(r"^-- EG-NODE (?:\[\d+\]|none)", text, re.MULTILINE)
+    # Every declaration is preceded by at least one annotation line.
+    assert len(annotated) >= len(declared)
 
 
 def test_erdos_has_all_180_steps_across_twelve_panels() -> None:

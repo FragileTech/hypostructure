@@ -24,10 +24,12 @@ open Hypostructure.Graph.Strategy.Spine
 
 universe u
 
+-- EG-NODE none (establishes no manuscript DAG node)
 noncomputable abbrev EGProblem :=
   Graph.Strategy.Spine.problem BranchState
     Graph.ReceiverLoad.LoadCapacityProfile erdosReceiverLoadProfile spineData
 
+-- EG-NODE none (establishes no manuscript DAG node)
 noncomputable def EGTarget : Core.Target EGProblem :=
   Graph.minimumDegreeCycleTarget erdosReceiverLoadProfile.baselineDegree
     BranchState
@@ -35,15 +37,31 @@ noncomputable def EGTarget : Core.Target EGProblem :=
     PowerOfTwoLength (fun exponent => exponent ≥ 2) (fun exponent => 2 ^ exponent)
     powerOfTwoLength_iff
 
+-- EG-NODE none (establishes no manuscript DAG node)
 noncomputable abbrev EGInput : Type (u + 1) :=
   Core.Strategy.ProblemInput EGProblem
 
+-- EG-NODE none (establishes no manuscript DAG node)
 noncomputable abbrev EGSelectionKey : FactKey EGInput :=
   K (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
     (presentation := erdosReceiverLoadProfile) (data := spineData) .selection
 
 /-- The entry prefix `[5]`--`[18]`, run on the selected exact ledger. -/
+-- EG-NODE [5] target algebra: R_e(G) cap Mers = empty for every oriented edge
+-- EG-NODE [6] Mersenne return exists?
+-- EG-NODE [8] no proper subgraph with minimum degree 3
+-- EG-NODE [9] edge deletion critical; every edge touches a degree-3 vertex
+-- EG-NODE [10] V_{>=4}(G) independent
+-- EG-NODE [13] replacement lemma
+-- EG-NODE [14] hereditary target-uncompressibility of proper supports
+-- EG-NODE [15] G is P_13-free?
+-- EG-NODE [17] maximal disjoint induced-P_13 packing P
+-- EG-NODE [18] P_13 label algebra: 399 labels; relations C_s; curvature Omega_2
+-- EG-NODE [7] power-of-two cycle (refuted arm of [6]: returnAvoidance iff, forward direction)
+-- EG-NODE [11] boundaried atoms; boundary degree profile d_partial
+-- EG-NODE [12] context-universality for target-complete identifications
+-- EG-NODE [16] HSS theorem gives target cycle (refuted arm of [15], via freeForcesTarget)
 noncomputable def selectedEntryPrefix
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected [EGSelectionKey]) :
@@ -105,6 +123,7 @@ noncomputable def selectedEntryPrefix
           EGSelectionKey, K_eq_iff])
 
 /-- Node `[19]`, run on the selected exact-ledger prefix. -/
+-- EG-NODE [19] non-near-cubic surplus? sigma(G)>C_sp sqrt n
 noncomputable def selectedSurplusDichotomy
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected [EGSelectionKey]) :
@@ -128,6 +147,7 @@ noncomputable def selectedSurplusDichotomy
 
 /-- Node `[125]`, `def:named-surplus-exits`: the selected minimal counterexample
 survives the sparse surplus exits, on the literal strict-surplus residual. -/
+-- EG-NODE [125] sparse-pressure survivor after P13 label algebra and sparse exits
 noncomputable def selectedSparseSurplusSurvivor
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -146,6 +166,9 @@ noncomputable def selectedSparseSurplusSurvivor
 
 /-- Nodes `[125]`--`[128]`, sparse-surplus activation on node `[125]`'s
 literal survivor residual. -/
+-- EG-NODE [126] sparse envelope m<=2n-2, sigma=n-6-2 lambda
+-- EG-NODE [127] excess-port extraction A=P_exc, |A|=sigma(G)
+-- EG-NODE [128] canonical activation returns R_p; open Q_p; triangular response
 noncomputable def selectedSparseSurplusActivation
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -187,6 +210,7 @@ noncomputable def selectedSparseSurplusActivation
 /-- Node `[129]`, the paper's common active-family baseline demand on the
 strict surplus arm.  This reads only the completed `[125]`--`[128]` fact; it
 does not read or manufacture the sibling node `[21]` package. -/
+-- EG-NODE [129] full active family and baseline A_0=P_exc, E_spine<=C_E n
 noncomputable def selectedBaselineSpineDemand
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -210,6 +234,7 @@ noncomputable def selectedBaselineSpineDemand
 
 /-- Node `[130]`: the full pair-response family, split into the paper's
 independent and dependent residuals on the literal `[129]` ledger. -/
+-- EG-NODE [130] canonical pair split: blocker-free?
 noncomputable def selectedPairResponseIndependenceDichotomy
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -225,6 +250,7 @@ noncomputable def selectedPairResponseIndependenceDichotomy
 
 /-- Node `[131]`, the exact mixed sparse-spine dependence fact on the
 independent residual of `[130]`. -/
+-- EG-NODE [131] free-pair entropy sandwich |Pi_free|<=E_spine+(sigma/2+1)log2 n
 noncomputable def selectedMixedSparseSpineDependence
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -250,6 +276,7 @@ noncomputable def selectedMixedSparseSpineDependence
 
 /-- Node `[131]`, `lem:exact-cubic-baseline-budget` on the literal residual
 already carrying the mixed sparse-spine dependence fact. -/
+-- EG-NODE [131] free-pair entropy sandwich |Pi_free|<=E_spine+(sigma/2+1)log2 n
 noncomputable def selectedExactCubicBaselineBudget
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -276,6 +303,7 @@ noncomputable def selectedExactCubicBaselineBudget
 
 /-- Node `[131]`, `lem:incremental-skeleton-room` on the literal residual
 carrying the exact cubic baseline evaluation. -/
+-- EG-NODE [131] free-pair entropy sandwich |Pi_free|<=E_spine+(sigma/2+1)log2 n
 noncomputable def selectedIncrementalSkeletonRoom
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -303,6 +331,7 @@ noncomputable def selectedIncrementalSkeletonRoom
 
 /-- Node `[131]`, `lem:skeleton-dominates` on the literal residual carrying
 the incremental-room fact. -/
+-- EG-NODE [131] free-pair entropy sandwich |Pi_free| <= E_spine+(sigma/2+1)log2 n
 noncomputable def selectedSkeletonDominates
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -330,6 +359,7 @@ noncomputable def selectedSkeletonDominates
       simp [skeletonDominatesRow, K_eq_iff])
 
 /-- Node `[132]`, the sparse-pair routing split after baseline demand. -/
+-- EG-NODE [132] blocked-pair routing: exit or canonical blocker?
 noncomputable def selectedBlockedPairRoutingDichotomy
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -354,6 +384,7 @@ noncomputable def selectedBlockedPairRoutingDichotomy
   blockedPairRoutingDichotomy (data := spineData) history
     (by simp [K_eq_iff]) (by simp [K_eq_iff])
 /-- Node `[133]`, sparse-pair exit closes against the survivor fact. -/
+-- EG-NODE [133] sparse surplus exit closes
 noncomputable def selectedSparsePairExitCloses
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -369,6 +400,7 @@ noncomputable def selectedSparsePairExitCloses
     (history.get (K .sparsePairExit)).down
 
 /-- Nodes `[130]` and `[134]`, canonical pair ledger on the blocker arm. -/
+-- EG-NODE [134] canonical blocker ledger: one B_pi and one capacity token per blocked pair
 noncomputable def selectedCanonicalPairFacts
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -397,6 +429,7 @@ noncomputable def selectedCanonicalPairFacts
         simp [canonicalPairLedgerRow, K_eq_iff])
 
 /-- Node `[135]`, exact window-join pressure on the literal `[134]` residual. -/
+-- EG-NODE [135] exact window-join pressure e(R,W)+2e_x(W)=15p13+sigma_W
 noncomputable def selectedExactWindowJoinPressure
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -423,6 +456,7 @@ noncomputable def selectedExactWindowJoinPressure
       simp [exactWindowJoinPressureRow, K_eq_iff])
 
 /-- Node `[136]`, capacity tokens on the literal `[135]` residual. -/
+-- EG-NODE [136] tokenized blocked-pair ledger |Pi_blk|=sum ell(t,r)
 noncomputable def selectedCapacityTokenFacts
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -455,6 +489,7 @@ arm, `[144]`'s caps arm): the spine surplus estimate `σ(G) ≤ C_sp ⌈√n⌉`
 on this branch contradicts node `[19]`'s strict lower bound on the same object,
 so the residual is exactly the near-cubic spine already handled by the other
 arm of `[19]`. -/
+-- EG-NODE [138] no coupled overload: quadratic bound on sigma; near-cubic spine
 noncomputable def selectedSpineSurplusEstimateCloses
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -479,6 +514,7 @@ routes to `[138]`; the pattern arm is `lem:same-token-bottleneck-routing` — th
 sparse-exit reading refuted by the `[125]` survivor, so the bottleneck produces
 decorated Type B fan data (`K .typeBHandoff`), which is handed to the Type B
 branch (the next producer on this route). -/
+-- EG-NODE [144] bottleneck discharge: sparse exit, Type B, or near-cubic spine
 noncomputable def selectedBottleneckDischarge
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -558,6 +594,11 @@ noncomputable def selectedBottleneckDischarge
 window-incidence test `[139]` and its audit `[140]`, the remainder-surplus test
 `[141]` and its audit `[142]`, the primitive-carrier verdict and audit `[143]`,
 each discharged at `[144]`. -/
+-- EG-NODE [139] token in T_W?
+-- EG-NODE [140] window-incidence geometric audit
+-- EG-NODE [141] token in T_R?
+-- EG-NODE [142] remainder-surplus geometric audit
+-- EG-NODE [143] primitive-carrier geometric audit
 noncomputable def selectedSparsePressureOverloadCloses
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -636,6 +677,7 @@ The comparison is formed from the current object's own registered quantities:
 `skeletonBudget` against `2 ^ (rate · scales · |𝒫_hot|)`.  The overflow cursor
 is the live-hot terminal `[23]`; the cap cursor is the literal no-arm residual
 forwarded toward `[24]` and the cold continuation. -/
+-- EG-NODE [22] hot/cold split P = P_hot sqcup P_cold; live-hot entropy cap closes?
 noncomputable def selectedBarrierDichotomy
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -672,6 +714,7 @@ canonical state count by the skeleton budget, and `lem:p13-window-package`
 (`K .windowPackageSeparated`) gives `rate · scales ≤ bits`; the overflow arm
 says the budget is below `2 ^ (rate · scales · |𝒫_hot|)`.  This is
 `lem:independent-target-entropy` on the incoming residual. -/
+-- EG-NODE [23] live-hot P13 window entropy overflow
 noncomputable def selectedBarrierOverflowCloses
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -715,6 +758,7 @@ noncomputable def selectedBarrierOverflowCloses
 (the cold branch forces no germ), the window-only density cap with its exact
 `o(1)` is produced from `K .coldMass`, `K .coldMassBounded`,
 `K .coldAmbientCubic`, and the split, on the literal residual. -/
+-- EG-NODE [24] bounded cold-mass return from [153]: theta <= theta_win + o(1)
 noncomputable def selectedDensityBudget
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -738,6 +782,7 @@ noncomputable def selectedDensityBudget
 /-- Node `[145]`: record node `[22]`'s partition on the literal cold residual
 after the density/spine entry.  The atomic row reads `K .hotColdPartition`
 from this ExactLedger and appends only `K .coldWindowLedgerSplit`. -/
+-- EG-NODE [145] cold-branch continuation from the no-edge of [22]
 noncomputable def selectedColdWindowLedgerSplit
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -760,6 +805,7 @@ noncomputable def selectedColdWindowLedgerSplit
 /-- Node `[146]`: the route-8 threshold is decided on the literal `[145]`
 residual.  The two outputs are sibling ledgers; neither output is appended to
 the other. -/
+-- EG-NODE [146] theta < 1/78 ?
 noncomputable def selectedColdRoute8Dichotomy
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -774,6 +820,7 @@ noncomputable def selectedColdRoute8Dichotomy
 
 /-- Node `[148]`: only the no arm of `[146]` reaches the live-hot entropy
 decision. -/
+-- EG-NODE [148] live-hot entropy cap closes?
 noncomputable def selectedColdHotEntropyDichotomy
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -793,6 +840,7 @@ skeleton budget against the near-cubic spine (`K .surplusAtOrBelow` and the
 standing baseline handshake) gives the exact finite cap
 `2·rate·scales·|𝒫_hot| ≤ (⌊log₂ n⌋+1)(δn + T(n))`, which the overflow arm
 denies.  This is `prop:p13-density`'s entropy step on the current residual. -/
+-- EG-NODE [149] P13 density cap
 noncomputable def selectedColdHotEntropyCloses
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -822,6 +870,7 @@ noncomputable def selectedColdHotEntropyCloses
 
 /-- Node `[150]`: append the cold-mass inequality to `[148]`'s literal
 no-residual. -/
+-- EG-NODE [150] hot failure forces cold mass C >= (theta-theta_win) n - o(n)
 noncomputable def selectedColdMass
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -836,6 +885,7 @@ noncomputable def selectedColdMass
 
 /-- Node `[151]`: append the ambient-cubic loss bound without rebuilding or
 copying any predecessor fact. -/
+-- EG-NODE [151] all but o(n) cold windows ambient-cubic
 noncomputable def selectedColdAmbientCubic
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -850,6 +900,7 @@ noncomputable def selectedColdAmbientCubic
 
 /-- Node `[152]`: append the selected branch-excess inequality to the same
 residual. -/
+-- EG-NODE [152] stub excess b(S_cold) >= 13C - o(n)
 noncomputable def selectedColdStubExcess
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -866,6 +917,7 @@ noncomputable def selectedColdStubExcess
 `[152]` residual (`2·perWindow·σ(G) < perWindow·C`); the linear arm forces a
 positive germ family (`lem:cold-germ-extraction`), the bounded arm continues to
 `[24]`. -/
+-- EG-NODE [153] linear first-failure extraction? N_germ >= 13C/D_cold - o(n)
 noncomputable def selectedColdMassDichotomy
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -881,6 +933,7 @@ noncomputable def selectedColdMassDichotomy
 
 /-- `lem:bridgeless` on the literal `[153]` linear residual: the selected
 object has no bridge; every oriented edge has a return. -/
+-- EG-NODE none (establishes no manuscript DAG node)
 noncomputable def selectedBridgeless
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -906,6 +959,7 @@ noncomputable def selectedBridgeless
 
 /-- Node `[153]`, `def:cold-corridor-first-failure`: every boundary stub of every
 outside component of `X_cold` has its cold return corridor. -/
+-- EG-NODE none (establishes no manuscript DAG node)
 noncomputable def selectedColdReturnCorridors
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -928,6 +982,7 @@ noncomputable def selectedColdReturnCorridors
 
 /-- Node `[153]`, `lem:cold-corridor-first-failure`: cut-states and (F1)--(F5)
 routing on the literal linear residual. -/
+-- EG-NODE none (establishes no manuscript DAG node)
 noncomputable def selectedColdFirstFailureRouting
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -952,6 +1007,7 @@ noncomputable def selectedColdFirstFailureRouting
 
 /-- Node `[153]`, `lem:cold-germ-extraction`: the exchange bound and the greedy
 extraction, on the routed residual. -/
+-- EG-NODE none (establishes no manuscript DAG node)
 noncomputable def selectedColdGermExtraction
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -981,6 +1037,7 @@ noncomputable def selectedColdGermExtraction
 the selected branch-excess half-edges — its count, overlap bound, positivity
 (the `[153]` linear arm) and its extracted disjoint subfamily — on the literal
 extraction residual. -/
+-- EG-NODE none (establishes no manuscript DAG node)
 noncomputable def selectedColdGermCandidates
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -1009,6 +1066,9 @@ noncomputable def selectedColdGermCandidates
 
 /-- Nodes `[154]`--`[156]`, `lem:cold-bounded-germ-trichotomy` and
 `lem:cold-increment-arithmetic` on the literal extracted residual. -/
+-- EG-NODE [154] bounded germ case?
+-- EG-NODE [155] G1: dyadic cycle
+-- EG-NODE [156] G2: target defect, exit (4), or handoff
 noncomputable def selectedColdGermTrichotomy
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected [K .coldGermCandidates, K .coldExchangeBound, K .coldGermExtraction,
@@ -1036,6 +1096,7 @@ noncomputable def selectedColdGermTrichotomy
 
 /-- Node `[157]`, `lem:cold-same-interface-table` with the short self-return
 filter, on the literal trichotomy residual. -/
+-- EG-NODE [157] G3 or same-interface table: compression
 noncomputable def selectedColdSameInterfaceTable
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected [K .coldGermRealized, K .coldGermDistinguished, K .coldGermSilent,
@@ -1064,6 +1125,7 @@ noncomputable def selectedColdSameInterfaceTable
 
 /-- `thm:cold-branch-quantitative-closure`: no terminal cold residual remains;
 the branch is closed by routing to the target-defect and handoff ledgers. -/
+-- EG-NODE none (establishes no manuscript DAG node)
 noncomputable def selectedColdBranchClosed
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected [K .coldSameInterfaceTable, K .coldGermRealized, K .coldGermDistinguished, K .coldGermSilent,
@@ -1099,6 +1161,7 @@ packing, and `𝒫_cold = ∅`, `C = 0`.  The linear arm's positivity
 `(perWindow + B_cold)·σ(G) < perWindow·C` (`K .coldMassLinear`) is then
 impossible.  A direct `False` derivation from the ledger's facts,
 index-polymorphic over the arm's exact ledger. -/
+-- EG-NODE none (establishes no manuscript DAG node)
 theorem selectedColdLinearCloses
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -1129,6 +1192,7 @@ theorem selectedColdLinearCloses
   rw [coldEmpty, Finset.card_empty, Nat.mul_zero] at linear
   exact Nat.not_lt_zero _ linear
 
+-- EG-NODE [4] choose lexicographically minimal counterexample
 noncomputable def openSelectedCounterexample
     (input : EGInput) (avoids : ¬ Target input.object) :
     OpenedScope EGSelectionKey := by
@@ -1157,6 +1221,8 @@ noncomputable def openSelectedCounterexample
 
 /-- A closed selected residual proves the registered target on every baseline
 object. -/
+-- EG-NODE [2] counterexample? delta(G)>=3 and no C_{2^j}
+-- EG-NODE [3] not a counterexample
 theorem target_closure_of_selectedLedgerClosure
     (selectedLedgerClosure :
       ∀ {selected : EGInput.{u}},
@@ -1179,6 +1245,7 @@ theorem target_closure_of_selectedLedgerClosure
 
 /-- Final public theorem, once the exact-ledger selected residual closure has
 been assembled from the rows. -/
+-- EG-NODE [1] finite simple graph G
 theorem erdos_64_of_selectedLedgerClosure
     (selectedLedgerClosure :
       ∀ {selected : EGInput.{u}},
@@ -1191,6 +1258,7 @@ theorem erdos_64_of_selectedLedgerClosure
 is the strict-surplus sibling; only the at-or-below sibling reaches node `[21]`.
 Neither branch reads or publishes a fact owned by the other. -/
 
+-- EG-NODE [21] finite enumeration: c_Omega, c_13
 noncomputable def selectedNearCubicNode21
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -1224,6 +1292,7 @@ near-cubic skeletons".  Per the methodology this is a decision on the literal
 in the canonical comparison (`K .windowPackageRealized`) and continues the
 manuscript's chain unchanged; the no arm is the residual on which that sentence
 fails, carried as a branch of its own (`K .windowPackageUnrealized`). -/
+-- EG-NODE [158] joint window package realized in the labelled class?
 noncomputable def selectedWindowPackageRealizationDichotomy
     {selected : EGInput.{u}}
     (dominated : ExactLedger EGInput.{u} selected
@@ -1249,6 +1318,7 @@ strict and near-cubic cursors cannot be accidentally exchanged. -/
 
 /-- Node `[137]`, first production: `lem:exact-surplus-pair-charge-partition`
 on the literal `[136]` residual. -/
+-- EG-NODE [137] coupled excess D_all > 0 ?
 noncomputable def selectedRoleFibrePartition
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -1296,6 +1366,11 @@ along the Part X/XI diagram on the literal `K .surplusAbove` ledger:
 
 `selectedFreePairEntropySandwich` and `selectedCoupledExcessDichotomy` are the
 next producers of this branch (see the audit rows `[131]`, `[137]`). -/
+-- EG-NODE [20] surplus-pair accounting branch
+-- EG-NODE [131] free-pair entropy sandwich
+-- EG-NODE [137] coupled excess D_all > 0 ?
+-- EG-NODE [138] no coupled overload: quadratic bound on sigma
+-- EG-NODE [178] pair-code unrealized residual: entropy count of [131]/[137] fails
 noncomputable def selectedStrictSurplusBranch
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -1402,6 +1477,7 @@ own completion yields a graph with fewer vertices, the same target status (the
 germ is neutral, so `Q` and `E` are context-equivalent, and the completion is
 `G` itself, which avoids the target), and the inherited baseline — a strictly
 smaller counterexample, contradicting the selection's minimality. -/
+-- EG-NODE [165] canonical replacement E != Q: swap Q->E gives a same-size counterexample
 noncomputable def selectedCanonicalSwapCloses
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -1437,6 +1513,18 @@ whole-graph route `[43]`--`[45]` closed at `[46]`.  Every terminal is a
 framework closure over the ledger of the arm against `K .selection`; the
 freshness of the keys committed along the way is decided on the arm's exact
 index at the call site. -/
+-- EG-NODE [36] valid against every outside context?
+-- EG-NODE [37] target-defective quotient
+-- EG-NODE [38] target-complete with smaller proper representative?
+-- EG-NODE [39] proper atom compression
+-- EG-NODE [40] requires enlarged connected support Z supsetneq C
+-- EG-NODE [41] Z subsetneq G ?
+-- EG-NODE [42] proper-support smearing closure
+-- EG-NODE [43] Z=G: whole-graph delocalization
+-- EG-NODE [44] 1-3 repair identity s=p-2+2beta-sigma
+-- EG-NODE [45] target / replacement / global profile barrier
+-- EG-NODE [46] rank-drop branch closed
+-- EG-NODE [12] context-universality for target-complete identifications
 noncomputable def selectedRankDropCloses
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -1513,6 +1601,20 @@ producer `selectedRouteEightCensus`), `[117]` `route8CarrierDichotomy` on it,
 `[119]`--`[122]` closed inline by `Graph.Route8Census.false_of_noTwoCarrier`
 (`rem:route8-carrier-margin`), and the two-carrier arm `[118]`--`[124]` handed to
 the next producer `selectedRouteEightTwoCarrierEntry`. -/
+-- EG-NODE [110] exit (8): route-8 residual profile
+-- EG-NODE [111] global squeeze extracts route-8 Type A collection X_A
+-- EG-NODE [112] route-8 burden N_basin >= 4 D_A
+-- EG-NODE [113] large-budget deficit D_A >= (1/4-tau_win)|R|-o(|R|)
+-- EG-NODE [114] each entry passes to its canonical minimal target-complete carrier core
+-- EG-NODE [115] some entry has alpha(xi) <= 1 ?
+-- EG-NODE [116] exits (4)-(7) occur
+-- EG-NODE [117] some entry has pi(xi) <= 2 ?
+-- EG-NODE [118] two-carrier route-8 entry
+-- EG-NODE [119] no two-carrier entry: at least three private essential carriers
+-- EG-NODE [120] private-carrier budget 3N_basin <= defp(R)+o(|R|)
+-- EG-NODE [121] burden plus deficit N_basin >= 4(1/4-tau)|R|
+-- EG-NODE [122] contradiction tau_win >= 12(1/4-tau_win)
+-- EG-NODE [123] large-budget pressure descent: target-defect entries peel by exit (4)
 noncomputable def selectedRouteEightResidual
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -1690,6 +1792,9 @@ pressure descent `[123]` — the next producer `selectedLargeBudgetPressureDesce
 (the global join of the Type A target-defect/route-8 ledger, the Type B bridge
 mass and the deficit `D_A ≥ (¼ − τ)|R| − o(|R|)`, with `τ` read from the arm's
 density fact). -/
+-- EG-NODE [76] Type B cannot carry the linear deficit outside two-carrier route 8
+-- EG-NODE [77] route-8 cores continue in Part IX
+-- EG-NODE [85] degree-4 Type B cannot carry linear deficit outside route 8
 noncomputable def selectedTypeBRoute8Continuation
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -1730,6 +1835,16 @@ outside route 8" input and is handed to `[77]`, the route-8 continuation of Part
 IX (`prop:typeB-bridge-sublinear`, `thm:large-budget-route8-only`) — the next
 producer `selectedTypeBRoute8Continuation`.  Index-polymorphic over the arm's
 ledger. -/
+-- EG-NODE [72] local fan-window ledger complete; B2 disjointness holds?
+-- EG-NODE [73] B2 disjointness fails: minimal Type B overlap obstruction
+-- EG-NODE [74] B2 holds: bridge reduction gives N_0(X)>=0 outside route 8
+-- EG-NODE [75] bridge fan-mass: fan-certificate centers and B2 failures charged
+-- EG-NODE [76] Type B cannot carry the linear deficit outside two-carrier route 8
+-- EG-NODE [81] c<=1, or c>=2 with B2 disjoint ledger?
+-- EG-NODE [82] yes: certificate-closed or B2-paid; N_0(X)>=0 outside route 8
+-- EG-NODE [83] no: c>=2 and B2 fails; minimal Type B overlap obstruction
+-- EG-NODE [84] fan-mass route: certificate failures and B2 failures charged
+-- EG-NODE [85] degree-4 Type B cannot carry linear deficit outside route 8
 noncomputable def selectedTypeBMarkedLedger
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -1829,6 +1944,10 @@ cycle test `[72]` (`directCycleDichotomy`) and the B2 disjoint ledger
 `def:typeB-assigned-ledger`'s (B-ledger) identity — through the same rows as the
 ordinary entry (`selectedTypeBMarkedLedger`, stated on the common fan support
 `K .typeBFanEntry`). -/
+-- EG-NODE [71] certificate labelling present?
+-- EG-NODE [75] bridge fan-mass: fan-certificate centers and B2 failures charged
+-- EG-NODE [80] certificate labelling present?
+-- EG-NODE [84] fan-mass route: certificate failures and B2 failures charged
 noncomputable def selectedTypeBDecoratedCertificate
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -1891,6 +2010,12 @@ degree-four → `[78]`--`[79]` `cor:degree-four-local-activation`
 (`degreeFourProfileRow`); both arms then read `[70]` `lem:fan-certificate`
 (`fanCertificateCapRow`); both arms then enter `[71]`/`[80]` on the common
 Type B fan support (`selectedTypeBDecoratedCertificate`). -/
+-- EG-NODE [67] high-degree centers independent; fan neighbours cubic
+-- EG-NODE [68] some center has d_G(h) > 4 ?
+-- EG-NODE [69] degree >4 local dichotomy: fan-compatible open pair or ports
+-- EG-NODE [70] fan-safe graph, P13 certificate graph, cap d_G(h)<=8
+-- EG-NODE [78] degree-4 branch: d_G(h)=4
+-- EG-NODE [79] degree-4 fan profile: center surplus 1, 0<=c<=4, D_B=c-7/4
 noncomputable def selectedTypeBDecoratedContinuation
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -1983,6 +2108,7 @@ the Type B branch at `[65]` with the decorated envelope's assigned support
 (`typeBDecoratedAssignedSupportRow`, `def:decorated-fan-envelope`,
 `def:canonical-decomp`).  Then `[67]`--`[70]` on the decorated envelope
 (`selectedTypeBDecoratedContinuation`). -/
+-- EG-NODE [65] Type B assigned support: high-degree fan centers and decorated envelope
 noncomputable def selectedTypeADecoratedHandoff
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -2041,6 +2167,13 @@ selection's minimality.  `[107]` exit `(7)`: the decorated handoff fan envelope
 is committed with its admissible Type B interface at `[108]` and returns to the
 Type B handoff (`[65]`), the next producer on that lane; its absence is `[109]`,
 the route-8 residual continued in Part IX (`[110]`, the next producer). -/
+-- EG-NODE [103] exit 5? target-complete response compression
+-- EG-NODE [104] uncompressibility contradiction
+-- EG-NODE [105] exit 6? proper/global delocalization
+-- EG-NODE [106] delocalization branch closes
+-- EG-NODE [107] exit 7? decorated handoff fan
+-- EG-NODE [108] returns to Type B handoff
+-- EG-NODE [66] Type A exit 7 input from the Part VIII handoff
 noncomputable def selectedTypeAExitFiveToSeven
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -2139,6 +2272,13 @@ noncomputable def selectedTypeAExitFiveToSeven
 `[101]`--`[109]`): identical exits `(5)`--`(7)`, and the exit-`(8)` residual
 `[109]` continues into Part IX (`selectedRouteEightResidual`), which needs the
 silent-excess count `[94]` and the large-budget residual on the ledger. -/
+-- EG-NODE [103] exit 5? target-complete response compression
+-- EG-NODE [104] uncompressibility contradiction
+-- EG-NODE [105] exit 6? proper/global delocalization
+-- EG-NODE [106] delocalization branch closes
+-- EG-NODE [107] exit 7? decorated handoff fan
+-- EG-NODE [108] returns to Type B handoff
+-- EG-NODE [109] route-8 residual continued in Part IX
 noncomputable def selectedTypeAExitFiveToSevenSilent
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -2272,6 +2412,7 @@ node `[123]` (`def:typeA-unified-negative`, `def:typeA-pressure-ledger`), where
 routes the discharged residual, with its peeled witnesses on the ledger, to the
 `[123]` join through `thm:branch-kill` (`branchKillClosedRow`, the same entry
 the Type B mass residual uses at `[76]`/`[77]`/`[85]`). -/
+-- EG-NODE none (establishes no manuscript DAG node)
 noncomputable def selectedTypeAExitFourDischargedRetest
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -2307,6 +2448,8 @@ receiver charge is nonnegative (`lem:typeA-exit4-peeling-charge`) and whose
 peeled loads are target-defect entries: the retest at `[89]` with the
 target-defect ledger (Part IX `[123]`), the next producer.  No: exits
 `(5)`--`(8)` at the entry state. -/
+-- EG-NODE [101] exit 4? target-defective quotient
+-- EG-NODE [102] target-defect peels one load
 noncomputable def selectedTypeAExitFourChain
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -2406,6 +2549,8 @@ noncomputable def selectedTypeAExitFourChain
 
 /-- The silent-lane copy of `selectedTypeAExitFourChain` (`[94]` → `[101]`--`[109]`
 → Part IX). -/
+-- EG-NODE [101] exit 4? target-defective quotient
+-- EG-NODE [102] target-defect peels one load
 noncomputable def selectedTypeAExitFourChainSilent
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -2544,6 +2689,7 @@ noncomputable def selectedTypeAExitFourChainSilent
 /-- **Node `[99]` → `[101]`, the visible lane**: the shared saturated exit entry
 at the empty peeling set (`lem:typeA-unpeeled-visible-routing`), then the exit
 segment `[101]`--`[109]`. -/
+-- EG-NODE none (establishes no manuscript DAG node)
 noncomputable def selectedTypeAVisibleExitFour
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -2619,6 +2765,7 @@ noncomputable def selectedTypeAVisibleExitFour
 /-- **Node `[94]` → `[101]`, the silent lane**: the shared saturated exit entry
 at the empty peeling set (`lem:typeA-unpeeled-silent-routing`), then the exit
 segment `[101]`--`[109]`. -/
+-- EG-NODE none (establishes no manuscript DAG node)
 noncomputable def selectedTypeASilentExitChain
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -2729,6 +2876,12 @@ returns through one port with accepted total length — is a cycle
 (`lem:typeA-common-port-return-cycle`), closed at `[98]` against the selection;
 exit `(3)` — a `P₁₃` label collision — closes at `[100]` against the selection.
 The exit-`(3)`-free residual enters exit `(4)`, `[101]`, the next producer. -/
+-- EG-NODE [95] exit 1? Mersenne return
+-- EG-NODE [96] target cycle
+-- EG-NODE [97] exit 2? power-of-two theta
+-- EG-NODE [98] target cycle
+-- EG-NODE [99] exit 3? P13 label collision
+-- EG-NODE [100] label/target collision
 noncomputable def selectedTypeAVisibleExitChain
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -2846,6 +2999,14 @@ anchored return, from `lem:bridgeless`) and `[93]`: does a port of the
 saturated receiver see `s` visible receiver-entry returns?  Yes → the exit
 chain `[95]`--`[107]`; no → `[94]` `S_sil^exc(X) ≥ s·D_A(X)` → exits
 `[101]`--`[107]`.  Both exit lanes are the next loud producers. -/
+-- EG-NODE [88] raw thresholds H_0<=4, H_1<=8, H_2<=12
+-- EG-NODE [89] some receiver has L(w)>=4q(w)?
+-- EG-NODE [90] no: unsaturated L(w)<=4q(w)-1
+-- EG-NODE [91] 3/7/11 charge bound
+-- EG-NODE [92] unsaturated Type A charge closes
+-- EG-NODE [93] some port has four visible receiver-entry returns?
+-- EG-NODE [94] visible-first excess S_sil^exc(X)>=4D_A(X)
+-- EG-NODE [86] Type A: sigma(X)=0, hence defp(X) < |X|/4
 noncomputable def selectedTypeALowSurplusContinuation
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -3022,6 +3183,17 @@ heavy-centre split (`typeBFanDegreeDichotomy`); on the heavy arm `[69]`
 (the local fan-window ledger / B2 question) on the marked arm, `[75]` (bridge
 fan-mass) on the residual arm, and `[78]` (the degree-four Part VII branch) on the
 `[68]` no arm.  Index-polymorphic over the arm's ledger. -/
+-- EG-NODE [65] Type B assigned support: high-degree fan centers
+-- EG-NODE [67] high-degree centers independent; fan neighbours cubic
+-- EG-NODE [68] some center has d_G(h)>4?
+-- EG-NODE [69] degree >4 local dichotomy: fan-compatible open pair or ports
+-- EG-NODE [70] fan-safe graph, P13 certificate graph, certificate cap
+-- EG-NODE [71] certificate labelling present?
+-- EG-NODE [75] bridge fan-mass: fan-certificate centers and B2 failures charged
+-- EG-NODE [78] degree-4 branch: d_G(h)=4
+-- EG-NODE [79] degree-4 fan profile: center surplus 1, 0<=c<=4, D_B=c-7/4
+-- EG-NODE [80] certificate labelling present?
+-- EG-NODE [84] fan-mass route: certificate failures and B2 failures charged
 noncomputable def selectedTypeBHighSurplusContinuation
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -3183,6 +3355,9 @@ uncrossing of `lem:window-system-realizability` (i)--(v) turns it into a
 scale-spanning serial window system, `lem:serial-system-sumset` fills its
 spectrum, and `lem:system-increment-arithmetic` closes it.  That uncrossing is
 the next producer. -/
+-- EG-NODE [170] conditional savings additive at every fixed scale?
+-- EG-NODE [171] compression closure: |B(P)| < 1
+-- EG-NODE [159] dense-packing residual: no-edge of [158]; 2^(c13 p13 log2 n) > |G_{n,m}|
 noncomputable def selectedScaleAdditivityDichotomy
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -3224,6 +3399,19 @@ selected corridor meets a heavy centre and the half-edges are decorated
 handoff fan data entering Type B at `[65]` (`[177]`).  Entered from the exact
 collision failure (`[173]`) and from the route-8 rate failure with a nonempty
 cold family. -/
+-- EG-NODE [153] linear first-failure extraction? N_germ>=13C/D_cold-o(n)
+-- EG-NODE [154] bounded germ case?
+-- EG-NODE [155] G1: dyadic cycle
+-- EG-NODE [156] G2: target defect, exit (4), or handoff
+-- EG-NODE [157] G3 or same-interface table: compression
+-- EG-NODE [163] neutral equal-length terminal germ: second strand genuine?
+-- EG-NODE [165] canonical replacement E!=Q: swap Q->E gives same-size counterexample
+-- EG-NODE [166] refined lexicographic minimality: Q=E
+-- EG-NODE [167] symmetric strand pair: finite two-strand check on closing lengths
+-- EG-NODE [169] trivial neutral germ residual: dense packing, every corridor terminal
+-- EG-NODE [175] selected corridor meets a high-degree vertex?
+-- EG-NODE [176] genuine (F5) germ closed by [154]-[157], [165]-[168]
+-- EG-NODE [177] decorated handoff fan data at the heavy centre z
 noncomputable def selectedAbsorbedGermResidual
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -3338,6 +3526,7 @@ family the failure is carried by cold windows and charged as `[174]`--`[177]`;
 with an empty cold family every packed window is hot at the exact skeleton
 budget and the private-carrier rate still fails — the exact budget-edge corner,
 whose closure is the next producer. -/
+-- EG-NODE none (establishes no manuscript DAG node)
 noncomputable def selectedRouteEightRateFailure
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -3402,6 +3591,17 @@ negative support `[61]` and `[62]` routes it to Type A `[63]` or Type B `[64]`.
 The small-order complement `[57]`, and the Type A / Type B continuations, are the
 next loud producers.  It is index-polymorphic over the arm's ledger, so both the
 density-cap and route-8 arms use the same definition. -/
+-- EG-NODE [57] large-budget net cap
+-- EG-NODE [58] net charge N_0
+-- EG-NODE [59] N_0(R)>=0?
+-- EG-NODE [60] net-cap contradiction
+-- EG-NODE [61] choose connected N_0(X)<0
+-- EG-NODE [62] high-degree surplus?
+-- EG-NODE [63] Type A continued in Part VIII
+-- EG-NODE [64] Type B continued in Part VI
+-- EG-NODE [173] exact collision test holds?
+-- EG-NODE [174] absorbed-germ residual: the exact collision fails, corridors charged
+-- EG-NODE [86] Type A: sigma(X)=0, hence defp(X) < |X|/4
 noncomputable def selectedNetChargeContinuation
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -3665,6 +3865,26 @@ this def returns the two surviving Residual C cursors and, separately, the
 `[53]`-active cursor on which the `[22]` comparison retains no code at all
 (`def:curvature-target-rank`'s complementary cold residual), for the caller to
 close from its own arm's facts. -/
+-- EG-NODE [25] Residual A: R=G-union V(P) large and componentwise P13-free
+-- EG-NODE [26] Residual A: R large and componentwise P13-free
+-- EG-NODE [27] no component of R has an internal 3-core
+-- EG-NODE [28] positive deficiency def+(X)=sum_v max(0,3-d_X(v))
+-- EG-NODE [29] external-incidence supply def+(R)<=15p13+o(n)
+-- EG-NODE [30] wedge lower bound W_2(R)>=omega_win|R|-o(|R|)
+-- EG-NODE [31] curvature target-rank r_Omega(R)
+-- EG-NODE [32] rank drop? r_Omega(R)<W_2(R)-o(W_2)
+-- EG-NODE [33] Branch D: rank-reducing curvature dependence
+-- EG-NODE [34] Residual B: no rank drop; full curvature rank
+-- EG-NODE [35] Branch D: rank-reducing curvature dependence
+-- EG-NODE [47] Residual B: full curvature rank r_Omega(R)>=W_2(R)-o(W_2)
+-- EG-NODE [48] forced curvature cost c_Omega W_2(R)>=K_win|R|-o(|R|)
+-- EG-NODE [49] per-vertex remainder entropy eta(R)=log2|G(R)|/|R|
+-- EG-NODE [50] eta(R)>=(1/10)log2 n ?
+-- EG-NODE [51] high-entropy remainder branch
+-- EG-NODE [52] window plus remainder accounting bounds theta
+-- EG-NODE [53] remaining non-curvature budget < K|R| ?
+-- EG-NODE [54] entropy cap closes
+-- EG-NODE [55] Residual C: large-budget branch; theta<=theta_win+o(1)
 noncomputable def selectedSpineToLargeBudget
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -3815,6 +4035,50 @@ arm (`[24]`'s density cap) — run `[25]`--`[31]` on their literal residuals,
 decide `[32]` and enter `[33]` (Branch D) or `[34]` (Residual B); `[35]`--`[46]`
 and `[47]` onward fail loudly; the routed cold closure `[157]` fails loudly at
 its target-defect/handoff discharge. -/
+-- EG-NODE [22] hot/cold split P=P_hot+P_cold: live-hot entropy cap closes?
+-- EG-NODE [24] bounded cold-mass return from [153]: theta<=theta_win+o(1)
+-- EG-NODE [25] Residual A: R=G-union V(P) large and componentwise P13-free
+-- EG-NODE [26] Residual A: R large and componentwise P13-free
+-- EG-NODE [27] no component of R has an internal 3-core
+-- EG-NODE [28] positive deficiency def+(X)
+-- EG-NODE [29] external-incidence supply def+(R)<=15p13+o(n)
+-- EG-NODE [30] wedge lower bound W_2(R)>=omega_win|R|-o(|R|)
+-- EG-NODE [31] curvature target-rank r_Omega(R)
+-- EG-NODE [32] rank drop? r_Omega(R)<W_2(R)-o(W_2)
+-- EG-NODE [33] Branch D: rank-reducing curvature dependence
+-- EG-NODE [34] Residual B: no rank drop; full curvature rank
+-- EG-NODE [35] Branch D: rank-reducing curvature dependence
+-- EG-NODE [47] Residual B: full curvature rank r_Omega(R)>=W_2(R)-o(W_2)
+-- EG-NODE [48] forced curvature cost c_Omega W_2(R)>=K_win|R|-o(|R|)
+-- EG-NODE [49] per-vertex remainder entropy eta(R)
+-- EG-NODE [50] eta(R)>=(1/10)log2 n ?
+-- EG-NODE [51] high-entropy remainder branch
+-- EG-NODE [52] window plus remainder accounting bounds theta
+-- EG-NODE [53] remaining non-curvature budget < K|R| ?
+-- EG-NODE [54] entropy cap closes
+-- EG-NODE [55] Residual C: large-budget branch; theta<=theta_win+o(1)
+-- EG-NODE [56] Delta_net(R)=(def+(R)-sigma_R)/|R| <= tau_win+o(1) < 1/4
+-- EG-NODE [145] cold-branch continuation from the no-edge of [22]
+-- EG-NODE [146] theta < 1/78 ?
+-- EG-NODE [147] route-8 private-carrier collision closes
+-- EG-NODE [148] live-hot entropy cap closes?
+-- EG-NODE [150] hot failure forces cold mass C>=(theta-theta_win)n-o(n)
+-- EG-NODE [151] all but o(n) cold windows ambient-cubic
+-- EG-NODE [152] stub excess b(S_cold)>=13C-o(n)
+-- EG-NODE [153] linear first-failure extraction? N_germ>=13C/D_cold-o(n)
+-- EG-NODE [154] bounded germ case?
+-- EG-NODE [155] G1: dyadic cycle
+-- EG-NODE [156] G2: target defect, exit (4), or handoff
+-- EG-NODE [157] G3 or same-interface table: compression
+-- EG-NODE [160] tau(theta) < 1/4 ? (exact [56] comparison)
+-- EG-NODE [161] negative-net-charge collision: continue at [25] with deficiency cap
+-- EG-NODE [162] dense hot/cold pass: run [22]-[24] and [145]-[157] on dense residual
+-- EG-NODE [163] neutral equal-length terminal germ: second strand genuine?
+-- EG-NODE [164] all-cold comparison closes: |G(R)|<=|G_{n,m}| by remainder glue
+-- EG-NODE [165] canonical replacement E!=Q: same-size counterexample
+-- EG-NODE [166] refined lexicographic minimality: Q=E
+-- EG-NODE [167] symmetric strand pair: finite two-strand check
+-- EG-NODE [169] trivial neutral germ residual: dense packing, all corridors terminal
 noncomputable def selectedNearCubicBranch
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -4339,6 +4603,7 @@ noncomputable def selectedNearCubicBranch
       exact selectedBarrierOverflowCloses overflowHistory
 
 /-- Selected-root closure, assembled directly from the exact-ledger rows. -/
+-- EG-NODE none (establishes no manuscript DAG node)
 theorem selectedLedgerClosure
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected [EGSelectionKey]) : False := by
@@ -4349,6 +4614,7 @@ theorem selectedLedgerClosure
       exact selectedNearCubicBranch nearCubicHistory
 
 /-- Final public theorem for Erdős Problem 64. -/
+-- EG-NODE none (establishes no manuscript DAG node)
 theorem erdos_64 : OfficialStatement.{u} :=
   erdos_64_of_selectedLedgerClosure
     (fun {selected} history =>

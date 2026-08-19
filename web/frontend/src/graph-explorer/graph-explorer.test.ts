@@ -276,6 +276,17 @@ describe("buildGraph", () => {
     expect(continuation.className).toContain("proof-edge-continuation");
     expect(continuation.label).toBe("continues");
   });
+
+  it("sets verified from the review sidecar", () => {
+    const withReview = {
+      ...TEST_DOCUMENT,
+      review: { nodes: { "2": { kernel: "verified" as const } } },
+    };
+    const { nodes } = buildGraph(withReview);
+    const byId = new Map(nodes.map((n) => [n.id, n.data]));
+    expect(byId.get("2")!.verified).toBe(true);
+    expect(byId.get("1")!.verified).toBe(false);
+  });
 });
 
 describe("parseLatex", () => {

@@ -1,5 +1,5 @@
 .PHONY: help build test lint mathlib-cache framework-build erdos-build erdos typeii-paper-check \
-        web web-install web-data web-build web-test
+        web web-install web-data web-build web-test lean-audit
 
 .DEFAULT_GOAL := help
 
@@ -47,7 +47,8 @@ help:
 	  '  make web             Serve the interactive proof explorer' \
 	  '  make web-data        Re-extract both proof diagrams and page maps from the manuscripts' \
 	  '  make web-build       Produce the static site in web/frontend/dist' \
-	  '  make web-test        Typecheck and test the explorer'
+	  '  make web-test        Typecheck and test the explorer' \
+	  '  make lean-audit      Re-run the kernel axiom audit of the Erdos assembly'
 
 framework-build:
 	cd $(HYPOSTRUCTURE_DIR) && lake build
@@ -101,6 +102,13 @@ test: build lint
 $(WEB_FRONTEND)/node_modules: $(WEB_FRONTEND)/package.json
 	cd $(WEB_FRONTEND) && $(NPM) install
 	@touch $@
+
+# Which Assembly declarations are actually proved: builds the package with
+# tracer stubs for the unfinished frontier producers, then runs
+# `#print axioms` on every declaration.  Needs a working Lean toolchain, so
+# it is a separate target -- web-data consumes the checked-in report.
+lean-audit:
+	$(PYTHON) $(WEB_DIR)/tools/lean_axiom_audit.py --out $(WEB_DIR)/data/eg_axiom_audit.json
 
 web-install: $(WEB_FRONTEND)/node_modules
 

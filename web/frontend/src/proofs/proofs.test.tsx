@@ -237,8 +237,8 @@ describe("referee mode", () => {
     expect(within(strip).getByText("Manuscript").nextSibling).toHaveTextContent("yes");
     expect(within(strip).getByText("Located").nextSibling).toHaveTextContent("yes");
     expect(within(strip).getByText("Cases").nextSibling).toHaveTextContent("yes");
-    expect(within(strip).getByText("Lean").nextSibling).toHaveTextContent("not recorded");
-    expect(within(strip).getByText("Kernel").nextSibling).toHaveTextContent("not recorded");
+    expect(within(strip).getByText("Lean").nextSibling).toHaveTextContent("yes");
+    expect(within(strip).getByText("Kernel").nextSibling).toHaveTextContent("yes");
 
     // Then, in order, the claim, the state and the cases.
     const headings = within(panel)
@@ -397,6 +397,17 @@ describe("referee mode", () => {
     );
     // The selected step stays legible even when the constraint dims the rest.
     expect(view.container.querySelector(".proof-node.is-selected")).not.toHaveClass("is-dimmed");
+
+    // Kernel-verified steps carry a check; steps still resting on an unfinished
+    // producer do not.  [7] counts as proved even though it is a terminal the
+    // proof only ever refutes -- discharging the branch is the proof of it.
+    // [124] has no Lean at all: its one route runs through an undefined producer.
+    const badge = (id: string) =>
+      view.container
+        .querySelector(`.react-flow__node[data-id="${id}"] .proof-node-verified`);
+    expect(badge("5")).not.toBeNull();
+    expect(badge("7")).not.toBeNull();
+    expect(badge("124")).toBeNull();
     expect(screen.getByRole("status")).toHaveTextContent("clear");
 
     changes.length = 0;

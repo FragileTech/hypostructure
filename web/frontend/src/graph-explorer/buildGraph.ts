@@ -15,6 +15,7 @@ export interface FlowNodeData extends Record<string, unknown> {
   traced: boolean;
   dimmed: boolean;
   matched: boolean;
+  verified: boolean;
 }
 
 export type ProofFlowNode = Node<FlowNodeData, "proof">;
@@ -83,6 +84,7 @@ export function buildGraph(
 
   const positions = layoutByChapter(visible, boxes, visibleEdges, layout);
 
+  const reviewNodes = document.review?.nodes;
   const hasTrace = Boolean(tracedNodeIds && tracedNodeIds.size);
   const hasSearch = Boolean(matchedIds && matchedIds.size);
 
@@ -112,6 +114,7 @@ export function buildGraph(
         // just clicked would make every click look like it did nothing.
         dimmed:
           node.id !== selectedId && ((hasTrace && !traced) || (hasSearch && !matched)),
+        verified: reviewNodes?.[node.id]?.kernel === "verified",
       },
     };
   });

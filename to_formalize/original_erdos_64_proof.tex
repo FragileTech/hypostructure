@@ -609,6 +609,8 @@ arrow/.style={-{Latex[length=2mm]},thick},
 every node/.style={font=\scriptsize}
 ]
 \node[box] (R) {\textbf{[26]}~Residual A: $R$ large and componentwise $P_{13}$-free};
+\coordinate (in26) at ($(R.north)+(0,0.72)$);
+\draw[arrow] (in26)--node[right]{from [25]}(R.north);
 \node[box, below=of R] (no3) {\textbf{[27]}~no component of $R$ has an internal $3$-core};
 \node[box, below=of no3] (defp) {\textbf{[28]}~positive deficiency $\defp(X)=\sum_v\max(0,3-d_X(v))$};
 \node[box, below=of defp] (stub) {\textbf{[29]}~external-incidence supply:\\$\defp(R)\le15p_{13}+o(n)$\\and $\defp(R)-\sigma_R\le15p_{13}+o(n)$};
@@ -644,6 +646,8 @@ arrow/.style={-{Latex[length=2mm]},thick},
 every node/.style={font=\scriptsize}
 ]
 \node[box] (dep) {\textbf{[35]}~Branch D: rank-reducing curvature dependence};
+\coordinate (in35) at ($(dep.north)+(0,0.72)$);
+\draw[arrow] (in35)--node[right]{from [33]}(dep.north);
 \node[dec, below=of dep] (ctx) {\textbf{[36]}~valid against every outside context?};
 \node[term, right=of ctx] (defect) {\textbf{[37]}~target-defective\\quotient};
 \node[dec, below=of ctx] (atom) {\textbf{[38]}~target-complete with\\smaller proper representative?};
@@ -685,6 +689,8 @@ arrow/.style={-{Latex[length=2mm]},thick},
 every node/.style={font=\scriptsize}
 ]
 \node[box] (fullrank) {\textbf{[47]}~Residual B: full curvature rank $r_\Omega(R)\ge W_2(R)-o(W_2)$};
+\coordinate (in47) at ($(fullrank.north)+(0,0.72)$);
+\draw[arrow] (in47)--node[right]{from [34]}(fullrank.north);
 \node[box, below=of fullrank] (cost) {\textbf{[48]}~forced curvature cost $c_\Omega W_2(R)\ge K_{\rm win}|R|-o(|R|)$\\(high entropy: $K=5.89262883286\ldots$)};
 \node[box, below=of cost] (eta) {\textbf{[49]}~per-vertex remainder entropy $\eta(R)=\log_2|\mathcal G(R)|/|R|$};
 \node[dec, below=of eta] (expensive) {\textbf{[50]}~$\eta(R)\ge\frac1{10}\log_2 n$?};
@@ -724,6 +730,8 @@ arrow/.style={-{Latex[length=2mm]},thick},
 every node/.style={font=\scriptsize}
 ]
 \node[box] (netcap) at (0.00,8.30) {\textbf{[57]}~large-budget\\net cap};
+\coordinate (in57) at ($(netcap.north)+(0,0.72)$);
+\draw[arrow] (in57)--node[right]{from [56]}(netcap.north);
 \node[dec] (exact) at (0.00,6.55) {\textbf{[173]}~exact collision\\test holds?};
 \node[box] (Ndef) at (0.00,4.95) {\textbf{[58]}~net charge\\\(\No\)};
 \node[dec] (globalnet) at (0.00,3.35) {\textbf{[59]}~\(\No(R)\ge0\)?};
@@ -768,7 +776,13 @@ arrow/.style={-{Latex[length=2mm]},thick},
 every node/.style={font=\scriptsize}
 ]
 \node[wide] (typeB) at (0.00,8.60) {\textbf{[65]}~Type B assigned support:\\high-degree fan centers and decorated handoff data};
+\coordinate (in65) at ($(typeB.north)+(0,0.72)$);
+\draw[arrow] (in65)--node[right]{from [64]}(typeB.north);
+\coordinate (in65b) at ($(typeB.west)+(-2.10,0)$);
+\draw[arrow] (in65b)--node[above]{from [177]}(typeB.west);
 \node[box,dashed] (decorB) at (6.75,8.60) {\textbf{[66]}~Type A exit 7 input\\from the Part VIII handoff};
+\coordinate (in66) at ($(decorB.north)+(0,0.72)$);
+\draw[arrow,dashed] (in66)--node[right]{from [108]}(decorB.north);
 \node[box] (highind) at (0.00,6.85) {\textbf{[67]}~high-degree centers independent; fan neighbours cubic};
 \node[dec] (degsplit) at (0.00,4.85) {\textbf{[68]}~some center has \(d_G(h)>4\)?};
 \node[wide] (localgt) at (6.75,4.85) {\textbf{[69]}~degree \(>4\) local dichotomy:\\fan-compatible open pair or \(k-2\) triangular ports gives fan-closed ports};
@@ -814,6 +828,8 @@ arrow/.style={-{Latex[length=2mm]},thick},
 every node/.style={font=\scriptsize}
 ]
 \node[dec] (split) at (0.00,6.60) {\textbf{[78]}~degree-\(4\) branch:\\\(d_G(h)=4\)};
+\coordinate (in78) at ($(split.north)+(0,0.72)$);
+\draw[arrow] (in78)--node[right]{from [68]}(split.north);
 \node[wide] (profile) at (0.00,4.15) {\textbf{[79]}~degree-\(4\) fan profile:\\center surplus \(1\), \(0\le c\le4\), \(D_B=c-\frac74\)};
 \node[dec] (certq) at (0.00,1.65) {\textbf{[80]}~certificate labelling present?};
 \node[dec] (ledgerq) at (0.00,-1.35) {\textbf{[81]}~\(c\le1\), or \(c\ge2\) with B2 disjoint ledger?};
@@ -850,6 +866,8 @@ arrow/.style={-{Latex[length=2mm]},thick},
 every node/.style={font=\scriptsize}
 ]
 \node[box] (typeA) {\textbf{[86]}~Type A: $\sigma(X)=0$, hence $\defp(X)<|X|/4$};
+\coordinate (in86) at ($(typeA.north)+(0,0.72)$);
+\draw[arrow] (in86)--node[right]{from [63]}(typeA.north);
 \node[box, below=of typeA] (bounded) {\textbf{[87]}~$P_{13}$-free; subcubic case has $\diam(X)\le11$ and $|X|\le6142$};
 \node[box, below=of bounded] (thresholds) {\textbf{[88]}~raw thresholds $H_0\le4$, $H_1\le8$, $H_2\le12$};
 \node[dec, below=of thresholds] (saturated) {\textbf{[89]}~some receiver has $L(w)\ge4q(w)$?};
@@ -919,6 +937,8 @@ arrow/.style={-{Latex[length=2mm]},thick},
 every node/.style={font=\scriptsize}
 ]
 \node[box] (route8) {\textbf{[110]}~exit (8): route-8 residual profile};
+\coordinate (in110) at ($(route8.north)+(0,0.72)$);
+\draw[arrow] (in110)--node[right]{from [109]}(route8.north);
 \node[box, below=of route8] (extract) {\textbf{[111]}~global squeeze extracts a route-8 Type A collection $\mathcal X_A$ carrying $D_A(\mathcal X_A)$};
 \node[box, below=of extract] (burden) {\textbf{[112]}~route-8 burden:\\$N_{\rm basin}(\mathcal X_A)\ge4D_A(\mathcal X_A)$};
 \node[box, below=of burden] (deficit) {\textbf{[113]}~large-budget deficit:\\$D_A(\mathcal X_A)\ge(1/4-\tau_{\rm win})|R|-o(|R|)$};
@@ -967,6 +987,8 @@ arrow/.style={-{Latex[length=2mm]},thick},
 every node/.style={font=\scriptsize}
 ]
 \node[wide] (resid) at (-1.55,8.20) {\textbf{[125]}~sparse-pressure survivor:\\after \(P_{13}\) label algebra and sparse exits};
+\coordinate (in125) at ($(resid.north)+(0,0.72)$);
+\draw[arrow] (in125)--node[right]{from [20]}(resid.north);
 \node[box] (slack) at (-1.55,6.55) {\textbf{[126]}~sparse envelope:\\\(m\le2n-2\), \(\sigma=n-6-2\lambda\)};
 \node[box] (extract) at (-1.55,4.90) {\textbf{[127]}~excess-port extraction:\\\(\mathcal A=\mathcal P_{\rm exc}\), \(|\mathcal A|=\sigma(G)\)};
 \node[box] (activate) at (-1.55,3.25) {\textbf{[128]}~canonical activation:\\returns \(R_p\); open \(Q_p\); triangular response};
@@ -1003,8 +1025,8 @@ every node/.style={font=\scriptsize}
 \draw[arrow] (supplyq)--(highload);
 \draw[arrow] (entropy.south)--(entropy.south|-highload.west)--node[below]{count holds: free pairs}(highload.west);
 \draw[arrow] (entropy.west)--node[above]{count fails}(pairunreal.east|-entropy.west)--(pairunreal.north);
-\coordinate (freeside) at ($(highload.south)+(-2.40,-1.20)$);
-\draw[arrow] (highload.south west)--node[below,sloped]{count fails on the free side: continue at [178]}(freeside);
+\coordinate (freeside) at ($(highload.south)+(-3.50,-0.40)$);
+\draw[arrow] (highload.south)|-node[below,pos=0.55]{count fails on the free side: continue at [178]}(freeside);
 \draw[arrow] (pairunreal)--(pairserial);
 \draw[arrow] (pairserial)--(pairclose);
 \draw[arrow] (highload.east)--node[above]{no}(nearclose.west);
@@ -1038,6 +1060,8 @@ arrow/.style={-{Latex[length=2mm]},thick},
 every node/.style={font=\scriptsize}
 ]
 \node[wide] (interface) at (0.00,7.50) {\textbf{[145]}~cold-branch continuation from the no-edge of [22], after the spine estimate};
+\coordinate (in145) at ($(interface.north)+(0,0.72)$);
+\draw[arrow] (in145)--node[right]{from [22]}(interface.north);
 \node[dec] (route8) at (0.00,5.50) {\textbf{[146]}~\(\theta<1/78\)?};
 \node[term] (route8closed) at (5.95,5.50) {\textbf{[147]}~route-8 private-carrier\\collision closes};
 \node[dec] (hot) at (0.00,3.20) {\textbf{[148]}~live-hot entropy\\cap closes?};
@@ -1084,6 +1108,8 @@ arrow/.style={-{Latex[length=2mm]},thick},
 every node/.style={font=\scriptsize}
 ]
 \node[wide] (dense) at (0.00,7.60) {\textbf{[159]}~dense-packing residual: the no-edge of [158];\\\(2^{c_{13}p_{13}\log_2 n}\) exceeds the labelled skeleton class, i.e.\ \(\theta>\theta_{\rm win}\)};
+\coordinate (in159) at ($(dense.north)+(0,0.72)$);
+\draw[arrow] (in159)--node[right]{from [158]}(dense.north);
 \node[dec] (tau) at (0.00,5.10) {\textbf{[160]}~\(\tau(\theta)<1/4\)?\\(exact [56] comparison)};
 \node[wide] (netcharge) at (6.40,5.10) {\textbf{[161]}~negative-net-charge collision:\\continue at [25] with the deficiency cap in place of [24]};
 \node[wide] (coldpass) at (0.00,2.60) {\textbf{[162]}~dense hot/cold pass: run [22]--[24] and [145]--[157] on the dense residual; [23], [149], [155], [156], [157] close as before; bounded arm of [153] and [146]/[160] arms return to [25]};

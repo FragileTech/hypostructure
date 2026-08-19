@@ -1062,6 +1062,29 @@ body.has-rail-open {
   vertical-align: 1px;
 }
 
+.proof-node-verified {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  z-index: 1;
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--ok);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.proof-node-decision .proof-node-verified {
+  right: 22px;
+}
+
 .proof-node-body {
   position: relative;
   display: flex;
