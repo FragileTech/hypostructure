@@ -121,7 +121,7 @@ def manuscript_all_labels(tex: str) -> set[str]:
     return set(re.findall(r"\\label(?:\[[^\]]+\])?\{([^}]+)\}", tex))
 
 
-def node_numbers(cell: str) -> set[int]:
+def node_numbers(cell: str, max_node: int) -> set[int]:
     result: set[int] = set()
     normalized = cell.replace("–", "-")
     for first, last in re.findall(r"\[(\d+)\](?:-\[(\d+)\])?", normalized):
@@ -132,7 +132,7 @@ def node_numbers(cell: str) -> set[int]:
         result.update(range(start, stop + 1))
     if not result:
         raise AuditError(f"fact row has no diagram node in {cell!r}")
-    invalid = sorted(number for number in result if not 1 <= number <= 157)
+    invalid = sorted(number for number in result if not 1 <= number <= max_node)
     if invalid:
         raise AuditError(f"out-of-range diagram nodes {invalid} in {cell!r}")
     return result
@@ -204,7 +204,7 @@ def validate(repo_root: Path) -> None:
             f"extra={sorted(set(node_rows) - expected_nodes)}"
         )
 
-    fact_nodes = {row[0]: node_numbers(row[2]) for row in facts.rows}
+    fact_nodes = {row[0]: node_numbers(row[2], max_node) for row in facts.rows}
     all_tex_labels = manuscript_all_labels(tex)
     for number, row in node_rows.items():
         for label in listed_labels(row[12]):
