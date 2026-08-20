@@ -14,24 +14,52 @@ export function LandingPage() {
   // lands here first and asks, through the navigation state, for the jump.
   const { state, key } = useLocation();
   useEffect(() => {
-    if ((state as { scrollTo?: string } | null)?.scrollTo === METHODOLOGY_ID) {
-      scrollToMethodology();
+    const target = (state as { scrollTo?: string } | null)?.scrollTo;
+    if (target?.startsWith(METHODOLOGY_ID)) {
+      scrollToMethodology(target);
     }
   }, [state, key]);
 
   return (
     <div className="page page-landing">
       <header className="hero">
-        <p className="hero-eyebrow">Proof explorer</p>
-        <h1>Two long proofs, laid out so you can walk them</h1>
-        <p className="hero-lead">
-          Each of these papers draws its own argument as a dependency diagram of
-          numbered steps. Here those diagrams are navigable: pick a step and see
-          what it asserts, which results stand behind it, and where the argument
-          goes next.
-        </p>
+        <p className="hero-eyebrow">LLM-assisted research</p>
+        <h1>An interactive structural analysis of difficult mathematical problems</h1>
+        <div className="hero-lead hero-lead-stack">
+          <p>
+            This site presents an LLM-assisted, interactive analysis of the
+            structures underlying difficult problems in combinatorics and
+            partial differential equations. Each argument is decomposed into a
+            case-by-case study of its structural alternatives, showing how
+            established mathematical techniques interact and how individual
+            results depend on one another. Navigable proof diagrams let readers
+            inspect each step, trace its supporting results, and follow the
+            subsequent branches of the argument.
+          </p>
+          <p>
+            Hypostructure is an ongoing research project with two closely
+            connected goals. The first is to build a detailed structural survey
+            that exposes recurring mechanisms and hidden relationships,
+            providing a foundation for developing new mathematical techniques.
+            The second is to create a Lean library for formalizing and automating
+            long structural-exhaustion arguments, so that their underlying
+            strategies can be abstracted, reused, and eventually applied to new
+            problems.
+          </p>
+          <p>
+            The project is evolving, and its analyses and formalizations remain
+            open to refinement. We warmly welcome mathematicians, formal-methods
+            researchers, and other interested members of the community to
+            explore the work, identify gaps, suggest improvements, and contribute
+            new perspectives.
+          </p>
+        </div>
         <p className="hero-actions">
-          <button type="button" className="button button-quiet" onClick={scrollToMethodology}>
+          <button
+            type="button"
+            className="button button-quiet"
+            onClick={() => scrollToMethodology()}
+          >
             Read the methodology
           </button>
         </p>

@@ -1,6 +1,6 @@
 {
- "pdf": "original_erdos_64_proof.pdf",
- "tex": "to_formalize/original_erdos_64_proof.tex",
+ "pdf": "erdos_64_proof.pdf",
+ "tex": "to_formalize/erdos_64_proof.tex",
  "chapter": "erdos-gyarfas",
  "pages": 253,
  "labels": {

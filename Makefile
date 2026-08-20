@@ -13,12 +13,12 @@ NPM ?= npm
 WEB_DIR := web
 WEB_FRONTEND := $(WEB_DIR)/frontend
 WEB_DATA := $(WEB_FRONTEND)/public/data/erdos-gyarfas.json \
-            $(WEB_FRONTEND)/public/data/pages/original_erdos_64_proof.json
-WEB_SOURCES := to_formalize/original_erdos_64_proof.tex \
+            $(WEB_FRONTEND)/public/data/pages/erdos_64_proof.json
+WEB_SOURCES := to_formalize/erdos_64_proof.tex \
                to_formalize/proof_setup.tex \
                to_formalize/type_I_residual_closure.tex \
                to_formalize/type_II_regularity.tex \
-               to_formalize/original_erdos_64_proof.aux \
+               to_formalize/erdos_64_proof.aux \
                to_formalize/proof_setup.aux \
                to_formalize/type_I_residual_closure.aux \
                to_formalize/type_II_regularity.aux

@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1787178627.61035 "original_erdos_64_proof.tex" "original_erdos_64_proof.pdf" "original_erdos_64_proof" 1787178635.29686 0
+["pdflatex"] 1787178627.61035 "erdos_64_proof.tex" "erdos_64_proof.pdf" "erdos_64_proof" 1787178635.29686 0
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/euler/eufm10.pfb" 1336858727 21098 d4aee7c0aac232caac5688b586b9363c ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb" 1248133631 31764 459c573c03a4949a528c2cc7f557e217 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb" 1248133631 34694 ad62b13721ee8eda1dcc8993c8bd7041 ""
@@ -184,14 +184,14 @@
   "/usr/share/texmf/tex/latex/lm/t1lmr.fd" 1616454256 1867 996fe743d88a01aca041ed22cc10e1bb ""
   "/usr/share/texmf/tex/latex/lm/t1lmtt.fd" 1616454256 2682 555da1faa2e266801e4b221d01a42cb5 ""
   "/usr/share/texmf/tex/latex/lm/ts1lmtt.fd" 1616454256 2739 a9185ca78909337213035903c24903f2 ""
-  "original_erdos_64_proof.aux" 1787178635.09603 103524 f32e340b7c593a6c7672c8f83737e260 "pdflatex"
-  "original_erdos_64_proof.out" 1787178635.10203 9331 39622d6882fd61da76cd3275a5035447 "pdflatex"
-  "original_erdos_64_proof.tex" 1787178621.59113 917222 5fa6cdb461a3bae8b6722fc23ec9b781 ""
-  "original_erdos_64_proof.toc" 1787178635.10203 8124 dccc6f1375ae3173226601564e7da9bc "pdflatex"
+  "erdos_64_proof.aux" 1787178635.09603 103524 f32e340b7c593a6c7672c8f83737e260 "pdflatex"
+  "erdos_64_proof.out" 1787178635.10203 9331 39622d6882fd61da76cd3275a5035447 "pdflatex"
+  "erdos_64_proof.tex" 1787178621.59113 917222 5fa6cdb461a3bae8b6722fc23ec9b781 ""
+  "erdos_64_proof.toc" 1787178635.10203 8124 dccc6f1375ae3173226601564e7da9bc "pdflatex"
   (generated)
-  "original_erdos_64_proof.aux"
-  "original_erdos_64_proof.log"
-  "original_erdos_64_proof.out"
-  "original_erdos_64_proof.pdf"
-  "original_erdos_64_proof.toc"
+  "erdos_64_proof.aux"
+  "erdos_64_proof.log"
+  "erdos_64_proof.out"
+  "erdos_64_proof.pdf"
+  "erdos_64_proof.toc"
   (rewritten before read)

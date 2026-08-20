@@ -5,7 +5,7 @@ import Hypostructure.Graph.DecoratedFan
 # Certificate-marked Type B fans and the fan-degree label-packing cap
 
 This file is pure finite graph mathematics.  It formalises two manuscript
-items of `original_erdos_64_proof.tex`:
+items of `erdos_64_proof.tex`:
 
 * `def:marked-typeB-fan` (node `[70]`): a *fan-certificate labelling* of a
   high-degree centre `h` is a map `S_h : N(h) → 𝓛` into the legal nonempty

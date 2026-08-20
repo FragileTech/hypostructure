@@ -4,7 +4,7 @@ import Hypostructure.Graph.BoundariedAtom
 /-!
 # Boundary-edge overlap counterexample
 
-This fixture isolates the residual in `original_erdos_64_proof.tex`, line 5619.
+This fixture isolates the residual in `erdos_64_proof.tex`, line 5619.
 Under unrestricted union gluing, equality of the uncapped piece-local boundary
 degree profiles does not imply equality of the final glued boundary degrees.
 

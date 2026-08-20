@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 
 import { Latex } from "../graph-explorer";
 import { findProof } from "../proofs/registry";
+import { GeneralStructuralSurvey } from "../structural-survey/GeneralStructuralSurvey";
 
 /** The element the whole account is anchored at. */
 export const METHODOLOGY_ID = "methodology";
@@ -21,6 +22,7 @@ export const METHODOLOGY_PARTS = [
   { id: "repair", title: "Red-teaming and repair" },
   { id: "iteration", title: "One iteration of the method" },
   { id: "proofs", title: "In the two proofs" },
+  { id: "survey", title: "Techniques and structural invariants" },
 ] as const;
 
 type PartId = (typeof METHODOLOGY_PARTS)[number]["id"];
@@ -630,9 +632,9 @@ function RepairDiagram() {
  * The site uses a hash router, so an `href="#methodology"` would be read as a
  * route. Anything pointing at the account jumps to it by hand instead.
  */
-export function scrollToMethodology() {
+export function scrollToMethodology(target = METHODOLOGY_ID) {
   document
-    .getElementById(METHODOLOGY_ID)
+    .getElementById(target)
     ?.scrollIntoView?.({ behavior: "smooth", block: "start" });
 }
 
@@ -1872,6 +1874,10 @@ export function MethodologySection() {
                 </li>
               ) : null}
             </ul>
+          </Part>
+
+          <Part id="survey">
+            <GeneralStructuralSurvey />
           </Part>
 
         </div>

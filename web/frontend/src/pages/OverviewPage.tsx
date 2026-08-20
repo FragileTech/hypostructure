@@ -4,6 +4,7 @@ import { Latex, MathProvider, createReferenceResolver, indexDocument } from "../
 import { useProof } from "../hooks/useProof";
 import { useProofDocument } from "../hooks/useProofDocument";
 import { ErrorPanel, LoadingPanel } from "../components/RequestPanels";
+import { EGStructuralSurvey } from "../structural-survey/EGStructuralSurvey";
 import { NotFoundPage } from "./NotFoundPage";
 
 export function OverviewPage() {
@@ -93,6 +94,8 @@ export function OverviewPage() {
             <PanelGrid slug={proof.slug} groups={document.groups} document={document} />
           </section>
         ) : null}
+
+        <EGStructuralSurvey document={document} />
 
         <footer className="page-footer">
           Every statement, branch label and constant on this site is read directly

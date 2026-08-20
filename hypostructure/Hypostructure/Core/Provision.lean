@@ -38,6 +38,25 @@ inductive PrimitiveRole where
   | importedContract
   deriving Repr, DecidableEq
 
+namespace PrimitiveRole
+
+/-- Whether this primitive role may describe data at the public presentation
+boundary.  Laws, certificates, and imported theorem contracts are constructed
+or registered behind that boundary. -/
+def presentationSafe : PrimitiveRole → Bool
+  | .definition
+  | .operator
+  | .finiteEnumeration
+  | .decisionProcedure => true
+  | .semanticLaw
+  | .localCertificate
+  | .importedContract => false
+
+@[simp] theorem semanticLaw_not_presentationSafe :
+    semanticLaw.presentationSafe = false := rfl
+
+end PrimitiveRole
+
 /-- One explicitly author-supplied primitive declaration. -/
 structure AuthorPrimitiveRef where
   source : DeclarationRef

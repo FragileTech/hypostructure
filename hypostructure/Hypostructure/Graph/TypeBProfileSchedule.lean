@@ -4,7 +4,7 @@ import Hypostructure.Graph.TypeBHybridIncidence
 /-!
 # The enumerable schedule of assigned Type B fan-window profiles
 
-Manuscript node `[74]` (`fanthm`) of `original_erdos_64_proof.tex` is a
+Manuscript node `[74]` (`fanthm`) of `erdos_64_proof.tex` is a
 framework step, and a framework step scans a *schedule*.  The assigned Type B
 fan-window profile `𝔉_h` of `def:typeB-window-incidence-profile` is
 `TypeBFanClosedPorts.Profile`, which is pure data and therefore carries no

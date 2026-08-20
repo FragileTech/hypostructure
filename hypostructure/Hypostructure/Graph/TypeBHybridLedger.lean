@@ -5,7 +5,7 @@ import Hypostructure.Graph.HighCentrePorts
 # The hybrid window / non-window incidence ledger of one Type B fan
 
 This file is the graph-mathematics content of manuscript nodes `[74]`/`[82]`
-(`fanthm`) of `original_erdos_64_proof.tex`:
+(`fanthm`) of `erdos_64_proof.tex`:
 
 * `def:typeB-hybrid-incidence` -- the support classification
   `c_W / c_M / c_I`, the incidence counts `I_W = 2c_W + c_M` and

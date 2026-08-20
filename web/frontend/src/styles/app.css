@@ -530,6 +530,14 @@ body.has-rail-open {
   color: var(--ink-muted);
 }
 
+.hero-lead-stack p {
+  margin: 0;
+}
+
+.hero-lead-stack p + p {
+  margin-top: 14px;
+}
+
 .hero-actions {
   display: flex;
   gap: 10px;
@@ -2405,6 +2413,432 @@ body.has-rail-open {
   font-size: 14px;
   line-height: 1.55;
   color: var(--ink-muted);
+}
+
+/* --------------------------------------------- structural survey ledger -- */
+
+/* The coordinate system is the visual bridge between the general register
+   and its proof-specific crosswalk: A01--I06 are structural properties and
+   T01--T19 are the textbook moves used to evaluate them. */
+.general-structural-survey {
+  --survey-property: var(--decision);
+  --survey-technique: var(--accent);
+}
+
+.survey-ontology {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(170px, 100%), 1fr));
+  gap: 8px;
+  margin: 18px 0 28px;
+}
+
+.methodology-part .survey-scope-note {
+  max-width: none;
+  margin: 16px 0 20px;
+  padding: 11px 14px;
+  border-left: 3px solid var(--decision);
+  border-radius: 0 8px 8px 0;
+  background: color-mix(in srgb, var(--decision) 7%, var(--surface));
+  color: var(--ink-muted);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.survey-scope-note strong {
+  color: var(--ink);
+}
+
+.survey-ontology > div {
+  min-width: 0;
+  padding: 12px 13px;
+  border-top: 2px solid var(--accent);
+  border-radius: 0 0 8px 8px;
+  background: var(--surface-sunken);
+}
+
+.survey-ontology dt {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.survey-ontology dd {
+  margin: 5px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ink-muted);
+}
+
+.general-structural-survey > h4 {
+  margin-top: 30px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  font-size: 19px;
+}
+
+.survey-table-wrap {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.survey-table-wrap table {
+  margin: 0;
+}
+
+.survey-table-wrap thead {
+  background: var(--surface-sunken);
+}
+
+.survey-table-wrap th,
+.survey-table-wrap td {
+  padding-left: 12px;
+}
+
+.survey-table-wrap tbody tr[id] {
+  scroll-margin-top: 96px;
+}
+
+.survey-table-wrap tbody tr:hover {
+  background: color-mix(in srgb, var(--accent-soft) 45%, transparent);
+}
+
+.survey-technique-table {
+  min-width: 900px;
+}
+
+.survey-technique-table th:first-child,
+.survey-technique-table td:first-child {
+  width: 72px;
+}
+
+.survey-technique-table td:nth-child(2) {
+  width: 23%;
+}
+
+.survey-technique-table td:nth-child(3) {
+  width: 38%;
+}
+
+.survey-technique-table td:first-child,
+.survey-property-table td:first-child {
+  width: auto;
+}
+
+.survey-technique-table td:last-child,
+.survey-property-table td:last-child {
+  color: var(--ink-muted);
+}
+
+.survey-property-groups {
+  display: grid;
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.survey-property-group {
+  min-width: 0;
+}
+
+.survey-property-group > header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.survey-property-group h5 {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.survey-property-group header span {
+  flex: none;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.survey-property-table {
+  min-width: 1180px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.survey-property-table th:first-child {
+  width: 64px;
+}
+
+.survey-property-table td:nth-child(2) {
+  width: 17%;
+}
+
+.survey-property-table td:nth-child(3) {
+  width: 20%;
+}
+
+.survey-property-table td:nth-child(4) {
+  width: 13%;
+}
+
+.survey-property-table td:nth-child(5),
+.survey-property-table td:nth-child(6) {
+  width: 22%;
+}
+
+.survey-id {
+  display: inline-block;
+  min-width: 36px;
+  padding: 2px 6px;
+  border: 1px solid color-mix(in srgb, var(--survey-property, var(--decision)) 45%, var(--line));
+  background: color-mix(in srgb, var(--survey-property, var(--decision)) 10%, var(--surface));
+  color: var(--survey-property, var(--decision));
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.survey-technique-table .survey-id {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface));
+  color: var(--accent);
+}
+
+.survey-coordinate-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.survey-coordinate {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  min-height: 24px;
+  padding: 2px 7px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-muted);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.survey-coordinate.is-property {
+  color: var(--decision);
+  background: color-mix(in srgb, var(--decision) 8%, var(--surface));
+}
+
+.survey-coordinate.is-technique {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+}
+
+.survey-coordinate.is-property:hover,
+.survey-coordinate.is-property:focus-visible {
+  background: var(--decision);
+  color: var(--surface);
+  outline: none;
+}
+
+.survey-coordinate.is-technique:hover,
+.survey-coordinate.is-technique:focus-visible {
+  background: var(--accent);
+  color: var(--surface);
+  outline: none;
+}
+
+/* The EG view keeps the whole manuscript-to-methodology relation in one
+   ledger. It scrolls within its panel on a narrow screen, never the page. */
+.eg-structural-survey {
+  position: relative;
+  overflow: hidden;
+  border-top: 3px solid var(--accent);
+}
+
+.eg-structural-survey .hero-eyebrow {
+  margin: 0 0 6px;
+}
+
+.eg-survey-table-wrap {
+  margin: 22px calc(clamp(20px, 3vw, 32px) * -1) calc(clamp(20px, 3vw, 32px) * -1);
+  overflow-x: auto;
+  border-top: 1px solid var(--line);
+}
+
+.eg-survey-table {
+  width: 100%;
+  min-width: 1280px;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+.eg-survey-table thead {
+  background: var(--surface-sunken);
+}
+
+.eg-survey-table th,
+.eg-survey-table td {
+  padding: 12px 14px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--line);
+}
+
+.eg-survey-table thead th {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+
+.eg-survey-table tbody tr:last-child > * {
+  border-bottom: 0;
+}
+
+.eg-survey-table tbody tr:hover {
+  background: color-mix(in srgb, var(--accent-soft) 45%, transparent);
+}
+
+.eg-survey-table tbody th {
+  width: 240px;
+  background: color-mix(in srgb, var(--surface) 94%, var(--accent-soft));
+}
+
+.eg-survey-table td:nth-child(2) {
+  width: 205px;
+}
+
+.eg-survey-table td:nth-child(3) {
+  width: 205px;
+}
+
+.eg-survey-table td:nth-child(4) {
+  width: 135px;
+}
+
+.eg-survey-table td:nth-child(5) {
+  width: 300px;
+}
+
+.eg-invariant-number {
+  display: block;
+  margin-bottom: 5px;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--decision);
+}
+
+.eg-survey-table tbody th strong {
+  display: block;
+  font-family: var(--serif);
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.eg-survey-table tbody th small {
+  display: block;
+  margin-top: 6px;
+  color: var(--ink-faint);
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.eg-survey-coordinate-names {
+  display: block;
+  margin-top: 7px;
+  color: var(--ink-muted);
+}
+
+.eg-survey-nodes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.eg-survey-nodes .chip {
+  padding: 1px 7px;
+  font-size: 10.5px;
+}
+
+.survey-result-kind {
+  margin-right: 2px;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+
+.eg-survey-more {
+  margin-top: 8px;
+}
+
+.eg-survey-more summary {
+  color: var(--ink-muted);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.eg-survey-more ul {
+  margin: 7px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.eg-survey-more li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 5px 0;
+  border-top: 1px solid var(--line);
+}
+
+.eg-survey-more li > span:last-child {
+  flex: none;
+  color: var(--ink-faint);
+  font-family: var(--mono);
+  font-size: 10.5px;
+}
+
+.eg-survey-page {
+  white-space: nowrap;
+  font-family: var(--mono);
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .survey-property-group > header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .eg-survey-table-wrap {
+    margin-top: 18px;
+  }
 }
 
 .panel-count {

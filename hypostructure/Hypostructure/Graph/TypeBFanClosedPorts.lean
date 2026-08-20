@@ -6,7 +6,7 @@ import Hypostructure.Graph.TypeBMarkedFan
 # Fan-closed surplus ports and the local Type B closed-neighbour deficit
 
 This file is the graph-mathematics content of manuscript node `[72]`
-(`typeBfan`) of `original_erdos_64_proof.tex`:
+(`typeBfan`) of `erdos_64_proof.tex`:
 
 * `def:fan-closed-port` -- `Profile.IsFanClosed`;
 * `lem:compatible-pair-fan-closure` -- `compatiblePairFanClosure`;

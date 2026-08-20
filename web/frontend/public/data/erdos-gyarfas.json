@@ -5,7 +5,7 @@
  "subtitle": "An interactive walk through the proof-dependency diagram of the original paper",
  "source": {
   "files": [
-   "to_formalize/original_erdos_64_proof.tex"
+   "to_formalize/erdos_64_proof.tex"
   ],
   "diagramNodes": 180,
   "figures": 12

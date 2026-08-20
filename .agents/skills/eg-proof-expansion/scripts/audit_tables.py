@@ -11,7 +11,7 @@ from pathlib import Path
 
 
 AUDIT_REL = Path("Assembly_node_audit.md")
-TEX_REL = Path("to_formalize/original_erdos_64_proof.tex")
+TEX_REL = Path("to_formalize/erdos_64_proof.tex")
 FACT_HEADING = "## Paper-fact implementation table"
 NODE_HEADING = "## Node-by-node table"
 FACT_HEADER = (
