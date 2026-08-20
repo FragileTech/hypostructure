@@ -2,6 +2,20 @@
 
 [![DOI](https://zenodo.org/badge/1322859158.svg)](https://doi.org/10.5281/zenodo.21813635)
 
+## An interactive structural analysis of difficult mathematical problems
+
+  This site presents an LLM-assisted, interactive analysis of the structures underlying difficult problems in combinatorics and partial differential equations. Each argument is decomposed into a
+  case-by-case study of its structural alternatives, showing how established mathematical techniques interact and how individual results depend on one another. Navigable proof diagrams let
+  readers inspect each step, trace its supporting results, and follow the subsequent branches of the argument.
+
+  Hypostructure is an ongoing research project with two closely connected goals. The first is to build a detailed structural survey that exposes recurring mechanisms and hidden relationships,
+  providing a foundation for developing new mathematical techniques. The second is to create a Lean library for formalizing and automating long structural-exhaustion arguments, so that their
+  underlying strategies can be abstracted, reused, and eventually applied to new problems.
+
+  The project is evolving, and its analyses and formalizations remain open to refinement. We warmly welcome mathematicians, formal-methods researchers, and other interested members of the
+  community to explore the work, identify gaps, suggest improvements, and contribute new perspectives.
+
+## The framework 
 Hypostructure is an ongoing effort to make long *structural-exhaustion* proofs —
 arguments organized as a finite tree of case splits, local reductions, and quantitative
 estimates, each branch closing by contradiction — readable, auditable, and eventually
