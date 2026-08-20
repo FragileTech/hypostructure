@@ -5,7 +5,7 @@ import Hypostructure.Core.DyadicLength
 # The `P₁₃` curvature algebra
 
 This file is the framework translation of the section *The `P₁₃` curvature
-algebra* of `original_erdos_64_proof.tex`, together with `lem:labels` (whose
+algebra* of `erdos_64_proof.tex`, together with `lem:labels` (whose
 enumeration is in `Graph/WindowCurvatureEnumeration.lean`).
 
 Let `P = v₀v₁⋯v_{order-1}` be an induced path.  The manuscript reads:

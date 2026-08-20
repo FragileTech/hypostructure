@@ -4,6 +4,7 @@ import Hypostructure.Core.Progress
 import Hypostructure.Core.Context
 import Hypostructure.Core.SemanticEquivalence
 import Hypostructure.Core.Provision
+import Hypostructure.Core.PresentationPurity
 import Hypostructure.Core.Coordinate.System
 import Hypostructure.Core.Coordinate.Path
 import Hypostructure.Core.Coordinate.Transport
@@ -77,6 +78,7 @@ import Hypostructure.Fixtures.ClosingProgram
 import Hypostructure.Fixtures.StrategyProgram
 import Hypostructure.Fixtures.Dag
 import Hypostructure.Fixtures.ExactLedgerOpacity
+import Hypostructure.Fixtures.PresentationPurity
 import Hypostructure.Fixtures.ExactLedgerDuplicateFact
 import Hypostructure.Fixtures.ExactLedgerMissingFact
 import Hypostructure.Fixtures.ExactExecutionMissingRequirement

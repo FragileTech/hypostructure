@@ -104,7 +104,7 @@ selected label or changes to the manuscript's proof strategy.
 
 Work from the repository root.  Require these live sources:
 
-- `to_formalize/original_erdos_64_proof.tex`: sole authority for mathematical
+- `to_formalize/erdos_64_proof.tex`: sole authority for mathematical
   statements, hypotheses, alternatives, order, and terminal behavior.
 - Actual Lean declaration types, bodies, fields, call sites, imports, and the
   generated sealed report: sole authority for what the implementation does.

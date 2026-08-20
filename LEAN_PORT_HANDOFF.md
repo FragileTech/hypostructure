@@ -1,7 +1,7 @@
 # Erdős–Gyárfás Lean port — handoff (state as of 2026-08-18)
 
 This document is the complete handoff for whoever continues the Lean port of
-`to_formalize/original_erdos_64_proof.tex` into the Hypostructure framework.
+`to_formalize/erdos_64_proof.tex` into the Hypostructure framework.
 It records the methodology, the exact current state, how to verify it, and —
 for every remaining open producer — what it is, what exists, and the concrete
 steps to close it.
@@ -57,7 +57,7 @@ steps to close it.
   Wrappers are index-polymorphic over the ledger (`{known}` + `FactKeys.Has`
   instances + freshness autoParams discharged at the concrete arms with
   `by simp [K_eq_iff]`).
-- Manuscript + PDF: `to_formalize/original_erdos_64_proof.tex` (rebuild with
+- Manuscript + PDF: `to_formalize/erdos_64_proof.tex` (rebuild with
   `latexmk -pdf -interaction=nonstopmode`). Web app: `web/` (regenerate with
   `python3 web/tools/extract_proof_graph.py`, `extract_page_map.py`, tests
   `python3 web/tools/test_extract_proof_graph.py`, `npm run typecheck/test/build`

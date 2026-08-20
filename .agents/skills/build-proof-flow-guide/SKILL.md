@@ -1,6 +1,6 @@
 ---
 name: build-proof-flow-guide
-description: Create, repair, or audit an introductory proof-architecture chapter in a mathematical LaTeX manuscript, including TikZ proof-flow diagrams, a diagram map, node-by-node source ledger, monotone-hypothesis ledger, and branch-closure table. Use when Codex must reproduce the proof-first reading-guide style of type_II_regularity.tex or original_erdos_64_proof.tex for another paper; merge or expand proof diagrams; correct node shapes, cross-page routing, labels, or overlaps; or verify that a diagram is acyclic, exhaustive, local, unconditional, and faithful to the implemented proof.
+description: Create, repair, or audit an introductory proof-architecture chapter in a mathematical LaTeX manuscript, including TikZ proof-flow diagrams, a diagram map, node-by-node source ledger, monotone-hypothesis ledger, and branch-closure table. Use when Codex must reproduce the proof-first reading-guide style of type_II_regularity.tex or erdos_64_proof.tex for another paper; merge or expand proof diagrams; correct node shapes, cross-page routing, labels, or overlaps; or verify that a diagram is acyclic, exhaustive, local, unconditional, and faithful to the implemented proof.
 ---
 
 # Build Proof Flow Guide

@@ -44,7 +44,7 @@ There is no backend. Two proofs are published:
 
 | Proof | Manuscripts | Size                           |
 | --- | --- |--------------------------------|
-| Erdős–Gyárfás | `original_erdos_64_proof.tex` | 180 steps, 12 panels           |
+| Erdős–Gyárfás | `erdos_64_proof.tex` | 180 steps, 12 panels           |
 | Navier–Stokes | `proof_setup.tex`, `type_I_residual_closure.tex`, `type_II_regularity.tex` | 333 steps, 23 panels, 3 papers |
 
 For each proof the site offers:

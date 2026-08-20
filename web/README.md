@@ -10,7 +10,7 @@ Two proofs are published:
 
 | Proof | Source | Size |
 | --- | --- | --- |
-| **Erdős–Gyárfás** — does every graph of minimum degree three contain a cycle of length a power of two? | `original_erdos_64_proof.tex` | 164 steps, 12 panels |
+| **Erdős–Gyárfás** — does every graph of minimum degree three contain a cycle of length a power of two? | `erdos_64_proof.tex` | 180 steps, 12 panels |
 | **Navier–Stokes** — can a finite-energy solution develop a local singularity? | `proof_setup.tex`, `type_I_residual_closure.tex`, `type_II_regularity.tex` | 333 steps, 23 panels, 3 papers |
 
 The Navier–Stokes argument is written across three manuscripts, each numbering

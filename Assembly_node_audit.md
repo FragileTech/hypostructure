@@ -2,7 +2,7 @@
 
 ## Authority and update rule
 
-`to_formalize/original_erdos_64_proof.tex` is the sole authority for mathematical statements, hypotheses, alternatives, order, and terminal behavior. Live Lean declaration types, bodies, exact key lists, call sites, and build results are the authority for what the implementation does. Lean doc comments, block comments, and `-- EG-NODE` annotations are search locators only and are never evidence.
+`to_formalize/erdos_64_proof.tex` is the sole authority for mathematical statements, hypotheses, alternatives, order, and terminal behavior. Live Lean declaration types, bodies, exact key lists, call sites, and build results are the authority for what the implementation does. Lean doc comments, block comments, and `-- EG-NODE` annotations are search locators only and are never evidence.
 
 The two tables below are the sole authority for current implementation status and the next unresolved work. Whenever a fact changes, update its paper-label row and every corresponding diagram-node row in the same change. Do not add progress logs, dated snapshots, executive findings, or narrative gap sections.
 
@@ -23,7 +23,7 @@ Status legend: ✅ verified from the current type, body, and build; ⚠ concrete
 
 ## Paper-fact implementation table
 
-Rows are the manuscript's labelled fact environments in manuscript order. `Page` is from `original_erdos_64_proof.aux`. `Node` is from the manuscript's own Detailed dependency table where that table lists the label, and otherwise by manuscript proximity to the nearest listed label.
+Rows are the manuscript's labelled fact environments in manuscript order. `Page` is from `erdos_64_proof.aux`. `Node` is from the manuscript's own Detailed dependency table where that table lists the label, and otherwise by manuscript proximity to the nearest listed label.
 
 | Label | Page | Node | Tactic | Lean | Partial match | Kernel checks | Local | Reads ledger | Writes ledger | Wired | Legal | No hardcoded facts |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |

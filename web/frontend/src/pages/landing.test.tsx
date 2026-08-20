@@ -13,6 +13,7 @@ import { MemoryRouter } from "react-router-dom";
 
 import { METHODOLOGY_PARTS, partAnchor } from "../components/MethodologySection";
 import { PROOFS } from "../proofs/registry";
+import { ALL_STRUCTURAL_PROPERTIES, STRUCTURAL_TECHNIQUES } from "../structural-survey/data";
 import { LandingPage } from "./LandingPage";
 
 function show() {
@@ -219,6 +220,22 @@ describe("the landing page", () => {
       const link = within(section).getByRole("link", { name: new RegExp(proof.name) });
       expect(link).toHaveAttribute("href", `/${proof.slug}`);
     }
+  });
+
+  it("ends with the problem-independent technique and invariant registers", () => {
+    show();
+    const proofCases = document.getElementById(partAnchor("proofs"))!;
+    const survey = document.getElementById(partAnchor("survey"))!;
+    expect(
+      proofCases.compareDocumentPosition(survey) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(within(survey).getByText(/These 88 coordinates exhaust/)).toBeInTheDocument();
+    expect(survey.querySelectorAll(".survey-technique-table tbody tr")).toHaveLength(
+      STRUCTURAL_TECHNIQUES.length,
+    );
+    expect(survey.querySelectorAll(".survey-property-table tbody tr")).toHaveLength(
+      ALL_STRUCTURAL_PROPERTIES.length,
+    );
   });
 
   it("renders every piece of its mathematics", () => {

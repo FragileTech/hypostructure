@@ -9,10 +9,10 @@ with the page the label landed on in that very build. This script joins the two.
 
 One JSON is written per PDF, named after it::
 
-    web/frontend/public/data/pages/original_erdos_64_proof.json
+    web/frontend/public/data/pages/erdos_64_proof.json
     {
-      "pdf": "original_erdos_64_proof.pdf",
-      "tex": "to_formalize/original_erdos_64_proof.tex",
+      "pdf": "erdos_64_proof.pdf",
+      "tex": "to_formalize/erdos_64_proof.tex",
       "chapter": "erdos-gyarfas",
       "pages": 240,
       "labels": {
