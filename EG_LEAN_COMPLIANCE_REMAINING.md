@@ -46,8 +46,8 @@ not an acceptable intermediate state.
 ## 3. Current measured state
 
 - Diagram nodes audited: **180**.
-- Nodes passing every strict gate: **106**.
-- Nodes retained in this ledger: **74**.
+- Nodes passing every strict gate: **107**.
+- Nodes retained in this ledger: **73**.
 - Axiom-audit declarations: **75** = **49 clean** + **26 tainted**; unreported: **0**.
 - Loud undefined frontier producers: **14**.
 
@@ -85,12 +85,12 @@ not an acceptable intermediate state.
 
 ### Exact section set
 
-[11], [12], [18], [22], [23], [26], [31], [35], [43], [44], [45], [54], [59], [65], [66], [67], [68], [69], [70], [71], [72], [73], [74], [76], [77], [81], [82], [84], [85], [87], [93], [103], [106], [110], [111], [113], [114], [115], [116], [117], [118], [123], [124], [129], [131], [132], [134], [137], [140], [142], [143], [144], [145], [147], [154], [156], [157], [159], [162], [163], [165], [166], [167], [168], [170], [171], [172], [174], [175], [176], [177], [178], [179], [180].
+[11], [12], [18], [22], [23], [26], [31], [35], [43], [44], [45], [54], [65], [66], [67], [68], [69], [70], [71], [72], [73], [74], [76], [77], [81], [82], [84], [85], [87], [93], [103], [106], [110], [111], [113], [114], [115], [116], [117], [118], [123], [124], [129], [131], [132], [134], [137], [140], [142], [143], [144], [145], [147], [154], [156], [157], [159], [162], [163], [165], [166], [167], [168], [170], [171], [172], [174], [175], [176], [177], [178], [179], [180].
 
 ## 4. Dependency-ordered repair route
 
 1. **Canonical execution boundary:** eliminate illegal/discarded requirements and detached
-   universal facts at [11], [12], [18], [22], [23], [31], [44], [54], and [59].
+   universal facts at [11], [12], [18], [22], [23], [31], [44], and [54].
 2. **Branch-D fidelity:** repair [35], [43], and [45] without altering the paper's alternatives.
 3. **Type B common chain:** repair [65]–[85] entries listed below, delete the marked-ledger helper,
    and leave the first route-8 census failure loud.
@@ -560,44 +560,6 @@ listed paper-fact row from the compiled term, run the table/API checks, and remo
 only when all seven boxes are checked. A later compiler failure is recorded as downstream unless
 that later node has its own independently failing audit row.
 
-### Node [59] — \(\No(R)\ge0\)?
-
-**Exact manuscript diagram output.** \(\No(R)\ge0\)?
-
-**Manuscript rows.** Label set **L11** (paper page(s): 151, 153); its complete label
-list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
-table; their exact environments supply the inherited quantifiers and hypotheses.
-
-**Current Lean owner.** `netChargeDichotomy` (SpineRows.lean:2437)
-
-**Current combinator / shared continuation.** terminal closure, AtomicCT.run row; selectedNetChargeContinuation.
-
-**Primary defect class.** illegal read/write, discarded requirement, or noncanonical carrier.
-
-**Fresh audit diagnosis.** ✅ FAITHFUL — Exhaustive split, but informationally redundant: `K .netChargeCap` and `K .maximalPacking` already yield the no arm and refute the yes arm. The yes arm is provably uninhabited on the incoming ledger.
-
-**What must be implemented or corrected.**
-
-- Remove the unused localization requirement or use it to establish the exact net-charge alternative. Keep the exhaustive `Decision.run`, but do not retain an informationally dead arm contract.
-- Give the owner a literal nonempty `FactManifest`; consume every declared requirement, return
-  exactly `Produces`, and commit with `AtomicCT.run`. Remove unused requirements and every
-  custom wrapper/carrier on this path without deleting valid mathematical content.
-
-**Live gate checklist.**
-
-- [x] **Implemented / reachable:** pass
-- [x] **Correctly wired:** pass
-- [x] **Residual-local proof:** pass
-- [ ] **Correct ledger registration:** partial: `K .netChargeLocalization` bound as `_localization` and never used
-- [ ] **No illegal carrier/API:** partial: `K .netChargeLocalization` bound as `_localization` and never used
-- [x] **Exact manuscript proof:** pass: FAITHFUL
-- [x] **Independent kernel check:** pass: YES
-
-**Exit criterion.** Reinspect the declaration body and call site, update this node row and every
-listed paper-fact row from the compiled term, run the table/API checks, and remove this section
-only when all seven boxes are checked. A later compiler failure is recorded as downstream unless
-that later node has its own independently failing audit row.
-
 ### Node [65] — Type B assigned support: high-degree fan centers and decorated handoff data
 
 **Exact manuscript diagram output.** Type B assigned support: high-degree fan centers and decorated handoff data
@@ -606,34 +568,46 @@ that later node has its own independently failing audit row.
 list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
 table; their exact environments supply the inherited quantifiers and hypotheses.
 
-**Current Lean owner.** `typeBDecoratedAssignedSupportRow` (SpineRows.lean:4430); `typeBAssignedSupportRow` (:2808)
+**Current Lean owner.** `typeBDecoratedAssignedSupportRow` (SpineRows.lean:4435); `typeBAssignedSupportRow` (:2813)
 
 **Current combinator / shared continuation.** terminal closure, AtomicCT.run row; selectedTypeADecoratedHandoff, selectedTypeBHighSurplusContinuation.
 
-**Primary defect class.** fact absent from or not wired into the literal branch ancestry.
+**Primary defect class.** fact published but not wired on every literal incoming branch.
 
-**Fresh audit diagnosis.** ✅ FAITHFUL — `def:decorated-fan-envelope`'s (Y,H); every clause discharged from an actual `Envelope` field. Produced on two lanes with two different propositions; the annotation names only one.
+**Fresh audit diagnosis.** ✅ FAITHFUL on the implemented exit-(7) lane. The value
+published as `K .typeBDecoratedAssignedSupport` now retains the exact decorated
+envelope, uses `Graph.IsHighCentre ... data.threshold`, records every assigned
+first-neighbour support, and retains all four fields of
+`Graph.DecoratedHandoff.Admissible` from `K .typeAExitSevenHandoff`. The old row
+discarded that admissibility proof and hardcoded the threshold as the numeral `3`.
+The bare routed-envelope entry at [144] and the absorbed-germ entry at [177] are
+still independently absent.
 
 **What must be implemented or corrected.**
 
-- Implement the two paper entry lanes on their actual envelope facts and wire both into the common Type B chain. The decorated lane is blocked by `selectedTypeBRoutedEnvelope`; the absorbed lane is blocked by `selectedAbsorbedGermTypeBHandoff`.
-- Prove the node value inside the atomic executor from `inputs.current` and semantic-key reads
-  through `inputs.get`; eliminate an ignored object argument, detached universal proof, or
-  requirement not tied to the literal incoming residual.
-- Run the repaired owner on the literal typed predecessor, select the correct `Decision` arm,
-  and pass its exact output ledger forward without reconstructing a cursor or merging siblings.
-- Build the narrow owner and an independent branch probe. The node is not green while its
-  producer or composed arm reaches any undefined frontier name shown in the kernel cell below.
+- Implement the [144] bare-envelope entry on its actual `K .typeBFanEnvelope`
+  fact; the first loud frontier is `selectedTypeBRoutedEnvelope`
+  (Assembly.lean:584).
+- Implement the separate [177] absorbed-germ handoff before routing that arm into
+  [65]; `selectedAbsorbedGermTypeBHandoff` (Assembly.lean:3520) is still undefined,
+  and the current [177] fact does not contain the paper's decorated envelope.
+- Preserve the repaired `K .typeBDecoratedAssignedSupport` value unchanged when
+  those two entries are connected. Do not reconstruct its envelope or
+  admissibility data outside `ExactLedger`.
 
 **Live gate checklist.**
 
 - [x] **Implemented / reachable:** pass
-- [ ] **Correctly wired:** fail: NO: `selectedLargeBudgetPressureCensus`
-- [ ] **Residual-local proof:** fail: NO
+- [ ] **Correctly wired:** partial: the [108] decorated lane is wired; the [144]
+  and [177] entries are undefined
+- [x] **Residual-local proof:** pass for the implemented atomic owner
 - [x] **Correct ledger registration:** pass
 - [x] **No illegal carrier/API:** None found
-- [x] **Exact manuscript proof:** pass: FAITHFUL
-- [ ] **Independent kernel check:** fail: NO: `selectedLargeBudgetPressureCensus`
+- [x] **Exact manuscript proof:** pass for `lem:decorated-fan-admissibility` on
+  the implemented decorated lane
+- [ ] **Independent kernel check:** partial: `SpineRows` and the [108]→[65]
+  call site elaborate; full composition stops at `selectedTypeBRoutedEnvelope`
+  and `selectedAbsorbedGermTypeBHandoff`
 
 **Exit criterion.** Reinspect the declaration body and call site, update this node row and every
 listed paper-fact row from the compiled term, run the table/API checks, and remove this section
@@ -3118,10 +3092,6 @@ rows in its set that the repaired fact changes.
 ### L10 — node(s) [54]
 
 `def:Theta`, `prop:entropy-high-theta`, `prop:two-budget`.
-
-### L11 — node(s) [59]
-
-`lem:netcharge-superadd`, `prop:negative-net-charge`.
 
 ### L12 — node(s) [65], [66], [68], [69], [70], [71], [72], [73], [74], [77], [81], [82], [84]
 

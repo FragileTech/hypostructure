@@ -2358,9 +2358,11 @@ def HandoffAdmissible (data : Data.{u}) (object : Graph.FiniteObject.{u})
         (handoffUncompressible data object) (handoffWindowFree data object)
         envelope
 
-/-- `def:decorated-typeB-envelope-support` / `def:typeB-assigned-ledger` on a
-selected handoff residual: the envelope's high-degree centre set and each
-centre's nonempty assigned first-neighbour support. -/
+/-- `def:decorated-typeB-envelope-support`, `def:typeB-assigned-ledger`, and
+`lem:decorated-fan-admissibility` on a selected handoff residual: the complete
+envelope, its high-degree centre set, each centre's nonempty assigned
+first-neighbour support, and the admissibility data consumed by the Type B
+calculation. -/
 def DecoratedTypeBAssignedSupport (data : Data.{u})
     (object : Graph.FiniteObject.{u})
     (packing : Finset (Finset object.Vertex))
@@ -2369,11 +2371,14 @@ def DecoratedTypeBAssignedSupport (data : Data.{u})
       (handoffHighDegree object) (handoffAbsorbing data object packing),
     envelope.core = piece ∧ envelope.decorations.Nonempty ∧
       (∀ centre ∈ envelope.decorations,
-        3 < object.degree centre) ∧
+        Graph.IsHighCentre object data.threshold centre) ∧
       (∀ centre ∈ envelope.decorations,
         (envelope.assigned centre).Nonempty ∧
           ∀ first ∈ envelope.assigned centre,
-            object.graph.Adj centre first)
+            object.graph.Adj centre first) ∧
+      Graph.DecoratedHandoff.Admissible object data.LengthOK
+        (handoffUncompressible data object) (handoffWindowFree data object)
+        envelope
 
 /-- Node `[68]`, yes arm: the assigned decorated envelope has a centre of
 degree strictly greater than four. -/

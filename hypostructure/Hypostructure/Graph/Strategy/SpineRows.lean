@@ -2441,9 +2441,9 @@ noncomputable def netChargeDichotomy
     (previous :
       @ExactLedger (Input BranchState Presentation presentation data)
         _ (factSystem BranchState Presentation presentation data) current known)
-    [@FactKeys.Has (Input BranchState Presentation presentation data) _
-      (factSystem BranchState Presentation presentation data)
-      (K .netChargeLocalization) known]
+    -- The sign test is excluded middle on the current residual and has no fact
+    -- prerequisite. The predecessor is retained verbatim by `Decision.run`;
+    -- localization is intentionally left for the negative-arm consumer `[61]`.
     (nonNegativeFresh : K .netChargeNonNegative ∉ known)
     (negativeFresh : K .netChargeNegative ∉ known) :
     @Decision (Input BranchState Presentation presentation data) _
@@ -2455,10 +2455,10 @@ noncomputable def netChargeDichotomy
     `Hypostructure.Graph.Strategy.Spine.netChargeDichotomy
     (by
       classical
-      have _localization :=
-        (@ExactLedger.get (Input BranchState Presentation presentation data) _
-          (factSystem BranchState Presentation presentation data)
-          current known previous (K .netChargeLocalization)).down
+      -- In particular, do not read `K .netChargeLocalization` here: `[61]`
+      -- consumes it together with the selected negative arm. Keeping it only
+      -- in the immutable prefix preserves the paper's order: decide the sign,
+      -- then localize a negative remainder to a connected support.
       by_cases nonNegative :
           ∀ packing : Finset (Finset current.object.Vertex),
             current.object.IsWindowPacking data.windowOrder packing →
@@ -2704,22 +2704,27 @@ noncomputable def heavyCentreDichotomy
       obtain ⟨packing, valid, maximal, component, present, negative, zero,
         receiver, isReceiver, peeled, peeledSubset, saturated, noExitFour,
         noCompression, noDelocalization, envelope, coreEq, nonempty, high,
-        assigned⟩ :=
+        assigned, _admissible⟩ :=
         (@ExactLedger.get (Input BranchState Presentation presentation data) _
           (factSystem BranchState Presentation presentation data)
           current known previous (K .typeBDecoratedAssignedSupport)).down
+      have highThree : ∀ centre ∈ envelope.decorations,
+          3 < current.object.degree centre := by
+        intro centre member
+        simpa [Graph.IsHighCentre, data.threshold_eq_three] using
+          high centre member
       by_cases heavy :
           ∃ centre ∈ envelope.decorations, 4 < current.object.degree centre
       · exact ⟨.inl ⟨packing, valid, maximal, component, present, negative,
           zero, receiver, isReceiver, peeled, peeledSubset, saturated,
           noExitFour, noCompression, noDelocalization,
-          ⟨envelope, coreEq, nonempty, high, assigned, heavy⟩⟩⟩
+          ⟨envelope, coreEq, nonempty, highThree, assigned, heavy⟩⟩⟩
       · refine ⟨.inr ⟨packing, valid, maximal, component, present, negative,
           zero, receiver, isReceiver, peeled, peeledSubset, saturated,
           noExitFour, noCompression, noDelocalization,
-          ⟨envelope, coreEq, nonempty, high, assigned, ?_⟩⟩⟩
+          ⟨envelope, coreEq, nonempty, highThree, assigned, ?_⟩⟩⟩
         intro centre member
-        have lower := high centre member
+        have lower := highThree centre member
         have upper : ¬ 4 < current.object.degree centre :=
           fun above => heavy ⟨centre, member, above⟩
         omega)
@@ -4452,14 +4457,20 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           obtain ⟨packing, valid, maximal, component, present, negative, zero,
             receiver, isReceiver, peeled, peeledSubset, saturated, noExitFour,
             noCompression, noDelocalization, envelope, coreEq, nonempty,
-            _admissible⟩ := handoff
+            admissible⟩ := handoff
+          have high : ∀ centre ∈ envelope.decorations,
+              Graph.IsHighCentre inputs.current.object data.threshold centre := by
+            intro centre member
+            rw [Graph.IsHighCentre, data.threshold_eq_three]
+            exact envelope.decorations_high centre member
           exact ⟨packing, valid, maximal, component, present, negative, zero,
             receiver, isReceiver, peeled, peeledSubset, saturated, noExitFour,
             noCompression, noDelocalization,
-            ⟨envelope, coreEq, nonempty, envelope.decorations_high,
+            ⟨envelope, coreEq, nonempty, high,
               fun centre member =>
                 ⟨envelope.assigned_nonempty centre member,
-                  envelope.assigned_adj centre member⟩⟩⟩⟩
+                  envelope.assigned_adj centre member⟩,
+              admissible⟩⟩⟩
         (.cons (key := K .typeBFanEntry)
           -- Node `[66]`: the decorated envelope enters the common Type B fan
           -- support with the decorations as its assigned centres
