@@ -1246,10 +1246,21 @@ remainder `R` of every maximal packing.
   subfamily (`exists_attaining_curvatureTargetRank`,
   `card_le_curvatureTargetRank`).
 
-The row reads the atom-remainder normalization of nodes `[25]`--`[27]` — the
-remainder is the region whose raw tests are ranked — and publishes the three
-definitional facts on the same residual.  `lem:target-rank-circuit` is the next
-row. -/
+This is the quotient-system obstruction rank of
+`def:curvature-target-rank`.  It does not assert that a surviving family
+realizes every Boolean target-response assignment, nor does it apply
+`lem:independent-target-entropy`: the manuscript identifies quotient survival
+with the full target code only on the surviving hot residual entering node
+`[47]`.  Publishing either conclusion here would add a fact to node `[31]`
+that the paper does not yet provide.
+
+The row is run after the remainder has been fixed, but these three facts are
+definitions and finite attainment facts about the literal active object.  None
+of their proofs uses the induced-window or internal-core conclusions of nodes
+`[25]`--`[27]`.  Its manifest therefore has `Requires := []`: chronology comes
+from passing the same `ExactLedger` to this row, not from declaring and
+discarding an unrelated semantic prerequisite.  `lem:target-rank-circuit` is
+the next row. -/
 omit [FactSystem (Input BranchState Presentation presentation data)] in
 @[reducible] noncomputable def curvatureTargetRankRow :
     @AtomicStrategy (Input BranchState Presentation presentation data) _
@@ -1264,16 +1275,13 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       (Presentation := Presentation) (presentation := presentation)
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.curvatureTargetRank
-    { Requires := [K .remainderNormalized]
+    { Requires := []
       Produces := [K .exactResponseProfile, K .admissibleRankQuotient,
         K .curvatureTargetRank]
       requiresUnique := by simp
       producesUnique := by simp [K_eq_iff]
       producesNonempty := by simp }
     (fun inputs =>
-      -- Node `[31]` ranks the raw curvature tests of the atom remainder; read
-      -- that literal predecessor fact.
-      let _normalized := inputs.get (K .remainderNormalized)
       .cons (key := K .exactResponseProfile)
         (show Value BranchState Presentation presentation data
             .exactResponseProfile inputs.current from
@@ -1489,7 +1497,20 @@ The rank-drop arm already contains a concrete proper determination.  Following
 `lem:curvature-dependence-routing`, this row chooses, for its fixed determined
 coordinate, a certificate whose connected declared support is inclusion-minimal.
 All candidates are local mathematical objects; the sole proof-data input and
-output are the exact-ledger facts named in the manifest. -/
+output are the exact-ledger facts named in the manifest.
+
+Part III of the manuscript repeats node `[33]` verbatim as node `[35]`, with
+the incoming edge labelled `from [33]`.  Thus `[35]` is not a second fact step:
+the caller passes the exact ledger returned by this row unchanged to node
+`[36]`, `contextValidityDichotomy`.  A second executor or a duplicate
+`branchDependence` publication would add a mathematical assertion and a commit
+that the paper does not contain.
+
+The dependency table associates `lem:separated-testers` with `[35]`--`[37]`,
+but the displayed support-complement sentence is not the output of the `[35]`
+box and is invoked by no manuscript proof body.  Its diagram-level consequence
+is the context-universal/target-defective question asked at `[36]`; that
+decision is made there for this same certificate and this same ledger. -/
 @[reducible] noncomputable def branchDependenceRow
     (data : Data.{u}) :
     AtomicStrategy (Input BranchState Presentation presentation data) := by

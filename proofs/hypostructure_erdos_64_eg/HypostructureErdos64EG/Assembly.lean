@@ -1495,13 +1495,17 @@ noncomputable def selectedCanonicalSwapCloses
     swappedBaseline)
 
 /-- Branch D, nodes `[35]`--`[46]`, on the literal `[33]` ledger of a spine
-arm: the context-validity test `[36]` with its target-defect terminal `[37]`,
+arm.  Node `[35]` repeats `[33]` verbatim in the manuscript, so it is exactly
+the identity continuation represented by the unchanged `history` argument;
+the first new commit is the context-validity decision at `[36]`.  That test,
+with its target-defect terminal `[37]`,
 the atom-compression test `[38]` with its terminal `[39]`, the delocalization
 scope `[40]`/`[41]` with its proper-support terminal `[42]`, and the
 whole-graph route `[43]`--`[45]` closed at `[46]`.  Every terminal is a
 framework closure over the ledger of the arm against `K .selection`; the
 freshness of the keys committed along the way is decided on the arm's exact
 index at the call site. -/
+-- EG-NODE [35] Branch D: rank-reducing obstruction dependence
 -- EG-NODE [36] valid against every outside context?
 -- EG-NODE [37] target-defective quotient
 -- EG-NODE [38] target-complete with smaller proper representative?
@@ -3865,7 +3869,7 @@ close from its own arm's facts. -/
 -- EG-NODE [32] rank drop? r_Omega(R)<W_2(R)-o(W_2)
 -- EG-NODE [33] Branch D: rank-reducing curvature dependence
 -- EG-NODE [34] Residual B: no rank drop; full curvature rank
--- EG-NODE [35] Branch D: rank-reducing curvature dependence
+-- EG-NODE [35] Branch D: rank-reducing obstruction dependence
 -- EG-NODE [47] Residual B: full curvature rank r_Omega(R)>=W_2(R)-o(W_2)
 -- EG-NODE [48] forced curvature cost c_Omega W_2(R)>=K_win|R|-o(|R|)
 -- EG-NODE [49] per-vertex remainder entropy eta(R)=log2|G(R)|/|R|
@@ -4040,7 +4044,7 @@ its target-defect/handoff discharge. -/
 -- EG-NODE [32] rank drop? r_Omega(R)<W_2(R)-o(W_2)
 -- EG-NODE [33] Branch D: rank-reducing curvature dependence
 -- EG-NODE [34] Residual B: no rank drop; full curvature rank
--- EG-NODE [35] Branch D: rank-reducing curvature dependence
+-- EG-NODE [35] Branch D: rank-reducing obstruction dependence
 -- EG-NODE [47] Residual B: full curvature rank r_Omega(R)>=W_2(R)-o(W_2)
 -- EG-NODE [48] forced curvature cost c_Omega W_2(R)>=K_win|R|-o(|R|)
 -- EG-NODE [49] per-vertex remainder entropy eta(R)

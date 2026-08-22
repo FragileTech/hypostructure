@@ -46,8 +46,8 @@ not an acceptable intermediate state.
 ## 3. Current measured state
 
 - Diagram nodes audited: **180**.
-- Nodes passing every strict gate: **115**.
-- Nodes retained in this ledger: **65**.
+- Nodes passing every strict gate: **117**.
+- Nodes retained in this ledger: **63**.
 - Axiom-audit declarations: **75** = **49 clean** + **26 tainted**; unreported: **0**.
 - Loud undefined frontier producers: **14**.
 
@@ -85,13 +85,13 @@ not an acceptable intermediate state.
 
 ### Exact section set
 
-[31], [35], [43], [44], [45], [54], [65], [68], [69], [70], [71], [72], [73], [74], [76], [77], [81], [82], [84], [85], [87], [93], [103], [106], [110], [111], [113], [114], [115], [116], [117], [118], [123], [124], [129], [131], [132], [134], [137], [140], [142], [143], [144], [145], [147], [154], [156], [157], [159], [162], [163], [165], [166], [167], [168], [170], [171], [172], [174], [175], [176], [177], [178], [179], [180].
+[43], [44], [45], [54], [65], [68], [69], [70], [71], [72], [73], [74], [76], [77], [81], [82], [84], [85], [87], [93], [103], [106], [110], [111], [113], [114], [115], [116], [117], [118], [123], [124], [129], [131], [132], [134], [137], [140], [142], [143], [144], [145], [147], [154], [156], [157], [159], [162], [163], [165], [166], [167], [168], [170], [171], [172], [174], [175], [176], [177], [178], [179], [180].
 
 ## 4. Dependency-ordered repair route
 
 1. **Canonical execution boundary:** eliminate illegal/discarded requirements and detached
-   universal facts at [31], [44], and [54].
-2. **Branch-D fidelity:** repair [35], [43], and [45] without altering the paper's alternatives.
+   universal facts at [44] and [54].
+2. **Branch-D fidelity:** repair [43] and [45] without altering the paper's alternatives.
 3. **Type B common chain:** repair [65]–[85] entries listed below, delete the marked-ledger helper,
    and leave the first route-8 census failure loud.
 4. **Type A and route 8:** repair [87], [93], [103], [106], [110]–[118], [123], and [124], using
@@ -107,81 +107,6 @@ The ordering is diagnostic; it does not authorize a multi-node implementation ch
 still stops at its first downstream failure and updates only that label's two audit rows.
 
 ## 5. Node-by-node remediation checklists
-
-### Node [31] — obstruction rank $r_\Omega(R)$
-
-**Exact manuscript diagram output.** obstruction rank $r_\Omega(R)$
-
-**Manuscript rows.** Label set **L06** (paper page(s): 97, 98, 99, 100, 102, 104, 138); its complete label
-list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
-table; their exact environments supply the inherited quantifiers and hypotheses.
-
-**Current Lean owner.** `curvatureTargetRankRow` (SpineRows.lean:1114)
-
-**Current combinator / shared continuation.** terminal closure, Decision.run, AtomicCT.run row; selectedNearCubicBranch, selectedSpineToLargeBudget.
-
-**Primary defect class.** fact proved detached from the literal active residual.
-
-**Fresh audit diagnosis.** ✅ FAITHFUL-TRIVIAL — All five labels are definitions with no proof; the first real theorem is `lem:target-rank-circuit` at the next row. Reads `K .remainderNormalized` and discards it. `def:target-rank`'s 2^k realization has no counterpart (the manuscript also only asserts it).
-
-**What must be implemented or corrected.**
-
-- Install the definitional rank data as a residual-local published proposition if downstream nodes consume it; otherwise classify the box explicitly as definition-only and remove the unused ledger requirement.
-- Prove the node value inside the atomic executor from `inputs.current` and semantic-key reads
-  through `inputs.get`; eliminate an ignored object argument, detached universal proof, or
-  requirement not tied to the literal incoming residual.
-
-**Live gate checklist.**
-
-- [x] **Implemented / reachable:** pass
-- [x] **Correctly wired:** pass: on a probed stub-free closure
-- [ ] **Residual-local proof:** fail: NO
-- [x] **Correct ledger registration:** pass
-- [x] **No illegal carrier/API:** None found
-- [x] **Exact manuscript proof:** pass: FAITHFUL-TRIVIAL
-- [x] **Independent kernel check:** pass: YES; arm probed stub-free
-
-**Exit criterion.** Reinspect the declaration body and call site, update this node row and every
-listed paper-fact row from the compiled term, run the table/API checks, and remove this section
-only when all seven boxes are checked. A later compiler failure is recorded as downstream unless
-that later node has its own independently failing audit row.
-
-### Node [35] — Branch D: rank-reducing obstruction dependence
-
-**Exact manuscript diagram output.** Branch D: rank-reducing obstruction dependence
-
-**Manuscript rows.** Label set **L07** (paper page(s): 138, 139, 140); its complete label
-list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
-table; their exact environments supply the inherited quantifiers and hypotheses.
-
-**Current Lean owner.** `branchDependenceRow` (SpineRows.lean:1353)
-
-**Current combinator / shared continuation.** terminal closure, Decision.run, AtomicCT.run row; selectedNearCubicBranch, selectedSpineToLargeBudget.
-
-**Primary defect class.** paper control-flow object not represented exactly.
-
-**Fresh audit diagnosis.** ⚠ PLUMBING — A continuation box: the arrow reads “from [33]” with identical text. `lem:separated-testers` is cited in no proof body anywhere in the manuscript, and its only stated consequence is what [36] performs. Exhaustiveness comes from `by_cases`, so the geometric content is never established; [35] has no formal content beyond [33].
-
-**What must be implemented or corrected.**
-
-- Either publish the separated-testers geometric conclusion used to reach [36], or prove from the manuscript that [35] is only the [33] continuation and record that exact control-flow identity. A bare `by_cases` is not the missing geometry.
-- Follow the cited manuscript proof and replace the current weaker, divergent, or bookkeeping
-  schema with the exact displayed proposition and alternatives. Preserve their order and scope.
-
-**Live gate checklist.**
-
-- [x] **Implemented / reachable:** pass
-- [x] **Correctly wired:** pass: on a probed stub-free closure
-- [x] **Residual-local proof:** pass
-- [x] **Correct ledger registration:** pass
-- [x] **No illegal carrier/API:** None found
-- [ ] **Exact manuscript proof:** partial: PLUMBING
-- [x] **Independent kernel check:** pass: YES; arm probed stub-free
-
-**Exit criterion.** Reinspect the declaration body and call site, update this node row and every
-listed paper-fact row from the compiled term, run the table/API checks, and remove this section
-only when all seven boxes are checked. A later compiler failure is recorded as downstream unless
-that later node has its own independently failing audit row.
 
 ### Node [43] — $Z=G$: whole-graph support dependence
 
@@ -2761,14 +2686,6 @@ rows in its set that the repaired fact changes.
 ### L04 — node(s) [22], [23]
 
 `lem:p13-window-package`, `prop:p13-density`.
-
-### L06 — node(s) [31]
-
-`def:admissible-rank-quotient`, `def:closed-quotient-representative`, `def:curvature-target-dependence`, `def:curvature-target-rank`, `def:declared-coordinate-signature`, `def:exact-response-profile`, `def:functional-rank-quotient`, `def:near-cubic-spine`, `def:proper-quotient-representative`, `def:target-rank`, `lem:independent-target-entropy`, `lem:skeleton-dominates`.
-
-### L07 — node(s) [35]
-
-`lem:curvature-dependence-routing`, `lem:separated-testers`, `lem:target-rank-circuit`.
 
 ### L08 — node(s) [43], [45]
 
