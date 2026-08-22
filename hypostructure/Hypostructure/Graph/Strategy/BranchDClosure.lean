@@ -18,9 +18,9 @@ registrations below are the manuscript's refutations, and nothing else:
 * `[42]` (`lem:proper-smearing`): the enlarged connected support `Z ⊊ G` is a
   proper support, and its target-complete rank reduction is again such a
   replacement.
-* `[46]` (`lem:no-silent-global-smearing`): the whole-graph dependence yields
-  either a proper replacement or a strictly smaller admissible closed
-  representative; the first is `cor:uncompressible`, the second contradicts the
+* `[46]` (`lem:no-silent-global-smearing`): after target-completeness,
+  whole-graph support, and rank reduction have excluded the other alternatives,
+  the strictly smaller admissible closed representative contradicts the
   selection's minimality together with its target avoidance.
 -/
 
@@ -97,31 +97,17 @@ noncomputable instance instIncompatibleProperDelocalization :
       quotient.support replacement
 
 /-- **The terminal `[46]` closes against the selected object.**  The global
-barrier's disjunction (`lem:no-silent-global-smearing`): a proper replacement
-contradicts `lem:replacement`; a strictly smaller admissible closed
-representative contradicts the selection's minimality and target avoidance. -/
+barrier stores the surviving conclusion of `lem:no-silent-global-smearing`: a
+strictly smaller admissible closed representative.  Selection minimality puts
+the target in that representative, target transfer puts it in the selected
+object, and selection avoidance gives the contradiction. -/
 noncomputable instance instIncompatibleGlobalBarrier :
     Incompatible (Input BranchState Presentation presentation data)
       (K .selection) (K .globalBarrier) where
   contradiction := fun residual selected barrier => by
-    obtain ⟨_packing, _valid, quotient, _certificate, reading⟩ := barrier.down
-    rcases reading with
-      replacement | ⟨representative, smaller, representativeBaseline, transfer⟩
-    · exact Graph.Strategy.InterfaceReplacement.not_replacementSupport
-        (Graph.MinimumDegreeAtLeast data.threshold) BranchState
-        (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
-        Presentation presentation
-        (Core.Target.ofPredicate _ (Graph.HasCycleWithLength data.LengthOK))
-        ((Graph.cycleTargetInterface data.LengthOK).coreInvariantWithPresentation
-          (Graph.MinimumDegreeAtLeast data.threshold) BranchState
-          Presentation presentation
-          (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold))
-        { G := residual.object, baseline := residual.baseline,
-          state := residual.branchState, avoids := selected.down.1,
-          minimal := selected.down.2 }
-        quotient.support replacement
-    · exact selected.down.1
-        (transfer (selected.down.2 representative smaller
-          representativeBaseline))
+    obtain ⟨representative, smaller, representativeBaseline, transfer⟩ :=
+      barrier.down
+    exact selected.down.1
+      (transfer (selected.down.2 representative smaller representativeBaseline))
 
 end Hypostructure.Graph.Strategy.Spine

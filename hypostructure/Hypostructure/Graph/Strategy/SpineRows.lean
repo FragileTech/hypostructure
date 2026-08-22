@@ -1499,18 +1499,11 @@ coordinate, a certificate whose connected declared support is inclusion-minimal.
 All candidates are local mathematical objects; the sole proof-data input and
 output are the exact-ledger facts named in the manifest.
 
-Part III of the manuscript repeats node `[33]` verbatim as node `[35]`, with
-the incoming edge labelled `from [33]`.  Thus `[35]` is not a second fact step:
-the caller passes the exact ledger returned by this row unchanged to node
-`[36]`, `contextValidityDichotomy`.  A second executor or a duplicate
-`branchDependence` publication would add a mathematical assertion and a commit
-that the paper does not contain.
-
-The dependency table associates `lem:separated-testers` with `[35]`--`[37]`,
-but the displayed support-complement sentence is not the output of the `[35]`
-box and is invoked by no manuscript proof body.  Its diagram-level consequence
-is the context-universal/target-defective question asked at `[36]`; that
-decision is made there for this same certificate and this same ledger. -/
+Part III of the manuscript repeats the Branch-D state of node `[33]` verbatim
+at node `[35]`, with the incoming edge labelled `from [33]`.  Hence `[35]`
+does not publish a second `branchDependence` fact.  It does, however, carry the
+separate labelled fact `lem:separated-testers`; `separatedTestersRow` below
+appends exactly that fact before node `[36]` tests the same certificate. -/
 @[reducible] noncomputable def branchDependenceRow
     (data : Data.{u}) :
     AtomicStrategy (Input BranchState Presentation presentation data) := by
@@ -1588,14 +1581,85 @@ decision is made there for this same certificate and this same ledger. -/
             exact absurd (Finset.card_lt_card strict) (by omega)⟩
           .nil)
 
+/-! ## Node `[35]`: separated testers
+
+`lem:separated-testers`.  Let corresponding internal wedges be centred in
+vertex-disjoint isomorphic rooted radius-`r` balls.  If an exact owned
+decomposition has those two balls as its piece side, every internal vertex of
+its outside context lies in the complement of both balls.  Thus any outside
+context distinguishing the represented wedges is supported there.  For an
+attempted quotient identifying their labels, excluded middle on context
+equivalence gives precisely the paper's concluding alternative: every
+identified pair is context-universal, or an identified pair has a concrete
+target-defect context.
+
+This is a source-free Type-A row: all objects occur in the proposition and the
+proof reads only `inputs.current`.  The row introduces no proof-specific data
+carrier and appends its sole output to the literal `ExactLedger`. -/
+@[reducible] noncomputable def separatedTestersRow
+    (data : Data.{u}) :
+    AtomicStrategy (Input BranchState Presentation presentation data) := by
+  classical
+  exact
+    factOnly `Hypostructure.Graph.Strategy.Spine.separatedTesters
+      (sourceFreeManifest (K .separatedTesters))
+      (fun inputs =>
+        .cons (key := K .separatedTesters)
+          ⟨by
+            intro packing _valid _packingCard radius u v _uMem _vMem
+            dsimp only
+            intro leftWedge rightWedge _leftMem _rightMem _leftRoot _rightRoot
+              _sameType _disjoint
+            constructor
+            · intro decomposition pieceCovers represented _separates internal
+              constructor <;> intro inBall
+              · obtain ⟨inside, same⟩ :=
+                  (pieceCovers _).mp (Or.inl inBall)
+                have impossible :
+                    Graph.pieceEmbedding decomposition.piece
+                        decomposition.outside inside =
+                      Graph.contextEmbedding decomposition.piece
+                        decomposition.outside (.inr internal) := by
+                  apply decomposition.vertexEquiv.injective
+                  simpa [Graph.OwnedDecomposition.pieceIntoAmbient] using same
+                cases inside <;>
+                  simp [Graph.pieceEmbedding, Graph.contextEmbedding] at impossible
+              · obtain ⟨inside, same⟩ :=
+                  (pieceCovers _).mp (Or.inr inBall)
+                have impossible :
+                    Graph.pieceEmbedding decomposition.piece
+                        decomposition.outside inside =
+                      Graph.contextEmbedding decomposition.piece
+                        decomposition.outside (.inr internal) := by
+                  apply decomposition.vertexEquiv.injective
+                  simpa [Graph.OwnedDecomposition.pieceIntoAmbient] using same
+                cases inside <;>
+                  simp [Graph.pieceEmbedding, Graph.contextEmbedding] at impossible
+            · intro attempt _identified
+              by_cases universal :
+                  ∀ left right : Graph.BoundaryPiece
+                      (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary
+                        inputs.current.object attempt.support),
+                    attempt.Identifies left right →
+                      Graph.Response.ContextEquivalent
+                        (Graph.HasCycleWithLength data.LengthOK) left right
+              · exact Or.inl universal
+              · right
+                push Not at universal
+                obtain ⟨left, right, sameValues, failure⟩ := universal
+                exact ⟨left, right, sameValues,
+                  Graph.Response.targetDefect_of_not_contextEquivalent failure⟩⟩
+          .nil)
+
 /-! ## Node `[36]`: the context-validity test
 
-The literal `[33]` residual contains one inclusion-minimal determination
-certificate.  Node `[36]` asks the paper's exact question of that certificate:
-does its determination remain valid against every outside context?  The no arm
-exhibits an identified pair and a distinguishing context; the yes arm records
-context universality for that same certificate.  Boundary-fibre preservation
-is already part of the admissible quotient and is not a second test here. -/
+The literal post-`[35]` ledger retains the one inclusion-minimal determination
+certificate selected at `[33]` and now also carries `lem:separated-testers`.
+Node `[36]` asks the paper's exact question of that certificate: does its
+determination remain valid against every outside context?  The no arm exhibits
+an identified pair and a distinguishing context; the yes arm records context
+universality for that same certificate.  Boundary-fibre preservation is already
+part of the admissible quotient and is not a second test here. -/
 omit [FactSystem (Input BranchState Presentation presentation data)] in
 noncomputable def contextValidityDichotomy
     {current : Input BranchState Presentation presentation data}
@@ -1833,15 +1897,12 @@ noncomputable def delocalizationScopeDichotomy
       have certificate := quotientSpec.1
       have complete := quotientSpec.2.1
       have outside := quotientSpec.2.2.1
-      by_cases proper :
-          ∃ vertex, vertex ∉
-            delocalizationSupport data current.object packing quotient
+      -- The paper's `Z` is the quotient's connected determination support.
+      -- Classifying any enlarged bookkeeping union here would not establish
+      -- the empty-boundary closed exact profile required at node `[43]`.
+      by_cases proper : ∃ vertex, vertex ∉ quotient.support
       · let vertex := Classical.choose proper
         have vertexOutside := Classical.choose_spec proper
-        have supportProper : ∃ vertex, vertex ∉ quotient.support := by
-          refine ⟨vertex, ?_⟩
-          intro vertexInSupport
-          exact vertexOutside (Finset.mem_union_left _ vertexInSupport)
         let test := Classical.choose certificate
         have testSpec := Classical.choose_spec certificate
         let determiners := Classical.choose testSpec
@@ -1851,7 +1912,7 @@ noncomputable def delocalizationScopeDichotomy
         have reducing : quotient.toRankQuotient.RankReducingOn
             ↑(remainderCurvatureTests current.object packing) :=
           certified.2.2.2.2.2.1
-        have replacement := quotient.properRepresentative supportProper reducing
+        have replacement := quotient.properRepresentative proper reducing
         exact .inl ⟨⟨packing, valid, quotient,
           ⟨test, determiners, supportData, certified⟩, complete, outside,
           vertex, vertexOutside, replacement⟩⟩
@@ -1865,53 +1926,63 @@ noncomputable def delocalizationScopeDichotomy
 `[44]` is `lem:smearing-support-repair`: a delayed compensation component with
 `p` boundary leaves, `s` internal vertices, cycle rank `β` and surplus `σ`
 satisfies `s = p − 2 + 2β − σ`.  The manuscript proves it from the handshake
-identity and the cycle-rank formula, which is exactly
-`Graph.OneThreeRepair.Component.identity`.
+identity and the cycle-rank formula.  The row below performs that derivation
+inside its atomic executor for every repair component embedded in the active
+support.  Node `[43]` remains in the literal ledger ancestry but is not copied
+or falsely declared as an arithmetic prerequisite; the proof does not appeal
+to a detached universal result.
 
 `[45]` is the barrier `lem:no-silent-global-smearing` raises against a
 whole-graph dependence: the closed clause of `def:admissible-rank-quotient`
-leaves a rank-reducing quotient either representable by a proper-support
-replacement or by a strictly smaller admissible closed representative, and
-`Graph.DeclaredQuotient.localize` is that split. -/
+supplies a strictly smaller admissible closed representative.  The target-defect
+case is excluded by the inherited target-completeness, the exact-label case is
+excluded by the inherited rank reduction, and node `[43]`'s coverage proof
+places the quotient in the closed rather than proper-support clause. -/
 @[reducible] noncomputable def repairIdentityRow
     (data : Data.{u}) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.repairIdentity
-    { Requires := [K .globalDelocalization]
-      Produces := [K .repairIdentity]
-      requiresUnique := by simp
-      producesUnique := by simp
-      producesNonempty := by simp }
+    (sourceFreeManifest (K .repairIdentity))
     (fun inputs =>
       .cons (key := K .repairIdentity)
-        ⟨fun component => by
-          have _selectedSupport :=
-            (inputs.get (K .globalDelocalization)).down
-          exact component.identity⟩
+        (show Value BranchState Presentation presentation data
+            .repairIdentity inputs.current from
+          ⟨by
+            dsimp only [Holds]
+            intro component _componentOnActiveSupport
+            have handshake :
+                (3 : Int) * component.internal.card + component.surplus +
+                    component.boundary.card =
+                  2 * component.object.edgeCount := by
+              exact_mod_cast component.handshake
+            have rank := component.cycleRank_cast
+            rw [component.vertexCard_eq] at rank
+            push_cast at rank
+            linarith⟩)
         .nil)
 
 @[reducible] noncomputable def globalBarrierRow
     (data : Data.{u}) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.globalBarrier
-    { Requires := [K .globalDelocalization, K .repairIdentity]
+    { Requires := [K .globalDelocalization]
       Produces := [K .globalBarrier]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by simp
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .globalBarrier)
-        ⟨by
-          obtain ⟨packing, valid, quotient, certificate, _complete, _outside,
-            _covers⟩ := (inputs.get (K .globalDelocalization)).down
-          have _repairIdentity := (inputs.get (K .repairIdentity)).down
-          obtain ⟨test, determiners, supportData, certified⟩ := certificate
-          have reducing : quotient.toRankQuotient.RankReducingOn
-              ↑(remainderCurvatureTests inputs.current.object packing) :=
-            certified.2.2.2.2.2.1
-          exact ⟨packing, valid, quotient,
-            ⟨test, determiners, supportData, certified⟩,
-            Graph.DeclaredQuotient.localize quotient reducing⟩⟩
+        (show Value BranchState Presentation presentation data
+            .globalBarrier inputs.current from
+          ⟨by
+            dsimp only [Holds]
+            obtain ⟨packing, _valid, quotient, certificate, _complete, _outside,
+              covers⟩ := (inputs.get (K .globalDelocalization)).down
+            obtain ⟨_test, _determiners, _supportData, certified⟩ := certificate
+            have reducing : quotient.toRankQuotient.RankReducingOn
+                ↑(remainderCurvatureTests inputs.current.object packing) :=
+              certified.2.2.2.2.2.1
+            exact quotient.closedRepresentative covers reducing⟩)
         .nil)
 
 /-! ## Nodes `[47]`--`[48]`: the forced curvature cost

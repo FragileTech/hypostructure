@@ -1,3 +1,4 @@
+import Mathlib.Combinatorics.SimpleGraph.Metric
 import Hypostructure.Core.Strategy.FactOnlyStrategy
 import Hypostructure.Core.Strategy.MinimalCounterexampleScope
 import Hypostructure.Graph.RootedReturn
@@ -546,6 +547,11 @@ inductive Key where
   connected determination support, rank-reducing on the raw curvature tests.
   That certificate is the object nodes `[36]`, `[38]` and `[40]` route. -/
   | branchDependence
+  /-- Node `[35]`, `lem:separated-testers`: corresponding internal wedges in
+  vertex-disjoint isomorphic rooted balls can be tested only by the outside
+  side of their boundaried decomposition; any quotient identifying the two
+  wedge labels is context-universal or has a concrete target-defect witness. -/
+  | separatedTesters
   /-- Node `[36]`, yes arm: the determination the certificate makes is valid
   against every outside context, and the states it identifies lie in one
   boundary-degree fibre (`lem:context-universality`,
@@ -1474,15 +1480,13 @@ def DeterminationCertificate (data : Data.{u}) (object : Graph.FiniteObject.{u})
                     (region := object.remainderSupport packing) coordinate ⊆
                   quotient.support
 
-/-- **`Z`, the connected support the determination actually needs.**
+/-- **The bookkeeping enlargement `C ∪ Z`.**
 
-`lem:curvature-dependence-routing` compares the certificate's support with the
-atom `C` whose curvature tests it determines: the determination either holds
-"already with support `C`", or "only once additional structure outside `C` is
-adjoined", in which case an inclusion-minimal connected such support is `Z ⊋ C`.
-`Z` is the certificate's own support together with `C`, so it contains `C` by
-construction and strictly contains it exactly when the certificate reaches
-outside.  Node `[41]` then compares `Z` with `G`. -/
+The paper's connected determination support `Z` is `quotient.support`.  This
+union is used only at node `[40]` to retain the already-recorded piece `C`
+while witnessing that the certificate reaches outside it.  In particular, it
+is not the support classified by node `[41]` and it is not the domain of the
+closed exact profile at node `[43]`. -/
 noncomputable def delocalizationSupport (data : Data.{u})
     (object : Graph.FiniteObject.{u})
     (packing : Finset (Finset object.Vertex))
@@ -1501,8 +1505,8 @@ theorem remainderSupport_subset_delocalizationSupport (data : Data.{u})
   intro vertex member
   simp [delocalizationSupport, member]
 
-/-- **`Z ⊋ C` exactly when the certificate reaches outside `C`**, which is the
-alternative node `[38]` sends to node `[40]`. -/
+/-- **`C ∪ Z ⊋ C` when the certificate reaches outside `C`**, the bookkeeping
+witness retained by node `[40]`. -/
 theorem remainderSupport_ssubset_delocalizationSupport (data : Data.{u})
     {object : Graph.FiniteObject.{u}}
     {packing : Finset (Finset object.Vertex)}
@@ -3252,6 +3256,77 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                           ∀ narrowerDeterminers narrowerSupportData,
                             ¬ DeterminationCertificate data object packing test
                               narrowerDeterminers narrower narrowerSupportData
+  | .separatedTesters, object =>
+      -- `lem:separated-testers`, with each manuscript object represented
+      -- literally.  `closedBall` is the rooted radius-`r` neighbourhood.  The
+      -- rooted graph isomorphism maps the two wedge centres and their two
+      -- neighbours.  An ambient target tester is the outside side of an exact
+      -- owned decomposition whose piece side is the union of the two balls;
+      -- its internal support is therefore in their complement.  Finally an
+      -- attempted rank quotient identifying the wedge labels is either valid
+      -- against every outside context or exhibits an identified pair with a
+      -- concrete target-defect context.
+      (∀ (packing : Finset (Finset object.Vertex)),
+        object.IsWindowPacking data.windowOrder packing →
+        packing.card = object.windowPackingNumber data.windowOrder →
+        ∀ (radius : Nat) (u v : object.Vertex),
+          u ∈ object.remainderSupport packing →
+          v ∈ object.remainderSupport packing →
+          let closedBall := fun root : object.Vertex =>
+            object.vertexFinset.filter fun vertex =>
+              object.graph.edist vertex root ≤ radius
+          ∀ (leftWedge rightWedge :
+              object.InternalWedge (object.remainderSupport packing)),
+            leftWedge ∈ remainderCurvatureTests object packing →
+            rightWedge ∈ remainderCurvatureTests object packing →
+            leftWedge.1 = u → rightWedge.1 = v →
+            (∃ iso : (object.induce (closedBall u)).graph ≃g
+                  (object.induce (closedBall v)).graph,
+              (∀ hu : u ∈ closedBall u, (iso ⟨u, hu⟩).1 = v) ∧
+              (∀ hv : v ∈ closedBall v, (iso.symm ⟨v, hv⟩).1 = u) ∧
+              (∀ x, x ∈ leftWedge.2.1 →
+                ∃ hx : x ∈ closedBall u,
+                  (iso ⟨x, hx⟩).1 ∈ rightWedge.2.1) ∧
+              (∀ y, y ∈ rightWedge.2.1 →
+                ∃ hy : y ∈ closedBall v,
+                  (iso.symm ⟨y, hy⟩).1 ∈ leftWedge.2.1)) →
+            Disjoint (closedBall u) (closedBall v) →
+            (∀ (decomposition : Graph.OwnedDecomposition object),
+              (∀ vertex, (vertex ∈ closedBall u ∨ vertex ∈ closedBall v) ↔
+                ∃ inside, decomposition.pieceIntoAmbient inside = vertex) →
+              ∀ (represented :
+                  object.InternalWedge (object.remainderSupport packing) →
+                    Graph.BoundaryPiece decomposition.interface),
+                ¬ (Graph.HasCycleWithLength data.LengthOK
+                      (Graph.glue (represented leftWedge) decomposition.outside) ↔
+                    Graph.HasCycleWithLength data.LengthOK
+                      (Graph.glue (represented rightWedge) decomposition.outside)) →
+                ∀ internal : decomposition.outside.Internal,
+                  decomposition.vertexEquiv
+                      (Graph.contextEmbedding decomposition.piece
+                        decomposition.outside (.inr internal)) ∉ closedBall u ∧
+                  decomposition.vertexEquiv
+                      (Graph.contextEmbedding decomposition.piece
+                        decomposition.outside (.inr internal)) ∉ closedBall v) ∧
+            (∀ (attempt : Graph.AttemptedQuotient
+                  (Graph.MinimumDegreeAtLeast data.threshold)
+                  (Graph.HasCycleWithLength data.LengthOK) object
+                  (remainderCurvatureTests object packing)
+                  (Graph.FiniteObject.internalWedgeSupport
+                    (region := object.remainderSupport packing))),
+              attempt.label leftWedge = attempt.label rightWedge →
+              ((∀ left right : Graph.BoundaryPiece
+                    (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary
+                      object attempt.support),
+                  attempt.Identifies left right →
+                    Graph.Response.ContextEquivalent
+                      (Graph.HasCycleWithLength data.LengthOK) left right) ∨
+                ∃ left right : Graph.BoundaryPiece
+                    (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary
+                      object attempt.support),
+                  attempt.Identifies left right ∧
+                    Graph.Response.TargetDefect
+                      (Graph.HasCycleWithLength data.LengthOK) left right)))
   | .contextUniversal, object =>
       -- Node `[36]`, yes: the single certificate chosen at `[33]` remains
       -- valid against every outside context.  The certificate and its
@@ -3330,7 +3405,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                     delocalizationSupport data object packing quotient)
   | .properDelocalization, object =>
       -- Node `[41]` yes, the terminal `[42]`: `Z ⊊ G`.  `lem:proper-smearing`
-      -- is stated exactly under this hypothesis.
+      -- is stated exactly under this hypothesis.  The paper's `Z` is the
+      -- connected determination support carried by the quotient itself.
       (∃ packing : Finset (Finset object.Vertex),
         object.IsWindowPacking data.windowOrder packing ∧
           ∃ quotient : remainderQuotient data object packing,
@@ -3340,7 +3416,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
               TargetCompleteAt data quotient ∧
                 ¬ quotient.support ⊆ object.remainderSupport packing ∧
                   ∃ vertex,
-                    vertex ∉ delocalizationSupport data object packing quotient ∧
+                    vertex ∉ quotient.support ∧
                   Graph.Strategy.InterfaceReplacement.ReplacementSupport
                     (Graph.MinimumDegreeAtLeast data.threshold)
                     (Graph.HasCycleWithLength data.LengthOK) object
@@ -3357,38 +3433,32 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
               TargetCompleteAt data quotient ∧
                 ¬ quotient.support ⊆ object.remainderSupport packing ∧
                   ∀ vertex,
-                    vertex ∈ delocalizationSupport data object packing quotient)
-  | .repairIdentity, _object =>
-      -- Node `[44]`, `lem:smearing-support-repair`: a delayed compensation
-      -- component with `p` boundary leaves, `s` internal vertices, cycle rank
-      -- `β` and surplus `σ` satisfies `s = p − 2 + 2β − σ`.  Like the window
-      -- algebra of node `[18]`, the statement is about the class of such
-      -- components and not about the selected object, which is what makes it
-      -- transport for free.
-      (∀ component : Graph.OneThreeRepair.Component.{u},
+                    vertex ∈ quotient.support)
+  | .repairIdentity, object =>
+      -- Node `[44]`, `lem:smearing-support-repair`: for each stipulated
+      -- `1`--`3` repair component on the active support `Z = G`, the paper
+      -- records only the handshake identity below.  The raw embedding and
+      -- graph inclusion express that the repair network lies in the active
+      -- graph; node `[43]`'s whole-support witness remains in its own earlier
+      -- ledger entry instead of being copied into this value.
+      ∀ component : Graph.OneThreeRepair.Component.{u},
+        (∃ embedding : component.object.Vertex ↪ object.Vertex,
+          component.object.graph.map embedding ≤ object.graph) →
         (component.internal.card : Int) =
-          component.boundary.card - 2 + 2 * component.cycleRank -
-            component.surplus)
+          component.boundary.card - 2 +
+            2 * component.cycleRank - component.surplus
   | .globalBarrier, object =>
-      -- Node `[45]`: the barrier `lem:no-silent-global-smearing` raises.  The
-      -- closed clause of `def:admissible-rank-quotient` leaves exactly two
-      -- readings of a rank-reducing whole-graph quotient, and node `[46]` is
-      -- that both are impossible in the selected minimal counterexample.
-      (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
-          ∃ quotient : remainderQuotient data object packing,
-            (∃ test determiners supportData,
-              DeterminationCertificate data object packing test determiners
-                quotient supportData) ∧
-              (Graph.Strategy.InterfaceReplacement.ReplacementSupport
-                  (Graph.MinimumDegreeAtLeast data.threshold)
-                  (Graph.HasCycleWithLength data.LengthOK) object
-                  quotient.support ∨
-                ∃ representative : Graph.FiniteObject.{u},
-                  representative.LexicographicallySmaller object ∧
-                    Graph.MinimumDegreeAtLeast data.threshold representative ∧
-                      (Graph.HasCycleWithLength data.LengthOK representative →
-                        Graph.HasCycleWithLength data.LengthOK object)))
+      -- Node `[45]`, `lem:no-silent-global-smearing`: node `[43]` has already
+      -- established that the target-complete rank-reducing quotient has
+      -- support `Z = G`.  The closed admissibility clause therefore supplies
+      -- exactly the strictly smaller admissible closed representative below;
+      -- the earlier quotient and coverage data remain in their own ledger
+      -- entry and are not republished here.
+      ∃ representative : Graph.FiniteObject.{u},
+        representative.LexicographicallySmaller object ∧
+          Graph.MinimumDegreeAtLeast data.threshold representative ∧
+            (Graph.HasCycleWithLength data.LengthOK representative →
+              Graph.HasCycleWithLength data.LengthOK object)
   | .coldCorridorState, object =>
       -- `def:cold-corridor-first-failure`, the cut-state clauses.  Stated at
       -- every presentation of the object's corridor segments, so no corridor
@@ -5742,6 +5812,7 @@ def label : Key → String
   | .curvatureRankDrop => "curvatureRankDrop"
   | .curvatureFullRank => "curvatureFullRank"
   | .branchDependence => "branchDependence"
+  | .separatedTesters => "separatedTesters"
   | .contextUniversal => "contextUniversal"
   | .contextDefect => "contextDefect"
   | .atomCompression => "atomCompression"
@@ -5979,6 +6050,7 @@ example : label .targetRankCircuit = "targetRankCircuit" := rfl
 example : label .curvatureRankDrop = "curvatureRankDrop" := rfl
 example : label .curvatureFullRank = "curvatureFullRank" := rfl
 example : label .branchDependence = "branchDependence" := rfl
+example : label .separatedTesters = "separatedTesters" := rfl
 example : label .contextUniversal = "contextUniversal" := rfl
 example : label .contextDefect = "contextDefect" := rfl
 example : label .atomCompression = "atomCompression" := rfl
@@ -6241,6 +6313,7 @@ def idx : Key → Nat
   | .curvatureRankDrop => 19
   | .curvatureFullRank => 20
   | .branchDependence => 21
+  | .separatedTesters => 324
   | .contextUniversal => 22
   | .contextDefect => 23
   | .atomCompression => 24
@@ -6472,6 +6545,7 @@ def ofIdx : Nat → Key
   | 19 => .curvatureRankDrop
   | 20 => .curvatureFullRank
   | 21 => .branchDependence
+  | 324 => .separatedTesters
   | 22 => .contextUniversal
   | 23 => .contextDefect
   | 24 => .atomCompression
@@ -6756,6 +6830,8 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "curvatureFullRank") 20
   | .branchDependence =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "branchDependence") 21
+  | .separatedTesters =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "separatedTesters") 324
   | .contextUniversal =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "contextUniversal") 22
   | .contextDefect =>

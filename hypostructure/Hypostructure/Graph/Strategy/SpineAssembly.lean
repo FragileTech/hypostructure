@@ -763,12 +763,14 @@ abbrev properDelocalizationKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   closed :: K .properDelocalization :: delocalizedSupportKeys
 
-/-- The key index of the closed terminal `[46]`: whole-graph delocalization,
-the repair identity, the global barrier, and the closure that barrier forces. -/
-abbrev rankDropClosedKeys :
+/-- The key index of the closed terminal `[46]`, over the literal rank-drop
+prefix on which `[33]` appends the Branch-D certificate. -/
+abbrev rankDropClosedKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  closed :: K .repairIdentity :: K .globalBarrier ::
-    K .globalDelocalization :: delocalizedSupportKeys
+  closed :: K .globalBarrier :: K .repairIdentity ::
+    K .globalDelocalization :: K .delocalizedSupport ::
+    K .contextUniversal :: K .separatedTesters :: K .branchDependence :: known
 
 /-- The key index of a ledger that left the block at node `[19]`. -/
 abbrev surplusAboveKeys :
@@ -1123,26 +1125,29 @@ theorem properDelocalization_audit_accounts_for_every_fact
 
 /-- **The rank-drop branch closes.**  Part III's caption is *"Every rank-drop
 branch terminates in a closed round node"*, and this is that terminal's audit:
-Branch D's certificate, the context-universal determination, the enlarged
-support, the whole-graph delocalization, the repair identity, the global
-barrier, and Core's reserved contradiction entry on top. -/
+Branch D's certificate, the separated-testers fact, the context-universal
+determination, the enlarged support, the whole-graph delocalization, the repair
+identity, the global barrier, and Core's reserved contradiction entry on top. -/
 theorem rankDropClosed_audit_facts
     {selected : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
     (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected rankDropClosedKeys) :
-    (ExactLedger.audit history).facts.take 7 =
+      selected (rankDropClosedKeys known)) :
+    (ExactLedger.audit history).facts.take 8 =
       [Core.Residual.closureFactName,
-        (name .repairIdentity),
         (name .globalBarrier),
+        (name .repairIdentity),
         (name .globalDelocalization),
         (name .delocalizedSupport),
         (name .contextUniversal),
+        (name .separatedTesters),
         (name .branchDependence)] := rfl
 
 theorem rankDropClosed_audit_accounts_for_every_fact
     {selected : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
     (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected rankDropClosedKeys) :
+      selected (rankDropClosedKeys known)) :
     (ExactLedger.audit history).facts =
       (ExactLedger.audit history).commits.reverse.flatMap
         (fun record => record.produced) :=

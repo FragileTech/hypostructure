@@ -1494,11 +1494,11 @@ noncomputable def selectedCanonicalSwapCloses
     (Graph.FiniteObject.lexicographicallySmaller_of_vertexCount_lt (by rw [← vertexEq]; exact vertexLt))
     swappedBaseline)
 
-/-- Branch D, nodes `[35]`--`[46]`, on the literal `[33]` ledger of a spine
-arm.  Node `[35]` repeats `[33]` verbatim in the manuscript, so it is exactly
-the identity continuation represented by the unchanged `history` argument;
-the first new commit is the context-validity decision at `[36]`.  That test,
-with its target-defect terminal `[37]`,
+/-- Branch D, nodes `[36]`--`[46]`, on the literal ledger returned by node
+`[35]`.  The displayed state at `[35]` repeats `[33]` verbatim, while the
+separate `separatedTestersRow` appends exactly `lem:separated-testers` without
+altering that state.  This continuation begins with the context-validity
+decision at `[36]`.  That test, with its target-defect terminal `[37]`,
 the atom-compression test `[38]` with its terminal `[39]`, the delocalization
 scope `[40]`/`[41]` with its proper-support terminal `[42]`, and the
 whole-graph route `[43]`--`[45]` closed at `[46]`.  Every terminal is a
@@ -3902,6 +3902,7 @@ noncomputable def selectedSpineToLargeBudget
     (dropFresh : K .curvatureRankDrop ∉ known := by simp [K_eq_iff])
     (fullFresh : K .curvatureFullRank ∉ known := by simp [K_eq_iff])
     (dependenceFresh : K .branchDependence ∉ known := by simp [K_eq_iff])
+    (separatedFresh : K .separatedTesters ∉ known := by simp [K_eq_iff])
     (defectFresh : K .contextDefect ∉ known := by simp [K_eq_iff])
     (universalFresh : K .contextUniversal ∉ known := by simp [K_eq_iff])
     (compressionFresh : K .atomCompression ∉ known := by simp [K_eq_iff])
@@ -3978,7 +3979,14 @@ noncomputable def selectedSpineToLargeBudget
         (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
         (presentation := erdosReceiverLoadProfile) spineData).run
         dropHistory (by simp [K_eq_iff, dependenceFresh])
-      exact (selectedRankDropCloses dependence
+      -- `[35]`: retain the Branch-D state and append only
+      -- `lem:separated-testers` to the same literal ledger.
+      let tested :=
+        (separatedTestersRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) spineData).run
+          dependence (by simp [K_eq_iff, separatedFresh])
+      exact (selectedRankDropCloses tested
         (by simp [K_eq_iff, defectFresh]) (by simp [K_eq_iff, universalFresh])
         (by simp [K_eq_iff, compressionFresh]) (by simp [K_eq_iff, delocalizedFresh])
         (by simp [K_eq_iff, properFresh]) (by simp [K_eq_iff, globalFresh])
@@ -4366,14 +4374,20 @@ noncomputable def selectedNearCubicBranch
               (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
           | .left dropHistory =>
               -- `[33]`: Branch D, the rank-reducing curvature dependence with its
-              -- inclusion-minimal connected support; `[35]`--`[46]` on this
-              -- residual is the next producer.
+              -- inclusion-minimal connected support.
               let dependence :=
                 (branchDependenceRow (BranchState := BranchState)
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) spineData).run
                   dropHistory (by simp [K_eq_iff])
-              exact selectedRankDropCloses dependence
+              -- `[35]`: the repeated Branch-D state plus the exact
+              -- `lem:separated-testers` fact on this literal ancestry.
+              let tested :=
+                (separatedTestersRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) spineData).run
+                  dependence (by simp [K_eq_iff])
+              exact selectedRankDropCloses tested
                 (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
                 (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
                 (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
@@ -4519,14 +4533,20 @@ noncomputable def selectedNearCubicBranch
                       (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
                   | .left dropHistory =>
                       -- `[33]`: Branch D, the rank-reducing curvature dependence with its
-                      -- inclusion-minimal connected support; `[35]`--`[46]` on this
-                      -- residual is the next producer.
+                      -- inclusion-minimal connected support.
                       let dependence :=
                         (branchDependenceRow (BranchState := BranchState)
                           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                           (presentation := erdosReceiverLoadProfile) spineData).run
                           dropHistory (by simp [K_eq_iff])
-                      exact selectedRankDropCloses dependence
+                      -- `[35]`: the repeated Branch-D state plus the exact
+                      -- `lem:separated-testers` fact on this literal ancestry.
+                      let tested :=
+                        (separatedTestersRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile) spineData).run
+                          dependence (by simp [K_eq_iff])
+                      exact selectedRankDropCloses tested
                         (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
                         (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
                         (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])

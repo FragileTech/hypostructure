@@ -46,8 +46,8 @@ not an acceptable intermediate state.
 ## 3. Current measured state
 
 - Diagram nodes audited: **180**.
-- Nodes passing every strict gate: **117**.
-- Nodes retained in this ledger: **63**.
+- Nodes passing every strict gate: **120**.
+- Nodes retained in this ledger: **60**.
 - Axiom-audit declarations: **75** = **49 clean** + **26 tainted**; unreported: **0**.
 - Loud undefined frontier producers: **14**.
 
@@ -74,7 +74,7 @@ not an acceptable intermediate state.
   package root still imports the application-local `Assembly.lean`. Full closure therefore lacks
   the sealed topology endpoint required by the framework.
 - The canonical API check currently rejects the application helper `selectedTypeBMarkedLedger` at
-  `Assembly.lean:1840`, `:1937`, `:1986`, `:3204`, `:3259`, `:3301`, and `:3705`.
+  `Assembly.lean:1844`, `:1941`, `:1990`, `:3208`, `:3263`, `:3305`, and `:3709`.
   Renaming it is not a repair: the marked Type B chain must be expressed as literal typed
   composition of permitted rows on one `ExactLedger`.
 - After bypassing that boundary failure for diagnosis only, the generated `allowed-api.md` content
@@ -85,140 +85,27 @@ not an acceptable intermediate state.
 
 ### Exact section set
 
-[43], [44], [45], [54], [65], [68], [69], [70], [71], [72], [73], [74], [76], [77], [81], [82], [84], [85], [87], [93], [103], [106], [110], [111], [113], [114], [115], [116], [117], [118], [123], [124], [129], [131], [132], [134], [137], [140], [142], [143], [144], [145], [147], [154], [156], [157], [159], [162], [163], [165], [166], [167], [168], [170], [171], [172], [174], [175], [176], [177], [178], [179], [180].
+[54], [65], [68], [69], [70], [71], [72], [73], [74], [76], [77], [81], [82], [84], [85], [87], [93], [103], [106], [110], [111], [113], [114], [115], [116], [117], [118], [123], [124], [129], [131], [132], [134], [137], [140], [142], [143], [144], [145], [147], [154], [156], [157], [159], [162], [163], [165], [166], [167], [168], [170], [171], [172], [174], [175], [176], [177], [178], [179], [180].
 
 ## 4. Dependency-ordered repair route
 
 1. **Canonical execution boundary:** eliminate illegal/discarded requirements and detached
-   universal facts at [44] and [54].
-2. **Branch-D fidelity:** repair [43] and [45] without altering the paper's alternatives.
-3. **Type B common chain:** repair [65]–[85] entries listed below, delete the marked-ledger helper,
+   universal facts at [54].
+2. **Type B common chain:** repair [65]–[85] entries listed below, delete the marked-ledger helper,
    and leave the first route-8 census failure loud.
-4. **Type A and route 8:** repair [87], [93], [103], [106], [110]–[118], [123], and [124], using
+3. **Type A and route 8:** repair [87], [93], [103], [106], [110]–[118], [123], and [124], using
    the real canonical carrier reading and exact pressure/peeling statements.
-5. **Sparse-surplus accounting:** repair [129], [131], [132], [134], [137], [140], [142]–[145],
+4. **Sparse-surplus accounting:** repair [129], [131], [132], [134], [137], [140], [142]–[145],
    and [147], then probe the Type B handoffs.
-6. **Cold/dense branch:** repair [154], [156], [157], [159], [162]–[172], and [174]–[177].
-7. **Pair serial closure:** construct the exact obstruction/system/arithmetic chain [178]–[180].
-8. **Sealed endpoint:** only after every node owner is green, express the final topology in
+5. **Cold/dense branch:** repair [154], [156], [157], [159], [162]–[172], and [174]–[177].
+6. **Pair serial closure:** construct the exact obstruction/system/arithmetic chain [178]–[180].
+7. **Sealed endpoint:** only after every node owner is green, express the final topology in
    `StrategyDag.lean`, switch the package root to it, and regenerate the sealed report.
 
 The ordering is diagnostic; it does not authorize a multi-node implementation change. A repair
 still stops at its first downstream failure and updates only that label's two audit rows.
 
 ## 5. Node-by-node remediation checklists
-
-### Node [43] — $Z=G$: whole-graph support dependence
-
-**Exact manuscript diagram output.** $Z=G$: whole-graph support dependence
-
-**Manuscript rows.** Label set **L08** (paper page(s): 97, 98, 99, 141); its complete label
-list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
-table; their exact environments supply the inherited quantifiers and hypotheses.
-
-**Current Lean owner.** `delocalizationScopeDichotomy` (SpineRows.lean:1619), `K .globalDelocalization`
-
-**Current combinator / shared continuation.** terminal closure, AtomicCT.run row; selectedRankDropCloses.
-
-**Primary defect class.** mathematical statement weakened or replaced by a surrogate.
-
-**Fresh audit diagnosis.** ⚠ WEAKER — Records Z = V(G) but not that the quotient is of the closed exact profile. Missing: `∀ vertex, vertex ∈ quotient.support`. This gap is what lets [45] be derived without ever using the Z = G clause.
-
-**What must be implemented or corrected.**
-
-- Strengthen the produced global-support fact to the manuscript's exact closed-profile statement, including `∀ v, v ∈ quotient.support`, on the active quotient residual.
-- Follow the cited manuscript proof and replace the current weaker, divergent, or bookkeeping
-  schema with the exact displayed proposition and alternatives. Preserve their order and scope.
-
-**Live gate checklist.**
-
-- [x] **Implemented / reachable:** pass
-- [x] **Correctly wired:** pass: on a probed stub-free closure
-- [x] **Residual-local proof:** pass
-- [x] **Correct ledger registration:** pass
-- [x] **No illegal carrier/API:** None found
-- [ ] **Exact manuscript proof:** partial: WEAKER
-- [x] **Independent kernel check:** pass: YES; arm probed stub-free
-
-**Exit criterion.** Reinspect the declaration body and call site, update this node row and every
-listed paper-fact row from the compiled term, run the table/API checks, and remove this section
-only when all seven boxes are checked. A later compiler failure is recorded as downstream unless
-that later node has its own independently failing audit row.
-
-### Node [44] — $1$--$3$ repair identity $s=p-2+2\beta-\sigma$
-
-**Exact manuscript diagram output.** $1$--$3$ repair identity $s=p-2+2\beta-\sigma$
-
-**Manuscript rows.** Label set **L09** (paper page(s): 141); its complete label
-list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
-table; their exact environments supply the inherited quantifiers and hypotheses.
-
-**Current Lean owner.** `repairIdentityRow` (SpineRows.lean:1693); `OneThreeRepair.Component.identity` (:169)
-
-**Current combinator / shared continuation.** terminal closure, AtomicCT.run row; selectedRankDropCloses.
-
-**Primary defect class.** fact proved detached from the literal active residual.
-
-**Fresh audit diagnosis.** ✅ FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. “Is a repair network” is stipulated by `def:repair-network-terms`, and its content is exactly `Component`'s fields. The dead-fact complaint is exculpated: `lem:smearing-support-repair` is never consumed arithmetically in the manuscript either — it is invariant 35, a routing record. Dead fact: the consumer `globalBarrierRow` discards it as `_repairIdentity` (SpineRows.lean:1725).
-
-**What must be implemented or corrected.**
-
-- Use the repair identity in the consumer that publishes the global barrier, or remove the false declared dependency. The identity itself is already faithful and kernel checked.
-- Prove the node value inside the atomic executor from `inputs.current` and semantic-key reads
-  through `inputs.get`; eliminate an ignored object argument, detached universal proof, or
-  requirement not tied to the literal incoming residual.
-
-**Live gate checklist.**
-
-- [x] **Implemented / reachable:** pass
-- [x] **Correctly wired:** pass: on a probed stub-free closure
-- [ ] **Residual-local proof:** fail: NO
-- [x] **Correct ledger registration:** pass
-- [x] **No illegal carrier/API:** None found
-- [x] **Exact manuscript proof:** pass: FAITHFUL
-- [x] **Independent kernel check:** pass: YES; arm probed stub-free
-
-**Exit criterion.** Reinspect the declaration body and call site, update this node row and every
-listed paper-fact row from the compiled term, run the table/API checks, and remove this section
-only when all seven boxes are checked. A later compiler failure is recorded as downstream unless
-that later node has its own independently failing audit row.
-
-### Node [45] — target / replacement / global profile barrier
-
-**Exact manuscript diagram output.** target / replacement / global profile barrier
-
-**Manuscript rows.** Label set **L08** (paper page(s): 97, 98, 99, 141); its complete label
-list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
-table; their exact environments supply the inherited quantifiers and hypotheses.
-
-**Current Lean owner.** `globalBarrierRow` (SpineRows.lean:1710)
-
-**Current combinator / shared continuation.** terminal closure, AtomicCT.run row; selectedRankDropCloses.
-
-**Primary defect class.** mathematical statement weakened or replaced by a surrogate.
-
-**Fresh audit diagnosis.** ⚠ WEAKER — Produced without using its stated hypothesis: `_covers` is discarded and `localize` branches on the scope of `quotient.support`, not Z. As written the fact follows from any rank-reducing declared certificate on any arm. Both representative clauses are structure fields of `DeclaredQuotient`: the representative is supplied by the definition, never constructed.
-
-**What must be implemented or corrected.**
-
-- Derive the barrier from the actual `Z = G` coverage fact and construct the required representatives inside the executor; do not discard `_covers` or treat supplied structure fields as the proof.
-- Follow the cited manuscript proof and replace the current weaker, divergent, or bookkeeping
-  schema with the exact displayed proposition and alternatives. Preserve their order and scope.
-
-**Live gate checklist.**
-
-- [x] **Implemented / reachable:** pass
-- [x] **Correctly wired:** pass: on a probed stub-free closure
-- [x] **Residual-local proof:** pass
-- [x] **Correct ledger registration:** pass
-- [x] **No illegal carrier/API:** None found
-- [ ] **Exact manuscript proof:** partial: WEAKER
-- [x] **Independent kernel check:** pass: YES; arm probed stub-free
-
-**Exit criterion.** Reinspect the declaration body and call site, update this node row and every
-listed paper-fact row from the compiled term, run the table/API checks, and remove this section
-only when all seven boxes are checked. A later compiler failure is recorded as downstream unless
-that later node has its own independently failing audit row.
 
 ### Node [54] — entropy cap closes
 
