@@ -270,7 +270,7 @@ of `lem:labels`' relation `C_s`.  The collision *builds* that cycle, and node
 The one thing the construction asks of the registered target is that the
 degenerate closure be rejected, and that is `Data.degenerateClosureRejected`,
 read from the presentation exactly as `Data.quadrilateralAccepted` is at node
-`[68]`.  The contradiction is otherwise read off the two committed statements,
+`[67]`.  The contradiction is otherwise read off the two committed statements,
 which is what makes the closure the framework's rather than a row's. -/
 noncomputable instance typeAExitThreeCollisionClosed :
     Incompatible (Input BranchState Presentation presentation data)
@@ -303,7 +303,7 @@ noncomputable instance typeAExitFiveClosed :
     obtain ⟨_packing, _valid, _maximal, _component, _present, _charge,
       _surplus, _receiver, _isReceiver, _peeled, _peeledSubset, _saturated,
       _noExitFour, support, compressible⟩ := exit.down
-    exact uncompressible.down.1 support compressible
+    exact uncompressible.down support compressible
 
 /-- **Node `[106]`, proper scope**: `lem:proper-smearing`'s replacement of the
 enlarging support against `lem:replacement`. -/

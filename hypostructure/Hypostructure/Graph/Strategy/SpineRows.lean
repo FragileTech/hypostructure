@@ -235,6 +235,73 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           .nil))
     0 0
 
+/-! ## Node `[11]`: boundary-degree fibres
+
+`lem:degree-profile-fibres`.  Condition (a) of
+`def:target-complete-quotient` says that every target-complete identification
+of two boundaried pieces has the same boundary-degree profile.  Equivalently,
+two states in different fibres cannot be quotient-merged.  The statement is
+about every target-complete identification, not only the narrower admissible
+rank quotients represented by `Graph.DeclaredQuotient`.
+
+The manuscript proof only unfolds that condition.  Accordingly this row has
+no predecessor requirement, but its produced proposition is indexed by
+`inputs.current.object`; the field projection is performed inside the sealed
+executor and the residual instance is appended to the literal ledger. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def degreeProfileFibresRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.degreeProfileFibres
+    (sourceFreeManifest (K .degreeProfileFibres))
+    (fun inputs =>
+      .cons (key := K .degreeProfileFibres)
+        (show Value BranchState Presentation presentation data
+            .degreeProfileFibres inputs.current from
+          ⟨fun _support _left _right complete => complete.profile_eq⟩)
+        .nil)
+    0 0
+
+/-! ## Node `[12]`: context-universality
+
+`lem:context-universality`.  Condition (b) of
+`def:target-complete-quotient` says that every target-complete identification
+has the same target response in every outside context.  Like node `[11]`, this
+is a field projection from the paper's target-completeness hypothesis.  The
+row is source-free, publishes exactly that semantic fact, and appends it to the
+literal ledger. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def targetCompleteContextUniversalityRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.targetCompleteContextUniversality
+    (sourceFreeManifest (K .targetCompleteContextUniversality))
+    (fun inputs =>
+      .cons (key := K .targetCompleteContextUniversality)
+        (show Value BranchState Presentation presentation data
+            .targetCompleteContextUniversality inputs.current from
+          ⟨fun _support _left _right complete => complete.contextEquivalent⟩)
+        .nil)
+    0 0
+
 /-! ## `lem:bridgeless`: the selected object has no bridge
 
 *"The graph `G` has no bridge.  Consequently every edge of `G` lies on a
@@ -283,7 +350,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
         .nil)
     0 0
 
-/-! ## Nodes `[11]`--`[14]`: interface replacement
+/-! ## Nodes `[13]`--`[14]`: interface replacement
 
 `lem:replacement` and `cor:uncompressible`.  A target-complete compression of a
 proper atom would produce a strictly smaller baseline object whose obstruction
@@ -293,11 +360,11 @@ context, and the reconstruction is isomorphic to the selected object, which
 avoids the target.
 
 Node `[13]` records the one-way replacement exclusion itself.  Its proof is
-performed at the literal residual: the five manuscript hypotheses construct
-the replacement, and the selection fact supplies precisely minimality and
-target avoidance.
+performed at the literal residual: the four represented replacement hypotheses
+construct the replacement, and the selection fact supplies precisely
+minimality and target avoidance.
 
-The node `[13]` executor spells out that argument locally and reads nothing but
+The node `[13]` executor spells out its argument locally and reads nothing but
 the selected context's `avoids` and `target_of_smaller`.  It therefore consumes
 the selection fact and nothing else; no closure record, registration, or
 payload stands between the fact and its consequence. -/
@@ -414,18 +481,14 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       .cons (key := K .uncompressible)
         (show Value BranchState Presentation presentation data
             .uncompressible inputs.current from
-          ⟨⟨fun support compressible => by
+          ⟨fun support compressible => by
               rcases compressible with
                 ⟨connected, proper, replacement, signatureEq, baseline, smaller,
                   contextUniversal⟩
               exact replacementExcluded support
                 ⟨connected, proper, replacement, signatureEq, baseline, smaller,
                   fun outside replacementTarget =>
-                    (contextUniversal outside).mp replacementTarget⟩,
-            fun _boundary left right failure => by
-              simp only [Graph.Response.ContextEquivalent, not_forall] at failure
-              obtain ⟨outside, distinguishes⟩ := failure
-              exact ⟨outside, distinguishes⟩⟩⟩)
+                    (contextUniversal outside).mp replacementTarget⟩⟩)
         .nil)
     0 0
 
@@ -490,9 +553,16 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
 
 /-! ## Node `[18]`: the exact finite local algebra
 
-The local algebra is read from the problem's registered executable census and
-proved at the literal packing residual.  The executor unfolds the definitions
-of `C_s` and `Ω₂` locally; it does not invoke a detached algebra theorem.
+For every induced window of the literal active object, the row publishes
+exactly the two assertions of `lem:labels`: the cardinality of the legal-label
+set and its displayed size distribution.  The manuscript's `C_s` and `Ω₂` are
+already the definitions `WindowCurvature.Safe` and
+`WindowCurvature.curvatureTwo`; they are deliberately not republished as
+stronger reflection theorems over raw (possibly illegal) labels.
+
+No predecessor fact is needed: the direct enumeration depends only on the
+registered window order, while the produced proposition is indexed by the
+active object's actual induced-window supports.
 -/
 omit [FactSystem (Input BranchState Presentation presentation data)] in
 @[reducible] noncomputable def localAlgebraRow :
@@ -514,13 +584,12 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
+      let object := inputs.current.object
       .cons (key := K .localAlgebra)
         (show Value BranchState Presentation presentation data
             .localAlgebra inputs.current from
-          ⟨data.labelCount, data.labelSizeDistribution,
-            fun _shift _source _target => Iff.rfl,
-            fun source middle target => by
-              simp [Graph.WindowCurvature.curvatureTwo, and_assoc]⟩)
+          ⟨fun (_support : Finset object.Vertex) _window =>
+            ⟨data.labelCount, data.labelSizeDistribution⟩⟩)
         .nil)
     0 0
 
@@ -837,6 +906,77 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                 rcases member with member | member
                 · exact hotFacts.1 member
                 · exact (Finset.mem_sdiff.mp member).1⟩)
+        .nil)
+    0 0
+
+/-! ## Node `[23]`: the live-hot window overflow -/
+
+/-! **Node `[23]`, the live-hot entropy comparison.**  On the literal overflow
+residual, `def:cold-window-ledger` says that the canonical hot family either
+has its full package realized by labelled skeletons or is empty.  In the first
+case `lem:p13-window-package` converts the registered rate into a lower bound
+on the realized state count and `lem:skeleton-dominates` bounds that count by
+the skeleton budget.  In the empty case the required package has one state,
+while the selected object's skeleton class is nonempty.  Thus the exact cap
+opposite to the overflow arm holds.
+
+All three manuscript premises are read through `FactInputs.get`, and the
+statement is indexed by `inputs.current`; no detached graph or proof payload is
+accepted by the row. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def liveHotBarrierCapRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.liveHotBarrierCap
+    { Requires :=
+        [K .hotColdPartition, K .skeletonDominates, K .windowPackageSeparated]
+      Produces := [K .barrierCap]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .barrierCap)
+        (show Value BranchState Presentation presentation data
+            .barrierCap inputs.current from
+          ⟨by
+            let object := inputs.current.object
+            change 2 ^ (data.windowRate *
+                data.separatedScaleCount object.vertexCount *
+                (canonicalHotWindows data object).card) ≤
+              Graph.skeletonBudget object
+            have split := (inputs.get (K .hotColdPartition)).down
+            have dominates := (inputs.get (K .skeletonDominates)).down
+            have package := (inputs.get (K .windowPackageSeparated)).down
+            obtain
+              ⟨_valid, _attains, _maximal, hotFacts, _coldIff, _disjoint, _cover⟩ :=
+                split
+            obtain ⟨_hotSubset, retained, _hotMaximal⟩ := hotFacts
+            obtain ⟨_packing, _packingValid, _packingCard, _packingMaximal,
+              _packageCard, _packagesDisjoint, _familyCard, rateLe, _⟩ := package
+            have exponentLe :
+                data.windowRate * data.separatedScaleCount object.vertexCount *
+                    (canonicalHotWindows data object).card ≤
+                  windowPackageBits data object *
+                    (canonicalHotWindows data object).card :=
+              Nat.mul_le_mul_right _ rateLe
+            rcases retained with
+              ⟨State, stateOf, packageStates, _retainedCode⟩ |
+                ⟨hotEmpty, _emptyUnrealized⟩
+            · have realizedBound := dominates.2 State stateOf
+              exact (Nat.pow_le_pow_right (by norm_num) exponentLe).trans
+                (packageStates.trans realizedBound)
+            · rw [hotEmpty]
+              simp only [Finset.card_empty, Nat.mul_zero, pow_zero]
+              exact Graph.skeletonBudget_pos object⟩)
         .nil)
     0 0
 
@@ -1536,6 +1676,14 @@ noncomputable def atomCompressionDichotomy
     [@Core.Residual.FactKeys.Has
       (Input BranchState Presentation presentation data) _
       (factSystem BranchState Presentation presentation data)
+      (K .degreeProfileFibres) known]
+    [@Core.Residual.FactKeys.Has
+      (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data)
+      (K .targetCompleteContextUniversality) known]
+    [@Core.Residual.FactKeys.Has
+      (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data)
       (K .maximalPacking) known]
     (compressionFresh : K .atomCompression ∉ known)
     (delocalizedFresh : K .delocalizedSupport ∉ known) :
@@ -1573,8 +1721,22 @@ noncomputable def atomCompressionDichotomy
           current known previous (K .maximalPacking)).down.1
       have complete : TargetCompleteAt data quotient := by
         intro left right identified
-        exact ⟨quotient.fibrewise left right identified,
-          universal left right identified⟩
+        have targetComplete : Graph.Response.TargetComplete
+            Graph.BoundaryPiece.boundaryDegreeProfile
+            (Graph.HasCycleWithLength data.LengthOK) left right :=
+          ⟨quotient.fibrewise left right identified,
+            universal left right identified⟩
+        exact ⟨(@ExactLedger.get
+              (Input BranchState Presentation presentation data) _
+              (factSystem BranchState Presentation presentation data)
+              current known previous (K .degreeProfileFibres)).down
+                quotient.support left right targetComplete,
+          (@ExactLedger.get
+            (Input BranchState Presentation presentation data) _
+            (factSystem BranchState Presentation presentation data)
+            current known previous
+              (K .targetCompleteContextUniversality)).down
+              quotient.support left right targetComplete⟩
       by_cases inside :
           quotient.support ⊆ current.object.remainderSupport packing
       · have packingNonempty : packing.Nonempty :=
@@ -2427,12 +2589,13 @@ prerequisite. -/
 
 /-! ## Node `[59]`: the net-charge sign test
 
-`N₀(R) ≥ 0?`  The yes arm is the manuscript's node `[60]`; the no arm is
-node `[61]`, where a connected negative support is selected.  Both sides are
-the two halves of one excluded middle on the exact integer comparison
-`def:net-charge` reduces to, so they are exhaustive.  The decision itself does
-not close `[60]`: that terminal additionally needs the strict net-cap estimate
-used by `prop:negative-net-charge`. -/
+`N₀(R) ≥ 0?`  Here `R` is the complement of the one maximum packing selected
+at node `[27]`, not a quantifier over every maximal packing.  The executor reads
+that witness from `K .maximalPacking`, decides its exact integer charge, and
+carries the same packing in either branch fact.  The yes arm is the manuscript's
+node `[60]`; the no arm is node `[61]`, where a connected negative support is
+selected.  The decision itself does not close `[60]`: that terminal additionally
+uses the strict net-cap estimate of `prop:negative-net-charge`. -/
 omit [FactSystem (Input BranchState Presentation presentation data)] in
 noncomputable def netChargeDichotomy
     {current : Input BranchState Presentation presentation data}
@@ -2441,9 +2604,9 @@ noncomputable def netChargeDichotomy
     (previous :
       @ExactLedger (Input BranchState Presentation presentation data)
         _ (factSystem BranchState Presentation presentation data) current known)
-    -- The sign test is excluded middle on the current residual and has no fact
-    -- prerequisite. The predecessor is retained verbatim by `Decision.run`;
-    -- localization is intentionally left for the negative-arm consumer `[61]`.
+    [@FactKeys.Has (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data)
+      (K .maximalPacking) known]
     (nonNegativeFresh : K .netChargeNonNegative ∉ known)
     (negativeFresh : K .netChargeNegative ∉ known) :
     @Decision (Input BranchState Presentation presentation data) _
@@ -2455,24 +2618,21 @@ noncomputable def netChargeDichotomy
     `Hypostructure.Graph.Strategy.Spine.netChargeDichotomy
     (by
       classical
-      -- In particular, do not read `K .netChargeLocalization` here: `[61]`
-      -- consumes it together with the selected negative arm. Keeping it only
-      -- in the immutable prefix preserves the paper's order: decide the sign,
-      -- then localize a negative remainder to a connected support.
-      by_cases nonNegative :
-          ∀ packing : Finset (Finset current.object.Vertex),
-            current.object.IsWindowPacking data.windowOrder packing →
-            (∀ window : Finset current.object.Vertex,
-              current.object.InducesWindow data.windowOrder window →
-              ∃ member ∈ packing, ¬ Disjoint window member) →
-            current.object.NonNegativeNetCharge
-              (current.object.remainderSupport packing) data.threshold
-              data.dischargeScale
-      · exact .inl ⟨nonNegative⟩
-      · refine .inr ⟨?_⟩
-        push Not at nonNegative
-        obtain ⟨packing, valid, maximal, negative⟩ := nonNegative
-        exact ⟨packing, valid, maximal, Nat.lt_of_not_le negative⟩)
+      have selected :=
+        (@ExactLedger.get (Input BranchState Presentation presentation data) _
+          (factSystem BranchState Presentation presentation data)
+          current known previous (K .maximalPacking)).down
+      let packing := Classical.choose selected.2
+      have packingSpec := Classical.choose_spec selected.2
+      have valid := packingSpec.1
+      have cardinality := packingSpec.2.1
+      have maximal := packingSpec.2.2
+      by_cases nonNegative : current.object.NonNegativeNetCharge
+          (current.object.remainderSupport packing) data.threshold
+          data.dischargeScale
+      · exact .inl ⟨packing, valid, cardinality, maximal, nonNegative⟩
+      · exact .inr ⟨packing, valid, cardinality, maximal,
+          Nat.lt_of_not_le nonNegative⟩)
     nonNegativeFresh negativeFresh
 
 /-! ## Node `[61]`: the selected connected negative support
@@ -2505,7 +2665,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       .cons (key := K .negativeSupport)
         (show Value BranchState Presentation presentation data
             .negativeSupport inputs.current from ⟨by
-          obtain ⟨packing, valid, maximal, negative⟩ :=
+          obtain ⟨packing, valid, _cardinality, maximal, negative⟩ :=
             (inputs.get (K .netChargeNegative)).down
           obtain ⟨component, present, charge⟩ :=
             (inputs.get (K .netChargeLocalization)).down packing valid negative
@@ -2550,32 +2710,23 @@ noncomputable def typeSplitDichotomy
         (@ExactLedger.get (Input BranchState Presentation presentation data) _
           (factSystem BranchState Presentation presentation data)
           current known previous (K .negativeSupport)).down
-      exact if typeA : ∃ packing : Finset (Finset current.object.Vertex),
-          current.object.IsWindowPacking data.windowOrder packing ∧
-            (∀ window : Finset current.object.Vertex,
-              current.object.InducesWindow data.windowOrder window →
-              ∃ member ∈ packing, ¬ Disjoint window member) ∧
-            ∃ component ∈ current.object.canonicalPieces
-                (current.object.remainderSupport packing),
-              let piece := current.object.pieceSupport
-                (current.object.remainderSupport packing) component
-              current.object.NegativeNetCharge piece data.threshold
-                  data.dischargeScale ∧
-                current.object.ambientSurplus piece data.threshold = 0 then
-        .inl ⟨typeA⟩
-      else
-        .inr ⟨by
-          obtain ⟨packing, valid, maximal, component, present, charge⟩ := support
-          refine ⟨packing, valid, maximal, component, present, charge, ?_⟩
-          rcases Nat.eq_zero_or_pos (current.object.ambientSurplus
-              (current.object.pieceSupport
-                (current.object.remainderSupport packing) component)
-              data.threshold) with zero | positive
-          · exact absurd ⟨packing, valid, maximal, component, present, charge, zero⟩ typeA
-          · exact positive⟩)
+      let packing := Classical.choose support
+      have packingSpec := Classical.choose_spec support
+      have valid := packingSpec.1
+      have maximal := packingSpec.2.1
+      let component := Classical.choose packingSpec.2.2
+      have componentSpec := Classical.choose_spec packingSpec.2.2
+      have present := componentSpec.1
+      have charge := componentSpec.2
+      let piece := current.object.pieceSupport
+        (current.object.remainderSupport packing) component
+      by_cases zero : current.object.ambientSurplus piece data.threshold = 0
+      · exact .inl ⟨packing, valid, maximal, component, present, charge, zero⟩
+      · exact .inr ⟨packing, valid, maximal, component, present, charge,
+          Nat.pos_of_ne_zero zero⟩)
     typeAFresh typeBFresh
 
-/-! ## Node `[68]`, the standing law: the high-neighbourhood normal form
+/-! ## Node `[67]`, the standing law: the high-neighbourhood normal form
 
 `lem:heavy-neighbourhood-normal-form`.  At a high centre `h` -- one whose degree
 is strictly above the baseline -- the manuscript proves three things, and the
@@ -2596,7 +2747,6 @@ The fact is stated of the *object*, at every high centre at once, because that
 is what the manuscript proves and because a centre is data: no fact can carry
 one.  Both arms of the degree split below read it. -/
 omit [FactSystem (Input BranchState Presentation presentation data)] in
-omit [FactSystem (Input BranchState Presentation presentation data)] in
 @[reducible] noncomputable def cubicBaselineRow
     : @AtomicStrategy (Input BranchState Presentation presentation data) _
         (instFactSystem (BranchState := BranchState)
@@ -2610,13 +2760,12 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       (Presentation := Presentation) (presentation := presentation)
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.cubicBaseline
-    { Requires := [K .selection]
+    { Requires := []
       Produces := [K .cubicBaseline]
       requiresUnique := by simp
       producesUnique := by simp
       producesNonempty := by simp }
-    (fun inputs =>
-      let _selection := inputs.get (K .selection)
+    (fun _inputs =>
       .cons (key := K .cubicBaseline) ⟨data.threshold_eq_three⟩ .nil)
     0 0
 
@@ -2639,12 +2788,23 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
+      let tight := (inputs.get (K .tightEndpoint)).down
+      let avoids := (inputs.get (K .selection)).down.1
       .cons (key := K .highCentreNormalForm)
-        ⟨fun _centre high =>
-            Graph.normalForm
-              (inputs.get (K .tightEndpoint)).down
-              (inputs.get (K .selection)).down.1
-              data.quadrilateralAccepted high⟩
+        ⟨fun centre high =>
+          { neighbourTight := by
+              intro x adjacent
+              rcases tight ⟨(centre, x), adjacent⟩ with centreTight | endpointTight
+              · exact absurd centreTight (Nat.ne_of_gt high)
+              · exact endpointTight
+            inducedMatching := by
+              intro x y z centreX centreY centreZ distinct xy yz
+              exact Graph.not_quadrilateral avoids data.quadrilateralAccepted
+                centreX xy yz centreZ.symm centreY.ne distinct
+            noCommonNeighbourOutside := by
+              intro x y z centreX centreY distinct _nonadjacent outside xz yz
+              exact Graph.not_quadrilateral avoids data.quadrilateralAccepted
+                centreX xz yz.symm centreY.symm (Ne.symm outside) distinct }⟩
         .nil)
     0 0
 
@@ -2675,12 +2835,6 @@ noncomputable def heavyCentreDichotomy
     [@FactKeys.Has (Input BranchState Presentation presentation data) _
       (factSystem BranchState Presentation presentation data)
       (K .typeBDecoratedAssignedSupport) known]
-    [@FactKeys.Has (Input BranchState Presentation presentation data) _
-      (factSystem BranchState Presentation presentation data)
-      (K .highCentreNormalForm) known]
-    [@FactKeys.Has (Input BranchState Presentation presentation data) _
-      (factSystem BranchState Presentation presentation data)
-      (K .cubicBaseline) known]
     (heavyFresh : K .typeBHeavyCentre ∉ known)
     (degreeFourFresh : K .typeBDegreeFourCentres ∉ known) :
     @Decision (Input BranchState Presentation presentation data) _
@@ -2693,14 +2847,6 @@ noncomputable def heavyCentreDichotomy
     (by
       classical
       apply Classical.choice
-      let _normal :=
-        @ExactLedger.get (Input BranchState Presentation presentation data) _
-          (factSystem BranchState Presentation presentation data)
-          current known previous (K .highCentreNormalForm)
-      let _baseline :=
-        @ExactLedger.get (Input BranchState Presentation presentation data) _
-          (factSystem BranchState Presentation presentation data)
-          current known previous (K .cubicBaseline)
       obtain ⟨packing, valid, maximal, component, present, negative, zero,
         receiver, isReceiver, peeled, peeledSubset, saturated, noExitFour,
         noCompression, noDelocalization, envelope, coreEq, nonempty, high,
@@ -2708,24 +2854,24 @@ noncomputable def heavyCentreDichotomy
         (@ExactLedger.get (Input BranchState Presentation presentation data) _
           (factSystem BranchState Presentation presentation data)
           current known previous (K .typeBDecoratedAssignedSupport)).down
-      have highThree : ∀ centre ∈ envelope.decorations,
-          3 < current.object.degree centre := by
+      have highRegistered : ∀ centre ∈ envelope.decorations,
+          data.threshold < current.object.degree centre := by
         intro centre member
-        simpa [Graph.IsHighCentre, data.threshold_eq_three] using
-          high centre member
+        simpa [Graph.IsHighCentre] using high centre member
       by_cases heavy :
-          ∃ centre ∈ envelope.decorations, 4 < current.object.degree centre
+          ∃ centre ∈ envelope.decorations,
+            data.threshold + 1 < current.object.degree centre
       · exact ⟨.inl ⟨packing, valid, maximal, component, present, negative,
           zero, receiver, isReceiver, peeled, peeledSubset, saturated,
           noExitFour, noCompression, noDelocalization,
-          ⟨envelope, coreEq, nonempty, highThree, assigned, heavy⟩⟩⟩
+          ⟨envelope, coreEq, nonempty, highRegistered, assigned, heavy⟩⟩⟩
       · refine ⟨.inr ⟨packing, valid, maximal, component, present, negative,
           zero, receiver, isReceiver, peeled, peeledSubset, saturated,
           noExitFour, noCompression, noDelocalization,
-          ⟨envelope, coreEq, nonempty, highThree, assigned, ?_⟩⟩⟩
+          ⟨envelope, coreEq, nonempty, highRegistered, assigned, ?_⟩⟩⟩
         intro centre member
-        have lower := highThree centre member
-        have upper : ¬ 4 < current.object.degree centre :=
+        have lower := highRegistered centre member
+        have upper : ¬ data.threshold + 1 < current.object.degree centre :=
           fun above => heavy ⟨centre, member, above⟩
         omega)
     heavyFresh degreeFourFresh
@@ -2784,12 +2930,20 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           intro centre member centreHeavy
           have highCentre :
               Graph.IsHighCentre inputs.current.object data.threshold centre := by
-            rw [Graph.IsHighCentre, baseline]
-            exact high centre member
+            simpa [Graph.IsHighCentre] using high centre member
           rcases Graph.heavyCentreLocalDichotomy
               (normal centre highCentre) with compatible | triangular
           · exact Or.inl compatible
-          · exact Or.inr ⟨triangular, by omega⟩⟩
+          · exact Or.inr ⟨triangular, by
+              have degreeLower : data.threshold + 2 ≤
+                  inputs.current.object.degree centre := by omega
+              have subLower : data.threshold ≤
+                  inputs.current.object.degree centre - 2 := by omega
+              have cardLower : data.threshold ≤
+                  (Graph.triangularEndpoints inputs.current.object centre).card :=
+                le_trans subLower triangular
+              rw [baseline] at cardLower
+              exact cardLower⟩⟩
         .nil)
     0 0
 
@@ -3276,17 +3430,18 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           have degree := degrees centre member
           have degreeThreshold :
               inputs.current.object.degree centre = data.threshold + 1 := by
-            rw [degree, baseline]
+            exact degree
           have highCentre :
               Graph.IsHighCentre inputs.current.object data.threshold centre := by
-            rw [Graph.IsHighCentre, baseline]
-            exact high centre member
+            simpa [Graph.IsHighCentre] using high centre member
           refine ⟨?_, ?_, ?_⟩
           · rcases Graph.heavyCentreLocalDichotomy
                 (normal centre highCentre) with compatible | triangular
             · exact Or.inl compatible
-            · exact Or.inr (by simpa [degree] using triangular)
-          · rw [degree, baseline]
+            · exact Or.inr (by
+                have thresholdThree : data.threshold = 3 := baseline
+                omega)
+          · omega
           · intro fanEnvelope
             obtain ⟨_surplus, counted, identity, _range⟩ :=
               Graph.TypeBFanIncidence.degreeFourProfile inputs.current.object
@@ -3473,7 +3628,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     (fun inputs =>
       let choiceFact := (inputs.get (K .typeBB2Choice)).down
       let avoids := (inputs.get (K .selection)).down.1
-      let uncompressibleFact := (inputs.get (K .uncompressible)).down.1
+      let uncompressibleFact := (inputs.get (K .uncompressible)).down
       let normalized := (inputs.get (K .remainderNormalized)).down
       .cons (key := K .typeBDisjointLedger)
         (⟨by
@@ -3544,14 +3699,14 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                         components,
                     Graph.TypeBMaximalCompletion.ComponentExitSeven ledger
                       component.1 data.LengthOK
-                      (handoffHighDegree inputs.current.object)
+                      (handoffHighDegree data inputs.current.object)
                       (handoffAbsorbing data inputs.current.object packing),
                     ∃ grouped :
                       Graph.DecoratedHandoff.GroupedEnvelopes
                         inputs.current.object data.LengthOK
                         (handoffUncompressible data inputs.current.object)
                         (handoffWindowFree data inputs.current.object)
-                        (handoffHighDegree inputs.current.object)
+                        (handoffHighDegree data inputs.current.object)
                         (handoffAbsorbing data inputs.current.object packing)
                         (Graph.TypeBMaximalCompletion.SelectedComponent ledger
                           components),
@@ -3574,12 +3729,17 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                 handoffWindowFree data inputs.current.object
                   (Graph.SupportComponents.Connected.vertices
                     inputs.current.object ledger.remainingCore component) := by
-              intro component componentMember window windowSubset induces
+              intro component componentMember
               have orderMember := componentsSubset component componentMember
               have componentData := componentFacts component orderMember
-              exact (normalized packing valid maximal window
-                (windowSubset.trans componentData.containedInRemainder)).1
-                induces
+              constructor
+              · intro window windowSubset induces
+                exact (normalized packing valid maximal window
+                  (windowSubset.trans componentData.containedInRemainder)).1
+                  induces
+              · intro internal internalSubset
+                exact (normalized packing valid maximal internal
+                  (internalSubset.trans componentData.containedInRemainder)).2
             let grouped :=
               Graph.TypeBMaximalCompletion.groupedOfComponentExitSeven
                 ledger components production avoids windowFree
@@ -4365,14 +4525,16 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
         .nil)
     0 0
 
-/-! ## Nodes `[107]`--`[109]`: exit `(7)` and route-8 residual
+/-! ## Nodes `[107]`--`[109]` and dashed input `[66]`
 
 The predecessor is the exact selected no-exit-`(6)` fact.  Node `[107]`
 decides only whether that same selected saturated handoff state produces a
 decorated handoff envelope.  Node `[108]` records the admissible Type B
-interface for the produced envelope.  Node `[109]` routes the selected
-no-handoff residual unchanged into Part IX; node `[110]` is the first new
-route-8 publication.
+interface for the produced envelope.  The dashed Part VI input `[66]` is the
+same `K .typeAExitSevenHandoff` fact passed unchanged from `[108]` to `[65]`;
+it is a routing edge, so it deliberately makes no duplicate ledger commit.
+Node `[109]` routes the selected no-handoff residual unchanged into Part IX;
+node `[110]` is the first new route-8 publication.
 -/
 
 omit [FactSystem (Input BranchState Presentation presentation data)] in
@@ -4389,7 +4551,8 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       (Presentation := Presentation) (presentation := presentation)
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.typeAExitSevenHandoff
-    { Requires := [K .selection, K .uncompressible, K .typeAExitSevenProduced]
+    { Requires := [K .selection, K .uncompressible, K .remainderNormalized,
+        K .typeAExitSevenProduced]
       Produces := [K .typeAExitSevenHandoff]
       requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp
@@ -4409,20 +4572,31 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
               inputs.current.object.remainderSupport packing :=
             inputs.current.object.pieceSupport_subset
               (inputs.current.object.remainderSupport packing) component
+          have normalized := (inputs.get (K .remainderNormalized)).down
+          have coreInside : envelope.core ⊆
+              inputs.current.object.remainderSupport packing := by
+            intro vertex member
+            exact inside (by simpa [piece, coreEq] using member)
           have windowFree :
               handoffWindowFree data inputs.current.object envelope.core := by
-            intro window subset windowInduces
-            exact
-              (inputs.current.object.not_inducesWindow_of_subset_remainderSupport
-                maximal (fun vertex member => inside (by
-                  simpa [piece, coreEq] using subset member))) windowInduces
+            constructor
+            · intro window subset windowInduces
+              exact (normalized packing valid maximal window
+                (subset.trans coreInside)).1 windowInduces
+            · intro internal subset
+              exact (normalized packing valid maximal internal
+                (subset.trans coreInside)).2
           have admissible :
               Graph.DecoratedHandoff.Admissible inputs.current.object
                 data.LengthOK (handoffUncompressible data inputs.current.object)
                 (handoffWindowFree data inputs.current.object) envelope :=
-            Graph.DecoratedHandoff.admissible_of_envelope
-              (inputs.get (K .selection)).down.1 windowFree
-              (inputs.get (K .uncompressible)).down.1
+            { dyadicSafe := (inputs.get (K .selection)).down.1
+              coreWindowFree := windowFree
+              uncompressible := (inputs.get (K .uncompressible)).down
+              fanReturnSafe := fun centre centreMember first firstMember second
+                  secondMember different =>
+                (envelope.fanSafe centre centreMember first firstMember second
+                  secondMember different).1 }
           exact
             ⟨packing, valid, maximal, component, present, negative, zero,
               receiver, isReceiver, peeled, peeledSubset, saturated,
@@ -4461,8 +4635,8 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           have high : ∀ centre ∈ envelope.decorations,
               Graph.IsHighCentre inputs.current.object data.threshold centre := by
             intro centre member
-            rw [Graph.IsHighCentre, data.threshold_eq_three]
-            exact envelope.decorations_high centre member
+            simpa [Graph.IsHighCentre] using
+              envelope.decorations_high centre member
           exact ⟨packing, valid, maximal, component, present, negative, zero,
             receiver, isReceiver, peeled, peeledSubset, saturated, noExitFour,
             noCompression, noDelocalization,
@@ -4480,16 +4654,14 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
               _receiver, _isReceiver, _peeled, _peeledSubset, _saturated, _noExitFour,
               _noCompression, _noDelocalization, envelope, coreEq, nonempty,
               _admissible⟩ := handoff
-            have three := data.threshold_eq_three
             refine ⟨packing, valid, maximal, component, present, envelope.decorations,
               Or.inr ⟨negative, zero, envelope, coreEq, rfl, nonempty,
                 fun centre member =>
                   ⟨envelope.assigned_nonempty centre member,
                     envelope.assigned_adj centre member⟩⟩,
               nonempty, fun centre member => ?_⟩
-            have high := envelope.decorations_high centre member
-            simp only [Graph.IsHighCentre, three]
-            exact high⟩
+            simpa [Graph.IsHighCentre] using
+              envelope.decorations_high centre member⟩
           .nil))
     0 0
 

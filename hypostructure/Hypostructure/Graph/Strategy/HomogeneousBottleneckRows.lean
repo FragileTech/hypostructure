@@ -223,7 +223,7 @@ residual.  Both hypotheses are read from the incoming exact ledger. -/
       producesNonempty := by simp }
     (fun inputs =>
       let selection := (inputs.get (K .selection)).down
-      let uncompressible := (inputs.get (K .uncompressible)).down.1
+      let uncompressible := (inputs.get (K .uncompressible)).down
       .cons (key := K .bottleneckRouting)
         (show Value BranchState Presentation presentation data
             .bottleneckRouting inputs.current from
@@ -327,7 +327,7 @@ noncomputable def patternRoutedBottleneckDichotomy
     (Classical.choice ?_) envelopeFresh cubicFresh
   have pattern := (ExactLedger.get previous (K .homogeneousBottleneckPattern)).down
   have selection := (ExactLedger.get previous (K .selection)).down
-  have uncompressible := (ExactLedger.get previous (K .uncompressible)).down.1
+  have uncompressible := (ExactLedger.get previous (K .uncompressible)).down
   simp only [Holds] at pattern selection uncompressible ⊢
   obtain ⟨presentation, ledger, token, _tokenMem, role, structured⟩ := pattern
   -- The role-homogeneous pattern of size `L_geom`, in either shape.
@@ -371,10 +371,10 @@ noncomputable def patternRoutedBottleneckDichotomy
     fun _ _ _ collision => selection.1
       (Graph.WindowLabelCollision.hasCycleWithLength_of_labelCollision
         data.degenerateClosureRejected collision)
-  by_cases high : handoffHighDegree current.object bottleneck.separation.separator
+  by_cases high : handoffHighDegree data current.object bottleneck.separation.separator
   · -- `d_G(z) ≥ 4`: the separator and the two separated tails are the envelope.
     let envelope := Graph.DecoratedHandoff.envelopeOfSeparation
-      (LengthOK := data.LengthOK) (HighDegree := handoffHighDegree current.object)
+      (LengthOK := data.LengthOK) (HighDegree := handoffHighDegree data current.object)
       (Absorbing := handoffAbsorbing data current.object presentation.packing)
       bottleneck.separation bottleneck.armLeft bottleneck.armRight
       bottleneck.armLeftIssued bottleneck.armRightIssued bottleneck.armLeftChain
@@ -386,17 +386,32 @@ noncomputable def patternRoutedBottleneckDichotomy
         current.object.pieceSupport
           (current.object.remainderSupport presentation.packing) component := by
       simpa [envelope, Graph.DecoratedHandoff.envelopeOfSeparation] using supportEq
+    have coreInside : envelope.core ⊆
+        current.object.remainderSupport presentation.packing := by
+      rw [coreEq]
+      exact current.object.pieceSupport_subset _ component
     have windowFree : handoffWindowFree data current.object envelope.core := by
-      intro window subset windowInduces
-      have inside : window ⊆ current.object.remainderSupport presentation.packing := by
-        rw [coreEq] at subset
-        exact subset.trans (current.object.pieceSupport_subset _ component)
-      exact current.object.not_inducesWindow_of_subset_remainderSupport
-        presentation.packingMeets inside windowInduces
+      constructor
+      · intro window subset windowInduces
+        exact current.object.not_inducesWindow_of_subset_remainderSupport
+          presentation.packingMeets (subset.trans coreInside) windowInduces
+      · intro internal subset
+        exact current.object.not_baseline_induce_of_subset_remainderSupport
+          data.freeForcesTarget selection.1 presentation.packingMeets
+          (subset.trans coreInside)
+    have admissible : Graph.DecoratedHandoff.Admissible current.object
+        data.LengthOK (handoffUncompressible data current.object)
+        (handoffWindowFree data current.object) envelope :=
+      { dyadicSafe := selection.1
+        coreWindowFree := windowFree
+        uncompressible := uncompressible
+        fanReturnSafe := fun centre centreMember first firstMember second
+            secondMember different =>
+          (envelope.fanSafe centre centreMember first firstMember second
+            secondMember different).1 }
     refine ⟨.inl ⟨⟨presentation.packing, presentation.packingValid,
       presentation.packingMeets, component, componentMem, envelope, coreEq, ?_,
-      Graph.DecoratedHandoff.admissible_of_envelope selection.1 windowFree
-        uncompressible⟩⟩⟩
+      admissible⟩⟩⟩
     simp [envelope, Graph.DecoratedHandoff.envelopeOfSeparation]
   · -- `d_G(z) = 3`: no unused ambient incidence, so the reading is absorbed
     -- (`lem:same-token-bottleneck-routing`); the delocalization reading is a

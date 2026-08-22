@@ -67,7 +67,8 @@ noncomputable def selectedEntryPrefix
     (history : ExactLedger EGInput.{u} selected [EGSelectionKey]) :
     ExactLedger EGInput.{u} selected
       [K .localAlgebra, K .maximalPacking, K .uncompressible,
-        K .replacementExclusion,
+        K .replacementExclusion, K .targetCompleteContextUniversality,
+        K .degreeProfileFibres,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection] := by
   let h1 :=
@@ -89,17 +90,35 @@ noncomputable def selectedEntryPrefix
       h2 (by
         simp [deletionCriticalityRow, noProperBaselineRow, returnAvoidanceRow,
           EGSelectionKey, K_eq_iff])
+  let h11 :=
+    (degreeProfileFibresRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      h3 (by
+        simp [degreeProfileFibresRow, deletionCriticalityRow,
+          noProperBaselineRow, returnAvoidanceRow, EGSelectionKey, K_eq_iff])
+  let h12 :=
+    (targetCompleteContextUniversalityRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      h11 (by
+        simp [targetCompleteContextUniversalityRow, degreeProfileFibresRow,
+          deletionCriticalityRow, noProperBaselineRow, returnAvoidanceRow,
+          EGSelectionKey, K_eq_iff])
   let h13 :=
     (replacementExclusionRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run h3 (by
-        simp [replacementExclusionRow, deletionCriticalityRow,
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run h12 (by
+        simp [replacementExclusionRow, targetCompleteContextUniversalityRow,
+          degreeProfileFibresRow,
+          deletionCriticalityRow,
           noProperBaselineRow, returnAvoidanceRow, EGSelectionKey, K_eq_iff])
   let h4 :=
     (interfaceReplacementRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run h13 (by
         simp [interfaceReplacementRow, replacementExclusionRow,
+          targetCompleteContextUniversalityRow, degreeProfileFibresRow,
           deletionCriticalityRow,
           noProperBaselineRow, returnAvoidanceRow, EGSelectionKey, K_eq_iff])
   let h5 :=
@@ -108,7 +127,8 @@ noncomputable def selectedEntryPrefix
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       h4 (by
         simp [obstructionPackingRow, interfaceReplacementRow,
-          replacementExclusionRow,
+          replacementExclusionRow, targetCompleteContextUniversalityRow,
+          degreeProfileFibresRow,
           deletionCriticalityRow,
           noProperBaselineRow, returnAvoidanceRow, EGTarget, EGSelectionKey,
           K_eq_iff])
@@ -118,7 +138,8 @@ noncomputable def selectedEntryPrefix
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       h5 (by
         simp [localAlgebraRow, obstructionPackingRow, interfaceReplacementRow,
-          replacementExclusionRow,
+          replacementExclusionRow, targetCompleteContextUniversalityRow,
+          degreeProfileFibresRow,
           deletionCriticalityRow, noProperBaselineRow, returnAvoidanceRow, EGTarget,
           EGSelectionKey, K_eq_iff])
 
@@ -152,11 +173,11 @@ noncomputable def selectedSparseSurplusSurvivor
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (sparseSurplusSurvivorRow (BranchState := BranchState)
@@ -173,14 +194,14 @@ noncomputable def selectedSparseSurplusActivation
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] := by
   let h2 :=
@@ -217,14 +238,14 @@ noncomputable def selectedBaselineSpineDemand
       [K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .baselineSpineDemand, K .activeSurplusDemands,
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor, K .surplusAbove,
-        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion,
+        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .selection] :=
   (baselineSpineDemandRow (BranchState := BranchState)
@@ -241,7 +262,7 @@ noncomputable def selectedPairResponseIndependenceDichotomy
       [K .baselineSpineDemand, K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision (K .independentPairFamily) (K .dependentPairFamily) history :=
@@ -258,7 +279,7 @@ noncomputable def selectedMixedSparseSpineDependence
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -267,7 +288,7 @@ noncomputable def selectedMixedSparseSpineDependence
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (mixedSparseSpineDependenceRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -285,7 +306,7 @@ noncomputable def selectedExactCubicBaselineBudget
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .exactCubicBaselineBudget, K .mixedSparseSpineDependence,
@@ -293,7 +314,7 @@ noncomputable def selectedExactCubicBaselineBudget
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (exactCubicBaselineBudgetRow (BranchState := BranchState)
@@ -312,7 +333,7 @@ noncomputable def selectedIncrementalSkeletonRoom
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -322,7 +343,7 @@ noncomputable def selectedIncrementalSkeletonRoom
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (incrementalSkeletonRoomRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -341,7 +362,7 @@ noncomputable def selectedSkeletonDominates
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .skeletonDominates, K .incrementalSkeletonRoom,
@@ -350,7 +371,7 @@ noncomputable def selectedSkeletonDominates
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (skeletonDominatesRow (BranchState := BranchState)
@@ -368,7 +389,7 @@ noncomputable def selectedBlockedPairRoutingDichotomy
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     Decision
@@ -393,7 +414,7 @@ noncomputable def selectedSparsePairExitCloses
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) : False := by
   exact (history.get (K .sparseSurplusSurvivor)).down
@@ -410,7 +431,7 @@ noncomputable def selectedCanonicalPairFacts
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .canonicalPairLedger, K .canonicalBlockerRoute,
@@ -419,7 +440,7 @@ noncomputable def selectedCanonicalPairFacts
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] := by
   exact
@@ -438,7 +459,7 @@ noncomputable def selectedExactWindowJoinPressure
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -448,7 +469,7 @@ noncomputable def selectedExactWindowJoinPressure
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (exactWindowJoinPressureRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -466,7 +487,7 @@ noncomputable def selectedCapacityTokenFacts
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .capacityTokenLedger, K .sparseUpperEnvelope,
@@ -475,7 +496,7 @@ noncomputable def selectedCapacityTokenFacts
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (capacityTokenLedgerRow (BranchState := BranchState)
@@ -679,19 +700,15 @@ is the live-hot terminal `[23]`; the cap cursor is the literal no-arm residual
 forwarded toward `[24]` and the cold continuation. -/
 -- EG-NODE [22] hot/cold split P = P_hot sqcup P_cold; live-hot entropy cap closes?
 noncomputable def selectedBarrierDichotomy
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
-        K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .replacementExclusion, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection]) :=
-  let partitioned :=
-    (hotColdPartitionRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by simp [K_eq_iff])
-  Decision.run partitioned (K .barrierCap) (K .barrierOverflow)
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .hotColdPartition) known]
+    (capFresh : K .barrierCap ∉ known)
+    (overflowFresh : K .barrierOverflow ∉ known) :
+    Decision (K .barrierCap) (K .barrierOverflow) history := by
+  classical
+  let _split := (history.get (K .hotColdPartition)).down
+  exact Decision.run history (K .barrierCap) (K .barrierOverflow)
     `HypostructureErdos64EG.selectedBarrierDichotomy
     (if overflow : Graph.skeletonBudget selected.object <
         2 ^ (spineData.{u}.windowRate *
@@ -699,21 +716,15 @@ noncomputable def selectedBarrierDichotomy
           (canonicalHotWindows spineData.{u} selected.object).card) then
       .inr ⟨overflow⟩
     else
-      .inl ⟨Nat.le_of_not_lt overflow,
-        fun _family member =>
-          Graph.skeletonBudget_le_variableEdgeBudget selected.object member⟩)
-    (by simp [K_eq_iff])
-    (by simp [K_eq_iff])
+      .inl ⟨Nat.le_of_not_lt overflow⟩)
+    capFresh overflowFresh
 
 /-- Node `[23]`: the live-hot `P₁₃` window entropy overflow closes on the
-literal overflow residual.  `𝒫_hot` is retained in the canonical entropy
-comparison (`K .hotColdPartition`): its full package code
-`2 ^ (bits · |𝒫_hot|)` is realized canonically by labelled skeletons of the
-current class, `lem:skeleton-dominates` (`K .skeletonDominates`) bounds every
-canonical state count by the skeleton budget, and `lem:p13-window-package`
-(`K .windowPackageSeparated`) gives `rate · scales ≤ bits`; the overflow arm
-says the budget is below `2 ^ (rate · scales · |𝒫_hot|)`.  This is
-`lem:independent-target-entropy` on the incoming residual. -/
+literal overflow residual.  `liveHotBarrierCapRow` reads the retained hot
+package, the package-rate inequality, and the skeleton state-count bound from
+that exact ledger and publishes the manuscript's opposite cap.  The framework
+atomically runs that row and closes its cap against the visible overflow arm;
+the application eliminates only the resulting distinguished closure fact. -/
 -- EG-NODE [23] live-hot P13 window entropy overflow
 noncomputable def selectedBarrierOverflowCloses
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
@@ -721,38 +732,16 @@ noncomputable def selectedBarrierOverflowCloses
     [FactKeys.Has (K .barrierOverflow) known]
     [FactKeys.Has (K .hotColdPartition) known]
     [FactKeys.Has (K .skeletonDominates) known]
-    [FactKeys.Has (K .windowPackageSeparated) known] : False := by
-  have overflow := (history.get (K .barrierOverflow)).down
-  have split := (history.get (K .hotColdPartition)).down
-  have dominates := (history.get (K .skeletonDominates)).down
-  have package := (history.get (K .windowPackageSeparated)).down
-  obtain ⟨_valid, _attains, _maximal, hotFacts, _coldIff, _disjoint, _cover⟩ :=
-    split
-  obtain ⟨_hotSubset, retained, _hotMaximal⟩ := hotFacts
-  obtain ⟨_packing, _packingValid, _packingCard, _packingMaximal,
-    _packageCard, _packagesDisjoint, _familyCard, rateLe, _⟩ := package
-  have exponentLe :
-      spineData.{u}.windowRate *
-          spineData.{u}.separatedScaleCount selected.object.vertexCount *
-          (canonicalHotWindows spineData.{u} selected.object).card ≤
-        windowPackageBits spineData.{u} selected.object *
-          (canonicalHotWindows spineData.{u} selected.object).card :=
-    Nat.mul_le_mul_right _ rateLe
-  rcases retained with ⟨State, stateOf, realized, _code⟩ | ⟨hotEmpty, _unrealized⟩
-  · have realizedBound := dominates.2 State stateOf
-    have := (Nat.pow_le_pow_right (by norm_num) exponentLe).trans
-      (realized.trans realizedBound)
-    exact absurd this (Nat.not_le_of_lt overflow)
-  · -- No window is hot: the overflow `budget < 2 ^ 0` says the skeleton class is
-    -- empty, but it contains the selected object's own skeleton.
-    change Graph.skeletonBudget selected.object <
-      2 ^ (spineData.{u}.windowRate *
-        spineData.{u}.separatedScaleCount selected.object.vertexCount *
-        (canonicalHotWindows spineData.{u} selected.object).card) at overflow
-    rw [hotEmpty] at overflow
-    simp only [Finset.card_empty, Nat.mul_zero, pow_zero] at overflow
-    exact absurd (Graph.skeletonBudget_pos selected.object) (Nat.not_lt.mpr
-      (Nat.le_of_lt_succ overflow))
+    [FactKeys.Has (K .windowPackageSeparated) known]
+    (capFresh : K .barrierCap ∉ known)
+    (closureFresh : closed ∉ known) : False := by
+  let closedHistory :=
+    (liveHotBarrierCapRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).runAndCloseIncompatible
+      history (K .barrierOverflow) (K .barrierCap)
+      (by simpa using capFresh) (by simp [closureFresh])
+  exact closedHistory.elimClosed (by infer_instance)
 
 /-- Node `[24]`: `prop:p13-density` "after closure" — on `[153]`'s bounded arm
 (the cold branch forces no germ), the window-only density cap with its exact
@@ -767,7 +756,7 @@ noncomputable def selectedDensityBudget
         K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
-        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .densityCap, K .coldMassBounded, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
@@ -775,7 +764,7 @@ noncomputable def selectedDensityBudget
         K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
-        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (densityBudgetRow (data := spineData)).run history (by simp [K_eq_iff])
 
@@ -789,7 +778,7 @@ noncomputable def selectedColdWindowLedgerSplit
       [K .barrierCap, K .hotColdPartition,
         K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -797,7 +786,7 @@ noncomputable def selectedColdWindowLedgerSplit
         K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
         K .maximalPacking,
-        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (coldWindowLedgerSplitRow (data := spineData)).run history
     (by simp [K_eq_iff])
@@ -812,7 +801,7 @@ noncomputable def selectedColdRoute8Dichotomy
       [K .coldWindowLedgerSplit, K .barrierCap,
         K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :=
   coldRoute8Dichotomy (data := spineData) history
@@ -827,7 +816,7 @@ noncomputable def selectedColdHotEntropyDichotomy
       [K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit, K .barrierCap,
         K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :=
   coldHotEntropyDichotomy (data := spineData) history
@@ -860,7 +849,7 @@ noncomputable def selectedColdHotEntropyCloses
       spineData.{u}.separatedScaleCount selected.object.vertexCount *
       (canonicalHotWindows spineData.{u} selected.object).card)
     spineData.{u}.threshold (spineData.{u}.surplusThreshold selected.object.vertexCount)
-    cap.1 spine spineData.{u}.three_le_threshold nearCubic
+    cap spine spineData.{u}.three_le_threshold nearCubic
   change coldSkeletonAllowance spineData.{u} selected.object <
     coldWindowBitRate spineData.{u} selected.object *
       (canonicalHotWindows spineData.{u} selected.object).card at overflow
@@ -878,7 +867,7 @@ noncomputable def selectedColdMass
         K .coldWindowLedgerSplit, K .barrierCap,
         K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :=
   (coldMassRow (data := spineData)).run history (by simp [K_eq_iff])
@@ -893,7 +882,7 @@ noncomputable def selectedColdAmbientCubic
         K .coldWindowLedgerSplit, K .barrierCap,
         K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :=
   (coldAmbientCubicRow (data := spineData)).run history (by simp [K_eq_iff])
@@ -908,7 +897,7 @@ noncomputable def selectedColdStubExcess
         K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit, K .barrierCap,
         K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :=
   (coldStubExcessRow (data := spineData)).run history (by simp [K_eq_iff])
@@ -925,7 +914,7 @@ noncomputable def selectedColdMassDichotomy
         K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit, K .barrierCap,
         K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :=
   coldMassDichotomy (data := spineData) history
@@ -942,7 +931,7 @@ noncomputable def selectedBridgeless
         K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
-        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
@@ -950,7 +939,7 @@ noncomputable def selectedBridgeless
         K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
-        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (bridgelessRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -968,7 +957,7 @@ noncomputable def selectedColdReturnCorridors
         K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
-        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .coldReturnCorridors, K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
@@ -976,7 +965,7 @@ noncomputable def selectedColdReturnCorridors
         K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
-        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (coldReturnCorridorRow (data := spineData)).run history (by simp [K_eq_iff])
 
@@ -991,7 +980,7 @@ noncomputable def selectedColdFirstFailureRouting
         K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
-        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .coldCorridorState, K .coldFailureCycle, K .coldFailureDefect,
@@ -1001,7 +990,7 @@ noncomputable def selectedColdFirstFailureRouting
         K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
-        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (coldFirstFailureRoutingRow (data := spineData)).run history (by simp [K_eq_iff])
 
@@ -1018,7 +1007,7 @@ noncomputable def selectedColdGermExtraction
         K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
-        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .coldExchangeBound, K .coldGermExtraction,
@@ -1029,7 +1018,7 @@ noncomputable def selectedColdGermExtraction
         K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
-        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (coldGermExtractionRow (data := spineData)).run history (by simp [K_eq_iff])
 
@@ -1049,7 +1038,7 @@ noncomputable def selectedColdGermCandidates
         K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
-        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .coldGermCandidates, K .coldExchangeBound, K .coldGermExtraction,
@@ -1060,7 +1049,7 @@ noncomputable def selectedColdGermCandidates
         K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
-        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (coldGermCandidatesRow (data := spineData)).run history (by simp [K_eq_iff])
 
@@ -1079,7 +1068,7 @@ noncomputable def selectedColdGermTrichotomy
         K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
-        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected [K .coldGermRealized, K .coldGermDistinguished, K .coldGermSilent,
         K .coldGermRouted, K .coldGermCandidates, K .coldExchangeBound, K .coldGermExtraction,
@@ -1090,7 +1079,7 @@ noncomputable def selectedColdGermTrichotomy
         K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
-        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (coldGermTrichotomyRow (data := spineData)).run history (by simp [K_eq_iff])
 
@@ -1108,7 +1097,7 @@ noncomputable def selectedColdSameInterfaceTable
         K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
-        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected [K .coldSameInterfaceTable, K .coldGermRealized, K .coldGermDistinguished, K .coldGermSilent,
         K .coldGermRouted, K .coldGermCandidates, K .coldExchangeBound, K .coldGermExtraction,
@@ -1119,7 +1108,7 @@ noncomputable def selectedColdSameInterfaceTable
         K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
-        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (coldSameInterfaceTableRow (data := spineData)).run history (by simp [K_eq_iff])
 
@@ -1137,7 +1126,7 @@ noncomputable def selectedColdBranchClosed
         K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
-        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected [K .coldBranchClosed, K .coldSameInterfaceTable, K .coldGermRealized, K .coldGermDistinguished, K .coldGermSilent,
         K .coldGermRouted, K .coldGermCandidates, K .coldExchangeBound, K .coldGermExtraction,
@@ -1148,7 +1137,7 @@ noncomputable def selectedColdBranchClosed
         K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
-        K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (coldBranchClosedRow (data := spineData)).run history (by simp [K_eq_iff])
 
@@ -1263,12 +1252,12 @@ noncomputable def selectedNearCubicNode21
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   let enumerated :=
     (barrierEnumerationRow (BranchState := BranchState)
@@ -1298,7 +1287,7 @@ noncomputable def selectedWindowPackageRealizationDichotomy
     (dominated : ExactLedger EGInput.{u} selected
       [K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :=
   Decision.run dominated (K .windowPackageRealized) (K .windowPackageUnrealized)
     `HypostructureErdos64EG.selectedWindowPackageRealizationDichotomy
@@ -1328,7 +1317,7 @@ noncomputable def selectedRoleFibrePartition
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -1338,7 +1327,7 @@ noncomputable def selectedRoleFibrePartition
         K .activeSurplusDemands, K .sparsePortActivation,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .tightEndpoint,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
         K .selection] :=
   (roleFibrePartitionRow (BranchState := BranchState)
@@ -1375,7 +1364,7 @@ noncomputable def selectedStrictSurplusBranch
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
   -- `[125]`: the survivor fact, then `[126]`--`[128]` and `[129]`.
   let survivor := selectedSparseSurplusSurvivor history
@@ -1529,6 +1518,9 @@ noncomputable def selectedRankDropCloses
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .branchDependence) known]
+    [FactKeys.Has (K .uncompressible) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .selection) known]
     (defectFresh : K .contextDefect ∉ known)
@@ -3783,12 +3775,10 @@ noncomputable def selectedNetChargeContinuation
       | .left nonNegHistory =>
           -- `[60]`: the net-cap contradiction on the same canonical maximal
           -- packing.  The cap gives `N₀(R) < 0`; the sibling gives `N₀(R) ≥ 0`.
-          obtain ⟨_positive, packing, valid, cardinality, maximal⟩ :=
-            (nonNegHistory.get (K .maximalPacking)).down
+          obtain ⟨packing, valid, cardinality, _maximal, nonnegative⟩ :=
+            (nonNegHistory.get (K .netChargeNonNegative)).down
           have negative :=
             (nonNegHistory.get (K .netChargeCap)).down packing valid cardinality
-          have nonnegative :=
-            (nonNegHistory.get (K .netChargeNonNegative)).down packing valid maximal
           exact ((selected.object.not_negativeNetCharge_iff
             (selected.object.remainderSupport packing) spineData.threshold
             spineData.dischargeScale).mpr nonnegative) negative
@@ -3890,6 +3880,9 @@ noncomputable def selectedSpineToLargeBudget
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
+    [FactKeys.Has (K .uncompressible) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .hotColdPartition) known]
     [FactKeys.Has (K .windowPackageSeparated) known]
@@ -4083,7 +4076,7 @@ noncomputable def selectedNearCubicBranch
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .replacementExclusion, K .tightEndpoint, K .slackIndependent,
+        K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
   match selectedWindowPackageRealizationDichotomy (selectedNearCubicNode21 history) with
   | .right unrealizedHistory =>
@@ -4146,20 +4139,11 @@ noncomputable def selectedNearCubicBranch
       | .right denseHistory =>
           -- `τ(θ) ≥ 1/4`, the dense residual: `[22]`'s live-hot cap decision and the
           -- cold branch `[145]`--`[157]` on it.
-          match Decision.run denseHistory (K .barrierCap) (K .barrierOverflow)
-              `HypostructureErdos64EG.selectedDenseBarrierDichotomy
-              (if overflow : Graph.skeletonBudget selected.object <
-                  2 ^ (spineData.{u}.windowRate *
-                    spineData.{u}.separatedScaleCount selected.object.vertexCount *
-                    (canonicalHotWindows spineData.{u} selected.object).card) then
-                .inr ⟨overflow⟩
-              else
-                .inl ⟨Nat.le_of_not_lt overflow,
-                  fun _family member =>
-                    Graph.skeletonBudget_le_variableEdgeBudget selected.object member⟩)
+          match selectedBarrierDichotomy denseHistory
               (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
           | .right overflowHistory =>
               exact selectedBarrierOverflowCloses overflowHistory
+                (by simp [K_eq_iff]) (by simp [K_eq_iff])
           | .left capHistory =>
           -- `[145]`'s split is already on this ledger (run before the deficiency test).
           match coldRoute8Dichotomy (data := spineData) capHistory
@@ -4315,7 +4299,13 @@ noncomputable def selectedNearCubicBranch
                     -- alone, which glues into the skeleton budget (`RemainderGlue`).
                     exact entropyCap_closes_of_allCold activeHistory cold.1
   | .left enumerated =>
-  match selectedBarrierDichotomy enumerated with
+  let partitioned :=
+    (hotColdPartitionRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      enumerated (by simp [K_eq_iff])
+  match selectedBarrierDichotomy partitioned
+      (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
   | .left capHistory =>
       let split := selectedColdWindowLedgerSplit capHistory
       match selectedColdRoute8Dichotomy split with
@@ -4601,6 +4591,7 @@ noncomputable def selectedNearCubicBranch
                       exact selectedNetChargeContinuation netCap
   | .right overflowHistory =>
       exact selectedBarrierOverflowCloses overflowHistory
+        (by simp [K_eq_iff]) (by simp [K_eq_iff])
 
 /-- Selected-root closure, assembled directly from the exact-ledger rows. -/
 -- EG-NODE none (establishes no manuscript DAG node)

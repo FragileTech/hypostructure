@@ -46,8 +46,8 @@ not an acceptable intermediate state.
 ## 3. Current measured state
 
 - Diagram nodes audited: **180**.
-- Nodes passing every strict gate: **107**.
-- Nodes retained in this ledger: **73**.
+- Nodes passing every strict gate: **115**.
+- Nodes retained in this ledger: **65**.
 - Axiom-audit declarations: **75** = **49 clean** + **26 tainted**; unreported: **0**.
 - Loud undefined frontier producers: **14**.
 
@@ -74,7 +74,7 @@ not an acceptable intermediate state.
   package root still imports the application-local `Assembly.lean`. Full closure therefore lacks
   the sealed topology endpoint required by the framework.
 - The canonical API check currently rejects the application helper `selectedTypeBMarkedLedger` at
-  `Assembly.lean:1848`, `:1945`, `:1994`, `:3212`, `:3267`, `:3309`, and `:3713`.
+  `Assembly.lean:1840`, `:1937`, `:1986`, `:3204`, `:3259`, `:3301`, and `:3705`.
   Renaming it is not a repair: the marked Type B chain must be expressed as literal typed
   composition of permitted rows on one `ExactLedger`.
 - After bypassing that boundary failure for diagnosis only, the generated `allowed-api.md` content
@@ -85,12 +85,12 @@ not an acceptable intermediate state.
 
 ### Exact section set
 
-[11], [12], [18], [22], [23], [26], [31], [35], [43], [44], [45], [54], [65], [66], [67], [68], [69], [70], [71], [72], [73], [74], [76], [77], [81], [82], [84], [85], [87], [93], [103], [106], [110], [111], [113], [114], [115], [116], [117], [118], [123], [124], [129], [131], [132], [134], [137], [140], [142], [143], [144], [145], [147], [154], [156], [157], [159], [162], [163], [165], [166], [167], [168], [170], [171], [172], [174], [175], [176], [177], [178], [179], [180].
+[31], [35], [43], [44], [45], [54], [65], [68], [69], [70], [71], [72], [73], [74], [76], [77], [81], [82], [84], [85], [87], [93], [103], [106], [110], [111], [113], [114], [115], [116], [117], [118], [123], [124], [129], [131], [132], [134], [137], [140], [142], [143], [144], [145], [147], [154], [156], [157], [159], [162], [163], [165], [166], [167], [168], [170], [171], [172], [174], [175], [176], [177], [178], [179], [180].
 
 ## 4. Dependency-ordered repair route
 
 1. **Canonical execution boundary:** eliminate illegal/discarded requirements and detached
-   universal facts at [11], [12], [18], [22], [23], [31], [44], and [54].
+   universal facts at [31], [44], and [54].
 2. **Branch-D fidelity:** repair [35], [43], and [45] without altering the paper's alternatives.
 3. **Type B common chain:** repair [65]–[85] entries listed below, delete the marked-ledger helper,
    and leave the first route-8 census failure loud.
@@ -107,233 +107,6 @@ The ordering is diagnostic; it does not authorize a multi-node implementation ch
 still stops at its first downstream failure and updates only that label's two audit rows.
 
 ## 5. Node-by-node remediation checklists
-
-### Node [11] — boundaried pieces; boundary degree profile $\mathbf d_\partial$
-
-**Exact manuscript diagram output.** boundaried pieces; boundary degree profile $\mathbf d_\partial$
-
-**Manuscript rows.** Label set **L01** (paper page(s): 96, 97, 100); its complete label
-list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
-table; their exact environments supply the inherited quantifiers and hypotheses.
-
-**Current Lean owner.** `Response.profile_ne_not_targetComplete` (Response.lean:52); `DeclaredQuotient.fibrewise` (DeclaredRankQuotient.lean:215); consumed on the spine through `selectedEntryPrefix` (Assembly.lean:65)
-
-**Current combinator / shared continuation.** AtomicCT.run row; selectedEntryPrefix.
-
-**Primary defect class.** fact proved detached from the literal active residual.
-
-**Fresh audit diagnosis.** ✅ FAITHFUL-TRIVIAL — `lem:degree-profile-fibres` is stipulated, not proved: `def:boundary-degree-profile` declares all response states fibrewise over d_∂ and `def:target-complete-quotient` makes profile preservation clause (a), so the paper's five-line proof just unfolds it. Lean carries it as the `profile_eq` field of `Response.TargetComplete` and the `fibrewise` field of `DeclaredQuotient`, with `profile_ne_not_targetComplete` (Response.lean:52) the one-step projection. The field is genuinely consumed — it closes the profile-mismatch disjunct of `SparseSurplusExit.targetDefect` at NamedSurplusExits.lean:123, builds `TargetCompleteAt` at SpineRows.lean:1576, and drives `AttemptedQuotient.route`'s profile test. On the spine the operative use is the first clause of `ReplacementSupport`, `replacement.boundaryDegreeProfile = piece.boundaryDegreeProfile`. `def:boundaried-gluing` is realized term for term: `Boundary`/`BoundaryPiece` build the injective boundary labelling into the carrier rather than asserting it, and `boundaryDegreeProfile` is the piece-internal degree the paper writes.
-
-**What must be implemented or corrected.**
-
-- Keep the existing profile mathematics, but publish its residual instance from the atomic owner; the universal `Response`/`DeclaredQuotient` projections cannot be the node's proof-data interface.
-- Prove the node value inside the atomic executor from `inputs.current` and semantic-key reads
-  through `inputs.get`; eliminate an ignored object argument, detached universal proof, or
-  requirement not tied to the literal incoming residual.
-
-**Live gate checklist.**
-
-- [x] **Implemented / reachable:** pass
-- [x] **Correctly wired:** pass: on a probed stub-free closure
-- [ ] **Residual-local proof:** fail: NO
-- [x] **Correct ledger registration:** pass
-- [x] **No illegal carrier/API:** None found
-- [x] **Exact manuscript proof:** pass: FAITHFUL-TRIVIAL
-- [x] **Independent kernel check:** pass: YES; arm probed stub-free
-
-**Exit criterion.** Reinspect the declaration body and call site, update this node row and every
-listed paper-fact row from the compiled term, run the table/API checks, and remove this section
-only when all seven boxes are checked. A later compiler failure is recorded as downstream unless
-that later node has its own independently failing audit row.
-
-### Node [12] — context-universality for target-complete identifications
-
-**Exact manuscript diagram output.** context-universality for target-complete identifications
-
-**Manuscript rows.** Label set **L02** (paper page(s): 100); its complete label
-list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
-table; their exact environments supply the inherited quantifiers and hypotheses.
-
-**Current Lean owner.** `interfaceReplacementRow` (SpineRows.lean:393), 2nd conjunct of `K .uncompressible`
-
-**Current combinator / shared continuation.** AtomicCT.run row, terminal closure; selectedEntryPrefix, selectedRankDropCloses.
-
-**Primary defect class.** fact proved detached from the literal active residual.
-
-**Fresh audit diagnosis.** ✅ FAITHFUL-TRIVIAL — `lem:context-universality`'s proof is two sentences opening “This is precisely the meaning of target-completeness”; the de Morgan step is the paper's step. Second coverer `selectedRankDropCloses` (Assembly.lean:1528, clean) is [36]/[37] material, not this lemma.
-
-**What must be implemented or corrected.**
-
-- Re-establish context-universality as the value of the existing `.uncompressible` production on the active residual; do not leave the working clause as a detached universal fact bundled with another conclusion.
-- Prove the node value inside the atomic executor from `inputs.current` and semantic-key reads
-  through `inputs.get`; eliminate an ignored object argument, detached universal proof, or
-  requirement not tied to the literal incoming residual.
-
-**Live gate checklist.**
-
-- [x] **Implemented / reachable:** pass
-- [x] **Correctly wired:** pass: on a probed stub-free closure
-- [ ] **Residual-local proof:** fail: NO
-- [x] **Correct ledger registration:** pass
-- [x] **No illegal carrier/API:** None found
-- [x] **Exact manuscript proof:** pass: FAITHFUL-TRIVIAL
-- [x] **Independent kernel check:** pass: YES; arm probed stub-free
-
-**Exit criterion.** Reinspect the declaration body and call site, update this node row and every
-listed paper-fact row from the compiled term, run the table/API checks, and remove this section
-only when all seven boxes are checked. A later compiler failure is recorded as downstream unless
-that later node has its own independently failing audit row.
-
-### Node [18] — $P_{13}$ label algebra: $399$ labels; relations $C_s$; obstruction tensor $\Omega_2$
-
-**Exact manuscript diagram output.** $P_{13}$ label algebra: $399$ labels; relations $C_s$; obstruction tensor $\Omega_2$
-
-**Manuscript rows.** Label set **L03** (paper page(s): 108); its complete label
-list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
-table; their exact environments supply the inherited quantifiers and hypotheses.
-
-**Current Lean owner.** `localAlgebraRow` (SpineRows.lean:498)
-
-**Current combinator / shared continuation.** AtomicCT.run row; selectedEntryPrefix.
-
-**Primary defect class.** fact proved detached from the literal active residual.
-
-**Fresh audit diagnosis.** ✅ FAITHFUL-TRIVIAL — The trivial conjuncts re-export the manuscript's own definitions of C_s and Ω₂, for which the paper proves nothing; the 399 count it does prove is a real kernel `decide`. `Holds .localAlgebra` takes `_object` and ignores it: a detached universal statement.
-
-**What must be implemented or corrected.**
-
-- Keep the kernel `decide` for the 399-label count, but make the row's output an active-residual fact rather than a proposition whose object argument is ignored.
-- Prove the node value inside the atomic executor from `inputs.current` and semantic-key reads
-  through `inputs.get`; eliminate an ignored object argument, detached universal proof, or
-  requirement not tied to the literal incoming residual.
-
-**Live gate checklist.**
-
-- [x] **Implemented / reachable:** pass
-- [x] **Correctly wired:** pass: on a probed stub-free closure
-- [ ] **Residual-local proof:** fail: NO
-- [x] **Correct ledger registration:** pass
-- [x] **No illegal carrier/API:** None found
-- [x] **Exact manuscript proof:** pass: FAITHFUL-TRIVIAL
-- [x] **Independent kernel check:** pass: YES; arm probed stub-free
-
-**Exit criterion.** Reinspect the declaration body and call site, update this node row and every
-listed paper-fact row from the compiled term, run the table/API checks, and remove this section
-only when all seven boxes are checked. A later compiler failure is recorded as downstream unless
-that later node has its own independently failing audit row.
-
-### Node [22] — hot/cold split $\mathcal P=\mathcal P_{\rm hot}\sqcup\mathcal P_{\rm cold}$: live-hot entropy cap closes?
-
-**Exact manuscript diagram output.** hot/cold split $\mathcal P=\mathcal P_{\rm hot}\sqcup\mathcal P_{\rm cold}$: live-hot entropy cap closes?
-
-**Manuscript rows.** Label set **L04** (paper page(s): 110, 130); its complete label
-list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
-table; their exact environments supply the inherited quantifiers and hypotheses.
-
-**Current Lean owner.** `selectedBarrierDichotomy` (Assembly.lean:681)
-
-**Current combinator / shared continuation.** Decision.run, AtomicCT.run row, terminal closure; selectedBarrierDichotomy, selectedNearCubicBranch.
-
-**Primary defect class.** fact proved detached from the literal active residual.
-
-**Fresh audit diagnosis.** ✅ FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. `def:window-realization-test` *defines* realization as a counting statement and gives the paper's own “equivalently θ > θ_win”; tex:7351 says the sentence “is a branch test, not an assertion”. The injectivity content is at [21], where the paper proves it, and [22] is entitled to read it. This settles the question that also spanned [23], [52] and [158]. The hot/cold split carries no information about the residual; 𝒫_hot is defined as the maximal realized subfamily, so the question is answered by construction.
-
-**What must be implemented or corrected.**
-
-- Retain the manuscript's realization branch test, but run one canonical decision at the literal packing ledger and reuse its two typed arms everywhere; node [162] must not recreate the split inline.
-- Prove the node value inside the atomic executor from `inputs.current` and semantic-key reads
-  through `inputs.get`; eliminate an ignored object argument, detached universal proof, or
-  requirement not tied to the literal incoming residual.
-
-**Live gate checklist.**
-
-- [x] **Implemented / reachable:** pass
-- [x] **Correctly wired:** pass: on a probed stub-free closure
-- [ ] **Residual-local proof:** partial: NO (in substance)
-- [x] **Correct ledger registration:** pass
-- [x] **No illegal carrier/API:** None found
-- [x] **Exact manuscript proof:** pass: FAITHFUL
-- [x] **Independent kernel check:** pass: YES; arm probed stub-free
-
-**Exit criterion.** Reinspect the declaration body and call site, update this node row and every
-listed paper-fact row from the compiled term, run the table/API checks, and remove this section
-only when all seven boxes are checked. A later compiler failure is recorded as downstream unless
-that later node has its own independently failing audit row.
-
-### Node [23] — live-hot $P_{13}$ window entropy overflow
-
-**Exact manuscript diagram output.** live-hot $P_{13}$ window entropy overflow
-
-**Manuscript rows.** Label set **L04** (paper page(s): 110, 130); its complete label
-list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
-table; their exact environments supply the inherited quantifiers and hypotheses.
-
-**Current Lean owner.** `selectedBarrierOverflowCloses` (Assembly.lean:718)
-
-**Current combinator / shared continuation.** terminal closure; selectedBarrierOverflowCloses.
-
-**Primary defect class.** fact proved detached from the literal active residual.
-
-**Fresh audit diagnosis.** ✅ FAITHFUL-TRIVIAL — The manuscript's [23] is precisely the claim that this arm cannot be inhabited, and it is empty in the paper by the same chain, because the paper also defines a window as hot only when its package is retained. Contested: an independent read holds that the trivially-satisfiable `WindowFamilyRealized` existential is a surrogate for the paper's realization sentence — see [22]. Doc comment claims this is `lem:independent-target-entropy` on the incoming residual. It is not; no such premise is consumed.
-
-**What must be implemented or corrected.**
-
-- Make the terminal consume the retained-package/entropy facts it claims to use, or restate the terminal under the exact smaller manifest that actually proves it. The current docstring is not evidence.
-- Prove the node value inside the atomic executor from `inputs.current` and semantic-key reads
-  through `inputs.get`; eliminate an ignored object argument, detached universal proof, or
-  requirement not tied to the literal incoming residual.
-
-**Live gate checklist.**
-
-- [x] **Implemented / reachable:** pass
-- [x] **Correctly wired:** pass: on a probed stub-free closure
-- [ ] **Residual-local proof:** fail: NO
-- [x] **Correct ledger registration:** pass
-- [x] **No illegal carrier/API:** None found
-- [x] **Exact manuscript proof:** pass: FAITHFUL-TRIVIAL
-- [x] **Independent kernel check:** pass: YES; arm probed stub-free
-
-**Exit criterion.** Reinspect the declaration body and call site, update this node row and every
-listed paper-fact row from the compiled term, run the table/API checks, and remove this section
-only when all seven boxes are checked. A later compiler failure is recorded as downstream unless
-that later node has its own independently failing audit row.
-
-### Node [26] — Residual A: $R$ large and componentwise $P_{13}$-free
-
-**Exact manuscript diagram output.** Residual A: $R$ large and componentwise $P_{13}$-free
-
-**Manuscript rows.** Label set **L05** (paper page(s): 132); its complete label
-list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
-table; their exact environments supply the inherited quantifiers and hypotheses.
-
-**Current Lean owner.** `remainderNormalizationRow` (SpineRows.lean:868)
-
-**Current combinator / shared continuation.** terminal closure, Decision.run, AtomicCT.run row; selectedNearCubicBranch, selectedSpineToLargeBudget.
-
-**Primary defect class.** paper control-flow object not represented exactly.
-
-**Fresh audit diagnosis.** ⚠ PLUMBING — A continuation box: the diagram arrow reads “from [25]” and the dependency table gives [17], [25]–[27] one row and one label. Not distinguishing it from [25] is correct. One fact covers [25] and [26]; they are not two independent obligations.
-
-**What must be implemented or corrected.**
-
-- This is a continuation box, not a second theorem. Completion requires a table-level verification that the exact [25] ledger is passed through unchanged and a faithful-control-flow verdict; do not invent a new fact merely to give the box a producer.
-- Follow the cited manuscript proof and replace the current weaker, divergent, or bookkeeping
-  schema with the exact displayed proposition and alternatives. Preserve their order and scope.
-
-**Live gate checklist.**
-
-- [x] **Implemented / reachable:** pass
-- [x] **Correctly wired:** pass: on a probed stub-free closure
-- [x] **Residual-local proof:** pass
-- [x] **Correct ledger registration:** pass
-- [x] **No illegal carrier/API:** None found
-- [ ] **Exact manuscript proof:** partial: PLUMBING
-- [x] **Independent kernel check:** pass: YES; arm probed stub-free
-
-**Exit criterion.** Reinspect the declaration body and call site, update this node row and every
-listed paper-fact row from the compiled term, run the table/API checks, and remove this section
-only when all seven boxes are checked. A later compiler failure is recorded as downstream unless
-that later node has its own independently failing audit row.
 
 ### Node [31] — obstruction rank $r_\Omega(R)$
 
@@ -568,7 +341,7 @@ that later node has its own independently failing audit row.
 list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
 table; their exact environments supply the inherited quantifiers and hypotheses.
 
-**Current Lean owner.** `typeBDecoratedAssignedSupportRow` (SpineRows.lean:4435); `typeBAssignedSupportRow` (:2813)
+**Current Lean owner.** `typeBDecoratedAssignedSupportRow` (SpineRows.lean:4532); `typeBAssignedSupportRow` (:2890)
 
 **Current combinator / shared continuation.** terminal closure, AtomicCT.run row; selectedTypeADecoratedHandoff, selectedTypeBHighSurplusContinuation.
 
@@ -580,6 +353,9 @@ envelope, uses `Graph.IsHighCentre ... data.threshold`, records every assigned
 first-neighbour support, and retains all four fields of
 `Graph.DecoratedHandoff.Admissible` from `K .typeAExitSevenHandoff`. The old row
 discarded that admissibility proof and hardcoded the threshold as the numeral `3`.
+The existing `handoffWindowFree` predicate now records both `P₁₃`-freeness and
+the empty internal baseline core, and the existing capacity presentation routes
+its bottleneck at `data.threshold`; no additional carrier was introduced.
 The bare routed-envelope entry at [144] and the absorbed-germ entry at [177] are
 still independently absent.
 
@@ -587,9 +363,9 @@ still independently absent.
 
 - Implement the [144] bare-envelope entry on its actual `K .typeBFanEnvelope`
   fact; the first loud frontier is `selectedTypeBRoutedEnvelope`
-  (Assembly.lean:584).
+  (Assembly.lean:605).
 - Implement the separate [177] absorbed-germ handoff before routing that arm into
-  [65]; `selectedAbsorbedGermTypeBHandoff` (Assembly.lean:3520) is still undefined,
+  [65]; `selectedAbsorbedGermTypeBHandoff` (Assembly.lean:3544) is still undefined,
   and the current [177] fact does not contain the paper's decorated envelope.
 - Preserve the repaired `K .typeBDecoratedAssignedSupport` value unchanged when
   those two entries are connected. Do not reconstruct its envelope or
@@ -614,89 +390,6 @@ listed paper-fact row from the compiled term, run the table/API checks, and remo
 only when all seven boxes are checked. A later compiler failure is recorded as downstream unless
 that later node has its own independently failing audit row.
 
-### Node [66] — Type A exit 7 input from the Part VIII handoff
-
-**Exact manuscript diagram output.** Type A exit 7 input from the Part VIII handoff
-
-**Manuscript rows.** Label set **L12** (paper page(s): 51, 52, 53, 54, 55, 56, 57, 160, 161, 162, 164, 187, 188, 189, 190, 191, 192, 194, 195, 196, 197, 198, 199, 200, 202, 203, 207, 208, 209, 210, 211); its complete label
-list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
-table; their exact environments supply the inherited quantifiers and hypotheses.
-
-**Current Lean owner.** `typeAExitSevenHandoffRow` (SpineRows.lean:4374)
-
-**Current combinator / shared continuation.** terminal closure, AtomicCT.run row; selectedTypeAExitFiveToSeven.
-
-**Primary defect class.** fact absent from or not wired into the literal branch ancestry.
-
-**Fresh audit diagnosis.** ✅ FAITHFUL — `Admissible` has four real fields; `windowFree` is derived from packing maximality, not assumed. The [66] clause is a comment inside a different file's row; the annotated declaration produces a key the vocabulary labels node [108].
-
-**What must be implemented or corrected.**
-
-- Attach the Type A exit-7 handoff to the exact [66] predecessor and complete its route-8 continuation; the current row is labelled as [108] and its transitive path reaches `selectedLargeBudgetPressureCensus`.
-- Prove the node value inside the atomic executor from `inputs.current` and semantic-key reads
-  through `inputs.get`; eliminate an ignored object argument, detached universal proof, or
-  requirement not tied to the literal incoming residual.
-- Run the repaired owner on the literal typed predecessor, select the correct `Decision` arm,
-  and pass its exact output ledger forward without reconstructing a cursor or merging siblings.
-- Build the narrow owner and an independent branch probe. The node is not green while its
-  producer or composed arm reaches any undefined frontier name shown in the kernel cell below.
-
-**Live gate checklist.**
-
-- [x] **Implemented / reachable:** pass
-- [ ] **Correctly wired:** fail: NO: `selectedLargeBudgetPressureCensus`
-- [ ] **Residual-local proof:** fail: NO
-- [x] **Correct ledger registration:** pass
-- [x] **No illegal carrier/API:** None found
-- [x] **Exact manuscript proof:** pass: FAITHFUL
-- [ ] **Independent kernel check:** fail: NO: `selectedLargeBudgetPressureCensus`
-
-**Exit criterion.** Reinspect the declaration body and call site, update this node row and every
-listed paper-fact row from the compiled term, run the table/API checks, and remove this section
-only when all seven boxes are checked. A later compiler failure is recorded as downstream unless
-that later node has its own independently failing audit row.
-
-### Node [67] — high-degree centers independent; fan neighbours cubic
-
-**Exact manuscript diagram output.** high-degree centers independent; fan neighbours cubic
-
-**Manuscript rows.** Label set **L13** (paper page(s): 50, 51, 52, 53, 54, 55, 56, 57, 160, 161, 162, 164, 187, 188, 189, 190, 191, 192, 194, 195, 196, 197, 198, 199, 200, 202, 203, 207, 208, 209, 210, 211); its complete label
-list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
-table; their exact environments supply the inherited quantifiers and hypotheses.
-
-**Current Lean owner.** `highCentreNormalFormRow` (SpineRows.lean:2623); `cubicBaselineRow` (:2600)
-
-**Current combinator / shared continuation.** terminal closure, AtomicCT.run row; selectedTypeBDecoratedContinuation, selectedTypeBHighSurplusContinuation.
-
-**Primary defect class.** illegal read/write, discarded requirement, or noncanonical carrier.
-
-**Fresh audit diagnosis.** ✅ FAITHFUL — All three normal-form clauses proved from the dart law and the two quadrilaterals. `cubicBaseline`'s own `Holds` is `data.threshold = 3` — a numeral bridge, vacuous alone. Independence of high centres follows from clause (a) rather than being stated.
-
-**What must be implemented or corrected.**
-
-- Derive the threshold bridge from presentation data on the active object, publish the normal form under one exact schema, and remove the unused `.selection` requirement from `cubicBaselineRow`.
-- Prove the node value inside the atomic executor from `inputs.current` and semantic-key reads
-  through `inputs.get`; eliminate an ignored object argument, detached universal proof, or
-  requirement not tied to the literal incoming residual.
-- Give the owner a literal nonempty `FactManifest`; consume every declared requirement, return
-  exactly `Produces`, and commit with `AtomicCT.run`. Remove unused requirements and every
-  custom wrapper/carrier on this path without deleting valid mathematical content.
-
-**Live gate checklist.**
-
-- [x] **Implemented / reachable:** pass
-- [x] **Correctly wired:** pass
-- [ ] **Residual-local proof:** fail: NO
-- [ ] **Correct ledger registration:** partial: `cubicBaselineRow` declares `Requires := [K .selection]` and discards it
-- [ ] **No illegal carrier/API:** partial: `cubicBaselineRow` declares `Requires := [K .selection]` and discards it
-- [x] **Exact manuscript proof:** pass: FAITHFUL
-- [x] **Independent kernel check:** pass: YES
-
-**Exit criterion.** Reinspect the declaration body and call site, update this node row and every
-listed paper-fact row from the compiled term, run the table/API checks, and remove this section
-only when all seven boxes are checked. A later compiler failure is recorded as downstream unless
-that later node has its own independently failing audit row.
-
 ### Node [68] — some center has \(d_G(h)>4\)?
 
 **Exact manuscript diagram output.** some center has \(d_G(h)>4\)?
@@ -705,27 +398,31 @@ that later node has its own independently failing audit row.
 list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
 table; their exact environments supply the inherited quantifiers and hypotheses.
 
-**Current Lean owner.** `heavyCentreDichotomy` (SpineRows.lean:2668); `typeBFanDegreeDichotomy` (:2881)
+**Current Lean owner.** `heavyCentreDichotomy` (SpineRows.lean:2751); `typeBFanDegreeDichotomy` (:2963)
 
 **Current combinator / shared continuation.** terminal closure, AtomicCT.run row; selectedTypeBDecoratedContinuation, selectedTypeBHighSurplusContinuation.
 
-**Primary defect class.** fact proved detached from the literal active residual.
+**Primary defect class.** one paper decision published under two distinct semantic key pairs.
 
-**Fresh audit diagnosis.** ✅ FAITHFUL — The no arm is committed in positive form (`degree = 4`) and derived by `omega`, not assumed. The two lanes commit different keys for the same diagram box.
+**Fresh audit diagnosis.** ✅ FAITHFUL and residual-local on each implemented lane. Both
+decisions retrieve their literal Type B support from `ExactLedger`, test
+`data.threshold + 1 < d_G(h)`, and derive the no arm positively as
+`d_G(h) = data.threshold + 1`. The remaining framework defect is that the ordinary and
+decorated lanes publish two different yes/no key pairs for this one manuscript decision.
 
 **What must be implemented or corrected.**
 
-- Unify the two degree-split lanes as the same manuscript decision over their literal Type B support; prove each arm from the support fact instead of a detached object-wide split.
-- Prove the node value inside the atomic executor from `inputs.current` and semantic-key reads
-  through `inputs.get`; eliminate an ignored object argument, detached universal proof, or
-  requirement not tied to the literal incoming residual.
+- Unify the two degree-split lanes under one exact semantic yes/no key pair while preserving
+  their literal support witness and the registered threshold.
+- Keep the decision proof at the canonical `Decision.run` boundary and read the support only
+  with `ExactLedger.get`; do not introduce a common carrier or reconstruct either support.
 
 **Live gate checklist.**
 
 - [x] **Implemented / reachable:** pass
 - [x] **Correctly wired:** pass
-- [ ] **Residual-local proof:** fail: NO
-- [x] **Correct ledger registration:** pass
+- [x] **Residual-local proof:** pass on both implemented lanes
+- [ ] **Correct ledger registration:** fail: two semantic key pairs represent one decision
 - [x] **No illegal carrier/API:** None found
 - [x] **Exact manuscript proof:** pass: FAITHFUL
 - [x] **Independent kernel check:** pass: YES
@@ -743,27 +440,31 @@ that later node has its own independently failing audit row.
 list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
 table; their exact environments supply the inherited quantifiers and hypotheses.
 
-**Current Lean owner.** `heavyCentreLocalDichotomyRow` (SpineRows.lean:2751)
+**Current Lean owner.** `heavyCentreLocalDichotomyRow` (SpineRows.lean:2825)
 
 **Current combinator / shared continuation.** terminal closure, AtomicCT.run row; selectedTypeBDecoratedContinuation, selectedTypeBHighSurplusContinuation.
 
-**Primary defect class.** fact proved detached from the literal active residual.
+**Primary defect class.** one paper conclusion published under two lane-specific key schemas.
 
-**Fresh audit diagnosis.** ✅ FAITHFUL — `cor:heavy-center-local-dichotomy` verbatim including the “in particular three” clause; `FanCompatible` carries all of `def:fan-compatible-open-ports`' conditions as fields, so the existential is not cheap. One of the strongest nodes in the development: HighCentrePorts.lean matches the manuscript line for line.
+**Fresh audit diagnosis.** ✅ FAITHFUL and residual-local on each lane —
+`cor:heavy-center-local-dichotomy` is proved inside the atomic executor from the literal
+normal-form and heavy-support facts. It includes the “in particular three” clause, and
+`FanCompatible` carries every condition of `def:fan-compatible-open-ports`. The remaining
+framework defect is the duplicate ordinary/decorated output-key schema inherited from [68].
 
 **What must be implemented or corrected.**
 
-- Re-run the already faithful high-centre theorem inside the atomic executor at the selected fan centre and publish the exact existential alternative to the same ledger.
-- Prove the node value inside the atomic executor from `inputs.current` and semantic-key reads
-  through `inputs.get`; eliminate an ignored object argument, detached universal proof, or
-  requirement not tied to the literal incoming residual.
+- Publish this one local dichotomy under one semantic key after the unified [68] support
+  decision, preserving the exact quantified support proposition.
+- Continue to read the normal form and selected heavy-support fact only through
+  `FactInputs.get`; do not introduce a shared carrier for the two lanes.
 
 **Live gate checklist.**
 
 - [x] **Implemented / reachable:** pass
 - [x] **Correctly wired:** pass
-- [ ] **Residual-local proof:** fail: NO
-- [x] **Correct ledger registration:** pass
+- [x] **Residual-local proof:** pass on both implemented lanes
+- [ ] **Correct ledger registration:** fail: lane-specific keys duplicate one paper fact
 - [x] **No illegal carrier/API:** None found
 - [x] **Exact manuscript proof:** pass: FAITHFUL
 - [x] **Independent kernel check:** pass: YES
@@ -2374,17 +2075,17 @@ that later node has its own independently failing audit row.
 list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
 table; their exact environments supply the inherited quantifiers and hypotheses.
 
-**Current Lean owner.** the `.right` arm of `selectedNearCubicBranch` (Assembly.lean:4148+)
+**Current Lean owner.** the `.right` arm of `selectedNearCubicBranch` (Assembly.lean:4164+)
 
 **Current combinator / shared continuation.** terminal closure, Decision.run, AtomicCT.run row; selectedNearCubicBranch.
 
-**Primary defect class.** illegal read/write, discarded requirement, or noncanonical carrier.
+**Primary defect class.** composed branch still reaches undefined downstream closures.
 
 **Fresh audit diagnosis.** ✅ FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. The unconsumed hypothesis is the manuscript's own finding: `lem:dense-cold-pass`'s proof says the density sentence is not among the facts the pass uses. The larger residual is sound, and the pass is valid on it precisely because it never reads that sentence. Because [160] tests the supply bound, the residual entered is strictly larger than the manuscript's.
 
 **What must be implemented or corrected.**
 
-- Reuse the [22] decision and all literal typed descendants instead of re-deriving it inline; wire the pass through the repaired [159], [166], and [172] closures without merging sibling histories.
+- Wire the pass through the repaired [159], [166], and [172] closures without merging sibling histories.
 - Give the owner a literal nonempty `FactManifest`; consume every declared requirement, return
   exactly `Produces`, and commit with `AtomicCT.run`. Remove unused requirements and every
   custom wrapper/carrier on this path without deleting valid mathematical content.
@@ -2398,8 +2099,8 @@ table; their exact environments supply the inherited quantifiers and hypotheses.
 - [x] **Implemented / reachable:** pass
 - [ ] **Correctly wired:** fail: NO: `selectedDenseSameSizeCanonicalSwap`, `selectedDenseJointCodeOverflow`, `selectedBarrierOverlapSerialSystem`
 - [x] **Residual-local proof:** pass
-- [ ] **Correct ledger registration:** partial: the [22] decision is re-derived inline rather than reusing `selectedBarrierDichotomy`
-- [ ] **No illegal carrier/API:** partial: the [22] decision is re-derived inline rather than reusing `selectedBarrierDichotomy`
+- [x] **Correct ledger registration:** pass for the shared [22] substep: the dense ledger uses `selectedBarrierDichotomy` and receives exactly one cap/overflow key
+- [x] **No illegal carrier/API:** pass for the shared [22] substep: the duplicate inline decision and extra variable-edge-budget fact are removed
 - [x] **Exact manuscript proof:** pass: FAITHFUL
 - [ ] **Independent kernel check:** fail: NO: `selectedDenseSameSizeCanonicalSwap`, `selectedDenseJointCodeOverflow`, `selectedBarrierOverlapSerialSystem`
 
@@ -3053,14 +2754,6 @@ These sets name every paper-fact audit row corresponding to the node sections ab
 live implementation/status cells remain in `Assembly_node_audit.md`; a node repair must update all
 rows in its set that the repaired fact changes.
 
-### L01 — node(s) [11]
-
-`def:atom`, `def:boundaried-gluing`, `def:boundary-degree-profile`, `def:obstruction-profile`, `def:target-complete-quotient`, `lem:degree-profile-fibres`, `lem:target-complete-quotient-composition`.
-
-### L02 — node(s) [12]
-
-`lem:context-universality`.
-
 ### L03 — node(s) [18]
 
 `lem:labels`.
@@ -3068,10 +2761,6 @@ rows in its set that the repaired fact changes.
 ### L04 — node(s) [22], [23]
 
 `lem:p13-window-package`, `prop:p13-density`.
-
-### L05 — node(s) [26]
-
-`def:internal-3-core`, `lem:remainder-empty-internal-3-core`.
 
 ### L06 — node(s) [31]
 

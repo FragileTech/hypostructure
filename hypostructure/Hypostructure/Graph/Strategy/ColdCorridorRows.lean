@@ -361,7 +361,7 @@ clause is universally quantified over the object's own corridors. -/
               ⟨by
                 intro windows component corridor presentation index support
                 exact Graph.ColdCorridor.Corridor.FirstFailureCompression.not_occurs
-                  uncompressible.1⟩
+                  uncompressible⟩
               (.cons (key := K .coldFailureHandoff)
                 ⟨by
                   intro windows component corridor Handoff segment failure
@@ -653,7 +653,7 @@ G2 for every surviving length-changing germ. -/
           (Graph.HasCycleWithLength data.LengthOK) inputs.current.object,
           germ.increment < 0 → ¬ germ.Neutral :=
         fun germ shorter neutral =>
-          uncompressible.1 germ.support
+          uncompressible germ.support
             (germ.compressibleSupport_of_not_distinguishing shorter neutral.2)
       .cons (key := K .coldGermRealized)
         ⟨⟨notRealizing, fun germ => germ.trichotomy⟩⟩
@@ -708,10 +708,10 @@ survive their smear and are routed the same way; and the table is finite. -/
       .cons (key := K .coldSameInterfaceTable)
         ⟨⟨fun Handoff row =>
             Graph.ColdCorridor.row_closed targetInvariant selected.1
-              uncompressible.1 row,
+              uncompressible row,
           fun Handoff self =>
             Graph.ColdCorridor.selfReturn_closed targetInvariant selected.1
-              uncompressible.1 self,
+              uncompressible self,
           fun length failed =>
             Graph.ColdCorridor.exists_accepted_of_not_survivesSmear failed,
           rfl,

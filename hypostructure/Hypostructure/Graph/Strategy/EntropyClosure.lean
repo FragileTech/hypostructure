@@ -1,7 +1,12 @@
 import Hypostructure.Graph.Strategy.SpineRows
 
 /-!
-# Node `[54]`: the entropy cap closes
+# Window-entropy terminals: nodes `[23]` and `[54]`
+
+Node `[23]` closes the live-hot overflow arm.  The retained hot-window package,
+the certified package-rate inequality, and the canonical state-count bound are
+read from the literal residual by one atomic row; that row publishes the
+opposite cap fact, and the framework closes the resulting cap/overflow pair.
 
 `prop:entropy-high-theta`: on the arm where the remaining non-curvature budget
 is strictly smaller than the forced curvature cost (`K .entropyCapActive`,
@@ -40,6 +45,17 @@ universe u v
 variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
+
+/-- The two numeric arms of node `[22]` are exact negations.  On node `[23]`'s
+overflow ledger, the atomic row establishes the cap arm from the paper's
+retained-package premises.  This registration puts the visible upstream arm
+first and the row's sole output second, exactly as
+`AtomicCT.runAndCloseIncompatible` expects. -/
+noncomputable instance instIncompatibleBarrierOverflowCap :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K .barrierOverflow) (K .barrierCap) where
+  contradiction := fun _residual overflow cap =>
+    (Nat.not_lt_of_ge cap.down) overflow.down
 
 /-- The joint package demand of nodes `[52]`--`[53]` is at most the code the
 comparison retains for the hot family: the registered rate never exceeds the

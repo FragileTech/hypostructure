@@ -465,18 +465,26 @@ inductive Key where
   /-- Node `[10]`: vertices strictly above the threshold are pairwise
   nonadjacent. -/
   | slackIndependent
+  /-- Node `[11]`, `lem:degree-profile-fibres`: every target-complete
+  identification of two boundaried pieces stays inside one boundary-degree
+  fibre. -/
+  | degreeProfileFibres
+  /-- Node `[12]`, `lem:context-universality`: every target-complete
+  identification has the same target response in every outside context. -/
+  | targetCompleteContextUniversality
   /-- Node `[13]`, `lem:replacement`: no proper atom admits a strictly smaller
   boundary-signature-preserving replacement with one-way obstruction
   inclusion. -/
   | replacementExclusion
-  /-- Nodes `[11]`--`[14]`: no proper atom admits a nontrivial target-complete
+  /-- Node `[14]`: no proper atom admits a nontrivial target-complete
   compression (`cor:uncompressible`). -/
   | uncompressible
   /-- Nodes `[15]`--`[17]`: the object carries a maximal vertex-disjoint family
   of induced windows, and the family is nonempty. -/
   | maximalPacking
-  /-- Node `[18]`: the local label algebra of the registered window order is
-  exactly enumerated and its curvature relation is decided (`lem:labels`). -/
+  /-- Node `[18]`: `lem:labels`'s exact legal-label census at the registered
+  window order.  The adjacent `C_s` and `Ω₂` displays are definitions supplied
+  by `WindowCurvature.Safe` and `WindowCurvature.curvatureTwo`. -/
   | localAlgebra
   /-- Node `[19]`, above arm: the degree surplus exceeds the registered scale
   threshold. -/
@@ -629,9 +637,10 @@ inductive Key where
   so a remainder of negative net charge has a *connected* admissible support of
   negative net charge. -/
   | netChargeLocalization
-  /-- Node `[59]`, yes arm: `N₀(R) ≥ 0`. -/
+  /-- Node `[59]`, yes arm: `N₀(R) ≥ 0` for the fixed maximum packing
+  whose complement is the manuscript's remainder `R`. -/
   | netChargeNonNegative
-  /-- Node `[59]`, no arm: `N₀(R) < 0`. -/
+  /-- Node `[59]`, no arm: `N₀(R) < 0` for that same selected packing. -/
   | netChargeNegative
   /-- Node `[61]`: `prop:negative-net-charge`.  A connected admissible support
   of the remainder carries negative net charge. -/
@@ -923,7 +932,7 @@ inductive Key where
   | coldPositiveGerm
   | coldGermRouted
   | coldBranchClosed
-  /-- Node `[68]`, the standing law: every high centre of the object has its
+  /-- Node `[67]`, the standing law: every high centre of the object has its
   neighbourhood in the normal form of `lem:heavy-neighbourhood-normal-form` --
   cubic neighbours, a matching inside `N_G(h)`, and no common neighbour outside
   `{h}` for a nonadjacent pair.  Both arms of the degree split run on it. -/
@@ -1760,10 +1769,7 @@ def BarrierCapStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
   2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
         (canonicalHotWindows data object).card) ≤
-      Graph.skeletonBudget object ∧
-    ∀ family : Finset Nat, object.edgeCount ∈ family →
-      Graph.skeletonBudget object ≤
-        Graph.variableEdgeBudget object.vertexCount family
+      Graph.skeletonBudget object
 
 def BarrierOverflowStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
@@ -2168,10 +2174,10 @@ here once, so the node's two arms, its row and its fixture all read the same
 predicate.
 
 *The high-degree predicate* is `lem:typeA-cubic-switch-absorption`'s own
-conclusion `d_G(z) ≥ 4` at a surviving first separator.  It is the count of
-incidences the separation uses — the root incidence and the two next incidences
-— strictly exceeded; it is not a registered baseline, and the registered
-`threshold` is deliberately not written here.
+conclusion `d_G(z) ≥ 4` at a surviving first separator.  It is recorded through
+the registered threshold as `data.threshold < d_G(z)`; the cubic-baseline
+identity makes this exactly the manuscript's inequality, rather than a second
+hard-coded degree convention.
 
 *The absorbing predicate* is `def:typeB-fan-safe` clause (ii), the label
 collision of `lem:labels`: exit `(3)`, which the branch reaching node `[107]`
@@ -2180,10 +2186,11 @@ has already denied and which the row therefore reads rather than restates.
 *The two admissibility predicates* are node `[14]`'s hereditary
 target-uncompressibility and the `P₁₃`-freeness of the counted core. -/
 
-/-- `V_{≥4}(G)` at a surviving first separator: `lem:typeA-cubic-switch-absorption`. -/
-abbrev handoffHighDegree (object : Graph.FiniteObject.{u}) :
+/-- The registered high-degree set at a surviving first separator:
+`lem:typeA-cubic-switch-absorption`. -/
+abbrev handoffHighDegree (data : Data.{u}) (object : Graph.FiniteObject.{u}) :
     object.Vertex → Prop :=
-  fun vertex => 3 < object.degree vertex
+  fun vertex => data.threshold < object.degree vertex
 
 /-- **`def:typeB-fan-safe` clauses (ii)--(v)**, at the registered data.
 `lem:typeA-high-degree-handoff` reads them off the exit list: *"failures of the
@@ -2208,12 +2215,17 @@ abbrev handoffUncompressible (data : Data.{u})
         (Graph.MinimumDegreeAtLeast data.threshold)
         (Graph.HasCycleWithLength data.LengthOK) object support
 
-/-- The counted core is `P₁₃`-free. -/
+/-- The counted core satisfies the paper's single compound core-safety clause:
+it is `P₁₃`-free and has no internal sub-support of minimum degree at least the
+registered baseline.  Keeping the conjunction in the existing predicate avoids
+introducing a second certificate carrier for `lem:decorated-fan-admissibility`. -/
 abbrev handoffWindowFree (data : Data.{u}) (object : Graph.FiniteObject.{u}) :
     Finset object.Vertex → Prop :=
   fun support =>
-    ∀ window : Finset object.Vertex, window ⊆ support →
-      ¬ object.InducesWindow data.windowOrder window
+    (∀ window : Finset object.Vertex, window ⊆ support →
+      ¬ object.InducesWindow data.windowOrder window) ∧
+    ∀ internal : Finset object.Vertex, internal ⊆ support →
+      ¬ Graph.MinimumDegreeAtLeast data.threshold (object.induce internal)
 
 /-- **The ordinary Type B support of node `[64]`** (`def:admissible` with
 `σ(X) > 0`): a connected piece of the remainder of a maximal packing carrying
@@ -2255,7 +2267,7 @@ def TypeBAssignedCentres (data : Data.{u}) (object : Graph.FiniteObject.{u})
   (object.NegativeNetCharge piece data.threshold data.dischargeScale ∧
       object.ambientSurplus piece data.threshold = 0 ∧
       ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-          (handoffHighDegree object) (handoffAbsorbing data object packing),
+          (handoffHighDegree data object) (handoffAbsorbing data object packing),
         envelope.core = piece ∧ envelope.decorations = centres ∧
           centres.Nonempty ∧
           ∀ centre ∈ centres,
@@ -2294,10 +2306,7 @@ theorem TypeBAssignedCentres.high (data : Data.{u}) (object : Graph.FiniteObject
   intro centre member
   rcases assigned with ⟨_, _, rfl⟩ | ⟨_, _, envelope, _, rfl, _, _⟩
   · exact (Graph.TypeBRefinedSupport.mem_centres.mp member).2
-  · have := envelope.decorations_high centre member
-    show data.threshold < object.degree centre
-    rw [data.threshold_eq_three]
-    exact this
+  · exact envelope.decorations_high centre member
 
 theorem TypeBAssignedCentres.centres_subset (data : Data.{u})
     (object : Graph.FiniteObject.{u})
@@ -2341,7 +2350,7 @@ def HandoffProduced (data : Data.{u}) (object : Graph.FiniteObject.{u})
     (packing : Finset (Finset object.Vertex))
     (piece : Finset object.Vertex) : Prop :=
   ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-      (handoffHighDegree object) (handoffAbsorbing data object packing),
+      (handoffHighDegree data object) (handoffAbsorbing data object packing),
     envelope.core = piece ∧ envelope.decorations.Nonempty
 
 /-- **The envelope produced is admissible Type B fan-envelope data**
@@ -2352,7 +2361,7 @@ def HandoffAdmissible (data : Data.{u}) (object : Graph.FiniteObject.{u})
     (packing : Finset (Finset object.Vertex))
     (piece : Finset object.Vertex) : Prop :=
   ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-      (handoffHighDegree object) (handoffAbsorbing data object packing),
+      (handoffHighDegree data object) (handoffAbsorbing data object packing),
     envelope.core = piece ∧ envelope.decorations.Nonempty ∧
       Graph.DecoratedHandoff.Admissible object data.LengthOK
         (handoffUncompressible data object) (handoffWindowFree data object)
@@ -2368,7 +2377,7 @@ def DecoratedTypeBAssignedSupport (data : Data.{u})
     (packing : Finset (Finset object.Vertex))
     (piece : Finset object.Vertex) : Prop :=
   ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-      (handoffHighDegree object) (handoffAbsorbing data object packing),
+      (handoffHighDegree data object) (handoffAbsorbing data object packing),
     envelope.core = piece ∧ envelope.decorations.Nonempty ∧
       (∀ centre ∈ envelope.decorations,
         Graph.IsHighCentre object data.threshold centre) ∧
@@ -2387,15 +2396,16 @@ def DecoratedTypeBHeavySupport (data : Data.{u})
     (packing : Finset (Finset object.Vertex))
     (piece : Finset object.Vertex) : Prop :=
   ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-      (handoffHighDegree object) (handoffAbsorbing data object packing),
+      (handoffHighDegree data object) (handoffAbsorbing data object packing),
     envelope.core = piece ∧ envelope.decorations.Nonempty ∧
       (∀ centre ∈ envelope.decorations,
-        3 < object.degree centre) ∧
+        data.threshold < object.degree centre) ∧
       (∀ centre ∈ envelope.decorations,
         (envelope.assigned centre).Nonempty ∧
           ∀ first ∈ envelope.assigned centre,
             object.graph.Adj centre first) ∧
-      ∃ centre ∈ envelope.decorations, 4 < object.degree centre
+      ∃ centre ∈ envelope.decorations,
+        data.threshold + 1 < object.degree centre
 
 /-- Node `[68]`, no arm: every centre of the assigned decorated envelope has
 degree four. -/
@@ -2404,15 +2414,16 @@ def DecoratedTypeBDegreeFourSupport (data : Data.{u})
     (packing : Finset (Finset object.Vertex))
     (piece : Finset object.Vertex) : Prop :=
   ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-      (handoffHighDegree object) (handoffAbsorbing data object packing),
+      (handoffHighDegree data object) (handoffAbsorbing data object packing),
     envelope.core = piece ∧ envelope.decorations.Nonempty ∧
       (∀ centre ∈ envelope.decorations,
-        3 < object.degree centre) ∧
+        data.threshold < object.degree centre) ∧
       (∀ centre ∈ envelope.decorations,
         (envelope.assigned centre).Nonempty ∧
           ∀ first ∈ envelope.assigned centre,
             object.graph.Adj centre first) ∧
-      ∀ centre ∈ envelope.decorations, object.degree centre = 4
+      ∀ centre ∈ envelope.decorations,
+        object.degree centre = data.threshold + 1
 
 /-- Node `[69]`: the paper's local alternative at every heavy centre of the
 assigned decorated envelope. -/
@@ -2421,15 +2432,18 @@ def DecoratedTypeBLocalDichotomySupport (data : Data.{u})
     (packing : Finset (Finset object.Vertex))
     (piece : Finset object.Vertex) : Prop :=
   ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-      (handoffHighDegree object) (handoffAbsorbing data object packing),
+      (handoffHighDegree data object) (handoffAbsorbing data object packing),
     envelope.core = piece ∧ envelope.decorations.Nonempty ∧
-      (∀ centre ∈ envelope.decorations, 3 < object.degree centre) ∧
+      (∀ centre ∈ envelope.decorations,
+        data.threshold < object.degree centre) ∧
       (∀ centre ∈ envelope.decorations,
         (envelope.assigned centre).Nonempty ∧
           ∀ first ∈ envelope.assigned centre,
             object.graph.Adj centre first) ∧
-      (∃ centre ∈ envelope.decorations, 4 < object.degree centre) ∧
-      ∀ centre ∈ envelope.decorations, 4 < object.degree centre →
+      (∃ centre ∈ envelope.decorations,
+        data.threshold + 1 < object.degree centre) ∧
+      ∀ centre ∈ envelope.decorations,
+        data.threshold + 1 < object.degree centre →
         (∃ left right : object.Vertex,
           Graph.FanCompatible object centre left right) ∨
         (object.degree centre - 2 ≤
@@ -2443,14 +2457,16 @@ def DecoratedTypeBDegreeFourProfileSupport (data : Data.{u})
     (packing : Finset (Finset object.Vertex))
     (piece : Finset object.Vertex) : Prop :=
   ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-      (handoffHighDegree object) (handoffAbsorbing data object packing),
+      (handoffHighDegree data object) (handoffAbsorbing data object packing),
     envelope.core = piece ∧ envelope.decorations.Nonempty ∧
-      (∀ centre ∈ envelope.decorations, 3 < object.degree centre) ∧
+      (∀ centre ∈ envelope.decorations,
+        data.threshold < object.degree centre) ∧
       (∀ centre ∈ envelope.decorations,
         (envelope.assigned centre).Nonempty ∧
           ∀ first ∈ envelope.assigned centre,
             object.graph.Adj centre first) ∧
-      (∀ centre ∈ envelope.decorations, object.degree centre = 4) ∧
+      (∀ centre ∈ envelope.decorations,
+        object.degree centre = data.threshold + 1) ∧
       ∀ centre ∈ envelope.decorations,
         ((∃ left right : object.Vertex,
               Graph.FanCompatible object centre left right) ∨
@@ -2913,11 +2929,10 @@ noncomputable def germCanonicalRepresentative (data : Data.{u})
 
 Every spine fact is a statement about the selected graph, never about a side
 payload carried beside it.  Making that explicit is what lets a fact transport
-along a refinement by a rewrite: refinement is object equality.
-
-`localAlgebra` is the one clause that does not mention the object: the window
-algebra is a property of the registered order, and saying so is what makes it
-transport for free. -/
+along a refinement by a rewrite: refinement is object equality.  The finite
+label census is stated at every induced window of that selected graph; the
+definitions of `C_s` and `Ω₂` live in `WindowCurvatureAlgebra` and are not
+restated as additional ledger theorems. -/
 def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
     (Presentation : Type) (presentation : Presentation) (data : Data.{u}) :
     Key → Graph.FiniteObject.{u} → Prop
@@ -2945,22 +2960,35 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
         data.threshold < object.degree left →
         data.threshold < object.degree right →
         ¬ object.graph.Adj left right)
+  | .degreeProfileFibres, object =>
+      ∀ (support : Finset object.Vertex)
+        (left right : Graph.BoundaryPiece
+          (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary object
+            support)),
+        Graph.Response.TargetComplete
+            Graph.BoundaryPiece.boundaryDegreeProfile
+            (Graph.HasCycleWithLength data.LengthOK) left right →
+          left.boundaryDegreeProfile = right.boundaryDegreeProfile
+  | .targetCompleteContextUniversality, object =>
+      ∀ (support : Finset object.Vertex)
+        (left right : Graph.BoundaryPiece
+          (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary object
+            support)),
+        Graph.Response.TargetComplete
+            Graph.BoundaryPiece.boundaryDegreeProfile
+            (Graph.HasCycleWithLength data.LengthOK) left right →
+          Graph.Response.ContextEquivalent
+            (Graph.HasCycleWithLength data.LengthOK) left right
   | .replacementExclusion, object =>
       (∀ support : Finset object.Vertex,
         ¬ Graph.Strategy.InterfaceReplacement.ReplacementSupport
             (Graph.MinimumDegreeAtLeast data.threshold)
             (Graph.HasCycleWithLength data.LengthOK) object support)
   | .uncompressible, object =>
-      ((∀ support : Finset object.Vertex,
+      (∀ support : Finset object.Vertex,
         ¬ Graph.Strategy.InterfaceReplacement.CompressibleSupport
             (Graph.MinimumDegreeAtLeast data.threshold)
-            (Graph.HasCycleWithLength data.LengthOK) object support) ∧
-      ∀ (boundary : Graph.Boundary.{u})
-        (left right : Graph.BoundaryPiece boundary),
-        ¬ Graph.Response.ContextEquivalent
-            (Graph.HasCycleWithLength data.LengthOK) left right →
-          Graph.Response.TargetDefect
-            (Graph.HasCycleWithLength data.LengthOK) left right)
+            (Graph.HasCycleWithLength data.LengthOK) object support)
   | .maximalPacking, object =>
       (0 < object.windowPackingNumber data.windowOrder ∧
         ∃ packing : Finset (Finset object.Vertex),
@@ -2969,20 +2997,12 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             ∀ support : Finset object.Vertex,
               object.InducesWindow data.windowOrder support →
               ∃ member ∈ packing, ¬ Disjoint support member)
-  | .localAlgebra, _object =>
-      ((Graph.WindowCurvature.Labels data.windowOrder).card = 399 ∧
-        (Graph.WindowCurvature.sizeDistribution data.windowOrder).take 7 =
-          [13, 60, 122, 122, 63, 17, 2] ∧
-        (∀ (shift : Nat)
-            (source target : Graph.WindowCurvature.Label data.windowOrder),
-          Graph.WindowCurvature.Safe shift source target ↔
-            ∀ i ∈ source, ∀ j ∈ target,
-              ¬ Graph.WindowCurvature.ForbiddenGap shift (Nat.dist i.1 j.1)) ∧
-        ∀ source middle target : Graph.WindowCurvature.Label data.windowOrder,
-          Graph.WindowCurvature.curvatureTwo source middle target = true ↔
-            Graph.WindowCurvature.Safe 1 source middle ∧
-              Graph.WindowCurvature.Safe 1 middle target ∧
-              ¬ Graph.WindowCurvature.Safe 2 source target)
+  | .localAlgebra, object =>
+      ∀ support : Finset object.Vertex,
+        object.InducesWindow data.windowOrder support →
+          ((Graph.WindowCurvature.Labels data.windowOrder).card = 399 ∧
+            (Graph.WindowCurvature.sizeDistribution data.windowOrder).take 7 =
+              [13, 60, 122, 122, 63, 17, 2])
   | .surplusAbove, object =>
       (data.surplusThreshold object.vertexCount <
         object.degreeSurplus data.threshold)
@@ -3993,19 +4013,23 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
               (object.pieceSupport (object.remainderSupport packing) component)
               data.threshold data.dischargeScale)
   | .netChargeNonNegative, object =>
-      -- Node `[59]`, yes: `N₀(R) ≥ 0`.  At the maximal packings, which is where
-      -- `R = G − W` is the manuscript's remainder.
-      (∀ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing →
-        (∀ window : Finset object.Vertex,
-          object.InducesWindow data.windowOrder window →
-          ∃ member ∈ packing, ¬ Disjoint window member) →
-        object.NonNegativeNetCharge (object.remainderSupport packing)
-          data.threshold data.dischargeScale)
-  | .netChargeNegative, object =>
-      -- Node `[59]`, no: `N₀(R) < 0`, at a maximal packing.
+      -- Node `[59]`, yes: the selected maximum packing and the exact assertion
+      -- `N₀(R) ≥ 0` for its remainder.  Carrying the packing in the fact keeps
+      -- this a test of the paper's fixed `R`, rather than a statement about all
+      -- possible maximal packings.
       (∃ packing : Finset (Finset object.Vertex),
         object.IsWindowPacking data.windowOrder packing ∧
+          packing.card = object.windowPackingNumber data.windowOrder ∧
+          (∀ window : Finset object.Vertex,
+            object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          object.NonNegativeNetCharge (object.remainderSupport packing)
+            data.threshold data.dischargeScale)
+  | .netChargeNegative, object =>
+      -- Node `[59]`, no: the same selected maximum packing and `N₀(R) < 0`.
+      (∃ packing : Finset (Finset object.Vertex),
+        object.IsWindowPacking data.windowOrder packing ∧
+          packing.card = object.windowPackingNumber data.windowOrder ∧
           (∀ window : Finset object.Vertex,
             object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
@@ -4447,7 +4471,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       SelectedNoExitSixWith data object
         (fun packing piece => ¬ HandoffProduced data object packing piece)
   | .highCentreNormalForm, object =>
-      -- Node `[68]`: `lem:heavy-neighbourhood-normal-form`, at every high
+      -- Node `[67]`: `lem:heavy-neighbourhood-normal-form`, at every high
       -- centre of the object at once.  It is not about one support, so it is
       -- stated of the object and both arms of the split read it.
       (∀ centre : object.Vertex,
@@ -4586,13 +4610,13 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                           Graph.TypeBMaximalCompletion.SelectedComponent ledger
                             components,
                         Graph.TypeBMaximalCompletion.ComponentExitSeven ledger
-                          component.1 data.LengthOK (handoffHighDegree object)
+                          component.1 data.LengthOK (handoffHighDegree data object)
                           (handoffAbsorbing data object packing),
                         ∃ grouped :
                           Graph.DecoratedHandoff.GroupedEnvelopes object
                             data.LengthOK (handoffUncompressible data object)
                             (handoffWindowFree data object)
-                            (handoffHighDegree object)
+                            (handoffHighDegree data object)
                             (handoffAbsorbing data object packing)
                             (Graph.TypeBMaximalCompletion.SelectedComponent
                               ledger components),
@@ -5664,8 +5688,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- absorbed — target-defective or target-complete
       -- (`lem:same-token-bottleneck-routing`, sparse exits (b)/(c)).
       ∃ bottleneck : Graph.SameTokenRoutingGerms.RoutedBottleneck object
-          (handoffHighDegree object) (fun _ _ _ => False),
-        ¬ handoffHighDegree object bottleneck.separation.separator ∧
+          (handoffHighDegree data object) (fun _ _ _ => False),
+        ¬ handoffHighDegree data object bottleneck.separation.separator ∧
           Graph.DecoratedHandoff.Absorbed (Graph.HasCycleWithLength data.LengthOK)
             bottleneck.reading False
   | .homogeneousBottleneck, object =>
@@ -5696,6 +5720,8 @@ def label : Key → String
   | .noProperBaseline => "noProperBaseline"
   | .tightEndpoint => "tightEndpoint"
   | .slackIndependent => "slackIndependent"
+  | .degreeProfileFibres => "degreeProfileFibres"
+  | .targetCompleteContextUniversality => "targetCompleteContextUniversality"
   | .replacementExclusion => "replacementExclusion"
   | .uncompressible => "uncompressible"
   | .maximalPacking => "maximalPacking"
@@ -5931,6 +5957,9 @@ example : label .returnAvoidance = "returnAvoidance" := rfl
 example : label .noProperBaseline = "noProperBaseline" := rfl
 example : label .tightEndpoint = "tightEndpoint" := rfl
 example : label .slackIndependent = "slackIndependent" := rfl
+example : label .degreeProfileFibres = "degreeProfileFibres" := rfl
+example : label .targetCompleteContextUniversality =
+    "targetCompleteContextUniversality" := rfl
 example : label .replacementExclusion = "replacementExclusion" := rfl
 example : label .uncompressible = "uncompressible" := rfl
 example : label .maximalPacking = "maximalPacking" := rfl
@@ -6174,6 +6203,8 @@ def idx : Key → Nat
   | .noProperBaseline => 2
   | .tightEndpoint => 3
   | .slackIndependent => 4
+  | .degreeProfileFibres => 322
+  | .targetCompleteContextUniversality => 323
   | .replacementExclusion => 223
   | .coldMassLinear => 224
   | .coldMassBounded => 225
@@ -6403,6 +6434,8 @@ def ofIdx : Nat → Key
   | 2 => .noProperBaseline
   | 3 => .tightEndpoint
   | 4 => .slackIndependent
+  | 322 => .degreeProfileFibres
+  | 323 => .targetCompleteContextUniversality
   | 223 => .replacementExclusion
   | 224 => .coldMassLinear
   | 225 => .coldMassBounded
@@ -6646,6 +6679,11 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "tightEndpoint") 3
   | .slackIndependent =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "slackIndependent") 4
+  | .degreeProfileFibres =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "degreeProfileFibres") 322
+  | .targetCompleteContextUniversality =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "targetCompleteContextUniversality") 323
   | .replacementExclusion =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "replacementExclusion") 223
   | .coldMassLinear =>

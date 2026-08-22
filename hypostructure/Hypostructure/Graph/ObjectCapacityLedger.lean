@@ -95,16 +95,16 @@ structure CapacityPresentation (object : FiniteObject.{u}) (order : Nat) where
   demands `lem:same-token-bottleneck-routing` routes — the presentation
   declares the two connector germs from `κ(t)` toward `T(p)`, `T(q)`, their
   first separator `z` and the switch support's declared reading
-  (`SameTokenRoutingGerms.RoutedBottleneck`).  It is declared at the bare
-  predicates; the high-degree and absorbing predicates the routing lemma reads
-  it at are the branch's, and the branch supplies them. -/
+  (`SameTokenRoutingGerms.RoutedBottleneck`).  Its high-degree predicate is the
+  presentation's registered threshold; the absorbing predicate remains false
+  until the strategy branch supplies its contextual reading. -/
   routedBottleneck : ∀ (threshold : Nat) (token : FiniteObject.CapacityToken object)
     (first second : Finset (object.Vertex × object.Vertex)),
     FiniteObject.Charges activation carrier threshold packing token first →
     FiniteObject.Charges activation carrier threshold packing token second →
     ∀ left, left ∈ first → ∀ right, right ∈ second → left ≠ right →
       SameTokenRoutingGerms.RoutedBottleneck object
-        (fun vertex => 3 < object.degree vertex) (fun _ _ _ => False)
+        (fun vertex => threshold < object.degree vertex) (fun _ _ _ => False)
   /-- **`def:decorated-fan-envelope`: the counted core is a connected remainder
   core.**  The selected support the declared germs land in is a canonical piece
   of the remainder of `𝒫`: `Y ⊆ R` is connected, and by `packingMeets` it is
