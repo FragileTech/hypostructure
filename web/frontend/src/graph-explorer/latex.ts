@@ -11,7 +11,8 @@ export type Segment =
   | { kind: "text"; value: string }
   | { kind: "math"; value: string; display: boolean }
   | { kind: "break" }
-  | { kind: "item" }
+  | { kind: "list"; ordered: boolean; open: boolean }
+  | { kind: "item"; label?: string }
   | { kind: "ref"; key: string }
   | { kind: "node"; id: string };
 
@@ -226,7 +227,8 @@ function unwrapTextMacros(source: string): string {
 // Every way these papers point at something: `\cref`, `\Cref`, `\eqref`, `\ref`.
 const REF = /\\(?:[cC]ref|eqref|ref)\{([^}]*)\}/;
 const STRIPPED_ENVIRONMENTS =
-  /\\(?:begin|end)\{(?:enumerate|itemize|description|remark|proof|center|small|scriptsize)\}(?:\[[^\]]*\])?/g;
+  /\\(?:begin|end)\{(?:remark|proof|center|small|scriptsize)\}(?:\[[^\]]*\])?/g;
+const LIST = /^\\(begin|end)\{(enumerate|itemize|description)\}(?:\[[^\]]*\])?[ \t]*\n?/;
 
 const NODE = /^\[(\d+)\]/;
 
@@ -235,6 +237,10 @@ function readProse(source: string, options: ParseOptions): Segment[] {
   let text = unwrapTextMacros(source);
   text = text.replace(STRIPPED_ENVIRONMENTS, "");
   text = text.replace(/\\label(?:\[[^\]]*\])?\{[^}]*\}/g, "");
+  // Bibliography citations have no target on the site; show the key in brackets.
+  text = text.replace(/\\cite[tp]?\*?(?:\[[^\]]*\])?\{([^}]*)\}/g, (_, keys: string) =>
+    `[${keys.split(",").map((key) => key.trim()).filter(Boolean).join(", ")}]`,
+  );
   text = text.replace(/\\(?:qquad|quad|,|;|:|!)/g, " ");
   text = text.replace(/``/g, "“").replace(/''/g, "”");
   text = text.replace(/(?<!-)---(?!-)/g, "—").replace(/(?<!-)--(?!-)/g, "–");
@@ -256,19 +262,38 @@ function readProse(source: string, options: ParseOptions): Segment[] {
       cursor += 2;
       continue;
     }
+    const list = LIST.exec(text.slice(cursor));
+    if (list) {
+      flush();
+      segments.push({ kind: "list", ordered: list[2] === "enumerate", open: list[1] === "begin" });
+      cursor += list[0].length;
+      continue;
+    }
     if (text.startsWith("\\item", cursor)) {
       flush();
-      segments.push({ kind: "item" });
       cursor += 5;
+      let label: string | undefined;
+      if (text[cursor] === "[") {
+        const close = text.indexOf("]", cursor);
+        if (close !== -1) {
+          label = text.slice(cursor + 1, close).trim();
+          cursor = close + 1;
+        }
+      }
+      while (cursor < text.length && /\s/.test(text[cursor])) cursor += 1;
+      segments.push(label ? { kind: "item", label } : { kind: "item" });
       continue;
     }
     const reference = REF.exec(text.slice(cursor));
     if (reference && reference.index === 0) {
       flush();
-      for (const key of reference[1].split(",")) {
-        const trimmed = key.trim();
-        if (trimmed) segments.push({ kind: "ref", key: trimmed });
-      }
+      const keys = reference[1].split(",").map((key) => key.trim()).filter(Boolean);
+      keys.forEach((key, index) => {
+        if (index > 0) {
+          segments.push({ kind: "text", value: index === keys.length - 1 ? " and " : ", " });
+        }
+        segments.push({ kind: "ref", key });
+      });
       cursor += reference[0].length;
       continue;
     }
@@ -314,6 +339,26 @@ export function parseLatex(source: string, options: ParseOptions = {}): Segment[
     }
   }
 
+  // Blank lines around list structure are layout, not content.
+  for (let position = segments.length - 1; position >= 0; position -= 1) {
+    if (segments[position].kind !== "break") continue;
+    const before = segments[position - 1];
+    const after = segments[position + 1];
+    const structural = (s: Segment | undefined): boolean =>
+      s !== undefined && (s.kind === "list" || s.kind === "item");
+    if (structural(before) || structural(after)) segments.splice(position, 1);
+  }
+  // Text touching list structure carries only layout whitespace at that edge.
+  for (let position = 0; position < segments.length; position += 1) {
+    const current = segments[position];
+    if (current.kind !== "text") continue;
+    const before = segments[position - 1];
+    const after = segments[position + 1];
+    if (before && (before.kind === "list" || before.kind === "item")) current.value = current.value.trimStart();
+    if (after && (after.kind === "list" || after.kind === "item")) current.value = current.value.trimEnd();
+    if (!current.value) segments.splice(position--, 1);
+  }
+
   // Collapse leading/trailing structural noise.
   while (segments.length && segments[0].kind === "break") segments.shift();
   while (segments.length && segments[segments.length - 1].kind === "break") segments.pop();
@@ -333,6 +378,8 @@ export function latexToPlainText(source: string): string {
           return segment.key;
         case "node":
           return `[${segment.id}]`;
+        case "item":
+          return segment.label ? ` ${segment.label} ` : " ";
         default:
           return " ";
       }

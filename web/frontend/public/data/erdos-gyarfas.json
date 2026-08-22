@@ -17727,23 +17727,23 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — σ(X) > 0 is the Type B entry; the yes-arm construction uses the [61] witness."
+    "note": "FAITHFUL — σ(X)>0 is the ordinary Type B entry. [65] derives an actual high centre of the same canonical piece and uses its canonical ambient fan; no decorated-arm surrogate is introduced."
    },
    "65": {
     "lean": "verified",
-    "kernel": "absent",
-    "wired": "absent",
-    "local": "absent",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `def:decorated-fan-envelope`'s (Y,H); every clause discharged from an actual `Envelope` field."
+    "note": "FAITHFUL — On [64], publishes the actual assigned high centres and common fan entry. On [108], reads selection, uncompressibility, normalization and the exact handoff from the incoming ExactLedger, proves precisely the four decorated-fan admissibility clauses, and publishes the full admissible support plus fan entry."
    },
    "66": {
     "lean": "verified",
-    "kernel": "absent",
-    "wired": "absent",
-    "local": "absent",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `Admissible` has four real fields; `windowFree` is derived from packing maximality, not assumed."
+    "note": "FAITHFUL — The dashed node is routing only: it passes [108]'s exact produced envelope unchanged. [65], not [66], proves and publishes decorated-fan admissibility from the same accumulated ledger."
    },
    "67": {
     "lean": "verified",
@@ -17757,17 +17757,17 @@
     "lean": "verified",
     "kernel": "verified",
     "wired": "partial",
-    "local": "absent",
+    "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — The no arm is committed in positive form (`degree = 4`) and derived by `omega`, not assumed."
+    "note": "FAITHFUL — Tests `data.threshold + 1 < d_G(h)`; the no arm derives the positive equality `d_G(h) = data.threshold + 1` from the inherited high-centre bound."
    },
    "69": {
     "lean": "verified",
     "kernel": "verified",
     "wired": "partial",
-    "local": "absent",
+    "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `cor:heavy-center-local-dichotomy` verbatim including the “in particular three” clause; `FanCompatible` carries all of `def:fan-compatible-open-ports`' conditions as fields, so the existential is not cheap."
+    "note": "FAITHFUL — The exact compatible-open-pair or at least `d_G(h)-2` triangular-endpoint alternative, including the stated consequence of at least three."
    },
    "70": {
     "lean": "verified",
@@ -17775,39 +17775,39 @@
     "wired": "partial",
     "local": "absent",
     "fidelity": "verified",
-    "note": "FAITHFUL — No numeral 8: the bound is `fanPackingCap` computed from the registered window order, and it is proved (`degree_le_fanPackingCap`), not a structure field."
+    "note": "FAITHFUL — The cap is derived from the registered `fanPackingCap`; it is not a free numeral."
    },
    "71": {
     "lean": "verified",
-    "kernel": "absent",
-    "wired": "absent",
-    "local": "absent",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Scoped to the assigned centres of a Type B support, which is `def:marked-typeB-fan`'s own scope."
+    "note": "FAITHFUL — The paper's certificate-labelling question on the exact assigned heavy-centre support."
    },
    "72": {
     "lean": "verified",
-    "kernel": "absent",
-    "wired": "absent",
-    "local": "absent",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — The cycle arm genuinely closes; `HasDisjointChoice` unfolds to B2's actual content. | API: ⚠ `b2AssignmentDichotomy` binds `K .typeBDirectCycleFree` and discards it, re-deriving its support from `K .typeBFanEntry`"
+    "note": "FAITHFUL — The direct configurations are excluded first; B2 then asks for the paper's simultaneous disjoint candidate choice."
    },
    "73": {
     "lean": "verified",
-    "kernel": "absent",
-    "wired": "absent",
-    "local": "absent",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Minimality is real: built by `exists_min_image` over failing subfamilies, with nonemptiness forced by `hasDisjointChoice_empty`."
+    "note": "FAITHFUL — The literal B2-failure arm returns the manuscript's genuinely minimal failing demand family."
    },
    "74": {
     "lean": "verified",
-    "kernel": "absent",
-    "wired": "absent",
-    "local": "absent",
+    "kernel": "verified",
+    "wired": "partial",
+    "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — The B1 incidence payment is real. `typeBExcluded := False` is derived at commitment, not a vacuity bug. | API: ⚠ `typeBSelectedFanChargeRow` declares three `Requires` and uses none"
+    "note": "FAITHFUL — The exact B1/B2 calculation publishes `N₀(X) ≥ 0` on the selected support; the terminal reads it back and closes against the retained negative support."
    },
    "75": {
     "lean": "verified",
@@ -17815,7 +17815,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `lem:typeB-bridge-deficit-bound`'s per-centre charge subtraction-free. Caveat: the inequality holds at every high centre of every object; only the residual-naming conjunct is branch-specific."
+    "note": "FAITHFUL — Each manuscript residual class is charged to the surplus units of its exact assigned centres."
    },
    "76": {
     "lean": "verified",
@@ -17823,7 +17823,7 @@
     "wired": "absent",
     "local": "verified",
     "fidelity": "partial",
-    "note": "SURROGATE-TRIVIAL — `thm:branch-kill`'s proof is ~25 lines with an explicit slack ε and a four-way case analysis. The manuscript's step is the conclusion “no survivor”; the Lean fact re-asserts the two premises, i.e. the situation the theorem refutes. | API: ⚠ `largeBudgetRoute8ClosedRow` binds and discards both `branchKillClosed` and `typeBBridgeSublinear`"
+    "note": "SURROGATE-TRIVIAL — The paper spends the sublinear fan mass and explicit slack in a four-way no-survivor argument; this row only republishes the large-budget and negative-support premises. | API: ⚠ `typeBBridgeSublinear` is present in the prefix but absent from `branchKillClosedRow.Requires` and never read"
    },
    "77": {
     "lean": "verified",
@@ -17831,7 +17831,7 @@
     "wired": "absent",
     "local": "absent",
     "fidelity": "partial",
-    "note": "PLUMBING — The manuscript's Detailed dependency table assigns [77] no row and no label — it is a cross-figure continuation box like [63], [64], [109], [20], [177]. Lean renders it as a handoff that runs [76]'s row and passes the residual on, which is the correct shape. Its tail reaches the undefined `selectedLargeBudgetPressureCensus`, but that gap belongs to [123]."
+    "note": "PLUMBING — A cross-figure handoff with no separate manuscript theorem; it preserves the exact Type B ledger before entering Part IX."
    },
    "78": {
     "lean": "verified",
@@ -17839,7 +17839,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `degree centre = data.threshold + 1` is d_G(h) = 4; the split is exhaustive."
+    "note": "FAITHFUL — The literal no arm of [68] records `degree centre = data.threshold + 1`, exactly degree four in the registered presentation."
    },
    "79": {
     "lean": "verified",
@@ -17847,7 +17847,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Centre surplus 1, 0 ≤ c ≤ 4, and D_B = c − 7/4 cleared of denominators, so nothing writes 7/4 and nothing rounds."
+    "note": "FAITHFUL — Proves degree four, the paper's local activation, centre surplus 1, `0 ≤ c ≤ 4`, and the exact denominator-cleared identity `4D_B = 4c - 7`."
    },
    "80": {
     "lean": "verified",
@@ -17855,7 +17855,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Identical Lean decision to [71]; there is no degree-4-specific certificate question in the formalization."
+    "note": "FAITHFUL — The paper's certificate-labelling question is quantified over the exact assigned centres on the active degree-four support."
    },
    "81": {
     "lean": "verified",
@@ -17863,15 +17863,15 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. The `c ≤ 1` alternative is the `.certificate` constructor of `CandidateData`, with `IsCertificateClosed` defined as `scaledDeficit ≤ 0` — the paper's own “equivalently c ≤ 1 when k ≤ 7”. A top-level implication would be the unfaithful rendering. | API: ⚠ `K .typeBDirectCycleFree` bound and unused"
+    "note": "FAITHFUL — The `c ≤ 1` case is the paper's certificate-closed candidate constructor; otherwise B2 asks for the simultaneous pairwise-disjoint candidate choice."
    },
    "82": {
     "lean": "verified",
     "kernel": "verified",
     "wired": "partial",
-    "local": "absent",
+    "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `prop:typeB-bridge-reduction`'s conclusion under the exact ledger refinement; the closing arm is a legitimate refutation. | API: ⚠ three discarded `Requires` in `typeBSelectedFanChargeRow`"
+    "note": "FAITHFUL — The exact B1/B2 calculation publishes `N₀(X) ≥ 0` on the selected degree-four support; the terminal reads it back and closes against the retained negative support."
    },
    "83": {
     "lean": "verified",
@@ -17879,15 +17879,15 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `lem:typeB-bridge-to-overlap` with genuine minimality."
+    "note": "FAITHFUL — The literal B2-failure arm returns the manuscript's genuinely minimal Type B overlap obstruction."
    },
    "84": {
     "lean": "verified",
     "kernel": "verified",
     "wired": "partial",
-    "local": "absent",
+    "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `prop:typeB-bridge-sublinear`'s M_B ≤ 16σ(G) in registered numbers. | API: ⚠ `bridgeFanMassRow` discards `K .typeBHandoff`, making its fact a generic property; `largeBudgetRoute8ClosedRow` discards the sublinearity, so it is never spent"
+    "note": "FAITHFUL — Publishes each branch-specific residual charge, the bridge/route-8 summation bound, and the near-cubic surplus bound giving `M_B ≤ 8S_B ≤ 16σ(G)`."
    },
    "85": {
     "lean": "verified",
@@ -17895,7 +17895,7 @@
     "wired": "absent",
     "local": "verified",
     "fidelity": "partial",
-    "note": "SURROGATE-TRIVIAL — `prop:typeB-bridge-sublinear` is a real estimate M_B ≤ 8S_B ≤ 16σ(G) = o(|R|). The statement exists in Lean but its producers are run by no assembly, and even the unrun row omits the comparison against |R|."
+    "note": "SURROGATE-TRIVIAL — [84] publishes the finite `M_B ≤ 8S_B ≤ 16σ(G)` estimate and near-cubic bound; this row does not read it or prove the paper's linear-deficit comparison. | API: ⚠ `typeBBridgeSublinear` is present in the prefix but absent from `branchKillClosedRow.Requires` and never read"
    },
    "86": {
     "lean": "verified",
@@ -18079,7 +18079,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — All four `Admissible` clauses; `windowFree` derived from packing maximality; all three `Requires` used."
+    "note": "FAITHFUL — Records exactly the produced decorated envelope from `K .typeAExitSevenProduced`; the paper assigns the four admissibility clauses to [65], where they are now proved from inherited ExactLedger facts."
    },
    "109": {
     "lean": "verified",
@@ -18606,16 +18606,16 @@
     "kernel": "verified",
     "wired": "partial",
     "local": "verified",
-    "fidelity": "partial",
-    "note": "WEAKER — Exactly ¬`K .netChargeCap`. The C lower bound and the bounded-arm placement are derived nowhere; nothing connects the collision failure to the cold family."
+    "fidelity": "verified",
+    "note": "FAITHFUL — Publishes, at the [173] failure witness packing P, `n + s·σ_R ≤ A·(|𝒫_hot| + |𝒫_cold|) + s·σ_W` with `A = netChargeCoefficient` (the manuscript's 73): the displayed `C ≥ (n − 73|𝒫_hot| − 4(σ_W − σ_R))/73` without subtraction, derived as the manuscript does from the failed collision, the exact stub supply `K .boundaryDemand`, `|R| + 13p = n` and `p = |𝒫_hot| + |𝒫_cold|`. The bounded-arm placement is the existing `K .coldMassBounded` where [153] ran; on the dense τ<1/4 path [153] never runs (lem:dense-deficiency-routing), so it is not required."
    },
    "175": {
     "lean": "verified",
     "kernel": "verified",
     "wired": "partial",
     "local": "verified",
-    "fidelity": "partial",
-    "note": "WEAKER — The manuscript's [175] is a per-half-edge dichotomy; Lean decides one global question, so on a mixed residual the heavy-centre half-edges are never routed to Type B."
+    "fidelity": "verified",
+    "note": "FAITHFUL — `K .absorbedGermSplit` is the lemma's per-half-edge dichotomy on the object: for every selected branch-excess half-edge ε of an ambient-cubic cold window with first-failure support J, either (i) J is subcubic and ε's germ is a member of `candidateGerms` (charged in full), or (ii) some z ∈ J has degree > threshold and every neighbour of z has degree exactly the threshold (node [10]) — a heavy centre. The object-level Decision that follows selects the closing continuation ([176] on a positive candidate class, [177] when every corridor is case (ii)); the per-half-edge fact is on the ledger on both arms."
    },
    "176": {
     "lean": "verified",

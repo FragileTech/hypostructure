@@ -35,19 +35,6 @@ universe u v
 variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
-
-
-
-
-@[reducible] noncomputable def branchKillClosed :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  branchKillClosedRow
-
-
-
-end Rows
-
-
 /-- The key index at the full-rank residual of node `[34]`, Residual B.  This
 is the index nodes `[47]` onwards extend; it is no longer an exit of the run. -/
 abbrev completedKeys : FactKeys (Input BranchState Presentation presentation data) :=
@@ -204,10 +191,17 @@ abbrev residualCTypeBHighSurplusKeys
     FactKeys (Input BranchState Presentation presentation data) :=
   K .typeBHighSurplus :: residualCNegativeSupportKeys known
 
+/-- Node `[87]`: the selected Type A support is bounded, over the literal
+Type A ancestry. -/
+abbrev residualCTypeABoundedSupportKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeABoundedSupport :: residualCTypeALowSurplusKeys known
+
 abbrev residualCTypeAReceiverRoutingKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeAReceiverRouting :: residualCTypeALowSurplusKeys known
+  K .typeAReceiverRouting :: residualCTypeABoundedSupportKeys known
 
 abbrev residualCTypeASaturatedReceiverKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
@@ -257,12 +251,12 @@ abbrev residualCTypeBNormalFormKeys
 abbrev residualCTypeBHeavyCentreKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBHeavyCentre :: residualCTypeBNormalFormKeys known
+  K .typeBFanHeavyCentre :: residualCTypeBNormalFormKeys known
 
 abbrev residualCTypeBLocalDichotomyKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBLocalDichotomy :: residualCTypeBHeavyCentreKeys known
+  K .typeBFanLocalDichotomy :: residualCTypeBHeavyCentreKeys known
 
 abbrev residualCTypeBHeavyFanCapKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
@@ -272,7 +266,7 @@ abbrev residualCTypeBHeavyFanCapKeys
 abbrev residualCTypeBDegreeFourKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBDegreeFourCentres :: residualCTypeBNormalFormKeys known
+  K .typeBFanDegreeFourCentres :: residualCTypeBNormalFormKeys known
 
 abbrev residualCTypeBDegreeFourFanCapKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
@@ -282,7 +276,7 @@ abbrev residualCTypeBDegreeFourFanCapKeys
 abbrev residualCTypeBDegreeFourProfileKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBDegreeFourProfile :: residualCTypeBDegreeFourFanCapKeys known
+  K .typeBFanDegreeFourProfile :: residualCTypeBDegreeFourFanCapKeys known
 
 /-- The already-ported Type A/Type B continuation currently instantiates the
 generic index at the low-entropy cursor; no fact is reconstructed or dropped. -/
@@ -299,7 +293,13 @@ abbrev typeALowSurplusKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   residualCTypeALowSurplusKeys remainderEntropyLowKeys
 
-/-- Node `[88]`: the routing and threshold algebra, on the Type A residual. -/
+/-- Node `[87]`: the selected Type A support is bounded. -/
+abbrev typeABoundedSupportKeys :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  residualCTypeABoundedSupportKeys remainderEntropyLowKeys
+
+/-- Node `[88]`: the routing and threshold algebra, on the bounded Type A
+residual. -/
 abbrev typeAReceiverRoutingKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   residualCTypeAReceiverRoutingKeys remainderEntropyLowKeys
@@ -310,7 +310,8 @@ abbrev typeASaturatedReceiverKeys :
   residualCTypeASaturatedReceiverKeys remainderEntropyLowKeys
 
 /-- `lem:typeA-port-return`, committed on the shared prefix of nodes `[93]`
-and `[94]`: every completion port of the object carries an anchored return. -/
+and `[94]`: every completion port of the selected saturated Type A support
+carries an anchored return. -/
 abbrev typeAPortReturnKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   residualCTypeAPortReturnKeys remainderEntropyLowKeys
@@ -397,7 +398,7 @@ abbrev fanCertResidualKeys
 abbrev fanCertResidualMassKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBBridgeMass :: fanCertResidualKeys known
+  K .fanCertificateResidualMass :: fanCertResidualKeys known
 
 /-- `[72]`/`[81]`, first half, closing arm. -/
 abbrev fanDirectCycleClosedKeys
@@ -429,29 +430,17 @@ abbrev fanDisjointLedgerKeys
     FactKeys (Input BranchState Presentation presentation data) :=
   K .typeBDisjointLedger :: fanHybridEntryKeys known
 
-/-- `[76]`/`[85]`: selected fan entries have nonnegative local charge. -/
-abbrev fanSelectedFanChargeKeys
-    (known : FactKeys (Input BranchState Presentation presentation data)) :
-    FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBSelectedFanCharge :: fanDisjointLedgerKeys known
-
-/-- `[76]`/`[85]`: the B-ledger exclusion charge implication. -/
-abbrev fanExclusionChargeKeys
-    (known : FactKeys (Input BranchState Presentation presentation data)) :
-    FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBExclusionCharge :: fanSelectedFanChargeKeys known
-
 /-- `[76]`/`[85]`, closed arm. -/
 abbrev fanExcludedKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  closed :: K .typeBExcluded :: fanExclusionChargeKeys known
+  closed :: K .typeBExcluded :: fanDisjointLedgerKeys known
 
 /-- `[76]`/`[85]`, surviving residual arm. -/
 abbrev fanExclusionResidualKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBExclusionResidual :: fanExclusionChargeKeys known
+  K .typeBExclusionResidual :: fanDisjointLedgerKeys known
 
 /-- `[72]`/`[81]`, second half, no — the entry of `[73]`/`[83]`. -/
 abbrev fanOverlapObstructionKeys
@@ -463,7 +452,7 @@ abbrev fanOverlapObstructionKeys
 abbrev fanOverlapObstructionMassKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBBridgeMass :: fanOverlapObstructionKeys known
+  K .typeBOverlapObstructionMass :: fanOverlapObstructionKeys known
 
 abbrev residualCTypeBCertificateMarkedKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :=
@@ -476,10 +465,6 @@ abbrev residualCTypeBDirectCycleClosedKeys
 abbrev residualCTypeBDisjointLedgerKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :=
   fanDisjointLedgerKeys (residualCTypeBCertificateMarkedKeys known)
-
-abbrev residualCTypeBExclusionChargeKeys
-    (known : FactKeys (Input BranchState Presentation presentation data)) :=
-  fanExclusionChargeKeys (residualCTypeBCertificateMarkedKeys known)
 
 abbrev residualCTypeBExcludedKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :=
@@ -516,10 +501,6 @@ abbrev residualCDegreeFourDirectCycleClosedKeys
 abbrev residualCDegreeFourDisjointLedgerKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :=
   fanDisjointLedgerKeys (residualCDegreeFourMarkedKeys known)
-
-abbrev residualCDegreeFourExclusionChargeKeys
-    (known : FactKeys (Input BranchState Presentation presentation data)) :=
-  fanExclusionChargeKeys (residualCDegreeFourMarkedKeys known)
 
 abbrev residualCDegreeFourExcludedKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :=
@@ -608,11 +589,6 @@ abbrev typeBDisjointLedgerKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   residualCTypeBDisjointLedgerKeys remainderEntropyLowKeys
 
-/-- Node `[76]`: the B-ledger charge implication after the heavy B2 cursor. -/
-abbrev typeBExclusionChargeKeys :
-    FactKeys (Input BranchState Presentation presentation data) :=
-  residualCTypeBExclusionChargeKeys remainderEntropyLowKeys
-
 /-- Node `[76]`, closed arm. -/
 abbrev typeBExcludedKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
@@ -627,11 +603,6 @@ abbrev typeBExclusionResidualKeys :
 abbrev degreeFourDisjointLedgerKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   residualCDegreeFourDisjointLedgerKeys remainderEntropyLowKeys
-
-/-- Node `[85]`: the B-ledger charge implication after the degree-four B2 cursor. -/
-abbrev degreeFourExclusionChargeKeys :
-    FactKeys (Input BranchState Presentation presentation data) :=
-  residualCDegreeFourExclusionChargeKeys remainderEntropyLowKeys
 
 /-- Node `[85]`, closed arm. -/
 abbrev degreeFourExcludedKeys :
@@ -955,16 +926,17 @@ theorem typeAUnsaturatedReceivers_audit_facts
     (ExactLedger.audit history).facts =
       (name .typeAUnsaturatedReceivers) ::
         (name .typeAReceiverRouting) ::
-          (name .typeALowSurplus) ::
-            (name .negativeSupport) ::
-              (name .netChargeNegative) ::
-                (name .netChargeLocalization) ::
-                      (name .netChargeCap) ::
-                      (name .netChargeLarge) ::
-                      (name .largeBudgetResidual) ::
-                        (name .remainderEntropyLow) ::
-                          (name .forcedCurvatureCost) ::
-                            (name .curvatureFullRank) ::
+          (name .typeABoundedSupport) ::
+            (name .typeALowSurplus) ::
+              (name .negativeSupport) ::
+                (name .netChargeNegative) ::
+                  (name .netChargeLocalization) ::
+                        (name .netChargeCap) ::
+                        (name .netChargeLarge) ::
+                        (name .largeBudgetResidual) ::
+                          (name .remainderEntropyLow) ::
+                            (name .forcedCurvatureCost) ::
+                              (name .curvatureFullRank) ::
         (name .curvatureTargetRank) ::
           (name .wedgeSupply) ::
                   (name .boundaryDemand) ::

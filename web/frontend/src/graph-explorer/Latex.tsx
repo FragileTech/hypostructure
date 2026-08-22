@@ -82,20 +82,89 @@ export function Latex({
   const options = useMemo<ParseOptions>(() => ({ nodes }), [nodes]);
   const segments = useMemo(() => parseLatex(value, options), [options, value]);
 
-  return (
-    <span className={className ? `latex ${className}` : "latex"}>
-      {segments.map((segment, position) => (
-        <SegmentView
-          key={position}
-          segment={segment}
-          macros={macros}
-          onReference={onReference}
-          resolveReference={resolveReference}
-          onNode={onNode}
-        />
-      ))}
-    </span>
+  const render = (segment: Segment, position: number) => (
+    <SegmentView
+      key={position}
+      segment={segment}
+      macros={macros}
+      onReference={onReference}
+      resolveReference={resolveReference}
+      onNode={onNode}
+    />
   );
+  const hasList = segments.some((segment) => segment.kind === "list" || segment.kind === "item");
+  const fullClassName = className ? `latex ${className}` : "latex";
+  if (!hasList) return <span className={fullClassName}>{segments.map(render)}</span>;
+  return <div className={fullClassName}>{buildTree(segments, render)}</div>;
+}
+
+interface ListFrame {
+  ordered: boolean;
+  labelled: boolean;
+  items: { label?: string; children: React.ReactNode[] }[];
+  /** Content seen before the first `\item`. */
+  preamble: React.ReactNode[];
+  implicit: boolean;
+}
+
+/** Group list boundaries and items into nested `<ul>`/`<ol>` elements. */
+function buildTree(
+  segments: Segment[],
+  render: (segment: Segment, position: number) => React.ReactNode,
+): React.ReactNode[] {
+  const root: React.ReactNode[] = [];
+  const stack: ListFrame[] = [];
+  const sink = (): React.ReactNode[] => {
+    const frame = stack[stack.length - 1];
+    if (!frame) return root;
+    const last = frame.items[frame.items.length - 1];
+    return last ? last.children : frame.preamble;
+  };
+  const close = (position: number): void => {
+    const frame = stack.pop();
+    if (!frame) return;
+    const Tag = frame.ordered ? "ol" : "ul";
+    const element = (
+      <Tag
+        key={`list-${position}`}
+        className={frame.labelled ? "latex-list is-labelled" : "latex-list"}
+      >
+        {frame.items.map((item, index) => (
+          <li key={index} className="latex-item">
+            {item.label ? <span className="latex-item-label">{item.label}</span> : null}
+            {item.children}
+          </li>
+        ))}
+      </Tag>
+    );
+    const target = sink();
+    target.push(...frame.preamble, element);
+  };
+
+  segments.forEach((segment, position) => {
+    if (segment.kind === "list") {
+      if (segment.open) {
+        stack.push({ ordered: segment.ordered, labelled: false, items: [], preamble: [], implicit: false });
+      } else {
+        // Close implicit lists opened by stray items first.
+        while (stack.length && stack[stack.length - 1].implicit) close(position);
+        close(position);
+      }
+      return;
+    }
+    if (segment.kind === "item") {
+      if (!stack.length) {
+        stack.push({ ordered: false, labelled: false, items: [], preamble: [], implicit: true });
+      }
+      const frame = stack[stack.length - 1];
+      if (segment.label) frame.labelled = true;
+      frame.items.push({ label: segment.label, children: [] });
+      return;
+    }
+    sink().push(render(segment, position));
+  });
+  while (stack.length) close(segments.length);
+  return root;
 }
 
 /**
@@ -122,15 +191,14 @@ function InlineReference({
 
   return (
     <>
-      <button
-        type="button"
+      <RefControl
         className={open ? "latex-ref is-open" : "latex-ref"}
-        aria-expanded={open}
+        expanded={open}
         title={title}
-        onClick={() => setOpen((current) => !current)}
+        onActivate={() => setOpen((current) => !current)}
       >
         {label}
-      </button>
+      </RefControl>
       {open ? (
         <span className="latex-inline-reference">
           {preview.kind === "math" ? (
@@ -145,6 +213,44 @@ function InlineReference({
         </span>
       ) : null}
     </>
+  );
+}
+
+/**
+ * A clickable reference that still copies as text. A real `<button>` is skipped
+ * when a reader selects a passage and copies it, leaving "in the sense of ."
+ * behind; an inline element with the button role keeps both behaviours.
+ */
+function RefControl({
+  className,
+  title,
+  expanded,
+  onActivate,
+  children,
+}: {
+  className: string;
+  title?: string;
+  expanded?: boolean;
+  onActivate: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <span
+      role="button"
+      tabIndex={0}
+      className={className}
+      aria-expanded={expanded}
+      title={title}
+      onClick={onActivate}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onActivate();
+        }
+      }}
+    >
+      {children}
+    </span>
   );
 }
 
@@ -164,7 +270,9 @@ function SegmentView({
     case "break":
       return <br />;
     case "item":
-      return <span className="latex-item" aria-hidden="true" />;
+    case "list":
+      // Structure is assembled by `buildTree`; nothing to draw inline.
+      return null;
     case "node":
       return onNode ? (
         <button
@@ -180,7 +288,7 @@ function SegmentView({
       );
     case "ref": {
       const reference = resolveReference?.(segment.key);
-      const label = reference?.label ?? segment.key;
+      const label = reference?.label || segment.key;
 
       if (reference?.preview) {
         return (
@@ -201,14 +309,9 @@ function SegmentView({
         );
       }
       return (
-        <button
-          type="button"
-          className="latex-ref"
-          onClick={() => onReference(segment.key)}
-          title={segment.key}
-        >
+        <RefControl className="latex-ref" title={segment.key} onActivate={() => onReference(segment.key)}>
           {label}
-        </button>
+        </RefControl>
       );
     }
     case "math":

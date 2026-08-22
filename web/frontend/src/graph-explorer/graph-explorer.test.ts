@@ -318,6 +318,41 @@ describe("parseLatex", () => {
     expect(segments.map((segment) => segment.kind)).toEqual(["text", "break", "text"]);
   });
 
+  it("keeps list structure as list and item segments", () => {
+    const source =
+      "Either:\n\\begin{enumerate}[label=(\\alph*)]\n\\item a cycle in the sense of \\cref{lem:a};\n\n\\item[(F5)] a quotient $q$.\n\\end{enumerate}\n";
+    expect(parseLatex(source)).toEqual([
+      { kind: "text", value: "Either:" },
+      { kind: "list", ordered: true, open: true },
+      { kind: "item" },
+      { kind: "text", value: "a cycle in the sense of " },
+      { kind: "ref", key: "lem:a" },
+      { kind: "text", value: ";" },
+      { kind: "item", label: "(F5)" },
+      { kind: "text", value: "a quotient " },
+      { kind: "math", value: "q", display: false },
+      { kind: "text", value: "." },
+      { kind: "list", ordered: true, open: false },
+    ]);
+    expect(parseLatex("\\begin{itemize}\\item x\\end{itemize}")[0]).toEqual({
+      kind: "list",
+      ordered: false,
+      open: true,
+    });
+  });
+
+  it("separates the keys of a multi-target reference and brackets citations", () => {
+    expect(parseLatex("by \\cref{lem:a,cor:b,lem:c} and \\cite{HSS2024}.")).toEqual([
+      { kind: "text", value: "by " },
+      { kind: "ref", key: "lem:a" },
+      { kind: "text", value: ", " },
+      { kind: "ref", key: "cor:b" },
+      { kind: "text", value: " and " },
+      { kind: "ref", key: "lem:c" },
+      { kind: "text", value: " and [HSS2024]." },
+    ]);
+  });
+
   it("unwraps text-only formatting", () => {
     expect(parseLatex("\\emph{target-safe} paths")).toEqual([
       { kind: "text", value: "target-safe paths" },

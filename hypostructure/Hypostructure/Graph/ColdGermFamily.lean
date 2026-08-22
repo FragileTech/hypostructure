@@ -32,21 +32,24 @@ universe u
 
 variable {object : FiniteObject.{u}}
 
-/-- A graph of minimum degree at least three has more than two vertices: any
-vertex has three neighbours besides itself, and an empty graph has minimum
-degree zero. -/
-theorem two_lt_vertexCount_of_minDegree
-    (baseline : Graph.MinimumDegreeAtLeast 3 object) : 2 < object.vertexCount := by
+/-- A graph whose registered minimum-degree threshold is at least three has
+more than two vertices.  The threshold is supplied by the problem
+presentation; this lemma does not specialize its caller to a literal cubic
+baseline. -/
+theorem two_lt_vertexCount_of_minDegree {threshold : Nat}
+    (three_le : 3 ≤ threshold)
+    (baseline : Graph.MinimumDegreeAtLeast threshold object) :
+    2 < object.vertexCount := by
   classical
   by_cases nonempty : Nonempty object.Vertex
   · obtain ⟨vertex⟩ := nonempty
     have := object.minDegree_le_degree vertex
     have := object.degree_lt_vertexCount vertex
-    change 3 ≤ object.minDegree at baseline
+    change threshold ≤ object.minDegree at baseline
     omega
   · exfalso
     rw [not_nonempty_iff] at nonempty
-    change 3 ≤ object.minDegree at baseline
+    change threshold ≤ object.minDegree at baseline
     have zero : object.minDegree = 0 := by
       letI : FinEnum object.Vertex := object.vertices
       letI : DecidableRel object.graph.Adj := object.decideAdj
@@ -1083,14 +1086,16 @@ open scoped Classical in
 /-- **The overlap bound of `lem:cold-germ-extraction`**: a candidate germ meets at
 most `M_cold · B_cold` candidate germs (itself included). -/
 theorem candidateGerms_overlap_le (family : Finset (Finset object.Vertex))
-    (baseline : Graph.MinimumDegreeAtLeast 3 object)
+    (threshold_eq_three : threshold = 3)
+    (baseline : Graph.MinimumDegreeAtLeast threshold object)
     (bridgeless : ∀ contraction : EdgeContraction object, contraction.HasReturn)
     (large : 2 < object.vertexCount)
-    (germ : BoundedGerm S (Graph.MinimumDegreeAtLeast 3) Target object)
-    (germMem : germ ∈ candidateGerms S 3 Target object family baseline bridgeless large) :
-    ((candidateGerms S 3 Target object family baseline bridgeless large).filter
+    (germ : BoundedGerm S (Graph.MinimumDegreeAtLeast threshold) Target object)
+    (germMem : germ ∈ candidateGerms S threshold Target object family baseline bridgeless large) :
+    ((candidateGerms S threshold Target object family baseline bridgeless large).filter
       fun other => ¬ Disjoint germ.support other.support).card ≤
-      exchangeBound S * overlapBound 3 S := by
+      exchangeBound S * overlapBound threshold S := by
+  subst threshold
   have germSubcubic : ∀ vertex ∈ germ.support, object.degree vertex ≤ 3 := by
     simp only [candidateGerms, Finset.mem_filter] at germMem
     exact germMem.2
@@ -1480,16 +1485,19 @@ theorem card_badStubs_le (family : Finset (Finset object.Vertex))
 a vertex-disjoint family, the selected half-edges are covered by the candidate
 germs up to their multiplicity and the high-degree loss. -/
 theorem selected_le_candidates (family : Finset (Finset object.Vertex))
-    (baseline : Graph.MinimumDegreeAtLeast 3 object)
+    (threshold_eq_three : threshold = 3)
+    (baseline : Graph.MinimumDegreeAtLeast threshold object)
     (bridgeless : ∀ contraction : EdgeContraction object, contraction.HasReturn)
     (large : 2 < object.vertexCount) {order : Nat}
     (induced : ∀ window ∈ family, object.InducesWindow order window)
     (disjoint : ∀ left ∈ family, ∀ right ∈ family, left ≠ right → Disjoint left right)
-    (windowsCubic : ∀ w ∈ windowsOf object family, object.degree w = 3) :
-    (3 * order - 2 * (order - 1) - 2) * family.card ≤
-      3 * (stateBound S + 1) *
-        (candidateGerms S 3 Target object family baseline bridgeless large).card +
-        overlapBound 3 S * object.degreeSurplus 3 := by
+    (windowsCubic : ∀ w ∈ windowsOf object family,
+      object.degree w = threshold) :
+    (threshold * order - 2 * (order - 1) - 2) * family.card ≤
+      threshold * (stateBound S + 1) *
+        (candidateGerms S threshold Target object family baseline bridgeless large).card +
+        overlapBound threshold S * object.degreeSurplus threshold := by
+  subst threshold
   classical
   have perWindow : ∀ window ∈ family,
       3 * order - 2 * (order - 1) - 2 ≤ (externalStubList object window).length - 2 := by

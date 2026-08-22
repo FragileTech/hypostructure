@@ -109,9 +109,9 @@ theorem exists_anchoredReturn {LengthOK : Nat → Prop} {threshold : Nat}
       avoids minimal
   exact ⟨anchoredReturnOfSeveredPath adjacent path⟩
 
-/-- **Every completion port of every receiver has an anchored return**, at one
-object: the form node `[93]` commits, quantified over the support, the receiver
-and the port so that no port is named. -/
+/-- **Every completion port has an anchored return**, at one object.  The
+caller supplies the support, receiver, and port, so a residual-local executor
+can instantiate the result on its selected support without naming a port. -/
 theorem exists_anchoredReturn_of_mem_completionPorts {LengthOK : Nat → Prop}
     {threshold : Nat} (two_le : 2 ≤ threshold)
     (baseline : Graph.MinimumDegreeAtLeast threshold object)

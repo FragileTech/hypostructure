@@ -1,4 +1,4 @@
-import Hypostructure.Graph.Strategy.SpineRows
+import Hypostructure.Graph.Strategy.SpineVocabulary
 import Hypostructure.Graph.ColdIncrementArithmetic
 import Hypostructure.Graph.ColdGermFamily
 
@@ -432,14 +432,10 @@ set_option maxHeartbeats 800000 in
         ⟨by
           classical
           let object := inputs.current.object
-          have three := data.threshold_eq_three
-          have baseline : Graph.MinimumDegreeAtLeast 3 object := by
-            have := inputs.current.baseline
-            change Graph.MinimumDegreeAtLeast data.threshold object at this
-            rw [three] at this
-            exact this
+          have baseline : Graph.MinimumDegreeAtLeast data.threshold object :=
+            inputs.current.baseline
           have large : 2 < object.vertexCount :=
-            Graph.ColdCorridor.two_lt_vertexCount_of_minDegree baseline
+            Graph.ColdCorridor.two_lt_vertexCount_of_minDegree data.three_le_threshold baseline
           let packing := canonicalWindowPacking data object
           let cold := canonicalColdWindows data object
           let cubic := cold.filter (AmbientCubicWindow data object)
@@ -453,20 +449,16 @@ set_option maxHeartbeats 800000 in
             fun left leftMem right rightMem => valid.2 left (cubicSub leftMem) right
               (cubicSub rightMem)
           have windowsCubic : ∀ vertex ∈ Graph.ColdCorridor.windowsOf object cubic,
-              object.degree vertex = 3 := by
+              object.degree vertex = data.threshold := by
             intro vertex member
             obtain ⟨window, windowMem, vertexMem⟩ :=
               (Graph.ColdCorridor.mem_windowsOf object cubic vertex).1 member
-            have := (Finset.mem_filter.1 windowMem).2 vertex vertexMem
-            rw [three] at this
-            exact this
+            exact (Finset.mem_filter.1 windowMem).2 vertex vertexMem
           have perWindowEq : Graph.ColdCorridor.branchExcessOf (coldExternalStubCount data) =
-              3 * data.windowOrder - 2 * (data.windowOrder - 1) - 2 := by
-            simp only [Graph.ColdCorridor.branchExcessOf, coldExternalStubCount, three]
-          have coldCount : cold.card ≤ cubic.card + object.degreeSurplus 3 := by
-            change cold.card ≤ cubic.card + object.degreeSurplus data.threshold ∧ _ at ambient
-            rw [three] at ambient
-            exact ambient.1
+              data.threshold * data.windowOrder - 2 * (data.windowOrder - 1) - 2 := by
+            simp only [Graph.ColdCorridor.branchExcessOf, coldExternalStubCount]
+          have coldCount : cold.card ≤ cubic.card + object.degreeSurplus data.threshold :=
+            ambient.1
           change (Graph.ColdCorridor.branchExcessOf (coldExternalStubCount data) +
               Graph.ColdCorridor.overlapBound data.threshold data.coldSignature) *
               object.degreeSurplus data.threshold <
@@ -476,19 +468,17 @@ set_option maxHeartbeats 800000 in
             Graph.ColdCorridor.ColdGermExtractionLocal data.coldSignature
               data.threshold (Graph.MinimumDegreeAtLeast data.threshold)
               (Graph.HasCycleWithLength data.LengthOK) object at extraction
-          rw [three] at linear extraction
           change ColdGermCandidatesStatement data object
           simp only [ColdGermCandidatesStatement]
-          rw [three]
           have count := Graph.ColdCorridor.selected_le_candidates data.coldSignature
-            (Graph.HasCycleWithLength data.LengthOK) object cubic baseline bridgeless large
-            induced disjoint windowsCubic
+            data.threshold (Graph.HasCycleWithLength data.LengthOK) object cubic
+            data.threshold_eq_three baseline bridgeless large induced disjoint windowsCubic
           rw [← perWindowEq] at count
-          let candidates := Graph.ColdCorridor.candidateGerms data.coldSignature 3
+          let candidates := Graph.ColdCorridor.candidateGerms data.coldSignature data.threshold
             (Graph.HasCycleWithLength data.LengthOK) object cubic baseline bridgeless large
-          have candidateFamily : Graph.ColdCorridor.CandidateGermFamily data.coldSignature 3
-              (Graph.MinimumDegreeAtLeast 3) (Graph.HasCycleWithLength data.LengthOK)
-              object candidates := by
+          have candidateFamily : Graph.ColdCorridor.CandidateGermFamily data.coldSignature
+              data.threshold (Graph.MinimumDegreeAtLeast data.threshold)
+              (Graph.HasCycleWithLength data.LengthOK) object candidates := by
             refine ⟨?_, ?_⟩
             · by_contra empty
               have zero : candidates.card = 0 := Nat.eq_zero_of_not_pos empty
@@ -499,8 +489,8 @@ set_option maxHeartbeats 800000 in
               omega
             · intro candidate member
               have overlap := Graph.ColdCorridor.candidateGerms_overlap_le data.coldSignature
-                (Graph.HasCycleWithLength data.LengthOK) object cubic baseline bridgeless large
-                candidate member
+                data.threshold (Graph.HasCycleWithLength data.LengthOK) object cubic
+                data.threshold_eq_three baseline bridgeless large candidate member
               convert overlap using 2
               exact Finset.filter_congr_decidable _ _ _
           obtain ⟨disjointFamily, extracted⟩ := extraction.2 candidates candidateFamily
@@ -591,19 +581,14 @@ noncomputable def absorbedGermDichotomy
   let split := (previous.get (K .coldWindowLedgerSplit)).down
   let extraction := (previous.get (K .coldGermExtraction)).down
   let object := current.object
-  have three := data.threshold_eq_three
-  have baseline3 : Graph.MinimumDegreeAtLeast 3 object := by
-    have := current.baseline
-    change Graph.MinimumDegreeAtLeast data.threshold object at this
-    rw [three] at this
-    exact this
+  have baseline : Graph.MinimumDegreeAtLeast data.threshold object := current.baseline
   have large : 2 < object.vertexCount :=
-    Graph.ColdCorridor.two_lt_vertexCount_of_minDegree baseline3
+    Graph.ColdCorridor.two_lt_vertexCount_of_minDegree data.three_le_threshold baseline
   let packing := canonicalWindowPacking data object
   let cold := canonicalColdWindows data object
   let cubic := cold.filter (AmbientCubicWindow data object)
-  let candidates := Graph.ColdCorridor.candidateGerms data.coldSignature 3
-    (Graph.HasCycleWithLength data.LengthOK) object cubic baseline3 bridgeless large
+  let candidates := Graph.ColdCorridor.candidateGerms data.coldSignature data.threshold
+    (Graph.HasCycleWithLength data.LengthOK) object cubic baseline bridgeless large
   exact Decision.run previous (K .coldGermCandidates) (K .absorbedGermFanData)
     `Hypostructure.Graph.Strategy.Spine.absorbedGermDichotomy
     (if positive : 0 < candidates.card then
@@ -618,36 +603,32 @@ noncomputable def absorbedGermDichotomy
           fun left leftMem right rightMem => valid.2 left (cubicSub leftMem) right
             (cubicSub rightMem)
         have windowsCubic : ∀ vertex ∈ Graph.ColdCorridor.windowsOf object cubic,
-            object.degree vertex = 3 := by
+            object.degree vertex = data.threshold := by
           intro vertex member
           obtain ⟨window, windowMem, vertexMem⟩ :=
             (Graph.ColdCorridor.mem_windowsOf object cubic vertex).1 member
-          have := (Finset.mem_filter.1 windowMem).2 vertex vertexMem
-          rw [three] at this
-          exact this
+          exact (Finset.mem_filter.1 windowMem).2 vertex vertexMem
         have perWindowEq : Graph.ColdCorridor.branchExcessOf (coldExternalStubCount data) =
-            3 * data.windowOrder - 2 * (data.windowOrder - 1) - 2 := by
-          simp only [Graph.ColdCorridor.branchExcessOf, coldExternalStubCount, three]
+            data.threshold * data.windowOrder - 2 * (data.windowOrder - 1) - 2 := by
+          simp only [Graph.ColdCorridor.branchExcessOf, coldExternalStubCount]
         change ColdExchangeBoundStatement data object ∧
           Graph.ColdCorridor.ColdGermExtractionLocal data.coldSignature
             data.threshold (Graph.MinimumDegreeAtLeast data.threshold)
             (Graph.HasCycleWithLength data.LengthOK) object at extraction
-        rw [three] at extraction
         change ColdGermCandidatesStatement data object
         simp only [ColdGermCandidatesStatement]
-        rw [three]
         have count := Graph.ColdCorridor.selected_le_candidates data.coldSignature
-          (Graph.HasCycleWithLength data.LengthOK) object cubic baseline3 bridgeless large
-          induced disjoint windowsCubic
+          data.threshold (Graph.HasCycleWithLength data.LengthOK) object cubic
+          data.threshold_eq_three baseline bridgeless large induced disjoint windowsCubic
         rw [← perWindowEq] at count
-        have candidateFamily : Graph.ColdCorridor.CandidateGermFamily data.coldSignature 3
-            (Graph.MinimumDegreeAtLeast 3) (Graph.HasCycleWithLength data.LengthOK)
-            object candidates := by
+        have candidateFamily : Graph.ColdCorridor.CandidateGermFamily data.coldSignature
+            data.threshold (Graph.MinimumDegreeAtLeast data.threshold)
+            (Graph.HasCycleWithLength data.LengthOK) object candidates := by
           refine ⟨positive, ?_⟩
           intro candidate member
           have overlap := Graph.ColdCorridor.candidateGerms_overlap_le data.coldSignature
-            (Graph.HasCycleWithLength data.LengthOK) object cubic baseline3 bridgeless large
-            candidate member
+            data.threshold (Graph.HasCycleWithLength data.LengthOK) object cubic
+            data.threshold_eq_three baseline bridgeless large candidate member
           convert overlap using 2
           exact Finset.filter_congr_decidable _ _ _
         obtain ⟨disjointFamily, extracted⟩ := extraction.2 candidates candidateFamily
@@ -656,13 +637,12 @@ noncomputable def absorbedGermDichotomy
       .inr ⟨by
         change AbsorbedGermFanDataStatement data object
         simp only [AbsorbedGermFanDataStatement]
-        rw [three]
         intro baseline' bridgeless' large' stub
         have empty : candidates = ∅ := Finset.card_eq_zero.1 (Nat.eq_zero_of_not_pos positive)
         by_contra none
         push_neg at none
-        have member : Graph.ColdCorridor.stubGerm data.coldSignature 3
-            (Graph.HasCycleWithLength data.LengthOK) object cubic baseline3 bridgeless large
+        have member : Graph.ColdCorridor.stubGerm data.coldSignature data.threshold
+            (Graph.HasCycleWithLength data.LengthOK) object cubic baseline bridgeless large
               stub ∈ candidates := by
           simp only [candidates, Graph.ColdCorridor.candidateGerms, Finset.mem_filter,
             Finset.mem_image, Finset.mem_attach, true_and]
@@ -670,6 +650,456 @@ noncomputable def absorbedGermDichotomy
         rw [empty] at member
         exact Finset.notMem_empty _ member⟩)
     candidatesFresh absorbedFresh
+
+/-! ## Node `[177]`, `lem:absorbed-germ-fan-data` (ii): decorated handoff fan data
+
+On the arm of `[175]` where every selected corridor meets a heavy centre, the
+manuscript reads case (ii) at each such centre `z`: *"the corridor enters `z`
+through one of its incidences and leaves through another: `z` is a heavy
+centre and the corridor's two configurations at `z` are separated connector
+tails in the sense of `lem:typeA-high-degree-handoff`,
+`def:decorated-fan-envelope`.  The half-edge `ε` is therefore decorated
+handoff fan data at `z`."*  The row builds that envelope on the literal
+residual: `H = {z}`; `K_z` is the pair of corridor incidences at `z` (the
+predecessor and successor of `z` on the corridor's inside path, or the window
+end of the entry/successor stub when `z` is the corridor's foot); the arms are
+the two corridor tails from those incidences, ending at the window vertices of
+the entry stub and of the successor stub; the clique condition on `K_z` is
+`lem:typeA-high-degree-handoff`'s: a fan return of accepted length closes a
+target cycle with the two fan edges, and the label-collision clause is a
+target cycle, both refuted by the selection.  The row publishes only case
+(ii)'s indexed handoff data: it does not assert that the cold-window union is
+a canonical Type B core or attach negative-charge or zero-surplus hypotheses,
+none of which is a conclusion of `[177]`.  The family is the absorbed
+alternative of the common `K .typeBFanEntry`, so the ledger edge is literally
+`[177] → [65]`; it does not construct a canonical negative support. -/
+set_option maxHeartbeats 4000000 in
+@[reducible] noncomputable def absorbedGermFanEnvelopeRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.absorbedGermFanEnvelope
+    { Requires := [K .selection, K .absorbedGermFanData, K .absorbedGermSplit]
+      Produces := [K .typeBFanEntry]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let selected := (inputs.get (K .selection)).down
+      let fanData := (inputs.get (K .absorbedGermFanData)).down
+      let split := (inputs.get (K .absorbedGermSplit)).down
+      .cons (key := K .typeBFanEntry)
+        ⟨by
+          classical
+          change TypeBFanEntryStatement data inputs.current.object
+          apply Or.inr
+          simp only [AbsorbedGermFanEnvelopeStatement]
+          change AbsorbedGermFanDataStatement data inputs.current.object at fanData
+          simp only [AbsorbedGermFanDataStatement] at fanData
+          change AbsorbedGermSplitStatement data inputs.current.object at split
+          simp only [AbsorbedGermSplitStatement] at split
+          intro baseline bridgeless large stub
+          obtain ⟨fanCentre, fanMember, fanHigh⟩ :=
+            fanData baseline bridgeless large stub
+          rcases split baseline bridgeless large stub with subcubic | heavyCentre
+          · exact absurd fanHigh
+              (Nat.not_lt_of_ge (subcubic.1 fanCentre fanMember))
+          obtain ⟨centre, member, high, neighboursCubic⟩ := heavyCentre
+          refine ⟨centre, member, high, neighboursCubic, ?_⟩
+          simp only [Graph.ColdCorridor.stubGerm] at member
+          have avoids : ¬ Graph.HasCycleWithLength data.LengthOK inputs.current.object := selected.1
+          have windowsCubic : ∀ vertex ∈ (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))), inputs.current.object.degree vertex = data.threshold := by
+            intro vertex vertexMem
+            obtain ⟨window, windowMem, inWindow⟩ :=
+              (Graph.ColdCorridor.mem_windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object)) vertex).1 vertexMem
+            exact (Finset.mem_filter.1 windowMem).2 vertex inWindow
+          have denied : ∀ c a b,
+              ¬ handoffAbsorbing data inputs.current.object (canonicalWindowPacking data inputs.current.object) c a b :=
+            fun _ _ _ collision => avoids
+              (Graph.WindowLabelCollision.hasCycleWithLength_of_labelCollision
+                data.degenerateClosureRejected collision)
+          obtain ⟨inWindow, adjacent⟩ := Graph.ColdCorridor.selected_facts inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object)) stub
+          by_cases outsideAll : stub.1.2 ∈ (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object)))
+          · -- The edge germ: both endpoints are window vertices at the threshold.
+            exfalso
+            rw [dif_pos outsideAll, Graph.ColdCorridor.support_edgeGerm,
+              Graph.ColdCorridor.mem_edgeSupport] at member
+            rcases member with rfl | rfl
+            · rw [windowsCubic _ inWindow] at high
+              exact Nat.lt_irrefl _ high
+            · rw [windowsCubic _ outsideAll] at high
+              exact Nat.lt_irrefl _ high
+          · have isStub : stub.1.1 ∈ (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) ∧ stub.1.2 ∉ (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) ∧
+                inputs.current.object.graph.Adj stub.1.1 stub.1.2 := ⟨inWindow, outsideAll, adjacent⟩
+            rw [dif_neg outsideAll, Graph.ColdCorridor.support_corridorGerm,
+              Graph.ColdCorridor.Corridor.mem_prefixSupport] at member
+            obtain ⟨inner, innerMem, innerEq⟩ := member
+            -- The corridor of `ε`, its inside path and that path's vertex list.
+            have outside := Graph.ColdCorridor.outsideComponentOf_isOutsideComponent inputs.current.object
+              (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) stub.1.2 outsideAll
+            have componentOutside : ∀ vertex ∈ Graph.ColdCorridor.outsideComponentOf inputs.current.object (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object)))
+                stub.1.2 outsideAll, vertex ∉ (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) :=
+              fun vertex vertexMem => Finset.disjoint_left.1 outside.1 vertexMem
+            have entryEq := Graph.ColdCorridor.stubCorridor_entryStub inputs.current.object (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) bridgeless isStub
+            set corridor := Graph.ColdCorridor.stubCorridor inputs.current.object (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) bridgeless isStub
+              with corridorDef
+            have innerMemWalk : inner ∈ corridor.inside.1.support := by
+              rw [SimpleGraph.Walk.support_take] at innerMem
+              exact List.mem_of_mem_take innerMem
+            set trail := corridor.inside.1.support.map Subtype.val with trailDef
+            have trailChain : trail.IsChain inputs.current.object.graph.Adj := by
+              rw [trailDef, List.isChain_map]
+              exact corridor.inside.1.isChain_adj_support.imp fun _ _ adj => adj
+            have trailNodup : trail.Nodup :=
+              corridor.inside.2.support_nodup.map Subtype.val_injective
+            have trailComponent : ∀ vertex ∈ trail,
+                vertex ∈ Graph.ColdCorridor.outsideComponentOf inputs.current.object (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) stub.1.2 outsideAll := by
+              intro vertex vertexMem
+              obtain ⟨inner', _, innerEq'⟩ := List.mem_map.1 vertexMem
+              exact innerEq' ▸ inner'.2
+            have footEq : corridor.entryStub.1 = stub.1.2 := by rw [entryEq]
+            have trailHead : trail.head? = some stub.1.2 := by
+              have insideHead : corridor.inside.1.support.head? =
+                  some (Graph.ColdCorridor.stubFoot inputs.current.object
+                    (Graph.ColdCorridor.windowsOf inputs.current.object
+                      ((canonicalColdWindows data inputs.current.object).filter
+                        (AmbientCubicWindow data inputs.current.object)))
+                    (Graph.ColdCorridor.outsideComponentOf inputs.current.object
+                      (Graph.ColdCorridor.windowsOf inputs.current.object
+                        ((canonicalColdWindows data inputs.current.object).filter
+                          (AmbientCubicWindow data inputs.current.object)))
+                      stub.1.2 outsideAll)
+                    corridor.entry) := by
+                rw [List.head?_eq_some_head corridor.inside.1.support_ne_nil]
+                exact congrArg some corridor.inside.1.head_support
+              have entryHead : trail.head? = some corridor.entryStub.1 := by
+                calc
+                  trail.head? =
+                      (corridor.inside.1.support.map Subtype.val).head? :=
+                    congrArg List.head? trailDef
+                  _ = corridor.inside.1.support.head?.map Subtype.val :=
+                    List.head?_map
+                  _ = (some (Graph.ColdCorridor.stubFoot inputs.current.object
+                        (Graph.ColdCorridor.windowsOf inputs.current.object
+                          ((canonicalColdWindows data inputs.current.object).filter
+                            (AmbientCubicWindow data inputs.current.object)))
+                        (Graph.ColdCorridor.outsideComponentOf inputs.current.object
+                          (Graph.ColdCorridor.windowsOf inputs.current.object
+                            ((canonicalColdWindows data inputs.current.object).filter
+                              (AmbientCubicWindow data inputs.current.object)))
+                          stub.1.2 outsideAll)
+                        corridor.entry)).map Subtype.val :=
+                    congrArg (Option.map Subtype.val) insideHead
+                  _ = some corridor.entryStub.1 := rfl
+              exact entryHead.trans (congrArg some footEq)
+            have trailLast : trail.getLast? = some corridor.successorStub.1 := by
+              have insideLast : corridor.inside.1.support.getLast? =
+                  some (Graph.ColdCorridor.stubFoot inputs.current.object
+                    (Graph.ColdCorridor.windowsOf inputs.current.object
+                      ((canonicalColdWindows data inputs.current.object).filter
+                        (AmbientCubicWindow data inputs.current.object)))
+                    (Graph.ColdCorridor.outsideComponentOf inputs.current.object
+                      (Graph.ColdCorridor.windowsOf inputs.current.object
+                        ((canonicalColdWindows data inputs.current.object).filter
+                          (AmbientCubicWindow data inputs.current.object)))
+                      stub.1.2 outsideAll)
+                    (Graph.ColdCorridor.successorIndex corridor.positive
+                      corridor.entry)) := by
+                rw [List.getLast?_eq_some_getLast corridor.inside.1.support_ne_nil]
+                exact congrArg some corridor.inside.1.getLast_support
+              calc
+                trail.getLast? =
+                    (corridor.inside.1.support.map Subtype.val).getLast? :=
+                  congrArg List.getLast? trailDef
+                _ = corridor.inside.1.support.getLast?.map Subtype.val :=
+                  List.getLast?_map
+                _ = (some (Graph.ColdCorridor.stubFoot inputs.current.object
+                      (Graph.ColdCorridor.windowsOf inputs.current.object
+                        ((canonicalColdWindows data inputs.current.object).filter
+                          (AmbientCubicWindow data inputs.current.object)))
+                      (Graph.ColdCorridor.outsideComponentOf inputs.current.object
+                        (Graph.ColdCorridor.windowsOf inputs.current.object
+                          ((canonicalColdWindows data inputs.current.object).filter
+                            (AmbientCubicWindow data inputs.current.object)))
+                        stub.1.2 outsideAll)
+                      (Graph.ColdCorridor.successorIndex corridor.positive
+                        corridor.entry))).map Subtype.val :=
+                  congrArg (Option.map Subtype.val) insideLast
+                _ = some corridor.successorStub.1 := rfl
+            -- The successor stub `h_{i+1}` and its distinctness from `ε`.
+            have successorMem : corridor.successorStub ∈
+                Graph.ColdCorridor.boundaryStubs inputs.current.object (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) _ := List.get_mem _ _
+            obtain ⟨successorFoot, successorWindow, successorAdj⟩ :=
+              (Graph.ColdCorridor.mem_boundaryStubs_iff inputs.current.object (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) _ _).1 successorMem
+            have index_ne_successor : ∀ {count : Nat} (two : 2 ≤ count)
+                (index : Fin count),
+                index ≠ Graph.ColdCorridor.successorIndex
+                  (Nat.lt_of_lt_of_le Nat.zero_lt_two two) index := by
+              intro count two index sameIndex
+              have valEq := congrArg Fin.val sameIndex
+              simp only [Graph.ColdCorridor.successorIndex] at valEq
+              have bound := index.2
+              rcases Nat.lt_or_ge (index.1 + 1) count with small | big
+              · rw [Nat.mod_eq_of_lt small] at valEq
+                omega
+              · have top : index.1 + 1 = count := by omega
+                rw [top, Nat.mod_self] at valEq
+                omega
+            have stubsDistinct : corridor.entryStub ≠ corridor.successorStub := by
+              intro same
+              have indexEq :=
+                (Graph.ColdCorridor.boundaryStubs_nodup inputs.current.object (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) _).get_inj_iff.1 same
+              exact index_ne_successor corridor.twoStubs corridor.entry indexEq
+            -- Split the inside path at the heavy centre.
+            have centreTrail : centre ∈ trail := List.mem_map.2 ⟨inner, innerMemWalk, innerEq⟩
+            obtain ⟨left, right, splitEq⟩ := List.append_of_mem centreTrail
+            have chainSplit := trailChain
+            rw [splitEq, List.isChain_append, List.isChain_cons] at chainSplit
+            obtain ⟨leftChain, ⟨centreRight, rightChain⟩, leftCentre⟩ := chainSplit
+            have nodupSplit := trailNodup
+            rw [splitEq, List.nodup_middle, List.nodup_cons] at nodupSplit
+            obtain ⟨centreNotMem, leftRightNodup⟩ := nodupSplit
+            have centreNotLeft : centre ∉ left :=
+              fun h => centreNotMem (List.mem_append.2 (Or.inl h))
+            have centreNotRight : centre ∉ right :=
+              fun h => centreNotMem (List.mem_append.2 (Or.inr h))
+            have leftNodup : left.Nodup := leftRightNodup.of_append_left
+            have rightNodup : right.Nodup := leftRightNodup.of_append_right
+            have leftRightDisjoint : ∀ v, v ∈ left → v ∈ right → False :=
+              fun v hl hr => List.disjoint_of_nodup_append leftRightNodup hl hr
+            have leftComponent : ∀ v ∈ left,
+                v ∈ Graph.ColdCorridor.outsideComponentOf inputs.current.object (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) stub.1.2 outsideAll :=
+              fun v h => trailComponent v (by rw [splitEq]; exact List.mem_append.2 (Or.inl h))
+            have rightComponent : ∀ v ∈ right,
+                v ∈ Graph.ColdCorridor.outsideComponentOf inputs.current.object (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) stub.1.2 outsideAll :=
+              fun v h => trailComponent v
+                (by rw [splitEq]; exact List.mem_append.2 (Or.inr (List.mem_cons_of_mem _ h)))
+            have headSplit : (left ++ centre :: right).head? = some stub.1.2 := by
+              rw [← splitEq]; exact trailHead
+            have lastSplit : (left ++ centre :: right).getLast? =
+                some corridor.successorStub.1 := by
+              rw [← splitEq]; exact trailLast
+            -- The two arms and the two corridor incidences at the centre.
+            obtain ⟨armLeft, armLeftDef⟩ :
+                ∃ arm : List inputs.current.object.Vertex, arm = left.reverse ++ [stub.1.1] :=
+              ⟨_, rfl⟩
+            obtain ⟨armRight, armRightDef⟩ :
+                ∃ arm : List inputs.current.object.Vertex,
+                  arm = right ++ [corridor.successorStub.2] :=
+              ⟨_, rfl⟩
+            have armLeftNe : armLeft ≠ [] := by simp [armLeftDef]
+            have armRightNe : armRight ≠ [] := by simp [armRightDef]
+            obtain ⟨first, firstHead⟩ : ∃ a, armLeft.head? = some a :=
+              ⟨_, List.head?_eq_some_head armLeftNe⟩
+            obtain ⟨second, secondHead⟩ : ∃ b, armRight.head? = some b :=
+              ⟨_, List.head?_eq_some_head armRightNe⟩
+            have firstCases : (left = [] ∧ first = stub.1.1) ∨
+                (∃ h : left ≠ [], first = left.getLast h ∧ first ∈ left) := by
+              rcases eq_or_ne left [] with nil | ne
+              · left
+                refine ⟨nil, ?_⟩
+                have : armLeft.head? = some stub.1.1 := by simp [armLeftDef, nil]
+                rw [firstHead] at this
+                exact Option.some.inj this
+              · right
+                have headEq : armLeft.head? = some (left.getLast ne) := by
+                  rw [armLeftDef, List.head?_append, List.head?_reverse,
+                    List.getLast?_eq_some_getLast ne]
+                  rfl
+                rw [firstHead] at headEq
+                refine ⟨ne, Option.some.inj headEq, ?_⟩
+                rw [Option.some.inj headEq]
+                exact List.getLast_mem ne
+            have secondCases : (right = [] ∧ second = corridor.successorStub.2) ∨
+                (∃ h : right ≠ [], second = right.head h ∧ second ∈ right) := by
+              rcases right with _ | ⟨x, rest⟩
+              · left
+                refine ⟨rfl, ?_⟩
+                have : armRight.head? = some corridor.successorStub.2 := by simp [armRightDef]
+                rw [secondHead] at this
+                exact Option.some.inj this
+              · right
+                have headEq : armRight.head? = some x := by simp [armRightDef]
+                rw [secondHead] at headEq
+                refine ⟨List.cons_ne_nil _ _, Option.some.inj headEq, ?_⟩
+                rw [Option.some.inj headEq]
+                exact List.mem_cons_self
+            -- When the corridor starts (ends) at the centre, the centre is the foot.
+            have centreFootOfLeftNil : left = [] → centre = stub.1.2 := by
+              intro nil
+              rw [nil] at headSplit
+              exact Option.some.inj headSplit
+            have centreSuccessorOfRightNil : right = [] → centre = corridor.successorStub.1 := by
+              intro nil
+              rw [nil, List.getLast?_append] at lastSplit
+              exact Option.some.inj lastSplit
+            have adjFirst : inputs.current.object.graph.Adj centre first := by
+              rcases firstCases with ⟨nil, eq⟩ | ⟨ne, eq, _⟩
+              · rw [eq, centreFootOfLeftNil nil]
+                exact adjacent.symm
+              · rw [eq]
+                exact (leftCentre _ (List.getLast?_eq_some_getLast ne) centre rfl).symm
+            have adjSecond : inputs.current.object.graph.Adj centre second := by
+              rcases secondCases with ⟨nil, eq⟩ | ⟨ne, eq, _⟩
+              · rw [eq, centreSuccessorOfRightNil nil]
+                exact successorAdj
+              · rw [eq]
+                exact centreRight _ (List.head?_eq_some_head ne)
+            have distinct : first ≠ second := by
+              intro same
+              rcases firstCases with ⟨leftNil, firstEq⟩ | ⟨_, _, firstMem⟩
+              · rcases secondCases with ⟨rightNil, secondEq⟩ | ⟨_, _, secondMem⟩
+                · -- both arms are bare stubs: the two stubs would coincide
+                  apply stubsDistinct
+                  have footEq : stub.1.2 = corridor.successorStub.1 :=
+                    (centreFootOfLeftNil leftNil).symm.trans (centreSuccessorOfRightNil rightNil)
+                  have windowEq : stub.1.1 = corridor.successorStub.2 :=
+                    firstEq.symm.trans (same.trans secondEq)
+                  exact entryEq.trans (Prod.ext footEq windowEq)
+                · exact componentOutside second (rightComponent _ secondMem)
+                    (by rw [← same, firstEq]; exact inWindow)
+              · rcases secondCases with ⟨_, secondEq⟩ | ⟨_, _, secondMem⟩
+                · exact componentOutside first (leftComponent _ firstMem)
+                    (by rw [same, secondEq]; exact successorWindow)
+                · exact leftRightDisjoint first firstMem (same ▸ secondMem)
+            have assignedAdj : ∀ x ∈ ({first, second} : Finset inputs.current.object.Vertex),
+                inputs.current.object.graph.Adj centre x := by
+              intro x xMem
+              rcases Finset.mem_insert.1 xMem with rfl | xMem
+              · exact adjFirst
+              · rw [Finset.mem_singleton.1 xMem]
+                exact adjSecond
+            -- Arm facts.
+            have armLeftChain : armLeft.IsChain inputs.current.object.graph.Adj := by
+              rw [armLeftDef]
+              refine List.isChain_append.mpr
+                ⟨List.isChain_reverse.2 (leftChain.imp fun _ _ adj => adj.symm),
+                List.isChain_singleton _, ?_⟩
+              intro x xMem y yMem
+              rw [List.getLast?_reverse] at xMem
+              rw [List.head?_cons, Option.mem_def, Option.some.injEq] at yMem
+              rcases left with _ | ⟨f, rest⟩
+              · simp at xMem
+              · rw [List.head?_cons, Option.mem_def, Option.some.injEq] at xMem
+                rw [List.cons_append, List.head?_cons, Option.some.injEq] at headSplit
+                rw [← xMem, ← yMem, headSplit]
+                exact adjacent.symm
+            have armRightChain : armRight.IsChain inputs.current.object.graph.Adj := by
+              rw [armRightDef]
+              refine List.isChain_append.mpr ⟨rightChain, List.isChain_singleton _, ?_⟩
+              intro x xMem y yMem
+              rw [List.head?_cons, Option.mem_def, Option.some.injEq] at yMem
+              rcases eq_or_ne right [] with nil | ne
+              · rw [nil] at xMem
+                simp at xMem
+              · rw [List.getLast?_eq_some_getLast ne, Option.mem_def, Option.some.injEq] at xMem
+                have lastEq : right.getLast ne = corridor.successorStub.1 := by
+                  rw [List.getLast?_append, List.getLast?_cons,
+                    List.getLast?_eq_some_getLast ne] at lastSplit
+                  simpa using lastSplit
+                rw [← xMem, ← yMem, lastEq]
+                exact successorAdj
+            have armLeftNodup : armLeft.Nodup := by
+              rw [armLeftDef]
+              refine List.nodup_append.mpr
+                ⟨List.nodup_reverse.mpr leftNodup, List.nodup_singleton _, ?_⟩
+              intro v vMem v' vMem' equality
+              rw [List.mem_singleton] at vMem'
+              rw [List.mem_reverse] at vMem
+              exact componentOutside v (leftComponent v vMem)
+                (equality ▸ vMem' ▸ inWindow)
+            have armRightNodup : armRight.Nodup := by
+              rw [armRightDef]
+              refine List.nodup_append.mpr ⟨rightNodup, List.nodup_singleton _, ?_⟩
+              intro v vMem v' vMem' equality
+              rw [List.mem_singleton] at vMem'
+              exact componentOutside v (rightComponent v vMem)
+                (equality ▸ vMem' ▸ successorWindow)
+            have armLeftLast : armLeft.getLast? = some stub.1.1 := by
+              simp [armLeftDef]
+            have armRightLast : armRight.getLast? = some corridor.successorStub.2 := by
+              simp [armRightDef]
+            have armLeftInterior : ∀ v ∈ armLeft,
+                v ∈ (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) ∨ v ∈ ({centre} : Finset inputs.current.object.Vertex) ∨ v = centre →
+                armLeft.getLast? = some v := by
+              intro v vMem vCase
+              simp only [armLeftDef, List.mem_append, List.mem_reverse, List.mem_singleton] at vMem
+              rcases vMem with vLeft | rfl
+              · exfalso
+                rcases vCase with vWindow | vCentre | vCentre
+                · exact componentOutside v (leftComponent v vLeft) vWindow
+                · exact centreNotLeft (Finset.mem_singleton.1 vCentre ▸ vLeft)
+                · exact centreNotLeft (vCentre ▸ vLeft)
+              · exact armLeftLast
+            have armRightInterior : ∀ v ∈ armRight,
+                v ∈ (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) ∨ v ∈ ({centre} : Finset inputs.current.object.Vertex) ∨ v = centre →
+                armRight.getLast? = some v := by
+              intro v vMem vCase
+              simp only [armRightDef, List.mem_append, List.mem_singleton] at vMem
+              rcases vMem with vRight | rfl
+              · exfalso
+                rcases vCase with vWindow | vCentre | vCentre
+                · exact componentOutside v (rightComponent v vRight) vWindow
+                · exact centreNotRight (Finset.mem_singleton.1 vCentre ▸ vRight)
+                · exact centreNotRight (vCentre ▸ vRight)
+              · exact armRightLast
+            -- The envelope.
+            let arm : inputs.current.object.Vertex → inputs.current.object.Vertex → List inputs.current.object.Vertex :=
+              fun _ x => if x = first then armLeft else armRight
+            have armOf : ∀ x ∈ ({first, second} : Finset inputs.current.object.Vertex),
+                (x = first ∧ arm centre x = armLeft) ∨
+                  (x = second ∧ arm centre x = armRight) := by
+              intro x xMem
+              rcases Finset.mem_insert.1 xMem with rfl | xMem
+              · exact Or.inl ⟨rfl, by simp [arm]⟩
+              · rw [Finset.mem_singleton] at xMem
+                subst xMem
+                exact Or.inr ⟨rfl, by simp [arm, distinct.symm]⟩
+            refine ⟨{ core := (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object)))
+                      decorations := {centre}
+                      decorations_high := ?_
+                      assigned := fun _ => {first, second}
+                      assigned_nonempty := fun _ _ => ⟨first, Finset.mem_insert_self _ _⟩
+                      assigned_adj := ?_
+                      arm := arm
+                      arm_issued := ?_
+                      arm_chain := ?_
+                      arm_nodup := ?_
+                      arm_lands := ?_
+                      arm_interior := ?_
+                      fanSafe := ?_ }, rfl, Finset.card_pair distinct⟩
+            · intro c cMem
+              rw [Finset.mem_singleton.1 cMem]
+              exact high
+            · intro c cMem x xMem
+              rw [Finset.mem_singleton.1 cMem]
+              exact assignedAdj x xMem
+            · intro c cMem x xMem
+              rcases armOf x xMem with ⟨rfl, eq⟩ | ⟨rfl, eq⟩
+              · rw [Finset.mem_singleton.1 cMem, eq]; exact firstHead
+              · rw [Finset.mem_singleton.1 cMem, eq]; exact secondHead
+            · intro c cMem x xMem
+              rcases armOf x xMem with ⟨_, eq⟩ | ⟨_, eq⟩
+              · rw [Finset.mem_singleton.1 cMem, eq]; exact armLeftChain
+              · rw [Finset.mem_singleton.1 cMem, eq]; exact armRightChain
+            · intro c cMem x xMem
+              rcases armOf x xMem with ⟨_, eq⟩ | ⟨_, eq⟩
+              · rw [Finset.mem_singleton.1 cMem, eq]; exact armLeftNodup
+              · rw [Finset.mem_singleton.1 cMem, eq]; exact armRightNodup
+            · intro c cMem x xMem
+              rcases armOf x xMem with ⟨_, eq⟩ | ⟨_, eq⟩
+              · rw [Finset.mem_singleton.1 cMem, eq]
+                exact ⟨stub.1.1, armLeftLast, inWindow⟩
+              · rw [Finset.mem_singleton.1 cMem, eq]
+                exact ⟨corridor.successorStub.2, armRightLast, successorWindow⟩
+            · intro c cMem x xMem v vMem vCase
+              rw [Finset.mem_singleton.1 cMem] at vCase ⊢
+              rcases armOf x xMem with ⟨_, eq⟩ | ⟨_, eq⟩
+              · rw [eq] at vMem ⊢; exact armLeftInterior v vMem vCase
+              · rw [eq] at vMem ⊢; exact armRightInterior v vMem vCase
+            · intro c cMem x xMem y yMem ne
+              rw [Finset.mem_singleton.1 cMem]
+              exact ⟨Graph.DecoratedHandoff.fanSafe_geometric (assignedAdj x xMem)
+                (assignedAdj y yMem) ne avoids, denied _ _ _⟩⟩
+        .nil)
 
 /-! ## Nodes `[154]`--`[156]`, `lem:cold-bounded-germ-trichotomy` and
 `lem:cold-increment-arithmetic`

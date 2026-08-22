@@ -1675,6 +1675,7 @@ body.has-rail-open {
 }
 
 .latex-ref {
+  display: inline;
   font: inherit;
   font-size: 0.94em;
   padding: 0 3px;
@@ -1685,8 +1686,22 @@ body.has-rail-open {
   cursor: pointer;
 }
 
-.latex-item::before {
-  content: "• ";
+.latex-list {
+  margin: 6px 0 6px 1.4em;
+  padding: 0;
+}
+
+.latex-list > li {
+  margin: 4px 0;
+}
+
+.latex-list.is-labelled {
+  list-style: none;
+  margin-left: 0.4em;
+}
+
+.latex-item-label {
+  margin-right: 0.5em;
   color: var(--ink-faint);
 }
 
