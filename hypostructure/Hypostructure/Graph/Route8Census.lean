@@ -43,8 +43,11 @@ instance : DecidableEq (Index object) := by
   classical
   exact inferInstance
 
-/-- `𝒳_A`: the Type A pieces of the canonical decomposition of the remainder
-`R` — negative net charge and zero ambient surplus. -/
+/-- The Type A pieces of the canonical decomposition of the remainder `R` —
+negative net charge and zero ambient surplus.  These are the entries of the
+*unified* Type A ledger used by the exit-`(4)` descent.  The smaller collection
+whose receivers survive only through route `8` is indexed by
+`entriesOfComponents` below. -/
 noncomputable def typeAPieces (packing : Finset (Finset object.Vertex))
     (threshold discharge : Nat) : Finset (Finset object.Vertex) := by
   classical
@@ -53,8 +56,8 @@ noncomputable def typeAPieces (packing : Finset (Finset object.Vertex))
       object.NegativeNetCharge piece threshold discharge ∧
         object.ambientSurplus piece threshold = 0
 
-/-- The indexed route-8 entries `(u, B_u)` of `𝒳_A`: every silent-excess load
-of every receiver of every Type A piece. -/
+/-- The indexed entries of the unified Type A ledger: every silent-excess load
+of every receiver of every negative zero-surplus canonical piece. -/
 noncomputable def entries (packing : Finset (Finset object.Vertex))
     (threshold discharge : Nat) : Finset (Index object) := by
   classical
@@ -79,6 +82,26 @@ theorem mem_entries {packing : Finset (Finset object.Vertex)}
   · rintro ⟨pieceMem, receiverMem, loadMem⟩
     exact ⟨piece, pieceMem, receiver, receiverMem, load, loadMem, rfl, rfl, rfl⟩
 
+/-- **The exact route-`8` entry family `Ξ(𝒳)`.**
+
+The caller supplies the canonical component subcollection `𝒳` selected by
+`def:typeA-route8-carriers`.  Each index is exactly a saturated receiver and an
+unpaid silent-excess load of one component of that collection.  The component
+is not stored in the index: its canonical piece support is the manuscript's
+`X` in the tuple `(X,w,u,B_u)`. -/
+noncomputable def entriesOfComponents
+    (packing : Finset (Finset object.Vertex))
+    (components : Finset (SupportComponents.Connected.Component object
+      (object.remainderSupport packing)))
+    (threshold discharge : Nat) : Finset (Index object) := by
+  classical
+  exact components.biUnion fun component =>
+    let piece := object.pieceSupport (object.remainderSupport packing) component
+    (VisibleEntry.saturatedReceivers object piece threshold discharge).biUnion
+      fun receiver =>
+        (VisibleEntry.silentExcess object piece threshold discharge receiver).image
+          fun load => (piece, receiver, load)
+
 /-- `B_u`: the trace basin selected for the entry (`def:typeA-trace-basin`). -/
 noncomputable def basin (threshold : Nat) (index : Index object) :
     Finset object.Vertex :=
@@ -88,7 +111,7 @@ noncomputable def basin (threshold : Nat) (index : Index object) :
 noncomputable def presented (threshold : Nat) (LengthOK : Nat → Prop)
     (index : Index object) : Route8.PresentedEntry object :=
   Route8.PresentedEntry.ofTraceBasin object index.1 (basin object threshold index)
-    threshold LengthOK
+    threshold LengthOK index.2.1 index.2.2
 
 /-- `𝓒_ess(ξ)`: the canonical essential carrier core of the entry. -/
 noncomputable def core (threshold : Nat) (LengthOK : Nat → Prop)
@@ -174,6 +197,17 @@ def Deficit (packing : Finset (Finset object.Vertex)) (threshold discharge slack
     (entries object packing threshold discharge).card +
       discharge * (supply object packing).card + slack
 
+/-- The same cleared deficit reading on the exact route-`8` collection
+`Ξ(𝒳)`, rather than on the broader unified Type A ledger. -/
+def CollectionDeficit
+    (packing : Finset (Finset object.Vertex))
+    (components : Finset (SupportComponents.Connected.Component object
+      (object.remainderSupport packing)))
+    (threshold discharge slack : Nat) : Prop :=
+  (object.remainderSupport packing).card ≤
+    (entriesOfComponents object packing components threshold discharge).card +
+      discharge * (supply object packing).card + slack
+
 /-- **The private-carrier rate** (nodes `[120]`--`[122]`, `rem:route8-carrier-margin`):
 `(δ·s + 1)·|∂R| + δ·slack < δ·|R|`, i.e. `τ < δ/(δs+1)` with the `o(|R|)`
 allowance; at the manuscript's `δ = 3`, `s = 4` this is `13·τ|R| < 3|R| − o(|R|)`,
@@ -197,6 +231,18 @@ def TwoCarrierEntry (packing : Finset (Finset object.Vertex))
     (threshold discharge : Nat) (LengthOK : Nat → Prop) (index : Index object) :
     Prop :=
   Route8.IndexedTwoCarrierCore (entries object packing threshold discharge)
+    (core object threshold LengthOK) (threshold - 1) index
+
+/-- The paper's two-support condition `π_𝒳(ξ) ≤ 2`, with privacy measured
+inside the exact selected route-`8` collection `Ξ(𝒳)`. -/
+def CollectionTwoCarrierEntry
+    (packing : Finset (Finset object.Vertex))
+    (components : Finset (SupportComponents.Connected.Component object
+      (object.remainderSupport packing)))
+    (threshold discharge : Nat) (LengthOK : Nat → Prop) (index : Index object) :
+    Prop :=
+  Route8.IndexedTwoCarrierCore
+    (entriesOfComponents object packing components threshold discharge)
     (core object threshold LengthOK) (threshold - 1) index
 
 /-- The two slack readings, transported to the slack-free ambient

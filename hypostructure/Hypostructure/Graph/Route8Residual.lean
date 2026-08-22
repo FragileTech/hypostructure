@@ -3,6 +3,7 @@ import Hypostructure.Graph.Route8Closure
 import Hypostructure.Graph.TraceCoordinateSystem
 import Hypostructure.Graph.CanonicalRealization
 import Hypostructure.Graph.MinimumDegreeCycleTarget
+import Hypostructure.Graph.ExitFourFamily
 
 /-!
 # Route-8 presented entries at one object
@@ -401,18 +402,6 @@ def TraceLocalTargetDefect (object : FiniteObject.{u})
       Response.TargetDefect (HasCycleWithLength LengthOK) replacement
         (Strategy.InterfaceReplacement.SupportAtom.piece object basin)
 
-/-- Alternative (b): a nontrivial target-complete trace-local compression. -/
-def TraceTargetCompleteCompression (object : FiniteObject.{u})
-    (support : Finset object.Vertex) (threshold : Nat)
-    (LengthOK : Nat → Prop) (receiver load : object.Vertex)
-    (basin : Finset object.Vertex) : Prop :=
-  ∃ replacement : BoundaryPiece
-      (Strategy.InterfaceReplacement.SupportAtom.boundary object basin),
-    replacement.boundaryDegreeProfile =
-        (Strategy.InterfaceReplacement.SupportAtom.piece object basin).boundaryDegreeProfile ∧
-      Response.ContextEquivalent (HasCycleWithLength LengthOK) replacement
-        (Strategy.InterfaceReplacement.SupportAtom.piece object basin)
-
 /-- Alternative (c): a trace equality delocalizes to a larger support. -/
 def TraceDelocalization (object : FiniteObject.{u})
     (support : Finset object.Vertex) (threshold : Nat)
@@ -433,23 +422,78 @@ def TraceSurvivingSeparator (object : FiniteObject.{u})
   ∃ separator : object.Vertex,
     separator ∉ support ∧ threshold < object.degree separator
 
-/-- The selected basin is target-complete-minimal precisely when none of the
-four trace-local failure alternatives of `def:typeA-trace-basin` occurs. -/
-def TargetCompleteMinimal (object : FiniteObject.{u})
-    (support : Finset object.Vertex) (threshold : Nat)
-    (LengthOK : Nat → Prop) (receiver load : object.Vertex)
-    (basin : Finset object.Vertex) : Prop :=
-  TraceComplete object support threshold receiver load basin ∧
-    ¬ TraceLocalTargetDefect object support threshold LengthOK receiver load basin ∧
-    ¬ TraceTargetCompleteCompression object support threshold LengthOK receiver load basin ∧
-    ¬ TraceDelocalization object support threshold LengthOK receiver load basin ∧
-    ¬ TraceSurvivingSeparator object support threshold LengthOK receiver load basin
-
 end TraceBasin
 
 namespace PresentedEntry
 
 open TraceCoordinateSystem
+
+/-- The declared coordinate algebra of one selected trace basin.  The base
+coordinate families are restricted to the coordinates supported at the routed
+load, and `traceIncidence` is the manuscript's distinguished coordinate
+recording the labelled canonical trace `T_u`. -/
+inductive TraceCoordinate (object : FiniteObject.{u})
+    (support : Finset object.Vertex) where
+  | base (coordinate : TraceCoordinateSystem.Base.Coordinate object support)
+  | traceIncidence
+
+noncomputable instance traceCoordinateDecEq (object : FiniteObject.{u})
+    (support : Finset object.Vertex) :
+    DecidableEq (TraceCoordinate object support) :=
+  Classical.decEq _
+
+/-- The exact declared `u`-supported coordinate family, including the
+distinguished trace-incidence coordinate required by
+`def:typeA-trace-basin`. -/
+noncomputable def traceCoordinates (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold : Nat)
+    (receiver load : object.Vertex) :
+    Finset (TraceCoordinate object support) := by
+  classical
+  exact insert .traceIncidence
+    (((TraceCoordinateSystem.Base.schedule object support).toFinset.filter
+      (fun coordinate =>
+        TraceCoordinateSystem.Base.uSupported object support threshold receiver
+          load coordinate)).image TraceCoordinate.base)
+
+/-- The base-coordinate part retained by a trace-coordinate restriction. -/
+noncomputable def retainedBaseCoordinates (object : FiniteObject.{u})
+    (support : Finset object.Vertex)
+    (retained : Finset (TraceCoordinate object support)) :
+    Finset (TraceCoordinateSystem.Base.Coordinate object support) := by
+  classical
+  exact (TraceCoordinateSystem.Base.schedule object support).toFinset.filter
+    (fun coordinate => TraceCoordinate.base coordinate ∈ retained)
+
+/-- The dependent value type of the selected trace-coordinate algebra. -/
+def TraceValue (object : FiniteObject.{u})
+    (support : Finset object.Vertex) :
+    TraceCoordinate object support → Type u
+  | .base coordinate =>
+      ULift.{u} (TraceCoordinateSystem.Base.Value object support coordinate)
+  | .traceIncidence => ULift.{u} (Finset object.Vertex)
+
+/-- The graph-derived value of a selected trace coordinate. -/
+noncomputable def traceValue (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold : Nat)
+    (receiver load : object.Vertex) :
+    (coordinate : TraceCoordinate object support) →
+      TraceValue object support coordinate
+  | .base coordinate =>
+      ULift.up (TraceCoordinateSystem.Base.value object support coordinate)
+  | .traceIncidence =>
+      ULift.up
+        ((TraceBasin.traceSeed? object support threshold receiver load).getD ∅)
+
+/-- Declared support in the selected trace-coordinate algebra. -/
+noncomputable def traceDeclaredSupport (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold : Nat)
+    (receiver load : object.Vertex) :
+    TraceCoordinate object support → Finset object.Vertex
+  | .base coordinate =>
+      TraceCoordinateSystem.Base.declaredSupport object support coordinate
+  | .traceIncidence =>
+      (TraceBasin.traceSeed? object support threshold receiver load).getD ∅
 
 /-- Convert a graph-derived D4 target event into the route-8 event shape. -/
 noncomputable def eventOfBase (object : FiniteObject.{u})
@@ -467,6 +511,14 @@ noncomputable def eventOfBase (object : FiniteObject.{u})
             { base := event.certificate.vertex
               walk := event.certificate.walk
               isCycle := event.certificate.isCycle }
+
+/-- Target events of the selected trace-coordinate algebra.  The distinguished
+trace coordinate records `T_u` itself and is not a target event. -/
+noncomputable def eventOfTraceCoordinate (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (LengthOK : Nat → Prop) :
+    TraceCoordinate object support → Option (CoordinateEvent object)
+  | .base coordinate => eventOfBase object support LengthOK coordinate
+  | .traceIncidence => none
 
 /-- **`\rho_u(B_u)|_D` realized at the object.**
 
@@ -577,6 +629,107 @@ theorem retainedReading_boundaryDegreeProfile (object : FiniteObject.{u})
     (minimumDegreeAtLeast_isomorphismInvariant threshold)
     (cycleTargetInterface LengthOK).isomorphismInvariant _).1
 
+end PresentedEntry
+
+namespace TraceBasin
+
+open TraceCoordinateSystem
+
+/-- **Alternative (b) of `def:typeA-trace-basin`.**
+
+A trace-local response quotient is represented by the declared coordinates it
+retains.  Omitted coordinates are the forgotten coordinates, or the
+non-representative members of identified coordinate classes.  The quotient is
+nontrivial only when one omitted coordinate has genuinely internal declared
+support.  `PresentedEntry.retainedReading` preserves every boundary incidence,
+so this is the paper's support-internal quotient rather than a later
+carrier-deletion quotient.
+
+The final disjunction is the two-case discharge used by
+`lem:typeA-exits-discharged`: either the same quotient has a smaller proper
+connected realization, or it exists only at the trace-response level. -/
+def TraceTargetCompleteCompression (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold : Nat)
+    (LengthOK : Nat → Prop) (receiver load : object.Vertex)
+    (basin : Finset object.Vertex) : Prop :=
+  let coordinates :=
+    PresentedEntry.traceCoordinates object support threshold receiver load
+  ∃ retained : Finset (PresentedEntry.TraceCoordinate object support),
+    retained ⊆ coordinates ∧
+      (∃ changed ∈ coordinates,
+        changed ∉ retained ∧
+          ((changed = .traceIncidence ∧
+              ∃ trace : object.graph.Path load receiver,
+                object.tracePath? support threshold load receiver = some trace ∧
+                  0 < trace.1.length ∧ trace.1.support.toFinset ⊆ basin) ∨
+            (∃ vertex ∈
+              PresentedEntry.traceDeclaredSupport object support threshold receiver
+                load changed,
+            vertex ∈ basin ∧
+              vertex ∉
+                Strategy.InterfaceReplacement.SupportAtom.cutBoundary object basin) ∨
+            ∃ left ∈
+                PresentedEntry.traceDeclaredSupport object support threshold receiver
+                  load changed,
+              ∃ right ∈
+                  PresentedEntry.traceDeclaredSupport object support threshold receiver
+                    load changed,
+                left ∈ basin ∧ right ∈ basin ∧ object.graph.Adj left right)) ∧
+      Response.TargetComplete BoundaryPiece.boundaryDegreeProfile
+        (HasCycleWithLength LengthOK)
+        (PresentedEntry.retainedReading object support basin threshold LengthOK
+          (PresentedEntry.retainedBaseCoordinates object support retained))
+        (PresentedEntry.retainedReading object support basin threshold LengthOK
+          (PresentedEntry.retainedBaseCoordinates object support coordinates)) ∧
+      ((∃ connected : SupportComponents.Connected.ConnectedOn object basin,
+          ∃ proper : ∃ vertex, vertex ∉ basin,
+            let atom :=
+              Strategy.InterfaceReplacement.SupportAtom.properAtom object basin
+                connected proper
+            MinimumDegreeAtLeast threshold
+                (glue
+                  (PresentedEntry.retainedReading object support basin threshold
+                    LengthOK
+                    (PresentedEntry.retainedBaseCoordinates object support retained))
+                  atom.decomposition.outside) ∧
+              (glue
+                  (PresentedEntry.retainedReading object support basin threshold
+                    LengthOK
+                    (PresentedEntry.retainedBaseCoordinates object support retained))
+                  atom.decomposition.outside).LexicographicallySmaller object) ∨
+        ¬ ∃ connected : SupportComponents.Connected.ConnectedOn object basin,
+          ∃ proper : ∃ vertex, vertex ∉ basin,
+            let atom :=
+              Strategy.InterfaceReplacement.SupportAtom.properAtom object basin
+                connected proper
+            MinimumDegreeAtLeast threshold
+                (glue
+                  (PresentedEntry.retainedReading object support basin threshold
+                    LengthOK
+                    (PresentedEntry.retainedBaseCoordinates object support retained))
+                  atom.decomposition.outside) ∧
+              (glue
+                  (PresentedEntry.retainedReading object support basin threshold
+                    LengthOK
+                    (PresentedEntry.retainedBaseCoordinates object support retained))
+                  atom.decomposition.outside).LexicographicallySmaller object)
+
+/-- The selected basin is target-complete-minimal precisely when none of the
+four trace-local failure alternatives of `def:typeA-trace-basin` occurs. -/
+def TargetCompleteMinimal (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold : Nat)
+    (LengthOK : Nat → Prop) (receiver load : object.Vertex)
+    (basin : Finset object.Vertex) : Prop :=
+  TraceComplete object support threshold receiver load basin ∧
+    ¬ TraceLocalTargetDefect object support threshold LengthOK receiver load basin ∧
+    ¬ TraceTargetCompleteCompression object support threshold LengthOK receiver load basin ∧
+    ¬ TraceDelocalization object support threshold LengthOK receiver load basin ∧
+    ¬ TraceSurvivingSeparator object support threshold LengthOK receiver load basin
+
+end TraceBasin
+
+namespace PresentedEntry
+
 /-- The graph-owned presented entry assigned to a selected trace basin.  The
 coordinate family, values, supports and target events are all read from the
 declared trace-coordinate system of the selected support, and the reading of a
@@ -584,19 +737,20 @@ retained coordinate set is the canonical realization
 `retainedReading` of `\rho_u(B_u)|_D`. -/
 noncomputable def ofTraceBasin (object : FiniteObject.{u})
     (support basin : Finset object.Vertex) (threshold : Nat)
-    (LengthOK : Nat → Prop) : PresentedEntry object where
+    (LengthOK : Nat → Prop) (receiver load : object.Vertex) :
+    PresentedEntry object where
   support := support
   interface := Strategy.InterfaceReplacement.SupportAtom.boundary object basin
-  Coordinate := TraceCoordinateSystem.Base.Coordinate object support
-  coordinateDecEq := TraceCoordinateSystem.Base.coordinateDecEq object support
-  coordinates := (TraceCoordinateSystem.Base.schedule object support).toFinset
-  Value := fun coordinate =>
-    ULift.{u} (TraceCoordinateSystem.Base.Value object support coordinate)
-  value := fun coordinate =>
-    ULift.up (TraceCoordinateSystem.Base.value object support coordinate)
-  declaredSupport := TraceCoordinateSystem.Base.declaredSupport object support
-  event? := eventOfBase object support LengthOK
-  state := retainedReading object support basin threshold LengthOK
+  Coordinate := TraceCoordinate object support
+  coordinateDecEq := traceCoordinateDecEq object support
+  coordinates := traceCoordinates object support threshold receiver load
+  Value := TraceValue object support
+  value := traceValue object support threshold receiver load
+  declaredSupport := traceDeclaredSupport object support threshold receiver load
+  event? := eventOfTraceCoordinate object support LengthOK
+  state := fun retained =>
+    retainedReading object support basin threshold LengthOK
+      (retainedBaseCoordinates object support retained)
 
 /-- **Every carrier restriction of a presented trace-basin entry sits in the
 basin's own boundary-degree fibre.**  This is the clause node `[124]` consumes:
@@ -605,17 +759,16 @@ so it is a *response quotient* and therefore a legitimate member of the
 canonical exit-`(4)` family `\mathcal Q_4(w)`. -/
 theorem ofTraceBasin_boundaryDegreeProfile (object : FiniteObject.{u})
     (support basin : Finset object.Vertex) (threshold : Nat)
-    (LengthOK : Nat → Prop)
-    (left right :
-      Finset (TraceCoordinateSystem.Base.Coordinate object support)) :
-    ((ofTraceBasin object support basin threshold LengthOK).state
+    (LengthOK : Nat → Prop) (receiver load : object.Vertex)
+    (left right : Finset (TraceCoordinate object support)) :
+    ((ofTraceBasin object support basin threshold LengthOK receiver load).state
         left).boundaryDegreeProfile =
-      ((ofTraceBasin object support basin threshold LengthOK).state
+      ((ofTraceBasin object support basin threshold LengthOK receiver load).state
         right).boundaryDegreeProfile := by
   show (retainedReading object support basin threshold LengthOK
-      left).boundaryDegreeProfile =
+      (retainedBaseCoordinates object support left)).boundaryDegreeProfile =
     (retainedReading object support basin threshold LengthOK
-      right).boundaryDegreeProfile
+      (retainedBaseCoordinates object support right)).boundaryDegreeProfile
   rw [retainedReading_boundaryDegreeProfile,
     retainedReading_boundaryDegreeProfile]
 

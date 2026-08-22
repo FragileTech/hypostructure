@@ -40,22 +40,6 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
-/-- Node `[124]`, `thm:large-budget-route8-only`: the closure fact of
-`largeBudgetRoute8ClosedRow` is `False` on the residual that carries it. -/
-noncomputable instance instImpossibleLargeBudgetRoute8Closed :
-    Impossible (Input BranchState Presentation presentation data)
-      (K (data := data) .largeBudgetRoute8Closed) where
-  contradiction := fun _residual closed => closed.down
-
-noncomputable instance instIncompatibleRoute8TerminalResidualNoGo :
-    Incompatible (Input BranchState Presentation presentation data)
-      (K (data := data) .route8TerminalResidual)
-      (K (data := data) .route8TerminalNoGo) where
-  contradiction := fun _input terminal noGo => by
-    obtain ⟨_pressure, _witnesses, presented, terminalContradiction⟩ :=
-      terminal.down
-    exact terminalContradiction (noGo.down.2.2 presented)
-
 /-! ## The row, at the spine's own keys
 
 The schema bridges are the identity on `PLift`: the spine's value at each

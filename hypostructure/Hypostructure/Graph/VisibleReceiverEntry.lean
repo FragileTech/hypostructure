@@ -783,6 +783,14 @@ noncomputable def silentExcess (object : FiniteObject.{u})
   (excessBasin object support threshold scale receiver) \
     visibleLoads object support threshold receiver
 
+/-- The receivers which contribute indexed unpaid-silent route-8 entries. -/
+noncomputable def saturatedReceivers (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold scale : Nat) :
+    Finset object.Vertex := by
+  classical
+  exact (object.receivers support threshold).filter
+    (object.Saturated support threshold scale)
+
 /-- The payable set has at most `c(w)` members. -/
 theorem card_payableSet_le (object : FiniteObject.{u})
     (support : Finset object.Vertex) (threshold scale : Nat)
