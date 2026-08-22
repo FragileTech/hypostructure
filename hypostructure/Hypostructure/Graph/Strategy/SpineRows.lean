@@ -2644,6 +2644,104 @@ noncomputable def exactCollisionDichotomy
               notNegative⟩⟩)
     capFresh failsFresh
 
+/-! ## Node `[174]`: the absorbed-configuration residual
+
+`lem:exact-collision-test`, the failure consequence.  At the failure witness
+packing `P` of `[173]` the remainder has nonnegative net charge,
+`|R| + s·σ_R ≤ s·def⁺(R)`.  The manuscript's stub supply of node `[29]` is
+exact on the object — `def⁺(R) ≤ e(R,W) ≤ (δ·order − 2(order−1))·p + σ_W`,
+which is `K .boundaryDemand` (not `K .stubSupply`, whose allowance is the
+scale threshold `T(n)` rather than `σ_W`) — and `|R| + order·p = n`.  With
+`p = |𝒫_hot| + |𝒫_cold|` from the hot/cold ledger, the failed collision
+rearranges to the manuscript's `C ≥ (n − 73|𝒫_hot| − 4(σ_W − σ_R))/73`,
+published subtraction-free as
+`n + s·σ_R ≤ A·(|𝒫_hot| + |𝒫_cold|) + s·σ_W` with `A = netChargeCoefficient`,
+the registered `s·(δ·order − 2(order−1)) + order`.  The residual's position on
+the bounded arm of `[153]` is the ledger fact `K .coldMassBounded` where that
+node ran; the row publishes only the arithmetic the lemma derives. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def absorbedConfigurationResidualRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.absorbedConfigurationResidual
+    { Requires :=
+        [K .exactCollisionFails, K .boundaryDemand, K .coldWindowLedgerSplit]
+      Produces := [K .absorbedConfigurationResidual]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let fails := (inputs.get (K .exactCollisionFails)).down
+      let demand := (inputs.get (K .boundaryDemand)).down
+      let split := (inputs.get (K .coldWindowLedgerSplit)).down
+      .cons (key := K .absorbedConfigurationResidual)
+        (show Value BranchState Presentation presentation data
+            .absorbedConfigurationResidual inputs.current from
+          ⟨by
+            classical
+            obtain ⟨packing, valid, cardinality, nonneg⟩ := fails
+            refine ⟨packing, valid, cardinality, nonneg, ?_⟩
+            obtain ⟨deficiencyLe, incidenceLe⟩ := demand packing valid
+            have sizes := inputs.current.object.remainderSupport_card_add_eq valid
+            obtain ⟨_, canonicalCard, _, _, _, disjoint, cover⟩ := split
+            -- `p = |𝒫_hot| + |𝒫_cold|`: the fixed packing is the disjoint union.
+            have union :
+                canonicalWindowPacking data inputs.current.object =
+                  canonicalHotWindows data inputs.current.object ∪
+                    canonicalColdWindows data inputs.current.object := by
+              ext window
+              simp only [Finset.mem_union]
+              exact cover window
+            have countEq :
+                packing.card =
+                  (canonicalHotWindows data inputs.current.object).card +
+                    (canonicalColdWindows data inputs.current.object).card := by
+              rw [cardinality, ← canonicalCard, union,
+                Finset.card_union_of_disjoint disjoint]
+            rw [← countEq]
+            unfold Graph.FiniteObject.NonNegativeNetCharge at nonneg
+            unfold Data.netChargeCoefficient
+            -- `e(R,W) ≤ (δ·order − 2(order−1))·p + σ_W`, in both truncation cases.
+            have assoc :
+                data.threshold * data.windowOrder * packing.card =
+                  data.threshold * (data.windowOrder * packing.card) :=
+              Nat.mul_assoc _ _ _
+            have supply :
+                inputs.current.object.boundaryIncidence
+                    (inputs.current.object.remainderSupport packing) ≤
+                  (data.threshold * data.windowOrder - 2 * (data.windowOrder - 1)) *
+                      packing.card +
+                    inputs.current.object.ambientSurplus
+                      (Graph.FiniteObject.windowSupport packing) data.threshold := by
+              rcases Nat.le_total (2 * (data.windowOrder - 1))
+                  (data.threshold * data.windowOrder) with small | large
+              · have recombine :
+                    (data.threshold * data.windowOrder - 2 * (data.windowOrder - 1)) *
+                        packing.card +
+                      2 * (data.windowOrder - 1) * packing.card =
+                      data.threshold * data.windowOrder * packing.card := by
+                  rw [← Nat.add_mul, Nat.sub_add_cancel small]
+                omega
+              · rw [Nat.sub_eq_zero_of_le large, Nat.zero_mul, Nat.zero_add]
+                have := Nat.mul_le_mul_right packing.card large
+                omega
+            have scaledDeficiency := Nat.mul_le_mul_left data.dischargeScale deficiencyLe
+            have scaledSupply := Nat.mul_le_mul_left data.dischargeScale supply
+            rw [Nat.mul_add] at scaledSupply
+            rw [Nat.add_mul, Nat.mul_assoc]
+            omega⟩)
+        .nil)
+    0 0
+
 /-! ## Nodes `[57]`--`[58]`: net charge and its localization
 
 `def:net-charge` measures an admissible support by
@@ -3046,10 +3144,10 @@ assigned surplus (`K .typeBHighSurplus`).  `def:canonical-decomp` assigns every
 surplus unit `d_G(h) − 3` of a high centre `h ∈ V_{≥4}(G) ∩ V(R)` to the piece
 containing `h`, so `σ(X) = Σ_{h ∈ X}(d_G(h) − δ)` and `σ(X) > 0` says `X` has a
 high centre: node `[65]`'s *assigned support* is `X` with its own high centres as
-fan centres, each with fan `N_G(h)` (the ordinary adjacent fan,
-`def:decorated-fan-envelope`'s special case `ℓ(a) = 0`; the decorated handoff
-data belong to the `[66]` input from Type A exit `(7)`, whose own rows sit
-above).  Node `[67]` is `lem:heavy-neighbourhood-normal-form`
+fan centres, each with the canonical fan `N_G(h)` used by the ordinary Type B
+calculation.  This lane invents no handoff arms; the decorated envelope data
+belong only to the `[66]` input from Type A exit `(7)`.  Node `[67]` is
+`lem:heavy-neighbourhood-normal-form`
 (`highCentreNormalFormRow`, stated of the object).  Node `[68]` asks whether some
 assigned fan centre is heavy — degree above the high-centre degree `δ + 1` — and
 `[69]` is `cor:heavy-center-local-dichotomy` at every heavy fan centre.  Every
@@ -4621,10 +4719,12 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
 
 The predecessor is the exact selected no-exit-`(6)` fact.  Node `[107]`
 decides only whether that same selected saturated handoff state produces a
-decorated handoff envelope.  Node `[108]` records the admissible Type B
-interface for the produced envelope.  The dashed Part VI input `[66]` is the
-same `K .typeAExitSevenHandoff` fact passed unchanged from `[108]` to `[65]`;
-it is a routing edge, so it deliberately makes no duplicate ledger commit.
+decorated handoff envelope.  Node `[108]` records that produced envelope as the
+Type B handoff.  Node `[65]` then proves `lem:decorated-fan-admissibility` from
+that exact handoff and the inherited selection, normalization, and
+uncompressibility facts.  The dashed Part VI input `[66]` passes the same
+`K .typeAExitSevenHandoff` fact unchanged from `[108]` to `[65]`; it is a
+routing edge, so it deliberately makes no duplicate ledger commit.
 Node `[109]` routes the selected no-handoff residual unchanged into Part IX;
 node `[110]` is the first new route-8 publication.
 -/
@@ -4643,32 +4743,60 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       (Presentation := Presentation) (presentation := presentation)
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.typeAExitSevenHandoff
-    { Requires := [K .selection, K .uncompressible, K .remainderNormalized,
-        K .typeAExitSevenProduced]
+    { Requires := [K .typeAExitSevenProduced]
       Produces := [K .typeAExitSevenHandoff]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by simp
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       let produced :=
         (inputs.get (K .typeAExitSevenProduced)).down
       .cons (key := K .typeAExitSevenHandoff)
+        (show Value BranchState Presentation presentation data
+            .typeAExitSevenHandoff inputs.current from
+          ⟨produced⟩)
+        .nil)
+    0 0
+
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def typeBDecoratedAssignedSupportRow
+    : @AtomicStrategy (Input BranchState Presentation presentation data) _
+        (instFactSystem (BranchState := BranchState)
+          (Presentation := Presentation) (presentation := presentation)
+          (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.typeBDecoratedAssignedSupport
+    { Requires := [K .selection, K .uncompressible, K .remainderNormalized,
+        K .typeAExitSevenHandoff]
+      Produces := [K .typeBDecoratedAssignedSupport, K .typeBFanEntry]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp [K_eq_iff]
+      producesNonempty := by simp }
+    (fun inputs =>
+      let handoff := (inputs.get (K .typeAExitSevenHandoff)).down
+      .cons (key := K .typeBDecoratedAssignedSupport)
         ⟨by
           obtain ⟨packing, valid, maximal, component, present, negative, zero,
             receiver, isReceiver, peeled, peeledSubset, saturated, noExitFour,
-            noCompression, noDelocalization, producedEnvelope⟩ := produced
+            noCompression, noDelocalization, envelope, coreEq, nonempty⟩ :=
+            handoff
           let piece := inputs.current.object.pieceSupport
             (inputs.current.object.remainderSupport packing) component
-          obtain ⟨envelope, coreEq, decorated⟩ := producedEnvelope
           have inside : piece ⊆
               inputs.current.object.remainderSupport packing :=
             inputs.current.object.pieceSupport_subset
               (inputs.current.object.remainderSupport packing) component
-          have normalized := (inputs.get (K .remainderNormalized)).down
           have coreInside : envelope.core ⊆
               inputs.current.object.remainderSupport packing := by
             intro vertex member
             exact inside (by simpa [piece, coreEq] using member)
+          have normalized := (inputs.get (K .remainderNormalized)).down
           have windowFree :
               handoffWindowFree data inputs.current.object envelope.core := by
             constructor
@@ -4689,41 +4817,6 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                   secondMember different =>
                 (envelope.fanSafe centre centreMember first firstMember second
                   secondMember different).1 }
-          exact
-            ⟨packing, valid, maximal, component, present, negative, zero,
-              receiver, isReceiver, peeled, peeledSubset, saturated,
-              noExitFour, noCompression, noDelocalization,
-              ⟨envelope, coreEq, decorated, admissible⟩⟩⟩
-        .nil)
-    0 0
-
-omit [FactSystem (Input BranchState Presentation presentation data)] in
-@[reducible] noncomputable def typeBDecoratedAssignedSupportRow
-    : @AtomicStrategy (Input BranchState Presentation presentation data) _
-        (instFactSystem (BranchState := BranchState)
-          (Presentation := Presentation) (presentation := presentation)
-          (data := data)) :=
-  letI : FactSystem (Input BranchState Presentation presentation data) :=
-    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
-      (presentation := presentation) (data := data)
-  @factOnly (Input BranchState Presentation presentation data) _
-    (instFactSystem (BranchState := BranchState)
-      (Presentation := Presentation) (presentation := presentation)
-      (data := data))
-    `Hypostructure.Graph.Strategy.Spine.typeBDecoratedAssignedSupport
-    { Requires := [K .typeAExitSevenHandoff]
-      Produces := [K .typeBDecoratedAssignedSupport, K .typeBFanEntry]
-      requiresUnique := by simp
-      producesUnique := by simp [K_eq_iff]
-      producesNonempty := by simp }
-    (fun inputs =>
-      let handoff := (inputs.get (K .typeAExitSevenHandoff)).down
-      .cons (key := K .typeBDecoratedAssignedSupport)
-        ⟨by
-          obtain ⟨packing, valid, maximal, component, present, negative, zero,
-            receiver, isReceiver, peeled, peeledSubset, saturated, noExitFour,
-            noCompression, noDelocalization, envelope, coreEq, nonempty,
-            admissible⟩ := handoff
           have high : ∀ centre ∈ envelope.decorations,
               Graph.IsHighCentre inputs.current.object data.threshold centre := by
             intro centre member
@@ -4738,14 +4831,14 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                   envelope.assigned_adj centre member⟩,
               admissible⟩⟩⟩
         (.cons (key := K .typeBFanEntry)
-          -- Node `[66]`: the decorated envelope enters the common Type B fan
-          -- support with the decorations as its assigned centres
-          -- (`def:typeB-assigned-ledger`, `lem:decorated-fan-admissibility`).
+          -- Node `[65]`, after routing-only input `[66]`: publish the common
+          -- Type B fan entry with the envelope decorations as its assigned
+          -- centres (`def:typeB-assigned-ledger`).
           ⟨by
             obtain ⟨packing, valid, maximal, component, present, negative, zero,
               _receiver, _isReceiver, _peeled, _peeledSubset, _saturated, _noExitFour,
-              _noCompression, _noDelocalization, envelope, coreEq, nonempty,
-              _admissible⟩ := handoff
+              _noCompression, _noDelocalization, envelope, coreEq, nonempty⟩ :=
+              handoff
             refine ⟨packing, valid, maximal, component, present, envelope.decorations,
               Or.inr ⟨negative, zero, envelope, coreEq, rfl, nonempty,
                 fun centre member =>

@@ -507,6 +507,60 @@ set_option maxHeartbeats 800000 in
           exact ⟨candidates, disjointFamily, candidateFamily, extracted, count⟩⟩
         .nil)
 
+/-! ## Node `[175]`, `lem:absorbed-germ-fan-data`: the per-half-edge dichotomy
+
+On the absorbed-configuration residual every selected branch-excess half-edge
+`ε` of an ambient-cubic cold window has a return corridor (`lem:bridgeless`)
+and a first-failure exchange germ; the lemma's dichotomy is *per half-edge*,
+by whether the germ's support `J` meets a vertex above the threshold.  Case
+(i): `J` is subcubic, so `ε`'s germ is a candidate of `lem:cold-germ-extraction`
+and is charged in full.  Case (ii): `J` contains a vertex `z` above the
+threshold; node `[10]` (`K .slackIndependent`) makes every neighbour of `z`
+sit exactly at the threshold, so `z` is a heavy centre.  The row publishes
+that dichotomy for every selected half-edge, on the literal residual; the
+exhaustive object-level decision that follows (`absorbedGermDichotomy`) only
+chooses which continuation closes the branch. -/
+@[reducible] noncomputable def absorbedGermSplitRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.absorbedGermSplit
+    { Requires := [K .bridgeless, K .coldWindowLedgerSplit, K .slackIndependent]
+      Produces := [K .absorbedGermSplit]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let _bridgeless := (inputs.get (K .bridgeless)).down
+      let _split := (inputs.get (K .coldWindowLedgerSplit)).down
+      let independent := (inputs.get (K .slackIndependent)).down
+      .cons (key := K .absorbedGermSplit)
+        ⟨by
+          classical
+          change AbsorbedGermSplitStatement data inputs.current.object
+          simp only [AbsorbedGermSplitStatement]
+          intro baseline bridgeless large stub
+          set germ := Graph.ColdCorridor.stubGerm data.coldSignature data.threshold
+            (Graph.HasCycleWithLength data.LengthOK) inputs.current.object
+            ((canonicalColdWindows data inputs.current.object).filter
+              (AmbientCubicWindow data inputs.current.object))
+            baseline bridgeless large stub with germDef
+          by_cases subcubic : ∀ vertex ∈ germ.support,
+              inputs.current.object.degree vertex ≤ data.threshold
+          · refine Or.inl ⟨subcubic, ?_⟩
+            rw [germDef]
+            simp only [Graph.ColdCorridor.candidateGerms, Finset.mem_filter,
+              Finset.mem_image, Finset.mem_attach, true_and]
+            exact ⟨⟨stub, rfl⟩, subcubic⟩
+          · push_neg at subcubic
+            obtain ⟨centre, member, high⟩ := subcubic
+            refine Or.inr ⟨centre, member, high, fun neighbour adjacent => ?_⟩
+            apply le_antisymm
+            · by_contra above
+              push_neg at above
+              exact independent centre neighbour high above adjacent
+            · exact le_trans inputs.current.baseline
+                (inputs.current.object.minDegree_le_degree neighbour)⟩
+        .nil)
+
 /-! ## Nodes `[174]`--`[177]`, `lem:absorbed-germ-fan-data`: the absorbed-germ split
 
 On the absorbed-germ residual (`[173]`'s no arm) the linear cold count of

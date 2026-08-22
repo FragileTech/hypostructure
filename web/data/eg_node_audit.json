@@ -631,33 +631,33 @@
    "on_probed_closed_arm": false
   },
   "64": {
-   "producer": "`typeSplitDichotomy` (SpineRows.lean:2528), yes arm",
+   "producer": "`typeSplitDichotomy` (SpineRows.lean:2878), yes arm; consumed by `typeBAssignedSupportRow` (:3157)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "\u03c3(X) > 0 is the Type B entry; the yes-arm construction uses the [61] witness.",
-   "complete": "YES for the fact; the continuation reaches `selectedLargeBudgetPressureCensus`",
+   "fidelity_note": "\u03c3(X)>0 is the ordinary Type B entry. [65] derives an actual high centre of the same canonical piece and uses its canonical ambient fan; no decorated-arm surrogate is introduced.",
+   "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "The [64]-entry Type B keys are a distinct family from the [66] decorated keys; merging them double-counts [65]\u2013[85].",
+   "difference": "The [64] ordinary key family remains distinct from the [108]\u2192[66] decorated family, preventing double counting.",
    "on_probed_closed_arm": false
   },
   "65": {
-   "producer": "`typeBDecoratedAssignedSupportRow` (SpineRows.lean:4430); `typeBAssignedSupportRow` (:2808)",
+   "producer": "`typeBAssignedSupportRow` (SpineRows.lean:3157); `typeBDecoratedAssignedSupportRow` (:4762)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`def:decorated-fan-envelope`'s (Y,H); every clause discharged from an actual `Envelope` field.",
-   "complete": "NO: `selectedLargeBudgetPressureCensus`",
-   "local": "NO",
+   "fidelity_note": "On [64], publishes the actual assigned high centres and common fan entry. On [108], reads selection, uncompressibility, normalization and the exact handoff from the incoming ExactLedger, proves precisely the four decorated-fan admissibility clauses, and publishes the full admissible support plus fan entry.",
+   "complete": "YES",
+   "local": "YES",
    "api": "OK",
-   "difference": "Produced on two lanes with two different propositions; the annotation names only one.",
+   "difference": "The available ordinary and decorated lanes retain their exact support predicates but both append the common fan-entry fact; [144]/[177] remain separately audited producer defects.",
    "on_probed_closed_arm": false
   },
   "66": {
-   "producer": "`typeAExitSevenHandoffRow` (SpineRows.lean:4374)",
+   "producer": "`typeAExitSevenHandoffRow` (SpineRows.lean:4733) \u2192 `typeBDecoratedAssignedSupportRow` (:4762)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`Admissible` has four real fields; `windowFree` is derived from packing maximality, not assumed.",
-   "complete": "NO: `selectedLargeBudgetPressureCensus`",
-   "local": "NO",
+   "fidelity_note": "The dashed node is routing only: it passes [108]'s exact produced envelope unchanged. [65], not [66], proves and publishes decorated-fan admissibility from the same accumulated ledger.",
+   "complete": "YES",
+   "local": "YES",
    "api": "OK",
-   "difference": "The [66] clause is a comment inside a different file's row; the annotated declaration produces a key the vocabulary labels node [108].",
+   "difference": "No duplicate key or second assertion is introduced.",
    "on_probed_closed_arm": false
   },
   "67": {
@@ -1072,13 +1072,13 @@
    "on_probed_closed_arm": false
   },
   "108": {
-   "producer": "`typeAExitSevenHandoffRow` (SpineRows.lean:4374)",
+   "producer": "`typeAExitSevenHandoffRow` (SpineRows.lean:4733)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "All four `Admissible` clauses; `windowFree` derived from packing maximality; all three `Requires` used.",
+   "fidelity_note": "Records exactly the produced decorated envelope from `K .typeAExitSevenProduced`; the paper assigns the four admissibility clauses to [65], where they are now proved from inherited ExactLedger facts.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "\u2014",
+   "difference": "Requires and publishes exactly one handoff fact while preserving the incoming ledger tail.",
    "on_probed_closed_arm": false
   },
   "109": {
@@ -1736,23 +1736,23 @@
    "on_probed_closed_arm": false
   },
   "174": {
-   "producer": "`exactCollisionDichotomy` (SpineRows.lean:2360), `.inr` arm",
-   "fidelity": "WEAKER",
-   "fidelity_note": "Exactly \u00ac`K .netChargeCap`. The C lower bound and the bounded-arm placement are derived nowhere; nothing connects the collision failure to the cold family.",
+   "producer": "`absorbedConfigurationResidualRow` (SpineRows.lean:2663) on the `.inr` arm of `exactCollisionDichotomy` (SpineRows.lean:2614)",
+   "fidelity": "FAITHFUL",
+   "fidelity_note": "Publishes, at the [173] failure witness packing P, `n + s\u00b7\u03c3_R \u2264 A\u00b7(|\ud835\udcab_hot| + |\ud835\udcab_cold|) + s\u00b7\u03c3_W` with `A = netChargeCoefficient` (the manuscript's 73): the displayed `C \u2265 (n \u2212 73|\ud835\udcab_hot| \u2212 4(\u03c3_W \u2212 \u03c3_R))/73` without subtraction, derived as the manuscript does from the failed collision, the exact stub supply `K .boundaryDemand`, `|R| + 13p = n` and `p = |\ud835\udcab_hot| + |\ud835\udcab_cold|`. The bounded-arm placement is the existing `K .coldMassBounded` where [153] ran; on the dense \u03c4<1/4 path [153] never runs (lem:dense-deficiency-routing), so it is not required.",
    "complete": "YES",
    "local": "YES",
-   "api": "OK \u2014 but it declares no `Requires` and consumes no prior fact",
+   "api": "OK",
    "difference": "\u2014",
    "on_probed_closed_arm": false
   },
   "175": {
-   "producer": "`absorbedGermDichotomy` (ColdCorridorRows.lean:524)",
-   "fidelity": "WEAKER",
-   "fidelity_note": "The manuscript's [175] is a per-half-edge dichotomy; Lean decides one global question, so on a mixed residual the heavy-centre half-edges are never routed to Type B.",
+   "producer": "`absorbedGermSplitRow` (ColdCorridorRows.lean:523), then `absorbedGermDichotomy` (ColdCorridorRows.lean:578)",
+   "fidelity": "FAITHFUL",
+   "fidelity_note": "`K .absorbedGermSplit` is the lemma's per-half-edge dichotomy on the object: for every selected branch-excess half-edge \u03b5 of an ambient-cubic cold window with first-failure support J, either (i) J is subcubic and \u03b5's germ is a member of `candidateGerms` (charged in full), or (ii) some z \u2208 J has degree > threshold and every neighbour of z has degree exactly the threshold (node [10]) \u2014 a heavy centre. The object-level Decision that follows selects the closing continuation ([176] on a positive candidate class, [177] when every corridor is case (ii)); the per-half-edge fact is on the ledger on both arms.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "Vacuity risk: if the ambient-cubic cold family is empty the no arm is vacuously true.",
+   "difference": "The two distinct corridor incidences at z / separated connector tails are [177]'s construction, not published here. Vacuous when no selected stub exists, as the manuscript's per-\u03b5 statement.",
    "on_probed_closed_arm": false
   },
   "176": {

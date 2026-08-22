@@ -625,6 +625,10 @@ inductive Key where
   package overflows the labelled skeleton budget (`eq:entropy-cap`,
   `prop:entropy-high-theta`). -/
   | entropyCapActive
+  /-- Node `[54]`: the independently realized window/remainder code fits in
+  the labelled skeleton class.  This is the exact bound contradicted by the
+  active arm of `eq:entropy-cap`. -/
+  | entropyCapBound
   /-- Node `[53]`, no arm — node `[55]`, Residual C: the joint package still
   fits the skeleton budget, and the branch is the large-budget residual. -/
   | largeBudgetResidual
@@ -635,6 +639,12 @@ inductive Key where
   collision, decided exactly on the current object, fails at some maximal
   packing — the absorbed-germ residual `[174]`. -/
   | exactCollisionFails
+  /-- Node `[174]`, `lem:exact-collision-test`, the consequence of the failed
+  collision: the failure witness packing `P` of `[173]` satisfies
+  `n + s·σ_R ≤ A·(|𝒫_hot| + |𝒫_cold|) + s·σ_W`, `A = netChargeCoefficient`,
+  the manuscript's `C ≥ (n − 73|𝒫_hot| − 4(σ_W − σ_R))/73` without subtraction:
+  the residual carries linearly many cold windows. -/
+  | absorbedConfigurationResidual
   /-- Node `[60]`: the large-budget remainder has negative total net charge
   once the paper's explicit sufficiently-large predicate holds. -/
   | netChargeCap
@@ -794,10 +804,11 @@ inductive Key where
   `typeASaturatedReceiver`.  No exit-(4) fact is currently produced from this
   entry: the required coordinate-specific response realization is absent. -/
   | typeASaturatedExitEntry
-  /-- Node `[107]`, yes arm — exit `(7)` of `def:typeA-saturated-exits`: *"a
-  high-degree decorated handoff fan envelope is produced"*, at the visible
-  saturated port node `[93]` delivered.  This is the Type B handoff exit, and it
-  is the one exit of the list that neither closes nor stays in Type A:
+  /-- Node `[108]`, on node `[107]`'s yes arm — exit `(7)` of
+  `def:typeA-saturated-exits`: *"a high-degree decorated handoff fan envelope
+  is produced"*, at the visible saturated port node `[93]` delivered.  This is
+  the Type B handoff exit, and it is the one exit of the list that neither
+  closes nor stays in Type A:
   `lem:typeA-exits-discharged` says the branch *"is reclassified as a decorated
   handoff fan envelope and leaves the Type A charge calculation"*.
 
@@ -806,15 +817,16 @@ inductive Key where
   connector germs through the port — `def:typeA-trace-basin` clause (d), routed
   by `lem:typeA-continuation-routing`, with ambient degree at least `4` by
   `lem:typeA-cubic-switch-absorption` and handed over by
-  `lem:typeA-high-degree-handoff`.  The fact carries the envelope's
-  admissibility as well, which is `lem:decorated-fan-admissibility`: the handoff
-  interface the Type B fan calculation consumes.  By
-  `rem:typeA-typeB-stratification` no conclusion of `lem:typeB-exclusion` is
-  used, and none is available on this cursor. -/
+  `lem:typeA-high-degree-handoff`.  This node records only that produced
+  envelope.  Node `[65]` proves `lem:decorated-fan-admissibility` from this fact
+  and the inherited selection, normalization, and uncompressibility facts on
+  the same ledger.  By `rem:typeA-typeB-stratification` no conclusion of
+  `lem:typeB-exclusion` is used, and none is available on this cursor. -/
   | typeAExitSevenHandoff
-  /-- The decorated exit-`(7)` envelope's Type-B centres and their assigned
-  first-neighbour supports, extracted on the same residual for nodes
-  `[65]`--`[68]`. -/
+  /-- Node `[65]` on the decorated lane: the exact exit-`(7)` envelope, its
+  Type-B centres and assigned first-neighbour supports, and every clause of
+  `lem:decorated-fan-admissibility`, all published on the same residual for the
+  common Type B continuation. -/
   | typeBDecoratedAssignedSupport
   /-- Node `[107]`, no arm — the entry of node `[109]`: no high-degree decorated
   handoff fan envelope is produced at any visible port of any saturated receiver
@@ -921,6 +933,11 @@ inductive Key where
   support — every selected corridor meets a vertex of degree above the
   threshold, a heavy centre, and is decorated handoff fan data for Type B. -/
   | absorbedGermFanData
+  /-- Node `[175]`, `lem:absorbed-germ-fan-data`: the per-half-edge
+  dichotomy — every selected branch-excess half-edge's first-failure support is
+  subcubic (a charged candidate germ) or meets a heavy centre whose neighbours
+  all sit at the threshold (node `[10]`). -/
+  | absorbedGermSplit
   /-- The route-8 rate-failure residual, `rem:route8-carrier-margin` read
   exactly: the cold family of the fixed packing is nonempty, so the failure of
   the private-carrier rate is carried by absorbed cold germs (`[174]`--`[177]`). -/
@@ -1089,7 +1106,8 @@ inductive Key where
   | typeAExitSixGlobal
   /-- Node `[107]`, yes arm: the selected saturated-handoff residual, after
   exits `(4)`--`(6)` have failed, produces the exit-`(7)` decorated handoff
-  envelope.  The admissibility interface is committed separately at `[108]`. -/
+  envelope.  Node `[108]` records the handoff, and node `[65]` commits its
+  admissibility interface. -/
   | typeAExitSevenProduced
   /-- Node `[110]`, exit `(8)`: the selected route-8 residual satisfies the
   silent-core residual profile.  This is a semantic fact about the selected
@@ -2098,6 +2116,36 @@ noncomputable def AbsorbedGermFanDataStatement (data : Data.{u})
         stub).support,
       data.threshold < object.degree vertex
 
+/-- Node `[175]`, `lem:absorbed-germ-fan-data`, the per-half-edge dichotomy on
+the absorbed-configuration residual.  For every selected branch-excess
+half-edge `ε` of an ambient-cubic cold window, with first-failure support `J`
+(the support of its first-failure exchange germ), exactly one of:
+(i) `J` contains no vertex of degree above the threshold — then `J` is
+subcubic and `ε`'s germ is one of the candidates of `lem:cold-germ-extraction`,
+so it is charged in full and routed (F1)--(F5) as in
+`lem:cold-corridor-first-failure` (node `[176]`); or
+(ii) `J` contains a vertex `z` of degree above the threshold — then, since the
+vertices above the threshold are independent (node `[10]`), every neighbour of
+`z` has degree exactly the threshold: `z` is a heavy centre (node `[177]`).
+The two cases are exclusive by the degree comparison at `z`. -/
+noncomputable def AbsorbedGermSplitStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop := by
+  classical
+  let cold := canonicalColdWindows data object
+  let cubic := cold.filter (AmbientCubicWindow data object)
+  exact ∀ (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
+      (bridgeless : ∀ contraction : Graph.EdgeContraction object, contraction.HasReturn)
+      (large : 2 < object.vertexCount)
+      (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic}),
+    let germ := Graph.ColdCorridor.stubGerm data.coldSignature data.threshold
+      (Graph.HasCycleWithLength data.LengthOK) object cubic baseline bridgeless large stub
+    ((∀ vertex ∈ germ.support, object.degree vertex ≤ data.threshold) ∧
+        germ ∈ Graph.ColdCorridor.candidateGerms data.coldSignature data.threshold
+          (Graph.HasCycleWithLength data.LengthOK) object cubic baseline bridgeless large) ∨
+      ∃ centre ∈ germ.support, data.threshold < object.degree centre ∧
+        ∀ neighbour : object.Vertex, object.graph.Adj centre neighbour →
+          object.degree neighbour = data.threshold
+
 /-- `lem:cold-germ-extraction` on the current residual.  The selected
 half-edge count pays for an actual candidate family; the framework-local
 greedy extraction then returns a positive disjoint family. -/
@@ -2371,11 +2419,12 @@ def HandoffAdmissible (data : Data.{u}) (object : Graph.FiniteObject.{u})
         (handoffUncompressible data object) (handoffWindowFree data object)
         envelope
 
-/-- `def:decorated-typeB-envelope-support`, `def:typeB-assigned-ledger`, and
-`lem:decorated-fan-admissibility` on a selected handoff residual: the complete
+/-- `def:decorated-fan-envelope`, the selected-handoff instance of
+`def:typeB-assigned-ledger`, and `lem:decorated-fan-admissibility`: the complete
 envelope, its high-degree centre set, each centre's nonempty assigned
 first-neighbour support, and the admissibility data consumed by the Type B
-calculation. -/
+calculation.  The paper's separate multi-core grouped-envelope support is
+formed later from the actual post-ledger component family. -/
 def DecoratedTypeBAssignedSupport (data : Data.{u})
     (object : Graph.FiniteObject.{u})
     (packing : Finset (Finset object.Vertex))
@@ -3864,6 +3913,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       ¬ BlockedScaleAdditivityStatement data object
   | .absorbedGermFanData, object =>
       AbsorbedGermFanDataStatement data object
+  | .absorbedGermSplit, object =>
+      AbsorbedGermSplitStatement data object
   | .coldFamilyPositive, object =>
       0 < (canonicalColdWindows data object).card
   | .coldFamilyEmpty, object =>
@@ -4050,6 +4101,11 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- curvature cost, i.e. the joint package strictly overflows the labelled
       -- skeleton budget of `lem:near-cubic-budget`.
       Graph.skeletonBudget object < jointPackageDemand data object
+  | .entropyCapBound, object =>
+      -- Node `[54]`: `lem:independent-target-entropy` and
+      -- `lem:skeleton-dominates` bound the exact joint code by the labelled
+      -- skeleton budget.  `K .entropyCapActive` is its strict negation.
+      jointPackageDemand data object ≤ Graph.skeletonBudget object
   | .largeBudgetResidual, object =>
       -- Residual C.  The high-entropy arm reaches it through the exact
       -- skeleton comparison; the low-entropy arm is routed here unchanged, as `prop:two-budget` prescribes.
@@ -4113,6 +4169,27 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
           packing.card = object.windowPackingNumber data.windowOrder ∧
             object.NonNegativeNetCharge (object.remainderSupport packing)
               data.threshold data.dischargeScale)
+  | .absorbedConfigurationResidual, object =>
+      -- Node `[174]`, `lem:exact-collision-test`: at the failure witness
+      -- packing, `|R| + s·σ_R ≤ s·def⁺(R)` combined with the exact stub supply
+      -- `def⁺(R) ≤ e(R,W) ≤ (δ·order − 2(order−1))·p + σ_W` and
+      -- `|R| + order·p = n`, `p = |𝒫_hot| + |𝒫_cold|`, gives the manuscript's
+      -- `C ≥ (n − A|𝒫_hot| − s(σ_W − σ_R))/A` with `A = s·(δ·order − 2(order−1)) + order`.
+      (∃ packing : Finset (Finset object.Vertex),
+        object.IsWindowPacking data.windowOrder packing ∧
+          packing.card = object.windowPackingNumber data.windowOrder ∧
+            object.NonNegativeNetCharge (object.remainderSupport packing)
+              data.threshold data.dischargeScale ∧
+            object.vertexCount +
+                data.dischargeScale *
+                  object.ambientSurplus (object.remainderSupport packing)
+                    data.threshold ≤
+              data.netChargeCoefficient *
+                  ((canonicalHotWindows data object).card +
+                    (canonicalColdWindows data object).card) +
+                data.dischargeScale *
+                  object.ambientSurplus (Graph.FiniteObject.windowSupport packing)
+                    data.threshold)
   | .netChargeCap, object =>
       (∀ packing : Finset (Finset object.Vertex),
         object.IsWindowPacking data.windowOrder packing →
@@ -4527,10 +4604,10 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       SelectedNoExitSixWith data object
         (fun packing piece => HandoffProduced data object packing piece)
   | .typeAExitSevenHandoff, object =>
-      -- Node `[108]`: the produced envelope is committed with the admissible
-      -- Type B handoff interface.
+      -- Node `[108]`: the produced envelope is committed as the Type B
+      -- handoff.  Its admissibility is the fact proved at node `[65]`.
       SelectedNoExitSixWith data object
-        (fun packing piece => HandoffAdmissible data object packing piece)
+        (fun packing piece => HandoffProduced data object packing piece)
   | .typeBDecoratedAssignedSupport, object =>
       SelectedNoExitSixWith data object
         (fun packing piece =>
@@ -5833,9 +5910,11 @@ def label : Key → String
   | .remainderEntropyLow => "remainderEntropyLow"
   | .entropyPackageDemand => "entropyPackageDemand"
   | .entropyCapActive => "entropyCapActive"
+  | .entropyCapBound => "entropyCapBound"
   | .largeBudgetResidual => "largeBudgetResidual"
   | .netDeficiencyCap => "netDeficiencyCap"
   | .exactCollisionFails => "exactCollisionFails"
+  | .absorbedConfigurationResidual => "absorbedConfigurationResidual"
   | .netChargeCap => "netChargeCap"
   | .netChargeLocalization => "netChargeLocalization"
   | .netChargeNonNegative => "netChargeNonNegative"
@@ -5897,6 +5976,7 @@ def label : Key → String
   | .blockedScaleAdditive => "blockedScaleAdditive"
   | .blockedBarrierOverlap => "blockedBarrierOverlap"
   | .absorbedGermFanData => "absorbedGermFanData"
+  | .absorbedGermSplit => "absorbedGermSplit"
   | .coldFamilyPositive => "coldFamilyPositive"
   | .coldFamilyEmpty => "coldFamilyEmpty"
   | .coldGermCandidates => "coldGermCandidates"
@@ -6070,10 +6150,13 @@ example : label .remainderEntropyHigh = "remainderEntropyHigh" := rfl
 example : label .remainderEntropyLow = "remainderEntropyLow" := rfl
 example : label .entropyPackageDemand = "entropyPackageDemand" := rfl
 example : label .entropyCapActive = "entropyCapActive" := rfl
+example : label .entropyCapBound = "entropyCapBound" := rfl
 example : label .largeBudgetResidual = "largeBudgetResidual" := rfl
 example : label .netDeficiencyCap = "netDeficiencyCap" := rfl
 example : label .exactCollisionFails = "exactCollisionFails" := rfl
+example : label .absorbedConfigurationResidual = "absorbedConfigurationResidual" := rfl
 example : label .absorbedGermFanData = "absorbedGermFanData" := rfl
+example : label .absorbedGermSplit = "absorbedGermSplit" := rfl
 example : label .coldFamilyPositive = "coldFamilyPositive" := rfl
 example : label .coldFamilyEmpty = "coldFamilyEmpty" := rfl
 example : label .netChargeCap = "netChargeCap" := rfl
@@ -6334,9 +6417,12 @@ def idx : Key → Nat
   | .remainderEntropyLow => 39
   | .entropyPackageDemand => 40
   | .entropyCapActive => 41
+  | .entropyCapBound => 325
   | .largeBudgetResidual => 42
   | .netDeficiencyCap => 222
   | .exactCollisionFails => 146
+  | .absorbedConfigurationResidual => 326
+  | .absorbedGermSplit => 327
   | .netChargeCap => 145
   | .netChargeLocalization => 46
   | .netChargeNonNegative => 47
@@ -6565,9 +6651,12 @@ def ofIdx : Nat → Key
   | 39 => .remainderEntropyLow
   | 40 => .entropyPackageDemand
   | 41 => .entropyCapActive
+  | 325 => .entropyCapBound
   | 42 => .largeBudgetResidual
   | 222 => .netDeficiencyCap
   | 146 => .exactCollisionFails
+  | 326 => .absorbedConfigurationResidual
+  | 327 => .absorbedGermSplit
   | 145 => .netChargeCap
   | 46 => .netChargeLocalization
   | 47 => .netChargeNonNegative
@@ -6874,12 +6963,18 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "entropyPackageDemand") 40
   | .entropyCapActive =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "entropyCapActive") 41
+  | .entropyCapBound =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "entropyCapBound") 325
   | .largeBudgetResidual =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "largeBudgetResidual") 42
   | .netDeficiencyCap =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "netDeficiencyCap") 222
   | .exactCollisionFails =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "exactCollisionFails") 146
+  | .absorbedConfigurationResidual =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "absorbedConfigurationResidual") 326
+  | .absorbedGermSplit =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "absorbedGermSplit") 327
   | .netChargeCap =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "netChargeCap") 145
   | .netChargeLocalization =>

@@ -134,22 +134,19 @@ abbrev residualCNetChargeCapKeys
     FactKeys (Input BranchState Presentation presentation data) :=
   K .netChargeCap :: residualCNetChargeLargeKeys known
 
-/-- Node `[53]`'s yes arm on the high-entropy package, closed at `[54]`. -/
-abbrev entropyCapActiveKeys :
+/-- Node `[53]`'s yes arm, closed at `[54]` after the sealed row publishes the
+exact skeleton-budget bound.  `known` is the literal incoming high-entropy
+package tail; no concrete predecessor shape is reconstructed. -/
+abbrev entropyCapClosedKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  closed :: K .entropyCapActive :: entropyPackageKeys
+  closed :: K .entropyCapBound :: K .entropyCapActive :: known
 
 /-- Node `[53]`'s no arm on the high-entropy package.  It retains the package
 fact and enters the large-budget continuation. -/
 abbrev entropyPackageLargeBudgetKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   K .largeBudgetResidual :: entropyPackageKeys
-
-/-- The same exact budget comparison on the low-entropy arm, when its active
-side is already incompatible with the separated realization. -/
-abbrev lowEntropyCapActiveKeys :
-    FactKeys (Input BranchState Presentation presentation data) :=
-  closed :: K .entropyCapActive :: remainderEntropyLowKeys
 
 /-- Node `[55]`, Residual C: node `[53]`'s no arm. -/
 abbrev largeBudgetKeys :
@@ -249,10 +246,13 @@ abbrev residualCTypeAUnsaturatedClosedKeys
     FactKeys (Input BranchState Presentation presentation data) :=
   closed :: residualCTypeAUnsaturatedDischargeKeys known
 
+/-- Node `[67]` after node `[65]`'s literal two-key manifest.  The assigned
+support and common fan entry remain in the same immutable ledger prefix. -/
 abbrev residualCTypeBNormalFormKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .highCentreNormalForm :: residualCTypeBHighSurplusKeys known
+  K .highCentreNormalForm :: K .typeBAssignedSupport :: K .typeBFanEntry ::
+    residualCTypeBHighSurplusKeys known
 
 abbrev residualCTypeBHeavyCentreKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
@@ -1006,19 +1006,20 @@ theorem entropyPackage_audit_accounts_for_every_fact
         (fun record => record.produced) :=
   ExactLedger.audit_complete history
 
-theorem entropyCapActive_audit_accounts_for_every_fact
+theorem entropyCapClosed_audit_facts
     {selected : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
     (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected entropyCapActiveKeys) :
-    (ExactLedger.audit history).facts =
-      (ExactLedger.audit history).commits.reverse.flatMap
-        (fun record => record.produced) :=
-  ExactLedger.audit_complete history
+      selected (entropyCapClosedKeys known)) :
+    (ExactLedger.audit history).facts.take 3 =
+      [Core.Residual.closureFactName, (name .entropyCapBound),
+        (name .entropyCapActive)] := rfl
 
-theorem lowEntropyCapActive_audit_accounts_for_every_fact
+theorem entropyCapClosed_audit_accounts_for_every_fact
     {selected : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
     (history : ExactLedger (Input BranchState Presentation presentation data)
-      selected lowEntropyCapActiveKeys) :
+      selected (entropyCapClosedKeys known)) :
     (ExactLedger.audit history).facts =
       (ExactLedger.audit history).commits.reverse.flatMap
         (fun record => record.produced) :=

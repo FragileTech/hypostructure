@@ -2098,11 +2098,12 @@ noncomputable def selectedTypeBDecoratedContinuation
         (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh])
         (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedBranchKillFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedSelectedChargeFresh]) (by simp [K_eq_iff, decoratedExclusionChargeFresh]) (by simp [K_eq_iff, decoratedExcludedFresh]) (by simp [K_eq_iff, decoratedExclusionResidualFresh]) (by simp [K_eq_iff, decoratedExclusionMassFresh]) (by simp [K_eq_iff, decoratedObstructionMassFresh]) (by simp [K_eq_iff, decoratedClosureFresh])
 
-/-- **Node `[108]` → Type B `[65]` on the decorated envelope**: the admissible
-Type B handoff interface committed at `[108]` (`K .typeAExitSevenHandoff`) enters
-the Type B branch at `[65]` with the decorated envelope's assigned support
-(`typeBDecoratedAssignedSupportRow`, `def:decorated-fan-envelope`,
-`def:canonical-decomp`).  Then `[67]`--`[70]` on the decorated envelope
+/-- **Node `[108]` → Type B `[65]` on the decorated envelope**: the exact
+envelope committed at `[108]` (`K .typeAExitSevenHandoff`) enters the Type B
+branch at `[65]`.  There `typeBDecoratedAssignedSupportRow` reads the inherited
+selection, normalization, and uncompressibility facts, proves
+`lem:decorated-fan-admissibility`, and commits the envelope's assigned support.
+Then `[67]`--`[70]` run on that decorated envelope
 (`selectedTypeBDecoratedContinuation`). -/
 -- EG-NODE [65] Type B assigned support: high-degree fan centers and decorated envelope
 noncomputable def selectedTypeADecoratedHandoff
@@ -2160,9 +2161,9 @@ saturated-handoff state after exit `(4)` is absent (index-polymorphic).
 response equality is localized at `[106]` — proper scope closes against
 `lem:replacement` (`K .replacementExclusion`), global scope against the
 selection's minimality.  `[107]` exit `(7)`: the decorated handoff fan envelope
-is committed with its admissible Type B interface at `[108]` and returns to the
-Type B handoff (`[65]`), the next producer on that lane; its absence is `[109]`,
-the route-8 residual continued in Part IX (`[110]`, the next producer). -/
+is committed as the Type B handoff at `[108]`; its admissibility is proved at
+`[65]`, the next producer on that lane.  Its absence is `[109]`, the route-8
+residual continued in Part IX (`[110]`, the next producer). -/
 -- EG-NODE [103] exit 5? target-complete response compression
 -- EG-NODE [104] uncompressibility contradiction
 -- EG-NODE [105] exit 6? proper/global delocalization
@@ -2245,8 +2246,8 @@ noncomputable def selectedTypeAExitFiveToSeven
               (by simp [K_eq_iff, sevenProducedFresh])
               (by simp [K_eq_iff, sevenFreeFresh]) with
           | .left producedHistory =>
-              -- `[108]`: the admissible Type B handoff interface; the decorated
-              -- envelope enters Type B at `[65]` — the next producer.
+              -- `[108]`: record the produced Type B handoff envelope; `[65]`
+              -- proves its admissibility — the next producer.
               let handoff :=
                 (typeAExitSevenHandoffRow (BranchState := BranchState)
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -2371,8 +2372,8 @@ noncomputable def selectedTypeAExitFiveToSevenSilent
               (by simp [K_eq_iff, sevenProducedFresh])
               (by simp [K_eq_iff, sevenFreeFresh]) with
           | .left producedHistory =>
-              -- `[108]`: the admissible Type B handoff interface; the decorated
-              -- envelope enters Type B at `[65]` — the next producer.
+              -- `[108]`: record the produced Type B handoff envelope; `[65]`
+              -- proves its admissibility — the next producer.
               let handoff :=
                 (typeAExitSevenHandoffRow (BranchState := BranchState)
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -3414,6 +3415,7 @@ noncomputable def selectedAbsorbedGermResidual
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .coldWindowLedgerSplit) known]
+    [FactKeys.Has (K .slackIndependent) known]
     (absorbedBridgelessFresh : K .bridgeless ∉ known := by simp [K_eq_iff])
     (absorbedCorridorsFresh : K .coldReturnCorridors ∉ known := by simp [K_eq_iff])
     (absorbedStateFresh : K .coldCorridorState ∉ known := by simp [K_eq_iff])
@@ -3424,6 +3426,7 @@ noncomputable def selectedAbsorbedGermResidual
     (absorbedRoutingFresh : K .coldFailureRouting ∉ known := by simp [K_eq_iff])
     (absorbedExchangeFresh : K .coldExchangeBound ∉ known := by simp [K_eq_iff])
     (absorbedExtractionFresh : K .coldGermExtraction ∉ known := by simp [K_eq_iff])
+    (absorbedSplitFresh : K .absorbedGermSplit ∉ known := by simp [K_eq_iff])
     (absorbedCandidatesFresh : K .coldGermCandidates ∉ known := by simp [K_eq_iff])
     (absorbedFanFresh : K .absorbedGermFanData ∉ known := by simp [K_eq_iff])
     (absorbedRealizedFresh : K .coldGermRealized ∉ known := by simp [K_eq_iff])
@@ -3455,8 +3458,15 @@ noncomputable def selectedAbsorbedGermResidual
   let extracted :=
     (coldGermExtractionRow (data := spineData)).run routed
       (by simp [K_eq_iff, absorbedExchangeFresh, absorbedExtractionFresh])
-  -- `[175]`: does some selected corridor have a subcubic first-failure support?
-  match absorbedGermDichotomy (data := spineData) extracted
+  -- `[175]`, `lem:absorbed-germ-fan-data`: the per-half-edge dichotomy — every
+  -- selected corridor's first-failure support is subcubic (a charged candidate
+  -- germ, `[176]`) or meets a heavy centre whose neighbours sit at the threshold
+  -- by node `[10]` (`[177]`).
+  let split :=
+    (absorbedGermSplitRow (data := spineData)).run extracted
+      (by simp [K_eq_iff, absorbedSplitFresh])
+  -- The exhaustive object-level reading of `[175]`: is the subcubic class nonempty?
+  match absorbedGermDichotomy (data := spineData) split
       (by simp [K_eq_iff, absorbedCandidatesFresh])
       (by simp [K_eq_iff, absorbedFanFresh]) with
   | .left candidates =>
@@ -3529,6 +3539,7 @@ noncomputable def selectedRouteEightRateFailure
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .coldWindowLedgerSplit) known]
+    [FactKeys.Has (K .slackIndependent) known]
     (positiveFresh : K .coldFamilyPositive ∉ known := by simp [K_eq_iff])
     (emptyFresh : K .coldFamilyEmpty ∉ known := by simp [K_eq_iff])
     (absorbedBridgelessFresh : K .bridgeless ∉ known := by simp [K_eq_iff])
@@ -3541,6 +3552,7 @@ noncomputable def selectedRouteEightRateFailure
     (absorbedRoutingFresh : K .coldFailureRouting ∉ known := by simp [K_eq_iff])
     (absorbedExchangeFresh : K .coldExchangeBound ∉ known := by simp [K_eq_iff])
     (absorbedExtractionFresh : K .coldGermExtraction ∉ known := by simp [K_eq_iff])
+    (absorbedSplitFresh : K .absorbedGermSplit ∉ known := by simp [K_eq_iff])
     (absorbedCandidatesFresh : K .coldGermCandidates ∉ known := by simp [K_eq_iff])
     (absorbedFanFresh : K .absorbedGermFanData ∉ known := by simp [K_eq_iff])
     (absorbedRealizedFresh : K .coldGermRealized ∉ known := by simp [K_eq_iff])
@@ -3564,6 +3576,7 @@ noncomputable def selectedRouteEightRateFailure
         (by simp [K_eq_iff, absorbedDefectFresh]) (by simp [K_eq_iff, absorbedCompressionFresh])
         (by simp [K_eq_iff, absorbedHandoffFresh]) (by simp [K_eq_iff, absorbedRoutingFresh])
         (by simp [K_eq_iff, absorbedExchangeFresh]) (by simp [K_eq_iff, absorbedExtractionFresh])
+        (by simp [K_eq_iff, absorbedSplitFresh])
         (by simp [K_eq_iff, absorbedCandidatesFresh]) (by simp [K_eq_iff, absorbedFanFresh])
         (by simp [K_eq_iff, absorbedRealizedFresh]) (by simp [K_eq_iff, absorbedDistinguishedFresh])
         (by simp [K_eq_iff, absorbedSilentFresh]) (by simp [K_eq_iff, absorbedRoutedFresh])
@@ -3605,12 +3618,15 @@ noncomputable def selectedNetChargeContinuation
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .netDeficiencyCap) known]
     [FactKeys.Has (K .stubSupply) known]
+    [FactKeys.Has (K .boundaryDemand) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .largeBudgetResidual) known]
     (capFresh : K .netChargeCap ∉ known := by simp [K_eq_iff])
     -- `[173]`--`[177]`, the exact collision test and the absorbed-germ residual.
     (failsFresh : K .exactCollisionFails ∉ known := by simp [K_eq_iff])
+    (absorbedResidualFresh : K .absorbedConfigurationResidual ∉ known := by simp [K_eq_iff])
     [FactKeys.Has (K .coldWindowLedgerSplit) known]
+    [FactKeys.Has (K .slackIndependent) known]
     (absorbedBridgelessFresh : K .bridgeless ∉ known := by simp [K_eq_iff])
     (absorbedCorridorsFresh : K .coldReturnCorridors ∉ known := by simp [K_eq_iff])
     (absorbedStateFresh : K .coldCorridorState ∉ known := by simp [K_eq_iff])
@@ -3621,6 +3637,7 @@ noncomputable def selectedNetChargeContinuation
     (absorbedRoutingFresh : K .coldFailureRouting ∉ known := by simp [K_eq_iff])
     (absorbedExchangeFresh : K .coldExchangeBound ∉ known := by simp [K_eq_iff])
     (absorbedExtractionFresh : K .coldGermExtraction ∉ known := by simp [K_eq_iff])
+    (absorbedSplitFresh : K .absorbedGermSplit ∉ known := by simp [K_eq_iff])
     (absorbedCandidatesFresh : K .coldGermCandidates ∉ known := by simp [K_eq_iff])
     (absorbedFanFresh : K .absorbedGermFanData ∉ known := by simp [K_eq_iff])
     (absorbedRealizedFresh : K .coldGermRealized ∉ known := by simp [K_eq_iff])
@@ -3751,14 +3768,22 @@ noncomputable def selectedNetChargeContinuation
   -- exactly on the current object (`K .netChargeCap`), with no condition on `n`.
   match exactCollisionDichotomy (data := spineData) history capFresh failsFresh with
   | .right failsHistory =>
-      -- `[174]`--`[177]`, `lem:absorbed-germ-fan-data`: the absorbed-germ
+      -- `[174]`, `lem:exact-collision-test`: the failed collision rearranges to
+      -- the cold-window lower bound `n + s·σ_R ≤ A·(|𝒫_hot| + |𝒫_cold|) + s·σ_W`.
+      let absorbed :=
+        (absorbedConfigurationResidualRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          failsHistory (by simp [K_eq_iff, absorbedResidualFresh])
+      -- `[175]`--`[177]`, `lem:absorbed-germ-fan-data`: the absorbed-germ
       -- residual (`selectedAbsorbedGermResidual`).
-      exact selectedAbsorbedGermResidual failsHistory
+      exact selectedAbsorbedGermResidual absorbed
         (by simp [K_eq_iff, absorbedBridgelessFresh]) (by simp [K_eq_iff, absorbedCorridorsFresh])
         (by simp [K_eq_iff, absorbedStateFresh]) (by simp [K_eq_iff, absorbedCycleFresh])
         (by simp [K_eq_iff, absorbedDefectFresh]) (by simp [K_eq_iff, absorbedCompressionFresh])
         (by simp [K_eq_iff, absorbedHandoffFresh]) (by simp [K_eq_iff, absorbedRoutingFresh])
         (by simp [K_eq_iff, absorbedExchangeFresh]) (by simp [K_eq_iff, absorbedExtractionFresh])
+        (by simp [K_eq_iff, absorbedSplitFresh])
         (by simp [K_eq_iff, absorbedCandidatesFresh]) (by simp [K_eq_iff, absorbedFanFresh])
         (by simp [K_eq_iff, absorbedRealizedFresh]) (by simp [K_eq_iff, absorbedDistinguishedFresh])
         (by simp [K_eq_iff, absorbedSilentFresh]) (by simp [K_eq_iff, absorbedRoutedFresh])
@@ -3912,6 +3937,7 @@ noncomputable def selectedSpineToLargeBudget
     (repairFresh : K .repairIdentity ∉ known := by simp [K_eq_iff])
     (barrierFresh : K .globalBarrier ∉ known := by simp [K_eq_iff])
     (closureFresh : closed ∉ known := by simp [K_eq_iff])
+    (entropyBoundFresh : K .entropyCapBound ∉ known := by simp [K_eq_iff])
     (costFresh : K .forcedCurvatureCost ∉ known := by simp [K_eq_iff])
     (highFresh : K .remainderEntropyHigh ∉ known := by simp [K_eq_iff])
     (lowFresh : K .remainderEntropyLow ∉ known := by simp [K_eq_iff])
@@ -3919,21 +3945,14 @@ noncomputable def selectedSpineToLargeBudget
     (activeFresh : K .entropyCapActive ∉ known := by simp [K_eq_iff])
     (largeFresh : K .largeBudgetResidual ∉ known := by simp [K_eq_iff]) :
     Sum
-      (Sum
-        (ExactLedger EGInput.{u} selected
-          (K .largeBudgetResidual :: K .entropyPackageDemand :: K .remainderEntropyHigh ::
-            K .forcedCurvatureCost :: K .curvatureFullRank :: K .targetRankCircuit ::
-            K .exactResponseProfile :: K .admissibleRankQuotient :: K .curvatureTargetRank ::
-            K .wedgeSupply :: K .stubSupply :: K .boundaryDemand :: K .remainderNormalized ::
-            known))
-        (ExactLedger EGInput.{u} selected
-          (K .largeBudgetResidual :: K .remainderEntropyLow ::
-            K .forcedCurvatureCost :: K .curvatureFullRank :: K .targetRankCircuit ::
-            K .exactResponseProfile :: K .admissibleRankQuotient :: K .curvatureTargetRank ::
-            K .wedgeSupply :: K .stubSupply :: K .boundaryDemand :: K .remainderNormalized ::
-            known)))
       (ExactLedger EGInput.{u} selected
-        (K .entropyCapActive :: K .entropyPackageDemand :: K .remainderEntropyHigh ::
+        (K .largeBudgetResidual :: K .entropyPackageDemand :: K .remainderEntropyHigh ::
+          K .forcedCurvatureCost :: K .curvatureFullRank :: K .targetRankCircuit ::
+          K .exactResponseProfile :: K .admissibleRankQuotient :: K .curvatureTargetRank ::
+          K .wedgeSupply :: K .stubSupply :: K .boundaryDemand :: K .remainderNormalized ::
+          known))
+      (ExactLedger EGInput.{u} selected
+        (K .largeBudgetResidual :: K .remainderEntropyLow ::
           K .forcedCurvatureCost :: K .curvatureFullRank :: K .targetRankCircuit ::
           K .exactResponseProfile :: K .admissibleRankQuotient :: K .curvatureTargetRank ::
           K .wedgeSupply :: K .stubSupply :: K .boundaryDemand :: K .remainderNormalized ::
@@ -4011,24 +4030,27 @@ noncomputable def selectedSpineToLargeBudget
       match entropyCapDichotomy (data := spineData) package
           (by simp [K_eq_iff, activeFresh]) (by simp [K_eq_iff, largeFresh]) with
       | .left activeHistory =>
-          -- `[54]`: closes when the `[22]` comparison retains the hot family's
-          -- code (`lem:independent-target-entropy`); the all-cold comparison
-          -- residual is returned to the caller.
-          classical
-          exact if retained : WindowFamilyRealized spineData.{u} selected.object
-              (canonicalHotWindows spineData.{u} selected.object) then
-            (entropyCap_closes activeHistory retained).elim
-          else
-            .inr activeHistory
+          -- `[54]`: the sealed row derives the exact opposite budget bound on
+          -- both alternatives stored in `K .hotColdPartition`; Core closes the
+          -- resulting incompatible facts on this literal active ledger.
+          let closedHistory :=
+            (entropyCapBoundRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).runAndCloseIncompatible
+                activeHistory
+                (K .entropyCapActive) (K .entropyCapBound)
+                (by simp [K_eq_iff, entropyBoundFresh])
+                (by simp [K_eq_iff, closureFresh])
+          exact (closedHistory.elimClosed (by infer_instance)).elim
       | .right largeHistory =>
-          exact .inl (.inl largeHistory)
+          exact .inl largeHistory
   | .right lowHistory =>
       let large :=
         (lowEntropyLargeBudgetRow (BranchState := BranchState)
         (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
         (presentation := erdosReceiverLoadProfile) (data := spineData)).run
         lowHistory (by simp [K_eq_iff, largeFresh])
-      exact .inl (.inr large)
+      exact .inr large
 
 set_option maxHeartbeats 4000000 in
 /-- The near-cubic branch after node `[19]`: node `[21]`, the `[22]` split and
@@ -4128,26 +4150,20 @@ noncomputable def selectedNearCubicBranch
               exact selectedRouteEightRateFailure rateFails
           | .left belowHistory =>
           match selectedSpineToLargeBudget belowHistory with
-          | .inl (.inl highHistory) =>
+          | .inl highHistory =>
               let netCap :=
                 (denseNetDeficiencyCapRow (BranchState := BranchState)
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                   highHistory (by simp [K_eq_iff])
               exact selectedNetChargeContinuation netCap
-          | .inl (.inr lowHistory) =>
+          | .inr lowHistory =>
               let netCap :=
                 (denseNetDeficiencyCapRow (BranchState := BranchState)
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                   lowHistory (by simp [K_eq_iff])
               exact selectedNetChargeContinuation netCap
-          | .inr activeHistory =>
-              rcases hotFamily_retained_or_cold activeHistory with retained | cold
-              · exact entropyCap_closes activeHistory retained
-              · -- `[54]` on the all-cold residual: the joint demand is the remainder class
-                -- alone, which glues into the skeleton budget (`RemainderGlue`).
-                exact entropyCap_closes_of_allCold activeHistory cold.1
       | .right denseHistory =>
           -- `τ(θ) ≥ 1/4`, the dense residual: `[22]`'s live-hot cap decision and the
           -- cold branch `[145]`--`[157]` on it.
@@ -4169,26 +4185,20 @@ noncomputable def selectedNearCubicBranch
               -- `[147]`: `τ(θ) < 3/13`, the spine's route-8 closure with that
               -- inequality as `[56]`'s input.
               match selectedSpineToLargeBudget belowHistory with
-              | .inl (.inl highHistory) =>
+              | .inl highHistory =>
                   let netCap :=
                     (routeEightNetDeficiencyCapRow (BranchState := BranchState)
                       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                       highHistory (by simp [K_eq_iff])
                   exact selectedNetChargeContinuation netCap
-              | .inl (.inr lowHistory) =>
+              | .inr lowHistory =>
                   let netCap :=
                     (routeEightNetDeficiencyCapRow (BranchState := BranchState)
                       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                       lowHistory (by simp [K_eq_iff])
                   exact selectedNetChargeContinuation netCap
-              | .inr activeHistory =>
-                  rcases hotFamily_retained_or_cold activeHistory with retained | cold
-                  · exact entropyCap_closes activeHistory retained
-                  · -- `[54]` on the all-cold residual: the joint demand is the remainder class
-                    -- alone, which glues into the skeleton budget (`RemainderGlue`).
-                    exact entropyCap_closes_of_allCold activeHistory cold.1
           | .right atOrAboveHistory =>
           match coldHotEntropyDichotomy (data := spineData) atOrAboveHistory
               (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
@@ -4290,26 +4300,20 @@ noncomputable def selectedNearCubicBranch
                   exact selectedRouteEightRateFailure rateFails
               | .left density =>
               match selectedSpineToLargeBudget density with
-              | .inl (.inl highHistory) =>
+              | .inl highHistory =>
                   let netCap :=
                     (netDeficiencyCapRow (BranchState := BranchState)
                       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                       highHistory (by simp [K_eq_iff])
                   exact selectedNetChargeContinuation netCap
-              | .inl (.inr lowHistory) =>
+              | .inr lowHistory =>
                   let netCap :=
                     (netDeficiencyCapRow (BranchState := BranchState)
                       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                       lowHistory (by simp [K_eq_iff])
                   exact selectedNetChargeContinuation netCap
-              | .inr activeHistory =>
-                  rcases hotFamily_retained_or_cold activeHistory with retained | cold
-                  · exact entropyCap_closes activeHistory retained
-                  · -- `[54]` on the all-cold residual: the joint demand is the remainder class
-                    -- alone, which glues into the skeleton budget (`RemainderGlue`).
-                    exact entropyCap_closes_of_allCold activeHistory cold.1
   | .left enumerated =>
   let partitioned :=
     (hotColdPartitionRow (BranchState := BranchState)
@@ -4414,21 +4418,17 @@ noncomputable def selectedNearCubicBranch
               match entropyCapDichotomy (data := spineData) package
                   (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
               | .left activeHistory =>
-                  -- `[54]`: the entropy cap closes (`prop:entropy-high-theta`).  The
-                  -- window package, remainder and forced-curvature bits "form one
-                  -- independently target-testable coordinate family": node `[22]`'s
-                  -- comparison retains the hot family's code, realized by the labelled
-                  -- skeletons of the class (`K .hotColdPartition`), so the realized states
-                  -- exceed the skeleton budget (`lem:independent-target-entropy`,
-                  -- `lem:skeleton-dominates`).  If the comparison retains no code at all
-                  -- (every window cold, not even the empty family's remainder-and-curvature
-                  -- code realized), the residual is `def:curvature-target-rank`'s
-                  -- complementary cold residual; its treatment is the next producer.
-                  rcases hotFamily_retained_or_cold activeHistory with retained | cold
-                  · exact entropyCap_closes activeHistory retained
-                  · -- `[54]` on the all-cold residual: the joint demand is the remainder
-                    -- class alone, which glues into the skeleton budget.
-                    exact entropyCap_closes_of_allCold activeHistory cold.1
+                  -- `[54]`: the sealed row handles both alternatives already
+                  -- stored in `K .hotColdPartition` and publishes only the exact
+                  -- opposite budget bound.  Core closes the two registered facts.
+                  let closedHistory :=
+                    (entropyCapBoundRow (BranchState := BranchState)
+                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                      (presentation := erdosReceiverLoadProfile)
+                      (data := spineData)).runAndCloseIncompatible activeHistory
+                        (K .entropyCapActive) (K .entropyCapBound)
+                        (by simp [K_eq_iff]) (by simp [K_eq_iff])
+                  exact closedHistory.elimClosed (by infer_instance)
               | .right largeHistory =>
                   -- `[55]`: Residual C on the high-entropy arm.
                   -- `[56]` on the route-8 arm: `Δ_net(R) < 1/4` from `τ(θ) < 3/13`
@@ -4573,21 +4573,17 @@ noncomputable def selectedNearCubicBranch
                       match entropyCapDichotomy (data := spineData) package
                           (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
                       | .left activeHistory =>
-                          -- `[54]`: the entropy cap closes (`prop:entropy-high-theta`).  The
-                          -- window package, remainder and forced-curvature bits "form one
-                          -- independently target-testable coordinate family": node `[22]`'s
-                          -- comparison retains the hot family's code, realized by the labelled
-                          -- skeletons of the class (`K .hotColdPartition`), so the realized states
-                          -- exceed the skeleton budget (`lem:independent-target-entropy`,
-                          -- `lem:skeleton-dominates`).  If the comparison retains no code at all
-                          -- (every window cold, not even the empty family's remainder-and-curvature
-                          -- code realized), the residual is `def:curvature-target-rank`'s
-                          -- complementary cold residual; its treatment is the next producer.
-                          rcases hotFamily_retained_or_cold activeHistory with retained | cold
-                          · exact entropyCap_closes activeHistory retained
-                          · -- `[54]` on the all-cold residual: the joint demand is the remainder
-                            -- class alone, which glues into the skeleton budget.
-                            exact entropyCap_closes_of_allCold activeHistory cold.1
+                          -- `[54]`: the same sealed bound row runs on this literal
+                          -- active ledger, and Core owns the terminal closure.
+                          let closedHistory :=
+                            (entropyCapBoundRow (BranchState := BranchState)
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile)
+                              (data := spineData)).runAndCloseIncompatible
+                                activeHistory (K .entropyCapActive)
+                                (K .entropyCapBound)
+                                (by simp [K_eq_iff]) (by simp [K_eq_iff])
+                          exact closedHistory.elimClosed (by infer_instance)
                       | .right largeHistory =>
                           -- `[55]`: Residual C on the high-entropy arm.
                           -- `[56]`: `Δ_net(R) ≤ τ_win + o(1) < 1/4` from `[24]`'s density cap.

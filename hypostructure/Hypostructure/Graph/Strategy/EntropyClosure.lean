@@ -19,19 +19,14 @@ exceed the number of labelled skeletons, contradicting
 
 The premise "form one independently target-testable coordinate family" is a
 property of the residual, carried by node `[22]`'s hot/cold split
-(`K .hotColdPartition`): the canonical entropy comparison *retains* the hot
-windows' full packages together with the remainder states and the exact
-curvature code of the fixed packing (`WindowFamilyRealized` = `retainedCode`
-realized by the labelled skeletons of the class), which is `def:target-rank`'s
-"independently target-testable … arising canonically from graphs in the
-labelled class" and the exact-code equality `def:curvature-target-rank` says is
-retained on the surviving hot residual entering node `[47]`.  The terminal is
-then a plain contradiction of ledger facts:
-`K .entropyCapActive` (`budget < demand`), `K .hotColdPartition`
-(`demand ≤ retainedCode 𝒫_hot ≤ #realized states`, using
-`K .windowPackageSeparated`'s `rate · scales ≤ bits`), and
-`K .skeletonDominates` (`#realized states ≤ budget`).  No numeral, threshold or
-rate is written here.
+(`K .hotColdPartition`).  A sealed fact row reads that split, the package-rate
+inequality, and the skeleton state-count bound.  On the retained arm it proves
+`demand ≤ retainedCode 𝒫_hot ≤ #realized states ≤ budget`; on the complementary
+all-cold arm the demand is the remainder class alone and `RemainderGlue` proves
+the same bound.  The row publishes only `K .entropyCapBound`, the exact
+inequality `demand ≤ budget`.  Core then closes it against
+`K .entropyCapActive`, its strict negation.  No numeral, threshold, rate, or
+out-of-ledger branch witness is supplied here.
 -/
 
 namespace Hypostructure.Graph.Strategy.Spine
@@ -57,101 +52,96 @@ noncomputable instance instIncompatibleBarrierOverflowCap :
   contradiction := fun _residual overflow cap =>
     (Nat.not_lt_of_ge cap.down) overflow.down
 
-/-- The joint package demand of nodes `[52]`--`[53]` is at most the code the
-comparison retains for the hot family: the registered rate never exceeds the
-package width (`lem:p13-window-package`, read from `K .windowPackageSeparated`). -/
-theorem jointPackageDemand_le_retainedCode (object : Graph.FiniteObject.{u})
-    (rateLe : data.windowRate * data.separatedScaleCount object.vertexCount ≤
-      windowPackageBits data object) :
-    jointPackageDemand data object ≤
-      retainedCode data object (canonicalHotWindows data object) := by
-  unfold jointPackageDemand retainedCode
-  calc 2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
-          (canonicalHotWindows data object).card) *
-        remainderStates data object (canonicalWindowPacking data object)
-      ≤ 2 ^ (windowPackageBits data object * (canonicalHotWindows data object).card) *
-          remainderStates data object (canonicalWindowPacking data object) :=
-        Nat.mul_le_mul_right _
-          (Nat.pow_le_pow_right (by omega) (Nat.mul_le_mul_right _ rateLe))
-    _ = 2 ^ (windowPackageBits data object * (canonicalHotWindows data object).card) *
-          remainderStates data object (canonicalWindowPacking data object) * 1 := by
-        rw [Nat.mul_one]
-    _ ≤ 2 ^ (windowPackageBits data object * (canonicalHotWindows data object).card) *
-          remainderStates data object (canonicalWindowPacking data object) *
-        2 ^ (data.curvatureCost *
-          remainderCurvatureTargetRank data object (canonicalWindowPacking data object)) :=
-        Nat.mul_le_mul_left _ Nat.one_le_two_pow
+/-- Node `[54]`'s active comparison and its exact skeleton bound cannot coexist.
+The two facts are retrieved only by Core's closure boundary. -/
+noncomputable instance instIncompatibleEntropyCapActiveBound :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K .entropyCapActive) (K .entropyCapBound) where
+  contradiction := fun _residual active bound =>
+    (Nat.not_lt_of_ge bound.down) active.down
 
-/-- **The remainder-only demand is within the budget** (`RemainderGlue`): with no
-hot window retained, the joint demand of `[52]`--`[53]` is the remainder class of
-the fixed maximal packing, which glues injectively into the object's labelled
-skeleton class. -/
-theorem jointPackageDemand_le_skeletonBudget_of_allCold (object : Graph.FiniteObject.{u})
-    (allCold : canonicalHotWindows data object = ∅) :
-    jointPackageDemand data object ≤ Graph.skeletonBudget object := by
-  unfold jointPackageDemand
-  rw [allCold, Finset.card_empty, Nat.mul_zero, pow_zero, Nat.one_mul]
-  exact Graph.RemainderGlue.remainderStateCount_le_skeletonBudget _ _ _ _
+/-! **The sealed proof row for terminal `[54]`** (`prop:entropy-high-theta`).
 
-/-- **The terminal `[54]`** (`prop:entropy-high-theta`), on the residual whose
-canonical comparison retains the hot family's code: the joint demand is at most
-the retained code, which the labelled skeletons realize, which
-`lem:skeleton-dominates` bounds by the skeleton budget, which `eq:entropy-cap`
-says is strictly smaller than the joint demand. -/
-theorem entropyCap_closes
-    {current : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    (history : ExactLedger
-      (Input BranchState Presentation presentation data) current known)
-    [FactKeys.Has (K .entropyCapActive) known]
-    [FactKeys.Has (K .hotColdPartition) known]
-    [FactKeys.Has (K .windowPackageSeparated) known]
-    [FactKeys.Has (K .skeletonDominates) known]
-    (retained : WindowFamilyRealized data current.object
-      (canonicalHotWindows data current.object)) : False := by
-  have active := (history.get (K .entropyCapActive)).down
-  have dominates := (history.get (K .skeletonDominates)).down
-  have package := (history.get (K .windowPackageSeparated)).down
-  obtain ⟨_packing, _valid, _card, _maximal, _packageCard, _disjoint, _familyCard,
-    rateLe, _⟩ := package
-  obtain ⟨State, stateOf, _packageLe, codeLe⟩ := retained
-  have demandLe := jointPackageDemand_le_retainedCode (data := data) current.object rateLe
-  have rangeLe := dominates.2 State stateOf
-  exact absurd (le_trans demandLe (le_trans codeLe rangeLe)) (Nat.not_le.mpr active)
-
-/-- **The terminal `[54]` on the all-cold residual.**  When the canonical
-comparison retains no window (`𝒫_hot = ∅`, `def:curvature-target-rank`'s
-"complementary cold residual"), the joint demand is the remainder class alone,
-which the glue `H ↦ G[R := H]` bounds by the labelled skeleton budget
-(`lem:skeleton-dominates` at `def:remainder-entropy`'s inherited vertex set and
-edge count), while `eq:entropy-cap` says the budget is strictly smaller. -/
-theorem entropyCap_closes_of_allCold
-    {current : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    (history : ExactLedger
-      (Input BranchState Presentation presentation data) current known)
-    [FactKeys.Has (K .entropyCapActive) known]
-    (allCold : canonicalHotWindows data current.object = ∅) : False := by
-  have active := (history.get (K .entropyCapActive)).down
-  exact absurd (jointPackageDemand_le_skeletonBudget_of_allCold (data := data)
-    current.object allCold) (Nat.not_le.mpr active)
-
-/-- The retained-code clause of `K .hotColdPartition` at the residual's own hot
-family: either the hot family's code is realized, or every window is cold
-because not even the empty family's remainder-and-curvature code is realized
-(`def:curvature-target-rank`: "its failure is the complementary cold
-residual"). -/
-theorem hotFamily_retained_or_cold
-    {current : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    (history : ExactLedger
-      (Input BranchState Presentation presentation data) current known)
-    [FactKeys.Has (K .hotColdPartition) known] :
-    WindowFamilyRealized data current.object (canonicalHotWindows data current.object) ∨
-      (canonicalHotWindows data current.object = ∅ ∧
-        ¬ WindowFamilyRealized data current.object ∅) := by
-  have split := (history.get (K .hotColdPartition)).down
-  obtain ⟨_valid, _attains, _maximal, hotFacts, _coldIff, _disjoint, _cover⟩ := split
-  exact hotFacts.2.1
+The row follows the two alternatives already stored in the active residual's
+`K .hotColdPartition`.  If the hot family is retained, the registered package
+rate puts the joint demand below its retained code, and the realized-code and
+skeleton-dominance clauses put that code below the labelled skeleton budget.
+If no family is retained, the canonical hot family is empty and the remainder
+glue gives the same bound.  Both alternatives therefore produce exactly
+`K .entropyCapBound`; the terminal itself is Core's incompatibility closure
+against `K .entropyCapActive`. -/
+@[reducible] noncomputable def entropyCapBoundRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.entropyCapBound
+    { Requires :=
+        [K .hotColdPartition, K .windowPackageSeparated, K .skeletonDominates]
+      Produces := [K .entropyCapBound]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .entropyCapBound)
+        (show Value BranchState Presentation presentation data
+            .entropyCapBound inputs.current from
+          ⟨by
+            let object := inputs.current.object
+            change jointPackageDemand data object ≤ Graph.skeletonBudget object
+            have split := (inputs.get (K .hotColdPartition)).down
+            have package := (inputs.get (K .windowPackageSeparated)).down
+            have dominates := (inputs.get (K .skeletonDominates)).down
+            obtain ⟨_valid, _attains, _maximal, hotFacts, _coldIff, _disjoint,
+              _cover⟩ := split
+            obtain ⟨_packing, _packingValid, _packingCard, _packingMaximal,
+              _packageCard, _packagesDisjoint, _familyCard, rateLe, _⟩ := package
+            rcases hotFacts.2.1 with retained | allCold
+            · obtain ⟨State, stateOf, _packageStates, retainedCodeLe⟩ := retained
+              have demandLe : jointPackageDemand data object ≤
+                  retainedCode data object (canonicalHotWindows data object) := by
+                unfold jointPackageDemand retainedCode
+                calc
+                  2 ^ (data.windowRate *
+                        data.separatedScaleCount object.vertexCount *
+                        (canonicalHotWindows data object).card) *
+                      remainderStates data object
+                        (canonicalWindowPacking data object)
+                      ≤ 2 ^ (windowPackageBits data object *
+                            (canonicalHotWindows data object).card) *
+                          remainderStates data object
+                            (canonicalWindowPacking data object) :=
+                        Nat.mul_le_mul_right _
+                          (Nat.pow_le_pow_right (by omega)
+                            (Nat.mul_le_mul_right _ rateLe))
+                  _ = 2 ^ (windowPackageBits data object *
+                            (canonicalHotWindows data object).card) *
+                          remainderStates data object
+                            (canonicalWindowPacking data object) * 1 := by
+                        rw [Nat.mul_one]
+                  _ ≤ 2 ^ (windowPackageBits data object *
+                            (canonicalHotWindows data object).card) *
+                          remainderStates data object
+                            (canonicalWindowPacking data object) *
+                          2 ^ (data.curvatureCost *
+                            remainderCurvatureTargetRank data object
+                              (canonicalWindowPacking data object)) :=
+                        Nat.mul_le_mul_left _ Nat.one_le_two_pow
+              exact demandLe.trans
+                (retainedCodeLe.trans (dominates.2 State stateOf))
+            · unfold jointPackageDemand
+              rw [allCold.1, Finset.card_empty, Nat.mul_zero, pow_zero,
+                Nat.one_mul]
+              exact Graph.RemainderGlue.remainderStateCount_le_skeletonBudget
+                _ _ _ _⟩)
+        .nil)
+    0 0
 
 end Hypostructure.Graph.Strategy.Spine
