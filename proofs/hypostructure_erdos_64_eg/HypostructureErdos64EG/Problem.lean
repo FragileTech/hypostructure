@@ -165,12 +165,6 @@ noncomputable def spineData : Graph.Strategy.Spine.Data.{u} where
     simpa [erdosReceiverLoadProfile] using WindowAlgebra.fanPackingCap_succ_le
   highCentreDeficitSlack := by norm_num [erdosReceiverLoadProfile]
   joinSlack := by norm_num [erdosReceiverLoadProfile, inducedPathOrder]
-  BoundaryProfile :=
-    Fin erdosReceiverLoadProfile.baselineDegree →
-      Fin erdosReceiverLoadProfile.baselineDegree
-  boundaryProfileFintype := inferInstance
-  boundaryProfileInhabited :=
-    ⟨fun _ => ⟨0, by norm_num [erdosReceiverLoadProfile]⟩⟩
   routingLabelBound :=
     Fintype.card Graph.SameTokenBlockerRoles.Role *
       Fintype.card Graph.SameTokenBlockerRoles.TokenSubtype * 2 *

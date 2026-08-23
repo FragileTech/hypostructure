@@ -115,6 +115,15 @@ end Blocker
 
 /-! ## The canonical data a clause intersects -/
 
+/-- Union of two vertex supports using the finite object's own decidable vertex
+equality.  Keeping this operation at the object level lets a demand activation
+state literally that its declared support is `T(p) ∪ Γ(p)` without asking a
+caller to install a second vertex-order instance. -/
+noncomputable def vertexSupportUnion (object : FiniteObject.{u})
+    (left right : Finset object.Vertex) : Finset object.Vertex := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  exact left ∪ right
+
 /-- **The canonical data of `def:active-surplus-demands`, in the concrete form
 the six clauses read.**
 
@@ -132,12 +141,19 @@ An empty family is the honest reading of "this pair has no obstruction of that
 clause". -/
 structure DemandActivation (object : FiniteObject.{u}) (Coordinate Chord : Type v)
     where
+  /-- `T(p)`, the selected port support. -/
+  localBuffer : object.Vertex × object.Vertex → Finset object.Vertex
+  /-- `Γ(p)`, the canonical response support. -/
+  responseSupport : object.Vertex × object.Vertex → Finset object.Vertex
   /-- `T(p) ∪ Γ(p)`, the declared demand support of clause (a). -/
   declaredSupport : object.Vertex × object.Vertex → Finset object.Vertex
+  /-- The preceding support is literally the union prescribed in
+  `def:sparse-pair-response`; it is not an unrelated caller-supplied set. -/
+  declaredSupport_eq : ∀ demand,
+    declaredSupport demand =
+      vertexSupportUnion object (localBuffer demand) (responseSupport demand)
   /-- `R_p`, the canonical return path's vertices, for clause (b). -/
   returnSupport : object.Vertex × object.Vertex → Finset object.Vertex
-  /-- `{a_p, b_p, x(p)}`, the shoulder endpoints and cubic buffer of clause (c). -/
-  localBuffer : object.Vertex × object.Vertex → Finset object.Vertex
   /-- The boundary-degree-profile coordinates obstructing the pair, clause (d),
   in the lexicographic order of their declared labels and supports. -/
   profileObstructions : Finset (object.Vertex × object.Vertex) → List Coordinate
@@ -149,10 +165,36 @@ structure DemandActivation (object : FiniteObject.{u}) (Coordinate Chord : Type 
   lexicographically by their increasing lists of shoulder chords. -/
   chordObstructions : Finset (object.Vertex × object.Vertex) →
     List (Finset Chord)
+  /-- The two ambient ends of a declared shoulder chord.  This is part of the
+  declared chord coordinate itself; capacity accounting reads this projection
+  rather than accepting a second chord presentation. -/
+  chordEnds : Chord → object.Vertex × object.Vertex
+  /-- The selected surplus port whose shoulder chord this is.  As with
+  `chordEnds`, this belongs to the activation's declared chord data and is not
+  supplied through a parallel carrier. -/
+  chordPort : Chord → object.Vertex × object.Vertex
 
 namespace DemandActivation
 
 variable {Coordinate Chord : Type v}
+
+/-- `T(p)` is carried by the literal declared support `T(p) ∪ Γ(p)`. -/
+theorem localBuffer_subset_declaredSupport
+    (activation : DemandActivation object Coordinate Chord)
+    (demand : object.Vertex × object.Vertex) :
+    activation.localBuffer demand ⊆ activation.declaredSupport demand := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  rw [activation.declaredSupport_eq]
+  exact Finset.subset_union_left
+
+/-- `Γ(p)` is carried by the literal declared support `T(p) ∪ Γ(p)`. -/
+theorem responseSupport_subset_declaredSupport
+    (activation : DemandActivation object Coordinate Chord)
+    (demand : object.Vertex × object.Vertex) :
+    activation.responseSupport demand ⊆ activation.declaredSupport demand := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  rw [activation.declaredSupport_eq]
+  exact Finset.subset_union_right
 
 /-- The vertices and edge-incidences contained in both of two vertex sets: the
 intersection clauses (a) and (b) take, read at both summands of the carrier.  An

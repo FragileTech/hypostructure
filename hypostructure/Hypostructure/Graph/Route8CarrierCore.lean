@@ -1,5 +1,4 @@
 import Hypostructure.Core.Finite.EssentialCarrier
-import Hypostructure.Graph.ExitFourFamily
 import Hypostructure.Graph.Response
 
 namespace Hypostructure.Graph.Route8
@@ -679,95 +678,49 @@ theorem twoCarrierDeletionWitnessFacts :
   exact twoCarrierDeletionWitnesses (Target := Target) carrierSupply
     coordinates car car_subset state entries core two core_eq
 
-/-- The terminal no-go consumed at node `[124]`.
-
-Once a selected two-carrier core has carrier-deletion witnesses, any generated
-Q5 carrier-deletion quotient with the recorded boundary-profile preservation is
-an ordinary exit-`(4)` witness.  The already committed no-exit-`(4)` ledger fact
-therefore closes the terminal route-`8` survivor. -/
-theorem terminalTwoCarrierNoGo
-    (entries : Finset Index) (core : Index → Finset Carrier)
-    {carrierBound : Nat} {index : Index}
-    (witnesses :
-      TwoCarrierDeletionWitnesses (Target := Target) carrierSupply coordinates
-        car state entries core carrierBound index)
-    {object : FiniteObject.{u}} {support : Finset object.Vertex}
-    {degreeThreshold : Nat} {receiver : object.Vertex}
-    {peeled : Finset object.Vertex} {eligible : object.Vertex → Prop}
-    (noExitFour :
-      ¬ ∃ witness : ExitFour.Witness Target support degreeThreshold receiver
-          peeled,
-        eligible witness.load)
-    (family : ExitFour.ReceiverFamily Target support degreeThreshold receiver)
-    {base identified : Finset family.Coordinate}
-    (generated :
-      family.Generated ExitFour.ReceiverClause.carrierDeletion base identified)
-    {load : object.Vertex}
-    (unpeeled :
-      load ∈ ExitFour.unpeeledLoads support degreeThreshold receiver peeled)
-    (declared : load ∈ family.declaredLoads identified)
-    (eligibleLoad : eligible load)
-    {carrier : Carrier} (member : carrier ∈ core index)
-    (sameBoundaryProfile :
-      (restriction carrierSupply coordinates car state
-          ((core index).erase carrier)).boundaryDegreeProfile =
-        (restriction carrierSupply coordinates car state
-          (core index)).boundaryDegreeProfile) :
-    False := by
-  have defect := (witnesses.2 carrier member).1
-  exact ExitFour.Witness.carrierDeletion_contradicts_noExitFour noExitFour
-    family generated unpeeled declared eligibleLoad sameBoundaryProfile defect
-
-/-- The reusable theorem package for node `[124]`: a terminal selected
-two-carrier carrier-deletion quotient contradicts the no-exit-`(4)` fact from
-the same residual. -/
-def TerminalTwoCarrierNoGoFacts
-    (Target : FiniteObject.{u} → Prop)
-    (carrierSupply : Enumeration Carrier) (coordinates : Finset Coordinate)
-    (car : Coordinate → Finset Carrier)
-    (_car_subset : ∀ r ∈ coordinates, car r ⊆ carrierSupply.toFinset)
-    (state : Finset Coordinate → BoundaryPiece boundary) : Prop :=
-  ∀ {Index : Type u} [DecidableEq Index]
-    (entries : Finset Index) (core : Index → Finset Carrier)
-    {carrierBound : Nat} {index : Index},
-      TwoCarrierDeletionWitnesses (Target := Target) carrierSupply coordinates
-        car state entries core carrierBound index →
-      ∀ {object : FiniteObject.{u}} {support : Finset object.Vertex}
-        {degreeThreshold : Nat} {receiver : object.Vertex}
-        {peeled : Finset object.Vertex} {eligible : object.Vertex → Prop},
-        (¬ ∃ witness : ExitFour.Witness Target support degreeThreshold receiver
-            peeled,
-          eligible witness.load) →
-        (family : ExitFour.ReceiverFamily Target support degreeThreshold
-          receiver) →
-        ∀ {base identified : Finset family.Coordinate},
-          family.Generated ExitFour.ReceiverClause.carrierDeletion base
-            identified →
-          ∀ {load : object.Vertex},
-            load ∈ ExitFour.unpeeledLoads support degreeThreshold receiver
-              peeled →
-            load ∈ family.declaredLoads identified →
-            eligible load →
-            ∀ {carrier : Carrier},
-              carrier ∈ core index →
-              (restriction carrierSupply coordinates car state
-                  ((core index).erase carrier)).boundaryDegreeProfile =
-                (restriction carrierSupply coordinates car state
-                  (core index)).boundaryDegreeProfile →
-              False
-
-theorem terminalTwoCarrierNoGoFacts :
-    TerminalTwoCarrierNoGoFacts Target carrierSupply coordinates
-      car car_subset state := by
-  intro Index indexDec entries core carrierBound index witnesses object
-    support degreeThreshold receiver peeled eligible noExitFour family base
-    identified generated load unpeeled declared eligibleLoad carrier member
-    sameBoundaryProfile
-  letI : DecidableEq Index := indexDec
-  exact terminalTwoCarrierNoGo (Target := Target) carrierSupply coordinates
-    car state entries core witnesses noExitFour family generated
-    unpeeled declared eligibleLoad member sameBoundaryProfile
-
 end TerminalTwoCarrier
+
+section UnifiedSmallCoreBound
+
+variable {Target : FiniteObject.{u} → Prop}
+variable {Carrier Coordinate : Type u}
+variable [DecidableEq Carrier] [DecidableEq Coordinate]
+variable {boundary : Boundary.{u}}
+variable (carrierSupply : Enumeration Carrier)
+variable (coordinates : Finset Coordinate)
+variable (car : Coordinate → Finset Carrier)
+variable (car_subset : ∀ r ∈ coordinates, car r ⊆ carrierSupply.toFinset)
+variable (state : Finset Coordinate → BoundaryPiece boundary)
+
+/-- **`lem:typeA-unified-carriers`, the collapse-side contrapositive in raw
+carrier-core form.**
+
+`lem:typeA-one-terminal-collapse` (via `smallCoreCollapse`) turns a zero/one
+carrier core into the caller-selected alternatives, once the cut-parity bound
+on the crossing coordinates and the internal-forgetting minimality clause are
+supplied.  When the caller also refutes those alternatives — for the unified
+census this is the target-complete-minimality datum of the selected trace
+basin — the essential core therefore has at least two carriers.  Nothing here
+chooses the alternatives, the crossing family, or the refutation: all three
+are the selected entry's own data. -/
+theorem two_le_essentialCore_card_of_alternatives_refuted
+    {crossing : Finset Coordinate} {Alternatives : Prop}
+    (parity : ∀ r ∈ crossing, 2 ≤ (car r).card)
+    (minimality :
+      state (retained carrierSupply coordinates car
+          (essentialCore (Target := Target) carrierSupply coordinates car
+            (car_subset := car_subset) state) \ crossing) =
+        restriction carrierSupply coordinates car state
+          (essentialCore (Target := Target) carrierSupply coordinates car
+            (car_subset := car_subset) state) →
+      Alternatives)
+    (refuted : ¬ Alternatives) :
+    2 ≤ (essentialCore (Target := Target) carrierSupply coordinates car
+      (car_subset := car_subset) state).card := by
+  by_contra small
+  exact refuted (smallCoreCollapse (Target := Target) carrierSupply coordinates
+    car car_subset state parity minimality (by omega))
+
+end UnifiedSmallCoreBound
 
 end Hypostructure.Graph.Route8

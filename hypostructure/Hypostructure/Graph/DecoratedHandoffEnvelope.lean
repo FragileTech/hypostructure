@@ -1447,6 +1447,30 @@ theorem token_le_componentTokens (threshold : Nat) {centre : object.Vertex}
       (fun _ _ => Nat.zero_le _)
       ((grouped.mem_componentCentres_iff _ _).2 ⟨member, rfl⟩))
 
+/-- The grouped-role decoration surplus, read as the ambient surplus of the
+deduplicated centre family: `σ(H) = Σ_𝔆 ω(𝔆)`.  This is the bridge between the
+component accounting above and the region-surplus comparisons of
+`def:window-remainder-surplus-split` — in particular it feeds
+`ambientSurplus_le_degreeSurplus`, the `S_B ≤ σ(G)` half of the grouped role of
+`def:typeB-residual-mass`. -/
+theorem ambientSurplus_centres (threshold : Nat) :
+    object.ambientSurplus grouped.centres threshold =
+      ∑ component ∈ grouped.components,
+        grouped.componentTokens threshold component := by
+  rw [grouped.sum_componentTokens threshold]
+  rfl
+
 end GroupedEnvelopes
+
+/-- `ω(H)` spelled as the decoration sum `Σ_{h ∈ H}(d_G(h) − δ)`, which is the
+form `lem:decorated-envelope-deficit-bound` charges against. -/
+theorem Envelope.centreTokens_eq_sum {LengthOK : Nat → Prop}
+    {HighDegree : object.Vertex → Prop}
+    {Absorbing : object.Vertex → object.Vertex → object.Vertex → Prop}
+    (envelope : Envelope object LengthOK HighDegree Absorbing)
+    (threshold : Nat) :
+    envelope.centreTokens threshold =
+      ∑ centre ∈ envelope.decorations, (object.degree centre - threshold) :=
+  rfl
 
 end Hypostructure.Graph.DecoratedHandoff

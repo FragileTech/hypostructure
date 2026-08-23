@@ -1,4 +1,4 @@
-import Hypostructure.Graph.Strategy.SpineRows
+import Hypostructure.Graph.Strategy.SpineVocabulary
 
 /-!
 # Window-entropy terminals: nodes `[23]` and `[54]`

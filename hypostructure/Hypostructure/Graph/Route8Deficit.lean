@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Route8Census
+import Hypostructure.Graph.ExitFourFamily
 import Hypostructure.Graph.TypeBEnvelopeCharge
 
 /-!
@@ -23,8 +24,7 @@ Summing, `|R| ≤ N_basin + s·def⁺(R) + F·s·σ(R)`; `def⁺(R) ≤ |∂R|`
 spine) give the reading.  The classification hypothesis — every negative piece
 is silent-first when it has no surplus and a bridge component when it has —
 is the exact content of `thm:branch-kill`'s two clauses at every piece; the
-route-8 branch decides it on its residual, and the complementary arm is the
-piece that fails it.
+consumer supplies it as a proved hypothesis on the active residual.
 -/
 
 namespace Hypostructure.Graph.Route8Deficit
@@ -49,11 +49,21 @@ def SilentFirst (piece : Finset object.Vertex) (threshold scale : Nat) : Prop :=
       (VisibleEntry.visibleLoadsAt object piece threshold receiver outside).card + 1 ≤
         scale
 
-/-- **The all-pieces classification of `thm:branch-kill`**: every negative piece
-of the canonical decomposition of the remainder is silent-first when it carries
-no ambient surplus (Type A: route-8 or target-defect entries only) and is a
-Type B bridge component when it carries surplus. -/
-def PieceClassification (packing : Finset (Finset object.Vertex))
+/-- **The silent-first specialization**: every negative zero-surplus piece is
+silent-first, and every negative positive-surplus piece is a Type B bridge
+component.
+
+This is *not* `thm:branch-kill`'s classification.  `thm:branch-kill` (a) lists
+"no exit-(4) witness for a routed load" among its hypotheses, and
+`rem:unified-covers-exit4` records that the unified collection `\tilde{𝒳}`
+"contains, simultaneously, the Type A supports carrying an admissible route-8
+residual profile *and* the Type A supports that leave through the target-defect
+exit".  A target-defect (exit-(4)) support may realize its exit through four
+visible receiver-entry returns, so silent-first does not hold for it.  This
+predicate is only the hypothesis under which `lem:typeA-silent-excess-count`
+applies to every negative zero-surplus piece; `card_piece_le` and
+`deficit_of_classification` below consume exactly it. -/
+def SilentClassification (packing : Finset (Finset object.Vertex))
     (threshold scale : Nat) : Prop :=
   ∀ piece ∈ object.canonicalPieces (object.remainderSupport packing),
     object.NegativeNetCharge
@@ -62,6 +72,45 @@ def PieceClassification (packing : Finset (Finset object.Vertex))
           (object.pieceSupport (object.remainderSupport packing) piece) threshold = 0 →
         SilentFirst object (object.pieceSupport (object.remainderSupport packing) piece)
           threshold scale) ∧
+      (0 < object.ambientSurplus
+          (object.pieceSupport (object.remainderSupport packing) piece) threshold →
+        TypeBEnvelopeCharge.BridgeResidualComponentAt object
+          (object.pieceSupport (object.remainderSupport packing) piece) threshold scale)
+
+/-- **The all-pieces classification of `thm:branch-kill`**, as the manuscript
+states it: the contrapositive of clauses (a) and (b) at every negative piece of
+the canonical decomposition of the remainder.
+
+A negative zero-surplus piece carries an exit-(4) witness for one of its routed
+loads, or an admissible route-8 residual profile, or a decorated Type B
+handoff; a negative positive-surplus piece is a Type B bridge component.
+`Route8Profile` and `Handoff` are the branch's registered notions of an
+admissible silent-core residual profile (`def:typeA-silent-core-residual`) and
+a produced decorated handoff envelope (`def:decorated-fan-envelope`); this
+module quantifies over them.
+
+Unlike `SilentClassification`, this statement does **not** make a negative
+zero-surplus piece silent-first: per `rem:unified-covers-exit4`, an exit-(4)
+support may realize its exit through four visible receiver-entry returns and
+still belongs to the unified collection. -/
+def PieceClassification (Target : FiniteObject.{u} → Prop)
+    (Route8Profile Handoff : Finset object.Vertex → Prop)
+    (packing : Finset (Finset object.Vertex))
+    (threshold scale : Nat) : Prop :=
+  ∀ piece ∈ object.canonicalPieces (object.remainderSupport packing),
+    object.NegativeNetCharge
+        (object.pieceSupport (object.remainderSupport packing) piece) threshold scale →
+      (object.ambientSurplus
+          (object.pieceSupport (object.remainderSupport packing) piece) threshold = 0 →
+        (∃ receiver : object.Vertex,
+          object.IsReceiver
+              (object.pieceSupport (object.remainderSupport packing) piece) threshold
+              receiver ∧
+            Nonempty (ExitFour.Witness Target
+              (object.pieceSupport (object.remainderSupport packing) piece)
+              threshold scale receiver ∅)) ∨
+          Route8Profile (object.pieceSupport (object.remainderSupport packing) piece) ∨
+          Handoff (object.pieceSupport (object.remainderSupport packing) piece)) ∧
       (0 < object.ambientSurplus
           (object.pieceSupport (object.remainderSupport packing) piece) threshold →
         TypeBEnvelopeCharge.BridgeResidualComponentAt object
@@ -179,7 +228,7 @@ theorem card_piece_le (packing : Finset (Finset object.Vertex))
         ∃ receiver : object.Vertex,
           object.traceReceiver? piece threshold vertex = some receiver ∧
             object.IsReceiver piece threshold receiver)
-    (classified : PieceClassification object packing threshold scale)
+    (classified : SilentClassification object packing threshold scale)
     (piece : SupportComponents.Connected.Component object (object.remainderSupport packing))
     (member : piece ∈ object.canonicalPieces (object.remainderSupport packing)) :
     (object.pieceSupport (object.remainderSupport packing) piece).card ≤
@@ -227,9 +276,12 @@ theorem card_piece_le (packing : Finset (Finset object.Vertex))
     unfold FiniteObject.NonNegativeNetCharge at nonneg
     omega
 
-/-- **`def:typeA-large-budget-deficit` with `lem:typeA-route8-burden` and
-`thm:branch-kill` substituted (node `[113]`)**: under the all-pieces
-classification, `|R| ≤ N_basin + s·|∂R| + F·s·T(n)`. -/
+/-- **`def:typeA-large-budget-deficit` with `lem:typeA-route8-burden`
+substituted**: under the *silent-first* classification — not `thm:branch-kill`'s
+— `|R| ≤ N_basin + s·|∂R| + F·s·T(n)`.  For the unified collection of
+`def:typeA-unified-negative` this hypothesis fails on visible exit-(4) supports
+(`rem:unified-covers-exit4`), which is exactly why `lem:typeA-unified-burden`
+is not derivable from it. -/
 theorem deficit_of_classification (packing : Finset (Finset object.Vertex))
     (threshold scale massFactor surplusBound : Nat) (scalePos : 1 ≤ scale)
     (slack : threshold + 2 + scale ≤ massFactor * scale)
@@ -242,7 +294,7 @@ theorem deficit_of_classification (packing : Finset (Finset object.Vertex))
           object.traceReceiver? piece threshold vertex = some receiver ∧
             object.IsReceiver piece threshold receiver)
     (surplus : object.degreeSurplus threshold ≤ surplusBound)
-    (classified : PieceClassification object packing threshold scale) :
+    (classified : SilentClassification object packing threshold scale) :
     Route8Census.Deficit object packing threshold scale
       (massFactor * scale * surplusBound) := by
   classical

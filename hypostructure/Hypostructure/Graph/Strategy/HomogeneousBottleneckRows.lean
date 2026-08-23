@@ -30,17 +30,17 @@ noncomputable def windowOverloadClassDichotomy
     (Classical.choice (show Nonempty
         ((K .windowClassOverload).At current ⊕
           (K .windowClassAbsent).At current) from by
-      obtain ⟨declared, ledger, token, role, tokenMem,
+      obtain ⟨active, declared, activationEq, ledger, token, role, tokenMem,
         _selected, rest⟩ := (previous.get (K .sparsePressureOverload)).down
       cases classified : ledger.presented.tokenClass token with
       | windowIncidence =>
-          exact ⟨.inl ⟨declared, ledger, token, role,
+          exact ⟨.inl ⟨active, declared, activationEq, ledger, token, role,
             tokenMem, classified, rest⟩⟩
       | remainderSurplus =>
-          exact ⟨.inr ⟨declared, ledger, token, role,
+          exact ⟨.inr ⟨active, declared, activationEq, ledger, token, role,
             tokenMem, by simpa [classified], rest⟩⟩
       | primitiveCarrier =>
-          exact ⟨.inr ⟨declared, ledger, token, role,
+          exact ⟨.inr ⟨active, declared, activationEq, ledger, token, role,
             tokenMem, by simpa [classified], rest⟩⟩))
     windowFresh outsideFresh
 
@@ -64,7 +64,8 @@ free-side entropy count already written to the incoming ledger. -/
           ⟨by
             classical
             let object := inputs.current.object
-            obtain ⟨capacity, _primitiveEq, _primitiveLe, concrete,
+            obtain ⟨active, capacity, activationEq, _primitiveEq,
+                _primitiveLe, concrete,
                 scheduleCard, Coordinate, family, coordinateSupport,
                 _survives, demand, deficitLe, entropy⟩ :=
               (inputs.get (K .blockedPairEntropySandwich)).down
@@ -108,7 +109,7 @@ free-side entropy count already written to the incoming ledger. -/
                 (object.capacityTokens_nonempty data.threshold capacity.packing vertex)
                 concrete.2.1
             let ledger := certified.ledger
-            refine ⟨capacity, certified, ?_⟩
+            refine ⟨active, capacity, activationEq, certified, ?_⟩
             refine ⟨ledger.presented.choose_two_eq_free_add_sum_roleFibre
                 ledger.presented.tokenClass,
               fun token => ledger.presented.load_eq_sum_roleFibre token,
@@ -152,16 +153,21 @@ fact consumed at `[144]`; `ExactLedger` retains the class witness as ancestry. -
       producesNonempty := by simp }
     (fun inputs =>
       letI := data.boundaryProfileFintype
+      let routed := (inputs.get (K .windowClassOverload)).down
+      let active := routed.choose
+      let declared := routed.choose_spec.choose
+      let activationEq := routed.choose_spec.choose_spec.1
       let overload : Graph.SparsePressureOverloadInClass inputs.current.object
           data.threshold data.windowOrder data.routingLabelBound
-          .windowIncidence :=
-        (inputs.get (K .windowClassOverload)).down
+          declared .windowIncidence :=
+        routed.choose_spec.choose_spec.2
       let pattern : Graph.HomogeneousBottleneckPatternStatement
           inputs.current.object data.threshold data.windowOrder
+          declared
           (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
             (Graph.WindowCurvature.Label data.windowOrder)) := by
         classical
-        obtain ⟨declared, ledger, token, role, tokenMem, _selected, positive,
+        obtain ⟨ledger, token, role, tokenMem, _selected, positive,
             absorbs, _quantitativePattern⟩ := overload
         have productPositive :
             0 < Graph.SameTokenBlockerRoles.sameTokenRoleBound *
@@ -195,7 +201,7 @@ fact consumed at `[144]`; `ExactLedger` retains the class witness as ancestry. -
             data.routingLabelBound)
           (by simp [Graph.SameTokenBlockerRoles.geometricPatternBound])
           (ledger.presented.pairs_roleFibre token role) large
-        refine ⟨declared, ledger, token, tokenMem, role, ?_⟩
+        refine ⟨ledger, token, tokenMem, role, ?_⟩
         simpa [Graph.SameTokenRoutingGerms.patternBound,
           Graph.SameTokenRoutingGerms.labelBound,
           Graph.SameTokenBlockerRoles.geometricPatternBound,
@@ -203,11 +209,11 @@ fact consumed at `[144]`; `ExactLedger` retains the class witness as ancestry. -
       .cons (key := K .windowIncidenceAudit)
         (show Value BranchState Presentation presentation data
             .windowIncidenceAudit inputs.current from
-          ⟨pattern⟩)
+          ⟨active, declared, activationEq, pattern⟩)
         (.cons (key := K .homogeneousBottleneckPattern)
           (show Value BranchState Presentation presentation data
               .homogeneousBottleneckPattern inputs.current from
-            ⟨pattern⟩)
+            ⟨active, declared, activationEq, pattern⟩)
           .nil))
 
 /-- Node `[142]`: audit the concrete remainder-surplus overload selected by
@@ -222,16 +228,21 @@ fact consumed at `[144]`; `ExactLedger` retains the class witness as ancestry. -
       producesNonempty := by simp }
     (fun inputs =>
       letI := data.boundaryProfileFintype
+      let routed := (inputs.get (K .remainderClassOverload)).down
+      let active := routed.choose
+      let declared := routed.choose_spec.choose
+      let activationEq := routed.choose_spec.choose_spec.1
       let overload : Graph.SparsePressureOverloadInClass inputs.current.object
           data.threshold data.windowOrder data.routingLabelBound
-          .remainderSurplus :=
-        (inputs.get (K .remainderClassOverload)).down
+          declared .remainderSurplus :=
+        routed.choose_spec.choose_spec.2
       let pattern : Graph.HomogeneousBottleneckPatternStatement
           inputs.current.object data.threshold data.windowOrder
+          declared
           (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
             (Graph.WindowCurvature.Label data.windowOrder)) := by
         classical
-        obtain ⟨declared, ledger, token, role, tokenMem, _selected, positive,
+        obtain ⟨ledger, token, role, tokenMem, _selected, positive,
             absorbs, _quantitativePattern⟩ := overload
         have productPositive :
             0 < Graph.SameTokenBlockerRoles.sameTokenRoleBound *
@@ -265,7 +276,7 @@ fact consumed at `[144]`; `ExactLedger` retains the class witness as ancestry. -
             data.routingLabelBound)
           (by simp [Graph.SameTokenBlockerRoles.geometricPatternBound])
           (ledger.presented.pairs_roleFibre token role) large
-        refine ⟨declared, ledger, token, tokenMem, role, ?_⟩
+        refine ⟨ledger, token, tokenMem, role, ?_⟩
         simpa [Graph.SameTokenRoutingGerms.patternBound,
           Graph.SameTokenRoutingGerms.labelBound,
           Graph.SameTokenBlockerRoles.geometricPatternBound,
@@ -273,11 +284,11 @@ fact consumed at `[144]`; `ExactLedger` retains the class witness as ancestry. -
       .cons (key := K .remainderSurplusAudit)
         (show Value BranchState Presentation presentation data
             .remainderSurplusAudit inputs.current from
-          ⟨pattern⟩)
+          ⟨active, declared, activationEq, pattern⟩)
         (.cons (key := K .homogeneousBottleneckPattern)
           (show Value BranchState Presentation presentation data
               .homogeneousBottleneckPattern inputs.current from
-            ⟨pattern⟩)
+            ⟨active, declared, activationEq, pattern⟩)
           .nil))
 
 /-- Node `[143]`: audit the concrete primitive-carrier overload already
@@ -292,16 +303,21 @@ carried by `[141]`'s no-arm.  No audit-only re-key is inserted. -/
       producesNonempty := by simp }
     (fun inputs =>
       letI := data.boundaryProfileFintype
+      let routed := (inputs.get (K .remainderClassAbsent)).down
+      let active := routed.choose
+      let declared := routed.choose_spec.choose
+      let activationEq := routed.choose_spec.choose_spec.1
       let overload : Graph.SparsePressureOverloadInClass inputs.current.object
           data.threshold data.windowOrder data.routingLabelBound
-          .primitiveCarrier :=
-        (inputs.get (K .remainderClassAbsent)).down
+          declared .primitiveCarrier :=
+        routed.choose_spec.choose_spec.2
       let pattern : Graph.HomogeneousBottleneckPatternStatement
           inputs.current.object data.threshold data.windowOrder
+          declared
           (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
             (Graph.WindowCurvature.Label data.windowOrder)) := by
         classical
-        obtain ⟨declared, ledger, token, role, tokenMem, _selected, positive,
+        obtain ⟨ledger, token, role, tokenMem, _selected, positive,
             absorbs, _quantitativePattern⟩ := overload
         have productPositive :
             0 < Graph.SameTokenBlockerRoles.sameTokenRoleBound *
@@ -335,7 +351,7 @@ carried by `[141]`'s no-arm.  No audit-only re-key is inserted. -/
             data.routingLabelBound)
           (by simp [Graph.SameTokenBlockerRoles.geometricPatternBound])
           (ledger.presented.pairs_roleFibre token role) large
-        refine ⟨declared, ledger, token, tokenMem, role, ?_⟩
+        refine ⟨ledger, token, tokenMem, role, ?_⟩
         simpa [Graph.SameTokenRoutingGerms.patternBound,
           Graph.SameTokenRoutingGerms.labelBound,
           Graph.SameTokenBlockerRoles.geometricPatternBound,
@@ -343,12 +359,82 @@ carried by `[141]`'s no-arm.  No audit-only re-key is inserted. -/
       .cons (key := K .primitiveCarrierAudit)
         (show Value BranchState Presentation presentation data
             .primitiveCarrierAudit inputs.current from
-          ⟨pattern⟩)
+          ⟨active, declared, activationEq, pattern⟩)
         (.cons (key := K .homogeneousBottleneckPattern)
           (show Value BranchState Presentation presentation data
               .homogeneousBottleneckPattern inputs.current from
-            ⟨pattern⟩)
+            ⟨active, declared, activationEq, pattern⟩)
           .nil))
+
+/-! ## Node `[144]`: same-token bottleneck routing
+
+The selected proof belongs here, inside one Type-A `factOnly` executor.  Its
+inputs are the exact current-object facts already published by the branch; no
+route, separator, label map, profile callback, or handoff object is accepted as
+an argument.  The executor publishes the paper lemma and then its survivor
+specialization monotonically.
+
+The first remaining kernel obligation is deliberately exposed at the exact
+mathematical step where it occurs.  `def:declared-coordinate-signature`
+currently presents the eight supports used by `Z(π;t,r)` (including the
+upstream canonical returns `R_p,R_q`), but the existing declarations do not
+construct the paper's connector configurations or their graph-derived routing
+labels from those supports.  The unresolved goal below is therefore the
+paper's literal sparse-exit-or-Type-B conclusion.  No selector, replacement
+datum, callback, or side carrier is postulated. -/
+
+@[reducible] noncomputable def sameTokenBottleneckRoutingRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.sameTokenBottleneckRouting
+    { Requires := [K .homogeneousBottleneckPattern, K .activeSurplusDemands,
+        K .sparseSurplusSurvivor, K .selection, K .degreeProfileFibres,
+        K .targetCompleteContextUniversality, K .replacementExclusion,
+        K .uncompressible, K .noProperBaseline, K .remainderNormalized]
+      Produces := [K .bottleneckRouting, K .typeBHandoff]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp [K_eq_iff]
+      producesNonempty := by simp }
+    (fun inputs =>
+      let patternFact :=
+        (inputs.get (K .homogeneousBottleneckPattern)).down
+      let routing : (K .bottleneckRouting).At inputs.current := ⟨by
+          classical
+          obtain ⟨patternActive, capacity, activationEq, concretePattern⟩ :=
+            patternFact
+          -- Read every paper hypothesis through the sealed ledger.  These are
+          -- intentionally not repackaged into a route or callback record.
+          have active := (inputs.get (K .activeSurplusDemands)).down
+          have activeEq : patternActive = active := Subsingleton.elim _ _
+          subst patternActive
+          have _survivor := (inputs.get (K .sparseSurplusSurvivor)).down
+          have _selection := (inputs.get (K .selection)).down
+          have _profiles := (inputs.get (K .degreeProfileFibres)).down
+          have _contexts :=
+            (inputs.get (K .targetCompleteContextUniversality)).down
+          have _replacement := (inputs.get (K .replacementExclusion)).down
+          have _uncompressible := (inputs.get (K .uncompressible)).down
+          have _noProperBaseline :=
+            (inputs.get (K .noProperBaseline)).down
+          have _remainderNormalized :=
+            (inputs.get (K .remainderNormalized)).down
+          -- First exact unproved construction: derive the paper-declared
+          -- routing labels and connector configurations from `active`,
+          -- `capacity`, and this concrete same-token pattern, using the
+          -- canonical `T`, `R`, and `Γ` entries already present in the
+          -- activation; then run the paper's parallel/first-separator proof.
+          -- Keep the literal conclusion loud instead of naming a nonexistent
+          -- framework operation or accepting proof data from the caller.
+          refine ⟨active, capacity, activationEq, concretePattern, ?_⟩
+          skip⟩
+      let handoff : (K .typeBHandoff).At inputs.current := ⟨by
+          obtain ⟨_, _, _, _pattern, outcome⟩ := routing.down
+          rcases outcome with sparseExit | typeBHandoff
+          · exact False.elim
+              ((inputs.get (K .sparseSurplusSurvivor)).down sparseExit)
+          · exact typeBHandoff⟩
+      .cons (key := K .bottleneckRouting)
+        routing
+        (.cons (key := K .typeBHandoff) handoff .nil))
 
 /-- Node `[144]`, `cor:homogeneous-same-token-caps-close`: on the literal
 fixed-caps residual, spend the already registered sparse slack identity and
@@ -628,7 +714,8 @@ noncomputable def blockedPairEntropyDichotomy
     (Classical.choice (show Nonempty
         ((K .blockedPairEntropySandwich).At current ⊕
           (K .blockedPairCodeUnrealized).At current) from by
-      obtain ⟨capacity, primitiveEq, primitiveLe, concrete⟩ :=
+      obtain ⟨active, capacity, activationEq, primitiveEq, primitiveLe,
+          concrete⟩ :=
         (previous.get (K .capacityTokenLedger)).down
       obtain ⟨_activePairFamily, _blockerCertificate, _pairsEq, scheduleCard,
           _partition, _incidence, _multiplicity, _blocked⟩ :=
@@ -643,11 +730,13 @@ noncomputable def blockedPairEntropyDichotomy
             capacity.eligibleDecidable).card) ≤
           Graph.skeletonBudget current.object
       exact if realized : count then
-        ⟨.inl ⟨capacity, primitiveEq, primitiveLe, concrete, scheduleCard,
+        ⟨.inl ⟨active, capacity, activationEq, primitiveEq, primitiveLe,
+          concrete, scheduleCard,
           Coordinate, family, coordinateSupport, survives, demand, deficitBound,
           realized⟩⟩
       else
-        ⟨.inr ⟨capacity, primitiveEq, primitiveLe, concrete, scheduleCard,
+        ⟨.inr ⟨active, capacity, activationEq, primitiveEq, primitiveLe,
+          concrete, scheduleCard,
           Coordinate, family, coordinateSupport, survives, demand, deficitBound,
           realized⟩⟩))
     sandwichFresh unrealizedFresh
@@ -668,13 +757,14 @@ same certified ledger whose count was just accepted. -/
         (show Value BranchState Presentation presentation data
             .fibrePressure inputs.current from
           ⟨by
-            obtain ⟨presentation, certified, _partition⟩ :=
+            obtain ⟨active, presentation, activationEq, certified,
+                _partition⟩ :=
               (inputs.get (K .roleFibrePartition)).down
             let ledger := certified.ledger
             obtain ⟨token, tokenMem, role, display, roleBound, forced,
                 pattern⟩ := ledger.presented.exists_forced_pattern
-            exact ⟨presentation, certified, token, role, tokenMem, display,
-              roleBound, forced, pattern⟩⟩)
+            exact ⟨active, presentation, activationEq, certified, token, role,
+              tokenMem, display, roleBound, forced, pattern⟩⟩)
         .nil)
 
 /-- Node `[137]`, the coupled excess test `D_all > 0?` of
@@ -697,8 +787,8 @@ noncomputable def coupledExcessDichotomy
     (Classical.choice (show Nonempty
         ((K .sparsePressureNearCubic).At current ⊕
           (K .sparsePressureOverload).At current) from by
-      obtain ⟨presentation, certified, _token, _role, _tokenMem, _display,
-          _roleBound, _forced, _pattern⟩ :=
+      obtain ⟨active, presentation, activationEq, certified, _token, _role,
+          _tokenMem, _display, _roleBound, _forced, _pattern⟩ :=
         (previous.get (K .fibrePressure)).down
       have above : data.surplusThreshold current.object.vertexCount <
           current.object.degreeSurplus data.threshold :=
@@ -753,8 +843,8 @@ noncomputable def coupledExcessDichotomy
           obtain ⟨token, tokenMem, role, excess, pattern⟩ :=
             ledger.presented.exists_overloaded_roleFibre
               ledger.presented.tokenClass patternBound
-          exact ⟨presentation, ledger, token, role, tokenMem, trivial,
-            overload, excess, pattern⟩⟩⟩))
+          exact ⟨active, presentation, activationEq, ledger, token, role,
+            tokenMem, trivial, overload, excess, pattern⟩⟩⟩))
     nearCubicFresh overloadFresh
 
 /-- Node `[141]`: classify the concrete overload witness, already known to be
@@ -774,40 +864,16 @@ noncomputable def remainderOverloadClassDichotomy
     (Classical.choice (show Nonempty
         ((K .remainderClassOverload).At current ⊕
           (K .remainderClassAbsent).At current) from by
-      obtain ⟨declared, ledger, token, role, tokenMem,
+      obtain ⟨active, declared, activationEq, ledger, token, role, tokenMem,
         outside, rest⟩ := (previous.get (K .windowClassAbsent)).down
       cases classified : ledger.presented.tokenClass token with
       | windowIncidence => exact absurd classified outside
       | remainderSurplus =>
-          exact ⟨.inl ⟨declared, ledger, token, role,
+          exact ⟨.inl ⟨active, declared, activationEq, ledger, token, role,
             tokenMem, classified, rest⟩⟩
       | primitiveCarrier =>
-          exact ⟨.inr ⟨declared, ledger, token, role,
+          exact ⟨.inr ⟨active, declared, activationEq, ledger, token, role,
             tokenMem, classified, rest⟩⟩))
     remainderFresh primitiveFresh
-
-/-- Node `[144]`, the caps/pattern test of `thm:homogeneous-overload-geometric-closure`
-at the counted routing-label alphabet: either every capacity ledger of the object
-respects the fixed homogeneous caps, or some role fibre carries a role-homogeneous
-same-token matching or star of size `L_geom`. -/
-noncomputable def homogeneousCapsDichotomy
-    {current : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    (previous : ExactLedger (Input BranchState Presentation presentation data)
-      current known)
-    (capsFresh : K .homogeneousCapsHold ∉ known)
-    (patternFresh : K .homogeneousBottleneckPattern ∉ known) :
-    Decision (K .homogeneousCapsHold) (K .homogeneousBottleneckPattern) previous := by
-  classical
-  letI := data.boundaryProfileFintype
-  exact Decision.run previous (K .homogeneousCapsHold) (K .homogeneousBottleneckPattern)
-    `Hypostructure.Graph.Strategy.Spine.homogeneousCapsDichotomy
-    (if caps : Graph.HomogeneousCapsHold current.object data.threshold data.windowOrder
-        (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
-          (Graph.WindowCurvature.Label data.windowOrder)) then
-      .inl ⟨caps⟩
-    else
-      .inr ⟨Graph.homogeneousBottleneckPatternStatement_of_not_caps current.object caps⟩)
-    capsFresh patternFresh
 
 end Hypostructure.Graph.Strategy.Spine

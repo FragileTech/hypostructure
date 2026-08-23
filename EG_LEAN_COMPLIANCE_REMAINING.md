@@ -46,10 +46,12 @@ not an acceptable intermediate state.
 ## 3. Current measured state
 
 - Diagram nodes audited: **180**.
-- Nodes passing every strict gate: **157**.
-- Nodes retained in this ledger: **23**.
+- Nodes passing every strict gate: **159**.
+- Nodes retained in this ledger: **21**.
 - Axiom-audit declarations: **75** = **49 clean** + **26 tainted**; unreported: **0**.
-- Loud undefined frontier producers: **12**.
+- Loud undefined frontier producers: **10**. Node [144] is no longer represented
+  by an undefined producer; its anonymous sealed executor stops at one explicit
+  unsolved mathematical goal.
 
 ### Loud frontier producers
 
@@ -61,34 +63,36 @@ not an acceptable intermediate state.
 - `selectedDenseSameSizeCanonicalSwap`
 - `selectedLargeBudgetPressureCensus`
 - `selectedRouteEightBudgetEdge`
-- `selectedRouteEightUnclassifiedPiece`
 - `selectedSparsePairSerialSystem`
 - `selectedTypeAVisibleRouteEightImpossible`
-- `selectedPatternRoutedBottleneck`
 
 ### Cross-cutting framework blockers
 
 - `StrategyDag.lean` contains only presentation-equality examples and no final `strategyDag`; the
   package root still imports the application-local `Assembly.lean`. Full closure therefore lacks
   the sealed topology endpoint required by the framework.
-- The common Type B path now retains the raw `[177]` witness through `[72]`/`[81]`, keeps a
-  successful indexed B2 entry on `[74]`/`[82]`, and sends only an actual minimal obstruction to
-  `[84]`, always on the same monotone `ExactLedger`. The default `SpineRows` check reaches those
-  owners and then hits the already retained route-8 `[111]` heartbeat boundary; an uncapped check
-  exposes the corresponding later route-8 typing mismatch at lines 5961--5970. This prevents the
-  compiled API export but is not a new Type B node or a new remediation section.
+- The default `SpineRows` build is currently blocked by the independently modified Type B
+  absorbed-germ owners, beginning at line 3281. Error recovery continues through [116] and reports
+  no error in `route8SmallCoreExitRow`; the focused [116] vocabulary and elimination checks pass.
+- The current `api_catalog.py` run stops because the independently modified
+  `ColdCorridorRows.olean` artifact is unavailable. That export failure is outside [116].
 
 ### Exact section set
 
-[104], [111], [129], [144], [154], [156], [157], [159], [162], [163], [165], [166], [167], [168], [170], [171], [172], [174], [175], [176], [178], [179], [180].
+[123], [144], [162], [165], [166], [167], [168], [170], [171], [172], [174], [175], [176], [178], [179], [180].
 
 ## 4. Dependency-ordered repair route
 
-1. **Type A and route 8:** repair [104] and route the exact unclassified-census arm at [111].
-   The classified route-8 chain [115]–[124] is now kernel-checked on its literal ledgers.
-2. **Sparse-surplus accounting:** resolve the manuscript-level missing producer at [129] and the
-   missing same-token routing-germ construction at [144]. Nodes [131]–[143], the direct [145]
-   handoff, and [147]'s rate conversion now use the literal monotone `ExactLedger` path.
+1. **Type A and route 8:** implement the later unified-census producer required by [123]. Node
+   [111] is now exactly the paper's deterministic `\mathcal X_A`/`D_A` extraction; the unrelated
+   branch-kill classification no longer imports [114]/[123] facts into that node. Node [104]
+   closes the literal selected trace-basin compression against inherited uncompressibility.
+   Node [116] now closes the small-core branch by reading alternative (b) exactly as the paper's
+   nontrivial target-complete response quotient, without an admissibility strengthening.
+2. **Sparse-surplus accounting:** resolve the missing same-token routing-germ construction at
+   [144]. Node [129] now publishes the paper's active-family baseline package through a sealed
+   row; nodes [131]–[143], the direct [145] handoff, and [147]'s rate conversion use the literal
+   monotone `ExactLedger` path.
 3. **Cold/dense branch:** repair [154], [156], [157], [159], [162]–[172], and [174]–[176].
 4. **Pair serial closure:** construct the exact obstruction/system/arithmetic chain [178]–[180].
 5. **Sealed endpoint:** only after every node owner is green, express the final topology in
@@ -99,164 +103,110 @@ still stops at its first downstream failure and updates only that label's two au
 
 ## 5. Node-by-node remediation checklists
 
-### Node [104] — uncompressibility contradiction
+### Node [123] — unified demand descent
 
-**Exact manuscript diagram output.** uncompressibility contradiction
+**Exact manuscript diagram output.** The unified Type A ledger contains both target-defect and
+route-8 entries. A target-defect two-support entry supplies the canonical exit-(4) peel and lowers
+\(\Lambda_4\); a terminal survivor is a true two-support route-8 entry sent to [124].
 
-**Manuscript rows.** Label set **L15** (paper page(s): 154, 155, 156, 157, 158, 159, 160, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 177, 178, 179, 180, 182, 183, 185); its complete label
-list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
-table; their exact environments supply the inherited quantifiers and hypotheses.
+**Current Lean owners.** `route8PeelingDescentRow` and `route8PeelingTerminalRow`.
 
-**Current Lean owner.** `typeAExitFiveClosed` (TypeAExitRun.lean:282)
+**Primary defect class.** Mathematical proof absent at the unified-census producer.
 
-**Current combinator / shared continuation.** canonical `Incompatible` terminal; selectedTypeAExitFiveToSeven, selectedTypeAExitFiveToSevenSilent.
-
-**Primary defect class.** mathematical proof absent.
-
-**Fresh audit diagnosis.** ❌ MATHEMATICAL PROOF ABSENT — Node [103] publishes the exact selected-load/trace-basin response quotient and its proper-realization versus trace-response-only cases. A focused kernel probe proves the strongest two consequences assigned by the manuscript: the proper arm constructs `CompressibleSupport ... object basin`, while the response-only arm proves `¬ TargetCompleteMinimal ... basin` and, using the selected-basin equality, `¬ Route8Entry ... load`. The literal [104] ledger supplies hereditary uncompressibility but no route-8-minimality premise. Consequently the first consequence contradicts `K .uncompressible`, whereas the second is only the manuscript's “not an admissible route-8 residual” and does not inhabit the `False` required by the diagram's canonical contradiction terminal.
-
-**What must be implemented or corrected.**
-
-- Preserve the kernel-checked proper-arm conversion: from the selected basin's connected/proper/baseline/smaller realization, construct the exact same-basin `CompressibleSupport` and contradict inherited hereditary uncompressibility.
-- Preserve the kernel-checked response-only consequence: failure alternative (b) gives `¬ TargetCompleteMinimal ... basin` and therefore `¬ Route8Entry ... load` for the same selected basin.
-- The manuscript must supply a logically valid terminal continuation for that response-only consequence before [104] can be closed. Adding route-8 minimality on a branch tested before route 8, strengthening `cor:uncompressible` to forbid abstract response quotients, or treating non-admissibility as a `False` closure is not authorized by the current paper and must not be introduced in Lean.
-- Preserve the exact selected packing, component, receiver, peeling set, eligible load, basin, retained coordinate family, and response quotient in any manuscript-approved correction.
-
-**Live gate checklist.**
-
-- [ ] **Implemented / reachable:** fail: the response-only case has no paper-supplied `False`
-- [ ] **Correctly wired:** fail: the [103]-yes edge requires a contradiction terminal, but the exact second case only excludes route 8
-- [x] **Residual-local proof:** pass: both focused consequences are at the literal [103]-yes data
-- [x] **Correct ledger registration:** pass
-- [x] **No illegal carrier/API:** None found
-- [ ] **Exact manuscript proof:** fail: the manuscript gives no contradiction after its response-only conclusion
-- [ ] **Independent kernel check:** fail for the terminal; pass for a focused probe of the exact `CompressibleSupport ∨ ¬ TargetCompleteMinimal` and `¬ Route8Entry` consequences
-
-**Exit criterion.** Obtain a manuscript-authorized proposition or continuation that turns the
-response-only alternative into the diagram's terminal behavior without strengthening an incoming
-fact or changing the exit order; then implement it through the literal ledger, update both live
-rows from the compiled term, and remove this section only when all seven boxes are checked.
-
-### Node [111] — global squeeze and unified route-8 census classification
-
-**Exact manuscript diagram output.** The negative zero-surplus Type A pieces form the canonical
-route-8 collection \(\mathcal X_A\); on the unified correction, every negative piece belongs
-extensionally to \(\widetilde\Xi\) and is classified either as a target-complete-minimal route-8
-entry or as the prescribed target-defect alternative.
-
-**Manuscript rows.** Label set **L16** (paper page(s): 174, 175, 176, 177, 178, 179, 180,
-181, 182, 183, 185, 233, 234, 250, 251); its complete label list is in Appendix A. The
-corresponding live row cells are in the paper-fact implementation table; their exact environments
-supply the inherited quantifiers and hypotheses.
-
-**Current Lean owner.** `route8GlobalSqueezeRow` (SpineRows.lean:5076);
-`route8PieceClassificationDichotomy` (SpineRows.lean:5802).
-
-**Current combinator / shared continuation.** Canonical `factOnly`/`AtomicCT.run` for the pure
-collection and `Decision.run`/`ExactLedger.get` for the unified classification;
-`selectedRouteEightResidual` and shared `selectedRouteEightCensus`.
-
-**Primary defect class.** Exact census complement not yet routed.
-
-**Fresh audit diagnosis.** ⚠ PARTIAL — The pure [111] owner is exact and kernel-checked:
-it extracts precisely the negative zero-surplus canonical Type A pieces satisfying
-`Route8Survives`, publishes their support image, and records the cleared deficit. The unified
-correction is also stated exactly as `Route8UnifiedCensusFacts`: extensional membership in
-\(\widetilde\Xi\), the ordered route-8/target-defect entry alternatives, and the rate invariant
-for every surviving peel stage are all part of the ledger fact. Its classified arm runs the
-paper's [113], [123], and [124] chain to contradiction. The complementary decision arm remains
-intentionally loud at `selectedRouteEightUnclassifiedPiece`; no false proof or surrogate routing
-has been inserted.
-
-**What must be implemented or corrected.**
-
-- Consume the exact `K .route8UnclassifiedPiece` witness from its incoming `ExactLedger` and
-  route the exhibited piece according to the paper's branch-kill alternatives: visible-first
-  Type A material must enter its prescribed Type A continuation, and a non-bridge Type B piece
-  must enter the prescribed Type B continuation.
-- Preserve the full incoming ledger and append every fact proved by that routing under its
-  canonical semantic key. Do not replace the extensional census equality, entry alternatives,
-  or surviving-stage invariant by a weaker disjunction.
-- Do not add an application-local carrier, callback, alternate history, detached helper theorem,
-  or axiom. Temporary witnesses must remain local to the sealed executor, and all reusable facts
-  must be read from and written to the canonical `ExactLedger`.
+**Fresh audit diagnosis.** ⚠ PARTIAL, WITH THE BURDEN NOW A THEOREM — the flat claim
+`route8Deficit ≤ route8UnifiedEntries.card` (`s·D̃_A ≤ |Ξ̃|`) is removed from
+`Route8UnifiedCensusFacts`: it is unprovable, because `Ξ̃` counts only silent unpaid loads while
+`rem:unified-covers-exit4` keeps visible exit-(4) supports in the collection. In its place the
+staged burden is proven: `Graph.Route8Pressure.stage_burden` gives
+`s·D̃_A ≤ |Ξ̃ ∖ P₄| + |P₄|` at every stage where each visible excess load is peeled, from the
+staged silent-excess count (`VisibleEntry.card_le_sum_silentExcess_sdiff_add_positiveDeficiency`)
+and the two recorded-peel counting lemmas. The descent (`route8PeelingDescentRow`) enforces the
+discipline with every peel recorded on the `ExactLedger`: while a visible excess load of a
+collection piece is unpeeled, it is peeled through the exit-(4) witness supplied by
+`K .route8VisibleExitFourRouting` (`lem:typeA-visible-entry` at the collection: exits
+(1)–(3),(5),(6) are standing-invariant contradictions, (7) is excluded, so the witness is the
+canonical (Q1) member at that load); otherwise the staged burden plus the census deficit give the
+stage deficit, `exists_twoCarrierEntry_staged` produces the two-carrier entry, and a
+target-defect entry is peeled (`PeelChain.cons`) or the true survivor goes to [124]
+(`route8PeelingTerminalRow`). Exit (4) is a transient state, re-applied and recorded until the
+stage closes (rate fails) or only route 8 remains. `K .route8PiecesClassified` states
+`thm:branch-kill` exactly; the silent-first surrogate is `SilentClassification`
+(`lem:typeA-silent-excess-count`'s hypothesis only) and `route8DeficitRow` is deleted.
 
 **Live gate checklist.**
 
-- [ ] **Implemented / reachable:** partial: the exact classified arm is complete; the
-  unclassified arm has no producer
-- [ ] **Correctly wired:** fail: `selectedRouteEightUnclassifiedPiece`
+- [x] **Node [111] exact:** deterministic `route8GlobalSqueezeRow` only
+- [x] **Exact branch-kill schema:** `Route8Deficit.PieceClassification` is the contrapositive of
+  `thm:branch-kill` (a)/(b); no silent-first strengthening
+- [x] **Staged burden proven:** `Route8Pressure.stage_burden`, no flat burden assumed
+- [x] **Every peel recorded:** the descent's chain is ledger data; `StageRate` charges every
+  recorded peel; visible peels carry their exit-(4) witnesses
 - [x] **Residual-local proof:** pass
-- [x] **Correct ledger registration:** pass
-- [x] **No illegal carrier/API:** None found
-- [x] **Exact manuscript statement:** pass
-- [ ] **Independent kernel check:** the owners and classified branch pass; composed Assembly
-  intentionally stops at `selectedRouteEightUnclassifiedPiece`
+- [x] **Correct ledger registration:** all six vocabulary sites, including the new
+  `route8VisibleExitFourRouting` (idx 338)
+- [x] **No illegal carrier/API:** canonical `FactInputs.get`/`AtomicCT.run` rows only
+- [ ] **Visible-routing producer:** `K .route8VisibleExitFourRouting`. The Holds is now the
+  paper's exact per-port, peeling-parametric statement (`lem:typeA-unpeeled-visible-routing`: an
+  overloaded port among unpeeled loads yields an exit-(4) witness at the current peeling whose
+  load is one of its visible unpeeled returns); the descent row consumes it directly and is
+  kernel-checked against it. The producer's exits-(1)/(2)/(3) arms use existing closures; the
+  shared **response-realization theorem is now delivered**
+  (`Graph/ResponseRealization.lean`: `declaredState` with registered profiles,
+  `canonicalDeclaredState` with baseline inheritance and the descent ⟺ strict-shrinkage
+  equivalence, `separationOfDeclared`/`switchReadingOfDeclared` for the germ schedule; builds
+  green, not yet imported by consumers). The (5)/(6)/(7) arms need only its per-branch
+  `shrinks` strictness witness (`def:proper-quotient-representative`, part of the exit's
+  defining data) wired at the exit sites.
+- [ ] **Unified-deficit producer:** `K .route8UnifiedDeficit`. **`lem:decorated-envelope-deficit-bound`
+  is now proven** (`TypeBEnvelopeCharge.lean`: `decoratedEnvelopeDeficitBound`,
+  `envelopeFamilyNegativePart_le`, `envelopeFamilyNegativePart_le_degreeSurplus`, with the
+  `GroupedEnvelopes` glue in `DecoratedHandoffEnvelope.lean`); three of four piece cases were
+  already derivable. The producer still needs, per handoff core, the `routes`/`unsaturated`
+  hypotheses (`lem:typeB-postledger-core-hygiene` + `lem:typeA-receiver-loads` +
+  `lem:typeA-unsaturated-discharge` read on the post-ledger remainder) and the fan-assignment
+  coverage `Σ_X |A_X| ≤ Σ_h c(𝔉_h)` (`def:typeB-assigned-ledger`); no ledger key packages them
+  yet.
+- [ ] **Entry-census producer:** `K .route8UnifiedEntryCensus`. Locally provable: `select? =
+  some basin` up to a D3 window-label cut-boundary lemma, the Q3↔alternative-(a) bridge and its
+  exit-(4) witness, and α ≥ 2 on the minimal arm (delivered:
+  `Route8.two_le_essentialCore_card_of_alternatives_refuted`, `Route8CarrierCore.lean`, builds).
+  Blocked on the [116]-shared standing-invariant refutations of alternatives (b)/(c)/(d)
+  (`cor:uncompressible`, `lem:proper-smearing`, `lem:no-silent-global-smearing`, and a
+  `TraceSurvivingSeparator → HandoffProduced` bridge), and on `lem:typeA-unified-carriers`'s
+  target-defect half (`lem:typeA-internal-quotient-mixed` routing). Q1/Q2/Q4/Q5 witnesses have
+  no Lean bridge to the minimality alternatives.
+- [x] **Stage restructure done:** the falsifiable invariant key `route8UnifiedStageRate` is
+  deleted; `route8StageRateFailed` (idx 342) records the failed-stage arm;
+  `route8StageOutcomeDichotomy` decides the terminal stage exactly as the manuscript's
+  procedure does (survivor → [124]; failed rate → the branch-kill closure, Assembly frontier
+  `selectedRouteEightStageClosure`); vocabulary builds, both [123] rows probe-elaborate. The
+  descent itself now peels per port with every peel recorded (reduced-ledger machinery in
+  `VisibleReceiverEntry.lean`: `visibleFirstOrderReduced`/`payableSetReduced`/
+  `silentExcessReduced` + `silentExcessReduced_subset` + the reduced
+  `lem:typeA-silent-excess-count`; `Route8Pressure.stage_burden` re-proven from them;
+  `PeelChain.visible` records a visible unpeeled load) — all kernel-checked, descent row
+  probe-elaborates. The failed-stage closure producer (`selectedRouteEightStageClosure`: the
+  large-budget net-deficiency cap + `thm:branch-kill` at the failed stage) still needs a
+  produced `route8PiecesClassified` and a branch-carried `netDeficiencyCap`.
+- [ ] **Composed [123] wiring:** `selectedLargeBudgetPressureCensus` remains the loud frontier
+  until the above are produced.
+- [ ] **Worktree/HEAD reconciliation (user):** commit `2985ff8` ("Add part IX closure") contains
+  a `Route8CarrierCore.lean` [124] no-go block plus `import ExitFourFamily` that now forms an
+  import cycle against the worktree topology (`ExitFourFamily → Route8Census →
+  Route8CarrierCore`); the worktree keeps the acyclic version.
 
-**Exit criterion.** Implement the paper-prescribed routing of the exact unclassified-piece
-witness on the literal incoming ledger, prove both resulting continuations kernel-check, update
-both live audit rows from that compiled term, and remove this section only when all seven boxes
-are green.
-
-### Node [129] — full active family and baseline: \(\mathcal A_0=\mathcal P_{\rm exc}\), \(E_{\rm spine}\le C_E n\)
-
-**Exact manuscript diagram output.** full active family and baseline: \(\mathcal A_0=\mathcal P_{\rm exc}\), \(E_{\rm spine}\le C_E n\)
-
-**Manuscript rows.** Label set **L18** (paper page(s): 59, 60, 83, 84); its complete label
-list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
-table; their exact environments supply the inherited quantifiers and hypotheses.
-
-**Current Lean owner.** No application owner. `Holds .baselineSpineDemand` states the exact
-required proposition, and `isBaselineSpineDemand_of_package` is the reusable arithmetic theorem;
-`selectedStrictSurplusBranch` stops loudly at the deliberately undefined
-`selectedBaselineSpineDemand`.
-
-**Current combinator / shared continuation.** Missing `factOnly`/`AtomicCT.run` producer;
-`selectedStrictSurplusBranch` is the first consumer.
-
-**Primary defect class.** exact mathematical producer absent.
-
-**Fresh audit diagnosis.** ❌ LOUD SOURCE GAP — The fabricated empty-support coordinate family,
-its zero-deficit proof, the legacy row, and its wrapper have been removed. Lean now states only
-the manuscript's required active family and baseline-spine demand. A source audit found that
-`def:baseline-spine-demand` only defines this package and every sparse theorem assumes that the
-active object admits one; no preceding manuscript lemma constructs a target-testable `𝓘_spine`
-or proves `E_spine ≤ C_E n` on the strict branch. The selected sparse continuation therefore keeps
-the exact producer undefined instead of feeding chosen zero data to [131]–[138].
-
-**What must be implemented or corrected.**
-
-- Supply a new paper lemma, or identify a currently missing source lemma, that constructs on this
-  literal residual a type `Coordinate`, a finite `family : Finset Coordinate`, and
-  `coordinateSupport : Coordinate → Finset object.Vertex`, while retaining
-  `𝓐₀ = 𝓟_exc`.
-- Its complete target is: every `DeclaredQuotient` on that family whose rank quotient is
-  `FunctionalOn ↑family` is `LabelInjectiveOn ↑family`, and
-  `cubicBaselineBudget n threshold ≤ 2^(family.card + spineDeficit n threshold family.card)`
-  together with
-  `spineDeficit n threshold family.card ≤ data.surplusScale * n`. The current paper defines and
-  assumes this package but does not prove this implication, so Lean must not obtain it by choosing
-  an empty family, selecting a deficit, or using a detached carrier.
-- Publish the complete value under `K .baselineSpineDemand` with one residual-local `factOnly`
-  row that reads all prerequisites through `inputs.get` and is run with `AtomicCT.run`.
-
-**Live gate checklist.**
-
-- [ ] **Implemented / reachable:** fail: `selectedBaselineSpineDemand` is intentionally undefined
-- [ ] **Correctly wired:** fail at the exact missing producer before [130]
-- [ ] **Residual-local proof:** no application proof exists
-- [x] **Correct ledger registration:** pass
-- [x] **No illegal carrier/API:** pass: the fabricated family/row/wrapper were removed
-- [ ] **Exact manuscript proof:** fail: the manuscript assumes, but does not prove, the
-  package-to-demand construction
-- [ ] **Independent kernel check:** the proposition and generic arithmetic theorem build; the
-  selected call is deliberately undefined, while full Assembly import currently stops earlier at
-  the separately audited [71]/[80] error
-
-**Exit criterion.** Reinspect the declaration body and call site, update this node row and every
-listed paper-fact row from the compiled term, run the table/API checks, and remove this section
-only when all seven boxes are checked. A later compiler failure is recorded as downstream unless
-that later node has its own independently failing audit row.
+**Exit criterion.** The framework theorems (response realization,
+`lem:decorated-envelope-deficit-bound`) are proven and the descent/terminal architecture is the
+manuscript's, kernel-checked end to end. [123] closes into [124] once four producers exist, each
+a single-label sealed row on the literal incoming ledger: (1) `route8VisibleExitFourRouting`
+(exits (1)–(3) closures + realization with its `shrinks` witness at (5)/(6)/(7)); (2)
+`route8UnifiedDeficit` (three cases done in theorems; handoff cores need the hygiene facts
+`lem:typeB-postledger-core-hygiene`/`lem:typeA-receiver-loads`/`lem:typeA-unsaturated-discharge`
+and the `def:typeB-assigned-ledger` coverage packaged as ledger facts); (3)
+`route8UnifiedEntryCensus` (locally provable parts + the [116]-shared standing-invariant
+refutations, now unblocked in principle by `ResponseRealization`); (4)
+`selectedRouteEightStageClosure` (`route8PiecesClassified` producer + branch-carried
+`netDeficiencyCap` + the failed-stage arithmetic).
 
 ### Node [144] — bottleneck discharge: sparse exit, Type B, or near-cubic spine
 
@@ -266,210 +216,97 @@ that later node has its own independently failing audit row.
 list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
 table; their exact environments supply the inherited quantifiers and hypotheses.
 
-**Current Lean owner.** `selectedBottleneckDischarge` (Assembly.lean:406)
+**Current Lean owner.** `sameTokenBottleneckRoutingRow`, run directly by
+`selectedBottleneckDischarge` on the incoming `ExactLedger`.
 
-**Current combinator / shared continuation.** Three residual-local `factOnly` audit rows,
-each publishing its class-specific audit and the shared `K .homogeneousBottleneckPattern`
-atomically; `selectedSparsePressureOverloadCloses` and `selectedBottleneckDischarge`.
+**Current combinator / shared continuation.** The three residual-local `factOnly` class-audit
+rows each publish their class audit and the shared `K .homogeneousBottleneckPattern`. The one
+anonymous Type-A `factOnly` owner for this label requires that pattern together with
+`K .activeSurplusDemands`, `K .sparseSurplusSurvivor`, and the inherited selection,
+profile, context, replacement, and uncompressibility facts. Its literal manifest produces
+`K .bottleneckRouting` and the survivor specialization `K .typeBHandoff`. The owner is loud
+inside its proof, before either output can be committed.
 
-**Primary defect class.** exact mathematical producer absent.
+**Primary defect class.** mathematical proof absent at
+`lem:same-token-bottleneck-routing`: Lean does not yet obtain the paper-declared connector
+configurations from the literal homogeneous pattern. The support now reads the canonical returns
+already present in `K .activeSurplusDemands`; no return path is requested from the lemma in
+isolation.
 
-**Fresh audit diagnosis.** ❌ LOUD PAPER GAP AFTER AN EXACT PREFIX — Each of [140], [142], and
-[143] reads its concrete class-specific overload witness from the incoming `ExactLedger`, derives
-the manuscript's matching/star pattern in that same token-role fibre, and atomically publishes both
-its audit key and `K .homogeneousBottleneckPattern`. The former [144] implementation did not then
-construct the paper's two routing germs and first separator: `CapacityPresentation` supplied those
-facts through callback fields, so the alleged `RoutedBottleneck` was assumed rather than proved.
-Those callbacks, the fabricated canonical presentation, the routing row, the Type B handoff row,
-and both downstream surrogate continuations have been removed. `selectedBottleneckDischarge` now
-stops loudly at `selectedPatternRoutedBottleneck`, the first missing manuscript fact.
+**Fresh audit diagnosis.** ❌ LOUD AT THE PAPER'S FIRST DECLARED-CONNECTOR STEP — Each of [140],
+[142], and [143] correctly reads its concrete overload witness from the incoming `ExactLedger` and
+publishes the manuscript's matching/star in the same token-role fibre. The subsequent Lean code had
+diverged from the paper by choosing arbitrary shortest paths from whole-graph connectivity. Those
+paths were not the active demands' `R_p` and their construction was circular.
 
-**What must be implemented or corrected.**
+The repaired `routingSupport` instead uses the literal upstream data: capacity-token carrier,
+canonical blocker, `T(p)`, `T(q)`, the already canonical `R_p`, `R_q`, and `Γ(p)`, `Γ(q)`. The
+two return entries are forced by the paper's own earlier active-demand definition and blocker type
+(b): at an open port `Γ(p)=Q_p`, so the canonical return cannot be recovered from `Γ(p)`. No new
+path is selected and no numerical datum is supplied. The extra presentation fields, global path
+selector, callback label readers, collision/trichotomy wrappers, detached construction theorems,
+`GermPair`/`RoutedBottleneck` carriers, invented semantic keys, and conditional handoff row are
+deleted. `Parallel` also no longer accepts bare `¬ Diverges`: common-prefix entry is proved from
+the configurations' actual landing facts when one finite configuration ends first.
 
-- For every concrete `CapacityPresentation`, `ObjectCapacityLedger`, token `t` in its token set,
-  role `r`, and `L_geom` matching or star inside `roleFibre t r`, select two distinct pattern edges
-  and two distinct selected demands whose *actual* routing labels agree.
-- From the capacity token, the canonical blockers of those two pairs, and their selected and
-  response supports, construct two declared connector configurations beginning at the relevant
-  primitive blocker anchor and ending in the prescribed selected supports. The construction must
-  retain the concrete paths, endpoint labels, boundary profiles, window labels, and suppressed
-  chord flag used in the paper's pigeonhole step.
-- Prove the exact parallel/first-separator alternative. Parallel configurations must produce an
-  actual constructor of `SparseSurplusExit`; separated configurations must supply the first
-  separator, switch support and switch reading needed for a concrete `RoutedBottleneck`. Applying
-  its exhaustive outcome must then produce the absorbed sparse-exit case or an admissible decorated
-  Type B envelope. Do not put any of these facts in a presentation callback.
-- Publish every newly proved routing fact under its canonical semantic key with one or more
-  `factOnly`/`AtomicCT.run` rows on the literal predecessor; pass the accumulated `ExactLedger`
-  forward without reconstructing a cursor or merging sibling histories.
-- Build the narrow owner and an independent branch probe. The node is not green while its
-  producer or composed arm reaches any undefined frontier name shown in the kernel cell below.
+The second source audit confirms why merely supplying `R_p,R_q` does not finish the proof.
+`ActiveSurplusDemands` carries enough data to reconstruct each canonical return walk from a selected
+endpoint to its centre. In contrast, the current `DeclaredCoordinateSignature` declaration exposes
+only coordinate constructors, valued readings, and support unions. It does not construct the
+paper-declared connector configuration from the primitive blocker support to a selected `T(p)`, nor
+does it provide the graph-derived seven-coordinate routing-label reading. Consequently the existing
+Lean declarations do not yet justify the first two objects chosen in the manuscript proof. This is
+a mathematical formalization gap, not permission to add a caller-supplied selector or carrier.
 
-**Live gate checklist.**
-
-- [ ] **Implemented / reachable:** fail: `selectedPatternRoutedBottleneck` is intentionally undefined
-- [ ] **Correctly wired:** fail at the exact missing routing-germ producer
-- [x] **Residual-local proof:** pass through the three concrete class audits
-- [x] **Correct ledger registration:** pass through `K .homogeneousBottleneckPattern`
-- [x] **No illegal carrier/API:** pass: the callback fields and fabricated presentation were removed
-- [ ] **Exact manuscript proof:** fail: the routing-germ and first-separator construction is absent
-- [ ] **Independent kernel check:** the exact prefix builds and the selected call remains
-  deliberately undefined; full Assembly import currently stops earlier at [71]/[80]
-
-**Exit criterion.** Reinspect the declaration body and call site, update this node row and every
-listed paper-fact row from the compiled term, run the table/API checks, and remove this section
-only when all seven boxes are checked. A later compiler failure is recorded as downstream unless
-that later node has its own independently failing audit row.
-
-### Node [154] — bounded configuration case?
-
-**Exact manuscript diagram output.** bounded configuration case?
-
-**Manuscript rows.** Label set **L25** (paper page(s): 111, 112, 113, 114, 115, 116, 117, 118, 120); its complete label
-list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
-table; their exact environments supply the inherited quantifiers and hypotheses.
-
-**Current Lean owner.** `selectedColdGermTrichotomy` (Assembly.lean:1072); `coldGermTrichotomyRow` (ColdCorridorRows.lean:630)
-
-**Current combinator / shared continuation.** terminal closure, AtomicCT.run row, Decision.run; selectedAbsorbedGermResidual, selectedColdGermTrichotomy, selectedNearCubicBranch.
-
-**Primary defect class.** fact proved detached from the literal active residual.
-
-**Fresh audit diagnosis.** ✅ FAITHFUL-TRIVIAL — The manuscript's exhaustiveness argument is “G3 is the complement”, asserted in one sentence with no supporting work. Requires only `K .selection` and `K .uncompressible`; nothing ties it to the [153] extracted family.
+The first remaining formula is therefore the manuscript's own one, not a request that the paper
+justify the deleted strategy. In the compiled context containing concrete witnesses
+`active`, `capacity`, `activationEq`, and `concretePattern`, the sole goal is
+`SparseSurplusExit (MinimumDegreeAtLeast data.threshold)
+(HasCycleWithLength data.LengthOK) data.LengthOK current.object ∨
+SameTokenTypeBHandoffStatement data current.object`. From the concrete token `t`, role `r`, and
+matching/star inside `concretePattern`, the proof must select two distinct equal-label edges and the
+declared connector configurations belonging to their active-family supports, then follow the
+paper's parallel/first-separator alternatives in order. On `K .sparseSurplusSurvivor`, the same
+executor eliminates the first arm and publishes only the Type B arm. No whole-graph connectivity
+path, extra support entry, caller-supplied bottleneck, undefined selector, or detached quotient
+theorem is an admissible substitute.
 
 **What must be implemented or corrected.**
 
-- Tie the bounded-configuration trichotomy to the family extracted at [153]; the current object-wide complement must not be provable without that active residual fact.
-- Prove the node value inside the atomic executor from `inputs.current` and semantic-key reads
-  through `inputs.get`; eliminate an ignored object argument, detached universal proof, or
-  requirement not tied to the literal incoming residual.
+- Complete the already registered mathematical `Holds` proposition, which now states the paper's
+  concrete homogeneous-pattern package and exact sparse-exit-or-decorated-Type-B alternative. Do
+  not restore a universal theorem about a separately supplied bottleneck.
+- Finish the anonymous proof inside `sameTokenBottleneckRoutingRow`. It already reads only the
+  literal pattern, survivor, and inherited paper facts through `FactInputs.get`; construct every
+  temporary routing/quotient/envelope object locally and return the two exact declared outputs.
+- Use `routingSupport` with the ledger's canonical `R_p,R_q`; never select a replacement path. The paper's
+  parallel case must follow its attempted-quotient/context/compression/smearing/closed-
+  representative alternatives, and the separated case must follow its cubic-switch and fan-safety
+  alternatives in that order.
+- Append the sparse-exit-or-Type-B fact and its survivor specialization
+  with the literal `FactManifest` and `AtomicCT.run` on the same `ExactLedger`. Do not restore any
+  helper theorem, callback, side carrier, path selector, or residual trichotomy.
+- After that proof, the next loud obligation is downstream: the current node [65] schemas accept a
+  canonical negative remainder component or the indexed [177] corridor datum, whereas [144]
+  produces the paper's arbitrary connected remainder core with its admissible handoff envelope.
+  Route that exact ledger fact through a same-token Type B lane; do not convert it into either
+  stronger existing schema.
 
 **Live gate checklist.**
 
-- [x] **Implemented / reachable:** pass
-- [x] **Correctly wired:** pass
-- [ ] **Residual-local proof:** partial: PARTIAL
-- [x] **Correct ledger registration:** pass
-- [x] **No illegal carrier/API:** None found
-- [x] **Exact manuscript proof:** pass: FAITHFUL-TRIVIAL
-- [x] **Independent kernel check:** pass: YES
-
-**Exit criterion.** Reinspect the declaration body and call site, update this node row and every
-listed paper-fact row from the compiled term, run the table/API checks, and remove this section
-only when all seven boxes are checked. A later compiler failure is recorded as downstream unless
-that later node has its own independently failing audit row.
-
-### Node [156] — G2: target defect, exit (4), or handoff
-
-**Exact manuscript diagram output.** G2: target defect, exit (4), or handoff
-
-**Manuscript rows.** Label set **L25** (paper page(s): 111, 112, 113, 114, 115, 116, 117, 118, 120); its complete label
-list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
-table; their exact environments supply the inherited quantifiers and hypotheses.
-
-**Current Lean owner.** `coldGermTrichotomyRow` (ColdCorridorRows.lean:630), keys `.coldGermDistinguished`, `.coldGermRouted`
-
-**Current combinator / shared continuation.** terminal closure, AtomicCT.run row, Decision.run; selectedAbsorbedGermResidual, selectedColdGermTrichotomy, selectedNearCubicBranch.
-
-**Primary defect class.** fact proved detached from the literal active residual.
-
-**Fresh audit diagnosis.** ✅ FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. “Exit (4), or handoff” is the name of the ledger the defect lands in, already excluded by `def:surviving-cold-branch`. The sign guard matches the manuscript's own orientation convention and is what the G3 descent needs. Vacuously true on everything the branch constructs. “exit (4), or handoff” has no formal counterpart.
-
-**What must be implemented or corrected.**
-
-- State and publish the formal exit-(4)-or-handoff conclusion rather than relying on a ledger name, and connect it to the G2 distinguished germ on the active family.
-- Prove the node value inside the atomic executor from `inputs.current` and semantic-key reads
-  through `inputs.get`; eliminate an ignored object argument, detached universal proof, or
-  requirement not tied to the literal incoming residual.
-
-**Live gate checklist.**
-
-- [x] **Implemented / reachable:** pass
-- [x] **Correctly wired:** pass
-- [ ] **Residual-local proof:** partial: PARTIAL
-- [x] **Correct ledger registration:** pass
-- [x] **No illegal carrier/API:** None found
-- [x] **Exact manuscript proof:** pass: FAITHFUL
-- [x] **Independent kernel check:** pass: YES
-
-**Exit criterion.** Reinspect the declaration body and call site, update this node row and every
-listed paper-fact row from the compiled term, run the table/API checks, and remove this section
-only when all seven boxes are checked. A later compiler failure is recorded as downstream unless
-that later node has its own independently failing audit row.
-
-### Node [157] — G3 or same-interface table: compression
-
-**Exact manuscript diagram output.** G3 or same-interface table: compression
-
-**Manuscript rows.** Label set **L25** (paper page(s): 111, 112, 113, 114, 115, 116, 117, 118, 120); its complete label
-list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
-table; their exact environments supply the inherited quantifiers and hypotheses.
-
-**Current Lean owner.** `selectedColdSameInterfaceTable` (Assembly.lean:1100); `coldSameInterfaceTableRow` (ColdCorridorRows.lean:694)
-
-**Current combinator / shared continuation.** terminal closure, AtomicCT.run row, Decision.run; selectedAbsorbedGermResidual, selectedColdSameInterfaceTable, selectedNearCubicBranch.
-
-**Primary defect class.** fact proved detached from the literal active residual.
-
-**Fresh audit diagnosis.** ✅ FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. “Nothing constructs a `TableRow`” is the manuscript's shape too — the paper never exhibits a row; the working lemma is “every row is routed” and the consumer negates existentials. `admissible` is `def:admissible-rank-quotient`, cited as a definition at exactly this point. Two of five conjuncts are trivial: `tableBound = Fintype.card Record` is `rfl`, and `row.increment = 0` is immediate from the `equalLength` field.
-
-**What must be implemented or corrected.**
-
-- Retain the manuscript's universal routing form, but instantiate it on the active same-interface family and remove any requirements that are only asserted by the row's data structure.
-- Prove the node value inside the atomic executor from `inputs.current` and semantic-key reads
-  through `inputs.get`; eliminate an ignored object argument, detached universal proof, or
-  requirement not tied to the literal incoming residual.
-
-**Live gate checklist.**
-
-- [x] **Implemented / reachable:** pass
-- [x] **Correctly wired:** pass
-- [ ] **Residual-local proof:** partial: PARTIAL
-- [x] **Correct ledger registration:** pass
-- [x] **No illegal carrier/API:** None found
-- [x] **Exact manuscript proof:** pass: FAITHFUL
-- [x] **Independent kernel check:** pass: YES
-
-**Exit criterion.** Reinspect the declaration body and call site, update this node row and every
-listed paper-fact row from the compiled term, run the table/API checks, and remove this section
-only when all seven boxes are checked. A later compiler failure is recorded as downstream unless
-that later node has its own independently failing audit row.
-
-### Node [159] — dense-packing residual: the no-edge of [158]; \(2^{c_{13}p_{13}\log_2 n}\) exceeds the labelled skeleton class, i.e.\ \(\theta>\theta_{\rm win}\)
-
-**Exact manuscript diagram output.** dense-packing residual: the no-edge of [158]; \(2^{c_{13}p_{13}\log_2 n}\) exceeds the labelled skeleton class, i.e.\ \(\theta>\theta_{\rm win}\)
-
-**Manuscript rows.** Label set **L26** (paper page(s): 121, 122, 123); its complete label
-list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
-table; their exact environments supply the inherited quantifiers and hypotheses.
-
-**Current Lean owner.** `denseOrJointCodeOverflow` (BlockedCompressionRows.lean:64); `blockedClassCompressionCloses` (:101)
-
-**Current combinator / shared continuation.** terminal closure; selectedScaleAdditivityDichotomy.
-
-**Primary defect class.** mathematical statement weakened or replaced by a surrogate.
-
-**Fresh audit diagnosis.** ⚠ WEAKER — The manuscript's single display is recovered only as the left disjunct; `K .windowPackageUnrealized` bundles two manuscript statements. Assembly.lean:3504 admits this in-source.
-
-**What must be implemented or corrected.**
-
-- Split `.windowPackageUnrealized` into the manuscript's realization failure and retained-code statements. Publish the exact skeleton-count overflow here and remove `selectedDenseJointCodeOverflow`.
-- Follow the cited manuscript proof and replace the current weaker, divergent, or bookkeeping
-  schema with the exact displayed proposition and alternatives. Preserve their order and scope.
-- Run the repaired owner on the literal typed predecessor, select the correct `Decision` arm,
-  and pass its exact output ledger forward without reconstructing a cursor or merging siblings.
-- Build the narrow owner and an independent branch probe. The node is not green while its
-  producer or composed arm reaches any undefined frontier name shown in the kernel cell below.
-
-**Live gate checklist.**
-
-- [x] **Implemented / reachable:** pass
-- [ ] **Correctly wired:** fail: NO: `selectedDenseJointCodeOverflow`
-- [x] **Residual-local proof:** pass
-- [x] **Correct ledger registration:** pass
-- [x] **No illegal carrier/API:** None found
-- [ ] **Exact manuscript proof:** partial: WEAKER
-- [ ] **Independent kernel check:** fail: NO: `selectedDenseJointCodeOverflow`
+- [ ] **Implemented / reachable:** the exact vocabulary builds, but the anonymous proof has the
+  one displayed unsolved outcome
+- [x] **Correctly wired:** the exact pattern reaches `sameTokenBottleneckRoutingRow` directly
+- [x] **Residual-local proof:** the three class audits concern the literal active object
+- [ ] **Correct ledger registration:** the literal two-key manifest is registered, but no routing
+  or Type B result can be committed until the proof closes
+- [x] **No invented path strategy:** the global path fields, two extra support entries, collision
+  wrappers, undefined selector, detached carriers, and conditional row are deleted
+- [ ] **Exact manuscript proof:** first absent at selection and reading of the declared connector
+  configurations
+- [x] **Independent kernel check:** `SameTokenRoutingGerms`, `ObjectCapacityLedger`, and
+  `SpineVocabulary` build; the narrow row reports only the displayed unsolved disjunction, and
+  searches find no obsolete routing carrier or fake producer
 
 **Exit criterion.** Reinspect the declaration body and call site, update this node row and every
 listed paper-fact row from the compiled term, run the table/API checks, and remove this section
@@ -512,46 +349,6 @@ table; their exact environments supply the inherited quantifiers and hypotheses.
 - [x] **No illegal carrier/API:** pass for the shared [22] substep: the duplicate inline decision and extra variable-edge-budget fact are removed
 - [x] **Exact manuscript proof:** pass: FAITHFUL
 - [ ] **Independent kernel check:** fail: NO: `selectedDenseSameSizeCanonicalSwap`, `selectedDenseJointCodeOverflow`, `selectedBarrierOverlapSerialSystem`
-
-**Exit criterion.** Reinspect the declaration body and call site, update this node row and every
-listed paper-fact row from the compiled term, run the table/API checks, and remove this section
-only when all seven boxes are checked. A later compiler failure is recorded as downstream unless
-that later node has its own independently failing audit row.
-
-### Node [163] — neutral equal-length terminal configuration: second strand graph-realized?
-
-**Exact manuscript diagram output.** neutral equal-length terminal configuration: second strand graph-realized?
-
-**Manuscript rows.** Label set **L26** (paper page(s): 121, 122, 123); its complete label
-list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
-table; their exact environments supply the inherited quantifiers and hypotheses.
-
-**Current Lean owner.** `neutralGermSymmetryDichotomy` (ColdCorridorRows.lean:800)
-
-**Current combinator / shared continuation.** terminal closure, AtomicCT.run row, Decision.run; selectedAbsorbedGermResidual, selectedNearCubicBranch.
-
-**Primary defect class.** wrong mathematical branch test or proof strategy.
-
-**Fresh audit diagnosis.** ⚠ DIVERGENT — Lean splits by the canonical order `Precedes`; the graph-realizability of the second strand — the literal diagram question — is never tested, and the `.inr` arm is [166]/[169], not [167]. `germ.Neutral` is the trichotomy's G3, missing `def:neutral-equal-length-germ`'s `increment = 0`; `LengthChanging` exists and is unused.
-
-**What must be implemented or corrected.**
-
-- Decide graph-realizability of the second strand exactly as drawn, require the neutral germ's `increment = 0`, and route the no/yes arms to [165]–[166] and [167] respectively. Canonical order is not the branch test.
-- Follow the cited manuscript proof and replace the current weaker, divergent, or bookkeeping
-  schema with the exact displayed proposition and alternatives. Preserve their order and scope.
-- Give the owner a literal nonempty `FactManifest`; consume every declared requirement, return
-  exactly `Produces`, and commit with `AtomicCT.run`. Remove unused requirements and every
-  custom wrapper/carrier on this path without deleting valid mathematical content.
-
-**Live gate checklist.**
-
-- [x] **Implemented / reachable:** pass
-- [x] **Correctly wired:** pass
-- [x] **Residual-local proof:** pass
-- [ ] **Correct ledger registration:** partial: `_structure` bound and discarded
-- [ ] **No illegal carrier/API:** partial: `_structure` bound and discarded
-- [ ] **Exact manuscript proof:** partial: DIVERGENT
-- [x] **Independent kernel check:** pass: YES
 
 **Exit criterion.** Reinspect the declaration body and call site, update this node row and every
 listed paper-fact row from the compiled term, run the table/API checks, and remove this section
@@ -1166,10 +963,6 @@ rows in its set that the repaired fact changes.
 ### L17 — node(s) [123]
 
 `cor:typeA-large-budget-closure-open-pressure`, `def:typeA-actual-profile-pressure-defects`, `def:typeA-carrier-deletion-witness`, `def:typeA-exit4-family`, `def:typeA-exit4-pressure-token`, `def:typeA-large-budget-deficit`, `def:typeA-open-window-blocker`, `def:typeA-peeling-reduced-ledger`, `def:typeA-pressure-absorbers`, `def:typeA-pressure-ledger`, `def:typeA-primitive-window-overload-excess`, `def:typeA-recorded-window-shadow-hit`, `def:typeA-route8-carriers`, `def:typeA-same-window-open-blocker-cap`, `def:typeA-same-window-overload-triple`, `def:typeA-terminal-two-carrier`, `def:typeA-true-route8-residual`, `def:typeA-two-terminal-pressure-records`, `def:typeA-unified-entries`, `def:typeA-unified-negative`, `def:typeA-window-attachment-shadow`, `def:typeA-zero-shadow-primitive-excess`, `def:typeB-assigned-ledger`, `lem:app-dense-window-closure`, `lem:app-global-smearing-closure`, `lem:app-typeA-quiet-bound`, `lem:typeA-carrier-cut-parity`, `lem:typeA-carrier-deletion-exit`, `lem:typeA-deletion-witness-declared`, `lem:typeA-essential-deletion-witness`, `lem:typeA-exit4-finite-descent`, `lem:typeA-final-open-pressure-exhaustion`, `lem:typeA-internal-quotient-mixed`, `lem:typeA-one-terminal-collapse`, `lem:typeA-open-pressure-zero-shadow-excess`, `lem:typeA-open-window-blocker-count`, `lem:typeA-peeling-reduced-reduction`, `lem:typeA-pressure-absorber-no-overcount`, `lem:typeA-pressure-defect-split`, `lem:typeA-pressure-is-exit4-peel`, `lem:typeA-pressure-ledger-no-overcount`, `lem:typeA-pressure-records-canonical`, `lem:typeA-pressure-token-two-carriers`, `lem:typeA-primitive-excess-zero-shadow`, `lem:typeA-profile-pressure-dependence-routing`, `lem:typeA-route8-burden`, `lem:typeA-routed-overload-not-open`, `lem:typeA-same-window-cap-overload-excess`, `lem:typeA-singleton-shadow-table`, `lem:typeA-two-carrier-deletion-canonical`, `lem:typeA-unified-burden`, `lem:typeA-unified-carriers`, `lem:typeA-unified-deficit`, `lem:typeA-window-blocker-accounting-audit`, `lem:typeA-window-blocker-numerics`, `lem:typeA-window-shadow-hit-routes`, `prop:typeA-exit4-closure-from-open-pressure`, `prop:typeA-exit4-closure-from-window-blockers`, `prop:typeA-exit4-closure-from-zero-shadow`, `prop:typeA-external-pressure-criterion`, `prop:typeA-external-pressure-reduction`, `prop:typeA-route8-carrier-reduction`, `prop:typeA-route8-closure-from-nogo`, `prop:typeA-unified-reduction`, `thm:large-budget-route8-only`, `thm:typeA-two-carrier-nogo`.
-
-### L18 — node(s) [129]
-
-`cor:sparse-pair-entropy-saturation`, `def:active-surplus-demands`, `def:baseline-spine-demand`, `def:named-surplus-exits`, `lem:sparse-excess-port-extraction`, `lem:sparse-port-activation`, `lem:surviving-active-family`, `prop:sparse-pair-independence-dichotomy`.
 
 ### L24 — node(s) [144]
 

@@ -51,46 +51,49 @@ noncomputable def scaleAdditivityDichotomy
     additiveFresh overlapFresh
 
 
-/-! ## Node `[171]`: `lem:blocked-graphs-compress` -/
+/-! ## Node `[159]`: the exact dense-packing residual -/
 
-/-- **Node `[159]`, `def:window-realization-test` read on the ledger.**  The
-realization test is "there is an assignment of target-complete states to
-labelled skeletons whose range has at least `2^{c₁₃p₁₃log₂n}` elements"; by
-`lem:skeleton-dominates` (`K .skeletonDominates`) no assignment beats the
-identity, whose range is the whole labelled class.  So the no-branch gives the
-definition's own display `2^{c₁₃p₁₃log₂n} > card 𝒢_{n,m}` — the dense-packing
-residual `[159]` — beside the retained-code clause that the same Lean key
-carries for node `[22]`. -/
-theorem denseOrJointCodeOverflow
-    {current : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    (previous : ExactLedger
-      (Input BranchState Presentation presentation data) current known)
-    [FactKeys.Has (K .windowPackageUnrealized) known]
-    [FactKeys.Has (K .skeletonDominates) known] :
-    Graph.skeletonBudget current.object <
-        2 ^ (windowPackageBits data current.object *
-          (canonicalWindowPacking data current.object).card) ∨
-      Graph.skeletonBudget current.object <
-        retainedCode data current.object (canonicalWindowPacking data current.object) := by
-  classical
-  have unrealized := (previous.get (K .windowPackageUnrealized)).down
-  have dominates := (previous.get (K .skeletonDominates)).down
-  by_contra contra
-  push_neg at contra
-  refine unrealized ⟨ULift.{u} (Graph.PackedWindowRealization.Skeleton
-    current.object.vertexCount current.object.edgeCount), ULift.up, ?_, ?_⟩ <;>
-  · have range : Nat.card (Set.range (ULift.up.{u} :
-        Graph.PackedWindowRealization.Skeleton
-          current.object.vertexCount current.object.edgeCount → _)) =
-        Graph.skeletonBudget current.object := by
-      rw [Set.range_eq_univ.2 (fun state => ⟨state.down, rfl⟩), Nat.card_univ,
-        Nat.card_ulift]
-      exact dominates.1
-    rw [range]
-    first
-      | exact contra.1
-      | exact contra.2
+/-- **Node `[159]`, `def:window-realization-test`.**  The no-arm of `[158]`
+denies precisely the window-package realization clause.  The identity map on
+the labelled skeleton class has range equal to the exact skeleton budget, so
+`lem:skeleton-dominates` turns that denial into the manuscript's single strict
+display.  The stronger remainder-and-curvature retained code remains solely in
+`K .hotColdPartition`; it is not bundled into this node. -/
+@[reducible] noncomputable def densePackingOverflowRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.densePackingOverflow
+    { Requires := [K .windowPackageUnrealized, K .skeletonDominates]
+      Produces := [K .densePackingOverflow]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let unrealized := (inputs.get (K .windowPackageUnrealized)).down
+      let dominates := (inputs.get (K .skeletonDominates)).down
+      .cons (key := K .densePackingOverflow)
+        ⟨by
+          classical
+          by_contra notDense
+          have packageLe :
+              2 ^ (windowPackageBits data inputs.current.object *
+                (canonicalWindowPacking data inputs.current.object).card) ≤
+                Graph.skeletonBudget inputs.current.object :=
+            Nat.le_of_not_gt notDense
+          apply unrealized
+          refine ⟨ULift.{u} (Graph.PackedWindowRealization.Skeleton
+            inputs.current.object.vertexCount inputs.current.object.edgeCount),
+            ULift.up, ?_⟩
+          have range : Nat.card (Set.range (ULift.up.{u} :
+              Graph.PackedWindowRealization.Skeleton
+                inputs.current.object.vertexCount inputs.current.object.edgeCount → _)) =
+              Graph.skeletonBudget inputs.current.object := by
+            rw [Set.range_eq_univ.2 (fun state => ⟨state.down, rfl⟩),
+              Nat.card_univ, Nat.card_ulift]
+            exact dominates.1
+          rwa [range]⟩
+        .nil)
+
+/-! ## Node `[171]`: `lem:blocked-graphs-compress` -/
 
 /-- **Node `[171]`, `lem:blocked-graphs-compress`.**  `lem:scale-additivity`'s
 additive arm supplies `card 𝓑(𝒫) · 2^{c₁₃p₁₃log₂n} ≤ card 𝒢_{n,m}`, and
@@ -105,11 +108,10 @@ theorem blockedClassCompressionCloses
       (Input BranchState Presentation presentation data) current known)
     [FactKeys.Has (K .blockedClassMember) known]
     [FactKeys.Has (K .blockedScaleAdditive) known]
-    (dense : Graph.skeletonBudget current.object <
-      2 ^ (windowPackageBits data current.object *
-        (canonicalWindowPacking data current.object).card)) :
+    [FactKeys.Has (K .densePackingOverflow) known] :
     False := by
   classical
+  have dense := (previous.get (K .densePackingOverflow)).down
   obtain ⟨minDegree, isBlocked, _cardLe⟩ := (previous.get (K .blockedClassMember)).down
   obtain ⟨_fibre, saving⟩ := (previous.get (K .blockedScaleAdditive)).down
   -- `def:blocked-class`, last sentence: the object's own skeleton is in `𝓑(𝒫)`.

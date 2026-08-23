@@ -43,11 +43,8 @@ instance : DecidableEq (Index object) := by
   classical
   exact inferInstance
 
-/-- The Type A pieces of the canonical decomposition of the remainder `R` —
-negative net charge and zero ambient surplus.  These are the entries of the
-*unified* Type A ledger used by the exit-`(4)` descent.  The smaller collection
-whose receivers survive only through route `8` is indexed by
-`entriesOfComponents` below. -/
+/-- The negative zero-surplus pieces of the canonical decomposition of the
+remainder `R`. -/
 noncomputable def typeAPieces (packing : Finset (Finset object.Vertex))
     (threshold discharge : Nat) : Finset (Finset object.Vertex) := by
   classical
@@ -56,8 +53,8 @@ noncomputable def typeAPieces (packing : Finset (Finset object.Vertex))
       object.NegativeNetCharge piece threshold discharge ∧
         object.ambientSurplus piece threshold = 0
 
-/-- The indexed entries of the unified Type A ledger: every silent-excess load
-of every receiver of every negative zero-surplus canonical piece. -/
+/-- Every silent-excess load of every receiver of every negative zero-surplus
+canonical piece. -/
 noncomputable def entries (packing : Finset (Finset object.Vertex))
     (threshold discharge : Nat) : Finset (Index object) := by
   classical

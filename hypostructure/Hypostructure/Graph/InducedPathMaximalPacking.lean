@@ -50,6 +50,55 @@ def support (object : FiniteObject.{u}) (order : Nat)
       Finset.card_image_of_injective _ window.injective
     _ = order := by simp
 
+/-! ## Canonical orientation of a packed window of derived order -/
+
+/-- Valid ordered placements with one fixed embedded support, in the object's
+canonical finite embedding schedule. -/
+noncomputable def placementCandidates (object : FiniteObject.{u}) (order : Nat)
+    (windowSupport : Finset object.Vertex) : List (Window object order) := by
+  classical
+  exact (windowSchedule object order).values.filter fun window =>
+    support object order window = windowSupport
+
+theorem mem_placementCandidates_iff (object : FiniteObject.{u}) (order : Nat)
+    (windowSupport : Finset object.Vertex) (window : Window object order) :
+    window ∈ placementCandidates object order windowSupport ↔
+      window ∈ (windowSchedule object order).values ∧
+        support object order window = windowSupport := by
+  classical
+  simp [placementCandidates]
+
+theorem mem_placementCandidates (object : FiniteObject.{u}) (order : Nat)
+    (window : Window object order) :
+    window ∈ placementCandidates object order (support object order window) := by
+  exact (mem_placementCandidates_iff object order _ window).2
+    ⟨by classical simp [windowSchedule], rfl⟩
+
+/-- The lexicographically first ordered placement of an induced window
+support.  Both its order and its schedule come from the graph presentation. -/
+noncomputable def canonicalPlacement (object : FiniteObject.{u}) (order : Nat)
+    (window : Window object order) : Window object order :=
+  (placementCandidates object order (support object order window)).headD window
+
+theorem canonicalPlacement_mem_candidates (object : FiniteObject.{u})
+    (order : Nat) (window : Window object order) :
+    canonicalPlacement object order window ∈
+      placementCandidates object order (support object order window) := by
+  classical
+  have original := mem_placementCandidates object order window
+  cases candidatesEq : placementCandidates object order
+      (support object order window) with
+  | nil => simp [candidatesEq] at original
+  | cons first rest => simp [canonicalPlacement, candidatesEq]
+
+theorem canonicalPlacement_support (object : FiniteObject.{u}) (order : Nat)
+    (window : Window object order) :
+    support object order (canonicalPlacement object order window) =
+      support object order window := by
+  exact (mem_placementCandidates_iff object order
+    (support object order window) (canonicalPlacement object order window)).1
+      (canonicalPlacement_mem_candidates object order window) |>.2
+
 /-! ## Canonical orientation of a packed P13 window -/
 
 namespace P13

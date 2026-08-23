@@ -63,10 +63,8 @@ noncomputable def coldHotEntropyDichotomy
       .inr ⟨Nat.le_of_not_lt overflow⟩)
     overflowFresh capFresh
 
-/-! Node `[149]`: the former row that published `K .densityCap` on `[148]`'s
-overflow arm from a cap on all windows is deleted; on the manuscript's DAG the
-live-hot overflow arm closes by the entropy comparison and the density cap is
-available only after the cold branch closes. -/
+/-! Node `[149]`: the live-hot overflow arm closes by the entropy comparison.
+The density cap is available after the cold branch closes. -/
 
 /-- Node `[150]`: derive the exact cleared cold-mass inequality. -/
 @[reducible] noncomputable def coldMassRow :
@@ -293,40 +291,33 @@ ledger; the connection is the component's own. -/
 
 /-! ## Node `[153]`, `lem:cold-corridor-first-failure`: cut-states and routing
 
-On the linear arm every selected branch-excess half-edge has a cold return
-corridor whose first failure is one of (F1)--(F5).  This row publishes the
-cut-state facts of `def:cold-corridor-first-failure` and the routing of
-(F1)--(F4) together with the existence of a first failure, exactly as the
-lemma states them, from the selected object's target avoidance (`K .selection`)
-and `cor:uncompressible` (`K .uncompressible`).  Nothing is constructed: each
-clause is universally quantified over the object's own corridors. -/
+On the linear arm every surviving selected outside half-edge already has the
+paper's first-failure incidence in `K .coldFailureRouting`: its actual
+corridor, presentation, retained readings, first terminal/repeat support, and
+bounded configuration.  This row reads that fact from the incoming ledger and
+publishes its state together with the separately named (F1)--(F4) routing
+consequences.  It does not create a presentation, record, representative, or
+candidate family. -/
 @[reducible] noncomputable def coldFirstFailureRoutingRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldFirstFailureRouting
-    { Requires := [K .selection, K .uncompressible]
+    { Requires := [K .coldFailureRouting, K .selection, K .uncompressible]
       Produces := [K .coldCorridorState, K .coldFailureCycle,
         K .coldFailureDefect, K .coldFailureCompression,
-        K .coldFailureHandoff, K .coldFailureRouting]
+        K .coldFailureHandoff]
       requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp [K_eq_iff]
       producesNonempty := by simp }
     (fun inputs =>
+      let routing := (inputs.get (K .coldFailureRouting)).down
       let selected := (inputs.get (K .selection)).down
       let uncompressible := (inputs.get (K .uncompressible)).down
       .cons (key := K .coldCorridorState)
         ⟨by
-          intro presentation
-          refine ⟨?_, ?_, ?_⟩
-          · intro left right same coordinate inside
-            exact presentation.reading_eq_of_state_eq same coordinate inside
-          · intro segments
-            exact presentation.exists_state_eq_of_stateBound_lt segments
-          · intro boundary carrier left right
-            exact ⟨fun excluded same =>
-                presentation.contextEquivalent_of_state_eq excluded same,
-              fun same separated =>
-                presentation.firstFailureResponse_of_not_contextEquivalent same
-                  separated⟩⟩
+          classical
+          change ColdFailureRoutingStatement data inputs.current.object at routing
+          simp only [ColdFailureRoutingStatement] at routing
+          exact Classical.choose routing.2⟩
         (.cons (key := K .coldFailureCycle)
           ⟨by
             intro windows component corridor order window segment failure
@@ -352,13 +343,7 @@ clause is universally quantified over the object's own corridors. -/
                 ⟨by
                   intro windows component corridor Handoff segment failure
                   exact Graph.ColdCorridor.Corridor.handoff_mem failure⟩
-                (.cons (key := K .coldFailureRouting)
-                  ⟨by
-                    change ColdFailureRoutingStatement data inputs.current.object
-                    refine ⟨fun _packing _hot cold _split => ⟨_, rfl⟩, ?_⟩
-                    intro windows component corridor presentation index injective
-                    exact corridor.exists_firstFailure presentation index injective⟩
-                  .nil))))))
+                .nil)))))
 
 /-! ## Node `[153]`, `lem:cold-germ-extraction`: exchange bound and extraction
 
@@ -388,29 +373,24 @@ the routing facts. -/
 
 /-! ## Node `[153]`, `lem:cold-germ-extraction`: the (F5) candidate family
 
-*"Every selected branch-excess half-edge yields a bounded germ … at most
-`3(Q_cold + 1)` selected half-edges yield the same germ … the high-degree loss
-is `o(n)` … the candidate family has overlap degree at most `M_cold·B_cold`, so
-a disjoint subfamily of size at least `|𝒢_cand|/D_cold` exists."*  On the
-current residual: the candidate family is the family of first-failure exchange
-germs of the selected branch-excess half-edges of the ambient-cubic cold windows
-(`candidateGerms`), read through `lem:bridgeless` and the ledger's window
-partition; its count is `selected_le_candidates`, its overlap bound is
-`candidateGerms_overlap_le`, its positivity is node `[153]`'s linear arm, and its
-disjoint subfamily is the ledger's `lem:cold-germ-extraction`. -/
+The candidates are exactly the image of the paper's surviving first-failure
+incidence retained by `K .coldFailureRouting`, filtered to the subcubic
+supports.  The same incoming fact supplies the count and overlap estimates;
+the linear-mass and ambient-cubic facts prove positivity, and the generic
+extraction fact supplies the disjoint subfamily.  No germ or record is
+reconstructed in this row. -/
 set_option maxHeartbeats 800000 in
 @[reducible] noncomputable def coldGermCandidatesRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldGermCandidates
-    { Requires := [K .bridgeless, K .hotColdPartition, K .coldAmbientCubic,
+    { Requires := [K .coldFailureRouting, K .coldAmbientCubic,
         K .coldMassLinear, K .coldGermExtraction]
       Produces := [K .coldGermCandidates]
       requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let bridgeless := (inputs.get (K .bridgeless)).down
-      let split := (inputs.get (K .hotColdPartition)).down
+      let routing := (inputs.get (K .coldFailureRouting)).down
       let ambient := (inputs.get (K .coldAmbientCubic)).down
       let linear := (inputs.get (K .coldMassLinear)).down
       let extraction := (inputs.get (K .coldGermExtraction)).down
@@ -418,33 +398,27 @@ set_option maxHeartbeats 800000 in
         ⟨by
           classical
           let object := inputs.current.object
-          have baseline : Graph.MinimumDegreeAtLeast data.threshold object :=
-            inputs.current.baseline
-          have large : 2 < object.vertexCount :=
-            Graph.ColdCorridor.two_lt_vertexCount_of_minDegree data.three_le_threshold baseline
-          let packing := canonicalWindowPacking data object
+          letI : FinEnum object.Vertex := object.vertices
           let cold := canonicalColdWindows data object
           let cubic := cold.filter (AmbientCubicWindow data object)
-          have cubicSub : cubic ⊆ packing :=
-            (Finset.filter_subset _ _).trans Finset.sdiff_subset
-          have valid : object.IsWindowPacking data.windowOrder packing := split.1
-          have induced : ∀ window ∈ cubic, object.InducesWindow data.windowOrder window :=
-            fun window member => valid.1 window (cubicSub member)
-          have disjoint : ∀ left ∈ cubic, ∀ right ∈ cubic, left ≠ right →
-              Disjoint left right :=
-            fun left leftMem right rightMem => valid.2 left (cubicSub leftMem) right
-              (cubicSub rightMem)
-          have windowsCubic : ∀ vertex ∈ Graph.ColdCorridor.windowsOf object cubic,
-              object.degree vertex = data.threshold := by
-            intro vertex member
-            obtain ⟨window, windowMem, vertexMem⟩ :=
-              (Graph.ColdCorridor.mem_windowsOf object cubic vertex).1 member
-            exact (Finset.mem_filter.1 windowMem).2 vertex vertexMem
-          have perWindowEq : Graph.ColdCorridor.branchExcessOf (coldExternalStubCount data) =
-              data.threshold * data.windowOrder - 2 * (data.windowOrder - 1) - 2 := by
-            simp only [Graph.ColdCorridor.branchExcessOf, coldExternalStubCount]
-          have coldCount : cold.card ≤ cubic.card + object.degreeSurplus data.threshold :=
-            ambient.1
+          let windows := Graph.ColdCorridor.windowsOf object cubic
+          let Eligible := {stub : object.Vertex × object.Vertex //
+            stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic ∧
+              stub.2 ∉ windows}
+          change ColdFailureRoutingStatement data object at routing
+          simp only [ColdFailureRoutingStatement] at routing
+          obtain ⟨state, overlap, count⟩ := routing.2
+          let incidence : Eligible →
+              Graph.ColdCorridor.BoundedGerm data.coldSignature
+                (Graph.MinimumDegreeAtLeast data.threshold)
+                (Graph.HasCycleWithLength data.LengthOK) object :=
+            Classical.choose state
+          let candidates :=
+            ((Finset.univ : Finset Eligible).filter fun epsilon =>
+              ∀ vertex ∈ (incidence epsilon).support,
+                object.degree vertex ≤ data.threshold).image incidence
+          have coldCount : cold.card ≤
+              cubic.card + object.degreeSurplus data.threshold := ambient.1
           change (Graph.ColdCorridor.branchExcessOf (coldExternalStubCount data) +
               Graph.ColdCorridor.overlapBound data.threshold data.coldSignature) *
               object.degreeSurplus data.threshold <
@@ -454,33 +428,59 @@ set_option maxHeartbeats 800000 in
             Graph.ColdCorridor.ColdGermExtractionLocal data.coldSignature
               data.threshold (Graph.MinimumDegreeAtLeast data.threshold)
               (Graph.HasCycleWithLength data.LengthOK) object at extraction
-          change ColdGermCandidatesStatement data object
-          simp only [ColdGermCandidatesStatement]
-          have count := Graph.ColdCorridor.selected_le_candidates data.coldSignature
-            data.threshold (Graph.HasCycleWithLength data.LengthOK) object cubic
-            data.threshold_eq_three baseline bridgeless large induced disjoint windowsCubic
-          rw [← perWindowEq] at count
-          let candidates := Graph.ColdCorridor.candidateGerms data.coldSignature data.threshold
-            (Graph.HasCycleWithLength data.LengthOK) object cubic baseline bridgeless large
-          have candidateFamily : Graph.ColdCorridor.CandidateGermFamily data.coldSignature
-              data.threshold (Graph.MinimumDegreeAtLeast data.threshold)
-              (Graph.HasCycleWithLength data.LengthOK) object candidates := by
+          have candidateFamily :
+              Graph.ColdCorridor.CandidateGermFamily data.coldSignature
+                data.threshold (Graph.MinimumDegreeAtLeast data.threshold)
+                (Graph.HasCycleWithLength data.LengthOK) object candidates := by
             refine ⟨?_, ?_⟩
             · by_contra empty
               have zero : candidates.card = 0 := Nat.eq_zero_of_not_pos empty
-              rw [zero, Nat.mul_zero, Nat.zero_add] at count
-              have := Nat.mul_le_mul_left
-                (Graph.ColdCorridor.branchExcessOf (coldExternalStubCount data)) coldCount
-              rw [Nat.mul_add, Nat.add_mul] at *
-              omega
+              have countZero := count
+              rw [zero, Nat.mul_zero, Nat.zero_add] at countZero
+              have coldToCubic := Nat.mul_le_mul_left
+                (Graph.ColdCorridor.branchExcessOf (coldExternalStubCount data))
+                coldCount
+              rw [Nat.mul_add] at coldToCubic
+              have upper :
+                  Graph.ColdCorridor.branchExcessOf (coldExternalStubCount data) *
+                      cold.card ≤
+                    (Graph.ColdCorridor.branchExcessOf
+                        (coldExternalStubCount data) +
+                      Graph.ColdCorridor.overlapBound data.threshold
+                        data.coldSignature) * object.degreeSurplus data.threshold := by
+                calc
+                  _ ≤ Graph.ColdCorridor.branchExcessOf
+                        (coldExternalStubCount data) * cubic.card +
+                      Graph.ColdCorridor.branchExcessOf
+                        (coldExternalStubCount data) *
+                          object.degreeSurplus data.threshold := coldToCubic
+                  _ ≤ Graph.ColdCorridor.overlapBound data.threshold
+                          data.coldSignature * object.degreeSurplus data.threshold +
+                        Graph.ColdCorridor.branchExcessOf
+                          (coldExternalStubCount data) *
+                            object.degreeSurplus data.threshold :=
+                      Nat.add_le_add_right countZero _
+                  _ = _ := by
+                    simp only [Nat.add_mul]
+                    omega
+              exact (Nat.not_lt_of_ge upper) linear
             · intro candidate member
-              have overlap := Graph.ColdCorridor.candidateGerms_overlap_le data.coldSignature
-                data.threshold (Graph.HasCycleWithLength data.LengthOK) object cubic
-                data.threshold_eq_three baseline bridgeless large candidate member
-              convert overlap using 2
-              exact Finset.filter_congr_decidable _ _ _
-          obtain ⟨disjointFamily, extracted⟩ := extraction.2 candidates candidateFamily
-          exact ⟨candidates, disjointFamily, candidateFamily, extracted, count⟩⟩
+              have denominator :
+                  Graph.ColdCorridor.extractionDenominator data.threshold
+                      data.coldSignature - 1 =
+                    Graph.ColdCorridor.exchangeBound data.coldSignature *
+                      Graph.ColdCorridor.overlapBound data.threshold
+                        data.coldSignature := by
+                simp only [Graph.ColdCorridor.extractionDenominator,
+                  Nat.add_sub_cancel]
+              rw [← denominator]
+              exact overlap candidate member
+          obtain ⟨disjointFamily, extracted⟩ :=
+            extraction.2 candidates candidateFamily
+          change ColdGermCandidatesStatement data object
+          simp only [ColdGermCandidatesStatement]
+          exact ⟨candidates, disjointFamily, state, rfl, candidateFamily,
+            extracted, count⟩⟩
         .nil)
 
 /-! ## Node `[175]`, `lem:absorbed-germ-fan-data`: the per-half-edge dichotomy
@@ -1046,13 +1046,14 @@ G2 for every surviving length-changing germ. -/
 @[reducible] noncomputable def coldGermTrichotomyRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldGermTrichotomy
-    { Requires := [K .selection, K .uncompressible]
+    { Requires := [K .coldGermCandidates, K .selection, K .uncompressible]
       Produces := [K .coldGermRealized, K .coldGermDistinguished,
         K .coldGermSilent, K .coldGermRouted]
       requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp [K_eq_iff]
       producesNonempty := by simp }
     (fun inputs =>
+      let candidates := (inputs.get (K .coldGermCandidates)).down
       let selected := (inputs.get (K .selection)).down
       let uncompressible := (inputs.get (K .uncompressible)).down
       let targetInvariant : Graph.FiniteObject.IsomorphismInvariant
@@ -1072,10 +1073,10 @@ G2 for every surviving length-changing germ. -/
           uncompressible germ.support
             (germ.compressibleSupport_of_not_distinguishing shorter neutral.2)
       .cons (key := K .coldGermRealized)
-        ⟨⟨notRealizing, fun germ => germ.trichotomy⟩⟩
+        ⟨⟨candidates, notRealizing, fun germ => germ.trichotomy⟩⟩
         (.cons (key := K .coldGermDistinguished)
-          ⟨fun germ Profile profile distinguishing =>
-            germ.not_targetComplete_of_distinguishing profile distinguishing⟩
+          ⟨⟨candidates, fun germ Profile profile distinguishing =>
+            germ.not_targetComplete_of_distinguishing profile distinguishing⟩⟩
           (.cons (key := K .coldGermSilent)
             ⟨⟨notSilent,
               fun germ => germ.not_lengthChanging_iff,
@@ -1092,12 +1093,14 @@ G2 for every surviving length-changing germ. -/
               fun transient exponent odd past =>
                 Graph.ColdCorridor.pow_mod_of_le past⟩⟩
             (.cons (key := K .coldGermRouted)
-              ⟨fun germ shorter =>
+              ⟨⟨candidates, fun germ shorter =>
                 have distinguishing :=
                   Graph.ColdCorridor.boundedGerm_not_survives notRealizing notSilent
                     germ shorter
-                ⟨distinguishing, fun Profile profile =>
-                  germ.not_targetComplete_of_distinguishing profile distinguishing⟩⟩
+                ⟨distinguishing,
+                  fun Profile profile =>
+                    germ.not_targetComplete_of_distinguishing profile distinguishing,
+                  Or.inl distinguishing⟩⟩⟩
               .nil))))
 
 /-! ## Node `[157]`, `lem:cold-same-interface-table` and
@@ -1110,19 +1113,20 @@ survive their smear and are routed the same way; and the table is finite. -/
 @[reducible] noncomputable def coldSameInterfaceTableRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldSameInterfaceTable
-    { Requires := [K .selection, K .uncompressible]
+    { Requires := [K .coldGermCandidates, K .selection, K .uncompressible]
       Produces := [K .coldSameInterfaceTable]
       requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
+      let candidates := (inputs.get (K .coldGermCandidates)).down
       let selected := (inputs.get (K .selection)).down
       let uncompressible := (inputs.get (K .uncompressible)).down
       let targetInvariant : Graph.FiniteObject.IsomorphismInvariant
           (Graph.HasCycleWithLength data.LengthOK) :=
         (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant
       .cons (key := K .coldSameInterfaceTable)
-        ⟨⟨fun Handoff row =>
+        ⟨⟨candidates, fun Handoff row =>
             Graph.ColdCorridor.row_closed targetInvariant selected.1
               uncompressible row,
           fun Handoff self =>
@@ -1206,38 +1210,31 @@ class is dominated by the skeleton budget (`lem:skeleton-dominates`,
 /-! ## Node `[163]`, `lem:neutral-germ-symmetry`: the symmetry split
 
 A neutral equal-length terminal germ carries no target information; it is a
-symmetry.  The manuscript splits it by the nature of its second representative:
-either `E` is a canonical replacement piece different from the corridor piece
-`Q[x,y]` (node `[165]`, closed by the refined minimality of
-`lem:refined-minimality-swap`), or every neutral germ has `E = Q[x,y]` (the
-state that minimality forces; on it the neutral row exchanges nothing, and a
-genuine second *strand* is excluded at interior selected half-edges by the stub
-structure `[167]`--`[168]`).  This is that decision on the literal residual. -/
+symmetry.  The manuscript's question is whether its second representative is
+graph-realized as a genuine second strand.  The yes-arm is the two-strand route
+`[167]`; the no-arm is the canonical-replacement route `[165]`--`[166]`.
+Canonical order is deliberately absent from this decision.  Both arms retain
+the exact extracted-family fact read from the incoming `ExactLedger`. -/
 noncomputable def neutralGermSymmetryDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger
       (Input BranchState Presentation presentation data) current known)
-    [FactKeys.Has (K .coldWindowStubStructure) known]
-    (properFresh : K .coldProperNeutralGerm ∉ known)
-    (trivialFresh : K .coldTrivialNeutralGerms ∉ known) :
-    Decision (K .coldProperNeutralGerm) (K .coldTrivialNeutralGerms) previous := by
+    [FactKeys.Has (K .coldGermCandidates) known]
+    (canonicalFresh : K .coldCanonicalNeutralConfiguration ∉ known)
+    (genuineFresh : K .coldGenuineSecondStrand ∉ known) :
+    Decision (K .coldCanonicalNeutralConfiguration)
+      (K .coldGenuineSecondStrand) previous := by
   classical
-  let _structure := (previous.get (K .coldWindowStubStructure)).down
-  exact Decision.run previous (K .coldProperNeutralGerm) (K .coldTrivialNeutralGerms)
+  let candidates := (previous.get (K .coldGermCandidates)).down
+  exact Decision.run previous (K .coldCanonicalNeutralConfiguration)
+    (K .coldGenuineSecondStrand)
     `Hypostructure.Graph.Strategy.Spine.neutralGermSymmetryDichotomy
-    (if proper : ∃ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) current.object,
-        germ.Neutral ∧
-          Graph.CanonicalPiece.Precedes (germCanonicalRepresentative data germ)
-            germ.piece.toCanonical then
-      .inl ⟨proper⟩
+    (if genuine : GenuineSecondStrandStatement data current.object then
+      .inr ⟨genuine⟩
     else
-      .inr ⟨by
-        intro germ neutral precedes
-        exact proper ⟨germ, neutral, precedes⟩⟩)
-    properFresh trivialFresh
+      .inl ⟨candidates, genuine⟩)
+    canonicalFresh genuineFresh
 
 /-! ## `lem:refined-minimality-swap`, the size split of the canonical replacement
 
@@ -1251,12 +1248,12 @@ noncomputable def canonicalSwapSizeDichotomy
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger
       (Input BranchState Presentation presentation data) current known)
-    [FactKeys.Has (K .coldProperNeutralGerm) known]
+    [FactKeys.Has (K .coldCanonicalNeutralConfiguration) known]
     (smallerFresh : K .coldCanonicalSwapSmaller ∉ known)
     (sameFresh : K .coldCanonicalSwapSameSize ∉ known) :
     Decision (K .coldCanonicalSwapSmaller) (K .coldCanonicalSwapSameSize) previous := by
   classical
-  let _proper := (previous.get (K .coldProperNeutralGerm)).down
+  let _proper := (previous.get (K .coldCanonicalNeutralConfiguration)).down
   exact Decision.run previous (K .coldCanonicalSwapSmaller) (K .coldCanonicalSwapSameSize)
     `Hypostructure.Graph.Strategy.Spine.canonicalSwapSizeDichotomy
     (if smaller : ∃ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
@@ -1320,8 +1317,11 @@ manuscript's Part XI leaves are drawn. -/
       let routed := (inputs.get (K .coldGermRouted)).down
       let table := (inputs.get (K .coldSameInterfaceTable)).down
       .cons (key := K .coldBranchClosed)
-        ⟨Graph.ColdCorridor.noTerminalColdResidual_of_routing extraction.2 routed
-          table.1 table.2.1⟩
+        ⟨Graph.ColdCorridor.noTerminalColdResidual_of_routing extraction.2
+          (fun germ shorter =>
+            let routedGerm := routed.2 germ shorter
+            ⟨routedGerm.1, routedGerm.2.1⟩)
+          table.2.1 table.2.2.1⟩
         .nil)
 
 /-! ## Node `[24]`: `prop:p13-density`, after the cold branch

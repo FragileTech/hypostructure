@@ -228,6 +228,35 @@ noncomputable def selectedSparseSurplusActivation
           activeSurplusFamilyRow, sparseSlackSurplusRow,
           K_eq_iff])
 
+/-- Node `[129]`, the paper's full active family and baseline spine demand.
+The row reads the literal `[125]` survivor, the active surplus demands, and the
+strict-surplus fact from this ledger; it writes only the resulting baseline
+demand fact. -/
+-- EG-NODE [129] full active family and baseline spine demand
+noncomputable def selectedBaselineSpineDemand
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .activeSurplusDemands, K .sparsePortActivation,
+        K .activeSurplusFamily, K .sparseSlackSurplus,
+        K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion,
+        K .targetCompleteContextUniversality, K .degreeProfileFibres,
+        K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
+        K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .baselineSpineDemand, K .activeSurplusDemands,
+        K .sparsePortActivation, K .activeSurplusFamily,
+        K .sparseSlackSurplus, K .sparseSurplusSurvivor,
+        K .surplusAbove, K .localAlgebra, K .maximalPacking,
+        K .uncompressible, K .replacementExclusion,
+        K .targetCompleteContextUniversality, K .degreeProfileFibres,
+        K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
+        K .returnAvoidance, K .selection] :=
+  (baselineSpineDemandRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run history
+      (by simp [baselineSpineDemandRow, K_eq_iff])
+
 /-- Node `[130]`: the full pair-response family, split into the paper's
 independent and dependent residuals on the literal `[129]` ledger. -/
 -- EG-NODE [130] canonical pair split: blocker-free?
@@ -397,20 +426,50 @@ noncomputable def selectedSpineSurplusEstimateCloses
   exact Nat.not_lt_of_ge (by
     simpa [Graph.Strategy.Spine.Data.surplusThreshold] using upper) lower
 
-/-- **Node `[144]`, first genuinely missing producer.**  The incoming ledger
-contains the concrete same-token `L_geom` pattern.  The paper next constructs
-two same-label routing germs, their first separator, and then the sparse-exit
-or decorated-Type-B outcome.  No kernel-checked constructor of those germs from
-the declared signature exists yet, so this call deliberately remains loud. -/
+/-- **Node `[144]`, through the canonical ExactLedger row.**  The row reads the
+concrete `L_geom` pattern, active-family returns, survivor, and the quotient /
+replacement facts from this exact history; it publishes the paper's
+sparse-exit-or-handoff conclusion and its survivor specialization.  Its first
+kernel obligation is to construct the paper's graph-derived routing label and
+declared connector configurations from those facts, exposed inside
+`sameTokenBottleneckRoutingRow` rather than represented by a caller-supplied
+route object.
+
+After that construction is proved locally, the remaining loud call is
+deliberately a downstream Type B boundary: `[144]` produces an arbitrary connected
+`P₁₃`-free remainder core `Y`, exactly as the paper states, whereas the
+current `[65]` entry accepts only a canonical negative remainder component or
+the indexed `[177]` corridor lane.  Converting `Y` into either of those would
+add hypotheses not proved at `[144]`; the Type B entry schema must instead gain
+the paper's same-token handoff lane. -/
 -- EG-NODE [144] bottleneck discharge: sparse exit, Type B, or near-cubic spine
 noncomputable def selectedBottleneckDischarge
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .homogeneousBottleneckPattern) known]
+    [FactKeys.Has (K .activeSurplusDemands) known]
     [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .uncompressible) known]
-    [FactKeys.Has (K .sparseSurplusSurvivor) known] : False :=
-  selectedPatternRoutedBottleneck history
+    [FactKeys.Has (K .noProperBaseline) known]
+    [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .sparseSurplusSurvivor) known] : False := by
+  let routed :=
+    (sameTokenBottleneckRoutingRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      history (by simp [K_eq_iff])
+  have _handoff :
+      SameTokenTypeBHandoffStatement spineData routed.current.object :=
+    (routed.get (K .typeBHandoff)).down
+  -- The paper routes this exact ledger fact into the common Type B
+  -- continuation.  The current downstream entry has no same-token lane: it
+  -- accepts only its canonical-negative-component and indexed-[177] schemas.
+  -- Leave that schema mismatch as the next literal proof obligation; do not
+  -- convert the handoff into either stronger datum.
+  skip
 
 /-- **Nodes `[139]`--`[144]`, on the literal overload residual of `[137]`**: the
 window-incidence test `[139]` and its audit `[140]`, the remainder-surplus test
@@ -432,6 +491,7 @@ noncomputable def selectedSparsePressureOverloadCloses
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .blockedPairEntropySandwich) known]
     [FactKeys.Has (K .canonicalPairLedger) known]
+    [FactKeys.Has (K .activeSurplusDemands) known]
     [FactKeys.Has (K .sparseUpperEnvelope) known]
     (windowFresh : K .windowClassOverload ∉ known)
     (windowAbsentFresh : K .windowClassAbsent ∉ known)
@@ -440,8 +500,14 @@ noncomputable def selectedSparsePressureOverloadCloses
     (remainderAbsentFresh : K .remainderClassAbsent ∉ known)
     (remainderAuditFresh : K .remainderSurplusAudit ∉ known)
     (primitiveAuditFresh : K .primitiveCarrierAudit ∉ known)
-    (patternFresh : K .homogeneousBottleneckPattern ∉ known) : False := by
-  match windowOverloadClassDichotomy (data := spineData) history windowFresh
+    (patternFresh : K .homogeneousBottleneckPattern ∉ known)
+    (remainderNormalizedFresh : K .remainderNormalized ∉ known) : False := by
+  let normalized :=
+    (remainderNormalizationRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      history (by simpa using remainderNormalizedFresh)
+  match windowOverloadClassDichotomy (data := spineData) normalized windowFresh
       windowAbsentFresh with
   | .left windowHistory =>
       let audited :=
@@ -720,7 +786,7 @@ routing on the literal linear residual. -/
 noncomputable def selectedColdFirstFailureRouting
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .coldReturnCorridors, K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
+      [K .coldFailureRouting, K .coldReturnCorridors, K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
         K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
@@ -1026,7 +1092,7 @@ noncomputable def selectedWindowPackageRealizationDichotomy
     `HypostructureErdos64EG.selectedWindowPackageRealizationDichotomy
     (by
       classical
-      exact if realized : WindowFamilyRealized spineData.{u} selected.object
+      exact if realized : WindowPackageRealized spineData.{u} selected.object
           (canonicalWindowPacking spineData.{u} selected.object) then
         .inl ⟨realized⟩
       else
@@ -1203,7 +1269,7 @@ noncomputable def selectedStrictSurplusBranch
                   exact selectedSparsePressureOverloadCloses overloadHistory
                     (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
                     (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
-                    (by simp [K_eq_iff]) (by simp [K_eq_iff])
+                    (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
 
 set_option maxHeartbeats 2000000 in
 /-- **`lem:refined-minimality-swap`, node `[165]`, size-reducing case.**  A
@@ -1323,64 +1389,52 @@ noncomputable def selectedRankDropCloses
               exact (closeIncompatible barrier (K .selection) (K .globalBarrier)
                 (by simp [K_eq_iff, closureFresh])).elimClosed (by infer_instance)
 
-/-- **The shared Part IX object-level census.**  This is the real target of the
-cross-figure handoffs `[77]` and `[109]`.  It consumes the literal accumulated
-ledger: node `[111]` classifies every negative canonical piece, node `[113]`
-reads the Type A receiver routing together with `[76]`/`[85]`'s exact
-`typeBBridgeSublinear` fact, and the subsequent rows append the census and its
-decisions.  No handoff fact or application-specific carrier is introduced. -/
+/-- **Node `[123]`, the shared unified-demand continuation.**
+
+This continuation reads the unified deficit (`K .route8UnifiedDeficit`), the
+visible exit-(4) routing (`K .route8VisibleExitFourRouting`), and the
+per-entry census (`K .route8UnifiedEntryCensus`); it performs the recorded
+finite exit-`(4)` descent, decides the terminal stage, closes the true
+two-support survivor through node `[124]`, and hands the failed-rate stage to
+the branch-kill closure. -/
 noncomputable def selectedRouteEightCensus
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .route8UnifiedDeficit) known]
+    [FactKeys.Has (K .route8VisibleExitFourRouting) known]
     [FactKeys.Has (K .typeAReceiverRouting) known]
-    [FactKeys.Has (K .typeBBridgeSublinear) known]
+    [FactKeys.Has (K .route8UnifiedEntryCensus) known]
     (peelingFresh : K .route8PeelingDescent ∉ known)
     (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known)
-    (terminalFresh : K .route8TerminalNoGo ∉ known)
-    (classifiedFresh : K .route8PiecesClassified ∉ known)
-    (unclassifiedFresh : K .route8UnclassifiedPiece ∉ known)
-    (deficitReadingFresh : K .route8Deficit ∉ known) : False := by
-  -- `[111]`: `thm:branch-kill`'s all-pieces classification, directly on the
-  -- incoming ledger shared by the two cross-figure entrances.
-  match route8PieceClassificationDichotomy (data := spineData) history
-      (by simp [K_eq_iff, classifiedFresh])
-      (by simp [K_eq_iff, unclassifiedFresh]) with
-  | .right unclassified =>
-      -- This is intentionally the first loud route-8 census frontier.  It must
-      -- route the exhibited visible-first Type A or non-bridge Type B piece.
-      exact selectedRouteEightUnclassifiedPiece unclassified
-  | .left classified =>
-      -- `[113]`: `|R| ≤ N_basin + s·|∂R| + F·s·T(n)`, consuming the exact
-      -- Type B bridge fact already present in this same ledger prefix.
-      let deficit :=
-        (route8DeficitRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          classified (by simp [K_eq_iff, deficitReadingFresh])
-      -- `[123]`: run finite exit-(4) descent on the exact unified census.
-      let descended :=
-        (route8PeelingDescentRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          deficit (by simp [K_eq_iff, peelingFresh])
-      let trueStage :=
-        (route8PeelingTerminalRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          descended (by simp [K_eq_iff, unifiedTrueFresh])
-      -- `[124]`: construct Q5 locally and contradict the same entry's
-      -- committed no-exit-(4) fact.
+    (stageFailedFresh : K .route8StageRateFailed ∉ known)
+    (terminalFresh : K .route8TerminalNoGo ∉ known) : False := by
+  let descended :=
+    (route8PeelingDescentRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      history (by simp [K_eq_iff, peelingFresh])
+  match route8StageOutcomeDichotomy (data := spineData) descended
+      (by simp [K_eq_iff, unifiedTrueFresh])
+      (by simp [K_eq_iff, stageFailedFresh]) with
+  | .left trueStage =>
+      -- `[124]`: construct Q5 locally and contradict the same entry's committed
+      -- no-exit-`(4)` fact.
       let closed :=
         (route8UnifiedTerminalNoGoRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile)
-          (data := spineData)).run trueStage
-          (by simp [K_eq_iff, terminalFresh])
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          trueStage (by simp [K_eq_iff, terminalFresh])
       exact (closed.get (K .route8TerminalNoGo)).down.elim
+  | .right failedStage =>
+      -- `thm:large-budget-route8-only`: "the large-budget net-deficiency cap
+      -- and `thm:branch-kill` close that stage" — the next producer.
+      exact selectedRouteEightStageClosure failedStage
 
-/-- **Nodes `[110]`--`[116]`: the route-8 residual of Part IX**, on the `[109]`
-  residual of the *silent* lane (`[94]`, `lem:typeA-unpeeled-silent-routing`;
-index-polymorphic).  `[110]` `route8ResidualProfileRow`
+/-- **Nodes `[110]`--`[116]`: the route-8 residual of Part IX**, on the shared
+  `[109]` residual reached by the no-edge of exit `(7)` (index-polymorphic).
+  This is exactly the edge drawn in Part VIII after the visible/silent
+  residual routing and any finite exit-`(4)` peeling.  `[110]`
+  `route8ResidualProfileRow`
 (`def:typeA-silent-core-residual`: the saturated receiver survives only through
 exit `(8)`, no decorated handoff fan); `[111]` `route8GlobalSqueezeRow` (the
   canonical route-8 Type A subcollection and its cleared `D_A` sum); `[112]`
@@ -1403,7 +1457,7 @@ object-level census `K .route8Census` (`Graph.Route8Census`: the indexed entries
 `(piece, receiver, silent-excess load)` of the Type A pieces `𝒳_A`, their selected
 trace basins and canonical essential cores, the supply `∂R`; the deficit
 `|R| ≤ N_basin + s·|∂R|` and the private-carrier rate — its row is the next
-producer `selectedRouteEightCensus`), `[117]` `route8CarrierDichotomy` on it,
+producer `route8CensusRow`), `[117]` `route8CarrierDichotomy` on it,
 `[119]`--`[122]` closed inline by `Graph.Route8Census.false_of_noTwoCarrier`
 (`rem:route8-carrier-margin`), and the two-carrier arm `[118]`--`[124]` handed to
 the next producer `selectedRouteEightTwoCarrierEntry`. -/
@@ -1427,7 +1481,6 @@ noncomputable def selectedRouteEightResidual
     [FactKeys.Has (K .route8Rate) known]
     [FactKeys.Has (K .typeAExitSevenFree) known]
     [FactKeys.Has (K .largeBudgetResidual) known]
-    [FactKeys.Has (K .typeAVisibleFirstExcess) known]
     (profileFresh : K .route8ResidualProfile ∉ known)
     (squeezeFresh : K .route8GlobalSqueeze ∉ known)
     (burdenFresh : K .route8BasinBurden ∉ known)
@@ -1449,12 +1502,10 @@ noncomputable def selectedRouteEightResidual
     (privateBudgetFresh : K .route8PrivateCarrierBudget ∉ known)
     (noTwoContradictionFresh : K .route8NoTwoCarrierContradiction ∉ known)
     (terminalNoGoFresh : K .route8TerminalNoGo ∉ known)
+    (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known)
     (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known)
     (peelingFresh : K .route8PeelingDescent ∉ known)
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known)
-    (classifiedFresh : K .route8PiecesClassified ∉ known)
-    (unclassifiedFresh : K .route8UnclassifiedPiece ∉ known)
-    (deficitReadingFresh : K .route8Deficit ∉ known)
     [FactKeys.Has (K .typeAReceiverRouting) known]
     [FactKeys.Has (K .surplusAtOrBelow) known] : False := by
   -- `[110]`
@@ -1517,7 +1568,9 @@ noncomputable def selectedRouteEightResidual
               load loadMem |>.2.1
           rcases alternatives with localDefect | compression | delocalization | separator
           · exact minimal.2.1 localDefect
-          · exact minimal.2.2.1 compression
+          · -- `[116]`: the nontrivial target-complete quotient `ρ°_𝒞` is
+            -- alternative (b) of `def:typeA-trace-basin` itself.
+            exact minimal.2.2.1 compression
           · exact minimal.2.2.2.1 delocalization
           · exact minimal.2.2.2.2 separator
       | .right noSmall =>
@@ -1571,9 +1624,8 @@ noncomputable def selectedRouteEightResidual
                   (by simp [K_eq_iff, terminalNoGoFresh])
               exact (closed.get (K .route8TerminalNoGo)).down.elim
   | .right deficitFails =>
-      -- This is the corrected paper's unified target-defect/route-8 arm.  Keep
-      -- the negative `[113]` fact in the same monotone ledger and run `[123]`'s
-      -- census/descent instead of asserting the missing route-8-only estimate.
+      -- The negative `[113]` fact remains in the ledger while the Type B
+      -- allowance and unified target-defect/route-8 collection are recorded.
       let bridgeMass :=
         (bridgeFanMassRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -1584,21 +1636,20 @@ noncomputable def selectedRouteEightResidual
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           bridgeMass (by simp [K_eq_iff, bridgeSublinearFresh])
-      exact selectedRouteEightCensus bridgeSublinear
-        (by simp [K_eq_iff, peelingFresh])
-        (by simp [K_eq_iff, unifiedTrueFresh])
-        (by simp [K_eq_iff, unifiedTerminalFresh])
-        (by simp [K_eq_iff, classifiedFresh])
-        (by simp [K_eq_iff, unclassifiedFresh])
-        (by simp [K_eq_iff, deficitReadingFresh])
+      -- `[123]`: publish the unified negative collection on this residual.
+      let unifiedNegative :=
+        (route8UnifiedNegativeRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          bridgeSublinear (by simp [K_eq_iff, unifiedNegativeFresh])
+      exact selectedLargeBudgetPressureCensus unifiedNegative
 
 /-- **Nodes `[76]`/`[77]` and `[85]` → Part IX: the Type B mass residual joins
 the route-8 census.**  The exact finite form of
 `prop:typeB-bridge-sublinear` is already the paper's conclusion here: after the
 route-8 cores are extracted, all remaining Type B bridge/fan mass is bounded by
-the registered surplus threshold.  Node `[77]` is only the cross-figure handoff,
-so it passes that literal ledger to the Part IX census without manufacturing a
-second “branch closed” carrier. -/
+the registered surplus threshold.  Node `[77]` passes that ledger to the Part IX
+unified census. -/
 -- EG-NODE [76] Type B cannot carry the linear deficit outside two-carrier route 8
 -- EG-NODE [77] route-8 cores continue in Part IX
 -- EG-NODE [85] degree-4 Type B cannot carry linear deficit outside route 8
@@ -1612,12 +1663,10 @@ noncomputable def selectedTypeBRoute8Continuation
     [FactKeys.Has (K .typeAReceiverRouting) known]
     (bridgeMassFresh : K .typeBBridgeMass ∉ known := by simp [K_eq_iff])
     (bridgeSublinearFresh : K .typeBBridgeSublinear ∉ known := by simp [K_eq_iff])
+    (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known := by simp [K_eq_iff])
     (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known := by simp [K_eq_iff])
     (peelingFresh : K .route8PeelingDescent ∉ known := by simp [K_eq_iff])
-    (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known := by simp [K_eq_iff])
-    (classifiedFresh : K .route8PiecesClassified ∉ known := by simp [K_eq_iff])
-    (unclassifiedFresh : K .route8UnclassifiedPiece ∉ known := by simp [K_eq_iff])
-    (deficitReadingFresh : K .route8Deficit ∉ known := by simp [K_eq_iff]) :
+    (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known := by simp [K_eq_iff]) :
     False := by
   -- `[75]`/`[84]`: publish the bridge-mass estimate on this literal residual,
   -- then spend the inherited near-cubic bound to publish
@@ -1633,15 +1682,14 @@ noncomputable def selectedTypeBRoute8Continuation
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       bridgeMass (by simp [K_eq_iff, bridgeSublinearFresh])
-  -- `[77]` contributes no theorem and no carrier: hand the literal ledger to
-  -- the real shared Part IX census.  Its first unimplemented classification
-  -- arm remains loud at `selectedRouteEightUnclassifiedPiece`.
-  exact selectedRouteEightCensus bridgeSublinear
-    (by simp [K_eq_iff, peelingFresh])
-    (by simp [K_eq_iff, unifiedTrueFresh])
-    (by simp [K_eq_iff, unifiedTerminalFresh])
-    (by simp [K_eq_iff, classifiedFresh]) (by simp [K_eq_iff, unclassifiedFresh])
-    (by simp [K_eq_iff, deficitReadingFresh])
+  -- `[77]` passes the literal bridge ledger to the unified negative collection
+  -- at `[123]`.
+  let unifiedNegative :=
+    (route8UnifiedNegativeRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      bridgeSublinear (by simp [K_eq_iff, unifiedNegativeFresh])
+  exact selectedLargeBudgetPressureCensus unifiedNegative
 
 /-- **Type B `[71]`/`[80]` and `[72]`/`[81]`, `[75]`/`[84]` on the common fan support**
 (`def:typeB-assigned-ledger`), on the decorated envelope's ledger
@@ -1681,12 +1729,10 @@ noncomputable def selectedTypeBDecoratedCertificate
     (ledgerFresh : K .typeBDisjointLedger ∉ known := by simp [K_eq_iff])
     (bridgeMassFresh : K .typeBBridgeMass ∉ known := by simp [K_eq_iff])
     (bridgeSublinearFresh : K .typeBBridgeSublinear ∉ known := by simp [K_eq_iff])
+    (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known := by simp [K_eq_iff])
     (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known := by simp [K_eq_iff])
     (peelingFresh : K .route8PeelingDescent ∉ known := by simp [K_eq_iff])
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known := by simp [K_eq_iff])
-    (classifiedFresh : K .route8PiecesClassified ∉ known := by simp [K_eq_iff])
-    (unclassifiedFresh : K .route8UnclassifiedPiece ∉ known := by simp [K_eq_iff])
-    (deficitReadingFresh : K .route8Deficit ∉ known := by simp [K_eq_iff])
     (excludedFresh : K .typeBExcluded ∉ known := by simp [K_eq_iff])
     (exclusionResidualFresh : K .typeBExclusionResidual ∉ known := by simp [K_eq_iff])
     (exclusionMassFresh : K .typeBExclusionResidualMass ∉ known := by simp [K_eq_iff])
@@ -1705,10 +1751,9 @@ noncomputable def selectedTypeBDecoratedCertificate
       exact selectedTypeBRoute8Continuation mass
         (by simp [K_eq_iff, bridgeMassFresh])
         (by simp [K_eq_iff, bridgeSublinearFresh])
+        (by simp [K_eq_iff, unifiedNegativeFresh])
         (by simp [K_eq_iff, unifiedTrueFresh]) (by simp [K_eq_iff, peelingFresh])
         (by simp [K_eq_iff, unifiedTerminalFresh])
-        (by simp [K_eq_iff, classifiedFresh]) (by simp [K_eq_iff, unclassifiedFresh])
-        (by simp [K_eq_iff, deficitReadingFresh])
   | .left markedHistory =>
       -- `[72]`--`[85]` on the common Type B carrier: the direct fan-window
       -- cycle test and the hybrid B1 reading preserve either the canonical
@@ -1772,12 +1817,10 @@ noncomputable def selectedTypeBDecoratedCertificate
                     exact selectedTypeBRoute8Continuation excludedHistory
                       (by simp [K_eq_iff, bridgeMassFresh])
                       (by simp [K_eq_iff, bridgeSublinearFresh])
+                      (by simp [K_eq_iff, unifiedNegativeFresh])
                       (by simp [K_eq_iff, unifiedTrueFresh])
                       (by simp [K_eq_iff, peelingFresh])
                       (by simp [K_eq_iff, unifiedTerminalFresh])
-                      (by simp [K_eq_iff, classifiedFresh])
-                      (by simp [K_eq_iff, unclassifiedFresh])
-                      (by simp [K_eq_iff, deficitReadingFresh])
               | .right residualHistory =>
                   let mass :=
                     (typeBExclusionResidualMassRow (BranchState := BranchState)
@@ -1787,12 +1830,10 @@ noncomputable def selectedTypeBDecoratedCertificate
                   exact selectedTypeBRoute8Continuation mass
                     (by simp [K_eq_iff, bridgeMassFresh])
                     (by simp [K_eq_iff, bridgeSublinearFresh])
+                    (by simp [K_eq_iff, unifiedNegativeFresh])
                     (by simp [K_eq_iff, unifiedTrueFresh])
                     (by simp [K_eq_iff, peelingFresh])
                     (by simp [K_eq_iff, unifiedTerminalFresh])
-                    (by simp [K_eq_iff, classifiedFresh])
-                    (by simp [K_eq_iff, unclassifiedFresh])
-                    (by simp [K_eq_iff, deficitReadingFresh])
           | .right obstructionHistory =>
               let mass :=
                 (typeBOverlapObstructionMassRow (BranchState := BranchState)
@@ -1802,11 +1843,9 @@ noncomputable def selectedTypeBDecoratedCertificate
               exact selectedTypeBRoute8Continuation mass
                 (by simp [K_eq_iff, bridgeMassFresh])
                 (by simp [K_eq_iff, bridgeSublinearFresh])
+                (by simp [K_eq_iff, unifiedNegativeFresh])
                 (by simp [K_eq_iff, unifiedTrueFresh]) (by simp [K_eq_iff, peelingFresh])
                 (by simp [K_eq_iff, unifiedTerminalFresh])
-                (by simp [K_eq_iff, classifiedFresh])
-                (by simp [K_eq_iff, unclassifiedFresh])
-                (by simp [K_eq_iff, deficitReadingFresh])
 
 /-- **Type B `[67]`--`[70]` on the decorated envelope** (`def:decorated-fan-envelope`,
 `def:typeB-assigned-ledger`), on the `[108]`/`[65]` decorated residual
@@ -1856,16 +1895,29 @@ noncomputable def selectedTypeBDecoratedContinuation
     (decoratedLedgerFresh : K .typeBDisjointLedger ∉ known)
     (decoratedBridgeMassFresh : K .typeBBridgeMass ∉ known)
     (decoratedBridgeSublinearFresh : K .typeBBridgeSublinear ∉ known)
+    (profileFresh : K .route8ResidualProfile ∉ known)
+    (squeezeFresh : K .route8GlobalSqueeze ∉ known)
+    (burdenFresh : K .route8BasinBurden ∉ known)
+    (deficitFresh : K .route8LargeBudgetDeficit ∉ known)
+    (deficitFailsFresh : K .route8LargeBudgetDeficitFails ∉ known)
+    (coreFresh : K .route8CarrierCore ∉ known)
+    (trueResidualFresh : K .route8TrueResidual ∉ known)
+    (cutParityFresh : K .route8CarrierCutParity ∉ known)
+    (smallFresh : K .route8SmallCoreEntry ∉ known)
+    (noSmallFresh : K .route8NoSmallCoreEntry ∉ known)
+    (collapseFresh : K .route8SmallCoreCollapse ∉ known)
     (censusFresh : K .route8Census ∉ known)
     (twoFresh : K .route8TwoCarrierEntry ∉ known)
     (noTwoFresh : K .route8NoTwoCarrierEntry ∉ known)
     (trueEntryFresh : K .route8TrueTwoCarrierEntry ∉ known)
+    (deletionWitnessesFresh : K .route8CarrierDeletionWitnesses ∉ known)
+    (privateBudgetFresh : K .route8PrivateCarrierBudget ∉ known)
+    (noTwoContradictionFresh : K .route8NoTwoCarrierContradiction ∉ known)
+    (terminalNoGoFresh : K .route8TerminalNoGo ∉ known)
+    (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known)
     (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known)
     (peelingFresh : K .route8PeelingDescent ∉ known)
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known)
-    (classifiedFresh : K .route8PiecesClassified ∉ known)
-    (unclassifiedFresh : K .route8UnclassifiedPiece ∉ known)
-    (deficitReadingFresh : K .route8Deficit ∉ known)
     (decoratedExcludedFresh : K .typeBExcluded ∉ known)
     (decoratedExclusionResidualFresh : K .typeBExclusionResidual ∉ known)
     (decoratedExclusionMassFresh : K .typeBExclusionResidualMass ∉ known)
@@ -1910,11 +1962,9 @@ noncomputable def selectedTypeBDecoratedContinuation
         (by simp [K_eq_iff, decoratedLedgerFresh])
         (by simp [K_eq_iff, decoratedBridgeMassFresh])
         (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
+        (by simp [K_eq_iff, unifiedNegativeFresh])
         (by simp [K_eq_iff, unifiedTrueFresh]) (by simp [K_eq_iff, peelingFresh])
         (by simp [K_eq_iff, unifiedTerminalFresh])
-        (by simp [K_eq_iff, classifiedFresh])
-        (by simp [K_eq_iff, unclassifiedFresh])
-        (by simp [K_eq_iff, deficitReadingFresh])
         (by simp [K_eq_iff, decoratedExcludedFresh])
         (by simp [K_eq_iff, decoratedExclusionResidualFresh])
         (by simp [K_eq_iff, decoratedExclusionMassFresh])
@@ -1943,11 +1993,9 @@ noncomputable def selectedTypeBDecoratedContinuation
         (by simp [K_eq_iff, decoratedLedgerFresh])
         (by simp [K_eq_iff, decoratedBridgeMassFresh])
         (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
+        (by simp [K_eq_iff, unifiedNegativeFresh])
         (by simp [K_eq_iff, unifiedTrueFresh]) (by simp [K_eq_iff, peelingFresh])
         (by simp [K_eq_iff, unifiedTerminalFresh])
-        (by simp [K_eq_iff, classifiedFresh])
-        (by simp [K_eq_iff, unclassifiedFresh])
-        (by simp [K_eq_iff, deficitReadingFresh])
         (by simp [K_eq_iff, decoratedExcludedFresh])
         (by simp [K_eq_iff, decoratedExclusionResidualFresh])
         (by simp [K_eq_iff, decoratedExclusionMassFresh])
@@ -1999,12 +2047,10 @@ noncomputable def selectedTypeADecoratedHandoff
     (twoFresh : K .route8TwoCarrierEntry ∉ known)
     (noTwoFresh : K .route8NoTwoCarrierEntry ∉ known)
     (trueEntryFresh : K .route8TrueTwoCarrierEntry ∉ known)
+    (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known)
     (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known)
     (peelingFresh : K .route8PeelingDescent ∉ known)
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known)
-    (classifiedFresh : K .route8PiecesClassified ∉ known)
-    (unclassifiedFresh : K .route8UnclassifiedPiece ∉ known)
-    (deficitReadingFresh : K .route8Deficit ∉ known)
     (decoratedExcludedFresh : K .typeBExcluded ∉ known)
     (decoratedExclusionResidualFresh : K .typeBExclusionResidual ∉ known)
     (decoratedExclusionMassFresh : K .typeBExclusionResidualMass ∉ known)
@@ -2034,10 +2080,9 @@ noncomputable def selectedTypeADecoratedHandoff
     (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
     (by simp [K_eq_iff, censusFresh]) (by simp [K_eq_iff, twoFresh])
     (by simp [K_eq_iff, noTwoFresh]) (by simp [K_eq_iff, trueEntryFresh])
+    (by simp [K_eq_iff, unifiedNegativeFresh])
     (by simp [K_eq_iff, unifiedTrueFresh]) (by simp [K_eq_iff, peelingFresh])
     (by simp [K_eq_iff, unifiedTerminalFresh])
-    (by simp [K_eq_iff, classifiedFresh]) (by simp [K_eq_iff, unclassifiedFresh])
-    (by simp [K_eq_iff, deficitReadingFresh])
     (by simp [K_eq_iff, decoratedExcludedFresh])
     (by simp [K_eq_iff, decoratedExclusionResidualFresh])
     (by simp [K_eq_iff, decoratedExclusionMassFresh])
@@ -2075,6 +2120,21 @@ noncomputable def selectedTypeAExitFiveToSeven
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .route8Rate) known]
     [FactKeys.Has (K .typeAReceiverRouting) known]
+    (profileFresh : K .route8ResidualProfile ∉ known)
+    (squeezeFresh : K .route8GlobalSqueeze ∉ known)
+    (burdenFresh : K .route8BasinBurden ∉ known)
+    (deficitFresh : K .route8LargeBudgetDeficit ∉ known)
+    (deficitFailsFresh : K .route8LargeBudgetDeficitFails ∉ known)
+    (coreFresh : K .route8CarrierCore ∉ known)
+    (trueResidualFresh : K .route8TrueResidual ∉ known)
+    (cutParityFresh : K .route8CarrierCutParity ∉ known)
+    (smallFresh : K .route8SmallCoreEntry ∉ known)
+    (noSmallFresh : K .route8NoSmallCoreEntry ∉ known)
+    (collapseFresh : K .route8SmallCoreCollapse ∉ known)
+    (deletionWitnessesFresh : K .route8CarrierDeletionWitnesses ∉ known)
+    (privateBudgetFresh : K .route8PrivateCarrierBudget ∉ known)
+    (noTwoContradictionFresh : K .route8NoTwoCarrierContradiction ∉ known)
+    (terminalNoGoFresh : K .route8TerminalNoGo ∉ known)
     (fiveFresh : K .typeAExitFive ∉ known)
     (fiveFreeFresh : K .typeAExitFiveFree ∉ known)
     (sixFresh : K .typeAExitSix ∉ known)
@@ -2108,12 +2168,10 @@ noncomputable def selectedTypeAExitFiveToSeven
     (twoFresh : K .route8TwoCarrierEntry ∉ known)
     (noTwoFresh : K .route8NoTwoCarrierEntry ∉ known)
     (trueEntryFresh : K .route8TrueTwoCarrierEntry ∉ known)
+    (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known)
     (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known)
     (peelingFresh : K .route8PeelingDescent ∉ known)
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known)
-    (classifiedFresh : K .route8PiecesClassified ∉ known)
-    (unclassifiedFresh : K .route8UnclassifiedPiece ∉ known)
-    (deficitReadingFresh : K .route8Deficit ∉ known)
     (decoratedExcludedFresh : K .typeBExcluded ∉ known)
     (decoratedExclusionResidualFresh : K .typeBExclusionResidual ∉ known)
     (decoratedExclusionMassFresh : K .typeBExclusionResidualMass ∉ known)
@@ -2159,20 +2217,42 @@ noncomputable def selectedTypeAExitFiveToSeven
                 (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
                 (by simp [K_eq_iff, censusFresh]) (by simp [K_eq_iff, twoFresh])
                 (by simp [K_eq_iff, noTwoFresh]) (by simp [K_eq_iff, trueEntryFresh])
+                (by simp [K_eq_iff, unifiedNegativeFresh])
                 (by simp [K_eq_iff, unifiedTrueFresh]) (by simp [K_eq_iff, peelingFresh])
                 (by simp [K_eq_iff, unifiedTerminalFresh])
-                (by simp [K_eq_iff, classifiedFresh]) (by simp [K_eq_iff, unclassifiedFresh])
-                (by simp [K_eq_iff, deficitReadingFresh])
                 (by simp [K_eq_iff, decoratedExcludedFresh]) (by simp [K_eq_iff, decoratedExclusionResidualFresh]) (by simp [K_eq_iff, decoratedExclusionMassFresh]) (by simp [K_eq_iff, decoratedObstructionMassFresh]) (by simp [K_eq_iff, decoratedClosureFresh])
           | .right route8History =>
-              -- `[109]` on the *visible* lane: `lem:typeA-visible-entry` — a
-              -- saturated receiver with a completion port carrying four visible
-              -- receiver-entry returns realizes one of exits `(1)`--`(7)`
-              -- (`lem:typeA-continuation-routing` on the four response
-              -- coordinates, `lem:typeA-cubic-switch-absorption`,
-              -- `lem:typeA-high-degree-handoff` force exit `(7)`), so exit
-              -- `(8)` does not occur here — the next producer.
-              exact selectedTypeAVisibleRouteEightImpossible route8History
+              -- `[109]` is the shared no-exit-`(7)` residual drawn in Part
+              -- VIII.  After any finite exit-`(4)` peeling the residual may be
+              -- on the silent side of `lem:typeA-exit4-residual-routing`, so
+              -- the paper sends this exact ledger to `[110]`; it has no
+              -- visible-lane impossibility terminal.
+              exact selectedRouteEightResidual route8History
+                (by simp [K_eq_iff, profileFresh])
+                (by simp [K_eq_iff, squeezeFresh])
+                (by simp [K_eq_iff, burdenFresh])
+                (by simp [K_eq_iff, deficitFresh])
+                (by simp [K_eq_iff, deficitFailsFresh])
+                (by simp [K_eq_iff, coreFresh])
+                (by simp [K_eq_iff, trueResidualFresh])
+                (by simp [K_eq_iff, cutParityFresh])
+                (by simp [K_eq_iff, smallFresh])
+                (by simp [K_eq_iff, noSmallFresh])
+                (by simp [K_eq_iff, collapseFresh])
+                (by simp [K_eq_iff, decoratedBridgeMassFresh])
+                (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
+                (by simp [K_eq_iff, censusFresh])
+                (by simp [K_eq_iff, twoFresh])
+                (by simp [K_eq_iff, noTwoFresh])
+                (by simp [K_eq_iff, trueEntryFresh])
+                (by simp [K_eq_iff, deletionWitnessesFresh])
+                (by simp [K_eq_iff, privateBudgetFresh])
+                (by simp [K_eq_iff, noTwoContradictionFresh])
+                (by simp [K_eq_iff, terminalNoGoFresh])
+                (by simp [K_eq_iff, unifiedNegativeFresh])
+                (by simp [K_eq_iff, unifiedTrueFresh])
+                (by simp [K_eq_iff, peelingFresh])
+                (by simp [K_eq_iff, unifiedTerminalFresh])
 
 /-- The silent-lane copy of `selectedTypeAExitFiveToSeven` (`[94]` →
 `[101]`--`[109]`): identical exits `(5)`--`(7)`, and the exit-`(8)` residual
@@ -2254,12 +2334,10 @@ noncomputable def selectedTypeAExitFiveToSevenSilent
     (privateBudgetFresh : K .route8PrivateCarrierBudget ∉ known)
     (noTwoContradictionFresh : K .route8NoTwoCarrierContradiction ∉ known)
     (terminalNoGoFresh : K .route8TerminalNoGo ∉ known)
+    (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known)
     (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known)
     (peelingFresh : K .route8PeelingDescent ∉ known)
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known)
-    (classifiedFresh : K .route8PiecesClassified ∉ known)
-    (unclassifiedFresh : K .route8UnclassifiedPiece ∉ known)
-    (deficitReadingFresh : K .route8Deficit ∉ known)
     (closureFresh : closed ∉ known) : False := by
   -- `[103]`
   match typeAExitFiveDichotomy (data := spineData) history fiveFresh fiveFreeFresh with
@@ -2300,10 +2378,9 @@ noncomputable def selectedTypeAExitFiveToSevenSilent
                 (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
                 (by simp [K_eq_iff, censusFresh]) (by simp [K_eq_iff, twoFresh])
                 (by simp [K_eq_iff, noTwoFresh]) (by simp [K_eq_iff, trueEntryFresh])
+                (by simp [K_eq_iff, unifiedNegativeFresh])
                 (by simp [K_eq_iff, unifiedTrueFresh]) (by simp [K_eq_iff, peelingFresh])
                 (by simp [K_eq_iff, unifiedTerminalFresh])
-                (by simp [K_eq_iff, classifiedFresh]) (by simp [K_eq_iff, unclassifiedFresh])
-                (by simp [K_eq_iff, deficitReadingFresh])
                 (by simp [K_eq_iff, decoratedExcludedFresh]) (by simp [K_eq_iff, decoratedExclusionResidualFresh]) (by simp [K_eq_iff, decoratedExclusionMassFresh]) (by simp [K_eq_iff, decoratedObstructionMassFresh]) (by simp [K_eq_iff, decoratedClosureFresh])
           | .right route8History =>
               -- `[109]` → `[110]`: the route-8 residual of Part IX on the silent
@@ -2327,27 +2404,17 @@ noncomputable def selectedTypeAExitFiveToSevenSilent
                 (by simp [K_eq_iff, privateBudgetFresh])
                 (by simp [K_eq_iff, noTwoContradictionFresh])
                 (by simp [K_eq_iff, terminalNoGoFresh])
+                (by simp [K_eq_iff, unifiedNegativeFresh])
                 (by simp [K_eq_iff, unifiedTrueFresh])
                 (by simp [K_eq_iff, peelingFresh]) (by simp [K_eq_iff, unifiedTerminalFresh])
-                (by simp [K_eq_iff, classifiedFresh]) (by simp [K_eq_iff, unclassifiedFresh])
-                (by simp [K_eq_iff, deficitReadingFresh])
 
 /-- **`[102]` → `[89]`, the retest of the peeled receiver.**  `K
 .typeAExitFourReceiverDischarged` records the outcome of the recompute-`L₄`
 loop: a witnessed peeling set `P₄(w)` at which the receiver is unsaturated
 (`lem:typeA-exit4-peeling-charge`: the remaining receiver charge
-`q(w) − ¼ − ¼L₄(w)` is nonnegative).  The paper's `[89]` no-arm at this receiver
-is *not* the pure Type A closure `[92]`: `rem:why-unified` and
-`thm:large-budget-route8-only` are explicit that a support that peels routed
-loads through the target-defect exit has `No(X) ≥ −¼|P₄| < 0`, and that its
-negative mass is placed in the unified target-defect/route-8 pressure ledger of
-node `[123]` (`def:typeA-unified-negative`, `def:typeA-pressure-ledger`), where
-`lem:typeA-pressure-is-exit4-peel` reads the peeling witnesses.  So the retest
-routes the discharged residual, with its peeled witnesses on the ledger, to the
-still-unrepaired `[123]` pressure join.  This legacy `branchKillClosedRow` use is
-local to that downstream Type A frontier; the repaired Type B `[76]`/`[85]`
-path instead publishes `typeBBridgeSublinear` and hands its literal ledger to
-the shared Part IX census at `[77]`. -/
+`q(w) − ¼ − ¼L₄(w)` is nonnegative).  Its peeled loads and their remaining
+negative mass enter node `[123]`'s unified target-defect/route-8 pressure
+ledger, where `lem:typeA-pressure-is-exit4-peel` reads the witnesses. -/
 -- EG-NODE none (establishes no manuscript DAG node)
 noncomputable def selectedTypeAExitFourDischargedRetest
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
@@ -2355,23 +2422,16 @@ noncomputable def selectedTypeAExitFourDischargedRetest
     [FactKeys.Has (K .typeAExitFourReceiverDischarged) known]
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .negativeSupport) known]
-    (branchKillFresh : K .branchKillClosed ∉ known) : False := by
-  -- The peeled target-defect entries stay on the ledger for `[123]`.
+    (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known) : False := by
+  -- Read the discharged receiver fact from the accumulated ledger.
   let _discharged := history.get (K .typeAExitFourReceiverDischarged)
-  let killed :=
-    (branchKillClosedRow (BranchState := BranchState)
+  -- `[123]`: publish `def:typeA-unified-negative` on this residual.
+  let unifiedNegative :=
+    (route8UnifiedNegativeRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by simp [K_eq_iff, branchKillFresh])
-  -- `[123]` is a global node: it runs on the object-level census
-  -- `K .route8Census` (`[111]`--`[113]`, `[120]`), which this ledger does not yet
-  -- carry — on it the census needs `thm:branch-kill`'s all-pieces classification
-  -- (`route8PieceClassificationDichotomy`), the deficit reading (`route8DeficitRow`,
-  -- which reads node `[88]`'s receiver routing at every zero-surplus piece) and the
-  -- arm's rate reading; producing those rows here is the next producer, after which
-  -- `route8PeelingDescentRow`, `route8PeelingTerminalRow`, and the terminal Q5
-  -- no-go run as on the unified census arm.
-  exact selectedLargeBudgetPressureCensus killed
+      history (by simp [K_eq_iff, unifiedNegativeFresh])
+  exact selectedLargeBudgetPressureCensus unifiedNegative
 
 /-- **Nodes `[101]`--`[102]` and their loop back to `[89]`**, on the shared
 saturated exit entry (index-polymorphic).  `lem:typeA-exit4-finite-descent` is
@@ -2398,6 +2458,21 @@ noncomputable def selectedTypeAExitFourChain
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .route8Rate) known]
     [FactKeys.Has (K .typeAReceiverRouting) known]
+    (profileFresh : K .route8ResidualProfile ∉ known)
+    (squeezeFresh : K .route8GlobalSqueeze ∉ known)
+    (burdenFresh : K .route8BasinBurden ∉ known)
+    (deficitFresh : K .route8LargeBudgetDeficit ∉ known)
+    (deficitFailsFresh : K .route8LargeBudgetDeficitFails ∉ known)
+    (coreFresh : K .route8CarrierCore ∉ known)
+    (trueResidualFresh : K .route8TrueResidual ∉ known)
+    (cutParityFresh : K .route8CarrierCutParity ∉ known)
+    (smallFresh : K .route8SmallCoreEntry ∉ known)
+    (noSmallFresh : K .route8NoSmallCoreEntry ∉ known)
+    (collapseFresh : K .route8SmallCoreCollapse ∉ known)
+    (deletionWitnessesFresh : K .route8CarrierDeletionWitnesses ∉ known)
+    (privateBudgetFresh : K .route8PrivateCarrierBudget ∉ known)
+    (noTwoContradictionFresh : K .route8NoTwoCarrierContradiction ∉ known)
+    (terminalNoGoFresh : K .route8TerminalNoGo ∉ known)
     (descentFresh : K .typeAExitFourFiniteDescent ∉ known)
     (exitFourFresh : K .typeASaturatedHandoffExitFour ∉ known)
     (exitFourFreeFresh : K .typeASaturatedHandoffExitFourFree ∉ known)
@@ -2436,12 +2511,10 @@ noncomputable def selectedTypeAExitFourChain
     (twoFresh : K .route8TwoCarrierEntry ∉ known)
     (noTwoFresh : K .route8NoTwoCarrierEntry ∉ known)
     (trueEntryFresh : K .route8TrueTwoCarrierEntry ∉ known)
+    (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known)
     (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known)
     (peelingFresh : K .route8PeelingDescent ∉ known)
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known)
-    (classifiedFresh : K .route8PiecesClassified ∉ known)
-    (unclassifiedFresh : K .route8UnclassifiedPiece ∉ known)
-    (deficitReadingFresh : K .route8Deficit ∉ known)
     (decoratedExcludedFresh : K .typeBExcluded ∉ known)
     (decoratedExclusionResidualFresh : K .typeBExclusionResidual ∉ known)
     (decoratedExclusionMassFresh : K .typeBExclusionResidualMass ∉ known)
@@ -2449,7 +2522,6 @@ noncomputable def selectedTypeAExitFourChain
     (decoratedClosureFresh : closed ∉ known)
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .negativeSupport) known]
-    (branchKillFresh : K .branchKillClosed ∉ known)
     (closureFresh : closed ∉ known) : False := by
   -- `lem:typeA-exit4-finite-descent` on the ledger (read again at `[123]`).
   let descended :=
@@ -2472,6 +2544,16 @@ noncomputable def selectedTypeAExitFourChain
           (by simp [K_eq_iff, exitFourFreeFresh]) (by simp [K_eq_iff, dischargedFresh]) with
       | .left terminalHistory =>
           exact selectedTypeAExitFiveToSeven terminalHistory
+            (by simp [K_eq_iff, profileFresh]) (by simp [K_eq_iff, squeezeFresh])
+            (by simp [K_eq_iff, burdenFresh]) (by simp [K_eq_iff, deficitFresh])
+            (by simp [K_eq_iff, deficitFailsFresh]) (by simp [K_eq_iff, coreFresh])
+            (by simp [K_eq_iff, trueResidualFresh])
+            (by simp [K_eq_iff, cutParityFresh]) (by simp [K_eq_iff, smallFresh])
+            (by simp [K_eq_iff, noSmallFresh]) (by simp [K_eq_iff, collapseFresh])
+            (by simp [K_eq_iff, deletionWitnessesFresh])
+            (by simp [K_eq_iff, privateBudgetFresh])
+            (by simp [K_eq_iff, noTwoContradictionFresh])
+            (by simp [K_eq_iff, terminalNoGoFresh])
             (by simp [K_eq_iff, fiveFresh]) (by simp [K_eq_iff, fiveFreeFresh])
             (by simp [K_eq_iff, sixFresh]) (by simp [K_eq_iff, sixFreeFresh])
             (by simp [K_eq_iff, sixProperFresh]) (by simp [K_eq_iff, sixGlobalFresh])
@@ -2480,10 +2562,9 @@ noncomputable def selectedTypeAExitFourChain
             (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
             (by simp [K_eq_iff, censusFresh]) (by simp [K_eq_iff, twoFresh])
             (by simp [K_eq_iff, noTwoFresh]) (by simp [K_eq_iff, trueEntryFresh])
+            (by simp [K_eq_iff, unifiedNegativeFresh])
             (by simp [K_eq_iff, unifiedTrueFresh]) (by simp [K_eq_iff, peelingFresh])
             (by simp [K_eq_iff, unifiedTerminalFresh])
-            (by simp [K_eq_iff, classifiedFresh]) (by simp [K_eq_iff, unclassifiedFresh])
-            (by simp [K_eq_iff, deficitReadingFresh])
             (by simp [K_eq_iff, decoratedExcludedFresh]) (by simp [K_eq_iff, decoratedExclusionResidualFresh]) (by simp [K_eq_iff, decoratedExclusionMassFresh]) (by simp [K_eq_iff, decoratedObstructionMassFresh]) (by simp [K_eq_iff, decoratedClosureFresh])
             (by simp [K_eq_iff, closureFresh])
       | .right dischargedHistory =>
@@ -2491,9 +2572,19 @@ noncomputable def selectedTypeAExitFourChain
           -- target-defect loads (Part IX pressure ledger `[123]`) — the next
           -- producer.
           exact selectedTypeAExitFourDischargedRetest dischargedHistory
-            (by simp [K_eq_iff, branchKillFresh])
+            (by simp [K_eq_iff, unifiedNegativeFresh])
   | .right freeHistory =>
       exact selectedTypeAExitFiveToSeven freeHistory
+        (by simp [K_eq_iff, profileFresh]) (by simp [K_eq_iff, squeezeFresh])
+        (by simp [K_eq_iff, burdenFresh]) (by simp [K_eq_iff, deficitFresh])
+        (by simp [K_eq_iff, deficitFailsFresh]) (by simp [K_eq_iff, coreFresh])
+        (by simp [K_eq_iff, trueResidualFresh])
+        (by simp [K_eq_iff, cutParityFresh]) (by simp [K_eq_iff, smallFresh])
+        (by simp [K_eq_iff, noSmallFresh]) (by simp [K_eq_iff, collapseFresh])
+        (by simp [K_eq_iff, deletionWitnessesFresh])
+        (by simp [K_eq_iff, privateBudgetFresh])
+        (by simp [K_eq_iff, noTwoContradictionFresh])
+        (by simp [K_eq_iff, terminalNoGoFresh])
         (by simp [K_eq_iff, fiveFresh]) (by simp [K_eq_iff, fiveFreeFresh])
         (by simp [K_eq_iff, sixFresh]) (by simp [K_eq_iff, sixFreeFresh])
         (by simp [K_eq_iff, sixProperFresh]) (by simp [K_eq_iff, sixGlobalFresh])
@@ -2502,10 +2593,9 @@ noncomputable def selectedTypeAExitFourChain
         (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
         (by simp [K_eq_iff, censusFresh]) (by simp [K_eq_iff, twoFresh])
         (by simp [K_eq_iff, noTwoFresh]) (by simp [K_eq_iff, trueEntryFresh])
+        (by simp [K_eq_iff, unifiedNegativeFresh])
         (by simp [K_eq_iff, unifiedTrueFresh]) (by simp [K_eq_iff, peelingFresh])
         (by simp [K_eq_iff, unifiedTerminalFresh])
-        (by simp [K_eq_iff, classifiedFresh]) (by simp [K_eq_iff, unclassifiedFresh])
-        (by simp [K_eq_iff, deficitReadingFresh])
         (by simp [K_eq_iff, decoratedExcludedFresh]) (by simp [K_eq_iff, decoratedExclusionResidualFresh]) (by simp [K_eq_iff, decoratedExclusionMassFresh]) (by simp [K_eq_iff, decoratedObstructionMassFresh]) (by simp [K_eq_iff, decoratedClosureFresh])
         (by simp [K_eq_iff, closureFresh])
 
@@ -2585,14 +2675,11 @@ noncomputable def selectedTypeAExitFourChainSilent
     (privateBudgetFresh : K .route8PrivateCarrierBudget ∉ known)
     (noTwoContradictionFresh : K .route8NoTwoCarrierContradiction ∉ known)
     (terminalNoGoFresh : K .route8TerminalNoGo ∉ known)
+    (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known)
     (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known)
     (peelingFresh : K .route8PeelingDescent ∉ known)
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known)
-    (classifiedFresh : K .route8PiecesClassified ∉ known)
-    (unclassifiedFresh : K .route8UnclassifiedPiece ∉ known)
-    (deficitReadingFresh : K .route8Deficit ∉ known)
     [FactKeys.Has (K .negativeSupport) known]
-    (branchKillFresh : K .branchKillClosed ∉ known)
     (closureFresh : closed ∉ known) : False := by
   -- `lem:typeA-exit4-finite-descent` on the ledger (read again at `[123]`).
   let descended :=
@@ -2637,17 +2724,16 @@ noncomputable def selectedTypeAExitFourChainSilent
                 (by simp [K_eq_iff, privateBudgetFresh])
                 (by simp [K_eq_iff, noTwoContradictionFresh])
                 (by simp [K_eq_iff, terminalNoGoFresh])
+                (by simp [K_eq_iff, unifiedNegativeFresh])
                 (by simp [K_eq_iff, unifiedTrueFresh])
                 (by simp [K_eq_iff, peelingFresh]) (by simp [K_eq_iff, unifiedTerminalFresh])
-                (by simp [K_eq_iff, classifiedFresh]) (by simp [K_eq_iff, unclassifiedFresh])
-                (by simp [K_eq_iff, deficitReadingFresh])
             (by simp [K_eq_iff, closureFresh])
       | .right dischargedHistory =>
           -- `[89]` retest of the discharged receiver with its peeled
           -- target-defect loads (Part IX pressure ledger `[123]`) — the next
           -- producer.
           exact selectedTypeAExitFourDischargedRetest dischargedHistory
-            (by simp [K_eq_iff, branchKillFresh])
+            (by simp [K_eq_iff, unifiedNegativeFresh])
   | .right freeHistory =>
       exact selectedTypeAExitFiveToSevenSilent freeHistory
         (by simp [K_eq_iff, fiveFresh]) (by simp [K_eq_iff, fiveFreeFresh])
@@ -2672,10 +2758,9 @@ noncomputable def selectedTypeAExitFourChainSilent
                 (by simp [K_eq_iff, privateBudgetFresh])
                 (by simp [K_eq_iff, noTwoContradictionFresh])
                 (by simp [K_eq_iff, terminalNoGoFresh])
+                (by simp [K_eq_iff, unifiedNegativeFresh])
                 (by simp [K_eq_iff, unifiedTrueFresh])
                 (by simp [K_eq_iff, peelingFresh]) (by simp [K_eq_iff, unifiedTerminalFresh])
-                (by simp [K_eq_iff, classifiedFresh]) (by simp [K_eq_iff, unclassifiedFresh])
-                (by simp [K_eq_iff, deficitReadingFresh])
         (by simp [K_eq_iff, closureFresh])
 
 /-- **Node `[99]` → `[101]`, the visible lane**: the shared saturated exit entry
@@ -2694,6 +2779,21 @@ noncomputable def selectedTypeAVisibleExitFour
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .route8Rate) known]
     [FactKeys.Has (K .typeAReceiverRouting) known]
+    (profileFresh : K .route8ResidualProfile ∉ known)
+    (squeezeFresh : K .route8GlobalSqueeze ∉ known)
+    (burdenFresh : K .route8BasinBurden ∉ known)
+    (deficitFresh : K .route8LargeBudgetDeficit ∉ known)
+    (deficitFailsFresh : K .route8LargeBudgetDeficitFails ∉ known)
+    (coreFresh : K .route8CarrierCore ∉ known)
+    (trueResidualFresh : K .route8TrueResidual ∉ known)
+    (cutParityFresh : K .route8CarrierCutParity ∉ known)
+    (smallFresh : K .route8SmallCoreEntry ∉ known)
+    (noSmallFresh : K .route8NoSmallCoreEntry ∉ known)
+    (collapseFresh : K .route8SmallCoreCollapse ∉ known)
+    (deletionWitnessesFresh : K .route8CarrierDeletionWitnesses ∉ known)
+    (privateBudgetFresh : K .route8PrivateCarrierBudget ∉ known)
+    (noTwoContradictionFresh : K .route8NoTwoCarrierContradiction ∉ known)
+    (terminalNoGoFresh : K .route8TerminalNoGo ∉ known)
     (entryFresh : K .typeASaturatedExitEntry ∉ known)
     (descentFresh : K .typeAExitFourFiniteDescent ∉ known)
     (exitFourFresh : K .typeASaturatedHandoffExitFour ∉ known)
@@ -2733,12 +2833,10 @@ noncomputable def selectedTypeAVisibleExitFour
     (twoFresh : K .route8TwoCarrierEntry ∉ known)
     (noTwoFresh : K .route8NoTwoCarrierEntry ∉ known)
     (trueEntryFresh : K .route8TrueTwoCarrierEntry ∉ known)
+    (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known)
     (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known)
     (peelingFresh : K .route8PeelingDescent ∉ known)
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known)
-    (classifiedFresh : K .route8PiecesClassified ∉ known)
-    (unclassifiedFresh : K .route8UnclassifiedPiece ∉ known)
-    (deficitReadingFresh : K .route8Deficit ∉ known)
     (decoratedExcludedFresh : K .typeBExcluded ∉ known)
     (decoratedExclusionResidualFresh : K .typeBExclusionResidual ∉ known)
     (decoratedExclusionMassFresh : K .typeBExclusionResidualMass ∉ known)
@@ -2746,7 +2844,6 @@ noncomputable def selectedTypeAVisibleExitFour
     (decoratedClosureFresh : closed ∉ known)
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .negativeSupport) known]
-    (branchKillFresh : K .branchKillClosed ∉ known)
     (closureFresh : closed ∉ known) : False := by
   let entered :=
     (typeAVisibleExitEntryRow (BranchState := BranchState)
@@ -2754,6 +2851,15 @@ noncomputable def selectedTypeAVisibleExitFour
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       history (by simp [K_eq_iff, entryFresh])
   exact selectedTypeAExitFourChain entered
+    (by simp [K_eq_iff, profileFresh]) (by simp [K_eq_iff, squeezeFresh])
+    (by simp [K_eq_iff, burdenFresh]) (by simp [K_eq_iff, deficitFresh])
+    (by simp [K_eq_iff, deficitFailsFresh]) (by simp [K_eq_iff, coreFresh])
+    (by simp [K_eq_iff, trueResidualFresh]) (by simp [K_eq_iff, cutParityFresh])
+    (by simp [K_eq_iff, smallFresh]) (by simp [K_eq_iff, noSmallFresh])
+    (by simp [K_eq_iff, collapseFresh]) (by simp [K_eq_iff, deletionWitnessesFresh])
+    (by simp [K_eq_iff, privateBudgetFresh])
+    (by simp [K_eq_iff, noTwoContradictionFresh])
+    (by simp [K_eq_iff, terminalNoGoFresh])
     (by simp [K_eq_iff, descentFresh]) (by simp [K_eq_iff, exitFourFresh])
     (by simp [K_eq_iff, exitFourFreeFresh]) (by simp [K_eq_iff, peeledFresh])
     (by simp [K_eq_iff, dischargedFresh])
@@ -2765,12 +2871,10 @@ noncomputable def selectedTypeAVisibleExitFour
     (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
     (by simp [K_eq_iff, censusFresh]) (by simp [K_eq_iff, twoFresh])
     (by simp [K_eq_iff, noTwoFresh]) (by simp [K_eq_iff, trueEntryFresh])
+    (by simp [K_eq_iff, unifiedNegativeFresh])
     (by simp [K_eq_iff, unifiedTrueFresh]) (by simp [K_eq_iff, peelingFresh])
     (by simp [K_eq_iff, unifiedTerminalFresh])
-    (by simp [K_eq_iff, classifiedFresh]) (by simp [K_eq_iff, unclassifiedFresh])
-    (by simp [K_eq_iff, deficitReadingFresh])
     (by simp [K_eq_iff, decoratedExcludedFresh]) (by simp [K_eq_iff, decoratedExclusionResidualFresh]) (by simp [K_eq_iff, decoratedExclusionMassFresh]) (by simp [K_eq_iff, decoratedObstructionMassFresh]) (by simp [K_eq_iff, decoratedClosureFresh])
-    (by simp [K_eq_iff, branchKillFresh])
     (by simp [K_eq_iff, closureFresh])
 
 /-- **Node `[94]` → `[101]`, the silent lane**: the shared saturated exit entry
@@ -2849,14 +2953,11 @@ noncomputable def selectedTypeASilentExitChain
     (privateBudgetFresh : K .route8PrivateCarrierBudget ∉ known)
     (noTwoContradictionFresh : K .route8NoTwoCarrierContradiction ∉ known)
     (terminalNoGoFresh : K .route8TerminalNoGo ∉ known)
+    (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known)
     (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known)
     (peelingFresh : K .route8PeelingDescent ∉ known)
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known)
-    (classifiedFresh : K .route8PiecesClassified ∉ known)
-    (unclassifiedFresh : K .route8UnclassifiedPiece ∉ known)
-    (deficitReadingFresh : K .route8Deficit ∉ known)
     [FactKeys.Has (K .negativeSupport) known]
-    (branchKillFresh : K .branchKillClosed ∉ known)
     (closureFresh : closed ∉ known) : False := by
   let entered :=
     (typeASilentExitEntryRow (BranchState := BranchState)
@@ -2889,11 +2990,9 @@ noncomputable def selectedTypeASilentExitChain
                 (by simp [K_eq_iff, privateBudgetFresh])
                 (by simp [K_eq_iff, noTwoContradictionFresh])
                 (by simp [K_eq_iff, terminalNoGoFresh])
+                (by simp [K_eq_iff, unifiedNegativeFresh])
                 (by simp [K_eq_iff, unifiedTrueFresh])
                 (by simp [K_eq_iff, peelingFresh]) (by simp [K_eq_iff, unifiedTerminalFresh])
-                (by simp [K_eq_iff, classifiedFresh]) (by simp [K_eq_iff, unclassifiedFresh])
-                (by simp [K_eq_iff, deficitReadingFresh])
-    (by simp [K_eq_iff, branchKillFresh])
     (by simp [K_eq_iff, closureFresh])
 
 /-- **Nodes `[95]`--`[100]`: the saturated exit chain, exits `(1)`--`(3)`**, on
@@ -2922,6 +3021,21 @@ noncomputable def selectedTypeAVisibleExitChain
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .route8Rate) known]
     [FactKeys.Has (K .typeAReceiverRouting) known]
+    (profileFresh : K .route8ResidualProfile ∉ known)
+    (squeezeFresh : K .route8GlobalSqueeze ∉ known)
+    (burdenFresh : K .route8BasinBurden ∉ known)
+    (deficitFresh : K .route8LargeBudgetDeficit ∉ known)
+    (deficitFailsFresh : K .route8LargeBudgetDeficitFails ∉ known)
+    (coreFresh : K .route8CarrierCore ∉ known)
+    (trueResidualFresh : K .route8TrueResidual ∉ known)
+    (cutParityFresh : K .route8CarrierCutParity ∉ known)
+    (smallFresh : K .route8SmallCoreEntry ∉ known)
+    (noSmallFresh : K .route8NoSmallCoreEntry ∉ known)
+    (collapseFresh : K .route8SmallCoreCollapse ∉ known)
+    (deletionWitnessesFresh : K .route8CarrierDeletionWitnesses ∉ known)
+    (privateBudgetFresh : K .route8PrivateCarrierBudget ∉ known)
+    (noTwoContradictionFresh : K .route8NoTwoCarrierContradiction ∉ known)
+    (terminalNoGoFresh : K .route8TerminalNoGo ∉ known)
     (returnFresh : K .typeAExitOneReturn ∉ known)
     (oneFreeFresh : K .typeAExitOneFree ∉ known)
     (thetaFresh : K .typeAExitTwoTheta ∉ known)
@@ -2971,12 +3085,10 @@ noncomputable def selectedTypeAVisibleExitChain
     (twoFresh : K .route8TwoCarrierEntry ∉ known)
     (noTwoFresh : K .route8NoTwoCarrierEntry ∉ known)
     (trueEntryFresh : K .route8TrueTwoCarrierEntry ∉ known)
+    (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known)
     (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known)
     (peelingFresh : K .route8PeelingDescent ∉ known)
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known)
-    (classifiedFresh : K .route8PiecesClassified ∉ known)
-    (unclassifiedFresh : K .route8UnclassifiedPiece ∉ known)
-    (deficitReadingFresh : K .route8Deficit ∉ known)
     (decoratedExcludedFresh : K .typeBExcluded ∉ known)
     (decoratedExclusionResidualFresh : K .typeBExclusionResidual ∉ known)
     (decoratedExclusionMassFresh : K .typeBExclusionResidualMass ∉ known)
@@ -2984,7 +3096,6 @@ noncomputable def selectedTypeAVisibleExitChain
     (decoratedClosureFresh : closed ∉ known)
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .negativeSupport) known]
-    (branchKillFresh : K .branchKillClosed ∉ known)
     (closureFresh : closed ∉ known) : False := by
   -- `[95]`
   match typeAExitOneDichotomy (data := spineData) history returnFresh oneFreeFresh with
@@ -3013,6 +3124,16 @@ noncomputable def selectedTypeAVisibleExitChain
               -- `[101]`--`[109]`: exit `(4)` and the rest of the exit segment on
               -- the visible lane.
               exact selectedTypeAVisibleExitFour threeFree
+                (by simp [K_eq_iff, profileFresh]) (by simp [K_eq_iff, squeezeFresh])
+                (by simp [K_eq_iff, burdenFresh]) (by simp [K_eq_iff, deficitFresh])
+                (by simp [K_eq_iff, deficitFailsFresh]) (by simp [K_eq_iff, coreFresh])
+                (by simp [K_eq_iff, trueResidualFresh])
+                (by simp [K_eq_iff, cutParityFresh]) (by simp [K_eq_iff, smallFresh])
+                (by simp [K_eq_iff, noSmallFresh]) (by simp [K_eq_iff, collapseFresh])
+                (by simp [K_eq_iff, deletionWitnessesFresh])
+                (by simp [K_eq_iff, privateBudgetFresh])
+                (by simp [K_eq_iff, noTwoContradictionFresh])
+                (by simp [K_eq_iff, terminalNoGoFresh])
                 (by simp [K_eq_iff, entryFresh]) (by simp [K_eq_iff, descentFresh])
                 (by simp [K_eq_iff, exitFourFresh]) (by simp [K_eq_iff, exitFourFreeFresh])
                 (by simp [K_eq_iff, peeledFresh]) (by simp [K_eq_iff, dischargedFresh])
@@ -3025,12 +3146,10 @@ noncomputable def selectedTypeAVisibleExitChain
                 (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
                 (by simp [K_eq_iff, censusFresh]) (by simp [K_eq_iff, twoFresh])
                 (by simp [K_eq_iff, noTwoFresh]) (by simp [K_eq_iff, trueEntryFresh])
+                (by simp [K_eq_iff, unifiedNegativeFresh])
                 (by simp [K_eq_iff, unifiedTrueFresh]) (by simp [K_eq_iff, peelingFresh])
                 (by simp [K_eq_iff, unifiedTerminalFresh])
-                (by simp [K_eq_iff, classifiedFresh]) (by simp [K_eq_iff, unclassifiedFresh])
-                (by simp [K_eq_iff, deficitReadingFresh])
                 (by simp [K_eq_iff, decoratedExcludedFresh]) (by simp [K_eq_iff, decoratedExclusionResidualFresh]) (by simp [K_eq_iff, decoratedExclusionMassFresh]) (by simp [K_eq_iff, decoratedObstructionMassFresh]) (by simp [K_eq_iff, decoratedClosureFresh])
-                (by simp [K_eq_iff, branchKillFresh])
                 (by simp [K_eq_iff, closureFresh])
 
 /-- **Nodes `[63]`, `[86]`--`[94]`: the Type A entry**, on the `[62]` Type A
@@ -3153,14 +3272,11 @@ noncomputable def selectedTypeALowSurplusContinuation
     (noTwoContradictionFresh : K .route8NoTwoCarrierContradiction ∉ known :=
       by simp [K_eq_iff])
     (terminalNoGoFresh : K .route8TerminalNoGo ∉ known := by simp [K_eq_iff])
+    (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known := by simp [K_eq_iff])
     (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known := by simp [K_eq_iff])
     (peelingFresh : K .route8PeelingDescent ∉ known := by simp [K_eq_iff])
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known := by simp [K_eq_iff])
-    (classifiedFresh : K .route8PiecesClassified ∉ known := by simp [K_eq_iff])
-    (unclassifiedFresh : K .route8UnclassifiedPiece ∉ known := by simp [K_eq_iff])
-    (deficitReadingFresh : K .route8Deficit ∉ known := by simp [K_eq_iff])
     [FactKeys.Has (K .negativeSupport) known]
-    (branchKillFresh : K .branchKillClosed ∉ known := by simp [K_eq_iff])
     (closureFresh : closed ∉ known := by simp [K_eq_iff]) :
     False := by
   -- `[87]`: the selected incoming Type A piece is P13-free, has diameter at
@@ -3206,6 +3322,16 @@ noncomputable def selectedTypeALowSurplusContinuation
       | .left visibleHistory =>
           -- `[95]`--`[107]`: the saturated exit chain on the visible arm.
           exact selectedTypeAVisibleExitChain visibleHistory
+            (by simp [K_eq_iff, profileFresh]) (by simp [K_eq_iff, squeezeFresh])
+            (by simp [K_eq_iff, burdenFresh]) (by simp [K_eq_iff, deficitFresh])
+            (by simp [K_eq_iff, deficitFailsFresh]) (by simp [K_eq_iff, coreFresh])
+            (by simp [K_eq_iff, trueResidualFresh])
+            (by simp [K_eq_iff, cutParityFresh]) (by simp [K_eq_iff, smallFresh])
+            (by simp [K_eq_iff, noSmallFresh]) (by simp [K_eq_iff, collapseFresh])
+            (by simp [K_eq_iff, deletionWitnessesFresh])
+            (by simp [K_eq_iff, privateBudgetFresh])
+            (by simp [K_eq_iff, noTwoContradictionFresh])
+            (by simp [K_eq_iff, terminalNoGoFresh])
             (by simp [K_eq_iff, returnFresh]) (by simp [K_eq_iff, oneFreeFresh])
             (by simp [K_eq_iff, thetaFresh]) (by simp [K_eq_iff, twoFreeFresh])
             (by simp [K_eq_iff, collisionFresh]) (by simp [K_eq_iff, threeFreeFresh])
@@ -3220,12 +3346,10 @@ noncomputable def selectedTypeALowSurplusContinuation
             (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
             (by simp [K_eq_iff, censusFresh]) (by simp [K_eq_iff, twoFresh])
             (by simp [K_eq_iff, noTwoFresh]) (by simp [K_eq_iff, trueEntryFresh])
+            (by simp [K_eq_iff, unifiedNegativeFresh])
             (by simp [K_eq_iff, unifiedTrueFresh]) (by simp [K_eq_iff, peelingFresh])
             (by simp [K_eq_iff, unifiedTerminalFresh])
-            (by simp [K_eq_iff, classifiedFresh]) (by simp [K_eq_iff, unclassifiedFresh])
-            (by simp [K_eq_iff, deficitReadingFresh])
             (by simp [K_eq_iff, decoratedExcludedFresh]) (by simp [K_eq_iff, decoratedExclusionResidualFresh]) (by simp [K_eq_iff, decoratedExclusionMassFresh]) (by simp [K_eq_iff, decoratedObstructionMassFresh]) (by simp [K_eq_iff, decoratedClosureFresh])
-            (by simp [K_eq_iff, branchKillFresh])
             (by simp [K_eq_iff, closureFresh])
       | .right excessHistory =>
           -- `[94]` → `[101]`--`[107]`: the exit chain from exit `(4)` on the
@@ -3256,11 +3380,9 @@ noncomputable def selectedTypeALowSurplusContinuation
                 (by simp [K_eq_iff, privateBudgetFresh])
                 (by simp [K_eq_iff, noTwoContradictionFresh])
                 (by simp [K_eq_iff, terminalNoGoFresh])
+                (by simp [K_eq_iff, unifiedNegativeFresh])
                 (by simp [K_eq_iff, unifiedTrueFresh])
                 (by simp [K_eq_iff, peelingFresh]) (by simp [K_eq_iff, unifiedTerminalFresh])
-                (by simp [K_eq_iff, classifiedFresh]) (by simp [K_eq_iff, unclassifiedFresh])
-                (by simp [K_eq_iff, deficitReadingFresh])
-            (by simp [K_eq_iff, branchKillFresh])
             (by simp [K_eq_iff, closureFresh])
 
 /-- **Node `[64]`: the ordinary Type B entry**, on the `[62]` yes-residual of any
@@ -3320,12 +3442,10 @@ noncomputable def selectedTypeBHighSurplusContinuation
     (twoFresh : K .route8TwoCarrierEntry ∉ known := by simp [K_eq_iff])
     (noTwoFresh : K .route8NoTwoCarrierEntry ∉ known := by simp [K_eq_iff])
     (trueEntryFresh : K .route8TrueTwoCarrierEntry ∉ known := by simp [K_eq_iff])
+    (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known := by simp [K_eq_iff])
     (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known := by simp [K_eq_iff])
     (peelingFresh : K .route8PeelingDescent ∉ known := by simp [K_eq_iff])
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known := by simp [K_eq_iff])
-    (classifiedFresh : K .route8PiecesClassified ∉ known := by simp [K_eq_iff])
-    (unclassifiedFresh : K .route8UnclassifiedPiece ∉ known := by simp [K_eq_iff])
-    (deficitReadingFresh : K .route8Deficit ∉ known := by simp [K_eq_iff])
     (excludedFresh : K .typeBExcluded ∉ known := by simp [K_eq_iff])
     (exclusionResidualFresh : K .typeBExclusionResidual ∉ known := by simp [K_eq_iff])
     (exclusionMassFresh : K .typeBExclusionResidualMass ∉ known := by simp [K_eq_iff])
@@ -3377,10 +3497,9 @@ noncomputable def selectedTypeBHighSurplusContinuation
         (by simp [K_eq_iff, choiceFresh]) (by simp [K_eq_iff, obstructionFresh])
         (by simp [K_eq_iff, hybridFresh]) (by simp [K_eq_iff, ledgerFresh])
         (by simp [K_eq_iff, bridgeMassFresh]) (by simp [K_eq_iff, bridgeSublinearFresh])
+        (by simp [K_eq_iff, unifiedNegativeFresh])
         (by simp [K_eq_iff, unifiedTrueFresh]) (by simp [K_eq_iff, peelingFresh])
         (by simp [K_eq_iff, unifiedTerminalFresh])
-        (by simp [K_eq_iff, classifiedFresh]) (by simp [K_eq_iff, unclassifiedFresh])
-        (by simp [K_eq_iff, deficitReadingFresh])
         (by simp [K_eq_iff, excludedFresh]) (by simp [K_eq_iff, exclusionResidualFresh])
         (by simp [K_eq_iff, exclusionMassFresh]) (by simp [K_eq_iff, obstructionMassFresh])
         (by simp [K_eq_iff, closureFresh])
@@ -3407,10 +3526,9 @@ noncomputable def selectedTypeBHighSurplusContinuation
         (by simp [K_eq_iff, choiceFresh]) (by simp [K_eq_iff, obstructionFresh])
         (by simp [K_eq_iff, hybridFresh]) (by simp [K_eq_iff, ledgerFresh])
         (by simp [K_eq_iff, bridgeMassFresh]) (by simp [K_eq_iff, bridgeSublinearFresh])
+        (by simp [K_eq_iff, unifiedNegativeFresh])
         (by simp [K_eq_iff, unifiedTrueFresh]) (by simp [K_eq_iff, peelingFresh])
         (by simp [K_eq_iff, unifiedTerminalFresh])
-        (by simp [K_eq_iff, classifiedFresh]) (by simp [K_eq_iff, unclassifiedFresh])
-        (by simp [K_eq_iff, deficitReadingFresh])
         (by simp [K_eq_iff, excludedFresh]) (by simp [K_eq_iff, exclusionResidualFresh])
         (by simp [K_eq_iff, exclusionMassFresh]) (by simp [K_eq_iff, obstructionMassFresh])
         (by simp [K_eq_iff, closureFresh])
@@ -3430,14 +3548,13 @@ closure as its own hypotheses (the loud producers
 The density hypothesis is the
 dense-packing residual `[159]` itself: by `def:window-realization-test` the
 no-branch of `[158]` is `2^{c₁₃p₁₃log₂n} > |𝒢_{n,m}|`, which
-`denseOrJointCodeOverflow` reads off `K .windowPackageUnrealized` together with
-`lem:skeleton-dominates` (`K .skeletonDominates`: no assignment of states to
-labelled skeletons beats the identity).  On that display
+`densePackingOverflowRow` publishes as `K .densePackingOverflow` from the
+literal no-arm and `lem:skeleton-dominates`.  On that display
 `blockedClassCompressionCloses` gives `card 𝓑(𝒫) < 1`, contradicting
 `G ∈ 𝓑(𝒫)`.  The complementary half of the same reading — the *joint* retained
 code (window package with the remainder states and the exact curvature code)
-overflowing the budget while the window package alone does not — is node
-`[53]`'s comparison on this residual and is the named producer.
+overflowing the budget while the window package alone does not — remains node
+`[53]`'s comparison in the hot/cold ledger and is not an arm of `[159]`.
 
 *Not additive* (`[172]`): `lem:barrier-failure-overlap` supplies a minimal
 same-scale barrier overlap obstruction with connected overlap support; the
@@ -3452,8 +3569,7 @@ noncomputable def selectedScaleAdditivityDichotomy
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .blockedClassMember) known]
-    [FactKeys.Has (K .windowPackageUnrealized) known]
-    [FactKeys.Has (K .skeletonDominates) known]
+    [FactKeys.Has (K .densePackingOverflow) known]
     (additiveFresh : K .blockedScaleAdditive ∉ known := by simp [K_eq_iff])
     (overlapFresh : K .blockedBarrierOverlap ∉ known := by simp [K_eq_iff]) :
     False := by
@@ -3463,14 +3579,7 @@ noncomputable def selectedScaleAdditivityDichotomy
       -- `card 𝓑(𝒫) · 2^{c₁₃p₁₃log₂n} ≤ card 𝒢_{n,m}` against the `[159]` display
       -- `2^{c₁₃p₁₃log₂n} > card 𝒢_{n,m}` give `card 𝓑(𝒫) < 1`, and
       -- `def:blocked-class` puts `G` in `𝓑(𝒫)`.
-      rcases denseOrJointCodeOverflow (data := spineData) additiveHistory with dense | overflow
-      · exact blockedClassCompressionCloses (data := spineData) additiveHistory dense
-      · -- `K .windowPackageUnrealized` states `def:window-realization-test`'s
-        -- no-branch together with `def:cold-window-ledger`'s retained-code
-        -- clause, so its negation also covers the joint-code overflow, which is
-        -- node `[53]`'s comparison and not `[159]`.  Unbundling the `[158]` key
-        -- into the two manuscript statements removes this arm entirely.
-        exact selectedDenseJointCodeOverflow additiveHistory overflow
+      exact blockedClassCompressionCloses (data := spineData) additiveHistory
   | .right overlapHistory =>
       -- `[172]`: the minimal same-scale overlap obstruction of
       -- `lem:barrier-failure-overlap`; the missing lemma is
@@ -3531,8 +3640,8 @@ noncomputable def selectedAbsorbedGermResidual
     (absorbedTableFresh : K .coldSameInterfaceTable ∉ known := by simp [K_eq_iff])
     (absorbedClosedFresh : K .coldBranchClosed ∉ known := by simp [K_eq_iff])
     (absorbedStubFresh : K .coldWindowStubStructure ∉ known := by simp [K_eq_iff])
-    (absorbedProperFresh : K .coldProperNeutralGerm ∉ known := by simp [K_eq_iff])
-    (absorbedTrivialFresh : K .coldTrivialNeutralGerms ∉ known := by simp [K_eq_iff])
+    (absorbedCanonicalFresh : K .coldCanonicalNeutralConfiguration ∉ known := by simp [K_eq_iff])
+    (absorbedGenuineFresh : K .coldGenuineSecondStrand ∉ known := by simp [K_eq_iff])
     (absorbedBlockedFresh : K .blockedClassMember ∉ known := by simp [K_eq_iff])
     (absorbedSwapSmallerFresh : K .coldCanonicalSwapSmaller ∉ known := by simp [K_eq_iff])
     (absorbedSwapSameFresh : K .coldCanonicalSwapSameSize ∉ known := by simp [K_eq_iff])
@@ -3581,41 +3690,23 @@ noncomputable def selectedAbsorbedGermResidual
       let closed :=
         (coldBranchClosedRow (data := spineData)).run table
           (by simp [K_eq_iff, absorbedClosedFresh])
-      let stubStructure :=
-        (coldWindowStubStructureRow (data := spineData)).run closed
-          (by simp [K_eq_iff, absorbedStubFresh])
-      match neutralGermSymmetryDichotomy (data := spineData) stubStructure
-          (by simp [K_eq_iff, absorbedProperFresh])
-          (by simp [K_eq_iff, absorbedTrivialFresh]) with
-      | .left properHistory =>
+      match neutralGermSymmetryDichotomy (data := spineData) closed
+          (by simp [K_eq_iff, absorbedCanonicalFresh])
+          (by simp [K_eq_iff, absorbedGenuineFresh]) with
+      | .left canonicalHistory =>
           -- `[165]`/`[166]`, `lem:refined-minimality-swap`: the canonical
           -- representative is smaller (the swap is a strictly smaller
           -- counterexample, closed by `[4]`) or of the same size (tie-break).
-          match canonicalSwapSizeDichotomy (data := spineData) properHistory
+          match canonicalSwapSizeDichotomy (data := spineData) canonicalHistory
               (by simp [K_eq_iff, absorbedSwapSmallerFresh])
               (by simp [K_eq_iff, absorbedSwapSameFresh]) with
           | .left smallerHistory => exact selectedCanonicalSwapCloses smallerHistory
           | .right sameHistory => exact selectedDenseSameSizeCanonicalSwap sameHistory
-      | .right trivialHistory =>
-          -- `[169]`: the trivial neutral germ residual; `def:blocked-class`'s
-          -- `G ∈ 𝓑(𝒫)` and `card 𝓑(𝒫) ≤ skeletonBudget` on the ledger.
-          let blocked :=
-            (blockedClassRow (data := spineData)).run trivialHistory
-              (by simp [K_eq_iff, absorbedBlockedFresh])
-          -- `[170]`--`[172]` are the manuscript's continuation of `[169]` *on the
-          -- dense-packing residual* `[159]`: `[171]`'s compression closes only
-          -- against `def:window-realization-test`'s no-branch
-          -- `2^{c₁₃p₁₃log₂n} > |𝒢_{n,m}|`.  The absorbed-germ chain reaches
-          -- `[169]` from both arms of `[158]`, so `K .windowPackageUnrealized` is
-          -- not on this ledger, and on the realized arm the display is false.
-          -- The missing lemma is `lem:absorbed-germ-fan-data`'s own dense reading:
-          -- the absorbed-germ residual carries `def:window-realization-test`'s
-          -- no-branch, which the manuscript states only for `[159]`.
-          -- `[170]`--`[172]` are the manuscript's continuation of `[169]` on the
-          -- dense-packing residual `[159]`, whose display `[171]` consumes.  The
-          -- absorbed-germ chain reaches `[169]` from both arms of `[158]`, so
-          -- that display is not on this ledger.
-          exact selectedAbsorbedGermBlockedResidual blocked
+      | .right genuineHistory =>
+          -- `[167]` is the paper's yes edge: apply the finite two-strand check
+          -- to this graph-realized second strand.  Its exact producer is the
+          -- next node in the cold/dense repair sequence.
+          exact selectedGenuineSecondStrandCloses genuineHistory
   | .right absorbedHistory =>
       -- `[177]`, `lem:absorbed-germ-fan-data` (ii): at every heavy centre of a
       -- selected corridor, the corridor's two incidences and tails are decorated
@@ -3685,8 +3776,8 @@ noncomputable def selectedRouteEightRateFailure
     (absorbedTableFresh : K .coldSameInterfaceTable ∉ known := by simp [K_eq_iff])
     (absorbedClosedFresh : K .coldBranchClosed ∉ known := by simp [K_eq_iff])
     (absorbedStubFresh : K .coldWindowStubStructure ∉ known := by simp [K_eq_iff])
-    (absorbedProperFresh : K .coldProperNeutralGerm ∉ known := by simp [K_eq_iff])
-    (absorbedTrivialFresh : K .coldTrivialNeutralGerms ∉ known := by simp [K_eq_iff])
+    (absorbedCanonicalFresh : K .coldCanonicalNeutralConfiguration ∉ known := by simp [K_eq_iff])
+    (absorbedGenuineFresh : K .coldGenuineSecondStrand ∉ known := by simp [K_eq_iff])
     (absorbedBlockedFresh : K .blockedClassMember ∉ known := by simp [K_eq_iff])
     (absorbedSwapSmallerFresh : K .coldCanonicalSwapSmaller ∉ known := by simp [K_eq_iff])
     (absorbedSwapSameFresh : K .coldCanonicalSwapSameSize ∉ known := by simp [K_eq_iff])
@@ -3709,8 +3800,8 @@ noncomputable def selectedRouteEightRateFailure
         (by simp [K_eq_iff, absorbedRealizedFresh]) (by simp [K_eq_iff, absorbedDistinguishedFresh])
         (by simp [K_eq_iff, absorbedSilentFresh]) (by simp [K_eq_iff, absorbedRoutedFresh])
         (by simp [K_eq_iff, absorbedTableFresh]) (by simp [K_eq_iff, absorbedClosedFresh])
-        (by simp [K_eq_iff, absorbedStubFresh]) (by simp [K_eq_iff, absorbedProperFresh])
-        (by simp [K_eq_iff, absorbedTrivialFresh]) (by simp [K_eq_iff, absorbedBlockedFresh])
+        (by simp [K_eq_iff, absorbedStubFresh]) (by simp [K_eq_iff, absorbedCanonicalFresh])
+        (by simp [K_eq_iff, absorbedGenuineFresh]) (by simp [K_eq_iff, absorbedBlockedFresh])
         (by simp [K_eq_iff, absorbedSwapSmallerFresh]) (by simp [K_eq_iff, absorbedSwapSameFresh])
         (by simp [K_eq_iff, absorbedCubicBaselineFresh])
         (by simp [K_eq_iff, absorbedNormalFormFresh])
@@ -3780,8 +3871,8 @@ noncomputable def selectedNetChargeContinuation
     (absorbedTableFresh : K .coldSameInterfaceTable ∉ known := by simp [K_eq_iff])
     (absorbedClosedFresh : K .coldBranchClosed ∉ known := by simp [K_eq_iff])
     (absorbedStubFresh : K .coldWindowStubStructure ∉ known := by simp [K_eq_iff])
-    (absorbedProperFresh : K .coldProperNeutralGerm ∉ known := by simp [K_eq_iff])
-    (absorbedTrivialFresh : K .coldTrivialNeutralGerms ∉ known := by simp [K_eq_iff])
+    (absorbedCanonicalFresh : K .coldCanonicalNeutralConfiguration ∉ known := by simp [K_eq_iff])
+    (absorbedGenuineFresh : K .coldGenuineSecondStrand ∉ known := by simp [K_eq_iff])
     (absorbedBlockedFresh : K .blockedClassMember ∉ known := by simp [K_eq_iff])
     (absorbedSwapSmallerFresh : K .coldCanonicalSwapSmaller ∉ known := by simp [K_eq_iff])
     (absorbedSwapSameFresh : K .coldCanonicalSwapSameSize ∉ known := by simp [K_eq_iff])
@@ -3902,13 +3993,11 @@ noncomputable def selectedNetChargeContinuation
     (noTwoContradictionFresh : K .route8NoTwoCarrierContradiction ∉ known :=
       by simp [K_eq_iff])
     (terminalNoGoFresh : K .route8TerminalNoGo ∉ known := by simp [K_eq_iff])
+    (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known := by simp [K_eq_iff])
     (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known := by simp [K_eq_iff])
     (peelingFresh : K .route8PeelingDescent ∉ known := by simp [K_eq_iff])
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known := by simp [K_eq_iff])
-    (classifiedFresh : K .route8PiecesClassified ∉ known := by simp [K_eq_iff])
-    (unclassifiedFresh : K .route8UnclassifiedPiece ∉ known := by simp [K_eq_iff])
-    (deficitReadingFresh : K .route8Deficit ∉ known := by simp [K_eq_iff])
-    (branchKillFresh : K .branchKillClosed ∉ known := by simp [K_eq_iff]) :
+    :
     False := by
   -- `[57]` = `[173]`, `lem:exact-collision-test`: node `[56]`'s collision decided
   -- exactly on the current object (`K .netChargeCap`), with no condition on `n`.
@@ -3935,8 +4024,8 @@ noncomputable def selectedNetChargeContinuation
         (by simp [K_eq_iff, absorbedRealizedFresh]) (by simp [K_eq_iff, absorbedDistinguishedFresh])
         (by simp [K_eq_iff, absorbedSilentFresh]) (by simp [K_eq_iff, absorbedRoutedFresh])
         (by simp [K_eq_iff, absorbedTableFresh]) (by simp [K_eq_iff, absorbedClosedFresh])
-        (by simp [K_eq_iff, absorbedStubFresh]) (by simp [K_eq_iff, absorbedProperFresh])
-        (by simp [K_eq_iff, absorbedTrivialFresh]) (by simp [K_eq_iff, absorbedBlockedFresh])
+        (by simp [K_eq_iff, absorbedStubFresh]) (by simp [K_eq_iff, absorbedCanonicalFresh])
+        (by simp [K_eq_iff, absorbedGenuineFresh]) (by simp [K_eq_iff, absorbedBlockedFresh])
         (by simp [K_eq_iff, absorbedSwapSmallerFresh]) (by simp [K_eq_iff, absorbedSwapSameFresh])
         (by simp [K_eq_iff, cubicBaselineFresh])
         (by simp [K_eq_iff, normalFormFresh])
@@ -4008,11 +4097,9 @@ noncomputable def selectedNetChargeContinuation
                 (by simp [K_eq_iff, privateBudgetFresh])
                 (by simp [K_eq_iff, noTwoContradictionFresh])
                 (by simp [K_eq_iff, terminalNoGoFresh])
+                (by simp [K_eq_iff, unifiedNegativeFresh])
                 (by simp [K_eq_iff, unifiedTrueFresh])
                 (by simp [K_eq_iff, peelingFresh]) (by simp [K_eq_iff, unifiedTerminalFresh])
-                (by simp [K_eq_iff, classifiedFresh]) (by simp [K_eq_iff, unclassifiedFresh])
-                (by simp [K_eq_iff, deficitReadingFresh])
-                (by simp [K_eq_iff, branchKillFresh])
                 (by simp [K_eq_iff, closureFresh])
           | .right typeBHistory =>
               exact selectedTypeBHighSurplusContinuation typeBHistory
@@ -4029,12 +4116,10 @@ noncomputable def selectedNetChargeContinuation
                 (by simp [K_eq_iff, censusFresh]) (by simp [K_eq_iff, twoFresh])
                 (by simp [K_eq_iff, noTwoFresh])
                 (by simp [K_eq_iff, trueEntryFresh])
+                (by simp [K_eq_iff, unifiedNegativeFresh])
                 (by simp [K_eq_iff, unifiedTrueFresh])
                 (by simp [K_eq_iff, peelingFresh])
                 (by simp [K_eq_iff, unifiedTerminalFresh])
-                (by simp [K_eq_iff, classifiedFresh])
-                (by simp [K_eq_iff, unclassifiedFresh])
-                (by simp [K_eq_iff, deficitReadingFresh])
                 (by simp [K_eq_iff, excludedFresh]) (by simp [K_eq_iff, exclusionResidualFresh])
                 (by simp [K_eq_iff, exclusionMassFresh]) (by simp [K_eq_iff, obstructionMassFresh])
                 (by simp [K_eq_iff, certificateMassFresh])
@@ -4290,11 +4375,16 @@ noncomputable def selectedNearCubicBranch
       -- fails (dense packing: `2^{bits·p}` exceeds the skeleton states).  The
       -- manuscript's own nodes are run on it: `[22]`'s partition, then the
       -- `τ(θ) < 1/4` reading of `prop:negative-net-charge` as a decision.
+      let denseOverflow :=
+        (densePackingOverflowRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          unrealizedHistory (by simp [K_eq_iff])
       let partitioned :=
         (hotColdPartitionRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          unrealizedHistory (by simp [K_eq_iff])
+          denseOverflow (by simp [K_eq_iff])
       -- `[145]` is the direct handoff of `[22]`'s hot/cold fact.  Both
       -- deficiency arms read it from this same literal ExactLedger.
       match Decision.run partitioned (K .denseDeficiencyBelow) (K .denseDeficiencyAtOrAbove)
@@ -4424,41 +4514,27 @@ noncomputable def selectedNearCubicBranch
                   (by simp [K_eq_iff])
               let closed :=
                 (coldBranchClosedRow (data := spineData)).run table (by simp [K_eq_iff])
-              -- `[167]`: the stub structure of the ambient-cubic cold windows —
-              -- endpoints carry `δ − 1` stubs, interior vertices `δ − 2`; a
-              -- genuine symmetric strand pair attaches only at endpoints, so the
-              -- interior branch-excess half-edges are asymmetric.
-              let stubStructure :=
-                (coldWindowStubStructureRow (data := spineData)).run closed (by simp [K_eq_iff])
-              -- `[163]`, `lem:neutral-germ-symmetry`: the neutral germ is a symmetry;
-              -- decide whether some neutral germ is a proper canonical replacement
-              -- (`E ≠ Q[x,y]`, node `[165]`) or every neutral germ is trivial.
-              match neutralGermSymmetryDichotomy (data := spineData) stubStructure
+              -- `[163]`, `lem:neutral-germ-symmetry`: decide the manuscript's
+              -- literal question — whether the neutral equal-length terminal
+              -- configuration has a graph-realized second representative.
+              match neutralGermSymmetryDichotomy (data := spineData) closed
                   (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
-              | .left properHistory =>
+              | .left canonicalHistory =>
                   -- `[165]`--`[166]`: exchanging `Q` for the canonical `E` is a
                   -- counterexample of the same `(|V|,|E|)`; `lem:refined-minimality-swap`
                   -- refines the `[4]` order by the canonical atom multiset `Φ` and
                   -- contradicts `K .selection`.  The framework's progress
                   -- (`Graph.lexicographicProgress`, vertex/edge counts) does not yet
                   -- carry `Φ`; refining it is the next producer.
-                  match canonicalSwapSizeDichotomy (data := spineData) properHistory
+                  match canonicalSwapSizeDichotomy (data := spineData) canonicalHistory
                       (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
                   | .left smallerHistory => exact selectedCanonicalSwapCloses smallerHistory
                   | .right sameHistory => exact selectedDenseSameSizeCanonicalSwap sameHistory
-              | .right trivialHistory =>
-                  -- Every neutral germ has `E = Q[x,y]`: the neutral row exchanges
-                  -- nothing.  A genuine second *strand* at an interior selected
-                  -- half-edge is excluded by `K .coldWindowStubStructure`
-                  -- (`[167]`--`[168]`); what remains is the residual whose selected
-                  -- corridors are all terminal, neutral and trivial — no bounded
-                  -- local test of the ledger separates it from a counterexample.
-                  -- `[169]`: `def:blocked-class` on the ledger; `[170]` is the next
-                  -- producer (see the absorbed-germ site).
-                  let blocked :=
-                    (blockedClassRow (data := spineData)).run trivialHistory
-                      (by simp [K_eq_iff])
-                  exact selectedScaleAdditivityDichotomy blocked
+              | .right genuineHistory =>
+                  -- The yes edge is exactly node `[167]`, not the blocked-class
+                  -- residual: the graph-realized strand pair is sent to the
+                  -- finite two-strand enumeration.
+                  exact selectedGenuineSecondStrandCloses genuineHistory
           | .right boundedHistory =>
               -- `[24]`: the density cap on the bounded arm, then the spine.  The
               -- route-8 rate `τ < 3/13` (`[120]`) follows from the density cap

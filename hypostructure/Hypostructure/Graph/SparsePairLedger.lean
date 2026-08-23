@@ -37,6 +37,16 @@ noncomputable def portPairSchedule (object : FiniteObject.{u})
   letI := object.vertexPairDecidableEq
   exact Graph.CanonicalFibreLedger.pairs (object.excessPorts threshold)
 
+/-- Every demand occurring in the canonical pair schedule is an actual member
+of the selected excess-port family. -/
+theorem subset_excessPorts_of_mem_portPairSchedule
+    (object : FiniteObject.{u}) (threshold : Nat)
+    {pair : Finset (object.Vertex × object.Vertex)}
+    (member : pair ∈ object.portPairSchedule threshold) :
+    pair ⊆ object.excessPorts threshold := by
+  letI := object.vertexPairDecidableEq
+  exact (Finset.mem_powersetCard.mp member).1
+
 /-- **`|Π(𝒜₀)| = C(σ(G),2)`**: the pair count of the active family, at
 `lem:sparse-excess-port-extraction`'s own cardinality. -/
 theorem card_portPairSchedule {object : FiniteObject.{u}} {threshold : Nat}

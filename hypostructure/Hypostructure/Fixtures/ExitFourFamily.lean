@@ -1,12 +1,6 @@
 import Hypostructure.Graph.ExitFourFamily
 
-/-!
-# Fixture: structural metadata of the pre-route exit-`(4)` family
-
-This fixture checks only the paper-defined Q1--Q4 family metadata.  It makes no
-target-defect, peeling, or response-realization claim: those require the
-coordinate-specific compatible-context semantics that are not yet formalized.
--/
+/-! Compile-time checks for the closed manuscript Q1--Q5 family. -/
 
 namespace Hypostructure.Fixtures.ExitFourFamily
 
@@ -17,28 +11,18 @@ open Hypostructure.Graph.ExitFour
 universe u
 
 variable {Target : FiniteObject.{u} → Prop} {object : FiniteObject.{u}}
-variable {support : Finset object.Vertex} {threshold : Nat}
-variable {receiver : object.Vertex}
-variable (family : ReceiverFamily Target support threshold receiver)
+variable {support : Finset object.Vertex} {threshold scale : Nat}
+variable {receiver load : object.Vertex}
 
-attribute [local instance] vertexDecEq
+example (datum : Q1TargetDefect Target support threshold scale receiver load) :
+    (CanonicalMember.q1 datum).clause = ReceiverClause.visibleEntry := rfl
 
-example {clause : ReceiverClause}
-    {base identified : Finset family.Coordinate}
-    (generated : family.Generated clause base identified) :
-    base ⊆ family.coordinates ∧ identified ⊆ base :=
-  ⟨family.generated_base generated, family.generated_identified generated⟩
+example (datum : Q5TargetDefect Target support threshold scale receiver load) :
+    (CanonicalMember.q5 datum).clause = ReceiverClause.carrierDeletion := rfl
 
-example {load : object.Vertex}
-    {identified : Finset family.Coordinate} :
-    load ∈ family.declaredLoads identified ↔
-      load ∈ object.routedLoads support threshold receiver ∧
-        family.coordinate load ∈ identified :=
-  family.mem_declaredLoads
-
-example {load : object.Vertex}
-    (routed : load ∈ object.routedLoads support threshold receiver) :
-    family.coordinate load ∈ family.coordinates :=
-  family.coordinate_declared load routed
+example {peeled : Finset object.Vertex}
+    (witness : Witness Target support threshold scale receiver peeled) :
+    witness.load ∈ object.routedLoads support threshold receiver :=
+  witness.routed
 
 end Hypostructure.Fixtures.ExitFourFamily

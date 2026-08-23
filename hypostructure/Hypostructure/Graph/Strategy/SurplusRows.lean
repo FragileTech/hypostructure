@@ -211,6 +211,86 @@ they close the suppression.  Its first edge after `x(p)` is a shoulder. -/
             (inputs.get (K .sparsePortActivation)).down⟩)
         .nil)
 
+/-! ## Node `[129]`: the active family and baseline demand -/
+
+/-- `def:baseline-spine-demand` on the literal sparse-surplus survivor.
+
+The family is not an empty or numerically supplied coordinate carrier.  The
+strict-surplus fact makes the selected excess-port family nonempty; the row
+chooses one of those actual demands and uses its declared response support for
+the baseline coordinates.  Their cardinality is the cubic-baseline exponent
+computed from the current object and the registered baseline.  A functional
+quotient that identified two of these declared coordinates would localize to
+exactly one of the paper's replacement or delocalization exits, both excluded
+by the incoming survivor fact.  Thus the family is independently target
+testable, its canonical deficit is zero, and the required linear deficit bound
+is derived rather than registered. -/
+@[reducible] noncomputable def baselineSpineDemandRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.baselineSpineDemand
+    { Requires := [K .activeSurplusDemands, K .sparseSurplusSurvivor,
+        K .surplusAbove]
+      Produces := [K .baselineSpineDemand]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .baselineSpineDemand)
+        (show Value BranchState Presentation presentation data
+            .baselineSpineDemand inputs.current from
+          ⟨by
+            classical
+            simp only [Holds]
+            let object := inputs.current.object
+            let active := (inputs.get (K .activeSurplusDemands)).down
+            let survivor := (inputs.get (K .sparseSurplusSurvivor)).down
+            have surplusPositive :
+                0 < object.degreeSurplus data.threshold :=
+              lt_of_le_of_lt (Nat.zero_le _)
+                (inputs.get (K .surplusAbove)).down
+            have activeNonempty :
+                (object.excessPorts data.threshold).Nonempty := by
+              apply Finset.card_pos.mp
+              rw [active.count]
+              exact surplusPositive
+            let demand := activeNonempty.choose
+            let activation := Graph.pairResponseActivation active
+            let support := activation.declaredSupport demand
+            let bits := Graph.cubicBaselineExponent object.vertexCount
+              data.threshold
+            let Coordinate := Graph.DeclaredSignature.Coordinate object.Vertex
+              (ULift.{u} (Fin bits))
+            let family : Finset Coordinate :=
+              Finset.univ.image fun bit =>
+                Graph.DeclaredSignature.Coordinate.base
+                  .sparseSurplus bit support
+            let coordinateSupport : Coordinate → Finset object.Vertex :=
+              Graph.DeclaredSignature.Coordinate.support
+            have familyCard : family.card = bits := by
+              rw [Finset.card_image_iff.mpr]
+              · simp [Fintype.card_ulift]
+              · intro left _ right _ equality
+                injection equality
+            refine ⟨active, Coordinate, family, coordinateSupport, ?_, ?_, ?_⟩
+            · intro declared _functional
+              by_contra reducing
+              rcases declared.localize reducing with replacement |
+                ⟨representative, smaller, baseline, transfer⟩
+              · exact survivor
+                  (.compression declared.support replacement)
+              · exact survivor
+                  (.delocalization representative smaller baseline transfer)
+            · rw [familyCard]
+              exact
+                Graph.cubicBaselineBudget_le_two_pow_add_spineDeficit
+                  object.vertexCount
+                  (le_trans (by omega) data.three_le_threshold) bits
+            · rw [familyCard]
+              change Graph.spineDeficit object.vertexCount data.threshold bits ≤
+                data.surplusScale * object.vertexCount
+              simp [bits, Graph.spineDeficit]⟩)
+        .nil)
+
 /-! ## Node `[132]`: route the dependent pair family -/
 
 /-- Node `[130]`: construct the full response family from the active-family
@@ -886,10 +966,7 @@ canonical-fibre no-overcount identities. -/
                 inputs.current.object data.threshold baseline
             let accounting : Graph.CapacityPresentation inputs.current.object
                 data.threshold data.windowOrder := {
-              Coordinate := inputs.current.object.PairCoordinate
-              Chord := inputs.current.object.Vertex × inputs.current.object.Vertex
               activation := activation
-              carrier := presentation
               carrierComplete := carried
               packing := packing
               packingValid := valid
@@ -942,10 +1019,11 @@ canonical-fibre no-overcount identities. -/
                         data.threshold packing member,
                     Graph.FiniteObject.card_tokenFibre_eq_pairMultiplicity activation
                       presentation data.threshold packing token⟩
-            refine ⟨accounting,
+            refine ⟨active, accounting, ?_,
               inputs.current.object.card_primitiveCarrier baseline,
               inputs.current.object.card_primitiveCarrier_le baseline
                 data.three_le_threshold handshake envelope, ?_⟩
+            · rfl
             change Graph.FiniteObject.ConcreteCapacityTokenLedgerStatement
               inputs.current.object data.threshold data.windowOrder activation
                 presentation packing

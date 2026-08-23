@@ -325,8 +325,8 @@ variable {support : corridor.Segment → Finset object.Vertex}
 /-- **`lem:cold-corridor-first-failure` (iii): "case (F3) is a target-complete
 compression of a proper support".**
 
-Every clause of `CompressibleSupport` is a field of the pair, so the conversion
-reads them off; nothing is rebuilt and no existential is invented. -/
+Every clause of `CompressibleSupport` is a field of the pair, and the conversion
+projects those fields directly. -/
 theorem compressibleSupport
     (failure : FirstFailureCompression corridor presentation index Baseline Target
       support) :
@@ -425,13 +425,22 @@ def TerminalCorridor (corridor : Corridor object windows component)
     (S : DeclaredSignature) : Prop :=
   corridor.statesRead ≤ stateBound S
 
-/-- **(F5), second subcase**: a cold corridor state repeats. -/
+/-- **(F5), second subcase**: the first cold corridor state repeat.
+
+The later endpoint is minimal: before `right` no two earlier corridor
+positions have the same retained state.  This is the manuscript's "the first
+such equality", rather than an arbitrary repeated pair. -/
 def RepeatedState {S : DeclaredSignature}
     (corridor : Corridor object windows component)
     (presentation : Presentation.{u} S object)
     (index : corridor.Segment → presentation.Segment) : Prop :=
-  ∃ left right : corridor.Segment, left ≠ right ∧
-    presentation.state (index left) = presentation.state (index right)
+  ∃ left right : corridor.Segment,
+    left.1 < right.1 ∧
+      presentation.state (index left) = presentation.state (index right) ∧
+      ∀ earlierLeft earlierRight : corridor.Segment,
+        earlierLeft.1 < earlierRight.1 → earlierRight.1 < right.1 →
+          presentation.state (index earlierLeft) ≠
+            presentation.state (index earlierRight)
 
 /-- **`lem:cold-corridor-first-failure`, the existence half: "for every
 `ε ∈ 𝓔_br`, the cold return corridor of `ε` has a first failure".**
@@ -469,7 +478,34 @@ theorem exists_firstFailure {S : DeclaredSignature}
       simpa [sample] using congrArg Fin.val same
     obtain ⟨left, right, distinct, same⟩ :=
       presentation.exists_state_eq_of_stateBound_lt (fun position => index (sample position))
-    exact ⟨sample left, sample right, fun equal => distinct (sampleInjective equal), same⟩
+    have repeated : ∃ later : corridor.Segment,
+        ∃ earlier : corridor.Segment, earlier.1 < later.1 ∧
+          presentation.state (index earlier) = presentation.state (index later) := by
+      rcases lt_or_gt_of_ne (fun equal => distinct (sampleInjective (Fin.ext equal))) with
+        before | after
+      · exact ⟨sample right, sample left, before, same⟩
+      · exact ⟨sample left, sample right, after, same.symm⟩
+    let repeatedRights : Finset corridor.Segment :=
+      Finset.univ.filter fun later =>
+        ∃ earlier : corridor.Segment, earlier.1 < later.1 ∧
+          presentation.state (index earlier) = presentation.state (index later)
+    have repeatedRights_nonempty : repeatedRights.Nonempty := by
+      obtain ⟨later, earlier, before, same⟩ := repeated
+      exact ⟨later, Finset.mem_filter.2
+        ⟨Finset.mem_univ _, ⟨earlier, before, same⟩⟩⟩
+    let firstRight : corridor.Segment :=
+      repeatedRights.min' repeatedRights_nonempty
+    have firstRight_mem : firstRight ∈ repeatedRights := by
+      exact Finset.min'_mem repeatedRights repeatedRights_nonempty
+    obtain ⟨firstLeft, firstBefore, firstSame⟩ :=
+      (Finset.mem_filter.1 firstRight_mem).2
+    refine ⟨firstLeft, firstRight, firstBefore, firstSame, ?_⟩
+    intro earlierLeft earlierRight earlierBefore rightBefore sameEarlier
+    have earlierRight_mem : earlierRight ∈ repeatedRights := by
+      exact Finset.mem_filter.2 ⟨Finset.mem_univ _,
+        ⟨earlierLeft, earlierBefore, sameEarlier⟩⟩
+    have minimal := Finset.min'_le repeatedRights earlierRight earlierRight_mem
+    exact (Nat.not_lt_of_ge (show firstRight.1 ≤ earlierRight.1 from minimal)) rightBefore
 
 /-- **The first-failure cold exchange is bounded by `M_cold`.**
 

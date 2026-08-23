@@ -245,34 +245,34 @@ and `Value := PUnit`, so essential cores are empty and "two-carrier" is vacuous
 exit-(4) receiver family (`ExitFourFamily`), feed `terminalTwoCarrierNoGo`;
 (3) close `[124]` at both sites; re-check `[119]`–`[122]` are non-vacuous.
 
-### 5.5 `[123]` — done except two named leaves
-Built (`Graph/Route8Pressure.lean`, rows `route8PeelingDescentRow`,
-`route8PeelingOutcomeDichotomy`; keys `route8PeelingDescent`/`route8PeelingSaturated`):
-peeled census `Ξ^{P₄}`, stage rate `D̃_A^{P₄}`, `exists_twoCarrierEntry_peeled`
-(`lem:typeA-peeling-reduced-reduction`), `TargetDefectAt`
-(`lem:typeA-pressure-is-exit4-peel`), `PeelChain`, `descent_of_census`
-(`thm:large-budget-route8-only` by strong induction on `Λ₄`). On the `[118]`
-target-defect arm: true stage → 5.4's producer; saturated →
-**`selectedRouteEightPeelingSaturatedStage`**: needs `lem:typeA-exit4-peeling-charge`'s
-exact `¼` discharge per peeled load so the peeled deficit is the whole remaining
-negative mass and `[56]`'s cap contradicts `¬StageRate`. The two non-census
-entry sites (Type B mass `selectedTypeBRoute8Continuation`, `[102]` retest) end at
-**`selectedLargeBudgetPressureCensus`**: run the census rows there
-(all-pieces classification `route8PieceClassificationDichotomy`, deficit row
-with `[88]` routing, rate row) — those ledgers lack `K .route8SmallCoreCollapse`
-/`K .typeAReceiverRouting`, so run the rows that publish them first (they are
-arm-independent) or restate the census on the facts present. Dead old chain
-(`route8PressureDescentRow`, `route8TerminalNoGoRow`, `largeBudgetRoute8ClosedRow`,
-key `route8PressureDescent`) still to delete (replace-don't-accrete).
+### 5.5 `[123]` — exact unified-demand producer still missing
 
-### 5.6 `selectedRouteEightUnclassifiedPiece` — `[111]`–`[113]` classification no-arm
-Paper: `thm:branch-kill` all-pieces form; a negative piece that is neither
-silent-first Type A nor a bridge-residual Type B: visible-first Type A pieces
-close by `lem:typeA-visible-entry` (needs 5.7's separation reading), non-bridge
-Type B pieces by `prop:typeB-bridge-reduction` per piece. Steps: state the
-per-piece Type A visible-lane closure and the per-piece Type B chain
-(`TypeBCanonicalB2`, `heavyCentreLocalDichotomy`) as rows over the piece, close
-the arm.
+Built (`Graph/Route8Pressure.lean`, `route8PeelingDescentRow`, and
+`route8PeelingTerminalRow`): the peeled census, `TargetDefectAt`, `PeelChain`,
+strict descent of `Λ₄`, and the terminal conversion.  These rows now read only
+the paper-assigned ledger fact `K .route8UnifiedCensus`; the terminal row also
+reads the accumulated `K .route8PeelingDescent` result.
+The census schema uses the cleared burden
+`route8Deficit ≤ route8UnifiedEntries.card`, with
+`route8Deficit = s·\tilde D_A`.
+
+The remaining named frontier is **`selectedLargeBudgetPressureCensus`**, but its
+first required conjunct is not proved by the manuscript.  The unified entries
+are only silent unpaid loads, so `lem:typeA-unified-burden` needs the per-port
+absence of four visible returns.  Its cited visible-entry lemma permits those
+returns to realize exit (4), and the unified collection explicitly retains
+exit-(4) supports.  Consequently no exact row can publish the burden or invoke
+the existing descent without a mathematical correction in the paper.  No
+later unified fact may be attached to `[111]`.
+
+### 5.6 `thm:branch-kill` predecessor of `[123]`
+
+The exact Type A conclusion is the disjunction “exit (4), route 8, or decorated
+handoff” for a negative zero-surplus support.  The current
+`K .route8PiecesClassified` instead requires `SilentFirst`, which rules out the
+visible exit-(4) case and is stronger than `thm:branch-kill`.  It must not be
+published or consumed as the paper theorem.  Node `[111]` remains the
+deterministic `route8GlobalSqueezeRow`.
 
 ### 5.7 `selectedTypeAVisibleRouteEightImpossible` — visible-lane `[109]`
 Paper: `lem:typeA-visible-entry`, `lem:typeA-continuation-routing`,
@@ -299,28 +299,37 @@ envelope (`def:decorated-fan-envelope`, `def:marked-typeB-fan`,
 `lem:typeA-high-degree-handoff`). Exists: `K .absorbedGermFanData`,
 `K .typeBFanEnvelope`, `TypeBAssignedCentres`/`TypeBAssignedLedgerWith` (decorated
 `σ=0` reading), `selectedTypeBDecoratedContinuation` (stated on the Type A `[108]`
-residual). Steps: restate the Type B entry rows `[65]`–`[67]` on the envelope
-facts they actually use (the `[67]`+ rows read `remainderNormalized`,
-`largeBudgetResidual`, `negativeSupport`, absent on these arms — run the
-arm-independent `[25]`–`[27]` normalization there if the paper's node order
-allows, or state the entry on the bare envelope), then call the common chain;
-no duplication.
+residual). For `[144]`, the former `bottleneckPattern_geometricTrichotomy` and
+`bottleneckTypeBHandoffRow` were deleted: they depended on canonical whole-graph
+paths inserted into `Z(π;t,r)`, which is not the paper's routing construction.
+The repaired support has exactly the six manuscript inputs. Steps: implement
+`lem:same-token-bottleneck-routing` in one sealed `factOnly` owner by reading the
+literal homogeneous pattern and survivor from `ExactLedger`, selecting the
+paper-declared connector configurations in those six-entry supports, and
+following the paper's parallel/first-separator and fan-safety alternatives.
+Publish the resulting Type B envelope on that same ancestry, then feed it to
+the common Type B entry. Do not reconstruct graph paths, add support entries,
+or reintroduce a routed-bottleneck callback/helper theorem.
 
 ### 5.10 `selectedCubicBottleneckSeparator` — `[144]` cubic reading
-Statement: `d_G(z)=3` reading of the routed bottleneck: internal switch reading;
-closing from `K .sparseSurplusSurvivor` needs the switch reading presented as an
-admissible `DeclaredQuotient` / baseline `ReplacementSupport` (the premises
-`TypeBHandoffStatement` quantifies over). Steps: build the switch reading's
-quotient from `cutStateRepresentative` (as in 5.7), refute delocalization by
-minimality, target-defect by `K .sparseSurplusSurvivor` (exit (b)), compression
-by `K .replacementExclusion`.
+Statement: `d_G(z)=3` reading of the paper-declared first separator. It is not a
+standalone residual produced by a global-path trichotomy. Inside the sealed
+owner for `lem:same-token-bottleneck-routing`, construct the finite switch
+quotient from the declared connector data and follow exactly the paper's three
+target-completeness cases; the survivor fact excludes all three sparse exits.
+The existing generic attempted-quotient / baseline replacement machinery is
+used only where its hypotheses are proved locally from those paper facts. The
+current first failure is earlier: Lean has no term selecting the declared
+configurations from the homogeneous-pattern fact. Do not stage cubic or
+parallel residual keys before that local paper construction exists, and do not
+replace it by an abstract label identification or quotient callback.
 
 ## 6. Cross-cutting notes
 
 - `skeletonBudget` is `C(C(n,2),m)` (all labelled graphs). Where the paper's
   entropy step is used (`[171]`), the class must be the near-cubic one —
   `BlockedClass.NearCubicSkeleton` (built); its count is bounded by the budget.
-- The one shared object of 5.1/5.4/5.7/5.10 and the uncrossings of 5.2/5.3 is
+- The one shared object of 5.1/5.4/5.7 and the uncrossings of 5.2/5.3 is
   `CanonicalRealization.cutStateRepresentative` — built; use it, do not
   re-derive canonical pieces elsewhere.
 - Interior-unit accounting: `[152]`–`[153]` still charge `13` units per window;

@@ -286,8 +286,22 @@ noncomputable instance typeAExitFiveClosed :
   contradiction := fun _input uncompressible exit => by
     obtain ⟨_packing, _valid, _maximal, _component, _present, _charge,
       _surplus, _receiver, _isReceiver, _peeled, _peeledSubset, _saturated,
-      _noExitFour, support, compressible⟩ := exit.down
-    exact uncompressible.down support compressible
+      _load, _eligible, basin, _selected, compression⟩ := exit.down
+    obtain ⟨retained, _retainedSubset, _changed, complete, connected, proper,
+      baseline, smaller⟩ := compression
+    let piece := _input.object.pieceSupport
+      (_input.object.remainderSupport _packing) _component
+    apply uncompressible.down basin
+    refine ⟨connected, proper, ?_⟩
+    let atom :=
+      Graph.Strategy.InterfaceReplacement.SupportAtom.properAtom
+        _input.object basin connected proper
+    refine ⟨Graph.Route8.PresentedEntry.retainedReading _input.object piece
+        basin data.threshold data.LengthOK
+        (Graph.Route8.PresentedEntry.retainedBaseCoordinates _input.object
+          piece retained), ?_, baseline, smaller, ?_⟩
+    · exact complete.profile_eq
+    · exact complete.contextEquivalent
 
 /-- **Node `[106]`, proper scope**: `lem:proper-smearing`'s replacement of the
 enlarging support against `lem:replacement`. -/

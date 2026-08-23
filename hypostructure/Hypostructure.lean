@@ -141,7 +141,6 @@ import Hypostructure.Graph.ReceiverRouting
 import Hypostructure.Graph.VisibleReceiverEntry
 import Hypostructure.Graph.CommonPortReturnCycle
 import Hypostructure.Graph.DecoratedHandoffEnvelope
-import Hypostructure.Graph.SameTokenBottleneckRouting
 import Hypostructure.Graph.AnchoredReturnCompletion
 import Hypostructure.Graph.WindowCurvatureAlgebra
 import Hypostructure.Graph.WindowCurvatureEnumeration
@@ -163,20 +162,13 @@ import Hypostructure.Graph.Route8Closure
 import Hypostructure.Graph.Route8Residual
 import Hypostructure.Graph.ResponseDelocalization
 
--- Modules rescued from the quarantine boundary: legal modules that happened to
--- be reachable only through a quarantined one.  They are imported explicitly so
--- the quarantine removes the illegal carriers and nothing else -- without these
--- lines they would drop out of the build closure and silently stop being
--- checked.  See `quarantine.txt`.
+-- Explicit imports keep these framework modules in the root build closure.
 
 import Hypostructure.Core.Contract
--- `Graph.WedgeLowerBound` was rescued here until node `[30]` was ported; the
--- spine's own vocabulary imports it now, so it is no longer a rescue.
 
--- Rescued from the SequentialExtensionLedger quarantine boundary.
+-- Finite path selection and the canonical interface-replacement machinery.
 import Hypostructure.Graph.FinitePathSelection
 import Hypostructure.Graph.Strategy.InterfaceReplacement
 
--- Rescued from the Core.Routing stage-deletion boundary: legal modules that
--- were reachable only through a quarantined one.
+-- Core routing modules included in the root build closure.
 import Hypostructure.Core.DependentOwnerGlueCapacity

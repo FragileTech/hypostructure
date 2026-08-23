@@ -993,4 +993,408 @@ theorem card_le_sum_silentExcess_add_positiveDeficiency
     threshold capped
   omega
 
+/-- The visible-first order lists exactly the routed loads. -/
+theorem mem_visibleFirstOrder (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold : Nat)
+    (receiver vertex : object.Vertex) :
+    vertex ∈ visibleFirstOrder object support threshold receiver ↔
+      vertex ∈ object.routedLoads support threshold receiver := by
+  classical
+  unfold visibleFirstOrder
+  rw [List.mem_append, List.mem_filter, List.mem_filter]
+  simp only [decide_eq_true_eq, FiniteObject.mem_orderedVertices, true_and]
+  constructor
+  · rintro (vis | ⟨mem, _⟩)
+    · exact visibleLoads_subset object support threshold receiver vis
+    · exact mem
+  · intro mem
+    by_cases vis : vertex ∈ visibleLoads object support threshold receiver
+    · exact Or.inl vis
+    · exact Or.inr ⟨mem, vis⟩
+
+/-- The visible-first order lists each routed load once. -/
+theorem visibleFirstOrder_nodup (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold : Nat)
+    (receiver : object.Vertex) :
+    (visibleFirstOrder object support threshold receiver).Nodup := by
+  classical
+  unfold visibleFirstOrder
+  refine List.Nodup.append (object.orderedVertices_nodup.filter _)
+    (object.orderedVertices_nodup.filter _) ?_
+  intro vertex memLeft memRight
+  rw [List.mem_filter] at memLeft memRight
+  simp only [decide_eq_true_eq] at memLeft memRight
+  exact memRight.2.2 memLeft.2
+
+/-- The visible-first order has length `L(w)`. -/
+theorem length_visibleFirstOrder (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold : Nat)
+    (receiver : object.Vertex) :
+    (visibleFirstOrder object support threshold receiver).length =
+      (object.routedLoads support threshold receiver).card := by
+  classical
+  have finset : (visibleFirstOrder object support threshold receiver).toFinset =
+      object.routedLoads support threshold receiver := by
+    ext vertex
+    rw [List.mem_toFinset]
+    exact mem_visibleFirstOrder object support threshold receiver vertex
+  rw [← finset,
+    List.toFinset_card_of_nodup
+      (visibleFirstOrder_nodup object support threshold receiver)]
+
+/-- **An unsaturated receiver has no excess**: `L(w) ≤ c(w)` pays every routed
+load, so `E(w) = ∅` (`lem:typeA-silent-excess-count`: *"If `L(w) ≤ c(w)`, then
+`w` contributes no unpaid routed vertex"*). -/
+theorem excessBasin_eq_empty_of_not_saturated (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold scale : Nat)
+    {receiver : object.Vertex}
+    (unsaturated : ¬ object.Saturated support threshold scale receiver) :
+    excessBasin object support threshold scale receiver = ∅ := by
+  classical
+  have small :=
+    (object.not_saturated_iff support threshold scale receiver).mp unsaturated
+  have lengthLe : (visibleFirstOrder object support threshold receiver).length ≤
+      scale * object.missingPorts support threshold receiver - 1 := by
+    rw [length_visibleFirstOrder, ← object.routedLoad_eq_card]
+    omega
+  have takeAll : (visibleFirstOrder object support threshold receiver).take
+      (scale * object.missingPorts support threshold receiver - 1) =
+      visibleFirstOrder object support threshold receiver :=
+    List.take_of_length_le lengthLe
+  unfold excessBasin payableSet
+  rw [takeAll]
+  refine Finset.sdiff_eq_empty_iff_subset.mpr ?_
+  intro vertex member
+  rw [List.mem_toFinset]
+  exact (mem_visibleFirstOrder object support threshold receiver vertex).mpr member
+
+/-- An unsaturated receiver contributes no silent excess. -/
+theorem silentExcess_eq_empty_of_not_saturated (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold scale : Nat)
+    {receiver : object.Vertex}
+    (unsaturated : ¬ object.Saturated support threshold scale receiver) :
+    silentExcess object support threshold scale receiver = ∅ := by
+  unfold silentExcess
+  rw [excessBasin_eq_empty_of_not_saturated object support threshold scale
+    unsaturated]
+  exact Finset.empty_sdiff _
+
+/-! ## The reduced ledger: the visible-first machinery at a peeling stage
+
+`def:typeA-peeling-reduced-ledger` deletes the peeled loads from the receiver
+ledger.  The reduced order, payable set, excess basin, and silent excess below
+are the visible-first machinery of `def:typeA-excess-basin` on
+`ℒ(w) ∖ P₄(w)`; the port hypothesis of `lem:typeA-silent-excess-count` becomes
+"every port carries at most `s − 1` visible **unpeeled** returns", which is
+exactly the state the descent's per-port exit-(4) peels
+(`lem:typeA-unpeeled-visible-routing`) drive every receiver into. -/
+
+/-- Membership in a `take` prefix is monotone in the prefix length. -/
+theorem mem_take_succ_of_mem_take {α : Type u} :
+    ∀ (l : List α) (n : Nat) (a : α), a ∈ l.take n → a ∈ l.take (n + 1) := by
+  intro l
+  induction l with
+  | nil => intro n a mem; simp at mem
+  | cons x xs ih =>
+      intro n a mem
+      cases n with
+      | zero => simp at mem
+      | succ m =>
+          rw [List.take_succ_cons, List.mem_cons] at mem
+          rw [List.take_succ_cons, List.mem_cons]
+          rcases mem with rfl | tail
+          · exact Or.inl rfl
+          · exact Or.inr (ih m a tail)
+
+/-- A surviving member of a paid prefix stays in the paid prefix of the
+reduced order: `take`/`filter` monotonicity. -/
+theorem mem_take_filter {α : Type u} (p : α → Bool) :
+    ∀ (l : List α) (c : Nat) (a : α), a ∈ l.take c → p a = true →
+      a ∈ (l.filter p).take c := by
+  intro l
+  induction l with
+  | nil => intro c a mem _; simp at mem
+  | cons x xs ih =>
+      intro c a mem pa
+      cases c with
+      | zero => simp at mem
+      | succ n =>
+          rw [List.take_succ_cons, List.mem_cons] at mem
+          rcases mem with rfl | tail
+          · rw [List.filter_cons_of_pos pa, List.take_succ_cons]
+            exact List.mem_cons_self
+          · by_cases px : p x = true
+            · rw [List.filter_cons_of_pos px, List.take_succ_cons]
+              exact List.mem_cons_of_mem _ (ih n a tail pa)
+            · rw [List.filter_cons_of_neg (by simpa using px)]
+              exact ih (n + 1) a (mem_take_succ_of_mem_take xs n a tail) pa
+
+/-- The reduced visible-first order: the peeled loads removed. -/
+noncomputable def visibleFirstOrderReduced (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold : Nat)
+    (receiver : object.Vertex) (excluded : Finset object.Vertex) :
+    List object.Vertex := by
+  classical
+  exact (visibleFirstOrder object support threshold receiver).filter
+    fun vertex => decide (vertex ∉ excluded)
+
+/-- `A^{P₄}(w)`: the payable set of the reduced ledger. -/
+noncomputable def payableSetReduced (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold scale : Nat)
+    (receiver : object.Vertex) (excluded : Finset object.Vertex) :
+    Finset object.Vertex := by
+  classical
+  exact ((visibleFirstOrderReduced object support threshold receiver
+      excluded).take
+    (scale * object.missingPorts support threshold receiver - 1)).toFinset
+
+/-- `E^{P₄}(w)`: the excess basin of the reduced ledger. -/
+noncomputable def excessBasinReduced (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold scale : Nat)
+    (receiver : object.Vertex) (excluded : Finset object.Vertex) :
+    Finset object.Vertex := by
+  classical
+  exact ((object.routedLoads support threshold receiver) \ excluded) \
+    payableSetReduced object support threshold scale receiver excluded
+
+/-- `𝒰^{P₄}(w)`: the silent excess of the reduced ledger. -/
+noncomputable def silentExcessReduced (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold scale : Nat)
+    (receiver : object.Vertex) (excluded : Finset object.Vertex) :
+    Finset object.Vertex :=
+  (excessBasinReduced object support threshold scale receiver excluded) \
+    visibleLoads object support threshold receiver
+
+/-- **A surviving reduced silent-excess load is an original silent-excess
+load**: peeling only promotes loads into the payable prefix, so
+`𝒰^{P₄}(w) ⊆ 𝒰(w) ∖ P₄(w)`.  This is what lets the reduced count feed the
+unpeeled census entries. -/
+theorem silentExcessReduced_subset (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold scale : Nat)
+    (receiver : object.Vertex) (excluded : Finset object.Vertex) :
+    silentExcessReduced object support threshold scale receiver excluded ⊆
+      (silentExcess object support threshold scale receiver) \ excluded := by
+  classical
+  intro load member
+  have basinMem := (Finset.mem_sdiff.1 member).1
+  have notVis := (Finset.mem_sdiff.1 member).2
+  have routedNotEx := (Finset.mem_sdiff.1 basinMem).1
+  have unpaidRed := (Finset.mem_sdiff.1 basinMem).2
+  have routed := (Finset.mem_sdiff.1 routedNotEx).1
+  have notEx := (Finset.mem_sdiff.1 routedNotEx).2
+  refine Finset.mem_sdiff.2 ⟨?_, notEx⟩
+  refine Finset.mem_sdiff.2 ⟨Finset.mem_sdiff.2 ⟨routed, ?_⟩, notVis⟩
+  intro paidOrig
+  apply unpaidRed
+  rw [payableSetReduced, List.mem_toFinset]
+  refine mem_take_filter _ _ _ _ ?_ (by simpa using notEx)
+  unfold payableSet at paidOrig
+  exact List.mem_toFinset.1 paidOrig
+
+/-- **`lem:typeA-silent-excess-count` at one receiver of the reduced ledger.**
+
+If every completion port carries at most `s − 1` visible unpeeled returns —
+the state the per-port exit-(4) peels drive the receiver into — then
+`1 + L(w) ≤ |𝒰^{P₄}(w)| + |P₄(w) ∩ ℒ(w)| + s·q(w)`. -/
+theorem one_add_routedLoad_le_silentExcessReduced (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold scale : Nat)
+    {receiver : object.Vertex}
+    (exact : object.degree receiver = threshold)
+    (isReceiver : object.IsReceiver support threshold receiver)
+    (scalePos : 1 ≤ scale)
+    (excluded : Finset object.Vertex)
+    (reducedPorts : object.Saturated support threshold scale receiver →
+      ∀ outside ∈ completionPorts object support receiver,
+        ((visibleLoadsAt object support threshold receiver outside) \
+          excluded).card + 1 ≤ scale) :
+    1 + object.routedLoad support threshold receiver ≤
+      (silentExcessReduced object support threshold scale receiver
+          excluded).card +
+        (excluded ∩ object.routedLoads support threshold receiver).card +
+        scale * object.missingPorts support threshold receiver := by
+  classical
+  set L := object.routedLoads support threshold receiver with Ldef
+  set V := visibleLoads object support threshold receiver with Vdef
+  have portsPos : 1 ≤ object.missingPorts support threshold receiver := by
+    unfold FiniteObject.missingPorts
+    have := isReceiver.2
+    omega
+  have capacityPos :
+      1 ≤ scale * object.missingPorts support threshold receiver :=
+    Nat.one_le_iff_ne_zero.mpr (Nat.mul_ne_zero (by omega) (by omega))
+  have interSplit : (L \ excluded).card + (L ∩ excluded).card = L.card :=
+    Finset.card_sdiff_add_card_inter L excluded
+  by_cases saturated : object.Saturated support threshold scale receiver
+  · -- reduced visible count per port
+    have visRedBound : ((V \ excluded)).card +
+        object.missingPorts support threshold receiver ≤
+        scale * object.missingPorts support threshold receiver := by
+      have ports := card_completionPorts object support threshold exact
+      have covered : V \ excluded ⊆
+          (completionPorts object support receiver).biUnion fun outside =>
+            (visibleLoadsAt object support threshold receiver outside) \
+              excluded := by
+        intro load member
+        have inV := (Finset.mem_sdiff.1 member).1
+        have notEx := (Finset.mem_sdiff.1 member).2
+        obtain ⟨_routed, outside, port, visible⟩ :=
+          (mem_visibleLoads object).mp inV
+        exact Finset.mem_biUnion.mpr
+          ⟨outside, port, Finset.mem_sdiff.2 ⟨visible, notEx⟩⟩
+      have sumBound :
+          ∑ outside ∈ completionPorts object support receiver,
+              (((visibleLoadsAt object support threshold receiver outside) \
+                excluded).card + 1) ≤
+            ∑ _outside ∈ completionPorts object support receiver, scale :=
+        Finset.sum_le_sum (reducedPorts saturated)
+      rw [Finset.sum_add_distrib, Finset.sum_const, Finset.sum_const,
+        smul_eq_mul, smul_eq_mul, Nat.mul_one, ports] at sumBound
+      calc (V \ excluded).card +
+              object.missingPorts support threshold receiver
+          ≤ ((completionPorts object support receiver).biUnion fun outside =>
+                (visibleLoadsAt object support threshold receiver outside) \
+                  excluded).card +
+              object.missingPorts support threshold receiver :=
+            Nat.add_le_add_right (Finset.card_le_card covered) _
+        _ ≤ (∑ outside ∈ completionPorts object support receiver,
+                ((visibleLoadsAt object support threshold receiver outside) \
+                  excluded).card) +
+              object.missingPorts support threshold receiver :=
+            Nat.add_le_add_right (Finset.card_biUnion_le) _
+        _ ≤ object.missingPorts support threshold receiver * scale := sumBound
+        _ = scale * object.missingPorts support threshold receiver :=
+            Nat.mul_comm _ _
+    have paid : (V \ excluded).card ≤
+        scale * object.missingPorts support threshold receiver - 1 := by
+      omega
+    -- the reduced visible block is fully paid
+    set blockV := object.orderedVertices.filter fun vertex =>
+      decide (vertex ∈ V) with blockVdef
+    set blockR := object.orderedVertices.filter fun vertex =>
+      decide (vertex ∈ L ∧ vertex ∉ V) with blockRdef
+    have orderEq : visibleFirstOrder object support threshold receiver =
+        blockV ++ blockR := by
+      rw [blockVdef, blockRdef]
+      rfl
+    have reducedEq : visibleFirstOrderReduced object support threshold receiver
+        excluded =
+        (blockV.filter fun vertex => decide (vertex ∉ excluded)) ++
+          (blockR.filter fun vertex => decide (vertex ∉ excluded)) := by
+      rw [visibleFirstOrderReduced, orderEq, List.filter_append]
+    have blockFinset :
+        (blockV.filter fun vertex => decide (vertex ∉ excluded)).toFinset =
+          V \ excluded := by
+      ext vertex
+      simp [blockVdef, List.mem_toFinset, List.mem_filter,
+        FiniteObject.mem_orderedVertices, Finset.mem_sdiff, and_comm]
+    have blockNodup :
+        (blockV.filter fun vertex => decide (vertex ∉ excluded)).Nodup :=
+      (object.orderedVertices_nodup.filter _).filter _
+    have blockLength :
+        (blockV.filter fun vertex => decide (vertex ∉ excluded)).length =
+          (V \ excluded).card := by
+      rw [← blockFinset, List.toFinset_card_of_nodup blockNodup]
+    have takeAll : (blockV.filter fun vertex =>
+        decide (vertex ∉ excluded)).take
+          (scale * object.missingPorts support threshold receiver - 1) =
+        blockV.filter fun vertex => decide (vertex ∉ excluded) :=
+      List.take_of_length_le (by omega)
+    have paidRed : V \ excluded ⊆
+        payableSetReduced object support threshold scale receiver excluded := by
+      intro vertex member
+      have inBlock : vertex ∈
+          blockV.filter fun vertex => decide (vertex ∉ excluded) := by
+        rw [← List.mem_toFinset, blockFinset]
+        exact member
+      rw [payableSetReduced]
+      refine List.mem_toFinset.mpr ?_
+      rw [reducedEq, List.take_append, takeAll]
+      exact List.mem_append_left _ inBlock
+    -- the reduced excess is silent
+    have basinRed :
+        silentExcessReduced object support threshold scale receiver excluded =
+          excessBasinReduced object support threshold scale receiver excluded := by
+      unfold silentExcessReduced
+      refine Finset.sdiff_eq_self_iff_disjoint.mpr ?_
+      rw [Finset.disjoint_right]
+      intro load inV inBasin
+      have routedNotEx := (Finset.mem_sdiff.1 inBasin).1
+      have unpaidRed := (Finset.mem_sdiff.1 inBasin).2
+      have notEx := (Finset.mem_sdiff.1 routedNotEx).2
+      exact unpaidRed (paidRed (Finset.mem_sdiff.2 ⟨inV, notEx⟩))
+    have splitRed : (L \ excluded).card ≤
+        (excessBasinReduced object support threshold scale receiver
+            excluded).card +
+          (payableSetReduced object support threshold scale receiver
+            excluded).card := by
+      unfold excessBasinReduced
+      exact Finset.card_le_card_sdiff_add_card
+    have payableLe :
+        (payableSetReduced object support threshold scale receiver
+            excluded).card ≤
+          scale * object.missingPorts support threshold receiver - 1 := by
+      unfold payableSetReduced
+      refine le_trans (List.toFinset_card_le _) ?_
+      simpa using
+        (List.length_take_le
+          (scale * object.missingPorts support threshold receiver - 1)
+          (visibleFirstOrderReduced object support threshold receiver excluded))
+    rw [object.routedLoad_eq_card, ← Ldef, basinRed,
+      Finset.inter_comm excluded L]
+    omega
+  · have := (object.not_saturated_iff support threshold scale receiver).mp
+      saturated
+    omega
+
+/-- **`lem:typeA-silent-excess-count` on the reduced ledger, summed.** -/
+theorem card_le_sum_silentExcessReduced_add_positiveDeficiency
+    (object : FiniteObject.{u}) (support : Finset object.Vertex)
+    (threshold scale : Nat) (scalePos : 1 ≤ scale)
+    (baseline : ∀ vertex ∈ support, object.degree vertex = threshold)
+    (capped : ∀ vertex ∈ support,
+      object.internalDegree support vertex ≤ threshold)
+    (routed : ∀ vertex ∈ support,
+      object.internalDegree support vertex = threshold →
+      ∃ receiver : object.Vertex,
+        object.traceReceiver? support threshold vertex = some receiver ∧
+          object.IsReceiver support threshold receiver)
+    (excludedAt : object.Vertex → Finset object.Vertex)
+    (reducedPorts : ∀ receiver ∈ object.receivers support threshold,
+      object.Saturated support threshold scale receiver →
+      ∀ outside ∈ completionPorts object support receiver,
+        ((visibleLoadsAt object support threshold receiver outside) \
+          excludedAt receiver).card + 1 ≤ scale) :
+    support.card ≤
+      (∑ receiver ∈ object.receivers support threshold,
+          (silentExcessReduced object support threshold scale receiver
+            (excludedAt receiver)).card) +
+        scale * object.positiveDeficiency support threshold +
+        ∑ receiver ∈ object.receivers support threshold,
+          (excludedAt receiver ∩
+            object.routedLoads support threshold receiver).card := by
+  classical
+  have perReceiver :
+      ∑ receiver ∈ object.receivers support threshold,
+          (1 + object.routedLoad support threshold receiver) ≤
+        ∑ receiver ∈ object.receivers support threshold,
+          ((silentExcessReduced object support threshold scale receiver
+              (excludedAt receiver)).card +
+            (excludedAt receiver ∩
+              object.routedLoads support threshold receiver).card +
+            scale * object.missingPorts support threshold receiver) := by
+    refine Finset.sum_le_sum ?_
+    intro receiver member
+    have isReceiver := FiniteObject.mem_receivers.mp member
+    exact one_add_routedLoad_le_silentExcessReduced object support threshold
+      scale (baseline receiver isReceiver.1) isReceiver scalePos
+      (excludedAt receiver) (reducedPorts receiver member)
+  rw [Finset.sum_add_distrib, Finset.sum_add_distrib, Finset.sum_add_distrib,
+    Finset.sum_const, smul_eq_mul, Nat.mul_one, ← Finset.mul_sum,
+    sum_missingPorts_eq_positiveDeficiency object support threshold,
+    FiniteObject.sum_routedLoad object support threshold routed]
+    at perReceiver
+  have split := FiniteObject.card_receivers_add_card_fullVertices object support
+    threshold capped
+  omega
+
 end Hypostructure.Graph.VisibleEntry

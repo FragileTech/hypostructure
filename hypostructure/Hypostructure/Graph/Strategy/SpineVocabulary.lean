@@ -31,6 +31,7 @@ import Hypostructure.Graph.Route8Deficit
 import Hypostructure.Graph.Route8Pressure
 import Hypostructure.Graph.ColdGermFamily
 import Hypostructure.Graph.ResponseDelocalization
+import Hypostructure.Graph.TraceBasinAlternatives
 import Hypostructure.Graph.BoundaryDemand
 import Hypostructure.Graph.ReceiverRouting
 import Hypostructure.Graph.VisibleReceiverEntry
@@ -68,6 +69,7 @@ import Hypostructure.Graph.NamedSurplusExits
 import Hypostructure.Graph.SparseEntropySandwich
 import Hypostructure.Graph.BlockedClass
 import Hypostructure.Graph.CanonicalRealization
+import Hypostructure.Graph.TwoStrandEnumeration
 
 /-!
 # The minimum-degree cycle spine: fact vocabulary
@@ -230,28 +232,23 @@ structure Data where
   one that varies with the object, which is why the alphabet is registered here
   rather than quantified at the node: `L_geom = Q_geom + 1` has to be one
   number, or nodes `[140]`--`[144]` are not testing the manuscript's threshold.
-  Only the boundary-degree profile alphabet is registered here.  The `P₁₃`
-  label is *not*: it is `Graph.WindowCurvature.Label windowOrder`, the
-  labelling's own computed alphabet, whose legality table node `[125]`'s
-  `localAlgebra` entry already carries -- so it is derived from the registered
-  window order rather than declared again.  The other five coordinates are the
-  framework's own finite alphabets, so `SameTokenRoutingGerms.RoutingLabel` at
-  the registered profile alphabet and that label type *is* the set `ρ_t` lands
-  in, and `Q_geom` is its cardinality. -/
-  BoundaryProfile : Type
-  /-- The profile alphabet is finite. -/
-  boundaryProfileFintype : Fintype BoundaryProfile
-  /-- The declared boundary-profile alphabet has a realizable profile. -/
-  boundaryProfileInhabited : Inhabited BoundaryProfile
-  /-- `Q_geom`, registered as a number so strategy arithmetic never evaluates
+  The boundary-degree profile alphabet is not registered as a free carrier:
+  `T(p)` has `threshold` canonically ordered vertices and each internal degree
+  is below `threshold`, so the alphabet is the derived type
+  `Fin threshold → Fin threshold`.  The `P₁₃` label is likewise derived as
+  `Graph.WindowCurvature.Label windowOrder`.  The other five coordinates are
+  framework finite alphabets.  Consequently the routing alphabet, and hence
+  `Q_geom`, is determined by the problem's threshold and window order.
+
+  `Q_geom` is registered as a number so strategy arithmetic never evaluates
   the potentially enormous `Fintype` enumeration. -/
   routingLabelBound : Nat
   /-- The registered number is exactly the cardinality of the paper's routed
   seven-coordinate label alphabet. -/
   routingLabelBound_eq :
-    letI := boundaryProfileFintype
     routingLabelBound = Fintype.card
-      (Graph.SameTokenRoutingGerms.RoutingLabel BoundaryProfile
+      (Graph.SameTokenRoutingGerms.RoutingLabel
+        (Fin threshold → Fin threshold)
         (Graph.WindowCurvature.Label windowOrder))
   /-- The problem's declared same-token role alphabet covers the universal
   coefficient left by the generic quadratic absorption estimate.  This is a
@@ -336,6 +333,22 @@ structure Data where
   bridgeMassSlack :
     threshold + 2 + dischargeScale ≤ bridgeMassFactor * dischargeScale
 
+/-- The paper's bounded-port boundary profile alphabet, derived from the
+registered baseline rather than supplied by a problem. -/
+abbrev Data.BoundaryProfile (data : Data.{u}) : Type :=
+  Fin data.threshold → Fin data.threshold
+
+/-- Finiteness of the derived profile alphabet. -/
+@[reducible] noncomputable def Data.boundaryProfileFintype (data : Data.{u}) :
+    Fintype data.BoundaryProfile := inferInstance
+
+/-- The derived alphabet is inhabited because every admitted presentation has
+positive baseline degree. -/
+@[reducible] def Data.boundaryProfileInhabited (data : Data.{u}) :
+    Inhabited data.BoundaryProfile := by
+  have positive : 0 < data.threshold := lt_of_lt_of_le (by omega) data.three_le_threshold
+  exact ⟨fun _ => ⟨0, positive⟩⟩
+
 /-- `M₀ = Cap_hom(L_geom)`, computed generically from the public declared
 coordinate signature.  No application repeats or hardcodes this alphabet. -/
 def Data.homogeneousCap (data : Data.{u}) : Nat :=
@@ -346,20 +359,6 @@ public baseline degree. -/
 def Data.capacityTokenScale (data : Data.{u}) : Nat :=
   3 * (data.threshold - 1) + 2
 
-/-- **The routing alphabet is inhabited**: one realizable seven-coordinate
-routing label of `def:same-token-routing-germs`, at the declared profile
-alphabet's own inhabitant.  It is what makes `Q_geom ≥ 1`, hence
-`L_geom ≥ 2`, and it is the label the pigeonhole of
-`lem:same-token-bottleneck-routing` is stated over. -/
-def Data.routingLabelWitness (data : Data.{u}) :
-    Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
-      (Graph.WindowCurvature.Label data.windowOrder) :=
-  letI := data.boundaryProfileInhabited
-  (⟨Graph.SameTokenBlockerRoles.BlockerKind.sharedDeclaredSupport,
-      Graph.SameTokenBlockerRoles.TokenSubtype.boundaryWindow⟩,
-    .boundaryWindow, 0, (.openPort, .openPort),
-    (default, default), ∅, false)
-
 /-- The routing alphabet's inhabitedness makes `L_geom ≥ 2`; hence its
 homogeneous cap already absorbs the safety coefficient derived by the generic
 quadratic estimate. -/
@@ -367,9 +366,14 @@ theorem Data.quadraticSafetyScale_le_twiceAdditive (data : Data.{u}) :
     Graph.TokenLoad.quadraticSafetyScale ≤
       2 * (1 + 2 * data.homogeneousCap) := by
   letI := data.boundaryProfileFintype
+  letI := data.boundaryProfileInhabited
   let Label := Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
     (Graph.WindowCurvature.Label data.windowOrder)
-  letI : Nonempty Label := ⟨data.routingLabelWitness⟩
+  letI : Nonempty Label := ⟨
+    (⟨Graph.SameTokenBlockerRoles.BlockerKind.sharedDeclaredSupport,
+        Graph.SameTokenBlockerRoles.TokenSubtype.boundaryWindow⟩,
+      .boundaryWindow, 0, (.openPort, .openPort),
+      (default, default), ∅, false)⟩
   have labelPositive : 0 < data.routingLabelBound := by
     rw [data.routingLabelBound_eq]
     exact Fintype.card_pos
@@ -891,6 +895,10 @@ inductive Key where
   labelled skeletons of the current object's class — the residual on which the
   manuscript's `[21]` sentence fails, carried as a branch of its own. -/
   | windowPackageUnrealized
+  /-- Node `[159]`: the no-arm of `[158]`, after comparison with the labelled
+  skeleton class: the canonical window-package demand strictly exceeds the
+  exact skeleton budget. -/
+  | densePackingOverflow
   /-- On the `[21]` unrealized residual: `prop:negative-net-charge`'s exact
   large-budget net-deficiency comparison holds at the fixed maximal packing —
   the manuscript's `τ(θ) < 1/4` deficiency reading with the exact `√n`
@@ -905,14 +913,14 @@ inductive Key where
   attachment vertex, so it can attach only at the endpoints, and at least
   `(order − 2)(δ − 2)` stubs are single-stub interior attachments. -/
   | coldWindowStubStructure
-  /-- Node `[163]`/`[165]`, `lem:neutral-germ-symmetry`: some neutral bounded
-  germ of the current object is a proper canonical replacement — its second
-  representative `E` differs from the corridor piece `Q[x,y]`. -/
-  | coldProperNeutralGerm
-  /-- Node `[163]`, complementary arm: every neutral bounded germ of the current
-  object is trivial, `E = Q[x,y]` (the state `lem:refined-minimality-swap`
-  forces; the residual on which the neutral row carries no exchange). -/
-  | coldTrivialNeutralGerms
+  /-- Node `[163]`, no-arm: no neutral zero-increment germ of the incoming
+  extracted family has a graph-realized second strand; its `E` is therefore
+  the canonical-replacement case of `[165]`--`[166]`. -/
+  | coldCanonicalNeutralConfiguration
+  /-- Node `[163]`, yes-arm: a neutral zero-increment germ of the incoming
+  extracted family is realized in the ambient graph as a genuine second
+  strand, with its exact two-strand numerical configuration. -/
+  | coldGenuineSecondStrand
   /-- `lem:refined-minimality-swap`, size-reducing case (node `[165]`): some
   neutral germ's corridor piece has a canonical representative with strictly
   fewer internal vertices, so the exchange is a strictly smaller counterexample. -/
@@ -1035,10 +1043,6 @@ inductive Key where
   extracted into the Type A ledger, the remaining Type B bridge residual mass is
   paid by the assigned high-centre surplus. -/
   | typeBBridgeSublinear
-  /-- Pending node `[123]` pressure-join marker.  This legacy fact is not used
-  by the Type B `[76]`/`[85]` route: those nodes publish the exact
-  `typeBBridgeSublinear` fact and pass it through `[77]` instead. -/
-  | branchKillClosed
   /-- Node `[76]`/`[85]`, closed arm: the selected Type B ledger gives
   nonnegative net charge. -/
   | typeBExcluded
@@ -1150,7 +1154,7 @@ inductive Key where
   private-carrier rate `((δ+1)s+1)·|∂R| < (δ+1)·|R|` (`τ < 3/13`), at the fixed
   maximal packing. -/
   | route8Census
-  /-- Nodes `[111]`--`[113]`: the deficit reading of the census alone,
+  /-- The later unified-demand deficit reading used at node `[123]`,
   `|R| ≤ N_basin + s·|∂R| + F·s·T(n)` — `def:typeA-large-budget-deficit` with
   `lem:typeA-route8-burden` and the Type B bridge mass of
   `prop:typeB-bridge-sublinear` (`o(|R|)`, the registered `F·s·T(n)`). -/
@@ -1164,16 +1168,28 @@ inductive Key where
   not decide it (`3/13 ≤ τ`): the manuscript's delicate density interval
   (row 2 of the cold-branch ledger), carried as its own branch. -/
   | route8RateFails
-  /-- Node `[111]`, the global squeeze as `thm:branch-kill`'s all-pieces
-  classification: every negative piece of the canonical decomposition of the
-  remainder is silent-first (no saturated receiver has a completion port
-  carrying `s` visible returns) when it has no ambient surplus, and is a Type B
-  bridge component when it has. -/
+  /-- `thm:branch-kill`'s all-pieces classification: every negative piece of
+  the canonical decomposition is silent-first when it has no ambient surplus,
+  and is a Type B bridge component when it has positive surplus.  This is not
+  node `[111]`, whose sole output is `route8GlobalSqueeze`. -/
   | route8PiecesClassified
-  /-- The complement of the classification: some negative piece is a visible-first
-  Type A piece or a Type B piece outside the bridge residual — the manuscript's
-  visible-entry / bridge-reduction alternatives, carried as its own branch. -/
-  | route8UnclassifiedPiece
+  /-- Node `[123]`, `def:typeA-unified-negative`: the canonical collection of
+  exactly the zero-surplus negative supports which produce no decorated Type B
+  handoff, together with its cleared total deficit. -/
+  | route8UnifiedNegative
+  /-- Node `[123]`, `lem:typeA-unified-deficit`: the unified collection carries
+  the whole large-budget deficit — `|R| ≤ s·D̃_A + s·|∂R| + 2F·s·T(n)`. -/
+  | route8UnifiedDeficit
+  /-- Node `[123]`, `def:typeA-unified-entries` with `lem:typeA-unified-carriers`
+  and `def:typeA-pressure-ledger`: every unified entry has its selected basin,
+  at least two essential incidences, and is a route-8 entry with no exit-(4)
+  witness or a target-defect entry through alternative (a) with its witness. -/
+  | route8UnifiedEntryCensus
+  /-- Node `[123]`, `thm:large-budget-route8-only`'s failed-stage arm: a
+  recorded peel chain whose stage rate fails.  The manuscript closes this stage
+  by the large-budget net-deficiency cap and `thm:branch-kill`; that closure is
+  the arm's consumer, never a standing invariant. -/
+  | route8StageRateFailed
   /-- Node `[117]`, yes: some indexed route-8 entry of `𝒳_A` has at most `δ`
   private essential carriers (`prop:typeA-route8-carrier-reduction`). -/
   | route8TwoCarrierEntry
@@ -1191,6 +1207,12 @@ inductive Key where
   stage with a true two-carrier entry of the peeled ledger or a stage where the
   stage rate fails (`Graph.Route8Pressure.StageOutcome`). -/
   | route8PeelingDescent
+  /-- Node `[123]`, `lem:typeA-visible-entry` at the unified collection: a
+  visible excess load of a collection piece carries the canonical exit-`(4)`
+  witness (clause (Q1) of `def:typeA-exit4-family`), because exits
+  `(1)`--`(3)`, `(5)`, `(6)` are standing-invariant contradictions and the
+  collection produces no Type B handoff (`rem:unified-covers-exit4`). -/
+  | route8VisibleExitFourRouting
   /-- Node `[123]`, terminal survivor of the unified peeling ledger: an
   unpeeled two-support entry with no exit-`(4)` target-defect witness.  This is
   kept distinct from the pure collection's `route8TrueTwoCarrierEntry`. -/
@@ -1344,28 +1366,14 @@ inductive Key where
   a pattern.  `lem:same-token-bottleneck-routing` reads it as a sparse surplus
   exit or as decorated Type B handoff fan data. -/
   | homogeneousBottleneckPattern
-  /-- Node `[144]`, the bottleneck arm's own fact:
-  `thm:homogeneous-overload-geometric-closure`'s first assertion, which is
-  `lem:same-token-bottleneck-routing` at every declared routed bottleneck. -/
+  /-- Node `[144]`, `lem:same-token-bottleneck-routing` itself: the concrete
+  homogeneous pattern in the current object's canonical capacity presentation
+  yields a sparse-surplus exit or the common Type B fan-ledger entry. -/
   | bottleneckRouting
-  /-- Node `[144]`, the bottleneck arm's Type B handoff fact: every declared
-  routed bottleneck produces admissible decorated Type B handoff fan data. -/
+  /-- Node `[144]`, the survivor specialization of the preceding fact: the
+  sparse-exit arm is impossible, so the same current object is entered directly
+  in the Type B fan ledger. -/
   | typeBHandoff
-  /-- Node `[144]` → Type B `[65]`/`[66]`, on the bare envelope: at the
-  pattern's own declared routed bottleneck (`def:same-token-routing-germs`)
-  the first separator has degree at least four and, with the two separated
-  connector tails, is an admissible decorated handoff fan envelope
-  (`lem:same-token-bottleneck-routing`, `def:decorated-fan-envelope`) whose
-  counted core is a canonical piece of the remainder of the presentation's
-  maximal packing. -/
-  | typeBFanEnvelope
-  /-- Node `[144]`, the other arm of the same split: the pattern's declared
-  routed bottleneck has a *cubic* first separator, so its switch reading is
-  absorbed (`lem:same-token-bottleneck-routing`: *"a cubic first separator
-  cannot survive"*) — the target-defect or target-complete reading, which the
-  manuscript refutes as sparse surplus exits (b)/(c); the delocalization
-  reading (d) is already refuted by minimality here. -/
-  | cubicBottleneckSeparator
   /-- Node `[144]`, `cor:homogeneous-same-token-caps-close` at the counted
   `L_geom` and the ledger's own token supply: every token load is at most
   `M₀ = Cap_hom(L_geom)`, hence `|Π_blk| ≤ M₀|𝔗_cap|`,
@@ -1624,6 +1632,23 @@ noncomputable def retainedCode (data : Data.{u}) (object : Graph.FiniteObject.{u
       remainderStates data object (canonicalWindowPacking data object) *
     2 ^ (data.curvatureCost *
       remainderCurvatureTargetRank data object (canonicalWindowPacking data object))
+
+/-! The realization test of node `[158]` and the retained-code predicate of
+node `[22]` are separate.  The first is exactly the single
+window-package inequality displayed in `def:window-realization-test`; the
+latter additionally retains the remainder and curvature code. -/
+
+/-- **`def:window-realization-test`, nodes `[158]`--`[159]`.**  The canonical
+window-package states of a family are realized by labelled skeletons.  This is
+only the paper's package-count clause; the stronger retained-code clause is
+`WindowFamilyRealized` below and belongs to the hot/cold ledger. -/
+def WindowPackageRealized (data : Data.{u}) (object : Graph.FiniteObject.{u})
+    (family : Finset (Finset object.Vertex)) : Prop :=
+  ∃ (State : Type u)
+    (stateOf : Graph.PackedWindowRealization.Skeleton
+      object.vertexCount object.edgeCount → State),
+    2 ^ (windowPackageBits data object * family.card) ≤
+      Nat.card (Set.range stateOf)
 
 /-- **`def:cold-window-ledger` / `def:curvature-target-rank`: a window family
 retained in the canonical entropy comparison.**  The comparison's code for the
@@ -2065,6 +2090,128 @@ noncomputable def ColdMassBoundedStatement (data : Data.{u})
     (perWindow + Graph.ColdCorridor.overlapBound data.threshold data.coldSignature) *
       object.degreeSurplus data.threshold
 
+/-- Graph realization of the paper's second representative `E` on the same
+two labelled cut vertices as the corridor piece, with internally disjoint
+ambient realization.  This is vocabulary inside the semantic ledger value;
+it introduces no proof-data channel. -/
+def SecondStrandGraphRealizedStatement (data : Data.{u})
+    {object : Graph.FiniteObject.{u}}
+    (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+      (Graph.MinimumDegreeAtLeast data.threshold)
+      (Graph.HasCycleWithLength data.LengthOK) object) : Prop :=
+  germ.atom.interface.vertexCount = 2 ∧
+    ∃ embedding :
+        (germ.atom.interface.Vertex ⊕ germ.canonical.Internal) ↪ object.Vertex,
+      (∀ boundary : germ.atom.interface.Vertex,
+        embedding (.inl boundary) =
+          germ.atom.pieceIntoAmbient (.inl boundary)) ∧
+      germ.canonical.graph.map embedding ≤ object.graph ∧
+      ∀ internal : germ.canonical.Internal,
+        embedding (.inr internal) ∉ germ.support
+
+/-- The literal retained datum of `def:cold-corridor-first-failure`.
+
+For every selected branch-excess half-edge that actually enters the outside
+graph, the proposition retains the paper's corridor presentation and its F5
+configuration.  In particular the configuration's table record is tied field
+by field to the retained presentation.  The repeated arm retains the first
+equal-state interval and the canonical cut-state representative; the terminal
+arm retains the graph-realized second completion strand.  No default record,
+fixed prefix, or self-representative is admitted by this statement. -/
+noncomputable def ColdCorridorStateStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop := by
+  classical
+  letI : FinEnum object.Vertex := object.vertices
+  let cold := canonicalColdWindows data object
+  let cubic := cold.filter (AmbientCubicWindow data object)
+  let windows := Graph.ColdCorridor.windowsOf object cubic
+  let Eligible := {stub : object.Vertex × object.Vertex //
+    stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic ∧
+      stub.2 ∉ windows}
+  exact ∃ incidence : Eligible →
+      Graph.ColdCorridor.BoundedGerm data.coldSignature
+        (Graph.MinimumDegreeAtLeast data.threshold)
+        (Graph.HasCycleWithLength data.LengthOK) object,
+    ∀ epsilon : Eligible,
+      let germ := incidence epsilon
+      ∃ (component : Finset object.Vertex)
+        (corridor : Graph.ColdCorridor.Corridor object windows component)
+        (presentation : Graph.ColdCorridor.Presentation data.coldSignature object)
+        (index : corridor.Segment → presentation.Segment),
+        Graph.ColdCorridor.IsOutsideComponent object windows component ∧
+          corridor.entryStub = (epsilon.1.2, epsilon.1.1) ∧
+          Function.Injective index ∧
+          (∀ left right : corridor.Segment,
+            presentation.state (index left) = presentation.state (index right) →
+              ∀ coordinate : Graph.ColdCorridor.Generated data.coldSignature,
+                presentation.support coordinate ⊆
+                    ↑(presentation.activeInterface (index left)) →
+                  presentation.reading (index left) coordinate =
+                    presentation.reading (index right) coordinate) ∧
+          (∀ segments : Fin (Graph.ColdCorridor.stateBound data.coldSignature + 1) →
+              corridor.Segment,
+            ∃ left right, left ≠ right ∧
+              presentation.state (index (segments left)) =
+                presentation.state (index (segments right))) ∧
+          (∀ (boundary : Graph.Boundary)
+              (carrier : presentation.Segment → Graph.BoundaryPiece boundary)
+              (left right : corridor.Segment),
+            (¬ presentation.FirstFailureResponse
+                (Graph.HasCycleWithLength data.LengthOK) carrier
+                  (index left) (index right) →
+              presentation.state (index left) = presentation.state (index right) →
+                Graph.Response.ContextEquivalent
+                  (Graph.HasCycleWithLength data.LengthOK)
+                  (carrier (index left)) (carrier (index right))) ∧
+            (presentation.state (index left) = presentation.state (index right) →
+              ¬ Graph.Response.ContextEquivalent
+                  (Graph.HasCycleWithLength data.LengthOK)
+                  (carrier (index left)) (carrier (index right)) →
+                presentation.FirstFailureResponse
+                  (Graph.HasCycleWithLength data.LengthOK) carrier
+                    (index left) (index right))) ∧
+          germ.atom.interface.vertexCount = 2 ∧
+          germ.support.card ≤
+            Graph.ColdCorridor.exchangeBound data.coldSignature ∧
+          (∀ vertex ∈ germ.support,
+            vertex ∈ (corridor.inside.1.support.map
+              (fun inner => inner.1)).toFinset) ∧
+          ((Graph.ColdCorridor.Corridor.TerminalCorridor corridor
+                data.coldSignature ∧
+              germ.support = corridor.prefixSupport corridor.statesRead ∧
+              SecondStrandGraphRealizedStatement data germ ∧
+              let terminal : corridor.Segment :=
+                ⟨corridor.inside.1.length, Nat.lt_succ_self _⟩
+              germ.record.boundaryDegrees =
+                  presentation.boundaryDegrees (index terminal) ∧
+                germ.record.stubs = presentation.halfEdges (index terminal) ∧
+                germ.record.offsets = presentation.offsets (index terminal) ∧
+                germ.record.state = presentation.state (index terminal) ∧
+                germ.record.truth = false) ∨
+            ∃ left right : corridor.Segment,
+              left.1 < right.1 ∧
+              presentation.state (index left) = presentation.state (index right) ∧
+              (∀ earlierLeft earlierRight : corridor.Segment,
+                earlierLeft.1 < earlierRight.1 →
+                  earlierRight.1 < right.1 →
+                    presentation.state (index earlierLeft) ≠
+                      presentation.state (index earlierRight)) ∧
+              germ.support =
+                ((((corridor.inside.1.drop left.1).take
+                    (right.1 - left.1)).support.map
+                      (fun inner => inner.1)).toFinset) ∧
+              germ.canonical =
+                (Graph.CanonicalPiece.cutStateRepresentative
+                  (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
+                  (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant
+                  germ.piece).toPiece ∧
+              germ.record.boundaryDegrees =
+                presentation.boundaryDegrees (index left) ∧
+              germ.record.stubs = presentation.halfEdges (index left) ∧
+              germ.record.offsets = presentation.offsets (index left) ∧
+              germ.record.state = presentation.state (index left) ∧
+              germ.record.truth = false)
+
 /-- Node `[177]`, `lem:absorbed-germ-fan-data` (ii): every selected
 branch-excess half-edge of the ambient-cubic cold windows has a first-failure
 exchange germ whose support meets a vertex of degree above the threshold (by
@@ -2073,16 +2220,22 @@ candidate germ is subcubic: the half-edge is decorated handoff fan data. -/
 noncomputable def AbsorbedGermFanDataStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
+  letI : FinEnum object.Vertex := object.vertices
   let cold := canonicalColdWindows data object
   let cubic := cold.filter (AmbientCubicWindow data object)
-  exact ∀ (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
-      (bridgeless : ∀ contraction : Graph.EdgeContraction object, contraction.HasReturn)
-      (large : 2 < object.vertexCount)
-      (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic}),
-    ∃ vertex ∈ (Graph.ColdCorridor.stubGerm data.coldSignature data.threshold
-        (Graph.HasCycleWithLength data.LengthOK) object cubic baseline bridgeless large
-        stub).support,
-      data.threshold < object.degree vertex
+  let windows := Graph.ColdCorridor.windowsOf object cubic
+  let Eligible := {stub : object.Vertex × object.Vertex //
+    stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic ∧
+      stub.2 ∉ windows}
+  exact ∃ state : ColdCorridorStateStatement data object,
+    let incidence : Eligible →
+        Graph.ColdCorridor.BoundedGerm data.coldSignature
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object :=
+      Classical.choose state
+    ∀ epsilon : Eligible,
+      ∃ vertex ∈ (incidence epsilon).support,
+        data.threshold < object.degree vertex
 
 /-- Node `[175]`, `lem:absorbed-germ-fan-data`, the per-half-edge dichotomy on
 the absorbed-configuration residual.  For every selected branch-excess
@@ -2099,46 +2252,93 @@ The two cases are exclusive by the degree comparison at `z`. -/
 noncomputable def AbsorbedGermSplitStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
+  letI : FinEnum object.Vertex := object.vertices
   let cold := canonicalColdWindows data object
   let cubic := cold.filter (AmbientCubicWindow data object)
-  exact ∀ (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
-      (bridgeless : ∀ contraction : Graph.EdgeContraction object, contraction.HasReturn)
-      (large : 2 < object.vertexCount)
-      (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic}),
-    let germ := Graph.ColdCorridor.stubGerm data.coldSignature data.threshold
-      (Graph.HasCycleWithLength data.LengthOK) object cubic baseline bridgeless large stub
-    ((∀ vertex ∈ germ.support, object.degree vertex ≤ data.threshold) ∧
-        germ ∈ Graph.ColdCorridor.candidateGerms data.coldSignature data.threshold
-          (Graph.HasCycleWithLength data.LengthOK) object cubic baseline bridgeless large) ∨
-      ∃ centre ∈ germ.support, data.threshold < object.degree centre ∧
-        ∀ neighbour : object.Vertex, object.graph.Adj centre neighbour →
-          object.degree neighbour = data.threshold
+  let windows := Graph.ColdCorridor.windowsOf object cubic
+  let Eligible := {stub : object.Vertex × object.Vertex //
+    stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic ∧
+      stub.2 ∉ windows}
+  exact ∃ state : ColdCorridorStateStatement data object,
+    let incidence : Eligible →
+        Graph.ColdCorridor.BoundedGerm data.coldSignature
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object :=
+      Classical.choose state
+    let candidates :=
+      ((Finset.univ : Finset Eligible).filter fun epsilon =>
+        ∀ vertex ∈ (incidence epsilon).support,
+          object.degree vertex ≤ data.threshold).image incidence
+    ∀ epsilon : Eligible,
+      let germ := incidence epsilon
+      ((∀ vertex ∈ germ.support,
+          object.degree vertex ≤ data.threshold) ∧ germ ∈ candidates) ∨
+        ∃ centre ∈ germ.support, data.threshold < object.degree centre ∧
+          ∀ neighbour : object.Vertex, object.graph.Adj centre neighbour →
+            object.degree neighbour = data.threshold
+
+/-- The exact family witness produced by `lem:cold-germ-extraction`: an actual
+candidate family of the current object, its positive disjoint subfamily, and
+the manuscript's charged-count inequality.  This is a proposition used inside
+semantic ledger values, not a transport carrier. -/
+noncomputable def ColdGermFamilyWitness (data : Data.{u})
+    (object : Graph.FiniteObject.{u})
+    (candidates disjointFamily : Finset
+      (Graph.ColdCorridor.BoundedGerm data.coldSignature
+        (Graph.MinimumDegreeAtLeast data.threshold)
+        (Graph.HasCycleWithLength data.LengthOK) object)) : Prop := by
+  classical
+  letI : FinEnum object.Vertex := object.vertices
+  let cold := canonicalColdWindows data object
+  let cubic := cold.filter (AmbientCubicWindow data object)
+  let windows := Graph.ColdCorridor.windowsOf object cubic
+  let Eligible := {stub : object.Vertex × object.Vertex //
+    stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic ∧
+      stub.2 ∉ windows}
+  exact ∃ state : ColdCorridorStateStatement data object,
+    let incidence : Eligible →
+        Graph.ColdCorridor.BoundedGerm data.coldSignature
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object :=
+      Classical.choose state
+    let routedCandidates :=
+      ((Finset.univ : Finset Eligible).filter fun epsilon =>
+        ∀ vertex ∈ (incidence epsilon).support,
+          object.degree vertex ≤ data.threshold).image incidence
+    candidates = routedCandidates ∧
+      Graph.ColdCorridor.CandidateGermFamily data.coldSignature data.threshold
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object candidates ∧
+        Graph.ColdCorridor.ExtractedGermFamily data.coldSignature data.threshold
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object candidates disjointFamily ∧
+        let perWindow := Graph.ColdCorridor.branchExcessOf
+          (coldExternalStubCount data)
+        perWindow * cubic.card ≤
+          data.threshold * (Graph.ColdCorridor.stateBound data.coldSignature + 1) *
+              candidates.card +
+            Graph.ColdCorridor.overlapBound data.threshold data.coldSignature *
+              object.degreeSurplus data.threshold
 
 /-- `lem:cold-germ-extraction` on the current residual.  The selected
 half-edge count pays for an actual candidate family; the framework-local
 greedy extraction then returns a positive disjoint family. -/
 noncomputable def ColdGermCandidatesStatement (data : Data.{u})
-    (object : Graph.FiniteObject.{u}) : Prop := by
-  classical
-  let cold := canonicalColdWindows data object
-  let cubic := cold.filter (AmbientCubicWindow data object)
-  exact ∃ candidates disjointFamily : Finset
-      (Graph.ColdCorridor.BoundedGerm data.coldSignature
-        (Graph.MinimumDegreeAtLeast data.threshold)
-        (Graph.HasCycleWithLength data.LengthOK) object),
-      Graph.ColdCorridor.CandidateGermFamily data.coldSignature data.threshold
-        (Graph.MinimumDegreeAtLeast data.threshold)
-        (Graph.HasCycleWithLength data.LengthOK) object candidates ∧
-      Graph.ColdCorridor.ExtractedGermFamily data.coldSignature data.threshold
-        (Graph.MinimumDegreeAtLeast data.threshold)
-        (Graph.HasCycleWithLength data.LengthOK) object candidates disjointFamily ∧
-      let perWindow := Graph.ColdCorridor.branchExcessOf
-        (coldExternalStubCount data)
-      perWindow * cubic.card ≤
-        data.threshold * (Graph.ColdCorridor.stateBound data.coldSignature + 1) *
-            candidates.card +
-          Graph.ColdCorridor.overlapBound data.threshold data.coldSignature *
-            object.degreeSurplus data.threshold
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ candidates disjointFamily,
+    ColdGermFamilyWitness data object candidates disjointFamily
+
+/-- One germ of the literal positive disjoint family retained by the incoming
+`K .coldGermCandidates` fact.  Downstream cold nodes use this predicate so a
+neutral or symmetric germ cannot be fabricated outside the extracted family. -/
+noncomputable def ActiveColdGermStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u})
+    (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+      (Graph.MinimumDegreeAtLeast data.threshold)
+      (Graph.HasCycleWithLength data.LengthOK) object) : Prop :=
+  ∃ candidates disjointFamily,
+    ColdGermFamilyWitness data object candidates disjointFamily ∧
+      germ ∈ disjointFamily
 
 /-- Node `[152]`: the scalar branch-excess witness for the canonical cold
 family. -/
@@ -2164,16 +2364,39 @@ def ColdAmbientCubicStubExcessStatement (data : Data.{u})
 /-- First-failure routing specialized to the current residual's committed cold
 family.  The corridor quantification ranges only over the current object and is
 paired with the exact `[152]` witness that activates the extraction. -/
-def ColdFailureRoutingStatement (data : Data.{u})
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  ColdAmbientCubicStubExcessStatement data object ∧
-  ∀ (windows component : Finset object.Vertex)
-    (corridor : Graph.ColdCorridor.Corridor object windows component)
-    (presentation : Graph.ColdCorridor.Presentation data.coldSignature object)
-    (index : corridor.Segment → presentation.Segment),
-    Function.Injective index →
-      Graph.ColdCorridor.Corridor.TerminalCorridor corridor data.coldSignature ∨
-        Graph.ColdCorridor.Corridor.RepeatedState corridor presentation index
+noncomputable def ColdFailureRoutingStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop := by
+  classical
+  letI : FinEnum object.Vertex := object.vertices
+  let cold := canonicalColdWindows data object
+  let cubic := cold.filter (AmbientCubicWindow data object)
+  let windows := Graph.ColdCorridor.windowsOf object cubic
+  let Eligible := {stub : object.Vertex × object.Vertex //
+    stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic ∧
+      stub.2 ∉ windows}
+  exact ColdAmbientCubicStubExcessStatement data object ∧
+    ∃ state : ColdCorridorStateStatement data object,
+      let incidence : Eligible →
+          Graph.ColdCorridor.BoundedGerm data.coldSignature
+            (Graph.MinimumDegreeAtLeast data.threshold)
+            (Graph.HasCycleWithLength data.LengthOK) object :=
+        Classical.choose state
+      let candidates :=
+        ((Finset.univ : Finset Eligible).filter fun epsilon =>
+          ∀ vertex ∈ (incidence epsilon).support,
+            object.degree vertex ≤ data.threshold).image incidence
+      (∀ germ ∈ candidates,
+        (candidates.filter fun other =>
+          ¬ Disjoint germ.support other.support).card ≤
+            Graph.ColdCorridor.extractionDenominator data.threshold
+              data.coldSignature - 1) ∧
+      let perWindow := Graph.ColdCorridor.branchExcessOf
+        (coldExternalStubCount data)
+      perWindow * cubic.card ≤
+        data.threshold * (Graph.ColdCorridor.stateBound data.coldSignature + 1) *
+            candidates.card +
+          Graph.ColdCorridor.overlapBound data.threshold data.coldSignature *
+            object.degreeSurplus data.threshold
 
 /-- The exchange bound for the same current-residual first-failure routing. -/
 def ColdExchangeBoundStatement (data : Data.{u})
@@ -2258,16 +2481,21 @@ exit-`(7)` core.  The indices remain part of the proposition so later Type B
 decisions classify the same literal corridor datum. -/
 noncomputable def AbsorbedGermFanEnvelopeWitness (data : Data.{u})
     (object : Graph.FiniteObject.{u})
-    (cubic : Finset (Finset object.Vertex))
-    (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
-    (bridgeless : ∀ contraction : Graph.EdgeContraction object, contraction.HasReturn)
-    (large : 2 < object.vertexCount)
-    (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic})
+    (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+      (Graph.MinimumDegreeAtLeast data.threshold)
+      (Graph.HasCycleWithLength data.LengthOK) object)
     (centre : object.Vertex) : Prop := by
   classical
-  exact centre ∈ (Graph.ColdCorridor.stubGerm data.coldSignature data.threshold
-      (Graph.HasCycleWithLength data.LengthOK) object cubic baseline bridgeless large
-      stub).support ∧
+  letI : FinEnum object.Vertex := object.vertices
+  let cold := canonicalColdWindows data object
+  let cubic := cold.filter (AmbientCubicWindow data object)
+  let windows := Graph.ColdCorridor.windowsOf object cubic
+  let Eligible := {stub : object.Vertex × object.Vertex //
+    stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic ∧
+      stub.2 ∉ windows}
+  exact (∃ state : ColdCorridorStateStatement data object,
+      ∃ epsilon : Eligible, germ = Classical.choose state epsilon) ∧
+    centre ∈ germ.support ∧
     data.threshold < object.degree centre ∧
       (∀ neighbour : object.Vertex, object.graph.Adj centre neighbour →
         object.degree neighbour = data.threshold) ∧
@@ -2312,14 +2540,22 @@ canonical negative remainder support, or a zero-surplus hypothesis. -/
 noncomputable def AbsorbedGermFanEnvelopeStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
+  letI : FinEnum object.Vertex := object.vertices
   let cold := canonicalColdWindows data object
   let cubic := cold.filter (AmbientCubicWindow data object)
-  exact ∀ (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
-      (bridgeless : ∀ contraction : Graph.EdgeContraction object, contraction.HasReturn)
-      (large : 2 < object.vertexCount)
-      (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic}),
-    ∃ centre, AbsorbedGermFanEnvelopeWitness data object cubic baseline bridgeless
-      large stub centre
+  let windows := Graph.ColdCorridor.windowsOf object cubic
+  let Eligible := {stub : object.Vertex × object.Vertex //
+    stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic ∧
+      stub.2 ∉ windows}
+  exact ∃ state : ColdCorridorStateStatement data object,
+    let incidence : Eligible →
+        Graph.ColdCorridor.BoundedGerm data.coldSignature
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object :=
+      Classical.choose state
+    ∀ epsilon : Eligible,
+      ∃ centre, AbsorbedGermFanEnvelopeWitness data object
+        (incidence epsilon) centre
 
 /-- **The ordinary Type B support of node `[64]`** (`def:admissible` with
 `σ(X) > 0`): a connected piece of the remainder of a maximal packing carrying
@@ -2408,16 +2644,12 @@ baseline rather than with an EG-specific numeral. -/
 noncomputable def AbsorbedGermFanHeavyCentreStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
-  let cold := canonicalColdWindows data object
-  let cubic := cold.filter (AmbientCubicWindow data object)
   exact AbsorbedGermFanEnvelopeStatement data object ∧
-    ∃ (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
-        (bridgeless : ∀ contraction : Graph.EdgeContraction object,
-          contraction.HasReturn)
-        (large : 2 < object.vertexCount)
-        (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic})
+    ∃ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object)
         (centre : object.Vertex),
-      AbsorbedGermFanEnvelopeWitness data object cubic baseline bridgeless large stub centre ∧
+      AbsorbedGermFanEnvelopeWitness data object germ centre ∧
         data.threshold + 1 < object.degree centre
 
 /-- Node `[68]`, no arm, for the indexed `[177]` input.  For every selected
@@ -2426,17 +2658,13 @@ at the unique high-but-not-heavy degree, namely `threshold + 1`. -/
 noncomputable def AbsorbedGermFanDegreeFourCentresStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
-  let cold := canonicalColdWindows data object
-  let cubic := cold.filter (AmbientCubicWindow data object)
   exact AbsorbedGermFanEnvelopeStatement data object ∧
-    ∀ (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
-        (bridgeless : ∀ contraction : Graph.EdgeContraction object,
-          contraction.HasReturn)
-        (large : 2 < object.vertexCount)
-        (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic}),
-      ∃ centre,
-        AbsorbedGermFanEnvelopeWitness data object cubic baseline bridgeless large stub centre ∧
-          object.degree centre = data.threshold + 1
+    ∀ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object)
+        (centre : object.Vertex),
+      AbsorbedGermFanEnvelopeWitness data object germ centre →
+        object.degree centre = data.threshold + 1
 
 /-- Node `[68]`, yes arm, on either of the two paper-prescribed Type B inputs. -/
 def TypeBFanHeavyCentreStatement (data : Data.{u})
@@ -2459,16 +2687,12 @@ alternative as on an ordinary Type B support. -/
 noncomputable def AbsorbedGermFanLocalDichotomyStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
-  let cold := canonicalColdWindows data object
-  let cubic := cold.filter (AmbientCubicWindow data object)
   exact AbsorbedGermFanEnvelopeStatement data object ∧
-    ∃ (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
-        (bridgeless : ∀ contraction : Graph.EdgeContraction object,
-          contraction.HasReturn)
-        (large : 2 < object.vertexCount)
-        (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic})
+    ∃ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object)
         (centre : object.Vertex),
-      AbsorbedGermFanEnvelopeWitness data object cubic baseline bridgeless large stub centre ∧
+      AbsorbedGermFanEnvelopeWitness data object germ centre ∧
         data.threshold + 1 < object.degree centre ∧
         ((∃ left right : object.Vertex,
             Graph.FanCompatible object centre left right) ∨
@@ -2483,16 +2707,12 @@ No canonical remainder piece is inserted into this statement. -/
 noncomputable def AbsorbedGermFanDegreeFourProfileStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
-  let cold := canonicalColdWindows data object
-  let cubic := cold.filter (AmbientCubicWindow data object)
   exact AbsorbedGermFanEnvelopeStatement data object ∧
-    ∀ (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
-        (bridgeless : ∀ contraction : Graph.EdgeContraction object,
-          contraction.HasReturn)
-        (large : 2 < object.vertexCount)
-        (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic}),
-      ∃ centre,
-        AbsorbedGermFanEnvelopeWitness data object cubic baseline bridgeless large stub centre ∧
+    ∀ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object)
+        (centre : object.Vertex),
+      AbsorbedGermFanEnvelopeWitness data object germ centre →
           object.degree centre = data.threshold + 1 ∧
           ((∃ left right : object.Vertex,
               Graph.FanCompatible object centre left right) ∨
@@ -2551,16 +2771,12 @@ manufactured. -/
 noncomputable def AbsorbedGermFanCertificateCapStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
-  let cold := canonicalColdWindows data object
-  let cubic := cold.filter (AmbientCubicWindow data object)
   exact AbsorbedGermFanEnvelopeStatement data object ∧
-    ∀ (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
-        (bridgeless : ∀ contraction : Graph.EdgeContraction object,
-          contraction.HasReturn)
-        (large : 2 < object.vertexCount)
-        (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic})
+    ∀ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object)
         (centre : object.Vertex),
-      AbsorbedGermFanEnvelopeWitness data object cubic baseline bridgeless large stub centre →
+      AbsorbedGermFanEnvelopeWitness data object germ centre →
         ∀ _marking : Graph.FanCertificateLabelling object data.windowOrder centre,
           object.degree centre ≤ Graph.WindowCurvature.fanPackingCap data.windowOrder
 
@@ -2581,16 +2797,12 @@ the cap already proved at `[70]`. -/
 noncomputable def AbsorbedGermFanCertificateMarkedStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
-  let cold := canonicalColdWindows data object
-  let cubic := cold.filter (AmbientCubicWindow data object)
   exact AbsorbedGermFanEnvelopeStatement data object ∧
-    ∀ (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
-        (bridgeless : ∀ contraction : Graph.EdgeContraction object,
-          contraction.HasReturn)
-        (large : 2 < object.vertexCount)
-        (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic})
+    ∀ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object)
         (centre : object.Vertex),
-      AbsorbedGermFanEnvelopeWitness data object cubic baseline bridgeless large stub centre →
+      AbsorbedGermFanEnvelopeWitness data object germ centre →
         ∃ _marking : Graph.FanCertificateLabelling object data.windowOrder centre,
           object.degree centre ≤ Graph.WindowCurvature.fanPackingCap data.windowOrder
 
@@ -2600,16 +2812,12 @@ centres has no fan-certificate labelling. -/
 noncomputable def AbsorbedGermFanCertificateResidualStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
-  let cold := canonicalColdWindows data object
-  let cubic := cold.filter (AmbientCubicWindow data object)
   exact AbsorbedGermFanEnvelopeStatement data object ∧
-    ∃ (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
-        (bridgeless : ∀ contraction : Graph.EdgeContraction object,
-          contraction.HasReturn)
-        (large : 2 < object.vertexCount)
-        (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic})
+    ∃ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object)
         (centre : object.Vertex),
-      AbsorbedGermFanEnvelopeWitness data object cubic baseline bridgeless large stub centre ∧
+      AbsorbedGermFanEnvelopeWitness data object germ centre ∧
         IsEmpty (Graph.FanCertificateLabelling object data.windowOrder centre)
 
 /-- Nodes `[71]`/`[80]`, yes arm, on either paper-prescribed Type B input. -/
@@ -2637,16 +2845,12 @@ centre selected by its corridor witness. -/
 noncomputable def AbsorbedGermFanHybridEntryStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
-  let cold := canonicalColdWindows data object
-  let cubic := cold.filter (AmbientCubicWindow data object)
   exact AbsorbedGermFanCertificateMarkedStatement data object ∧
-    ∀ (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
-        (bridgeless : ∀ contraction : Graph.EdgeContraction object,
-          contraction.HasReturn)
-        (large : 2 < object.vertexCount)
-        (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic})
+    ∀ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object)
         (centre : object.Vertex),
-      AbsorbedGermFanEnvelopeWitness data object cubic baseline bridgeless large stub centre →
+      AbsorbedGermFanEnvelopeWitness data object germ centre →
         ∀ envelope windowSupport : Finset object.Vertex,
           (∀ left ∈ Graph.TypeBFanIncidence.closedNeighbours object
               data.threshold envelope centre,
@@ -2727,16 +2931,12 @@ noncomputable def TypeBFanHybridEntryStatement (data : Data.{u})
 noncomputable def AbsorbedGermFanDirectCycleStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
-  let cold := canonicalColdWindows data object
-  let cubic := cold.filter (AmbientCubicWindow data object)
   exact AbsorbedGermFanCertificateMarkedStatement data object ∧
-    ∃ (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
-        (bridgeless : ∀ contraction : Graph.EdgeContraction object,
-          contraction.HasReturn)
-        (large : 2 < object.vertexCount)
-        (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic})
+    ∃ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object)
         (centre : object.Vertex),
-      AbsorbedGermFanEnvelopeWitness data object cubic baseline bridgeless large stub centre ∧
+      AbsorbedGermFanEnvelopeWitness data object germ centre ∧
         Graph.TypeBDirectCycle.DirectCycleConfiguration object data.windowOrder
           data.LengthOK (canonicalWindowPacking data object) centre
 
@@ -2744,16 +2944,12 @@ noncomputable def AbsorbedGermFanDirectCycleStatement (data : Data.{u})
 noncomputable def AbsorbedGermFanDirectCycleFreeStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
-  let cold := canonicalColdWindows data object
-  let cubic := cold.filter (AmbientCubicWindow data object)
   exact AbsorbedGermFanCertificateMarkedStatement data object ∧
-    ∀ (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
-        (bridgeless : ∀ contraction : Graph.EdgeContraction object,
-          contraction.HasReturn)
-        (large : 2 < object.vertexCount)
-        (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic})
+    ∀ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object)
         (centre : object.Vertex),
-      AbsorbedGermFanEnvelopeWitness data object cubic baseline bridgeless large stub centre →
+      AbsorbedGermFanEnvelopeWitness data object germ centre →
         Graph.TypeBDirectCycle.DirectCycleFree object data.windowOrder data.LengthOK
           (canonicalWindowPacking data object) centre
 
@@ -2785,24 +2981,15 @@ core is manufactured. -/
 noncomputable def AbsorbedGermFanB2ChoiceStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
-  let cold := canonicalColdWindows data object
-  let cubic := cold.filter (AmbientCubicWindow data object)
   let packing := canonicalWindowPacking data object
   exact AbsorbedGermFanDirectCycleFreeStatement data object ∧
-    ∀ (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
-        (bridgeless : ∀ contraction : Graph.EdgeContraction object,
-          contraction.HasReturn)
-        (large : 2 < object.vertexCount)
-        (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic})
+    ∀ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object)
         (centre : object.Vertex),
-      AbsorbedGermFanEnvelopeWitness data object cubic baseline bridgeless
-          large stub centre →
+      AbsorbedGermFanEnvelopeWitness data object germ centre →
         Graph.TypeBRefinedSupport.HasDisjointChoice object data.threshold
-          data.dischargeScale packing
-          (Graph.ColdCorridor.stubGerm data.coldSignature data.threshold
-            (Graph.HasCycleWithLength data.LengthOK) object cubic baseline
-              bridgeless large stub).support
-          {centre} {centre}
+          data.dischargeScale packing germ.support {centre} {centre}
 
 /-- Node `[72]`/`[81]`, B2 no arm, on the literal indexed `[177]` fan datum.
 The published failure is the paper's genuine minimal overlap obstruction on
@@ -2810,24 +2997,15 @@ the same first-failure support and its actual heavy centre. -/
 noncomputable def AbsorbedGermFanB2ObstructionStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
-  let cold := canonicalColdWindows data object
-  let cubic := cold.filter (AmbientCubicWindow data object)
   let packing := canonicalWindowPacking data object
   exact AbsorbedGermFanDirectCycleFreeStatement data object ∧
-    ∃ (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
-        (bridgeless : ∀ contraction : Graph.EdgeContraction object,
-          contraction.HasReturn)
-        (large : 2 < object.vertexCount)
-        (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic})
+    ∃ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object)
         (centre : object.Vertex),
-      AbsorbedGermFanEnvelopeWitness data object cubic baseline bridgeless
-          large stub centre ∧
+      AbsorbedGermFanEnvelopeWitness data object germ centre ∧
         Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction object
-          data.threshold data.dischargeScale packing
-          (Graph.ColdCorridor.stubGerm data.coldSignature data.threshold
-            (Graph.HasCycleWithLength data.LengthOK) object cubic baseline
-              bridgeless large stub).support
-          {centre})
+          data.threshold data.dischargeScale packing germ.support {centre})
 
 /-- Nodes `[74]`/`[82]` on the indexed `[177]` lane.  This is the literal
 successful B2(a)--(c) datum on the first-failure support: it retains the
@@ -2838,31 +3016,18 @@ the post-ledger Type A component conclusions that require one. -/
 noncomputable def AbsorbedGermFanB2PaidStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
-  let cold := canonicalColdWindows data object
-  let cubic := cold.filter (AmbientCubicWindow data object)
   let packing := canonicalWindowPacking data object
   exact AbsorbedGermFanB2ChoiceStatement data object ∧
-    ∀ (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
-        (bridgeless : ∀ contraction : Graph.EdgeContraction object,
-          contraction.HasReturn)
-        (large : 2 < object.vertexCount)
-        (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic})
+    ∀ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object)
         (centre : object.Vertex),
-      AbsorbedGermFanEnvelopeWitness data object cubic baseline bridgeless
-          large stub centre →
+      AbsorbedGermFanEnvelopeWitness data object germ centre →
         ∃ choice : Graph.TypeBRefinedSupport.DisjointChoice object
-            data.threshold data.dischargeScale packing
-            (Graph.ColdCorridor.stubGerm data.coldSignature data.threshold
-              (Graph.HasCycleWithLength data.LengthOK) object cubic baseline
-                bridgeless large stub).support
-            {centre} {centre},
+            data.threshold data.dischargeScale packing germ.support {centre} {centre},
           ∀ member : centre ∈ ({centre} : Finset object.Vertex),
             (choice.entry centre member).EntryRefines data.threshold
-              data.dischargeScale
-              (Graph.ColdCorridor.stubGerm data.coldSignature data.threshold
-                (Graph.HasCycleWithLength data.LengthOK) object cubic baseline
-                  bridgeless large stub).support
-              centre
+              data.dischargeScale germ.support centre
 
 /-- Node `[84]` on the indexed `[177]` B2-failure lane.  The mass estimate is
 attached to the same corridor indices, actual heavy centre, first-failure
@@ -2870,24 +3035,15 @@ support, and minimal overlap obstruction; no canonical support is substituted. -
 noncomputable def AbsorbedGermFanB2ObstructionMassStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
-  let cold := canonicalColdWindows data object
-  let cubic := cold.filter (AmbientCubicWindow data object)
   let packing := canonicalWindowPacking data object
   exact AbsorbedGermFanDirectCycleFreeStatement data object ∧
-    ∃ (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
-        (bridgeless : ∀ contraction : Graph.EdgeContraction object,
-          contraction.HasReturn)
-        (large : 2 < object.vertexCount)
-        (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic})
+    ∃ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object)
         (centre : object.Vertex),
-      AbsorbedGermFanEnvelopeWitness data object cubic baseline bridgeless
-          large stub centre ∧
+      AbsorbedGermFanEnvelopeWitness data object germ centre ∧
         Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction object
-          data.threshold data.dischargeScale packing
-          (Graph.ColdCorridor.stubGerm data.coldSignature data.threshold
-            (Graph.HasCycleWithLength data.LengthOK) object cubic baseline
-              bridgeless large stub).support
-          {centre}) ∧
+          data.threshold data.dischargeScale packing germ.support {centre}) ∧
         ∀ envelope : Finset object.Vertex,
           Graph.TypeBEnvelopeCharge.envelopeNegativePart object data.threshold
               data.dischargeScale envelope centre ≤
@@ -2898,16 +3054,12 @@ noncomputable def AbsorbedGermFanB2ObstructionMassStatement (data : Data.{u})
 noncomputable def AbsorbedGermFanCertificateResidualMassStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
-  let cold := canonicalColdWindows data object
-  let cubic := cold.filter (AmbientCubicWindow data object)
   exact AbsorbedGermFanEnvelopeStatement data object ∧
-    ∃ (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
-        (bridgeless : ∀ contraction : Graph.EdgeContraction object,
-          contraction.HasReturn)
-        (large : 2 < object.vertexCount)
-        (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic})
+    ∃ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object)
         (centre : object.Vertex),
-      AbsorbedGermFanEnvelopeWitness data object cubic baseline bridgeless large stub centre ∧
+      AbsorbedGermFanEnvelopeWitness data object germ centre ∧
         IsEmpty (Graph.FanCertificateLabelling object data.windowOrder centre) ∧
         ∀ envelope : Finset object.Vertex,
           Graph.TypeBEnvelopeCharge.envelopeNegativePart object data.threshold
@@ -3019,6 +3171,27 @@ def HandoffAdmissible (data : Data.{u}) (object : Graph.FiniteObject.{u})
         (handoffUncompressible data object) (handoffWindowFree data object)
         envelope
 
+/-- **The literal Type B handoff conclusion of
+`lem:same-token-bottleneck-routing`.**
+
+This is a proposition about the current object, not a transport structure.  It
+states exactly the envelope data produced in the manuscript: a maximal window
+packing, a connected core `Y` contained in its remainder, and an admissible
+decorated handoff envelope with that core.  `HandoffAdmissible` supplies the
+`P₁₃`-free/empty-core condition, nonempty high-degree decorations, simple
+arms, and fan safety.  No canonical component, negative-charge hypothesis, or
+Type-A receiver state is added here; none is part of the paper's [144]
+conclusion. -/
+def SameTokenTypeBHandoffStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ packing : Finset (Finset object.Vertex),
+    object.IsWindowPacking data.windowOrder packing ∧
+      packing.card = object.windowPackingNumber data.windowOrder ∧
+      ∃ core : Finset object.Vertex,
+        core ⊆ object.remainderSupport packing ∧
+          Graph.SupportComponents.Connected.ConnectedOn object core ∧
+          HandoffAdmissible data object packing core
+
 /-- `def:decorated-fan-envelope`, the selected-handoff instance of
 `def:typeB-assigned-ledger`, and `lem:decorated-fan-admissibility`: the complete
 envelope, its high-degree centre set, each centre's nonempty assigned
@@ -3042,18 +3215,43 @@ def DecoratedTypeBAssignedSupport (data : Data.{u})
         (handoffUncompressible data object) (handoffWindowFree data object)
         envelope
 
-/-- Exit `(6)` at the selected Type A support.
-
-The delocalizing declared response entry is not a free route-8 object: it is
-presented at the same support `piece` currently carried by the ledger branch. -/
+/-- Exit `(6)` at the selected Type A support and receiver: some eligible
+silent routed load of the receiver has a selected trace basin at which an
+equality of declared coordinates of `ρ_u(B_u)` becomes target-complete only
+after adjoining a larger connected support (`def:typeA-trace-basin` (c),
+identified with exit `(6)` by `lem:typeA-reduced-silent-residual`).  The
+eligible loads are exactly those tested by exit `(5)` on the same peeling set. -/
 def ExitSixDelocalizes (data : Data.{u}) (object : Graph.FiniteObject.{u})
-    (piece : Finset object.Vertex) : Prop :=
-  ∃ presented : Graph.Route8.PresentedEntry object,
-    presented.support = piece ∧
-      Nonempty
-        (Graph.Route8.Delocalization
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) presented)
+    (piece : Finset object.Vertex) (receiver : object.Vertex)
+    (peeled : Finset object.Vertex) : Prop :=
+  ∃ load : object.Vertex,
+    (((∃ package :
+          Graph.ExitFour.VisibleFourUnpeeledPackage piece data.threshold
+            data.dischargeScale receiver peeled,
+        (¬ ∃ witness : Graph.ExitFour.Witness
+            (Graph.HasCycleWithLength data.LengthOK) piece data.threshold data.dischargeScale
+            receiver peeled,
+          ∃ selected ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
+              data.threshold data.dischargeScale receiver package.outside
+              peeled,
+            witness.load = selected) ∧
+          load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
+            data.threshold data.dischargeScale receiver package.outside
+            peeled) ∨
+      (Graph.ExitFour.SilentUnpeeledExcessAt piece data.threshold
+          data.dischargeScale receiver peeled ∧
+        (¬ ∃ witness : Graph.ExitFour.Witness
+            (Graph.HasCycleWithLength data.LengthOK) piece data.threshold data.dischargeScale
+            receiver peeled,
+          witness.load ∈ Graph.ExitFour.unpeeledExcess piece data.threshold
+            data.dischargeScale receiver peeled) ∧
+        load ∈ Graph.ExitFour.unpeeledExcess piece data.threshold
+          data.dischargeScale receiver peeled)) ∧
+      ∃ basin : Finset object.Vertex,
+        Graph.Route8.TraceBasin.select? object piece data.threshold
+            receiver load = some basin ∧
+          Graph.Route8.TraceBasin.TraceDelocalization object piece
+            data.threshold data.LengthOK receiver load basin)
 
 /-- The exact selected saturated Type A state after exits `(4)`, `(5)`, and
 `(6)` have failed, with one additional local clause on its selected packing and
@@ -3070,7 +3268,7 @@ abbrev SelectedNoExitSixWith (data : Data.{u}) (object : Graph.FiniteObject.{u})
             Graph.ExitFour.VisibleFourUnpeeledPackage piece data.threshold
               data.dischargeScale receiver peeled,
           (¬ ∃ witness : Graph.ExitFour.Witness
-              (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+              (Graph.HasCycleWithLength data.LengthOK) piece data.threshold data.dischargeScale
               receiver peeled,
             ∃ selected ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
                 data.threshold data.dischargeScale receiver package.outside
@@ -3082,7 +3280,7 @@ abbrev SelectedNoExitSixWith (data : Data.{u}) (object : Graph.FiniteObject.{u})
         (Graph.ExitFour.SilentUnpeeledExcessAt piece data.threshold
             data.dischargeScale receiver peeled ∧
           (¬ ∃ witness : Graph.ExitFour.Witness
-              (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+              (Graph.HasCycleWithLength data.LengthOK) piece data.threshold data.dischargeScale
               receiver peeled,
             witness.load ∈ Graph.ExitFour.unpeeledExcess piece data.threshold
               data.dischargeScale receiver peeled) ∧
@@ -3115,7 +3313,7 @@ abbrev SelectedNoExitSixWith (data : Data.{u}) (object : Graph.FiniteObject.{u})
                         data.threshold data.dischargeScale receiver peeled,
                     ¬ ∃ witness : Graph.ExitFour.Witness
                         (Graph.HasCycleWithLength data.LengthOK) piece
-                        data.threshold receiver peeled,
+                        data.threshold data.dischargeScale receiver peeled,
                       ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
                           piece data.threshold data.dischargeScale receiver
                           package.outside peeled,
@@ -3124,11 +3322,11 @@ abbrev SelectedNoExitSixWith (data : Data.{u}) (object : Graph.FiniteObject.{u})
                         data.threshold data.dischargeScale receiver peeled ∧
                       ¬ ∃ witness : Graph.ExitFour.Witness
                           (Graph.HasCycleWithLength data.LengthOK) piece
-                          data.threshold receiver peeled,
+                          data.threshold data.dischargeScale receiver peeled,
                         witness.load ∈ Graph.ExitFour.unpeeledExcess piece
                           data.threshold data.dischargeScale receiver peeled)) ∧
                   ¬ exitFiveAt piece receiver peeled ∧
-                  ¬ ExitSixDelocalizes data object piece ∧
+                  ¬ ExitSixDelocalizes data object piece receiver peeled ∧
                   extra packing piece)
 
 /-- The same selected no-exit-`(6)` residual, but with the selected receiver
@@ -3147,7 +3345,7 @@ abbrev SelectedNoExitSixReceiverWith (data : Data.{u})
             Graph.ExitFour.VisibleFourUnpeeledPackage piece data.threshold
               data.dischargeScale receiver peeled,
           (¬ ∃ witness : Graph.ExitFour.Witness
-              (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+              (Graph.HasCycleWithLength data.LengthOK) piece data.threshold data.dischargeScale
               receiver peeled,
             ∃ selected ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
                 data.threshold data.dischargeScale receiver package.outside
@@ -3159,7 +3357,7 @@ abbrev SelectedNoExitSixReceiverWith (data : Data.{u})
         (Graph.ExitFour.SilentUnpeeledExcessAt piece data.threshold
             data.dischargeScale receiver peeled ∧
           (¬ ∃ witness : Graph.ExitFour.Witness
-              (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+              (Graph.HasCycleWithLength data.LengthOK) piece data.threshold data.dischargeScale
               receiver peeled,
             witness.load ∈ Graph.ExitFour.unpeeledExcess piece data.threshold
               data.dischargeScale receiver peeled) ∧
@@ -3192,7 +3390,7 @@ abbrev SelectedNoExitSixReceiverWith (data : Data.{u})
                         data.threshold data.dischargeScale receiver peeled,
                     ¬ ∃ witness : Graph.ExitFour.Witness
                         (Graph.HasCycleWithLength data.LengthOK) piece
-                        data.threshold receiver peeled,
+                        data.threshold data.dischargeScale receiver peeled,
                       ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
                           piece data.threshold data.dischargeScale receiver
                           package.outside peeled,
@@ -3201,11 +3399,11 @@ abbrev SelectedNoExitSixReceiverWith (data : Data.{u})
                         data.threshold data.dischargeScale receiver peeled ∧
                       ¬ ∃ witness : Graph.ExitFour.Witness
                           (Graph.HasCycleWithLength data.LengthOK) piece
-                          data.threshold receiver peeled,
+                          data.threshold data.dischargeScale receiver peeled,
                         witness.load ∈ Graph.ExitFour.unpeeledExcess piece
                           data.threshold data.dischargeScale receiver peeled)) ∧
                   ¬ exitFiveAt piece receiver peeled ∧
-                  ¬ ExitSixDelocalizes data object piece ∧
+                  ¬ ExitSixDelocalizes data object piece receiver peeled ∧
                   extra packing piece receiver peeled)
 
 /-- The selected silent-core residual profile at exit `(8)`.  It exposes the
@@ -3302,31 +3500,61 @@ abbrev Route8Survives (data : Data.{u}) (object : Graph.FiniteObject.{u})
         Graph.Route8.TraceBasin.Route8Entry object piece data.threshold
             data.LengthOK receiver load ∧
           ¬ ∃ witness : Graph.ExitFour.Witness
-              (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+              (Graph.HasCycleWithLength data.LengthOK) piece data.threshold data.dischargeScale
               receiver ∅,
             witness.load = load
 
-/-- One member of the paper's unified indexed collection `\tilde\Xi`.
-
-The support is a negative, zero-surplus canonical Type A support which has not
-produced the decorated Type B handoff.  The receiver is saturated and the load
-is one of its unpaid silent loads.  This is a proposition about the canonical
-object data; it is not a transport record. -/
-abbrev Route8UnifiedIndex (data : Data.{u})
-    (object : Graph.FiniteObject.{u})
-    (index : Graph.Route8Census.Index object) : Prop :=
+/-- The canonical component collection `\tilde{\mathcal X}` of
+`def:typeA-unified-negative`. -/
+noncomputable def route8UnifiedComponents (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) :
+    Finset (Graph.SupportComponents.Connected.Component object
+      (object.remainderSupport (canonicalWindowPacking data object))) := by
+  classical
   let packing := canonicalWindowPacking data object
   let support := object.remainderSupport packing
-  ∃ component ∈ object.canonicalPieces support,
+  exact (object.canonicalPieces support).filter fun component =>
     let piece := object.pieceSupport support component
-    index.1 = piece ∧
+    object.ambientSurplus piece data.threshold = 0 ∧
       object.NegativeNetCharge piece data.threshold data.dischargeScale ∧
-      object.ambientSurplus piece data.threshold = 0 ∧
-      ¬ HandoffProduced data object packing piece ∧
-      index.2.1 ∈ Graph.VisibleEntry.saturatedReceivers object piece
-        data.threshold data.dischargeScale ∧
-      index.2.2 ∈ Graph.VisibleEntry.silentExcess object piece
-        data.threshold data.dischargeScale index.2.1
+      ¬ HandoffProduced data object packing piece
+
+/-- The paper's unified indexed collection `\tilde\Xi`: saturated receivers
+and unpaid silent loads of the supports in `\tilde{\mathcal X}`. -/
+noncomputable def route8UnifiedEntries (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) :
+    Finset (Graph.Route8Census.Index object) :=
+  Graph.Route8Census.entriesOfComponents object
+    (canonicalWindowPacking data object) (route8UnifiedComponents data object)
+    data.threshold data.dischargeScale
+
+/-- **`def:typeA-unified-negative`**, on the literal active remainder.
+
+The component filter is exactly
+`σ(X) = 0`, `N₀(X) < 0`, and no decorated Type B handoff.  The natural-number
+summand is the discharge-cleared value `s·δ(X) = |V(X)| - s·def⁺(X)`; its
+strict positivity is recorded for every member, exactly as in the definition.
+No large-budget lower bound, entry classification, carrier theorem, or peeling
+invariant is part of this schema. -/
+abbrev Route8UnifiedNegative (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  let packing := canonicalWindowPacking data object
+  let support := object.remainderSupport packing
+  let unified := route8UnifiedComponents data object
+  ∃ collection : Finset (Finset object.Vertex),
+    collection = unified.image (object.pieceSupport support) ∧
+      (∀ piece ∈ collection,
+        object.ambientSurplus piece data.threshold = 0 ∧
+          object.NegativeNetCharge piece data.threshold data.dischargeScale ∧
+          ¬ HandoffProduced data object packing piece ∧
+          0 < piece.card -
+            data.dischargeScale * object.positiveDeficiency piece data.threshold) ∧
+      ∃ scaledDeficit : Nat,
+        scaledDeficit =
+          ∑ piece ∈ collection,
+            (piece.card -
+              data.dischargeScale * object.positiveDeficiency piece data.threshold)
 
 /-- The exact route-8/target-defect classification of one unified entry.
 
@@ -3347,51 +3575,57 @@ abbrev Route8UnifiedEntryFacts (data : Data.{u})
     ((Graph.Route8.TraceBasin.TargetCompleteMinimal object index.1
           data.threshold data.LengthOK index.2.1 index.2.2 basin ∧
         ¬ ∃ witness : Graph.ExitFour.Witness
-            (Graph.HasCycleWithLength data.LengthOK) index.1 data.threshold
+            (Graph.HasCycleWithLength data.LengthOK) index.1 data.threshold data.dischargeScale
             index.2.1 ∅,
           witness.load = index.2.2) ∨
       (Graph.Route8.TraceBasin.TraceLocalTargetDefect object index.1
           data.threshold data.LengthOK index.2.1 index.2.2 basin ∧
-        ¬ Graph.Route8.TraceBasin.TraceTargetCompleteCompression object index.1
-          data.threshold data.LengthOK index.2.1 index.2.2 basin ∧
+        (¬ ∃ retained,
+          Graph.Route8.TraceBasin.TraceResponseQuotient object index.1
+            data.threshold data.LengthOK index.2.1 index.2.2 basin retained) ∧
         ¬ Graph.Route8.TraceBasin.TraceDelocalization object index.1
           data.threshold data.LengthOK index.2.1 index.2.2 basin ∧
         ¬ Graph.Route8.TraceBasin.TraceSurvivingSeparator object index.1
           data.threshold data.LengthOK index.2.1 index.2.2 basin ∧
         ∃ witness : Graph.ExitFour.Witness
-            (Graph.HasCycleWithLength data.LengthOK) index.1 data.threshold
+            (Graph.HasCycleWithLength data.LengthOK) index.1 data.threshold data.dischargeScale
             index.2.1 ∅,
           witness.load = index.2.2))
 
-/-- Nodes `[111]`--`[123]`, the paper's unified Type A census on the selected
-minimal-counterexample branch.
-
-The first conjunct is the all-pieces branch-kill classification.  The second
-says that the concrete object-level census is *exactly* `\tilde\Xi` (so no
-decorated handoff or unsaturated receiver is counted).  The third is the
-route-8/target-defect dichotomy and common two-incidence lower bound for every
-entry.  The last conjunct is the surviving-stage consequence of the
-large-budget net-deficiency cap: every valid finite exit-(4) peeling prefix
-still satisfies the reduced support rate; its negation is precisely the stage
-which `thm:branch-kill` closes. -/
-abbrev Route8UnifiedCensusFacts (data : Data.{u})
+/-- **`lem:typeA-unified-deficit`** (node `[123]`): the unified collection
+carries the whole large-budget deficit, cleared of denominators. -/
+abbrev Route8UnifiedDeficitFact (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
   let packing := canonicalWindowPacking data object
-  let entries := Graph.Route8Census.entries object packing data.threshold
-    data.dischargeScale
-  Graph.Route8Deficit.PieceClassification object packing data.threshold
-      data.dischargeScale ∧
-    (∀ index, index ∈ entries ↔ Route8UnifiedIndex data object index) ∧
-    (∀ index ∈ entries, Route8UnifiedEntryFacts data object index) ∧
-    ∀ chain : List (Graph.Route8Census.Index object),
-      Graph.Route8Pressure.PeelChain object packing data.threshold
-          data.dischargeScale
-          (data.bridgeMassFactor * data.dischargeScale *
-            data.surplusThreshold object.vertexCount) data.LengthOK chain →
-        Graph.Route8Pressure.StageRate object packing data.threshold
-          data.dischargeScale
-          (data.bridgeMassFactor * data.dischargeScale *
-            data.surplusThreshold object.vertexCount) chain.toFinset
+  let support := object.remainderSupport packing
+  let components := route8UnifiedComponents data object
+  support.card ≤
+    Graph.TypeBEnvelopeCharge.route8Deficit object support data.threshold
+        data.dischargeScale components +
+      data.dischargeScale * (Graph.Route8Census.supply object packing).card +
+      2 * (data.bridgeMassFactor * data.dischargeScale *
+        data.surplusThreshold object.vertexCount)
+
+/-- **`def:typeA-unified-entries` with `lem:typeA-unified-carriers` and
+`def:typeA-pressure-ledger`** (node `[123]`): the exact per-entry census. -/
+abbrev Route8UnifiedEntryCensusFact (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∀ index ∈ route8UnifiedEntries data object,
+    Route8UnifiedEntryFacts data object index
+
+/-- **`thm:large-budget-route8-only`'s failed-stage arm** (node `[123]`): a
+recorded peel chain of the descent at which the stage rate fails. -/
+abbrev Route8StageRateFailedFact (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  let packing := canonicalWindowPacking data object
+  let entries := route8UnifiedEntries data object
+  let bridgeSlack := 2 * (data.bridgeMassFactor * data.dischargeScale *
+    data.surplusThreshold object.vertexCount)
+  ∃ chain : List (Graph.Route8Census.Index object),
+    Graph.Route8Pressure.PeelChain object packing entries data.threshold
+        data.dischargeScale bridgeSlack data.LengthOK chain ∧
+      ¬ Graph.Route8Pressure.StageRate object packing data.threshold
+          data.dischargeScale bridgeSlack chain.toFinset
 
 /-- Node `[111]`, `def:typeA-large-budget-deficit`: extract the canonical
 collection `𝒳_A` of Type A pieces all of whose saturated receivers survive in
@@ -3402,29 +3636,20 @@ basin burden and the large-budget lower bound belong to `[112]` and `[113]` and
 are deliberately absent here. -/
 abbrev Route8GlobalSqueeze (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
-  SilentCoreResidualProfile data object ∧
   letI : DecidableEq object.Vertex := object.vertices.decEq
   let packing := canonicalWindowPacking data object
-  object.IsWindowPacking data.windowOrder packing ∧
-      (∀ window : Finset object.Vertex,
-        object.InducesWindow data.windowOrder window →
-        ∃ member ∈ packing, ¬ Disjoint window member) ∧
-      let support := object.remainderSupport packing
-      let routeEight : Finset
-          (Graph.SupportComponents.Connected.Component object support) := by
-        classical
-        exact (object.canonicalPieces support).filter
-          (Route8Survives data object packing)
-      (∀ component,
-        component ∈ routeEight ↔
-          component ∈ object.canonicalPieces support ∧
-            Route8Survives data object packing component) ∧
-        ∃ collection : Finset (Finset object.Vertex),
-          collection = routeEight.image (object.pieceSupport support) ∧
-            ∃ scaledDeficit : Nat,
-              scaledDeficit =
-                Graph.TypeBEnvelopeCharge.route8Deficit object support
-                  data.threshold data.dischargeScale routeEight
+  let support := object.remainderSupport packing
+  let routeEight : Finset
+      (Graph.SupportComponents.Connected.Component object support) := by
+    classical
+    exact (object.canonicalPieces support).filter
+      (Route8Survives data object packing)
+  ∃ collection : Finset (Finset object.Vertex),
+    collection = routeEight.image (object.pieceSupport support) ∧
+      ∃ scaledDeficit : Nat,
+        scaledDeficit =
+          Graph.TypeBEnvelopeCharge.route8Deficit object support
+            data.threshold data.dischargeScale routeEight
 
 /-- Node `[112]`, `lem:typeA-route8-burden`, cleared by the registered scale.
 
@@ -3436,29 +3661,28 @@ load.  The final inequality is therefore
 node `[113]`. -/
 abbrev Route8BasinBurden (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
-  Route8GlobalSqueeze data object ∧
-    letI : DecidableEq object.Vertex := object.vertices.decEq
-    let packing := canonicalWindowPacking data object
-    let support := object.remainderSupport packing
-    let routeEight : Finset
-        (Graph.SupportComponents.Connected.Component object support) := by
-      classical
-      exact (object.canonicalPieces support).filter
-        (Route8Survives data object packing)
-    ∃ basinCount : Nat,
-      basinCount =
-        ∑ component ∈ routeEight,
-          ∑ receiver ∈ Graph.VisibleEntry.saturatedReceivers object
-              (object.pieceSupport support component) data.threshold
-              data.dischargeScale,
-            (Graph.VisibleEntry.silentExcess object
-              (object.pieceSupport support component) data.threshold
-              data.dischargeScale receiver).card ∧
-        ∃ scaledDeficit : Nat,
-          scaledDeficit =
-            Graph.TypeBEnvelopeCharge.route8Deficit object support
-              data.threshold data.dischargeScale routeEight ∧
-            scaledDeficit ≤ basinCount
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  let packing := canonicalWindowPacking data object
+  let support := object.remainderSupport packing
+  let routeEight : Finset
+      (Graph.SupportComponents.Connected.Component object support) := by
+    classical
+    exact (object.canonicalPieces support).filter
+      (Route8Survives data object packing)
+  ∃ basinCount : Nat,
+    basinCount =
+      ∑ component ∈ routeEight,
+        ∑ receiver ∈ Graph.VisibleEntry.saturatedReceivers object
+            (object.pieceSupport support component) data.threshold
+            data.dischargeScale,
+          (Graph.VisibleEntry.silentExcess object
+            (object.pieceSupport support component) data.threshold
+            data.dischargeScale receiver).card ∧
+      ∃ scaledDeficit : Nat,
+        scaledDeficit =
+          Graph.TypeBEnvelopeCharge.route8Deficit object support
+            data.threshold data.dischargeScale routeEight ∧
+          scaledDeficit ≤ basinCount
 
 /-- Node `[113]`, `def:typeA-large-budget-deficit`, in exact finite form.
 
@@ -3559,7 +3783,7 @@ abbrev Route8TrueResidual (data : Data.{u})
                 Graph.Route8.TraceBasin.TargetCompleteMinimal object piece
                     data.threshold data.LengthOK receiver load basin ∧
                   ¬ ∃ witness : Graph.ExitFour.Witness
-                      (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+                      (Graph.HasCycleWithLength data.LengthOK) piece data.threshold data.dischargeScale
                       receiver ∅,
                     witness.load = load
 
@@ -3680,8 +3904,9 @@ abbrev Route8SmallCoreCollapse (data : Data.{u})
               (Graph.HasCycleWithLength data.LengthOK)).alpha ≤ 1 ∧
             (Graph.Route8.TraceBasin.TraceLocalTargetDefect object piece
                 data.threshold data.LengthOK receiver load basin ∨
-              Graph.Route8.TraceBasin.TraceTargetCompleteCompression object piece
-                data.threshold data.LengthOK receiver load basin ∨
+              (∃ retained,
+                Graph.Route8.TraceBasin.TraceResponseQuotient object piece
+                  data.threshold data.LengthOK receiver load basin retained) ∨
               Graph.Route8.TraceBasin.TraceDelocalization object piece
                 data.threshold data.LengthOK receiver load basin ∨
               Graph.Route8.TraceBasin.TraceSurvivingSeparator object piece
@@ -3809,9 +4034,19 @@ count therefore concerns the free side of that very `Θ_cap`, not an arbitrary
 or empty presentation. -/
 def BlockedPairEntropySandwichStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
-  ∃ (capacity : Graph.CapacityPresentation object data.threshold
+  ∃ (active : Graph.ActiveSurplusDemands
+        (Graph.MinimumDegreeAtLeast data.threshold)
+        (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
+        data.threshold)
+      (capacity : Graph.CapacityPresentation object data.threshold
         data.windowOrder),
-    (object.primitiveCarrier data.threshold).card =
+    capacity.activation =
+        (Graph.recordSparsePairDEBlockers
+          (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+          (LengthOK := data.LengthOK)
+          (Graph.pairResponseActivation active)
+          (object.portPairSchedule data.threshold)) ∧
+      (object.primitiveCarrier data.threshold).card =
         object.vertexCount + 2 * object.edgeCount +
           object.degreeSurplus data.threshold ∧
       (object.primitiveCarrier data.threshold).card ≤
@@ -3845,9 +4080,19 @@ def BlockedPairEntropySandwichStatement (data : Data.{u})
 presentation and node-`[129]` baseline family. -/
 def BlockedPairCodeUnrealizedStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
-  ∃ (capacity : Graph.CapacityPresentation object data.threshold
+  ∃ (active : Graph.ActiveSurplusDemands
+        (Graph.MinimumDegreeAtLeast data.threshold)
+        (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
+        data.threshold)
+      (capacity : Graph.CapacityPresentation object data.threshold
         data.windowOrder),
-    (object.primitiveCarrier data.threshold).card =
+    capacity.activation =
+        (Graph.recordSparsePairDEBlockers
+          (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+          (LengthOK := data.LengthOK)
+          (Graph.pairResponseActivation active)
+          (object.portPairSchedule data.threshold)) ∧
+      (object.primitiveCarrier data.threshold).card =
         object.vertexCount + 2 * object.edgeCount +
           object.degreeSurplus data.threshold ∧
       (object.primitiveCarrier data.threshold).card ≤
@@ -3892,6 +4137,78 @@ noncomputable def germCanonicalRepresentative (data : Data.{u})
   Graph.CanonicalPiece.cutStateRepresentative
     (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
     (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant germ.piece
+
+/-- The finite range used by the manuscript's two-strand kernel census.  At
+the registered `P₁₃` window this is `3·13 + 1 = 40`, so the semantic node
+invokes exactly `survivors 13 40` without installing an application-owned
+numeric field. -/
+def twoStrandEnumerationBound (data : Data.{u}) : Nat :=
+  3 * data.windowOrder + 1
+
+/-- The literal graph-realized symmetric-strand witness of nodes
+`[163]`--`[168]`, stated over one germ of the incoming extracted family.
+
+`Q` and `E` are neutral and equal-length; `E` is embedded in the ambient graph
+as the second internally-disjoint representative.  Its two cut coordinates
+attach to one ambient-cubic cold window and each attachment has two distinct
+outside stubs.  The recorded offsets give `d`, the common internal size gives
+`ℓ`, and the two graph cycles imply the exact numerical closing test used by
+`Graph.TwoStrand`.  No witness is stored beside the ledger: this entire
+existential is the semantic proposition of its key. -/
+noncomputable def GenuineSecondStrandConfiguration (data : Data.{u})
+    (object : Graph.FiniteObject.{u})
+    (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+      (Graph.MinimumDegreeAtLeast data.threshold)
+      (Graph.HasCycleWithLength data.LengthOK) object)
+    (config : Graph.TwoStrand.Configuration) : Prop := by
+  classical
+  let cold := canonicalColdWindows data object
+  let cubic := cold.filter (AmbientCubicWindow data object)
+  exact ActiveColdGermStatement data object germ ∧
+    germ.Neutral ∧ germ.increment = 0 ∧
+    SecondStrandGraphRealizedStatement data germ ∧
+    config.length = germ.piece.internalVertexCount + 1 ∧
+    config.gap = Nat.dist (germ.record.offsets 0).1 (germ.record.offsets 1).1 ∧
+    config.gap < data.windowOrder ∧
+    (∃ window ∈ cubic,
+      ∃ left right : object.Vertex,
+        left ∈ window ∧ right ∈ window ∧ left ≠ right ∧
+        (∃ x y : germ.atom.interface.Vertex,
+          x ≠ y ∧
+          germ.atom.pieceIntoAmbient (.inl x) = left ∧
+          germ.atom.pieceIntoAmbient (.inl y) = right) ∧
+        (∃ leftFirst leftSecond : object.Vertex,
+          leftFirst ∈ object.externalNeighbours window left ∧
+          leftSecond ∈ object.externalNeighbours window left ∧
+          leftFirst ≠ leftSecond) ∧
+        (∃ rightFirst rightSecond : object.Vertex,
+          rightFirst ∈ object.externalNeighbours window right ∧
+          rightSecond ∈ object.externalNeighbours window right ∧
+          rightFirst ≠ rightSecond)) ∧
+    (config.DyadicallyClosed → germ.Realizing)
+
+/-- Node `[163]`, yes-arm: some neutral equal-length germ of the active
+extracted family has its second representative graph-realized.  The finite
+closing-length data and endpoint-stub conclusions belong to `[167]` and
+`[168]`; they are deliberately not bundled into this branch test. -/
+noncomputable def GenuineSecondStrandStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+      (Graph.MinimumDegreeAtLeast data.threshold)
+      (Graph.HasCycleWithLength data.LengthOK) object,
+    ActiveColdGermStatement data object germ ∧
+      germ.Neutral ∧
+      germ.increment = 0 ∧
+      SecondStrandGraphRealizedStatement data germ
+
+/-- Node `[163]`, no-arm: on the same incoming extracted-family witness, no
+neutral zero-increment germ has a graph-realized second strand.  Such a germ's
+second representative is therefore the canonical replacement case of
+`[165]`--`[166]`; canonical order itself is not the branch test. -/
+noncomputable def CanonicalNeutralConfigurationStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ColdGermCandidatesStatement data object ∧
+    ¬ GenuineSecondStrandStatement data object
 
 /-- The value schema of each spine fact, stated of the *object* alone.
 
@@ -4424,62 +4741,11 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             (Graph.HasCycleWithLength data.LengthOK representative →
               Graph.HasCycleWithLength data.LengthOK object)
   | .coldCorridorState, object =>
-      -- `def:cold-corridor-first-failure`, the cut-state clauses.  Stated at
-      -- every presentation of the object's corridor segments, so no corridor
-      -- construction travels with the fact: what is committed is that the
-      -- retained state is *complete* and that it is *bounded*.
-      --
-      -- The first clause is the manuscript's "after excluding (F2), equality of
-      -- cold corridor states is equality for every target-response coordinate
-      -- used by the local replacement" -- and it holds at every declared
-      -- coordinate of `def:declared-coordinate-signature`, derived (D8) ones
-      -- included, although the state retains only the generating ones.
-      --
-      -- The second is "the set of possible cold corridor states is bounded by a
-      -- constant `Q_cold` depending only on the fixed declared signature":
-      -- `Q_cold + 1` segments cannot have pairwise distinct states.  That is the
-      -- pigeonhole `lem:cold-corridor-first-failure` reaches the repeat subcase
-      -- of (F5) by.
-      --
-      -- The third is the sentence the second half of the paragraph draws:
-      -- "if two prefixes have the same finite cut-state but differ in exact
-      -- target response against some compatible context, that discrepancy is
-      -- recorded as a first failure of type (F2)", and "thus, after excluding
-      -- (F2), equality of cold corridor states is equality for every
-      -- target-response coordinate used by the local replacement".  It holds at
-      -- every reading of the corridor's responses, so no carrier travels.
-      (∀ presentation : Graph.ColdCorridor.Presentation data.coldSignature object,
-        (∀ left right : presentation.Segment,
-          presentation.state left = presentation.state right →
-          ∀ coordinate : Graph.ColdCorridor.Generated data.coldSignature,
-            presentation.support coordinate ⊆
-                ↑(presentation.activeInterface left) →
-              presentation.reading left coordinate =
-                presentation.reading right coordinate) ∧
-        (∀ segments : Fin (Graph.ColdCorridor.stateBound data.coldSignature + 1) →
-            presentation.Segment,
-          ∃ left right, left ≠ right ∧
-            presentation.state (segments left) =
-              presentation.state (segments right)) ∧
-        ∀ (boundary : Graph.Boundary)
-          (carrier : presentation.Segment → Graph.BoundaryPiece boundary)
-          (left right : presentation.Segment),
-          (¬ presentation.FirstFailureResponse
-              (Graph.HasCycleWithLength data.LengthOK) carrier left right →
-            presentation.state left = presentation.state right →
-              Graph.Response.ContextEquivalent
-                (Graph.HasCycleWithLength data.LengthOK)
-                (carrier left) (carrier right)) ∧
-          -- And the converse the same sentence states: a genuine response
-          -- discrepancy at equal states *is* recorded as a first failure of
-          -- type (F2).  Committing only one direction would leave the
-          -- manuscript's dichotomy at a repeated state half-stated.
-          (presentation.state left = presentation.state right →
-            ¬ Graph.Response.ContextEquivalent
-                (Graph.HasCycleWithLength data.LengthOK)
-                (carrier left) (carrier right) →
-              presentation.FirstFailureResponse
-                (Graph.HasCycleWithLength data.LengthOK) carrier left right))
+      -- The ledger retains the actual corridor presentations, state readings,
+      -- first repeat, exact table record, and the paper's terminal/repeated
+      -- exchange representative.  Consumers recover those witnesses from this
+      -- key; they do not supply a fresh `Presentation` or manufacture a row.
+      ColdCorridorStateStatement data object
   | .coldSameInterfaceTable, object =>
       -- `lem:cold-same-interface-table` and `lem:cold-short-self-return-filter`.
       --
@@ -4502,35 +4768,36 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- `lem:cold-short-self-return-filter`'s surviving ones -- an accepted
       -- length in a self-return's smear interval would be realized through its
       -- cold-window offset, and the selected object realizes none.
-      ((∀ Handoff : Finset object.Vertex → Prop,
-        ∀ row : Graph.ColdCorridor.TableRow data.coldSignature
-            (Graph.MinimumDegreeAtLeast data.threshold)
-            (Graph.HasCycleWithLength data.LengthOK) object Handoff,
-          ¬ row.Realizing ∧ (Handoff row.support ∨ row.Distinguishing)) ∧
-        (∀ Handoff : Finset object.Vertex → Prop,
-          ∀ self : Graph.ColdCorridor.SelfReturn data.coldSignature data.LengthOK
-              (Graph.MinimumDegreeAtLeast data.threshold)
-              (Graph.HasCycleWithLength data.LengthOK) object Handoff,
-            Graph.ColdCorridor.SurvivesSmear data.LengthOK
-                (data.coldSignature.windowOrder - 1) self.outsideLength ∧
-              ¬ self.row.Realizing ∧
-                (Handoff self.row.support ∨ self.row.Distinguishing)) ∧
-        (∀ length : Nat,
-          ¬ Graph.ColdCorridor.SurvivesSmear data.LengthOK
-              (data.windowOrder - 1) length →
-            ∃ tested, length ≤ tested ∧ tested ≤ length + (data.windowOrder - 1) ∧
-              data.LengthOK tested) ∧
-        -- `def:cold-same-interface-table`'s own finiteness claim -- "the table
-        -- is finite because the support size, boundary size, window labels, and
-        -- declared coordinate labels are bounded" -- and the equal-length
-        -- condition `δ = 0` that makes a row a row.
-        (Graph.ColdCorridor.tableBound data.coldSignature =
-          Fintype.card (Graph.ColdCorridor.Record data.coldSignature)) ∧
-        ∀ Handoff : Finset object.Vertex → Prop,
+      ColdGermCandidatesStatement data object ∧
+        ((∀ Handoff : Finset object.Vertex → Prop,
           ∀ row : Graph.ColdCorridor.TableRow data.coldSignature
               (Graph.MinimumDegreeAtLeast data.threshold)
               (Graph.HasCycleWithLength data.LengthOK) object Handoff,
-            row.increment = 0)
+            ¬ row.Realizing ∧ (Handoff row.support ∨ row.Distinguishing)) ∧
+          (∀ Handoff : Finset object.Vertex → Prop,
+            ∀ self : Graph.ColdCorridor.SelfReturn data.coldSignature data.LengthOK
+                (Graph.MinimumDegreeAtLeast data.threshold)
+                (Graph.HasCycleWithLength data.LengthOK) object Handoff,
+              Graph.ColdCorridor.SurvivesSmear data.LengthOK
+                  (data.coldSignature.windowOrder - 1) self.outsideLength ∧
+                ¬ self.row.Realizing ∧
+                  (Handoff self.row.support ∨ self.row.Distinguishing)) ∧
+          (∀ length : Nat,
+            ¬ Graph.ColdCorridor.SurvivesSmear data.LengthOK
+                (data.windowOrder - 1) length →
+              ∃ tested, length ≤ tested ∧ tested ≤ length + (data.windowOrder - 1) ∧
+                data.LengthOK tested) ∧
+          -- `def:cold-same-interface-table`'s own finiteness claim -- "the table
+          -- is finite because the support size, boundary size, window labels, and
+          -- declared coordinate labels are bounded" -- and the equal-length
+          -- condition `δ = 0` that makes a row a row.
+          (Graph.ColdCorridor.tableBound data.coldSignature =
+            Fintype.card (Graph.ColdCorridor.Record data.coldSignature)) ∧
+          ∀ Handoff : Finset object.Vertex → Prop,
+            ∀ row : Graph.ColdCorridor.TableRow data.coldSignature
+                (Graph.MinimumDegreeAtLeast data.threshold)
+                (Graph.HasCycleWithLength data.LengthOK) object Handoff,
+              row.increment = 0)
   | .coldGermRealized, object =>
       -- `lem:cold-bounded-germ-trichotomy`, G1 and the exhaustiveness of the
       -- three cases.
@@ -4549,14 +4816,15 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- distinction `lem:cold-increment-arithmetic` (c) appeals to when it
       -- sends a target-visible periodic carrier to G2 and a target-invisible one
       -- to G3.
-      ((∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) object,
-          ¬ germ.Realizing) ∧
-        ∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) object,
-          germ.Realizing ∨ germ.Distinguishing ∨ germ.Neutral)
+      ColdGermCandidatesStatement data object ∧
+        ((∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+            (Graph.MinimumDegreeAtLeast data.threshold)
+            (Graph.HasCycleWithLength data.LengthOK) object,
+            ¬ germ.Realizing) ∧
+          ∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+            (Graph.MinimumDegreeAtLeast data.threshold)
+            (Graph.HasCycleWithLength data.LengthOK) object,
+            germ.Realizing ∨ germ.Distinguishing ∨ germ.Neutral)
   | .coldGermDistinguished, object =>
       -- `lem:cold-bounded-germ-trichotomy`, G2, through
       -- `lem:context-universality`: "the two local responses agree in the actual
@@ -4570,14 +4838,15 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- for the (F2) discrepancy.  No cycle is claimed: the manuscript is
       -- explicit that G2 distinguishes "without already realizing the cycle in
       -- the current graph", and what the germ is routed to is the defect exit.
-      (∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-        (Graph.MinimumDegreeAtLeast data.threshold)
-        (Graph.HasCycleWithLength data.LengthOK) object,
-        ∀ (Profile : Type)
-          (profile : Graph.BoundaryPiece germ.atom.interface → Profile),
-          germ.Distinguishing →
-            ¬ Graph.Response.TargetComplete profile
-              (Graph.HasCycleWithLength data.LengthOK) germ.piece germ.canonical)
+      ColdGermCandidatesStatement data object ∧
+        ∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object,
+          ∀ (Profile : Type)
+            (profile : Graph.BoundaryPiece germ.atom.interface → Profile),
+            germ.Distinguishing →
+              ¬ Graph.Response.TargetComplete profile
+                (Graph.HasCycleWithLength data.LengthOK) germ.piece germ.canonical
   | .coldGermSilent, object =>
       -- `lem:cold-bounded-germ-trichotomy`, G3, with
       -- `lem:cold-increment-arithmetic`.
@@ -4750,9 +5019,13 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- from the tail back to the head after the edge is deleted.
       (∀ contraction : Graph.EdgeContraction object, contraction.HasReturn)
   | .windowPackageRealized, object =>
-      WindowFamilyRealized data object (canonicalWindowPacking data object)
+      WindowPackageRealized data object (canonicalWindowPacking data object)
   | .windowPackageUnrealized, object =>
-      ¬ WindowFamilyRealized data object (canonicalWindowPacking data object)
+      ¬ WindowPackageRealized data object (canonicalWindowPacking data object)
+  | .densePackingOverflow, object =>
+      Graph.skeletonBudget object <
+        2 ^ (windowPackageBits data object *
+          (canonicalWindowPacking data object).card)
   | .denseDeficiencyBelow, object =>
       DenseDeficiencyBelowStatement data object
   | .denseDeficiencyAtOrAbove, object =>
@@ -4771,27 +5044,10 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             ∑ vertex ∈ window.filter (fun vertex =>
               (object.externalNeighbours window vertex).card = data.threshold - 2),
               (object.externalNeighbours window vertex).card)
-  | .coldProperNeutralGerm, object =>
-      -- `lem:neutral-germ-symmetry`, first kind: a neutral germ whose corridor
-      -- piece is not its own canonical representative — the canonical
-      -- representative of its cut-state (`def:cold-corridor-first-failure`,
-      -- `def:proper-quotient-representative`, `Graph/CanonicalRealization`)
-      -- strictly precedes it in the fixed canonical order on bounded pieces.
-      ∃ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) object,
-        germ.Neutral ∧
-          Graph.CanonicalPiece.Precedes (germCanonicalRepresentative data germ)
-            germ.piece.toCanonical
-  | .coldTrivialNeutralGerms, object =>
-      -- The exact complement: every neutral germ's corridor piece is its own
-      -- canonical representative (`Q = E`).
-      ∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) object,
-        germ.Neutral →
-          ¬ Graph.CanonicalPiece.Precedes (germCanonicalRepresentative data germ)
-            germ.piece.toCanonical
+  | .coldCanonicalNeutralConfiguration, object =>
+      CanonicalNeutralConfigurationStatement data object
+  | .coldGenuineSecondStrand, object =>
+      GenuineSecondStrandStatement data object
   | .coldCanonicalSwapSmaller, object =>
       ∃ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
           (Graph.MinimumDegreeAtLeast data.threshold)
@@ -4937,16 +5193,20 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- and then reading the G2 route from the ledger.  The fact therefore
       -- carries the actual target-defect route, not just the intermediate
       -- `Distinguishing` predicate.
-      ∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) object,
-        germ.increment < 0 →
-          germ.Distinguishing ∧
-            ∀ (Profile : Type)
-              (profile : Graph.BoundaryPiece germ.atom.interface → Profile),
-              ¬ Graph.Response.TargetComplete profile
-                (Graph.HasCycleWithLength data.LengthOK)
-                germ.piece germ.canonical
+      ColdGermCandidatesStatement data object ∧
+        ∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+            (Graph.MinimumDegreeAtLeast data.threshold)
+            (Graph.HasCycleWithLength data.LengthOK) object,
+          germ.increment < 0 →
+            germ.Distinguishing ∧
+              (∀ (Profile : Type)
+                (profile : Graph.BoundaryPiece germ.atom.interface → Profile),
+                ¬ Graph.Response.TargetComplete profile
+                  (Graph.HasCycleWithLength data.LengthOK)
+                  germ.piece germ.canonical) ∧
+              (germ.Distinguishing ∨
+                HandoffProduced data object (canonicalWindowPacking data object)
+                  germ.support)
   | .coldBranchClosed, object =>
       -- `thm:cold-branch-quantitative-closure`, in the form consumed by the
       -- cold oval: after the current residual's length-changing germs and
@@ -5525,7 +5785,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                         data.dischargeScale receiver peeled ∧
                       Graph.ExitFour.PeeledByWitnesses
                         (Graph.HasCycleWithLength data.LengthOK) piece
-                        data.threshold receiver peeled)
+                        data.threshold data.dischargeScale receiver peeled)
   | .typeAExitSevenProduced, object =>
       -- Node `[107]`, yes: exit `(7)` is produced on the exact selected
       -- no-exit-`(6)` residual.
@@ -5762,49 +6022,43 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                     2 * (data.bridgeMassFactor * data.dischargeScale *
                       object.degreeSurplus data.threshold))
   | .typeBBridgeSublinear, object =>
-      -- `prop:typeB-bridge-sublinear` in exact finite form: the bridge mass is
-      -- bounded by the assigned surplus budget after route-8 cores are
-      -- extracted, and `def:near-cubic-spine` bounds that budget by the
-      -- registered sublinear threshold.
+      -- `prop:typeB-bridge-sublinear` in exact finite form.  `ordinary` is the
+      -- canonical assigned-support role and `grouped` is the decorated-envelope
+      -- role from `def:typeB-residual-mass`.  Empty route-8 subcollections are
+      -- the proposition's hypothesis that the non-window cores contain no
+      -- admissible route-8 profile.  The factor `2` is precisely the paper's
+      -- at-most-twice convention: a high-centre surplus unit occurs at most once
+      -- in each of the two roles.
       ((∀ packing : Finset (Finset object.Vertex),
           object.IsWindowPacking data.windowOrder packing →
-          ∀ route8 : Finset (Graph.SupportComponents.Connected.Component object
-              (object.remainderSupport packing)),
-            (∀ piece ∈ route8,
-              object.ambientSurplus (object.pieceSupport
-                (object.remainderSupport packing) piece) data.threshold = 0) →
-            (∀ piece ∈ object.canonicalPieces (object.remainderSupport packing),
-              piece ∉ route8 →
+          ∀ ordinary grouped : Finset object.Vertex,
+            ordinary ⊆ object.remainderSupport packing →
+            grouped ⊆ object.remainderSupport packing →
+            (∀ piece ∈ object.canonicalPieces ordinary,
               Graph.TypeBEnvelopeCharge.BridgeResidualComponentAt object
-                (object.pieceSupport (object.remainderSupport packing) piece)
+                (object.pieceSupport ordinary piece)
                 data.threshold data.dischargeScale) →
-            ∑ piece ∈ object.canonicalPieces (object.remainderSupport packing),
-                ((object.pieceSupport (object.remainderSupport packing) piece).card +
+            (∀ piece ∈ object.canonicalPieces grouped,
+              Graph.TypeBEnvelopeCharge.BridgeResidualComponentAt object
+                (object.pieceSupport grouped piece)
+                data.threshold data.dischargeScale) →
+            ∑ piece ∈ object.canonicalPieces ordinary,
+                ((object.pieceSupport ordinary piece).card +
                     data.dischargeScale * object.ambientSurplus
-                      (object.pieceSupport (object.remainderSupport packing) piece)
+                      (object.pieceSupport ordinary piece)
                       data.threshold -
                   data.dischargeScale * object.positiveDeficiency
-                    (object.pieceSupport (object.remainderSupport packing) piece)
-                    data.threshold) ≤
-              Graph.TypeBEnvelopeCharge.route8Deficit object
-                  (object.remainderSupport packing) data.threshold
-                  data.dischargeScale route8 +
-                data.bridgeMassFactor * data.dischargeScale *
-                  object.degreeSurplus data.threshold) ∧
+                    (object.pieceSupport ordinary piece) data.threshold) +
+              ∑ piece ∈ object.canonicalPieces grouped,
+                ((object.pieceSupport grouped piece).card +
+                    data.dischargeScale * object.ambientSurplus
+                      (object.pieceSupport grouped piece) data.threshold -
+                  data.dischargeScale * object.positiveDeficiency
+                    (object.pieceSupport grouped piece) data.threshold) ≤
+                2 * (data.bridgeMassFactor * data.dischargeScale *
+                  object.degreeSurplus data.threshold)) ∧
         object.degreeSurplus data.threshold ≤
           data.surplusThreshold object.vertexCount)
-  | .branchKillClosed, object =>
-      LargeBudgetResidual data object ∧
-        ∃ packing : Finset (Finset object.Vertex),
-          object.IsWindowPacking data.windowOrder packing ∧
-            (∀ window : Finset object.Vertex,
-              object.InducesWindow data.windowOrder window →
-              ∃ member ∈ packing, ¬ Disjoint window member) ∧
-            ∃ component ∈ object.canonicalPieces
-                (object.remainderSupport packing),
-              object.NegativeNetCharge
-                (object.pieceSupport (object.remainderSupport packing) component)
-                data.threshold data.dischargeScale
   | .typeBExcluded, object =>
       -- Nodes `[74]`/`[82]`, the successful B2 reduction.  A canonical
       -- assigned support publishes the paper's literal `N₀(X) ≥ 0`.
@@ -5856,10 +6110,10 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                         data.dischargeScale receiver peeled ∧
                       Graph.ExitFour.PeeledByWitnesses
                         (Graph.HasCycleWithLength data.LengthOK) piece
-                        data.threshold receiver peeled ∧
+                        data.threshold data.dischargeScale receiver peeled ∧
                       ∃ witness : Graph.ExitFour.Witness
                           (Graph.HasCycleWithLength data.LengthOK) piece
-                          data.threshold receiver peeled,
+                          data.threshold data.dischargeScale receiver peeled,
                         witness.load ∈ Graph.ExitFour.unpeeledLoads piece
                             data.threshold receiver peeled ∧
                           Graph.ExitFour.Witness.nextPeeled witness ⊆
@@ -5898,13 +6152,13 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                         data.dischargeScale receiver peeled ∧
                       Graph.ExitFour.PeeledByWitnesses
                         (Graph.HasCycleWithLength data.LengthOK) piece
-                        data.threshold receiver peeled ∧
+                        data.threshold data.dischargeScale receiver peeled ∧
                       ((∃ package :
                           Graph.ExitFour.VisibleFourUnpeeledPackage piece
                             data.threshold data.dischargeScale receiver peeled,
                         ∃ witness : Graph.ExitFour.Witness
                             (Graph.HasCycleWithLength data.LengthOK) piece
-                            data.threshold receiver peeled,
+                            data.threshold data.dischargeScale receiver peeled,
                           ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
                               piece data.threshold data.dischargeScale receiver
                               package.outside peeled,
@@ -5913,7 +6167,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                             data.threshold data.dischargeScale receiver peeled ∧
                           ∃ witness : Graph.ExitFour.Witness
                               (Graph.HasCycleWithLength data.LengthOK) piece
-                              data.threshold receiver peeled,
+                              data.threshold data.dischargeScale receiver peeled,
                             witness.load ∈ Graph.ExitFour.unpeeledExcess piece
                               data.threshold data.dischargeScale receiver peeled)))
   | .typeASaturatedHandoffExitFourFree, object =>
@@ -5941,7 +6195,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                             data.threshold data.dischargeScale receiver peeled,
                         ¬ ∃ witness : Graph.ExitFour.Witness
                             (Graph.HasCycleWithLength data.LengthOK) piece
-                            data.threshold receiver peeled,
+                            data.threshold data.dischargeScale receiver peeled,
                           ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
                               piece data.threshold data.dischargeScale receiver
                               package.outside peeled,
@@ -5950,7 +6204,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                             data.threshold data.dischargeScale receiver peeled ∧
                           ¬ ∃ witness : Graph.ExitFour.Witness
                               (Graph.HasCycleWithLength data.LengthOK) piece
-                              data.threshold receiver peeled,
+                              data.threshold data.dischargeScale receiver peeled,
                             witness.load ∈ Graph.ExitFour.unpeeledExcess piece
                               data.threshold data.dischargeScale receiver peeled)))
   | .typeAExitFourReceiverDischarged, object =>
@@ -5978,7 +6232,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                     peeled ⊆ object.routedLoads piece data.threshold receiver ∧
                       Graph.ExitFour.PeeledByWitnesses
                         (Graph.HasCycleWithLength data.LengthOK) piece
-                        data.threshold receiver peeled ∧
+                        data.threshold data.dischargeScale receiver peeled ∧
                       ¬ Graph.ExitFour.SaturatedAfter piece data.threshold
                           data.dischargeScale receiver peeled ∧
                       1 + Graph.ExitFour.residualLoad piece data.threshold
@@ -5997,7 +6251,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                 Graph.ExitFour.VisibleFourUnpeeledPackage piece data.threshold
                   data.dischargeScale receiver peeled,
               (¬ ∃ witness : Graph.ExitFour.Witness
-                  (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+                  (Graph.HasCycleWithLength data.LengthOK) piece data.threshold data.dischargeScale
                   receiver peeled,
                 ∃ selected ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
                     data.threshold data.dischargeScale receiver package.outside
@@ -6009,7 +6263,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             (Graph.ExitFour.SilentUnpeeledExcessAt piece data.threshold
                 data.dischargeScale receiver peeled ∧
               (¬ ∃ witness : Graph.ExitFour.Witness
-                  (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+                  (Graph.HasCycleWithLength data.LengthOK) piece data.threshold data.dischargeScale
                   receiver peeled,
                 witness.load ∈ Graph.ExitFour.unpeeledExcess piece data.threshold
                   data.dischargeScale receiver peeled) ∧
@@ -6049,7 +6303,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                 Graph.ExitFour.VisibleFourUnpeeledPackage piece data.threshold
                   data.dischargeScale receiver peeled,
               (¬ ∃ witness : Graph.ExitFour.Witness
-                  (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+                  (Graph.HasCycleWithLength data.LengthOK) piece data.threshold data.dischargeScale
                   receiver peeled,
                 ∃ selected ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
                     data.threshold data.dischargeScale receiver package.outside
@@ -6061,7 +6315,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             (Graph.ExitFour.SilentUnpeeledExcessAt piece data.threshold
                 data.dischargeScale receiver peeled ∧
               (¬ ∃ witness : Graph.ExitFour.Witness
-                  (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+                  (Graph.HasCycleWithLength data.LengthOK) piece data.threshold data.dischargeScale
                   receiver peeled,
                 witness.load ∈ Graph.ExitFour.unpeeledExcess piece data.threshold
                   data.dischargeScale receiver peeled) ∧
@@ -6094,7 +6348,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                             data.threshold data.dischargeScale receiver peeled,
                         ¬ ∃ witness : Graph.ExitFour.Witness
                             (Graph.HasCycleWithLength data.LengthOK) piece
-                            data.threshold receiver peeled,
+                            data.threshold data.dischargeScale receiver peeled,
                           ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
                               piece data.threshold data.dischargeScale receiver
                               package.outside peeled,
@@ -6103,7 +6357,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                             data.threshold data.dischargeScale receiver peeled ∧
                           ¬ ∃ witness : Graph.ExitFour.Witness
                               (Graph.HasCycleWithLength data.LengthOK) piece
-                              data.threshold receiver peeled,
+                              data.threshold data.dischargeScale receiver peeled,
                             witness.load ∈ Graph.ExitFour.unpeeledExcess piece
                               data.threshold data.dischargeScale receiver peeled)) ∧
                       ¬ exitFiveAt piece receiver peeled)
@@ -6120,7 +6374,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                 Graph.ExitFour.VisibleFourUnpeeledPackage piece data.threshold
                   data.dischargeScale receiver peeled,
               (¬ ∃ witness : Graph.ExitFour.Witness
-                  (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+                  (Graph.HasCycleWithLength data.LengthOK) piece data.threshold data.dischargeScale
                   receiver peeled,
                 ∃ selected ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
                     data.threshold data.dischargeScale receiver package.outside
@@ -6132,7 +6386,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             (Graph.ExitFour.SilentUnpeeledExcessAt piece data.threshold
                 data.dischargeScale receiver peeled ∧
               (¬ ∃ witness : Graph.ExitFour.Witness
-                  (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+                  (Graph.HasCycleWithLength data.LengthOK) piece data.threshold data.dischargeScale
                   receiver peeled,
                 witness.load ∈ Graph.ExitFour.unpeeledExcess piece data.threshold
                   data.dischargeScale receiver peeled) ∧
@@ -6165,7 +6419,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                             data.threshold data.dischargeScale receiver peeled,
                         ¬ ∃ witness : Graph.ExitFour.Witness
                             (Graph.HasCycleWithLength data.LengthOK) piece
-                            data.threshold receiver peeled,
+                            data.threshold data.dischargeScale receiver peeled,
                           ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
                               piece data.threshold data.dischargeScale receiver
                               package.outside peeled,
@@ -6174,11 +6428,11 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                             data.threshold data.dischargeScale receiver peeled ∧
                           ¬ ∃ witness : Graph.ExitFour.Witness
                               (Graph.HasCycleWithLength data.LengthOK) piece
-                              data.threshold receiver peeled,
+                              data.threshold data.dischargeScale receiver peeled,
                             witness.load ∈ Graph.ExitFour.unpeeledExcess piece
                               data.threshold data.dischargeScale receiver peeled)) ∧
                       (¬ exitFiveAt piece receiver peeled ∧
-                        ExitSixDelocalizes data object piece))
+                        ExitSixDelocalizes data object piece receiver peeled))
   | .typeAExitSixFree, object =>
       -- Node `[105]`, no: the same selected saturated handoff state has no
       -- exit-`(6)` delocalization witness.
@@ -6189,7 +6443,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                 Graph.ExitFour.VisibleFourUnpeeledPackage piece data.threshold
                   data.dischargeScale receiver peeled,
               (¬ ∃ witness : Graph.ExitFour.Witness
-                  (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+                  (Graph.HasCycleWithLength data.LengthOK) piece data.threshold data.dischargeScale
                   receiver peeled,
                 ∃ selected ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
                     data.threshold data.dischargeScale receiver package.outside
@@ -6201,7 +6455,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             (Graph.ExitFour.SilentUnpeeledExcessAt piece data.threshold
                 data.dischargeScale receiver peeled ∧
               (¬ ∃ witness : Graph.ExitFour.Witness
-                  (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+                  (Graph.HasCycleWithLength data.LengthOK) piece data.threshold data.dischargeScale
                   receiver peeled,
                 witness.load ∈ Graph.ExitFour.unpeeledExcess piece data.threshold
                   data.dischargeScale receiver peeled) ∧
@@ -6234,7 +6488,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                             data.threshold data.dischargeScale receiver peeled,
                         ¬ ∃ witness : Graph.ExitFour.Witness
                             (Graph.HasCycleWithLength data.LengthOK) piece
-                            data.threshold receiver peeled,
+                            data.threshold data.dischargeScale receiver peeled,
                           ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
                               piece data.threshold data.dischargeScale receiver
                               package.outside peeled,
@@ -6243,11 +6497,11 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                             data.threshold data.dischargeScale receiver peeled ∧
                           ¬ ∃ witness : Graph.ExitFour.Witness
                               (Graph.HasCycleWithLength data.LengthOK) piece
-                              data.threshold receiver peeled,
+                              data.threshold data.dischargeScale receiver peeled,
                             witness.load ∈ Graph.ExitFour.unpeeledExcess piece
                               data.threshold data.dischargeScale receiver peeled)) ∧
                       (¬ exitFiveAt piece receiver peeled ∧
-                        ¬ ExitSixDelocalizes data object piece))
+                        ¬ ExitSixDelocalizes data object piece receiver peeled))
   | .typeAExitSixProper, object =>
       -- Node `[106]`, proper scope: `lem:proper-smearing` returns a
       -- proper-support replacement for the selected delocalization.
@@ -6358,9 +6612,38 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
         (data.bridgeMassFactor * data.dischargeScale *
           data.surplusThreshold object.vertexCount)
   | .route8PiecesClassified, object =>
-      Route8UnifiedCensusFacts data object
-  | .route8UnclassifiedPiece, object =>
-      ¬ Route8UnifiedCensusFacts data object
+      -- `thm:branch-kill`'s all-pieces classification, exactly as stated: at a
+      -- negative zero-surplus piece, an exit-(4) witness for a routed load, an
+      -- admissible silent-core residual profile
+      -- (`def:typeA-silent-core-residual` at every saturated receiver, which
+      -- presupposes the `[93]`-no reduction), or a produced decorated Type B
+      -- handoff; at a negative positive-surplus piece, the Type B bridge
+      -- component pair.  Per `rem:unified-covers-exit4` this does not force
+      -- silent-first: an exit-(4) support may be visible.
+      Graph.Route8Deficit.PieceClassification object
+        (Graph.HasCycleWithLength data.LengthOK)
+        (fun piece =>
+          Graph.Route8Deficit.SilentFirst object piece data.threshold
+              data.dischargeScale ∧
+            ∀ receiver ∈ Graph.VisibleEntry.saturatedReceivers object piece
+                data.threshold data.dischargeScale,
+              ∀ load ∈ Graph.VisibleEntry.silentExcess object piece
+                  data.threshold data.dischargeScale receiver,
+                Graph.Route8.TraceBasin.Route8Entry object piece data.threshold
+                  data.LengthOK receiver load)
+        (fun piece =>
+          HandoffProduced data object (canonicalWindowPacking data object) piece)
+        (canonicalWindowPacking data object) data.threshold data.dischargeScale
+  | .route8UnifiedNegative, object =>
+      -- `def:typeA-unified-negative`: only the exact canonical collection and
+      -- its cleared defining sum; all quantitative and entry facts are later.
+      Route8UnifiedNegative data object
+  | .route8UnifiedDeficit, object =>
+      Route8UnifiedDeficitFact data object
+  | .route8UnifiedEntryCensus, object =>
+      Route8UnifiedEntryCensusFact data object
+  | .route8StageRateFailed, object =>
+      Route8StageRateFailedFact data object
   | .route8TwoCarrierEntry, object =>
       let packing := canonicalWindowPacking data object
       let support := object.remainderSupport packing
@@ -6401,23 +6684,71 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
         Graph.Route8Census.CollectionTwoCarrierEntry object packing routeEight
           data.threshold data.dischargeScale data.LengthOK index ∧
         ¬ ∃ witness : Graph.ExitFour.Witness (Graph.HasCycleWithLength data.LengthOK)
-            index.1 data.threshold index.2.1 ∅,
+            index.1 data.threshold data.dischargeScale index.2.1 ∅,
           witness.load = index.2.2
+  | .route8VisibleExitFourRouting, object =>
+      -- `lem:typeA-unpeeled-visible-routing` / `lem:typeA-visible-entry` at the
+      -- unified collection, discharged through the standing invariants and
+      -- `rem:unified-covers-exit4`: a completion port of a receiver of a
+      -- collection piece that carries `s` visible receiver-entry returns among
+      -- its unpeeled loads yields an exit-`(4)` witness at the current peeling
+      -- whose load is one of those visible unpeeled loads.  The witness is per
+      -- port, not per load: the manuscript selects one of the overloaded
+      -- port's returns.
+      letI : DecidableEq object.Vertex := object.vertices.decEq
+      (∀ component ∈ route8UnifiedComponents data object,
+        ∀ receiver ∈ object.receivers
+            (object.pieceSupport
+              (object.remainderSupport (canonicalWindowPacking data object))
+              component)
+            data.threshold,
+          ∀ peeled : Finset object.Vertex,
+            peeled ⊆ object.routedLoads
+              (object.pieceSupport
+                (object.remainderSupport (canonicalWindowPacking data object))
+                component)
+              data.threshold receiver →
+            ∀ outside ∈ Graph.VisibleEntry.completionPorts object
+                (object.pieceSupport
+                  (object.remainderSupport (canonicalWindowPacking data object))
+                  component)
+                receiver,
+              data.dischargeScale ≤
+                ((Graph.VisibleEntry.visibleLoadsAt object
+                    (object.pieceSupport
+                      (object.remainderSupport
+                        (canonicalWindowPacking data object))
+                      component)
+                    data.threshold receiver outside) \ peeled).card →
+              ∃ witness : Graph.ExitFour.Witness
+                  (Graph.HasCycleWithLength data.LengthOK)
+                  (object.pieceSupport
+                    (object.remainderSupport (canonicalWindowPacking data object))
+                    component)
+                  data.threshold data.dischargeScale receiver peeled,
+                witness.load ∈
+                  (Graph.VisibleEntry.visibleLoadsAt object
+                    (object.pieceSupport
+                      (object.remainderSupport
+                        (canonicalWindowPacking data object))
+                      component)
+                    data.threshold receiver outside) \ peeled)
   | .route8PeelingDescent, object =>
       -- `thm:large-budget-route8-only`'s procedure at the fixed maximal packing,
-      -- with the census slack `F·s·T(n)` of node `[113]`.
+      -- with the two-role Type B allowance `2·F·s·T(n)`.
+      let entries := route8UnifiedEntries data object
+      let bridgeSlack := 2 * (data.bridgeMassFactor * data.dischargeScale *
+        data.surplusThreshold object.vertexCount)
       ∃ final : List (Graph.Route8Census.Index object),
         Graph.Route8Pressure.StageOutcome object (canonicalWindowPacking data object)
-          data.threshold data.dischargeScale
-          (data.bridgeMassFactor * data.dischargeScale *
-            data.surplusThreshold object.vertexCount) data.LengthOK final
+          entries data.threshold data.dischargeScale bridgeSlack data.LengthOK final
   | .route8UnifiedTrueTwoCarrierEntry, object =>
       letI : DecidableEq object.Vertex := object.vertices.decEq
-      ∃ index ∈ Graph.Route8Census.entries object
-          (canonicalWindowPacking data object) data.threshold data.dischargeScale,
-        Graph.Route8Census.TwoCarrierEntry object
-            (canonicalWindowPacking data object) data.threshold
-            data.dischargeScale data.LengthOK index ∧
+      let entries := route8UnifiedEntries data object
+      ∃ index ∈ entries,
+        Graph.Route8.IndexedTwoCarrierCore entries
+            (Graph.Route8Census.core object data.threshold data.LengthOK)
+            (data.threshold - 1) index ∧
           let basin := Graph.Route8Census.basin object data.threshold index
           Graph.Route8.TraceBasin.select? object index.1 data.threshold
               index.2.1 index.2.2 = some basin ∧
@@ -6426,7 +6757,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             2 ≤ ((Graph.Route8Census.presented object data.threshold data.LengthOK
               index).toEntry (Graph.HasCycleWithLength data.LengthOK)).alpha ∧
           ¬ ∃ witness : Graph.ExitFour.Witness
-              (Graph.HasCycleWithLength data.LengthOK) index.1 data.threshold
+              (Graph.HasCycleWithLength data.LengthOK) index.1 data.threshold data.dischargeScale
               index.2.1 ∅,
             witness.load = index.2.2
   | .sparseSlackSurplus, object =>
@@ -6667,9 +6998,19 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
   | .capacityTokenLedger, object =>
       -- The one concrete activation/carrier/packing presentation constructed
       -- at `[136]`, together with every accounting identity proved there.
-      ∃ capacity : Graph.CapacityPresentation object data.threshold
+      ∃ active : Graph.ActiveSurplusDemands
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
+          data.threshold,
+        ∃ capacity : Graph.CapacityPresentation object data.threshold
           data.windowOrder,
-        (object.primitiveCarrier data.threshold).card =
+        capacity.activation =
+            (Graph.recordSparsePairDEBlockers
+              (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+              (LengthOK := data.LengthOK)
+              (Graph.pairResponseActivation active)
+              (object.portPairSchedule data.threshold)) ∧
+          (object.primitiveCarrier data.threshold).card =
             object.vertexCount + 2 * object.edgeCount +
               object.degreeSurplus data.threshold ∧
           (object.primitiveCarrier data.threshold).card ≤
@@ -6680,15 +7021,39 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
   | .roleFibrePartition, object =>
       -- `lem:exact-surplus-pair-charge-partition` with the classwise and
       -- subtype budgets, at the object's own capacity-token ledger.
-      Graph.RoleFibrePartitionStatement object data.threshold data.windowOrder
-        data.surplusScale
+      ∃ active : Graph.ActiveSurplusDemands
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
+          data.threshold,
+        ∃ capacity : Graph.CapacityPresentation object data.threshold
+            data.windowOrder,
+          capacity.activation =
+              (Graph.recordSparsePairDEBlockers
+                (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+                (LengthOK := data.LengthOK)
+                (Graph.pairResponseActivation active)
+                (object.portPairSchedule data.threshold)) ∧
+            Graph.RoleFibrePartitionStatement object data.threshold
+              data.windowOrder data.surplusScale capacity
   | .fibrePressure, object =>
       -- `lem:capacity-token-high-load` with
       -- `cor:forced-homogeneous-same-token-scale` and the two sharp budgets,
       -- existential in the object's own capacity-token ledger at every declared
       -- presentation.
-      Graph.FibrePressureStatement object data.threshold data.windowOrder
-        data.surplusScale
+      ∃ active : Graph.ActiveSurplusDemands
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
+          data.threshold,
+        ∃ capacity : Graph.CapacityPresentation object data.threshold
+            data.windowOrder,
+          capacity.activation =
+              (Graph.recordSparsePairDEBlockers
+                (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+                (LengthOK := data.LengthOK)
+                (Graph.pairResponseActivation active)
+                (object.portPairSchedule data.threshold)) ∧
+            Graph.FibrePressureStatement object data.threshold data.windowOrder
+              data.surplusScale capacity
   | .spineSurplusEstimate, object =>
       -- The actual node-`[138]` conclusion, derived from the concrete
       -- node-`[129]` deficit and node-`[131]` entropy ledger.
@@ -6700,8 +7065,20 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
   | .sparsePressureOverload, object =>
       -- `prop:single-graph-sparse-pressure-routing` (b) with
       -- `cor:coupled-single-graph-overload-budget`.
-      Graph.SparsePressureOverloadStatement object data.threshold data.windowOrder
-        data.routingLabelBound
+      ∃ active : Graph.ActiveSurplusDemands
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
+          data.threshold,
+        ∃ capacity : Graph.CapacityPresentation object data.threshold
+            data.windowOrder,
+          capacity.activation =
+              (Graph.recordSparsePairDEBlockers
+                (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+                (LengthOK := data.LengthOK)
+                (Graph.pairResponseActivation active)
+                (object.portPairSchedule data.threshold)) ∧
+            Graph.SparsePressureOverloadStatement object data.threshold
+              data.windowOrder data.routingLabelBound capacity
   | .freePairEntropySandwich, object =>
       FreePairEntropySandwichStatement data object
   | .freePairCodeUnrealized, object =>
@@ -6712,42 +7089,126 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       BlockedPairCodeUnrealizedStatement data object
   | .windowClassOverload, object =>
       -- Node `[139]`, yes: the overload occurs at a window-incidence token.
-      Graph.SparsePressureOverloadInClass object data.threshold data.windowOrder
-        data.routingLabelBound .windowIncidence
+      ∃ active : Graph.ActiveSurplusDemands
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
+          data.threshold,
+        ∃ capacity : Graph.CapacityPresentation object data.threshold
+            data.windowOrder,
+          capacity.activation =
+              (Graph.recordSparsePairDEBlockers
+                (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+                (LengthOK := data.LengthOK)
+                (Graph.pairResponseActivation active)
+                (object.portPairSchedule data.threshold)) ∧
+            Graph.SparsePressureOverloadInClass object data.threshold
+              data.windowOrder data.routingLabelBound capacity .windowIncidence
   | .windowClassAbsent, object =>
       -- Node `[139]`, no.
-      Graph.SparsePressureOverloadOutsideClass object data.threshold data.windowOrder
-        data.routingLabelBound .windowIncidence
+      ∃ active : Graph.ActiveSurplusDemands
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
+          data.threshold,
+        ∃ capacity : Graph.CapacityPresentation object data.threshold
+            data.windowOrder,
+          capacity.activation =
+              (Graph.recordSparsePairDEBlockers
+                (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+                (LengthOK := data.LengthOK)
+                (Graph.pairResponseActivation active)
+                (object.portPairSchedule data.threshold)) ∧
+            Graph.SparsePressureOverloadOutsideClass object data.threshold
+              data.windowOrder data.routingLabelBound capacity .windowIncidence
   | .remainderClassOverload, object =>
       -- Node `[141]`, yes: the overload occurs at a remainder-surplus token.
-      Graph.SparsePressureOverloadInClass object data.threshold data.windowOrder
-        data.routingLabelBound .remainderSurplus
+      ∃ active : Graph.ActiveSurplusDemands
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
+          data.threshold,
+        ∃ capacity : Graph.CapacityPresentation object data.threshold
+            data.windowOrder,
+          capacity.activation =
+              (Graph.recordSparsePairDEBlockers
+                (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+                (LengthOK := data.LengthOK)
+                (Graph.pairResponseActivation active)
+                (object.portPairSchedule data.threshold)) ∧
+            Graph.SparsePressureOverloadInClass object data.threshold
+              data.windowOrder data.routingLabelBound capacity .remainderSurplus
   | .remainderClassAbsent, object =>
       -- Node `[141]`, no: after the inherited non-window residual, the same
       -- selected overload token is necessarily primitive.
-      Graph.SparsePressureOverloadInClass object data.threshold data.windowOrder
-        data.routingLabelBound .primitiveCarrier
+      ∃ active : Graph.ActiveSurplusDemands
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
+          data.threshold,
+        ∃ capacity : Graph.CapacityPresentation object data.threshold
+            data.windowOrder,
+          capacity.activation =
+              (Graph.recordSparsePairDEBlockers
+                (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+                (LengthOK := data.LengthOK)
+                (Graph.pairResponseActivation active)
+                (object.portPairSchedule data.threshold)) ∧
+            Graph.SparsePressureOverloadInClass object data.threshold
+              data.windowOrder data.routingLabelBound capacity .primitiveCarrier
   | .windowIncidenceAudit, object =>
       -- Node `[140]`: the actual `L_geom` pattern forced by the selected
       -- window-incidence overload witness.
-      Graph.HomogeneousBottleneckPatternStatement object data.threshold
-        data.windowOrder
-        (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
-          (Graph.WindowCurvature.Label data.windowOrder))
+      ∃ active : Graph.ActiveSurplusDemands
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
+          data.threshold,
+        ∃ capacity : Graph.CapacityPresentation object data.threshold
+            data.windowOrder,
+          capacity.activation =
+              (Graph.recordSparsePairDEBlockers
+                (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+                (LengthOK := data.LengthOK)
+                (Graph.pairResponseActivation active)
+                (object.portPairSchedule data.threshold)) ∧
+            Graph.HomogeneousBottleneckPatternStatement object data.threshold
+              data.windowOrder capacity
+              (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+                (Graph.WindowCurvature.Label data.windowOrder))
   | .remainderSurplusAudit, object =>
       -- Node `[142]`: the actual `L_geom` pattern forced by the selected
       -- remainder-surplus overload witness.
-      Graph.HomogeneousBottleneckPatternStatement object data.threshold
-        data.windowOrder
-        (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
-          (Graph.WindowCurvature.Label data.windowOrder))
+      ∃ active : Graph.ActiveSurplusDemands
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
+          data.threshold,
+        ∃ capacity : Graph.CapacityPresentation object data.threshold
+            data.windowOrder,
+          capacity.activation =
+              (Graph.recordSparsePairDEBlockers
+                (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+                (LengthOK := data.LengthOK)
+                (Graph.pairResponseActivation active)
+                (object.portPairSchedule data.threshold)) ∧
+            Graph.HomogeneousBottleneckPatternStatement object data.threshold
+              data.windowOrder capacity
+              (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+                (Graph.WindowCurvature.Label data.windowOrder))
   | .primitiveCarrierAudit, object =>
       -- Node `[143]`: the actual `L_geom` pattern forced by the selected
       -- primitive-carrier overload witness.
-      Graph.HomogeneousBottleneckPatternStatement object data.threshold
-        data.windowOrder
-        (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
-          (Graph.WindowCurvature.Label data.windowOrder))
+      ∃ active : Graph.ActiveSurplusDemands
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
+          data.threshold,
+        ∃ capacity : Graph.CapacityPresentation object data.threshold
+            data.windowOrder,
+          capacity.activation =
+              (Graph.recordSparsePairDEBlockers
+                (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+                (LengthOK := data.LengthOK)
+                (Graph.pairResponseActivation active)
+                (object.portPairSchedule data.threshold)) ∧
+            Graph.HomogeneousBottleneckPatternStatement object data.threshold
+              data.windowOrder capacity
+              (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+                (Graph.WindowCurvature.Label data.windowOrder))
   | .quantitativeOverload, object =>
       -- `cor:quantitative-homogeneous-overload`.
       Graph.QuantitativeOverloadStatement object data.threshold data.windowOrder
@@ -6760,50 +7221,49 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
   | .homogeneousBottleneckPattern, object =>
       -- Its complement, normalized to the positive same-token bottleneck
       -- pattern the paper routes at node `[144]`.
-      Graph.HomogeneousBottleneckPatternStatement object data.threshold
-        data.windowOrder
-        (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
-          (Graph.WindowCurvature.Label data.windowOrder))
+      ∃ active : Graph.ActiveSurplusDemands
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
+          data.threshold,
+        ∃ capacity : Graph.CapacityPresentation object data.threshold
+            data.windowOrder,
+          capacity.activation =
+              (Graph.recordSparsePairDEBlockers
+                (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+                (LengthOK := data.LengthOK)
+                (Graph.pairResponseActivation active)
+                (object.portPairSchedule data.threshold)) ∧
+            Graph.HomogeneousBottleneckPatternStatement object data.threshold
+              data.windowOrder capacity
+              (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+                (Graph.WindowCurvature.Label data.windowOrder))
   | .bottleneckRouting, object =>
-      -- `thm:homogeneous-overload-geometric-closure`'s first assertion:
-      -- `lem:same-token-bottleneck-routing` at every declared routed
-      -- bottleneck of the object.
-      Graph.BottleneckRoutingStatement object
-        (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
-        data.windowOrder
+      -- `lem:same-token-bottleneck-routing`, on the actual active family and
+      -- capacity presentation.  No caller-supplied route, separator, reading,
+      -- profile map, or callback is part of the proposition.
+      ∃ active : Graph.ActiveSurplusDemands
+            (Graph.MinimumDegreeAtLeast data.threshold)
+            (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
+            data.threshold,
+        ∃ capacity : Graph.CapacityPresentation object data.threshold
+            data.windowOrder,
+          capacity.activation =
+            (Graph.recordSparsePairDEBlockers
+              (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+              (LengthOK := data.LengthOK)
+              (Graph.pairResponseActivation active)
+              (object.portPairSchedule data.threshold)) ∧
+          Graph.HomogeneousBottleneckPatternStatement object data.threshold
+              data.windowOrder capacity
+              (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+                (Graph.WindowCurvature.Label data.windowOrder)) ∧
+          (Graph.SparseSurplusExit (Graph.MinimumDegreeAtLeast data.threshold)
+                (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object ∨
+              SameTokenTypeBHandoffStatement data object)
   | .typeBHandoff, object =>
-      -- and, at a survivor, the outcome itself: every declared routed
-      -- bottleneck produces admissible decorated Type B handoff fan data.
-      -- `prop:nonnear-cubic-sharp-overload-routing` opens *"if a sparse surplus
-      -- exit occurs, there is nothing to route; otherwise..."*, and node `[125]`
-      -- has already excluded that arm.
-      Graph.TypeBHandoffStatement object
-        (Graph.MinimumDegreeAtLeast data.threshold) data.LengthOK
-        data.windowOrder
-  | .typeBFanEnvelope, object =>
-      -- Node `[144]` → Type B `[65]`/`[66]` on the bare envelope: at a maximal
-      -- packing, a canonical piece of the remainder is the counted core of an
-      -- admissible decorated handoff fan envelope (`def:decorated-fan-envelope`,
-      -- `lem:decorated-fan-admissibility`) — the routed bottleneck's separator
-      -- and separated tails.
-      ∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
-          (∀ window : Finset object.Vertex,
-            object.InducesWindow data.windowOrder window →
-            ∃ member ∈ packing, ¬ Disjoint window member) ∧
-          ∃ component ∈ object.canonicalPieces (object.remainderSupport packing),
-            HandoffAdmissible data object packing
-              (object.pieceSupport (object.remainderSupport packing) component)
-  | .cubicBottleneckSeparator, object =>
-      -- Node `[144]`, cubic first separator: a declared routed bottleneck of the
-      -- object whose separator is not high-degree and whose switch reading is
-      -- absorbed — target-defective or target-complete
-      -- (`lem:same-token-bottleneck-routing`, sparse exits (b)/(c)).
-      ∃ bottleneck : Graph.SameTokenRoutingGerms.RoutedBottleneck object
-          (handoffHighDegree data object) (fun _ _ _ => False),
-        ¬ handoffHighDegree data object bottleneck.separation.separator ∧
-          Graph.DecoratedHandoff.Absorbed (Graph.HasCycleWithLength data.LengthOK)
-            bottleneck.reading False
+      -- The direct Type B handoff on the survivor branch, with exactly the
+      -- core/envelope clauses proved at `[144]` and no imported Type-A state.
+      SameTokenTypeBHandoffStatement data object
   | .homogeneousBottleneck, object =>
       -- `cor:homogeneous-same-token-caps-close` at the counted `L_geom`, with
       -- `thm:homogeneous-overload-geometric-closure`'s edge-count half.
@@ -6930,11 +7390,12 @@ def label : Key → String
   | .coldReturnCorridors => "coldReturnCorridors"
   | .windowPackageRealized => "windowPackageRealized"
   | .windowPackageUnrealized => "windowPackageUnrealized"
+  | .densePackingOverflow => "densePackingOverflow"
   | .denseDeficiencyBelow => "denseDeficiencyBelow"
   | .denseDeficiencyAtOrAbove => "denseDeficiencyAtOrAbove"
   | .coldWindowStubStructure => "coldWindowStubStructure"
-  | .coldProperNeutralGerm => "coldProperNeutralGerm"
-  | .coldTrivialNeutralGerms => "coldTrivialNeutralGerms"
+  | .coldCanonicalNeutralConfiguration => "coldCanonicalNeutralConfiguration"
+  | .coldGenuineSecondStrand => "coldGenuineSecondStrand"
   | .coldCanonicalSwapSmaller => "coldCanonicalSwapSmaller"
   | .coldCanonicalSwapSameSize => "coldCanonicalSwapSameSize"
   | .blockedClassMember => "blockedClassMember"
@@ -6967,7 +7428,6 @@ def label : Key → String
   | .typeBExclusionResidualMass => "typeBExclusionResidualMass"
   | .typeBBridgeMass => "typeBBridgeMass"
   | .typeBBridgeSublinear => "typeBBridgeSublinear"
-  | .branchKillClosed => "branchKillClosed"
   | .typeBExcluded => "typeBExcluded"
   | .typeBExclusionResidual => "typeBExclusionResidual"
   | .typeAExitFourPeeled => "typeAExitFourPeeled"
@@ -7003,11 +7463,15 @@ def label : Key → String
   | .route8Rate => "route8Rate"
   | .route8RateFails => "route8RateFails"
   | .route8PiecesClassified => "route8PiecesClassified"
-  | .route8UnclassifiedPiece => "route8UnclassifiedPiece"
+  | .route8UnifiedNegative => "route8UnifiedNegative"
+  | .route8UnifiedDeficit => "route8UnifiedDeficit"
+  | .route8UnifiedEntryCensus => "route8UnifiedEntryCensus"
+  | .route8StageRateFailed => "route8StageRateFailed"
   | .route8TwoCarrierEntry => "route8TwoCarrierEntry"
   | .route8NoTwoCarrierEntry => "route8NoTwoCarrierEntry"
   | .route8TrueTwoCarrierEntry => "route8TrueTwoCarrierEntry"
   | .route8PeelingDescent => "route8PeelingDescent"
+  | .route8VisibleExitFourRouting => "route8VisibleExitFourRouting"
   | .route8UnifiedTrueTwoCarrierEntry => "route8UnifiedTrueTwoCarrierEntry"
   | .sparseSlackSurplus => "sparseSlackSurplus"
   | .activeSurplusFamily => "activeSurplusFamily"
@@ -7039,8 +7503,6 @@ def label : Key → String
   | .homogeneousBottleneckPattern => "homogeneousBottleneckPattern"
   | .bottleneckRouting => "bottleneckRouting"
   | .typeBHandoff => "typeBHandoff"
-  | .typeBFanEnvelope => "typeBFanEnvelope"
-  | .cubicBottleneckSeparator => "cubicBottleneckSeparator"
   | .homogeneousBottleneck => "homogeneousBottleneck"
   | .sparseSurplusSurvivor => "sparseSurplusSurvivor"
   | .activeSurplusDemands => "activeSurplusDemands"
@@ -7159,11 +7621,12 @@ example : label .bridgeless = "bridgeless" := rfl
 example : label .coldReturnCorridors = "coldReturnCorridors" := rfl
 example : label .windowPackageRealized = "windowPackageRealized" := rfl
 example : label .windowPackageUnrealized = "windowPackageUnrealized" := rfl
+example : label .densePackingOverflow = "densePackingOverflow" := rfl
 example : label .denseDeficiencyBelow = "denseDeficiencyBelow" := rfl
 example : label .denseDeficiencyAtOrAbove = "denseDeficiencyAtOrAbove" := rfl
 example : label .coldWindowStubStructure = "coldWindowStubStructure" := rfl
-example : label .coldProperNeutralGerm = "coldProperNeutralGerm" := rfl
-example : label .coldTrivialNeutralGerms = "coldTrivialNeutralGerms" := rfl
+example : label .coldCanonicalNeutralConfiguration = "coldCanonicalNeutralConfiguration" := rfl
+example : label .coldGenuineSecondStrand = "coldGenuineSecondStrand" := rfl
 example : label .coldCanonicalSwapSmaller = "coldCanonicalSwapSmaller" := rfl
 example : label .coldCanonicalSwapSameSize = "coldCanonicalSwapSameSize" := rfl
 example : label .blockedClassMember = "blockedClassMember" := rfl
@@ -7189,7 +7652,6 @@ example : label .typeBOverlapObstructionMass = "typeBOverlapObstructionMass" := 
 example : label .typeBExclusionResidualMass = "typeBExclusionResidualMass" := rfl
 example : label .typeBBridgeMass = "typeBBridgeMass" := rfl
 example : label .typeBBridgeSublinear = "typeBBridgeSublinear" := rfl
-example : label .branchKillClosed = "branchKillClosed" := rfl
 example : label .typeBExcluded = "typeBExcluded" := rfl
 example : label .typeBExclusionResidual = "typeBExclusionResidual" := rfl
 example : label .typeAExitFourPeeled = "typeAExitFourPeeled" := rfl
@@ -7234,11 +7696,16 @@ example : label .route8Deficit = "route8Deficit" := rfl
 example : label .route8Rate = "route8Rate" := rfl
 example : label .route8RateFails = "route8RateFails" := rfl
 example : label .route8PiecesClassified = "route8PiecesClassified" := rfl
-example : label .route8UnclassifiedPiece = "route8UnclassifiedPiece" := rfl
+example : label .route8UnifiedNegative = "route8UnifiedNegative" := rfl
+example : label .route8UnifiedDeficit = "route8UnifiedDeficit" := rfl
+example : label .route8UnifiedEntryCensus = "route8UnifiedEntryCensus" := rfl
+example : label .route8StageRateFailed = "route8StageRateFailed" := rfl
 example : label .route8TwoCarrierEntry = "route8TwoCarrierEntry" := rfl
 example : label .route8NoTwoCarrierEntry = "route8NoTwoCarrierEntry" := rfl
 example : label .route8TrueTwoCarrierEntry = "route8TrueTwoCarrierEntry" := rfl
 example : label .route8PeelingDescent = "route8PeelingDescent" := rfl
+example : label .route8VisibleExitFourRouting =
+    "route8VisibleExitFourRouting" := rfl
 example : label .route8UnifiedTrueTwoCarrierEntry =
     "route8UnifiedTrueTwoCarrierEntry" := rfl
 example : label .sparseSlackSurplus = "sparseSlackSurplus" := rfl
@@ -7271,8 +7738,6 @@ example : label .homogeneousCapsHold = "homogeneousCapsHold" := rfl
 example : label .homogeneousBottleneckPattern = "homogeneousBottleneckPattern" := rfl
 example : label .bottleneckRouting = "bottleneckRouting" := rfl
 example : label .typeBHandoff = "typeBHandoff" := rfl
-example : label .typeBFanEnvelope = "typeBFanEnvelope" := rfl
-example : label .cubicBottleneckSeparator = "cubicBottleneckSeparator" := rfl
 example : label .homogeneousBottleneck = "homogeneousBottleneck" := rfl
 example : label .sparseSurplusSurvivor = "sparseSurplusSurvivor" := rfl
 example : label .activeSurplusDemands = "activeSurplusDemands" := rfl
@@ -7315,11 +7780,12 @@ def idx : Key → Nat
   | .coldReturnCorridors => 227
   | .windowPackageRealized => 228
   | .windowPackageUnrealized => 229
+  | .densePackingOverflow => 337
   | .denseDeficiencyBelow => 230
   | .denseDeficiencyAtOrAbove => 231
   | .coldWindowStubStructure => 232
-  | .coldProperNeutralGerm => 233
-  | .coldTrivialNeutralGerms => 234
+  | .coldCanonicalNeutralConfiguration => 233
+  | .coldGenuineSecondStrand => 234
   | .coldCanonicalSwapSmaller => 244
   | .coldCanonicalSwapSameSize => 245
   | .blockedClassMember => 238
@@ -7438,7 +7904,6 @@ def idx : Key → Nat
   | .typeBExclusionResidualMass => 188
   | .typeBBridgeMass => 85
   | .typeBBridgeSublinear => 189
-  | .branchKillClosed => 191
   | .typeBExcluded => 166
   | .typeBExclusionResidual => 167
   | .typeAExitFourPeeled => 151
@@ -7473,11 +7938,15 @@ def idx : Key → Nat
   | .route8Rate => 264
   | .route8RateFails => 265
   | .route8PiecesClassified => 266
-  | .route8UnclassifiedPiece => 267
+  | .route8UnifiedNegative => 336
+  | .route8UnifiedDeficit => 339
+  | .route8UnifiedEntryCensus => 340
+  | .route8StageRateFailed => 342
   | .route8TwoCarrierEntry => 261
   | .route8NoTwoCarrierEntry => 262
   | .route8TrueTwoCarrierEntry => 280
   | .route8PeelingDescent => 282
+  | .route8VisibleExitFourRouting => 338
   | .route8UnifiedTrueTwoCarrierEntry => 334
   | .sparseSlackSurplus => 109
   | .activeSurplusFamily => 110
@@ -7509,8 +7978,6 @@ def idx : Key → Nat
   | .homogeneousBottleneckPattern => 141
   | .bottleneckRouting => 142
   | .typeBHandoff => 184
-  | .typeBFanEnvelope => 290
-  | .cubicBottleneckSeparator => 291
   | .homogeneousBottleneck => 118
   | .sparseSurplusSurvivor => 119
   | .activeSurplusDemands => 120
@@ -7543,11 +8010,12 @@ def ofIdx : Nat → Key
   | 227 => .coldReturnCorridors
   | 228 => .windowPackageRealized
   | 229 => .windowPackageUnrealized
+  | 337 => .densePackingOverflow
   | 230 => .denseDeficiencyBelow
   | 231 => .denseDeficiencyAtOrAbove
   | 232 => .coldWindowStubStructure
-  | 233 => .coldProperNeutralGerm
-  | 234 => .coldTrivialNeutralGerms
+  | 233 => .coldCanonicalNeutralConfiguration
+  | 234 => .coldGenuineSecondStrand
   | 244 => .coldCanonicalSwapSmaller
   | 245 => .coldCanonicalSwapSameSize
   | 238 => .blockedClassMember
@@ -7660,7 +8128,6 @@ def ofIdx : Nat → Key
   | 188 => .typeBExclusionResidualMass
   | 85 => .typeBBridgeMass
   | 189 => .typeBBridgeSublinear
-  | 191 => .branchKillClosed
   | 166 => .typeBExcluded
   | 167 => .typeBExclusionResidual
   | 151 => .typeAExitFourPeeled
@@ -7695,11 +8162,15 @@ def ofIdx : Nat → Key
   | 264 => .route8Rate
   | 265 => .route8RateFails
   | 266 => .route8PiecesClassified
-  | 267 => .route8UnclassifiedPiece
+  | 336 => .route8UnifiedNegative
+  | 339 => .route8UnifiedDeficit
+  | 340 => .route8UnifiedEntryCensus
+  | 342 => .route8StageRateFailed
   | 261 => .route8TwoCarrierEntry
   | 262 => .route8NoTwoCarrierEntry
   | 280 => .route8TrueTwoCarrierEntry
   | 282 => .route8PeelingDescent
+  | 338 => .route8VisibleExitFourRouting
   | 334 => .route8UnifiedTrueTwoCarrierEntry
   | 109 => .sparseSlackSurplus
   | 110 => .activeSurplusFamily
@@ -7724,8 +8195,6 @@ def ofIdx : Nat → Key
   | 141 => .homogeneousBottleneckPattern
   | 142 => .bottleneckRouting
   | 184 => .typeBHandoff
-  | 290 => .typeBFanEnvelope
-  | 291 => .cubicBottleneckSeparator
   | 118 => .homogeneousBottleneck
   | 119 => .sparseSurplusSurvivor
   | 120 => .activeSurplusDemands
@@ -7795,16 +8264,19 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "windowPackageRealized") 228
   | .windowPackageUnrealized =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "windowPackageUnrealized") 229
+  | .densePackingOverflow =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "densePackingOverflow") 337
   | .denseDeficiencyBelow =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "denseDeficiencyBelow") 230
   | .denseDeficiencyAtOrAbove =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "denseDeficiencyAtOrAbove") 231
   | .coldWindowStubStructure =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldWindowStubStructure") 232
-  | .coldProperNeutralGerm =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "coldProperNeutralGerm") 233
-  | .coldTrivialNeutralGerms =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "coldTrivialNeutralGerms") 234
+  | .coldCanonicalNeutralConfiguration =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "coldCanonicalNeutralConfiguration") 233
+  | .coldGenuineSecondStrand =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldGenuineSecondStrand") 234
   | .coldCanonicalSwapSmaller =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldCanonicalSwapSmaller") 244
   | .coldCanonicalSwapSameSize =>
@@ -8064,9 +8536,6 @@ def name : Key → Lean.Name
   | .typeBBridgeSublinear =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "typeBBridgeSublinear") 189
-  | .branchKillClosed =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine
-        "branchKillClosed") 191
   | .typeBExcluded =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeBExcluded") 166
   | .typeBExclusionResidual =>
@@ -8153,8 +8622,16 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8RateFails") 265
   | .route8PiecesClassified =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8PiecesClassified") 266
-  | .route8UnclassifiedPiece =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "route8UnclassifiedPiece") 267
+  | .route8UnifiedNegative =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8UnifiedNegative") 336
+  | .route8UnifiedDeficit =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8UnifiedDeficit") 339
+  | .route8UnifiedEntryCensus =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "route8UnifiedEntryCensus") 340
+  | .route8StageRateFailed =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "route8StageRateFailed") 342
   | .route8TwoCarrierEntry =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8TwoCarrierEntry") 261
   | .route8NoTwoCarrierEntry =>
@@ -8163,6 +8640,9 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8TrueTwoCarrierEntry") 280
   | .route8PeelingDescent =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8PeelingDescent") 282
+  | .route8VisibleExitFourRouting =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "route8VisibleExitFourRouting") 338
   | .route8UnifiedTrueTwoCarrierEntry =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "route8UnifiedTrueTwoCarrierEntry") 334
@@ -8234,10 +8714,6 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "bottleneckRouting") 142
   | .typeBHandoff =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeBHandoff") 184
-  | .typeBFanEnvelope =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "typeBFanEnvelope") 290
-  | .cubicBottleneckSeparator =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "cubicBottleneckSeparator") 291
   | .homogeneousBottleneck =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "homogeneousBottleneck") 118

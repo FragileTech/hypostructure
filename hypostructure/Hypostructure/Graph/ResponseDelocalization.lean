@@ -59,13 +59,14 @@ that `Z` carries the declared coordinate family, its `fibrewise` and
 representative fields are `def:admissible-rank-quotient`'s proper and closed
 clauses.  Nothing here re-derives them. -/
 structure Delocalization (Baseline Target : FiniteObject.{u} → Prop)
-    (presented : PresentedEntry object) : Type (u + 2) where
+    (presented : PresentedEntry object) (base : Finset object.Vertex) :
+    Type (u + 2) where
   /-- The larger connected support `Z` and the admissible identification it
   carries. -/
   quotient : DeclaredQuotient Baseline Target object presented.coordinates
     presented.declaredSupport
-  /-- `Z ⊋ B_u`: the support strictly enlarges the trace basin. -/
-  enlarges : presented.support ⊂ quotient.support
+  /-- `Z ⊋ B_u`: the support strictly enlarges the trace basin `base`. -/
+  enlarges : base ⊂ quotient.support
   /-- The first coordinate of the equality. -/
   left : presented.Coordinate
   /-- The second coordinate of the equality. -/
@@ -91,8 +92,8 @@ structure Delocalization (Baseline Target : FiniteObject.{u} → Prop)
 namespace Delocalization
 
 variable {Baseline Target : FiniteObject.{u} → Prop}
-variable {presented : PresentedEntry object}
-variable (delocalization : Delocalization Baseline Target presented)
+variable {presented : PresentedEntry object} {base : Finset object.Vertex}
+variable (delocalization : Delocalization Baseline Target presented base)
 
 /-- The identification is rank-reducing on the declared family: it is an
 equality between two *distinct* declared coordinates. -/

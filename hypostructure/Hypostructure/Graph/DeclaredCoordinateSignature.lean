@@ -49,7 +49,7 @@ what every later definition reads off a declared coordinate.
 
 namespace Hypostructure.Graph.DeclaredSignature
 
-universe u v
+universe u v w
 
 /-- The kind `k` of a declared coordinate: the generating clause it comes from.
 Clauses (D1)--(D7) are the seven base kinds; (D8) is closure and adds no kind. -/
@@ -140,5 +140,94 @@ theorem support_subset_product_right (left right : Coordinate Item Label) :
   Finset.subset_union_right
 
 end Coordinate
+
+/-! ## Values of declared coordinates
+
+The inductive `Coordinate` is the finite *index* used by schedules, supports,
+and rank quotients.  The manuscript's coordinate is the corresponding valued
+tuple `(k, ι, supp_X(r), val_X(r))`.  `Reading` packages exactly that fourth
+entry without forcing unrelated coordinate kinds to share one value type.
+
+Keeping the value dependent is essential: a boundary-degree entry is a natural
+number, a connector entry contains a path and channel, and a target-response
+entry is a function on compatible outside contexts.  Replacing all of those by
+one guessed scalar would change the declared response algebra.
+-/
+
+/-- A declared coordinate together with its exact value in the embedded
+support.  `coordinate` owns `(k, ι, supp_X(r))`; `Value` and `value` own
+`val_X(r)`. -/
+structure Reading (Item : Type u) (Label : Type v) where
+  coordinate : Coordinate Item Label
+  Value : Type w
+  value : Value
+
+namespace Reading
+
+variable {Item : Type u} {Label : Type v} [DecidableEq Item]
+
+/-- The declared support of a valued coordinate is the support of its index. -/
+def support (reading : Reading.{u, v, w} Item Label) : Finset Item :=
+  reading.coordinate.support
+
+/-- Clauses (D1)--(D7), including the embedded value. -/
+def base (kind : Kind) (label : Label) (items : Finset Item)
+    {Value : Type w} (value : Value) : Reading Item Label where
+  coordinate := .base kind label items
+  Value := Value
+  value := value
+
+/-- Clause (D8), finite products: both values are retained. -/
+def product (left : Reading.{u, v, w} Item Label)
+    (right : Reading.{u, v, w} Item Label) : Reading Item Label where
+  coordinate := .product left.coordinate right.coordinate
+  Value := left.Value × right.Value
+  value := (left.value, right.value)
+
+/-- Clause (D8), labelled copies: relabelling does not alter the value. -/
+def copy (label : Label) (source : Reading.{u, v, w} Item Label) :
+    Reading Item Label where
+  coordinate := .copy label source.coordinate
+  Value := source.Value
+  value := source.value
+
+/-- Clause (D8), restrictions: the caller supplies the value of the restricted
+embedded support; it is not inferred from the unrestricted value. -/
+def restrict (source : Reading.{u, v, w} Item Label) (region : Finset Item)
+    {RestrictedValue : Type w} (value : RestrictedValue) : Reading Item Label where
+  coordinate := .restrict source.coordinate region
+  Value := RestrictedValue
+  value := value
+
+/-- Clause (D8), quotient images: a quotient map computes the image value. -/
+def quotientImage (source : Reading.{u, v, w} Item Label)
+    {QuotientValue : Type w} (project : source.Value → QuotientValue) :
+    Reading Item Label where
+  coordinate := .quotientImage source.coordinate
+  Value := QuotientValue
+  value := project source.value
+
+@[simp] theorem support_base (kind : Kind) (label : Label)
+    (items : Finset Item) {Value : Type w} (value : Value) :
+    (base kind label items value : Reading Item Label).support = items := rfl
+
+@[simp] theorem support_product (left right : Reading.{u, v, w} Item Label) :
+    (product left right).support = left.support ∪ right.support := rfl
+
+@[simp] theorem support_copy (label : Label)
+    (source : Reading.{u, v, w} Item Label) :
+    (copy label source).support = source.support := rfl
+
+@[simp] theorem support_restrict (source : Reading.{u, v, w} Item Label)
+    (region : Finset Item) {RestrictedValue : Type w}
+    (value : RestrictedValue) :
+    (restrict source region value).support = source.support ∩ region := rfl
+
+@[simp] theorem support_quotientImage
+    (source : Reading.{u, v, w} Item Label) {QuotientValue : Type w}
+    (project : source.Value → QuotientValue) :
+    (quotientImage source project).support = source.support := rfl
+
+end Reading
 
 end Hypostructure.Graph.DeclaredSignature

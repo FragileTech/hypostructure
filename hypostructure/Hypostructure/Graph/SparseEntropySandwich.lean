@@ -133,7 +133,11 @@ noncomputable def pairResponseActivation
     object.DemandActivation (object.PairCoordinate)
       (object.Vertex × object.Vertex) := by
   classical
-  let supportOf := fun demand : object.Vertex × object.Vertex =>
+  let bufferOf := fun demand : object.Vertex × object.Vertex =>
+    if member : demand ∈ object.excessPorts threshold then
+      (object.surplusPortOfMem member).support
+    else ∅
+  let responseOf := fun demand : object.Vertex × object.Vertex =>
     if member : demand ∈ object.excessPorts threshold then
       let port := object.surplusPortOfMem member
       let shoulders := active.shoulderPair demand member
@@ -142,8 +146,10 @@ noncomputable def pairResponseActivation
       let description := shoulders.choose_spec.choose_spec.1
       let distinct := shoulders.choose_spec.choose_spec.2
       let activated := active.activated demand member left right description distinct
-      port.declaredSupport activated.1 activated.2.1
+      port.responseSupport activated.1 activated.2.1
     else ∅
+  let supportOf := fun demand : object.Vertex × object.Vertex =>
+    FiniteObject.vertexSupportUnion object (bufferOf demand) (responseOf demand)
   let returnOf := fun demand : object.Vertex × object.Vertex =>
     if member : demand ∈ object.excessPorts threshold then
       let port := object.surplusPortOfMem member
@@ -154,10 +160,6 @@ noncomputable def pairResponseActivation
       let distinct := shoulders.choose_spec.choose_spec.2
       let activated := active.activated demand member left right description distinct
       port.returnSupport activated.1
-    else ∅
-  let bufferOf := fun demand : object.Vertex × object.Vertex =>
-    if member : demand ∈ object.excessPorts threshold then
-      (object.surplusPortOfMem member).support
     else ∅
   let rawPorts : List (object.Vertex × object.Vertex) :=
     object.orderedVertices.flatMap fun centre =>
@@ -185,14 +187,43 @@ noncomputable def pairResponseActivation
     ((lexicographicSublists orderedPorts).map List.toFinset).filter fun chords =>
       chords ∈ (object.excessPorts threshold).powerset
   exact {
-    declaredSupport := supportOf
-    returnSupport := returnOf
     localBuffer := bufferOf
+    responseSupport := responseOf
+    declaredSupport := supportOf
+    declaredSupport_eq := fun _ => rfl
+    returnSupport := returnOf
     profileObstructions := fun _ => []
     responseObstructions := fun _ => []
     chordObstructions := fun pair =>
       orderedChordSets.filter fun chords =>
-        SparsePairSuppressionChordObstruction active pair chords }
+        SparsePairSuppressionChordObstruction active pair chords
+    chordEnds := pairResponseChordEnds active
+    chordPort := id }
+
+/-- The concrete activation reads the selected port's actual `T(p)` on every
+member of the active family. -/
+@[simp] theorem pairResponseActivation_localBuffer_of_mem
+    {Baseline Target : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {threshold : Nat}
+    (active : ActiveSurplusDemands Baseline Target LengthOK object threshold)
+    {demand : object.Vertex × object.Vertex}
+    (member : demand ∈ object.excessPorts threshold) :
+    (pairResponseActivation active).localBuffer demand =
+      (object.surplusPortOfMem member).support := by
+  classical
+  simp [pairResponseActivation, member]
+
+/-- `T(p)` is literally contained in the declared support `T(p) ∪ Γ(p)` of
+the same activated demand. -/
+theorem pairResponseActivation_localBuffer_subset_declaredSupport_of_mem
+    {Baseline Target : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {threshold : Nat}
+    (active : ActiveSurplusDemands Baseline Target LengthOK object threshold)
+    {demand : object.Vertex × object.Vertex}
+    (member : demand ∈ object.excessPorts threshold) :
+    (pairResponseActivation active).localBuffer demand ⊆
+      (pairResponseActivation active).declaredSupport demand := by
+  exact (pairResponseActivation active).localBuffer_subset_declaredSupport demand
 
 /-- The active-family fact constructs the concrete response activation. -/
 theorem existsPairResponseActivation
@@ -305,9 +336,11 @@ noncomputable def recordSparsePairDEBlockers
     object.DemandActivation (object.PairCoordinate) Chord := by
   classical
   exact {
-    declaredSupport := activation.declaredSupport
-    returnSupport := activation.returnSupport
     localBuffer := activation.localBuffer
+    responseSupport := activation.responseSupport
+    declaredSupport := activation.declaredSupport
+    declaredSupport_eq := activation.declaredSupport_eq
+    returnSupport := activation.returnSupport
     profileObstructions := fun pair =>
       if SparsePairDEProfileObstructionAt
           (Baseline := Baseline) (LengthOK := LengthOK) activation pairs pair then
@@ -320,7 +353,9 @@ noncomputable def recordSparsePairDEBlockers
         [FiniteObject.DemandActivation.pairCoordinate pair
           ((activation.pairSupport pair).getD ∅)]
       else []
-    chordObstructions := activation.chordObstructions }
+    chordObstructions := activation.chordObstructions
+    chordEnds := activation.chordEnds
+    chordPort := activation.chordPort }
 
 theorem recordedSparsePairDEBlocker_nonempty
     {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}

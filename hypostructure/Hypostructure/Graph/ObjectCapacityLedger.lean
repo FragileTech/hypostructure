@@ -1,6 +1,5 @@
 import Hypostructure.Graph.GrainedTokenBudget
 import Hypostructure.Graph.CapacityTokenAssignment
-import Hypostructure.Graph.SameTokenBottleneckRouting
 import Hypostructure.Graph.WindowTargetPackage
 import Hypostructure.Graph.NetCharge
 
@@ -12,7 +11,7 @@ abstract demand family.  This module fixes the presentation node `[136]` builds
 for one object: the token universe `𝔗_cap`, the assignment `Θ_cap`,
 `lem:capacity-token-supply`'s `|𝔗_cap| ≤ (3(δ−1)+2)n + σ(G)`, and the free-side
 entropy sandwich.  Bundling them is what lets nodes `[137]`--`[144]` speak about
-*the* capacity ledger of the object rather than about an invented one.
+the canonical capacity ledger of the object.
 
 Nothing here is a free parameter of a ledger.  `def:capacity-token-ledger` builds
 its token universe and its charge from three declared data -- a valid packing of
@@ -44,29 +43,29 @@ universe u v
 
 /-- **`def:capacity-token-ledger`'s declared data at one object.**
 
-A valid packing of induced windows of the registered order, the demand
-activation of `def:active-surplus-demands`, and the declared coordinate and
-shoulder-chord presentation of `def:declared-coordinate-signature`.  These are
-exactly the data from which `def:capacity-token-ledger` constructs
-`𝔗_cap`, `Θ_cap`, and `ρ_t`. -/
+A valid packing of induced windows of the registered order and the concrete
+demand activation of `def:active-surplus-demands`.  The coordinate support and
+shoulder-chord projections read by `def:capacity-token-ledger` are derived from
+that activation; there is no second presentation which could disagree with the
+ledger fact.  These are exactly the data from which
+`def:capacity-token-ledger` constructs `𝔗_cap`, `Θ_cap`, and `ρ_t`. -/
 structure CapacityPresentation (object : FiniteObject.{u}) (threshold order : Nat) where
-  /-- The declared coordinate alphabet of `def:declared-coordinate-signature`. -/
-  Coordinate : Type u
-  /-- The shoulder-chord alphabet of `def:declared-coordinate-signature`. -/
-  Chord : Type u
-  /-- `def:active-surplus-demands`' activation, whose blockers `Θ_cap` charges. -/
-  activation : FiniteObject.DemandActivation object Coordinate Chord
-  /-- The declared support and shoulder-chord data the two selecting clauses of
-  `def:capacity-token-ledger` read. -/
-  carrier : FiniteObject.CarrierPresentation object Coordinate Chord
+  /-- `def:active-surplus-demands`' concrete activation, whose blockers
+  `Θ_cap` charges.  Its coordinate and chord alphabets are the paper's declared
+  pair coordinates and selected shoulder chords. -/
+  activation : FiniteObject.DemandActivation object object.PairCoordinate
+    (object.Vertex × object.Vertex)
   /-- Every declared canonical blocker has the primitive carrier prescribed by
   `def:primitive-sparse-blocker-carrier`.  This is well-formedness of the
   presentation, not a graph hypothesis; it makes the fourth charge clause
   total on the blocked side. -/
   carrierComplete : ∀ pair ∈ object.portPairSchedule threshold,
       ∀ blocker ∈ activation.blockers pair,
-        (FiniteObject.Blocker.carrier object threshold carrier.coordinateSupport
-          carrier.chordPort blocker).isSome
+        (FiniteObject.Blocker.carrier object threshold
+          (by
+            letI := object.vertices.decEq
+            exact DeclaredSignature.Coordinate.support)
+          activation.chordPort blocker).isSome
   /-- The packing of induced windows the two halves of `𝔗_W` are built from. -/
   packing : Finset (Finset object.Vertex)
   /-- The packing is one: its members are induced windows and they are pairwise
@@ -82,6 +81,18 @@ structure CapacityPresentation (object : FiniteObject.{u}) (threshold order : Na
 namespace CapacityPresentation
 
 variable {object : FiniteObject.{u}} {threshold order : Nat}
+
+/-- The carrier presentation is a derived view of the activation already
+recorded in the ledger.  In particular, its chord endpoints and port projection
+cannot be supplied through a parallel data channel. -/
+noncomputable def carrier (data : CapacityPresentation object threshold order) :
+    FiniteObject.CarrierPresentation object object.PairCoordinate
+      (object.Vertex × object.Vertex) where
+  coordinateSupport := by
+    letI := object.vertices.decEq
+    exact DeclaredSignature.Coordinate.support
+  chordEnds := data.activation.chordEnds
+  chordPort := data.activation.chordPort
 
 /-- Every unchosen induced window overlaps the actual maximal packing.  This is
 derived from the two packing fields; it is not extra presentation data. -/
@@ -323,9 +334,9 @@ the classwise/subtype accounting identities, at the single certified capacity
 ledger constructed from the incoming `[136]` presentation and the accepted
 free-side entropy count. -/
 def RoleFibrePartitionStatement (object : FiniteObject.{u})
-    (threshold order deficitScale : Nat) : Prop :=
-  ∃ (data : CapacityPresentation.{u} object threshold order)
-      (certified : CertifiedObjectCapacityLedger object threshold order
+    (threshold order deficitScale : Nat)
+    (data : CapacityPresentation.{u} object threshold order) : Prop :=
+  ∃ (certified : CertifiedObjectCapacityLedger object threshold order
         deficitScale data),
     let ledger := certified.ledger
     -- `lem:exact-surplus-pair-charge-partition`.
@@ -375,9 +386,9 @@ capacity-token ledger realizes the high-load display, so it is not provable
 without node `[136]`'s commitment that such a ledger exists.  That commitment is
 read by exact key and supplied by the executor, not assumed here. -/
 def FibrePressureStatement (object : FiniteObject.{u})
-    (threshold order deficitScale : Nat) : Prop :=
-  ∃ (data : CapacityPresentation.{u} object threshold order)
-      (certified : CertifiedObjectCapacityLedger object threshold order
+    (threshold order deficitScale : Nat)
+    (data : CapacityPresentation.{u} object threshold order) : Prop :=
+  ∃ (certified : CertifiedObjectCapacityLedger object threshold order
         deficitScale data),
       let ledger := certified.ledger
       ∃ (token : ledger.presented.Token) (role : Role),
@@ -426,9 +437,10 @@ the geometric caps, and some role fibre absorbs its average share over the
 star.  `class(t)` of that token is the one datum nodes `[140]`, `[142]`, `[143]`
 dispatch on, and it is read off the token rather than carried beside it. -/
 def OverloadAtClass (object : FiniteObject.{u}) (threshold order : Nat)
-    (routingLabelBound : Nat) (Selects : TokenClass → Prop) : Prop :=
-  ∃ (data : CapacityPresentation.{u} object threshold order)
-      (ledger : ObjectCapacityLedger.{u} object threshold order data)
+    (routingLabelBound : Nat)
+    (data : CapacityPresentation.{u} object threshold order)
+    (Selects : TokenClass → Prop) : Prop :=
+  ∃ (ledger : ObjectCapacityLedger.{u} object threshold order data)
       (token : ledger.presented.Token) (role : Role),
       token ∈ ledger.presented.tokens ∧
         Selects (ledger.presented.tokenClass token) ∧
@@ -456,8 +468,9 @@ def OverloadAtClass (object : FiniteObject.{u}) (threshold order : Nat)
 /-- **Node `[137]`, overload arm**, with no class selected: the overload occurs
 somewhere. -/
 def SparsePressureOverloadStatement (object : FiniteObject.{u})
-    (threshold order routingLabelBound : Nat) : Prop :=
-  OverloadAtClass object threshold order routingLabelBound fun _ => True
+    (threshold order routingLabelBound : Nat)
+    (data : CapacityPresentation.{u} object threshold order) : Prop :=
+  OverloadAtClass object threshold order routingLabelBound data fun _ => True
 
 /-- **Nodes `[139]` and `[141]`, the two class tests.**
 
@@ -465,15 +478,21 @@ def SparsePressureOverloadStatement (object : FiniteObject.{u})
 lies in `𝔗_R`; `class(t)` is read off the token by `tokenClass`, not carried
 beside it, so a token cannot be routed to an audit of a class it is not in. -/
 def SparsePressureOverloadInClass (object : FiniteObject.{u})
-    (threshold order routingLabelBound : Nat) (value : TokenClass) : Prop :=
-  OverloadAtClass object threshold order routingLabelBound fun class' => class' = value
+    (threshold order routingLabelBound : Nat)
+    (data : CapacityPresentation.{u} object threshold order)
+    (value : TokenClass) : Prop :=
+  OverloadAtClass object threshold order routingLabelBound data fun class' =>
+    class' = value
 
 /-- The concrete overload witness selected upstream has a token outside the
 given class.  This is the negative residual of the paper's class test; it is
 not the stronger assertion that no overload witness exists in that class. -/
 def SparsePressureOverloadOutsideClass (object : FiniteObject.{u})
-    (threshold order routingLabelBound : Nat) (value : TokenClass) : Prop :=
-  OverloadAtClass object threshold order routingLabelBound fun class' => class' ≠ value
+    (threshold order routingLabelBound : Nat)
+    (data : CapacityPresentation.{u} object threshold order)
+    (value : TokenClass) : Prop :=
+  OverloadAtClass object threshold order routingLabelBound data fun class' =>
+    class' ≠ value
 
 /-- **`cor:quantitative-homogeneous-overload` at the object.**
 
@@ -530,9 +549,10 @@ positive pattern statement the paper routes: some certified capacity-token
 ledger has a token and role supporting a role-homogeneous same-token
 `L_geom`-matching or `L_geom`-star. -/
 def HomogeneousBottleneckPatternStatement (object : FiniteObject.{u})
-    (threshold order : Nat) (Label : Type) [Fintype Label] : Prop :=
-  ∃ (data : CapacityPresentation.{u} object threshold order)
-      (ledger : ObjectCapacityLedger.{u} object threshold order data)
+    (threshold order : Nat)
+    (data : CapacityPresentation.{u} object threshold order)
+    (Label : Type) [Fintype Label] : Prop :=
+  ∃ (ledger : ObjectCapacityLedger.{u} object threshold order data)
       (token : ledger.presented.Token),
       token ∈ ledger.presented.tokens ∧
         ∃ role : Role,
@@ -573,79 +593,6 @@ def HomogeneousCapsCloseStatement (object : FiniteObject.{u})
             2 * (homogeneousCapCharge (SameTokenRoutingGerms.patternBound Label) *
               object.capacityTokenSupply threshold))))
 
-/-- **`thm:homogeneous-overload-geometric-closure`, first assertion, at the
-object.**
-
-*"Every role-homogeneous same-token matching or star of size `L_geom` in the
-window-incidence, remainder-surplus, or primitive-carrier token classes realizes
-either a sparse surplus exit or a decorated Type B handoff fan envelope."*
-
-Read at the routed configuration `def:same-token-routing-germs` declares: at
-every declared routed bottleneck of the object, the identification at the first
-separator is absorbed -- the quotient, compression and delocalization readings
-of `def:named-surplus-exits` -- or the separator survives and the separated
-tails are admissible decorated Type B handoff fan data.  This is
-`prop:nonnear-cubic-sharp-overload-routing`'s (b) or (c), committed as one
-fact. -/
-def BottleneckRoutingStatement (object : FiniteObject.{u})
-    (Baseline : FiniteObject.{u} → Prop) (LengthOK : Nat → Prop) (order : Nat) :
-    Prop :=
-  ∀ (HighDegree : object.Vertex → Prop)
-    (Absorbing : object.Vertex → object.Vertex → object.Vertex → Prop)
-    (bottleneck : SameTokenRoutingGerms.RoutedBottleneck object HighDegree
-      Absorbing),
-    Graph.InducedPathFree (object.induce bottleneck.support) order →
-    DecoratedHandoff.Absorbed (Graph.HasCycleWithLength LengthOK)
-        bottleneck.reading
-        (SameTokenRoutingGerms.Delocalizes Baseline
-          (Graph.HasCycleWithLength LengthOK) object) ∨
-      (3 < object.degree bottleneck.separation.separator ∧
-        ∃ envelope : DecoratedHandoff.Envelope object LengthOK HighDegree
-          Absorbing,
-          DecoratedHandoff.Admissible object LengthOK
-            (fun piece =>
-              ¬ Graph.Strategy.InterfaceReplacement.CompressibleSupport Baseline
-                (Graph.HasCycleWithLength LengthOK) object piece)
-            (fun piece => Graph.InducedPathFree (object.induce piece) order)
-            envelope)
-
-/-- **Node `[144]`, the bottleneck arm's fact: the Type B handoff itself.**
-
-`prop:nonnear-cubic-sharp-overload-routing` opens *"If a sparse surplus exit
-occurs, there is nothing to route.  Otherwise…"* — so on the branch that reaches
-`[144]`, which is node `[125]`'s survivor, outcome (b) is already excluded and
-the manuscript's trichotomy is a *dichotomy*: the fixed caps close to the
-near-cubic spine, or the bottleneck produces decorated Type B fan data.
-
-This is that second outcome, at every declared routed bottleneck of the object:
-`d_G(z) ≥ 4` and the separated tails are admissible decorated Type B handoff fan
-data.  It is `lem:same-token-bottleneck-routing` with its absorbed case refuted
-by survival, which is the manuscript's *"Thus every surviving separated case
-enters the Type B fan ledger."* -/
-def TypeBHandoffStatement (object : FiniteObject.{u})
-    (Baseline : FiniteObject.{u} → Prop) (LengthOK : Nat → Prop) (order : Nat) :
-    Prop :=
-  ∀ (HighDegree : object.Vertex → Prop)
-    (Absorbing : object.Vertex → object.Vertex → object.Vertex → Prop)
-    (bottleneck : SameTokenRoutingGerms.RoutedBottleneck object HighDegree
-      Absorbing),
-    Graph.InducedPathFree (object.induce bottleneck.support) order →
-    bottleneck.separation.separator ∉
-      Graph.Strategy.InterfaceReplacement.SupportAtom.cutBoundary object
-        bottleneck.separation.switchSupport →
-    Baseline (Graph.glue bottleneck.reading.quotient
-      bottleneck.separation.atom.decomposition.outside) →
-    Graph.Response.ContextEquivalent (Graph.HasCycleWithLength LengthOK)
-      bottleneck.reading.quotient bottleneck.reading.full →
-    3 < object.degree bottleneck.separation.separator ∧
-      ∃ envelope : DecoratedHandoff.Envelope object LengthOK HighDegree
-        Absorbing,
-        DecoratedHandoff.Admissible object LengthOK
-          (fun piece => ¬ Graph.Strategy.InterfaceReplacement.CompressibleSupport
-            Baseline (Graph.HasCycleWithLength LengthOK) object piece)
-          (fun piece => Graph.InducedPathFree (object.induce piece) order)
-          envelope
-
 /-! ## The statements, proved -/
 
 /-- **`cor:quantitative-homogeneous-overload` at the object, proved.** -/
@@ -661,22 +608,23 @@ theorem quantitativeOverloadStatement (object : FiniteObject.{u})
 token, that same witness lies either in the remainder or primitive class. -/
 theorem overloadClassExhaustive (object : FiniteObject.{u})
     (threshold order routingLabelBound : Nat)
-    (notWindow : SparsePressureOverloadOutsideClass object threshold order routingLabelBound
-      .windowIncidence) :
-    SparsePressureOverloadInClass object threshold order routingLabelBound
+    (data : CapacityPresentation.{u} object threshold order)
+    (notWindow : SparsePressureOverloadOutsideClass object threshold order
+      routingLabelBound data .windowIncidence) :
+    SparsePressureOverloadInClass object threshold order routingLabelBound data
         .remainderSurplus ∨
-      SparsePressureOverloadInClass object threshold order routingLabelBound
+      SparsePressureOverloadInClass object threshold order routingLabelBound data
         .primitiveCarrier := by
-  obtain ⟨data, ledger, token, role, tokenMem,
+  obtain ⟨ledger, token, role, tokenMem,
     outsideWindow, rest⟩ := notWindow
   cases classified : ledger.presented.tokenClass token with
   | windowIncidence =>
       exact absurd classified outsideWindow
   | remainderSurplus =>
-      exact Or.inl ⟨data, ledger, token, role, tokenMem,
+      exact Or.inl ⟨ledger, token, role, tokenMem,
         classified, rest⟩
   | primitiveCarrier =>
-      exact Or.inr ⟨data, ledger, token, role, tokenMem,
+      exact Or.inr ⟨ledger, token, role, tokenMem,
         classified, rest⟩
 
 /-- **Node `[144]`, proved.**
@@ -701,42 +649,6 @@ theorem homogeneousCapsCloseStatement (object : FiniteObject.{u})
   refine ⟨loads, blocked, surplus, ?_⟩
   rw [slack]
   exact Nat.add_le_add_left surplus _
-
-/-- The failed fixed-cap subbranch is the positive bottleneck-pattern fact. -/
-theorem homogeneousBottleneckPatternStatement_of_not_caps
-    (object : FiniteObject.{u}) {threshold order : Nat} {Label : Type}
-    [Fintype Label]
-    (failure : ¬ HomogeneousCapsHold object threshold order Label) :
-    HomogeneousBottleneckPatternStatement object threshold order Label := by
-  classical
-  by_contra noPattern
-  apply failure
-  intro declared ledger
-  refine ⟨?_, ?_⟩
-  · intro token tokenMem role
-    rintro ⟨pattern, subset, matching, large⟩
-    exact noPattern ⟨declared, ledger, token, tokenMem, role,
-      Or.inl ⟨pattern, subset, matching, large⟩⟩
-  · intro token tokenMem role
-    rintro ⟨centre, pattern, subset, star, large⟩
-    exact noPattern ⟨declared, ledger, token, tokenMem, role,
-      Or.inr ⟨centre, pattern, subset, star, large⟩⟩
-
-/-- **`prop:nonnear-cubic-sharp-overload-routing`, the exhaustive outcome at
-node `[144]`.**
-
-Either the fixed homogeneous caps hold -- and then the near-cubic estimate above
-closes the branch to node `[138]` -- or some capacity token supports a
-role-homogeneous same-token `L_geom`-pattern, which is the bottleneck
-`lem:same-token-bottleneck-routing` reads as a sparse surplus exit or as
-decorated Type B handoff fan data.  The two arms are the two cases of the
-excluded middle on a property of the object, so nothing is assumed to make the
-split exhaustive. -/
-theorem homogeneousCapsRouting (object : FiniteObject.{u})
-    (threshold order : Nat) (Label : Type) [Fintype Label] :
-    HomogeneousCapsHold object threshold order Label ∨
-      ¬ HomogeneousCapsHold object threshold order Label :=
-  Classical.em _
 
 /-- **`cor:spine-lower-bound-surplus-estimates` at the object**: each lower-bound
 package that bounds the pair count of the active family bounds the surplus. -/

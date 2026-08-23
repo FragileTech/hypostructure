@@ -797,4 +797,238 @@ theorem ambientSurplus_le_degreeSurplus (object : FiniteObject.{u})
   rw [← object.ambientSurplus_univ_eq_degreeSurplus threshold baseline]
   exact Finset.sum_le_sum_of_subset (Finset.subset_univ support)
 
+/-! ## `lem:decorated-envelope-deficit-bound`: the grouped decorated envelope
+
+The grouped decorated envelope support of `def:decorated-typeB-envelope-support`
+is a *zero-surplus* counted core charged to the surplus of *external* handoff
+centres: the decorations sit outside the counted core, so the core ledger has
+no centre term at all, and the whole negative part of the support is the unpaid
+cubic mass of the core.  The manuscript pays it in two moves.  The fan
+envelopes at the decorations absorb part of the core — at most the cubic-closed
+count `c(𝔉_h) ≤ k` per centre — and the paper's display
+`(k − 3 + ¼) + c/4 ≤ 8(k − 3)` (here `envelopeNegativePart_le`, at the
+registered factor and slack) converts that absorption into
+`F·s·(d_G(h) − δ)` decoration tokens.  Off the absorbed part,
+`lem:typeB-postledger-core-hygiene` leaves exactly the regions on which the
+Type A discharging of `lem:typeA-receiver-loads` and
+`lem:typeA-unsaturated-discharge` runs, which is
+`card_le_scaled_deficiency_off` with the absorbed part as the exceptional
+set. -/
+
+/-- **The discharge step of `lem:decorated-envelope-deficit-bound`.**
+
+`|V(Y)| ≤ s·def⁺(Y) + |A|`, where `A` is the part of the counted core absorbed
+into the decoration fan envelopes.  The three conditions are the post-ledger
+Type A conditions read off `A` — `lem:typeB-postledger-core-hygiene` decomposes
+the remainder, and `lem:typeA-receiver-loads` / `lem:typeA-unsaturated-discharge`
+are the routing and unsaturation clauses.  Nothing about the decorations enters
+yet: this is the half of the manuscript proof that says *"only the displayed
+grouped fan-envelope negative part can remain unpaid"*. -/
+theorem card_le_scaled_deficiency_add_absorbed (object : FiniteObject.{u})
+    (piece absorbed : Finset object.Vertex) (threshold dischargeScale : Nat)
+    (absorbedSubset : absorbed ⊆ piece)
+    (capped : ∀ vertex ∈ piece \ absorbed,
+      object.internalDegree piece vertex ≤ threshold)
+    (routes : ∀ vertex ∈ piece \ absorbed,
+      object.internalDegree piece vertex = threshold →
+      ∃ receiver : object.Vertex,
+        object.traceReceiver? piece threshold vertex = some receiver ∧
+          object.IsReceiver piece threshold receiver ∧ receiver ∉ absorbed)
+    (unsaturated : ∀ receiver ∈ object.receivers piece threshold \ absorbed,
+      1 + object.restrictedLoad piece absorbed threshold receiver ≤
+        dischargeScale * object.missingPorts piece threshold receiver) :
+    piece.card ≤
+      dischargeScale * object.positiveDeficiency piece threshold +
+        absorbed.card := by
+  classical
+  have discharged := object.card_le_scaled_deficiency_off piece absorbed
+    threshold dischargeScale capped routes unsaturated
+  have inside : ∑ vertex ∈ piece \ absorbed,
+      dischargeScale * (threshold - object.internalDegree piece vertex) ≤
+        dischargeScale * object.positiveDeficiency piece threshold := by
+    unfold FiniteObject.positiveDeficiency
+    rw [Finset.mul_sum]
+    exact Finset.sum_le_sum_of_subset Finset.sdiff_subset
+  have split := Finset.card_sdiff_add_card_eq_card absorbedSubset
+  omega
+
+/-- **The absorption capacity is inside the registered mass budget.**
+
+The manuscript display `(k − 3 + ¼) + c/4 ≤ 8(k − 3)`, summed over an external
+decoration set: the cubic-closed absorption count of the decoration fan
+envelopes is paid by `F·s` times the decorations' own ambient surplus.  Per
+centre this is `envelopeNegativePart_le` with the centre term
+`s·(k − δ) + 1` discarded — the centre is not a core vertex here, so only the
+`c` absorbed core vertices are spent. -/
+theorem sum_closedCount_le_massBudget {threshold dischargeScale massFactor : Nat}
+    (object : FiniteObject.{u}) (decorations : Finset object.Vertex)
+    (fanEnvelope : object.Vertex → Finset object.Vertex)
+    (slack : threshold + 2 + dischargeScale ≤ massFactor * dischargeScale)
+    (high : ∀ centre ∈ decorations, threshold < object.degree centre) :
+    ∑ centre ∈ decorations,
+        closedCount object threshold (fanEnvelope centre) centre ≤
+      massFactor * dischargeScale *
+        object.ambientSurplus decorations threshold := by
+  calc ∑ centre ∈ decorations,
+          closedCount object threshold (fanEnvelope centre) centre
+      ≤ ∑ centre ∈ decorations,
+          massFactor * dischargeScale * (object.degree centre - threshold) := by
+        refine Finset.sum_le_sum fun centre member => ?_
+        have bound := envelopeNegativePart_le (object := object)
+          (envelope := fanEnvelope centre) (high centre member) slack
+        simp only [envelopeNegativePart] at bound
+        omega
+    _ = massFactor * dischargeScale *
+          object.ambientSurplus decorations threshold := by
+        unfold FiniteObject.ambientSurplus
+        rw [Finset.mul_sum]
+
+/-- **`lem:decorated-envelope-deficit-bound`.**
+
+`No_-(𝔛*) ≤ F·Σ_{h ∈ H}(d_G(h) − δ)` for one decorated envelope, written
+subtraction-free at the discharge scale:
+`|V(Y)| ≤ s·def⁺(Y) + F·s·σ(H)`.  The decorations are external to the counted
+core, so their surplus is the ambient surplus of the decoration set itself —
+for an actual `DecoratedHandoff.Envelope` this is `Envelope.centreTokens`.
+The manuscript's `8` is the registered factor and its `27k ≥ 85` the registered
+slack, exactly as in `envelopeNegativePart_le`.
+
+`absorbed` is the part of the core covered by the decoration fan envelopes and
+`covered` its per-centre cubic-closed capacity; both are the fan-assignment
+data of `def:typeB-assigned-ledger` read on the handoff decorations. -/
+theorem decoratedEnvelopeDeficitBound {threshold dischargeScale massFactor : Nat}
+    (object : FiniteObject.{u})
+    (piece decorations absorbed : Finset object.Vertex)
+    (fanEnvelope : object.Vertex → Finset object.Vertex)
+    (slack : threshold + 2 + dischargeScale ≤ massFactor * dischargeScale)
+    (high : ∀ centre ∈ decorations, threshold < object.degree centre)
+    (absorbedSubset : absorbed ⊆ piece)
+    (capped : ∀ vertex ∈ piece \ absorbed,
+      object.internalDegree piece vertex ≤ threshold)
+    (routes : ∀ vertex ∈ piece \ absorbed,
+      object.internalDegree piece vertex = threshold →
+      ∃ receiver : object.Vertex,
+        object.traceReceiver? piece threshold vertex = some receiver ∧
+          object.IsReceiver piece threshold receiver ∧ receiver ∉ absorbed)
+    (unsaturated : ∀ receiver ∈ object.receivers piece threshold \ absorbed,
+      1 + object.restrictedLoad piece absorbed threshold receiver ≤
+        dischargeScale * object.missingPorts piece threshold receiver)
+    (covered : absorbed.card ≤ ∑ centre ∈ decorations,
+      closedCount object threshold (fanEnvelope centre) centre) :
+    piece.card ≤
+      dischargeScale * object.positiveDeficiency piece threshold +
+        massFactor * dischargeScale *
+          object.ambientSurplus decorations threshold := by
+  have discharge := card_le_scaled_deficiency_add_absorbed object piece absorbed
+    threshold dischargeScale absorbedSubset capped routes unsaturated
+  have budget := sum_closedCount_le_massBudget (massFactor := massFactor)
+    object decorations fanEnvelope slack high
+  omega
+
+/-- **`lem:decorated-envelope-deficit-bound`, summed** — the sum the route-8
+unified-deficit ledger consumes for the handoff pieces:
+
+`Σ_X (|V(Y_X)| − s·def⁺(Y_X)) ≤ F·s·σ(H)`,
+
+with the subtraction truncated per envelope, so the left side is the
+residual-mass sum `M_B` of the grouped role of `def:typeB-residual-mass`.
+`centres` is the *deduplicated* decoration family: each grouped handoff centre
+appears once, which is what `def:decorated-typeB-envelope-support` guarantees
+through `GroupedEnvelopes.disjoint_componentCentres` /
+`GroupedEnvelopes.sum_componentTokens`, and is what makes `covered` a sum over
+a plain finset rather than a tagged union.  The other, ordinary role of the
+at-most-twice convention `S_B ≤ 2σ(G)` is `bridgeResidualMass_le_twice`. -/
+theorem envelopeFamilyNegativePart_le {threshold dischargeScale massFactor : Nat}
+    {Core : Type*} (object : FiniteObject.{u}) (cores : Finset Core)
+    (corePiece absorbedAt : Core → Finset object.Vertex)
+    (centres : Finset object.Vertex)
+    (fanEnvelope : object.Vertex → Finset object.Vertex)
+    (slack : threshold + 2 + dischargeScale ≤ massFactor * dischargeScale)
+    (high : ∀ centre ∈ centres, threshold < object.degree centre)
+    (absorbedSubset : ∀ core ∈ cores, absorbedAt core ⊆ corePiece core)
+    (capped : ∀ core ∈ cores, ∀ vertex ∈ corePiece core \ absorbedAt core,
+      object.internalDegree (corePiece core) vertex ≤ threshold)
+    (routes : ∀ core ∈ cores, ∀ vertex ∈ corePiece core \ absorbedAt core,
+      object.internalDegree (corePiece core) vertex = threshold →
+      ∃ receiver : object.Vertex,
+        object.traceReceiver? (corePiece core) threshold vertex = some receiver ∧
+          object.IsReceiver (corePiece core) threshold receiver ∧
+            receiver ∉ absorbedAt core)
+    (unsaturated : ∀ core ∈ cores,
+      ∀ receiver ∈ object.receivers (corePiece core) threshold \ absorbedAt core,
+      1 + object.restrictedLoad (corePiece core) (absorbedAt core) threshold
+          receiver ≤
+        dischargeScale * object.missingPorts (corePiece core) threshold receiver)
+    (covered : ∑ core ∈ cores, (absorbedAt core).card ≤
+      ∑ centre ∈ centres,
+        closedCount object threshold (fanEnvelope centre) centre) :
+    ∑ core ∈ cores,
+        ((corePiece core).card -
+          dischargeScale *
+            object.positiveDeficiency (corePiece core) threshold) ≤
+      massFactor * dischargeScale *
+        object.ambientSurplus centres threshold := by
+  classical
+  have pointwise : ∀ core ∈ cores,
+      (corePiece core).card -
+          dischargeScale *
+            object.positiveDeficiency (corePiece core) threshold ≤
+        (absorbedAt core).card := by
+    intro core member
+    have discharge := card_le_scaled_deficiency_add_absorbed object
+      (corePiece core) (absorbedAt core) threshold dischargeScale
+      (absorbedSubset core member) (capped core member) (routes core member)
+      (unsaturated core member)
+    omega
+  have summed := Finset.sum_le_sum pointwise
+  have budget := sum_closedCount_le_massBudget (massFactor := massFactor)
+    object centres fanEnvelope slack high
+  omega
+
+/-- **`lem:decorated-envelope-deficit-bound` + `prop:typeB-bridge-sublinear`,
+grouped role**: the summed handoff-envelope negative part is inside `F·s` times
+the object's own degree surplus, `M_B(grouped role) ≤ F·S_B(grouped) ≤ F·σ(G)`.
+The decoration surplus of the family is below the global surplus because the
+surplus is a nonnegative vertex-local count — `ambientSurplus_le_degreeSurplus`
+on the deduplicated centre family. -/
+theorem envelopeFamilyNegativePart_le_degreeSurplus
+    {threshold dischargeScale massFactor : Nat}
+    {Core : Type*} (object : FiniteObject.{u}) (cores : Finset Core)
+    (corePiece absorbedAt : Core → Finset object.Vertex)
+    (centres : Finset object.Vertex)
+    (fanEnvelope : object.Vertex → Finset object.Vertex)
+    (slack : threshold + 2 + dischargeScale ≤ massFactor * dischargeScale)
+    (baseline : ∀ vertex : object.Vertex, threshold ≤ object.degree vertex)
+    (high : ∀ centre ∈ centres, threshold < object.degree centre)
+    (absorbedSubset : ∀ core ∈ cores, absorbedAt core ⊆ corePiece core)
+    (capped : ∀ core ∈ cores, ∀ vertex ∈ corePiece core \ absorbedAt core,
+      object.internalDegree (corePiece core) vertex ≤ threshold)
+    (routes : ∀ core ∈ cores, ∀ vertex ∈ corePiece core \ absorbedAt core,
+      object.internalDegree (corePiece core) vertex = threshold →
+      ∃ receiver : object.Vertex,
+        object.traceReceiver? (corePiece core) threshold vertex = some receiver ∧
+          object.IsReceiver (corePiece core) threshold receiver ∧
+            receiver ∉ absorbedAt core)
+    (unsaturated : ∀ core ∈ cores,
+      ∀ receiver ∈ object.receivers (corePiece core) threshold \ absorbedAt core,
+      1 + object.restrictedLoad (corePiece core) (absorbedAt core) threshold
+          receiver ≤
+        dischargeScale * object.missingPorts (corePiece core) threshold receiver)
+    (covered : ∑ core ∈ cores, (absorbedAt core).card ≤
+      ∑ centre ∈ centres,
+        closedCount object threshold (fanEnvelope centre) centre) :
+    ∑ core ∈ cores,
+        ((corePiece core).card -
+          dischargeScale *
+            object.positiveDeficiency (corePiece core) threshold) ≤
+      massFactor * dischargeScale * object.degreeSurplus threshold := by
+  have local' := envelopeFamilyNegativePart_le (massFactor := massFactor)
+    object cores corePiece absorbedAt centres fanEnvelope slack high
+    absorbedSubset capped routes unsaturated covered
+  have global : object.ambientSurplus centres threshold ≤
+      object.degreeSurplus threshold :=
+    ambientSurplus_le_degreeSurplus object centres threshold baseline
+  have paid := Nat.mul_le_mul_left (massFactor * dischargeScale) global
+  omega
+
 end Hypostructure.Graph.TypeBEnvelopeCharge
