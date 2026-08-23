@@ -228,31 +228,6 @@ noncomputable def selectedSparseSurplusActivation
           activeSurplusFamilyRow, sparseSlackSurplusRow,
           K_eq_iff])
 
-/-- Node `[129]`, the paper's common active-family baseline demand on the
-strict surplus arm.  This reads only the completed `[125]`--`[128]` fact; it
-does not read or manufacture the sibling node `[21]` package. -/
--- EG-NODE [129] full active family and baseline A_0=P_exc, E_spine<=C_E n
-noncomputable def selectedBaselineSpineDemand
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .activeSurplusDemands, K .sparsePortActivation,
-        K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection]) :
-    ExactLedger EGInput.{u} selected
-      [K .baselineSpineDemand, K .activeSurplusDemands,
-        K .sparsePortActivation, K .activeSurplusFamily,
-        K .sparseSlackSurplus, K .sparseSurplusSurvivor, K .surplusAbove,
-        K .localAlgebra, K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres,
-        K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
-        K .returnAvoidance, K .selection] :=
-  (baselineSpineDemandRow (BranchState := BranchState)
-    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-    (presentation := erdosReceiverLoadProfile) (data := spineData)).run history (by
-      simp [baselineSpineDemandRow, K_eq_iff])
-
 /-- Node `[130]`: the full pair-response family, split into the paper's
 independent and dependent residuals on the literal `[129]` ledger. -/
 -- EG-NODE [130] canonical pair split: blocker-free?
@@ -268,116 +243,6 @@ noncomputable def selectedPairResponseIndependenceDichotomy
     Decision (K .independentPairFamily) (K .dependentPairFamily) history :=
   pairResponseIndependenceDichotomy (data := spineData) history
     (by simp [K_eq_iff]) (by simp [K_eq_iff])
-
-/-- Node `[131]`, the exact mixed sparse-spine dependence fact on the
-independent residual of `[130]`. -/
--- EG-NODE [131] free-pair entropy sandwich |Pi_free|<=E_spine+(sigma/2+1)log2 n
-noncomputable def selectedMixedSparseSpineDependence
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .independentPairFamily, K .baselineSpineDemand,
-        K .activeSurplusDemands, K .sparsePortActivation,
-        K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection]) :
-    ExactLedger EGInput.{u} selected
-      [K .mixedSparseSpineDependence, K .independentPairFamily,
-        K .baselineSpineDemand, K .activeSurplusDemands,
-        K .sparsePortActivation, K .activeSurplusFamily,
-        K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection] :=
-  (mixedSparseSpineDependenceRow (BranchState := BranchState)
-    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-    (presentation := erdosReceiverLoadProfile) (data := spineData)).run history (by
-      simp [mixedSparseSpineDependenceRow, K_eq_iff])
-
-/-- Node `[131]`, `lem:exact-cubic-baseline-budget` on the literal residual
-already carrying the mixed sparse-spine dependence fact. -/
--- EG-NODE [131] free-pair entropy sandwich |Pi_free|<=E_spine+(sigma/2+1)log2 n
-noncomputable def selectedExactCubicBaselineBudget
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .mixedSparseSpineDependence, K .independentPairFamily,
-        K .baselineSpineDemand, K .activeSurplusDemands,
-        K .sparsePortActivation, K .activeSurplusFamily,
-        K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection]) :
-    ExactLedger EGInput.{u} selected
-      [K .exactCubicBaselineBudget, K .mixedSparseSpineDependence,
-        K .independentPairFamily, K .baselineSpineDemand,
-        K .activeSurplusDemands, K .sparsePortActivation,
-        K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection] :=
-  (exactCubicBaselineBudgetRow (BranchState := BranchState)
-    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-    (presentation := erdosReceiverLoadProfile) (data := spineData)).run history (by
-      simp [exactCubicBaselineBudgetRow, K_eq_iff])
-
-/-- Node `[131]`, `lem:incremental-skeleton-room` on the literal residual
-carrying the exact cubic baseline evaluation. -/
--- EG-NODE [131] free-pair entropy sandwich |Pi_free|<=E_spine+(sigma/2+1)log2 n
-noncomputable def selectedIncrementalSkeletonRoom
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .exactCubicBaselineBudget, K .mixedSparseSpineDependence,
-        K .independentPairFamily, K .baselineSpineDemand,
-        K .activeSurplusDemands, K .sparsePortActivation,
-        K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection]) :
-    ExactLedger EGInput.{u} selected
-      [K .incrementalSkeletonRoom, K .exactCubicBaselineBudget,
-        K .mixedSparseSpineDependence, K .independentPairFamily,
-        K .baselineSpineDemand, K .activeSurplusDemands,
-        K .sparsePortActivation, K .activeSurplusFamily,
-        K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection] :=
-  (incrementalSkeletonRoomRow (BranchState := BranchState)
-    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-    (presentation := erdosReceiverLoadProfile) (data := spineData)).run history (by
-      simp [incrementalSkeletonRoomRow, K_eq_iff])
-
-/-- Node `[131]`, `lem:skeleton-dominates` on the literal residual carrying
-the incremental-room fact. -/
--- EG-NODE [131] free-pair entropy sandwich |Pi_free| <= E_spine+(sigma/2+1)log2 n
-noncomputable def selectedSkeletonDominates
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .incrementalSkeletonRoom, K .exactCubicBaselineBudget,
-        K .mixedSparseSpineDependence, K .independentPairFamily,
-        K .baselineSpineDemand, K .activeSurplusDemands,
-        K .sparsePortActivation, K .activeSurplusFamily,
-        K .sparseSlackSurplus, K .sparseSurplusSurvivor,
-        K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection]) :
-    ExactLedger EGInput.{u} selected
-      [K .skeletonDominates, K .incrementalSkeletonRoom,
-        K .exactCubicBaselineBudget, K .mixedSparseSpineDependence,
-        K .independentPairFamily, K .baselineSpineDemand,
-        K .activeSurplusDemands, K .sparsePortActivation,
-        K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection] :=
-  (skeletonDominatesRow (BranchState := BranchState)
-    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-    (presentation := erdosReceiverLoadProfile) (data := spineData)).run history (by
-      simp [skeletonDominatesRow, K_eq_iff])
 
 /-- Node `[132]`, the sparse-pair routing split after baseline demand. -/
 -- EG-NODE [132] blocked-pair routing: exit or canonical blocker?
@@ -420,7 +285,10 @@ noncomputable def selectedSparsePairExitCloses
   exact (history.get (K .sparseSurplusSurvivor)).down
     (history.get (K .sparsePairExit)).down
 
-/-- Nodes `[130]` and `[134]`, canonical pair ledger on the blocker arm. -/
+/-- Node `[134]`: construct the full canonical blocker ledger on the literal
+blocker arm.  The row reads the `[132]` certificate through `ExactLedger` and
+writes only the canonical partition and no-overcount facts prescribed by the
+paper. -/
 -- EG-NODE [134] canonical blocker ledger: one B_pi and one capacity token per blocked pair
 noncomputable def selectedCanonicalPairFacts
     {selected : EGInput.{u}}
@@ -431,8 +299,10 @@ noncomputable def selectedCanonicalPairFacts
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+        K .uncompressible, K .replacementExclusion,
+        K .targetCompleteContextUniversality, K .degreeProfileFibres,
+        K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
+        K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .canonicalPairLedger, K .canonicalBlockerRoute,
         K .dependentPairFamily, K .baselineSpineDemand,
@@ -440,14 +310,14 @@ noncomputable def selectedCanonicalPairFacts
         K .sparsePortActivation, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection] := by
-  exact
-    (canonicalPairLedgerRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run history (by
-        simp [canonicalPairLedgerRow, K_eq_iff])
+        K .maximalPacking, K .uncompressible, K .replacementExclusion,
+        K .targetCompleteContextUniversality, K .degreeProfileFibres,
+        K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
+        K .returnAvoidance, K .selection] :=
+  (canonicalPairLedgerRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run history (by
+      simp [canonicalPairLedgerRow, K_eq_iff])
 
 /-- Node `[135]`, exact window-join pressure on the literal `[134]` residual. -/
 -- EG-NODE [135] exact window-join pressure e(R,W)+2e_x(W)=15p13+sigma_W
@@ -527,89 +397,20 @@ noncomputable def selectedSpineSurplusEstimateCloses
   exact Nat.not_lt_of_ge (by
     simpa [Graph.Strategy.Spine.Data.surplusThreshold] using upper) lower
 
-/-- **Node `[144]`, bottleneck discharge**, on the literal audit residual of the
-class selected at `[139]`/`[141]`/`[143]`: the caps/pattern test of
-`thm:homogeneous-overload-geometric-closure`; the caps arm gives
-`cor:homogeneous-same-token-caps-close`'s estimate at the certified ledger and
-routes to `[138]`; the pattern arm is `lem:same-token-bottleneck-routing` — the
-sparse-exit reading refuted by the `[125]` survivor, so the bottleneck produces
-decorated Type B fan data (`K .typeBHandoff`), which is handed to the Type B
-branch (the next producer on this route). -/
+/-- **Node `[144]`, first genuinely missing producer.**  The incoming ledger
+contains the concrete same-token `L_geom` pattern.  The paper next constructs
+two same-label routing germs, their first separator, and then the sparse-exit
+or decorated-Type-B outcome.  No kernel-checked constructor of those germs from
+the declared signature exists yet, so this call deliberately remains loud. -/
 -- EG-NODE [144] bottleneck discharge: sparse exit, Type B, or near-cubic spine
 noncomputable def selectedBottleneckDischarge
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .sparseSlackSurplus) known]
-    [FactKeys.Has (K .surplusAbove) known]
+    [FactKeys.Has (K .homogeneousBottleneckPattern) known]
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .uncompressible) known]
-    [FactKeys.Has (K .sparseSurplusSurvivor) known]
-    [FactKeys.Has (K .blockedPairEntropySandwich) known]
-    [FactKeys.Has (K .canonicalPairLedger) known]
-    [FactKeys.Has (K .sparseUpperEnvelope) known]
-    (capsFresh : K .homogeneousCapsHold ∉ known)
-    (patternFresh : K .homogeneousBottleneckPattern ∉ known)
-    (bottleneckFresh : K .homogeneousBottleneck ∉ known)
-    (routingFresh : K .bottleneckRouting ∉ known)
-    (handoffFresh : K .typeBHandoff ∉ known)
-    (envelopeFresh : K .typeBFanEnvelope ∉ known)
-    (cubicFresh : K .cubicBottleneckSeparator ∉ known) : False := by
-  match homogeneousCapsDichotomy (data := spineData) history capsFresh patternFresh with
-  | .left capsHistory =>
-      let closed :=
-        (homogeneousCapsCloseRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          capsHistory (by simp [K_eq_iff, bottleneckFresh])
-      -- `[138]`: `cor:homogeneous-same-token-caps-close` at the certified ledger.
-      obtain ⟨_active, _certificate, _pairsEq, scheduleCard, _partition,
-        _incidence, _multiplicity, _blocked⟩ := (closed.get (K .canonicalPairLedger)).down
-      obtain ⟨envelope, _packing, _valid, _maximal, _joinIdentity⟩ :=
-        (closed.get (K .sparseUpperEnvelope)).down
-      have estimate := capsClose_estimate spineData selected.object selected.baseline
-        (closed.get (K .blockedPairEntropySandwich)).down scheduleCard envelope
-        (closed.get (K .sparseSlackSurplus)).down (closed.get (K .surplusAbove)).down
-        (closed.get (K .homogeneousBottleneck)).down
-      have lower :
-          spineData.surplusThreshold selected.object.vertexCount <
-            selected.object.degreeSurplus spineData.threshold :=
-        (closed.get (K .surplusAbove)).down
-      exact Nat.not_lt_of_ge (by
-        simpa [Graph.Strategy.Spine.Data.surplusThreshold] using estimate) lower
-  | .right patternHistory =>
-      let routed :=
-        (bottleneckRoutingRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          patternHistory (by simp [K_eq_iff, routingFresh])
-      let handoff :=
-        (typeBHandoffRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          routed (by simp [K_eq_iff, handoffFresh])
-      -- `[144]` → Type B: `lem:same-token-bottleneck-routing` at the pattern's
-      -- *own* declared routed bottleneck — the connector germs of the two
-      -- selected demands of `K .homogeneousBottleneckPattern`
-      -- (`def:same-token-routing-germs`, `CapacityPresentation.routedBottleneck`).
-      -- The manuscript's split on the separator's degree: `d_G(z) ≥ 4` gives the
-      -- decorated handoff fan envelope on a canonical remainder piece of the
-      -- presentation's maximal packing (`K .typeBFanEnvelope`, the Type B
-      -- `[65]`/`[66]` entry on the bare envelope); the cubic separator's reading
-      -- is absorbed (`K .cubicBottleneckSeparator`, sparse exits (b)/(c)).
-      match patternRoutedBottleneckDichotomy (data := spineData) handoff
-          (by simp [K_eq_iff, envelopeFresh]) (by simp [K_eq_iff, cubicFresh]) with
-      | .left envelopeHistory =>
-          -- Type B `[67]`--`[85]` on the routed envelope's ledger (no near-cubic
-          -- spine facts here: `K .remainderNormalized`, `K .largeBudgetResidual`,
-          -- `K .negativeSupport` are absent on the surplus arm).  Next producer.
-          exact selectedTypeBRoutedEnvelope envelopeHistory
-      | .right cubicHistory =>
-          -- The cubic separator's target-defect / target-complete reading, the
-          -- manuscript's sparse exits (b)/(c) at the switch reading; refuting
-          -- them from `K .sparseSurplusSurvivor` needs the reading presented as
-          -- an admissible declared quotient / a baseline replacement, which is
-          -- what `K .typeBHandoff` universally quantifies over.  Next producer.
-          exact selectedCubicBottleneckSeparator cubicHistory
+    [FactKeys.Has (K .sparseSurplusSurvivor) known] : False :=
+  selectedPatternRoutedBottleneck history
 
 /-- **Nodes `[139]`--`[144]`, on the literal overload residual of `[137]`**: the
 window-incidence test `[139]` and its audit `[140]`, the remainder-surplus test
@@ -638,15 +439,8 @@ noncomputable def selectedSparsePressureOverloadCloses
     (remainderFresh : K .remainderClassOverload ∉ known)
     (remainderAbsentFresh : K .remainderClassAbsent ∉ known)
     (remainderAuditFresh : K .remainderSurplusAudit ∉ known)
-    (primitiveFresh : K .primitiveClassOverload ∉ known)
     (primitiveAuditFresh : K .primitiveCarrierAudit ∉ known)
-    (capsFresh : K .homogeneousCapsHold ∉ known)
-    (patternFresh : K .homogeneousBottleneckPattern ∉ known)
-    (bottleneckFresh : K .homogeneousBottleneck ∉ known)
-    (routingFresh : K .bottleneckRouting ∉ known)
-    (handoffFresh : K .typeBHandoff ∉ known)
-    (envelopeFresh : K .typeBFanEnvelope ∉ known)
-    (cubicFresh : K .cubicBottleneckSeparator ∉ known) : False := by
+    (patternFresh : K .homogeneousBottleneckPattern ∉ known) : False := by
   match windowOverloadClassDichotomy (data := spineData) history windowFresh
       windowAbsentFresh with
   | .left windowHistory =>
@@ -654,12 +448,8 @@ noncomputable def selectedSparsePressureOverloadCloses
         (windowIncidenceAuditRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          windowHistory (by simp [K_eq_iff, windowAuditFresh])
+          windowHistory (by simp [K_eq_iff, windowAuditFresh, patternFresh])
       exact selectedBottleneckDischarge audited
-        (by simp [K_eq_iff, capsFresh]) (by simp [K_eq_iff, patternFresh])
-        (by simp [K_eq_iff, bottleneckFresh]) (by simp [K_eq_iff, routingFresh])
-        (by simp [K_eq_iff, handoffFresh]) (by simp [K_eq_iff, envelopeFresh])
-        (by simp [K_eq_iff, cubicFresh])
   | .right windowAbsent =>
       match remainderOverloadClassDichotomy (data := spineData) windowAbsent
           (by simp [K_eq_iff, remainderFresh]) (by simp [K_eq_iff, remainderAbsentFresh]) with
@@ -668,28 +458,17 @@ noncomputable def selectedSparsePressureOverloadCloses
             (remainderSurplusAuditRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              remainderHistory (by simp [K_eq_iff, remainderAuditFresh])
+              remainderHistory
+                (by simp [K_eq_iff, remainderAuditFresh, patternFresh])
           exact selectedBottleneckDischarge audited
-            (by simp [K_eq_iff, capsFresh]) (by simp [K_eq_iff, patternFresh])
-            (by simp [K_eq_iff, bottleneckFresh]) (by simp [K_eq_iff, routingFresh])
-            (by simp [K_eq_iff, handoffFresh]) (by simp [K_eq_iff, envelopeFresh])
-            (by simp [K_eq_iff, cubicFresh])
       | .right remainderAbsent =>
-          let primitive :=
-            (primitiveClassOverloadRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              remainderAbsent (by simp [K_eq_iff, primitiveFresh])
           let audited :=
             (primitiveCarrierAuditRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              primitive (by simp [K_eq_iff, primitiveAuditFresh])
+              remainderAbsent
+                (by simp [K_eq_iff, primitiveAuditFresh, patternFresh])
           exact selectedBottleneckDischarge audited
-            (by simp [K_eq_iff, capsFresh]) (by simp [K_eq_iff, patternFresh])
-            (by simp [K_eq_iff, bottleneckFresh]) (by simp [K_eq_iff, routingFresh])
-            (by simp [K_eq_iff, handoffFresh]) (by simp [K_eq_iff, envelopeFresh])
-            (by simp [K_eq_iff, cubicFresh])
 
 /-- Node `[22]`: the canonical hot/cold partition (`def:cold-window-ledger`),
 then the live-hot entropy cap decision on `𝒫_hot`.
@@ -752,54 +531,29 @@ noncomputable def selectedDensityBudget
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .coldMassBounded, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
-        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
-        K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .densityCap, K .coldMassBounded, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
-        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
-        K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection] :=
   (densityBudgetRow (data := spineData)).run history (by simp [K_eq_iff])
 
-/-- Node `[145]`: record node `[22]`'s partition on the literal cold residual
-after the density/spine entry.  The atomic row reads `K .hotColdPartition`
-from this ExactLedger and appends only `K .coldWindowLedgerSplit`. -/
--- EG-NODE [145] cold-branch continuation from the no-edge of [22]
-noncomputable def selectedColdWindowLedgerSplit
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .barrierCap, K .hotColdPartition,
-        K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
-        K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection]) :
-    ExactLedger EGInput.{u} selected
-      [K .coldWindowLedgerSplit, K .barrierCap,
-        K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
-        K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking,
-        K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection] :=
-  (coldWindowLedgerSplitRow (data := spineData)).run history
-    (by simp [K_eq_iff])
-
-/-- Node `[146]`: the route-8 threshold is decided on the literal `[145]`
-residual.  The two outputs are sibling ledgers; neither output is appended to
-the other. -/
+/-- Node `[145]` is a control-flow edge: node `[146]` reads node `[22]`'s
+`K .hotColdPartition` directly from the same ExactLedger.  The two outputs of
+`[146]` are sibling ledgers; neither output is appended to the other. -/
+-- EG-NODE [145] direct cold-branch handoff from the no-edge of [22]
 -- EG-NODE [146] theta < 1/78 ?
 noncomputable def selectedColdRoute8Dichotomy
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .coldWindowLedgerSplit, K .barrierCap,
-        K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
+      [K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
@@ -813,8 +567,7 @@ decision. -/
 noncomputable def selectedColdHotEntropyDichotomy
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit, K .barrierCap,
-        K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
+      [K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
@@ -864,8 +617,7 @@ noncomputable def selectedColdMass
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .coldHotEntropyCap, K .coldRoute8AtOrAbove,
-        K .coldWindowLedgerSplit, K .barrierCap,
-        K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
@@ -879,8 +631,7 @@ noncomputable def selectedColdAmbientCubic
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .coldMass, K .coldHotEntropyCap, K .coldRoute8AtOrAbove,
-        K .coldWindowLedgerSplit, K .barrierCap,
-        K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
+        K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
@@ -894,8 +645,7 @@ noncomputable def selectedColdStubExcess
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .coldAmbientCubic, K .coldMass, K .coldHotEntropyCap,
-        K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit, K .barrierCap,
-        K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
+        K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
@@ -911,8 +661,7 @@ noncomputable def selectedColdMassDichotomy
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .coldStubExcess, K .coldAmbientCubic, K .coldMass, K .coldHotEntropyCap,
-        K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit, K .barrierCap,
-        K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
+        K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
@@ -927,16 +676,14 @@ noncomputable def selectedBridgeless
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
-        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
-        K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
-        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
-        K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
@@ -953,16 +700,14 @@ noncomputable def selectedColdReturnCorridors
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
-        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
-        K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .coldReturnCorridors, K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
-        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
-        K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
@@ -976,8 +721,7 @@ noncomputable def selectedColdFirstFailureRouting
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .coldReturnCorridors, K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
-        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
-        K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
@@ -986,8 +730,7 @@ noncomputable def selectedColdFirstFailureRouting
       [K .coldCorridorState, K .coldFailureCycle, K .coldFailureDefect,
         K .coldFailureCompression, K .coldFailureHandoff, K .coldFailureRouting,
         K .coldReturnCorridors, K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
-        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
-        K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
@@ -1003,8 +746,7 @@ noncomputable def selectedColdGermExtraction
       [K .coldCorridorState, K .coldFailureCycle, K .coldFailureDefect,
         K .coldFailureCompression, K .coldFailureHandoff, K .coldFailureRouting,
         K .coldReturnCorridors, K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
-        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
-        K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
@@ -1014,8 +756,7 @@ noncomputable def selectedColdGermExtraction
         K .coldCorridorState, K .coldFailureCycle, K .coldFailureDefect,
         K .coldFailureCompression, K .coldFailureHandoff, K .coldFailureRouting,
         K .coldReturnCorridors, K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
-        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
-        K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
@@ -1034,8 +775,7 @@ noncomputable def selectedColdGermCandidates
         K .coldCorridorState, K .coldFailureCycle, K .coldFailureDefect,
         K .coldFailureCompression, K .coldFailureHandoff, K .coldFailureRouting,
         K .coldReturnCorridors, K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
-        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
-        K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
@@ -1045,8 +785,7 @@ noncomputable def selectedColdGermCandidates
         K .coldCorridorState, K .coldFailureCycle, K .coldFailureDefect,
         K .coldFailureCompression, K .coldFailureHandoff, K .coldFailureRouting,
         K .coldReturnCorridors, K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
-        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
-        K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
@@ -1064,8 +803,7 @@ noncomputable def selectedColdGermTrichotomy
         K .coldCorridorState, K .coldFailureCycle, K .coldFailureDefect,
         K .coldFailureCompression, K .coldFailureHandoff, K .coldFailureRouting,
         K .coldReturnCorridors, K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
-        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
-        K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
@@ -1075,8 +813,7 @@ noncomputable def selectedColdGermTrichotomy
         K .coldCorridorState, K .coldFailureCycle, K .coldFailureDefect,
         K .coldFailureCompression, K .coldFailureHandoff, K .coldFailureRouting,
         K .coldReturnCorridors, K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
-        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
-        K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
@@ -1093,8 +830,7 @@ noncomputable def selectedColdSameInterfaceTable
         K .coldCorridorState, K .coldFailureCycle, K .coldFailureDefect,
         K .coldFailureCompression, K .coldFailureHandoff, K .coldFailureRouting,
         K .coldReturnCorridors, K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
-        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
-        K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
@@ -1104,8 +840,7 @@ noncomputable def selectedColdSameInterfaceTable
         K .coldCorridorState, K .coldFailureCycle, K .coldFailureDefect,
         K .coldFailureCompression, K .coldFailureHandoff, K .coldFailureRouting,
         K .coldReturnCorridors, K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
-        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
-        K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
@@ -1122,8 +857,7 @@ noncomputable def selectedColdBranchClosed
         K .coldCorridorState, K .coldFailureCycle, K .coldFailureDefect,
         K .coldFailureCompression, K .coldFailureHandoff, K .coldFailureRouting,
         K .coldReturnCorridors, K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
-        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
-        K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
@@ -1133,8 +867,7 @@ noncomputable def selectedColdBranchClosed
         K .coldCorridorState, K .coldFailureCycle, K .coldFailureDefect,
         K .coldFailureCompression, K .coldFailureHandoff, K .coldFailureRouting,
         K .coldReturnCorridors, K .bridgeless, K .coldMassLinear, K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
-        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .coldWindowLedgerSplit,
-        K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
+        K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
@@ -1145,7 +878,7 @@ noncomputable def selectedColdBranchClosed
 `[157]` residual.**  By `lem:p13-window-package` (`K .windowPackageRealized`)
 the canonical comparison retains the whole packing's package, so by
 `def:cold-window-ledger` every packed window is hot: the canonical hot family
-is the maximal retained subfamily (`K .coldWindowLedgerSplit`), hence the whole
+is the maximal retained subfamily (`K .hotColdPartition`), hence the whole
 packing, and `𝒫_cold = ∅`, `C = 0`.  The linear arm's positivity
 `(perWindow + B_cold)·σ(G) < perWindow·C` (`K .coldMassLinear`) is then
 impossible.  A direct `False` derivation from the ledger's facts,
@@ -1155,11 +888,11 @@ theorem selectedColdLinearCloses
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .coldMassLinear) known]
-    [FactKeys.Has (K .coldWindowLedgerSplit) known]
+    [FactKeys.Has (K .hotColdPartition) known]
     [FactKeys.Has (K .windowPackageRealized) known] : False := by
   classical
   have linear := (history.get (K .coldMassLinear)).down
-  have split := (history.get (K .coldWindowLedgerSplit)).down
+  have split := (history.get (K .hotColdPartition)).down
   have realized := (history.get (K .windowPackageRealized)).down
   obtain ⟨_valid, _attains, _maximal, ⟨hotSubset, _retained, hotMaximal⟩, coldIff,
     _disjoint, _cover⟩ := split
@@ -1305,35 +1038,20 @@ noncomputable def selectedWindowPackageRealizationDichotomy
 functions.  Their arguments and results are exact-ledger indices, so the
 strict and near-cubic cursors cannot be accidentally exchanged. -/
 
-/-- Node `[137]`, first production: `lem:exact-surplus-pair-charge-partition`
-on the literal `[136]` residual. -/
+/-- Node `[137]`, the manuscript's literal coupled-excess test on the
+post-pressure residual.  The decision consumes every quantitative fact its two
+arms use through `ExactLedger` and preserves the complete ancestry on either
+result. -/
 -- EG-NODE [137] coupled excess D_all > 0 ?
-noncomputable def selectedRoleFibrePartition
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .capacityTokenLedger, K .sparseUpperEnvelope,
-        K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .dependentPairFamily, K .baselineSpineDemand,
-        K .activeSurplusDemands, K .sparsePortActivation,
-        K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection]) :
-    ExactLedger EGInput.{u} selected
-      [K .roleFibrePartition, K .capacityTokenLedger, K .sparseUpperEnvelope,
-        K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .dependentPairFamily, K .baselineSpineDemand,
-        K .activeSurplusDemands, K .sparsePortActivation,
-        K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection] :=
-  (roleFibrePartitionRow (BranchState := BranchState)
-    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-    (presentation := erdosReceiverLoadProfile) (data := spineData)).run history
-      (by simp [roleFibrePartitionRow, K_eq_iff])
+noncomputable def selectedCoupledExcessDichotomy
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .fibrePressure) known]
+    [FactKeys.Has (K .surplusAbove) known]
+    (nearCubicFresh : K .sparsePressureNearCubic ∉ known)
+    (overloadFresh : K .sparsePressureOverload ∉ known) :
+    Decision (K .sparsePressureNearCubic) (K .sparsePressureOverload) history :=
+  coupledExcessDichotomy (data := spineData) history nearCubicFresh overloadFresh
 
 /-- Node `[20]`, the strict (non-near-cubic) surplus branch, run node by node
 along the Part X/XI diagram on the literal `K .surplusAbove` ledger:
@@ -1343,13 +1061,13 @@ along the Part X/XI diagram on the literal `K .surplusAbove` ledger:
   so the survivor fact is a row, not a decision (the manuscript's box);
 * `[126]`--`[128]` activation, `[129]` baseline spine demand, `[130]` canonical
   pair split;
-* `[130]` yes: `[131]` (mixed sparse-spine dependence, exact cubic baseline
-  budget, incremental skeleton room, `lem:skeleton-dominates`), then the
-  free-pair entropy sandwich into `[137]` (`selectedFreePairEntropySandwich`);
+* `[130]` yes: `[131]` decides the paper's full-pair code count on the exact
+  `[129]` baseline witness and, on its realized arm, publishes both that count
+  and the cleared free-pair entropy sandwich;
 * `[130]` no: `[132]` blocked-pair routing — exit → `[133]` closes; blocker →
   `[134]` canonical pair ledger → `[135]` exact window-join pressure → `[136]`
-  capacity-token ledger → `[137]` first production (`roleFibrePartitionRow`),
-  then the coupled-excess decision `[137]` (`selectedCoupledExcessDichotomy`:
+  capacity-token ledger → `[137]` free-side count, exact role-fibre
+  partition, and coupled-excess decision (`selectedCoupledExcessDichotomy`:
   no → `[138]`; yes → `[139]`/`[141]` class tests → `[140]`/`[142]`/`[143]`
   audits → `[144]`).
 
@@ -1372,15 +1090,10 @@ noncomputable def selectedStrictSurplusBranch
   let baseline := selectedBaselineSpineDemand activated
   match selectedPairResponseIndependenceDichotomy baseline with
   | .left independentHistory =>
-      -- `[131]`: `lem:mixed-sparse-spine-dependence`, the exact cubic baseline
-      -- budget, the incremental skeleton room, `lem:skeleton-dominates`, then
-      -- the entropy count of `prop:sparse-entropy-sandwich` at the full pair
-      -- schedule, decided on this literal residual.
-      let mixed := selectedMixedSparseSpineDependence independentHistory
-      let budget := selectedExactCubicBaselineBudget mixed
-      let room := selectedIncrementalSkeletonRoom budget
-      let dominated := selectedSkeletonDominates room
-      match freePairEntropyDichotomy (data := spineData) dominated
+      -- `[131]`: decide the full-pair realization count on the literal
+      -- baseline family read from the ledger.  The realized arm also records
+      -- the exact cleared sandwich of `prop:sparse-entropy-sandwich`.
+      match freePairEntropyDichotomy (data := spineData) independentHistory
           (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
       | .left sandwichHistory =>
           -- `[131]` → `[137]` (no blocked pairs, `D_all = 0`) → `[138]`:
@@ -1413,15 +1126,14 @@ noncomputable def selectedStrictSurplusBranch
           -- `[133]`: the exit contradicts the survivor fact of `[125]`.
           exact selectedSparsePairExitCloses exitHistory
       | .right blockerHistory =>
-          -- `[134]`--`[136]`, then `[137]`: the role-fibre partition, the
-          -- entropy count of `prop:sparse-entropy-sandwich-with-blockers` at
-          -- every declared presentation (decided on this literal residual),
-          -- `lem:capacity-token-high-load`, and the coupled excess test.
+          -- `[134]`--`[136]`, then `[137]`: decide the entropy count of
+          -- `prop:sparse-entropy-sandwich-with-blockers` at the exact
+          -- presentation; on its yes arm publish the exact role-fibre
+          -- partition, `lem:capacity-token-high-load`, and the coupled test.
           let pairs := selectedCanonicalPairFacts blockerHistory
           let joined := selectedExactWindowJoinPressure pairs
           let tokens := selectedCapacityTokenFacts joined
-          let fibres := selectedRoleFibrePartition tokens
-          match blockedPairEntropyDichotomy (data := spineData) fibres
+          match blockedPairEntropyDichotomy (data := spineData) tokens
               (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
           | .right unrealizedHistory =>
               -- `[178]` (free side of `[137]`): the residual on which the entropy
@@ -1434,12 +1146,17 @@ noncomputable def selectedStrictSurplusBranch
               -- serial-spectrum row of `[179]` on this residual.
               exact selectedSparsePairSerialSystem unrealizedHistory
           | .left sandwichHistory =>
+              let fibres :=
+                (roleFibrePartitionRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  sandwichHistory (by simp [K_eq_iff])
               let pressure :=
                 (fibrePressureRow (BranchState := BranchState)
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                  sandwichHistory (by simp [K_eq_iff])
-              match coupledExcessDichotomy (data := spineData) pressure
+                  fibres (by simp [K_eq_iff])
+              match selectedCoupledExcessDichotomy pressure
                   (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
               | .left nearCubicHistory =>
                   -- `[138]`: `σ(G) ≤ R_L(n) ≤ C_sp ⌈√n⌉` against `[19]`.
@@ -1454,9 +1171,7 @@ noncomputable def selectedStrictSurplusBranch
                   exact selectedSparsePressureOverloadCloses overloadHistory
                     (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
                     (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
-                    (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
-                    (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
-                    (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
+                    (by simp [K_eq_iff]) (by simp [K_eq_iff])
 
 set_option maxHeartbeats 2000000 in
 /-- **`lem:refined-minimality-swap`, node `[165]`, size-reducing case.**  A
@@ -3726,7 +3441,7 @@ noncomputable def selectedAbsorbedGermResidual
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .uncompressible) known]
-    [FactKeys.Has (K .coldWindowLedgerSplit) known]
+    [FactKeys.Has (K .hotColdPartition) known]
     [FactKeys.Has (K .slackIndependent) known]
     [FactKeys.Has (K .tightEndpoint) known]
     (absorbedBridgelessFresh : K .bridgeless ∉ known := by simp [K_eq_iff])
@@ -3878,7 +3593,7 @@ noncomputable def selectedRouteEightRateFailure
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .uncompressible) known]
-    [FactKeys.Has (K .coldWindowLedgerSplit) known]
+    [FactKeys.Has (K .hotColdPartition) known]
     [FactKeys.Has (K .slackIndependent) known]
     [FactKeys.Has (K .tightEndpoint) known]
     (positiveFresh : K .coldFamilyPositive ∉ known := by simp [K_eq_iff])
@@ -3976,7 +3691,7 @@ noncomputable def selectedNetChargeContinuation
     -- `[173]`--`[177]`, the exact collision test and the absorbed-germ residual.
     (failsFresh : K .exactCollisionFails ∉ known := by simp [K_eq_iff])
     (absorbedResidualFresh : K .absorbedConfigurationResidual ∉ known := by simp [K_eq_iff])
-    [FactKeys.Has (K .coldWindowLedgerSplit) known]
+    [FactKeys.Has (K .hotColdPartition) known]
     [FactKeys.Has (K .slackIndependent) known]
     (absorbedBridgelessFresh : K .bridgeless ∉ known := by simp [K_eq_iff])
     (absorbedCorridorsFresh : K .coldReturnCorridors ∉ known := by simp [K_eq_iff])
@@ -4514,12 +4229,9 @@ noncomputable def selectedNearCubicBranch
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           unrealizedHistory (by simp [K_eq_iff])
-      -- `[145]`, `def:cold-window-ledger`: the hot/cold ledger of the fixed packing,
-      -- read on both deficiency arms (the absorbed-germ residual `[174]` of the
-      -- `τ < 1/4` arm runs the cold corridors on it).
-      let partition :=
-        (coldWindowLedgerSplitRow (data := spineData)).run partitioned (by simp [K_eq_iff])
-      match Decision.run partition (K .denseDeficiencyBelow) (K .denseDeficiencyAtOrAbove)
+      -- `[145]` is the direct handoff of `[22]`'s hot/cold fact.  Both
+      -- deficiency arms read it from this same literal ExactLedger.
+      match Decision.run partitioned (K .denseDeficiencyBelow) (K .denseDeficiencyAtOrAbove)
           `HypostructureErdos64EG.selectedDenseDeficiencyDichotomy
           (by
             classical
@@ -4722,8 +4434,9 @@ noncomputable def selectedNearCubicBranch
   match selectedBarrierDichotomy partitioned
       (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
   | .left capHistory =>
-      let split := selectedColdWindowLedgerSplit capHistory
-      match selectedColdRoute8Dichotomy split with
+      -- `[145]` carries no mathematical assertion of its own: pass the
+      -- literal `[22]` ledger directly to `[146]`.
+      match selectedColdRoute8Dichotomy capHistory with
       | .left belowHistory =>
           -- The route-8 rate `K .route8Rate` (`[120]`, `τ < 3/13` with the exact
           -- allowances) is `K .coldRoute8Below` read through `|∂R| ≤ 15p + σ_W`.

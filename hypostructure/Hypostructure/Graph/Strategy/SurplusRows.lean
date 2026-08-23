@@ -1,4 +1,4 @@
-import Hypostructure.Graph.Strategy.SpineRows
+import Hypostructure.Graph.Strategy.SpineVocabulary
 import Hypostructure.Graph.SparsePortActivation
 import Hypostructure.Graph.PrimitiveCarrier
 import Hypostructure.Graph.SparsePairLedger
@@ -194,102 +194,22 @@ they close the suppression.  Its first edge after `x(p)` is a shoulder. -/
           ⟨Graph.surviving_active_family
             (inputs.get (K .sparseSurplusSurvivor)).down
             (inputs.get (K .activeSurplusFamily)).down.1
+            (by
+              classical
+              intro pair member
+              have cardAt :=
+                (inputs.get (K .activeSurplusFamily)).down.2 pair member |>.2.2
+              have cardTwo :
+                  (inputs.current.object.surplusPortOfMem member).shoulders.card = 2 := by
+                simpa [data.threshold_eq_three] using cardAt
+              obtain ⟨left, right, distinct, description⟩ :=
+                Finset.card_eq_two.mp cardTwo
+              refine ⟨left, right, ?_, distinct⟩
+              intro vertex
+              rw [description]
+              simp)
             (inputs.get (K .sparsePortActivation)).down⟩)
         .nil)
-
-/-! ## Node `[129]`: the active family and baseline demand -/
-
-/-- `def:baseline-spine-demand` at the strict branch's already-built active
-family.
-
-The paper does not obtain this demand from node `[21]`.  The completed active
-family of `[128]` and the sparse-exit survivor of `[125]` are read from the
-incoming exact ledger.  Exit-freeness makes the concrete baseline family
-independently target-testable; choosing the cubic baseline exponent itself as
-its cardinality gives canonical deficit zero, hence the required linear bound.
-The witness, deficit, and bound are all registered in this node's one paper
-fact. -/
-@[reducible] noncomputable def baselineSpineDemandRow :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.baselineSpineDemand
-        { Requires := [K .activeSurplusDemands, K .sparseSurplusSurvivor,
-            K .selection]
-          Produces := [K .baselineSpineDemand]
-          requiresUnique := by simp [K_eq_iff]
-          producesUnique := by simp
-          producesNonempty := by simp }
-        (fun inputs =>
-          .cons (key := K .baselineSpineDemand)
-            (show Value BranchState Presentation presentation data .baselineSpineDemand
-                inputs.current from
-              ⟨by
-                classical
-                simp only [Holds]
-                change Graph.ActiveSurplusDemands
-                    (Graph.MinimumDegreeAtLeast data.threshold)
-                    (Graph.HasCycleWithLength data.LengthOK) data.LengthOK
-                    inputs.current.object data.threshold ∧
-                  ∃ (Coordinate : Type u) (family : Finset Coordinate)
-                    (coordinateSupport : Coordinate →
-                      Finset inputs.current.object.Vertex),
-                    (∀ declared : Graph.DeclaredQuotient
-                        (Graph.MinimumDegreeAtLeast data.threshold)
-                        (Graph.HasCycleWithLength data.LengthOK)
-                        inputs.current.object family coordinateSupport,
-                      declared.toRankQuotient.FunctionalOn ↑family →
-                        declared.toRankQuotient.LabelInjectiveOn ↑family) ∧
-                      Graph.cubicBaselineBudget inputs.current.object.vertexCount
-                          data.threshold ≤
-                        2 ^ (family.card + Graph.spineDeficit
-                          inputs.current.object.vertexCount data.threshold
-                          family.card) ∧
-                      Graph.spineDeficit inputs.current.object.vertexCount
-                          data.threshold family.card ≤
-                        data.surplusScale * inputs.current.object.vertexCount
-                let bits := Graph.cubicBaselineExponent
-                  inputs.current.object.vertexCount data.threshold
-                let Coordinate := inputs.current.object.BaselineSpineCoordinate bits
-                let family := inputs.current.object.baselineSpineFamily bits
-                let coordinateSupport := inputs.current.object.baselineSpineSupport
-                  (bits := bits)
-                have familyCard : family.card = bits := by
-                  simp [family]
-                let survivor := (inputs.get (K .sparseSurplusSurvivor)).down
-                let selection := (inputs.get (K .selection)).down
-                refine ⟨(inputs.get (K .activeSurplusDemands)).down,
-                  Coordinate, family, coordinateSupport, ?_, ?_, ?_⟩
-                · intro declared _functional
-                  by_contra reducing
-                  rcases declared.localize reducing with replacement |
-                    ⟨representative, smaller, baseline, transfer⟩
-                  · exact Graph.Strategy.InterfaceReplacement.not_replacementSupport
-                      (Graph.MinimumDegreeAtLeast data.threshold) BranchState
-                      (Graph.minimumDegreeAtLeast_isomorphismInvariant
-                        data.threshold)
-                      Presentation presentation
-                      (Core.Target.ofPredicate _
-                        (Graph.HasCycleWithLength data.LengthOK))
-                      ((Graph.cycleTargetInterface data.LengthOK).coreInvariantWithPresentation
-                        (Graph.MinimumDegreeAtLeast data.threshold) BranchState
-                        Presentation presentation
-                        (Graph.minimumDegreeAtLeast_isomorphismInvariant
-                          data.threshold))
-                      { G := inputs.current.object,
-                        baseline := inputs.current.baseline,
-                        state := inputs.current.branchState,
-                        avoids := selection.1,
-                        minimal := selection.2 }
-                      declared.support replacement
-                  · exact survivor
-                      (Graph.SparseSurplusExit.delocalization representative
-                        smaller baseline transfer)
-                · rw [familyCard]
-                  exact Graph.cubicBaselineBudget_le_two_pow_add_spineDeficit
-                    inputs.current.object.vertexCount
-                    (le_trans (by omega) data.three_le_threshold) bits
-                · rw [familyCard]
-                  simp [bits, Graph.spineDeficit]⟩)
-            .nil)
 
 /-! ## Node `[132]`: route the dependent pair family -/
 
@@ -318,12 +238,12 @@ noncomputable def pairResponseIndependenceDichotomy
           Finset current.object.Vertex := by
         letI := current.object.vertices.decEq
         exact Graph.DeclaredSignature.Coordinate.support
-      by_cases independent : ∀ declared : Graph.DeclaredQuotient
+      by_cases independent : ∀ attempt : Graph.AttemptedQuotient
           (Graph.MinimumDegreeAtLeast data.threshold)
           (Graph.HasCycleWithLength data.LengthOK) current.object family
           coordinateSupport,
-          declared.toRankQuotient.FunctionalOn ↑family →
-            Set.InjOn declared.label ↑family
+          attempt.toRankQuotient.FunctionalOn ↑family →
+            Set.InjOn attempt.label ↑family
       · exact ⟨.inl ⟨active, independent⟩⟩
       · push_neg at independent
         exact ⟨.inr ⟨active, independent⟩⟩))
@@ -623,12 +543,12 @@ noncomputable def blockedPairRoutingDichotomy
     (Classical.choice (show Nonempty
         ((K .sparsePairExit).At current ⊕
           (K .canonicalBlockerRoute).At current) from by
-      obtain ⟨active, attempt, reducing⟩ :=
+      obtain ⟨active, attempt, functional, reducing⟩ :=
         (previous.get (K .dependentPairFamily)).down
       let activation := Graph.pairResponseActivation active
       let pairs := current.object.portPairSchedule data.threshold
       rcases Graph.sparsePairDependence_exit_or_blocker activation pairs
-          attempt.toAttempt reducing.2 with exit | blocker
+          attempt reducing functional with exit | blocker
       · exact ⟨.inl ⟨exit⟩⟩
       · exact ⟨.inr ⟨active, blocker⟩⟩))
     exitFresh blockerFresh
@@ -636,9 +556,11 @@ noncomputable def blockedPairRoutingDichotomy
 /-! ## Node `[134]`: canonical blocker ledger -/
 
 /-- The canonical blocker ledger on the literal blocker residual of `[132]`.
-The executor records that certified type-(d)/(e) obstruction in the same
-activation, then publishes the full-pair count, the blocked/free partition,
-the canonical-fibre no-overcount identity, and an exhibited blocked pair. -/
+The executor reconstructs the paper's full finite blocker set: clauses
+(a)--(c) from the two demands' active data, clauses (d)--(e) from every actual
+minimal failed determination, and clause (f) from every actual compatible
+suppression chord set.  It then publishes the blocked/free partition and the
+canonical-fibre no-overcount identities. -/
 @[reducible] noncomputable def canonicalPairLedgerRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.canonicalPairLedger
@@ -656,18 +578,20 @@ the canonical-fibre no-overcount identity, and an exhibited blocked pair. -/
               (inputs.get (K .canonicalBlockerRoute)).down
             let activation := Graph.pairResponseActivation active
             let pairs := inputs.current.object.portPairSchedule data.threshold
-            let recorded := Graph.recordSparsePairDEBlocker activation pairs certificate
+            let recorded := Graph.recordSparsePairDEBlockers
+              (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+              (LengthOK := data.LengthOK) activation pairs
             have baseline : ∀ vertex : inputs.current.object.Vertex,
                 data.threshold ≤ inputs.current.object.degree vertex :=
               fun vertex => le_trans inputs.current.baseline
                 (inputs.current.object.minDegree_le_degree vertex)
-            refine ⟨active, certificate, rfl,
-              ?_, ?_, ?_, ?_, ?_⟩
+            refine ⟨active, certificate, rfl, ?_, ?_, ?_, ?_, ?_⟩
             · exact inputs.current.object.card_portPairSchedule baseline
             · simpa [recorded] using
                 recorded.card_blockedPairs_add_card_unblockedPairs data.threshold
             · exact recorded.card_canonicalIncidenceLedger data.threshold
-            · exact recorded.card_blockedPairs_eq_sum_blockerMultiplicity data.threshold
+            · exact recorded.card_blockedPairs_eq_sum_blockerMultiplicity
+                data.threshold
             · exact Graph.recordedSparsePairDEBlocker_nonempty activation pairs
                 certificate⟩)
         .nil)
@@ -724,15 +648,17 @@ the canonical-fibre no-overcount identity, and an exhibited blocked pair. -/
       .cons (key := K .capacityTokenLedger)
         (show Value BranchState Presentation presentation data
             .capacityTokenLedger inputs.current from
-          ⟨by
+          PLift.up (by
             obtain ⟨active, certificate, _pairsEq, scheduleCard,
                 _partition, _incidence, _multiplicity, _blocked⟩ :=
               (inputs.get (K .canonicalPairLedger)).down
             obtain ⟨envelope, packing, valid, maximal, _joinIdentity⟩ :=
               (inputs.get (K .sparseUpperEnvelope)).down
-            let activation := Graph.recordSparsePairDEBlocker
+            let activation := Graph.recordSparsePairDEBlockers
+              (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+              (LengthOK := data.LengthOK)
               (Graph.pairResponseActivation active)
-              (inputs.current.object.portPairSchedule data.threshold) certificate
+              (inputs.current.object.portPairSchedule data.threshold)
             have pairCard : certificate.choose.card = 2 :=
               Graph.card_of_mem_portPairSchedule inputs.current.object data.threshold
                 certificate.choose_spec.1
@@ -815,32 +741,35 @@ the canonical-fibre no-overcount identity, and an exhibited blocked pair. -/
                 let path := walk.toPath
                 exact ⟨path, path.isPath, fun vertex _ =>
                   inputs.current.object.mem_vertexFinset vertex⟩
-            have pairSupportSome :=
-              Graph.FiniteObject.DemandActivation.pairSupport_isSome_of_connected
-                (Graph.pairResponseActivation active) certificate.choose connectedOn
-            obtain ⟨pairSupport, pairSupportEq⟩ :=
-              Option.isSome_iff_exists.mp pairSupportSome
-            letI := inputs.current.object.vertices.decEq
-            have pairSupportNonempty : pairSupport.Nonempty :=
-              (Graph.FiniteObject.DemandActivation.pairSupport_mem_candidates
-                pairSupportEq).2.1
-            have coordinateNonempty :
+            letI : DecidableEq inputs.current.object.Vertex := Classical.decEq _
+            have pairCoordinateNonempty
+                (pair : Finset
+                  (inputs.current.object.Vertex × inputs.current.object.Vertex)) :
                 (Graph.DeclaredSignature.Coordinate.support
-                  (Graph.sparsePairDECoordinate
-                    (Graph.pairResponseActivation active)
-                    (inputs.current.object.portPairSchedule data.threshold)
-                    certificate)).Nonempty := by
-              letI := inputs.current.object.vertices.decEq
-              simpa [Graph.sparsePairDECoordinate, pairSupportEq] using
-                pairSupportNonempty
+                  (Graph.FiniteObject.DemandActivation.pairCoordinate pair
+                    (((Graph.pairResponseActivation active).pairSupport pair).getD
+                      ∅))).Nonempty := by
+              have pairSupportSome :=
+                Graph.FiniteObject.DemandActivation.pairSupport_isSome_of_connected
+                  (Graph.pairResponseActivation active) pair connectedOn
+              obtain ⟨pairSupport, pairSupportEq⟩ :=
+                Option.isSome_iff_exists.mp pairSupportSome
+              have pairSupportNonempty : pairSupport.Nonempty :=
+                (Graph.FiniteObject.DemandActivation.pairSupport_mem_candidates
+                  pairSupportEq).2.1
+              change (((Graph.pairResponseActivation active).pairSupport pair).getD
+                ∅).Nonempty
+              rw [pairSupportEq]
+              exact pairSupportNonempty
             let presentation : inputs.current.object.CarrierPresentation
                 inputs.current.object.PairCoordinate
-                PEmpty := {
+                (inputs.current.object.Vertex ×
+                  inputs.current.object.Vertex) := {
               coordinateSupport := by
                 letI := inputs.current.object.vertices.decEq
                 exact Graph.DeclaredSignature.Coordinate.support
-              chordEnds := PEmpty.elim
-              chordPort := PEmpty.elim }
+              chordEnds := Graph.pairResponseChordEnds active
+              chordPort := id }
             have carried : ∀ pair ∈
                 inputs.current.object.portPairSchedule data.threshold,
                 ∀ blocker ∈ activation.blockers pair,
@@ -861,11 +790,10 @@ the canonical-fibre no-overcount identity, and an exhibited blocked pair. -/
                     simpa [Graph.FiniteObject.DemandActivation.blockers] using
                       blockerMem
                   have coordinateEq : coordinate =
-                      Graph.sparsePairDECoordinate
-                        (Graph.pairResponseActivation active)
-                        (inputs.current.object.portPairSchedule data.threshold)
-                        certificate := by
-                    simp only [activation, Graph.recordSparsePairDEBlocker] at coordinateMem
+                      Graph.FiniteObject.DemandActivation.pairCoordinate pair
+                        (((Graph.pairResponseActivation active).pairSupport pair).getD
+                          ∅) := by
+                    simp only [activation, Graph.recordSparsePairDEBlockers] at coordinateMem
                     split at coordinateMem
                     · simpa using coordinateMem
                     · simp at coordinateMem
@@ -873,18 +801,18 @@ the canonical-fibre no-overcount identity, and an exhibited blocked pair. -/
                   rw [Graph.FiniteObject.Blocker.carrier]
                   simp only [Option.isSome_map, List.isSome_head?]
                   exact List.ne_nil_of_mem (by
-                    simpa [presentation] using coordinateNonempty.choose_spec)
+                    simpa [presentation] using
+                      (pairCoordinateNonempty pair).choose_spec)
               | targetResponse coordinate =>
                   have coordinateMem :
                       coordinate ∈ activation.responseObstructions pair := by
                     simpa [Graph.FiniteObject.DemandActivation.blockers] using
                       blockerMem
                   have coordinateEq : coordinate =
-                      Graph.sparsePairDECoordinate
-                        (Graph.pairResponseActivation active)
-                        (inputs.current.object.portPairSchedule data.threshold)
-                        certificate := by
-                    simp only [activation, Graph.recordSparsePairDEBlocker] at coordinateMem
+                      Graph.FiniteObject.DemandActivation.pairCoordinate pair
+                        (((Graph.pairResponseActivation active).pairSupport pair).getD
+                          ∅) := by
+                    simp only [activation, Graph.recordSparsePairDEBlockers] at coordinateMem
                     split at coordinateMem
                     · simpa using coordinateMem
                     · simp at coordinateMem
@@ -892,15 +820,58 @@ the canonical-fibre no-overcount identity, and an exhibited blocked pair. -/
                   rw [Graph.FiniteObject.Blocker.carrier]
                   simp only [Option.isSome_map, List.isSome_head?]
                   exact List.ne_nil_of_mem (by
-                    simpa [presentation] using coordinateNonempty.choose_spec)
+                    simpa [presentation] using
+                      (pairCoordinateNonempty pair).choose_spec)
               | arithmeticChordSet chords =>
                   have chordMem :
                       chords ∈ activation.chordObstructions pair := by
                     simpa [Graph.FiniteObject.DemandActivation.blockers] using
                       blockerMem
                   change chords ∈ (Graph.pairResponseActivation active).chordObstructions pair at chordMem
-                  change chords ∈ ∅ at chordMem
-                  simpa using chordMem
+                  change chords ∈
+                    (inputs.current.object.excessPorts data.threshold).powerset.filter
+                      (fun candidate =>
+                        Graph.SparsePairSuppressionChordObstruction active pair
+                          candidate) at chordMem
+                  have chordFacts := Finset.mem_filter.mp chordMem
+                  have chordSubset :
+                      chords ⊆ inputs.current.object.excessPorts data.threshold :=
+                    Finset.mem_powerset.mp chordFacts.1
+                  obtain ⟨_pairSubset, family, suppressionCertificate,
+                      _familyPorts, _chordEnds, usedChords⟩ := chordFacts.2
+                  have avoids : ¬ Graph.HasCycleWithLength data.LengthOK
+                      inputs.current.object := by
+                    intro cycle
+                    exact active.survives (.dyadic cycle)
+                  have usedNonempty :=
+                    family.usedChords_nonempty_of_avoids avoids
+                      suppressionCertificate
+                  have chordsNonempty : chords.Nonempty := by
+                    let portOf := fun index : family.Index =>
+                      ((family.configuration index).center,
+                        (family.configuration index).vertex)
+                    have imageNonempty :
+                        (family.usedChords suppressionCertificate.walk).image
+                          portOf |>.Nonempty :=
+                      usedNonempty.image portOf
+                    have imageEq :
+                        (family.usedChords suppressionCertificate.walk).image
+                          portOf = chords := by
+                      simpa only [portOf] using usedChords
+                    rw [← imageEq]
+                    exact imageNonempty
+                  have chosenInIntersection : chordsNonempty.choose ∈
+                      (chords.image presentation.chordPort) ∩
+                        inputs.current.object.excessPorts data.threshold := by
+                    refine Finset.mem_inter.mpr ⟨?_,
+                      chordSubset chordsNonempty.choose_spec⟩
+                    simpa [presentation] using
+                      (Finset.mem_image_of_mem presentation.chordPort
+                        chordsNonempty.choose_spec)
+                  rw [Graph.FiniteObject.Blocker.carrier]
+                  simp only [Option.isSome_map, List.isSome_head?]
+                  exact List.ne_nil_of_mem (by
+                    simpa using chosenInIntersection)
             have baseline : ∀ vertex : inputs.current.object.Vertex,
                 data.threshold ≤ inputs.current.object.degree vertex :=
               fun vertex => le_trans inputs.current.baseline
@@ -909,13 +880,20 @@ the canonical-fibre no-overcount identity, and an exhibited blocked pair. -/
                 2 * inputs.current.object.edgeCount :=
               Graph.baselineDegree_mul_vertexCount_le_two_mul_edgeCount
                 inputs.current.object data.threshold baseline
-            refine ⟨inputs.current.object.PairCoordinate,
-              PEmpty, activation, presentation,
-              packing, valid, maximal, ⟨?_, ?_⟩, ?_⟩
-            · exact inputs.current.object.card_primitiveCarrier baseline
-            · exact inputs.current.object.card_primitiveCarrier_le baseline
-                data.three_le_threshold handshake envelope
-            · refine ⟨inputs.current.object.card_capacityTokens_add_internalMass
+            let accounting : Graph.CapacityPresentation inputs.current.object
+                data.threshold data.windowOrder := {
+              Coordinate := inputs.current.object.PairCoordinate
+              Chord := inputs.current.object.Vertex × inputs.current.object.Vertex
+              activation := activation
+              carrier := presentation
+              carrierComplete := carried
+              packing := packing
+              packingValid := valid
+              packingMaximal := maximal }
+            have concrete : Graph.FiniteObject.ConcreteCapacityTokenLedgerStatement
+                inputs.current.object data.threshold data.windowOrder activation
+                presentation packing := by
+              refine ⟨inputs.current.object.card_capacityTokens_add_internalMass
                   valid baseline, ?_, ?_, ?_, ?_, ?_⟩
               · exact inputs.current.object.card_capacityTokens_le valid baseline
                   data.three_le_threshold handshake envelope data.windowOrder_pos
@@ -959,7 +937,15 @@ the canonical-fibre no-overcount identity, and an exhibited blocked pair. -/
                       Graph.FiniteObject.card_of_mem_tokenFibre activation presentation
                         data.threshold packing member,
                     Graph.FiniteObject.card_tokenFibre_eq_pairMultiplicity activation
-                      presentation data.threshold packing token⟩⟩)
+                      presentation data.threshold packing token⟩
+            refine ⟨accounting,
+              inputs.current.object.card_primitiveCarrier baseline,
+              inputs.current.object.card_primitiveCarrier_le baseline
+                data.three_le_threshold handshake envelope, ?_⟩
+            change Graph.FiniteObject.ConcreteCapacityTokenLedgerStatement
+              inputs.current.object data.threshold data.windowOrder activation
+                presentation packing
+            exact concrete))
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

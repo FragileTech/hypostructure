@@ -111,6 +111,23 @@ variable {object : FiniteObject.{u}} {Coordinate : Type u}
 variable {family : Finset Coordinate}
 variable {coordinateSupport : Coordinate → Finset object.Vertex}
 
+/-- Read an attempted declared quotient through the rank calculus.  Unlike a
+`DeclaredQuotient`, an attempt need not yet be target-complete; the rank axiom
+is therefore retained separately by the sparse-dependence certificate that
+uses this projection. -/
+def toRankQuotient
+    (attempt : AttemptedQuotient Baseline Target object family coordinateSupport) :
+    Core.TargetRank.RankQuotient.{u, u + 1} Coordinate where
+  Label := attempt.Label
+  Value := attempt.Value
+  Realization := BoundaryPiece (SupportAtom.boundary object attempt.support)
+  label := attempt.label
+  value := attempt.value
+
+@[simp] theorem toRankQuotient_label
+    (attempt : AttemptedQuotient Baseline Target object family coordinateSupport) :
+    attempt.toRankQuotient.label = attempt.label := rfl
+
 /-- Two realizations the attempt does not separate on the declared family. -/
 def Identifies (attempt : AttemptedQuotient Baseline Target object family
       coordinateSupport)

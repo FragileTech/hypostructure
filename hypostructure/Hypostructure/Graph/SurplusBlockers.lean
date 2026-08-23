@@ -189,6 +189,16 @@ theorem incidence_mem_incidences_of_mem_sharedItems {object : FiniteObject.{u}}
     cases equality
     exact (Finset.mem_filter.1 filtered).1
 
+/-- The two ordered readings of an unordered demand pair.  The diagonal is
+excluded: clauses (a)--(c) compare the two *distinct* active demands in
+`\{p,q\}`, exactly as `def:surplus-blockers` prescribes. -/
+noncomputable def distinctDemandPairs
+    (pair : Finset (object.Vertex × object.Vertex)) :
+    Finset ((object.Vertex × object.Vertex) ×
+      (object.Vertex × object.Vertex)) := by
+  classical
+  exact (pair ×ˢ pair).filter fun demands => demands.1 ≠ demands.2
+
 /-- **`𝖡𝗅𝗄(π)`**: the finite set of sparse surplus blockers of a pair.
 
 The union of the six clauses, each read at the pair's own two demands.  Clauses
@@ -200,7 +210,7 @@ noncomputable def blockers (activation : DemandActivation object Coordinate Chor
     Finset (Blocker object Coordinate Chord) := by
   classical
   exact
-    (pair ×ˢ pair).biUnion (fun demands =>
+    (distinctDemandPairs pair).biUnion (fun demands =>
         (sharedItems object (activation.declaredSupport demands.1)
             (activation.declaredSupport demands.2)).image
           Blocker.sharedDeclaredSupport ∪
@@ -330,6 +340,7 @@ theorem blocks_sharedDeclaredSupport
     {pair : Finset (object.Vertex × object.Vertex)}
     {left right : object.Vertex × object.Vertex}
     (leftMem : left ∈ pair) (rightMem : right ∈ pair)
+    (distinct : left ≠ right)
     {vertex : object.Vertex}
     (inLeft : vertex ∈ activation.declaredSupport left)
     (inRight : vertex ∈ activation.declaredSupport right) :
@@ -337,7 +348,8 @@ theorem blocks_sharedDeclaredSupport
   classical
   refine ⟨Blocker.sharedDeclaredSupport (CarrierItem.vertex vertex), ?_, rfl⟩
   refine Finset.mem_union_left _ ?_
-  refine Finset.mem_biUnion.2 ⟨(left, right), Finset.mem_product.2 ⟨leftMem, rightMem⟩, ?_⟩
+  refine Finset.mem_biUnion.2 ⟨(left, right), ?_, ?_⟩
+  · simp [distinctDemandPairs, leftMem, rightMem, distinct]
   exact Finset.mem_union_left _
     (Finset.mem_image_of_mem _ (vertex_mem_sharedItems inLeft inRight))
 
@@ -347,6 +359,7 @@ theorem blocks_sharedReturnSupport
     {pair : Finset (object.Vertex × object.Vertex)}
     {left right : object.Vertex × object.Vertex}
     (leftMem : left ∈ pair) (rightMem : right ∈ pair)
+    (distinct : left ≠ right)
     {vertex : object.Vertex}
     (inLeft : vertex ∈ activation.returnSupport left)
     (inRight : vertex ∈ activation.returnSupport right) :
@@ -354,7 +367,8 @@ theorem blocks_sharedReturnSupport
   classical
   refine ⟨Blocker.sharedReturnSupport (CarrierItem.vertex vertex), ?_, rfl⟩
   refine Finset.mem_union_left _ ?_
-  refine Finset.mem_biUnion.2 ⟨(left, right), Finset.mem_product.2 ⟨leftMem, rightMem⟩, ?_⟩
+  refine Finset.mem_biUnion.2 ⟨(left, right), ?_, ?_⟩
+  · simp [distinctDemandPairs, leftMem, rightMem, distinct]
   refine Finset.mem_union_right _ (Finset.mem_union_left _ ?_)
   exact Finset.mem_image_of_mem _ (vertex_mem_sharedItems inLeft inRight)
 
@@ -365,6 +379,7 @@ theorem blocks_sharedLocalBuffer
     {pair : Finset (object.Vertex × object.Vertex)}
     {left right : object.Vertex × object.Vertex}
     (leftMem : left ∈ pair) (rightMem : right ∈ pair)
+    (distinct : left ≠ right)
     {vertex : object.Vertex}
     (inLeft : vertex ∈ activation.localBuffer left)
     (inRight : vertex ∈ activation.localBuffer right) :
@@ -372,7 +387,8 @@ theorem blocks_sharedLocalBuffer
   classical
   refine ⟨Blocker.sharedLocalBuffer vertex, ?_, rfl⟩
   refine Finset.mem_union_left _ ?_
-  refine Finset.mem_biUnion.2 ⟨(left, right), Finset.mem_product.2 ⟨leftMem, rightMem⟩, ?_⟩
+  refine Finset.mem_biUnion.2 ⟨(left, right), ?_, ?_⟩
+  · simp [distinctDemandPairs, leftMem, rightMem, distinct]
   refine Finset.mem_union_right _ (Finset.mem_union_right _ ?_)
   exact Finset.mem_image_of_mem _ (Finset.mem_inter.2 ⟨inLeft, inRight⟩)
 

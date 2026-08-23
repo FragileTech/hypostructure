@@ -29,12 +29,12 @@ noncomputable def coldRoute8Dichotomy
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger
       (Input BranchState Presentation presentation data) current known)
-    [FactKeys.Has (K .coldWindowLedgerSplit) known]
+    [FactKeys.Has (K .hotColdPartition) known]
     (belowFresh : K .coldRoute8Below ∉ known)
     (atOrAboveFresh : K .coldRoute8AtOrAbove ∉ known) :
     Decision (K .coldRoute8Below) (K .coldRoute8AtOrAbove) previous := by
   classical
-  let _split := (previous.get (K .coldWindowLedgerSplit)).down
+  let _split := (previous.get (K .hotColdPartition)).down
   exact Decision.run previous (K .coldRoute8Below) (K .coldRoute8AtOrAbove)
     `Hypostructure.Graph.Strategy.Spine.coldRoute8Dichotomy
     (if below : ColdRoute8BelowStatement data current.object then
@@ -49,12 +49,12 @@ noncomputable def coldHotEntropyDichotomy
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger
       (Input BranchState Presentation presentation data) current known)
-    [FactKeys.Has (K .coldWindowLedgerSplit) known]
+    [FactKeys.Has (K .hotColdPartition) known]
     (overflowFresh : K .coldHotEntropyOverflow ∉ known)
     (capFresh : K .coldHotEntropyCap ∉ known) :
     Decision (K .coldHotEntropyOverflow) (K .coldHotEntropyCap) previous := by
   classical
-  let _split := (previous.get (K .coldWindowLedgerSplit)).down
+  let _split := (previous.get (K .hotColdPartition)).down
   exact Decision.run previous (K .coldHotEntropyOverflow) (K .coldHotEntropyCap)
     `Hypostructure.Graph.Strategy.Spine.coldHotEntropyDichotomy
     (if overflow : ColdHotEntropyOverflowStatement data current.object then
@@ -68,31 +68,17 @@ overflow arm from a cap on all windows is deleted; on the manuscript's DAG the
 live-hot overflow arm closes by the entropy comparison and the density cap is
 available only after the cold branch closes. -/
 
-/-- Node `[145]`: append the canonical hot/cold split. -/
-@[reducible] noncomputable def coldWindowLedgerSplitRow :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.coldWindowLedgerSplit
-    { Requires := [K .hotColdPartition]
-      Produces := [K .coldWindowLedgerSplit]
-      requiresUnique := by simp
-      producesUnique := by simp
-      producesNonempty := by simp }
-    (fun inputs =>
-      .cons (key := K .coldWindowLedgerSplit)
-        ⟨(inputs.get (K .hotColdPartition)).down⟩
-        .nil)
-
 /-- Node `[150]`: derive the exact cleared cold-mass inequality. -/
 @[reducible] noncomputable def coldMassRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldMass
-    { Requires := [K .coldWindowLedgerSplit, K .coldHotEntropyCap]
+    { Requires := [K .hotColdPartition, K .coldHotEntropyCap]
       Produces := [K .coldMass]
       requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let split := (inputs.get (K .coldWindowLedgerSplit)).down
+      let split := (inputs.get (K .hotColdPartition)).down
       let hotBound := (inputs.get (K .coldHotEntropyCap)).down
       .cons (key := K .coldMass)
         ⟨by
@@ -123,14 +109,14 @@ positive-surplus vertex of the current object. -/
 @[reducible] noncomputable def coldAmbientCubicRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldAmbientCubic
-    { Requires := [K .coldWindowLedgerSplit, K .surplusAtOrBelow,
+    { Requires := [K .hotColdPartition, K .surplusAtOrBelow,
         K .selection]
       Produces := [K .coldAmbientCubic]
       requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let split := (inputs.get (K .coldWindowLedgerSplit)).down
+      let split := (inputs.get (K .hotColdPartition)).down
       let nearCubic := (inputs.get (K .surplusAtOrBelow)).down
       let _selected := (inputs.get (K .selection)).down
       .cons (key := K .coldAmbientCubic)
@@ -416,7 +402,7 @@ set_option maxHeartbeats 800000 in
 @[reducible] noncomputable def coldGermCandidatesRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldGermCandidates
-    { Requires := [K .bridgeless, K .coldWindowLedgerSplit, K .coldAmbientCubic,
+    { Requires := [K .bridgeless, K .hotColdPartition, K .coldAmbientCubic,
         K .coldMassLinear, K .coldGermExtraction]
       Produces := [K .coldGermCandidates]
       requiresUnique := by simp [K_eq_iff]
@@ -424,7 +410,7 @@ set_option maxHeartbeats 800000 in
       producesNonempty := by simp }
     (fun inputs =>
       let bridgeless := (inputs.get (K .bridgeless)).down
-      let split := (inputs.get (K .coldWindowLedgerSplit)).down
+      let split := (inputs.get (K .hotColdPartition)).down
       let ambient := (inputs.get (K .coldAmbientCubic)).down
       let linear := (inputs.get (K .coldMassLinear)).down
       let extraction := (inputs.get (K .coldGermExtraction)).down
@@ -513,14 +499,14 @@ chooses which continuation closes the branch. -/
 @[reducible] noncomputable def absorbedGermSplitRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.absorbedGermSplit
-    { Requires := [K .bridgeless, K .coldWindowLedgerSplit, K .slackIndependent]
+    { Requires := [K .bridgeless, K .hotColdPartition, K .slackIndependent]
       Produces := [K .absorbedGermSplit]
       requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       let _bridgeless := (inputs.get (K .bridgeless)).down
-      let _split := (inputs.get (K .coldWindowLedgerSplit)).down
+      let _split := (inputs.get (K .hotColdPartition)).down
       let independent := (inputs.get (K .slackIndependent)).down
       .cons (key := K .absorbedGermSplit)
         ⟨by
@@ -571,14 +557,14 @@ noncomputable def absorbedGermDichotomy
     (previous : ExactLedger
       (Input BranchState Presentation presentation data) current known)
     [FactKeys.Has (K .bridgeless) known]
-    [FactKeys.Has (K .coldWindowLedgerSplit) known]
+    [FactKeys.Has (K .hotColdPartition) known]
     [FactKeys.Has (K .coldGermExtraction) known]
     (candidatesFresh : K .coldGermCandidates ∉ known)
     (absorbedFresh : K .absorbedGermFanData ∉ known) :
     Decision (K .coldGermCandidates) (K .absorbedGermFanData) previous := by
   classical
   let bridgeless := (previous.get (K .bridgeless)).down
-  let split := (previous.get (K .coldWindowLedgerSplit)).down
+  let split := (previous.get (K .hotColdPartition)).down
   let extraction := (previous.get (K .coldGermExtraction)).down
   let object := current.object
   have baseline : Graph.MinimumDegreeAtLeast data.threshold object := current.baseline
@@ -1215,13 +1201,13 @@ single-stub attachments. -/
 @[reducible] noncomputable def coldWindowStubStructureRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldWindowStubStructure
-    { Requires := [K .coldWindowLedgerSplit]
+    { Requires := [K .hotColdPartition]
       Produces := [K .coldWindowStubStructure]
       requiresUnique := by simp
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let split := (inputs.get (K .coldWindowLedgerSplit)).down
+      let split := (inputs.get (K .hotColdPartition)).down
       .cons (key := K .coldWindowStubStructure)
         ⟨by
           classical
@@ -1254,14 +1240,14 @@ class is dominated by the skeleton budget (`lem:skeleton-dominates`,
 @[reducible] noncomputable def blockedClassRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.blockedClassMember
-    { Requires := [K .selection, K .coldWindowLedgerSplit]
+    { Requires := [K .selection, K .hotColdPartition]
       Produces := [K .blockedClassMember]
       requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       let avoids := (inputs.get (K .selection)).down.1
-      let split := (inputs.get (K .coldWindowLedgerSplit)).down
+      let split := (inputs.get (K .hotColdPartition)).down
       .cons (key := K .blockedClassMember)
         ⟨Graph.BlockedClass.minDegree_objectSkeleton inputs.current.object data.threshold
             inputs.current.baseline,
@@ -1355,12 +1341,12 @@ noncomputable def coldFamilyDichotomy
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger
       (Input BranchState Presentation presentation data) current known)
-    [FactKeys.Has (K .coldWindowLedgerSplit) known]
+    [FactKeys.Has (K .hotColdPartition) known]
     (positiveFresh : K .coldFamilyPositive ∉ known)
     (emptyFresh : K .coldFamilyEmpty ∉ known) :
     Decision (K .coldFamilyPositive) (K .coldFamilyEmpty) previous := by
   classical
-  let _split := (previous.get (K .coldWindowLedgerSplit)).down
+  let _split := (previous.get (K .hotColdPartition)).down
   exact Decision.run previous (K .coldFamilyPositive) (K .coldFamilyEmpty)
     `Hypostructure.Graph.Strategy.Spine.coldFamilyDichotomy
     (if positive : 0 < (canonicalColdWindows data current.object).card then
@@ -1404,7 +1390,7 @@ density cap with its exact `o(1)`. -/
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.finiteDensityBudget
     { Requires := [K .coldMass, K .coldMassBounded, K .coldAmbientCubic,
-        K .coldWindowLedgerSplit]
+        K .hotColdPartition]
       Produces := [K .densityCap]
       requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp
@@ -1413,7 +1399,7 @@ density cap with its exact `o(1)`. -/
       let mass := (inputs.get (K .coldMass)).down
       let bounded := (inputs.get (K .coldMassBounded)).down
       let cubic := (inputs.get (K .coldAmbientCubic)).down
-      let split := (inputs.get (K .coldWindowLedgerSplit)).down
+      let split := (inputs.get (K .hotColdPartition)).down
       .cons (key := K .densityCap)
         ⟨by
           classical

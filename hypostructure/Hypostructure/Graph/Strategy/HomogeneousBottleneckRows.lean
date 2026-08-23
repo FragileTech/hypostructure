@@ -1,4 +1,4 @@
-import Hypostructure.Graph.Strategy.SpineRows
+import Hypostructure.Graph.Strategy.SpineVocabulary
 import Hypostructure.Graph.NamedSurplusExits
 import Hypostructure.Graph.SparsePressureLedger
 
@@ -30,43 +30,97 @@ noncomputable def windowOverloadClassDichotomy
     (Classical.choice (show Nonempty
         ((K .windowClassOverload).At current ⊕
           (K .windowClassAbsent).At current) from by
-      obtain ⟨declared, ledger, routingLabelBound, token, role, tokenMem,
+      obtain ⟨declared, ledger, token, role, tokenMem,
         _selected, rest⟩ := (previous.get (K .sparsePressureOverload)).down
       cases classified : ledger.presented.tokenClass token with
       | windowIncidence =>
-          exact ⟨.inl ⟨declared, ledger, routingLabelBound, token, role,
+          exact ⟨.inl ⟨declared, ledger, token, role,
             tokenMem, classified, rest⟩⟩
       | remainderSurplus =>
-          exact ⟨.inr ⟨declared, ledger, routingLabelBound, token, role,
+          exact ⟨.inr ⟨declared, ledger, token, role,
             tokenMem, by simpa [classified], rest⟩⟩
       | primitiveCarrier =>
-          exact ⟨.inr ⟨declared, ledger, routingLabelBound, token, role,
+          exact ⟨.inr ⟨declared, ledger, token, role,
             tokenMem, by simpa [classified], rest⟩⟩))
     windowFresh outsideFresh
 
 /-- Node `[137]`, first production: `lem:exact-surplus-pair-charge-partition`
 with `thm:sharp-classwise-homogeneous-token-budget` (a)--(c) and
-`thm:sharp-surplus-overload-audit` (b)--(c), read at the object's own
-capacity-token ledger of node `[136]`.  Every pair of active demands is free or
-lies in exactly one class/token/role fibre; the classwise and subtype budgets
-are those fibres' own counts. -/
+`thm:sharp-surplus-overload-audit` (b)--(c), for the literal presentation and
+free-side entropy count already written to the incoming ledger. -/
 @[reducible] noncomputable def roleFibrePartitionRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.roleFibrePartition
-    { Requires := [K .capacityTokenLedger]
+    { Requires := [K .blockedPairEntropySandwich, K .sparseSlackSurplus,
+        K .surplusAbove]
       Produces := [K .roleFibrePartition]
-      requiresUnique := by simp
+      requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      -- Node `[137]` is entered only on the tokenized `[136]` residual; read
-      -- that literal predecessor fact.
-      let _ledger := inputs.get (K .capacityTokenLedger)
       .cons (key := K .roleFibrePartition)
         (show Value BranchState Presentation presentation data
             .roleFibrePartition inputs.current from
-          ⟨Graph.roleFibrePartitionStatement inputs.current.object data.threshold
-            data.windowOrder⟩)
+          ⟨by
+            classical
+            let object := inputs.current.object
+            obtain ⟨capacity, _primitiveEq, _primitiveLe, concrete,
+                scheduleCard, Coordinate, family, coordinateSupport,
+                _survives, demand, deficitLe, entropy⟩ :=
+              (inputs.get (K .blockedPairEntropySandwich)).down
+            have slack : 2 * object.edgeCount =
+                data.threshold * object.vertexCount +
+                  object.degreeSurplus data.threshold :=
+              (inputs.get (K .sparseSlackSurplus)).down
+            have above : data.surplusThreshold object.vertexCount <
+                object.degreeSurplus data.threshold :=
+              (inputs.get (K .surplusAbove)).down
+            have aboveEdges : Graph.cubicBaselineEdgeCount object.vertexCount
+                data.threshold ≤ object.edgeCount := by
+              unfold Graph.cubicBaselineEdgeCount
+              omega
+            have surplusPos : 0 < object.degreeSurplus data.threshold :=
+              lt_of_le_of_lt (Nat.zero_le _) above
+            have slackLe : object.edgeCount -
+                Graph.cubicBaselineEdgeCount object.vertexCount data.threshold ≤
+                  object.degreeSurplus data.threshold := by
+              unfold Graph.cubicBaselineEdgeCount
+              omega
+            have sizePos : 0 < object.vertexCount := by
+              by_contra zero
+              have empty : object.vertexCount = 0 := Nat.eq_zero_of_not_pos zero
+              have edges := object.edgeCount_le_choose_two
+              rw [empty] at edges
+              simp at edges
+              unfold Graph.FiniteObject.degreeSurplus at surplusPos
+              omega
+            obtain ⟨vertex, _vertexMem⟩ : object.vertexFinset.Nonempty :=
+              Finset.card_pos.mp (by
+                rw [object.card_vertexFinset]
+                exact sizePos)
+            let certified : Graph.CertifiedObjectCapacityLedger object
+                data.threshold data.windowOrder data.surplusScale capacity :=
+              Graph.certifiedLedger_of_sandwich capacity
+                (le_trans (by norm_num) data.three_le_threshold) aboveEdges
+                family.card
+                (Graph.spineDeficit object.vertexCount data.threshold family.card)
+                demand deficitLe slackLe entropy scheduleCard
+                (object.capacityTokens_nonempty data.threshold capacity.packing vertex)
+                concrete.2.1
+            let ledger := certified.ledger
+            refine ⟨capacity, certified, ?_⟩
+            refine ⟨ledger.presented.choose_two_eq_free_add_sum_roleFibre
+                ledger.presented.tokenClass,
+              fun token => ledger.presented.load_eq_sum_roleFibre token,
+              ledger.presented.classwise_split.1.1,
+              ledger.presented.classwise_split.1.2,
+              ledger.presented.classwise_split.2,
+              ledger.presented.subtype_split.1.1,
+              ledger.presented.subtype_split.2, ?_⟩
+            intro patternBound positive value noMatching noStar
+            exact ledger.presented.grainLoad_le_of_no_homogeneous
+              ledger.presented.tokenClass value patternBound positive
+              noMatching noStar⟩)
         .nil)
 
 @[reducible] noncomputable def pressureSpineSurplusEstimateRow :
@@ -84,86 +138,217 @@ are those fibres' own counts. -/
           ⟨(inputs.get (K .sparsePressureNearCubic)).down⟩)
         .nil)
 
-/-- Node `[140]`: the geometric audit of the concrete window-incidence class
-selected by `[139]`.  The class fact fixes the routed arm; the audit itself is
-the canonical counted-label theorem at the current object. -/
+/-- Node `[140]`: audit the concrete window-incidence overload selected by
+`[139]`.  The row reads that exact witness, derives its `L_geom` matching or
+star, and publishes both the node-labelled audit and the canonical pattern
+fact consumed at `[144]`; `ExactLedger` retains the class witness as ancestry. -/
 @[reducible] noncomputable def windowIncidenceAuditRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.windowIncidenceAudit
     { Requires := [K .windowClassOverload]
-      Produces := [K .windowIncidenceAudit]
+      Produces := [K .windowIncidenceAudit, K .homogeneousBottleneckPattern]
       requiresUnique := by simp
-      producesUnique := by simp
+      producesUnique := by simp [K_eq_iff]
       producesNonempty := by simp }
     (fun inputs =>
-      let _selectedClass := inputs.get (K .windowClassOverload)
+      letI := data.boundaryProfileFintype
+      let overload : Graph.SparsePressureOverloadInClass inputs.current.object
+          data.threshold data.windowOrder data.routingLabelBound
+          .windowIncidence :=
+        (inputs.get (K .windowClassOverload)).down
+      let pattern : Graph.HomogeneousBottleneckPatternStatement
+          inputs.current.object data.threshold data.windowOrder
+          (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+            (Graph.WindowCurvature.Label data.windowOrder)) := by
+        classical
+        obtain ⟨declared, ledger, token, role, tokenMem, _selected, positive,
+            absorbs, _quantitativePattern⟩ := overload
+        have productPositive :
+            0 < Graph.SameTokenBlockerRoles.sameTokenRoleBound *
+              ledger.presented.tokens.card *
+              ledger.presented.roleFibreExcess ledger.presented.tokenClass
+                (fun _ => Graph.SameTokenBlockerRoles.geometricPatternBound
+                  data.routingLabelBound) token role :=
+          positive.trans_le absorbs
+        have excessPositive :
+            0 < ledger.presented.roleFibreExcess ledger.presented.tokenClass
+              (fun _ => Graph.SameTokenBlockerRoles.geometricPatternBound
+                data.routingLabelBound) token role := by
+          by_contra notPositive
+          have zero : ledger.presented.roleFibreExcess
+              ledger.presented.tokenClass
+              (fun _ => Graph.SameTokenBlockerRoles.geometricPatternBound
+                data.routingLabelBound) token role = 0 :=
+            Nat.eq_zero_of_not_pos notPositive
+          simp [zero] at productPositive
+        have large :
+            (Graph.SameTokenBlockerRoles.geometricPatternBound
+                data.routingLabelBound - 1) *
+                (2 * Graph.SameTokenBlockerRoles.geometricPatternBound
+                  data.routingLabelBound - 3) <
+              (ledger.presented.roleFibre token role).card := by
+          unfold Graph.CapacityTokenLedger.roleFibreExcess at excessPositive
+          exact Nat.sub_pos_iff_lt.mp excessPositive
+        have structured := Graph.PatternFamily.exists_matching_or_star_of_lt_card
+          (ledger.presented.roleFibre token role)
+          (Graph.SameTokenBlockerRoles.geometricPatternBound
+            data.routingLabelBound)
+          (by simp [Graph.SameTokenBlockerRoles.geometricPatternBound])
+          (ledger.presented.pairs_roleFibre token role) large
+        refine ⟨declared, ledger, token, tokenMem, role, ?_⟩
+        simpa [Graph.SameTokenRoutingGerms.patternBound,
+          Graph.SameTokenRoutingGerms.labelBound,
+          Graph.SameTokenBlockerRoles.geometricPatternBound,
+          data.routingLabelBound_eq] using structured
       .cons (key := K .windowIncidenceAudit)
         (show Value BranchState Presentation presentation data
             .windowIncidenceAudit inputs.current from
-          ⟨Graph.classAuditStatement inputs.current.object data.threshold
-            data.windowOrder
-            (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
-              (Graph.WindowCurvature.Label data.windowOrder))
-            .windowIncidence⟩)
-        .nil)
+          ⟨pattern⟩)
+        (.cons (key := K .homogeneousBottleneckPattern)
+          (show Value BranchState Presentation presentation data
+              .homogeneousBottleneckPattern inputs.current from
+            ⟨pattern⟩)
+          .nil))
 
-/-- Node `[142]`: the geometric audit of the concrete remainder-surplus class
-selected by `[141]`. -/
+/-- Node `[142]`: audit the concrete remainder-surplus overload selected by
+`[141]`, publishing its exact `L_geom` pattern for `[144]`. -/
 @[reducible] noncomputable def remainderSurplusAuditRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.remainderSurplusAudit
     { Requires := [K .remainderClassOverload]
-      Produces := [K .remainderSurplusAudit]
+      Produces := [K .remainderSurplusAudit, K .homogeneousBottleneckPattern]
       requiresUnique := by simp
-      producesUnique := by simp
+      producesUnique := by simp [K_eq_iff]
       producesNonempty := by simp }
     (fun inputs =>
-      let _selectedClass := inputs.get (K .remainderClassOverload)
+      letI := data.boundaryProfileFintype
+      let overload : Graph.SparsePressureOverloadInClass inputs.current.object
+          data.threshold data.windowOrder data.routingLabelBound
+          .remainderSurplus :=
+        (inputs.get (K .remainderClassOverload)).down
+      let pattern : Graph.HomogeneousBottleneckPatternStatement
+          inputs.current.object data.threshold data.windowOrder
+          (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+            (Graph.WindowCurvature.Label data.windowOrder)) := by
+        classical
+        obtain ⟨declared, ledger, token, role, tokenMem, _selected, positive,
+            absorbs, _quantitativePattern⟩ := overload
+        have productPositive :
+            0 < Graph.SameTokenBlockerRoles.sameTokenRoleBound *
+              ledger.presented.tokens.card *
+              ledger.presented.roleFibreExcess ledger.presented.tokenClass
+                (fun _ => Graph.SameTokenBlockerRoles.geometricPatternBound
+                  data.routingLabelBound) token role :=
+          positive.trans_le absorbs
+        have excessPositive :
+            0 < ledger.presented.roleFibreExcess ledger.presented.tokenClass
+              (fun _ => Graph.SameTokenBlockerRoles.geometricPatternBound
+                data.routingLabelBound) token role := by
+          by_contra notPositive
+          have zero : ledger.presented.roleFibreExcess
+              ledger.presented.tokenClass
+              (fun _ => Graph.SameTokenBlockerRoles.geometricPatternBound
+                data.routingLabelBound) token role = 0 :=
+            Nat.eq_zero_of_not_pos notPositive
+          simp [zero] at productPositive
+        have large :
+            (Graph.SameTokenBlockerRoles.geometricPatternBound
+                data.routingLabelBound - 1) *
+                (2 * Graph.SameTokenBlockerRoles.geometricPatternBound
+                  data.routingLabelBound - 3) <
+              (ledger.presented.roleFibre token role).card := by
+          unfold Graph.CapacityTokenLedger.roleFibreExcess at excessPositive
+          exact Nat.sub_pos_iff_lt.mp excessPositive
+        have structured := Graph.PatternFamily.exists_matching_or_star_of_lt_card
+          (ledger.presented.roleFibre token role)
+          (Graph.SameTokenBlockerRoles.geometricPatternBound
+            data.routingLabelBound)
+          (by simp [Graph.SameTokenBlockerRoles.geometricPatternBound])
+          (ledger.presented.pairs_roleFibre token role) large
+        refine ⟨declared, ledger, token, tokenMem, role, ?_⟩
+        simpa [Graph.SameTokenRoutingGerms.patternBound,
+          Graph.SameTokenRoutingGerms.labelBound,
+          Graph.SameTokenBlockerRoles.geometricPatternBound,
+          data.routingLabelBound_eq] using structured
       .cons (key := K .remainderSurplusAudit)
         (show Value BranchState Presentation presentation data
             .remainderSurplusAudit inputs.current from
-          ⟨Graph.classAuditStatement inputs.current.object data.threshold
-            data.windowOrder
-            (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
-              (Graph.WindowCurvature.Label data.windowOrder))
-            .remainderSurplus⟩)
-        .nil)
+          ⟨pattern⟩)
+        (.cons (key := K .homogeneousBottleneckPattern)
+          (show Value BranchState Presentation presentation data
+              .homogeneousBottleneckPattern inputs.current from
+            ⟨pattern⟩)
+          .nil))
 
-/-- Node `[143]`: the geometric audit of the concrete primitive-carrier class
-selected after the two negative class tests. -/
+/-- Node `[143]`: audit the concrete primitive-carrier overload already
+carried by `[141]`'s no-arm.  No audit-only re-key is inserted. -/
 @[reducible] noncomputable def primitiveCarrierAuditRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.primitiveCarrierAudit
-    { Requires := [K .primitiveClassOverload]
-      Produces := [K .primitiveCarrierAudit]
+    { Requires := [K .remainderClassAbsent]
+      Produces := [K .primitiveCarrierAudit, K .homogeneousBottleneckPattern]
       requiresUnique := by simp
-      producesUnique := by simp
+      producesUnique := by simp [K_eq_iff]
       producesNonempty := by simp }
     (fun inputs =>
-      let _selectedClass := inputs.get (K .primitiveClassOverload)
+      letI := data.boundaryProfileFintype
+      let overload : Graph.SparsePressureOverloadInClass inputs.current.object
+          data.threshold data.windowOrder data.routingLabelBound
+          .primitiveCarrier :=
+        (inputs.get (K .remainderClassAbsent)).down
+      let pattern : Graph.HomogeneousBottleneckPatternStatement
+          inputs.current.object data.threshold data.windowOrder
+          (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+            (Graph.WindowCurvature.Label data.windowOrder)) := by
+        classical
+        obtain ⟨declared, ledger, token, role, tokenMem, _selected, positive,
+            absorbs, _quantitativePattern⟩ := overload
+        have productPositive :
+            0 < Graph.SameTokenBlockerRoles.sameTokenRoleBound *
+              ledger.presented.tokens.card *
+              ledger.presented.roleFibreExcess ledger.presented.tokenClass
+                (fun _ => Graph.SameTokenBlockerRoles.geometricPatternBound
+                  data.routingLabelBound) token role :=
+          positive.trans_le absorbs
+        have excessPositive :
+            0 < ledger.presented.roleFibreExcess ledger.presented.tokenClass
+              (fun _ => Graph.SameTokenBlockerRoles.geometricPatternBound
+                data.routingLabelBound) token role := by
+          by_contra notPositive
+          have zero : ledger.presented.roleFibreExcess
+              ledger.presented.tokenClass
+              (fun _ => Graph.SameTokenBlockerRoles.geometricPatternBound
+                data.routingLabelBound) token role = 0 :=
+            Nat.eq_zero_of_not_pos notPositive
+          simp [zero] at productPositive
+        have large :
+            (Graph.SameTokenBlockerRoles.geometricPatternBound
+                data.routingLabelBound - 1) *
+                (2 * Graph.SameTokenBlockerRoles.geometricPatternBound
+                  data.routingLabelBound - 3) <
+              (ledger.presented.roleFibre token role).card := by
+          unfold Graph.CapacityTokenLedger.roleFibreExcess at excessPositive
+          exact Nat.sub_pos_iff_lt.mp excessPositive
+        have structured := Graph.PatternFamily.exists_matching_or_star_of_lt_card
+          (ledger.presented.roleFibre token role)
+          (Graph.SameTokenBlockerRoles.geometricPatternBound
+            data.routingLabelBound)
+          (by simp [Graph.SameTokenBlockerRoles.geometricPatternBound])
+          (ledger.presented.pairs_roleFibre token role) large
+        refine ⟨declared, ledger, token, tokenMem, role, ?_⟩
+        simpa [Graph.SameTokenRoutingGerms.patternBound,
+          Graph.SameTokenRoutingGerms.labelBound,
+          Graph.SameTokenBlockerRoles.geometricPatternBound,
+          data.routingLabelBound_eq] using structured
       .cons (key := K .primitiveCarrierAudit)
         (show Value BranchState Presentation presentation data
             .primitiveCarrierAudit inputs.current from
-          ⟨Graph.classAuditStatement inputs.current.object data.threshold
-            data.windowOrder
-            (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
-              (Graph.WindowCurvature.Label data.windowOrder))
-            .primitiveCarrier⟩)
-        .nil)
-
-/-- Node `[143]`: normalize node `[141]`'s literal no-remainder residual to the
-canonical primitive-class verdict consumed by the audit. -/
-@[reducible] noncomputable def primitiveClassOverloadRow :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.primitiveClassOverload
-    { Requires := [K .remainderClassAbsent]
-      Produces := [K .primitiveClassOverload]
-      requiresUnique := by simp
-      producesUnique := by simp
-      producesNonempty := by simp }
-    (fun inputs =>
-      .cons (key := K .primitiveClassOverload)
-        ⟨(inputs.get (K .remainderClassAbsent)).down⟩ .nil)
+          ⟨pattern⟩)
+        (.cons (key := K .homogeneousBottleneckPattern)
+          (show Value BranchState Presentation presentation data
+              .homogeneousBottleneckPattern inputs.current from
+            ⟨pattern⟩)
+          .nil))
 
 /-- Node `[144]`, `cor:homogeneous-same-token-caps-close`: on the literal
 fixed-caps residual, spend the already registered sparse slack identity and
@@ -211,229 +396,6 @@ row reads exactly the two facts it spends. -/
             exclusion⟩)
         .nil)
 
-/-- Node `[144]`: route every declared same-token bottleneck of the current
-residual.  Both hypotheses are read from the incoming exact ledger. -/
-@[reducible] noncomputable def bottleneckRoutingRow :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.bottleneckRouting
-    { Requires := [K .selection, K .uncompressible]
-      Produces := [K .bottleneckRouting]
-      requiresUnique := by simp [K_eq_iff]
-      producesUnique := by simp
-      producesNonempty := by simp }
-    (fun inputs =>
-      let selection := (inputs.get (K .selection)).down
-      let uncompressible := (inputs.get (K .uncompressible)).down
-      .cons (key := K .bottleneckRouting)
-        (show Value BranchState Presentation presentation data
-            .bottleneckRouting inputs.current from
-          ⟨by
-            simp only [Holds]
-            intro HighDegree Absorbing bottleneck windowFree
-            exact bottleneck.outcome selection.1 uncompressible windowFree⟩)
-        .nil)
-
-/-- Node `[144]`, survivor arm: eliminate the absorbed outcome locally and
-append the resulting Type-B handoff fact to the same ledger. -/
-@[reducible] noncomputable def typeBHandoffRow :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.typeBHandoff
-    { Requires := [K .bottleneckRouting, K .sparseSurplusSurvivor]
-      Produces := [K .typeBHandoff]
-      requiresUnique := by simp [K_eq_iff]
-      producesUnique := by simp
-      producesNonempty := by simp }
-    (fun inputs =>
-      let routed := (inputs.get (K .bottleneckRouting)).down
-      let survivor := (inputs.get (K .sparseSurplusSurvivor)).down
-      .cons (key := K .typeBHandoff)
-        (show Value BranchState Presentation presentation data
-            .typeBHandoff inputs.current from
-          ⟨by
-            classical
-            simp only [Holds] at routed ⊢
-            intro HighDegree Absorbing bottleneck windowFree internal baseline
-              contextEquivalent
-            rcases routed HighDegree Absorbing bottleneck windowFree with
-              absorbed | handoff
-            · exfalso
-              apply survivor
-              rcases absorbed with defect | complete | delocalizes
-              · obtain ⟨context, separated⟩ := defect
-                exact absurd (contextEquivalent context) separated
-              · refine .compression bottleneck.separation.switchSupport
-                  ⟨bottleneck.separation.switchConnected,
-                    bottleneck.separation.switchProper,
-                    bottleneck.reading.quotient, ?_, baseline,
-                    bottleneck.reading.lexicographicallySmaller, ?_⟩
-                · have registered := bottleneck.reading.registered internal
-                    bottleneck.reading.reduced
-                    bottleneck.reading.reduced_ssubset.subset
-                  exact registered.trans rfl
-                · intro context
-                  have equivalence := complete.2 context
-                  intro target
-                  have targetFull := equivalence.mp target
-                  change Graph.HasCycleWithLength data.LengthOK
-                    (Graph.glue
-                      (bottleneck.reading.state bottleneck.reading.base)
-                      context) at targetFull
-                  rw [bottleneck.reading.baseIsPiece] at targetFull
-                  exact targetFull
-              · obtain ⟨representative, smaller, baselineObject, transfer⟩ :=
-                  delocalizes
-                exact .delocalization representative smaller baselineObject
-                  transfer
-            · exact handoff⟩)
-        .nil)
-
-/-! ## Node `[144]`, the bottleneck arm routed: the pattern's own bottleneck
-
-`K .bottleneckRouting`/`K .typeBHandoff` are `lem:same-token-bottleneck-routing`
-at *every* declared routed bottleneck.  Entering Type B needs the pattern's
-*own* one: *"two distinct edges `π₁, π₂ ∈ 𝓜` have the same routing label ... we
-obtain two distinct selected surplus demands ... Consider the two routing germs
-from the carrier of `t` toward those two selected demands"* — the declared
-connector germs `def:same-token-routing-germs` gives, read off the certified
-presentation (`CapacityPresentation.routedBottleneck`).  The manuscript then
-splits on the separator's degree: *"If `d_G(z) = 3` ... a cubic first separator
-cannot survive"* (its reading is absorbed, the sparse exits (b)–(d)); otherwise
-*"the high-degree separator `z`, together with the separated connector tails
-from `z` to the two selected surplus demands, is exactly the decorated handoff
-data of `def:decorated-fan-envelope`"*.  That split is the decision below; the
-delocalization reading (d) of the cubic arm is refuted here by minimality, so the
-cubic arm carries only the target-defect/target-complete readings. -/
-
-/-- **Node `[144]`, the bottleneck arm routed at the pattern's declared
-bottleneck**: the high-degree separator gives the decorated Type B handoff fan
-envelope on a canonical remainder piece of the presentation's maximal packing
-(`K .typeBFanEnvelope`, the Type B `[65]`/`[66]` entry on the bare envelope);
-the cubic separator's absorbed reading is the other arm. -/
-noncomputable def patternRoutedBottleneckDichotomy
-    {current : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    (previous : ExactLedger (Input BranchState Presentation presentation data)
-      current known)
-    [FactKeys.Has (K .homogeneousBottleneckPattern) known]
-    [FactKeys.Has (K .selection) known]
-    [FactKeys.Has (K .uncompressible) known]
-    (envelopeFresh : K .typeBFanEnvelope ∉ known)
-    (cubicFresh : K .cubicBottleneckSeparator ∉ known) :
-    Decision (K .typeBFanEnvelope) (K .cubicBottleneckSeparator) previous := by
-  classical
-  letI := data.boundaryProfileFintype
-  refine Decision.run previous (K .typeBFanEnvelope) (K .cubicBottleneckSeparator)
-    `Hypostructure.Graph.Strategy.Spine.patternRoutedBottleneckDichotomy
-    (Classical.choice ?_) envelopeFresh cubicFresh
-  have pattern := (ExactLedger.get previous (K .homogeneousBottleneckPattern)).down
-  have selection := (ExactLedger.get previous (K .selection)).down
-  have uncompressible := (ExactLedger.get previous (K .uncompressible)).down
-  simp only [Holds] at pattern selection uncompressible ⊢
-  obtain ⟨presentation, ledger, token, _tokenMem, role, structured⟩ := pattern
-  -- The role-homogeneous pattern of size `L_geom`, in either shape.
-  obtain ⟨pattern, inside, shaped, large⟩ :
-      ∃ pattern ⊆ ledger.presented.roleFibre token role,
-        (Graph.PatternFamily.IsMatching pattern ∨
-          ∃ centre, Graph.PatternFamily.IsStar pattern centre) ∧
-        Graph.SameTokenRoutingGerms.patternBound
-          (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
-            (Graph.WindowCurvature.Label data.windowOrder)) ≤ pattern.card := by
-    rcases structured with ⟨pattern, inside, matching, large⟩ |
-      ⟨centre, pattern, inside, star, large⟩
-    · exact ⟨pattern, inside, Or.inl matching, large⟩
-    · exact ⟨pattern, inside, Or.inr ⟨centre, star⟩, large⟩
-  -- The pigeonhole: two distinct edges, hence two distinct selected demands.
-  obtain ⟨first, firstMem, second, secondMem, _distinctEdges, _sameLabel,
-      left, leftMem, right, rightMem, distinct⟩ :=
-    Graph.SameTokenRoutingGerms.exists_routed_demands pattern
-      (fun _ => data.routingLabelWitness)
-      (fun edge member => ledger.presented.pairs_roleFibre token role edge (inside member))
-      shaped large
-  -- Both edges are charged to `t`: `Θ_cap` is the ledger's eligibility.
-  have chargesOf : ∀ pair ∈ ledger.presented.roleFibre token role,
-      Graph.FiniteObject.Charges presentation.activation presentation.carrier
-        data.threshold presentation.packing token pair := by
-    intro pair member
-    have inFibre := Graph.PatternFamily.roleFibre_subset _ _ _ member
-    exact Graph.CanonicalFibreLedger.applies_canonicalLabel
-      (Finset.mem_filter.1 inFibre).2
-  let bottleneck := presentation.routedBottleneck data.threshold token first second
-    (chargesOf first (inside firstMem)) (chargesOf second (inside secondMem))
-    left leftMem right rightMem distinct
-  obtain ⟨component, componentMem, supportEq⟩ :=
-    presentation.routedBottleneck_core data.threshold token first second
-      (chargesOf first (inside firstMem)) (chargesOf second (inside secondMem))
-      left leftMem right rightMem distinct
-  -- Exit `(3)` is denied on the selected object: a label collision at the
-  -- packing is an accepted cycle.
-  have denied : ∀ centre first second : current.object.Vertex,
-      ¬ handoffAbsorbing data current.object presentation.packing centre first second :=
-    fun _ _ _ collision => selection.1
-      (Graph.WindowLabelCollision.hasCycleWithLength_of_labelCollision
-        data.degenerateClosureRejected collision)
-  by_cases high : handoffHighDegree data current.object bottleneck.separation.separator
-  · -- `d_G(z) ≥ 4`: the separator and the two separated tails are the envelope.
-    let envelope := Graph.DecoratedHandoff.envelopeOfSeparation
-      (LengthOK := data.LengthOK) (HighDegree := handoffHighDegree data current.object)
-      (Absorbing := handoffAbsorbing data current.object presentation.packing)
-      bottleneck.separation bottleneck.armLeft bottleneck.armRight
-      bottleneck.armLeftIssued bottleneck.armRightIssued bottleneck.armLeftChain
-      bottleneck.armRightChain bottleneck.armLeftNodup bottleneck.armRightNodup
-      bottleneck.armLeftLands bottleneck.armRightLands bottleneck.armLeftInterior
-      bottleneck.armRightInterior high selection.1
-      (denied _ _ _) (denied _ _ _)
-    have coreEq : envelope.core =
-        current.object.pieceSupport
-          (current.object.remainderSupport presentation.packing) component := by
-      simpa [envelope, Graph.DecoratedHandoff.envelopeOfSeparation] using supportEq
-    have coreInside : envelope.core ⊆
-        current.object.remainderSupport presentation.packing := by
-      rw [coreEq]
-      exact current.object.pieceSupport_subset _ component
-    have windowFree : handoffWindowFree data current.object envelope.core := by
-      constructor
-      · intro window subset windowInduces
-        exact current.object.not_inducesWindow_of_subset_remainderSupport
-          presentation.packingMeets (subset.trans coreInside) windowInduces
-      · intro internal subset
-        exact current.object.not_baseline_induce_of_subset_remainderSupport
-          data.freeForcesTarget selection.1 presentation.packingMeets
-          (subset.trans coreInside)
-    have admissible : Graph.DecoratedHandoff.Admissible current.object
-        data.LengthOK (handoffUncompressible data current.object)
-        (handoffWindowFree data current.object) envelope :=
-      { dyadicSafe := selection.1
-        coreWindowFree := windowFree
-        uncompressible := uncompressible
-        fanReturnSafe := fun centre centreMember first firstMember second
-            secondMember different =>
-          (envelope.fanSafe centre centreMember first firstMember second
-            secondMember different).1 }
-    refine ⟨.inl ⟨⟨presentation.packing, presentation.packingValid,
-      presentation.packingMeets, component, componentMem, envelope, coreEq, ?_,
-      admissible⟩⟩⟩
-    simp [envelope, Graph.DecoratedHandoff.envelopeOfSeparation]
-  · -- `d_G(z) = 3`: no unused ambient incidence, so the reading is absorbed
-    -- (`lem:same-token-bottleneck-routing`); the delocalization reading is a
-    -- strictly smaller baseline object with the target, refuted by minimality.
-    have cubic : current.object.degree bottleneck.separation.separator = 3 := by
-      have lower := current.baseline.trans
-        (current.object.minDegree_le_degree bottleneck.separation.separator)
-      have three := data.threshold_eq_three
-      simp only [handoffHighDegree, not_lt] at high
-      omega
-    have absorbed := Graph.DecoratedHandoff.absorbed_of_internal
-      (Graph.HasCycleWithLength data.LengthOK) bottleneck.reading
-      (Graph.SameTokenRoutingGerms.Delocalizes
-        (Graph.MinimumDegreeAtLeast data.threshold)
-        (Graph.HasCycleWithLength data.LengthOK) current.object)
-      (bottleneck.separation.separator_notMem_cutBoundary cubic)
-    refine ⟨.inr ⟨⟨bottleneck, high, ?_⟩⟩⟩
-    rcases absorbed with defect | complete | ⟨representative, smaller, baseline, transfer⟩
-    · exact Or.inl defect
-    · exact Or.inr (Or.inl complete)
-    · exact absurd (transfer (selection.2 representative smaller baseline)) selection.1
-
 /-! ## Nodes `[131]`, `[137]` and `[138]`: the entropy count, the certified capacity
 ledger, and the square-root surplus estimate
 
@@ -445,81 +407,6 @@ the yes arm carries the count and continues the manuscript's chain, the no arm i
 the residual on which it fails, carried as its own branch.  On the yes arm the
 rest is arithmetic already proved in `Graph.SparsePressureLedger`. -/
 
-/-- The certified capacity ledger of `def:capacity-token-ledger` at a declared
-presentation, from the facts nodes `[126]`--`[137]` put on the ledger:
-`lem:sparse-slack-surplus` (`2m = δn + σ`), node `[130]`'s pair count,
-`lem:sparse-upper-envelope`, the strict surplus lower bound of node `[19]`, and
-the entropy count of `prop:sparse-entropy-sandwich-with-blockers` at that
-presentation.  The entropy budget is `E_spine + (m − m₀)(⌊log₂ n⌋+1)`. -/
-theorem certifiedLedger_of_facts (data : Data.{u}) (object : Graph.FiniteObject.{u})
-    (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
-    (sandwich : BlockedPairEntropySandwichStatement data object)
-    (scheduleCard : (object.portPairSchedule data.threshold).card =
-      (object.degreeSurplus data.threshold).choose 2)
-    (envelope : object.edgeCount + 2 ≤ (data.threshold - 1) * object.vertexCount)
-    (slack : 2 * object.edgeCount =
-      data.threshold * object.vertexCount + object.degreeSurplus data.threshold)
-    (above : data.surplusThreshold object.vertexCount < object.degreeSurplus data.threshold)
-    (presentation : Graph.CapacityPresentation.{u} object data.windowOrder) :
-    Nonempty (Graph.CertifiedObjectCapacityLedger object data.threshold data.windowOrder
-      data.surplusScale presentation) := by
-  classical
-  obtain ⟨Coordinate, family, coordinateSupport, _survives, demand, deficitLe, entropy⟩ :=
-    sandwich presentation
-  have degreeLower : ∀ vertex : object.Vertex, data.threshold ≤ object.degree vertex :=
-    fun vertex => le_trans baseline (object.minDegree_le_degree vertex)
-  have handshake : data.threshold * object.vertexCount ≤ 2 * object.edgeCount := by omega
-  have aboveEdges : Graph.cubicBaselineEdgeCount object.vertexCount data.threshold ≤
-      object.edgeCount := by
-    unfold Graph.cubicBaselineEdgeCount; omega
-  have surplusPos : 0 < object.degreeSurplus data.threshold :=
-    lt_of_le_of_lt (Nat.zero_le _) above
-  have slackLe : object.edgeCount - Graph.cubicBaselineEdgeCount object.vertexCount
-      data.threshold ≤ object.degreeSurplus data.threshold := by
-    unfold Graph.cubicBaselineEdgeCount; omega
-  have sizePos : 0 < object.vertexCount := by
-    by_contra zero
-    have empty : object.vertexCount = 0 := Nat.eq_zero_of_not_pos zero
-    have edges := object.edgeCount_le_choose_two
-    rw [empty] at edges
-    simp at edges
-    unfold Graph.FiniteObject.degreeSurplus at surplusPos
-    omega
-  obtain ⟨vertex, _⟩ : object.vertexFinset.Nonempty :=
-    Finset.card_pos.mp (by rw [object.card_vertexFinset]; exact sizePos)
-  exact ⟨Graph.certifiedLedger_of_sandwich presentation
-    (le_trans (by norm_num) data.three_le_threshold) aboveEdges family.card
-    (Graph.spineDeficit object.vertexCount data.threshold family.card) demand deficitLe
-    slackLe entropy scheduleCard
-    (object.capacityTokens_nonempty data.threshold presentation.packing vertex)
-    (object.card_capacityTokens_le presentation.packingValid degreeLower
-      data.three_le_threshold handshake envelope data.windowOrder_pos data.joinSlack)⟩
-
-/-- `C_sp ≥ 2` and `⌈√n⌉ ≥ 1` at a nonempty object: the strict surplus lower bound
-of node `[19]` puts `σ(G) ≥ 3`, hence `0 < n`.  Read off `K .surplusAbove`. -/
-theorem vertexCount_pos_of_surplusAbove (data : Data.{u}) (object : Graph.FiniteObject.{u})
-    (above : data.surplusThreshold object.vertexCount < object.degreeSurplus data.threshold) :
-    0 < object.vertexCount := by
-  by_contra zero
-  have empty : object.vertexCount = 0 := Nat.eq_zero_of_not_pos zero
-  have edges := object.edgeCount_le_choose_two
-  rw [empty] at edges
-  simp at edges
-  unfold Graph.FiniteObject.degreeSurplus at above
-  omega
-
-/-- The registered `C_sp` covers the universal quadratic-safety coefficient. -/
-theorem quadraticSafety_le_spineScale (data : Data.{u}) :
-    Graph.TokenLoad.quadraticSafetyScale ≤
-      2 * (1 + 2 * Graph.SameTokenBlockerRoles.homogeneousTokenCap data.routingLabelBound) +
-        (2 * data.surplusScale +
-          2 * Graph.SameTokenBlockerRoles.homogeneousTokenCap data.routingLabelBound *
-            (3 * (data.threshold - 1) + 2)) := by
-  have := data.quadraticSafetyScale_le_twiceAdditive
-  change Graph.TokenLoad.quadraticSafetyScale ≤
-    2 * (1 + 2 * Graph.SameTokenBlockerRoles.homogeneousTokenCap data.routingLabelBound) at this
-  omega
-
 /-- Node `[131]`: the entropy count of `prop:sparse-entropy-sandwich` at the full
 pair schedule — decided on the literal independent residual of `[130]`. -/
 noncomputable def freePairEntropyDichotomy
@@ -527,18 +414,89 @@ noncomputable def freePairEntropyDichotomy
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger (Input BranchState Presentation presentation data)
       current known)
-    [FactKeys.Has (K .skeletonDominates) known]
+    [FactKeys.Has (K .baselineSpineDemand) known]
+    [FactKeys.Has (K .independentPairFamily) known]
     (sandwichFresh : K .freePairEntropySandwich ∉ known)
     (unrealizedFresh : K .freePairCodeUnrealized ∉ known) :
     Decision (K .freePairEntropySandwich) (K .freePairCodeUnrealized) previous := by
   classical
-  let _dominated := (previous.get (K .skeletonDominates)).down
-  exact Decision.run previous (K .freePairEntropySandwich) (K .freePairCodeUnrealized)
+  let baseline := (previous.get (K .baselineSpineDemand)).down
+  let Coordinate := Classical.choose baseline.2
+  let coordinatePackage := Classical.choose_spec baseline.2
+  let family := Classical.choose coordinatePackage
+  let supportPackage := Classical.choose_spec coordinatePackage
+  let coordinateSupport := Classical.choose supportPackage
+  let properties := Classical.choose_spec supportPackage
+  let survives := properties.1
+  let demand := properties.2.1
+  let deficitBound := properties.2.2
+  let pairFacts := (previous.get (K .independentPairFamily)).down
+  let active := Classical.choose pairFacts
+  let activation := Graph.pairResponseActivation active
+  let pairs := current.object.portPairSchedule data.threshold
+  let responses := activation.pairFamily pairs
+  let pairIndependentStatement : Prop :=
+    ∀ attempt :
+        let family := activation.pairFamily pairs
+        let coordinateSupport : current.object.PairCoordinate →
+            Finset current.object.Vertex := by
+          letI := current.object.vertices.decEq
+          exact Graph.DeclaredSignature.Coordinate.support
+        Graph.AttemptedQuotient
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) current.object family
+          coordinateSupport,
+      let family := activation.pairFamily pairs
+      attempt.toRankQuotient.FunctionalOn ↑family →
+        Set.InjOn attempt.label ↑family
+  have pairIndependent : pairIndependentStatement :=
+    Classical.choose_spec pairFacts
+  have responseCard : responses.card =
+      (current.object.degreeSurplus data.threshold).choose 2 := by
+    rw [Graph.FiniteObject.DemandActivation.card_pairFamily]
+    exact current.object.card_portPairSchedule fun vertex =>
+      le_trans current.baseline (current.object.minDegree_le_degree vertex)
+  let entropy : Prop :=
+    pairIndependentStatement ∧
+      2 ^ (family.card + responses.card) ≤ Graph.skeletonBudget current.object
+  exact Decision.run previous (K .freePairEntropySandwich)
+    (K .freePairCodeUnrealized)
     `Hypostructure.Graph.Strategy.Spine.freePairEntropyDichotomy
-    (if realized : FreePairEntropySandwichStatement data current.object then
-      .inl ⟨realized⟩
+    (if realized : entropy then
+      let count :
+          2 ^ (family.card +
+              (current.object.degreeSurplus data.threshold).choose 2) ≤
+            Graph.skeletonBudget current.object := by
+        simpa only [responseCard] using realized.2
+      let handshake : data.threshold * current.object.vertexCount ≤
+          2 * current.object.edgeCount :=
+        Graph.baselineDegree_mul_vertexCount_le_two_mul_edgeCount
+          current.object data.threshold fun vertex =>
+            le_trans current.baseline
+              (current.object.minDegree_le_degree vertex)
+      let above : Graph.cubicBaselineEdgeCount current.object.vertexCount
+          data.threshold ≤ current.object.edgeCount :=
+        Graph.cubicBaselineEdgeCount_le_edgeCount_of_handshake
+          current.object data.threshold handshake
+      let sandwich := Graph.entropySandwich_of_unblocked current.object
+        (le_trans (by norm_num) data.three_le_threshold) above count demand
+      let result : FreePairEntropySandwichStatement data current.object :=
+        ⟨Coordinate, family, coordinateSupport, survives, demand,
+          deficitBound, count, sandwich⟩
+      .inl ⟨result⟩
     else
-      .inr ⟨realized⟩)
+      let countFailure :
+          ¬ 2 ^ (family.card +
+              (current.object.degreeSurplus data.threshold).choose 2) ≤
+            Graph.skeletonBudget current.object := by
+        intro count
+        apply realized
+        refine ⟨pairIndependent, ?_⟩
+        simpa only [responseCard] using count
+      let result : FreePairCodeUnrealizedStatement data current.object :=
+        ⟨Coordinate, family, coordinateSupport, survives, demand,
+          deficitBound, countFailure⟩
+      .inr ⟨result⟩)
     sandwichFresh unrealizedFresh
 
 /-- Node `[131]` → `[138]`, `cor:spine-lower-bound-surplus-estimates` at the free
@@ -560,7 +518,8 @@ baseline demand, `σ(G) ≤ C_sp ⌈√n⌉`. -/
             classical
             let object := inputs.current.object
             obtain ⟨Coordinate, family, coordinateSupport, _survives, demand, deficitLe,
-              entropy⟩ := (inputs.get (K .freePairEntropySandwich)).down
+              entropy, _sandwich⟩ :=
+              (inputs.get (K .freePairEntropySandwich)).down
             have slack : 2 * object.edgeCount =
                 data.threshold * object.vertexCount + object.degreeSurplus data.threshold :=
               (inputs.get (K .sparseSlackSurplus)).down
@@ -575,12 +534,30 @@ baseline demand, `σ(G) ≤ C_sp ⌈√n⌉`. -/
             have slackLe : object.edgeCount - Graph.cubicBaselineEdgeCount
                 object.vertexCount data.threshold ≤ object.degreeSurplus data.threshold := by
               unfold Graph.cubicBaselineEdgeCount; omega
+            have sizePos : 0 < object.vertexCount := by
+              by_contra zero
+              have empty : object.vertexCount = 0 := Nat.eq_zero_of_not_pos zero
+              have edges := object.edgeCount_le_choose_two
+              rw [empty] at edges
+              simp at edges
+              unfold Graph.FiniteObject.degreeSurplus at surplusPos
+              omega
+            have safety : Graph.TokenLoad.quadraticSafetyScale ≤
+                2 * (1 + 2 * Graph.SameTokenBlockerRoles.homogeneousTokenCap
+                  data.routingLabelBound) +
+                  (2 * data.surplusScale +
+                    2 * Graph.SameTokenBlockerRoles.homogeneousTokenCap
+                      data.routingLabelBound * (3 * (data.threshold - 1) + 2)) := by
+              have registered := data.quadraticSafetyScale_le_twiceAdditive
+              change Graph.TokenLoad.quadraticSafetyScale ≤
+                2 * (1 + 2 * Graph.SameTokenBlockerRoles.homogeneousTokenCap
+                  data.routingLabelBound) at registered
+              omega
             have estimate := Graph.surplus_le_scale_of_pairSandwich object
               (Graph.SameTokenBlockerRoles.homogeneousTokenCap data.routingLabelBound)
               (le_trans (by norm_num) data.three_le_threshold) aboveEdges family.card
               (Graph.spineDeficit object.vertexCount data.threshold family.card) demand
-              deficitLe slackLe entropy (vertexCount_pos_of_surplusAbove data object above)
-              (quadraticSafety_le_spineScale data)
+              deficitLe slackLe entropy sizePos safety
             have scale : data.spineScale =
                 2 * (1 + 2 * Graph.SameTokenBlockerRoles.homogeneousTokenCap
                   data.routingLabelBound) +
@@ -593,40 +570,59 @@ baseline demand, `σ(G) ≤ C_sp ⌈√n⌉`. -/
             exact estimate⟩)
         .nil)
 
-/-- Node `[137]`: the entropy count of `prop:sparse-entropy-sandwich-with-blockers`
-at every declared capacity presentation — decided on the literal `[137]`
-residual after its first production. -/
+/-- Node `[137]`: decide `prop:sparse-entropy-sandwich-with-blockers` on the
+free side of the exact token map copied from `[136]`. -/
 noncomputable def blockedPairEntropyDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger (Input BranchState Presentation presentation data)
       current known)
-    [FactKeys.Has (K .roleFibrePartition) known]
+    [FactKeys.Has (K .capacityTokenLedger) known]
+    [FactKeys.Has (K .canonicalPairLedger) known]
+    [FactKeys.Has (K .baselineSpineDemand) known]
     (sandwichFresh : K .blockedPairEntropySandwich ∉ known)
     (unrealizedFresh : K .blockedPairCodeUnrealized ∉ known) :
     Decision (K .blockedPairEntropySandwich) (K .blockedPairCodeUnrealized) previous := by
   classical
-  let _partition := (previous.get (K .roleFibrePartition)).down
   exact Decision.run previous (K .blockedPairEntropySandwich)
     (K .blockedPairCodeUnrealized)
     `Hypostructure.Graph.Strategy.Spine.blockedPairEntropyDichotomy
-    (if realized : BlockedPairEntropySandwichStatement data current.object then
-      .inl ⟨realized⟩
-    else
-      .inr ⟨realized⟩)
+    (Classical.choice (show Nonempty
+        ((K .blockedPairEntropySandwich).At current ⊕
+          (K .blockedPairCodeUnrealized).At current) from by
+      obtain ⟨capacity, primitiveEq, primitiveLe, concrete⟩ :=
+        (previous.get (K .capacityTokenLedger)).down
+      obtain ⟨_activePairFamily, _blockerCertificate, _pairsEq, scheduleCard,
+          _partition, _incidence, _multiplicity, _blocked⟩ :=
+        (previous.get (K .canonicalPairLedger)).down
+      obtain ⟨_active, Coordinate, family, coordinateSupport, survives, demand,
+          deficitBound⟩ := (previous.get (K .baselineSpineDemand)).down
+      let count : Prop :=
+        2 ^ (family.card +
+            (Graph.freeSide current.object.vertexPairDecidableEq
+              (current.object.portPairSchedule data.threshold)
+            capacity.tokenOrder capacity.Eligible
+            capacity.eligibleDecidable).card) ≤
+          Graph.skeletonBudget current.object
+      exact if realized : count then
+        ⟨.inl ⟨capacity, primitiveEq, primitiveLe, concrete, scheduleCard,
+          Coordinate, family, coordinateSupport, survives, demand, deficitBound,
+          realized⟩⟩
+      else
+        ⟨.inr ⟨capacity, primitiveEq, primitiveLe, concrete, scheduleCard,
+          Coordinate, family, coordinateSupport, survives, demand, deficitBound,
+          realized⟩⟩))
     sandwichFresh unrealizedFresh
 
 /-- Node `[137]`, second production: `lem:capacity-token-high-load` with
 `cor:forced-homogeneous-same-token-scale` and the two sharp budgets, at the
-object's own certified capacity ledger — which exists at every declared
-presentation once the entropy count is on the ledger. -/
+same certified ledger whose count was just accepted. -/
 @[reducible] noncomputable def fibrePressureRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.fibrePressure
-    { Requires := [K .blockedPairEntropySandwich, K .canonicalPairLedger,
-        K .sparseUpperEnvelope, K .sparseSlackSurplus, K .surplusAbove]
+    { Requires := [K .roleFibrePartition]
       Produces := [K .fibrePressure]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by simp
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
@@ -634,63 +630,66 @@ presentation once the entropy count is on the ledger. -/
         (show Value BranchState Presentation presentation data
             .fibrePressure inputs.current from
           ⟨by
-            obtain ⟨_active, _certificate, _pairsEq, scheduleCard, _partition,
-              _incidence, _multiplicity, _blocked⟩ :=
-              (inputs.get (K .canonicalPairLedger)).down
-            obtain ⟨envelope, _packing, _valid, _maximal, _joinIdentity⟩ :=
-              (inputs.get (K .sparseUpperEnvelope)).down
-            exact Graph.fibrePressureStatement inputs.current.object data.threshold
-              data.windowOrder fun presentation =>
-                ⟨(Classical.choice (certifiedLedger_of_facts data inputs.current.object
-                  inputs.current.baseline
-                  (inputs.get (K .blockedPairEntropySandwich)).down scheduleCard envelope
-                  (inputs.get (K .sparseSlackSurplus)).down
-                  (inputs.get (K .surplusAbove)).down presentation)).ledger⟩⟩)
+            obtain ⟨presentation, certified, _partition⟩ :=
+              (inputs.get (K .roleFibrePartition)).down
+            let ledger := certified.ledger
+            obtain ⟨token, tokenMem, role, display, roleBound, forced,
+                pattern⟩ := ledger.presented.exists_forced_pattern
+            exact ⟨presentation, certified, token, role, tokenMem, display,
+              roleBound, forced, pattern⟩⟩)
         .nil)
 
 /-- Node `[137]`, the coupled excess test `D_all > 0?` of
-`prop:single-graph-sparse-pressure-routing`: either every capacity ledger of the
-object respects the geometric caps — and then, at the certified ledger of the
-canonical presentation, `σ(G) ≤ R_L(n) ≤ C_sp ⌈√n⌉`, the near-cubic route `[138]`
-— or some ledger overloads and the coupled excess forces a role-homogeneous
-same-token pattern, routed by its token class to `[139]`--`[143]`. -/
+`prop:single-graph-sparse-pressure-routing`, on the certified ledger produced
+immediately above: either it respects the geometric cap and gives `[138]`, or
+its positive coupled excess selects one of `[140]`, `[142]`, `[143]`. -/
 noncomputable def coupledExcessDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger (Input BranchState Presentation presentation data)
       current known)
     [FactKeys.Has (K .fibrePressure) known]
-    [FactKeys.Has (K .blockedPairEntropySandwich) known]
-    [FactKeys.Has (K .canonicalPairLedger) known]
-    [FactKeys.Has (K .sparseUpperEnvelope) known]
-    [FactKeys.Has (K .sparseSlackSurplus) known]
     [FactKeys.Has (K .surplusAbove) known]
     (nearCubicFresh : K .sparsePressureNearCubic ∉ known)
     (overloadFresh : K .sparsePressureOverload ∉ known) :
     Decision (K .sparsePressureNearCubic) (K .sparsePressureOverload) previous := by
   classical
-  let _pressure := (previous.get (K .fibrePressure)).down
   exact Decision.run previous (K .sparsePressureNearCubic) (K .sparsePressureOverload)
     `Hypostructure.Graph.Strategy.Spine.coupledExcessDichotomy
-    (if capped : Graph.SparsePressureCapped current.object data.threshold
-        data.windowOrder then
-      .inl ⟨by
-          obtain ⟨_active, _certificate, _pairsEq, scheduleCard, _partition,
-            _incidence, _multiplicity, _blocked⟩ :=
-            (previous.get (K .canonicalPairLedger)).down
-          obtain ⟨envelope, _packing, _valid, _maximal, _joinIdentity⟩ :=
-            (previous.get (K .sparseUpperEnvelope)).down
-          have above : data.surplusThreshold current.object.vertexCount <
-              current.object.degreeSurplus data.threshold :=
-            (previous.get (K .surplusAbove)).down
-          let canonical := Graph.CapacityPresentation.canonical current.object
-            data.windowOrder data.windowOrder_pos
-          obtain ⟨certified⟩ := certifiedLedger_of_facts data current.object
-            current.baseline (previous.get (K .blockedPairEntropySandwich)).down
-            scheduleCard envelope (previous.get (K .sparseSlackSurplus)).down above canonical
-          have estimate := Graph.surplus_le_scale_of_capped canonical certified
-            data.routingLabelBound capped (vertexCount_pos_of_surplusAbove data _ above)
-            (quadraticSafety_le_spineScale data)
+    (Classical.choice (show Nonempty
+        ((K .sparsePressureNearCubic).At current ⊕
+          (K .sparsePressureOverload).At current) from by
+      obtain ⟨presentation, certified, _token, _role, _tokenMem, _display,
+          _roleBound, _forced, _pattern⟩ :=
+        (previous.get (K .fibrePressure)).down
+      have above : data.surplusThreshold current.object.vertexCount <
+          current.object.degreeSurplus data.threshold :=
+        (previous.get (K .surplusAbove)).down
+      exact if capped : Graph.SparsePressureCappedAt certified
+          data.routingLabelBound then
+        ⟨.inl ⟨by
+          have sizePos : 0 < current.object.vertexCount := by
+            by_contra zero
+            have empty : current.object.vertexCount = 0 :=
+              Nat.eq_zero_of_not_pos zero
+            have edges := current.object.edgeCount_le_choose_two
+            rw [empty] at edges
+            simp at edges
+            unfold Graph.FiniteObject.degreeSurplus at above
+            omega
+          have safety : Graph.TokenLoad.quadraticSafetyScale ≤
+              2 * (1 + 2 * Graph.SameTokenBlockerRoles.homogeneousTokenCap
+                data.routingLabelBound) +
+                (2 * data.surplusScale +
+                  2 * Graph.SameTokenBlockerRoles.homogeneousTokenCap
+                    data.routingLabelBound * (3 * (data.threshold - 1) + 2)) := by
+            have registered := data.quadraticSafetyScale_le_twiceAdditive
+            change Graph.TokenLoad.quadraticSafetyScale ≤
+              2 * (1 + 2 * Graph.SameTokenBlockerRoles.homogeneousTokenCap
+                data.routingLabelBound) at registered
+            omega
+          have estimate := Graph.surplus_le_scale_of_capped presentation certified
+            data.routingLabelBound capped sizePos safety
           have scale : data.spineScale =
               2 * (1 + 2 * Graph.SameTokenBlockerRoles.homogeneousTokenCap
                 data.routingLabelBound) +
@@ -700,10 +699,59 @@ noncomputable def coupledExcessDichotomy
           change current.object.degreeSurplus data.threshold ≤
             data.spineScale * Core.ceilSqrt current.object.vertexCount
           rw [scale]
-          exact estimate⟩
-    else
-      .inr ⟨(Graph.sparsePressureRouting current.object data.threshold
-        data.windowOrder).resolve_left capped⟩)
+          exact estimate⟩⟩
+      else
+        ⟨.inr ⟨by
+          let ledger := certified.ledger
+          have failure : Graph.CapacityTokenLedger.sparsePressureBound
+                ledger.entropyBudget
+                (Graph.SameTokenBlockerRoles.homogeneousTokenCap
+                  data.routingLabelBound)
+                (current.object.capacityTokenSupply data.threshold) <
+              current.object.degreeSurplus data.threshold :=
+            Nat.lt_of_not_ge capped
+          obtain ⟨token, tokenMem, role, overload, excess, pattern⟩ :
+              ∃ token ∈ ledger.presented.tokens,
+                ∃ role : Graph.SameTokenBlockerRoles.Role,
+                  0 < ledger.presented.coupledExcess
+                      ledger.presented.tokenClass
+                      (fun _ => Graph.SameTokenBlockerRoles.geometricPatternBound
+                        data.routingLabelBound) ∧
+                    ledger.presented.coupledExcess
+                        ledger.presented.tokenClass
+                        (fun _ => Graph.SameTokenBlockerRoles.geometricPatternBound
+                          data.routingLabelBound) ≤
+                      Graph.SameTokenBlockerRoles.sameTokenRoleBound *
+                        ledger.presented.tokens.card *
+                          ledger.presented.roleFibreExcess
+                            ledger.presented.tokenClass
+                            (fun _ =>
+                              Graph.SameTokenBlockerRoles.geometricPatternBound
+                                data.routingLabelBound) token role ∧
+                    ((∃ structured ⊆ ledger.presented.roleFibre token role,
+                        Graph.PatternFamily.IsMatching structured ∧
+                          Graph.PatternFamily.patternThreshold
+                              (ledger.presented.roleFibre token role).card ≤
+                            structured.card) ∨
+                      (∃ centre, ∃ structured ⊆
+                          ledger.presented.roleFibre token role,
+                        Graph.PatternFamily.IsStar structured centre ∧
+                          Graph.PatternFamily.patternThreshold
+                              (ledger.presented.roleFibre token role).card ≤
+                            structured.card)) := by
+            rcases ledger.presented.sparsePressureAlternative
+                ledger.presented.tokenClass
+                (fun _ => Graph.SameTokenBlockerRoles.geometricPatternBound
+                  data.routingLabelBound)
+                (Graph.SameTokenBlockerRoles.homogeneousTokenCap
+                  data.routingLabelBound)
+                (current.object.capacityTokenSupply data.threshold)
+                (fun _ => Nat.le_refl _) ledger.tokens_card_le with
+              bounded | ⟨token, tokenMem, role, rest⟩
+            · exact absurd bounded (Nat.not_le.mpr failure)
+            · exact ⟨token, tokenMem, role, rest⟩
+          exact ⟨presentation, ledger, token, role, tokenMem, trivial,
+            overload, excess, pattern⟩⟩⟩))
     nearCubicFresh overloadFresh
 
 /-- Node `[141]`: classify the concrete overload witness, already known to be
@@ -723,15 +771,15 @@ noncomputable def remainderOverloadClassDichotomy
     (Classical.choice (show Nonempty
         ((K .remainderClassOverload).At current ⊕
           (K .remainderClassAbsent).At current) from by
-      obtain ⟨declared, ledger, routingLabelBound, token, role, tokenMem,
+      obtain ⟨declared, ledger, token, role, tokenMem,
         outside, rest⟩ := (previous.get (K .windowClassAbsent)).down
       cases classified : ledger.presented.tokenClass token with
       | windowIncidence => exact absurd classified outside
       | remainderSurplus =>
-          exact ⟨.inl ⟨declared, ledger, routingLabelBound, token, role,
+          exact ⟨.inl ⟨declared, ledger, token, role,
             tokenMem, classified, rest⟩⟩
       | primitiveCarrier =>
-          exact ⟨.inr ⟨declared, ledger, routingLabelBound, token, role,
+          exact ⟨.inr ⟨declared, ledger, token, role,
             tokenMem, classified, rest⟩⟩))
     remainderFresh primitiveFresh
 
@@ -758,51 +806,5 @@ noncomputable def homogeneousCapsDichotomy
     else
       .inr ⟨Graph.homogeneousBottleneckPatternStatement_of_not_caps current.object caps⟩)
     capsFresh patternFresh
-
-/-- Node `[144]`, the near-cubic outcome: `cor:homogeneous-same-token-caps-close`
-at the certified ledger of the canonical presentation gives `σ(G) ≤ C_sp ⌈√n⌉`. -/
-theorem capsClose_estimate (data : Data.{u}) (object : Graph.FiniteObject.{u})
-    (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
-    (sandwich : BlockedPairEntropySandwichStatement data object)
-    (scheduleCard : (object.portPairSchedule data.threshold).card =
-      (object.degreeSurplus data.threshold).choose 2)
-    (envelope : object.edgeCount + 2 ≤ (data.threshold - 1) * object.vertexCount)
-    (slack : 2 * object.edgeCount =
-      data.threshold * object.vertexCount + object.degreeSurplus data.threshold)
-    (above : data.surplusThreshold object.vertexCount < object.degreeSurplus data.threshold)
-    (close : letI := data.boundaryProfileFintype
-      Graph.HomogeneousCapsCloseStatement object data.threshold data.windowOrder
-        (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
-          (Graph.WindowCurvature.Label data.windowOrder))) :
-    object.degreeSurplus data.threshold ≤ data.spineScale * Core.ceilSqrt object.vertexCount := by
-  classical
-  letI := data.boundaryProfileFintype
-  let canonical := Graph.CapacityPresentation.canonical object data.windowOrder
-    data.windowOrder_pos
-  obtain ⟨certified⟩ := certifiedLedger_of_facts data object baseline sandwich scheduleCard
-    envelope slack above canonical
-  obtain ⟨_, _, pressure, _⟩ := close canonical certified.ledger
-  have capEq : Graph.SameTokenBlockerRoles.homogeneousCapCharge
-      (Graph.SameTokenRoutingGerms.patternBound
-        (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
-          (Graph.WindowCurvature.Label data.windowOrder))) =
-      Graph.SameTokenBlockerRoles.homogeneousTokenCap data.routingLabelBound := by
-    simp only [Graph.SameTokenBlockerRoles.homogeneousTokenCap,
-      Graph.SameTokenBlockerRoles.geometricPatternBound,
-      Graph.SameTokenRoutingGerms.patternBound, Graph.SameTokenRoutingGerms.labelBound]
-    rw [data.routingLabelBound_eq]
-  rw [capEq] at pressure
-  have estimate := certified.degreeSurplus_le_mul_ceilSqrt
-    (vertexCount_pos_of_surplusAbove data object above)
-    (Graph.SameTokenBlockerRoles.homogeneousTokenCap data.routingLabelBound)
-    (quadraticSafety_le_spineScale data) pressure
-  have scale : data.spineScale =
-      2 * (1 + 2 * Graph.SameTokenBlockerRoles.homogeneousTokenCap
-        data.routingLabelBound) +
-        (2 * data.surplusScale +
-          2 * Graph.SameTokenBlockerRoles.homogeneousTokenCap
-            data.routingLabelBound * (3 * (data.threshold - 1) + 2)) := rfl
-  rw [scale]
-  exact estimate
 
 end Hypostructure.Graph.Strategy.Spine

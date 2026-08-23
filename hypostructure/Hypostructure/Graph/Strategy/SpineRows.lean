@@ -2784,7 +2784,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.absorbedConfigurationResidual
     { Requires :=
-        [K .exactCollisionFails, K .boundaryDemand, K .coldWindowLedgerSplit]
+        [K .exactCollisionFails, K .boundaryDemand, K .hotColdPartition]
       Produces := [K .absorbedConfigurationResidual]
       requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp
@@ -2792,7 +2792,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     (fun inputs =>
       let fails := (inputs.get (K .exactCollisionFails)).down
       let demand := (inputs.get (K .boundaryDemand)).down
-      let split := (inputs.get (K .coldWindowLedgerSplit)).down
+      let split := (inputs.get (K .hotColdPartition)).down
       .cons (key := K .absorbedConfigurationResidual)
         (show Value BranchState Presentation presentation data
             .absorbedConfigurationResidual inputs.current from
@@ -3319,18 +3319,36 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
         (show Value BranchState Presentation presentation data
             .typeBFanLocalDichotomy inputs.current from
           ⟨by
-            obtain ⟨packing, valid, maximal, component, present, centres, assigned,
-              _heavyWitness⟩ := heavy
-            refine ⟨packing, valid, maximal, component, present, centres, assigned, ?_⟩
-            intro centre member centreHeavy
-            have highCentre :=
-              TypeBAssignedCentres.high data inputs.current.object assigned centre member
-            rcases Graph.heavyCentreLocalDichotomy (normal centre highCentre) with
-              compatible | triangular
-            · exact Or.inl compatible
-            · exact Or.inr ⟨triangular,
-                Graph.three_le_triangularEndpoints_card data.three_le_threshold
-                  centreHeavy triangular⟩⟩)
+            change TypeBFanLocalDichotomyStatement data inputs.current.object
+            unfold TypeBFanLocalDichotomyStatement
+            rcases heavy with canonical | absorbed
+            · apply Or.inl
+              obtain ⟨packing, valid, maximal, component, present, centres, assigned,
+                _heavyWitness⟩ := canonical
+              refine ⟨packing, valid, maximal, component, present, centres, assigned, ?_⟩
+              intro centre member centreHeavy
+              have highCentre :=
+                TypeBAssignedCentres.high data inputs.current.object assigned centre member
+              rcases Graph.heavyCentreLocalDichotomy (normal centre highCentre) with
+                compatible | triangular
+              · exact Or.inl compatible
+              · exact Or.inr ⟨triangular,
+                  Graph.three_le_triangularEndpoints_card data.three_le_threshold
+                    centreHeavy triangular⟩
+            · apply Or.inr
+              refine ⟨absorbed.1, ?_⟩
+              obtain ⟨baseline, bridgeless, large, stub, centre, witness,
+                centreHeavy⟩ := absorbed.2
+              refine ⟨baseline, bridgeless, large, stub, centre, witness,
+                centreHeavy, ?_⟩
+              have highCentre : Graph.IsHighCentre inputs.current.object
+                  data.threshold centre := witness.2.1
+              rcases Graph.heavyCentreLocalDichotomy (normal centre highCentre) with
+                compatible | triangular
+              · exact Or.inl compatible
+              · exact Or.inr ⟨triangular,
+                  Graph.three_le_triangularEndpoints_card data.three_le_threshold
+                    centreHeavy triangular⟩⟩)
         .nil)
     0 0
 
@@ -3372,26 +3390,50 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
         (show Value BranchState Presentation presentation data
             .typeBFanDegreeFourProfile inputs.current from
           ⟨by
-            obtain ⟨packing, valid, maximal, component, present, centres, assigned,
-              degrees⟩ := degreeFour
-            refine ⟨packing, valid, maximal, component, present, centres, assigned, ?_⟩
-            intro centre member
-            have high :=
-              TypeBAssignedCentres.high data inputs.current.object assigned centre member
-            have degree := degrees centre member
-            refine ⟨degree, ?_, ?_, ?_⟩
-            · rcases Graph.heavyCentreLocalDichotomy (normal centre high) with
-                compatible | triangular
-              · exact Or.inl compatible
-              · refine Or.inr ?_
-                rw [degree] at triangular
-                omega
-            · omega
-            · intro fanEnvelope
-              obtain ⟨_surplus, counted, identity, _range⟩ :=
-                Graph.TypeBFanIncidence.degreeFourProfile inputs.current.object
-                  data.threshold data.dischargeScale fanEnvelope degree
-              exact ⟨counted, identity⟩⟩)
+            change TypeBFanDegreeFourProfileStatement data inputs.current.object
+            unfold TypeBFanDegreeFourProfileStatement
+            rcases degreeFour with canonical | absorbed
+            · apply Or.inl
+              obtain ⟨packing, valid, maximal, component, present, centres, assigned,
+                degrees⟩ := canonical
+              refine ⟨packing, valid, maximal, component, present, centres, assigned, ?_⟩
+              intro centre member
+              have high :=
+                TypeBAssignedCentres.high data inputs.current.object assigned centre member
+              have degree := degrees centre member
+              refine ⟨degree, ?_, ?_, ?_⟩
+              · rcases Graph.heavyCentreLocalDichotomy (normal centre high) with
+                  compatible | triangular
+                · exact Or.inl compatible
+                · refine Or.inr ?_
+                  rw [degree] at triangular
+                  omega
+              · omega
+              · intro fanEnvelope
+                obtain ⟨_surplus, counted, identity, _range⟩ :=
+                  Graph.TypeBFanIncidence.degreeFourProfile inputs.current.object
+                    data.threshold data.dischargeScale fanEnvelope degree
+                exact ⟨counted, identity⟩
+            · apply Or.inr
+              refine ⟨absorbed.1, ?_⟩
+              intro baseline bridgeless large stub
+              obtain ⟨centre, witness, degree⟩ :=
+                absorbed.2 baseline bridgeless large stub
+              refine ⟨centre, witness, degree, ?_, ?_, ?_⟩
+              · have high : Graph.IsHighCentre inputs.current.object
+                    data.threshold centre := witness.2.1
+                rcases Graph.heavyCentreLocalDichotomy (normal centre high) with
+                  compatible | triangular
+                · exact Or.inl compatible
+                · refine Or.inr ?_
+                  rw [degree] at triangular
+                  omega
+              · omega
+              · intro fanEnvelope
+                obtain ⟨_surplus, counted, identity, _range⟩ :=
+                  Graph.TypeBFanIncidence.degreeFourProfile inputs.current.object
+                    data.threshold data.dischargeScale fanEnvelope degree
+                exact ⟨counted, identity⟩⟩)
         .nil)
     0 0
 
@@ -3436,16 +3478,24 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let entry := inputs.get (K .typeBFanEntry)
+      let entry := (inputs.get (K .typeBFanEntry)).down
       .cons (key := K .fanCertificateCap)
         (show Value BranchState Presentation presentation data
             .fanCertificateCap inputs.current from
           ⟨by
-            obtain ⟨packing, valid, maximal, component, present, centres,
-              assigned, _nonempty, _high⟩ := entry.down
-            exact ⟨packing, valid, maximal, component, present, centres,
-              assigned, fun _centre _member marking =>
-                marking.degree_le_fanPackingCap⟩⟩)
+            change TypeBFanCertificateCapStatement data inputs.current.object
+            unfold TypeBFanCertificateCapStatement
+            rcases entry with canonical | absorbed
+            · apply Or.inl
+              obtain ⟨packing, valid, maximal, component, present, centres,
+                assigned, _nonempty, _high⟩ := canonical
+              exact ⟨packing, valid, maximal, component, present, centres,
+                assigned, fun _centre _member marking =>
+                  marking.degree_le_fanPackingCap⟩
+            · apply Or.inr
+              refine ⟨absorbed, ?_⟩
+              intro baseline bridgeless large stub centre _witness marking
+              exact marking.degree_le_fanPackingCap⟩)
         .nil)
     0 0
 

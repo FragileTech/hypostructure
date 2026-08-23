@@ -849,7 +849,6 @@ inductive Key where
   | coldFailureHandoff
   | coldFailureRouting
   | coldExchangeBound
-  | coldWindowLedgerSplit
   /-- Node `[146]`, yes: the canonical packing lies below the route-8
   private-carrier threshold. -/
   | coldRoute8Below
@@ -1312,14 +1311,14 @@ inductive Key where
   /-- Node `[139]`, yes arm: the overloading token of node `[137]` lies in
   `𝔗_W`, so the branch enters the window-incidence audit `[140]`. -/
   | windowClassOverload
-  /-- Node `[139]`, no arm: no overloading token lies in `𝔗_W`, so the branch
-  falls through to node `[141]`. -/
+  /-- Node `[139]`, no arm: the selected overloading token does not lie in
+  `𝔗_W`, so that same witness falls through to node `[141]`. -/
   | windowClassAbsent
   /-- Node `[141]`, yes arm: the overloading token lies in `𝔗_R`, so the branch
   enters the remainder-surplus audit `[142]`. -/
   | remainderClassOverload
-  /-- Node `[141]`, no arm: no overloading token lies in `𝔗_R` either, so the
-  branch enters the primitive-carrier audit `[143]`. -/
+  /-- Node `[141]`, no arm: the selected overloading token lies in
+  `𝔗_prim`, so that same witness enters `[143]`. -/
   | remainderClassAbsent
   /-- Node `[140]`, the window-incidence geometric audit: a token of `𝔗_W` whose
   load exceeds `Cap_hom(L_geom)` carries a role-homogeneous `L_geom`-matching or
@@ -1330,10 +1329,6 @@ inductive Key where
   | remainderSurplusAudit
   /-- Node `[143]`, the primitive-carrier geometric audit, at `𝔗_prim`. -/
   | primitiveCarrierAudit
-  /-- Node `[143]`'s own class verdict: the overloading token lies in `𝔗_prim`.
-  It is *derived* at that node from node `[137]`'s overload and the two negative
-  arms of `[139]` and `[141]`, because `class(t)` has three values. -/
-  | primitiveClassOverload
   /-- `cor:quantitative-homogeneous-overload`: the forced role-homogeneous
   pattern scale `K_hom(G) ≥ ψ(N_*(G)/(Q_st(8n+σ(G))))`, cleared of division.
   Committed on each of the three audit arms, because it is what makes the audit
@@ -1779,14 +1774,6 @@ def BarrierOverflowStatement (data : Data.{u})
   Graph.skeletonBudget object <
     2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
       (canonicalHotWindows data object).card)
-
-/-- Node `[145]`: the hot/cold interface on the literal post-spine residual.
-It fixes the maximal packing together with the canonical live window package
-already committed by the predecessor.  Later nodes decide the route-8 and
-live-hot alternatives; this fact performs neither decision. -/
-def ColdWindowLedgerStatement (data : Data.{u})
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  HotColdWindowStatement data object
 
 /-! ## Nodes `[170]`--`[172]`: the barrier states of the blocked class
 
@@ -2438,6 +2425,128 @@ def TypeBFanDegreeFourCentresStatement (data : Data.{u})
   TypeBFanSupportWith data object (fun _packing _piece centres =>
     ∀ centre ∈ centres, object.degree centre = data.threshold + 1) ∨
   AbsorbedGermFanDegreeFourCentresStatement data object
+
+/-- Node `[69]` on the indexed `[177]` lane.  The original absorbed-germ
+witness and its indices remain the carrier; at the heavy centre selected by
+`[68]`, `cor:heavy-center-local-dichotomy` supplies exactly the same local
+alternative as on an ordinary Type B support. -/
+noncomputable def AbsorbedGermFanLocalDichotomyStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop := by
+  classical
+  let cold := canonicalColdWindows data object
+  let cubic := cold.filter (AmbientCubicWindow data object)
+  exact AbsorbedGermFanEnvelopeStatement data object ∧
+    ∃ (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
+        (bridgeless : ∀ contraction : Graph.EdgeContraction object,
+          contraction.HasReturn)
+        (large : 2 < object.vertexCount)
+        (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic})
+        (centre : object.Vertex),
+      AbsorbedGermFanEnvelopeWitness data object cubic baseline bridgeless large stub centre ∧
+        data.threshold + 1 < object.degree centre ∧
+        ((∃ left right : object.Vertex,
+            Graph.FanCompatible object centre left right) ∨
+          (object.degree centre - 2 ≤
+              (Graph.triangularEndpoints object centre).card ∧
+            3 ≤ (Graph.triangularEndpoints object centre).card))
+
+/-- Node `[79]` on the indexed `[177]` lane.  For every selected cold
+half-edge, the degree-`threshold + 1` decorated centre chosen by `[68]` carries
+`cor:degree-four-local-activation` and the exact registered-scale fan profile.
+No canonical remainder piece is inserted into this statement. -/
+noncomputable def AbsorbedGermFanDegreeFourProfileStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop := by
+  classical
+  let cold := canonicalColdWindows data object
+  let cubic := cold.filter (AmbientCubicWindow data object)
+  exact AbsorbedGermFanEnvelopeStatement data object ∧
+    ∀ (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
+        (bridgeless : ∀ contraction : Graph.EdgeContraction object,
+          contraction.HasReturn)
+        (large : 2 < object.vertexCount)
+        (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic}),
+      ∃ centre,
+        AbsorbedGermFanEnvelopeWitness data object cubic baseline bridgeless large stub centre ∧
+          object.degree centre = data.threshold + 1 ∧
+          ((∃ left right : object.Vertex,
+              Graph.FanCompatible object centre left right) ∨
+            data.threshold - 1 ≤
+              (Graph.triangularEndpoints object centre).card) ∧
+          object.degree centre - data.threshold = 1 ∧
+          ∀ fanEnvelope : Finset object.Vertex,
+            Graph.TypeBFanIncidence.closedCount object data.threshold
+                fanEnvelope centre ≤ data.threshold + 1 ∧
+              Graph.TypeBFanIncidence.scaledDeficit object data.threshold
+                  data.dischargeScale fanEnvelope centre =
+                (data.dischargeScale : Int) *
+                    (Graph.TypeBFanIncidence.closedCount object data.threshold
+                      fanEnvelope centre : Int) -
+                  (data.dischargeScale : Int) * (data.threshold : Int) +
+                  ((data.threshold : Int) + 2)
+
+/-- Node `[69]` on either paper-prescribed Type B carrier. -/
+def TypeBFanLocalDichotomyStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  TypeBFanSupportWith data object (fun _packing _piece centres =>
+      ∀ centre ∈ centres, data.threshold + 1 < object.degree centre →
+        (∃ left right : object.Vertex,
+          Graph.FanCompatible object centre left right) ∨
+        (object.degree centre - 2 ≤
+            (Graph.triangularEndpoints object centre).card ∧
+          3 ≤ (Graph.triangularEndpoints object centre).card)) ∨
+    AbsorbedGermFanLocalDichotomyStatement data object
+
+/-- Node `[79]` on either paper-prescribed Type B carrier. -/
+noncomputable def TypeBFanDegreeFourProfileStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  TypeBFanSupportWith data object (fun _packing _piece centres =>
+      ∀ centre ∈ centres,
+        object.degree centre = data.threshold + 1 ∧
+        ((∃ left right : object.Vertex,
+            Graph.FanCompatible object centre left right) ∨
+          data.threshold - 1 ≤ (Graph.triangularEndpoints object centre).card) ∧
+        object.degree centre - data.threshold = 1 ∧
+        ∀ fanEnvelope : Finset object.Vertex,
+          Graph.TypeBFanIncidence.closedCount object data.threshold
+              fanEnvelope centre ≤ data.threshold + 1 ∧
+            Graph.TypeBFanIncidence.scaledDeficit object data.threshold
+                data.dischargeScale fanEnvelope centre =
+              (data.dischargeScale : Int) *
+                  (Graph.TypeBFanIncidence.closedCount object data.threshold
+                    fanEnvelope centre : Int) -
+                (data.dischargeScale : Int) * (data.threshold : Int) +
+                ((data.threshold : Int) + 2)) ∨
+    AbsorbedGermFanDegreeFourProfileStatement data object
+
+/-- Node `[70]` on the indexed `[177]` lane.  The fan-certificate cap is
+pointwise and therefore applies directly to every actual decorated centre;
+the corridor/envelope indices are retained and no canonical support is
+manufactured. -/
+noncomputable def AbsorbedGermFanCertificateCapStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop := by
+  classical
+  let cold := canonicalColdWindows data object
+  let cubic := cold.filter (AmbientCubicWindow data object)
+  exact AbsorbedGermFanEnvelopeStatement data object ∧
+    ∀ (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
+        (bridgeless : ∀ contraction : Graph.EdgeContraction object,
+          contraction.HasReturn)
+        (large : 2 < object.vertexCount)
+        (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic})
+        (centre : object.Vertex),
+      AbsorbedGermFanEnvelopeWitness data object cubic baseline bridgeless large stub centre →
+        ∀ _marking : Graph.FanCertificateLabelling object data.windowOrder centre,
+          object.degree centre ≤ Graph.WindowCurvature.fanPackingCap data.windowOrder
+
+/-- Node `[70]` on either paper-prescribed Type B carrier. -/
+noncomputable def TypeBFanCertificateCapStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  TypeBFanSupportWith data object (fun _packing _piece centres =>
+      ∀ centre ∈ centres,
+        ∀ _marking : Graph.FanCertificateLabelling object data.windowOrder centre,
+          object.degree centre ≤
+            Graph.WindowCurvature.fanPackingCap data.windowOrder) ∨
+    AbsorbedGermFanCertificateCapStatement data object
 
 /-- The assigned centres of either manuscript form are high centres, and they
 include every high centre of the counted core (`def:typeB-assigned-ledger`):
@@ -3267,19 +3376,54 @@ def FreePairEntropySandwichStatement (data : Data.{u})
       Graph.spineDeficit object.vertexCount data.threshold family.card ≤
         data.surplusScale * object.vertexCount ∧
       2 ^ (family.card + (object.degreeSurplus data.threshold).choose 2) ≤
+        Graph.skeletonBudget object ∧
+      2 ^ (object.degreeSurplus data.threshold).choose 2 ≤
+        2 ^ Graph.spineDeficit object.vertexCount data.threshold family.card *
+          object.vertexCount ^
+            (object.edgeCount -
+              Graph.cubicBaselineEdgeCount object.vertexCount data.threshold)
+
+/-- The exact count-failure arm paired with node `[131]`'s sandwich.  It keeps
+the baseline family selected from the incoming `[129]` fact and records that
+this mixed family does not realize its full code. -/
+def FreePairCodeUnrealizedStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ (Coordinate : Type u) (family : Finset Coordinate)
+    (coordinateSupport : Coordinate → Finset object.Vertex),
+    (∀ declared : Graph.DeclaredQuotient
+        (Graph.MinimumDegreeAtLeast data.threshold)
+        (Graph.HasCycleWithLength data.LengthOK) object family
+        coordinateSupport,
+      declared.toRankQuotient.FunctionalOn ↑family →
+        declared.toRankQuotient.LabelInjectiveOn ↑family) ∧
+      Graph.cubicBaselineBudget object.vertexCount data.threshold ≤
+        2 ^ (family.card + Graph.spineDeficit object.vertexCount
+          data.threshold family.card) ∧
+      Graph.spineDeficit object.vertexCount data.threshold family.card ≤
+        data.surplusScale * object.vertexCount ∧
+      ¬ 2 ^ (family.card + (object.degreeSurplus data.threshold).choose 2) ≤
         Graph.skeletonBudget object
 
-/-- **Node `[137]`, `prop:sparse-entropy-sandwich-with-blockers`'s entropy count
-at every declared capacity presentation**: for each presentation of
-`def:capacity-token-ledger`, the mixed family of the node-`[129]` baseline spine
-demand and the pair coordinates of the ledger's free side `Π_free` realizes its
-full code among the labelled skeletons, `2^{|ℐ_spine| + |Π_free|} ≤ C(N,m)`.  This
-is what the manuscript's `E` in `lem:capacity-token-high-load`'s display
-`C(s,2) ≤ E + L_max |𝔗_cap|` is built from. -/
+/-- **Node `[137]`, `prop:sparse-entropy-sandwich-with-blockers` at the exact
+node-`[136]` presentation.**  The presentation and every accounting identity
+needed to recognize it are copied from the incoming `ExactLedger`; the entropy
+count therefore concerns the free side of that very `Θ_cap`, not an arbitrary
+or empty presentation. -/
 def BlockedPairEntropySandwichStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
-  ∀ presentation : Graph.CapacityPresentation.{u} object data.windowOrder,
-    ∃ (Coordinate : Type u) (family : Finset Coordinate)
+  ∃ (capacity : Graph.CapacityPresentation object data.threshold
+        data.windowOrder),
+    (object.primitiveCarrier data.threshold).card =
+        object.vertexCount + 2 * object.edgeCount +
+          object.degreeSurplus data.threshold ∧
+      (object.primitiveCarrier data.threshold).card ≤
+        object.primitiveCarrierSupply data.threshold ∧
+      Graph.FiniteObject.ConcreteCapacityTokenLedgerStatement object
+        data.threshold data.windowOrder capacity.activation capacity.carrier
+        capacity.packing ∧
+      (object.portPairSchedule data.threshold).card =
+        (object.degreeSurplus data.threshold).choose 2 ∧
+      ∃ (Coordinate : Type u) (family : Finset Coordinate)
       (coordinateSupport : Coordinate → Finset object.Vertex),
       (∀ declared : Graph.DeclaredQuotient
           (Graph.MinimumDegreeAtLeast data.threshold)
@@ -3293,12 +3437,47 @@ def BlockedPairEntropySandwichStatement (data : Data.{u})
         Graph.spineDeficit object.vertexCount data.threshold family.card ≤
           data.surplusScale * object.vertexCount ∧
         2 ^ (family.card +
-          (Graph.freeSide object.vertexPairDecidableEq
-            (object.portPairSchedule data.threshold)
-            (presentation.tokenOrder data.threshold)
-            (presentation.Eligible data.threshold)
-            (presentation.eligibleDecidable data.threshold)).card) ≤
+            (Graph.freeSide object.vertexPairDecidableEq
+              (object.portPairSchedule data.threshold)
+            capacity.tokenOrder capacity.Eligible
+            capacity.eligibleDecidable).card) ≤
           Graph.skeletonBudget object
+
+/-- The paired count-failure arm, retaining the same concrete node-`[136]`
+presentation and node-`[129]` baseline family. -/
+def BlockedPairCodeUnrealizedStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ (capacity : Graph.CapacityPresentation object data.threshold
+        data.windowOrder),
+    (object.primitiveCarrier data.threshold).card =
+        object.vertexCount + 2 * object.edgeCount +
+          object.degreeSurplus data.threshold ∧
+      (object.primitiveCarrier data.threshold).card ≤
+        object.primitiveCarrierSupply data.threshold ∧
+      Graph.FiniteObject.ConcreteCapacityTokenLedgerStatement object
+        data.threshold data.windowOrder capacity.activation capacity.carrier
+        capacity.packing ∧
+      (object.portPairSchedule data.threshold).card =
+        (object.degreeSurplus data.threshold).choose 2 ∧
+      ∃ (Coordinate : Type u) (family : Finset Coordinate)
+        (coordinateSupport : Coordinate → Finset object.Vertex),
+        (∀ declared : Graph.DeclaredQuotient
+            (Graph.MinimumDegreeAtLeast data.threshold)
+            (Graph.HasCycleWithLength data.LengthOK) object family
+            coordinateSupport,
+          declared.toRankQuotient.FunctionalOn ↑family →
+            declared.toRankQuotient.LabelInjectiveOn ↑family) ∧
+          Graph.cubicBaselineBudget object.vertexCount data.threshold ≤
+            2 ^ (family.card + Graph.spineDeficit object.vertexCount
+              data.threshold family.card) ∧
+          Graph.spineDeficit object.vertexCount data.threshold family.card ≤
+            data.surplusScale * object.vertexCount ∧
+          ¬ 2 ^ (family.card +
+            (Graph.freeSide object.vertexPairDecidableEq
+              (object.portPairSchedule data.threshold)
+              capacity.tokenOrder capacity.Eligible
+              capacity.eligibleDecidable).card) ≤
+            Graph.skeletonBudget object
 
 /-- **The canonical representative of a germ's corridor piece**
 (`def:cold-corridor-first-failure`: "the canonical representative determined by
@@ -4149,8 +4328,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       ColdFailureRoutingStatement data object
   | .coldExchangeBound, object =>
       ColdExchangeBoundStatement data object
-  | .coldWindowLedgerSplit, object =>
-      ColdWindowLedgerStatement data object
   | .coldRoute8Below, object =>
       ColdRoute8BelowStatement data object
   | .coldRoute8AtOrAbove, object =>
@@ -4627,35 +4804,14 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       TypeBFanDegreeFourCentresStatement data object
   | .typeBFanLocalDichotomy, object =>
       -- Node `[69]`, `cor:heavy-center-local-dichotomy`, on the common
-      -- assigned-centre support selected by `[68]`.
-      TypeBFanSupportWith data object (fun _packing _piece centres =>
-        ∀ centre ∈ centres, data.threshold + 1 < object.degree centre →
-          (∃ left right : object.Vertex,
-            Graph.FanCompatible object centre left right) ∨
-          (object.degree centre - 2 ≤
-              (Graph.triangularEndpoints object centre).card ∧
-            3 ≤ (Graph.triangularEndpoints object centre).card))
+      -- assigned-centre carrier selected by `[68]`: either the canonical
+      -- support or the indexed decorated handoff from `[177]`.
+      TypeBFanLocalDichotomyStatement data object
   | .typeBFanDegreeFourProfile, object =>
-      -- Nodes `[78]`--`[79]` on the common Type B support.  At every assigned
-      -- degree-four centre this is `cor:degree-four-local-activation` together
-      -- with the three displayed degree-four fan-profile identities.
-      TypeBFanSupportWith data object (fun _packing _piece centres =>
-        ∀ centre ∈ centres,
-          object.degree centre = data.threshold + 1 ∧
-          ((∃ left right : object.Vertex,
-              Graph.FanCompatible object centre left right) ∨
-            data.threshold - 1 ≤ (Graph.triangularEndpoints object centre).card) ∧
-          object.degree centre - data.threshold = 1 ∧
-          ∀ fanEnvelope : Finset object.Vertex,
-            Graph.TypeBFanIncidence.closedCount object data.threshold
-                fanEnvelope centre ≤ data.threshold + 1 ∧
-              Graph.TypeBFanIncidence.scaledDeficit object data.threshold
-                  data.dischargeScale fanEnvelope centre =
-                (data.dischargeScale : Int) *
-                    (Graph.TypeBFanIncidence.closedCount object data.threshold
-                      fanEnvelope centre : Int) -
-                  (data.dischargeScale : Int) * (data.threshold : Int) +
-                  ((data.threshold : Int) + 2))
+      -- Nodes `[78]`--`[79]` on either literal Type B carrier.  At every
+      -- relevant degree-four centre this is `cor:degree-four-local-activation`
+      -- together with the three displayed degree-four fan-profile identities.
+      TypeBFanDegreeFourProfileStatement data object
   | .typeAReceiverRouting, object =>
       -- Node `[88]`.  Stated at every Type A support the object carries, in
       -- the same way node `[27]` is stated at every subregion of a remainder:
@@ -5004,12 +5160,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- packing number at the registered window order, never a numeral: at the
       -- manuscript's order it evaluates to `8`.  It is conditional on the
       -- certificate labelling, exactly as in the manuscript.
-      TypeBFanSupportWith data object (fun _packing _piece centres =>
-        ∀ centre ∈ centres,
-          ∀ _marking :
-              Graph.FanCertificateLabelling object data.windowOrder centre,
-            object.degree centre ≤
-              Graph.WindowCurvature.fanPackingCap data.windowOrder)
+      TypeBFanCertificateCapStatement data object
   | .fanCertificateMarked, object =>
       -- Node `[71]`/`[80]`, yes arm, on the common Type B fan support: every
       -- assigned centre carries a fan-certificate labelling and the cap proved
@@ -6011,7 +6162,9 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
         let pairs := object.portPairSchedule data.threshold
         pairs = object.portPairSchedule data.threshold ∧
           pairs.card = (object.degreeSurplus data.threshold).choose 2 ∧
-          let recorded := Graph.recordSparsePairDEBlocker activation pairs certificate
+          let recorded := Graph.recordSparsePairDEBlockers
+            (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+            (LengthOK := data.LengthOK) activation pairs
           (recorded.blockedPairs data.threshold).card +
                 (recorded.unblockedPairs data.threshold).card = pairs.card ∧
             (recorded.canonicalIncidenceLedger data.threshold).card =
@@ -6033,51 +6186,52 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             (LengthOK := data.LengthOK) (Graph.pairResponseActivation active)
               (object.portPairSchedule data.threshold)
   | .dependentPairFamily, object =>
-      -- Node `[130]`, no: `ℛ_Π` does not survive the admissible quotient
-      -- system — some functional admissible rank quotient
-      -- (`def:admissible-rank-quotient`, `def:functional-rank-quotient`) is
-      -- rank-reducing on the pair family.
+      -- Node `[130]`, no: the circuit extraction starts with a functional
+      -- attempted determination which is rank-reducing on `ℛ_Π`.  It is
+      -- deliberately not upgraded to `DeclaredQuotient` here: node `[132]`
+      -- must still test the degree-profile and context-completeness clauses of
+      -- `def:admissible-rank-quotient`.
       ∃ active : Graph.ActiveSurplusDemands
           (Graph.MinimumDegreeAtLeast data.threshold)
           (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
           data.threshold,
         let activation := Graph.pairResponseActivation active
         let pairs := object.portPairSchedule data.threshold
-        ∃ declared :
+        ∃ attempt :
             let family := activation.pairFamily pairs
             let coordinateSupport : object.PairCoordinate →
                 Finset object.Vertex := by
               letI := object.vertices.decEq
               exact Graph.DeclaredSignature.Coordinate.support
-            Graph.DeclaredQuotient
+            Graph.AttemptedQuotient
               (Graph.MinimumDegreeAtLeast data.threshold)
               (Graph.HasCycleWithLength data.LengthOK) object family
               coordinateSupport,
             let family := activation.pairFamily pairs
-            declared.toRankQuotient.FunctionalOn ↑family ∧
-              ¬ Set.InjOn declared.label ↑family
+            attempt.toRankQuotient.FunctionalOn ↑family ∧
+              ¬ Set.InjOn attempt.label ↑family
   | .independentPairFamily, object =>
-      -- Node `[130]`, yes: `ℛ_Π` survives every functional admissible rank
-      -- quotient.
+      -- Node `[130]`, yes: no functional attempted determination reduces
+      -- `ℛ_Π`.  This is the literal complement of the no-arm above.
       ∃ active : Graph.ActiveSurplusDemands
           (Graph.MinimumDegreeAtLeast data.threshold)
           (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
           data.threshold,
         let activation := Graph.pairResponseActivation active
         let pairs := object.portPairSchedule data.threshold
-        ∀ declared :
+        ∀ attempt :
             let family := activation.pairFamily pairs
             let coordinateSupport : object.PairCoordinate →
                 Finset object.Vertex := by
               letI := object.vertices.decEq
               exact Graph.DeclaredSignature.Coordinate.support
-            Graph.DeclaredQuotient
+            Graph.AttemptedQuotient
               (Graph.MinimumDegreeAtLeast data.threshold)
               (Graph.HasCycleWithLength data.LengthOK) object family
               coordinateSupport,
           let family := activation.pairFamily pairs
-          declared.toRankQuotient.FunctionalOn ↑family →
-            Set.InjOn declared.label ↑family
+          attempt.toRankQuotient.FunctionalOn ↑family →
+            Set.InjOn attempt.label ↑family
   | .mixedSparseSpineDependence, object => by
       classical
       exact ∃ (active : Graph.ActiveSurplusDemands
@@ -6173,29 +6327,30 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                 object.ambientSurplus (object.windowSupport packing)
                   data.threshold
   | .capacityTokenLedger, object =>
-      ∃ (Coordinate Chord : Type u)
-        (activation : object.DemandActivation Coordinate Chord)
-        (presentation : object.CarrierPresentation Coordinate Chord)
-        (packing : Finset (Finset object.Vertex)),
-        object.IsWindowPacking data.windowOrder packing ∧
-          packing.card = object.windowPackingNumber data.windowOrder ∧
-          ((object.primitiveCarrier data.threshold).card =
-              object.vertexCount + 2 * object.edgeCount +
-                object.degreeSurplus data.threshold ∧
-            (object.primitiveCarrier data.threshold).card ≤
-              object.primitiveCarrierSupply data.threshold) ∧
+      -- The one concrete activation/carrier/packing presentation constructed
+      -- at `[136]`, together with every accounting identity proved there.
+      ∃ capacity : Graph.CapacityPresentation object data.threshold
+          data.windowOrder,
+        (object.primitiveCarrier data.threshold).card =
+            object.vertexCount + 2 * object.edgeCount +
+              object.degreeSurplus data.threshold ∧
+          (object.primitiveCarrier data.threshold).card ≤
+            object.primitiveCarrierSupply data.threshold ∧
           Graph.FiniteObject.ConcreteCapacityTokenLedgerStatement object
-            data.threshold data.windowOrder activation presentation packing
+            data.threshold data.windowOrder capacity.activation capacity.carrier
+            capacity.packing
   | .roleFibrePartition, object =>
       -- `lem:exact-surplus-pair-charge-partition` with the classwise and
       -- subtype budgets, at the object's own capacity-token ledger.
       Graph.RoleFibrePartitionStatement object data.threshold data.windowOrder
+        data.surplusScale
   | .fibrePressure, object =>
       -- `lem:capacity-token-high-load` with
       -- `cor:forced-homogeneous-same-token-scale` and the two sharp budgets,
       -- existential in the object's own capacity-token ledger at every declared
       -- presentation.
       Graph.FibrePressureStatement object data.threshold data.windowOrder
+        data.surplusScale
   | .spineSurplusEstimate, object =>
       -- The actual node-`[138]` conclusion, derived from the concrete
       -- node-`[129]` deficit and node-`[131]` entropy ledger.
@@ -6208,50 +6363,53 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- `prop:single-graph-sparse-pressure-routing` (b) with
       -- `cor:coupled-single-graph-overload-budget`.
       Graph.SparsePressureOverloadStatement object data.threshold data.windowOrder
+        data.routingLabelBound
   | .freePairEntropySandwich, object =>
       FreePairEntropySandwichStatement data object
   | .freePairCodeUnrealized, object =>
-      ¬ FreePairEntropySandwichStatement data object
+      FreePairCodeUnrealizedStatement data object
   | .blockedPairEntropySandwich, object =>
       BlockedPairEntropySandwichStatement data object
   | .blockedPairCodeUnrealized, object =>
-      ¬ BlockedPairEntropySandwichStatement data object
+      BlockedPairCodeUnrealizedStatement data object
   | .windowClassOverload, object =>
       -- Node `[139]`, yes: the overload occurs at a window-incidence token.
       Graph.SparsePressureOverloadInClass object data.threshold data.windowOrder
-        .windowIncidence
+        data.routingLabelBound .windowIncidence
   | .windowClassAbsent, object =>
       -- Node `[139]`, no.
       Graph.SparsePressureOverloadOutsideClass object data.threshold data.windowOrder
-        .windowIncidence
+        data.routingLabelBound .windowIncidence
   | .remainderClassOverload, object =>
       -- Node `[141]`, yes: the overload occurs at a remainder-surplus token.
       Graph.SparsePressureOverloadInClass object data.threshold data.windowOrder
-        .remainderSurplus
+        data.routingLabelBound .remainderSurplus
   | .remainderClassAbsent, object =>
       -- Node `[141]`, no: after the inherited non-window residual, the same
       -- selected overload token is necessarily primitive.
       Graph.SparsePressureOverloadInClass object data.threshold data.windowOrder
-        .primitiveCarrier
+        data.routingLabelBound .primitiveCarrier
   | .windowIncidenceAudit, object =>
-      -- Node `[140]`.
-      Graph.ClassAuditStatement object data.threshold data.windowOrder
+      -- Node `[140]`: the actual `L_geom` pattern forced by the selected
+      -- window-incidence overload witness.
+      Graph.HomogeneousBottleneckPatternStatement object data.threshold
+        data.windowOrder
         (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
-          (Graph.WindowCurvature.Label data.windowOrder)) .windowIncidence
+          (Graph.WindowCurvature.Label data.windowOrder))
   | .remainderSurplusAudit, object =>
-      -- Node `[142]`.
-      Graph.ClassAuditStatement object data.threshold data.windowOrder
+      -- Node `[142]`: the actual `L_geom` pattern forced by the selected
+      -- remainder-surplus overload witness.
+      Graph.HomogeneousBottleneckPatternStatement object data.threshold
+        data.windowOrder
         (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
-          (Graph.WindowCurvature.Label data.windowOrder)) .remainderSurplus
+          (Graph.WindowCurvature.Label data.windowOrder))
   | .primitiveCarrierAudit, object =>
-      -- Node `[143]`.
-      Graph.ClassAuditStatement object data.threshold data.windowOrder
+      -- Node `[143]`: the actual `L_geom` pattern forced by the selected
+      -- primitive-carrier overload witness.
+      Graph.HomogeneousBottleneckPatternStatement object data.threshold
+        data.windowOrder
         (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
-          (Graph.WindowCurvature.Label data.windowOrder)) .primitiveCarrier
-  | .primitiveClassOverload, object =>
-      -- Node `[143]`'s class verdict, derived from the two negative arms.
-      Graph.SparsePressureOverloadInClass object data.threshold data.windowOrder
-        .primitiveCarrier
+          (Graph.WindowCurvature.Label data.windowOrder))
   | .quantitativeOverload, object =>
       -- `cor:quantitative-homogeneous-overload`.
       Graph.QuantitativeOverloadStatement object data.threshold data.windowOrder
@@ -6421,7 +6579,6 @@ def label : Key → String
   | .coldFailureHandoff => "coldFailureHandoff"
   | .coldFailureRouting => "coldFailureRouting"
   | .coldExchangeBound => "coldExchangeBound"
-  | .coldWindowLedgerSplit => "coldWindowLedgerSplit"
   | .coldRoute8Below => "coldRoute8Below"
   | .coldRoute8AtOrAbove => "coldRoute8AtOrAbove"
   | .coldHotEntropyOverflow => "coldHotEntropyOverflow"
@@ -6539,7 +6696,6 @@ def label : Key → String
   | .windowIncidenceAudit => "windowIncidenceAudit"
   | .remainderSurplusAudit => "remainderSurplusAudit"
   | .primitiveCarrierAudit => "primitiveCarrierAudit"
-  | .primitiveClassOverload => "primitiveClassOverload"
   | .quantitativeOverload => "quantitativeOverload"
   | .homogeneousCapsHold => "homogeneousCapsHold"
   | .homogeneousBottleneckPattern => "homogeneousBottleneckPattern"
@@ -6659,7 +6815,6 @@ example : label .coldFailureCompression = "coldFailureCompression" := rfl
 example : label .coldFailureHandoff = "coldFailureHandoff" := rfl
 example : label .coldFailureRouting = "coldFailureRouting" := rfl
 example : label .coldExchangeBound = "coldExchangeBound" := rfl
-example : label .coldWindowLedgerSplit = "coldWindowLedgerSplit" := rfl
 example : label .coldMassLinear = "coldMassLinear" := rfl
 example : label .coldMassBounded = "coldMassBounded" := rfl
 example : label .bridgeless = "bridgeless" := rfl
@@ -6773,7 +6928,6 @@ example : label .remainderClassAbsent = "remainderClassAbsent" := rfl
 example : label .windowIncidenceAudit = "windowIncidenceAudit" := rfl
 example : label .remainderSurplusAudit = "remainderSurplusAudit" := rfl
 example : label .primitiveCarrierAudit = "primitiveCarrierAudit" := rfl
-example : label .primitiveClassOverload = "primitiveClassOverload" := rfl
 example : label .quantitativeOverload = "quantitativeOverload" := rfl
 example : label .homogeneousCapsHold = "homogeneousCapsHold" := rfl
 example : label .homogeneousBottleneckPattern = "homogeneousBottleneckPattern" := rfl
@@ -6916,7 +7070,6 @@ def idx : Key → Nat
   | .coldFailureHandoff => 67
   | .coldFailureRouting => 68
   | .coldExchangeBound => 177
-  | .coldWindowLedgerSplit => 178
   | .coldRoute8Below => 212
   | .coldRoute8AtOrAbove => 213
   | .coldHotEntropyOverflow => 214
@@ -7013,7 +7166,6 @@ def idx : Key → Nat
   | .windowIncidenceAudit => 134
   | .remainderSurplusAudit => 135
   | .primitiveCarrierAudit => 136
-  | .primitiveClassOverload => 139
   | .quantitativeOverload => 137
   | .homogeneousCapsHold => 140
   | .homogeneousBottleneckPattern => 141
@@ -7140,7 +7292,6 @@ def ofIdx : Nat → Key
   | 67 => .coldFailureHandoff
   | 68 => .coldFailureRouting
   | 177 => .coldExchangeBound
-  | 178 => .coldWindowLedgerSplit
   | 212 => .coldRoute8Below
   | 213 => .coldRoute8AtOrAbove
   | 214 => .coldHotEntropyOverflow
@@ -7230,7 +7381,6 @@ def ofIdx : Nat → Key
   | 134 => .windowIncidenceAudit
   | 135 => .remainderSurplusAudit
   | 136 => .primitiveCarrierAudit
-  | 139 => .primitiveClassOverload
   | 137 => .quantitativeOverload
   | 140 => .homogeneousCapsHold
   | 141 => .homogeneousBottleneckPattern
@@ -7504,9 +7654,6 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldFailureRouting") 68
   | .coldExchangeBound =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldExchangeBound") 177
-  | .coldWindowLedgerSplit =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine
-        "coldWindowLedgerSplit") 178
   | .coldRoute8Below =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldRoute8Below") 212
   | .coldRoute8AtOrAbove =>
@@ -7738,9 +7885,6 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "remainderSurplusAudit") 135
   | .primitiveCarrierAudit =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "primitiveCarrierAudit") 136
-  | .primitiveClassOverload =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine
-        "primitiveClassOverload") 139
   | .quantitativeOverload =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "quantitativeOverload") 137
   | .homogeneousCapsHold =>

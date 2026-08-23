@@ -69,7 +69,7 @@ node `[130]`'s pair count, `𝔗_cap ≠ ∅`, and the entropy budget
 `E + (m − m₀)(⌊log₂ n⌋+1)` of `prop:sparse-entropy-sandwich-with-blockers`. -/
 noncomputable def certifiedLedger_of_sandwich {object : FiniteObject.{u}}
     {threshold order deficitScale : Nat}
-    (data : CapacityPresentation object order)
+    (data : CapacityPresentation object threshold order)
     (baseline : 2 ≤ threshold)
     (above : cubicBaselineEdgeCount object.vertexCount threshold ≤ object.edgeCount)
     (spineCount deficit : Nat)
@@ -80,12 +80,11 @@ noncomputable def certifiedLedger_of_sandwich {object : FiniteObject.{u}}
       object.degreeSurplus threshold)
     (entropy : 2 ^ (spineCount +
       (freeSide object.vertexPairDecidableEq (object.portPairSchedule threshold)
-        (data.tokenOrder threshold) (data.Eligible threshold)
-        (data.eligibleDecidable threshold)).card) ≤ skeletonBudget object)
+        data.tokenOrder data.Eligible data.eligibleDecidable).card) ≤ skeletonBudget object)
     (scheduleCard : (object.portPairSchedule threshold).card =
       (object.degreeSurplus threshold).choose 2)
-    (orderNonempty : (data.tokens threshold).Nonempty)
-    (supply : (data.tokens threshold).card ≤
+    (orderNonempty : data.tokens.Nonempty)
+    (supply : data.tokens.card ≤
       object.capacityTokenSupply threshold + object.degreeSurplus threshold) :
     CertifiedObjectCapacityLedger object threshold order deficitScale data where
   ledger := ObjectCapacityLedger.ofCapacityCharge data scheduleCard orderNonempty
@@ -107,10 +106,10 @@ absorption, with `C_sp` derived from the routing alphabet, the baseline degree
 and the deficit scale exactly as the presentation registers it. -/
 theorem surplus_le_scale_of_capped {object : FiniteObject.{u}}
     {threshold order deficitScale : Nat}
-    (data : CapacityPresentation object order)
+    (data : CapacityPresentation object threshold order)
     (certified : CertifiedObjectCapacityLedger object threshold order deficitScale data)
     (routingLabelBound : Nat)
-    (capped : SparsePressureCapped object threshold order)
+    (capped : SparsePressureCappedAt certified routingLabelBound)
     (sizePos : 0 < object.vertexCount)
     (safety : TokenLoad.quadraticSafetyScale ≤
       2 * (1 + 2 * homogeneousTokenCap routingLabelBound) +
@@ -120,9 +119,8 @@ theorem surplus_le_scale_of_capped {object : FiniteObject.{u}}
       (2 * (1 + 2 * homogeneousTokenCap routingLabelBound) +
         (2 * deficitScale + 2 * homogeneousTokenCap routingLabelBound *
           (3 * (threshold - 1) + 2))) * Core.ceilSqrt object.vertexCount := by
-  have pressure := capped data certified.ledger routingLabelBound
   exact certified.degreeSurplus_le_mul_ceilSqrt sizePos
-    (homogeneousTokenCap routingLabelBound) safety pressure
+    (homogeneousTokenCap routingLabelBound) safety capped
 
 /-- **`[138]` at the full pair schedule** (`prop:sparse-entropy-sandwich`,
 `cor:spine-lower-bound-surplus-estimates`): if the free-pair code

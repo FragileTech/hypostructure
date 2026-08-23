@@ -154,6 +154,17 @@ structure ActiveSurplusDemands (Baseline Target : FiniteObject.{u} → Prop)
   survives : SurvivesSparseExits Baseline Target LengthOK object
   /-- `|𝒜₀| = σ(G)`. -/
   count : (object.excessPorts threshold).card = object.degreeSurplus threshold
+  /-- The canonical shoulder pair of every selected port.  At the manuscript's
+  cubic baseline this is the literal statement
+  `N(x(p)) \ {c(p)} = {a_p,b_p}` with `a_p ≠ b_p`; retaining it here is what
+  lets a suppressed-family blocker name its actual added shoulder chord. -/
+  shoulderPair : ∀ pair : object.Vertex × object.Vertex,
+    ∀ member : pair ∈ object.excessPorts threshold,
+      ∃ left right : object.Vertex,
+        (∀ vertex : object.Vertex,
+          vertex ∈ (object.surplusPortOfMem member).shoulders ↔
+            (vertex = left ∨ vertex = right)) ∧
+          left ≠ right
   /-- Every selected port carries **all** the canonical data of
   `lem:sparse-port-activation`: the return path `R_p` of clause (b), the
   suppression path `Q_p` of clause (c) at an open port, and the triangle of
@@ -195,6 +206,13 @@ theorem surviving_active_family
     (survives : SurvivesSparseExits Baseline Target LengthOK object)
     (count : (object.excessPorts threshold).card =
       object.degreeSurplus threshold)
+    (shoulderPair : ∀ pair : object.Vertex × object.Vertex,
+      ∀ member : pair ∈ object.excessPorts threshold,
+        ∃ left right : object.Vertex,
+          (∀ vertex : object.Vertex,
+            vertex ∈ (object.surplusPortOfMem member).shoulders ↔
+              (vertex = left ∨ vertex = right)) ∧
+            left ≠ right)
     (activated : ∀ pair : object.Vertex × object.Vertex,
       ∀ member : pair ∈ object.excessPorts threshold,
         ∀ left right : object.Vertex,
@@ -211,6 +229,9 @@ theorem surviving_active_family
               object.graph.Adj pair.2 left ∧ object.graph.Adj left right ∧
                 object.graph.Adj right pair.2)) :
     ActiveSurplusDemands Baseline Target LengthOK object threshold :=
-  { survives := survives, count := count, activated := activated }
+  { survives := survives
+    count := count
+    shoulderPair := shoulderPair
+    activated := activated }
 
 end Hypostructure.Graph
