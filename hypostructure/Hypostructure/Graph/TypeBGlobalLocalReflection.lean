@@ -38,8 +38,10 @@ theorem CandidateData.packedWindowIncidences_subset_localWindowBoundaryIncidence
     {object : FiniteObject.{u}} {threshold dischargeScale : ℕ}
     {packing : Finset (Finset object.Vertex)}
     {piece : CanonicalPiece object packing}
+    {assigned : Finset object.Vertex}
     {hub : object.Vertex} {data : CandidateData object}
-    (eligible : data ∈ candidateFamily object threshold dischargeScale piece hub) :
+    (eligible : data ∈ candidateFamily object threshold dischargeScale
+      packing piece.vertices assigned hub) :
     data.packedWindowIncidences threshold packing hub ⊆
       object.localWindowBoundaryIncidences packing piece.vertices := by
   intro incidence member
@@ -92,7 +94,9 @@ structure GlobalLocalReflectionACE
     (threshold dischargeScale : ℕ)
     {packing : Finset (Finset object.Vertex)}
     (piece : CanonicalPiece object packing)
-    (obstruction : OverlapObstruction object threshold dischargeScale piece) : Prop where
+    (assigned : Finset object.Vertex)
+    (obstruction : OverlapObstruction object threshold dischargeScale
+      packing piece.vertices assigned) : Prop where
   /-- Manuscript clause (a). -/
   contextualDyadicSafety : TypeAB.ContextuallyDyadicSafe presentation object
   /-- Manuscript clause (b), first assertion. -/
@@ -106,7 +110,8 @@ structure GlobalLocalReflectionACE
   /-- Manuscript clause (c), incidence-supply assertion. -/
   packedWindowCompatible :
     ∀ hub ∈ obstruction.demands, ∀ data,
-      data ∈ candidateFamily object threshold dischargeScale piece hub →
+      data ∈ candidateFamily object threshold dischargeScale
+          packing piece.vertices assigned hub →
         data.packedWindowIncidences threshold packing hub ⊆
           object.localWindowBoundaryIncidences packing piece.vertices
   /-- Manuscript clause (c), direct same-window and two-window exclusion. -/
@@ -117,7 +122,8 @@ structure GlobalLocalReflectionACE
   subfamily and therefore includes every proper connected sub-obstruction. -/
   minimalOverlap :
     ∀ sub : Finset object.Vertex, sub ⊂ obstruction.demands → sub.Nonempty →
-      HasDisjointChoice object threshold dischargeScale piece sub
+      HasDisjointChoice object threshold dischargeScale
+        packing piece.vertices assigned sub
 
 /-- Clauses (a)--(c) and (e) are inherited or derived on the literal overlap
 support.  Normal form supplies clause (b); candidate provenance and the
@@ -130,14 +136,16 @@ theorem globalLocalReflectionACE
     {threshold dischargeScale : ℕ}
     {packing : Finset (Finset object.Vertex)}
     {piece : CanonicalPiece object packing}
-    (obstruction : OverlapObstruction object threshold dischargeScale piece)
+    {assigned : Finset object.Vertex}
+    (obstruction : OverlapObstruction object threshold dischargeScale
+      packing piece.vertices assigned)
     (targetSafe : TypeAB.ContextuallyDyadicSafe presentation object)
     (normalForms : ∀ hub ∈ obstruction.demands,
       NormalForm object threshold hub)
     (cycleFree : ∀ hub ∈ obstruction.demands,
       TypeBDirectCycle.DirectCycleFree object order LengthOK packing hub) :
     GlobalLocalReflectionACE presentation object order LengthOK threshold
-      dischargeScale piece obstruction where
+      dischargeScale piece assigned obstruction where
   contextualDyadicSafety := targetSafe
   centresIndependent := by
     intro left leftMem right rightMem different adjacent

@@ -1090,10 +1090,42 @@ noncomputable def selectedStrictSurplusBranch
   let baseline := selectedBaselineSpineDemand activated
   match selectedPairResponseIndependenceDichotomy baseline with
   | .left independentHistory =>
+      -- `[131]` first commits the manuscript's named arithmetic and
+      -- dependence prefix to this literal residual.  In particular, the
+      -- entropy executor below reads `K .incrementalSkeletonRoom`; it does not
+      -- recompute that fact, and the other named facts remain in its ancestry.
+      let mixed :=
+        (mixedSparseSpineDependenceRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          independentHistory (by
+            simp [mixedSparseSpineDependenceRow, K_eq_iff])
+      let cubic :=
+        (exactCubicBaselineBudgetRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          mixed (by
+            simp [exactCubicBaselineBudgetRow,
+              mixedSparseSpineDependenceRow, K_eq_iff])
+      let room :=
+        (incrementalSkeletonRoomRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          cubic (by
+            simp [incrementalSkeletonRoomRow, exactCubicBaselineBudgetRow,
+              mixedSparseSpineDependenceRow, K_eq_iff])
+      let dominated :=
+        (skeletonDominatesRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          room (by
+            simp [skeletonDominatesRow, incrementalSkeletonRoomRow,
+              exactCubicBaselineBudgetRow, mixedSparseSpineDependenceRow,
+              K_eq_iff])
       -- `[131]`: decide the full-pair realization count on the literal
       -- baseline family read from the ledger.  The realized arm also records
       -- the exact cleared sandwich of `prop:sparse-entropy-sandwich`.
-      match freePairEntropyDichotomy (data := spineData) independentHistory
+      match freePairEntropyDichotomy (data := spineData) dominated
           (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
       | .left sandwichHistory =>
           -- `[131]` → `[137]` (no blocked pairs, `D_all = 0`) → `[138]`:

@@ -66,10 +66,10 @@ def CandidateData.witnessSupport {object : FiniteObject.{u}}
 /-- The support of every eligible candidate for one obstruction demand. -/
 def candidateFamilyWitnessSupport (object : FiniteObject.{u})
     (threshold dischargeScale : ℕ)
-    {packing : Finset (Finset object.Vertex)}
-    (piece : CanonicalPiece object packing) (hub : object.Vertex) :
+    (packing : Finset (Finset object.Vertex))
+    (piece assigned : Finset object.Vertex) (hub : object.Vertex) :
     Finset object.Vertex :=
-  (candidateFamily object threshold dischargeScale piece hub).toFinset.biUnion
+  (candidateFamily object threshold dischargeScale packing piece assigned hub).toFinset.biUnion
     fun data => data.witnessSupport threshold packing hub
 
 /-- The manuscript overlap support `Z(O)`: the obstruction demands together
@@ -77,12 +77,13 @@ with every carrier, decorated path, and touched packed-window support occurring
 in their finite candidate families. -/
 def OverlapObstruction.overlapSupport {object : FiniteObject.{u}}
     {threshold dischargeScale : ℕ}
-    {packing : Finset (Finset object.Vertex)}
-    {piece : CanonicalPiece object packing}
-    (obstruction : OverlapObstruction object threshold dischargeScale piece) :
+    {packing : Finset (Finset object.Vertex)} {piece assigned : Finset object.Vertex}
+    (obstruction : OverlapObstruction object threshold dischargeScale
+      packing piece assigned) :
     Finset object.Vertex :=
   obstruction.demands ∪ obstruction.demands.biUnion fun hub =>
-    candidateFamilyWitnessSupport object threshold dischargeScale piece hub
+    candidateFamilyWitnessSupport object threshold dischargeScale
+      packing piece assigned hub
 
 /-- The literal boundary of a finite support inside the ambient graph. -/
 def supportBoundary (object : FiniteObject.{u})
@@ -101,9 +102,9 @@ def supportDegree (object : FiniteObject.{u})
 actual ambient boundary, rather than a supplied interface. -/
 def OverlapObstruction.boundaryDegreeProfile {object : FiniteObject.{u}}
     {threshold dischargeScale : ℕ}
-    {packing : Finset (Finset object.Vertex)}
-    {piece : CanonicalPiece object packing}
-    (obstruction : OverlapObstruction object threshold dischargeScale piece) :
+    {packing : Finset (Finset object.Vertex)} {piece assigned : Finset object.Vertex}
+    (obstruction : OverlapObstruction object threshold dischargeScale
+      packing piece assigned) :
     {vertex // vertex ∈ supportBoundary object obstruction.overlapSupport} → ℕ :=
   fun vertex => supportDegree object obstruction.overlapSupport vertex.1
 
@@ -123,71 +124,81 @@ inductive RawOverlapCoordinate (object : FiniteObject.{u}) where
 /-- Exact semantic validity of one enumerated overlap-response coordinate. -/
 def RawOverlapCoordinate.IsFor {object : FiniteObject.{u}}
     {threshold dischargeScale : ℕ}
-    {packing : Finset (Finset object.Vertex)}
-    {piece : CanonicalPiece object packing}
-    (obstruction : OverlapObstruction object threshold dischargeScale piece) :
+    {packing : Finset (Finset object.Vertex)} {piece assigned : Finset object.Vertex}
+    (obstruction : OverlapObstruction object threshold dischargeScale
+      packing piece assigned) :
     RawOverlapCoordinate object → Prop
   | .missingCandidate hub =>
       hub ∈ obstruction.demands ∧
-        candidateFamily object threshold dischargeScale piece hub = []
+        candidateFamily object threshold dischargeScale packing piece assigned hub = []
   | .supportConflict left right leftEntry rightEntry atom =>
       left ∈ obstruction.demands ∧
         right ∈ obstruction.demands ∧
           left ≠ right ∧
-            leftEntry ∈ candidateFamily object threshold dischargeScale piece left ∧
-              rightEntry ∈ candidateFamily object threshold dischargeScale piece right ∧
+            leftEntry ∈ candidateFamily object threshold dischargeScale
+                packing piece assigned left ∧
+              rightEntry ∈ candidateFamily object threshold dischargeScale
+                packing piece assigned right ∧
                 atom ∈ leftEntry.supportAtoms threshold packing left ∧
                   atom ∈ rightEntry.supportAtoms threshold packing right
   | .reserveConflict left right leftEntry rightEntry unit =>
       left ∈ obstruction.demands ∧
         right ∈ obstruction.demands ∧
           left ≠ right ∧
-            leftEntry ∈ candidateFamily object threshold dischargeScale piece left ∧
-              rightEntry ∈ candidateFamily object threshold dischargeScale piece right ∧
-                unit ∈ leftEntry.consumedReserveUnits threshold piece left ∧
-                  unit ∈ rightEntry.consumedReserveUnits threshold piece right
+            leftEntry ∈ candidateFamily object threshold dischargeScale
+                packing piece assigned left ∧
+              rightEntry ∈ candidateFamily object threshold dischargeScale
+                packing piece assigned right ∧
+                unit ∈ leftEntry.consumedReserveUnits threshold packing piece left ∧
+                  unit ∈ rightEntry.consumedReserveUnits threshold packing piece right
 
 /-- All proof-free coordinates obtainable from the literal finite candidate
 families.  The semantic filter below removes equal-demand and nonempty-family
 `missingCandidate` records. -/
 def rawOverlapCoordinateSchedule (object : FiniteObject.{u})
     (threshold dischargeScale : ℕ)
-    {packing : Finset (Finset object.Vertex)}
-    (piece : CanonicalPiece object packing)
-    (obstruction : OverlapObstruction object threshold dischargeScale piece) :
+    (packing : Finset (Finset object.Vertex))
+    (piece assigned : Finset object.Vertex)
+    (obstruction : OverlapObstruction object threshold dischargeScale
+      packing piece assigned) :
     List (RawOverlapCoordinate object) :=
   obstruction.demands.toList.map RawOverlapCoordinate.missingCandidate ++
     obstruction.demands.toList.flatMap fun left =>
       obstruction.demands.toList.flatMap fun right =>
-        (candidateFamily object threshold dischargeScale piece left).flatMap fun leftEntry =>
-          (candidateFamily object threshold dischargeScale piece right).flatMap fun rightEntry =>
+        (candidateFamily object threshold dischargeScale
+            packing piece assigned left).flatMap fun leftEntry =>
+          (candidateFamily object threshold dischargeScale
+              packing piece assigned right).flatMap fun rightEntry =>
             ((leftEntry.supportAtoms threshold packing left ∩
                 rightEntry.supportAtoms threshold packing right).toList.map fun atom =>
               RawOverlapCoordinate.supportConflict
                 left right leftEntry rightEntry atom) ++
-            ((leftEntry.consumedReserveUnits threshold piece left ∩
-                rightEntry.consumedReserveUnits threshold piece right).toList.map fun unit =>
+            ((leftEntry.consumedReserveUnits threshold packing piece left ∩
+                rightEntry.consumedReserveUnits threshold packing piece right).toList.map fun unit =>
               RawOverlapCoordinate.reserveConflict
                 left right leftEntry rightEntry unit)
 
 /-- The finite schedule of exactly valid overlap-response coordinates. -/
 def overlapCoordinateSchedule (object : FiniteObject.{u})
     (threshold dischargeScale : ℕ)
-    {packing : Finset (Finset object.Vertex)}
-    (piece : CanonicalPiece object packing)
-  (obstruction : OverlapObstruction object threshold dischargeScale piece) :
+    (packing : Finset (Finset object.Vertex))
+    (piece assigned : Finset object.Vertex)
+    (obstruction : OverlapObstruction object threshold dischargeScale
+      packing piece assigned) :
     List (RawOverlapCoordinate object) :=
-  (rawOverlapCoordinateSchedule object threshold dischargeScale piece obstruction).filter
+  (rawOverlapCoordinateSchedule object threshold dischargeScale
+    packing piece assigned obstruction).filter
     fun coordinate => coordinate.IsFor obstruction
 
 theorem mem_rawOverlapCoordinateSchedule_of_isFor
     {object : FiniteObject.{u}} {threshold dischargeScale : ℕ}
-    {packing : Finset (Finset object.Vertex)}
-    {piece : CanonicalPiece object packing}
-    {obstruction : OverlapObstruction object threshold dischargeScale piece}
+    {packing : Finset (Finset object.Vertex)} {piece assigned : Finset object.Vertex}
+    {obstruction : OverlapObstruction object threshold dischargeScale
+      packing piece assigned}
     {coordinate : RawOverlapCoordinate object}
     (valid : coordinate.IsFor obstruction) :
-    coordinate ∈ rawOverlapCoordinateSchedule object threshold dischargeScale piece obstruction := by
+    coordinate ∈ rawOverlapCoordinateSchedule object threshold dischargeScale
+      packing piece assigned obstruction := by
   cases coordinate with
   | missingCandidate hub =>
       exact List.mem_append_left _ (by simpa [RawOverlapCoordinate.IsFor] using valid.1)
@@ -218,11 +229,12 @@ theorem mem_rawOverlapCoordinateSchedule_of_isFor
 coordinate predicate. -/
 theorem mem_overlapCoordinateSchedule_iff
     {object : FiniteObject.{u}} {threshold dischargeScale : ℕ}
-    {packing : Finset (Finset object.Vertex)}
-    {piece : CanonicalPiece object packing}
-    {obstruction : OverlapObstruction object threshold dischargeScale piece}
+    {packing : Finset (Finset object.Vertex)} {piece assigned : Finset object.Vertex}
+    {obstruction : OverlapObstruction object threshold dischargeScale
+      packing piece assigned}
     {coordinate : RawOverlapCoordinate object} :
-    coordinate ∈ overlapCoordinateSchedule object threshold dischargeScale piece obstruction ↔
+    coordinate ∈ overlapCoordinateSchedule object threshold dischargeScale
+      packing piece assigned obstruction ↔
       coordinate.IsFor obstruction := by
   constructor
   · intro member
@@ -236,18 +248,20 @@ either a genuinely empty candidate family, or a literal shared carrier in a
 full attempted selection. -/
 theorem OverlapObstruction.exists_overlapCoordinate
     {object : FiniteObject.{u}} {threshold dischargeScale : ℕ}
-    {packing : Finset (Finset object.Vertex)}
-    {piece : CanonicalPiece object packing}
-    (obstruction : OverlapObstruction object threshold dischargeScale piece) :
+    {packing : Finset (Finset object.Vertex)} {piece assigned : Finset object.Vertex}
+    (obstruction : OverlapObstruction object threshold dischargeScale
+      packing piece assigned) :
     ∃ coordinate : RawOverlapCoordinate object, coordinate.IsFor obstruction := by
   by_cases missing : ∃ hub ∈ obstruction.demands,
-      candidateFamily object threshold dischargeScale piece hub = []
+      candidateFamily object threshold dischargeScale packing piece assigned hub = []
   · rcases missing with ⟨hub, hubMem, empty⟩
     exact ⟨.missingCandidate hub, hubMem, empty⟩
   · have familyNonempty : ∀ hub, hub ∈ obstruction.demands →
-        ∃ entry, entry ∈ candidateFamily object threshold dischargeScale piece hub := by
+        ∃ entry, entry ∈ candidateFamily object threshold dischargeScale
+          packing piece assigned hub := by
       intro hub hubMem
-      have notEmpty : candidateFamily object threshold dischargeScale piece hub ≠ [] := by
+      have notEmpty : candidateFamily object threshold dischargeScale
+          packing piece assigned hub ≠ [] := by
         intro empty
         exact missing ⟨hub, hubMem, empty⟩
       exact List.exists_mem_of_ne_nil _ notEmpty
@@ -260,8 +274,8 @@ theorem OverlapObstruction.exists_overlapCoordinate
     · have notReserves : ¬ ∀ left (leftMem : left ∈ obstruction.demands)
           right (rightMem : right ∈ obstruction.demands), left ≠ right →
             Disjoint
-              ((entry left leftMem).consumedReserveUnits threshold piece left)
-              ((entry right rightMem).consumedReserveUnits threshold piece right) := by
+              ((entry left leftMem).consumedReserveUnits threshold packing piece left)
+              ((entry right rightMem).consumedReserveUnits threshold packing piece right) := by
           intro reserves
           exact obstruction.noDisjointChoice
             ⟨{ entry := entry
@@ -289,10 +303,11 @@ theorem OverlapObstruction.exists_overlapCoordinate
 
 theorem OverlapObstruction.overlapCoordinateSchedule_nonempty
     {object : FiniteObject.{u}} {threshold dischargeScale : ℕ}
-    {packing : Finset (Finset object.Vertex)}
-    {piece : CanonicalPiece object packing}
-    (obstruction : OverlapObstruction object threshold dischargeScale piece) :
-    overlapCoordinateSchedule object threshold dischargeScale piece obstruction ≠ [] := by
+    {packing : Finset (Finset object.Vertex)} {piece assigned : Finset object.Vertex}
+    (obstruction : OverlapObstruction object threshold dischargeScale
+      packing piece assigned) :
+    overlapCoordinateSchedule object threshold dischargeScale
+      packing piece assigned obstruction ≠ [] := by
   rcases obstruction.exists_overlapCoordinate with ⟨coordinate, valid⟩
   exact List.ne_nil_of_mem (mem_overlapCoordinateSchedule_iff.mpr valid)
 

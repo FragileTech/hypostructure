@@ -475,12 +475,7 @@ theorem capacityCharge_eq_none_of_blockers_eq_empty
     capacityCharge activation presentation threshold packing pair = none := by
   classical
   have blockerNone : canonicalBlocker activation pair = none := by
-    apply Option.not_isSome_iff_eq_none.mp
-    intro selected
-    obtain ⟨blocker, blockerEq⟩ := Option.isSome_iff_exists.mp selected
-    have member := canonicalBlocker_mem activation blockerEq
-    rw [empty] at member
-    simpa using member
+    simp [canonicalBlocker, empty]
   have supportEmpty : chargeSupport activation presentation pair = ∅ := by
     simp [chargeSupport, blockerNone]
   have windowNone : windowJoinChoice activation presentation packing pair = none := by

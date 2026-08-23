@@ -828,17 +828,21 @@ canonical-fibre no-overcount identities. -/
                     simpa [Graph.FiniteObject.DemandActivation.blockers] using
                       blockerMem
                   change chords ∈ (Graph.pairResponseActivation active).chordObstructions pair at chordMem
-                  change chords ∈
-                    (inputs.current.object.excessPorts data.threshold).powerset.filter
-                      (fun candidate =>
-                        Graph.SparsePairSuppressionChordObstruction active pair
-                          candidate) at chordMem
-                  have chordFacts := Finset.mem_filter.mp chordMem
+                  simp only [Graph.pairResponseActivation] at chordMem
+                  have chordFacts := List.mem_filter.mp chordMem
+                  have orderedFacts := List.mem_filter.mp chordFacts.1
+                  have powersetMember : chords ∈
+                      (inputs.current.object.excessPorts data.threshold).powerset :=
+                    of_decide_eq_true orderedFacts.2
                   have chordSubset :
                       chords ⊆ inputs.current.object.excessPorts data.threshold :=
-                    Finset.mem_powerset.mp chordFacts.1
+                    Finset.mem_powerset.mp powersetMember
+                  have obstruction :
+                      Graph.SparsePairSuppressionChordObstruction active pair
+                        chords :=
+                    of_decide_eq_true chordFacts.2
                   obtain ⟨_pairSubset, family, suppressionCertificate,
-                      _familyPorts, _chordEnds, usedChords⟩ := chordFacts.2
+                      _familyPorts, _chordEnds, usedChords⟩ := obstruction
                   have avoids : ¬ Graph.HasCycleWithLength data.LengthOK
                       inputs.current.object := by
                     intro cycle

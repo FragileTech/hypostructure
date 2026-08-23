@@ -138,14 +138,17 @@ structure DemandActivation (object : FiniteObject.{u}) (Coordinate Chord : Type 
   returnSupport : object.Vertex × object.Vertex → Finset object.Vertex
   /-- `{a_p, b_p, x(p)}`, the shoulder endpoints and cubic buffer of clause (c). -/
   localBuffer : object.Vertex × object.Vertex → Finset object.Vertex
-  /-- The boundary-degree-profile coordinates obstructing the pair, clause (d). -/
-  profileObstructions : Finset (object.Vertex × object.Vertex) → Finset Coordinate
-  /-- The target-response coordinates obstructing the pair, clause (e). -/
+  /-- The boundary-degree-profile coordinates obstructing the pair, clause (d),
+  in the lexicographic order of their declared labels and supports. -/
+  profileObstructions : Finset (object.Vertex × object.Vertex) → List Coordinate
+  /-- The target-response coordinates obstructing the pair, clause (e), in the
+  same declared-coordinate order. -/
   responseObstructions : Finset (object.Vertex × object.Vertex) →
-    Finset Coordinate
-  /-- The arithmetic chord-set obstructions of the pair, clause (f). -/
+    List Coordinate
+  /-- The arithmetic chord-set obstructions of the pair, clause (f), ordered
+  lexicographically by their increasing lists of shoulder chords. -/
   chordObstructions : Finset (object.Vertex × object.Vertex) →
-    Finset (Finset Chord)
+    List (Finset Chord)
 
 namespace DemandActivation
 
@@ -220,9 +223,12 @@ noncomputable def blockers (activation : DemandActivation object Coordinate Chor
           ((activation.localBuffer demands.1 ∩
               activation.localBuffer demands.2).image
             Blocker.sharedLocalBuffer))) ∪
-      ((activation.profileObstructions pair).image Blocker.boundaryProfile ∪
-        ((activation.responseObstructions pair).image Blocker.targetResponse ∪
-          (activation.chordObstructions pair).image Blocker.arithmeticChordSet))
+      ((activation.profileObstructions pair).toFinset.image
+          Blocker.boundaryProfile ∪
+        ((activation.responseObstructions pair).toFinset.image
+            Blocker.targetResponse ∪
+          (activation.chordObstructions pair).toFinset.image
+            Blocker.arithmeticChordSet))
 
 /-- An edge-incidence blocker of clause (a) or (b) carries a genuine
 edge-incidence of the object.  `def:primitive-sparse-blocker-carrier`'s
@@ -402,7 +408,7 @@ theorem blocks_boundaryProfile
   classical
   refine ⟨Blocker.boundaryProfile coordinate, ?_, rfl⟩
   exact Finset.mem_union_right _
-    (Finset.mem_union_left _ (Finset.mem_image_of_mem _ obstructs))
+    (Finset.mem_union_left _ (Finset.mem_image_of_mem _ (by simpa using obstructs)))
 
 /-- **Clause (e).**  A target-response coordinate obstructing the pair blocks
 it. -/
@@ -414,7 +420,8 @@ theorem blocks_targetResponse
   classical
   refine ⟨Blocker.targetResponse coordinate, ?_, rfl⟩
   refine Finset.mem_union_right _ (Finset.mem_union_right _ ?_)
-  exact Finset.mem_union_left _ (Finset.mem_image_of_mem _ obstructs)
+  exact Finset.mem_union_left _
+    (Finset.mem_image_of_mem _ (by simpa using obstructs))
 
 /-- **Clause (f).**  An arithmetic chord-set obstruction blocks the pair. -/
 theorem blocks_arithmeticChordSet
@@ -425,17 +432,34 @@ theorem blocks_arithmeticChordSet
   classical
   refine ⟨Blocker.arithmeticChordSet chords, ?_, rfl⟩
   refine Finset.mem_union_right _ (Finset.mem_union_right _ ?_)
-  exact Finset.mem_union_right _ (Finset.mem_image_of_mem _ obstructs)
+  exact Finset.mem_union_right _
+    (Finset.mem_image_of_mem _ (by simpa using obstructs))
 
 /-! ## The canonical blocker, `Π_blk`, and `Π_free` -/
 
 end DemandActivation
 
-noncomputable def canonicalBlocker
+/-- `Φ_can(π)`: the first applicable blocker in the manuscript's literal total
+order.  In particular, this does not depend on `Finset.toList`'s quotient
+representative. -/
+@[irreducible] noncomputable def canonicalBlocker
     (activation : DemandActivation object Coordinate Chord)
     (pair : Finset (object.Vertex × object.Vertex)) :
-    Option (Blocker object Coordinate Chord) :=
-  (activation.blockers pair).toList.head?
+    Option (Blocker object Coordinate Chord) := by
+  classical
+  let orderedCarrierItems : List (CarrierItem object) :=
+    object.orderedVertices.map CarrierItem.vertex ++
+      object.orderedDarts.map fun dart =>
+        CarrierItem.incidence (dart.fst, dart.snd)
+  let candidates : List (Blocker object Coordinate Chord) :=
+    orderedCarrierItems.map Blocker.sharedDeclaredSupport ++
+      orderedCarrierItems.map Blocker.sharedReturnSupport ++
+      object.orderedVertices.map Blocker.sharedLocalBuffer ++
+      (activation.profileObstructions pair).map Blocker.boundaryProfile ++
+      (activation.responseObstructions pair).map Blocker.targetResponse ++
+      (activation.chordObstructions pair).map Blocker.arithmeticChordSet
+  exact (candidates.filter fun blocker =>
+    blocker ∈ activation.blockers pair).head?
 
 theorem canonicalBlocker_mem
     (activation : DemandActivation object Coordinate Chord)
@@ -443,18 +467,78 @@ theorem canonicalBlocker_mem
     {blocker : Blocker object Coordinate Chord}
     (selected : canonicalBlocker activation pair = some blocker) :
     blocker ∈ activation.blockers pair := by
-  simpa using List.mem_of_mem_head? selected
+  classical
+  rw [canonicalBlocker] at selected
+  simpa using (List.mem_filter.1 (List.mem_of_mem_head? selected)).2
 
 theorem isSome_canonicalBlocker
     (activation : DemandActivation object Coordinate Chord)
     {pair : Finset (object.Vertex × object.Vertex)}
     (blocked : (activation.blockers pair).Nonempty) :
     (canonicalBlocker activation pair).isSome := by
+  classical
   obtain ⟨blocker, member⟩ := blocked
-  have inside : blocker ∈ (activation.blockers pair).toList :=
-    Finset.mem_toList.2 member
   rw [canonicalBlocker]
-  cases enumeration : (activation.blockers pair).toList with
+  let orderedCarrierItems : List (CarrierItem object) :=
+    object.orderedVertices.map CarrierItem.vertex ++
+      object.orderedDarts.map fun dart =>
+        CarrierItem.incidence (dart.fst, dart.snd)
+  let candidates : List (Blocker object Coordinate Chord) :=
+    orderedCarrierItems.map Blocker.sharedDeclaredSupport ++
+      orderedCarrierItems.map Blocker.sharedReturnSupport ++
+      object.orderedVertices.map Blocker.sharedLocalBuffer ++
+      (activation.profileObstructions pair).map Blocker.boundaryProfile ++
+      (activation.responseObstructions pair).map Blocker.targetResponse ++
+      (activation.chordObstructions pair).map Blocker.arithmeticChordSet
+  have insideCandidates : blocker ∈ candidates := by
+    cases blocker with
+    | sharedDeclaredSupport item =>
+        have itemMember : item ∈ orderedCarrierItems := by
+          cases item with
+          | vertex vertex =>
+              exact List.mem_append_left _
+                (List.mem_map.2 ⟨vertex, object.mem_orderedVertices vertex, rfl⟩)
+          | incidence incidence =>
+              let dart : object.graph.Dart :=
+                ⟨incidence, (object.mem_incidences_iff incidence).1
+                  (DemandActivation.incidence_mem_incidences_of_mem_blockers
+                    activation (Or.inl member))⟩
+              exact List.mem_append_right _
+                (List.mem_map.2 ⟨dart, object.mem_orderedDarts dart, rfl⟩)
+        simp [candidates, itemMember]
+    | sharedReturnSupport item =>
+        have itemMember : item ∈ orderedCarrierItems := by
+          cases item with
+          | vertex vertex =>
+              exact List.mem_append_left _
+                (List.mem_map.2 ⟨vertex, object.mem_orderedVertices vertex, rfl⟩)
+          | incidence incidence =>
+              let dart : object.graph.Dart :=
+                ⟨incidence, (object.mem_incidences_iff incidence).1
+                  (DemandActivation.incidence_mem_incidences_of_mem_blockers
+                    activation (Or.inr member))⟩
+              exact List.mem_append_right _
+                (List.mem_map.2 ⟨dart, object.mem_orderedDarts dart, rfl⟩)
+        simp [candidates, itemMember]
+    | sharedLocalBuffer vertex =>
+        simp [candidates]
+    | boundaryProfile coordinate =>
+        have obstructs : coordinate ∈ activation.profileObstructions pair := by
+          simpa [DemandActivation.blockers] using member
+        simp [candidates, obstructs]
+    | targetResponse coordinate =>
+        have obstructs : coordinate ∈ activation.responseObstructions pair := by
+          simpa [DemandActivation.blockers] using member
+        simp [candidates, obstructs]
+    | arithmeticChordSet chords =>
+        have obstructs : chords ∈ activation.chordObstructions pair := by
+          simpa [DemandActivation.blockers] using member
+        simp [candidates, obstructs]
+  have inside : blocker ∈ candidates.filter fun candidate =>
+      candidate ∈ activation.blockers pair :=
+    List.mem_filter.2 ⟨insideCandidates, by simpa using member⟩
+  cases enumeration : candidates.filter (fun candidate =>
+      candidate ∈ activation.blockers pair) with
   | nil => rw [enumeration] at inside; cases inside
   | cons head tail => simp
 

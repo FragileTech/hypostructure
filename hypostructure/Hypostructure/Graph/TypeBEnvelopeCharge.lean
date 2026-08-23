@@ -209,75 +209,75 @@ entries and the remaining core both have nonnegative scaled charge. -/
 theorem nonNegativeNetCharge_of_disjointLedger_remainingCore_nonneg_of_selectedEntryPayment₂_nonnegative
     {threshold dischargeScale : Nat}
     {packing : Finset (Finset object.Vertex)}
-    {piece : TypeBRefinedSupport.CanonicalPiece object packing}
+    {piece : Finset object.Vertex}
     {demands : Finset object.Vertex}
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece demands)
+      packing piece demands)
     (exact : ledger.ExactAugmentedLedgerRefinement)
     (selectedNonnegative : 0 ≤ ledger.selectedEntryPayment₂)
     (remainingNonnegative :
       0 ≤ ∑ vertex ∈ ledger.remainingCore,
-        scaledCoreCharge object threshold dischargeScale piece.vertices vertex) :
-    object.NonNegativeNetCharge piece.vertices threshold dischargeScale := by
+        scaledCoreCharge object threshold dischargeScale piece vertex) :
+    object.NonNegativeNetCharge piece threshold dischargeScale := by
   classical
   -- The assigned centres inside the core contribute at least `−1` each as
   -- core vertices, which their `¼` (here the count of all assigned centres)
   -- absorbs.
   have centreCoreNonnegative :
-      0 ≤ (∑ centre ∈ demands ∩ piece.vertices,
-        scaledCoreCharge object threshold dischargeScale piece.vertices centre) +
+      0 ≤ (∑ centre ∈ demands ∩ piece,
+        scaledCoreCharge object threshold dischargeScale piece centre) +
           (demands.card : Int) := by
-    have pointwise : ∀ centre ∈ demands ∩ piece.vertices,
-        (-1 : Int) ≤ scaledCoreCharge object threshold dischargeScale piece.vertices centre := by
+    have pointwise : ∀ centre ∈ demands ∩ piece,
+        (-1 : Int) ≤ scaledCoreCharge object threshold dischargeScale piece centre := by
       intro centre _member
       rw [scaledCoreCharge]
       have nonneg :
           (0 : Int) ≤
             ((dischargeScale *
-              (threshold - object.internalDegree piece.vertices centre) : Nat) :
+              (threshold - object.internalDegree piece centre) : Nat) :
               Int) := Int.natCast_nonneg _
       linarith
     have sumBound := Finset.sum_le_sum pointwise
     rw [Finset.sum_const, nsmul_eq_mul, mul_neg, mul_one] at sumBound
-    have cardLe : ((demands ∩ piece.vertices).card : Int) ≤ (demands.card : Int) := by
+    have cardLe : ((demands ∩ piece).card : Int) ≤ (demands.card : Int) := by
       exact_mod_cast Finset.card_le_card Finset.inter_subset_left
     linarith
   have doubled :
       0 ≤ 2 *
         (TypeBRefinedSupport.augmentedLedgerWith object threshold dischargeScale
-            piece.vertices demands + (demands.card : Int)) := by
+            piece demands + (demands.card : Int)) := by
     rw [exact.partition]
     nlinarith
   have assignedNonnegative :
       0 ≤ TypeBRefinedSupport.augmentedLedgerWith object threshold dischargeScale
-          piece.vertices demands + (demands.card : Int) := by
+          piece demands + (demands.card : Int) := by
     nlinarith
   -- `def:typeB-assigned-ledger`: with the core's own high centres among the
   -- assigned ones, the own-centre ledger dominates.
   have ledgerNonnegative :
-      0 ≤ augmentedLedger object threshold dischargeScale piece.vertices +
-        ((TypeBRefinedSupport.centres object threshold piece.vertices).card :
+      0 ≤ augmentedLedger object threshold dischargeScale piece +
+        ((TypeBRefinedSupport.centres object threshold piece).card :
           Int) :=
     le_trans assignedNonnegative
       (TypeBRefinedSupport.augmentedLedgerWith_add_card_le object threshold
-        dischargeScale piece.vertices demands ledger.centres_subset)
+        dischargeScale piece demands ledger.centres_subset)
   exact nonNegativeNetCharge_of_augmentedLedger_add_centres_nonneg object
-    threshold dischargeScale piece.vertices ledgerNonnegative
+    threshold dischargeScale piece ledgerNonnegative
 
 /-- The exact B2 refinement gives the exclusion charge once the remaining core
 has nonnegative scaled charge. -/
 theorem nonNegativeNetCharge_of_disjointLedger_remainingCore_nonneg
     {threshold dischargeScale : Nat}
     {packing : Finset (Finset object.Vertex)}
-    {piece : TypeBRefinedSupport.CanonicalPiece object packing}
+    {piece : Finset object.Vertex}
     {demands : Finset object.Vertex}
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece demands)
+      packing piece demands)
     (exact : ledger.ExactAugmentedLedgerRefinement)
     (remainingNonnegative :
       0 ≤ ∑ vertex ∈ ledger.remainingCore,
-        scaledCoreCharge object threshold dischargeScale piece.vertices vertex) :
-    object.NonNegativeNetCharge piece.vertices threshold dischargeScale :=
+        scaledCoreCharge object threshold dischargeScale piece vertex) :
+    object.NonNegativeNetCharge piece threshold dischargeScale :=
   nonNegativeNetCharge_of_disjointLedger_remainingCore_nonneg_of_selectedEntryPayment₂_nonnegative
     ledger exact exact.selectedNonnegative remainingNonnegative
 
@@ -298,11 +298,11 @@ augmented-ledger refinement; it is not a constructor field. -/
 theorem candidate_refines_of_mem
     {threshold dischargeScale : Nat}
     {packing : Finset (Finset object.Vertex)}
-    {piece : TypeBRefinedSupport.CanonicalPiece object packing}
+    {piece assigned : Finset object.Vertex}
     {hub : object.Vertex}
     {data : TypeBRefinedSupport.CandidateData object}
     (member : data ∈ TypeBRefinedSupport.candidateFamily object threshold
-      dischargeScale piece hub) :
+      dischargeScale packing piece assigned hub) :
     data.EntryRefines threshold dischargeScale piece hub :=
   (TypeBRefinedSupport.mem_candidateFamily_iff.mp member).2.entryRefines
 
@@ -312,10 +312,10 @@ supports and indexed reserve units are pairwise disjoint. -/
 theorem disjointLedger_exactAugmentedLedgerRefinement
     {threshold dischargeScale : Nat}
     {packing : Finset (Finset object.Vertex)}
-    {piece : TypeBRefinedSupport.CanonicalPiece object packing}
+    {piece : Finset object.Vertex}
     {demands : Finset object.Vertex}
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece demands) :
+      packing piece demands) :
     ledger.ExactAugmentedLedgerRefinement :=
   ledger.exactAugmentedLedgerRefinement
 
@@ -324,10 +324,10 @@ its support's augmented ledger. -/
 theorem disjointLedger_entry_refines
     {threshold dischargeScale : Nat}
     {packing : Finset (Finset object.Vertex)}
-    {piece : TypeBRefinedSupport.CanonicalPiece object packing}
+    {piece : Finset object.Vertex}
     {demands : Finset object.Vertex}
     (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
-      piece demands) (hub : object.Vertex)
+      packing piece demands) (hub : object.Vertex)
     (member : hub ∈ demands) :
     (ledger.choice.entry hub member).EntryRefines threshold dischargeScale
       piece hub :=

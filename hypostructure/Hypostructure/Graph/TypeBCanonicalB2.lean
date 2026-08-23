@@ -191,7 +191,7 @@ namespace CandidateData
 
 variable {threshold dischargeScale : Nat}
 variable {packing : Finset (Finset object.Vertex)}
-variable {piece : CanonicalPiece object packing} {hub : object.Vertex}
+variable {piece assigned : Finset object.Vertex} {hub : object.Vertex}
 
 def profile (data : CandidateData object) : TypeBFanClosedPorts.Profile object :=
   match data with
@@ -231,12 +231,13 @@ noncomputable def selectedIncidences (data : CandidateData object)
 
 noncomputable def localReserveVertexUniverse
     (profile : TypeBFanClosedPorts.Profile object)
-    (threshold : Nat) {packing : Finset (Finset object.Vertex)}
-    (piece : CanonicalPiece object packing) (hub : object.Vertex) :
+    (threshold : Nat) (packing : Finset (Finset object.Vertex))
+    (piece assigned : Finset object.Vertex)
+    (hub : object.Vertex) :
     Finset object.Vertex :=
   (((nonWindowIncidenceSet object threshold profile.envelope
-      (object.windowSupport packing) hub).image Prod.snd) ∩ piece.vertices) \
-    (centres object threshold piece.vertices ∪
+      (object.windowSupport packing) hub).image Prod.snd) ∩ piece) \
+    (assigned ∪
       closedNeighbours object threshold profile.envelope hub)
 
 /-- Vertex atoms at both endpoints of every selected incidence. -/
@@ -255,19 +256,19 @@ noncomputable def supportAtoms (data : CandidateData object)
 /-- The ordinary-reserve units literally met by this candidate carrier.  No
 unit is authored or assigned: this is the intersection induced by support. -/
 noncomputable def consumedReserveUnits (data : CandidateData object)
-    (threshold : Nat) {packing : Finset (Finset object.Vertex)}
-    (piece : CanonicalPiece object packing) (hub : object.Vertex) :
+    (threshold : Nat) (packing : Finset (Finset object.Vertex))
+    (piece : Finset object.Vertex) (hub : object.Vertex) :
     Finset (OrdinaryDeficiencyReserve.Carrier object) := by
   classical
-  exact (object.ordinaryDeficiencyReserve threshold packing piece.vertices).filter
+  exact (object.ordinaryDeficiencyReserve threshold packing piece).filter
     fun unit => ¬ Disjoint (reserveUnitSupport unit)
       (data.supportAtoms threshold packing hub)
 
 theorem consumedReserveUnits_subset (data : CandidateData object)
-    (threshold : Nat) {packing : Finset (Finset object.Vertex)}
-    (piece : CanonicalPiece object packing) (hub : object.Vertex) :
-    data.consumedReserveUnits threshold piece hub ⊆
-      object.ordinaryDeficiencyReserve threshold packing piece.vertices := by
+    (threshold : Nat) (packing : Finset (Finset object.Vertex))
+    (piece : Finset object.Vertex) (hub : object.Vertex) :
+    data.consumedReserveUnits threshold packing piece hub ⊆
+      object.ordinaryDeficiencyReserve threshold packing piece := by
   classical
   exact Finset.filter_subset _ _
 
@@ -275,16 +276,15 @@ theorem consumedReserveUnits_subset (data : CandidateData object)
 noncomputable def localReserveCapacity₂
     (block : LocalReserveBlock object)
     (threshold dischargeScale : Nat)
-    {packing : Finset (Finset object.Vertex)}
-    (piece : CanonicalPiece object packing) : Int :=
+    (piece : Finset object.Vertex) : Int :=
   2 * ∑ vertex ∈ block.vertices,
-    scaledCoreCharge object threshold dischargeScale piece.vertices vertex
+    scaledCoreCharge object threshold dischargeScale piece vertex
 
 /-- The literal B1 half-incidence payment made by the chosen non-window
 carriers.  This is independent of the local reserve block's core charge. -/
 def PaysHybridB1 (data : CandidateData object)
     (threshold dischargeScale : Nat)
-    {packing : Finset (Finset object.Vertex)} (hub : object.Vertex) : Prop :=
+    (packing : Finset (Finset object.Vertex)) (hub : object.Vertex) : Prop :=
   match data with
   | .certificate _ _ => True
   | .positive profile _ chosen =>
@@ -297,16 +297,14 @@ are provenance for the refinement; no incidence capacity is added to the core
 charge a second time. -/
 noncomputable def entryPayment₂ (data : CandidateData object)
     (threshold dischargeScale : Nat)
-    {packing : Finset (Finset object.Vertex)}
-    (piece : CanonicalPiece object packing) (hub : object.Vertex) : Int :=
+    (piece : Finset object.Vertex) (hub : object.Vertex) : Int :=
   2 * (scaledCentreCharge object threshold dischargeScale hub +
     ∑ vertex ∈ data.chargedVertices threshold hub,
-      scaledCoreCharge object threshold dischargeScale piece.vertices vertex)
+      scaledCoreCharge object threshold dischargeScale piece vertex)
 
 def EntryRefines (data : CandidateData object)
     (threshold dischargeScale : Nat)
-    {packing : Finset (Finset object.Vertex)}
-    (piece : CanonicalPiece object packing) (hub : object.Vertex) : Prop :=
+    (piece : Finset object.Vertex) (hub : object.Vertex) : Prop :=
   0 ≤ data.entryPayment₂ threshold dischargeScale piece hub
 
 /-- Eligibility is a finite test of the two manuscript candidate variants.
@@ -314,16 +312,16 @@ The positive case scans actual `Y_X` vertex blocks and tests their charge; no
 local block is postulated. -/
 def IsCandidate (data : CandidateData object)
     (threshold dischargeScale : Nat)
-    {packing : Finset (Finset object.Vertex)}
-    (piece : CanonicalPiece object packing) (hub : object.Vertex) : Prop :=
+    (packing : Finset (Finset object.Vertex))
+    (piece assigned : Finset object.Vertex) (hub : object.Vertex) : Prop :=
   data.profile ∈ profileCandidatesWith object (object.windowSupport packing) ∧
   data.profile.marked.fan.hub = hub ∧
-  hub ∈ centres object threshold piece.vertices ∧
-  data.chargedVertices threshold hub ⊆ piece.vertices ∧
+  hub ∈ assigned ∧
+  data.chargedVertices threshold hub ⊆ piece ∧
   Disjoint (data.chargedVertices threshold hub)
-    (centres object threshold piece.vertices) ∧
+    assigned ∧
   data.EntryRefines threshold dischargeScale piece hub ∧
-  data.PaysHybridB1 threshold dischargeScale (packing := packing) hub ∧
+  data.PaysHybridB1 threshold dischargeScale packing hub ∧
   match data with
   | .certificate profile assigned =>
       IsCertificateClosed object threshold dischargeScale profile.envelope hub ∧
@@ -331,32 +329,32 @@ def IsCandidate (data : CandidateData object)
   | .positive profile localReserve chosenNonWindow =>
       0 < scaledDeficit object threshold dischargeScale profile.envelope hub ∧
         localReserve.vertices ⊆
-          localReserveVertexUniverse profile threshold piece hub ∧
+          localReserveVertexUniverse profile threshold packing piece assigned hub ∧
         chosenNonWindow ⊆
           nonWindowIncidenceSet object threshold profile.envelope
             (object.windowSupport packing) hub
 
 theorem IsCandidate.chargedVertices_subset
     {data : CandidateData object}
-    (eligible : data.IsCandidate threshold dischargeScale piece hub) :
-    data.chargedVertices threshold hub ⊆ piece.vertices :=
+    (eligible : data.IsCandidate threshold dischargeScale packing piece assigned hub) :
+    data.chargedVertices threshold hub ⊆ piece :=
   eligible.2.2.2.1
 
 theorem IsCandidate.chargedVertices_disjoint_centres
     {data : CandidateData object}
-    (eligible : data.IsCandidate threshold dischargeScale piece hub) :
+    (eligible : data.IsCandidate threshold dischargeScale packing piece assigned hub) :
     Disjoint (data.chargedVertices threshold hub)
-      (centres object threshold piece.vertices) :=
+      assigned :=
   eligible.2.2.2.2.1
 
 theorem IsCandidate.entryRefines {data : CandidateData object}
-    (eligible : data.IsCandidate threshold dischargeScale piece hub) :
+    (eligible : data.IsCandidate threshold dischargeScale packing piece assigned hub) :
     data.EntryRefines threshold dischargeScale piece hub :=
   eligible.2.2.2.2.2.1
 
 theorem IsCandidate.paysHybridB1 {data : CandidateData object}
-    (eligible : data.IsCandidate threshold dischargeScale piece hub) :
-    data.PaysHybridB1 threshold dischargeScale (packing := packing) hub :=
+    (eligible : data.IsCandidate threshold dischargeScale packing piece assigned hub) :
+    data.PaysHybridB1 threshold dischargeScale packing hub :=
   eligible.2.2.2.2.2.2.1
 
 /-- Paying the exact remaining non-window demand implies the complete B1
@@ -366,7 +364,7 @@ theorem paysHybridB1_total
     (localReserve : LocalReserveBlock object)
     (chosenNonWindow : Finset (object.Vertex × object.Vertex))
     (pays : (CandidateData.positive profile localReserve chosenNonWindow).PaysHybridB1
-      threshold dischargeScale (packing := packing) hub) :
+      threshold dischargeScale packing hub) :
     2 * scaledDeficit object threshold dischargeScale profile.envelope hub ≤
       (dischargeScale : Int) *
         ((TypeBHybridIncidence.windowIncidences object threshold
@@ -392,7 +390,7 @@ theorem positiveCandidate_localB1
     (localReserve : LocalReserveBlock object)
     (chosenNonWindow : Finset (object.Vertex × object.Vertex))
     (eligible : (CandidateData.positive profile localReserve chosenNonWindow).IsCandidate
-      threshold dischargeScale piece hub) :
+      threshold dischargeScale packing piece assigned hub) :
     0 ≤ (CandidateData.positive profile localReserve chosenNonWindow).entryPayment₂
         threshold dischargeScale piece hub ∧
       2 * scaledDeficit object threshold dischargeScale profile.envelope hub ≤
@@ -422,7 +420,7 @@ theorem positive_entryPayment₂_eq
         threshold dischargeScale piece hub =
       2 * (scaledCentreCharge object threshold dischargeScale hub +
         ∑ vertex ∈ closedNeighbours object threshold profile.envelope hub,
-          scaledCoreCharge object threshold dischargeScale piece.vertices vertex) +
+          scaledCoreCharge object threshold dischargeScale piece vertex) +
         localReserveCapacity₂ localReserve threshold dischargeScale piece := by
   rw [entryPayment₂, chargedVertices,
     Finset.sum_union disjoint]
@@ -432,8 +430,8 @@ theorem positive_entryPayment₂_eq
 noncomputable def isCandidateDecidable (data : CandidateData object)
     (threshold dischargeScale : Nat)
     {packing : Finset (Finset object.Vertex)}
-    (piece : CanonicalPiece object packing) (hub : object.Vertex) :
-    Decidable (data.IsCandidate threshold dischargeScale piece hub) :=
+    (piece assigned : Finset object.Vertex) (hub : object.Vertex) :
+    Decidable (data.IsCandidate threshold dischargeScale packing piece assigned hub) :=
   Classical.dec _
 
 end CandidateData
@@ -441,15 +439,16 @@ end CandidateData
 /-- The exhaustive finite raw schedule.  Both `A_h` and `Q` range over every
 finite subset of their literal graph-derived universes. -/
 noncomputable def candidateDataSchedule (object : FiniteObject.{u})
-    (threshold : Nat) {packing : Finset (Finset object.Vertex)}
-    (piece : CanonicalPiece object packing) (hub : object.Vertex) :
+    (threshold : Nat) (packing : Finset (Finset object.Vertex))
+    (piece assigned : Finset object.Vertex) (hub : object.Vertex) :
     List (CandidateData object) :=
   (profileCandidatesWith object (object.windowSupport packing)).flatMap
     fun profile =>
-      ((((TypeBMarkedFan.neighbourRim object hub ∩ piece.vertices) \
-          centres object threshold piece.vertices).powerset.toList.map
+      ((((TypeBMarkedFan.neighbourRim object hub ∩ piece) \
+          assigned).powerset.toList.map
         fun assigned => CandidateData.certificate profile assigned) ++
-      ((CandidateData.localReserveVertexUniverse profile threshold piece hub).powerset.toList.flatMap
+      ((CandidateData.localReserveVertexUniverse profile threshold packing piece
+          assigned hub).powerset.toList.flatMap
         fun localReserveVertices =>
           (nonWindowIncidenceSet object threshold profile.envelope
             (object.windowSupport packing) hub).powerset.toList.map
@@ -459,21 +458,23 @@ noncomputable def candidateDataSchedule (object : FiniteObject.{u})
 
 noncomputable def candidateFamily (object : FiniteObject.{u})
     (threshold dischargeScale : Nat)
-    {packing : Finset (Finset object.Vertex)}
-    (piece : CanonicalPiece object packing) (hub : object.Vertex) :
+    (packing : Finset (Finset object.Vertex))
+    (piece assigned : Finset object.Vertex) (hub : object.Vertex) :
     List (CandidateData object) := by
   classical
-  exact (candidateDataSchedule object threshold piece hub).filter
-    fun data => data.IsCandidate threshold dischargeScale piece hub
+  exact (candidateDataSchedule object threshold packing piece assigned hub).filter
+    fun data => data.IsCandidate threshold dischargeScale
+      packing piece assigned hub
 
 theorem mem_candidateFamily_iff
     {threshold dischargeScale : Nat}
     {packing : Finset (Finset object.Vertex)}
-    {piece : CanonicalPiece object packing} {hub : object.Vertex}
+    {piece assigned : Finset object.Vertex} {hub : object.Vertex}
     {data : CandidateData object} :
-    data ∈ candidateFamily object threshold dischargeScale piece hub ↔
-      data ∈ candidateDataSchedule object threshold piece hub ∧
-        data.IsCandidate threshold dischargeScale piece hub := by
+    data ∈ candidateFamily object threshold dischargeScale packing piece assigned hub ↔
+      data ∈ candidateDataSchedule object threshold packing piece assigned hub ∧
+        data.IsCandidate threshold dischargeScale
+          packing piece assigned hub := by
   classical
   simp [candidateFamily]
 
@@ -481,31 +482,33 @@ theorem mem_candidateFamily_iff
 
 structure DisjointChoice (object : FiniteObject.{u})
     (threshold dischargeScale : Nat)
-    {packing : Finset (Finset object.Vertex)}
-    (piece : CanonicalPiece object packing) (demands : Finset object.Vertex) where
+    (packing : Finset (Finset object.Vertex))
+    (piece assigned demands : Finset object.Vertex) where
   entry : ∀ hub ∈ demands, CandidateData object
   eligible : ∀ hub (member : hub ∈ demands),
-    entry hub member ∈ candidateFamily object threshold dischargeScale piece hub
+    entry hub member ∈ candidateFamily object threshold dischargeScale
+      packing piece assigned hub
   carrierDisjoint : ∀ left (leftMem : left ∈ demands)
       right (rightMem : right ∈ demands), left ≠ right →
     Disjoint ((entry left leftMem).supportAtoms threshold packing left)
       ((entry right rightMem).supportAtoms threshold packing right)
   reserveDisjoint : ∀ left (leftMem : left ∈ demands)
       right (rightMem : right ∈ demands), left ≠ right →
-    Disjoint ((entry left leftMem).consumedReserveUnits threshold piece left)
-      ((entry right rightMem).consumedReserveUnits threshold piece right)
+    Disjoint ((entry left leftMem).consumedReserveUnits threshold packing piece left)
+      ((entry right rightMem).consumedReserveUnits threshold packing piece right)
 
 def HasDisjointChoice (object : FiniteObject.{u})
     (threshold dischargeScale : Nat)
-    {packing : Finset (Finset object.Vertex)}
-    (piece : CanonicalPiece object packing) (demands : Finset object.Vertex) : Prop :=
-  Nonempty (DisjointChoice object threshold dischargeScale piece demands)
+    (packing : Finset (Finset object.Vertex))
+    (piece assigned demands : Finset object.Vertex) : Prop :=
+  Nonempty (DisjointChoice object threshold dischargeScale
+    packing piece assigned demands)
 
 theorem hasDisjointChoice_empty (object : FiniteObject.{u})
     (threshold dischargeScale : Nat)
-    {packing : Finset (Finset object.Vertex)}
-    (piece : CanonicalPiece object packing) :
-    HasDisjointChoice object threshold dischargeScale piece ∅ := by
+    (packing : Finset (Finset object.Vertex))
+    (piece assigned : Finset object.Vertex) :
+    HasDisjointChoice object threshold dischargeScale packing piece assigned ∅ := by
   classical
   exact ⟨{
     entry := fun hub member => False.elim (Finset.notMem_empty hub member)
@@ -523,34 +526,36 @@ the core's high centres; for a decorated handoff envelope the core has none and
 `H_X` is the decoration set). -/
 structure DisjointLedger (object : FiniteObject.{u})
     (threshold dischargeScale : Nat)
-    {packing : Finset (Finset object.Vertex)}
-    (piece : CanonicalPiece object packing) (demands : Finset object.Vertex) where
-  choice : DisjointChoice object threshold dischargeScale piece demands
+    (packing : Finset (Finset object.Vertex))
+    (piece demands : Finset object.Vertex) where
+  choice : DisjointChoice object threshold dischargeScale
+    packing piece demands demands
   demands_high : ∀ hub ∈ demands, Graph.IsHighCentre object threshold hub
-  centres_subset : centres object threshold piece.vertices ⊆ demands
+  centres_subset : centres object threshold piece ⊆ demands
 
 namespace DisjointLedger
 
 variable {threshold dischargeScale : Nat}
 variable {packing : Finset (Finset object.Vertex)}
-variable {piece : CanonicalPiece object packing}
+variable {piece : Finset object.Vertex}
 variable {demands : Finset object.Vertex}
 
 theorem demands_inter_subset_centres
-    (ledger : DisjointLedger object threshold dischargeScale piece demands) :
-    demands ∩ piece.vertices ⊆ centres object threshold piece.vertices := by
+    (ledger : DisjointLedger object threshold dischargeScale packing piece demands) :
+    demands ∩ piece ⊆ centres object threshold piece := by
   intro hub member
   rw [Finset.mem_inter] at member
   exact mem_centres.mpr ⟨member.2, ledger.demands_high hub member.1⟩
 
 theorem entry_isCandidate
-    (ledger : DisjointLedger object threshold dischargeScale piece demands)
+    (ledger : DisjointLedger object threshold dischargeScale packing piece demands)
     (hub : object.Vertex) (member : hub ∈ demands) :
-    (ledger.choice.entry hub member).IsCandidate threshold dischargeScale piece hub :=
+    (ledger.choice.entry hub member).IsCandidate threshold dischargeScale
+      packing piece demands hub :=
   (mem_candidateFamily_iff.mp (ledger.choice.eligible hub member)).2
 
 theorem entry_refines
-    (ledger : DisjointLedger object threshold dischargeScale piece demands)
+    (ledger : DisjointLedger object threshold dischargeScale packing piece demands)
     (hub : object.Vertex) (member : hub ∈ demands) :
     (ledger.choice.entry hub member).EntryRefines
       threshold dischargeScale piece hub :=
@@ -558,36 +563,36 @@ theorem entry_refines
 
 /-- The literal indexed ordinary-reserve units met by the selected carriers. -/
 noncomputable def consumedReserveUnits
-    (ledger : DisjointLedger object threshold dischargeScale piece demands) :
+    (ledger : DisjointLedger object threshold dischargeScale packing piece demands) :
     Finset (OrdinaryDeficiencyReserve.Carrier object) :=
   (demands).attach.biUnion fun hub =>
-    (ledger.choice.entry hub.1 hub.2).consumedReserveUnits threshold piece hub.1
+    (ledger.choice.entry hub.1 hub.2).consumedReserveUnits threshold packing piece hub.1
 
 theorem consumedReserveUnits_subset
-    (ledger : DisjointLedger object threshold dischargeScale piece demands) :
+    (ledger : DisjointLedger object threshold dischargeScale packing piece demands) :
     ledger.consumedReserveUnits ⊆
-      object.ordinaryDeficiencyReserve threshold packing piece.vertices := by
+      object.ordinaryDeficiencyReserve threshold packing piece := by
   classical
   intro unit member
   obtain ⟨hub, _hubMem, unitMem⟩ := Finset.mem_biUnion.mp member
   exact CandidateData.consumedReserveUnits_subset
-    (ledger.choice.entry hub.1 hub.2) threshold piece hub.1 unitMem
+    (ledger.choice.entry hub.1 hub.2) threshold packing piece hub.1 unitMem
 
 noncomputable def remainingReserve
-    (ledger : DisjointLedger object threshold dischargeScale piece demands) :
+    (ledger : DisjointLedger object threshold dischargeScale packing piece demands) :
     Finset (OrdinaryDeficiencyReserve.Carrier object) :=
-  object.ordinaryDeficiencyReserve threshold packing piece.vertices \
+  object.ordinaryDeficiencyReserve threshold packing piece \
     ledger.consumedReserveUnits
 
 theorem consumed_union_remainingReserve
-    (ledger : DisjointLedger object threshold dischargeScale piece demands) :
+    (ledger : DisjointLedger object threshold dischargeScale packing piece demands) :
     ledger.consumedReserveUnits ∪ ledger.remainingReserve =
-      object.ordinaryDeficiencyReserve threshold packing piece.vertices := by
+      object.ordinaryDeficiencyReserve threshold packing piece := by
   classical
   exact Finset.union_sdiff_of_subset ledger.consumedReserveUnits_subset
 
 theorem consumed_disjoint_remainingReserve
-    (ledger : DisjointLedger object threshold dischargeScale piece demands) :
+    (ledger : DisjointLedger object threshold dischargeScale packing piece demands) :
     Disjoint ledger.consumedReserveUnits ledger.remainingReserve := by
   classical
   rw [Finset.disjoint_left]
@@ -595,31 +600,31 @@ theorem consumed_disjoint_remainingReserve
   exact (Finset.mem_sdiff.mp remaining).2 consumed
 
 noncomputable def consumedReserveCapacity
-    (ledger : DisjointLedger object threshold dischargeScale piece demands) : Int :=
+    (ledger : DisjointLedger object threshold dischargeScale packing piece demands) : Int :=
   OrdinaryDeficiencyReserve.capacity dischargeScale ledger.consumedReserveUnits
 
 noncomputable def remainingReserveCapacity
-    (ledger : DisjointLedger object threshold dischargeScale piece demands) : Int :=
+    (ledger : DisjointLedger object threshold dischargeScale packing piece demands) : Int :=
   OrdinaryDeficiencyReserve.capacity dischargeScale ledger.remainingReserve
 
 theorem consumed_add_remainingReserveCapacity
-    (ledger : DisjointLedger object threshold dischargeScale piece demands) :
+    (ledger : DisjointLedger object threshold dischargeScale packing piece demands) :
     ledger.consumedReserveCapacity + ledger.remainingReserveCapacity =
       OrdinaryDeficiencyReserve.capacity dischargeScale
-        (object.ordinaryDeficiencyReserve threshold packing piece.vertices) := by
+        (object.ordinaryDeficiencyReserve threshold packing piece) := by
   rw [consumedReserveCapacity, remainingReserveCapacity,
     ← OrdinaryDeficiencyReserve.capacity_union
       ledger.consumed_disjoint_remainingReserve,
     ledger.consumed_union_remainingReserve]
 
 noncomputable def chargedVertexSupport
-    (ledger : DisjointLedger object threshold dischargeScale piece demands) :
+    (ledger : DisjointLedger object threshold dischargeScale packing piece demands) :
     Finset object.Vertex :=
   (demands).attach.biUnion fun hub =>
     (ledger.choice.entry hub.1 hub.2).chargedVertices threshold hub.1
 
 theorem chargedVertices_disjoint
-    (ledger : DisjointLedger object threshold dischargeScale piece demands)
+    (ledger : DisjointLedger object threshold dischargeScale packing piece demands)
     (left : object.Vertex) (leftMem : left ∈ demands)
     (right : object.Vertex) (rightMem : right ∈ demands)
     (distinct : left ≠ right) :
@@ -644,59 +649,55 @@ theorem chargedVertices_disjoint
       leftAtom rightAtom
 
 theorem chargedVertexSupport_subset
-    (ledger : DisjointLedger object threshold dischargeScale piece demands) :
-    ledger.chargedVertexSupport ⊆ piece.vertices := by
+    (ledger : DisjointLedger object threshold dischargeScale packing piece demands) :
+    ledger.chargedVertexSupport ⊆ piece := by
   classical
   intro vertex member
   obtain ⟨hub, _, vertexMem⟩ := Finset.mem_biUnion.mp member
   exact (ledger.entry_isCandidate hub.1 hub.2).chargedVertices_subset vertexMem
 
 theorem chargedVertexSupport_disjoint_centres
-    (ledger : DisjointLedger object threshold dischargeScale piece demands) :
+    (ledger : DisjointLedger object threshold dischargeScale packing piece demands) :
     Disjoint ledger.chargedVertexSupport demands := by
   classical
   rw [Finset.disjoint_left]
   intro vertex charged centreMem
   obtain ⟨hub, _, vertexMem⟩ := Finset.mem_biUnion.mp charged
-  have inPiece : vertex ∈ piece.vertices :=
-    (ledger.entry_isCandidate hub.1 hub.2).chargedVertices_subset vertexMem
-  have inCentres : vertex ∈ centres object threshold piece.vertices :=
-    ledger.demands_inter_subset_centres (Finset.mem_inter.mpr ⟨centreMem, inPiece⟩)
   exact (Finset.disjoint_left.mp
     (ledger.entry_isCandidate hub.1 hub.2).chargedVertices_disjoint_centres)
-      vertexMem inCentres
+      vertexMem centreMem
 
 theorem chargedVertexSupport_disjoint_demandsInPiece
-    (ledger : DisjointLedger object threshold dischargeScale piece demands) :
-    Disjoint ledger.chargedVertexSupport (demands ∩ piece.vertices) :=
+    (ledger : DisjointLedger object threshold dischargeScale packing piece demands) :
+    Disjoint ledger.chargedVertexSupport (demands ∩ piece) :=
   Finset.disjoint_of_subset_right Finset.inter_subset_left
     ledger.chargedVertexSupport_disjoint_centres
 
 noncomputable def remainingCore
-    (ledger : DisjointLedger object threshold dischargeScale piece demands) :
+    (ledger : DisjointLedger object threshold dischargeScale packing piece demands) :
     Finset object.Vertex :=
-  piece.vertices \
+  piece \
     (demands ∪ ledger.chargedVertexSupport)
 
 noncomputable def removedVertices
-    (ledger : DisjointLedger object threshold dischargeScale piece demands) :
+    (ledger : DisjointLedger object threshold dischargeScale packing piece demands) :
     Finset object.Vertex :=
   demands ∪ ledger.chargedVertexSupport
 
 theorem remainingCore_subset
-    (ledger : DisjointLedger object threshold dischargeScale piece demands) :
-    ledger.remainingCore ⊆ piece.vertices :=
+    (ledger : DisjointLedger object threshold dischargeScale packing piece demands) :
+    ledger.remainingCore ⊆ piece :=
   Finset.sdiff_subset
 
 theorem centre_mem_removedVertices
-    (ledger : DisjointLedger object threshold dischargeScale piece demands)
+    (ledger : DisjointLedger object threshold dischargeScale packing piece demands)
     {hub : object.Vertex}
     (member : hub ∈ demands) :
     hub ∈ ledger.removedVertices :=
   Finset.mem_union_left _ member
 
 theorem noHighCentre_remaining
-    (ledger : DisjointLedger object threshold dischargeScale piece demands)
+    (ledger : DisjointLedger object threshold dischargeScale packing piece demands)
     {hub : object.Vertex} (member : hub ∈ ledger.remainingCore) :
     ¬ Graph.IsHighCentre object threshold hub := by
   intro high
@@ -706,19 +707,19 @@ theorem noHighCentre_remaining
     (ledger.centre_mem_removedVertices (ledger.centres_subset inCentres))
 
 noncomputable def selectedEntryPayment₂
-    (ledger : DisjointLedger object threshold dischargeScale piece demands) : Int :=
+    (ledger : DisjointLedger object threshold dischargeScale packing piece demands) : Int :=
   ∑ hub ∈ (demands).attach,
     (ledger.choice.entry hub.1 hub.2).entryPayment₂
       threshold dischargeScale piece hub.1
 
 theorem sum_chargedVertexSupport
-    (ledger : DisjointLedger object threshold dischargeScale piece demands) :
+    (ledger : DisjointLedger object threshold dischargeScale packing piece demands) :
     (∑ vertex ∈ ledger.chargedVertexSupport,
-        scaledCoreCharge object threshold dischargeScale piece.vertices vertex) =
+        scaledCoreCharge object threshold dischargeScale piece vertex) =
       ∑ hub ∈ (demands).attach,
         ∑ vertex ∈ (ledger.choice.entry hub.1 hub.2).chargedVertices
             threshold hub.1,
-          scaledCoreCharge object threshold dischargeScale piece.vertices vertex := by
+          scaledCoreCharge object threshold dischargeScale piece vertex := by
   classical
   rw [chargedVertexSupport, Finset.sum_biUnion]
   intro left _ right _ distinct
@@ -726,12 +727,12 @@ theorem sum_chargedVertexSupport
     (fun equality => distinct (Subtype.ext equality))
 
 theorem selectedEntryPayment₂_eq
-    (ledger : DisjointLedger object threshold dischargeScale piece demands) :
+    (ledger : DisjointLedger object threshold dischargeScale packing piece demands) :
     ledger.selectedEntryPayment₂ =
       2 * (∑ centre ∈ demands,
         scaledCentreCharge object threshold dischargeScale centre) +
       2 * ∑ vertex ∈ ledger.chargedVertexSupport,
-        scaledCoreCharge object threshold dischargeScale piece.vertices vertex := by
+        scaledCoreCharge object threshold dischargeScale piece vertex := by
   classical
   rw [selectedEntryPayment₂, ledger.sum_chargedVertexSupport]
   simp_rw [CandidateData.entryPayment₂, mul_add]
@@ -748,65 +749,65 @@ the assigned centres inside the core are counted once as core vertices, and
 every assigned centre contributes its `¼` (`def:typeB-assigned-ledger`,
 (B-ledger)). -/
 theorem augmentedLedger_partition
-    (ledger : DisjointLedger object threshold dischargeScale piece demands) :
-    2 * (augmentedLedgerWith object threshold dischargeScale piece.vertices demands +
+    (ledger : DisjointLedger object threshold dischargeScale packing piece demands) :
+    2 * (augmentedLedgerWith object threshold dischargeScale piece demands +
       (demands.card : Int)) =
       ledger.selectedEntryPayment₂ +
         2 * (∑ vertex ∈ ledger.remainingCore,
-          scaledCoreCharge object threshold dischargeScale piece.vertices vertex) +
-        2 * (∑ centre ∈ demands ∩ piece.vertices,
-          scaledCoreCharge object threshold dischargeScale piece.vertices centre) +
+          scaledCoreCharge object threshold dischargeScale piece vertex) +
+        2 * (∑ centre ∈ demands ∩ piece,
+          scaledCoreCharge object threshold dischargeScale piece centre) +
         2 * (demands.card : Int) := by
   classical
   have selectedSubset :
-      demands ∩ piece.vertices ∪ ledger.chargedVertexSupport ⊆ piece.vertices :=
+      demands ∩ piece ∪ ledger.chargedVertexSupport ⊆ piece :=
     Finset.union_subset Finset.inter_subset_right ledger.chargedVertexSupport_subset
   have remainingEq : ledger.remainingCore =
-      piece.vertices \ (demands ∩ piece.vertices ∪ ledger.chargedVertexSupport) := by
+      piece \ (demands ∩ piece ∪ ledger.chargedVertexSupport) := by
     rw [remainingCore]
     ext vertex
     simp only [Finset.mem_sdiff, Finset.mem_union, Finset.mem_inter]
     tauto
   have selectedDisjoint : Disjoint
-      (demands ∩ piece.vertices ∪ ledger.chargedVertexSupport)
+      (demands ∩ piece ∪ ledger.chargedVertexSupport)
       ledger.remainingCore := by
     rw [Finset.disjoint_left]
     intro vertex selected remaining
     rw [remainingEq] at remaining
     exact (Finset.mem_sdiff.mp remaining).2 selected
   have cover :
-      (demands ∩ piece.vertices ∪ ledger.chargedVertexSupport) ∪
-          ledger.remainingCore = piece.vertices := by
+      (demands ∩ piece ∪ ledger.chargedVertexSupport) ∪
+          ledger.remainingCore = piece := by
     rw [remainingEq]
     exact Finset.union_sdiff_of_subset selectedSubset
   have coreSplit :
-      (∑ vertex ∈ piece.vertices,
-          scaledCoreCharge object threshold dischargeScale piece.vertices vertex) =
-        (∑ centre ∈ demands ∩ piece.vertices,
-          scaledCoreCharge object threshold dischargeScale piece.vertices centre) +
+      (∑ vertex ∈ piece,
+          scaledCoreCharge object threshold dischargeScale piece vertex) =
+        (∑ centre ∈ demands ∩ piece,
+          scaledCoreCharge object threshold dischargeScale piece centre) +
         (∑ vertex ∈ ledger.chargedVertexSupport,
-          scaledCoreCharge object threshold dischargeScale piece.vertices vertex) +
+          scaledCoreCharge object threshold dischargeScale piece vertex) +
         ∑ vertex ∈ ledger.remainingCore,
-          scaledCoreCharge object threshold dischargeScale piece.vertices vertex := by
+          scaledCoreCharge object threshold dischargeScale piece vertex := by
     let charge : object.Vertex → Int := fun vertex =>
-      scaledCoreCharge object threshold dischargeScale piece.vertices vertex
-    change (∑ vertex ∈ piece.vertices, charge vertex) =
-      (∑ centre ∈ demands ∩ piece.vertices, charge centre) +
+      scaledCoreCharge object threshold dischargeScale piece vertex
+    change (∑ vertex ∈ piece, charge vertex) =
+      (∑ centre ∈ demands ∩ piece, charge centre) +
       (∑ vertex ∈ ledger.chargedVertexSupport, charge vertex) +
       ∑ vertex ∈ ledger.remainingCore, charge vertex
     calc
-      (∑ vertex ∈ piece.vertices, charge vertex) =
+      (∑ vertex ∈ piece, charge vertex) =
           ∑ vertex ∈
-            ((demands ∩ piece.vertices ∪
+            ((demands ∩ piece ∪
                 ledger.chargedVertexSupport) ∪ ledger.remainingCore),
               charge vertex :=
         congrArg (fun vertices : Finset object.Vertex =>
           ∑ vertex ∈ vertices, charge vertex) cover.symm
-      _ = (∑ vertex ∈ demands ∩ piece.vertices ∪
+      _ = (∑ vertex ∈ demands ∩ piece ∪
               ledger.chargedVertexSupport, charge vertex) +
             ∑ vertex ∈ ledger.remainingCore, charge vertex :=
         Finset.sum_union selectedDisjoint
-      _ = (∑ centre ∈ demands ∩ piece.vertices,
+      _ = (∑ centre ∈ demands ∩ piece,
               charge centre) +
             (∑ vertex ∈ ledger.chargedVertexSupport, charge vertex) +
             ∑ vertex ∈ ledger.remainingCore, charge vertex := by
@@ -815,7 +816,7 @@ theorem augmentedLedger_partition
   ring
 
 theorem selectedEntryPayment₂_nonnegative
-    (ledger : DisjointLedger object threshold dischargeScale piece demands) :
+    (ledger : DisjointLedger object threshold dischargeScale packing piece demands) :
     0 ≤ ledger.selectedEntryPayment₂ := by
   classical
   rw [selectedEntryPayment₂]
@@ -825,15 +826,15 @@ theorem selectedEntryPayment₂_nonnegative
 
 /-- The exact successful B2 refinement, with no authored partition proof. -/
 structure ExactAugmentedLedgerRefinement
-    (ledger : DisjointLedger object threshold dischargeScale piece demands) : Prop where
+    (ledger : DisjointLedger object threshold dischargeScale packing piece demands) : Prop where
   partition :
-    2 * (augmentedLedgerWith object threshold dischargeScale piece.vertices demands +
+    2 * (augmentedLedgerWith object threshold dischargeScale piece demands +
       (demands.card : Int)) =
       ledger.selectedEntryPayment₂ +
         2 * (∑ vertex ∈ ledger.remainingCore,
-          scaledCoreCharge object threshold dischargeScale piece.vertices vertex) +
-        2 * (∑ centre ∈ demands ∩ piece.vertices,
-          scaledCoreCharge object threshold dischargeScale piece.vertices centre) +
+          scaledCoreCharge object threshold dischargeScale piece vertex) +
+        2 * (∑ centre ∈ demands ∩ piece,
+          scaledCoreCharge object threshold dischargeScale piece centre) +
         2 * (demands.card : Int)
   selectedNonnegative : 0 ≤ ledger.selectedEntryPayment₂
   carrierDisjoint : ∀ left
@@ -848,18 +849,18 @@ structure ExactAugmentedLedgerRefinement
       right (rightMem : right ∈ demands),
     left ≠ right →
       Disjoint
-        ((ledger.choice.entry left leftMem).consumedReserveUnits threshold piece left)
-        ((ledger.choice.entry right rightMem).consumedReserveUnits threshold piece right)
+        ((ledger.choice.entry left leftMem).consumedReserveUnits threshold packing piece left)
+        ((ledger.choice.entry right rightMem).consumedReserveUnits threshold packing piece right)
   reservePartition :
     ledger.consumedReserveUnits ∪ ledger.remainingReserve =
-      object.ordinaryDeficiencyReserve threshold packing piece.vertices
+      object.ordinaryDeficiencyReserve threshold packing piece
   reserveCapacityPartition :
     ledger.consumedReserveCapacity + ledger.remainingReserveCapacity =
       OrdinaryDeficiencyReserve.capacity dischargeScale
-        (object.ordinaryDeficiencyReserve threshold packing piece.vertices)
+        (object.ordinaryDeficiencyReserve threshold packing piece)
 
 theorem exactAugmentedLedgerRefinement
-    (ledger : DisjointLedger object threshold dischargeScale piece demands) :
+    (ledger : DisjointLedger object threshold dischargeScale packing piece demands) :
     ledger.ExactAugmentedLedgerRefinement :=
   ⟨ledger.augmentedLedger_partition, ledger.selectedEntryPayment₂_nonnegative,
     ledger.choice.carrierDisjoint, ledger.choice.reserveDisjoint,
@@ -872,40 +873,48 @@ end DisjointLedger
 
 structure OverlapObstruction (object : FiniteObject.{u})
     (threshold dischargeScale : Nat)
-    {packing : Finset (Finset object.Vertex)}
-    (piece : CanonicalPiece object packing) where
+    (packing : Finset (Finset object.Vertex))
+    (piece assigned : Finset object.Vertex) where
   demands : Finset object.Vertex
+  demands_subset : demands ⊆ assigned
   demands_high : ∀ hub ∈ demands, Graph.IsHighCentre object threshold hub
   demands_nonempty : demands.Nonempty
   noDisjointChoice :
-    ¬ HasDisjointChoice object threshold dischargeScale piece demands
+    ¬ HasDisjointChoice object threshold dischargeScale
+      packing piece assigned demands
   minimal : ∀ sub ⊂ demands, sub.Nonempty →
-    HasDisjointChoice object threshold dischargeScale piece sub
+    HasDisjointChoice object threshold dischargeScale packing piece assigned sub
 
 theorem exists_overlapObstruction_of_not_hasDisjointChoice
     (object : FiniteObject.{u}) (threshold dischargeScale : Nat)
-    {packing : Finset (Finset object.Vertex)}
-    (piece : CanonicalPiece object packing) (demands : Finset object.Vertex)
-    (high : ∀ hub ∈ demands, Graph.IsHighCentre object threshold hub)
-    (failure : ¬ HasDisjointChoice object threshold dischargeScale piece demands) :
-    Nonempty (OverlapObstruction object threshold dischargeScale piece) := by
+    (packing : Finset (Finset object.Vertex))
+    (piece assigned : Finset object.Vertex)
+    (high : ∀ hub ∈ assigned, Graph.IsHighCentre object threshold hub)
+    (failure : ¬ HasDisjointChoice object threshold dischargeScale
+      packing piece assigned assigned) :
+    Nonempty (OverlapObstruction object threshold dischargeScale
+      packing piece assigned) := by
   classical
-  have nonempty : demands.Nonempty := by
-    rcases Finset.eq_empty_or_nonempty demands with rfl | present
-    · exact absurd (hasDisjointChoice_empty object threshold dischargeScale piece)
+  have nonempty : assigned.Nonempty := by
+    rcases Finset.eq_empty_or_nonempty assigned with rfl | present
+    · exact absurd
+        (hasDisjointChoice_empty object threshold dischargeScale packing piece ∅)
         failure
     · exact present
   let failing : Finset (Finset object.Vertex) :=
-    demands.powerset.filter fun family => family.Nonempty ∧
-      ¬ HasDisjointChoice object threshold dischargeScale piece family
-  have selfMember : demands ∈ failing := by simp [failing, nonempty, failure]
+    assigned.powerset.filter fun family => family.Nonempty ∧
+      ¬ HasDisjointChoice object threshold dischargeScale
+        packing piece assigned family
+  have selfMember : assigned ∈ failing := by simp [failing, nonempty, failure]
   obtain ⟨minimalFamily, minimalMember, minimalCard⟩ :=
-    failing.exists_min_image Finset.card ⟨demands, selfMember⟩
-  have data : minimalFamily ⊆ demands ∧ minimalFamily.Nonempty ∧
-      ¬ HasDisjointChoice object threshold dischargeScale piece minimalFamily := by
+    failing.exists_min_image Finset.card ⟨assigned, selfMember⟩
+  have data : minimalFamily ⊆ assigned ∧ minimalFamily.Nonempty ∧
+      ¬ HasDisjointChoice object threshold dischargeScale
+        packing piece assigned minimalFamily := by
     simpa [failing] using minimalMember
   refine ⟨{
     demands := minimalFamily
+    demands_subset := data.1
     demands_high := fun hub member => high hub (data.1 member)
     demands_nonempty := data.2.1
     noDisjointChoice := data.2.2
@@ -921,16 +930,19 @@ theorem exists_overlapObstruction_of_not_hasDisjointChoice
 the assigned centres, or a minimal overlap obstruction among them. -/
 theorem b2_or_overlap (object : FiniteObject.{u})
     (threshold dischargeScale : Nat)
-    {packing : Finset (Finset object.Vertex)}
-    (piece : CanonicalPiece object packing) (demands : Finset object.Vertex)
-    (high : ∀ hub ∈ demands, Graph.IsHighCentre object threshold hub) :
-    HasDisjointChoice object threshold dischargeScale piece demands ∨
-      Nonempty (OverlapObstruction object threshold dischargeScale piece) := by
+    (packing : Finset (Finset object.Vertex))
+    (piece assigned : Finset object.Vertex)
+    (high : ∀ hub ∈ assigned, Graph.IsHighCentre object threshold hub) :
+    HasDisjointChoice object threshold dischargeScale
+        packing piece assigned assigned ∨
+      Nonempty (OverlapObstruction object threshold dischargeScale
+        packing piece assigned) := by
   classical
-  by_cases choice : HasDisjointChoice object threshold dischargeScale piece demands
+  by_cases choice : HasDisjointChoice object threshold dischargeScale
+      packing piece assigned assigned
   · exact Or.inl choice
   · exact Or.inr (exists_overlapObstruction_of_not_hasDisjointChoice object
-      threshold dischargeScale piece demands high choice)
+      threshold dischargeScale packing piece assigned high choice)
 
 theorem centres_high (object : FiniteObject.{u}) (threshold : Nat)
     (piece : Finset object.Vertex) :

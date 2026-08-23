@@ -231,17 +231,22 @@ its zero-deficit proof, the legacy row, and its wrapper have been removed. Lean 
 the manuscript's required active family and baseline-spine demand. A source audit found that
 `def:baseline-spine-demand` only defines this package and every sparse theorem assumes that the
 active object admits one; no preceding manuscript lemma constructs a target-testable `𝓘_spine`
-or proves `E_spine ≤ C_E n` on the strict branch. Assembly therefore fails at the exact missing
-producer instead of feeding chosen zero data to [131]–[138].
+or proves `E_spine ≤ C_E n` on the strict branch. The selected sparse continuation therefore keeps
+the exact producer undefined instead of feeding chosen zero data to [131]–[138].
 
 **What must be implemented or corrected.**
 
-- Supply a new paper lemma, or identify a currently missing source lemma, that constructs
-  `𝓐₀ = 𝓟_exc` and a concrete spine coordinate family on this literal residual, including
-  target-testability of every functional declared quotient.
-- That lemma must derive the baseline entropy inequality and `E_spine ≤ C_E n` from explicit
-  hypotheses. The current paper does not prove this implication, so Lean must not invent it by
-  choosing an empty family, a selected deficit, or a detached carrier.
+- Supply a new paper lemma, or identify a currently missing source lemma, that constructs on this
+  literal residual a type `Coordinate`, a finite `family : Finset Coordinate`, and
+  `coordinateSupport : Coordinate → Finset object.Vertex`, while retaining
+  `𝓐₀ = 𝓟_exc`.
+- Its complete target is: every `DeclaredQuotient` on that family whose rank quotient is
+  `FunctionalOn ↑family` is `LabelInjectiveOn ↑family`, and
+  `cubicBaselineBudget n threshold ≤ 2^(family.card + spineDeficit n threshold family.card)`
+  together with
+  `spineDeficit n threshold family.card ≤ data.surplusScale * n`. The current paper defines and
+  assumes this package but does not prove this implication, so Lean must not obtain it by choosing
+  an empty family, selecting a deficit, or using a detached carrier.
 - Publish the complete value under `K .baselineSpineDemand` with one residual-local `factOnly`
   row that reads all prerequisites through `inputs.get` and is run with `AtomicCT.run`.
 
@@ -254,8 +259,9 @@ producer instead of feeding chosen zero data to [131]–[138].
 - [x] **No illegal carrier/API:** pass: the fabricated family/row/wrapper were removed
 - [ ] **Exact manuscript proof:** fail: the manuscript assumes, but does not prove, the
   package-to-demand construction
-- [ ] **Independent kernel check:** the proposition and generic arithmetic theorem build;
-  composed Assembly stops at `selectedBaselineSpineDemand`
+- [ ] **Independent kernel check:** the proposition and generic arithmetic theorem build; the
+  selected call is deliberately undefined, while full Assembly import currently stops earlier at
+  the separately audited [71]/[80] error
 
 **Exit criterion.** Reinspect the declaration body and call site, update this node row and every
 listed paper-fact row from the compiled term, run the table/API checks, and remove this section
@@ -270,7 +276,7 @@ that later node has its own independently failing audit row.
 list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
 table; their exact environments supply the inherited quantifiers and hypotheses.
 
-**Current Lean owner.** `selectedBottleneckDischarge` (Assembly.lean:518)
+**Current Lean owner.** `selectedBottleneckDischarge` (Assembly.lean:406)
 
 **Current combinator / shared continuation.** Three residual-local `factOnly` audit rows,
 each publishing its class-specific audit and the shared `K .homogeneousBottleneckPattern`
@@ -290,13 +296,19 @@ stops loudly at `selectedPatternRoutedBottleneck`, the first missing manuscript 
 
 **What must be implemented or corrected.**
 
-- Construct the two same-token routing configurations from the concrete matching/star pattern and
-  the primitive blocker supports carried by the exact capacity presentation. Retain their common
-  token, common role, distinct demand pairs, and literal routed paths.
-- Prove the paper's parallel-germ/first-separator alternative and from it the exact
-  `RoutedBottleneck` outcome: a named sparse surplus exit, ordinary Type B fan data, or the fixed
-  homogeneous-cap conclusion. Do not place this result in a presentation field or accept it as a
-  callback.
+- For every concrete `CapacityPresentation`, `ObjectCapacityLedger`, token `t` in its token set,
+  role `r`, and `L_geom` matching or star inside `roleFibre t r`, select two distinct pattern edges
+  and two distinct selected demands whose *actual* routing labels agree.
+- From the capacity token, the canonical blockers of those two pairs, and their selected and
+  response supports, construct two declared connector configurations beginning at the relevant
+  primitive blocker anchor and ending in the prescribed selected supports. The construction must
+  retain the concrete paths, endpoint labels, boundary profiles, window labels, and suppressed
+  chord flag used in the paper's pigeonhole step.
+- Prove the exact parallel/first-separator alternative. Parallel configurations must produce an
+  actual constructor of `SparseSurplusExit`; separated configurations must supply the first
+  separator, switch support and switch reading needed for a concrete `RoutedBottleneck`. Applying
+  its exhaustive outcome must then produce the absorbed sparse-exit case or an admissible decorated
+  Type B envelope. Do not put any of these facts in a presentation callback.
 - Publish every newly proved routing fact under its canonical semantic key with one or more
   `factOnly`/`AtomicCT.run` rows on the literal predecessor; pass the accumulated `ExactLedger`
   forward without reconstructing a cursor or merging sibling histories.
@@ -311,8 +323,8 @@ stops loudly at `selectedPatternRoutedBottleneck`, the first missing manuscript 
 - [x] **Correct ledger registration:** pass through `K .homogeneousBottleneckPattern`
 - [x] **No illegal carrier/API:** pass: the callback fields and fabricated presentation were removed
 - [ ] **Exact manuscript proof:** fail: the routing-germ and first-separator construction is absent
-- [ ] **Independent kernel check:** the exact prefix builds; Assembly stops at
-  `selectedPatternRoutedBottleneck`
+- [ ] **Independent kernel check:** the exact prefix builds and the selected call remains
+  deliberately undefined; full Assembly import currently stops earlier at [71]/[80]
 
 **Exit criterion.** Reinspect the declaration body and call site, update this node row and every
 listed paper-fact row from the compiled term, run the table/API checks, and remove this section

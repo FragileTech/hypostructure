@@ -27,9 +27,10 @@ once: neither proof inspects which coordinates the family holds, which is why
 the manuscript gives them the same four cases.
 
 `prop:sparse-pair-independence-dichotomy` is registered at its concrete branch
-decision.  The baseline-family instance is proved directly inside node `[129]`
-from its incoming survivor fact; this module exposes no detached universal
-survival theorem or quotient-system carrier.
+decision.  A baseline-family instance at node `[129]` must be proved from that
+node's literal incoming ledger; this module exposes no detached universal
+survival theorem or quotient-system carrier, and it does not manufacture the
+baseline demand that the manuscript currently assumes.
 
 **The sandwich.**  `prop:sparse-entropy-sandwich-with-blockers` writes
 
@@ -158,14 +159,39 @@ noncomputable def pairResponseActivation
     if member : demand ∈ object.excessPorts threshold then
       (object.surplusPortOfMem member).support
     else ∅
+  let rawPorts : List (object.Vertex × object.Vertex) :=
+    object.orderedVertices.flatMap fun centre =>
+      (object.selectedPortEndpoints threshold centre).map fun endpoint =>
+        (centre, endpoint)
+  let vertexRank (vertex : object.Vertex) :=
+    object.orderedVertices.idxOf vertex
+  let radix := object.orderedVertices.length + 1
+  let chordKey (demand : object.Vertex × object.Vertex) :=
+    let ends := pairResponseChordEnds active demand
+    let first := min (vertexRank ends.1) (vertexRank ends.2)
+    let second := max (vertexRank ends.1) (vertexRank ends.2)
+    (((first * radix + second) * radix + vertexRank demand.1) * radix +
+      vertexRank demand.2)
+  let orderedPorts := rawPorts.insertionSort fun left right =>
+    chordKey left ≤ chordKey right
+  let rec lexicographicSublists :
+      List (object.Vertex × object.Vertex) →
+        List (List (object.Vertex × object.Vertex))
+    | [] => [[]]
+    | head :: tail =>
+        let rest := lexicographicSublists tail
+        [] :: (rest.map (head :: ·) ++ rest.tail)
+  let orderedChordSets :=
+    ((lexicographicSublists orderedPorts).map List.toFinset).filter fun chords =>
+      chords ∈ (object.excessPorts threshold).powerset
   exact {
     declaredSupport := supportOf
     returnSupport := returnOf
     localBuffer := bufferOf
-    profileObstructions := fun _ => ∅
-    responseObstructions := fun _ => ∅
+    profileObstructions := fun _ => []
+    responseObstructions := fun _ => []
     chordObstructions := fun pair =>
-      (object.excessPorts threshold).powerset.filter fun chords =>
+      orderedChordSets.filter fun chords =>
         SparsePairSuppressionChordObstruction active pair chords }
 
 /-- The active-family fact constructs the concrete response activation. -/
@@ -285,15 +311,15 @@ noncomputable def recordSparsePairDEBlockers
     profileObstructions := fun pair =>
       if SparsePairDEProfileObstructionAt
           (Baseline := Baseline) (LengthOK := LengthOK) activation pairs pair then
-        {FiniteObject.DemandActivation.pairCoordinate pair
-          ((activation.pairSupport pair).getD ∅)}
-      else ∅
+        [FiniteObject.DemandActivation.pairCoordinate pair
+          ((activation.pairSupport pair).getD ∅)]
+      else []
     responseObstructions := fun pair =>
       if SparsePairDEResponseObstructionAt
           (Baseline := Baseline) (LengthOK := LengthOK) activation pairs pair then
-        {FiniteObject.DemandActivation.pairCoordinate pair
-          ((activation.pairSupport pair).getD ∅)}
-      else ∅
+        [FiniteObject.DemandActivation.pairCoordinate pair
+          ((activation.pairSupport pair).getD ∅)]
+      else []
     chordObstructions := activation.chordObstructions }
 
 theorem recordedSparsePairDEBlocker_nonempty
@@ -322,7 +348,7 @@ theorem recordedSparsePairDEBlocker_nonempty
             change coordinate ∈
               (if SparsePairDEProfileObstructionAt
                   (Baseline := Baseline) (LengthOK := LengthOK)
-                  activation pairs pair then {coordinate} else ∅)
+                  activation pairs pair then [coordinate] else [])
             rw [if_pos profile]
             simp)⟩
   · exact ((recordSparsePairDEBlockers (Baseline := Baseline)
@@ -335,7 +361,7 @@ theorem recordedSparsePairDEBlocker_nonempty
             change coordinate ∈
               (if SparsePairDEResponseObstructionAt
                   (Baseline := Baseline) (LengthOK := LengthOK)
-                  activation pairs pair then {coordinate} else ∅)
+                  activation pairs pair then [coordinate] else [])
             rw [if_pos response]
             simp)⟩
 

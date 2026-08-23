@@ -416,6 +416,7 @@ noncomputable def freePairEntropyDichotomy
       current known)
     [FactKeys.Has (K .baselineSpineDemand) known]
     [FactKeys.Has (K .independentPairFamily) known]
+    [FactKeys.Has (K .incrementalSkeletonRoom) known]
     (sandwichFresh : K .freePairEntropySandwich ∉ known)
     (unrealizedFresh : K .freePairCodeUnrealized ∉ known) :
     Decision (K .freePairEntropySandwich) (K .freePairCodeUnrealized) previous := by
@@ -468,18 +469,55 @@ noncomputable def freePairEntropyDichotomy
               (current.object.degreeSurplus data.threshold).choose 2) ≤
             Graph.skeletonBudget current.object := by
         simpa only [responseCard] using realized.2
-      let handshake : data.threshold * current.object.vertexCount ≤
-          2 * current.object.edgeCount :=
-        Graph.baselineDegree_mul_vertexCount_le_two_mul_edgeCount
-          current.object data.threshold fun vertex =>
-            le_trans current.baseline
-              (current.object.minDegree_le_degree vertex)
-      let above : Graph.cubicBaselineEdgeCount current.object.vertexCount
-          data.threshold ≤ current.object.edgeCount :=
-        Graph.cubicBaselineEdgeCount_le_edgeCount_of_handshake
-          current.object data.threshold handshake
-      let sandwich := Graph.entropySandwich_of_unblocked current.object
-        (le_trans (by norm_num) data.three_le_threshold) above count demand
+      let room := (previous.get (K .incrementalSkeletonRoom)).down.1
+      let sandwich :
+          2 ^ (current.object.degreeSurplus data.threshold).choose 2 ≤
+            2 ^ Graph.spineDeficit current.object.vertexCount data.threshold
+                family.card *
+              current.object.vertexCount ^
+                (current.object.edgeCount -
+                  Graph.cubicBaselineEdgeCount current.object.vertexCount
+                    data.threshold) := by
+        have chain :
+            2 ^ family.card *
+                2 ^ (current.object.degreeSurplus data.threshold).choose 2 ≤
+              2 ^ family.card *
+                (2 ^ Graph.spineDeficit current.object.vertexCount
+                    data.threshold family.card *
+                  current.object.vertexCount ^
+                    (current.object.edgeCount -
+                      Graph.cubicBaselineEdgeCount current.object.vertexCount
+                        data.threshold)) := by
+          calc
+            2 ^ family.card *
+                  2 ^ (current.object.degreeSurplus data.threshold).choose 2
+                = 2 ^ (family.card +
+                    (current.object.degreeSurplus data.threshold).choose 2) := by
+                    rw [pow_add]
+            _ ≤ Graph.skeletonBudget current.object := count
+            _ ≤ Graph.cubicBaselineBudget current.object.vertexCount
+                    data.threshold *
+                  current.object.vertexCount ^
+                    (current.object.edgeCount -
+                      Graph.cubicBaselineEdgeCount current.object.vertexCount
+                        data.threshold) := room
+            _ ≤ 2 ^ (family.card + Graph.spineDeficit
+                    current.object.vertexCount data.threshold family.card) *
+                  current.object.vertexCount ^
+                    (current.object.edgeCount -
+                      Graph.cubicBaselineEdgeCount current.object.vertexCount
+                        data.threshold) :=
+                Nat.mul_le_mul_right _ demand
+            _ = 2 ^ family.card *
+                  (2 ^ Graph.spineDeficit current.object.vertexCount
+                      data.threshold family.card *
+                    current.object.vertexCount ^
+                      (current.object.edgeCount -
+                        Graph.cubicBaselineEdgeCount current.object.vertexCount
+                          data.threshold)) := by
+                rw [pow_add, Nat.mul_assoc]
+        exact Nat.le_of_mul_le_mul_left chain
+          (Nat.two_pow_pos family.card)
       let result : FreePairEntropySandwichStatement data current.object :=
         ⟨Coordinate, family, coordinateSupport, survives, demand,
           deficitBound, count, sandwich⟩
@@ -665,9 +703,20 @@ noncomputable def coupledExcessDichotomy
       have above : data.surplusThreshold current.object.vertexCount <
           current.object.degreeSurplus data.threshold :=
         (previous.get (K .surplusAbove)).down
-      exact if capped : Graph.SparsePressureCappedAt certified
-          data.routingLabelBound then
-        ⟨.inl ⟨by
+      let ledger := certified.ledger
+      let patternBound := fun _ : Graph.SameTokenBlockerRoles.TokenClass =>
+        Graph.SameTokenBlockerRoles.geometricPatternBound data.routingLabelBound
+      rcases Nat.eq_zero_or_pos (ledger.presented.coupledExcess
+          ledger.presented.tokenClass patternBound) with balanced | overload
+      · have capped : Graph.SparsePressureCappedAt certified
+            data.routingLabelBound := by
+          exact ledger.presented.demand_le_sparsePressureBound
+            ledger.presented.tokenClass patternBound
+            (Graph.SameTokenBlockerRoles.homogeneousTokenCap
+              data.routingLabelBound)
+            (current.object.capacityTokenSupply data.threshold)
+            (fun _ => Nat.le_refl _) ledger.tokens_card_le balanced
+        exact ⟨.inl ⟨by
           have sizePos : 0 < current.object.vertexCount := by
             by_contra zero
             have empty : current.object.vertexCount = 0 :=
@@ -700,56 +749,10 @@ noncomputable def coupledExcessDichotomy
             data.spineScale * Core.ceilSqrt current.object.vertexCount
           rw [scale]
           exact estimate⟩⟩
-      else
-        ⟨.inr ⟨by
-          let ledger := certified.ledger
-          have failure : Graph.CapacityTokenLedger.sparsePressureBound
-                ledger.entropyBudget
-                (Graph.SameTokenBlockerRoles.homogeneousTokenCap
-                  data.routingLabelBound)
-                (current.object.capacityTokenSupply data.threshold) <
-              current.object.degreeSurplus data.threshold :=
-            Nat.lt_of_not_ge capped
-          obtain ⟨token, tokenMem, role, overload, excess, pattern⟩ :
-              ∃ token ∈ ledger.presented.tokens,
-                ∃ role : Graph.SameTokenBlockerRoles.Role,
-                  0 < ledger.presented.coupledExcess
-                      ledger.presented.tokenClass
-                      (fun _ => Graph.SameTokenBlockerRoles.geometricPatternBound
-                        data.routingLabelBound) ∧
-                    ledger.presented.coupledExcess
-                        ledger.presented.tokenClass
-                        (fun _ => Graph.SameTokenBlockerRoles.geometricPatternBound
-                          data.routingLabelBound) ≤
-                      Graph.SameTokenBlockerRoles.sameTokenRoleBound *
-                        ledger.presented.tokens.card *
-                          ledger.presented.roleFibreExcess
-                            ledger.presented.tokenClass
-                            (fun _ =>
-                              Graph.SameTokenBlockerRoles.geometricPatternBound
-                                data.routingLabelBound) token role ∧
-                    ((∃ structured ⊆ ledger.presented.roleFibre token role,
-                        Graph.PatternFamily.IsMatching structured ∧
-                          Graph.PatternFamily.patternThreshold
-                              (ledger.presented.roleFibre token role).card ≤
-                            structured.card) ∨
-                      (∃ centre, ∃ structured ⊆
-                          ledger.presented.roleFibre token role,
-                        Graph.PatternFamily.IsStar structured centre ∧
-                          Graph.PatternFamily.patternThreshold
-                              (ledger.presented.roleFibre token role).card ≤
-                            structured.card)) := by
-            rcases ledger.presented.sparsePressureAlternative
-                ledger.presented.tokenClass
-                (fun _ => Graph.SameTokenBlockerRoles.geometricPatternBound
-                  data.routingLabelBound)
-                (Graph.SameTokenBlockerRoles.homogeneousTokenCap
-                  data.routingLabelBound)
-                (current.object.capacityTokenSupply data.threshold)
-                (fun _ => Nat.le_refl _) ledger.tokens_card_le with
-              bounded | ⟨token, tokenMem, role, rest⟩
-            · exact absurd bounded (Nat.not_le.mpr failure)
-            · exact ⟨token, tokenMem, role, rest⟩
+      · exact ⟨.inr ⟨by
+          obtain ⟨token, tokenMem, role, excess, pattern⟩ :=
+            ledger.presented.exists_overloaded_roleFibre
+              ledger.presented.tokenClass patternBound
           exact ⟨presentation, ledger, token, role, tokenMem, trivial,
             overload, excess, pattern⟩⟩⟩))
     nearCubicFresh overloadFresh
