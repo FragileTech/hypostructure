@@ -8,14 +8,15 @@ open Classical
 
 example {object : FiniteObject.{u}} {threshold dischargeScale : ℕ}
     {packing : Finset (Finset object.Vertex)}
-    {piece : CanonicalPiece object packing} {hub : object.Vertex}
+    {piece : CanonicalPiece object packing}
+    {assigned : Finset object.Vertex} {hub : object.Vertex}
     (profile : TypeBFanClosedPorts.Profile object)
     (localReserve : LocalReserveBlock object)
     (chosenNonWindow : Finset (object.Vertex × object.Vertex))
     (eligible : (CandidateData.positive profile localReserve chosenNonWindow).IsCandidate
-      threshold dischargeScale piece hub) :
+      threshold dischargeScale packing piece.vertices assigned hub) :
     0 ≤ (CandidateData.positive profile localReserve chosenNonWindow).entryPayment₂
-        threshold dischargeScale piece hub ∧
+        threshold dischargeScale piece.vertices hub ∧
       2 * TypeBFanIncidence.scaledDeficit object threshold dischargeScale
           profile.envelope hub ≤
         (dischargeScale : Int) *
@@ -31,9 +32,13 @@ example {object : FiniteObject.{u}} {threshold dischargeScale : ℕ}
 example {object : FiniteObject.{u}} {threshold dischargeScale : ℕ}
     {packing : Finset (Finset object.Vertex)}
     (piece : CanonicalPiece object packing) :
-    HasDisjointChoice object threshold dischargeScale piece
+    HasDisjointChoice object threshold dischargeScale packing piece.vertices
+          (centres object threshold piece.vertices)
           (centres object threshold piece.vertices) ∨
-        Nonempty (OverlapObstruction object threshold dischargeScale piece) :=
-  b2_or_overlap object threshold dischargeScale piece
+        Nonempty (OverlapObstruction object threshold dischargeScale packing
+          piece.vertices (centres object threshold piece.vertices)) :=
+  b2_or_overlap object threshold dischargeScale packing piece.vertices
+    (centres object threshold piece.vertices)
+    (centres_high object threshold piece.vertices)
 
 end Hypostructure.Graph.TypeBRefinedSupport

@@ -3846,21 +3846,65 @@ noncomputable def b2AssignmentDichotomy
       -- Read the surviving support from the direct-cycle-free fact itself.
       -- This both consumes the first half of `[81]` and prevents the B2 choice
       -- from silently selecting a different existential Type B support.
-      obtain ⟨packing, valid, maximal, component, componentMem, centres, assigned,
-        _directFree⟩ :=
-        (ExactLedger.get previous (K .typeBDirectCycleFree)).down
-      let canonicalPiece :
-          Graph.TypeBRefinedSupport.CanonicalPiece current.object packing :=
-        ⟨component, componentMem⟩
-      have assigned' : TypeBAssignedCentres data current.object packing
-          canonicalPiece.vertices centres := assigned
-      rcases Graph.TypeBRefinedSupport.b2_or_overlap current.object
-          data.threshold data.dischargeScale canonicalPiece centres
-          (TypeBAssignedCentres.high data current.object assigned') with
-        choice | obstruction
-      · exact ⟨.inl ⟨packing, valid, maximal, canonicalPiece, centres, assigned', choice⟩⟩
-      · exact ⟨.inr ⟨packing, valid, maximal, canonicalPiece, centres, assigned',
-            obstruction⟩⟩)
+      rcases (ExactLedger.get previous (K .typeBDirectCycleFree)).down with
+        canonical | absorbed
+      · obtain ⟨packing, valid, maximal, component, componentMem, centres,
+          assigned, _directFree⟩ := canonical
+        let canonicalPiece :
+            Graph.TypeBRefinedSupport.CanonicalPiece current.object packing :=
+          ⟨component, componentMem⟩
+        have assigned' : TypeBAssignedCentres data current.object packing
+            canonicalPiece.vertices centres := assigned
+        rcases Graph.TypeBRefinedSupport.b2_or_overlap current.object
+            data.threshold data.dischargeScale packing canonicalPiece.vertices
+            centres (TypeBAssignedCentres.high data current.object assigned') with
+          choice | obstruction
+        · exact ⟨.inl ⟨.inl ⟨packing, valid, maximal, canonicalPiece, centres,
+              assigned', choice⟩⟩⟩
+        · exact ⟨.inr ⟨.inl ⟨packing, valid, maximal, canonicalPiece, centres,
+              assigned', obstruction⟩⟩⟩
+      · let cold := canonicalColdWindows data current.object
+        let cubic := cold.filter (AmbientCubicWindow data current.object)
+        let packing := canonicalWindowPacking data current.object
+        by_cases choices :
+            ∀ (baseline : Graph.MinimumDegreeAtLeast data.threshold current.object)
+                (bridgeless : ∀ contraction : Graph.EdgeContraction current.object,
+                  contraction.HasReturn)
+                (large : 2 < current.object.vertexCount)
+                (stub : {stub // stub ∈
+                  Graph.ColdCorridor.allSelectedStubs current.object cubic})
+                (centre : current.object.Vertex),
+              AbsorbedGermFanEnvelopeWitness data current.object cubic baseline
+                  bridgeless large stub centre →
+                Graph.TypeBRefinedSupport.HasDisjointChoice current.object
+                  data.threshold data.dischargeScale packing
+                  (Graph.ColdCorridor.stubGerm data.coldSignature data.threshold
+                    (Graph.HasCycleWithLength data.LengthOK) current.object cubic
+                      baseline bridgeless large stub).support
+                  {centre} {centre}
+        · exact ⟨.inl ⟨.inr ⟨absorbed, choices⟩⟩⟩
+        · push Not at choices
+          obtain ⟨baseline, bridgeless, large, stub, centre, witness,
+            failure⟩ := choices
+          have noChoice : ¬ Graph.TypeBRefinedSupport.HasDisjointChoice
+              current.object data.threshold data.dischargeScale packing
+              (Graph.ColdCorridor.stubGerm data.coldSignature data.threshold
+                (Graph.HasCycleWithLength data.LengthOK) current.object cubic
+                  baseline bridgeless large stub).support
+              {centre} {centre} := failure
+          rcases Graph.TypeBRefinedSupport.b2_or_overlap current.object
+              data.threshold data.dischargeScale packing
+              (Graph.ColdCorridor.stubGerm data.coldSignature data.threshold
+                (Graph.HasCycleWithLength data.LengthOK) current.object cubic
+                  baseline bridgeless large stub).support
+              {centre} (by
+                intro hub member
+                rw [Finset.mem_singleton] at member
+                exact member ▸ witness.2.1) with
+            choice | obstruction
+          · exact absurd choice noChoice
+          · exact ⟨.inr ⟨.inr ⟨absorbed, baseline, bridgeless, large, stub,
+                centre, witness, obstruction⟩⟩⟩)
     choiceFresh obstructionFresh
 
 /-! ## B2 and the live Type B post-ledger core
@@ -3907,7 +3951,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
             choice⟩ := choiceFact
           let ledger : Graph.TypeBRefinedSupport.DisjointLedger
               inputs.current.object data.threshold data.dischargeScale
-                canonicalPiece centres :=
+                packing canonicalPiece.vertices centres :=
             ⟨Classical.choice choice,
               TypeBAssignedCentres.high data inputs.current.object assigned,
               TypeBAssignedCentres.centres_subset data inputs.current.object assigned⟩
@@ -4023,9 +4067,19 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
               exact Graph.TypeBMaximalCompletion.Grouped.mem_centres_iff
                 ledger components production avoids windowFree
                 uncompressibleFact centre
-          exact ⟨packing, valid, maximal, canonicalPiece, centres, assigned,
+          exact Or.inl ⟨packing, valid, maximal, canonicalPiece, centres, assigned,
             ledger, ledger.exactAugmentedLedgerRefinement,
-            componentFacts, groupedCoverage⟩⟩)
+            componentFacts, groupedCoverage⟩
+          rename_i absorbed
+          refine .inr ⟨absorbed, ?_⟩
+          intro baseline bridgeless large stub centre witness
+          obtain ⟨choice⟩ :=
+            absorbed.2 baseline bridgeless large stub centre witness
+          refine ⟨choice, ?_⟩
+          intro member
+          exact (Graph.TypeBRefinedSupport.mem_candidateFamily_iff.mp
+            (choice.eligible centre member)).2.entryRefines
+        ⟩)
         .nil)
     0 0
 
@@ -4198,11 +4252,18 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
         refine ⟨?_⟩
         obtain ⟨packing, valid, maximal, canonicalPiece, centres, assigned,
           obstruction⟩ := residual.down
-        exact ⟨packing, valid, maximal, canonicalPiece, centres, assigned,
+        exact Or.inl ⟨packing, valid, maximal, canonicalPiece, centres, assigned,
           obstruction, fun centre member envelope =>
             Graph.TypeBEnvelopeCharge.envelopeNegativePart_le envelope
               (TypeBAssignedCentres.high data inputs.current.object assigned centre member)
-              data.bridgeMassSlack⟩)
+              data.bridgeMassSlack⟩
+        rename_i absorbed
+        obtain ⟨directFree, baseline, bridgeless, large, stub, centre,
+          witness, obstruction⟩ := absorbed
+        exact .inr ⟨directFree, baseline, bridgeless, large, stub, centre,
+          witness, obstruction, fun envelope =>
+            Graph.TypeBEnvelopeCharge.envelopeNegativePart_le envelope
+              witness.2.1 data.bridgeMassSlack⟩)
       .nil)
     0 0
 
@@ -4230,15 +4291,14 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       .cons (key := K .typeBExclusionResidualMass) (by
         classical
         refine ⟨?_⟩
-        have residualFact := residual.down
         obtain ⟨packing, packingValid, packingMaximal, canonicalPiece,
-          centres, assigned, ledger, exact, _postLedger, negative⟩ :=
-          residualFact
-        exact ⟨packing, packingValid, packingMaximal, canonicalPiece, centres, assigned,
-          ledger, exact, negative,
+          centres, assigned, ledger, exact, _postLedger, negative⟩ := residual.down
+        exact ⟨packing, packingValid, packingMaximal, canonicalPiece,
+          centres, assigned, ledger, exact, negative,
           fun centre member envelope =>
             Graph.TypeBEnvelopeCharge.envelopeNegativePart_le envelope
-              (TypeBAssignedCentres.high data inputs.current.object assigned centre member)
+              (TypeBAssignedCentres.high data inputs.current.object assigned
+                centre member)
               data.bridgeMassSlack⟩)
       .nil)
     0 0
@@ -4283,33 +4343,36 @@ noncomputable def typeBExclusionDichotomy
     (by
       classical
       apply Classical.choice
-      obtain ⟨packing, valid, maximal, canonicalPiece, centres, assigned,
-        ledger, exact, postLedger, _groupedCoverage⟩ :=
-        (ExactLedger.get previous (K .typeBDisjointLedger)).down
-      -- Both manuscript forms of the assigned support carry the negative net
-      -- charge of the counted core (`def:typeB-assigned-ledger`).
-      have negative : current.object.NegativeNetCharge canonicalPiece.vertices
-          data.threshold data.dischargeScale := by
-        rcases assigned with ⟨negative, _, _⟩ | ⟨negative, _, _⟩ <;> exact negative
-      let charge := ∑ vertex ∈ ledger.remainingCore,
-        Graph.TypeBRefinedSupport.scaledCoreCharge current.object
-          data.threshold data.dischargeScale canonicalPiece.vertices vertex
-      have selectedNonnegative : (0 : Int) ≤ ledger.selectedEntryPayment₂ := by
-        rw [Graph.TypeBRefinedSupport.DisjointLedger.selectedEntryPayment₂]
-        refine Finset.sum_nonneg ?_
-        intro centre _member
-        exact (ledger.entry_isCandidate centre.1 centre.2).entryRefines
-      by_cases clean : (0 : Int) ≤ charge
-      · have nonnegative :=
-          Graph.TypeBEnvelopeCharge.nonNegativeNetCharge_of_disjointLedger_remainingCore_nonneg_of_selectedEntryPayment₂_nonnegative
-            (object := current.object) ledger exact selectedNonnegative clean
-        -- Publish the paper's exact `N₀(X) ≥ 0` conclusion.  The selected
-        -- negative-support fact remains in `assigned`; the canonical terminal
-        -- reads both pieces from this one semantic value and closes.
-        exact ⟨.inl ⟨packing, valid, maximal, canonicalPiece, centres, assigned,
-          nonnegative⟩⟩
-      · exact ⟨.inr ⟨packing, valid, maximal, canonicalPiece, centres, assigned,
-          ledger, exact, postLedger, by simpa [charge] using clean⟩⟩)
+      rcases (ExactLedger.get previous (K .typeBDisjointLedger)).down with
+        canonical | absorbed
+      · obtain ⟨packing, valid, maximal, canonicalPiece, centres, assigned,
+          ledger, exact, postLedger, _groupedCoverage⟩ := canonical
+        -- Both manuscript forms of an assigned support carry the negative net
+        -- charge of its counted core (`def:typeB-assigned-ledger`).
+        have negative : current.object.NegativeNetCharge canonicalPiece.vertices
+            data.threshold data.dischargeScale := by
+          rcases assigned with ⟨negative, _, _⟩ | ⟨negative, _, _⟩ <;>
+            exact negative
+        let charge := ∑ vertex ∈ ledger.remainingCore,
+          Graph.TypeBRefinedSupport.scaledCoreCharge current.object
+            data.threshold data.dischargeScale canonicalPiece.vertices vertex
+        have selectedNonnegative : (0 : Int) ≤ ledger.selectedEntryPayment₂ := by
+          rw [Graph.TypeBRefinedSupport.DisjointLedger.selectedEntryPayment₂]
+          refine Finset.sum_nonneg ?_
+          intro centre _member
+          exact (ledger.entry_isCandidate centre.1 centre.2).entryRefines
+        by_cases clean : (0 : Int) ≤ charge
+        · have nonnegative :=
+            Graph.TypeBEnvelopeCharge.nonNegativeNetCharge_of_disjointLedger_remainingCore_nonneg_of_selectedEntryPayment₂_nonnegative
+              (object := current.object) ledger exact selectedNonnegative clean
+          exact ⟨.inl ⟨.inl ⟨packing, valid, maximal, canonicalPiece,
+            centres, assigned, nonnegative⟩⟩⟩
+        · exact ⟨.inr ⟨packing, valid, maximal, canonicalPiece,
+            centres, assigned, ledger, exact, postLedger,
+            by simpa [charge] using clean⟩⟩
+      · -- `[177]` has a successful B2 entry, so it follows the paper's
+        -- yes edge `[74]`/`[82]` → `[76]`/`[85]`, never `[84]`.
+        exact ⟨.inl ⟨.inr absorbed⟩⟩)
     closedFresh residualFresh
 
 /-! ## Node `[87]`: the bounded selected Type A support

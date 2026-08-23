@@ -10,14 +10,16 @@ example
     {threshold dischargeScale : ℕ}
     {packing : Finset (Finset object.Vertex)}
     {piece : CanonicalPiece object packing}
-    (obstruction : OverlapObstruction object threshold dischargeScale piece)
+    {assigned : Finset object.Vertex}
+    (obstruction : OverlapObstruction object threshold dischargeScale packing
+      piece.vertices assigned)
     (targetSafe : TypeAB.ContextuallyDyadicSafe presentation object)
     (normalForms : ∀ hub ∈ obstruction.demands,
       NormalForm object threshold hub)
     (cycleFree : ∀ hub ∈ obstruction.demands,
       TypeBDirectCycle.DirectCycleFree object order LengthOK packing hub) :
     GlobalLocalReflectionACE presentation object order LengthOK threshold
-      dischargeScale piece obstruction :=
+      dischargeScale piece assigned obstruction :=
   globalLocalReflectionACE obstruction targetSafe normalForms cycleFree
 
 end Hypostructure.Graph.TypeBRefinedSupport

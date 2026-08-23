@@ -2249,9 +2249,13 @@ abbrev handoffWindowFree (data : Data.{u}) (object : Graph.FiniteObject.{u}) :
 
 /-- The exact case-(ii) witness of `lem:absorbed-germ-fan-data` for one selected
 branch-excess half-edge: a high centre on its first-failure support, its cubic
-neighbourhood, and the two-incidence decorated handoff envelope at that centre.
-The indices remain part of the proposition so later Type B decisions classify
-the centre without replacing the corridor datum by a canonical support. -/
+neighbourhood, and the two distinct corridor incidences and simple tails at
+that centre.  The tails land in the selected packed-window union, exactly as
+the corridor construction proves.  In particular this proposition does **not**
+misdeclare that union to be the `P₁₃`-free remainder core of a
+`DecoratedHandoff.Envelope`; the manuscript supplies fan data here, not a Type A
+exit-`(7)` core.  The indices remain part of the proposition so later Type B
+decisions classify the same literal corridor datum. -/
 noncomputable def AbsorbedGermFanEnvelopeWitness (data : Data.{u})
     (object : Graph.FiniteObject.{u})
     (cubic : Finset (Finset object.Vertex))
@@ -2267,22 +2271,44 @@ noncomputable def AbsorbedGermFanEnvelopeWitness (data : Data.{u})
     data.threshold < object.degree centre ∧
       (∀ neighbour : object.Vertex, object.graph.Adj centre neighbour →
         object.degree neighbour = data.threshold) ∧
-      ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-          (handoffHighDegree data object)
-          (handoffAbsorbing data object (canonicalWindowPacking data object)),
-        envelope.decorations = {centre} ∧
-          (envelope.assigned centre).card = 2
+      ∃ first second : object.Vertex,
+        first ≠ second ∧
+          object.graph.Adj centre first ∧
+          object.graph.Adj centre second ∧
+          ∃ left right : List object.Vertex,
+            left.head? = some first ∧
+            right.head? = some second ∧
+            left.IsChain object.graph.Adj ∧
+            right.IsChain object.graph.Adj ∧
+            left.Nodup ∧
+            right.Nodup ∧
+            (∃ terminal, left.getLast? = some terminal ∧
+              terminal ∈ Graph.ColdCorridor.windowsOf object cubic) ∧
+            (∃ terminal, right.getLast? = some terminal ∧
+              terminal ∈ Graph.ColdCorridor.windowsOf object cubic) ∧
+            (∀ vertex ∈ left,
+              vertex ∈ Graph.ColdCorridor.windowsOf object cubic ∨
+                  vertex = centre →
+                left.getLast? = some vertex) ∧
+            (∀ vertex ∈ right,
+              vertex ∈ Graph.ColdCorridor.windowsOf object cubic ∨
+                  vertex = centre →
+                right.getLast? = some vertex) ∧
+            Graph.DecoratedHandoff.FanSafe object data.LengthOK
+              (handoffAbsorbing data object
+                (canonicalWindowPacking data object)) centre first second ∧
+            Graph.DecoratedHandoff.FanSafe object data.LengthOK
+              (handoffAbsorbing data object
+                (canonicalWindowPacking data object)) centre second first
 
 /-- Node `[177]`, `lem:absorbed-germ-fan-data` (ii), the decorated handoff fan
 data at the heavy centre.  For every selected branch-excess half-edge `ε` of an
 ambient-cubic cold window, choose the heavy vertex `z` supplied by case (ii) of
 the first-failure split.  Every neighbour of `z` is cubic, and the two distinct
 corridor incidences at `z`, together with the corridor tails on their two sides,
-form the geometric decorated handoff fan data used by
-`def:decorated-fan-envelope` (`lem:typeA-high-degree-handoff`): `H = {z}` and
-`K_z` has exactly two members.  This is the indexed case-(ii) handoff datum;
-it does not add the canonical negative-core or zero-surplus hypotheses of the
-ordinary Type B support lane. -/
+form the geometric decorated handoff fan data used by the Type B calculation.
+This is the indexed case-(ii) datum; it does not invent a Type A core, a
+canonical negative remainder support, or a zero-surplus hypothesis. -/
 noncomputable def AbsorbedGermFanEnvelopeStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
@@ -2751,11 +2777,11 @@ noncomputable def TypeBFanDirectCycleFreeStatement (data : Data.{u})
             data.LengthOK packing centre) ∨
     AbsorbedGermFanDirectCycleFreeStatement data object
 
-/-- Node `[72]`/`[81]`, B2 yes arm, on the literal indexed `[177]` envelope.
-For every retained cold-corridor witness, one of its actual decorated handoff
-envelopes admits a disjoint candidate entry at every assigned decoration.  The
-packing is used only for the manuscript's packed-window incidence ledger; the
-counted core is `envelope.core`, never a manufactured remainder component. -/
+/-- Node `[72]`/`[81]`, B2 yes arm, on the literal indexed `[177]` fan datum.
+For every retained cold-corridor witness, its actual heavy centre admits the
+paper's candidate entry on that same first-failure support.  The singleton is
+the one centre whose discarded half-edge is being charged; no decorated Type A
+core is manufactured. -/
 noncomputable def AbsorbedGermFanB2ChoiceStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
@@ -2771,18 +2797,16 @@ noncomputable def AbsorbedGermFanB2ChoiceStatement (data : Data.{u})
         (centre : object.Vertex),
       AbsorbedGermFanEnvelopeWitness data object cubic baseline bridgeless
           large stub centre →
-        ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-            (handoffHighDegree data object)
-            (handoffAbsorbing data object packing),
-          envelope.decorations = {centre} ∧
-            (envelope.assigned centre).card = 2 ∧
-            Graph.TypeBRefinedSupport.HasDisjointChoice object data.threshold
-              data.dischargeScale packing envelope.core envelope.decorations
-              envelope.decorations
+        Graph.TypeBRefinedSupport.HasDisjointChoice object data.threshold
+          data.dischargeScale packing
+          (Graph.ColdCorridor.stubGerm data.coldSignature data.threshold
+            (Graph.HasCycleWithLength data.LengthOK) object cubic baseline
+              bridgeless large stub).support
+          {centre} {centre}
 
-/-- Node `[72]`/`[81]`, B2 no arm, on the literal indexed `[177]` envelope.
+/-- Node `[72]`/`[81]`, B2 no arm, on the literal indexed `[177]` fan datum.
 The published failure is the paper's genuine minimal overlap obstruction on
-the same counted core and assigned decorations. -/
+the same first-failure support and its actual heavy centre. -/
 noncomputable def AbsorbedGermFanB2ObstructionStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
@@ -2795,17 +2819,80 @@ noncomputable def AbsorbedGermFanB2ObstructionStatement (data : Data.{u})
           contraction.HasReturn)
         (large : 2 < object.vertexCount)
         (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic})
-        (centre : object.Vertex)
-        (envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-          (handoffHighDegree data object)
-          (handoffAbsorbing data object packing)),
+        (centre : object.Vertex),
       AbsorbedGermFanEnvelopeWitness data object cubic baseline bridgeless
           large stub centre ∧
-        envelope.decorations = {centre} ∧
-        (envelope.assigned centre).card = 2 ∧
         Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction object
-          data.threshold data.dischargeScale packing envelope.core
-          envelope.decorations)
+          data.threshold data.dischargeScale packing
+          (Graph.ColdCorridor.stubGerm data.coldSignature data.threshold
+            (Graph.HasCycleWithLength data.LengthOK) object cubic baseline
+              bridgeless large stub).support
+          {centre})
+
+/-- Nodes `[74]`/`[82]` on the indexed `[177]` lane.  This is the literal
+successful B2(a)--(c) datum on the first-failure support: it retains the
+chosen `DisjointChoice`, hence all of its candidate and pairwise-disjoint
+carrier fields, and records the candidate's nonnegative augmented payment.
+It deliberately does not manufacture a canonical remainder piece or assert
+the post-ledger Type A component conclusions that require one. -/
+noncomputable def AbsorbedGermFanB2PaidStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop := by
+  classical
+  let cold := canonicalColdWindows data object
+  let cubic := cold.filter (AmbientCubicWindow data object)
+  let packing := canonicalWindowPacking data object
+  exact AbsorbedGermFanB2ChoiceStatement data object ∧
+    ∀ (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
+        (bridgeless : ∀ contraction : Graph.EdgeContraction object,
+          contraction.HasReturn)
+        (large : 2 < object.vertexCount)
+        (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic})
+        (centre : object.Vertex),
+      AbsorbedGermFanEnvelopeWitness data object cubic baseline bridgeless
+          large stub centre →
+        ∃ choice : Graph.TypeBRefinedSupport.DisjointChoice object
+            data.threshold data.dischargeScale packing
+            (Graph.ColdCorridor.stubGerm data.coldSignature data.threshold
+              (Graph.HasCycleWithLength data.LengthOK) object cubic baseline
+                bridgeless large stub).support
+            {centre} {centre},
+          ∀ member : centre ∈ ({centre} : Finset object.Vertex),
+            (choice.entry centre member).EntryRefines data.threshold
+              data.dischargeScale
+              (Graph.ColdCorridor.stubGerm data.coldSignature data.threshold
+                (Graph.HasCycleWithLength data.LengthOK) object cubic baseline
+                  bridgeless large stub).support
+              centre
+
+/-- Node `[84]` on the indexed `[177]` B2-failure lane.  The mass estimate is
+attached to the same corridor indices, actual heavy centre, first-failure
+support, and minimal overlap obstruction; no canonical support is substituted. -/
+noncomputable def AbsorbedGermFanB2ObstructionMassStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop := by
+  classical
+  let cold := canonicalColdWindows data object
+  let cubic := cold.filter (AmbientCubicWindow data object)
+  let packing := canonicalWindowPacking data object
+  exact AbsorbedGermFanDirectCycleFreeStatement data object ∧
+    ∃ (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
+        (bridgeless : ∀ contraction : Graph.EdgeContraction object,
+          contraction.HasReturn)
+        (large : 2 < object.vertexCount)
+        (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic})
+        (centre : object.Vertex),
+      AbsorbedGermFanEnvelopeWitness data object cubic baseline bridgeless
+          large stub centre ∧
+        Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction object
+          data.threshold data.dischargeScale packing
+          (Graph.ColdCorridor.stubGerm data.coldSignature data.threshold
+            (Graph.HasCycleWithLength data.LengthOK) object cubic baseline
+              bridgeless large stub).support
+          {centre}) ∧
+        ∀ envelope : Finset object.Vertex,
+          Graph.TypeBEnvelopeCharge.envelopeNegativePart object data.threshold
+              data.dischargeScale envelope centre ≤
+            data.bridgeMassFactor * data.dischargeScale *
+              (object.degree centre - data.threshold)
 
 /-- Node `[75]`/`[84]` on the indexed `[177]` certificate-residual lane. -/
 noncomputable def AbsorbedGermFanCertificateResidualMassStatement (data : Data.{u})
@@ -5500,10 +5587,11 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
   | .typeBB2Choice, object =>
       -- Node `[72]`/`[81]`, yes: the B2 disjoint choice at the assigned
       -- centres `H_X` of the literal fan support.  The absorbed lane retains
-      -- its actual decorated envelope rather than inventing a canonical piece.
+      -- its actual first-failure support and heavy centre rather than inventing
+      -- either a decorated Type A envelope core or a canonical piece.
       TypeBB2ChoiceStatement data object
   | .typeBDisjointLedger, object =>
-      TypeBAssignedLedgerWith data object (fun packing canonicalPiece centres =>
+      (TypeBAssignedLedgerWith data object (fun packing canonicalPiece centres =>
               ∃ ledger : Graph.TypeBRefinedSupport.DisjointLedger object
                   data.threshold data.dischargeScale packing
                     canonicalPiece.vertices centres,
@@ -5546,7 +5634,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                                   Graph.TypeBMaximalCompletion.SelectedComponent
                                     ledger components,
                                   centre =
-                                    (production component).separation.separator)
+                                    (production component).separation.separator)) ∨
+        AbsorbedGermFanB2PaidStatement data object
   | .typeBOverlapObstruction, object =>
       -- Node `[72]`/`[81]`, no.  `lem:typeB-bridge-to-overlap`: the
       -- disjoint-carrier clause fails on some assigned support, and what that
@@ -5558,7 +5647,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- bridge mass (`def:typeB-residual-mass`).
       TypeBFanCertificateResidualMassStatement data object
   | .typeBOverlapObstructionMass, object =>
-      TypeBAssignedLedgerWith data object (fun packing canonicalPiece centres =>
+      (TypeBAssignedLedgerWith data object (fun packing canonicalPiece centres =>
               Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction object
                 data.threshold data.dischargeScale packing
                   canonicalPiece.vertices centres) ∧
@@ -5567,7 +5656,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                   Graph.TypeBEnvelopeCharge.envelopeNegativePart object
                       data.threshold data.dischargeScale envelope centre ≤
                     data.bridgeMassFactor * data.dischargeScale *
-                      (object.degree centre - data.threshold))
+                      (object.degree centre - data.threshold))) ∨
+        AbsorbedGermFanB2ObstructionMassStatement data object
   | .typeBExclusionResidualMass, object =>
       TypeBAssignedLedgerWith data object (fun packing canonicalPiece centres =>
           ∃ ledger : Graph.TypeBRefinedSupport.DisjointLedger object
@@ -5581,7 +5671,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
               ∀ centre ∈ centres,
                 ∀ envelope : Finset object.Vertex,
                   Graph.TypeBEnvelopeCharge.envelopeNegativePart object
-                      data.threshold data.dischargeScale envelope centre ≤
+                  data.threshold data.dischargeScale envelope centre ≤
                     data.bridgeMassFactor * data.dischargeScale *
                       (object.degree centre - data.threshold))
   | .typeBBridgeMass, object =>
@@ -5716,14 +5806,16 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                 (object.pieceSupport (object.remainderSupport packing) component)
                 data.threshold data.dischargeScale
   | .typeBExcluded, object =>
-      -- Nodes `[74]`/`[82]`, the successful B2 reduction: publish the
-      -- manuscript's exact `N₀(X) ≥ 0` statement on the same canonical
-      -- support.  `TypeBAssignedCentres` retains the incoming negative-support
-      -- hypothesis, so the terminal can read this semantic fact back and close
-      -- without manufacturing a second carrier.
-      TypeBAssignedLedgerWith data object (fun _packing canonicalPiece _centres =>
-        object.NonNegativeNetCharge canonicalPiece.vertices data.threshold
-          data.dischargeScale)
+      -- Nodes `[74]`/`[82]`, the successful B2 reduction.  A canonical
+      -- assigned support publishes the paper's literal `N₀(X) ≥ 0`.
+      -- The indexed `[177]` lane publishes its literal paid B2 entry: that
+      -- lane has no canonical negative remainder support and must not be
+      -- relabelled as the B2-failure residual of `[84]`.
+      (TypeBAssignedLedgerWith data object
+          (fun _packing canonicalPiece _centres =>
+            object.NonNegativeNetCharge canonicalPiece.vertices data.threshold
+              data.dischargeScale)) ∨
+        AbsorbedGermFanB2PaidStatement data object
   | .typeBExclusionResidual, object =>
       TypeBAssignedLedgerWith data object (fun packing canonicalPiece centres =>
               ∃ ledger : Graph.TypeBRefinedSupport.DisjointLedger object

@@ -1753,8 +1753,31 @@ noncomputable def selectedTypeBDecoratedCertificate
                   (by simp [K_eq_iff, excludedFresh])
                   (by simp [K_eq_iff, exclusionResidualFresh]) with
               | .left excludedHistory =>
-                  exact (closeImpossible excludedHistory (K .typeBExcluded)
-                    (by simp [K_eq_iff, closureFresh])).elimClosed (by infer_instance)
+                  rcases (ExactLedger.get excludedHistory
+                    (K .typeBExcluded)).down with canonical | _absorbed
+                  · obtain ⟨_packing, _valid, _maximal, canonicalPiece,
+                      _centres, assigned, nonnegative⟩ := canonical
+                    have negative : selected.object.NegativeNetCharge
+                        canonicalPiece.vertices spineData.threshold
+                        spineData.dischargeScale := by
+                      rcases assigned with ⟨negative, _, _⟩ | ⟨negative, _, _⟩ <;>
+                        exact negative
+                    exact (selected.object.not_negativeNetCharge_iff
+                      canonicalPiece.vertices spineData.threshold
+                        spineData.dischargeScale).mpr nonnegative negative
+                  · -- `[177]`'s literal fan datum has no canonical negative
+                    -- remainder support to contradict.  Its B2 candidate is
+                    -- paid, so follow the paper's `[74]`/`[82]` →
+                    -- `[76]`/`[85]` edge on this exact ledger.
+                    exact selectedTypeBRoute8Continuation excludedHistory
+                      (by simp [K_eq_iff, bridgeMassFresh])
+                      (by simp [K_eq_iff, bridgeSublinearFresh])
+                      (by simp [K_eq_iff, unifiedTrueFresh])
+                      (by simp [K_eq_iff, peelingFresh])
+                      (by simp [K_eq_iff, unifiedTerminalFresh])
+                      (by simp [K_eq_iff, classifiedFresh])
+                      (by simp [K_eq_iff, unclassifiedFresh])
+                      (by simp [K_eq_iff, deficitReadingFresh])
               | .right residualHistory =>
                   let mass :=
                     (typeBExclusionResidualMassRow (BranchState := BranchState)

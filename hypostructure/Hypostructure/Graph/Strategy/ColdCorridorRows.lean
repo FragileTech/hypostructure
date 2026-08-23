@@ -946,13 +946,6 @@ set_option maxHeartbeats 4000000 in
                 · exact componentOutside first (leftComponent _ firstMem)
                     (by rw [same, secondEq]; exact successorWindow)
                 · exact leftRightDisjoint first firstMem (same ▸ secondMem)
-            have assignedAdj : ∀ x ∈ ({first, second} : Finset inputs.current.object.Vertex),
-                inputs.current.object.graph.Adj centre x := by
-              intro x xMem
-              rcases Finset.mem_insert.1 xMem with rfl | xMem
-              · exact adjFirst
-              · rw [Finset.mem_singleton.1 xMem]
-                exact adjSecond
             -- Arm facts.
             have armLeftChain : armLeft.IsChain inputs.current.object.graph.Adj := by
               rw [armLeftDef]
@@ -1004,87 +997,40 @@ set_option maxHeartbeats 4000000 in
             have armRightLast : armRight.getLast? = some corridor.successorStub.2 := by
               simp [armRightDef]
             have armLeftInterior : ∀ v ∈ armLeft,
-                v ∈ (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) ∨ v ∈ ({centre} : Finset inputs.current.object.Vertex) ∨ v = centre →
+                v ∈ (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) ∨ v = centre →
                 armLeft.getLast? = some v := by
               intro v vMem vCase
               simp only [armLeftDef, List.mem_append, List.mem_reverse, List.mem_singleton] at vMem
               rcases vMem with vLeft | rfl
               · exfalso
-                rcases vCase with vWindow | vCentre | vCentre
+                rcases vCase with vWindow | vCentre
                 · exact componentOutside v (leftComponent v vLeft) vWindow
-                · exact centreNotLeft (Finset.mem_singleton.1 vCentre ▸ vLeft)
                 · exact centreNotLeft (vCentre ▸ vLeft)
               · exact armLeftLast
             have armRightInterior : ∀ v ∈ armRight,
-                v ∈ (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) ∨ v ∈ ({centre} : Finset inputs.current.object.Vertex) ∨ v = centre →
+                v ∈ (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) ∨ v = centre →
                 armRight.getLast? = some v := by
               intro v vMem vCase
               simp only [armRightDef, List.mem_append, List.mem_singleton] at vMem
               rcases vMem with vRight | rfl
               · exfalso
-                rcases vCase with vWindow | vCentre | vCentre
+                rcases vCase with vWindow | vCentre
                 · exact componentOutside v (rightComponent v vRight) vWindow
-                · exact centreNotRight (Finset.mem_singleton.1 vCentre ▸ vRight)
                 · exact centreNotRight (vCentre ▸ vRight)
               · exact armRightLast
-            -- The envelope.
-            let arm : inputs.current.object.Vertex → inputs.current.object.Vertex → List inputs.current.object.Vertex :=
-              fun _ x => if x = first then armLeft else armRight
-            have armOf : ∀ x ∈ ({first, second} : Finset inputs.current.object.Vertex),
-                (x = first ∧ arm centre x = armLeft) ∨
-                  (x = second ∧ arm centre x = armRight) := by
-              intro x xMem
-              rcases Finset.mem_insert.1 xMem with rfl | xMem
-              · exact Or.inl ⟨rfl, by simp [arm]⟩
-              · rw [Finset.mem_singleton] at xMem
-                subst xMem
-                exact Or.inr ⟨rfl, by simp [arm, distinct.symm]⟩
-            refine ⟨{ core := (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object)))
-                      decorations := {centre}
-                      decorations_high := ?_
-                      assigned := fun _ => {first, second}
-                      assigned_nonempty := fun _ _ => ⟨first, Finset.mem_insert_self _ _⟩
-                      assigned_adj := ?_
-                      arm := arm
-                      arm_issued := ?_
-                      arm_chain := ?_
-                      arm_nodup := ?_
-                      arm_lands := ?_
-                      arm_interior := ?_
-                      fanSafe := ?_ }, rfl, Finset.card_pair distinct⟩
-            · intro c cMem
-              rw [Finset.mem_singleton.1 cMem]
-              exact high
-            · intro c cMem x xMem
-              rw [Finset.mem_singleton.1 cMem]
-              exact assignedAdj x xMem
-            · intro c cMem x xMem
-              rcases armOf x xMem with ⟨rfl, eq⟩ | ⟨rfl, eq⟩
-              · rw [Finset.mem_singleton.1 cMem, eq]; exact firstHead
-              · rw [Finset.mem_singleton.1 cMem, eq]; exact secondHead
-            · intro c cMem x xMem
-              rcases armOf x xMem with ⟨_, eq⟩ | ⟨_, eq⟩
-              · rw [Finset.mem_singleton.1 cMem, eq]; exact armLeftChain
-              · rw [Finset.mem_singleton.1 cMem, eq]; exact armRightChain
-            · intro c cMem x xMem
-              rcases armOf x xMem with ⟨_, eq⟩ | ⟨_, eq⟩
-              · rw [Finset.mem_singleton.1 cMem, eq]; exact armLeftNodup
-              · rw [Finset.mem_singleton.1 cMem, eq]; exact armRightNodup
-            · intro c cMem x xMem
-              rcases armOf x xMem with ⟨_, eq⟩ | ⟨_, eq⟩
-              · rw [Finset.mem_singleton.1 cMem, eq]
-                exact ⟨stub.1.1, armLeftLast, inWindow⟩
-              · rw [Finset.mem_singleton.1 cMem, eq]
-                exact ⟨corridor.successorStub.2, armRightLast, successorWindow⟩
-            · intro c cMem x xMem v vMem vCase
-              rw [Finset.mem_singleton.1 cMem] at vCase ⊢
-              rcases armOf x xMem with ⟨_, eq⟩ | ⟨_, eq⟩
-              · rw [eq] at vMem ⊢; exact armLeftInterior v vMem vCase
-              · rw [eq] at vMem ⊢; exact armRightInterior v vMem vCase
-            · intro c cMem x xMem y yMem ne
-              rw [Finset.mem_singleton.1 cMem]
-              exact ⟨Graph.DecoratedHandoff.fanSafe_geometric (assignedAdj x xMem)
-                (assignedAdj y yMem) ne avoids, denied _ _ _⟩⟩
+            -- Publish precisely the two corridor incidences and tails.  The
+            -- packed-window union is their landing set, not a fabricated Type
+            -- A core of a `DecoratedHandoff.Envelope`.
+            refine ⟨first, second, distinct, adjFirst, adjSecond, armLeft,
+              armRight, firstHead, secondHead, armLeftChain, armRightChain,
+              armLeftNodup, armRightNodup,
+              ⟨stub.1.1, armLeftLast, inWindow⟩,
+              ⟨corridor.successorStub.2, armRightLast, successorWindow⟩,
+              armLeftInterior, armRightInterior, ?_, ?_⟩
+            · exact ⟨Graph.DecoratedHandoff.fanSafe_geometric adjFirst adjSecond
+                distinct avoids, denied centre first second⟩
+            · exact ⟨Graph.DecoratedHandoff.fanSafe_geometric adjSecond adjFirst
+                (Ne.symm distinct) avoids, denied centre second first⟩⟩
         .nil)
 
 /-! ## Nodes `[154]`--`[156]`, `lem:cold-bounded-germ-trichotomy` and
