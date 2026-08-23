@@ -1678,19 +1678,30 @@ noncomputable def selectedTypeBDecoratedCertificate
         (by simp [K_eq_iff, classifiedFresh]) (by simp [K_eq_iff, unclassifiedFresh])
         (by simp [K_eq_iff, deficitReadingFresh])
   | .left markedHistory =>
-      -- `[72]`--`[85]` on the common assigned support (`def:typeB-assigned-ledger`):
-      -- the direct fan-window cycle test, the B2 disjoint ledger at the
-      -- assigned centres, the hybrid B1 ledger, the exclusion, and every
-      -- residual-mass fact are all read from and appended to this exact ledger.
+      -- `[72]`--`[85]` on the common Type B carrier: the direct fan-window
+      -- cycle test and the hybrid B1 reading preserve either the canonical
+      -- assigned support or the indexed absorbed witness.  B2 is the next
+      -- boundary: it may proceed only once its own literal carrier is present.
       match directCycleDichotomy (data := spineData) markedHistory
           (by simp [K_eq_iff, cycleFresh]) (by simp [K_eq_iff, freeFresh]) with
       | .left cycleHistory =>
-          obtain ⟨packing, valid, _maximal, _component, _present, _centres, _assigned,
-            _centre, _member, _high, directCycle⟩ :=
-            (cycleHistory.get (K .typeBDirectCycle)).down
-          exact (cycleHistory.get (K .selection)).down.1
-            (Graph.TypeBDirectCycle.hasCycleWithLength_of_directCycleConfiguration
-              valid directCycle)
+          rcases (cycleHistory.get (K .typeBDirectCycle)).down with
+            canonical | absorbed
+          · obtain ⟨packing, valid, _maximal, _component, _present, _centres,
+              _assigned, _centre, _member, _high, directCycle⟩ := canonical
+            exact (cycleHistory.get (K .selection)).down.1
+              (Graph.TypeBDirectCycle.hasCycleWithLength_of_directCycleConfiguration
+                valid directCycle)
+          · obtain ⟨_marked, _baseline, _bridgeless, _large, _stub, _centre,
+              _witness, directCycle⟩ := absorbed
+            have valid : selected.object.IsWindowPacking spineData.windowOrder
+                (canonicalWindowPacking spineData selected.object) :=
+              (Classical.choose_spec
+                (selected.object.exists_windowPacking_card_eq
+                  spineData.windowOrder)).1
+            exact (cycleHistory.get (K .selection)).down.1
+              (Graph.TypeBDirectCycle.hasCycleWithLength_of_directCycleConfiguration
+                valid directCycle)
       | .right freeHistory =>
           match b2AssignmentDichotomy (data := spineData) freeHistory
               (by simp [K_eq_iff, choiceFresh])

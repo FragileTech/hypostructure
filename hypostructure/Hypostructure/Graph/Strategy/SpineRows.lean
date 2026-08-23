@@ -3508,13 +3508,15 @@ centre assigned to a Type B support but not certificate-marked is a
 bridge-residual mass of `def:typeB-residual-mass` and takes no part in the
 certificate-closed local discharging step.
 
-The question is therefore scoped to the centres of a Type B support, not to the
-object's high centres at large: a high centre lying in no Type B support is not
-a residual centre and carries no bridge mass.  That scope is the manuscript's
-own, and getting it wrong would charge Type B for centres it never assigned.
+The question is therefore scoped to the centres of the literal Type B carrier,
+not to the object's high centres at large: either the assigned centres of the
+canonical support or the actual centres indexed by the absorbed corridor
+witness.  A high centre in neither carrier is not a residual centre and carries
+no bridge mass.
 
-The split is taken on a `Prop`, so no centre and no labelling is extracted to
-build the branch; the arm not taken supplies the other arm's clause.  This is a
+The split is taken on the carrier's certificate proposition.  The marked arm
+retains an actual labelling and `[70]`'s cap at each applicable centre; the
+other arm extracts an actual applicable centre with no labelling.  This is a
 `Decision`, so the arm not taken is absent from the taken branch's key index. -/
 omit [FactSystem (Input BranchState Presentation presentation data)] in
 noncomputable def fanCertificateDichotomy
@@ -3547,25 +3549,52 @@ noncomputable def fanCertificateDichotomy
     (by
       classical
       apply Classical.choice
-      obtain ⟨packing, valid, maximal, component, present, centres, assigned,
-        cap⟩ := (ExactLedger.get previous (K .fanCertificateCap)).down
-      by_cases marked :
-          ∀ centre ∈ centres,
-            Nonempty (Graph.FanCertificateLabelling current.object
-              data.windowOrder centre)
-      · exact ⟨.inl ⟨packing, valid, maximal, component, present, centres,
-          assigned, fun centre member => by
-            obtain ⟨marking⟩ := marked centre member
-            exact ⟨marking, cap centre member marking⟩⟩⟩
-      · refine ⟨.inr ⟨?_⟩⟩
-        -- Not every assigned centre is marked, so one of them is a
-        -- fan-certificate residual centre.
-        push Not at marked
-        obtain ⟨centre, member, unmarked⟩ := marked
-        exact ⟨packing, valid, maximal, component, present, centres, assigned,
-          centre, member,
-          TypeBAssignedCentres.high data current.object assigned centre member,
-          unmarked⟩)
+      rcases (ExactLedger.get previous (K .fanCertificateCap)).down with
+        support | absorbed
+      · obtain ⟨packing, valid, maximal, component, present, centres, assigned,
+          cap⟩ := support
+        by_cases marked :
+            ∀ centre ∈ centres,
+              Nonempty (Graph.FanCertificateLabelling current.object
+                data.windowOrder centre)
+        · exact ⟨.inl ⟨.inl ⟨packing, valid, maximal, component, present, centres,
+            assigned, fun centre member => by
+              obtain ⟨marking⟩ := marked centre member
+              exact ⟨marking, cap centre member marking⟩⟩⟩⟩
+        · -- Not every assigned centre is marked, so one of them is a
+          -- fan-certificate residual centre.
+          push Not at marked
+          obtain ⟨centre, member, unmarked⟩ := marked
+          exact ⟨.inr ⟨.inl ⟨packing, valid, maximal, component, present, centres,
+            assigned, centre, member,
+            TypeBAssignedCentres.high data current.object assigned centre member,
+            unmarked⟩⟩⟩
+      · obtain ⟨envelopes, cap⟩ := absorbed
+        let cold := canonicalColdWindows data current.object
+        let cubic := cold.filter (AmbientCubicWindow data current.object)
+        by_cases marked :
+            ∀ (baseline : Graph.MinimumDegreeAtLeast data.threshold current.object)
+                (bridgeless : ∀ contraction : Graph.EdgeContraction current.object,
+                  contraction.HasReturn)
+                (large : 2 < current.object.vertexCount)
+                (stub : {stub // stub ∈
+                  Graph.ColdCorridor.allSelectedStubs current.object cubic})
+                (centre : current.object.Vertex),
+              AbsorbedGermFanEnvelopeWitness data current.object cubic baseline
+                  bridgeless large stub centre →
+                Nonempty (Graph.FanCertificateLabelling current.object
+                  data.windowOrder centre)
+        · exact ⟨.inl ⟨.inr ⟨envelopes,
+            fun baseline bridgeless large stub centre witness => by
+              obtain ⟨marking⟩ :=
+                marked baseline bridgeless large stub centre witness
+              exact ⟨marking,
+                cap baseline bridgeless large stub centre witness marking⟩⟩⟩⟩
+        · push Not at marked
+          obtain ⟨baseline, bridgeless, large, stub, centre, witness, unmarked⟩ :=
+            marked
+          exact ⟨.inr ⟨.inr ⟨envelopes, baseline, bridgeless, large, stub,
+            centre, witness, unmarked⟩⟩⟩)
     markedFresh residualFresh
 
 /-! ## Node `[74]`/`[82]`: the hybrid B1 fan ledger
@@ -3614,38 +3643,65 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       producesNonempty := by simp }
     (fun inputs => Classical.choice <| by
       let avoids := (inputs.get (K .selection)).down.1
-      obtain ⟨packing, valid, maximal, component, present, centres, assigned,
-          marked⟩ := (inputs.get (K .fanCertificateMarked)).down
-      exact ⟨.cons (key := K .typeBHybridEntry)
-        (⟨packing, valid, maximal, component, present, centres, assigned,
-          fun centre member high envelope windowSupport => by
-            -- The marked fan's cap, and with it the manuscript's `k ≤ 8`.
-            obtain ⟨_marking, capped⟩ :=
-              marked centre member
-            have slack :
-                inputs.current.object.degree centre + 1 ≤
-                  data.dischargeScale * data.threshold :=
-              le_trans (Nat.succ_le_succ capped)
-                data.fanCapSlack
-            refine ⟨?_, ?_, ?_, ?_, ?_⟩
-            · -- The carriers are distinct: a shared endpoint is a quadrilateral.
-              intro left leftMember right rightMember different shared
-                leftIncidence rightIncidence
-              exact Graph.TypeBHybridIncidence.endpoints_not_shared avoids
-                data.quadrilateralAccepted
-                (Graph.TypeBFanIncidence.mem_closedNeighbours_iff.mp leftMember)
-                (Graph.TypeBFanIncidence.mem_closedNeighbours_iff.mp rightMember)
-                different leftIncidence rightIncidence
-            · exact Graph.TypeBHybridIncidence.windowIncidences_add_nonWindowIncidences
-                _ _ _ _ _
-            · exact Graph.TypeBHybridIncidence.hybridCapacity_pays _ _ _ _ _ _
-                data.three_le_threshold slack
-            · exact Graph.TypeBHybridIncidence.nonWindowCredit_ge_demand _ _ _ _
-                _ _ data.three_le_threshold slack
-            · intro two_le
-              exact Graph.TypeBHybridIncidence.positive_deficit_of_two_le_closedCount
-                _ _ _ _ _ two_le high data.highCentreDeficitSlack⟩)
-        .nil⟩)
+      rcases (inputs.get (K .fanCertificateMarked)).down with support | absorbed
+      · obtain ⟨packing, valid, maximal, component, present, centres, assigned,
+          marked⟩ := support
+        exact ⟨.cons (key := K .typeBHybridEntry)
+          (⟨.inl ⟨packing, valid, maximal, component, present, centres, assigned,
+            fun centre member high envelope windowSupport => by
+              -- The marked fan's cap, and with it the manuscript's `k ≤ 8`.
+              obtain ⟨_marking, capped⟩ := marked centre member
+              have slack :
+                  inputs.current.object.degree centre + 1 ≤
+                    data.dischargeScale * data.threshold :=
+                le_trans (Nat.succ_le_succ capped) data.fanCapSlack
+              refine ⟨?_, ?_, ?_, ?_, ?_⟩
+              · intro left leftMember right rightMember different shared
+                  leftIncidence rightIncidence
+                exact Graph.TypeBHybridIncidence.endpoints_not_shared avoids
+                  data.quadrilateralAccepted
+                  (Graph.TypeBFanIncidence.mem_closedNeighbours_iff.mp leftMember)
+                  (Graph.TypeBFanIncidence.mem_closedNeighbours_iff.mp rightMember)
+                  different leftIncidence rightIncidence
+              · exact Graph.TypeBHybridIncidence.windowIncidences_add_nonWindowIncidences
+                  _ _ _ _ _
+              · exact Graph.TypeBHybridIncidence.hybridCapacity_pays _ _ _ _ _ _
+                  data.three_le_threshold slack
+              · exact Graph.TypeBHybridIncidence.nonWindowCredit_ge_demand _ _ _ _
+                  _ _ data.three_le_threshold slack
+              · intro two_le
+                exact Graph.TypeBHybridIncidence.positive_deficit_of_two_le_closedCount
+                  _ _ _ _ _ two_le high data.highCentreDeficitSlack⟩⟩)
+          .nil⟩
+      · obtain ⟨envelopes, marked⟩ := absorbed
+        exact ⟨.cons (key := K .typeBHybridEntry)
+          (⟨.inr ⟨⟨envelopes, marked⟩,
+            fun baseline bridgeless large stub centre witness envelope
+                windowSupport => by
+              obtain ⟨_marking, capped⟩ :=
+                marked baseline bridgeless large stub centre witness
+              have slack :
+                  inputs.current.object.degree centre + 1 ≤
+                    data.dischargeScale * data.threshold :=
+                le_trans (Nat.succ_le_succ capped) data.fanCapSlack
+              refine ⟨?_, ?_, ?_, ?_, ?_⟩
+              · intro left leftMember right rightMember different shared
+                  leftIncidence rightIncidence
+                exact Graph.TypeBHybridIncidence.endpoints_not_shared avoids
+                  data.quadrilateralAccepted
+                  (Graph.TypeBFanIncidence.mem_closedNeighbours_iff.mp leftMember)
+                  (Graph.TypeBFanIncidence.mem_closedNeighbours_iff.mp rightMember)
+                  different leftIncidence rightIncidence
+              · exact Graph.TypeBHybridIncidence.windowIncidences_add_nonWindowIncidences
+                  _ _ _ _ _
+              · exact Graph.TypeBHybridIncidence.hybridCapacity_pays _ _ _ _ _ _
+                  data.three_le_threshold slack
+              · exact Graph.TypeBHybridIncidence.nonWindowCredit_ge_demand _ _ _ _
+                  _ _ data.three_le_threshold slack
+              · intro two_le
+                exact Graph.TypeBHybridIncidence.positive_deficit_of_two_le_closedCount
+                  _ _ _ _ _ two_le witness.2.1 data.highCentreDeficitSlack⟩⟩)
+          .nil⟩)
     0 0
 
 /-! ## Node `[72]`, first half: is a direct fan-window cycle present?
@@ -3664,10 +3720,10 @@ Nothing here writes `{2, 6}` or `{0, 4, 12}`.  Each side condition is
 `data.LengthOK` of the length of its own cycle; at the registered target and
 window order those readings are exactly the manuscript's sets.
 
-The split is `Classical.em` on the configuration proposition, so no window, no
-centre and no neighbour pair is extracted to build the branch, and the arm not
-taken supplies the other arm's clause.  This is a `Decision`: the arm not taken
-is absent from the taken branch's key index. -/
+The split is `Classical.em` on the literal carrier's configuration proposition.
+The yes arm retains an actual centre and direct configuration; the no arm
+records their absence at every applicable centre.  This is a `Decision`: the
+arm not taken is absent from the taken branch's key index. -/
 omit [FactSystem (Input BranchState Presentation presentation data)] in
 noncomputable def directCycleDichotomy
     {current : Input BranchState Presentation presentation data}
@@ -3699,18 +3755,40 @@ noncomputable def directCycleDichotomy
     (by
       classical
       apply Classical.choice
-      obtain ⟨packing, valid, maximal, component, present, centres, assigned,
-        _marked⟩ := (ExactLedger.get previous (K .fanCertificateMarked)).down
-      by_cases configuration :
-          ∃ centre ∈ centres,
-            Graph.IsHighCentre current.object data.threshold centre ∧
-              Graph.TypeBDirectCycle.DirectCycleConfiguration current.object
-                data.windowOrder data.LengthOK packing centre
-      · exact ⟨.inl ⟨packing, valid, maximal, component, present, centres, assigned,
-            configuration⟩⟩
-      · exact ⟨.inr ⟨packing, valid, maximal, component, present, centres, assigned,
-            fun centre member high present =>
-              configuration ⟨centre, member, high, present⟩⟩⟩)
+      rcases (ExactLedger.get previous (K .fanCertificateMarked)).down with
+        support | absorbed
+      · obtain ⟨packing, valid, maximal, component, present, centres, assigned,
+          _marked⟩ := support
+        by_cases configuration :
+            ∃ centre ∈ centres,
+              Graph.IsHighCentre current.object data.threshold centre ∧
+                Graph.TypeBDirectCycle.DirectCycleConfiguration current.object
+                  data.windowOrder data.LengthOK packing centre
+        · exact ⟨.inl ⟨.inl ⟨packing, valid, maximal, component, present, centres,
+              assigned, configuration⟩⟩⟩
+        · exact ⟨.inr ⟨.inl ⟨packing, valid, maximal, component, present, centres,
+              assigned, fun centre member high present =>
+                configuration ⟨centre, member, high, present⟩⟩⟩⟩
+      · let cold := canonicalColdWindows data current.object
+        let cubic := cold.filter (AmbientCubicWindow data current.object)
+        by_cases configuration :
+            ∃ (baseline : Graph.MinimumDegreeAtLeast data.threshold current.object)
+                (bridgeless : ∀ contraction : Graph.EdgeContraction current.object,
+                  contraction.HasReturn)
+                (large : 2 < current.object.vertexCount)
+                (stub : {stub // stub ∈
+                  Graph.ColdCorridor.allSelectedStubs current.object cubic})
+                (centre : current.object.Vertex),
+              AbsorbedGermFanEnvelopeWitness data current.object cubic baseline
+                  bridgeless large stub centre ∧
+                Graph.TypeBDirectCycle.DirectCycleConfiguration current.object
+                  data.windowOrder data.LengthOK
+                  (canonicalWindowPacking data current.object) centre
+        · exact ⟨.inl ⟨.inr ⟨absorbed, configuration⟩⟩⟩
+        · exact ⟨.inr ⟨.inr ⟨absorbed,
+            fun baseline bridgeless large stub centre witness present =>
+              configuration ⟨baseline, bridgeless, large, stub, centre,
+                witness, present⟩⟩⟩⟩)
     cycleFresh freeFresh
 
 /-! ## Node `[72]`/`[81]`, second half: does the B2 disjoint ledger exist?
@@ -4079,12 +4157,19 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       let residual := inputs.get (K .fanCertificateResidual)
       .cons (key := K .fanCertificateResidualMass) (by
         refine ⟨?_⟩
-        obtain ⟨packing, valid, maximal, component, componentMem, centres, assigned,
-          centre, centreMem, high, empty⟩ := residual.down
-        exact ⟨packing, valid, maximal, component, componentMem, centres, assigned,
-          centre, centreMem, high, empty, fun envelope =>
-            Graph.TypeBEnvelopeCharge.envelopeNegativePart_le envelope high
-              data.bridgeMassSlack⟩)
+        rcases residual.down with support | absorbed
+        · obtain ⟨packing, valid, maximal, component, componentMem, centres, assigned,
+            centre, centreMem, high, empty⟩ := support
+          exact .inl ⟨packing, valid, maximal, component, componentMem, centres,
+            assigned, centre, centreMem, high, empty, fun envelope =>
+              Graph.TypeBEnvelopeCharge.envelopeNegativePart_le envelope high
+                data.bridgeMassSlack⟩
+        · obtain ⟨envelopes, baseline, bridgeless, large, stub, centre, witness,
+            empty⟩ := absorbed
+          exact .inr ⟨envelopes, baseline, bridgeless, large, stub, centre,
+            witness, empty, fun envelope =>
+              Graph.TypeBEnvelopeCharge.envelopeNegativePart_le envelope
+                witness.2.1 data.bridgeMassSlack⟩)
       .nil)
     0 0
 

@@ -72,27 +72,30 @@ not an acceptable intermediate state.
   package root still imports the application-local `Assembly.lean`. Full closure therefore lacks
   the sealed topology endpoint required by the framework.
 - The ordinary, Type A, and absorbed Type B inputs now share one literal `ExactLedger` route through
-  [65], [67]–[70], and [79]. The first remaining Type B schema mismatch is the shared certificate
-  decision at [71]/[80]: its input retains the absorbed handoff witness, but its marked/residual
-  outputs are still canonical-only. No compatibility helper or carrier is permitted there. Until
-  that row elaborates, `SpineRows.olean` is unavailable and the compiled API-catalogue export stops
-  at that missing object file; the narrower sparse-surplus owners and canonical ExactLedger fixture
-  suite kernel-check independently.
-- After [71]/[80] elaborates, normal Assembly elaboration is intentionally loud at the 12 names
+  [65], [67]–[71], [79], and [80]. Both certificate outcomes retain their literal carrier, and all
+  three direct consumers of the two common keys now case-split that carrier without manufacturing a
+  canonical support. The first remaining Type B schema mismatch is the B2 decision at [72]/[81]:
+  its direct-cycle-free input retains the absorbed witness, but its choice/overlap outputs are still
+  canonical-piece propositions. No compatibility helper or carrier is permitted there. Until that
+  row elaborates, `SpineRows.olean` is unavailable and the compiled API-catalogue export stops at
+  that missing object file; `SpineVocabulary`, the exact [71]/[80] prefix, and the canonical
+  ExactLedger fixture suite kernel-check independently.
+- After [72]/[81] elaborates, normal Assembly elaboration is intentionally loud at the 12 names
   above. Any other Lean error is an additional defect and must be entered in both live audit rows
   before work continues.
 
 ### Exact section set
 
-[71], [80], [104], [111], [129], [144], [154], [156], [157], [159], [162], [163], [165], [166], [167], [168], [170], [171], [172], [174], [175], [176], [178], [179], [180].
+[72], [81], [104], [111], [129], [144], [154], [156], [157], [159], [162], [163], [165], [166], [167], [168], [170], [171], [172], [174], [175], [176], [178], [179], [180].
 
 ## 4. Dependency-ordered repair route
 
 1. **Type A and route 8:** repair [104] and route the exact unclassified-census arm at [111].
    The classified route-8 chain [115]–[124] is now kernel-checked on its literal ledgers.
-2. **Type B handoff:** extend [71]/[80]'s marked and residual output propositions to retain the
-   absorbed witness, then audit every downstream consumer of those two common keys. The exact
-   [177]→[65]→[67]–[70]/[79] prefix is now kernel-checked.
+2. **Type B handoff:** extend [72]/[81]'s B2-choice and overlap-obstruction propositions to retain
+   the absorbed direct-cycle-free witness, then audit their downstream consumers. The exact
+   [177]→[65]→[67]–[71]/[79]–[80] prefix and every direct marked/residual-key consumer are now
+   kernel-checked.
 3. **Sparse-surplus accounting:** resolve the manuscript-level missing producer at [129] and the
    missing same-token routing-germ construction at [144]. Nodes [131]–[143], the direct [145]
    handoff, and [147]'s rate conversion now use the literal monotone `ExactLedger` path.
@@ -316,95 +319,98 @@ listed paper-fact row from the compiled term, run the table/API checks, and remo
 only when all seven boxes are checked. A later compiler failure is recorded as downstream unless
 that later node has its own independently failing audit row.
 
-### Node [71] — certificate labelling present? (heavy-centre arm)
+### Node [72] — local fan-window ledger complete; B2 disjointness holds?
 
-**Exact manuscript diagram output.** certificate labelling present?
+**Exact manuscript diagram output.** local fan-window ledger complete; B2 disjointness holds?
 
 **Manuscript rows.** Label set **L12**; its complete label list is in Appendix A.
 
-**Current Lean owner.** `fanCertificateDichotomy` (SpineRows.lean:3520)
+**Current Lean owner.** `directCycleDichotomy` (SpineRows.lean:3728), followed by
+`b2AssignmentDichotomy` (SpineRows.lean:3816)
 
-**Current combinator / shared continuation.** `Decision.run`, called after the exact [69] and
-[70] rows on the literal Type B ledger.
+**Current combinator / shared continuation.** Two consecutive `Decision.run` calls on the literal
+certificate-marked ledger.
 
-**Primary defect class.** common decision outputs narrow the paper's decorated input to the
-canonical support schema.
+**Primary defect class.** the B2 decision outputs narrow the absorbed direct-cycle-free input to a
+canonical-piece schema.
 
-**Fresh audit diagnosis.** ❌ FIRST TYPE B HANDOFF MISMATCH — `K .fanCertificateCap` now
-retains either the canonical assigned support or the complete indexed absorbed-corridor family.
-The decision's two target propositions, `Holds .fanCertificateMarked` and
-`Holds .fanCertificateResidual`, are still defined only by `TypeBFanSupportWith`. Therefore
-the absorbed cap fact cannot inhabit either branch even though [69] and [70] have already proved
-the paper-prescribed local alternative and cap at every actual retained centre. Direct
-`SpineRows` elaboration stops at this type mismatch.
+**Fresh audit diagnosis.** ❌ FIRST TYPE B HANDOFF MISMATCH — the direct-cycle decision now reads
+the common `K .fanCertificateMarked`, tests the actual packing on the canonical arm and the
+canonical window packing at every actual indexed centre on the absorbed arm, and publishes a
+carrier-preserving `K .typeBDirectCycle` or `K .typeBDirectCycleFree`. The following B2 decision
+still destructures the free fact as `TypeBAssignedLedgerWith`: both `K .typeBB2Choice` and
+`K .typeBOverlapObstruction` require a canonical remainder component. The absorbed arm has no such
+component, and direct `SpineRows` elaboration stops rather than inventing one.
 
 **What must be implemented or corrected.**
 
-- Extend both semantic-key propositions with an absorbed alternative. The yes arm must retain the
-  baseline, bridgelessness, largeness, selected stub, actual centre, corridor incidences, tails,
-  envelope witness, certificate labelling, and its derived `fanPackingCap` bound.
-- The no arm must retain the same indexed data and an actual selected centre with no certificate
-  labelling. Define the split on those graph-derived witnesses; do not coerce them to a canonical
-  packing/piece or introduce a lane-specific key.
-- Update `fanCertificateDichotomy` to read only `K .fanCertificateCap` and append exactly one
-  of the two common keys through `Decision.run`. Then extend each downstream marked/residual
-  consumer to case-split the two literal carriers on the same `ExactLedger`.
+- State the paper's B2 candidate-choice and minimal-overlap alternatives directly on the literal
+  indexed decorated envelope. Retain the baseline, bridgelessness, largeness, selected stub, actual
+  centre, corridor incidences, tails, certificate marking, and direct-cycle-free witness.
+- Extend the two existing common key propositions; do not introduce absorbed-only keys, coerce the
+  envelope to a `CanonicalPiece`, or add a compatibility wrapper. If the manuscript does not supply
+  B2 carrier data for this lane, keep that missing mathematical implication loud.
+- Update `b2AssignmentDichotomy` to case-split `K .typeBDirectCycleFree` from the same
+  `ExactLedger` and append exactly one common key through `Decision.run`; then audit the literal
+  choice and obstruction consumers before changing their status.
 
 **Live gate checklist.**
 
-- [ ] **Implemented / reachable:** fail: the decision does not elaborate for the absorbed arm
-- [ ] **Correctly wired:** fail at the first post-[70] handoff
-- [ ] **Residual-local proof:** partial: the input is local, the output schemas erase it
-- [ ] **Correct ledger registration:** partial: the keys are canonical, but their values are too narrow
-- [x] **No illegal carrier/API:** pass: no compatibility helper remains
-- [ ] **Exact manuscript proof:** fail on the decorated carrier only
-- [ ] **Independent kernel check:** `SpineRows` fails in `fanCertificateDichotomy` after
-  elaborating [69], [79], and [70]
+- [ ] **Implemented / reachable:** partial: the direct-cycle half elaborates; the absorbed B2 half does not
+- [ ] **Correctly wired:** fail at the first post-[71] B2 handoff
+- [x] **Residual-local proof:** pass through the direct-cycle split; no B2 proof is claimed
+- [ ] **Correct ledger registration:** partial: the input key is common, but both output values are too narrow
+- [x] **No illegal carrier/API:** pass: the mismatch remains loud and no carrier was fabricated
+- [ ] **Exact manuscript proof:** fail only for the absorbed B2 carrier
+- [ ] **Independent kernel check:** `SpineRows` elaborates [71]/[80] and all three audited
+  marked/residual consumers, then stops at the absorbed arm of `b2AssignmentDichotomy`
 
-**Exit criterion.** Define exhaustive two-carrier marked/residual propositions, prove the shared
-decision with `ExactLedger.get` and `Decision.run`, and kernel-check every direct consumer.
+**Exit criterion.** Define exhaustive two-carrier B2 propositions from a manuscript-authorized
+decorated-envelope construction, prove the shared decision with `ExactLedger.get` and
+`Decision.run`, and kernel-check every direct consumer.
 
-### Node [80] — certificate labelling present? (degree-four arm)
+### Node [81] — \(c\le1\), or \(c\ge2\) with B2 disjoint ledger?
 
-**Exact manuscript diagram output.** certificate labelling present?
+**Exact manuscript diagram output.** \(c\le1\), or \(c\ge2\) with B2 disjoint ledger?
 
 **Manuscript rows.** Label set **L12**; its complete label list is in Appendix A.
 
-**Current Lean owner.** The same `fanCertificateDichotomy` (SpineRows.lean:3520), reached after
-`typeBFanDegreeFourProfileRow` and `fanCertificateCapRow`.
+**Current Lean owner.** The same `directCycleDichotomy` (SpineRows.lean:3728) and
+`b2AssignmentDichotomy` (SpineRows.lean:3816), reached after the exact [79] and [80] prefix.
 
-**Current combinator / shared continuation.** `Decision.run` on the literal [79]→[70] ledger.
+**Current combinator / shared continuation.** Two consecutive `Decision.run` calls on the literal
+[79]→[70]→[80] ledger.
 
-**Primary defect class.** same narrowed output schema as [71].
+**Primary defect class.** same canonical-only B2 output schema as [72].
 
-**Fresh audit diagnosis.** ❌ FIRST TYPE B HANDOFF MISMATCH — [79] now retains every indexed
-degree-`threshold + 1` handoff witness and proves the manuscript's activation, surplus-one,
-closed-count, and deficit identities. [70] proves the conditional certificate cap for that same
-entry. The shared certificate decision nevertheless targets canonical-only marked/residual
-propositions, so the absorbed degree-four lane cannot leave [80].
+**Fresh audit diagnosis.** ❌ FIRST TYPE B HANDOFF MISMATCH — [79] retains the indexed
+degree-`threshold + 1` profile, [70] proves the conditional cap, and [80] now records either the
+marked indexed family or an actual certificate-residual centre. On the marked arm, the first half
+of [81] records direct-cycle presence or absence without losing the carrier. The second half still
+requires a canonical `TypeBAssignedLedgerWith`, so the absorbed degree-four lane cannot publish
+either B2 result.
 
 **What must be implemented or corrected.**
 
-- Use the same two-carrier `Holds .fanCertificateMarked` and
-  `Holds .fanCertificateResidual` repair required at [71]; [80] must not introduce separate
+- Reuse the same two-carrier B2 propositions required at [72]; [81] must not introduce separate
   degree-four keys or a compatibility wrapper.
-- Retain [79]'s exact degree equality and profile in ledger ancestry while the decision appends
-  exactly one certificate key.
-- Probe both decision arms and then audit the downstream certificate-marked and residual rows,
-  which currently destructure only `TypeBFanSupportWith`.
+- Retain [79]'s degree equality and profile, [80]'s marking and cap, and the direct-cycle-free fact
+  in ledger ancestry while the B2 decision appends exactly one result key.
+- Probe both B2 arms and audit the disjoint-choice and minimal-overlap consumers on their literal
+  accumulated ledgers.
 
 **Live gate checklist.**
 
-- [ ] **Implemented / reachable:** fail on the absorbed input
-- [ ] **Correctly wired:** fail at the shared decision after [79]/[70]
-- [ ] **Residual-local proof:** partial: exact input, narrowed output
-- [ ] **Correct ledger registration:** partial: semantic keys are right, value schemas are not
+- [ ] **Implemented / reachable:** partial: the [80] and direct-cycle decisions elaborate; B2 does not
+- [ ] **Correctly wired:** fail at the shared B2 decision after [79]/[80]
+- [x] **Residual-local proof:** pass through direct-cycle-free; no canonical support is inferred
+- [ ] **Correct ledger registration:** partial: semantic keys are right, B2 value schemas are not
 - [x] **No illegal carrier/API:** pass
-- [ ] **Exact manuscript proof:** fail on the absorbed degree-four carrier
-- [ ] **Independent kernel check:** same `fanCertificateDichotomy` error as [71]
+- [ ] **Exact manuscript proof:** fail only for the absorbed degree-four B2 carrier
+- [ ] **Independent kernel check:** same `b2AssignmentDichotomy` absorbed-arm goal as [72]
 
-**Exit criterion.** Reuse the repaired common decision from [71] on the literal degree-four ledger
-and kernel-check both downstream arms without re-keying or coercing the absorbed family.
+**Exit criterion.** Reuse the repaired common B2 decision from [72] on the literal degree-four
+ledger and kernel-check both downstream arms without re-keying or coercing the absorbed family.
 
 ### Node [154] — bounded configuration case?
 

@@ -2548,6 +2548,244 @@ noncomputable def TypeBFanCertificateCapStatement (data : Data.{u})
             Graph.WindowCurvature.fanPackingCap data.windowOrder) ∨
     AbsorbedGermFanCertificateCapStatement data object
 
+/-- Node `[71]`/`[80]`, yes arm, on the indexed `[177]` lane.  The complete
+absorbed family is retained, and every actual centre witnessing one of its
+selected corridor entries carries the paper's fan-certificate labelling and
+the cap already proved at `[70]`. -/
+noncomputable def AbsorbedGermFanCertificateMarkedStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop := by
+  classical
+  let cold := canonicalColdWindows data object
+  let cubic := cold.filter (AmbientCubicWindow data object)
+  exact AbsorbedGermFanEnvelopeStatement data object ∧
+    ∀ (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
+        (bridgeless : ∀ contraction : Graph.EdgeContraction object,
+          contraction.HasReturn)
+        (large : 2 < object.vertexCount)
+        (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic})
+        (centre : object.Vertex),
+      AbsorbedGermFanEnvelopeWitness data object cubic baseline bridgeless large stub centre →
+        ∃ _marking : Graph.FanCertificateLabelling object data.windowOrder centre,
+          object.degree centre ≤ Graph.WindowCurvature.fanPackingCap data.windowOrder
+
+/-- Node `[71]`/`[80]`, no arm, on the indexed `[177]` lane.  The full
+absorbed family remains available and one of its literal corridor-indexed
+centres has no fan-certificate labelling. -/
+noncomputable def AbsorbedGermFanCertificateResidualStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop := by
+  classical
+  let cold := canonicalColdWindows data object
+  let cubic := cold.filter (AmbientCubicWindow data object)
+  exact AbsorbedGermFanEnvelopeStatement data object ∧
+    ∃ (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
+        (bridgeless : ∀ contraction : Graph.EdgeContraction object,
+          contraction.HasReturn)
+        (large : 2 < object.vertexCount)
+        (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic})
+        (centre : object.Vertex),
+      AbsorbedGermFanEnvelopeWitness data object cubic baseline bridgeless large stub centre ∧
+        IsEmpty (Graph.FanCertificateLabelling object data.windowOrder centre)
+
+/-- Nodes `[71]`/`[80]`, yes arm, on either paper-prescribed Type B input. -/
+noncomputable def TypeBFanCertificateMarkedStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  TypeBFanSupportWith data object (fun _packing _piece centres =>
+      ∀ centre ∈ centres,
+        ∃ _marking : Graph.FanCertificateLabelling object data.windowOrder centre,
+          object.degree centre ≤
+            Graph.WindowCurvature.fanPackingCap data.windowOrder) ∨
+    AbsorbedGermFanCertificateMarkedStatement data object
+
+/-- Nodes `[71]`/`[80]`, no arm, on either paper-prescribed Type B input. -/
+noncomputable def TypeBFanCertificateResidualStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  TypeBFanSupportWith data object (fun _packing _piece centres =>
+      ∃ centre ∈ centres,
+        Graph.IsHighCentre object data.threshold centre ∧
+          IsEmpty (Graph.FanCertificateLabelling object data.windowOrder centre)) ∨
+    AbsorbedGermFanCertificateResidualStatement data object
+
+/-- Node `[74]`/`[82]` on the indexed `[177]` lane.  The marked absorbed
+family is retained while the hybrid B1 calculation is recorded at each actual
+centre selected by its corridor witness. -/
+noncomputable def AbsorbedGermFanHybridEntryStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop := by
+  classical
+  let cold := canonicalColdWindows data object
+  let cubic := cold.filter (AmbientCubicWindow data object)
+  exact AbsorbedGermFanCertificateMarkedStatement data object ∧
+    ∀ (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
+        (bridgeless : ∀ contraction : Graph.EdgeContraction object,
+          contraction.HasReturn)
+        (large : 2 < object.vertexCount)
+        (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic})
+        (centre : object.Vertex),
+      AbsorbedGermFanEnvelopeWitness data object cubic baseline bridgeless large stub centre →
+        ∀ envelope windowSupport : Finset object.Vertex,
+          (∀ left ∈ Graph.TypeBFanIncidence.closedNeighbours object
+              data.threshold envelope centre,
+            ∀ right ∈ Graph.TypeBFanIncidence.closedNeighbours object
+                data.threshold envelope centre,
+              left ≠ right →
+              ∀ shared : object.Vertex,
+                shared ∈ Graph.TypeBHybridIncidence.nonHubIncidences object
+                  centre left →
+                shared ∉ Graph.TypeBHybridIncidence.nonHubIncidences object
+                  centre right) ∧
+          Graph.TypeBHybridIncidence.windowIncidences object data.threshold
+                envelope windowSupport centre +
+              Graph.TypeBHybridIncidence.nonWindowIncidences object
+                data.threshold envelope windowSupport centre =
+            (data.threshold - 1) *
+              Graph.TypeBFanIncidence.closedCount object data.threshold envelope centre ∧
+          2 * Graph.TypeBFanIncidence.scaledDeficit object data.threshold
+                  data.dischargeScale envelope centre ≤
+              (data.dischargeScale : Int) *
+                ((Graph.TypeBHybridIncidence.windowIncidences object
+                    data.threshold envelope windowSupport centre : Int) +
+                  (Graph.TypeBHybridIncidence.nonWindowIncidences object
+                    data.threshold envelope windowSupport centre : Int)) ∧
+          Graph.TypeBHybridIncidence.nonWindowDemand object data.threshold
+                data.dischargeScale envelope windowSupport centre ≤
+              (data.dischargeScale : Int) *
+                (Graph.TypeBHybridIncidence.nonWindowIncidences object
+                  data.threshold envelope windowSupport centre : Int) ∧
+          (2 ≤ Graph.TypeBFanIncidence.closedCount object data.threshold
+              envelope centre →
+            0 < Graph.TypeBFanIncidence.scaledDeficit object data.threshold
+              data.dischargeScale envelope centre)
+
+/-- Node `[74]`/`[82]` on either paper-prescribed Type B carrier. -/
+noncomputable def TypeBFanHybridEntryStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  TypeBFanSupportWith data object (fun _packing _piece centres =>
+      ∀ centre ∈ centres,
+        Graph.IsHighCentre object data.threshold centre →
+          ∀ envelope windowSupport : Finset object.Vertex,
+            (∀ left ∈ Graph.TypeBFanIncidence.closedNeighbours object
+                data.threshold envelope centre,
+              ∀ right ∈ Graph.TypeBFanIncidence.closedNeighbours object
+                  data.threshold envelope centre,
+                left ≠ right →
+                ∀ shared : object.Vertex,
+                  shared ∈ Graph.TypeBHybridIncidence.nonHubIncidences object
+                    centre left →
+                  shared ∉ Graph.TypeBHybridIncidence.nonHubIncidences object
+                    centre right) ∧
+            Graph.TypeBHybridIncidence.windowIncidences object data.threshold
+                  envelope windowSupport centre +
+                Graph.TypeBHybridIncidence.nonWindowIncidences object
+                  data.threshold envelope windowSupport centre =
+              (data.threshold - 1) *
+                Graph.TypeBFanIncidence.closedCount object data.threshold
+                  envelope centre ∧
+            2 * Graph.TypeBFanIncidence.scaledDeficit object data.threshold
+                    data.dischargeScale envelope centre ≤
+                (data.dischargeScale : Int) *
+                  ((Graph.TypeBHybridIncidence.windowIncidences object
+                      data.threshold envelope windowSupport centre : Int) +
+                    (Graph.TypeBHybridIncidence.nonWindowIncidences object
+                      data.threshold envelope windowSupport centre : Int)) ∧
+            Graph.TypeBHybridIncidence.nonWindowDemand object data.threshold
+                  data.dischargeScale envelope windowSupport centre ≤
+                (data.dischargeScale : Int) *
+                  (Graph.TypeBHybridIncidence.nonWindowIncidences object
+                    data.threshold envelope windowSupport centre : Int) ∧
+            (2 ≤ Graph.TypeBFanIncidence.closedCount object data.threshold
+                envelope centre →
+              0 < Graph.TypeBFanIncidence.scaledDeficit object data.threshold
+                data.dischargeScale envelope centre)) ∨
+    AbsorbedGermFanHybridEntryStatement data object
+
+/-- Node `[72]`/`[81]`, direct-cycle arm, on the indexed `[177]` lane. -/
+noncomputable def AbsorbedGermFanDirectCycleStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop := by
+  classical
+  let cold := canonicalColdWindows data object
+  let cubic := cold.filter (AmbientCubicWindow data object)
+  exact AbsorbedGermFanCertificateMarkedStatement data object ∧
+    ∃ (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
+        (bridgeless : ∀ contraction : Graph.EdgeContraction object,
+          contraction.HasReturn)
+        (large : 2 < object.vertexCount)
+        (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic})
+        (centre : object.Vertex),
+      AbsorbedGermFanEnvelopeWitness data object cubic baseline bridgeless large stub centre ∧
+        Graph.TypeBDirectCycle.DirectCycleConfiguration object data.windowOrder
+          data.LengthOK (canonicalWindowPacking data object) centre
+
+/-- Node `[72]`/`[81]`, direct-cycle-free arm, on the indexed `[177]` lane. -/
+noncomputable def AbsorbedGermFanDirectCycleFreeStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop := by
+  classical
+  let cold := canonicalColdWindows data object
+  let cubic := cold.filter (AmbientCubicWindow data object)
+  exact AbsorbedGermFanCertificateMarkedStatement data object ∧
+    ∀ (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
+        (bridgeless : ∀ contraction : Graph.EdgeContraction object,
+          contraction.HasReturn)
+        (large : 2 < object.vertexCount)
+        (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic})
+        (centre : object.Vertex),
+      AbsorbedGermFanEnvelopeWitness data object cubic baseline bridgeless large stub centre →
+        Graph.TypeBDirectCycle.DirectCycleFree object data.windowOrder data.LengthOK
+          (canonicalWindowPacking data object) centre
+
+/-- Node `[72]`/`[81]`, direct-cycle arm, on either Type B carrier. -/
+noncomputable def TypeBFanDirectCycleStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  TypeBFanSupportWith data object (fun packing _piece centres =>
+      ∃ centre ∈ centres,
+        Graph.IsHighCentre object data.threshold centre ∧
+          Graph.TypeBDirectCycle.DirectCycleConfiguration object
+            data.windowOrder data.LengthOK packing centre) ∨
+    AbsorbedGermFanDirectCycleStatement data object
+
+/-- Node `[72]`/`[81]`, direct-cycle-free arm, on either Type B carrier. -/
+noncomputable def TypeBFanDirectCycleFreeStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  TypeBFanSupportWith data object (fun packing _piece centres =>
+      ∀ centre ∈ centres,
+        Graph.IsHighCentre object data.threshold centre →
+          Graph.TypeBDirectCycle.DirectCycleFree object data.windowOrder
+            data.LengthOK packing centre) ∨
+    AbsorbedGermFanDirectCycleFreeStatement data object
+
+/-- Node `[75]`/`[84]` on the indexed `[177]` certificate-residual lane. -/
+noncomputable def AbsorbedGermFanCertificateResidualMassStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop := by
+  classical
+  let cold := canonicalColdWindows data object
+  let cubic := cold.filter (AmbientCubicWindow data object)
+  exact AbsorbedGermFanEnvelopeStatement data object ∧
+    ∃ (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
+        (bridgeless : ∀ contraction : Graph.EdgeContraction object,
+          contraction.HasReturn)
+        (large : 2 < object.vertexCount)
+        (stub : {stub // stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic})
+        (centre : object.Vertex),
+      AbsorbedGermFanEnvelopeWitness data object cubic baseline bridgeless large stub centre ∧
+        IsEmpty (Graph.FanCertificateLabelling object data.windowOrder centre) ∧
+        ∀ envelope : Finset object.Vertex,
+          Graph.TypeBEnvelopeCharge.envelopeNegativePart object data.threshold
+              data.dischargeScale envelope centre ≤
+            data.bridgeMassFactor * data.dischargeScale *
+              (object.degree centre - data.threshold)
+
+/-- Node `[75]`/`[84]`, certificate-residual mass, on either Type B carrier. -/
+noncomputable def TypeBFanCertificateResidualMassStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  TypeBFanSupportWith data object (fun _packing _piece centres =>
+      ∃ centre ∈ centres,
+        Graph.IsHighCentre object data.threshold centre ∧
+          IsEmpty (Graph.FanCertificateLabelling object data.windowOrder centre) ∧
+          ∀ envelope : Finset object.Vertex,
+            Graph.TypeBEnvelopeCharge.envelopeNegativePart object data.threshold
+                data.dischargeScale envelope centre ≤
+              data.bridgeMassFactor * data.dischargeScale *
+                (object.degree centre - data.threshold)) ∨
+    AbsorbedGermFanCertificateResidualMassStatement data object
+
 /-- The assigned centres of either manuscript form are high centres, and they
 include every high centre of the counted core (`def:typeB-assigned-ledger`):
 for the ordinary support they are exactly the core's high centres; for a
@@ -5162,88 +5400,30 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- certificate labelling, exactly as in the manuscript.
       TypeBFanCertificateCapStatement data object
   | .fanCertificateMarked, object =>
-      -- Node `[71]`/`[80]`, yes arm, on the common Type B fan support: every
-      -- assigned centre carries a fan-certificate labelling and the cap proved
-      -- at `[70]` for that same support (`def:marked-typeB-fan`).
-      TypeBFanSupportWith data object (fun _packing _piece centres =>
-        ∀ centre ∈ centres,
-          ∃ _marking :
-              Graph.FanCertificateLabelling object data.windowOrder centre,
-            object.degree centre ≤
-              Graph.WindowCurvature.fanPackingCap data.windowOrder)
+      -- Node `[71]`/`[80]`, yes arm, on either common Type B input.  The
+      -- indexed absorbed form retains the literal corridor and envelope
+      -- witness rather than manufacturing a canonical support.
+      TypeBFanCertificateMarkedStatement data object
   | .fanCertificateResidual, object =>
-      -- Node `[71]`/`[80]`, no arm: some assigned centre is a fan-certificate
-      -- residual centre (`def:marked-typeB-fan`).
-      TypeBFanSupportWith data object (fun _packing _piece centres =>
-        ∃ centre ∈ centres,
-          Graph.IsHighCentre object data.threshold centre ∧
-            IsEmpty (Graph.FanCertificateLabelling object data.windowOrder centre))
+      -- Node `[71]`/`[80]`, no arm, retaining the same literal carrier on
+      -- which the missing fan-certificate labelling was observed.
+      TypeBFanCertificateResidualStatement data object
   | .typeBHybridEntry, object =>
       -- Node `[74]`/`[82]`.  Scoped to the assigned centres of the Type B fan
       -- support, because `k ≤ α(D)` is available only at a certificate-marked
       -- fan, and quantified over the envelope and the packed-window union
       -- because both are fan data.
-      TypeBFanSupportWith data object (fun _packing _piece centres =>
-        ∀ centre ∈ centres,
-          Graph.IsHighCentre object data.threshold centre →
-            ∀ envelope windowSupport : Finset object.Vertex,
-              -- The carriers are distinct: no non-`h` endpoint is shared.
-              (∀ left ∈ Graph.TypeBFanIncidence.closedNeighbours object
-                  data.threshold envelope centre,
-                ∀ right ∈ Graph.TypeBFanIncidence.closedNeighbours object
-                    data.threshold envelope centre,
-                  left ≠ right →
-                  ∀ shared : object.Vertex,
-                    shared ∈ Graph.TypeBHybridIncidence.nonHubIncidences object
-                      centre left →
-                    shared ∉ Graph.TypeBHybridIncidence.nonHubIncidences object
-                      centre right) ∧
-                -- `I_W + I_N = (δ − 1)·c`.
-                Graph.TypeBHybridIncidence.windowIncidences object data.threshold
-                      envelope windowSupport centre +
-                    Graph.TypeBHybridIncidence.nonWindowIncidences object
-                      data.threshold envelope windowSupport centre =
-                  (data.threshold - 1) *
-                    Graph.TypeBFanIncidence.closedCount object data.threshold
-                      envelope centre ∧
-                -- The hybrid entry pays `D_B`.
-                2 * Graph.TypeBFanIncidence.scaledDeficit object data.threshold
-                        data.dischargeScale envelope centre ≤
-                    (data.dischargeScale : Int) *
-                      ((Graph.TypeBHybridIncidence.windowIncidences object
-                          data.threshold envelope windowSupport centre : Int) +
-                        (Graph.TypeBHybridIncidence.nonWindowIncidences object
-                          data.threshold envelope windowSupport centre : Int)) ∧
-                -- The non-window half-credit covers `D_N`.
-                Graph.TypeBHybridIncidence.nonWindowDemand object data.threshold
-                      data.dischargeScale envelope windowSupport centre ≤
-                    (data.dischargeScale : Int) *
-                      (Graph.TypeBHybridIncidence.nonWindowIncidences object
-                        data.threshold envelope windowSupport centre : Int) ∧
-                -- Two cubic-closed neighbours make the deficit positive.
-                (2 ≤ Graph.TypeBFanIncidence.closedCount object data.threshold
-                    envelope centre →
-                  0 < Graph.TypeBFanIncidence.scaledDeficit object data.threshold
-                    data.dischargeScale envelope centre))
+      TypeBFanHybridEntryStatement data object
   | .typeBDirectCycle, object =>
-      -- Node `[72]`, the closing arm.  `lem:typeB-direct-fan-window-cycles` and
-      -- `lem:typeB-two-window-cycles` in the shape their negation produces: an
-      -- assigned centre of the Type B fan support carries one of the four
-      -- direct configurations, over the windows of the packing the support is
-      -- read in.  The configuration is data, so the fact records that one exists.
-      TypeBFanSupportWith data object (fun packing _piece centres =>
-        ∃ centre ∈ centres,
-          Graph.IsHighCentre object data.threshold centre ∧
-            Graph.TypeBDirectCycle.DirectCycleConfiguration object
-              data.windowOrder data.LengthOK packing centre)
+      -- Node `[72]`/`[81]`, the closing arm.  On either literal Type B carrier,
+      -- an applicable centre carries one of the four direct configurations;
+      -- the absorbed lane uses the object's canonical window packing without
+      -- manufacturing a canonical remainder component.
+      TypeBFanDirectCycleStatement data object
   | .typeBDirectCycleFree, object =>
-      -- Node `[72]`, surviving arm, on the Type B fan support selected at `[62]`
-      -- (or handed off at `[66]`).
-      TypeBFanSupportWith data object (fun packing _piece centres =>
-        ∀ centre ∈ centres,
-          Graph.IsHighCentre object data.threshold centre →
-            Graph.TypeBDirectCycle.DirectCycleFree object data.windowOrder
-              data.LengthOK packing centre)
+      -- Node `[72]`/`[81]`, surviving arm, retaining the same canonical or
+      -- indexed absorbed carrier read by the direct-cycle decision.
+      TypeBFanDirectCycleFreeStatement data object
   | .typeBB2Choice, object =>
       -- Node `[72]`/`[81]`, yes: the B2 disjoint choice at the assigned
       -- centres `H_X` of the fan support (`def:typeB-assigned-ledger`).
@@ -5305,15 +5485,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
   | .fanCertificateResidualMass, object =>
       -- Node `[75]`/`[84]`: the residual centre's fan mass is charged to the
       -- bridge mass (`def:typeB-residual-mass`).
-      TypeBFanSupportWith data object (fun _packing _piece centres =>
-        ∃ centre ∈ centres,
-          Graph.IsHighCentre object data.threshold centre ∧
-            IsEmpty (Graph.FanCertificateLabelling object data.windowOrder centre) ∧
-            ∀ envelope : Finset object.Vertex,
-              Graph.TypeBEnvelopeCharge.envelopeNegativePart object
-                  data.threshold data.dischargeScale envelope centre ≤
-                data.bridgeMassFactor * data.dischargeScale *
-                  (object.degree centre - data.threshold))
+      TypeBFanCertificateResidualMassStatement data object
   | .typeBOverlapObstructionMass, object =>
       TypeBAssignedLedgerWith data object (fun _packing canonicalPiece centres =>
               Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction object
