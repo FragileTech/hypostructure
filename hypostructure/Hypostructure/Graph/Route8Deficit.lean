@@ -49,6 +49,34 @@ def SilentFirst (piece : Finset object.Vertex) (threshold scale : Nat) : Prop :=
       (VisibleEntry.visibleLoadsAt object piece threshold receiver outside).card + 1 ≤
         scale
 
+/-- **The visible arm's entry state**: a piece that is not silent-first has a
+saturated receiver with a completion port carrying the registered overload of
+visible returns — `VisibleFourUnpeeledAt` at the empty peeling, the hypothesis
+of `lem:typeA-unpeeled-visible-routing`'s canonical package. -/
+theorem visibleFourUnpeeledAt_of_not_silentFirst
+    {piece : Finset object.Vertex} {threshold scale : Nat}
+    (notSilent : ¬ SilentFirst object piece threshold scale) :
+    ∃ receiver : object.Vertex,
+      object.IsReceiver piece threshold receiver ∧
+        object.Saturated piece threshold scale receiver ∧
+        ExitFour.VisibleFourUnpeeledAt piece threshold scale receiver ∅ := by
+  classical
+  unfold SilentFirst at notSilent
+  push_neg at notSilent
+  obtain ⟨receiver, isReceiver, saturated, outside, portMember, overload⟩ :=
+    notSilent
+  have portEq : ExitFour.unpeeledVisibleLoadsAt piece threshold receiver
+      outside ∅ =
+      VisibleEntry.visibleLoadsAt object piece threshold receiver outside := by
+    unfold ExitFour.unpeeledVisibleLoadsAt ExitFour.unpeeledLoads
+    rw [Finset.sdiff_empty]
+    refine Finset.inter_eq_left.mpr ?_
+    intro load member
+    unfold VisibleEntry.visibleLoadsAt at member
+    exact (Finset.mem_filter.mp member).1
+  exact ⟨receiver, isReceiver, saturated, outside, portMember, by
+    rw [portEq]; omega⟩
+
 /-- **The silent-first specialization**: every negative zero-surplus piece is
 silent-first, and every negative positive-surplus piece is a Type B bridge
 component.
@@ -116,24 +144,26 @@ def PieceClassification (Target : FiniteObject.{u} → Prop)
         TypeBEnvelopeCharge.BridgeResidualComponentAt object
           (object.pieceSupport (object.remainderSupport packing) piece) threshold scale)
 
-/-- The silent-excess mass a piece contributes to the census: its indexed
-entries when it is a Type A piece of `𝒳_A`, nothing otherwise. -/
-noncomputable def silentMass (packing : Finset (Finset object.Vertex))
+/-- The excess mass a piece contributes to the census (`E(w)`-indexed; the
+paper's `𝒰(w)` on silent-first pieces): its indexed entries when it is a
+Type A piece of `𝒳_A`, nothing otherwise. -/
+noncomputable def excessMass (packing : Finset (Finset object.Vertex))
     (threshold scale : Nat) (piece : Finset object.Vertex) : Nat := by
   classical
   exact if piece ∈ Route8Census.typeAPieces object packing threshold scale then
     ∑ receiver ∈ object.receivers piece threshold,
-      (VisibleEntry.silentExcess object piece threshold scale receiver).card
+      (VisibleEntry.excessBasin object piece threshold scale receiver).card
   else 0
 
-/-- `N_basin = Σ_{X ∈ 𝒳_A} Σ_w |𝒰_X(w)|`: the census entries are the indexed
-`(piece, receiver, load)` triples, counted once each. -/
+/-- `N_basin = Σ_{X ∈ 𝒳_A} Σ_w |E_X(w)|`: the census entries are the indexed
+`(piece, receiver, load)` triples, counted once each
+(`lem:typeA-route8-burden`'s count, silence-free). -/
 theorem card_entries (packing : Finset (Finset object.Vertex))
     (threshold scale : Nat) :
     (Route8Census.entries object packing threshold scale).card =
       ∑ piece ∈ Route8Census.typeAPieces object packing threshold scale,
         ∑ receiver ∈ object.receivers piece threshold,
-          (VisibleEntry.silentExcess object piece threshold scale receiver).card := by
+          (VisibleEntry.excessBasin object piece threshold scale receiver).card := by
   classical
   unfold Route8Census.entries
   rw [Finset.card_biUnion]
@@ -175,10 +205,10 @@ theorem pieceSupport_injOn (support : Finset object.Vertex) :
   exact Finset.disjoint_left.mp disjoint member member'
 
 /-- The silent masses of the pieces sum to the census count. -/
-theorem sum_silentMass (packing : Finset (Finset object.Vertex))
+theorem sum_excessMass (packing : Finset (Finset object.Vertex))
     (threshold scale : Nat) :
     ∑ piece ∈ object.canonicalPieces (object.remainderSupport packing),
-        silentMass object packing threshold scale
+        excessMass object packing threshold scale
           (object.pieceSupport (object.remainderSupport packing) piece) =
       (Route8Census.entries object packing threshold scale).card := by
   classical
@@ -211,12 +241,12 @@ theorem sum_silentMass (packing : Finset (Finset object.Vertex))
   by_cases typeA : object.NegativeNetCharge (object.pieceSupport R piece) threshold scale ∧
       object.ambientSurplus (object.pieceSupport R piece) threshold = 0
   · rw [if_pos typeA]
-    simp only [silentMass, if_pos ((memTypeA piece member).mpr typeA)]
+    simp only [excessMass, if_pos ((memTypeA piece member).mpr typeA)]
   · rw [if_neg typeA]
-    simp only [silentMass, if_neg (fun h => typeA ((memTypeA piece member).mp h))]
+    simp only [excessMass, if_neg (fun h => typeA ((memTypeA piece member).mp h))]
 
 /-- **One piece of the squeeze.**  Under the classification, every canonical piece
-satisfies `|X| ≤ silentMass(X) + s·def⁺(X) + F·s·σ(X)`. -/
+satisfies `|X| ≤ excessMass(X) + s·def⁺(X) + F·s·σ(X)`. -/
 theorem card_piece_le (packing : Finset (Finset object.Vertex))
     (threshold scale massFactor : Nat) (scalePos : 1 ≤ scale)
     (slack : threshold + 2 + scale ≤ massFactor * scale)
@@ -232,7 +262,7 @@ theorem card_piece_le (packing : Finset (Finset object.Vertex))
     (piece : SupportComponents.Connected.Component object (object.remainderSupport packing))
     (member : piece ∈ object.canonicalPieces (object.remainderSupport packing)) :
     (object.pieceSupport (object.remainderSupport packing) piece).card ≤
-      silentMass object packing threshold scale
+      excessMass object packing threshold scale
           (object.pieceSupport (object.remainderSupport packing) piece) +
         scale * object.positiveDeficiency
           (object.pieceSupport (object.remainderSupport packing) piece) threshold +
@@ -260,10 +290,24 @@ theorem card_piece_le (packing : Finset (Finset object.Vertex))
         object X threshold scale scalePos exactDegree capped
         (routed X (object.pieceSupport_subset _ piece) surplusZero)
         (silent surplusZero)
+      have basinEq : ∀ receiver ∈ object.receivers X threshold,
+          (VisibleEntry.silentExcess object X threshold scale receiver).card =
+            (VisibleEntry.excessBasin object X threshold scale receiver).card := by
+        intro receiver receiverMem
+        have isReceiver := FiniteObject.mem_receivers.mp receiverMem
+        rw [VisibleEntry.silentExcess_eq_excessBasin object X threshold scale
+          (exactDegree receiver isReceiver.1) isReceiver scalePos
+          (fun saturated => (silent surplusZero) receiver isReceiver saturated)]
+      have sums : (∑ receiver ∈ object.receivers X threshold,
+            (VisibleEntry.silentExcess object X threshold scale
+              receiver).card) =
+          ∑ receiver ∈ object.receivers X threshold,
+            (VisibleEntry.excessBasin object X threshold scale receiver).card :=
+        Finset.sum_congr rfl basinEq
       have typeA : X ∈ Route8Census.typeAPieces object packing threshold scale := by
         simp only [Route8Census.typeAPieces, Finset.mem_filter, Finset.mem_image]
         exact ⟨⟨piece, member, rfl⟩, negative, surplusZero⟩
-      simp only [silentMass, if_pos typeA]
+      simp only [excessMass, if_pos typeA]
       omega
     · -- Type B bridge component: `lem:typeB-bridge-deficit-bound`.
       have positive : 0 < object.ambientSurplus X threshold := Nat.pos_of_ne_zero surplusZero
@@ -306,14 +350,14 @@ theorem deficit_of_classification (packing : Finset (Finset object.Vertex))
   have summed :
       ∑ piece ∈ object.canonicalPieces R, (object.pieceSupport R piece).card ≤
         ∑ piece ∈ object.canonicalPieces R,
-          (silentMass object packing threshold scale (object.pieceSupport R piece) +
+          (excessMass object packing threshold scale (object.pieceSupport R piece) +
             scale * object.positiveDeficiency (object.pieceSupport R piece) threshold +
             massFactor * scale * object.ambientSurplus (object.pieceSupport R piece)
               threshold) :=
     Finset.sum_le_sum perPiece
   rw [object.sum_pieceSupport_card R, Finset.sum_add_distrib, Finset.sum_add_distrib,
     ← Finset.mul_sum, ← Finset.mul_sum, object.sum_positiveDeficiency_canonicalPieces,
-    object.sum_ambientSurplus_canonicalPieces, sum_silentMass] at summed
+    object.sum_ambientSurplus_canonicalPieces, sum_excessMass] at summed
   have deficiency := object.positiveDeficiency_le_boundaryIncidence R threshold baseline
   rw [← Route8Census.card_supply] at deficiency
   have surplusR := (object.ambientSurplus_le_degreeSurplus R threshold baseline).trans surplus

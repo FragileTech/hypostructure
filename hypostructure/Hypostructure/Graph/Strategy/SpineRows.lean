@@ -2536,7 +2536,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                       inputs.current.object
                       (inputs.current.object.pieceSupport support component)
                       data.threshold data.dischargeScale,
-                    (Graph.VisibleEntry.silentExcess inputs.current.object
+                    (Graph.VisibleEntry.excessBasin inputs.current.object
                       (inputs.current.object.pieceSupport support component)
                       data.threshold data.dischargeScale receiver).card := by
             unfold Graph.Route8Census.entriesOfComponents
@@ -2580,6 +2580,48 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
               have rightMem' : vertex ∈ inputs.current.object.pieceSupport
                   support right := pieceEq ▸ vertexMem
               exact Finset.disjoint_left.mp disjoint vertexMem rightMem'
+          have exactDegreeAt : ∀ component ∈ routeEight,
+              ∀ vertex ∈ inputs.current.object.pieceSupport support component,
+              inputs.current.object.degree vertex = data.threshold := by
+            intro component componentMem vertex vertexMem
+            have surplusZero := ((Finset.mem_filter.mp componentMem).2).2.1
+            have nonneg := le_trans inputs.current.baseline
+              (inputs.current.object.minDegree_le_degree vertex)
+            have summand : inputs.current.object.degree vertex -
+                data.threshold = 0 :=
+              Nat.eq_zero_of_le_zero
+                (surplusZero ▸ Finset.single_le_sum
+                  (f := fun other =>
+                    inputs.current.object.degree other - data.threshold)
+                  (fun _ _ => Nat.zero_le _) vertexMem)
+            omega
+          have bridge :
+              (∑ component ∈ routeEight,
+                ∑ receiver ∈ Graph.VisibleEntry.saturatedReceivers
+                    inputs.current.object
+                    (inputs.current.object.pieceSupport support component)
+                    data.threshold data.dischargeScale,
+                  (Graph.VisibleEntry.silentExcess inputs.current.object
+                    (inputs.current.object.pieceSupport support component)
+                    data.threshold data.dischargeScale receiver).card) =
+              ∑ component ∈ routeEight,
+                ∑ receiver ∈ Graph.VisibleEntry.saturatedReceivers
+                    inputs.current.object
+                    (inputs.current.object.pieceSupport support component)
+                    data.threshold data.dischargeScale,
+                  (Graph.VisibleEntry.excessBasin inputs.current.object
+                    (inputs.current.object.pieceSupport support component)
+                    data.threshold data.dischargeScale receiver).card := by
+            refine Finset.sum_congr rfl fun component componentMem => ?_
+            refine Finset.sum_congr rfl fun receiver receiverMem => ?_
+            have survives := (Finset.mem_filter.mp componentMem).2
+            have isReceiver := FiniteObject.mem_receivers.mp
+              (Finset.mem_filter.mp receiverMem).1
+            rw [Graph.VisibleEntry.silentExcess_eq_excessBasin
+              inputs.current.object _ data.threshold data.dischargeScale
+              (exactDegreeAt component componentMem receiver isReceiver.1)
+              isReceiver data.dischargeScale_pos
+              (fun saturated => survives.2.2.1 receiver isReceiver saturated)]
           have supplyCount := Graph.Route8Census.card_supply
             inputs.current.object packing
           refine ⟨?_, rate⟩
@@ -2597,7 +2639,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                   inputs.current.object
                   (inputs.current.object.pieceSupport support component)
                   data.threshold data.dischargeScale,
-                (Graph.VisibleEntry.silentExcess inputs.current.object
+                (Graph.VisibleEntry.excessBasin inputs.current.object
                   (inputs.current.object.pieceSupport support component)
                   data.threshold data.dischargeScale receiver).card) +
               data.dischargeScale * inputs.current.object.boundaryIncidence support +
@@ -6111,7 +6153,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                       (canonicalWindowPacking data inputs.current.object)) component ∧
                     receiver ∈ Graph.VisibleEntry.saturatedReceivers
                       inputs.current.object piece data.threshold data.dischargeScale ∧
-                    load ∈ Graph.VisibleEntry.silentExcess inputs.current.object piece
+                    load ∈ Graph.VisibleEntry.excessBasin inputs.current.object piece
                       data.threshold data.dischargeScale receiver := by
             simp only [Graph.Route8Census.entriesOfComponents,
               Finset.mem_biUnion, Finset.mem_image, Prod.mk.injEq]
@@ -6129,9 +6171,38 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
             (inputs.current.object.remainderSupport
               (canonicalWindowPacking data inputs.current.object)) component at pieceEq
           subst piece
+          have survives := (Finset.mem_filter.mp componentMem).2
           have componentFacts := trueResidual.down.2 component componentMem
           have receiverFacts := componentFacts.2 receiver receiverMem
-          have noExitFour := (receiverFacts.2.2 load loadMem).2.2
+          have exactDegree : ∀ vertex ∈ inputs.current.object.pieceSupport
+              (inputs.current.object.remainderSupport
+                (canonicalWindowPacking data inputs.current.object)) component,
+              inputs.current.object.degree vertex = data.threshold := by
+            intro vertex vertexMem
+            have nonneg := le_trans inputs.current.baseline
+              (inputs.current.object.minDegree_le_degree vertex)
+            have summand : inputs.current.object.degree vertex -
+                data.threshold = 0 :=
+              Nat.eq_zero_of_le_zero
+                (survives.2.1 ▸ Finset.single_le_sum
+                  (f := fun other =>
+                    inputs.current.object.degree other - data.threshold)
+                  (fun _ _ => Nat.zero_le _) vertexMem)
+            omega
+          have silentLoadMem : load ∈ Graph.VisibleEntry.silentExcess
+              inputs.current.object
+              (inputs.current.object.pieceSupport
+                (inputs.current.object.remainderSupport
+                  (canonicalWindowPacking data inputs.current.object)) component)
+              data.threshold data.dischargeScale receiver := by
+            rw [Graph.VisibleEntry.silentExcess_eq_excessBasin
+              inputs.current.object _ data.threshold data.dischargeScale
+              (exactDegree receiver receiverFacts.1.1) receiverFacts.1
+              data.dischargeScale_pos
+              (fun saturated =>
+                componentFacts.1 receiver receiverFacts.1 saturated)]
+            exact loadMem
+          have noExitFour := (receiverFacts.2.2 load silentLoadMem).2.2
           exact ⟨_, indexMem, two, noExitFour⟩⟩ .nil)
     0 0
 
@@ -6148,6 +6219,296 @@ drops (`lem:typeA-exit4-finite-descent`, `Λ₄`); the procedure therefore ends 
 stage with a true (route-8) two-carrier entry, sent to node `[124]`, or at a stage
 where the stage rate fails.  The row reads the unified deficit, burden, entry,
 and surviving-stage facts and publishes the procedure's outcome. -/
+/-! ## Node `[86]`: `lem:typeA-exclusion`
+
+*"Consequently a Type A support with `N₀(X) < 0` must carry an admissible
+route-8 residual profile, produce the Type B handoff, or contain an exit-(4)
+witness for a routed load."*  Stated over the canonical pieces of every
+maximal-packing remainder of the selected minimal counterexample.  Per
+`rem:unified-covers-exit4`, the residual arm quantifies the route-8 entries of
+every saturated receiver over both its silent excess and, at each overloaded
+port, its selected visible unpeeled loads: exits (5) and (6) close per load
+against `K .uncompressible`/`K .replacementExclusion` and the selection's own
+minimality (`lem:typeA-exits-discharged`), a surviving separator produces the
+decorated envelope (`lem:typeA-cubic-switch-absorption` +
+`lem:typeA-high-degree-handoff`), and the label-collision absorbing clause is
+denied by target avoidance (`lem:labels`). -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def typeAExclusionRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.typeAExclusion
+    { Requires := [K .selection, K .replacementExclusion, K .cubicBaseline]
+      Produces := [K .typeAExclusion]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let selection := (inputs.get (K .selection)).down
+      let exclusion := (inputs.get (K .replacementExclusion)).down
+      let cubic := (inputs.get (K .cubicBaseline)).down
+      .cons (key := K .typeAExclusion)
+        (show Value BranchState Presentation presentation data
+            .typeAExclusion inputs.current from
+          ⟨by
+            classical
+            dsimp only [Holds]
+            letI : DecidableEq inputs.current.object.Vertex :=
+              inputs.current.object.vertices.decEq
+            intro packing valid maximal component componentMem negative
+              zeroSurplus
+            set piece := inputs.current.object.pieceSupport
+              (inputs.current.object.remainderSupport packing) component
+              with pieceDef
+            have avoids :
+                ¬ Graph.HasCycleWithLength data.LengthOK
+                  inputs.current.object := selection.1
+            have minimality : ∀ representative : Graph.FiniteObject.{u},
+                representative.LexicographicallySmaller inputs.current.object →
+                Graph.MinimumDegreeAtLeast data.threshold representative →
+                Graph.HasCycleWithLength data.LengthOK representative :=
+              fun representative lex base =>
+                selection.2 representative lex base
+            have connected :
+                Graph.SupportComponents.Connected.ConnectedOn
+                  inputs.current.object piece :=
+              Graph.SupportComponents.Connected.connectedOn_of_mem_order
+                inputs.current.object _
+                ((Graph.FiniteObject.mem_canonicalPieces _ _).1 componentMem)
+            by_cases witnessed : ∃ receiver : inputs.current.object.Vertex,
+                inputs.current.object.IsReceiver piece data.threshold
+                    receiver ∧
+                  Nonempty (Graph.ExitFour.Witness
+                    (Graph.HasCycleWithLength data.LengthOK) piece
+                    data.threshold data.dischargeScale receiver ∅)
+            · exact Or.inl witnessed
+            by_cases handoff :
+                HandoffProduced data inputs.current.object packing piece
+            · exact Or.inr (Or.inr handoff)
+            refine Or.inr (Or.inl ?_)
+            intro receiver receiverMem
+            have isReceiver : inputs.current.object.IsReceiver piece
+                data.threshold receiver :=
+              Graph.FiniteObject.mem_receivers.mp
+                (Finset.mem_filter.1 receiverMem).1
+            have perLoad : ∀ load ∈ inputs.current.object.routedLoads piece
+                data.threshold receiver,
+                Graph.Route8.TraceBasin.Route8Entry inputs.current.object piece
+                  data.threshold data.LengthOK receiver load ∨
+                  ∃ basin : Finset inputs.current.object.Vertex,
+                    Graph.Route8.TraceBasin.select? inputs.current.object piece
+                        data.threshold receiver load = some basin ∧
+                      ∃ retained,
+                        Graph.Route8.TraceBasin.TraceResponseQuotient
+                          inputs.current.object piece data.threshold
+                          data.LengthOK receiver load basin retained := by
+              intro load routed
+              by_cases quotient : ∃ basin : Finset inputs.current.object.Vertex,
+                  Graph.Route8.TraceBasin.select? inputs.current.object piece
+                      data.threshold receiver load = some basin ∧
+                    ∃ retained,
+                      Graph.Route8.TraceBasin.TraceResponseQuotient
+                        inputs.current.object piece data.threshold
+                        data.LengthOK receiver load basin retained
+              · exact Or.inr quotient
+              refine Or.inl ?_
+              by_cases separated : ∃ basin : Finset inputs.current.object.Vertex,
+                  Graph.Route8.TraceBasin.TraceSurvivingSeparator
+                    inputs.current.object piece data.threshold data.LengthOK
+                    receiver load basin
+              · obtain ⟨basin, separator⟩ := separated
+                refine absurd ?_ handoff
+                obtain ⟨envelope, coreEq, decorated⟩ :=
+                  Graph.Route8.TraceBasin.exists_envelope_of_traceSurvivingSeparator
+                    (HighDegree := handoffHighDegree data inputs.current.object)
+                    (Absorbing :=
+                      handoffAbsorbing data inputs.current.object packing)
+                    separator avoids
+                    (fun vertex high => by
+                      show data.threshold < inputs.current.object.degree vertex
+                      rw [cubic]
+                      exact high)
+                    (fun centre first second collision =>
+                      avoids
+                        (Graph.WindowLabelCollision.hasCycleWithLength_of_labelCollision
+                          data.degenerateClosureRejected collision))
+                exact ⟨envelope, coreEq, decorated⟩
+              · rcases Graph.Route8.TraceBasin.exists_witness_or_route8Entry
+                    (scale := data.dischargeScale) connected routed
+                    (fun basin selectedEq quotientAt =>
+                      quotient ⟨basin, selectedEq, quotientAt⟩)
+                    exclusion avoids minimality
+                    (not_exists.1 separated) with ⟨witness, _⟩ | entry
+                · exact absurd ⟨receiver, isReceiver, ⟨witness⟩⟩ witnessed
+                · exact entry
+            constructor
+            · intro load loadMem
+              exact perLoad load
+                (Graph.Route8.TraceBasin.silentExcess_subset_routedLoads
+                  inputs.current.object piece data.threshold
+                  data.dischargeScale receiver loadMem)
+            · intro outside _portMem _overloaded load loadMem
+              refine perLoad load ?_
+              have inOrder := List.mem_of_mem_take loadMem
+              have member : load ∈ Graph.ExitFour.unpeeledVisibleLoadsAt piece
+                  data.threshold receiver outside ∅ := by
+                simpa [inputs.current.object.mem_orderedVertices load] using
+                  inOrder
+              have unpeeled : load ∈ Graph.ExitFour.unpeeledLoads piece
+                  data.threshold receiver ∅ :=
+                (Finset.mem_inter.1 member).2
+              rw [Graph.ExitFour.mem_unpeeledLoads] at unpeeled
+              exact unpeeled.1⟩)
+        .nil)
+    0 0
+
+/-! ## Fact 2 of node `[123]`: `lem:typeA-unpeeled-visible-routing`
+
+*"Suppose that a completion port of `w` carries four visible receiver-entry
+returns whose routed loads lie in `L(w) \\ P₄(w)`.  Then the unpeeled data
+realize one of exits (1)--(7) ... If the realized exit is (4), the
+target-defective quotient has declared routed-load support containing at least
+one of those four unpeeled loads."*  At the unified collection, exits
+`(1)`--`(3)` and `(6)` close against the standing invariants inside the
+per-load routing, exit `(7)` contradicts the collection's own no-handoff
+filter (`rem:unified-covers-exit4`), and what remains per overloaded port is
+the exit-`(4)` witness or, per selected visible unpeeled load, the trace-basin
+outcome of `lem:typeA-reduced-silent-residual`. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def route8VisibleRoutingRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.route8VisibleExitFourRouting
+    { Requires := [K .selection, K .replacementExclusion, K .cubicBaseline]
+      Produces := [K .route8VisibleExitFourRouting]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let selection := (inputs.get (K .selection)).down
+      let exclusion := (inputs.get (K .replacementExclusion)).down
+      let cubic := (inputs.get (K .cubicBaseline)).down
+      .cons (key := K .route8VisibleExitFourRouting)
+        (show Value BranchState Presentation presentation data
+            .route8VisibleExitFourRouting inputs.current from
+          ⟨by
+            classical
+            dsimp only [Holds]
+            letI : DecidableEq inputs.current.object.Vertex :=
+              inputs.current.object.vertices.decEq
+            intro component componentMem receiver _receiverMem peeled
+              _peeledSubset outside _portMem _overCard
+            set piece := inputs.current.object.pieceSupport
+              (inputs.current.object.remainderSupport
+                (canonicalWindowPacking data inputs.current.object)) component
+              with pieceDef
+            have avoids :
+                ¬ Graph.HasCycleWithLength data.LengthOK
+                  inputs.current.object := selection.1
+            have minimality : ∀ representative : Graph.FiniteObject.{u},
+                representative.LexicographicallySmaller inputs.current.object →
+                Graph.MinimumDegreeAtLeast data.threshold representative →
+                Graph.HasCycleWithLength data.LengthOK representative :=
+              fun representative lex base =>
+                selection.2 representative lex base
+            have componentPiece : component ∈
+                inputs.current.object.canonicalPieces
+                  (inputs.current.object.remainderSupport
+                    (canonicalWindowPacking data inputs.current.object)) :=
+              (Finset.mem_filter.1 componentMem).1
+            have connected :
+                Graph.SupportComponents.Connected.ConnectedOn
+                  inputs.current.object piece :=
+              Graph.SupportComponents.Connected.connectedOn_of_mem_order
+                inputs.current.object _
+                ((Graph.FiniteObject.mem_canonicalPieces _ _).1 componentPiece)
+            have noHandoff : ¬ HandoffProduced data inputs.current.object
+                (canonicalWindowPacking data inputs.current.object) piece :=
+              ((Finset.mem_filter.1 componentMem).2).2.2
+            by_cases witnessed : ∃ witness : Graph.ExitFour.Witness
+                (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+                data.dischargeScale receiver peeled,
+              witness.load ∈
+                (Graph.VisibleEntry.visibleLoadsAt inputs.current.object piece
+                  data.threshold receiver outside) \ peeled
+            · exact Or.inl witnessed
+            refine Or.inr ?_
+            intro load loadMem
+            have inOrder := List.mem_of_mem_take loadMem
+            have member : load ∈ Graph.ExitFour.unpeeledVisibleLoadsAt piece
+                data.threshold receiver outside peeled := by
+              simpa [inputs.current.object.mem_orderedVertices load] using
+                inOrder
+            have unpeeled : load ∈ Graph.ExitFour.unpeeledLoads piece
+                data.threshold receiver peeled :=
+              (Finset.mem_inter.1 member).2
+            have visMem : load ∈ Graph.VisibleEntry.visibleLoadsAt
+                inputs.current.object piece data.threshold receiver outside :=
+              (Finset.mem_inter.1 member).1
+            have unpeeledSplit := unpeeled
+            rw [Graph.ExitFour.mem_unpeeledLoads] at unpeeledSplit
+            by_cases quotient : ∃ basin : Finset inputs.current.object.Vertex,
+                Graph.Route8.TraceBasin.select? inputs.current.object piece
+                    data.threshold receiver load = some basin ∧
+                  ∃ retained,
+                    Graph.Route8.TraceBasin.TraceResponseQuotient
+                      inputs.current.object piece data.threshold
+                      data.LengthOK receiver load basin retained
+            · exact Or.inr quotient
+            refine Or.inl ?_
+            by_cases separated : ∃ basin : Finset inputs.current.object.Vertex,
+                Graph.Route8.TraceBasin.TraceSurvivingSeparator
+                  inputs.current.object piece data.threshold data.LengthOK
+                  receiver load basin
+            · obtain ⟨basin, separator⟩ := separated
+              refine absurd ?_ noHandoff
+              obtain ⟨envelope, coreEq, decorated⟩ :=
+                Graph.Route8.TraceBasin.exists_envelope_of_traceSurvivingSeparator
+                  (HighDegree := handoffHighDegree data inputs.current.object)
+                  (Absorbing :=
+                    handoffAbsorbing data inputs.current.object
+                      (canonicalWindowPacking data inputs.current.object))
+                  separator avoids
+                  (fun vertex high => by
+                    show data.threshold < inputs.current.object.degree vertex
+                    rw [cubic]
+                    exact high)
+                  (fun centre first second collision =>
+                    avoids
+                      (Graph.WindowLabelCollision.hasCycleWithLength_of_labelCollision
+                        data.degenerateClosureRejected collision))
+              exact ⟨envelope, coreEq, decorated⟩
+            · rcases Graph.Route8.TraceBasin.exists_witness_or_route8Entry
+                  (scale := data.dischargeScale) connected unpeeledSplit.1
+                  (fun basin selectedEq quotientAt =>
+                    quotient ⟨basin, selectedEq, quotientAt⟩)
+                  exclusion avoids minimality
+                  (not_exists.1 separated) with ⟨witness₀, witnessLoad⟩ | entry
+              · refine absurd ?_ witnessed
+                exact ⟨⟨load, unpeeled, witnessLoad ▸ witness₀.member⟩,
+                  Finset.mem_sdiff.2 ⟨visMem, unpeeledSplit.2⟩⟩
+              · exact entry⟩)
+        .nil)
+    0 0
+
 set_option maxHeartbeats 1000000 in
 omit [FactSystem (Input BranchState Presentation presentation data)] in
 @[reducible] noncomputable def route8PeelingDescentRow
@@ -6163,15 +6524,13 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       (Presentation := Presentation) (presentation := presentation)
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.route8PeelingDescent
-    { Requires := [K .route8UnifiedDeficit, K .route8VisibleExitFourRouting,
-        K .typeAReceiverRouting]
+    { Requires := [K .route8UnifiedDeficit, K .typeAReceiverRouting]
       Produces := [K .route8PeelingDescent]
       requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       let census := inputs.get (K .route8UnifiedDeficit)
-      let visibleRouting := inputs.get (K .route8VisibleExitFourRouting)
       let receiverRouting := inputs.get (K .typeAReceiverRouting)
       .cons (key := K .route8PeelingDescent)
         (show Value BranchState Presentation presentation data
@@ -6189,9 +6548,6 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                 components
             let slack := 2 * (data.bridgeMassFactor * data.dischargeScale *
               data.surplusThreshold inputs.current.object.vertexCount)
-            let visibles := Graph.Route8Pressure.visibleLoadIndices
-              inputs.current.object packing components data.threshold
-            let allIndices := entries ∪ visibles
             have thresholdPos : 1 ≤ data.threshold :=
               le_trans (by norm_num) data.three_le_threshold
             have dischargePos : 1 ≤ data.dischargeScale := data.dischargeScale_pos
@@ -6260,8 +6616,8 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                 ∀ chain : List (Graph.Route8Census.Index inputs.current.object),
                   Graph.Route8Pressure.PeelChain inputs.current.object packing entries
                       data.threshold data.dischargeScale slack data.LengthOK chain →
-                    chain.toFinset ⊆ allIndices →
-                    (allIndices \ chain.toFinset).card = n →
+                    chain.toFinset ⊆ entries →
+                    (entries \ chain.toFinset).card = n →
                     ∃ final,
                       Graph.Route8Pressure.StageOutcome inputs.current.object packing entries
                         data.threshold data.dischargeScale slack data.LengthOK final from
@@ -6273,202 +6629,55 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
               by_cases rate : Graph.Route8Pressure.StageRate
                   inputs.current.object packing data.threshold data.dischargeScale
                   slack chain.toFinset
-              · by_cases overloaded : ∃ component ∈ components,
-                    ∃ receiver ∈ inputs.current.object.receivers
-                        (inputs.current.object.pieceSupport support component)
-                        data.threshold,
-                      ∃ outside ∈ Graph.VisibleEntry.completionPorts
-                          inputs.current.object
-                          (inputs.current.object.pieceSupport support component)
-                          receiver,
-                        data.dischargeScale ≤
-                          ((Graph.VisibleEntry.visibleLoadsAt
-                              inputs.current.object
-                              (inputs.current.object.pieceSupport support
-                                component)
-                              data.threshold receiver outside) \
-                            Graph.Route8Pressure.peeledLoads
-                              inputs.current.object chain.toFinset
-                              (inputs.current.object.pieceSupport support
-                                component)
-                              receiver).card
-                · -- an overloaded port: peel through its exit-(4) witness
-                  -- (`lem:typeA-unpeeled-visible-routing`)
-                  obtain ⟨component, componentMem, receiver, receiverMem,
-                    outside, portMem, overCard⟩ := overloaded
-                  set piece := inputs.current.object.pieceSupport support
-                    component with pieceDef
-                  set P := Graph.Route8Pressure.peeledLoads inputs.current.object
-                    chain.toFinset piece receiver with Pdef
-                  set P' := P ∩ inputs.current.object.routedLoads piece
-                    data.threshold receiver with P'def
-                  have P'sub : P' ⊆ inputs.current.object.routedLoads piece
-                      data.threshold receiver := Finset.inter_subset_right
-                  have visEq : (Graph.VisibleEntry.visibleLoadsAt
-                        inputs.current.object piece data.threshold receiver
-                        outside) \ P =
-                      (Graph.VisibleEntry.visibleLoadsAt inputs.current.object
-                        piece data.threshold receiver outside) \ P' := by
-                    ext load
-                    simp only [Finset.mem_sdiff, P'def, Finset.mem_inter]
-                    constructor
-                    · rintro ⟨vis, notP⟩
-                      exact ⟨vis, fun h => notP h.1⟩
-                    · rintro ⟨vis, notP'⟩
-                      refine ⟨vis, fun hP => notP' ⟨hP, ?_⟩⟩
-                      exact Graph.VisibleEntry.visibleLoadsAt_subset
-                        inputs.current.object piece data.threshold receiver
-                        outside vis
-                  have overBound : data.dischargeScale ≤
-                      ((Graph.VisibleEntry.visibleLoadsAt inputs.current.object
-                          piece data.threshold receiver outside) \ P').card := by
-                    rw [← visEq]
-                    exact overCard
-                  obtain ⟨witness, wmem⟩ := visibleRouting.down component
-                    componentMem receiver receiverMem P' P'sub outside portMem
-                    overBound
-                  have wVis := (Finset.mem_sdiff.1 wmem).1
-                  have loadRouted : witness.load ∈
-                      inputs.current.object.routedLoads piece data.threshold
-                        receiver :=
-                    Graph.VisibleEntry.visibleLoadsAt_subset inputs.current.object
-                      piece data.threshold receiver outside wVis
-                  have loadNotP : witness.load ∉ P := by
-                    intro h
-                    exact (Finset.mem_sdiff.1 wmem).2
-                      (Finset.mem_inter.2 ⟨h, loadRouted⟩)
-                  have unpeeledP : witness.load ∈
-                      Graph.ExitFour.unpeeledLoads piece data.threshold receiver
-                        P := by
-                    rw [Graph.ExitFour.mem_unpeeledLoads]
-                    exact ⟨loadRouted, loadNotP⟩
-                  have defect : Graph.Route8Pressure.TargetDefectAt
-                      inputs.current.object data.threshold data.dischargeScale
-                      (Graph.HasCycleWithLength data.LengthOK) chain.toFinset
-                      (piece, receiver, witness.load) :=
-                    ⟨⟨witness.load, unpeeledP, witness.member⟩, rfl⟩
-                  have fresh : (piece, receiver, witness.load) ∉
-                      chain.toFinset := by
-                    intro h
-                    exact loadNotP
-                      ((Graph.Route8Pressure.mem_peeledLoads
-                        inputs.current.object).2 h)
-                  have visLoad : witness.load ∈
-                      Graph.VisibleEntry.visibleLoads inputs.current.object piece
-                        data.threshold receiver :=
-                    (Graph.VisibleEntry.mem_visibleLoads
-                      inputs.current.object).2
-                      ⟨loadRouted, outside, portMem, wVis⟩
-                  have visibleLoadField : (piece, receiver, witness.load).2.2 ∈
-                      (Graph.VisibleEntry.visibleLoads inputs.current.object
-                          (piece, receiver, witness.load).1 data.threshold
-                          (piece, receiver, witness.load).2.1) \
-                        Graph.Route8Pressure.peeledLoads inputs.current.object
-                          chain.toFinset (piece, receiver, witness.load).1
-                          (piece, receiver, witness.load).2.1 :=
-                    Finset.mem_sdiff.2 ⟨visLoad, loadNotP⟩
-                  have valid'' := Graph.Route8Pressure.PeelChain.visible
-                    (object := inputs.current.object) valid' rate fresh
-                    visibleLoadField defect
-                  have idxAll : (piece, receiver, witness.load) ∈ allIndices :=
-                    Finset.mem_union_right _
-                      ((Graph.Route8Pressure.mem_visibleLoadIndices
-                        inputs.current.object).2
-                        ⟨component, componentMem, rfl, receiverMem, visLoad⟩)
+              · -- the silence-free staged burden covers every stage
+                have burden := Graph.Route8Pressure.stage_burden
+                  inputs.current.object packing components data.threshold
+                  data.dischargeScale dischargePos baseline componentsSub
+                  surplusZero routedFact chain.toFinset
+                have stageDeficit : support.card ≤
+                    (Graph.Route8Pressure.peeledEntries inputs.current.object
+                        entries chain.toFinset).card + chain.toFinset.card +
+                      data.dischargeScale *
+                        (Graph.Route8Census.supply inputs.current.object
+                          packing).card +
+                      slack := by
+                  have burden' : scaledDeficit ≤
+                      (Graph.Route8Pressure.peeledEntries inputs.current.object
+                          entries chain.toFinset).card +
+                        chain.toFinset.card := burden
+                  omega
+                obtain ⟨index, member, two⟩ :=
+                  Graph.Route8Pressure.exists_twoCarrierEntry_staged
+                    inputs.current.object packing entries data.threshold
+                    data.dischargeScale slack data.LengthOK thresholdPos
+                    entriesSubset chain.toFinset stageDeficit rate
+                by_cases targetDefect : Graph.Route8Pressure.TargetDefectAt
+                    inputs.current.object data.threshold data.dischargeScale
+                    (Graph.HasCycleWithLength data.LengthOK) chain.toFinset index
+                · have valid'' := Graph.Route8Pressure.PeelChain.cons
+                    (object := inputs.current.object) valid' rate member two
+                    targetDefect
+                  have fresh : index ∉ chain.toFinset :=
+                    (Finset.mem_sdiff.1 member).2
+                  have idxAll : index ∈ entries :=
+                    Graph.Route8Pressure.peeledEntries_subset
+                      inputs.current.object entries chain.toFinset member
                   have smaller :
-                      (allIndices \
-                        ((piece, receiver, witness.load) ::
-                          chain).toFinset).card < n := by
+                      (entries \ (index :: chain).toFinset).card < n := by
                     rw [← cardEq]
                     apply Finset.card_lt_card
                     rw [Finset.ssubset_iff_of_subset]
-                    · refine ⟨(piece, receiver, witness.load),
-                        Finset.mem_sdiff.2 ⟨idxAll, fresh⟩, ?_⟩
+                    · refine ⟨index, Finset.mem_sdiff.2 ⟨idxAll, fresh⟩, ?_⟩
                       simp [List.toFinset_cons]
                     · intro other otherMem
                       simp only [List.toFinset_cons, Finset.mem_sdiff,
                         Finset.mem_insert, not_or] at otherMem ⊢
                       exact ⟨otherMem.1, otherMem.2.2⟩
-                  refine ih _ smaller ((piece, receiver, witness.load) :: chain)
-                    valid'' ?_ rfl
+                  refine ih _ smaller (index :: chain) valid'' ?_ rfl
                   rw [List.toFinset_cons]
                   exact Finset.insert_subset idxAll chainSub
-                · -- every port is visibly settled: the staged burden holds
-                  have reducedPorts : ∀ component ∈ components,
-                      ∀ receiver ∈ inputs.current.object.receivers
-                          (inputs.current.object.pieceSupport support component)
-                          data.threshold,
-                        inputs.current.object.Saturated
-                            (inputs.current.object.pieceSupport support
-                              component)
-                            data.threshold data.dischargeScale receiver →
-                        ∀ outside ∈ Graph.VisibleEntry.completionPorts
-                            inputs.current.object
-                            (inputs.current.object.pieceSupport support
-                              component)
-                            receiver,
-                          ((Graph.VisibleEntry.visibleLoadsAt
-                              inputs.current.object
-                              (inputs.current.object.pieceSupport support
-                                component)
-                              data.threshold receiver outside) \
-                            Graph.Route8Pressure.peeledLoads
-                              inputs.current.object chain.toFinset
-                              (inputs.current.object.pieceSupport support
-                                component)
-                              receiver).card + 1 ≤ data.dischargeScale := by
-                    intro c cm r rm _sat o om
-                    by_contra small
-                    exact overloaded ⟨c, cm, r, rm, o, om, by omega⟩
-                  have burden := Graph.Route8Pressure.stage_burden
-                    inputs.current.object packing components data.threshold
-                    data.dischargeScale dischargePos baseline componentsSub
-                    surplusZero routedFact chain.toFinset reducedPorts
-                  have stageDeficit : support.card ≤
-                      (Graph.Route8Pressure.peeledEntries inputs.current.object
-                          entries chain.toFinset).card + chain.toFinset.card +
-                        data.dischargeScale *
-                          (Graph.Route8Census.supply inputs.current.object
-                            packing).card +
-                        slack := by
-                    have burden' : scaledDeficit ≤
-                        (Graph.Route8Pressure.peeledEntries inputs.current.object
-                            entries chain.toFinset).card +
-                          chain.toFinset.card := burden
-                    omega
-                  obtain ⟨index, member, two⟩ :=
-                    Graph.Route8Pressure.exists_twoCarrierEntry_staged
-                      inputs.current.object packing entries data.threshold
-                      data.dischargeScale slack data.LengthOK thresholdPos
-                      entriesSubset chain.toFinset stageDeficit rate
-                  by_cases targetDefect : Graph.Route8Pressure.TargetDefectAt
-                      inputs.current.object data.threshold data.dischargeScale
-                      (Graph.HasCycleWithLength data.LengthOK) chain.toFinset index
-                  · have valid'' := Graph.Route8Pressure.PeelChain.cons
-                      (object := inputs.current.object) valid' rate member two
-                      targetDefect
-                    have fresh : index ∉ chain.toFinset :=
-                      (Finset.mem_sdiff.1 member).2
-                    have idxAll : index ∈ allIndices :=
-                      Finset.mem_union_left _
-                        (Graph.Route8Pressure.peeledEntries_subset
-                          inputs.current.object entries chain.toFinset member)
-                    have smaller :
-                        (allIndices \ (index :: chain).toFinset).card < n := by
-                      rw [← cardEq]
-                      apply Finset.card_lt_card
-                      rw [Finset.ssubset_iff_of_subset]
-                      · refine ⟨index, Finset.mem_sdiff.2 ⟨idxAll, fresh⟩, ?_⟩
-                        simp [List.toFinset_cons]
-                      · intro other otherMem
-                        simp only [List.toFinset_cons, Finset.mem_sdiff,
-                          Finset.mem_insert, not_or] at otherMem ⊢
-                        exact ⟨otherMem.1, otherMem.2.2⟩
-                    refine ih _ smaller (index :: chain) valid'' ?_ rfl
-                    rw [List.toFinset_cons]
-                    exact Finset.insert_subset idxAll chainSub
-                  · exact ⟨chain, valid', Or.inl ⟨rate, index, member, two,
-                      targetDefect⟩⟩
+                · exact ⟨chain, valid', Or.inl ⟨rate, index, member, two,
+                    targetDefect⟩⟩
               · exact ⟨chain, valid', Or.inr rate⟩⟩)
         .nil)
     0 0
@@ -6623,9 +6832,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           obtain ⟨targetDefect, coordinate, coordinateMem, coordinateCore,
             carrierCoordinate⟩ := deletionWitnesses.2 carrier carrierMem
           have loadRouted : load ∈ inputs.current.object.routedLoads piece
-              data.threshold receiver := by
-            have excess := (Finset.mem_sdiff.mp loadMem).1
-            exact (Finset.mem_sdiff.mp excess).1
+              data.threshold receiver := (Finset.mem_sdiff.mp loadMem).1
           have unpeeled : load ∈ Graph.ExitFour.unpeeledLoads piece
               data.threshold receiver ∅ := by
             rw [Graph.ExitFour.mem_unpeeledLoads]
@@ -6875,7 +7082,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                   piece = inputs.current.object.pieceSupport support component ∧
                     receiver ∈ Graph.VisibleEntry.saturatedReceivers
                       inputs.current.object piece data.threshold data.dischargeScale ∧
-                    load ∈ Graph.VisibleEntry.silentExcess inputs.current.object piece
+                    load ∈ Graph.VisibleEntry.excessBasin inputs.current.object piece
                       data.threshold data.dischargeScale receiver := by
             simp only [Graph.Route8Census.entriesOfComponents,
               Finset.mem_biUnion, Finset.mem_image, Prod.mk.injEq]
@@ -6902,8 +7109,35 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
             data.threshold data.LengthOK index
           let entry := presented.toEntry
             (Graph.HasCycleWithLength data.LengthOK)
+          have survives := (Finset.mem_filter.mp componentMem).2
+          have trueFactsEarly := trueResidual.down.2 component componentMem
+          have receiverFactsEarly := trueFactsEarly.2 receiver receiverMem
+          have exactDegree : ∀ vertex ∈ inputs.current.object.pieceSupport
+              support component,
+              inputs.current.object.degree vertex = data.threshold := by
+            intro vertex vertexMem
+            have nonneg := le_trans inputs.current.baseline
+              (inputs.current.object.minDegree_le_degree vertex)
+            have summand : inputs.current.object.degree vertex -
+                data.threshold = 0 :=
+              Nat.eq_zero_of_le_zero
+                (survives.2.1 ▸ Finset.single_le_sum
+                  (f := fun other =>
+                    inputs.current.object.degree other - data.threshold)
+                  (fun _ _ => Nat.zero_le _) vertexMem)
+            omega
+          have silentLoadMem : load ∈ Graph.VisibleEntry.silentExcess
+              inputs.current.object piece data.threshold data.dischargeScale
+              receiver := by
+            rw [Graph.VisibleEntry.silentExcess_eq_excessBasin
+              inputs.current.object _ data.threshold data.dischargeScale
+              (exactDegree receiver receiverFactsEarly.1.1)
+              receiverFactsEarly.1 data.dischargeScale_pos
+              (fun saturated =>
+                trueFactsEarly.1 receiver receiverFactsEarly.1 saturated)]
+            exact loadMem
           have notSmall := noSmall.down.2 component componentMem receiver
-            receiverMem load loadMem
+            receiverMem load silentLoadMem
           change ¬ entry.alpha ≤ 1 at notSmall
           have alphaAtLeast : 2 ≤ entry.alpha := by omega
           have coreNonempty : entry.essentialCore.Nonempty := by
@@ -6916,9 +7150,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           obtain ⟨targetDefect, coordinate, coordinateMem, coordinateCore,
             carrierCoordinate⟩ := deletionWitnesses.2 carrier carrierMem
           have loadRouted : load ∈ inputs.current.object.routedLoads piece
-              data.threshold receiver := by
-            have excess := (Finset.mem_sdiff.mp loadMem).1
-            exact (Finset.mem_sdiff.mp excess).1
+              data.threshold receiver := (Finset.mem_sdiff.mp loadMem).1
           have unpeeled : load ∈ Graph.ExitFour.unpeeledLoads piece
               data.threshold receiver ∅ := by
             rw [Graph.ExitFour.mem_unpeeledLoads]
@@ -6935,7 +7167,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                 receiver load _ _
           have trueFacts := trueResidual.down.2 component componentMem
           have receiverFacts := trueFacts.2 receiver receiverMem
-          have entryFacts := receiverFacts.2.2 load loadMem
+          have entryFacts := receiverFacts.2.2 load silentLoadMem
           have selected := entryFacts.1
           have noExitFour := entryFacts.2.2
           have canonicalCollection : Graph.ExitFour.Q5CanonicalCollection

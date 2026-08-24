@@ -390,6 +390,257 @@ theorem select?_isSome {object : FiniteObject.{u}}
   | nil => exact absurd list nonempty
   | cons head tail => simp [select?, list]
 
+
+/-! ## The selected support is itself a trace-complete candidate
+
+`def:typeA-trace-basin` selects `B_u` among the trace-complete connected
+candidate basins, and `lem:density-mersenne`'s silent analysis reads that
+selection at every unpaid silent routed load.  The selection is total: the
+selected support is always a candidate.  The declared support of a
+`u`-supported base coordinate either sits inside the support — a D1 coordinate
+is a cut-boundary vertex, a D4 wedge is internal, and a packed D3 window lies
+wholly in the component — or reaches it from outside and then marks a
+cut-boundary vertex: a return crossing the cut leaves a declared vertex on the
+boundary, and an attachment outside the support exposes its adjacent window
+vertex.  Nothing here chooses a basin; `select?` still returns the canonical
+minimum-cardinality candidate. -/
+
+/-- A walk starting inside a support and meeting its complement carries a
+cut-boundary vertex. -/
+theorem exists_cutBoundary_of_walk_from_inside {support : Finset object.Vertex} :
+    ∀ {left right : object.Vertex} (walk : object.graph.Walk left right),
+      left ∈ support →
+      (∃ outsider ∈ walk.support, outsider ∉ support) →
+      ∃ crossing ∈ walk.support,
+        crossing ∈
+          Strategy.InterfaceReplacement.SupportAtom.cutBoundary object support := by
+  intro left right walk
+  induction walk with
+  | nil =>
+      intro inside witness
+      obtain ⟨outsider, member, outside⟩ := witness
+      rw [SimpleGraph.Walk.support_nil, List.mem_singleton] at member
+      subst member
+      exact absurd inside outside
+  | @cons head next tail adjacent rest ih =>
+      intro inside witness
+      obtain ⟨outsider, member, outside⟩ := witness
+      by_cases nextInside : next ∈ support
+      · have restWitness : outsider ∈ rest.support := by
+          rw [SimpleGraph.Walk.support_cons] at member
+          rcases List.mem_cons.mp member with rfl | tailMember
+          · exact absurd inside outside
+          · exact tailMember
+        obtain ⟨crossing, crossingMember, crossingBoundary⟩ :=
+          ih nextInside ⟨outsider, restWitness, outside⟩
+        refine ⟨crossing, ?_, crossingBoundary⟩
+        rw [SimpleGraph.Walk.support_cons]
+        exact List.mem_cons_of_mem _ crossingMember
+      · refine ⟨head, SimpleGraph.Walk.start_mem_support _, ?_⟩
+        exact (Strategy.InterfaceReplacement.SupportAtom.mem_cutBoundary_iff
+          object support head).2 ⟨inside, next, adjacent, nextInside⟩
+
+/-- A walk starting outside a support and meeting it carries a cut-boundary
+vertex. -/
+theorem exists_cutBoundary_of_walk_from_outside {support : Finset object.Vertex} :
+    ∀ {left right : object.Vertex} (walk : object.graph.Walk left right),
+      left ∉ support →
+      (∃ insider ∈ walk.support, insider ∈ support) →
+      ∃ crossing ∈ walk.support,
+        crossing ∈
+          Strategy.InterfaceReplacement.SupportAtom.cutBoundary object support := by
+  intro left right walk
+  induction walk with
+  | nil =>
+      intro outside witness
+      obtain ⟨insider, member, inside⟩ := witness
+      rw [SimpleGraph.Walk.support_nil, List.mem_singleton] at member
+      subst member
+      exact absurd inside outside
+  | @cons head next tail adjacent rest ih =>
+      intro outside witness
+      obtain ⟨insider, member, inside⟩ := witness
+      by_cases nextInside : next ∈ support
+      · refine ⟨next, ?_, ?_⟩
+        · rw [SimpleGraph.Walk.support_cons]
+          exact List.mem_cons_of_mem _ (SimpleGraph.Walk.start_mem_support rest)
+        · exact (Strategy.InterfaceReplacement.SupportAtom.mem_cutBoundary_iff
+            object support next).2 ⟨nextInside, head, adjacent.symm, outside⟩
+      · have restWitness : insider ∈ rest.support := by
+          rw [SimpleGraph.Walk.support_cons] at member
+          rcases List.mem_cons.mp member with rfl | tailMember
+          · exact absurd inside outside
+          · exact tailMember
+        obtain ⟨crossing, crossingMember, crossingBoundary⟩ :=
+          ih nextInside ⟨insider, restWitness, inside⟩
+        refine ⟨crossing, ?_, crossingBoundary⟩
+        rw [SimpleGraph.Walk.support_cons]
+        exact List.mem_cons_of_mem _ crossingMember
+
+/-- A walk meeting both a support and its complement carries a cut-boundary
+vertex. -/
+theorem exists_cutBoundary_of_walk_crossing {support : Finset object.Vertex}
+    {left right insider outsider : object.Vertex}
+    (walk : object.graph.Walk left right)
+    (insiderMember : insider ∈ walk.support)
+    (insiderInside : insider ∈ support)
+    (outsiderMember : outsider ∈ walk.support)
+    (outsiderOutside : outsider ∉ support) :
+    ∃ crossing ∈ walk.support,
+      crossing ∈
+        Strategy.InterfaceReplacement.SupportAtom.cutBoundary object support := by
+  by_cases startInside : left ∈ support
+  · exact exists_cutBoundary_of_walk_from_inside walk startInside
+      ⟨outsider, outsiderMember, outsiderOutside⟩
+  · exact exists_cutBoundary_of_walk_from_outside walk startInside
+      ⟨insider, insiderMember, insiderInside⟩
+
+/-- **The selected support is a trace-complete candidate basin** at every load
+the canonical routing traces to the receiver. -/
+theorem traceComplete_support (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold : Nat)
+    {receiver load : object.Vertex}
+    (connected : SupportComponents.Connected.ConnectedOn object support)
+    (routed : object.TraceTo support threshold load receiver) :
+    TraceComplete object support threshold receiver load support := by
+  classical
+  obtain ⟨trace, selected⟩ := Option.isSome_iff_exists.mp
+    (object.isSome_tracePath?_of_traceTo routed)
+  have receiverInside : receiver ∈ support :=
+    (object.mem_support_of_traceTo routed).2
+  refine ⟨Finset.Subset.refl support, ⟨trace, selected, ?_⟩, connected, ?_⟩
+  · intro vertex member
+    exact (object.isTracePath_of_tracePath?_eq_some selected).1 vertex
+      (List.mem_toFinset.mp member)
+  · intro coordinate _scheduled uSupported
+    cases coordinate with
+    | d1 boundaryCoordinate =>
+        refine Or.inr ⟨boundaryCoordinate.1, boundaryCoordinate.2, ?_⟩
+        show boundaryCoordinate.1 ∈
+          D1.declaredSupport object support boundaryCoordinate
+        unfold D1.declaredSupport
+        exact Finset.mem_singleton_self _
+    | d2ReturnLength returnCoordinate =>
+        have uSupportedReturn : D2.USupported object support threshold receiver
+            load returnCoordinate := uSupported
+        by_cases contained :
+            Base.declaredSupport object support
+              (.d2ReturnLength returnCoordinate) ⊆ support
+        · exact Or.inl contained
+        · obtain ⟨escapee, escapeeDeclared, escapeeOutside⟩ :=
+            Finset.not_subset.mp contained
+          have escapeeWalk :
+              escapee ∈ returnCoordinate.ambientPath.support := by
+            have declared : escapee ∈
+                D2.declaredSupport object returnCoordinate := escapeeDeclared
+            unfold D2.declaredSupport at declared
+            exact List.mem_toFinset.mp declared
+          have anchor : ∃ insider ∈ returnCoordinate.ambientPath.support,
+              insider ∈ support := by
+            rcases uSupportedReturn with meets | owned
+            · obtain ⟨trace', selected', vertex, vertexDeclared, vertexTrace⟩ :=
+                meets
+              refine ⟨vertex, ?_, ?_⟩
+              · have declared : vertex ∈
+                    D2.declaredSupport object returnCoordinate := vertexDeclared
+                unfold D2.declaredSupport at declared
+                exact List.mem_toFinset.mp declared
+              · exact (object.isTracePath_of_tracePath?_eq_some selected').1
+                  vertex vertexTrace
+            · obtain ⟨outside, _port, fstEq, _sndEq, _return', _scheduled',
+                _owns⟩ := owned
+              refine ⟨returnCoordinate.dart.fst,
+                SimpleGraph.Walk.end_mem_support _, ?_⟩
+              rw [fstEq]
+              exact receiverInside
+          obtain ⟨insider, insiderWalk, insiderInside⟩ := anchor
+          obtain ⟨crossing, crossingWalk, crossingBoundary⟩ :=
+            exists_cutBoundary_of_walk_crossing returnCoordinate.ambientPath
+              insiderWalk insiderInside escapeeWalk escapeeOutside
+          refine Or.inr ⟨crossing, crossingBoundary, ?_⟩
+          show crossing ∈ D2.declaredSupport object returnCoordinate
+          unfold D2.declaredSupport
+          exact List.mem_toFinset.mpr crossingWalk
+    | d3WindowLabel windowCoordinate =>
+        obtain ⟨⟨window, attachment⟩, isAttachment⟩ := windowCoordinate
+        by_cases attachmentInside : attachment ∈ support
+        · refine Or.inl ?_
+          intro vertex vertexMember
+          have declared : vertex ∈
+              D3.declaredSupport object support
+                ⟨(window, attachment), isAttachment⟩ := vertexMember
+          unfold D3.declaredSupport at declared
+          simp only [Finset.mem_union, Finset.mem_singleton] at declared
+          rcases declared with inWindow | rfl
+          · rw [D3.placement_support] at inWindow
+            exact window.2 inWindow
+          · exact attachmentInside
+        · obtain ⟨index, indexMember⟩ := isAttachment.2
+          have adjacency : object.graph.Adj attachment
+              (D3.placement object support window index) :=
+            (D3.mem_attachmentLabel_iff object support window attachment
+              index).mp indexMember
+          have anchorWindow : D3.placement object support window index ∈
+              InducedPathMaximalPacking.support object 13
+                (D3.placement object support window) := by
+            unfold InducedPathMaximalPacking.support
+            exact Finset.mem_image.mpr ⟨index, Finset.mem_univ index, rfl⟩
+          have anchorInside :
+              D3.placement object support window index ∈ support := by
+            have copy := anchorWindow
+            rw [D3.placement_support] at copy
+            exact window.2 copy
+          refine Or.inr ⟨D3.placement object support window index, ?_, ?_⟩
+          · exact (Strategy.InterfaceReplacement.SupportAtom.mem_cutBoundary_iff
+              object support _).2
+              ⟨anchorInside, attachment, adjacency.symm, attachmentInside⟩
+          · show D3.placement object support window index ∈
+              D3.declaredSupport object support
+                ⟨(window, attachment), isAttachment⟩
+            unfold D3.declaredSupport
+            simp only [Finset.mem_union]
+            exact Or.inl anchorWindow
+    | d4RawCurvature wedgeCoordinate =>
+        refine Or.inl ?_
+        intro vertex vertexMember
+        have declared : vertex ∈
+            D4.declaredSupport object support wedgeCoordinate := vertexMember
+        unfold D4.declaredSupport FiniteObject.internalWedgeSupport at declared
+        rcases Finset.mem_insert.mp declared with rfl | inPair
+        · have familyMember := wedgeCoordinate.2
+          unfold FiniteObject.internalWedgeFamily at familyMember
+          exact (Finset.mem_sigma.mp familyMember).1
+        · have inNeighbors :=
+            (Finset.mem_powersetCard.mp wedgeCoordinate.1.2.2).1 inPair
+          unfold FiniteObject.internalNeighborFinset at inNeighbors
+          simp only [Finset.mem_inter] at inNeighbors
+          exact inNeighbors.2
+
+/-- Basin selection succeeds at every load the canonical routing traces to the
+receiver. -/
+theorem select?_isSome_of_traceTo (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold : Nat)
+    {receiver load : object.Vertex}
+    (connected : SupportComponents.Connected.ConnectedOn object support)
+    (routed : object.TraceTo support threshold load receiver) :
+    (select? object support threshold receiver load).isSome :=
+  select?_isSome ⟨support, mem_candidates_iff.mpr
+    (traceComplete_support object support threshold connected routed)⟩
+
+/-- **Basin selection is total on `ℒ(w)`**: every routed load of a receiver of
+a connected support has its selected trace basin. -/
+theorem exists_select?_eq_some_of_mem_routedLoads (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold : Nat)
+    {receiver load : object.Vertex}
+    (connected : SupportComponents.Connected.ConnectedOn object support)
+    (routedLoad : load ∈ object.routedLoads support threshold receiver) :
+    ∃ basin, select? object support threshold receiver load = some basin :=
+  Option.isSome_iff_exists.mp
+    (select?_isSome_of_traceTo object support threshold connected
+      (object.traceTo_of_traceReceiver?_eq_some
+        ((object.mem_routedLoads).mp routedLoad).2.2))
+
+
 end TraceBasin
 
 namespace PresentedEntry
@@ -552,6 +803,203 @@ theorem retainedBasinPiece_boundaryDegreeProfile (object : FiniteObject.{u})
   · intro adjacent
     exact ⟨adjacent, fun same => adjacent.ne (congrArg _ same),
       Or.inl (Or.inl rfl)⟩
+
+/-- The decode map of a retained basin piece is injective: boundary labels and
+internal vertices are disjoint ambient classes, and each carries its ambient
+vertex. -/
+theorem retainedBasinPiece_decode_injective (object : FiniteObject.{u})
+    (basin : Finset object.Vertex) :
+    Function.Injective
+      (Strategy.InterfaceReplacement.SupportAtom.pieceDecode object basin) := by
+  intro left right equal
+  rcases left with leftLabel | leftInside <;>
+    rcases right with rightLabel | rightInside
+  · exact congrArg Sum.inl (Subtype.ext equal)
+  · have valueEq : leftLabel.1 = rightInside.1 := equal
+    exact absurd (valueEq ▸ leftLabel.2) rightInside.2.2
+  · have valueEq : rightLabel.1 = leftInside.1 := equal.symm
+    exact absurd (valueEq ▸ rightLabel.2) leftInside.2.2
+  · exact congrArg Sum.inr (Subtype.ext equal)
+
+/-- **An accepted internal cycle of a retained reading is an accepted cycle of
+the object**: the reading's graph is a restriction of the ambient graph, and
+its decode map is injective. -/
+theorem hasCycleWithLength_of_retainedBasinPiece_cycle
+    (object : FiniteObject.{u}) (basin retained : Finset object.Vertex)
+    {LengthOK : Nat → Prop}
+    {base : (Strategy.InterfaceReplacement.SupportAtom.boundary object
+      basin).Vertex ⊕ (retainedBasinPiece object basin retained).Internal}
+    {c : (retainedBasinPiece object basin retained).graph.Walk base base}
+    (cycle : c.IsCycle) (accepted : LengthOK c.length) :
+    HasCycleWithLength LengthOK object := by
+  classical
+  let decodeHom : (retainedBasinPiece object basin retained).graph →g
+      object.graph :=
+    ⟨Strategy.InterfaceReplacement.SupportAtom.pieceDecode object basin,
+      fun adjacent => adjacent.1⟩
+  refine ⟨⟨_, c.map decodeHom, ?_, ?_⟩⟩
+  · exact cycle.map (retainedBasinPiece_decode_injective object basin)
+  · rw [SimpleGraph.Walk.length_map]
+    exact accepted
+
+/-- **A label path of a retained reading is an object path**: the decode map
+is an injective graph homomorphism, so paths transfer with their length. -/
+theorem exists_object_path_of_retainedBasinPiece_path (object : FiniteObject.{u})
+    (basin retained : Finset object.Vertex)
+    {start finish : (Strategy.InterfaceReplacement.SupportAtom.boundary object
+      basin).Vertex ⊕ (retainedBasinPiece object basin retained).Internal}
+    (q : (retainedBasinPiece object basin retained).graph.Walk start finish)
+    (isPath : q.IsPath) :
+    ∃ walk : object.graph.Walk
+        (Strategy.InterfaceReplacement.SupportAtom.pieceDecode object basin
+          start)
+        (Strategy.InterfaceReplacement.SupportAtom.pieceDecode object basin
+          finish),
+      walk.IsPath ∧ walk.length = q.length := by
+  classical
+  let decodeHom : (retainedBasinPiece object basin retained).graph →g
+      object.graph :=
+    ⟨Strategy.InterfaceReplacement.SupportAtom.pieceDecode object basin,
+      fun adjacent => adjacent.1⟩
+  exact ⟨q.map decodeHom,
+    SimpleGraph.Walk.map_isPath_of_injective
+      (retainedBasinPiece_decode_injective object basin) isPath,
+    SimpleGraph.Walk.length_map _ _⟩
+
+/-- The canonical encode of a basin vertex into a retained piece carrier:
+boundary labels to the left, internal vertices to the right. -/
+noncomputable def pieceEncode (object : FiniteObject.{u})
+    (basin : Finset object.Vertex) (vertex : object.Vertex)
+    (inside : vertex ∈ basin) :
+    (Strategy.InterfaceReplacement.SupportAtom.boundary object basin).Vertex ⊕
+      Strategy.InterfaceReplacement.SupportAtom.PieceInternal object basin := by
+  classical
+  exact if member : vertex ∈
+      Strategy.InterfaceReplacement.SupportAtom.cutBoundary object basin then
+    Sum.inl ⟨vertex, member⟩
+  else Sum.inr ⟨vertex, inside, member⟩
+
+@[simp] theorem pieceDecode_pieceEncode (object : FiniteObject.{u})
+    (basin : Finset object.Vertex) (vertex : object.Vertex)
+    (inside : vertex ∈ basin) :
+    Strategy.InterfaceReplacement.SupportAtom.pieceDecode object basin
+      (pieceEncode object basin vertex inside) = vertex := by
+  unfold pieceEncode
+  split <;> rfl
+
+/-- Encoding a cut-boundary vertex yields its boundary label. -/
+theorem pieceEncode_of_mem_cutBoundary (object : FiniteObject.{u})
+    (basin : Finset object.Vertex) (vertex : object.Vertex)
+    (inside : vertex ∈ basin)
+    (member : vertex ∈
+      Strategy.InterfaceReplacement.SupportAtom.cutBoundary object basin) :
+    pieceEncode object basin vertex inside = Sum.inl ⟨vertex, member⟩ := by
+  unfold pieceEncode
+  rw [dif_pos member]
+
+/-- **A support channel is a walk of every retained reading that keeps its
+vertices**: encode each channel vertex by its ownership class.  Length and
+decoded support are preserved. -/
+theorem exists_retainedBasinPiece_walk_of_channel (object : FiniteObject.{u})
+    (basin retained : Finset object.Vertex)
+    {entry receiver : object.Vertex}
+    (channel : object.graph.Walk entry receiver)
+    (inside : ∀ vertex ∈ channel.support, vertex ∈ basin)
+    (kept : ∀ vertex ∈ channel.support, vertex ∈ retained) :
+    ∃ q : (retainedBasinPiece object basin retained).graph.Walk
+        (pieceEncode object basin entry
+          (inside entry channel.start_mem_support))
+        (pieceEncode object basin receiver
+          (inside receiver channel.end_mem_support)),
+      q.length = channel.length ∧
+        q.support.map
+            (Strategy.InterfaceReplacement.SupportAtom.pieceDecode object
+              basin) =
+          channel.support := by
+  classical
+  induction channel with
+  | nil =>
+      refine ⟨.nil, rfl, ?_⟩
+      rw [SimpleGraph.Walk.support_nil]
+      show [Strategy.InterfaceReplacement.SupportAtom.pieceDecode object basin
+        (pieceEncode object basin _ _)] = [_]
+      rw [pieceDecode_pieceEncode]
+  | @cons first second finish adjacent rest ih =>
+      have consMem : ∀ vertex ∈ rest.support,
+          vertex ∈ (SimpleGraph.Walk.cons adjacent rest).support := by
+        intro vertex member
+        rw [SimpleGraph.Walk.support_cons]
+        exact List.mem_cons_of_mem _ member
+      have restInside : ∀ vertex ∈ rest.support, vertex ∈ basin :=
+        fun vertex member => inside vertex (consMem vertex member)
+      have restKept : ∀ vertex ∈ rest.support, vertex ∈ retained :=
+        fun vertex member => kept vertex (consMem vertex member)
+      obtain ⟨q, qLength, qSupport⟩ := ih restInside restKept
+      have firstMem : first ∈ (SimpleGraph.Walk.cons adjacent rest).support :=
+        SimpleGraph.Walk.start_mem_support _
+      have secondMem : second ∈ (SimpleGraph.Walk.cons adjacent rest).support :=
+        consMem second rest.start_mem_support
+      have edge : (retainedBasinPiece object basin retained).graph.Adj
+          (pieceEncode object basin first (inside first firstMem))
+          (pieceEncode object basin second (inside second secondMem)) := by
+        refine ⟨?_, ?_⟩
+        · show object.graph.Adj
+            (Strategy.InterfaceReplacement.SupportAtom.pieceDecode object basin
+              (pieceEncode object basin first (inside first firstMem)))
+            (Strategy.InterfaceReplacement.SupportAtom.pieceDecode object basin
+              (pieceEncode object basin second (inside second secondMem)))
+          rw [pieceDecode_pieceEncode, pieceDecode_pieceEncode]
+          exact adjacent
+        · rw [SimpleGraph.fromRel_adj]
+          refine ⟨?_, Or.inl (Or.inr (Or.inr ⟨?_, ?_⟩))⟩
+          · intro same
+            have decoded := congrArg
+              (Strategy.InterfaceReplacement.SupportAtom.pieceDecode object
+                basin) same
+            rw [pieceDecode_pieceEncode, pieceDecode_pieceEncode] at decoded
+            exact adjacent.ne decoded
+          · rw [pieceDecode_pieceEncode]
+            exact kept first firstMem
+          · rw [pieceDecode_pieceEncode]
+            exact kept second secondMem
+      refine ⟨SimpleGraph.Walk.cons edge q, ?_, ?_⟩
+      · rw [SimpleGraph.Walk.length_cons, qLength,
+          SimpleGraph.Walk.length_cons]
+      · rw [SimpleGraph.Walk.support_cons, SimpleGraph.Walk.support_cons]
+        show Strategy.InterfaceReplacement.SupportAtom.pieceDecode object basin
+            (pieceEncode object basin first (inside first firstMem)) ::
+            q.support.map
+              (Strategy.InterfaceReplacement.SupportAtom.pieceDecode object
+                basin) =
+          first :: rest.support
+        rw [pieceDecode_pieceEncode, qSupport]
+
+/-- **A support channel path is a path of every retained reading that keeps
+its vertices**, between its two encoded endpoints, of the same length. -/
+theorem exists_retainedBasinPiece_path_of_channel (object : FiniteObject.{u})
+    (basin retained : Finset object.Vertex)
+    {entry receiver : object.Vertex}
+    (channel : object.graph.Walk entry receiver)
+    (isPath : channel.IsPath)
+    (inside : ∀ vertex ∈ channel.support, vertex ∈ basin)
+    (kept : ∀ vertex ∈ channel.support, vertex ∈ retained) :
+    ∃ q : (retainedBasinPiece object basin retained).graph.Walk
+        (pieceEncode object basin entry
+          (inside entry channel.start_mem_support))
+        (pieceEncode object basin receiver
+          (inside receiver channel.end_mem_support)),
+      q.IsPath ∧ q.length = channel.length := by
+  obtain ⟨q, qLength, qSupport⟩ :=
+    exists_retainedBasinPiece_walk_of_channel object basin retained channel
+      inside kept
+  refine ⟨q, ?_, qLength⟩
+  rw [SimpleGraph.Walk.isPath_def]
+  have nodup : (q.support.map
+      (Strategy.InterfaceReplacement.SupportAtom.pieceDecode object
+        basin)).Nodup := by
+    rw [qSupport]
+    exact isPath.support_nodup
+  exact nodup.of_map
 
 /-- **The reading a set of declared coordinates presents at the basin.**
 

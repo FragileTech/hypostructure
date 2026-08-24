@@ -53,14 +53,18 @@ noncomputable def typeAPieces (packing : Finset (Finset object.Vertex))
       object.NegativeNetCharge piece threshold discharge ∧
         object.ambientSurplus piece threshold = 0
 
-/-- Every silent-excess load of every receiver of every negative zero-surplus
-canonical piece. -/
+/-- Every unpaid excess load (`E(w)`, `def:typeA-excess-basin`) of every
+receiver of every negative zero-surplus canonical piece.  On a silent-first
+piece this is the paper's `𝒰(w)` (`lem:typeA-silent-excess-count`:
+`VisibleEntry.silentExcess_eq_excessBasin`); per `rem:unified-covers-exit4`
+the unified collection also carries the unpaid visible loads, "not
+distinguished at the level of net charge". -/
 noncomputable def entries (packing : Finset (Finset object.Vertex))
     (threshold discharge : Nat) : Finset (Index object) := by
   classical
   exact (typeAPieces object packing threshold discharge).biUnion fun piece =>
     (object.receivers piece threshold).biUnion fun receiver =>
-      (VisibleEntry.silentExcess object piece threshold discharge receiver).image
+      (VisibleEntry.excessBasin object piece threshold discharge receiver).image
         fun load => (piece, receiver, load)
 
 theorem mem_entries {packing : Finset (Finset object.Vertex)}
@@ -68,7 +72,7 @@ theorem mem_entries {packing : Finset (Finset object.Vertex)}
     index ∈ entries object packing threshold discharge ↔
       index.1 ∈ typeAPieces object packing threshold discharge ∧
         index.2.1 ∈ object.receivers index.1 threshold ∧
-        index.2.2 ∈ VisibleEntry.silentExcess object index.1 threshold discharge
+        index.2.2 ∈ VisibleEntry.excessBasin object index.1 threshold discharge
           index.2.1 := by
   classical
   obtain ⟨piece, receiver, load⟩ := index
@@ -83,7 +87,8 @@ theorem mem_entries {packing : Finset (Finset object.Vertex)}
 
 The caller supplies the canonical component subcollection `𝒳` selected by
 `def:typeA-route8-carriers`.  Each index is exactly a saturated receiver and an
-unpaid silent-excess load of one component of that collection.  The component
+unpaid excess load of one component of that collection (`E(w)`; the paper's
+`𝒰(w)` on the silent-first pieces).  The component
 is not stored in the index: its canonical piece support is the manuscript's
 `X` in the tuple `(X,w,u,B_u)`. -/
 noncomputable def entriesOfComponents
@@ -96,7 +101,7 @@ noncomputable def entriesOfComponents
     let piece := object.pieceSupport (object.remainderSupport packing) component
     (VisibleEntry.saturatedReceivers object piece threshold discharge).biUnion
       fun receiver =>
-        (VisibleEntry.silentExcess object piece threshold discharge receiver).image
+        (VisibleEntry.excessBasin object piece threshold discharge receiver).image
           fun load => (piece, receiver, load)
 
 /-- `B_u`: the trace basin selected for the entry (`def:typeA-trace-basin`). -/

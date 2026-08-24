@@ -253,17 +253,6 @@ inductive PeelChain (packing : Finset (Finset object.Vertex))
       (defect : TargetDefectAt object threshold discharge
         (HasCycleWithLength LengthOK) chain.toFinset index) :
       PeelChain packing entries threshold discharge slack LengthOK (index :: chain)
-  | visible {chain : List (Route8Census.Index object)}
-      {index : Route8Census.Index object}
-      (previous : PeelChain packing entries threshold discharge slack LengthOK chain)
-      (rate : StageRate object packing threshold discharge slack chain.toFinset)
-      (fresh : index ∉ chain.toFinset)
-      (visibleLoad : index.2.2 ∈
-        (VisibleEntry.visibleLoads object index.1 threshold index.2.1) \
-          peeledLoads object chain.toFinset index.1 index.2.1)
-      (defect : TargetDefectAt object threshold discharge
-        (HasCycleWithLength LengthOK) chain.toFinset index) :
-      PeelChain packing entries threshold discharge slack LengthOK (index :: chain)
 
 /-- **The outcome of a stage** of `thm:large-budget-route8-only`'s procedure. -/
 def StageOutcome (packing : Finset (Finset object.Vertex))
@@ -275,53 +264,6 @@ def StageOutcome (packing : Finset (Finset object.Vertex))
         ∃ index,
           TrueEntryAt object packing entries threshold discharge LengthOK chain.toFinset index) ∨
       ¬ StageRate object packing threshold discharge slack chain.toFinset)
-
-/-- The visible-load indices of the collection: `(X, w, u)` with `u` a visible
-routed load of the receiver `w`.  These index the per-port exit-(4) peels the
-procedure performs (`lem:typeA-unpeeled-visible-routing`) and bound their
-number. -/
-noncomputable def visibleLoadIndices
-    (packing : Finset (Finset object.Vertex))
-    (components : Finset (SupportComponents.Connected.Component object
-      (object.remainderSupport packing)))
-    (threshold : Nat) : Finset (Route8Census.Index object) := by
-  classical
-  exact components.biUnion fun component =>
-    (object.receivers
-        (object.pieceSupport (object.remainderSupport packing) component)
-        threshold).biUnion fun receiver =>
-      (VisibleEntry.visibleLoads object
-          (object.pieceSupport (object.remainderSupport packing) component)
-          threshold receiver).image
-        fun load =>
-          ((object.pieceSupport (object.remainderSupport packing) component),
-            receiver, load)
-
-theorem mem_visibleLoadIndices
-    {packing : Finset (Finset object.Vertex)}
-    {components : Finset (SupportComponents.Connected.Component object
-      (object.remainderSupport packing))}
-    {threshold : Nat} {index : Route8Census.Index object} :
-    index ∈ visibleLoadIndices object packing components threshold ↔
-      ∃ component ∈ components,
-        index.1 = object.pieceSupport (object.remainderSupport packing)
-            component ∧
-          index.2.1 ∈ object.receivers index.1 threshold ∧
-          index.2.2 ∈ VisibleEntry.visibleLoads object index.1 threshold
-            index.2.1 := by
-  classical
-  obtain ⟨piece, receiver, load⟩ := index
-  simp only [visibleLoadIndices, Finset.mem_biUnion, Finset.mem_image,
-    Prod.mk.injEq]
-  constructor
-  · rintro ⟨component, componentMem, receiver', receiverMem, load', loadMem,
-      pieceEq, receiverEq, loadEq⟩
-    subst pieceEq; subst receiverEq; subst loadEq
-    exact ⟨component, componentMem, rfl, receiverMem, loadMem⟩
-  · rintro ⟨component, componentMem, pieceEq, receiverMem, loadMem⟩
-    subst pieceEq
-    exact ⟨component, componentMem, receiver, receiverMem, load, loadMem,
-      rfl, rfl, rfl⟩
 
 /-- **`lem:typeA-peeling-reduced-reduction`, staged**: on a stage whose deficit
 reading already credits every recorded peel —
@@ -371,20 +313,20 @@ theorem exists_twoCarrierEntry_staged (packing : Finset (Finset object.Vertex))
 
 /-! ## The staged burden (`lem:typeA-unified-burden` made rigorous)
 
-`def:typeA-peeling-reduced-ledger` with every peel recorded: at a stage of the
-descent where **every visible excess load of every collection piece has been
-peeled** — each such peel carried by its own exit-(4) witness and appended to
-the ledger — the reduced burden `s·D̃_A ≤ |Ξ̃ ∖ P₄| + |P₄|` is a theorem of the
-staged count `VisibleEntry.card_le_sum_silentExcess_sdiff_add_positiveDeficiency`.
-No silent-first hypothesis and no flat burden assumption occurs: the
-manuscript's parenthetical *"in particular no completion port carries four
-visible receiver-entry returns"* is replaced by the peeling discipline itself
-(`rem:unified-covers-exit4`: visible exit-(4) supports stay in the collection
-and their visible excess is peeled, not assumed away). -/
+`def:typeA-peeling-reduced-ledger` with every peel recorded: at every stage of
+the descent the reduced burden `s·D̃_A ≤ |Ξ̃ ∖ P₄| + |P₄|` is a theorem of the
+silence-free staged count
+`VisibleEntry.card_le_sum_excessBasinReduced_add_positiveDeficiency`.  No
+silent-first hypothesis, no per-port condition, and no flat burden assumption
+occurs: `lem:typeA-silent-excess-count`'s displayed count
+`Σ_w (L(w) − c(w)) ≥ s·D_A(X)` never uses silence — silence only locates the
+unpaid loads under the no-overloaded-port hypothesis — and
+`rem:unified-covers-exit4` keeps the unpaid visible route-8 loads in the
+census, "not distinguished at the level of net charge". -/
 
-/-- The surviving silent entries of the collection are surviving census
-entries: `Σ_X Σ_w |𝒰(w) ∖ P₄(w)| ≤ |Ξ̃ ∖ P₄|`. -/
-theorem sum_silentExcess_sdiff_le_card_peeledEntries
+/-- The surviving excess entries of the collection are surviving census
+entries: `Σ_X Σ_w |E(w) ∖ P₄(w)| ≤ |Ξ̃ ∖ P₄|`. -/
+theorem sum_excessBasin_sdiff_le_card_peeledEntries
     (packing : Finset (Finset object.Vertex))
     (components : Finset (SupportComponents.Connected.Component object
       (object.remainderSupport packing)))
@@ -396,7 +338,7 @@ theorem sum_silentExcess_sdiff_le_card_peeledEntries
         ∑ receiver ∈ VisibleEntry.saturatedReceivers object
             (object.pieceSupport (object.remainderSupport packing) component)
             threshold discharge,
-          ((VisibleEntry.silentExcess object
+          ((VisibleEntry.excessBasin object
               (object.pieceSupport (object.remainderSupport packing) component)
               threshold discharge receiver) \
             peeledLoads object peeled
@@ -409,7 +351,7 @@ theorem sum_silentExcess_sdiff_le_card_peeledEntries
   have subset : (components.biUnion fun component =>
       (VisibleEntry.saturatedReceivers object (object.pieceSupport (object.remainderSupport packing) component)
           threshold discharge).biUnion fun receiver =>
-        ((VisibleEntry.silentExcess object (object.pieceSupport (object.remainderSupport packing) component)
+        ((VisibleEntry.excessBasin object (object.pieceSupport (object.remainderSupport packing) component)
             threshold discharge receiver) \
           peeledLoads object peeled (object.pieceSupport (object.remainderSupport packing) component)
             receiver).image
@@ -558,23 +500,7 @@ theorem stage_burden
         ∃ receiver : object.Vertex,
           object.traceReceiver? piece threshold vertex = some receiver ∧
             object.IsReceiver piece threshold receiver)
-    (peeled : Peeled object)
-    (reducedPorts : ∀ component ∈ components,
-      ∀ receiver ∈ object.receivers
-          (object.pieceSupport (object.remainderSupport packing) component)
-          threshold,
-        object.Saturated
-            (object.pieceSupport (object.remainderSupport packing) component)
-            threshold discharge receiver →
-        ∀ outside ∈ VisibleEntry.completionPorts object
-            (object.pieceSupport (object.remainderSupport packing) component)
-            receiver,
-          ((VisibleEntry.visibleLoadsAt object
-              (object.pieceSupport (object.remainderSupport packing) component)
-              threshold receiver outside) \
-            peeledLoads object peeled
-              (object.pieceSupport (object.remainderSupport packing) component)
-              receiver).card + 1 ≤ discharge) :
+    (peeled : Peeled object) :
     TypeBEnvelopeCharge.route8Deficit object (object.remainderSupport packing)
         threshold discharge components ≤
       (peeledEntries object
@@ -589,7 +515,7 @@ theorem stage_burden
         (∑ receiver ∈ object.receivers
             (object.pieceSupport (object.remainderSupport packing) component)
             threshold,
-          ((VisibleEntry.silentExcess object
+          ((VisibleEntry.excessBasin object
               (object.pieceSupport (object.remainderSupport packing) component)
               threshold discharge receiver) \
             peeledLoads object peeled
@@ -622,25 +548,23 @@ theorem stage_burden
         exactDegree vertex vertexMem ▸
           object.internalDegree_le_degree piece vertex
     have count :=
-      VisibleEntry.card_le_sum_silentExcessReduced_add_positiveDeficiency
-        object piece threshold discharge dischargePos exactDegree capped
+      VisibleEntry.card_le_sum_excessBasinReduced_add_positiveDeficiency
+        object piece threshold discharge dischargePos capped
         (routed piece (object.pieceSupport_subset _ component)
           (surplusZero component componentMem))
         (fun receiver => peeledLoads object peeled piece receiver)
-        (fun receiver receiverMem saturated =>
-          reducedPorts component componentMem receiver receiverMem saturated)
     have monotone :
         (∑ receiver ∈ object.receivers piece threshold,
-            (VisibleEntry.silentExcessReduced object piece threshold discharge
+            (VisibleEntry.excessBasinReduced object piece threshold discharge
               receiver (peeledLoads object peeled piece receiver)).card) ≤
           ∑ receiver ∈ object.receivers piece threshold,
-            ((VisibleEntry.silentExcess object piece threshold discharge
+            ((VisibleEntry.excessBasin object piece threshold discharge
                 receiver) \
               peeledLoads object peeled piece receiver).card := by
       refine Finset.sum_le_sum ?_
       intro receiver _
       exact Finset.card_le_card
-        (VisibleEntry.silentExcessReduced_subset object piece threshold
+        (VisibleEntry.excessBasinReduced_subset object piece threshold
           discharge receiver (peeledLoads object peeled piece receiver))
     refine tsub_le_iff_right.mpr ?_
     refine le_trans count ?_
@@ -653,7 +577,7 @@ theorem stage_burden
           ∑ receiver ∈ object.receivers
               (object.pieceSupport (object.remainderSupport packing) component)
               threshold,
-            ((VisibleEntry.silentExcess object
+            ((VisibleEntry.excessBasin object
                 (object.pieceSupport (object.remainderSupport packing)
                   component)
                 threshold discharge receiver) \
@@ -676,11 +600,11 @@ theorem stage_burden
     unfold TypeBEnvelopeCharge.route8Deficit
     rw [← Finset.sum_add_distrib]
     exact Finset.sum_le_sum perPiece
-  have silentRestrict : ∀ component ∈ components,
+  have excessRestrict : ∀ component ∈ components,
       (∑ receiver ∈ object.receivers
           (object.pieceSupport (object.remainderSupport packing) component)
           threshold,
-        ((VisibleEntry.silentExcess object
+        ((VisibleEntry.excessBasin object
             (object.pieceSupport (object.remainderSupport packing) component)
             threshold discharge receiver) \
           peeledLoads object peeled
@@ -689,7 +613,7 @@ theorem stage_burden
       ∑ receiver ∈ VisibleEntry.saturatedReceivers object
           (object.pieceSupport (object.remainderSupport packing) component)
           threshold discharge,
-        ((VisibleEntry.silentExcess object
+        ((VisibleEntry.excessBasin object
             (object.pieceSupport (object.remainderSupport packing) component)
             threshold discharge receiver) \
           peeledLoads object peeled
@@ -703,7 +627,7 @@ theorem stage_burden
         threshold discharge receiver := by
       intro saturated
       exact absent (Finset.mem_filter.2 ⟨_receiverMem, saturated⟩)
-    rw [VisibleEntry.silentExcess_eq_empty_of_not_saturated object
+    rw [VisibleEntry.excessBasin_eq_empty_of_not_saturated object
       (object.pieceSupport (object.remainderSupport packing) component)
       threshold discharge unsaturated]
     simp
@@ -714,8 +638,8 @@ theorem stage_burden
           (Route8Census.entriesOfComponents object packing components threshold
             discharge) peeled).card + peeled.card := by
         refine Nat.add_le_add ?_ ?_
-        · rw [Finset.sum_congr rfl silentRestrict]
-          exact sum_silentExcess_sdiff_le_card_peeledEntries object packing
+        · rw [Finset.sum_congr rfl excessRestrict]
+          exact sum_excessBasin_sdiff_le_card_peeledEntries object packing
             components threshold discharge componentsSub peeled
         · exact sum_peeledLoads_inter_le_card object packing components
             threshold discharge componentsSub peeled

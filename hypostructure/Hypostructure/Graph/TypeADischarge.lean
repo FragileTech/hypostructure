@@ -368,6 +368,38 @@ theorem unsaturatedDischarge (object : FiniteObject.{u})
   rw [deficiency]
   omega
 
+
+/-- **The unsaturated case of `lem:density-mersenne`**: a zero-surplus support
+whose routing is total and whose receivers are all unsaturated has
+`|V(X)| ≤ s·def⁺(X)`, i.e. `N₀(X) ≥ 0`.  The cap is the zero ambient surplus
+itself: every summand `d_G(v) − δ` vanishes, so every internal degree is at
+most the baseline. -/
+theorem card_le_scaled_deficiency_of_no_saturated (object : FiniteObject.{u})
+    (support : Finset object.Vertex) (threshold scale : Nat)
+    (surplusZero : object.ambientSurplus support threshold = 0)
+    (routes : ∀ vertex ∈ support,
+      object.internalDegree support vertex = threshold →
+      ∃ receiver : object.Vertex,
+        object.traceReceiver? support threshold vertex = some receiver ∧
+          object.IsReceiver support threshold receiver)
+    (noSaturated : ∀ receiver : object.Vertex,
+      object.IsReceiver support threshold receiver →
+      ¬ object.Saturated support threshold scale receiver) :
+    support.card ≤ scale * object.positiveDeficiency support threshold := by
+  classical
+  have capped : ∀ vertex ∈ support,
+      object.internalDegree support vertex ≤ threshold := by
+    intro vertex member
+    have zero : object.degree vertex - threshold = 0 := by
+      have := (Finset.sum_eq_zero_iff.mp surplusZero) vertex member
+      simpa using this
+    have degreeLe : object.degree vertex ≤ threshold := by omega
+    exact le_trans (object.internalDegree_le_degree support vertex) degreeLe
+  exact unsaturatedDischarge object support threshold scale capped routes
+    (fun receiver isReceiver =>
+      (object.not_saturated_iff support threshold scale receiver).mp
+        (noSaturated receiver isReceiver))
+
 end FiniteObject
 
 end Hypostructure.Graph

@@ -448,6 +448,13 @@ noncomputable def selectedBottleneckDischarge
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .homogeneousBottleneckPattern) known]
     [FactKeys.Has (K .activeSurplusDemands) known]
+    [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .capacityTokenLedger) known]
+    [FactKeys.Has (K .canonicalPairLedger) known]
+    [FactKeys.Has (K .canonicalBlockerRoute) known]
+    [FactKeys.Has (K .dependentPairFamily) known]
+    [FactKeys.Has (K .sparseUpperEnvelope) known]
+    [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .degreeProfileFibres) known]
     [FactKeys.Has (K .targetCompleteContextUniversality) known]
@@ -490,9 +497,14 @@ noncomputable def selectedSparsePressureOverloadCloses
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .blockedPairEntropySandwich) known]
+    [FactKeys.Has (K .capacityTokenLedger) known]
     [FactKeys.Has (K .canonicalPairLedger) known]
+    [FactKeys.Has (K .canonicalBlockerRoute) known]
+    [FactKeys.Has (K .dependentPairFamily) known]
     [FactKeys.Has (K .activeSurplusDemands) known]
+    [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .sparseUpperEnvelope) known]
+    [FactKeys.Has (K .maximalPacking) known]
     (windowFresh : K .windowClassOverload ∉ known)
     (windowAbsentFresh : K .windowClassAbsent ∉ known)
     (windowAuditFresh : K .windowIncidenceAudit ∉ known)

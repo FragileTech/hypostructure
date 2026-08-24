@@ -387,6 +387,10 @@ datum, callback, or side carrier is postulated. -/
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.sameTokenBottleneckRouting
     { Requires := [K .homogeneousBottleneckPattern, K .activeSurplusDemands,
+        K .cubicBaseline,
+        K .capacityTokenLedger, K .canonicalPairLedger,
+        K .canonicalBlockerRoute, K .dependentPairFamily,
+        K .sparseUpperEnvelope, K .maximalPacking,
         K .sparseSurplusSurvivor, K .selection, K .degreeProfileFibres,
         K .targetCompleteContextUniversality, K .replacementExclusion,
         K .uncompressible, K .noProperBaseline, K .remainderNormalized]
@@ -406,6 +410,19 @@ datum, callback, or side carrier is postulated. -/
           have active := (inputs.get (K .activeSurplusDemands)).down
           have activeEq : patternActive = active := Subsingleton.elim _ _
           subst patternActive
+          have cubic := (inputs.get (K .cubicBaseline)).down
+          have _capacityLedger :=
+            (inputs.get (K .capacityTokenLedger)).down
+          have _pairLedger :=
+            (inputs.get (K .canonicalPairLedger)).down
+          have _blockerRoute :=
+            (inputs.get (K .canonicalBlockerRoute)).down
+          have _dependentFamily :=
+            (inputs.get (K .dependentPairFamily)).down
+          have _upperEnvelope :=
+            (inputs.get (K .sparseUpperEnvelope)).down
+          have _maximalPacking :=
+            (inputs.get (K .maximalPacking)).down
           have _survivor := (inputs.get (K .sparseSurplusSurvivor)).down
           have _selection := (inputs.get (K .selection)).down
           have _profiles := (inputs.get (K .degreeProfileFibres)).down
@@ -417,15 +434,471 @@ datum, callback, or side carrier is postulated. -/
             (inputs.get (K .noProperBaseline)).down
           have _remainderNormalized :=
             (inputs.get (K .remainderNormalized)).down
-          -- First exact unproved construction: derive the paper-declared
-          -- routing labels and connector configurations from `active`,
-          -- `capacity`, and this concrete same-token pattern, using the
-          -- canonical `T`, `R`, and `Γ` entries already present in the
-          -- activation; then run the paper's parallel/first-separator proof.
-          -- Keep the literal conclusion loud instead of naming a nonexistent
-          -- framework operation or accepting proof data from the caller.
           refine ⟨active, capacity, activationEq, concretePattern, ?_⟩
-          skip⟩
+          let object := inputs.current.object
+          let activation := capacity.activation
+          letI : DecidableEq object.Vertex := object.vertices.decEq
+          obtain ⟨ledger, token, tokenMem, role, structured⟩ := concretePattern
+
+          -- The support carried by the capacity token itself.  This is the
+          -- source coordinate in `Z(π;t,r)`, computed by cases from `t` rather
+          -- than supplied by a route object.
+          let tokenSupport : Finset object.Vertex := by
+            letI := object.vertices.decEq
+            exact match token with
+              | .boundaryWindow incidence => {incidence.1, incidence.2}
+              | .crossWindow incidence => {incidence.1, incidence.2}
+              | .remainder unit => {unit.1}
+              | .primitive (.inl vertex) => {vertex}
+              | .primitive (.inr (.inl incidence)) =>
+                  {incidence.1, incidence.2}
+              | .primitive (.inr (.inr port)) => {port.1, port.2}
+
+          -- `T(p)`, read canonically from an active demand.  The empty branch
+          -- only totalizes the function away from the pair schedule; every
+          -- edge of the homogeneous pattern is proved below to consist of
+          -- scheduled active demands.
+          let selectedSupport (demand : object.Vertex × object.Vertex) :
+              Finset object.Vertex :=
+            if member : demand ∈ object.excessPorts data.threshold then
+              (object.surplusPortOfMem member).support
+            else ∅
+
+          -- The local open/triangular coordinate of the paper's routing
+          -- label, obtained from the actual shoulder graph.
+          let portStatus (demand : object.Vertex × object.Vertex) :
+              Graph.SameTokenRoutingGerms.PortStatus :=
+            if _ : ∃ member : demand ∈ object.excessPorts data.threshold,
+                ∃ left ∈ (object.surplusPortOfMem member).shoulders,
+                  ∃ right ∈ (object.surplusPortOfMem member).shoulders,
+                    left ≠ right ∧ object.graph.Adj left right then
+              .triangular
+            else
+              .openPort
+
+          have selectedSupport_card (demand : object.Vertex × object.Vertex)
+              (member : demand ∈ object.excessPorts data.threshold) :
+              (selectedSupport demand).card = data.threshold := by
+            let port := object.surplusPortOfMem member
+            have endpointNotShoulder : port.endpoint ∉ port.shoulders := by
+              intro endpointShoulder
+              exact object.graph.loopless.irrefl _
+                ((port.mem_shoulders_iff port.endpoint).1 endpointShoulder).2
+            obtain ⟨left, right, description, distinct⟩ :=
+              active.shoulderPair demand member
+            have shouldersEq : port.shoulders = {left, right} := by
+              ext vertex
+              rw [description]
+              simp [or_comm]
+            have shoulderCard : port.shoulders.card = 2 := by
+              rw [shouldersEq]
+              simp [distinct]
+            have supportCard : port.support.card = data.threshold := by
+              unfold Graph.FiniteObject.SurplusPort.support
+              rw [Finset.card_insert_of_notMem endpointNotShoulder,
+                shoulderCard, cubic]
+            simpa only [selectedSupport, dif_pos member] using supportCard
+
+          -- The boundary-degree profile of `T(p)`: enumerate its vertices in
+          -- the object's fixed order and record their actual degrees in the
+          -- induced active support.  The `Fin` bound is proved from
+          -- `|T(p)| = threshold`, itself derived from the ledger's active-port
+          -- shoulder pair and cubic-baseline facts.
+          let boundaryProfile (demand : object.Vertex × object.Vertex) :
+              data.BoundaryProfile := fun index => by
+            if member : demand ∈ object.excessPorts data.threshold then
+              let support := selectedSupport demand
+              let ordered := object.orderedVertices.filter fun vertex =>
+                vertex ∈ support
+              if bound : index.1 < ordered.length then
+                let vertex := ordered.get ⟨index.1, bound⟩
+                have vertexMem : vertex ∈ support := by
+                  have inside : vertex ∈ ordered :=
+                    ordered.get_mem ⟨index.1, bound⟩
+                  simp only [ordered, List.mem_filter, decide_eq_true_eq] at inside
+                  exact inside.2
+                have degreeBound :
+                    (object.induce support).degree ⟨vertex, vertexMem⟩ <
+                      data.threshold := by
+                  have finiteBound :=
+                    (object.induce support).degree_lt_vertexCount
+                      ⟨vertex, vertexMem⟩
+                  rw [Graph.FiniteObject.vertexCount_induce,
+                    selectedSupport_card demand member] at finiteBound
+                  exact finiteBound
+                exact ⟨(object.induce support).degree ⟨vertex, vertexMem⟩,
+                  degreeBound⟩
+              else
+                exact index
+            else
+              exact index
+
+          -- The full bounded part of `Z(π;t,r)`: the token carrier, the
+          -- canonical blocker support, `T(p),T(q)`, `R_p,R_q`, and the two
+          -- response supports (the latter already occur in
+          -- `activation.declaredSupport = T ∪ Γ`).
+          let boundedSupport
+              (pair : Finset (object.Vertex × object.Vertex)) :
+              Finset object.Vertex := by
+            letI := object.vertices.decEq
+            exact tokenSupport ∪
+              (Graph.FiniteObject.chargeSupport activation capacity.carrier
+                pair ∪
+                (pair.biUnion activation.declaredSupport ∪
+                  pair.biUnion activation.returnSupport))
+
+          -- The `P₁₃` coordinate consists of exactly the window positions
+          -- met by the bounded routing support, read from presentations of the
+          -- members of the actual maximal packing.
+          let windowLabel
+              (pair : Finset (object.Vertex × object.Vertex)) :
+              Graph.WindowCurvature.Label data.windowOrder := by
+            classical
+            exact Finset.univ.filter fun index =>
+              ∃ window ∈ capacity.packing,
+                ∃ presentation :
+                    Graph.TypeBDirectCycle.Presentation object data.windowOrder,
+                  presentation.support = window ∧
+                    presentation.coordinate index.1 ∈ boundedSupport pair
+
+          let chordFlag
+              (pair : Finset (object.Vertex × object.Vertex)) : Bool :=
+            match Graph.FiniteObject.canonicalBlocker activation pair with
+            | some (.arithmeticChordSet _) => true
+            | _ => false
+
+          -- `ρ_t(π)`, in the seven coordinates and order fixed by
+          -- `def:same-token-routing-germs`.  The cardinality proof is part of
+          -- the local call, so there is no off-pattern fallback label.  The
+          -- endpoint coordinate is computed from the selected endpoint's
+          -- actual position in the object's ordered two-element pair.
+          let routingLabel
+              (pair : Finset (object.Vertex × object.Vertex))
+              (pairCard : pair.card = 2)
+              (demand : object.Vertex × object.Vertex) :
+              Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+                (Graph.WindowCurvature.Label data.windowOrder) := by
+            let first := pair.toList.get
+              ⟨0, by simpa [pairCard] using (show 0 < pair.card by omega)⟩
+            let second := pair.toList.get
+              ⟨1, by simpa [pairCard] using (show 1 < pair.card by omega)⟩
+            let endpoint : Fin 2 := if demand = first then 0 else 1
+            exact (capacity.role pair,
+              Graph.FiniteObject.CapacityToken.subtype token,
+              endpoint,
+              (portStatus first, portStatus second),
+              (boundaryProfile first, boundaryProfile second),
+              windowLabel pair, chordFlag pair)
+
+          have selectedPairData :
+              ∃ first second : Finset (object.Vertex × object.Vertex),
+                ∃ left ∈ first, ∃ right ∈ second,
+                  ∃ firstCard : first.card = 2,
+                    ∃ secondCard : second.card = 2,
+                      first ∈ ledger.presented.roleFibre token role ∧
+                      second ∈ ledger.presented.roleFibre token role ∧
+                      left ≠ right ∧
+                        routingLabel first firstCard left =
+                          routingLabel second secondCard right := by
+            rcases structured with
+                ⟨pattern, patternSubset, patternShape, large⟩ |
+                ⟨centre, pattern, patternSubset, patternShape, large⟩
+            · have pairs : ∀ edge ∈ pattern, edge.card = 2 := by
+                intro edge edgeMem
+                exact ledger.presented.pairs_roleFibre token role edge
+                  (patternSubset edgeMem)
+              let attached := pattern.attach
+              let chosenDemand (edge : {edge // edge ∈ pattern}) :
+                  object.Vertex × object.Vertex :=
+                edge.1.toList.get ⟨0, by
+                  rw [Finset.length_toList, pairs edge.1 edge.2]
+                  omega⟩
+              let attachedLabel (edge : {edge // edge ∈ pattern}) :=
+                routingLabel edge.1 (pairs edge.1 edge.2) (chosenDemand edge)
+              obtain ⟨first, firstMem, second, secondMem, different,
+                  sameLabel⟩ :=
+                Graph.SameTokenRoutingGerms.exists_same_routingLabel attached
+                  attachedLabel (by
+                    rw [show attached.card = pattern.card by simp [attached]]
+                    exact Nat.lt_of_lt_of_le (Nat.lt_succ_self _) large)
+              have firstPattern : first.1 ∈ pattern := first.2
+              have secondPattern : second.1 ∈ pattern := second.2
+              let left := chosenDemand first
+              let right := chosenDemand second
+              have leftMem : left ∈ first.1 := by
+                exact Finset.mem_toList.mp
+                  (List.get_mem first.1.toList ⟨0, by
+                    rw [Finset.length_toList, pairs first.1 first.2]
+                    omega⟩)
+              have rightMem : right ∈ second.1 := by
+                exact Finset.mem_toList.mp
+                  (List.get_mem second.1.toList ⟨0, by
+                    rw [Finset.length_toList, pairs second.1 second.2]
+                    omega⟩)
+              have demandsDifferent : left ≠ right := by
+                intro equal
+                have edgeDifferent : first.1 ≠ second.1 := by
+                  intro edgeEqual
+                  exact different (Subtype.ext edgeEqual)
+                exact patternShape first.1 firstPattern second.1 secondPattern
+                  edgeDifferent left leftMem (equal ▸ rightMem)
+              refine ⟨first.1, second.1, left, leftMem, right, rightMem,
+                pairs first.1 firstPattern, pairs second.1 secondPattern,
+                patternSubset firstPattern, patternSubset secondPattern,
+                demandsDifferent, ?_⟩
+              simpa only [attachedLabel] using sameLabel
+            · have pairs : ∀ edge ∈ pattern, edge.card = 2 := by
+                intro edge edgeMem
+                exact ledger.presented.pairs_roleFibre token role edge
+                  (patternSubset edgeMem)
+              let attached := pattern.attach
+              let chosenDemand (edge : {edge // edge ∈ pattern}) :
+                  object.Vertex × object.Vertex :=
+                (edge.1.erase centre).toList.get ⟨0, by
+                  rw [Finset.length_toList,
+                    Finset.card_erase_of_mem (patternShape edge.1 edge.2),
+                    pairs edge.1 edge.2]
+                  omega⟩
+              let attachedLabel (edge : {edge // edge ∈ pattern}) :=
+                routingLabel edge.1 (pairs edge.1 edge.2) (chosenDemand edge)
+              obtain ⟨first, firstMem, second, secondMem, different,
+                  sameLabel⟩ :=
+                Graph.SameTokenRoutingGerms.exists_same_routingLabel attached
+                  attachedLabel (by
+                    rw [show attached.card = pattern.card by simp [attached]]
+                    exact Nat.lt_of_lt_of_le (Nat.lt_succ_self _) large)
+              have firstPattern : first.1 ∈ pattern := first.2
+              have secondPattern : second.1 ∈ pattern := second.2
+              let left := chosenDemand first
+              let right := chosenDemand second
+              have leftErase : left ∈ first.1.erase centre := by
+                exact Finset.mem_toList.mp
+                  (List.get_mem (first.1.erase centre).toList ⟨0, by
+                    rw [Finset.length_toList,
+                      Finset.card_erase_of_mem
+                        (patternShape first.1 firstPattern),
+                      pairs first.1 firstPattern]
+                    omega⟩)
+              have rightErase : right ∈ second.1.erase centre := by
+                exact Finset.mem_toList.mp
+                  (List.get_mem (second.1.erase centre).toList ⟨0, by
+                    rw [Finset.length_toList,
+                      Finset.card_erase_of_mem
+                        (patternShape second.1 secondPattern),
+                      pairs second.1 secondPattern]
+                    omega⟩)
+              have leftNe : left ≠ centre := (Finset.mem_erase.mp leftErase).1
+              have rightNe : right ≠ centre := (Finset.mem_erase.mp rightErase).1
+              have leftMem : left ∈ first.1 := (Finset.mem_erase.mp leftErase).2
+              have rightMem : right ∈ second.1 :=
+                (Finset.mem_erase.mp rightErase).2
+              have edgeEq : ∀ edge ∈ pattern, ∀ other,
+                  other ≠ centre → other ∈ edge → edge = {centre, other} := by
+                intro edge edgeMem other otherNe otherMem
+                have centreMem := patternShape edge edgeMem
+                refine (Finset.eq_of_subset_of_card_le ?_ ?_).symm
+                · intro item inside
+                  rcases Finset.mem_insert.mp inside with rfl | inside
+                  · exact centreMem
+                  · rw [Finset.mem_singleton.mp inside]
+                    exact otherMem
+                · rw [pairs edge edgeMem, Finset.card_insert_of_notMem
+                      (by simp [Ne.symm otherNe]),
+                    Finset.card_singleton]
+              have firstEq := edgeEq first.1 firstPattern left leftNe leftMem
+              have secondEq := edgeEq second.1 secondPattern right rightNe rightMem
+              have demandsDifferent : left ≠ right := by
+                intro equal
+                apply different
+                apply Subtype.ext
+                rw [firstEq, secondEq, equal]
+              refine ⟨first.1, second.1, left, leftMem, right, rightMem,
+                pairs first.1 firstPattern, pairs second.1 secondPattern,
+                patternSubset firstPattern, patternSubset secondPattern,
+                demandsDifferent, ?_⟩
+              simpa only [attachedLabel] using sameLabel
+          obtain ⟨first, second, left, leftMem, right, rightMem,
+            firstCard, secondCard, firstFibre, secondFibre,
+            demandsDifferent, sameLabel⟩ := selectedPairData
+
+          -- Read the two pattern edges back through the canonical token fibre.
+          -- This recovers both the actual pair schedule and the equality
+          -- `Θ_cap(πᵢ)=t`; neither is re-proved or carried separately.
+          have firstTokenFibre : first ∈ ledger.presented.fibre token :=
+            Graph.PatternFamily.roleFibre_subset _ _ _ firstFibre
+          have secondTokenFibre : second ∈ ledger.presented.fibre token :=
+            Graph.PatternFamily.roleFibre_subset _ _ _ secondFibre
+          have firstSchedule : first ∈ object.portPairSchedule data.threshold :=
+            ledger.presented.fibre_subset token firstTokenFibre
+          have secondSchedule : second ∈ object.portPairSchedule data.threshold :=
+            ledger.presented.fibre_subset token secondTokenFibre
+          have leftActive : left ∈ object.excessPorts data.threshold :=
+            (object.subset_excessPorts_of_mem_portPairSchedule data.threshold
+              firstSchedule) leftMem
+          have rightActive : right ∈ object.excessPorts data.threshold :=
+            (object.subset_excessPorts_of_mem_portPairSchedule data.threshold
+              secondSchedule) rightMem
+          have firstCharge :
+              Graph.FiniteObject.capacityCharge activation capacity.carrier
+                data.threshold capacity.packing first = some token := by
+            have labelled := (Finset.mem_filter.mp firstTokenFibre).2
+            change Graph.CanonicalFibreLedger.canonicalLabel
+                capacity.tokenOrder capacity.Eligible first = some token at labelled
+            have charged : capacity.Eligible token first :=
+              Graph.CanonicalFibreLedger.applies_canonicalLabel labelled
+            exact charged
+          have secondCharge :
+              Graph.FiniteObject.capacityCharge activation capacity.carrier
+                data.threshold capacity.packing second = some token := by
+            have labelled := (Finset.mem_filter.mp secondTokenFibre).2
+            change Graph.CanonicalFibreLedger.canonicalLabel
+                capacity.tokenOrder capacity.Eligible second = some token at labelled
+            have charged : capacity.Eligible token second :=
+              Graph.CanonicalFibreLedger.applies_canonicalLabel labelled
+            exact charged
+          have leftBuffer : activation.localBuffer left = selectedSupport left := by
+            simp only [activation, activationEq,
+              Graph.recordSparsePairDEBlockers,
+              Graph.pairResponseActivation_localBuffer_of_mem active leftActive,
+              selectedSupport, dif_pos leftActive]
+          have rightBuffer : activation.localBuffer right = selectedSupport right := by
+            simp only [activation, activationEq,
+              Graph.recordSparsePairDEBlockers,
+              Graph.pairResponseActivation_localBuffer_of_mem active rightActive,
+              selectedSupport, dif_pos rightActive]
+
+          -- The current object is connected.  Otherwise its induced component
+          -- through the selected demand would be a proper baseline object,
+          -- contradicting the exact `noProperBaseline` ledger entry.
+          have graphConnected : object.graph.Connected := by
+            let root : object.Vertex := left.1
+            let support : Finset object.Vertex :=
+              object.vertexFinset.filter fun vertex =>
+                object.graph.connectedComponentMk vertex =
+                  object.graph.connectedComponentMk root
+            by_contra disconnected
+            have rootMem : root ∈ support := by simp [support]
+            have supportCardLt : support.card < object.vertexCount := by
+              have notAllReachable :
+                  ¬ ∀ vertex : object.Vertex,
+                    object.graph.Reachable root vertex := by
+                intro allReachable
+                apply disconnected
+                exact object.graph.connected_iff_exists_forall_reachable.mpr
+                  ⟨root, allReachable⟩
+              push Not at notAllReachable
+              obtain ⟨outside, unreachable⟩ := notAllReachable
+              have outsideNotMem : outside ∉ support := by
+                simp only [support, Finset.mem_filter,
+                  object.mem_vertexFinset, true_and,
+                  SimpleGraph.ConnectedComponent.eq]
+                exact fun reachable => unreachable reachable.symm
+              have strict : support ⊂ object.vertexFinset := by
+                refine Finset.ssubset_iff_subset_ne.mpr ⟨?_, ?_⟩
+                · intro vertex _
+                  exact object.mem_vertexFinset vertex
+                · intro equal
+                  exact outsideNotMem
+                    (equal ▸ object.mem_vertexFinset outside)
+              simpa only [object.card_vertexFinset] using
+                Finset.card_lt_card strict
+            let component : Graph.ProperSubgraph object :=
+              Graph.ProperSubgraph.ofInducedSupport object support supportCardLt
+            letI : Nonempty component.value.Vertex := ⟨⟨root, rootMem⟩⟩
+            have neighborSubset (vertex : component.value.Vertex) :
+                object.graph.neighborSet vertex.1 ⊆
+                  (support : Set object.Vertex) := by
+              intro neighbor adjacent
+              change neighbor ∈ support
+              simp only [support, Finset.mem_filter, object.mem_vertexFinset,
+                true_and, SimpleGraph.ConnectedComponent.eq]
+              exact (show object.graph.Adj vertex.1 neighbor from adjacent).reachable.symm.trans
+                (by
+                  simpa only [support, Finset.mem_filter,
+                    object.mem_vertexFinset, true_and,
+                    SimpleGraph.ConnectedComponent.eq] using vertex.2)
+            have componentMinimumDegree :
+                data.threshold ≤ component.value.minDegree := by
+              apply component.value.le_minDegree_of_forall_le_degree data.threshold
+              intro vertex
+              rw [show component.value.degree vertex = object.degree vertex.1 from
+                object.degree_induce_of_neighborSet_subset support vertex
+                  (neighborSubset vertex)]
+              exact inputs.current.baseline.trans
+                (object.minDegree_le_degree vertex.1)
+            exact _noProperBaseline component componentMinimumDegree
+          have connectedOn :
+              Graph.SupportComponents.Connected.ConnectedOn object
+                object.vertexFinset := by
+            constructor
+            · exact ⟨left.1, object.mem_vertexFinset _⟩
+            · intro firstVertex secondVertex _ _
+              obtain ⟨walk⟩ :=
+                graphConnected.preconnected firstVertex secondVertex
+              let path := walk.toPath
+              exact ⟨path, path.isPath, fun vertex _ =>
+                object.mem_vertexFinset vertex⟩
+
+          -- `X_π` is the canonical connected support already defined by the
+          -- declared pair-response API; the row selects no replacement
+          -- support of its own.
+          obtain ⟨firstPairSupport, firstPairSupportEq⟩ :=
+            Option.isSome_iff_exists.mp
+              (Graph.FiniteObject.DemandActivation.pairSupport_isSome_of_connected
+                activation first connectedOn)
+          obtain ⟨secondPairSupport, secondPairSupportEq⟩ :=
+            Option.isSome_iff_exists.mp
+              (Graph.FiniteObject.DemandActivation.pairSupport_isSome_of_connected
+                activation second connectedOn)
+          have firstPairSupportFacts :=
+            Graph.FiniteObject.DemandActivation.pairSupport_mem_candidates
+              firstPairSupportEq
+          have secondPairSupportFacts :=
+            Graph.FiniteObject.DemandActivation.pairSupport_mem_candidates
+              secondPairSupportEq
+          have leftSelected_subset_pairSupport :
+              selectedSupport left ⊆ firstPairSupport := by
+            intro vertex vertexMem
+            apply firstPairSupportFacts.1
+            apply Graph.FiniteObject.DemandActivation.declaredSupport_subset_pairSeed
+              activation leftMem
+            apply activation.localBuffer_subset_declaredSupport left
+            rwa [leftBuffer]
+          have rightSelected_subset_pairSupport :
+              selectedSupport right ⊆ secondPairSupport := by
+            intro vertex vertexMem
+            apply secondPairSupportFacts.1
+            apply Graph.FiniteObject.DemandActivation.declaredSupport_subset_pairSeed
+              activation rightMem
+            apply activation.localBuffer_subset_declaredSupport right
+            rwa [rightBuffer]
+
+          -- The primitive start is a function of the shared token itself.
+          -- In particular both connector configurations are rooted at the
+          -- same vertex; no caller-supplied root or route carrier appears.
+          let tokenRoot : object.Vertex :=
+            match token with
+            | .boundaryWindow incidence => incidence.1
+            | .crossWindow incidence => incidence.1
+            | .remainder unit => unit.1
+            | .primitive (.inl vertex) => vertex
+            | .primitive (.inr (.inl incidence)) => incidence.1
+            | .primitive (.inr (.inr port)) => port.2
+          have tokenRoot_mem : tokenRoot ∈ tokenSupport := by
+            rcases token with incidence | incidence | unit | item
+            · simp [tokenRoot, tokenSupport]
+            · simp [tokenRoot, tokenSupport]
+            · simp [tokenRoot, tokenSupport]
+            · rcases item with vertex | item
+              · simp [tokenRoot, tokenSupport]
+              · rcases item with incidence | port <;>
+                  simp [tokenRoot, tokenSupport]
+
+          -- The two exact same-token configurations are constructed next from
+          -- the canonical blocker support and these ledger-read `T`, `R`, and
+          -- `Γ` entries.
+          skip
+          ⟩
       let handoff : (K .typeBHandoff).At inputs.current := ⟨by
           obtain ⟨_, _, _, _pattern, outcome⟩ := routing.down
           rcases outcome with sparseExit | typeBHandoff

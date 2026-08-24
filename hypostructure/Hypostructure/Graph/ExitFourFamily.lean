@@ -55,6 +55,40 @@ theorem visibleResponsePiece_boundaryDegreeProfile
   Route8.PresentedEntry.retainedBasinPiece_boundaryDegreeProfile object support
     coordinate.channel.support.toFinset
 
+/-- **The selected receiver-entry channel is a path of its own visible
+response piece**, between the entry label and the receiver label, of the
+channel's own length: `def:typeA-channel-spectrum`'s `Q` read on the retained
+reading. -/
+theorem exists_visibleResponsePiece_channelPath
+    {support : Finset object.Vertex} {receiver : object.Vertex}
+    (coordinate : VisibleEntry.ResponseCoordinate object support receiver) :
+    ∃ q : (visibleResponsePiece coordinate).graph.Walk
+        (Sum.inl coordinate.entry)
+        (Sum.inl coordinate.receiverBoundary),
+      q.IsPath ∧ q.length = coordinate.channel.length := by
+  classical
+  obtain ⟨q, qPath, qLength⟩ :=
+    Route8.PresentedEntry.exists_retainedBasinPiece_path_of_channel object
+      support coordinate.channel.support.toFinset coordinate.channel
+      coordinate.isChannel.1 coordinate.isChannel.2
+      (fun vertex member => List.mem_toFinset.mpr member)
+  have startEq : Route8.PresentedEntry.pieceEncode object support
+        coordinate.entry.1
+        (coordinate.isChannel.2 coordinate.entry.1
+          coordinate.channel.start_mem_support) =
+      Sum.inl coordinate.entry := by
+    exact Route8.PresentedEntry.pieceEncode_of_mem_cutBoundary object support
+      coordinate.entry.1 _ coordinate.entry.2
+  have endEq : Route8.PresentedEntry.pieceEncode object support receiver
+        (coordinate.isChannel.2 receiver
+          coordinate.channel.end_mem_support) =
+      Sum.inl coordinate.receiverBoundary := by
+    exact Route8.PresentedEntry.pieceEncode_of_mem_cutBoundary object support
+      receiver _ coordinate.receiverBoundary.2
+  refine ⟨q.copy startEq endEq, ?_, ?_⟩
+  · exact (SimpleGraph.Walk.isPath_copy q startEq endEq).mpr qPath
+  · exact (SimpleGraph.Walk.length_copy q startEq endEq).trans qLength
+
 /-- Q1, with the pair and both response realizations derived from one selected
 visible-four package.  The declared support is exactly the two loads whose
 coordinates are identified. -/
@@ -420,5 +454,317 @@ theorem peeledByWitnesses_nextPeeled
   · exact ⟨peeled, Finset.subset_cons _, witness, rfl⟩
   · obtain ⟨prior, priorSubset, witness', equal⟩ := witnessed load member'
     exact ⟨prior, priorSubset.trans (Finset.subset_cons _), witness', equal⟩
+
+
+/-! ## The Q2 semantic step
+
+`lem:typeA-unpeeled-silent-routing`, after the visible loads are exhausted: the
+whole silent/excess basin `B(w)` is one boundaried response state, and its
+identification with the ambient piece is target-defective — exit `(4)` through
+a Q2 quotient supported on the residual excess — or target-complete, the
+identification entering exits `(5)`–`(8)`. -/
+
+/-- An unpeeled excess load is an unpeeled routed load. -/
+theorem unpeeledExcess_subset_unpeeledLoads
+    (support : Finset object.Vertex) (threshold scale : Nat)
+    (receiver : object.Vertex) (peeled : Finset object.Vertex) :
+    unpeeledExcess support threshold scale receiver peeled ⊆
+      unpeeledLoads support threshold receiver peeled :=
+  Finset.sdiff_subset
+
+/-- **The Q2 exit-(4) witness of a target-defective excess basin**
+(`lem:typeA-unpeeled-silent-routing`, the exit-(4) sentence): a compatible
+outside context distinguishing the basin's literal boundary response from the
+basin itself makes the replacement quotient target-defective of type (Q2), and
+its declared routed-load support is the residual excess. -/
+def witnessOfExcessTargetDefect {Target : FiniteObject.{u} → Prop}
+    {support : Finset object.Vertex} {threshold scale : Nat}
+    {receiver : object.Vertex} {peeled : Finset object.Vertex}
+    (silent : SilentUnpeeledExcessAt support threshold scale receiver peeled)
+    {load : object.Vertex}
+    (excessMember : load ∈ unpeeledExcess support threshold scale receiver
+      peeled)
+    (basin_subset :
+      excessTraceSupport object support threshold scale receiver peeled ⊆
+        support)
+    (connected : SupportComponents.Connected.ConnectedOn object
+      (excessTraceSupport object support threshold scale receiver peeled))
+    (proper : ∃ vertex,
+      vertex ∉ excessTraceSupport object support threshold scale receiver
+        peeled)
+    (targetDefect : Response.TargetDefect Target
+      (excessBoundaryResponse object support threshold scale receiver peeled)
+      (Strategy.InterfaceReplacement.SupportAtom.piece object
+        (excessTraceSupport object support threshold scale receiver peeled))) :
+    Witness Target support threshold scale receiver peeled where
+  load := load
+  unpeeled := unpeeledExcess_subset_unpeeledLoads support threshold scale
+    receiver peeled excessMember
+  member := .q2 ⟨peeled, silent, excessMember, basin_subset, connected, proper,
+    targetDefect⟩
+
+/-- **The Q2 semantic dichotomy** (`lem:typeA-unpeeled-silent-routing`): at a
+silent unpeeled excess state, either the excess basin's boundary response is
+distinguished from the basin by a compatible outside context — and then the
+state supplies an exit-(4) witness at one of its own residual excess loads —
+or the identification is target-complete, entering exits `(5)`–`(8)`.  The
+common boundary-degree fibre is
+`retainedBasinPiece_boundaryDegreeProfile`; the exhaustiveness is
+`lem:context-universality` (`Response.contextEquivalent_or_targetDefect`). -/
+theorem exists_witness_or_excess_targetComplete
+    {Target : FiniteObject.{u} → Prop}
+    {support : Finset object.Vertex} {threshold scale : Nat}
+    {receiver : object.Vertex} {peeled : Finset object.Vertex}
+    (silent : SilentUnpeeledExcessAt support threshold scale receiver peeled)
+    (basin_subset :
+      excessTraceSupport object support threshold scale receiver peeled ⊆
+        support)
+    (connected : SupportComponents.Connected.ConnectedOn object
+      (excessTraceSupport object support threshold scale receiver peeled))
+    (proper : ∃ vertex,
+      vertex ∉ excessTraceSupport object support threshold scale receiver
+        peeled) :
+    (∃ witness : Witness Target support threshold scale receiver peeled,
+        witness.load ∈ unpeeledExcess support threshold scale receiver peeled) ∨
+      Response.TargetComplete Graph.BoundaryPiece.boundaryDegreeProfile Target
+        (excessBoundaryResponse object support threshold scale receiver peeled)
+        (Strategy.InterfaceReplacement.SupportAtom.piece object
+          (excessTraceSupport object support threshold scale receiver
+            peeled)) := by
+  classical
+  rcases Response.contextEquivalent_or_targetDefect Target
+      (excessBoundaryResponse object support threshold scale receiver peeled)
+      (Strategy.InterfaceReplacement.SupportAtom.piece object
+        (excessTraceSupport object support threshold scale receiver peeled)) with
+    equivalent | targetDefect
+  · refine Or.inr ⟨?_, equivalent⟩
+    exact Route8.PresentedEntry.retainedBasinPiece_boundaryDegreeProfile object
+      (excessTraceSupport object support threshold scale receiver peeled) _
+  · obtain ⟨load, excessMember⟩ := silent.2.1
+    exact Or.inl
+      ⟨witnessOfExcessTargetDefect silent excessMember basin_subset connected
+        proper targetDefect, excessMember⟩
+
+
+/-! ## The excess basin's structural clauses
+
+The Q2 dichotomy consumes three structural facts about `B(w)`: it lies inside
+the support, it is connected — every excess load reaches the receiver along
+its own canonical trace, and every seed vertex reaches it along the trace's
+tail — and it is proper whenever the support is. -/
+
+/-- Every vertex of a trace seed lies in the support. -/
+theorem traceSeed_subset_support
+    {support : Finset object.Vertex} {threshold : Nat}
+    {receiver routed vertex : object.Vertex}
+    (member : vertex ∈
+      (Route8.TraceBasin.traceSeed? object support threshold receiver
+        routed).getD ∅) :
+    vertex ∈ support := by
+  classical
+  unfold Route8.TraceBasin.traceSeed? at member
+  rcases selected : object.tracePath? support threshold routed receiver with
+    _ | trace
+  · rw [selected] at member
+    simp at member
+  · rw [selected] at member
+    simp only [Option.getD_some] at member
+    exact (object.isTracePath_of_tracePath?_eq_some selected).1 vertex
+      (List.mem_toFinset.mp member)
+
+/-- **`B(w)` lies inside the support.** -/
+theorem excessTraceSupport_subset
+    (support : Finset object.Vertex) (threshold scale : Nat)
+    (receiver : object.Vertex) (peeled : Finset object.Vertex)
+    (receiverInside : receiver ∈ support) :
+    excessTraceSupport object support threshold scale receiver peeled ⊆
+      support := by
+  classical
+  intro vertex member
+  simp only [excessTraceSupport, Finset.mem_insert, Finset.mem_union,
+    Finset.mem_biUnion] at member
+  rcases member with rfl | inExcess | ⟨routed, _routedExcess, inSeed⟩
+  · exact receiverInside
+  · exact (object.mem_routedLoads.mp
+      ((mem_unpeeledLoads (object := object) support threshold receiver).mp
+        (unpeeledExcess_subset_unpeeledLoads support threshold scale receiver
+          peeled inExcess)).1).1
+  · exact traceSeed_subset_support inSeed
+
+/-- **`B(w)` is proper whenever the support is.** -/
+theorem excessTraceSupport_proper
+    (support : Finset object.Vertex) (threshold scale : Nat)
+    (receiver : object.Vertex) (peeled : Finset object.Vertex)
+    (receiverInside : receiver ∈ support)
+    (properSupport : ∃ vertex, vertex ∉ support) :
+    ∃ vertex,
+      vertex ∉ excessTraceSupport object support threshold scale receiver
+        peeled :=
+  let ⟨vertex, outside⟩ := properSupport
+  ⟨vertex, fun member => outside
+    (excessTraceSupport_subset support threshold scale receiver peeled
+      receiverInside member)⟩
+
+/-- **`B(w)` is connected through the receiver**: every excess load reaches
+the receiver along its own canonical trace, and every seed vertex along the
+trace's tail. -/
+theorem excessTraceSupport_connectedOn
+    (support : Finset object.Vertex) (threshold scale : Nat)
+    (receiver : object.Vertex) (peeled : Finset object.Vertex) :
+    SupportComponents.Connected.ConnectedOn object
+      (excessTraceSupport object support threshold scale receiver peeled) := by
+  classical
+  have receiverMember : receiver ∈
+      excessTraceSupport object support threshold scale receiver peeled := by
+    simp [excessTraceSupport]
+  have seedMember : ∀ routed ∈ unpeeledExcess support threshold scale receiver
+      peeled, ∀ vertex ∈
+        (Route8.TraceBasin.traceSeed? object support threshold receiver
+          routed).getD ∅,
+      vertex ∈ excessTraceSupport object support threshold scale receiver
+        peeled := by
+    intro routed routedExcess vertex member
+    simp only [excessTraceSupport, Finset.mem_insert, Finset.mem_union,
+      Finset.mem_biUnion]
+    exact Or.inr (Or.inr ⟨routed, routedExcess, member⟩)
+  have traceOf : ∀ routed ∈ unpeeledExcess support threshold scale receiver
+      peeled, ∃ trace : object.graph.Path routed receiver,
+        object.tracePath? support threshold routed receiver = some trace := by
+    intro routed routedExcess
+    have routedLoad := ((mem_unpeeledLoads (object := object) support threshold
+      receiver).mp (unpeeledExcess_subset_unpeeledLoads support threshold scale
+        receiver peeled routedExcess)).1
+    exact Option.isSome_iff_exists.mp
+      (object.isSome_tracePath?_of_traceTo
+        (object.traceTo_of_traceReceiver?_eq_some
+          (object.mem_routedLoads.mp routedLoad).2.2))
+  have traceSeedOf : ∀ routed ∈ unpeeledExcess support threshold scale receiver
+      peeled, ∀ trace : object.graph.Path routed receiver,
+        object.tracePath? support threshold routed receiver = some trace →
+      ∀ vertex ∈ trace.1.support,
+        vertex ∈
+          (Route8.TraceBasin.traceSeed? object support threshold receiver
+            routed).getD ∅ := by
+    intro routed _routedExcess trace selected vertex member
+    unfold Route8.TraceBasin.traceSeed?
+    rw [selected]
+    simpa using member
+  -- every basin vertex reaches the receiver by a walk inside the basin
+  have toReceiver : ∀ vertex ∈
+      excessTraceSupport object support threshold scale receiver peeled,
+      ∃ walk : object.graph.Walk vertex receiver,
+        ∀ v ∈ walk.support,
+          v ∈ excessTraceSupport object support threshold scale receiver
+            peeled := by
+    intro vertex member
+    have memberCases := member
+    simp only [excessTraceSupport, Finset.mem_insert, Finset.mem_union,
+      Finset.mem_biUnion] at memberCases
+    rcases memberCases with rfl | inExcess | ⟨routed, routedExcess, inSeed⟩
+    · refine ⟨SimpleGraph.Walk.nil, ?_⟩
+      intro v vMember
+      rw [SimpleGraph.Walk.support_nil, List.mem_singleton] at vMember
+      subst vMember
+      exact receiverMember
+    · obtain ⟨trace, selected⟩ := traceOf vertex inExcess
+      refine ⟨trace.1, ?_⟩
+      intro v vMember
+      exact seedMember vertex inExcess v
+        (traceSeedOf vertex inExcess trace selected v vMember)
+    · obtain ⟨trace, selected⟩ := traceOf routed routedExcess
+      have inTrace : vertex ∈ trace.1.support := by
+        have inSeed' := inSeed
+        unfold Route8.TraceBasin.traceSeed? at inSeed'
+        rw [selected] at inSeed'
+        simpa using inSeed'
+      refine ⟨trace.1.dropUntil vertex inTrace, ?_⟩
+      intro v vMember
+      exact seedMember routed routedExcess v
+        (traceSeedOf routed routedExcess trace selected v
+          (SimpleGraph.Walk.support_dropUntil_subset_support trace.1 inTrace
+            vMember))
+  refine ⟨⟨receiver, receiverMember⟩, ?_⟩
+  intro left right leftMember rightMember
+  obtain ⟨walkLeft, walkLeftInside⟩ := toReceiver left leftMember
+  obtain ⟨walkRight, walkRightInside⟩ := toReceiver right rightMember
+  refine ⟨(walkLeft.append walkRight.reverse).bypass,
+    SimpleGraph.Walk.bypass_isPath _, ?_⟩
+  intro v vMember
+  have vAppend : v ∈ (walkLeft.append walkRight.reverse).support :=
+    SimpleGraph.Walk.support_bypass_subset_support _ vMember
+  rcases (SimpleGraph.Walk.mem_support_append_iff walkLeft
+      walkRight.reverse).mp vAppend with inLeft | inRight
+  · exact walkLeftInside v inLeft
+  · refine walkRightInside v ?_
+    rwa [SimpleGraph.Walk.support_reverse, List.mem_reverse] at inRight
+
+
+/-! ## The rooted germ of a receiver-entry return
+
+`def:typeA-continuation-classes`' germ `Γ = (x₀, …, x_g)` is the return's own
+outside connector, rooted at the receiver: `w, h, x₁, …, x_g`.  Every field of
+`DecoratedHandoff.RootedGerm` is read off the return's structure; the one
+hypothesis is that the first entry is not the receiver itself, which is what
+keeps the rooted list simple. -/
+
+/-- **The rooted outside-connector germ of a receiver-entry return.** -/
+noncomputable def germOfReturn {support : Finset object.Vertex}
+    {threshold : Nat} {receiver outside : object.Vertex}
+    (return' : VisibleEntry.ReceiverEntryReturn object support receiver outside)
+    (port : outside ∈ VisibleEntry.completionPorts object support receiver)
+    (receiverInside : receiver ∈ support)
+    (entryFresh : return'.entry ≠ receiver) :
+    DecoratedHandoff.RootedGerm object support receiver outside where
+  path := receiver :: return'.connector.support
+  chain := by
+    refine (List.isChain_cons_iff _ _ _).mpr (Or.inr
+      ⟨outside, return'.connector.support.tail, ?_, ?_, ?_⟩)
+    · exact (VisibleEntry.mem_completionPorts.mp port).1
+    · rw [SimpleGraph.Walk.cons_tail_support]
+      exact SimpleGraph.Walk.isChain_adj_support return'.connector
+    · exact (SimpleGraph.Walk.cons_tail_support return'.connector).symm
+  nodup := by
+    refine List.nodup_cons.mpr ⟨?_, ?_⟩
+    · intro member
+      exact return'.connectorOutside receiver member
+        (fun equal => entryFresh equal.symm) receiverInside
+    · have compositeNodup := return'.isPath.support_nodup
+      rw [SimpleGraph.Walk.support_append] at compositeNodup
+      exact (List.nodup_append.mp compositeNodup).1
+  rooted := rfl
+  issued := by
+    show return'.connector.support.head? = some outside
+    rw [← SimpleGraph.Walk.cons_tail_support return'.connector]
+    rfl
+  terminal := return'.entry
+  terminal_last := by
+    show (List.cons receiver return'.connector.support).getLast? =
+      some return'.entry
+    have step : (List.cons receiver return'.connector.support).getLast? =
+        return'.connector.support.getLast? := by
+      show ([receiver] ++ return'.connector.support).getLast? =
+        return'.connector.support.getLast?
+      exact List.getLast?_append_of_ne_nil _
+        (SimpleGraph.Walk.support_ne_nil return'.connector)
+    rw [step, List.getLast?_eq_some_getLast
+      (h := SimpleGraph.Walk.support_ne_nil return'.connector)]
+    exact congrArg some (SimpleGraph.Walk.getLast_support return'.connector)
+  terminal_inside :=
+    return'.isChannel.2 return'.entry return'.channel.start_mem_support
+  interior := by
+    intro vertex member inside
+    by_contra fresh
+    exact return'.connectorOutside vertex member fresh inside
+
+@[simp] theorem germOfReturn_path {support : Finset object.Vertex}
+    {threshold : Nat} {receiver outside : object.Vertex}
+    (return' : VisibleEntry.ReceiverEntryReturn object support receiver outside)
+    (port : outside ∈ VisibleEntry.completionPorts object support receiver)
+    (receiverInside : receiver ∈ support)
+    (entryFresh : return'.entry ≠ receiver) :
+    (germOfReturn (threshold := threshold) return' port receiverInside
+        entryFresh).path =
+      receiver :: return'.connector.support :=
+  rfl
 
 end Hypostructure.Graph.ExitFour

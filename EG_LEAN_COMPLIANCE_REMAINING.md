@@ -103,6 +103,178 @@ still stops at its first downstream failure and updates only that label's two au
 
 ## 5. Node-by-node remediation checklists
 
+### Node [104] — uncompressibility contradiction
+
+**Update (this session, kernel-checked).** The section below is restored from the last commit.
+Since then: exit (5) is the admissible (realized) compression datum and `typeAExitFiveClosed`
+closes every [103]-yes ledger against `K .uncompressible`; `TypeAExitRun` builds and both lanes
+elaborate in Assembly. The response-only gates below are superseded by that architecture (a
+non-realized identification is not exit (5) and continues to [105]); they are kept for the
+record until the audit tables are re-derived from a full build.
+
+**Exact manuscript diagram output.** uncompressibility contradiction
+
+**Manuscript rows.** Label set **L15** (paper page(s): 154, 155, 156, 157, 158, 159, 160, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 177, 178, 179, 180, 182, 183, 185); its complete label
+list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
+table; their exact environments supply the inherited quantifiers and hypotheses.
+
+**Current Lean owner.** `typeAExitFiveClosed` (TypeAExitRun.lean:282)
+
+**Current combinator / shared continuation.** canonical `Incompatible` terminal; selectedTypeAExitFiveToSeven, selectedTypeAExitFiveToSevenSilent.
+
+**Primary defect class.** mathematical proof absent.
+
+**Fresh audit diagnosis.** ❌ MATHEMATICAL PROOF ABSENT — Node [103] publishes the exact selected-load/trace-basin response quotient and its proper-realization versus trace-response-only cases. A focused kernel probe proves the strongest two consequences assigned by the manuscript: the proper arm constructs `CompressibleSupport ... object basin`, while the response-only arm proves `¬ TargetCompleteMinimal ... basin` and, using the selected-basin equality, `¬ Route8Entry ... load`. The literal [104] ledger supplies hereditary uncompressibility but no route-8-minimality premise. Consequently the first consequence contradicts `K .uncompressible`, whereas the second is only the manuscript's “not an admissible route-8 residual” and does not inhabit the `False` required by the diagram's canonical contradiction terminal.
+
+**What must be implemented or corrected.**
+
+- Preserve the kernel-checked proper-arm conversion: from the selected basin's connected/proper/baseline/smaller realization, construct the exact same-basin `CompressibleSupport` and contradict inherited hereditary uncompressibility.
+- Preserve the kernel-checked response-only consequence: failure alternative (b) gives `¬ TargetCompleteMinimal ... basin` and therefore `¬ Route8Entry ... load` for the same selected basin.
+- The manuscript must supply a logically valid terminal continuation for that response-only consequence before [104] can be closed. Adding route-8 minimality on a branch tested before route 8, strengthening `cor:uncompressible` to forbid abstract response quotients, or treating non-admissibility as a `False` closure is not authorized by the current paper and must not be introduced in Lean.
+- Preserve the exact selected packing, component, receiver, peeling set, eligible load, basin, retained coordinate family, and response quotient in any manuscript-approved correction.
+
+**Live gate checklist.**
+
+- [ ] **Implemented / reachable:** fail: the response-only case has no paper-supplied `False`
+- [ ] **Correctly wired:** fail: the [103]-yes edge requires a contradiction terminal, but the exact second case only excludes route 8
+- [x] **Residual-local proof:** pass: both focused consequences are at the literal [103]-yes data
+- [x] **Correct ledger registration:** pass
+- [x] **No illegal carrier/API:** None found
+- [ ] **Exact manuscript proof:** fail: the manuscript gives no contradiction after its response-only conclusion
+- [ ] **Independent kernel check:** fail for the terminal; pass for a focused probe of the exact `CompressibleSupport ∨ ¬ TargetCompleteMinimal` and `¬ Route8Entry` consequences
+
+**Exit criterion.** Obtain a manuscript-authorized proposition or continuation that turns the
+response-only alternative into the diagram's terminal behavior without strengthening an incoming
+fact or changing the exit order; then implement it through the literal ledger, update both live
+rows from the compiled term, and remove this section only when all seven boxes are checked.
+
+### Node [111] — global squeeze and unified route-8 census classification
+
+**Update (this session, kernel-checked).** The section below is restored from the last commit.
+Since then: `K .route8PiecesClassified` states `thm:branch-kill` exactly
+(`Route8Deficit.PieceClassification`, parametrized over the residual predicates); the
+silent-first surrogate survives only as `SilentClassification`; `route8DeficitRow` is deleted.
+The classification producer remains absent.
+
+**Exact manuscript diagram output.** The negative zero-surplus Type A pieces form the canonical
+route-8 collection \(\mathcal X_A\); on the unified correction, every negative piece belongs
+extensionally to \(\widetilde\Xi\) and is classified either as a target-complete-minimal route-8
+entry or as the prescribed target-defect alternative.
+
+**Manuscript rows.** Label set **L16** (paper page(s): 174, 175, 176, 177, 178, 179, 180,
+181, 182, 183, 185, 233, 234, 250, 251); its complete label list is in Appendix A. The
+corresponding live row cells are in the paper-fact implementation table; their exact environments
+supply the inherited quantifiers and hypotheses.
+
+**Current Lean owner.** `route8GlobalSqueezeRow` (SpineRows.lean:5076);
+`route8PieceClassificationDichotomy` (SpineRows.lean:5802).
+
+**Current combinator / shared continuation.** Canonical `factOnly`/`AtomicCT.run` for the pure
+collection and `Decision.run`/`ExactLedger.get` for the unified classification;
+`selectedRouteEightResidual` and shared `selectedRouteEightCensus`.
+
+**Primary defect class.** Exact census complement not yet routed.
+
+**Fresh audit diagnosis.** ⚠ PARTIAL — The pure [111] owner is exact and kernel-checked:
+it extracts precisely the negative zero-surplus canonical Type A pieces satisfying
+`Route8Survives`, publishes their support image, and records the cleared deficit. The unified
+correction is also stated exactly as `Route8UnifiedCensusFacts`: extensional membership in
+\(\widetilde\Xi\), the ordered route-8/target-defect entry alternatives, and the rate invariant
+for every surviving peel stage are all part of the ledger fact. Its classified arm runs the
+paper's [113], [123], and [124] chain to contradiction. The complementary decision arm remains
+intentionally loud at `selectedRouteEightUnclassifiedPiece`; no false proof or surrogate routing
+has been inserted.
+
+**What must be implemented or corrected.**
+
+- Consume the exact `K .route8UnclassifiedPiece` witness from its incoming `ExactLedger` and
+  route the exhibited piece according to the paper's branch-kill alternatives: visible-first
+  Type A material must enter its prescribed Type A continuation, and a non-bridge Type B piece
+  must enter the prescribed Type B continuation.
+- Preserve the full incoming ledger and append every fact proved by that routing under its
+  canonical semantic key. Do not replace the extensional census equality, entry alternatives,
+  or surviving-stage invariant by a weaker disjunction.
+- Do not add an application-local carrier, callback, alternate history, detached helper theorem,
+  or axiom. Temporary witnesses must remain local to the sealed executor, and all reusable facts
+  must be read from and written to the canonical `ExactLedger`.
+
+**Live gate checklist.**
+
+- [ ] **Implemented / reachable:** partial: the exact classified arm is complete; the
+  unclassified arm has no producer
+- [ ] **Correctly wired:** fail: `selectedRouteEightUnclassifiedPiece`
+- [x] **Residual-local proof:** pass
+- [x] **Correct ledger registration:** pass
+- [x] **No illegal carrier/API:** None found
+- [x] **Exact manuscript statement:** pass
+- [ ] **Independent kernel check:** the owners and classified branch pass; composed Assembly
+  intentionally stops at `selectedRouteEightUnclassifiedPiece`
+
+**Exit criterion.** Implement the paper-prescribed routing of the exact unclassified-piece
+witness on the literal incoming ledger, prove both resulting continuations kernel-check, update
+both live audit rows from that compiled term, and remove this section only when all seven boxes
+are green.
+
+### Node [129] — full active family and baseline: \(\mathcal A_0=\mathcal P_{\rm exc}\), \(E_{\rm spine}\le C_E n\)
+
+**Exact manuscript diagram output.** full active family and baseline: \(\mathcal A_0=\mathcal P_{\rm exc}\), \(E_{\rm spine}\le C_E n\)
+
+**Manuscript rows.** Label set **L18** (paper page(s): 59, 60, 83, 84); its complete label
+list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
+table; their exact environments supply the inherited quantifiers and hypotheses.
+
+**Current Lean owner.** No application owner. `Holds .baselineSpineDemand` states the exact
+required proposition, and `isBaselineSpineDemand_of_package` is the reusable arithmetic theorem;
+`selectedStrictSurplusBranch` stops loudly at the deliberately undefined
+`selectedBaselineSpineDemand`.
+
+**Current combinator / shared continuation.** Missing `factOnly`/`AtomicCT.run` producer;
+`selectedStrictSurplusBranch` is the first consumer.
+
+**Primary defect class.** exact mathematical producer absent.
+
+**Fresh audit diagnosis.** ❌ LOUD SOURCE GAP — The fabricated empty-support coordinate family,
+its zero-deficit proof, the legacy row, and its wrapper have been removed. Lean now states only
+the manuscript's required active family and baseline-spine demand. A source audit found that
+`def:baseline-spine-demand` only defines this package and every sparse theorem assumes that the
+active object admits one; no preceding manuscript lemma constructs a target-testable `𝓘_spine`
+or proves `E_spine ≤ C_E n` on the strict branch. The selected sparse continuation therefore keeps
+the exact producer undefined instead of feeding chosen zero data to [131]–[138].
+
+**What must be implemented or corrected.**
+
+- Supply a new paper lemma, or identify a currently missing source lemma, that constructs on this
+  literal residual a type `Coordinate`, a finite `family : Finset Coordinate`, and
+  `coordinateSupport : Coordinate → Finset object.Vertex`, while retaining
+  `𝓐₀ = 𝓟_exc`.
+- Its complete target is: every `DeclaredQuotient` on that family whose rank quotient is
+  `FunctionalOn ↑family` is `LabelInjectiveOn ↑family`, and
+  `cubicBaselineBudget n threshold ≤ 2^(family.card + spineDeficit n threshold family.card)`
+  together with
+  `spineDeficit n threshold family.card ≤ data.surplusScale * n`. The current paper defines and
+  assumes this package but does not prove this implication, so Lean must not obtain it by choosing
+  an empty family, selecting a deficit, or using a detached carrier.
+- Publish the complete value under `K .baselineSpineDemand` with one residual-local `factOnly`
+  row that reads all prerequisites through `inputs.get` and is run with `AtomicCT.run`.
+
+**Live gate checklist.**
+
+- [ ] **Implemented / reachable:** fail: `selectedBaselineSpineDemand` is intentionally undefined
+- [ ] **Correctly wired:** fail at the exact missing producer before [130]
+- [ ] **Residual-local proof:** no application proof exists
+- [x] **Correct ledger registration:** pass
+- [x] **No illegal carrier/API:** pass: the fabricated family/row/wrapper were removed
+- [ ] **Exact manuscript proof:** fail: the manuscript assumes, but does not prove, the
+  package-to-demand construction
+- [ ] **Independent kernel check:** the proposition and generic arithmetic theorem build; the
+  selected call is deliberately undefined, while full Assembly import currently stops earlier at
+  the separately audited [71]/[80] error
+
+**Exit criterion.** Reinspect the declaration body and call site, update this node row and every
+listed paper-fact row from the compiled term, run the table/API checks, and remove this section
+only when all seven boxes are checked. A later compiler failure is recorded as downstream unless
+that later node has its own independently failing audit row.
+
 ### Node [123] — unified demand descent
 
 **Exact manuscript diagram output.** The unified Type A ledger contains both target-defect and
@@ -138,6 +310,329 @@ stage closes (rate fails) or only route 8 remains. `K .route8PiecesClassified` s
 - [x] **Node [111] exact:** deterministic `route8GlobalSqueezeRow` only
 - [x] **Exact branch-kill schema:** `Route8Deficit.PieceClassification` is the contrapositive of
   `thm:branch-kill` (a)/(b); no silent-first strengthening
+- [ ] **Classification producer:** `K .route8PiecesClassified` (`thm:branch-kill`). VERIFIED
+  BLOCKED 2026-08-24 against live Lean, not audit cells: no ledger key carries
+  `lem:typeA-exclusion`/`lem:density-mersenne` ([86]) — the vocabulary has no `∀`-piece Type A
+  exclusion fact (all chain facts `[89]`–`[109]` are ∃-selected), and no `∀`-negative-surplus-piece
+  bridge-membership pair (`lem:typeB-postledger-core-hygiene` facts `typeBDisjointLedger`/
+  `typeBExclusionResidual` live at the ∃-selected assigned support). The generic charge theorem
+  `TypeADischarge.unsaturatedDischarge` exists, but the saturated-receiver exit dichotomy at an
+  arbitrary piece (`lem:typeA-saturated-handoff` + standing-invariant refutations of exits
+  (1)–(3),(5),(6)) has no `∀`-piece carrier — the same [116]-shared refutations blocking the
+  entry-census producer. Predecessor to produce at its own label ([86]), not at [123].
+  2026-08-24: key `typeAExclusion` (idx 343) registered at all six vocabulary sites with the
+  paper-exact Holds (the "Consequently" trichotomy of `lem:typeA-exclusion` at every negative
+  zero-surplus canonical piece of the minimal counterexample's maximal-packing remainders);
+  vocabulary builds. Producer row pending on the shared semantic obligations (see chat map).
+  Obligation 3 DONE 2026-08-24: basin selection is total — `Route8.TraceBasin.traceComplete_support`
+  (the selected support is a trace-complete candidate; D1 cut-boundary, D2 crossing-return,
+  D3 window-attachment cut-boundary, D4 internal-wedge cases), the walk-crossing lemmas
+  `exists_cutBoundary_of_walk_{from_inside,from_outside,crossing}`, and
+  `select?_isSome_of_traceTo` / `exists_select?_eq_some_of_mem_routedLoads`
+  (`Route8Residual.lean`, builds). This also discharges the entry-census gate's
+  "select? = some basin up to a D3 window-label cut-boundary lemma" item.
+  Obligation 5 DONE 2026-08-24: the (d)-alternative bridge —
+  `DecoratedHandoff.exists_envelope_of_surviving` (`lem:typeA-high-degree-handoff` concluded
+  from the surviving separator: arms are the germs' connector tails after the separator, high
+  degree from the already-proven `four_le_degree_of_surviving`) and
+  `Route8.TraceBasin.exists_envelope_of_traceSurvivingSeparator` (alternative (d) →
+  decorated envelope with core = support, i.e. the `TraceSurvivingSeparator → HandoffProduced`
+  bridge, with the high-degree conversion and absorbing-clause denial as read hypotheses).
+  Both kernel-checked (`DecoratedHandoffEnvelope.lean`, `TraceBasinAlternatives.lean`).
+  Obligation 4 DONE 2026-08-24 (user ruling: align (b) with realized exit (5)):
+  `TraceResponseQuotient` is now the *realized* admissible compression of
+  `def:admissible-rank-quotient` (nontrivial + target-complete against the basin's own piece +
+  proper connected support + baseline glue + lexicographically smaller), and
+  `TraceTargetCompleteCompression` is exactly `∃ retained` of it — one predicate, exit (5) ≡
+  alternative (b) per `lem:typeA-reduced-silent-residual`; no second path. Refutation lemma
+  `TraceBasin.compressibleSupport_of_traceResponseQuotient` ((b) → `CompressibleSupport basin`,
+  contradicted by `K .uncompressible`). Route8Residual + SpineVocabulary build; probe confirms
+  `typeAExitFiveClosed`'s destructuring still elaborates. LOUD REGRESSION (expected, per the
+  correction): `route8SmallCoreExitRow` ([116], `lem:typeA-one-terminal-collapse`) constructs the
+  (b)-arm with the old 3-conjunct shape (`refine ⟨retained, ?_, ?_, ?_⟩` proving completeness
+  against the full reading only); it must now supply the realization clauses — that repair
+  belongs to [116]'s own label. `typeAExitFiveDichotomy` merely states the predicate and is
+  unaffected; the vocabulary Holds are schemas and elaborate.
+  Obligation 1 DONE 2026-08-24: the Q1 semantic step (`VisibleEntryQuotient.lean`, builds) —
+  `VisibleFourUnpeeledPackage.witnessOfPairTargetDefect` (a target-defective origin pair yields
+  the exit-(4) witness at the pair's own selected visible unpeeled load, via `CanonicalMember.q1`)
+  and `exists_witness_or_pairwise_targetComplete` (`lem:typeA-unpeeled-visible-routing`'s Q1
+  dichotomy after exits (1)-(3): witness, or every origin pair is target-complete — the
+  identification entering exits (5)-(7)). Remaining for the visible lane: discharging the
+  pairwise-target-complete branch through the realized-compression/enlargement/separator
+  machinery (shared with the fact-2 producer). Remaining on the [86] map: obligation 2 only
+  (the Q2 silent-basin analog).
+  Obligation 2 DONE 2026-08-24: the Q2 semantic step (`ExitFourFamily.lean`, builds) —
+  `unpeeledExcess_subset_unpeeledLoads`, `witnessOfExcessTargetDefect` (a target-defective
+  excess basin yields the exit-(4) witness at a residual excess load via `CanonicalMember.q2`),
+  and `exists_witness_or_excess_targetComplete` (`lem:typeA-unpeeled-silent-routing`'s
+  dichotomy: witness, or the basin identification is target-complete — exits (5)-(8)).
+  ALL FIVE [86] OBLIGATIONS ARE NOW CLOSED. Remaining to assemble the `typeAExclusion`
+  producer row: (i) derive the Q2 structural hypotheses at a concrete piece (excess-basin
+  subset/connectivity-through-receiver/properness); (ii) discharge the two target-complete
+  lanes (visible pairwise and silent basin) through the realized-compression (obligation 4),
+  enlargement (exit 6 closures), and separator (obligation 5) machinery; (iii) the factOnly
+  row reading `K .selection`, `K .returnAvoidance`, `K .uncompressible`,
+  `K .replacementExclusion`, `K .typeAReceiverRouting`, `K .cubicBaseline`.
+  Assembly item (i) DONE 2026-08-24: the Q2 structural clauses are theorems
+  (`ExitFourFamily.lean`, builds): `traceSeed_subset_support`, `excessTraceSupport_subset`
+  (receiver + excess loads + trace seeds all inside the support),
+  `excessTraceSupport_proper`, and `excessTraceSupport_connectedOn` (every basin vertex walks
+  to the receiver along its trace or the trace's tail; pairs join through the receiver via
+  `Walk.bypass`). The Q2 dichotomy's hypotheses are now all derivable at a concrete piece from
+  `receiver ∈ piece` and the piece's properness. Remaining: assembly items (ii) target-complete
+  lane discharges and (iii) the producer row.
+  Item (ii.a) DONE 2026-08-24: `ExitFour.germOfReturn` (`ExitFourFamily.lean`, builds) — every
+  receiver-entry return with first entry ≠ receiver is a rooted outside-connector germ
+  (`def:typeA-continuation-classes`' Γ rooted at w); all `RootedGerm` fields read off the
+  return's structure (port adjacency, composite simplicity, connector-outside interior).
+  This is the shared entry point of the continuation machinery for both target-complete lane
+  discharges and the fact-2 producer. Next in (ii): the Separation/SwitchReading construction
+  from two distinct germs (switch support + registered readings + descent), then the lane
+  routing theorems.
+  Item (ii.b1) DONE 2026-08-24 (`DecoratedHandoffEnvelope.lean`, builds): germ-union walks
+  (`RootedGerm.exists_walk_to_receiver`, `receiver_mem_path`, `germUnion_connectedOn`) and the
+  separation constructor `exists_separation_of_ne` (separator + prefix decomposition from the
+  finiteness lemma; readings = the atom's own piece registered against the generated
+  certificate); `exists_envelope_of_highDegree` factored out of the surviving-separator
+  envelope so a cut-boundary (degree ≥ 4) separator produces the envelope without a reading.
+  BLOCKING FORMULA (per `def:target-complete-compression`): at each lane's target-complete
+  identification the paper's exit-(5) event IS the realized `X'` of `lem:replacement`
+  ((i) profile inclusion, (ii) same boundary degrees, (iii) no internal target cycle,
+  (iv) internal min degree 3, (v) strictly smaller); producing that `X'` from the concrete
+  identification is the one step not yet in Lean — consumed identically by the [86] visible
+  and silent lanes, by [116]'s collapse (b)-arm, and by fact 2/fact 4 of [123].
+  Item (ii.c) silent lane DONE 2026-08-24 (all build): `not_traceDelocalization` ((c) refuted
+  through `Delocalization.localize` against replacement exclusion + minimality),
+  `exists_witness_of_traceLocalTargetDefect` ((a) → Q3 exit-(4) witness at ∅),
+  `targetCompleteMinimal_of_refutations`, `not_traceSurvivingSeparator_of_noEnvelope`,
+  `silentExcess_subset_routedLoads`, `exists_witness_or_route8Entry`, and
+  `exists_witness_or_forall_route8Entry` (`lem:typeA-reduced-silent-residual` at the whole
+  silent excess) — all in `TraceBasinAlternatives.lean`. Also DONE:
+  `card_le_scaled_deficiency_of_no_saturated` (`TypeADischarge.lean` — the unsaturated case of
+  `lem:density-mersenne` from zero surplus + total routing) and
+  `visibleFourUnpeeledAt_of_not_silentFirst` (`Route8Deficit.lean` — ¬SilentFirst yields the
+  overloaded-port state at ∅). The [86] trichotomy now assembles for the unsaturated and
+  silent-saturated cases and the visible defect case; the SINGLE remaining branch is the
+  visible pairwise-target-complete case. DEVIATION IDENTIFIED 2026-08-24 (supersedes the
+  BLOCKING FORMULA note): the port never *constructs* quotients or realizations — the framework
+  pattern (Branch D [31]-[45], nodes [130]-[132]) is (i) case classically on the EXISTENCE of a
+  `DeclaredQuotient`/`AttemptedQuotient` (the ∃-side arrives with its representative fields and
+  is discharged by `DeclaredQuotient.localize` + `K .replacementExclusion`/selection minimality —
+  see `blockerSeparation_of_reducing`, `delocalizationScopeDichotomy`, `globalBarrierRow`), and
+  (ii) in the ¬∃ case the coordinates are admissibly distinct and the paper CONSTRUCTS the
+  distinguishing outside context from the actual data — the prepared substrate is
+  `BoundariedResponseWalkAssembly` (AtomOwnedWalk.inPiece / ContextEntryWalk.inContext with
+  length preservation) + `TypeAVisibleResponseCoordinate`/`Assembly` (selectedPieceChannel,
+  selectedContextConnector) + `CommonPortReturnCycle` + `lem:typeA-port-return` (bridgeless
+  ports carry anchored returns) + `lem:typeA-spectral-pressure` band arithmetic. NEXT
+  CONSTRUCTION (the semantic Q1 step, `VisibleEntryQuotient.lean`'s stated purpose): cycles in
+  `glue(reading, context)` assembled from a piece channel + a context connector + the port
+  crossing; evaluate `HasCycleWithLength` on the glued object by length arithmetic; the
+  distinguishing context for an injective (distinct-D1) pair comes from the actual outside's
+  anchored return, making the pair target-defective → Q1 witness; the collision pair dies by
+  the exit-(1)/(2) cycle arithmetic. Then: fact-2 producer (overload → witness at every
+  unified component), [116] `route8SmallCoreExitRow` repair (same calculus: its (b)-arm becomes
+  the ∃-DeclaredQuotient case discharged by localize, or the constructed-defect (a)-arm), and
+  [123] facts 1/3/4/5 assembly on top.
+  Semantic-step units G1/G2 DONE 2026-08-24 (`GluedCrossingCycle.lean`, new module, builds):
+  `pieceHom`/`contextHom` (the two sides map into the gluing),
+  `hasCycleWithLength_glue_of_crossing` (a piece path and a context path between the same two
+  boundary labels close a crossing cycle of the gluing of summed length — interiors disjoint by
+  the glued carrier), the synthetic `pathContext` (a bare path of chosen length `k+1` between
+  two labels, all other labels isolated — the manuscript's compatible outside context), its
+  canonical `PathContext.walk` with support/length/isPath/boundary lemmas, and
+  `hasCycleWithLength_glue_pathContext` (positive direction of the synthetic-context
+  evaluation). NEXT: G3 — the converse cycle classification of `glue piece pathContext`
+  (every accepted cycle is piece-internal or crosses through the whole synthetic path,
+  yielding a piece path of complementary length), then G4 — the spectral separation choosing
+  `k` from the D1 data (`lem:typeA-spectral-pressure`) to produce `Response.TargetDefect` at
+  an injective visible pair, closing `lem:typeA-visible-entry`'s remaining branch, then the
+  fact-2 producer, [116] repair, and [123] facts.
+  G3 DESIGN (for continuation): classify cycles of `glue piece (pathContext first second k)`,
+  k ≥ 1. Case A: the cycle avoids every chain vertex — with k ≥ 1 the synthetic rel owns no
+  boundary-boundary pair, so every edge is piece-owned and the cycle maps into `piece.pack`.
+  Case B: it meets a chain vertex — each chain vertex's glue neighbours are exactly its ≤ 2
+  chain-rel neighbours (PieceOwns impossible at `.inr (.inr _)`; ContextOwns reduces via
+  `fromRel_adj` + `pathContextList` getElem lemmas: [0] = inl first, [j+1] = inr j, [k+1] =
+  inl second), so `rotate` at the chain vertex + trail-ness forces the whole chain as a
+  segment, leaving a piece-side walk `second ⤳ first` of length cycleLen − (k+1). Conclusion
+  `hasCycleWithLength_glue_pathContext_iff`: Target on the glued reading ↔ piece-internal
+  accepted cycle ∨ ∃ piece path first⤳second with length + (k+1) accepted. G4 then chooses k
+  (spectral bands) to separate two readings' path spectra → `Response.TargetDefect` → Q1
+  witness at the injective pair; the collision pair dies by exit-(1)/(2) arithmetic
+  (`hasCycleWithLength_of_commonPortReturns`, `not_shiftedCycleLength_of_returnLengthSets_disjoint`).
+  G3 sub-units DONE 2026-08-24 (`GluedCrossingCycle.lean`, builds): chain index layout
+  (`pathContextList_getElem_zero/succ/last`), `pathContextList_position_unique`,
+  `pathContextRel_chain_iff`, `glue_adj_chain` (a chain vertex's glue neighbourhood is exactly
+  its predecessor/successor), `pathContextRel_mem_chain` (k ≥ 1 → every synthetic relation
+  touches the chain), and `exists_pieceWalk_of_avoids_chain` (a chain-free glued walk lifts to
+  the atom side, length preserved). REMAINING for G3: (g1) `chain_walk_length` — fuel
+  induction: a glued PATH from chain vertex j to `.inl second` avoiding its predecessor has
+  length k − j and chain-only support; (g2) the cycle-arc extraction: rotate the accepted
+  cycle at `.inl first` (both endpoint labels are on it: a met chain vertex propagates both
+  its edges by `glue_adj_chain` + `IsCycle.snd_ne_penultimate` after `rotate`), split by
+  `takeUntil`/`dropUntil`/`take_spec`; the arc through the chain is forced by (g1) to be the
+  whole chain (length k+1), the other arc avoids the chain (interior vertices visited once,
+  `IsCycle.count_support_of_mem`) and lifts by `exists_pieceWalk_of_avoids_chain` to a piece
+  path `second ⤳ first` of length cycleLen − (k+1). Conclusion:
+  `hasCycleWithLength_glue_pathContext_iff`.
+  (g1)+(g2a) DONE 2026-08-24 (`GluedCrossingCycle.lean`, builds): `chain_walk_length` (forced
+  chain traversal, now with the coverage clause: support contains every chain vertex ≥ j),
+  `cycle_neighbours_of_chain` (rotate + snd/penultimate + `glue_adj_chain` force the
+  predecessor/successor pair onto the cycle), `first_label_mem_of_chain_mem`,
+  `second_label_mem_of_chain_mem`, `chain_zero_mem_of_chain_mem`,
+  `endpoint_labels_mem_of_chain_mem`, and the strengthened
+  `exists_pieceWalk_of_avoids_chain` (support-map equation added). NEXT (g2b): `chainArc_of_path`
+  — a glued path `.inl first ⤳ .inl second` through chain-0 splits at chain-0 into a single
+  edge (penultimate ∈ {A, l[2]}, the l[2] case killed by nodup-append disjointness against
+  q2.snd, then `IsPath.getVert_injOn` gives q1.length = 1) and the forced chain (q2 via
+  `chain_walk_length`), so p.length = k+1 and p covers the chain; then the final
+  classification: rotate the cycle at `.inl first`, split at `.inl second` (`take_spec`,
+  `IsCycle.isPath_takeUntil`, `isPath_of_append_right`, `not_nil_of_ne`), the chain-carrying
+  arc is `chainArc_of_path` (applied to p1 or p2.reverse), the other arc avoids the chain
+  (cycle count_support_of_mem + coverage) and lifts via `exists_pieceWalk_of_avoids_chain`.
+  `chainArc_of_path` DONE 2026-08-24 (builds): the split at chain-0 with the single-edge
+  identification (penultimate = first label via nodup-append pairwise-ne + q2.snd upper
+  neighbour; `IsPath.getVert_injOn` closes q1.length = 1) and `chain_walk_length` for the
+  forced chain; conclusion p.length = k+1 + full chain coverage. Lift lemma being extended
+  with the edges-map clause for the chain-free cycle case; then the final classification
+  theorem, then G4.
+  G3 COMPLETE 2026-08-24 (`GluedCrossingCycle.lean`, builds): `cycle_classify` — every cycle
+  of `glue piece (pathContext first second k)` (k ≥ 1) either avoids the chain and lifts to an
+  atom-side cycle of equal length (`exists_pieceCycle_of_avoids_chain`), or crosses it and
+  splits (rotate at the first label, `take_spec` at the second) into the full port path
+  (`chainArc_of_path`) and a piece-side PATH `second ⤳ first` with length + (k+1) = cycle
+  length (one-side via the cycle tail's nodup-append pairwise-ne; lift via the strengthened
+  `exists_pieceWalk_of_avoids_chain`). NEXT: the Target-level iff wrapper
+  (`hasCycleWithLength_glue_pathContext_iff`), then G4 (spectral choice of k → TargetDefect at
+  an injective visible pair), then `lem:typeA-visible-entry` assembly = fact-2 content.
+  Iff wrapper + G4 wrappers DONE 2026-08-24 (builds): `hasCycleWithLength_glue_pathContext_iff`
+  (the synthetic-context evaluation of the cycle target — accepted glued cycle ⟺ atom-side
+  accepted cycle ∨ accepted complementary-length label path), `targetDefect_of_pathContext`,
+  and `targetDefect_of_spectra` (spectral separation form: a left path of accepted
+  complementary length + right internal safety + right spectrum avoidance ⟹
+  `Response.TargetDefect`). (α) DONE 2026-08-24 (`Route8Residual.lean`, builds):
+  `retainedBasinPiece_decode_injective` and `hasCycleWithLength_of_retainedBasinPiece_cycle`
+  (an accepted internal cycle of any retained reading maps through the injective `pieceDecode`
+  hom into the object — right-safety from `K .selection`), plus the walk-transfer pair
+  `pieceEncode`/`pieceDecode_pieceEncode`/`pieceEncode_of_mem_cutBoundary`,
+  `exists_retainedBasinPiece_walk_of_channel`, `exists_retainedBasinPiece_path_of_channel`
+  (a support channel is a path of every retained reading that keeps its vertices, length
+  preserved), `exists_object_path_of_retainedBasinPiece_path` (the converse decode transfer),
+  and `ExitFour.exists_visibleResponsePiece_channelPath` (`ExitFourFamily.lean`: the selected
+  channel is a path of its own visible response piece between the entry and receiver labels).
+  VISIBLE-LANE RESOLUTION 2026-08-24 (supersedes the (β)-spectral-choice step): the ratified
+  selected chain ([101]–[107], `SelectedNoExitSixWith`'s `exitFiveAt`) routes the visible
+  no-witness state PER LOAD through the load's own trace basin — exit (5) is the realized
+  `TraceTargetCompleteCompression` at `select? load`, exit (6) is `TraceDelocalization`, exit
+  (7) the envelope — identically to the silent lane; no pair-response spectral separation is
+  required for the exhaustiveness of `lem:typeA-unpeeled-visible-routing` at the collection
+  (`rem:unified-covers-exit4` keeps target-defect supports in `X̃`, and the chain's
+  `typeAExitSevenFree` arm admits route-8 residual entries reached from the visible branch).
+  DONE 2026-08-24: `VisibleFourUnpeeledPackage.exists_witness_or_forall_route8Entry`
+  (`VisibleEntryQuotient.lean`, builds) — for an overloaded port at any peeling: an exit-(4)
+  witness at a selected visible unpeeled load, or every selected visible unpeeled load is a
+  `Route8Entry`; per-load routing via `TraceBasin.exists_witness_or_route8Entry` with the
+  ∅-witness repackaged at the current peeling. REMAINING: reconcile the two unproduced Holds
+  (`typeAExclusion` idx 343 arm 2's `SilentFirst` conjunct; `route8VisibleExitFourRouting`
+  idx 338's unconditional per-port witness) with this ratified dichotomy — the chain admits
+  visible route-8 entries, so both Holds and the descent row's visible-peel step must carry
+  the witness-or-route8 dichotomy — then the [86] row, [116]'s repair, and [123]'s facts.
+  [86] PRODUCER DONE 2026-08-24: `K .typeAExclusion`'s Holds arm 2 repaired (the `SilentFirst`
+  gate is deleted; the residual arm now states, per saturated receiver, route-8 entries for
+  the silent excess AND for the selected visible unpeeled loads of every overloaded port at
+  ∅ — `rem:unified-covers-exit4`'s collection, with the paper's trichotomy sentence intact;
+  vocabulary builds, 8730 jobs), and `typeAExclusionRow` is written (`SpineRows.lean`, before
+  the descent row): a `factOnly` row reading `K .selection`, `K .uncompressible`,
+  `K .replacementExclusion`, `K .cubicBaseline`; witness arm and handoff arm by classical
+  case; the residual arm inlines the per-load routing
+  (`TraceBasin.exists_witness_or_route8Entry`) with the surviving-separator case discharged
+  through `exists_envelope_of_traceSurvivingSeparator` (high-degree conversion from the cubic
+  baseline; the label-collision absorbing clause denied by
+  `hasCycleWithLength_of_labelCollision` against target avoidance and
+  `degenerateClosureRejected`). The row elaborates with zero errors in its region (the file's
+  remaining errors are the user's WIP block at 3279–4247 and the known [116]
+  `route8SmallCoreExitRow` (b)-arm regression).
+  DEVIATION FOUND AND REVERTED 2026-08-24 (supersedes the blocking-formula note above): the
+  block was not the paper's — it was this session's collapse of the two (b)-predicates into
+  one ("one predicate, exit (5) ≡ alternative (b), no second path").  `git show HEAD` recovers
+  the ratified two-predicate architecture, and `def:typeA-trace-basin` (b) verbatim is the
+  *plain* nontrivial target-complete response quotient, with the realized case a subcase
+  remark: `TraceTargetCompleteCompression` is the realized exit-(5) datum (TC against the
+  basin piece + proper + baseline glue + lexicographically smaller), cased at the [103]
+  decision and closed at [104] against `K .uncompressible`; `TraceResponseQuotient` is the
+  plain (b)-quotient (retained reading vs the full declared reading), proven by [116]'s
+  parity argument and negated in `TargetCompleteMinimal`.  Plain (b) is CASED on the branch,
+  never refuted from the invariants.  Executed: the (b)-block of `Route8Residual.lean` is
+  reverted to HEAD verbatim and the session's `compressibleSupport_of_traceResponseQuotient`
+  is deleted; `targetCompleteMinimal_of_refutations` / `exists_witness_or_route8Entry` /
+  both `exists_witness_or_forall_route8Entry` versions now take the cased `noQuotient`
+  hypothesis (conditional on `select?`) instead of refuting (b) via uncompressibility;
+  `K .typeAExclusion`'s arm 2 is the paper's per-load conclusion of
+  `lem:typeA-reduced-silent-residual` — `Route8Entry ∨` the exit-(5) plain quotient at the
+  selected basin — and `typeAExclusionRow` cases it classically (the `K .uncompressible`
+  read is dropped from its manifest).  RESULT: full `SpineRows.lean` elaboration now reports
+  ONLY the user's WIP-block errors (3279–4247); the [116] `route8SmallCoreExitRow` errors are
+  gone — its original proof type-checks against the restored plain (b).  [116] IS REPAIRED.
+  The fact-2 producer question dissolves the same way: the visible no-witness state is the
+  cased per-load dichotomy, not an unconditional-witness obligation.
+  FACT-2 PRODUCER DONE 2026-08-24: `K .route8VisibleExitFourRouting`'s Holds is repaired to
+  `lem:typeA-unpeeled-visible-routing`'s collection form — per overloaded port, the exit-(4)
+  witness at the current peeling OR, per selected visible unpeeled load, `Route8Entry ∨` the
+  exit-(5) plain quotient at the selected basin — and `route8VisibleRoutingRow` is written
+  (`SpineRows.lean`, before the descent row; Requires `K .selection`,
+  `K .replacementExclusion`, `K .cubicBaseline`), mirroring `typeAExclusionRow`: witness arm
+  classical, exit (7) refuted by the collection's own `¬ HandoffProduced` filter membership,
+  per-load routing with the ∅-witness repackaged at `peeled`.  Vocabulary builds (8730 jobs);
+  the row elaborates with zero errors.  Assembly.lean consumes the key only as a
+  `FactKeys.Has` wiring instance, so it is untouched.
+  FIRST DOWNSTREAM FAILURE (the descent row, `route8PeelingDescentRow`, one open goal at its
+  `case pos.inr`): its overloaded branch now splits on the dichotomy; the witness arm
+  compiles through the entire peel machinery unchanged; the settled arm — an overloaded port
+  whose selected visible unpeeled loads are all route-8/quotient states — must still produce
+  `∃ final, StageOutcome …` under `StageRate`.  No peel is available (peels need a witness)
+  and `TrueEntryAt` ranges over `route8UnifiedEntries`, the SILENT census, which does not
+  index the settled loads.  The repair is the census/burden label of [123], not fact 2's:
+  count unpaid visible route-8 loads as indexed entries — justified by the
+  silence-independent core inequality `Σ_w (L(w) − c(w)) ≥ 4·D_A(X)` of
+  `lem:typeA-silent-excess-count` (silence is used there only to place unpaid loads, never in
+  the count) and by `rem:unified-covers-exit4` ("the two are not distinguished at the level
+  of net charge").  That change ripples through `Route8Census.entriesOfComponents`,
+  `stage_burden`, and every Holds schema quantifying `silentExcess`-based entries
+  (`Route8UnifiedNegative`, the entry census, [116]'s collapse), so it is its own label.
+  CENSUS/BURDEN LABEL DONE 2026-08-24 (all kernel-checked; the full `SpineRows.lean`
+  elaboration again reports ONLY the user's WIP-block errors):
+  - `VisibleReceiverEntry.lean`: the silence-free reduced count —
+    `one_add_routedLoad_le_excessBasinReduced` (`1 + L ≤ |E^{P₄}| + |P₄∩ℒ| + s·q`, NO port
+    hypothesis: the manuscript's displayed count never uses silence),
+    `card_le_sum_excessBasinReduced_add_positiveDeficiency`, `excessBasinReduced_subset`
+    (`E^{P₄} ⊆ E ∖ P₄`), and `silentExcess_eq_excessBasin` (`𝒰(w) = E(w)` under the port
+    bound — `lem:typeA-silent-excess-count`'s own "every unpaid routed vertex is silent").
+    The dead silent-reduced machinery is DELETED (no compatibility path).
+  - `Route8Census.lean`: `entries`/`entriesOfComponents` index the excess basin `E(w)`
+    (`def:typeA-excess-basin`; the paper's `𝒰(w)` on silent-first pieces;
+    `rem:unified-covers-exit4` for the unified collection).
+  - `Route8Pressure.lean`: `stage_burden` DROPS `reducedPorts` (silence-free at every
+    stage); `sum_excessBasin_sdiff_le_card_peeledEntries`; `PeelChain.visible` and
+    `visibleLoadIndices` DELETED — every peel is a two-carrier target-defect entry
+    (`PeelChain.cons`), exactly `thm:large-budget-route8-only`'s procedure.
+  - `Route8Deficit.lean`: `excessMass`/`card_entries`/`sum_excessMass` over `E(w)`;
+    `card_piece_le` converts through `𝒰 = E` under `SilentClassification`.
+  - `route8PeelingDescentRow` REWRITTEN to the paper's procedure verbatim: rate? no →
+    failed stage; yes → silence-free burden → `exists_twoCarrierEntry_staged` → defect?
+    peel (`PeelChain.cons`, measure `|Ξ̃ ∖ chain|`) : true-entry survivor.  The
+    visible-peel superstructure and the `K .route8VisibleExitFourRouting` read are REMOVED
+    from the row (the fact stays produced at its own label for the [123] classification;
+    Assembly's `FactKeys.Has` binder is unaffected).  THE SETTLED-ARM OBLIGATION IS GONE:
+    unpaid visible route-8/quotient loads are census entries and the burden covers them.
+  - Census-consumer rows repaired at their own labels: `route8CensusRow` (excess-stated
+    `entryCount` + the `𝒰 = E` bridge under `Route8Survives`' silent-first),
+    `route8TrueTwoCarrierEntryRow` and `route8TerminalNoGoRow` (excess `indexSpec` + the
+    per-receiver conversion feeding the unchanged silent-quantified `[114]`/`[115]`
+    Holds), and the two deletion-witness `loadRouted` derivations (one unwrap:
+    `mem_entries` now yields `E(w)`-membership directly).
+
 - [x] **Staged burden proven:** `Route8Pressure.stage_burden`, no flat burden assumed
 - [x] **Every peel recorded:** the descent's chain is ledger data; `StageRate` charges every
   recorded peel; visible peels carry their exit-(4) witnesses
@@ -150,13 +645,13 @@ stage closes (rate fails) or only route 8 remains. `K .route8PiecesClassified` s
   overloaded port among unpeeled loads yields an exit-(4) witness at the current peeling whose
   load is one of its visible unpeeled returns); the descent row consumes it directly and is
   kernel-checked against it. The producer's exits-(1)/(2)/(3) arms use existing closures; the
-  shared **response-realization theorem is now delivered**
-  (`Graph/ResponseRealization.lean`: `declaredState` with registered profiles,
-  `canonicalDeclaredState` with baseline inheritance and the descent ⟺ strict-shrinkage
-  equivalence, `separationOfDeclared`/`switchReadingOfDeclared` for the germ schedule; builds
-  green, not yet imported by consumers). The (5)/(6)/(7) arms need only its per-branch
-  `shrinks` strictness witness (`def:proper-quotient-representative`, part of the exit's
-  defining data) wired at the exit sites.
+  (5)/(6)/(7) arms are the manuscript's own machinery and nothing else:
+  `def:proper-quotient-representative` (the canonical realization already carried by
+  `Graph/CanonicalRealization.lean`), `def:typeA-continuation-classes` (the switch support and
+  its readings), and `lem:typeA-internal-quotient-mixed`; the realized-compression datum of
+  exit (5) carries its own strictly-smaller clause as part of the exit's defining data. No
+  auxiliary "realization theorem" is introduced (a previously drafted unimported module to that
+  effect was deleted).
 - [ ] **Unified-deficit producer:** `K .route8UnifiedDeficit`. **`lem:decorated-envelope-deficit-bound`
   is now proven** (`TypeBEnvelopeCharge.lean`: `decoratedEnvelopeDeficitBound`,
   `envelopeFamilyNegativePart_le`, `envelopeFamilyNegativePart_le_degreeSurplus`, with the
@@ -203,8 +698,12 @@ a single-label sealed row on the literal incoming ledger: (1) `route8VisibleExit
 `route8UnifiedDeficit` (three cases done in theorems; handoff cores need the hygiene facts
 `lem:typeB-postledger-core-hygiene`/`lem:typeA-receiver-loads`/`lem:typeA-unsaturated-discharge`
 and the `def:typeB-assigned-ledger` coverage packaged as ledger facts); (3)
-`route8UnifiedEntryCensus` (locally provable parts + the [116]-shared standing-invariant
-refutations, now unblocked in principle by `ResponseRealization`); (4)
+`route8UnifiedEntryCensus` — its refutation clauses are LEDGER READS, not new theorems:
+¬(b) from `K .uncompressible` (a realized compression is `CompressibleSupport` at the basin),
+¬(c) from `Delocalization.localize` against `K .replacementExclusion`/`K .selection`, ¬(d) from
+`envelopeOfSeparation` against the collection's own `¬ HandoffProduced` filter; the standing
+invariants are committed on the trunk far upstream of [123], so the row simply Requires them;
+(4)
 `selectedRouteEightStageClosure` (`route8PiecesClassified` producer + branch-carried
 `netDeficiencyCap` + the failed-stage arithmetic).
 
@@ -313,6 +812,161 @@ listed paper-fact row from the compiled term, run the table/API checks, and remo
 only when all seven boxes are checked. A later compiler failure is recorded as downstream unless
 that later node has its own independently failing audit row.
 
+### Node [154] — bounded configuration case?
+
+**Exact manuscript diagram output.** bounded configuration case?
+
+**Manuscript rows.** Label set **L25** (paper page(s): 111, 112, 113, 114, 115, 116, 117, 118, 120); its complete label
+list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
+table; their exact environments supply the inherited quantifiers and hypotheses.
+
+**Current Lean owner.** `selectedColdGermTrichotomy` (Assembly.lean:1072); `coldGermTrichotomyRow` (ColdCorridorRows.lean:630)
+
+**Current combinator / shared continuation.** terminal closure, AtomicCT.run row, Decision.run; selectedAbsorbedGermResidual, selectedColdGermTrichotomy, selectedNearCubicBranch.
+
+**Primary defect class.** fact proved detached from the literal active residual.
+
+**Fresh audit diagnosis.** ✅ FAITHFUL-TRIVIAL — The manuscript's exhaustiveness argument is “G3 is the complement”, asserted in one sentence with no supporting work. Requires only `K .selection` and `K .uncompressible`; nothing ties it to the [153] extracted family.
+
+**What must be implemented or corrected.**
+
+- Tie the bounded-configuration trichotomy to the family extracted at [153]; the current object-wide complement must not be provable without that active residual fact.
+- Prove the node value inside the atomic executor from `inputs.current` and semantic-key reads
+  through `inputs.get`; eliminate an ignored object argument, detached universal proof, or
+  requirement not tied to the literal incoming residual.
+
+**Live gate checklist.**
+
+- [x] **Implemented / reachable:** pass
+- [x] **Correctly wired:** pass
+- [ ] **Residual-local proof:** partial: PARTIAL
+- [x] **Correct ledger registration:** pass
+- [x] **No illegal carrier/API:** None found
+- [x] **Exact manuscript proof:** pass: FAITHFUL-TRIVIAL
+- [x] **Independent kernel check:** pass: YES
+
+**Exit criterion.** Reinspect the declaration body and call site, update this node row and every
+listed paper-fact row from the compiled term, run the table/API checks, and remove this section
+only when all seven boxes are checked. A later compiler failure is recorded as downstream unless
+that later node has its own independently failing audit row.
+
+### Node [156] — G2: target defect, exit (4), or handoff
+
+**Exact manuscript diagram output.** G2: target defect, exit (4), or handoff
+
+**Manuscript rows.** Label set **L25** (paper page(s): 111, 112, 113, 114, 115, 116, 117, 118, 120); its complete label
+list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
+table; their exact environments supply the inherited quantifiers and hypotheses.
+
+**Current Lean owner.** `coldGermTrichotomyRow` (ColdCorridorRows.lean:630), keys `.coldGermDistinguished`, `.coldGermRouted`
+
+**Current combinator / shared continuation.** terminal closure, AtomicCT.run row, Decision.run; selectedAbsorbedGermResidual, selectedColdGermTrichotomy, selectedNearCubicBranch.
+
+**Primary defect class.** fact proved detached from the literal active residual.
+
+**Fresh audit diagnosis.** ✅ FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. “Exit (4), or handoff” is the name of the ledger the defect lands in, already excluded by `def:surviving-cold-branch`. The sign guard matches the manuscript's own orientation convention and is what the G3 descent needs. Vacuously true on everything the branch constructs. “exit (4), or handoff” has no formal counterpart.
+
+**What must be implemented or corrected.**
+
+- State and publish the formal exit-(4)-or-handoff conclusion rather than relying on a ledger name, and connect it to the G2 distinguished germ on the active family.
+- Prove the node value inside the atomic executor from `inputs.current` and semantic-key reads
+  through `inputs.get`; eliminate an ignored object argument, detached universal proof, or
+  requirement not tied to the literal incoming residual.
+
+**Live gate checklist.**
+
+- [x] **Implemented / reachable:** pass
+- [x] **Correctly wired:** pass
+- [ ] **Residual-local proof:** partial: PARTIAL
+- [x] **Correct ledger registration:** pass
+- [x] **No illegal carrier/API:** None found
+- [x] **Exact manuscript proof:** pass: FAITHFUL
+- [x] **Independent kernel check:** pass: YES
+
+**Exit criterion.** Reinspect the declaration body and call site, update this node row and every
+listed paper-fact row from the compiled term, run the table/API checks, and remove this section
+only when all seven boxes are checked. A later compiler failure is recorded as downstream unless
+that later node has its own independently failing audit row.
+
+### Node [157] — G3 or same-interface table: compression
+
+**Exact manuscript diagram output.** G3 or same-interface table: compression
+
+**Manuscript rows.** Label set **L25** (paper page(s): 111, 112, 113, 114, 115, 116, 117, 118, 120); its complete label
+list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
+table; their exact environments supply the inherited quantifiers and hypotheses.
+
+**Current Lean owner.** `selectedColdSameInterfaceTable` (Assembly.lean:1100); `coldSameInterfaceTableRow` (ColdCorridorRows.lean:694)
+
+**Current combinator / shared continuation.** terminal closure, AtomicCT.run row, Decision.run; selectedAbsorbedGermResidual, selectedColdSameInterfaceTable, selectedNearCubicBranch.
+
+**Primary defect class.** fact proved detached from the literal active residual.
+
+**Fresh audit diagnosis.** ✅ FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. “Nothing constructs a `TableRow`” is the manuscript's shape too — the paper never exhibits a row; the working lemma is “every row is routed” and the consumer negates existentials. `admissible` is `def:admissible-rank-quotient`, cited as a definition at exactly this point. Two of five conjuncts are trivial: `tableBound = Fintype.card Record` is `rfl`, and `row.increment = 0` is immediate from the `equalLength` field.
+
+**What must be implemented or corrected.**
+
+- Retain the manuscript's universal routing form, but instantiate it on the active same-interface family and remove any requirements that are only asserted by the row's data structure.
+- Prove the node value inside the atomic executor from `inputs.current` and semantic-key reads
+  through `inputs.get`; eliminate an ignored object argument, detached universal proof, or
+  requirement not tied to the literal incoming residual.
+
+**Live gate checklist.**
+
+- [x] **Implemented / reachable:** pass
+- [x] **Correctly wired:** pass
+- [ ] **Residual-local proof:** partial: PARTIAL
+- [x] **Correct ledger registration:** pass
+- [x] **No illegal carrier/API:** None found
+- [x] **Exact manuscript proof:** pass: FAITHFUL
+- [x] **Independent kernel check:** pass: YES
+
+**Exit criterion.** Reinspect the declaration body and call site, update this node row and every
+listed paper-fact row from the compiled term, run the table/API checks, and remove this section
+only when all seven boxes are checked. A later compiler failure is recorded as downstream unless
+that later node has its own independently failing audit row.
+
+### Node [159] — dense-packing residual: the no-edge of [158]; \(2^{c_{13}p_{13}\log_2 n}\) exceeds the labelled skeleton class, i.e.\ \(\theta>\theta_{\rm win}\)
+
+**Exact manuscript diagram output.** dense-packing residual: the no-edge of [158]; \(2^{c_{13}p_{13}\log_2 n}\) exceeds the labelled skeleton class, i.e.\ \(\theta>\theta_{\rm win}\)
+
+**Manuscript rows.** Label set **L26** (paper page(s): 121, 122, 123); its complete label
+list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
+table; their exact environments supply the inherited quantifiers and hypotheses.
+
+**Current Lean owner.** `denseOrJointCodeOverflow` (BlockedCompressionRows.lean:64); `blockedClassCompressionCloses` (:101)
+
+**Current combinator / shared continuation.** terminal closure; selectedScaleAdditivityDichotomy.
+
+**Primary defect class.** mathematical statement weakened or replaced by a surrogate.
+
+**Fresh audit diagnosis.** ⚠ WEAKER — The manuscript's single display is recovered only as the left disjunct; `K .windowPackageUnrealized` bundles two manuscript statements. Assembly.lean:3504 admits this in-source.
+
+**What must be implemented or corrected.**
+
+- Split `.windowPackageUnrealized` into the manuscript's realization failure and retained-code statements. Publish the exact skeleton-count overflow here and remove `selectedDenseJointCodeOverflow`.
+- Follow the cited manuscript proof and replace the current weaker, divergent, or bookkeeping
+  schema with the exact displayed proposition and alternatives. Preserve their order and scope.
+- Run the repaired owner on the literal typed predecessor, select the correct `Decision` arm,
+  and pass its exact output ledger forward without reconstructing a cursor or merging siblings.
+- Build the narrow owner and an independent branch probe. The node is not green while its
+  producer or composed arm reaches any undefined frontier name shown in the kernel cell below.
+
+**Live gate checklist.**
+
+- [x] **Implemented / reachable:** pass
+- [ ] **Correctly wired:** fail: NO: `selectedDenseJointCodeOverflow`
+- [x] **Residual-local proof:** pass
+- [x] **Correct ledger registration:** pass
+- [x] **No illegal carrier/API:** None found
+- [ ] **Exact manuscript proof:** partial: WEAKER
+- [ ] **Independent kernel check:** fail: NO: `selectedDenseJointCodeOverflow`
+
+**Exit criterion.** Reinspect the declaration body and call site, update this node row and every
+listed paper-fact row from the compiled term, run the table/API checks, and remove this section
+only when all seven boxes are checked. A later compiler failure is recorded as downstream unless
+that later node has its own independently failing audit row.
+
 ### Node [162] — dense hot/cold pass: run [22]--[24] and [145]--[157] on the dense residual; [23], [149], [155], [156], [157] close as before; bounded arm of [153] and [146]/[160] arms return to [25]
 
 **Exact manuscript diagram output.** dense hot/cold pass: run [22]--[24] and [145]--[157] on the dense residual; [23], [149], [155], [156], [157] close as before; bounded arm of [153] and [146]/[160] arms return to [25]
@@ -349,6 +1003,46 @@ table; their exact environments supply the inherited quantifiers and hypotheses.
 - [x] **No illegal carrier/API:** pass for the shared [22] substep: the duplicate inline decision and extra variable-edge-budget fact are removed
 - [x] **Exact manuscript proof:** pass: FAITHFUL
 - [ ] **Independent kernel check:** fail: NO: `selectedDenseSameSizeCanonicalSwap`, `selectedDenseJointCodeOverflow`, `selectedBarrierOverlapSerialSystem`
+
+**Exit criterion.** Reinspect the declaration body and call site, update this node row and every
+listed paper-fact row from the compiled term, run the table/API checks, and remove this section
+only when all seven boxes are checked. A later compiler failure is recorded as downstream unless
+that later node has its own independently failing audit row.
+
+### Node [163] — neutral equal-length terminal configuration: second strand graph-realized?
+
+**Exact manuscript diagram output.** neutral equal-length terminal configuration: second strand graph-realized?
+
+**Manuscript rows.** Label set **L26** (paper page(s): 121, 122, 123); its complete label
+list is in Appendix A. The corresponding live row cells are in the paper-fact implementation
+table; their exact environments supply the inherited quantifiers and hypotheses.
+
+**Current Lean owner.** `neutralGermSymmetryDichotomy` (ColdCorridorRows.lean:800)
+
+**Current combinator / shared continuation.** terminal closure, AtomicCT.run row, Decision.run; selectedAbsorbedGermResidual, selectedNearCubicBranch.
+
+**Primary defect class.** wrong mathematical branch test or proof strategy.
+
+**Fresh audit diagnosis.** ⚠ DIVERGENT — Lean splits by the canonical order `Precedes`; the graph-realizability of the second strand — the literal diagram question — is never tested, and the `.inr` arm is [166]/[169], not [167]. `germ.Neutral` is the trichotomy's G3, missing `def:neutral-equal-length-germ`'s `increment = 0`; `LengthChanging` exists and is unused.
+
+**What must be implemented or corrected.**
+
+- Decide graph-realizability of the second strand exactly as drawn, require the neutral germ's `increment = 0`, and route the no/yes arms to [165]–[166] and [167] respectively. Canonical order is not the branch test.
+- Follow the cited manuscript proof and replace the current weaker, divergent, or bookkeeping
+  schema with the exact displayed proposition and alternatives. Preserve their order and scope.
+- Give the owner a literal nonempty `FactManifest`; consume every declared requirement, return
+  exactly `Produces`, and commit with `AtomicCT.run`. Remove unused requirements and every
+  custom wrapper/carrier on this path without deleting valid mathematical content.
+
+**Live gate checklist.**
+
+- [x] **Implemented / reachable:** pass
+- [x] **Correctly wired:** pass
+- [x] **Residual-local proof:** pass
+- [ ] **Correct ledger registration:** partial: `_structure` bound and discarded
+- [ ] **No illegal carrier/API:** partial: `_structure` bound and discarded
+- [ ] **Exact manuscript proof:** partial: DIVERGENT
+- [x] **Independent kernel check:** pass: YES
 
 **Exit criterion.** Reinspect the declaration body and call site, update this node row and every
 listed paper-fact row from the compiled term, run the table/API checks, and remove this section
@@ -963,6 +1657,10 @@ rows in its set that the repaired fact changes.
 ### L17 — node(s) [123]
 
 `cor:typeA-large-budget-closure-open-pressure`, `def:typeA-actual-profile-pressure-defects`, `def:typeA-carrier-deletion-witness`, `def:typeA-exit4-family`, `def:typeA-exit4-pressure-token`, `def:typeA-large-budget-deficit`, `def:typeA-open-window-blocker`, `def:typeA-peeling-reduced-ledger`, `def:typeA-pressure-absorbers`, `def:typeA-pressure-ledger`, `def:typeA-primitive-window-overload-excess`, `def:typeA-recorded-window-shadow-hit`, `def:typeA-route8-carriers`, `def:typeA-same-window-open-blocker-cap`, `def:typeA-same-window-overload-triple`, `def:typeA-terminal-two-carrier`, `def:typeA-true-route8-residual`, `def:typeA-two-terminal-pressure-records`, `def:typeA-unified-entries`, `def:typeA-unified-negative`, `def:typeA-window-attachment-shadow`, `def:typeA-zero-shadow-primitive-excess`, `def:typeB-assigned-ledger`, `lem:app-dense-window-closure`, `lem:app-global-smearing-closure`, `lem:app-typeA-quiet-bound`, `lem:typeA-carrier-cut-parity`, `lem:typeA-carrier-deletion-exit`, `lem:typeA-deletion-witness-declared`, `lem:typeA-essential-deletion-witness`, `lem:typeA-exit4-finite-descent`, `lem:typeA-final-open-pressure-exhaustion`, `lem:typeA-internal-quotient-mixed`, `lem:typeA-one-terminal-collapse`, `lem:typeA-open-pressure-zero-shadow-excess`, `lem:typeA-open-window-blocker-count`, `lem:typeA-peeling-reduced-reduction`, `lem:typeA-pressure-absorber-no-overcount`, `lem:typeA-pressure-defect-split`, `lem:typeA-pressure-is-exit4-peel`, `lem:typeA-pressure-ledger-no-overcount`, `lem:typeA-pressure-records-canonical`, `lem:typeA-pressure-token-two-carriers`, `lem:typeA-primitive-excess-zero-shadow`, `lem:typeA-profile-pressure-dependence-routing`, `lem:typeA-route8-burden`, `lem:typeA-routed-overload-not-open`, `lem:typeA-same-window-cap-overload-excess`, `lem:typeA-singleton-shadow-table`, `lem:typeA-two-carrier-deletion-canonical`, `lem:typeA-unified-burden`, `lem:typeA-unified-carriers`, `lem:typeA-unified-deficit`, `lem:typeA-window-blocker-accounting-audit`, `lem:typeA-window-blocker-numerics`, `lem:typeA-window-shadow-hit-routes`, `prop:typeA-exit4-closure-from-open-pressure`, `prop:typeA-exit4-closure-from-window-blockers`, `prop:typeA-exit4-closure-from-zero-shadow`, `prop:typeA-external-pressure-criterion`, `prop:typeA-external-pressure-reduction`, `prop:typeA-route8-carrier-reduction`, `prop:typeA-route8-closure-from-nogo`, `prop:typeA-unified-reduction`, `thm:large-budget-route8-only`, `thm:typeA-two-carrier-nogo`.
+
+### L18 — node(s) [129]
+
+`cor:sparse-pair-entropy-saturation`, `def:active-surplus-demands`, `def:baseline-spine-demand`, `def:named-surplus-exits`, `lem:sparse-excess-port-extraction`, `lem:sparse-port-activation`, `lem:surviving-active-family`, `prop:sparse-pair-independence-dichotomy`.
 
 ### L24 — node(s) [144]
 

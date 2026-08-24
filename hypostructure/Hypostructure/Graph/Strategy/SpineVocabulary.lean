@@ -731,6 +731,12 @@ inductive Key where
   Type A support, in the exact integral form
   `|V(X)| ≤ s * def⁺(X)`. -/
   | typeAUnsaturatedDischarge
+  /-- Node `[86]`, `lem:typeA-exclusion` (via `lem:density-mersenne`), at the
+  minimal counterexample: every negative zero-surplus canonical piece of a
+  maximal packing's remainder carries an exit-`(4)` witness for a routed load,
+  an admissible silent-core residual profile, or a produced decorated Type B
+  handoff. -/
+  | typeAExclusion
   /-- Nodes `[89]`, `[93]`, `[94]`, `[109]`, `lem:typeA-port-return`: every
   completion port of the selected object carries at least one anchored return.
   `lem:bridgeless` says the port edge is on a cycle, and deleting it from that
@@ -5562,6 +5568,59 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             piece.card ≤
               data.dischargeScale *
                 object.positiveDeficiency piece data.threshold)
+  | .typeAExclusion, object =>
+      -- Node `[86]`, `lem:typeA-exclusion` via `lem:density-mersenne`, stated
+      -- at the minimal counterexample the branch carries, over the canonical
+      -- pieces of its own maximal-packing remainders: a negative zero-surplus
+      -- piece leaves through the target-defect exit, the silent-core residual
+      -- profile, or the decorated handoff.  The three alternatives are the
+      -- exact instantiations `K .route8PiecesClassified`'s zero-surplus arm
+      -- consumes.
+      (∀ packing : Finset (Finset object.Vertex),
+        object.IsWindowPacking data.windowOrder packing →
+        (∀ window : Finset object.Vertex,
+          object.InducesWindow data.windowOrder window →
+          ∃ member ∈ packing, ¬ Disjoint window member) →
+        ∀ component ∈ object.canonicalPieces (object.remainderSupport packing),
+          let piece := object.pieceSupport
+            (object.remainderSupport packing) component
+          object.NegativeNetCharge piece data.threshold data.dischargeScale →
+          object.ambientSurplus piece data.threshold = 0 →
+          ((∃ receiver : object.Vertex,
+              object.IsReceiver piece data.threshold receiver ∧
+                Nonempty (Graph.ExitFour.Witness
+                  (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+                  data.dischargeScale receiver ∅)) ∨
+            (∀ receiver ∈ Graph.VisibleEntry.saturatedReceivers object piece
+                  data.threshold data.dischargeScale,
+                (∀ load ∈ Graph.VisibleEntry.silentExcess object piece
+                    data.threshold data.dischargeScale receiver,
+                  Graph.Route8.TraceBasin.Route8Entry object piece
+                    data.threshold data.LengthOK receiver load ∨
+                    ∃ basin : Finset object.Vertex,
+                      Graph.Route8.TraceBasin.select? object piece
+                          data.threshold receiver load = some basin ∧
+                        ∃ retained,
+                          Graph.Route8.TraceBasin.TraceResponseQuotient object
+                            piece data.threshold data.LengthOK receiver load
+                            basin retained) ∧
+                ∀ outside ∈ Graph.VisibleEntry.completionPorts object piece
+                    receiver,
+                  data.dischargeScale ≤
+                    (Graph.VisibleEntry.visibleLoadsAt object piece
+                      data.threshold receiver outside).card →
+                  ∀ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
+                      data.threshold data.dischargeScale receiver outside ∅,
+                    Graph.Route8.TraceBasin.Route8Entry object piece
+                      data.threshold data.LengthOK receiver load ∨
+                      ∃ basin : Finset object.Vertex,
+                        Graph.Route8.TraceBasin.select? object piece
+                            data.threshold receiver load = some basin ∧
+                          ∃ retained,
+                            Graph.Route8.TraceBasin.TraceResponseQuotient object
+                              piece data.threshold data.LengthOK receiver load
+                              basin retained) ∨
+            HandoffProduced data object packing piece))
   | .typeAPortReturn, object =>
       -- `lem:typeA-port-return`, on the selected saturated Type A support
       -- carried by the literal incoming residual: every completion port of
@@ -6687,14 +6746,17 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             index.1 data.threshold data.dischargeScale index.2.1 ∅,
           witness.load = index.2.2
   | .route8VisibleExitFourRouting, object =>
-      -- `lem:typeA-unpeeled-visible-routing` / `lem:typeA-visible-entry` at the
-      -- unified collection, discharged through the standing invariants and
-      -- `rem:unified-covers-exit4`: a completion port of a receiver of a
-      -- collection piece that carries `s` visible receiver-entry returns among
-      -- its unpeeled loads yields an exit-`(4)` witness at the current peeling
-      -- whose load is one of those visible unpeeled loads.  The witness is per
-      -- port, not per load: the manuscript selects one of the overloaded
-      -- port's returns.
+      -- `lem:typeA-unpeeled-visible-routing` at the unified collection,
+      -- discharged through the standing invariants and
+      -- `rem:unified-covers-exit4`: an overloaded completion port among the
+      -- unpeeled loads realizes the exit list, with exits `(1)`--`(3)` and
+      -- `(6)` closed by the standing invariants and exit `(7)` excluded by
+      -- the collection's own no-handoff filter.  What remains is exit `(4)` —
+      -- a witness at the current peeling whose load is one of the port's
+      -- visible unpeeled loads — or, per selected visible unpeeled load, the
+      -- trace-basin outcome of `lem:typeA-reduced-silent-residual`: a route-8
+      -- entry, or the exit-`(5)` response quotient at the selected basin
+      -- (cased on the branch, never refuted from the invariants).
       letI : DecidableEq object.Vertex := object.vertices.decEq
       (∀ component ∈ route8UnifiedComponents data object,
         ∀ receiver ∈ object.receivers
@@ -6720,7 +6782,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                         (canonicalWindowPacking data object))
                       component)
                     data.threshold receiver outside) \ peeled).card →
-              ∃ witness : Graph.ExitFour.Witness
+              (∃ witness : Graph.ExitFour.Witness
                   (Graph.HasCycleWithLength data.LengthOK)
                   (object.pieceSupport
                     (object.remainderSupport (canonicalWindowPacking data object))
@@ -6732,7 +6794,34 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                       (object.remainderSupport
                         (canonicalWindowPacking data object))
                       component)
-                    data.threshold receiver outside) \ peeled)
+                    data.threshold receiver outside) \ peeled) ∨
+                ∀ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
+                    (object.pieceSupport
+                      (object.remainderSupport
+                        (canonicalWindowPacking data object))
+                      component)
+                    data.threshold data.dischargeScale receiver outside peeled,
+                  Graph.Route8.TraceBasin.Route8Entry object
+                      (object.pieceSupport
+                        (object.remainderSupport
+                          (canonicalWindowPacking data object))
+                        component)
+                      data.threshold data.LengthOK receiver load ∨
+                    ∃ basin : Finset object.Vertex,
+                      Graph.Route8.TraceBasin.select? object
+                          (object.pieceSupport
+                            (object.remainderSupport
+                              (canonicalWindowPacking data object))
+                            component)
+                          data.threshold receiver load = some basin ∧
+                        ∃ retained,
+                          Graph.Route8.TraceBasin.TraceResponseQuotient object
+                            (object.pieceSupport
+                              (object.remainderSupport
+                                (canonicalWindowPacking data object))
+                              component)
+                            data.threshold data.LengthOK receiver load basin
+                            retained)
   | .route8PeelingDescent, object =>
       -- `thm:large-budget-route8-only`'s procedure at the fixed maximal packing,
       -- with the two-role Type B allowance `2·F·s·T(n)`.
@@ -7358,6 +7447,7 @@ def label : Key → String
   | .typeASaturatedReceiver => "typeASaturatedReceiver"
   | .typeAUnsaturatedReceivers => "typeAUnsaturatedReceivers"
   | .typeAUnsaturatedDischarge => "typeAUnsaturatedDischarge"
+  | .typeAExclusion => "typeAExclusion"
   | .typeAPortReturn => "typeAPortReturn"
   | .typeAVisibleEntry => "typeAVisibleEntry"
   | .typeAVisibleFirstExcess => "typeAVisibleFirstExcess"
@@ -7597,6 +7687,7 @@ example : label .typeAReceiverRouting = "typeAReceiverRouting" := rfl
 example : label .typeASaturatedReceiver = "typeASaturatedReceiver" := rfl
 example : label .typeAUnsaturatedReceivers = "typeAUnsaturatedReceivers" := rfl
 example : label .typeAUnsaturatedDischarge = "typeAUnsaturatedDischarge" := rfl
+example : label .typeAExclusion = "typeAExclusion" := rfl
 example : label .typeAPortReturn = "typeAPortReturn" := rfl
 example : label .typeAVisibleEntry = "typeAVisibleEntry" := rfl
 example : label .typeAVisibleFirstExcess = "typeAVisibleFirstExcess" := rfl
@@ -7855,6 +7946,7 @@ def idx : Key → Nat
   | .typeASaturatedReceiver => 54
   | .typeAUnsaturatedReceivers => 55
   | .typeAUnsaturatedDischarge => 148
+  | .typeAExclusion => 343
   | .typeAPortReturn => 121
   | .typeAVisibleEntry => 56
   | .typeAVisibleFirstExcess => 57
@@ -8084,6 +8176,7 @@ def ofIdx : Nat → Key
   | 54 => .typeASaturatedReceiver
   | 55 => .typeAUnsaturatedReceivers
   | 148 => .typeAUnsaturatedDischarge
+  | 343 => .typeAExclusion
   | 56 => .typeAVisibleEntry
   | 57 => .typeAVisibleFirstExcess
   | 58 => .typeAExitOneReturn
@@ -8420,6 +8513,8 @@ def name : Key → Lean.Name
   | .typeAUnsaturatedDischarge =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "typeAUnsaturatedDischarge") 148
+  | .typeAExclusion =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExclusion") 343
   | .typeAPortReturn =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPortReturn") 121
   | .typeAVisibleEntry =>
