@@ -63,6 +63,23 @@ theorem notMem_windowSupport_of_mem_remainderSupport
   classical
   exact (Finset.mem_sdiff.mp inside).2
 
+/-- **The set-difference reading of `R = G − W`**: a vertex missing from the
+remainder lies in some packed window.  This is the definitional bookkeeping
+that lands every boundary edge of the remainder in the packed-window support,
+which the window-blocker accounting of `def:typeA-open-window-blocker`
+consumes. -/
+theorem exists_mem_packing_of_notMem_remainderSupport
+    (object : FiniteObject.{u}) {packing : Finset (Finset object.Vertex)}
+    {vertex : object.Vertex}
+    (outside : vertex ∉ object.remainderSupport packing) :
+    ∃ window ∈ packing, vertex ∈ window := by
+  letI : FinEnum object.Vertex := object.vertices
+  classical
+  have inWindow : vertex ∈ windowSupport packing := by
+    by_contra notWindow
+    exact outside (Finset.mem_sdiff.mpr ⟨Finset.mem_univ vertex, notWindow⟩)
+  exact Finset.mem_biUnion.mp inWindow
+
 /-- **`sec:remainder`, first assertion.**  No window of the ambient object lies
 inside the remainder of a maximal packing.
 

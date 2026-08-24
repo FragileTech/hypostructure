@@ -1,4 +1,5 @@
 import Hypostructure.Graph.ResponseDelocalization
+import Hypostructure.Graph.GluedCycleSides
 import Hypostructure.Graph.ExitFourFamily
 
 /-!
@@ -171,6 +172,212 @@ theorem exists_witness_of_traceLocalTargetDefect {object : FiniteObject.{u}}
       targetDefect := targetDefect }⟩, rfl⟩
   rw [ExitFour.mem_unpeeledLoads]
   exact ⟨loadRouted, Finset.notMem_empty load⟩
+
+/-- **`lem:typeA-pressure-token-two-carriers`** — alternative (a)'s
+distinguishing data yield a demand token whose witnessing accepted event
+records two distinct cut-boundary labels of the basin.  The one-sided
+monotone transfer pins the realizing side to the basin's full piece
+(`exists_context_of_not_contextEquivalent`); the witnessing cycle must enter
+the basin, since the label-edge-preserving retained restriction would
+otherwise realize the target and contradict the defect
+(`hasCycleWithLength_restriction_of_avoids_piece_internal` +
+`glue_swap_target_iff`); and the glued-cycle classification then yields the
+two labels — a piece lift would decode to an accepted ambient cycle against
+the standing avoidance. -/
+theorem exists_two_cutBoundary_of_traceLocalTargetDefect
+    {object : FiniteObject.{u}} {support : Finset object.Vertex}
+    {threshold : Nat} {LengthOK : Nat → Prop}
+    {receiver load : object.Vertex} {basin : Finset object.Vertex}
+    (defect : TraceLocalTargetDefect object support threshold LengthOK
+      receiver load basin)
+    (avoids : ¬ HasCycleWithLength LengthOK object) :
+    ∃ (context : OutsideContext
+        (Strategy.InterfaceReplacement.SupportAtom.boundary object basin))
+      (certificate : CycleCertificate
+        (glue (Strategy.InterfaceReplacement.SupportAtom.piece object basin)
+          context) LengthOK)
+      (left right : (Strategy.InterfaceReplacement.SupportAtom.boundary object
+        basin).Vertex),
+      left ≠ right ∧
+        Sum.inl left ∈ certificate.walk.support ∧
+        Sum.inl right ∈ certificate.walk.support := by
+  classical
+  obtain ⟨retained, _retainedSubset, _nontrivial, targetDefect⟩ := defect
+  have monotone : ∀ outsideCtx : OutsideContext
+      (Strategy.InterfaceReplacement.SupportAtom.boundary object basin),
+      HasCycleWithLength LengthOK
+        (glue (PresentedEntry.retainedReading object support basin threshold
+          LengthOK (PresentedEntry.retainedBaseCoordinates object support
+            retained)) outsideCtx) →
+      HasCycleWithLength LengthOK
+        (glue (Strategy.InterfaceReplacement.SupportAtom.piece object basin)
+          outsideCtx) := fun outsideCtx =>
+    PresentedEntry.hasCycleWithLength_glue_of_retainedReading object support
+      basin threshold LengthOK
+      (PresentedEntry.retainedBaseCoordinates object support retained)
+      outsideCtx
+  have failure : ¬ Response.ContextEquivalent (HasCycleWithLength LengthOK)
+      (PresentedEntry.retainedReading object support basin threshold LengthOK
+        (PresentedEntry.retainedBaseCoordinates object support retained))
+      (Strategy.InterfaceReplacement.SupportAtom.piece object basin) := by
+    obtain ⟨distinguishing, distinguishes⟩ := targetDefect
+    exact fun equivalent => distinguishes (equivalent distinguishing)
+  obtain ⟨context, acceptedPiece, notReading⟩ :=
+    Response.exists_context_of_not_contextEquivalent monotone failure
+  obtain ⟨certificate⟩ := acceptedPiece
+  refine ⟨context, certificate, ?_⟩
+  by_cases meetsPiece : ∃ inner, (Sum.inr (Sum.inl inner) :
+      GluedVertex (Strategy.InterfaceReplacement.SupportAtom.piece object
+        basin) context) ∈ certificate.walk.support
+  · obtain ⟨pieceInner, pieceInnerMem⟩ := meetsPiece
+    rcases GluedCycleSides.cycle_pieceLift_or_contextInternal_or_labelDart
+        (c := certificate.walk) certificate.isCycle with
+      ⟨pieceBase, lifted, liftedCycle, liftedLength⟩ |
+        ⟨contextInner, contextInnerMem⟩ |
+        ⟨left, right, distinct, leftMem, rightMem, _contextAdj, _dartEdge⟩
+    · exfalso
+      refine avoids ⟨⟨_, lifted.map
+        ⟨Strategy.InterfaceReplacement.SupportAtom.pieceDecode object basin,
+          fun adjacent => adjacent⟩, ?_, ?_⟩⟩
+      · exact liftedCycle.map
+          (PresentedEntry.retainedBasinPiece_decode_injective object basin)
+      · rw [SimpleGraph.Walk.length_map]
+        exact (congrArg LengthOK liftedLength).mpr certificate.length_ok
+    · obtain ⟨left, right, distinct, leftMem, rightMem⟩ :=
+        GluedCycleSides.exists_two_labels_of_cycle_sides certificate.isCycle
+          pieceInnerMem contextInnerMem
+      exact ⟨left, right, distinct, leftMem, rightMem⟩
+    · exact ⟨left, right, distinct, leftMem, rightMem⟩
+  · exfalso
+    push_neg at meetsPiece
+    have transferred :=
+      GluedCycleSides.hasCycleWithLength_restriction_of_avoids_piece_internal
+        (piece := Strategy.InterfaceReplacement.SupportAtom.piece object basin)
+        (outside := context)
+        (PresentedEntry.retainedBasinPiece object basin
+          (PresentedEntry.retainedVertices object support
+            (PresentedEntry.retainedBaseCoordinates object support
+              retained))).graph
+        (PresentedEntry.retainedBasinPiece object basin
+          (PresentedEntry.retainedVertices object support
+            (PresentedEntry.retainedBaseCoordinates object support
+              retained))).decideAdj
+        (fun label other adjacent =>
+          PresentedEntry.retainedBasinPiece_adj_of_label object basin _
+            label other adjacent)
+        certificate.isCycle certificate.length_ok
+        (fun inner member => meetsPiece inner member)
+    have retainedGlue : HasCycleWithLength LengthOK
+        (glue (PresentedEntry.retainedBasinPiece object basin
+          (PresentedEntry.retainedVertices object support
+            (PresentedEntry.retainedBaseCoordinates object support retained)))
+          context) := transferred
+    exact notReading ((CanonicalPiece.glue_swap_target_iff
+      (minimumDegreeAtLeast_isomorphismInvariant threshold)
+      (cycleTargetInterface LengthOK).isomorphismInvariant
+      (PresentedEntry.retainedBasinPiece object basin
+        (PresentedEntry.retainedVertices object support
+          (PresentedEntry.retainedBaseCoordinates object support retained)))
+      context).mpr retainedGlue)
+
+/-- **`def:typeA-two-terminal-pressure-records`** — the canonical demand
+record at a selected basin: an *actual two-terminal record* (an accepted
+event of the basin glued to its actual exterior, with an outside corridor
+between two distinct cut-boundary labels along event edges, every interior
+vertex context-internal), or a *profile record* (an accepted event of the
+basin glued to a distinguished non-actual context, with two distinct visited
+labels).  `lem:typeA-pressure-records-canonical`: the two record classes are
+disjoint by the context-equality polarity. -/
+def CanonicalDemandRecord (object : FiniteObject.{u})
+    (basin : Finset object.Vertex) (LengthOK : Nat → Prop) : Prop :=
+    (∃ certificate : CycleCertificate
+        (glue (Strategy.InterfaceReplacement.SupportAtom.piece object basin)
+          (Strategy.InterfaceReplacement.SupportAtom.outside object basin))
+        LengthOK,
+      ∃ left right : (Strategy.InterfaceReplacement.SupportAtom.boundary
+          object basin).Vertex,
+        left ≠ right ∧
+          ∃ corridor : (glueGraph
+              (Strategy.InterfaceReplacement.SupportAtom.piece object basin)
+              (Strategy.InterfaceReplacement.SupportAtom.outside object
+                basin)).Walk (.inl left) (.inl right),
+            corridor.edges ⊆ certificate.walk.edges ∧
+              ∀ x ∈ corridor.support,
+                x = Sum.inl left ∨ x = Sum.inl right ∨
+                  ∃ inner, x = Sum.inr (Sum.inr inner)) ∨
+    (∃ context : OutsideContext
+        (Strategy.InterfaceReplacement.SupportAtom.boundary object basin),
+      context ≠ Strategy.InterfaceReplacement.SupportAtom.outside object
+          basin ∧
+        ∃ certificate : CycleCertificate
+            (glue (Strategy.InterfaceReplacement.SupportAtom.piece object
+              basin) context) LengthOK,
+          ∃ left right : (Strategy.InterfaceReplacement.SupportAtom.boundary
+              object basin).Vertex,
+            left ≠ right ∧
+              Sum.inl left ∈ certificate.walk.support ∧
+              Sum.inl right ∈ certificate.walk.support)
+
+/-- **`lem:typeA-pressure-records-canonical`** — every target-defect entry
+carries its canonical demand record: the distinguishing context is the actual
+exterior (actual record, with the corridor supplied by the glued-cycle
+classification — the piece lift decodes to an accepted ambient cycle against
+the standing avoidance, the context-internal visit yields the corridor, and
+the label dart is itself a one-edge corridor) or it is not (profile record).
+The manuscript's lexicographically-first choices are replaced by classical
+witnesses, as everywhere in this lane. -/
+theorem exists_record_of_traceLocalTargetDefect
+    {object : FiniteObject.{u}} {support : Finset object.Vertex}
+    {threshold : Nat} {LengthOK : Nat → Prop}
+    {receiver load : object.Vertex} {basin : Finset object.Vertex}
+    (defect : TraceLocalTargetDefect object support threshold LengthOK
+      receiver load basin)
+    (avoids : ¬ HasCycleWithLength LengthOK object) :
+    CanonicalDemandRecord object basin LengthOK := by
+  classical
+  unfold CanonicalDemandRecord
+  obtain ⟨context, certificate, left, right, distinct, leftMem, rightMem⟩ :=
+    exists_two_cutBoundary_of_traceLocalTargetDefect defect avoids
+  by_cases actual : context =
+      Strategy.InterfaceReplacement.SupportAtom.outside object basin
+  · subst actual
+    refine Or.inl ⟨certificate, ?_⟩
+    rcases GluedCycleSides.cycle_pieceLift_or_contextInternal_or_labelDart
+        (c := certificate.walk) certificate.isCycle with
+      ⟨pieceBase, lifted, liftedCycle, liftedLength⟩ |
+        ⟨contextInner, contextInnerMem⟩ |
+        ⟨dartLeft, dartRight, dartDistinct, _dartLeftMem, _dartRightMem,
+          dartAdj, dartEdge⟩
+    · exfalso
+      refine avoids ⟨⟨_, lifted.map
+        ⟨Strategy.InterfaceReplacement.SupportAtom.pieceDecode object basin,
+          fun adjacent => adjacent⟩, ?_, ?_⟩⟩
+      · exact liftedCycle.map
+          (PresentedEntry.retainedBasinPiece_decode_injective object basin)
+      · rw [SimpleGraph.Walk.length_map]
+        exact (congrArg LengthOK liftedLength).mpr certificate.length_ok
+    · exact GluedCycleSides.exists_corridor_of_cycle_contextInternal
+        certificate.isCycle contextInnerMem distinct leftMem rightMem
+    · have dartGlueAdj : (glueGraph
+          (Strategy.InterfaceReplacement.SupportAtom.piece object basin)
+          (Strategy.InterfaceReplacement.SupportAtom.outside object
+            basin)).Adj (.inl dartLeft) (.inl dartRight) := by
+        refine (glueGraph_adj_iff _ _ _ _).mpr (Or.inr ⟨.inl dartLeft,
+          .inl dartRight, dartAdj, ?_, ?_⟩) <;> rfl
+      refine ⟨dartLeft, dartRight, dartDistinct,
+        SimpleGraph.Walk.cons dartGlueAdj SimpleGraph.Walk.nil, ?_, ?_⟩
+      · intro e emem
+        rw [SimpleGraph.Walk.edges_cons, SimpleGraph.Walk.edges_nil] at emem
+        rw [List.mem_singleton.mp emem]
+        exact dartEdge
+      · intro x xmem
+        rw [SimpleGraph.Walk.support_cons, SimpleGraph.Walk.support_nil]
+          at xmem
+        rcases List.mem_cons.mp xmem with rfl | tailmem
+        · exact Or.inl rfl
+        · exact Or.inr (Or.inl (List.mem_singleton.mp tailmem))
+  · exact Or.inr ⟨context, actual, certificate, left, right, distinct,
+      leftMem, rightMem⟩
 
 /-- **Target-complete-minimality from the branch's refutations**: the selected
 basin is trace-complete, and each of the four failure alternatives is refuted

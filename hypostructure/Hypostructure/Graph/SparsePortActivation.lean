@@ -57,6 +57,17 @@ noncomputable def support (port : SurplusPort object threshold) :
   letI : DecidableEq object.Vertex := object.vertices.decEq
   exact insert port.endpoint port.shoulders
 
+@[simp] theorem endpoint_mem_support (port : SurplusPort object threshold) :
+    port.endpoint ∈ port.support := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  exact Finset.mem_insert_self _ _
+
+theorem mem_support_of_mem_shoulders (port : SurplusPort object threshold)
+    {vertex : object.Vertex} (member : vertex ∈ port.shoulders) :
+    vertex ∈ port.support := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  exact Finset.mem_insert_of_mem member
+
 /-- A port is *open* when its two shoulders are nonadjacent, and *triangular*
 when they are adjacent.  This is the manuscript's dichotomy at the shoulder
 pair, and it is decidable on a finite object. -/

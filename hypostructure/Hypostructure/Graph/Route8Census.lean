@@ -1,3 +1,4 @@
+import Hypostructure.Graph.DemandPartition
 import Hypostructure.Graph.Route8Residual
 import Hypostructure.Graph.Route8Supply
 import Hypostructure.Graph.Route8CarrierCore
@@ -294,5 +295,103 @@ theorem false_of_noTwoCarrier (packing : Finset (Finset object.Vertex))
   exact Route8.noTwoCarrier_contradiction (entries object packing threshold discharge)
     (core object threshold LengthOK) (supply object packing)
     (core_subset_supply object packing threshold discharge LengthOK) deficit' rate' noTwo
+
+/-! ## The 2/3-demand ledger at the census
+
+`def:typeA-pressure-ledger` and `lem:typeA-pressure-ledger-no-overcount` at
+the object: the entry family is the census `entries`; an entry's available
+boundary incidences are its essential core (`lem:typeA-unified-carriers` puts
+at least two incidences there for every entry — clause (L2)); the pinned
+entries are the surviving route-8 entries, paid from their private essential
+carriers (`thm:typeA-two-carrier-nogo` has closed every branch holding one
+with at most two); and the supply is the cut of the remainder, with
+`|∂_E R| = e(R, W)` by `card_supply`.  Clauses (L1) and (L3)–(L5) and the
+maximal choice are `DemandPartition.Partition.exists_maximal_pinned`. -/
+
+/-- **`def:typeA-pressure-ledger`** at the census: once every pinned entry of
+the chosen family holds at least three private essential carriers, a
+2/3-demand ledger paying them privately exists and one is chosen maximizing
+first `N₃`, then `N₂`.  The family is arbitrary — at node `[123]` it is the
+unified collection `Ξ̃`. -/
+theorem exists_maximal_demandLedger
+    (entryFamily : Finset (Index object))
+    (threshold : Nat) (LengthOK : Nat → Prop)
+    (pinned : Finset (Index object))
+    (pinnedSubset : pinned ⊆ entryFamily)
+    (pinnedLarge : ∀ index ∈ pinned,
+      3 ≤ (Route8.indexedPrivateCoreCarriers entryFamily
+        (core object threshold LengthOK) index).card) :
+    ∃ P : DemandPartition.Partition entryFamily
+        (core object threshold LengthOK),
+      DemandPartition.Partition.Pinned pinned
+          (Route8.indexedPrivateCoreCarriers entryFamily
+            (core object threshold LengthOK)) P ∧
+        ∀ Q : DemandPartition.Partition entryFamily
+            (core object threshold LengthOK),
+          DemandPartition.Partition.Pinned pinned
+            (Route8.indexedPrivateCoreCarriers entryFamily
+              (core object threshold LengthOK)) Q →
+          Q.three.card ≤ P.three.card ∧
+            (Q.three.card = P.three.card → Q.two.card ≤ P.two.card) := by
+  classical
+  exact DemandPartition.Partition.exists_maximal_pinned _ _ pinned _
+    pinnedSubset
+    (fun index _ => Route8.indexedPrivateCoreCarriers_subset_core _ _ index)
+    pinnedLarge
+    (fun left leftMem right rightMem distinct =>
+      Route8.indexedPrivateCoreCarriers_disjoint _ _
+        (pinnedSubset leftMem) (pinnedSubset rightMem) distinct)
+
+/-- **`lem:typeA-pressure-ledger-no-overcount`** at the census: the assigned
+incidences of any 2/3-demand ledger are pairwise-disjoint members of the cut
+of the remainder, so `3N₃ + 2N₂ ≤ e(R, W)`; equivalently, with the
+external-demand defect `𝖯_ext = N₂ + 3N_res`, `3Ñ ≤ e(R, W) + 𝖯_ext`. -/
+theorem core_subset_supply_ofComponents (packing : Finset (Finset object.Vertex))
+    (components : Finset (SupportComponents.Connected.Component object
+      (object.remainderSupport packing)))
+    (threshold discharge : Nat) (LengthOK : Nat → Prop) :
+    ∀ index ∈ entriesOfComponents object packing components threshold discharge,
+      core object threshold LengthOK index ⊆ supply object packing := by
+  classical
+  intro index member
+  simp only [entriesOfComponents, Finset.mem_biUnion, Finset.mem_image] at member
+  obtain ⟨component, _, receiver, _, load, _, indexEq⟩ := member
+  refine (core_subset_cutEdges object threshold LengthOK index).trans ?_
+  have pieceEq : index.1 =
+      object.pieceSupport (object.remainderSupport packing) component := by
+    rw [← indexEq]
+  rw [pieceEq]
+  exact cutEdges_piece_subset object packing component
+
+theorem demandLedger_no_overcount (packing : Finset (Finset object.Vertex))
+    (components : Finset (SupportComponents.Connected.Component object
+      (object.remainderSupport packing)))
+    (threshold discharge : Nat) (LengthOK : Nat → Prop)
+    (P : DemandPartition.Partition
+      (entriesOfComponents object packing components threshold discharge)
+      (core object threshold LengthOK)) :
+    3 * P.three.card + 2 * P.two.card ≤
+        object.boundaryIncidence (object.remainderSupport packing) ∧
+      3 * (entriesOfComponents object packing components threshold
+            discharge).card ≤
+        object.boundaryIncidence (object.remainderSupport packing) +
+          P.externalDefect := by
+  classical
+  have supplied : ∀ index ∈ P.three ∪ P.two,
+      P.assigned index ⊆ supply object packing := by
+    intro index memUnion
+    have memEntries : index ∈
+        entriesOfComponents object packing components threshold discharge := by
+      rcases Finset.mem_union.mp memUnion with mem | mem
+      · exact P.three_subset_entries mem
+      · exact P.two_subset_entries mem
+    exact (P.assigned_available index memUnion).trans
+      (core_subset_supply_ofComponents object packing components threshold
+        discharge LengthOK index memEntries)
+  refine ⟨?_, ?_⟩
+  · have raw := P.three_mul_add_two_mul_le (supply object packing) supplied
+    rwa [card_supply object packing] at raw
+  · have defectForm := P.three_mul_card_le (supply object packing) supplied
+    rwa [card_supply object packing] at defectForm
 
 end Hypostructure.Graph.Route8Census

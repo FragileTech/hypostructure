@@ -218,6 +218,32 @@ theorem vertex_mem_sharedItems {object : FiniteObject.{u}}
   refine Finset.mem_union_left _ ?_
   exact Finset.mem_image_of_mem _ (Finset.mem_inter.2 ⟨inLeft, inRight⟩)
 
+theorem mem_both_of_vertex_mem_sharedItems {object : FiniteObject.{u}}
+    {left right : Finset object.Vertex} {vertex : object.Vertex}
+    (member : CarrierItem.vertex vertex ∈ sharedItems object left right) :
+    vertex ∈ left ∧ vertex ∈ right := by
+  classical
+  rcases Finset.mem_union.mp member with vertexSide | incidenceSide
+  · obtain ⟨other, inside, equality⟩ := Finset.mem_image.mp vertexSide
+    cases equality
+    exact Finset.mem_inter.mp inside
+  · obtain ⟨_, _, equality⟩ := Finset.mem_image.mp incidenceSide
+    cases equality
+
+theorem endpoints_mem_both_of_incidence_mem_sharedItems
+    {object : FiniteObject.{u}} {left right : Finset object.Vertex}
+    {incidence : object.Vertex × object.Vertex}
+    (member : CarrierItem.incidence incidence ∈ sharedItems object left right) :
+    incidence.1 ∈ left ∧ incidence.2 ∈ left ∧
+      incidence.1 ∈ right ∧ incidence.2 ∈ right := by
+  classical
+  rcases Finset.mem_union.mp member with vertexSide | incidenceSide
+  · obtain ⟨_, _, equality⟩ := Finset.mem_image.mp vertexSide
+    cases equality
+  · obtain ⟨other, filtered, equality⟩ := Finset.mem_image.mp incidenceSide
+    cases equality
+    exact (Finset.mem_filter.mp filtered).2
+
 /-- An edge-incidence item of clauses (a) and (b) is a genuine edge-incidence of
 the object: `sharedItems` filters the object's own `I_E(G)`.  This is what makes
 such an item a member of `def:primitive-sparse-blocker-carrier`'s second
@@ -271,6 +297,141 @@ noncomputable def blockers (activation : DemandActivation object Coordinate Chor
             Blocker.targetResponse ∪
           (activation.chordObstructions pair).toFinset.image
             Blocker.arithmeticChordSet))
+
+theorem sharedDeclaredSupport_mem_blockers_iff
+    (activation : DemandActivation object Coordinate Chord)
+    {pair : Finset (object.Vertex × object.Vertex)}
+    {item : CarrierItem object} :
+    Blocker.sharedDeclaredSupport item ∈ activation.blockers pair ↔
+      ∃ left ∈ pair, ∃ right ∈ pair, left ≠ right ∧
+        item ∈ sharedItems object (activation.declaredSupport left)
+          (activation.declaredSupport right) := by
+  classical
+  constructor
+  · intro member
+    rw [blockers] at member
+    rcases Finset.mem_union.mp member with localPart | remote
+    · obtain ⟨demands, demandsMem, inside⟩ := Finset.mem_biUnion.mp localPart
+      rcases Finset.mem_union.mp inside with declared | rest
+      · obtain ⟨shared, sharedMem, equality⟩ := Finset.mem_image.mp declared
+        cases equality
+        have demandsFacts : (demands.1 ∈ pair ∧ demands.2 ∈ pair) ∧
+            demands.1 ≠ demands.2 := by
+          simpa [distinctDemandPairs] using demandsMem
+        exact ⟨demands.1, demandsFacts.1.1, demands.2, demandsFacts.1.2,
+          demandsFacts.2, sharedMem⟩
+      · rcases Finset.mem_union.mp rest with returned | buffered
+        · obtain ⟨_, _, equality⟩ := Finset.mem_image.mp returned
+          cases equality
+        · obtain ⟨_, _, equality⟩ := Finset.mem_image.mp buffered
+          cases equality
+    · rcases Finset.mem_union.mp remote with profiled | rest
+      · obtain ⟨_, _, equality⟩ := Finset.mem_image.mp profiled
+        cases equality
+      · rcases Finset.mem_union.mp rest with responded | chorded
+        · obtain ⟨_, _, equality⟩ := Finset.mem_image.mp responded
+          cases equality
+        · obtain ⟨_, _, equality⟩ := Finset.mem_image.mp chorded
+          cases equality
+  · rintro ⟨left, leftMem, right, rightMem, distinct, shared⟩
+    rw [blockers]
+    apply Finset.mem_union_left
+    apply Finset.mem_biUnion.mpr
+    refine ⟨(left, right), ?_, ?_⟩
+    · exact Finset.mem_filter.mpr ⟨Finset.mem_product.mpr ⟨leftMem, rightMem⟩,
+        distinct⟩
+    · exact Finset.mem_union_left _ (Finset.mem_image.mpr ⟨item, shared, rfl⟩)
+
+theorem sharedReturnSupport_mem_blockers_iff
+    (activation : DemandActivation object Coordinate Chord)
+    {pair : Finset (object.Vertex × object.Vertex)}
+    {item : CarrierItem object} :
+    Blocker.sharedReturnSupport item ∈ activation.blockers pair ↔
+      ∃ left ∈ pair, ∃ right ∈ pair, left ≠ right ∧
+        item ∈ sharedItems object (activation.returnSupport left)
+          (activation.returnSupport right) := by
+  classical
+  constructor
+  · intro member
+    rw [blockers] at member
+    rcases Finset.mem_union.mp member with localPart | remote
+    · obtain ⟨demands, demandsMem, inside⟩ := Finset.mem_biUnion.mp localPart
+      rcases Finset.mem_union.mp inside with declared | rest
+      · obtain ⟨_, _, equality⟩ := Finset.mem_image.mp declared
+        cases equality
+      · rcases Finset.mem_union.mp rest with returned | buffered
+        · obtain ⟨shared, sharedMem, equality⟩ := Finset.mem_image.mp returned
+          cases equality
+          have demandsFacts : (demands.1 ∈ pair ∧ demands.2 ∈ pair) ∧
+              demands.1 ≠ demands.2 := by
+            simpa [distinctDemandPairs] using demandsMem
+          exact ⟨demands.1, demandsFacts.1.1, demands.2, demandsFacts.1.2,
+            demandsFacts.2, sharedMem⟩
+        · obtain ⟨_, _, equality⟩ := Finset.mem_image.mp buffered
+          cases equality
+    · rcases Finset.mem_union.mp remote with profiled | rest
+      · obtain ⟨_, _, equality⟩ := Finset.mem_image.mp profiled
+        cases equality
+      · rcases Finset.mem_union.mp rest with responded | chorded
+        · obtain ⟨_, _, equality⟩ := Finset.mem_image.mp responded
+          cases equality
+        · obtain ⟨_, _, equality⟩ := Finset.mem_image.mp chorded
+          cases equality
+  · rintro ⟨left, leftMem, right, rightMem, distinct, shared⟩
+    rw [blockers]
+    apply Finset.mem_union_left
+    apply Finset.mem_biUnion.mpr
+    refine ⟨(left, right), ?_, ?_⟩
+    · exact Finset.mem_filter.mpr ⟨Finset.mem_product.mpr ⟨leftMem, rightMem⟩,
+        distinct⟩
+    · exact Finset.mem_union_right _
+        (Finset.mem_union_left _ (Finset.mem_image.mpr ⟨item, shared, rfl⟩))
+
+theorem sharedLocalBuffer_mem_blockers_iff
+    (activation : DemandActivation object Coordinate Chord)
+    {pair : Finset (object.Vertex × object.Vertex)}
+    {vertex : object.Vertex} :
+    Blocker.sharedLocalBuffer vertex ∈ activation.blockers pair ↔
+      ∃ left ∈ pair, ∃ right ∈ pair, left ≠ right ∧
+        vertex ∈ activation.localBuffer left ∧
+          vertex ∈ activation.localBuffer right := by
+  classical
+  constructor
+  · intro member
+    rw [blockers] at member
+    rcases Finset.mem_union.mp member with localPart | remote
+    · obtain ⟨demands, demandsMem, inside⟩ := Finset.mem_biUnion.mp localPart
+      rcases Finset.mem_union.mp inside with declared | rest
+      · obtain ⟨_, _, equality⟩ := Finset.mem_image.mp declared
+        cases equality
+      · rcases Finset.mem_union.mp rest with returned | buffered
+        · obtain ⟨_, _, equality⟩ := Finset.mem_image.mp returned
+          cases equality
+        · obtain ⟨shared, sharedMem, equality⟩ := Finset.mem_image.mp buffered
+          cases equality
+          have demandsFacts : (demands.1 ∈ pair ∧ demands.2 ∈ pair) ∧
+              demands.1 ≠ demands.2 := by
+            simpa [distinctDemandPairs] using demandsMem
+          exact ⟨demands.1, demandsFacts.1.1, demands.2, demandsFacts.1.2,
+            demandsFacts.2, Finset.mem_inter.mp sharedMem⟩
+    · rcases Finset.mem_union.mp remote with profiled | rest
+      · obtain ⟨_, _, equality⟩ := Finset.mem_image.mp profiled
+        cases equality
+      · rcases Finset.mem_union.mp rest with responded | chorded
+        · obtain ⟨_, _, equality⟩ := Finset.mem_image.mp responded
+          cases equality
+        · obtain ⟨_, _, equality⟩ := Finset.mem_image.mp chorded
+          cases equality
+  · rintro ⟨left, leftMem, right, rightMem, distinct, leftLocal, rightLocal⟩
+    rw [blockers]
+    apply Finset.mem_union_left
+    apply Finset.mem_biUnion.mpr
+    refine ⟨(left, right), ?_, ?_⟩
+    · exact Finset.mem_filter.mpr ⟨Finset.mem_product.mpr ⟨leftMem, rightMem⟩,
+        distinct⟩
+    · exact Finset.mem_union_right _
+        (Finset.mem_union_right _ (Finset.mem_image.mpr
+          ⟨vertex, Finset.mem_inter.mpr ⟨leftLocal, rightLocal⟩, rfl⟩))
 
 /-- An edge-incidence blocker of clause (a) or (b) carries a genuine
 edge-incidence of the object.  `def:primitive-sparse-blocker-carrier`'s

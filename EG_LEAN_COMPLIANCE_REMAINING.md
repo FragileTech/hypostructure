@@ -694,6 +694,720 @@ stage closes (rate fails) or only route 8 remains. `K .route8PiecesClassified` s
   after the consumer coupling surfaced — no unprovable row and no schema drift was left in
   the tree.
 
+
+  SHARPENED 2026-08-24 (full verification against live Lean + the manuscript's [123] section):
+  the dependency order inside [123] is `route8PiecesClassified` → `route8UnifiedDeficit` →
+  `route8UnifiedEntryCensus` → closure.  (α) The FIRST unproved formula for the whole cluster is
+  `thm:branch-kill`(b)'s positive-surplus arm: ∀ piece ∈ canonicalPieces(R), NegativeNetCharge →
+  0 < ambientSurplus → `BridgeResidualComponentAt object piece δ s` — i.e. the pair (routes:
+  every δ-internal-degree vertex off `TypeBRefinedSupport.centres` trace-routes to an off-centre
+  receiver; unsaturated: every off-centre receiver has `1 + restrictedLoad ≤ s·missingPorts`).
+  Its manuscript proof is `lem:typeB-hybrid-B1` + `prop:typeB-bridge-reduction` (B2 holds outside
+  the residual) — `lem:typeB-postledger-core-hygiene`'s lane, NOT derivable from
+  `highCentreNormalForm` + baseline (checked: `unsaturated` is B2's own content).  The deficit
+  fact needs it too: `typeBBridgeMass`'s clauses 2/3 (bridgeResidualMass_le_route8/_le_twice,
+  committed and green) are conditional on exactly this pair at every non-route-8 piece, and the
+  failed-stage closure quotes `thm:branch-kill` in the manuscript's own proof of
+  `thm:large-budget-route8-only`.  (β) The zero-surplus arm is now one read of
+  `K .typeAExclusion` (schema aligned, green).  (γ) The census schema's ¬quotient clauses (in
+  BOTH arms, via `TargetCompleteMinimal` and the defect-arm conjunct) do NOT match the
+  manuscript: the paper never proves per-entry ¬(b) — `def:typeA-pressure-ledger` puts
+  non-(a) failures through the profile demand records (`lem:typeA-profile-pressure-dependence-routing`
+  is CONDITIONAL on a functional admissible rank quotient; its ¬∃-side stays as counted
+  P_prof units) and closes NUMERICALLY (P_open = o(|R|), window-blocker audit).  Under the
+  ratified two-predicate calibration ([104] ruling: never refute the plain quotient from
+  invariants) the consumer-coupled `Route8UnifiedEntryFacts` is therefore a pre-existing
+  DEVIATION: the paper-exact schema is the [86]-arm trichotomy (minimal ∧ ¬witness ∨
+  (a)-defect ∧ witness ∨ cased quotient at the selected basin), with the quotient/res class
+  carried into the pressure accounting, and `route8StageOutcomeDichotomy`/[124] repaired to
+  the 3-arm form.  All other census ingredients assemble from committed facts: α ≥ 2 via
+  `two_le_essentialCore_card_of_alternatives_refuted` (+ the [116] crossing callback and each
+  arm's own refuted clauses), select? via `exists_select?_eq_some_of_mem_routedLoads`,
+  ¬(c) via `not_traceDelocalization` (K .replacementExclusion + K .selection), ¬(d) via
+  `not_traceSurvivingSeparator_of_noEnvelope` + the collection's ¬HandoffProduced, the
+  (a)-witness via `exists_witness_of_traceLocalTargetDefect`.
+
+  FIX LANDED 2026-08-24 (the (α)-formula's carrier): key `typeBBridgeReduction` (idx 344, all
+  six vocabulary sites) + producer `typeBBridgeReductionRow` (SpineRows.lean:4142; Requires
+  `K .selection`, `K .uncompressible`, `K .remainderNormalized` — all on the route-8 branch's
+  common prefix, so the [123] frontier can run it on any arm).  Holds = the ∀-piece
+  contrapositive of `prop:typeB-bridge-reduction`/`lem:typeB-bridge-to-overlap`: every negative
+  positive-surplus canonical piece carries the B2 disjoint ledger at its own high centres
+  (exact augmented refinement + strictly negative remaining core + post-ledger hygiene at every
+  remaining component + B2(d) grouped envelope coverage) or a minimal overlap obstruction.
+  Proof: `b2_or_overlap` per piece; the choice arm assembles the `DisjointLedger` and refutes a
+  clean core via `nonNegativeNetCharge_of_disjointLedger_remainingCore_nonneg` against the
+  piece's own negativity — the same engine as `typeBExclusionDichotomy`, made ∀-piece.
+  Vocabulary builds green (8730 jobs); the row elaborates with zero errors in its range
+  (4142–4317).  SCOPE NOTE: this supplies the classification's Type B input and the deficit's
+  piece dichotomy; the residual pieces' NUMERIC mass conversion (obstruction/negative-core
+  mass₀ ≤ F·s·σ) still routes through the residual-mass lemmas (`envelopeNegativePart_le` per
+  centre is unconditional; the piece-level conversion is the obstruction lane's remaining
+  step).
+
+  CLASSIFICATION PRODUCER LANDED 2026-08-24: `route8PiecesClassifiedRow`
+  (SpineRows.lean:6269; Requires exactly `K .typeAExclusion`,
+  `K .typeBBridgeReduction`; zero errors in the full-file check).
+  `Route8Deficit.PieceClassification`'s positive arm is parameterized
+  (`Bridge`) and the vocabulary instantiates it at the paper's residual
+  dichotomy; the hard-coded flat pair is deleted (`Route8Deficit` and the
+  vocabulary build).  DEFICIT GATE RE-SHARPENED against the manuscript's
+  `lem:typeB-bridge-deficit-bound` / `lem:typeB-bridge-with-route8-core` /
+  `prop:typeB-bridge-sublinear` (tex 14275–14570): the Lean mass lane for a
+  negative positive-surplus piece is the FLAT pair (`bridgeDeficitBound`'s
+  routes/unsaturated at piece ∖ centres) — provable when no off-centre
+  receiver is saturated; a saturated off-centre receiver is the paper's
+  fan/handoff lane, and `lem:typeB-bridge-with-route8-core` then extracts the
+  route-8 non-window sub-cores into `D_A`.  The unified deficit's first
+  unproved formula is therefore: at every negative positive-surplus canonical
+  piece, `piece.card + s·σ ≤ s·def⁺ + F·s·σ` — via the flat pair, or via the
+  centre-envelope bound with the saturated sub-core deficit extracted (its
+  Lean carrier does not exist yet; `card_le_scaled_deficiency_add_absorbed`
+  is the absorbed-core half).
+
+  DEFICIT σ>0 ARM — CORRECTED ANALYSIS 2026-08-24 (supersedes the earlier note in this
+  block; its "saturated component is necessary" inference was WRONG — it conflated the
+  component-measured and piece-measured deficiencies).  Verified against the kernel-checked
+  partition identities (`DisjointLedger.augmentedLedger_partition`,
+  `selectedEntryPayment₂_eq`, `refinedAugmentedLedgerPartition`,
+  `refinedComponent_positiveDeficiency_supplied`):
+
+  (1) EXACT REDUCTION (kernel-clean, no hypotheses beyond the ledger arm of
+  `K .typeBBridgeReduction`): with `demands = centres(P)`,
+  `augLedger(P) = s·def⁺(P) − |P| − s·σ(P) − |H|` (σ(P) = Σ_H(deg−θ) by
+  `sum_centres_surplus`; `positiveDeficiency` is the exact truncated sum), and the partition
+  plus `payment₂ ≥ 0` plus `coreCharge ≥ −1` at centres give
+  `massB(P) = |P| + s·σ − s·def⁺ ≤ − Σ_{remainingCore} scaledCoreCharge(P-measured)`.
+  So the whole `thm:branch-kill`(b) mass bound `massB ≤ F·s·σ` reduces to ONE formula:
+  `Σ_{remainingCore} scaledCoreCharge ≥ −F·s·σ(P)`.
+
+  (2) The core's negativity has TWO sources, per the manuscript's own
+  `lem:typeB-bridge-deficit-bound` proof: (a) removal-created boundary deficiency — an
+  unsaturated component C has `|C| ≤ s·def⁺_C(C)` (discharge) but the charge uses the
+  P-measured `def⁺_P(C)`, smaller by exactly the C-to-removed edges; the paper pays this
+  through the ledger carriers (`def:typeB-ledger-carriers` — in Lean
+  `refinedComponent_positiveDeficiency_supplied`: `s·def⁺_C(C) ≤ componentReserve +
+  windowStubReserve`) and the refined per-centre count ((1) in the manuscript:
+  fan neighbours credit +¾, closed neighbours −¼, total per centre ≤ 8·t_h);
+  (b) genuinely saturated components — resolved in the manuscript by the exit-(4) peeling
+  loop to unsaturation, with the peeled −¼ mass and any route-8 sub-profile "continuing in
+  Part IX" (`lem:typeB-bridge-with-route8-core` extracts `D_A(𝒜_X)`), under
+  `prop:typeB-bridge-sublinear`'s hypothesis that the cores are profile-free.
+
+  NEXT CONSTRUCTION (the deficit's remaining carrier): the ledger-form
+  `lem:typeB-bridge-deficit-bound` — a generic theorem bounding
+  `Σ_{remainingCore} scaledCoreCharge` below by `−F·s·σ(P)` from the entry payments'
+  refined lower bounds (`positive_entryPayment₂_eq`, `sum_centreAllowance_le` shapes) and
+  the component reserve accounting, with the saturated/profile case as its stated
+  hypothesis exactly as `prop:typeB-bridge-sublinear` states it; the discharge of that
+  hypothesis on this branch is the manuscript's own branch-position claim ("route-8 cores
+  continue in Part IX") and stays loud until its Part IX receiver exists.
+
+  DEFICIT LANE WRITTEN 2026-08-24 (pending kernel check — the tree's dependency chain is
+  currently blocked by concurrent sparse-lane WIP in `SurplusBlockers.lean`/
+  `SparseEntropySandwich.lean`): (1) `TypeBSublinearHypotheses` (SpineVocabulary) — the
+  `[113]`-tested form of `prop:typeB-bridge-sublinear`'s hypotheses: the flat off-centre
+  pair at every negative positive-surplus canonical piece, and the grouped fan-assignment
+  bundle (∃-characterized handoff family + centre family + absorbedAt/fanEnvelope data +
+  coverage) at the negative zero-surplus handoff pieces; keys `typeBSublinearLedger`
+  (idx 345) and `typeBSublinearResidual` (idx 346, the literal negation, [115]-pattern).
+  (2) `typeBSublinearDichotomy` (SpineRows:6332) — classical Decision, no reads.
+  (3) `route8UnifiedDeficitRow` (SpineRows:6377) — Requires exactly
+  `K .typeBSublinearLedger`, `K .surplusAtOrBelow`; the executor is
+  `lem:typeA-unified-deficit`'s proof verbatim: |R| summed over canonical pieces; unified
+  members are the cleared deficit (definitional `route8Deficit` match); nonnegative pieces
+  carry nothing; negative positive-surplus pieces pay through `bridgeDeficitBound` with the
+  tested pair into surplus role 1; handoff pieces pay through
+  `envelopeFamilyNegativePart_le_degreeSurplus` with the tested bundle into surplus role 2;
+  `s·def⁺(R) ≤ s·|∂R|` by `positiveDeficiency_le_boundaryIncidence` + `card_supply`; both
+  roles convert to the registered threshold by `K .surplusAtOrBelow` — exactly the fact's
+  `2·F·s·T` slack.  The descent's `Requires` are unchanged; once this row kernel-checks,
+  the [123] chain up to `route8StageOutcomeDichotomy` is producer-complete except the
+  entry census.
+
+  CENSUS LANE + COMPOSITION WRITTEN 2026-08-24 (validation pending — the tree is shared and
+  the full-file check is queued behind the user's own builds): (4) census schema corrected to
+  the paper-exact `def:typeA-unified-entries` form — the minimal arm's `¬ witness` conjunct
+  was DEAD WEIGHT (the dichotomy consumer takes its no-witness datum from the descent
+  survivor's `trueEntry_transport`, never from the census) and unprovable; dropped, with the
+  one-token consumer repair (`routeEntry.1` → `routeEntry`); vocabulary builds green.
+  (5) keys `route8QuotientFree` (idx 347) / `route8QuotientResidual` (idx 348) +
+  `route8QuotientDichotomy` — the [113]-tested casing of the plain-(b) state per the [104]
+  ruling; the residual arm is the manuscript's profile demand-record lane.
+  (6) `route8UnifiedEntryCensusRow` — Requires exactly `K .route8QuotientFree`,
+  `K .selection`, `K .replacementExclusion`, `K .cubicBaseline`; per entry: select? total via
+  `exists_select?_eq_some_of_mem_routedLoads`, the (c)/(d) refutations via
+  `not_traceDelocalization` / `not_traceSurvivingSeparator_of_noEnvelope` (the collection's
+  own ¬HandoffProduced), the (a)-witness via `exists_witness_of_traceLocalTargetDefect`, and
+  `α ≥ 2` on both arms via `entry.smallCoreCollapseFacts` with the [116] crossing-callback —
+  whose constructed alternative is exactly the tested-refuted quotient — and parity from
+  `presented.two_le_card_car` (basin ⊆ piece from `select?_traceComplete`).
+  (7) `selectedLargeBudgetPressureCensus` DEFINED in Assembly: [86] → ∀-piece bridge
+  reduction → branch-kill classification → tested sublinear hypotheses → deficit → tested
+  quotient-freeness → census → fact 2 → `selectedRouteEightCensus` (descent → dichotomy →
+  [124]); the two tested residual arms are held at the loud manuscript-lane continuations
+  `selectedTypeBSublinearResidual` / `selectedRouteEightQuotientResidual`.
+  FIXES APPLIED from the first check round: `cardSum` simp recursion → explicit calc;
+  `smallCoreCollapseFacts`'s implicit crossing; `TypeBSublinearHypotheses` now elaborates
+  under `open scoped Classical` so its sdiffs carry the same instances as
+  `envelopeFamilyNegativePart_le_degreeSurplus`'s statement (the instance-mismatch root
+  cause).  VALIDATED 2026-08-24 (low-priority full-file check, error set = exactly the 22
+  pre-existing WIP-block lines): all six [123] producers/decisions and the repaired dichotomy
+  elaborate with ZERO errors — the survivor path [123] → descent → dichotomy → [124]
+  (`route8UnifiedTerminalNoGoRow`, Q5/deletion-witness no-go) is complete at the elaboration
+  level; the kernel olean waits only on the user's [116]-region WIP block.  The two lane
+  modules `DemandPartition` and `WindowAttachmentShadow` are kernel-checked (`lake build`,
+  815 jobs).
+
+  ¬RATE-ARM LANE STARTED 2026-08-24 (both files elaborate cleanly via `lake env lean`):
+  `Graph/WindowAttachmentShadow.lean` — `def:typeA-window-attachment-shadow` generically
+  (`forbiddenDistances`/`shadow` over the registered length predicate, the membership iffs,
+  symmetry, and `accepted_of_mem_shadow` — the corridor-hit closure of
+  `fig:exit4-p13-attachment-accounting`; `lem:typeA-singleton-shadow-table` is presentation
+  arithmetic and is not restated).  `Graph/DemandPartition.lean` —
+  `def:typeA-pressure-ledger`'s combinatorial core (`Partition` = Ξ₃ ⊔ Ξ₂ ⊔ Ξ_res with
+  disjoint 3/2-incidence assignments, `externalDefect` = 𝖯_ext) and
+  `lem:typeA-pressure-ledger-no-overcount` in both forms (`three_mul_add_two_mul_le`,
+  `three_mul_card_le`).  The graph-side instantiation (tokens over the census defect arm,
+  their `K(𝔱)` incidence sets via the crossing-parity machinery, and the absorber audit)
+  is the lane's remaining work, consumed by the ¬rate residual continuation
+  `selectedRouteEightStageClosure`.  ANALYSIS (recorded for the closure design): a ¬rate
+  stage reached by peeling is arithmetically pinned — each `PeelChain.cons` carried the rate,
+  so at the failed stage `θ|R| ≤ L + θ|P| < θ|R| + θ` with `L = (θs+1)|supply| + θ·slack` —
+  and its closure is exactly the manuscript's window-pressure audit
+  (`𝖯_open ≤ 2p₁₃ + 𝖯_zero⁺` + `prop:typeA-exit4-closure-from-open-pressure`), not local
+  arithmetic; the survivor arm needs none of this.  EXTENDED same day: `DemandPartition` now also carries the type-(A1) absorber layer (`Absorption`: single-use absorbing incidences disjoint from every ledger assignment; `three_mul_add_two_mul_add_card_le` = `lem:typeA-pressure-absorber-no-overcount`'s raw count `3N₃ + 2N₂ + B_abs ≤ |supply|`) and `open_pressure_contradiction` — the cleared three-reading collision of `prop:typeA-exit4-closure-from-open-pressure` (deficit/budget-with-open-demand/rate), the engine the ¬rate residual continuation will close with once the graph-side token audit supplies its `budget` reading; and `card_le_two_mul_card_add_excess` — `lem:typeA-open-window-blocker-count` with the per-window split of `fig:exit4-p13-attachment-accounting` (`𝖯_open ≤ 2p + Σ_P (B_open(P) − 2)⁺`, generic fibre counting).  The whole file elaborates cleanly.  Plus `Graph/GluedCycleSides.lean` (kernel-built, 8582 jobs): `lem:typeA-pressure-token-two-carriers`' geometric core at an ARBITRARY outside context — side-crossing walks pass through a boundary label (`exists_label_of_walk_sides`/`'`), and a glued cycle meeting both interiors visits two DISTINCT labels (`exists_two_labels_of_cycle_sides`: rotate to the piece-internal vertex, split at the context-internal one, one label per arc, distinctness from the cycle's tail-nodup) — the cut-parity the profile-only demand tokens need, where the actual-exterior crossing lemmas do not apply.  And `Route8Residual.hasCycleWithLength_glue_of_retainedReading` — the one-sided monotone transfer of `lem:typeA-internal-quotient-mixed`: an accepted cycle of a gluing of the retained reading transfers to the same gluing of the basin's full piece (`glue_swap_target_iff` to the retained piece, `glueGraph_mono` + `Walk.mapLe` to the unrestricted piece); with `exists_context_of_not_contextEquivalent` this pins every defect's distinguishing context to realize the target on the full-piece side — the (P3) polarity of `def:typeA-exit4-pressure-token`.  `GluedCycleSides` gained the restriction transfer (`exists_walk_restriction_of_avoids_piece_internal` / `hasCycleWithLength_restriction_of_avoids_piece_internal`): an accepted glued cycle avoiding the piece's internal vertices lives in the gluing of any label-edge-preserving restriction — applied with the retained piece it forces every token's witnessing cycle to enter the basin (the manuscript's \"if E were contained in X…\" step, context side).  And the general trichotomy (`exists_pieceWalk_or_labelDart`, `cycle_pieceLift_or_contextInternal_or_labelDart`): a glued cycle lifts to a piece cycle of equal length, meets a context-internal vertex, or uses a context-owned edge between two distinct visited labels — generalizing the pathContext-only `exists_pieceCycle_of_avoids_chain` to arbitrary contexts; with the restriction transfer and the two-labels cycle lemma this closes every case of the token's |K(𝔱)| ≥ 2 except the piece-lift, which lands on the object-level cycle against the standing avoidance.
+
+  TOKEN TWO-CARRIERS LANDED 2026-08-24 (kernel-built through
+  `Hypostructure.Graph.TraceBasinAlternatives`, 8640 jobs):
+  `exists_two_cutBoundary_of_traceLocalTargetDefect` = the whole of
+  `lem:typeA-pressure-token-two-carriers`, assembled exactly as the manuscript proves it —
+  alternative (a)'s distinguishing data + `exists_context_of_not_contextEquivalent` with the
+  retained-reading monotone transfer pin the realizing side to the basin's full piece; the
+  witnessing accepted cycle must enter the basin (label-edge-preserving retained restriction +
+  `glue_swap_target_iff` against the defect); the glued-cycle classification then yields two
+  DISTINCT cut-boundary labels in the witnessing event's support, the piece-lift arm decoding
+  to an accepted ambient cycle against the standing avoidance.  This is the token's
+  `|K(𝔱)| ≥ 2`; the remaining lane work is the `def:typeA-exit4-pressure-token` packaging,
+  the ledger instantiation of `DemandPartition` over the census entries, and
+  `prop:typeA-external-pressure-criterion`'s numeric row toward the ¬rate residual closure.
+
+  PRESSURE-LEDGER MAXIMAL CHOICE LANDED 2026-08-24 (kernel-built through
+  `Hypostructure.Graph.DemandPartition`, 734 jobs): `Partition.Pinned` is clause (L1)
+  of `def:typeA-pressure-ledger` (every pinned entry in `Ξ₃`, paid from its private
+  availability); `Partition.exists_pinned` constructs a clause-(L1) ledger from
+  three-or-more pairwise-disjoint private incidences per pinned entry; and
+  `Partition.exists_maximal_pinned` performs the manuscript's once-and-for-all choice
+  maximizing first `N₃`, then `N₂` (`Nat.findGreatest` on the lexicographic value
+  `N₃·(|Ξ|+1)+N₂`).  The instantiation at the census — pinned = surviving route-8
+  entries with `indexedPrivateCoreCarriers` (≥3 since `thm:typeA-two-carrier-nogo`
+  closed ≤2), available = the essential core (`2 ≤ entry.alpha` is on the ledger),
+  supply = `Route8Census.supply` — and the no-overcount numeric row
+  (`three_mul_add_two_mul_le` against `card_supply`) belong to the
+  `lem:typeA-pressure-ledger-no-overcount` consuming row next.
+
+  CENSUS LEDGER INSTANTIATION LANDED 2026-08-24 (kernel-built through
+  `Hypostructure.Graph.Route8Census`, 8627 jobs): `exists_maximal_demandLedger` is
+  `def:typeA-pressure-ledger` at the object (available = essential core, pinned =
+  surviving route-8 entries paid from `indexedPrivateCoreCarriers`; disjointness and
+  core-membership are theorems, the ≥3-private-carriers reading is the branch
+  hypothesis), and `demandLedger_no_overcount` is `lem:typeA-pressure-ledger-no-overcount`
+  in both manuscript displays against `e(R,W)` via `card_supply`.  Next labels in the
+  lane: `def:typeA-two-terminal-pressure-records`/`lem:typeA-pressure-records-canonical`
+  (actual-context vs profile-only polarity on the token) and
+  `prop:typeA-external-pressure-reduction`'s three-class table.
+
+  DEMAND RECORDS LANDED 2026-08-24 (kernel-built through
+  `Hypostructure.Graph.TraceBasinAlternatives`, 8641 jobs):
+  `exists_record_of_traceLocalTargetDefect` is
+  `def:typeA-two-terminal-pressure-records` + `lem:typeA-pressure-records-canonical`
+  — actual record (context = `SupportAtom.outside`, witnessing event, and the outside
+  corridor between two DISTINCT boundary labels along event edges with
+  context-internal interior) or profile record (non-actual context, two distinct
+  visited labels), exactly one by the context-equality polarity.  The corridor engine
+  is new in `GluedCycleSides` (section Corridor): `exists_context_lead_to_label`
+  (context side exits through a label, along walk edges),
+  `exists_corridor_of_path_labels` (nodup label-to-label walk: distinct-endpoint
+  corridor via the takeUntil/dropUntil disjointness), and
+  `exists_corridor_of_cycle_contextInternal` (label rotation + half-nodup transfer);
+  both trichotomy dart arms now also carry `s(inl left, inl right) ∈ edges`, with the
+  one-token consumer repair.  Next: `prop:typeA-external-pressure-reduction`'s
+  three-class accounting at the census, then the absorbers
+  (`def:typeA-pressure-absorbers`) toward `prop:typeA-external-pressure-criterion`.
+
+  EXTERNAL-DEMAND REDUCTION LANDED 2026-08-24 (kernel-built through the new
+  `Hypostructure.Graph.Route8DemandLedger`, 8642 jobs): the record proposition is
+  factored as `TraceBasin.CanonicalDemandRecord` (actual corridor record or profile
+  record, disjoint by the context-equality polarity), and
+  `Route8DemandLedger.records_of_two_residual` is
+  `prop:typeA-external-pressure-reduction`'s record row — every `Ξ₂ ∪ Ξ_res` entry
+  of a clause-(L1) ledger is target-defect (unpinned ⟹ defect, from the census
+  dichotomy at the consuming row) and carries its canonical record.  Next labels:
+  `def:typeA-pressure-absorbers`/`lem:typeA-pressure-absorber-no-overcount`
+  instantiation, the window-blocker audit, and
+  `prop:typeA-external-pressure-criterion`'s numeric row.
+
+  DEMAND-DEFECT SPLIT LANDED 2026-08-24 (kernel-built, `DemandPartition` 734 jobs):
+  `Partition.demandWeight` (1 on `Ξ₂`, 3 on `Ξ_res`),
+  `externalDefect_eq_sum_demandWeight` (`𝖯_ext` = total weight), and
+  `externalDefect_split` (`𝖯_ext = 𝖯_act + 𝖯_prof` for any record-polarity
+  predicate) are `def:typeA-actual-profile-pressure-defects` +
+  `lem:typeA-pressure-defect-split`; the polarity predicate at the census is
+  `CanonicalDemandRecord`'s actual arm.  Next in paper order:
+  `lem:typeA-profile-pressure-dependence-routing` (functional admissible rank
+  quotients on the profile coordinates), then `def:typeA-pressure-absorbers` units
+  and `lem:typeA-pressure-absorber-no-overcount`'s `3Ñ − 𝖯_open ≤ def⁺(R) + B_dep`.
+
+  ABSORBER LAYER LANDED 2026-08-24 (kernel-built, whole census chain 8642 jobs):
+  `Partition.demandUnits`/`card_demandUnits` are `def:typeA-pressure-absorbers`'
+  demand units with the exact count |𝒰_press| = 𝖯_ext, and
+  `three_mul_card_le_of_absorption` is `lem:typeA-pressure-absorber-no-overcount`
+  subtraction-free: `3Ñ ≤ |supply| + B_dep + 𝖯_open` with
+  `𝖯_open = |𝒰_press ∖ (absorbed ∪ dep)|`; the (A2) certificate semantics, the
+  routed-branch `B_dep = 0`, and the maximal absorbed-then-(A1) choice are branch
+  data at the consuming row.  `lem:typeA-profile-pressure-dependence-routing` is
+  recorded against the live generic `AttemptedQuotient.route` (arbitrary coordinate
+  family; profile-preservation kills arm 1 at the instantiation).  Remaining in the
+  lane: the window-blocker audit labels
+  (`lem:typeA-open-window-blocker-count` already has
+  `card_le_two_mul_card_add_excess`; the shadow/zero-shadow/numerics rows), then
+  `prop:typeA-exit4-closure-from-open-pressure` (generic arithmetic
+  `open_pressure_contradiction` is kernel-checked) and
+  `prop:typeA-external-pressure-criterion`'s numeric row toward
+  `selectedRouteEightStageClosure`.
+
+  WINDOW-SHADOW LANE LANDED 2026-08-24 (kernel-built, new
+  `Hypostructure.Graph.WindowShadowHit`, 8566 jobs):
+  `exists_pathGraph_walk`/`exists_window_arc` (an embedded window carries a simple
+  arc of length exactly the index distance), `exists_cycle_of_corridor`
+  (corridor + two attachment edges + window arc = simple cycle of length
+  s(Q) + 2 + |a − b|; simplicity from the corridor avoiding the window and the
+  distinct-attachment-edge clause), and `hasCycleWithLength_of_shadow_hit` =
+  `lem:typeA-window-shadow-hit-routes` (signature membership is the closed
+  length's acceptance — certificate (O1)).  `WindowAttachmentShadow` gained
+  `card_forbiddenDistances_le_one` = `lem:typeA-singleton-shadow-table`'s
+  load-bearing tail (s ≥ 18).  Remaining in the lane: the overload-triple and
+  same-window-cap labels (`def:typeA-same-window-overload-triple`,
+  `lem:typeA-same-window-cap-overload-excess`, `def:typeA-same-window-open-blocker-cap`,
+  `lem:typeA-routed-overload-not-open`), the zero-shadow labels, the
+  blocker-accounting audit and numerics, then
+  `prop:typeA-exit4-closure-from-open-pressure` and the criterion's numeric row.
+
+  EXHAUSTION + CAP LAYERS LANDED 2026-08-24 (kernel-built, chain 8642-8644 jobs):
+  `DemandPartition.exists_base_zero_partition` = the accounting audit and the
+  exhaustion partition (base ≤ 2 per window, zero class = the zero-signature
+  excess, exact disjoint cover); `card_le_two_mul_card_add_zero_excess` =
+  `lem:typeA-open-pressure-zero-shadow-excess`; `excess_le_card_exceptional` =
+  `lem:typeA-same-window-cap-overload-excess` (cap ⟹ excess ≤ exceptional card).
+  The overload-triple labels are recorded against their four kernel-checked
+  certificate engines ((O1) `WindowShadowHit`, (O2) `Absorption`, (O3)
+  `AttemptedQuotient.route`, (O4) Type B handoff), `lem:typeA-routed-overload-not-open`
+  is branch case elimination, `lem:typeA-primitive-excess-zero-shadow` is
+  `filter_congr` on the branch equivalence, and the three closure propositions
+  compose the checked engines with `open_pressure_contradiction`; every remaining
+  numeric margin (ε_press, ε_prim, 2θ/(1−13θ)) is registered-`Data` instance
+  arithmetic at the consuming rows.  The ¬rate lane's generic layer is now
+  complete through the paper's S25 audit; what remains for
+  `selectedRouteEightStageClosure` is the consuming-row assembly itself: the
+  `def:typeA-exit4-pressure-token` packaging over the census entries, the branch
+  decisions ((A2) routing, overload-triple removal, cap testing — [113]-pattern
+  Decisions where the paper tests them), and the peeling-reduced ledger labels
+  (`def:typeA-peeling-reduced-ledger`, `lem:typeA-peeling-reduced-reduction`,
+  `cor:typeA-large-budget-closure-open-pressure`).
+
+  ¬RATE-LANE GENERIC LAYER COMPLETE 2026-08-24: with the token packaging recorded
+  against `exists_two_cutBoundary_of_traceLocalTargetDefect` + `CanonicalDemandRecord`
+  and the criterion against `open_pressure_contradiction` at opendemand = 𝖯_ext +
+  `demandLedger_no_overcount`, no ¬rate-lane label row remains marked
+  "mathematics NOT yet implemented".  Every label's generic/geometric engine is
+  kernel-built; what remains for `selectedRouteEightStageClosure` is exclusively
+  consuming-row work on the residual branch: the [113]-pattern Decisions the paper
+  itself tests ((A2) routing, overload-triple removal, the same-window cap), the
+  registered numeric margins, and the assembly of the checked engines on the
+  literal failed-stage ledger.  The peeling-reduced labels
+  (`def:typeA-peeling-reduced-ledger`, `lem:typeA-peeling-reduced-reduction`,
+  `lem:typeA-exit4-finite-descent`) were already producer-complete on the
+  survivor path (`Route8Pressure` peel machinery + the [123] rows).
+
+  STAGE-CLOSURE ROW 1 LANDED 2026-08-24 — the failed-rate frontier advanced one
+  paper label, exactly per `def:typeA-pressure-ledger`:
+  * `Route8Census.exists_maximal_demandLedger`/`demandLedger_no_overcount`
+    restated on the arbitrary/`entriesOfComponents` family (replace-don't-accrete;
+    kernel-built) so they apply verbatim to the unified collection `Ξ̃`.
+  * New vocabulary key `route8DemandLedger` (idx 349, kernel-built 8733 jobs):
+    `Route8DemandLedgerStatement` = the maximal pinned 2/3-demand ledger over `Ξ̃`
+    (pinned = minimal entries holding at least δ private essential incidences,
+    clause (L1); maximal in `N₃` then `N₂`), both no-overcount displays, and the
+    canonical demand records of every unpaid target-defect entry.
+  * `route8DemandLedgerDichotomy` (SpineRows, `Decision.run`): clause (L1)'s own
+    dichotomy — a minimal entry with at most δ−1 private incidences and no
+    exit-(4) witness is EXACTLY the `[124]` survivor fact
+    (`K .route8UnifiedTrueTwoCarrierEntry`, republished verbatim); otherwise the
+    ledger fact is committed, `avoids` read from `K .selection` per the ExactLedger
+    discipline.  Full-file source check: only the pre-existing user-WIP errors.
+  * `selectedRouteEightStageClosure` (Assembly.lean:1437) is now DEFINED: left arm
+    closed by the same `route8UnifiedTerminalNoGoRow` (`thm:typeA-two-carrier-nogo`,
+    read not re-proved), right arm handed to the new loud continuation
+    `selectedRouteEightDemandAbsorption` — the manuscript's next labels
+    (`def:typeA-pressure-absorbers` with the tested (A2) routing, then the
+    window-blocker audit toward `prop:typeA-exit4-closure-from-open-pressure`).
+    `selectedRouteEightCensus` gained the `[FactKeys.Has (K .selection) known]`
+    binder its failed arm reads (available at its one call site).
+  Assembly's kernel check still waits only on the user's SpineRows WIP block; both
+  static catalog gates pass.
+
+  INVENTION-REMOVAL IN PROGRESS 2026-08-24 (the user's standing order: remove the
+  tested Decisions minted for claims the paper proves; implement the paper's own
+  proofs; do not stop until [123] compiles).  Ruling of record on the three loud
+  arms:
+  * `selectedRouteEightQuotientResidual` — NOT an invention: the census (b)-test is
+    the ratified two-predicate calibration.  Verified against the live predicates:
+    `TraceResponseQuotient` (plain (b)) lacks exactly the compression data
+    (`TraceTargetCompleteCompression`'s connected/proper atom, glued baseline
+    `MinimumDegreeAtLeast`, and `LexicographicallySmaller` realization) that the
+    `[104]` closure consumes — the identification cannot be derived, per the
+    standing ruling.  The arm stays as the calibration's residual.
+  * `selectedTypeBSublinearResidual` — IS an invention (the paper proves
+    `prop:typeB-bridge-sublinear` outright).  Removal = implementing
+    `lem:typeB-bridge-deficit-bound` + `lem:decorated-envelope-deficit-bound` as
+    the paper proves them.  KERNEL-GREEN MILESTONES LANDED TODAY:
+    (1) `K .typeAExclusion` generalized to the paper's own support-general
+    quantification (executor proof unchanged; classification row instantiates at
+    canonical pieces) — this is what lets the already-closed Type A case serve the
+    post-ledger core components ("similar cases already closed rigorously");
+    (2) `TypeBPostLedgerCore.refinedComponentCrossDegree` +
+    `sum_scaledCoreCharge_component_eq` — the EXACT per-component identity
+    Σ charge = s·def⁺(C) − |C| − s·cross(C);
+    (3) `sum_scaledCoreCharge_core_ge` — the remaining-core floor with an
+    extracted family (quiet components pay their size by
+    `PostLedgerComponent.nonnegative_or_saturatedReceiver`, extracted ones floor
+    at −|C|);
+    (4) `TypeBEnvelopeCharge.massBound_of_disjointLedger_bounded` — the
+    allowance-parameterized (B-ledger) mass bound (old fixed form kept as an
+    instance).
+    REMAINING ASSEMBLY, with the payment discipline now verified against
+    `def:typeB-assigned-ledger` (charges are Y_X-internal-degree charges — the
+    repo's `scaledCoreCharge` convention matches the manuscript exactly):
+    the cross-degree `s·cross(C)` between a remaining-core component and the
+    consumed fan carriers is paid by the B1 INCIDENCE CAPACITIES — the
+    `OrdinaryDeficiencyReserve` units the B2 ledger partitions exactly
+    (`reserveCapacityPartition`; per component `refinedComponentReserve` with
+    `suppliedPositiveDeficiency`: s·def⁺_own(C) ≤ reserve(C) + stub(C)) — NOT by
+    the F·s·σ allowance, which pays only the fan-envelope terms
+    ((k−3+¼)+c/4 ≤ 8(k−3) = `Data.bridgeMassSlack`).  The quiet-component chain
+    is: |C| ≤ s·def⁺_own(C) (the support-general `K .typeAExclusion`),
+    s·def⁺_own(C) = s·def⁺_piece(C) + s·cross(C)
+    (`sum_scaledCoreCharge_component_eq` rearranged), and the s·cross part is
+    covered inside `refinedComponentReserve` by the consumed-incidence
+    capacities anchored at the component.  The assembly composes the committed
+    `K .typeBBridgeReduction` clauses + the exact refinement partition + the
+    reserve-capacity partition + `massBound_of_disjointLedger_bounded`; then
+
+  CROSS-BOUND MILESTONE LANDED 2026-08-24 (kernel-built, 8734 jobs):
+  `FiniteObject.internalDegree_eq_of_closed` (BoundaryDemand — a closed region
+  reads the same internal degree as its closure; membership-level proof, immune
+  to the instance-transparency poison) and
+  `TypeBPostLedgerCore.sum_refinedComponentCrossDegree_le` — the additive chain
+  (A) per-component degree split, (B) components partition the core, (C) closed
+  components read the core degree, then the `sum_internalDegree_comm` double
+  count — bounding the total cross-degree by the removed region's internal
+  degrees.  With `sum_scaledCoreCharge_component_eq`,
+  `sum_scaledCoreCharge_core_ge`, and `massBound_of_extraction` (all
+  kernel-built), the ENTIRE bridge-arm removal now reduces to ONE inequality,
+  (★):
+
+      s·crossTotal ≤ payment₂/2 + F·s·σ(X)
+
+  — from the exact B2 partition identity
+  |X| + s·σ = s·def⁺ − |H| − payment₂/2 − Σ_core − Σ_{H∩X}, the floors, and the
+  landed component algebra, (★) is exactly what yields
+  `lem:typeB-bridge-with-route8-core`'s
+  |X| + s·σ ≤ s·def⁺ + F·s·σ + Σ_extracted(|C| − s·def⁺_own(C)).
+  (★) is the manuscript's per-centre economy: the charged carriers' deficiency
+  terms inside payment₂ net the carrier-side of every cross incidence, and the
+  remainder is the fan-envelope negative part (k−3+¼)+c/4 ≤ 8(k−3).  Its proof
+  must come from the committed candidate/profile ledger
+  (`TypeBFanClosedPorts.Profile`, `TypeBHybridIncidence`'s window/non-window
+  split, `PaysHybridB1`'s non-window demand payment, `IsCandidate`'s
+  charged-vertices structure) — raw degree counting provably does NOT fit the
+  registered `F = 8` (checked: crude removed-side bounds give about five times
+  the budget), so only the manuscript's own fine-grained accounting closes it,
+  exactly as `rem:route8-carrier-margin` warns.  After (★): the deficit row
+  consumes `K .typeBBridgeReduction` + the support-general `K .typeAExclusion`
+  via `massBound_of_extraction`, the extracted components join
+  `route8UnifiedEntries` (their `PostLedgerComponent` fields carry every Type A
+  admissibility invariant), and the tested
+  `typeBSublinearDichotomy`/`TypeBSublinearHypotheses` and keys 345/346 are
+  deleted.
+
+  CORRECTION AND PAPER-ROUTE LANDING 2026-08-24 (superseding the (★) framing
+  above): (★) was an artifact of forcing the paper's proof through the
+  committed B2-partition route — the manuscript's own proof of
+  `lem:typeB-bridge-deficit-bound` states explicitly that it "does not assume
+  that the B2 disjoint-incidence ledger exists".  The paper's route is now
+  IMPLEMENTED AND KERNEL-BUILT (8622 jobs), new module
+  `Graph/TypeBBridgeMass.lean`:
+
+  `bridge_mass_of_centre_deletion` = `lem:typeB-bridge-with-route8-core`:
+      |X| + s·σ(X) ≤ s·def⁺(X) + F·s·σ(X) + Σ_{w ∈ receivers(X ∖ H_X)} |E(w)|
+  — the centre region paid by the per-centre allowance (each centre carries at
+  least one surplus unit, `sum_centres_surplus`), the deleted region discharged
+  by the silence-free staged count
+  (`card_le_sum_excessBasinReduced_add_positiveDeficiency` — the same engine as
+  `stage_burden`), receiver routing total by
+  `exists_traceTo_of_no_baseline_subsupport` from the committed remainder
+  normalization, and the deficiency transfer through the deleted centres by the
+  new `FiniteObject.positiveDeficiency_sdiff_le` +
+  `internalDegree_le_add_of_cover` (BoundaryDemand, flavour-safe
+  membership-level statements).  The unpaid excess loads `E(w)` of `X ∖ H_X`
+  are the extracted census entries — the manuscript's `D_A(𝒜_X)`.  NO tested
+  hypothesis anywhere: `routes` is a theorem, `unsaturated` is replaced by
+  extraction, exactly `rem:unified-covers-exit4`'s reading.
+
+  The slack `1 + s·δ + 2s ≤ F·s` (21 ≤ 32 at the registered values) is
+  presentation arithmetic of the `bridgeMassSlack`/`fanCapSlack` family, to be
+  registered as a `Data` fact discharged by `norm_num` in `Problem.lean`.
+
+  REMAINING for the tested-Decision deletion, all mapped with no unknowns:
+  1. The handoff arm: derive `envelopeFamilyNegativePart_le_degreeSurplus`'s
+     per-piece hypotheses from the committed `HandoffProduced` envelope
+     (`DecoratedHandoff.Envelope`: decorations = the centres, assigned/arm =
+     the absorption structure, `lem:typeA-saturated-handoff` = saturated
+     receivers absorbed by the handoff) — or the analogous
+     extraction-plus-decoration count.
+  2. `Route8UnifiedDeficitFact` restated with the extracted entries of
+     `piece ∖ centres` for the negative σ>0 pieces (their components are
+     connected σ = 0 admissible sub-supports of the remainder, so the
+     support-general `K .typeAExclusion` classifies their entries for the
+     census); census/descent run over the extended family.
+  3. The deficit row rewritten onto `bridge_mass_of_centre_deletion` +
+     `K .remainderNormalized`; the tested Decision and keys 345/346 deleted.
+
+  THE COMPLETE [123]/[124] FACT-FLOW LEDGER 2026-08-24 (the closure as pure
+  `inputs.get` collection; verified against every live Holds read this
+  session).  Facts COMMITTED on the [123] ledger, available to read:
+  selection, replacementExclusion, cubicBaseline, uncompressible,
+  remainderNormalized, surplusAtOrBelow, typeAReceiverRouting (∀ σ=0
+  sub-support of the remainder: routing totality + threshold algebra),
+  typeBBridgeMass (three conditional mass bounds), typeBBridgeSublinear,
+  route8UnifiedNegative, typeAExclusion (support-general),
+  typeBBridgeReduction (∀-σ>0-negative-piece: B2 ledger + hygiene + grouped
+  clauses, or overlap), route8PiecesClassified, route8UnifiedDeficit,
+  route8QuotientFree (tested, ratified), route8UnifiedEntryCensus,
+  route8VisibleExitFourRouting, route8PeelingDescent,
+  route8StageRateFailed / route8UnifiedTrueTwoCarrierEntry,
+  route8DemandLedger.  Registered data: bridgeMassSlack, and now
+  bridgeDeletionSlack (1 + s·δ + 2s ≤ F·s, norm_num in Problem.lean,
+  kernel-built 8733).
+
+  ROW REWIRING (signature surgery only; the mathematics is kernel-built):
+  * route8UnifiedDeficitRow: Requires [typeBSublinearLedger, surplusAtOrBelow]
+    → [typeAReceiverRouting, surplusAtOrBelow, M1].  Executor per piece class:
+    σ=0-negative-no-handoff → route8Deficit summand (definitional);
+    nonneg → 0 (not_negativeNetCharge_iff);
+    σ>0-negative → `bridge_mass_of_centre_deletion` with
+      routed := (inputs.get typeAReceiverRouting) at piece∖centres
+      (a σ=0 sub-support: ambientSurplus = 0 since no high vertex survives)
+      and data.bridgeDeletionSlack — the Holds gains the extracted-entries
+      term Σ_{w ∈ receivers(piece∖centres)} excess(w);
+    σ=0-negative-handoff → M1.
+  * route8UnifiedEntryCensusRow: extend over the extracted entries
+    (components of piece∖centres are connected σ=0 admissible sub-supports of
+    the remainder — the support-general typeAExclusion classifies them; = M2).
+  * descent/stage/terminal rows: same shapes over the extended entry family
+    (stage_burden's engine is support-general).
+  * then DELETE typeBSublinearDichotomy, TypeBSublinearHypotheses,
+    keys 345/346, and `selectedTypeBSublinearResidual` disappears.
+
+  MISSING PRODUCERS — the exact remaining fact list, nothing else:
+  M1  handoff-envelope mass: ∀ σ=0-negative HandoffProduced piece,
+      |X| ≤ s·def⁺(X) + F·s·(decoration surplus, at-most-twice) — assembled
+      from the committed classification's handoff arm (the
+      DecoratedHandoff.Envelope datum) through the kernel-built
+      envelopeNegativePart/envelopeFamily machinery.
+  M2  the extended census fact over extracted entries (per above).
+  M3  the failed-stage demand-chain facts behind
+      selectedRouteEightDemandAbsorption (the S24 rows; every generic engine
+      kernel-built).
+  M4  the quotient residual arm (ratified two-predicate case; closure needs
+      the manuscript's realized exit-(5) data per the standing ruling).
+  [124] itself: complete; consumes route8UnifiedTrueTwoCarrierEntry only.
+
+  M1 RESOLUTION AFTER TWO VERIFIED AGENT REPORTS 2026-08-24: the paper proves
+  NO unconditional absorption bundle anywhere — `lem:typeA-saturated-handoff`
+  (tex 11346–11360) is an outcome iteration whose outcomes INCLUDE the route-8
+  residual, and every unconditional Type B mass statement keeps the −D_A(𝒜_X)
+  escape term (`lem:decorated-envelope-with-route8-core`,
+  `lem:typeB-bridge-with-route8-core`); the route-8-freeness hypothesis of the
+  conditional forms is discharged in the paper BY EXTRACTION.  The [107]/[108]
+  keys commit only `HandoffProduced` (∃ envelope, core = piece, decorations
+  nonempty); the envelope structure carries no absorption fields.  The
+  paper-exact carrier of the missing data is node [86]: `typeAExclusionRow`'s
+  executor ALREADY derives the per-load classification internally (`perLoad`:
+  each routed load is a route-8 entry ∨ quotient, with the witness and
+  separator cases short-circuited into the piece-level arms) — the fix is to
+  PUBLISH the per-load four-way form (witness ∨ route-8 entry ∨ quotient ∨
+  separator-with-envelope) in `K .typeAExclusion`'s Holds, exactly what the
+  executor proves, and repair the one consumer
+  (`route8PiecesClassifiedRow`).  Then the handoff-piece deficit treatment
+  reads it: separator loads → the envelope decorations (grouped per
+  `lem:decorated-envelope-no-double-count`), witness/route-8/quotient loads →
+  census extraction — no tested fact anywhere.  SEQUENCING: this [86] Holds
+  enrichment must WAIT for the M2 agent (census region reads the current
+  exclusion Holds) to land.
+
+  M4 FINAL DISPOSITION 2026-08-24 (agent investigation, verified against tex
+  11251–11295 and 5787–5805): the plain-(b) → exclusion bridge DOES NOT EXIST
+  in the manuscript and must not be built — the admissibility representative
+  clause is a definitional filter, not an existence theorem ("it is only an
+  abstract identification of labels"), and `properRepresentative`/
+  `closedRepresentative` are consumed as hypotheses everywhere in the tree,
+  never constructed.  The paper's own disposition of exit (5):
+  * realized by a smaller proper piece → `cor:uncompressible`
+    (= the committed [104] consumption, exactly as implemented against
+    `TraceTargetCompleteCompression`);
+  * response-level only → alternative (b), "not an admissible route-8
+    residual" — excluded by `def:typeA-true-route8-residual` (R2)/(R4), i.e.
+    CASED, with the denial carried by the true-residual entry — exactly the
+    committed `route8QuotientFree` test and the terminal fact's
+    `TargetCompleteMinimal` conjunct.
+  The committed design is therefore the paper's architecture.  The residual
+  arm (`selectedRouteEightQuotientResidual`: ∃ entry with plain (b)) closes
+  inside the S24 demand accounting: the response-level data is precisely the
+  PROFILE DEMAND RECORD of `def:typeA-two-terminal-pressure-records`
+  (`(q, r(ξ), S₀, S₁, Y)`), so that arm folds into the failed-stage demand
+  chain (the M3 lane), not into a separate closure.  The two unprovable
+  formulas, for the record (any future attempt must produce them from new
+  manuscript text, never from invariants): the glue baseline
+  `MinimumDegreeAtLeast θ (glue (retainedReading …) outside)` and
+  `LexicographicallySmaller` for the retained reading — both are separate
+  FIELDS of the realized predicate because they are not derivable.
+
+  M3 LANDED 2026-08-24 (agent-verified: vocabulary kernel-built 8733 jobs,
+  SpineRows at the exact 22-line baseline, DemandPartition kernel-built):
+  keys `route8DemandAbsorption` (idx 351) and `route8WindowBlockers`
+  (idx 352) with rows `route8DemandAbsorptionRow` /
+  `route8WindowBlockersRow` inserted after the demand-ledger dichotomy;
+  generic additions `Partition.fst_mem_of_mem_demandUnits`,
+  `Partition.exists_maximal_absorption`, and
+  `FiniteObject.exists_mem_packing_of_notMem_remainderSupport`.
+  CALIBRATION DECISION FOR USER REVIEW (agent-flagged, endorsed): the
+  absorption fact publishes (A1)-maximality WITH THE TYPE-(A2) SET HELD
+  (∀ B with the same side conditions and disjoint from dep,
+  |B.absorbed| ≤ |A.absorbed|) — NOT pair-maximality over (B, dep′), which
+  would force 𝖯_open = 0 and vacuate the S24 chain; the held-form is exactly
+  the property the manuscript's maximal choice satisfies and the one consumed
+  at tex 15708 (the (O2) case of `lem:typeA-routed-overload-not-open`: an
+  open unit with an admissible fresh incidence contradicts maximality).
+  Blocker construction: uniform from the entry's receiver (completion ports
+  nonempty), not from the token records — the record datum is basin-level
+  and conditional; the uniform route is the manuscript's own "the other
+  endpoint lies in W" sentence.  NEXT in the M3 lane: the overload-triple /
+  zero-shadow exhaustion rows on `K .route8WindowBlockers` (the generic
+  engines `exists_base_zero_partition`, `card_le_two_mul_card_add_zero_excess`,
+  `excess_le_card_exceptional`, `WindowShadowHit` are all kernel-built), into
+  which the quotient-residual arm's profile records fold per the M4
+  disposition.
+
+  M2 LANDED 2026-08-24 (agent-verified: vocabulary 8733 jobs, SpineRows at
+  the exact 22-line baseline): key `route8ExtractedEntryCensus` (idx 350) +
+  `route8ExtractedEntryCensusRow` — the per-entry census facts
+  (`Route8UnifiedEntryFacts` REUSED UNCHANGED) at the entries of
+  `route8ExtractedCores` = the canonical connected components of
+  `piece ∖ centres` over the negative σ>0 pieces, filtered to the paper's
+  `𝒜_X` (σ = 0, negative, ¬HandoffProduced, quotient-free) — the
+  component-indexed form, since the census derivation genuinely needs
+  connectivity (`exists_select?_eq_some_of_mem_routedLoads`).  Deviations
+  reported and endorsed: (i) `K .typeAExclusion` is NOT consumable per
+  component (its trichotomy cannot refute plain (b) and needs negativity);
+  the quotient-freeness and ¬handoff clauses are DEFINITIONAL FILTER clauses
+  of the collection, exactly as `route8UnifiedComponents` carries its own —
+  the paper's `𝒜_X` is by name the route-8 residual collection; (ii) the row
+  Requires only [selection, replacementExclusion, cubicBaseline].
+  INTEGRATION NOTE for the deficit-row rewrite: `bridge_mass_of_centre_deletion`
+  sums excess over ALL receivers of `piece ∖ centres`; the extracted census
+  covers the FILTERED components only — the complement components split as:
+  nonneg → 0, handoff → the envelope lane ([86] per-load enrichment),
+  quotient → the profile-record lane (S24), the same three-way split as
+  everywhere; the deficit Holds must route each accordingly.
+
+  [86] PER-LOAD PUBLICATION LANDED 2026-08-24 (agent-verified against
+  `lem:typeA-reduced-silent-residual`'s own per-load proof, tex 10949–10978;
+  vocabulary 8733 jobs; SpineRows at the exact 22-line baseline):
+  `K .typeAExclusion`'s Holds now carries, as an additive second conjunct
+  under the same support-general quantification, the per-load FOUR-WAY
+  classification at every saturated receiver (silent-excess and
+  overloaded-port loads): exit-(4) witness ∨ `Route8Entry` ∨ plain-(b)
+  quotient ∨ (surviving separator ∧ `HandoffProduced`) — derived ONCE in the
+  executor (the previous short-circuits into piece-level arms now read off
+  the same `perLoad`), existing trichotomy byte-identical as component 1,
+  single consumer `route8PiecesClassifiedRow` repaired with a `.1`
+  projection, no Assembly repair needed.  ALL FOUR M-FACTS ARE NOW RESOLVED:
+  M1 → this per-load fact (the separator arm is the handoff lane's per-load
+  carrier), M2 → key 350, M3 → keys 351/352, M4 → closed (no bridge; profile
+  lane).  REMAINING: the serial integration — restate the unified-deficit
+  Holds routing each non-extracted component class per the three-way split,
+  rewrite `route8UnifiedDeficitRow` onto `bridge_mass_of_centre_deletion` +
+  `K .typeAReceiverRouting` + `data.bridgeDeletionSlack` + the per-load fact,
+  extend the burden/descent over the extracted entries, delete
+  `typeBSublinearDichotomy`/`TypeBSublinearHypotheses`/keys 345–346, wire the
+  failed-stage continuation through keys 351/352, then the audit rows.
+
+  INTEGRATION DESIGN FREEZE v2 (2026-08-24, supersedes the per-class routing
+  sketch above after full manuscript verification):
+  (0) FINDING — M2 re-base required.  The paper's `𝒜_X`
+  (`lem:typeB-bridge-with-route8-core`, tex 14483: "After deleting the Type B
+  fan envelopes … contained in the remaining non-window core") lives in the
+  B2 ledger's REMAINING CORE, not in the bare centre-deleted region
+  `X ∖ centres(X)` that the landed `route8ExtractedCores` uses.  The
+  committed carrier of the paper's route is `K .typeBBridgeReduction`
+  (idx 344, fresh at the [123] cursor): B2 `DisjointLedger` + exact
+  refinement + negative core charge + PostLedgerComponent hygiene + grouped
+  decorated-envelope productions, with
+  `Graph.TypeBPostLedgerCore.massBound_of_extraction` giving
+  `|X| + s·σ ≤ s·def⁺(X) + Σ_extracted |C| + s·Σ crossDegree`, `quiet`
+  discharged definitionally by extracting every negative component.
+  (1) `route8ExtractedCores` redefined over the chosen ledger's remaining
+  core (classical dite choice per piece, `canonicalWindowPacking` pattern);
+  entry family `route8UnifiedEntries` extended by union; M2's census row
+  re-based (its derivation is collection-agnostic at connected σ=0 negative
+  filtered cores).
+  (2) `Route8QuotientFreeStatement` extended with the deleted-region
+  conjunct (quotient-freeness at excess loads of every negative no-handoff
+  remaining-core component), and `route8QuotientDichotomy` MOVED before the
+  deficit row in `selectedLargeBudgetPressureCensus` — the ratified casing
+  is the branch surrogate of the exit-(5) closure that
+  `lem:typeB-bridge-with-route8-core`'s proof invokes through
+  `lem:typeA-exclusion`; on the free arm the negative components split into
+  handoff (grouped-envelope-paid) and extracted (census-covered) only.
+  (3) Deficit fact: `|R| ≤ route8Deficit(𝒳̃) + extractedDeficit + s·supply
+  + 2FsT(n)`; descent slack UNCHANGED at `2FsT(n)` — the extracted deficit
+  is absorbed into the family count by the per-core staged burden, not into
+  slack (a slack route would poison the stage rate and the demand margin).
+  (4) Open joints under verification (three read-only agents dispatched):
+  (A) obstruction-arm payment at 344's right disjunct; (B) grouped-envelope
+  payment bundle derivability from 344's productions (remaining-core
+  components) and from `HandoffProduced` ([86] conjunct) for the σ=0
+  negative handoff CANONICAL pieces, which 344 does NOT cover; (C) component
+  decomposition lemmas (card/def⁺/staged count over remaining-core
+  components) and DisjointLedger trivial-instance viability for the choice
+  definition.  Integration edits begin when A–C report.
+    the deficit row rewritten to consume `K .typeBBridgeReduction` (committed:
+    ledger + exact refinement + negative core + per-component
+    `PostLedgerComponent` + exit-seven grouped envelopes, or overlap) with the
+    saturated components EXTRACTED into the unified ledger (the appendix's
+    "route-8 non-window core is extracted into D_A"), the census extended over
+    the extracted components (their `PostLedgerComponent` fields supply every
+    Type A admissibility invariant), and the overlap arm closed
+    (`lem:typeB-global-local-reflection` clause (d) is the one un-derived piece —
+    `TypeBGlobalLocalReflection`'s module note).  Then the tested
+    `typeBSublinearDichotomy`, `TypeBSublinearHypotheses`, and keys 345/346 are
+    deleted.
+  * `selectedRouteEightDemandAbsorption` — the failed-stage demand chain per the
+    paper's own S24–S25 order; its terminal margin state is recorded earlier in
+    this file.
+
+
 - [x] **Staged burden proven:** `Route8Pressure.stage_burden`, no flat burden assumed
 - [x] **Every peel recorded:** the descent's chain is ledger data; `StageRate` charges every
   recorded peel; visible peels carry their exit-(4) witnesses
@@ -787,60 +1501,53 @@ profile, context, replacement, and uncompressibility facts. Its literal manifest
 `K .bottleneckRouting` and the survivor specialization `K .typeBHandoff`. The owner is loud
 inside its proof, before either output can be committed.
 
-**Primary defect class.** mathematical proof absent at
-`lem:same-token-bottleneck-routing`: Lean does not yet obtain the paper-declared connector
-configurations from the literal homogeneous pattern. The support now reads the canonical returns
-already present in `K .activeSurplusDemands`; no return path is requested from the lemma in
-isolation.
+**Primary defect class.** mathematical proof absent after the declared-connector step of
+`lem:same-token-bottleneck-routing`: the paper's two configurations are now registered upstream,
+but the parallel/first-separator case analysis and its sparse-exit/Type-B consequences remain open.
 
-**Fresh audit diagnosis.** ❌ LOUD AT THE PAPER'S FIRST DECLARED-CONNECTOR STEP — Each of [140],
-[142], and [143] correctly reads its concrete overload witness from the incoming `ExactLedger` and
-publishes the manuscript's matching/star in the same token-role fibre. The subsequent Lean code had
-diverged from the paper by choosing arbitrary shortest paths from whole-graph connectivity. Those
-paths were not the active demands' `R_p` and their construction was circular.
+**Fresh audit diagnosis.** ⚠ DECLARED-CONNECTOR STEP REPAIRED — Node [136] already proved the
+current object connected while constructing the canonical pair support `X_π`; that proposition was
+formerly discarded. Its existing `K .capacityTokenLedger` fact now retains
+`ConnectedOn G V(G)`. Each of [140], [142], and [143] requires that same ledger fact, reads it with
+`inputs.get`, recovers `Θ_cap(π)=t` from the actual role fibre, and proves an inhabited routing
+configuration for every demand of every edge in its matching/star. The producer then publishes the
+configuration family, its canonical common root, and the homogeneous pattern atomically in the
+existing `K .homogeneousBottleneckPattern` fact. No new key, presentation field, selector, route
+carrier, or nonmonotone handoff is introduced.
 
-The repaired `routingSupport` instead uses the literal upstream data: capacity-token carrier,
-canonical blocker, `T(p)`, `T(q)`, the already canonical `R_p`, `R_q`, and `Γ(p)`, `Γ(q)`. The
-two return entries are forced by the paper's own earlier active-demand definition and blocker type
-(b): at an open port `Γ(p)=Q_p`, so the canonical return cannot be recovered from `Γ(p)`. No new
-path is selected and no numerical datum is supplied. The extra presentation fields, global path
-selector, callback label readers, collision/trichotomy wrappers, detached construction theorems,
-`GermPair`/`RoutedBottleneck` carriers, invented semantic keys, and conditional handoff row are
-deleted. `Parallel` also no longer accepts bare `¬ Diverges`: common-prefix entry is proved from
-the configurations' actual landing facts when one finite configuration ends first.
+The declared support is derived from the existing capacity presentation: token carrier, canonical
+blocker, `T(p),T(q)`, `Γ(p),Γ(q)`, the canonical pair-response support `X_π`, and the already
+registered canonical returns `R_p,R_q`. The connector walk is obtained from the connected declared
+support and is checked to start in the primitive token support and land in the selected local
+buffer. The generic support lemmas introduce no stored object; all object-valued witnesses are
+constructed inside the producer proof and sealed by the homogeneous-pattern ledger entry.
 
-The second source audit confirms why merely supplying `R_p,R_q` does not finish the proof.
-`ActiveSurplusDemands` carries enough data to reconstruct each canonical return walk from a selected
-endpoint to its centre. In contrast, the current `DeclaredCoordinateSignature` declaration exposes
-only coordinate constructors, valued readings, and support unions. It does not construct the
-paper-declared connector configuration from the primitive blocker support to a selected `T(p)`, nor
-does it provide the graph-derived seven-coordinate routing-label reading. Consequently the existing
-Lean declarations do not yet justify the first two objects chosen in the manuscript proof. This is
-a mathematical formalization gap, not permission to add a caller-supplied selector or carrier.
+Node [144] now destructures that strengthened ledger entry, performs the manuscript's matching/star
+endpoint choice and finite routing-label collision, and obtains both configurations from the
+registered provider. It proves that their heads coincide and that this head is the canonical token
+root. The former [144] code that re-proved graph connectivity, re-read the token charge, rebuilt
+`X_π`, and redefined the token root has been deleted.
 
-The first remaining formula is therefore the manuscript's own one, not a request that the paper
-justify the deleted strategy. In the compiled context containing concrete witnesses
-`active`, `capacity`, `activationEq`, and `concretePattern`, the sole goal is
+The first remaining formula is therefore the next manuscript step. In the context containing the
+two equal-label, same-root configurations, the open goal is
 `SparseSurplusExit (MinimumDegreeAtLeast data.threshold)
 (HasCycleWithLength data.LengthOK) data.LengthOK current.object ∨
-SameTokenTypeBHandoffStatement data current.object`. From the concrete token `t`, role `r`, and
-matching/star inside `concretePattern`, the proof must select two distinct equal-label edges and the
-declared connector configurations belonging to their active-family supports, then follow the
-paper's parallel/first-separator alternatives in order. On `K .sparseSurplusSurvivor`, the same
-executor eliminates the first arm and publishes only the Type B arm. No whole-graph connectivity
-path, extra support entry, caller-supplied bottleneck, undefined selector, or detached quotient
-theorem is an admissible substitute.
+SameTokenTypeBHandoffStatement data current.object`. The proof must now apply the paper's
+parallel/first-separator alternatives in order. On `K .sparseSurplusSurvivor`, the same executor
+eliminates the first arm and publishes only the Type B arm. No whole-graph replacement path, extra
+support entry, caller-supplied bottleneck, undefined selector, or detached quotient theorem is an
+admissible substitute.
 
 **What must be implemented or corrected.**
 
 - Complete the already registered mathematical `Holds` proposition, which now states the paper's
   concrete homogeneous-pattern package and exact sparse-exit-or-decorated-Type-B alternative. Do
   not restore a universal theorem about a separately supplied bottleneck.
-- Finish the anonymous proof inside `sameTokenBottleneckRoutingRow`. It already reads only the
-  literal pattern, survivor, and inherited paper facts through `FactInputs.get`; construct every
-  temporary routing/quotient/envelope object locally and return the two exact declared outputs.
-- Use `routingSupport` with the ledger's canonical `R_p,R_q`; never select a replacement path. The paper's
-  parallel case must follow its attempted-quotient/context/compression/smearing/closed-
+- Finish the anonymous proof inside `sameTokenBottleneckRoutingRow` from the two configurations now
+  read from `K .homogeneousBottleneckPattern`; construct only the paper's temporary
+  quotient/separator/envelope witnesses locally and return the two exact declared outputs.
+- Use the registered configurations with the ledger's canonical `R_p,R_q`; never select a
+  replacement path. The paper's parallel case must follow its attempted-quotient/context/compression/smearing/closed-
   representative alternatives, and the separated case must follow its cubic-switch and fan-safety
   alternatives in that order.
 - Append the sparse-exit-or-Type-B fact and its survivor specialization
@@ -854,12 +1561,14 @@ theorem is an admissible substitute.
 
 **Live gate checklist.**
 
-- [ ] **Implemented / reachable:** the exact vocabulary builds, but the anonymous proof has the
-  one displayed unsolved outcome
-- [x] **Correctly wired:** the exact pattern reaches `sameTokenBottleneckRoutingRow` directly
+- [x] **Implemented / reachable through the declared connectors:** the exact support API, retained
+  connectivity, and all three producer rows kernel-check; [144] reads the two same-root configurations
+- [x] **Correctly wired:** each exact pattern plus its configuration family reaches
+  `sameTokenBottleneckRoutingRow` directly
 - [x] **Residual-local proof:** the three class audits concern the literal active object
-- [ ] **Correct ledger registration:** the literal two-key manifest is registered, but no routing
-  or Type B result can be committed until the proof closes
+- [x] **Correct connector registration:** [140]/[142]/[143] append the inhabited same-root family in
+  the existing homogeneous-pattern fact; the later `[bottleneckRouting, typeBHandoff]` outputs still
+  cannot be committed until the remaining case analysis closes
 - [x] **No invented path strategy:** the global path fields, two extra support entries, collision
   wrappers, undefined selector, detached carriers, and conditional row are deleted
 - [ ] **Exact manuscript proof:** first absent at selection and reading of the declared connector

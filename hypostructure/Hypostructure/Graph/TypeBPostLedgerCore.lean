@@ -631,6 +631,375 @@ theorem postLedgerCoreHygiene
     exactWeightedRefinement := ledger.exactAugmentedLedgerRefinement
     }
 
+/-! ## The exact component charge identity
+
+`lem:typeB-bridge-deficit-bound`'s remaining-core accounting, per canonical
+component: with every core vertex ambiently at the baseline, the piece-scaled
+core charge of a component is exactly its own scaled positive deficiency minus
+its size minus its scaled cross-degree — the incidences its vertices keep into
+the consumed B2 carriers.  Core adjacency never leaves the component, so the
+cross-degree counts only carrier incidences; the manuscript pays them from the
+per-centre allowance. -/
+
+/-- The piece-internal neighbours a post-ledger component's vertices keep
+outside the component. -/
+noncomputable def refinedComponentCrossDegree
+    (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
+      packing piece.vertices demands)
+    (component : Connected.Component object ledger.remainingCore) : Nat :=
+  ∑ vertex ∈ Connected.vertices object ledger.remainingCore component,
+    (object.internalDegree piece.vertices vertex -
+      object.internalDegree
+        (Connected.vertices object ledger.remainingCore component) vertex)
+
+/-- **The exact per-component charge identity.** -/
+theorem sum_scaledCoreCharge_component_eq
+    (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
+      packing piece.vertices demands)
+    (component : Connected.Component object ledger.remainingCore)
+    (baseline : ∀ vertex : object.Vertex, threshold ≤ object.degree vertex) :
+    ∑ vertex ∈ Connected.vertices object ledger.remainingCore component,
+        TypeBRefinedSupport.scaledCoreCharge object threshold dischargeScale
+          piece.vertices vertex =
+      ((dischargeScale * object.positiveDeficiency
+          (Connected.vertices object ledger.remainingCore component)
+          threshold : Nat) : Int) -
+        ((Connected.vertices object ledger.remainingCore component).card :
+          Int) -
+        ((dischargeScale *
+          refinedComponentCrossDegree ledger component : Nat) : Int) := by
+  classical
+  set C := Connected.vertices object ledger.remainingCore component with hC
+  have caps : ∀ vertex ∈ C,
+      object.internalDegree C vertex ≤
+          object.internalDegree piece.vertices vertex ∧
+        object.internalDegree piece.vertices vertex ≤ threshold := by
+    intro vertex member
+    have coreMember : vertex ∈ ledger.remainingCore := by
+      exact refinedComponent_subset_remainingCore ledger component member
+    have degreeLe : object.degree vertex ≤ threshold := by
+      simpa [Graph.IsHighCentre] using
+        (ledger.noHighCentre_remaining coreMember)
+    refine ⟨?_, ?_⟩
+    · exact object.internalDegree_mono
+        (refinedComponent_subset_piece ledger component) vertex
+    · exact le_trans (object.internalDegree_le_degree piece.vertices vertex)
+        degreeLe
+  have pointwise : ∀ vertex ∈ C,
+      TypeBRefinedSupport.scaledCoreCharge object threshold dischargeScale
+          piece.vertices vertex =
+        ((dischargeScale *
+            (threshold - object.internalDegree C vertex) : Nat) : Int) -
+          ((dischargeScale *
+            (object.internalDegree piece.vertices vertex -
+              object.internalDegree C vertex) : Nat) : Int) - 1 := by
+    intro vertex member
+    obtain ⟨capLe, capTop⟩ := caps vertex member
+    rw [TypeBRefinedSupport.scaledCoreCharge]
+    have split : dischargeScale *
+        (threshold - object.internalDegree C vertex) =
+        dischargeScale *
+            (threshold - object.internalDegree piece.vertices vertex) +
+          dischargeScale *
+            (object.internalDegree piece.vertices vertex -
+              object.internalDegree C vertex) := by
+      rw [← Nat.mul_add]
+      congr 1
+      omega
+    push_cast [split]
+    ring
+  rw [Finset.sum_congr rfl pointwise]
+  rw [Finset.sum_sub_distrib, Finset.sum_sub_distrib, Finset.sum_const,
+    nsmul_eq_mul, mul_one]
+  have deficiencyEq :
+      (∑ vertex ∈ C, ((dischargeScale *
+          (threshold - object.internalDegree C vertex) : Nat) : Int)) =
+      ((dischargeScale * object.positiveDeficiency C threshold : Nat) : Int) := by
+    rw [FiniteObject.positiveDeficiency, Finset.mul_sum]
+    push_cast
+    rfl
+  have crossEq :
+      (∑ vertex ∈ C, ((dischargeScale *
+          (object.internalDegree piece.vertices vertex -
+            object.internalDegree C vertex) : Nat) : Int)) =
+      ((dischargeScale *
+        refinedComponentCrossDegree ledger component : Nat) : Int) := by
+    rw [refinedComponentCrossDegree, Finset.mul_sum, ← hC]
+    push_cast
+    rfl
+  rw [deficiencyEq, crossEq]
+  ring
+
+/-- **The remaining-core charge floor with extraction**: every component is
+quiet — its size paid by its own scaled deficiency
+(`PostLedgerComponent.nonnegative_or_saturatedReceiver`, first arm) — or is
+listed in the extracted family; the core charge is then bounded below by the
+extracted sizes and the scaled total cross-degree. -/
+theorem sum_scaledCoreCharge_core_ge
+    (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
+      packing piece.vertices demands)
+    (baseline : ∀ vertex : object.Vertex, threshold ≤ object.degree vertex)
+    (extracted : Finset (Connected.Component object ledger.remainingCore))
+    (quiet : ∀ component ∈
+        (Connected.order object ledger.remainingCore).toFinset,
+      component ∉ extracted →
+      (Connected.vertices object ledger.remainingCore component).card ≤
+        dischargeScale * object.positiveDeficiency
+          (Connected.vertices object ledger.remainingCore component)
+          threshold) :
+    -(∑ component ∈ extracted,
+        ((Connected.vertices object ledger.remainingCore component).card :
+          Int)) -
+      ((dischargeScale *
+        ∑ component ∈ (Connected.order object ledger.remainingCore).toFinset,
+          refinedComponentCrossDegree ledger component : Nat) : Int) ≤
+      ∑ vertex ∈ ledger.remainingCore,
+        TypeBRefinedSupport.scaledCoreCharge object threshold dischargeScale
+          piece.vertices vertex := by
+  classical
+  have components := sum_eq_sum_components object ledger.remainingCore
+    (TypeBRefinedSupport.scaledCoreCharge object threshold dischargeScale
+      piece.vertices)
+  have nodupOrder := Connected.order_nodup object ledger.remainingCore
+  have listToFinset :
+      ((Connected.order object ledger.remainingCore).map fun component =>
+        ∑ vertex ∈ Connected.vertices object ledger.remainingCore component,
+          TypeBRefinedSupport.scaledCoreCharge object threshold dischargeScale
+            piece.vertices vertex).sum =
+      ∑ component ∈ (Connected.order object ledger.remainingCore).toFinset,
+        ∑ vertex ∈ Connected.vertices object ledger.remainingCore component,
+          TypeBRefinedSupport.scaledCoreCharge object threshold dischargeScale
+            piece.vertices vertex := by
+    rw [Finset.sum_list_map_count]
+    refine Finset.sum_congr rfl fun component member => ?_
+    rw [List.count_eq_one_of_mem nodupOrder (List.mem_toFinset.mp member),
+      one_nsmul]
+  rw [components, listToFinset]
+  have pointwiseGe : ∀ component ∈
+      (Connected.order object ledger.remainingCore).toFinset,
+      (if component ∈ extracted then
+          -(((Connected.vertices object ledger.remainingCore component).card :
+            Int))
+        else 0) -
+        ((dischargeScale *
+          refinedComponentCrossDegree ledger component : Nat) : Int) ≤
+      ∑ vertex ∈ Connected.vertices object ledger.remainingCore component,
+        TypeBRefinedSupport.scaledCoreCharge object threshold dischargeScale
+          piece.vertices vertex := by
+    intro component member
+    rw [sum_scaledCoreCharge_component_eq ledger component baseline]
+    by_cases inExtracted : component ∈ extracted
+    · rw [if_pos inExtracted]
+      have nonneg : (0 : Int) ≤
+          ((dischargeScale * object.positiveDeficiency
+            (Connected.vertices object ledger.remainingCore component)
+            threshold : Nat) : Int) := Int.natCast_nonneg _
+      linarith
+    · rw [if_neg inExtracted]
+      have paid := quiet component member inExtracted
+      have paidInt :
+          ((Connected.vertices object ledger.remainingCore component).card :
+            Int) ≤
+          ((dischargeScale * object.positiveDeficiency
+            (Connected.vertices object ledger.remainingCore component)
+            threshold : Nat) : Int) := by exact_mod_cast paid
+      linarith
+  have summed := Finset.sum_le_sum pointwiseGe
+  rw [Finset.sum_sub_distrib] at summed
+  have ifSum : (∑ component ∈
+      (Connected.order object ledger.remainingCore).toFinset,
+      (if component ∈ extracted then
+          -(((Connected.vertices object ledger.remainingCore
+            component).card : Int))
+        else 0)) =
+      -(∑ component ∈
+          (Connected.order object ledger.remainingCore).toFinset ∩ extracted,
+        ((Connected.vertices object ledger.remainingCore component).card :
+          Int)) := by
+    rw [← Finset.sum_neg_distrib, Finset.sum_ite_mem]
+  have extractedLe :
+      -(∑ component ∈ extracted,
+        ((Connected.vertices object ledger.remainingCore component).card :
+          Int)) ≤
+      -(∑ component ∈
+          (Connected.order object ledger.remainingCore).toFinset ∩ extracted,
+        ((Connected.vertices object ledger.remainingCore component).card :
+          Int)) := by
+    have sub :
+        (Connected.order object ledger.remainingCore).toFinset ∩ extracted ⊆
+          extracted := Finset.inter_subset_right
+    have := Finset.sum_le_sum_of_subset_of_nonneg
+      (f := fun component =>
+        ((Connected.vertices object ledger.remainingCore component).card :
+          Int))
+      sub (fun component _ _ => Int.natCast_nonneg _)
+    linarith
+  have crossCast :
+      ((dischargeScale *
+        ∑ component ∈ (Connected.order object ledger.remainingCore).toFinset,
+          refinedComponentCrossDegree ledger component : Nat) : Int) =
+      ∑ component ∈ (Connected.order object ledger.remainingCore).toFinset,
+        ((dischargeScale *
+          refinedComponentCrossDegree ledger component : Nat) : Int) := by
+    rw [Finset.mul_sum]
+    push_cast
+    rfl
+  rw [crossCast]
+  linarith [summed, ifSum, extractedLe]
+
+/-- **The total cross-degree is bounded by the removed region's internal
+degrees** — the incidences the B1 entries carry.  Core adjacency never leaves
+a component, so the double count runs through the cut between the remaining
+core and the consumed part. -/
+theorem sum_refinedComponentCrossDegree_le
+    (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
+      packing piece.vertices demands) :
+    ∑ component ∈ (Connected.order object ledger.remainingCore).toFinset,
+        refinedComponentCrossDegree ledger component ≤
+      ∑ vertex ∈ piece.vertices \ ledger.remainingCore,
+        object.internalDegree piece.vertices vertex := by
+  classical
+  have nodupOrder := Connected.order_nodup object ledger.remainingCore
+  have listSum : ∀ f : Connected.Component object ledger.remainingCore → Nat,
+      ((Connected.order object ledger.remainingCore).map f).sum =
+        ∑ component ∈ (Connected.order object ledger.remainingCore).toFinset,
+          f component := by
+    intro f
+    rw [Finset.sum_list_map_count]
+    refine Finset.sum_congr rfl fun component member => ?_
+    rw [List.count_eq_one_of_mem nodupOrder (List.mem_toFinset.mp member),
+      one_nsmul]
+  -- (A) per component: Σ_C d_piece = Σ_C d_C + crossDegree
+  have splitA : ∀ component ∈
+      (Connected.order object ledger.remainingCore).toFinset,
+      (∑ vertex ∈ Connected.vertices object ledger.remainingCore component,
+        object.internalDegree piece.vertices vertex) =
+      (∑ vertex ∈ Connected.vertices object ledger.remainingCore component,
+        object.internalDegree
+          (Connected.vertices object ledger.remainingCore component) vertex) +
+        refinedComponentCrossDegree ledger component := by
+    intro component _
+    rw [refinedComponentCrossDegree, ← Finset.sum_add_distrib]
+    refine Finset.sum_congr rfl fun vertex _ => ?_
+    have mono := object.internalDegree_mono
+      (refinedComponent_subset_piece ledger component) vertex
+    omega
+  -- (B) components partition the core, for the piece-degree weight
+  have coreDp : (∑ vertex ∈ ledger.remainingCore,
+      object.internalDegree piece.vertices vertex) =
+      ∑ component ∈ (Connected.order object ledger.remainingCore).toFinset,
+        ∑ vertex ∈ Connected.vertices object ledger.remainingCore component,
+          object.internalDegree piece.vertices vertex := by
+    rw [sum_eq_sum_components object ledger.remainingCore
+      (object.internalDegree piece.vertices), listSum]
+  -- (C) closed components read the core degree
+  have coreDc : (∑ component ∈
+      (Connected.order object ledger.remainingCore).toFinset,
+      ∑ vertex ∈ Connected.vertices object ledger.remainingCore component,
+        object.internalDegree
+          (Connected.vertices object ledger.remainingCore component) vertex) =
+      ∑ vertex ∈ ledger.remainingCore,
+        object.internalDegree ledger.remainingCore vertex := by
+    have pointwise : ∀ component ∈
+        (Connected.order object ledger.remainingCore).toFinset,
+        (∑ vertex ∈ Connected.vertices object ledger.remainingCore component,
+          object.internalDegree
+            (Connected.vertices object ledger.remainingCore component)
+            vertex) =
+        ∑ vertex ∈ Connected.vertices object ledger.remainingCore component,
+          object.internalDegree ledger.remainingCore vertex := by
+      intro component _
+      refine Finset.sum_congr rfl fun vertex vmem => ?_
+      exact (object.internalDegree_eq_of_closed
+        (refinedComponent_subset_remainingCore ledger component)
+        (fun other adjacent inMid =>
+          Connected.neighbor_mem_vertices object ledger.remainingCore
+            component vmem inMid adjacent)).symm
+    rw [Finset.sum_congr rfl pointwise,
+      ← listSum (fun component =>
+        ∑ vertex ∈ Connected.vertices object ledger.remainingCore component,
+          object.internalDegree ledger.remainingCore vertex),
+      ← sum_eq_sum_components object ledger.remainingCore
+        (object.internalDegree ledger.remainingCore)]
+  -- the cut double count
+  have comm := object.sum_internalDegree_comm ledger.remainingCore
+    piece.vertices
+  have sdiffSplit := Finset.sum_sdiff (f := fun vertex =>
+      object.internalDegree ledger.remainingCore vertex)
+    ledger.remainingCore_subset
+  have monoRest : (∑ vertex ∈ piece.vertices \ ledger.remainingCore,
+      object.internalDegree ledger.remainingCore vertex) ≤
+      ∑ vertex ∈ piece.vertices \ ledger.remainingCore,
+        object.internalDegree piece.vertices vertex :=
+    Finset.sum_le_sum fun vertex _ =>
+      object.internalDegree_mono ledger.remainingCore_subset vertex
+  have sumSplitA : (∑ component ∈
+      (Connected.order object ledger.remainingCore).toFinset,
+      ∑ vertex ∈ Connected.vertices object ledger.remainingCore component,
+        object.internalDegree piece.vertices vertex) =
+      (∑ component ∈
+        (Connected.order object ledger.remainingCore).toFinset,
+        ∑ vertex ∈ Connected.vertices object ledger.remainingCore component,
+          object.internalDegree
+            (Connected.vertices object ledger.remainingCore component)
+            vertex) +
+        ∑ component ∈
+          (Connected.order object ledger.remainingCore).toFinset,
+          refinedComponentCrossDegree ledger component := by
+    rw [Finset.sum_congr rfl splitA, Finset.sum_add_distrib]
+  omega
+
+/-- **`lem:typeB-bridge-with-route8-core`, the ledger side**: from the
+committed B2 ledger and its exact refinement, with every non-extracted
+component quiet, the piece's cleared mass is paid by its deficiency, the
+extracted components' sizes, and the scaled total cross-degree — the
+manuscript's fan-envelope allowance then pays the latter through the B1
+half-credit incidences at the consuming row. -/
+theorem massBound_of_extraction
+    (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
+      packing piece.vertices
+      (TypeBRefinedSupport.centres object threshold piece.vertices))
+    (exact : ledger.ExactAugmentedLedgerRefinement)
+    (baseline : ∀ vertex : object.Vertex, threshold ≤ object.degree vertex)
+    (extracted : Finset (Connected.Component object ledger.remainingCore))
+    (quiet : ∀ component ∈
+        (Connected.order object ledger.remainingCore).toFinset,
+      component ∉ extracted →
+      (Connected.vertices object ledger.remainingCore component).card ≤
+        dischargeScale * object.positiveDeficiency
+          (Connected.vertices object ledger.remainingCore component)
+          threshold) :
+    piece.vertices.card +
+        dischargeScale * object.ambientSurplus piece.vertices threshold ≤
+      dischargeScale * object.positiveDeficiency piece.vertices threshold +
+        ((∑ component ∈ extracted,
+          (Connected.vertices object ledger.remainingCore component).card) +
+          dischargeScale *
+            ∑ component ∈
+              (Connected.order object ledger.remainingCore).toFinset,
+              refinedComponentCrossDegree ledger component) := by
+  classical
+  refine TypeBEnvelopeCharge.massBound_of_disjointLedger_bounded ledger exact ?_
+  have floor := sum_scaledCoreCharge_core_ge ledger baseline extracted quiet
+  have castEq :
+      -(((∑ component ∈ extracted,
+          (Connected.vertices object ledger.remainingCore component).card) +
+          dischargeScale *
+            ∑ component ∈
+              (Connected.order object ledger.remainingCore).toFinset,
+              refinedComponentCrossDegree ledger component : Nat) : Int) =
+      -(∑ component ∈ extracted,
+          ((Connected.vertices object ledger.remainingCore component).card :
+            Int)) -
+        ((dischargeScale *
+          ∑ component ∈
+            (Connected.order object ledger.remainingCore).toFinset,
+            refinedComponentCrossDegree ledger component : Nat) : Int) := by
+    push_cast
+    ring
+  rw [castEq]
+  exact floor
+
 end
 
 end Hypostructure.Graph.TypeBPostLedgerCore

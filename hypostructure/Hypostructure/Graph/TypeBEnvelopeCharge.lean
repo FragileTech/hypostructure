@@ -283,6 +283,100 @@ theorem nonNegativeNetCharge_of_disjointLedger_remainingCore_nonneg
 
 
 
+/-- **`lem:typeB-bridge-deficit-bound`, reduced to the remaining core** — the
+exact B2 partition turns the piece-level mass bound into a single lower bound
+on the remaining core's scaled charge: with the piece's own high centres as
+demands, `(B-ledger)` gives `augLedger + |H| = s·def⁺ − s·σ − |V|`, and the
+partition with nonnegative selected payments and the `−1`-floor of the centre
+core charges gives `augLedger + |H| ≥ Σ_{remainingCore} scaledCoreCharge`.
+Hence a lower bound `−F·s·σ` on the remaining core yields the manuscript's
+`No₋(X) ≤ F·Σ_h (d_G(h) − δ)`, written subtraction-free at the discharge
+scale. -/
+theorem massBound_of_disjointLedger_bounded {threshold dischargeScale : Nat}
+    {packing : Finset (Finset object.Vertex)}
+    {piece : Finset object.Vertex} {allowance : Nat}
+    (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
+      packing piece (TypeBRefinedSupport.centres object threshold piece))
+    (exact : ledger.ExactAugmentedLedgerRefinement)
+    (coreBound :
+      - ((allowance : Nat) : Int) ≤
+        ∑ vertex ∈ ledger.remainingCore,
+          TypeBRefinedSupport.scaledCoreCharge object threshold dischargeScale
+            piece vertex) :
+    piece.card + dischargeScale * object.ambientSurplus piece threshold ≤
+      dischargeScale * object.positiveDeficiency piece threshold +
+        allowance := by
+  classical
+  have partition := exact.partition
+  have paymentNonneg := exact.selectedNonnegative
+  -- the assigned centres inside the core contribute at least `−1` each
+  have centreCoreFloor :
+      0 ≤ (∑ centre ∈ TypeBRefinedSupport.centres object threshold piece ∩ piece,
+        TypeBRefinedSupport.scaledCoreCharge object threshold dischargeScale
+          piece centre) +
+        ((TypeBRefinedSupport.centres object threshold piece ∩ piece).card : Int) := by
+    have pointwise : ∀ centre ∈
+        TypeBRefinedSupport.centres object threshold piece ∩ piece,
+        (-1 : Int) ≤ TypeBRefinedSupport.scaledCoreCharge object threshold
+          dischargeScale piece centre := by
+      intro centre _member
+      rw [TypeBRefinedSupport.scaledCoreCharge]
+      have nonneg : (0 : Int) ≤
+          ((dischargeScale *
+            (threshold - object.internalDegree piece centre) : Nat) : Int) :=
+        Int.natCast_nonneg _
+      linarith
+    have sumBound := Finset.sum_le_sum pointwise
+    rw [Finset.sum_const, nsmul_eq_mul, mul_neg, mul_one] at sumBound
+    linarith
+  have interLe :
+      ((TypeBRefinedSupport.centres object threshold piece ∩ piece).card : Int) ≤
+        ((TypeBRefinedSupport.centres object threshold piece).card : Int) := by
+    exact_mod_cast Finset.card_le_card Finset.inter_subset_left
+  -- the partition with the floors: `augLedgerWith + |H| ≥ Σ_remainingCore charge`
+  have ledgerGe : (∑ vertex ∈ ledger.remainingCore,
+        TypeBRefinedSupport.scaledCoreCharge object threshold dischargeScale
+          piece vertex) ≤
+      TypeBRefinedSupport.augmentedLedgerWith object threshold dischargeScale
+          piece (TypeBRefinedSupport.centres object threshold piece) +
+        ((TypeBRefinedSupport.centres object threshold piece).card : Int) := by
+    linarith [partition, paymentNonneg, centreCoreFloor, interLe]
+  have chain := le_trans coreBound ledgerGe
+  -- `(B-ledger)`: `augLedgerWith + |H| = s·def⁺ − s·σ − |V|`
+  have identity : TypeBRefinedSupport.augmentedLedgerWith object threshold
+      dischargeScale piece (TypeBRefinedSupport.centres object threshold piece) +
+        ((TypeBRefinedSupport.centres object threshold piece).card : Int) =
+      ((dischargeScale * object.positiveDeficiency piece threshold : Nat) : Int) -
+        ((dischargeScale * object.ambientSurplus piece threshold : Nat) : Int) -
+        (piece.card : Int) :=
+    augmentedLedger_add_card_centres object threshold dischargeScale piece
+  rw [identity] at chain
+  have intBound :
+      (piece.card : Int) +
+          ((dischargeScale * object.ambientSurplus piece threshold : Nat) : Int) ≤
+        ((dischargeScale * object.positiveDeficiency piece threshold : Nat) : Int) +
+          ((allowance : Nat) : Int) := by
+    linarith
+  exact_mod_cast intBound
+
+/-- The manuscript's fixed-allowance instance: `allowance = F·s·σ(X)`. -/
+theorem massBound_of_disjointLedger {threshold dischargeScale massFactor : Nat}
+    {packing : Finset (Finset object.Vertex)}
+    {piece : Finset object.Vertex}
+    (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
+      packing piece (TypeBRefinedSupport.centres object threshold piece))
+    (exact : ledger.ExactAugmentedLedgerRefinement)
+    (coreBound :
+      - ((massFactor * dischargeScale *
+          object.ambientSurplus piece threshold : Nat) : Int) ≤
+        ∑ vertex ∈ ledger.remainingCore,
+          TypeBRefinedSupport.scaledCoreCharge object threshold dischargeScale
+            piece vertex) :
+    piece.card + dischargeScale * object.ambientSurplus piece threshold ≤
+      dischargeScale * object.positiveDeficiency piece threshold +
+        massFactor * dischargeScale * object.ambientSurplus piece threshold :=
+  massBound_of_disjointLedger_bounded ledger exact coreBound
+
 /-! ## `lem:typeB-exclusion` Step 2: the canonical B2 refinement -/
 
 /-- The unpaid negative fan-envelope part used by the later bridge-mass

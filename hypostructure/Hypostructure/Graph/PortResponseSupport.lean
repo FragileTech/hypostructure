@@ -1,5 +1,6 @@
 import Hypostructure.Graph.SparsePortActivation
 import Hypostructure.Graph.FinitePathSelection
+import Hypostructure.Graph.SameTokenRoutingGerms
 
 /-!
 # The canonical response support of a selected surplus port
@@ -97,6 +98,42 @@ noncomputable def returnSupport
   letI : Fintype object.Vertex := by infer_instance
   letI : DecidableEq object.Vertex := object.vertices.decEq
   exact (port.canonicalReturn returns).path.1.support.toFinset
+
+/-- The selected endpoint is the initial vertex of its canonical return and
+therefore belongs to `R_p`. -/
+theorem endpoint_mem_returnSupport
+    (port : SurplusPort object threshold) {left right : object.Vertex}
+    (returns : Nonempty (PortReturn object port.centre port.endpoint left right)) :
+    port.endpoint ∈ port.returnSupport returns := by
+  letI : FinEnum object.Vertex := object.vertices
+  letI : Fintype object.Vertex := by infer_instance
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  simp [returnSupport]
+
+/-- The canonical return support is connected because it is the support of the
+canonical simple return path already carried by the active demand. -/
+theorem connectedOn_returnSupport
+    (port : SurplusPort object threshold) {left right : object.Vertex}
+    (returns : Nonempty (PortReturn object port.centre port.endpoint left right)) :
+    SupportComponents.Connected.ConnectedOn object
+      (port.returnSupport returns) := by
+  letI : FinEnum object.Vertex := object.vertices
+  letI : Fintype object.Vertex := by infer_instance
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  letI : DecidableRel object.graph.Adj := object.decideAdj
+  let deletedWalk := (port.canonicalReturn returns).path.1
+  let inclusion : port.deletedPortGraph →g object.graph :=
+    .ofLE (by
+      unfold deletedPortGraph
+      exact object.graph.deleteEdges_le {s(port.centre, port.endpoint)})
+  let ambientWalk : object.graph.Walk port.endpoint port.centre :=
+    deletedWalk.map inclusion
+  have supportEq : ambientWalk.support = deletedWalk.support := by
+    rw [show ambientWalk.support = deletedWalk.support.map inclusion from by
+      exact SimpleGraph.Walk.support_map inclusion deletedWalk]
+    simp [inclusion]
+  rw [returnSupport, ← supportEq]
+  exact SameTokenRoutingGerms.connectedOn_walkSupport ambientWalk
 
 /-- **`Γ(p)`, the canonical response support.**
 

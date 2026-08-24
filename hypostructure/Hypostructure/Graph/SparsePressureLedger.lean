@@ -34,6 +34,534 @@ open Hypostructure.Graph.SameTokenBlockerRoles
 
 universe u
 
+/-- A canonical clause-(d) blocker in the recorded capacity presentation reads
+back the exact pair-indexed failed determination stored by node `[134]`. -/
+theorem CapacityPresentation.profileObstructionAt_of_canonicalBlocker
+    {Baseline Target : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {threshold order : Nat}
+    (active : ActiveSurplusDemands Baseline Target LengthOK object threshold)
+    (capacity : CapacityPresentation object threshold order)
+    (activationEq : capacity.activation =
+      recordSparsePairDEBlockers (Baseline := Baseline) (LengthOK := LengthOK)
+        (pairResponseActivation active) (object.portPairSchedule threshold))
+    {pair : Finset (object.Vertex × object.Vertex)}
+    {coordinate : object.PairCoordinate}
+    (selected : FiniteObject.canonicalBlocker capacity.activation pair =
+      some (.boundaryProfile coordinate)) :
+    SparsePairDEProfileObstructionAt (Baseline := Baseline)
+      (LengthOK := LengthOK) (pairResponseActivation active)
+        (object.portPairSchedule threshold) pair := by
+  have blockerMem :=
+    FiniteObject.canonicalBlocker_mem capacity.activation selected
+  have obstructs :
+      coordinate ∈ capacity.activation.profileObstructions pair := by
+    simpa [FiniteObject.DemandActivation.blockers] using blockerMem
+  rw [activationEq] at obstructs
+  exact profileObstructionAt_of_mem_recordedProfileObstructions
+    (pairResponseActivation active) (object.portPairSchedule threshold)
+      obstructs
+
+/-- A canonical clause-(e) blocker reads back its exact pair-indexed
+target-response obstruction from the same monotone activation row. -/
+theorem CapacityPresentation.responseObstructionAt_of_canonicalBlocker
+    {Baseline Target : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {threshold order : Nat}
+    (active : ActiveSurplusDemands Baseline Target LengthOK object threshold)
+    (capacity : CapacityPresentation object threshold order)
+    (activationEq : capacity.activation =
+      recordSparsePairDEBlockers (Baseline := Baseline) (LengthOK := LengthOK)
+        (pairResponseActivation active) (object.portPairSchedule threshold))
+    {pair : Finset (object.Vertex × object.Vertex)}
+    {coordinate : object.PairCoordinate}
+    (selected : FiniteObject.canonicalBlocker capacity.activation pair =
+      some (.targetResponse coordinate)) :
+    SparsePairDEResponseObstructionAt (Baseline := Baseline)
+      (LengthOK := LengthOK) (pairResponseActivation active)
+        (object.portPairSchedule threshold) pair := by
+  have blockerMem :=
+    FiniteObject.canonicalBlocker_mem capacity.activation selected
+  have obstructs :
+      coordinate ∈ capacity.activation.responseObstructions pair := by
+    simpa [FiniteObject.DemandActivation.blockers] using blockerMem
+  rw [activationEq] at obstructs
+  exact responseObstructionAt_of_mem_recordedResponseObstructions
+    (pairResponseActivation active) (object.portPairSchedule threshold)
+      obstructs
+
+/-- Every vertex of the canonical blocker support lies in the already declared
+connector core `X_π ∪ ⋃ R_p`.  This is the clause-by-clause support
+reading needed to turn the paper's blocker object into a connector; no support
+or path is supplied by a caller. -/
+theorem CapacityPresentation.chargeSupport_subset_pairConnectorSupport
+    {Baseline Target : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {threshold order : Nat}
+    (active : ActiveSurplusDemands Baseline Target LengthOK object threshold)
+    (capacity : CapacityPresentation object threshold order)
+    (activationEq : capacity.activation =
+      recordSparsePairDEBlockers (Baseline := Baseline) (LengthOK := LengthOK)
+        (pairResponseActivation active) (object.portPairSchedule threshold))
+    {pair : Finset (object.Vertex × object.Vertex)}
+    (pairSubset : pair ⊆ object.excessPorts threshold)
+    (connected : SupportComponents.Connected.ConnectedOn object
+      object.vertexFinset) :
+    FiniteObject.chargeSupport capacity.activation capacity.carrier pair ⊆
+      capacity.pairConnectorSupport pair := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  let base := pairResponseActivation active
+  have pairSupportSome :=
+    FiniteObject.DemandActivation.pairSupport_isSome_of_connected
+      capacity.activation pair connected
+  obtain ⟨support, selected⟩ := Option.isSome_iff_exists.mp pairSupportSome
+  have supportFacts :=
+    FiniteObject.DemandActivation.pairSupport_mem_candidates selected
+  have selectedBase : base.pairSupport pair = some support := by
+    have recordedSelected := selected
+    rw [activationEq] at recordedSelected
+    simpa [base, FiniteObject.DemandActivation.pairSupport,
+      FiniteObject.DemandActivation.pairSeed,
+      recordSparsePairDEBlockers] using recordedSelected
+  intro vertex vertexMem
+  rcases blockerCase : FiniteObject.canonicalBlocker capacity.activation pair with
+    _ | blocker
+  · simp [FiniteObject.chargeSupport, blockerCase] at vertexMem
+  · have blockerMem :=
+      FiniteObject.canonicalBlocker_mem capacity.activation blockerCase
+    simp only [FiniteObject.chargeSupport, blockerCase] at vertexMem
+    have inSupport (member : vertex ∈ support) :
+        vertex ∈ capacity.pairConnectorSupport pair := by
+      unfold CapacityPresentation.pairConnectorSupport
+      rw [selected]
+      exact Finset.mem_union_left _ member
+    have inReturn {demand : object.Vertex × object.Vertex}
+        (demandMem : demand ∈ pair)
+        (member : vertex ∈ capacity.activation.returnSupport demand) :
+        vertex ∈ capacity.pairConnectorSupport pair := by
+      unfold CapacityPresentation.pairConnectorSupport
+      rw [selected]
+      exact Finset.mem_union_right _
+        (Finset.mem_biUnion.mpr ⟨demand, demandMem, member⟩)
+    have inSeed {demand : object.Vertex × object.Vertex}
+        (demandMem : demand ∈ pair)
+        (member : vertex ∈ capacity.activation.declaredSupport demand) :
+        vertex ∈ capacity.pairConnectorSupport pair := by
+      apply inSupport
+      apply supportFacts.1
+      exact FiniteObject.DemandActivation.declaredSupport_subset_pairSeed
+        capacity.activation demandMem member
+    cases blocker with
+    | sharedDeclaredSupport item =>
+        obtain ⟨left, leftMem, _right, _rightMem, _distinct, shared⟩ :=
+          (FiniteObject.DemandActivation.sharedDeclaredSupport_mem_blockers_iff
+            capacity.activation).mp blockerMem
+        cases item with
+        | vertex root =>
+            have equality : vertex = root := by
+              simpa [FiniteObject.Blocker.declaredSupport] using vertexMem
+            subst vertex
+            exact inSeed leftMem
+              (FiniteObject.DemandActivation.mem_both_of_vertex_mem_sharedItems
+                shared).1
+        | incidence incidence =>
+            have endpoint : vertex = incidence.1 ∨ vertex = incidence.2 := by
+              simpa [FiniteObject.Blocker.declaredSupport] using vertexMem
+            have endpoints :=
+              FiniteObject.DemandActivation.endpoints_mem_both_of_incidence_mem_sharedItems
+                shared
+            rcases endpoint with rfl | rfl
+            · exact inSeed leftMem endpoints.1
+            · exact inSeed leftMem endpoints.2.1
+    | sharedReturnSupport item =>
+        obtain ⟨left, leftMem, _right, _rightMem, _distinct, shared⟩ :=
+          (FiniteObject.DemandActivation.sharedReturnSupport_mem_blockers_iff
+            capacity.activation).mp blockerMem
+        cases item with
+        | vertex root =>
+            have equality : vertex = root := by
+              simpa [FiniteObject.Blocker.declaredSupport] using vertexMem
+            subst vertex
+            exact inReturn leftMem
+              (FiniteObject.DemandActivation.mem_both_of_vertex_mem_sharedItems
+                shared).1
+        | incidence incidence =>
+            have endpoint : vertex = incidence.1 ∨ vertex = incidence.2 := by
+              simpa [FiniteObject.Blocker.declaredSupport] using vertexMem
+            have endpoints :=
+              FiniteObject.DemandActivation.endpoints_mem_both_of_incidence_mem_sharedItems
+                shared
+            rcases endpoint with rfl | rfl
+            · exact inReturn leftMem endpoints.1
+            · exact inReturn leftMem endpoints.2.1
+    | sharedLocalBuffer root =>
+        have equality : vertex = root := by
+          simpa [FiniteObject.Blocker.declaredSupport] using vertexMem
+        subst vertex
+        obtain ⟨left, leftMem, _right, _rightMem, _distinct,
+            leftLocal, _rightLocal⟩ :=
+          (FiniteObject.DemandActivation.sharedLocalBuffer_mem_blockers_iff
+            capacity.activation).mp blockerMem
+        exact inSeed leftMem
+          (capacity.activation.localBuffer_subset_declaredSupport left leftLocal)
+    | boundaryProfile coordinate =>
+        have coordinateMem :
+            coordinate ∈ capacity.activation.profileObstructions pair := by
+          simpa [FiniteObject.DemandActivation.blockers] using blockerMem
+        have recordedMem : coordinate ∈
+            (recordSparsePairDEBlockers (Baseline := Baseline)
+              (LengthOK := LengthOK) base
+              (object.portPairSchedule threshold)).profileObstructions pair := by
+          simpa [base, activationEq] using coordinateMem
+        have coordinateEq := coordinate_eq_of_mem_recordedProfileObstructions
+          (Baseline := Baseline) (LengthOK := LengthOK) base
+          (object.portPairSchedule threshold) recordedMem
+        have member : vertex ∈ support := by
+          simpa [FiniteObject.Blocker.declaredSupport,
+            CapacityPresentation.carrier, coordinateEq,
+            FiniteObject.DemandActivation.pairCoordinate, selectedBase] using vertexMem
+        exact inSupport member
+    | targetResponse coordinate =>
+        have coordinateMem :
+            coordinate ∈ capacity.activation.responseObstructions pair := by
+          simpa [FiniteObject.DemandActivation.blockers] using blockerMem
+        have recordedMem : coordinate ∈
+            (recordSparsePairDEBlockers (Baseline := Baseline)
+              (LengthOK := LengthOK) base
+              (object.portPairSchedule threshold)).responseObstructions pair := by
+          simpa [base, activationEq] using coordinateMem
+        have coordinateEq := coordinate_eq_of_mem_recordedResponseObstructions
+          (Baseline := Baseline) (LengthOK := LengthOK) base
+          (object.portPairSchedule threshold) recordedMem
+        have member : vertex ∈ support := by
+          simpa [FiniteObject.Blocker.declaredSupport,
+            CapacityPresentation.carrier, coordinateEq,
+            FiniteObject.DemandActivation.pairCoordinate, selectedBase] using vertexMem
+        exact inSupport member
+    | arithmeticChordSet chords =>
+        have chordsMem : chords ∈ capacity.activation.chordObstructions pair := by
+          simpa [FiniteObject.DemandActivation.blockers] using blockerMem
+        have baseChordsMem : chords ∈ base.chordObstructions pair := by
+          simpa [base, activationEq, recordSparsePairDEBlockers] using chordsMem
+        have obstruction :=
+          suppressionObstruction_of_mem_pairResponseChordObstructions active
+            baseChordsMem
+        have chordsSubset := chords_subset_pair_of_suppressionObstruction obstruction
+        have expanded : vertex ∈ chords.biUnion (fun chord =>
+            let ends := pairResponseChordEnds active chord
+            {ends.1, ends.2}) := by
+          simpa [FiniteObject.Blocker.declaredSupport,
+            CapacityPresentation.carrier, base, activationEq,
+            recordSparsePairDEBlockers] using vertexMem
+        obtain ⟨demand, demandChord, vertexEnd⟩ := Finset.mem_biUnion.mp expanded
+        have demandPair := chordsSubset demandChord
+        have demandActive := pairSubset demandPair
+        have endsLocal := pairResponseChordEnds_mem_localBuffer active demandActive
+        have endpointLocal : vertex ∈ base.localBuffer demand := by
+          simpa only [Finset.mem_insert, Finset.mem_singleton] using
+            (show vertex = (pairResponseChordEnds active demand).1 ∨
+                vertex = (pairResponseChordEnds active demand).2 from
+              by simpa using vertexEnd).elim
+              (fun equality => equality ▸ endsLocal.1)
+              (fun equality => equality ▸ endsLocal.2)
+        have endpointDeclared : vertex ∈ base.declaredSupport demand :=
+          base.localBuffer_subset_declaredSupport demand endpointLocal
+        have capacityDeclared :
+            vertex ∈ capacity.activation.declaredSupport demand := by
+          simpa [base, activationEq, recordSparsePairDEBlockers] using
+            endpointDeclared
+        exact inSeed demandPair capacityDeclared
+
+/-- A pair charged to `t` contains the canonical root of `t` in its declared
+connector core.  The geometric charge cases read this directly from
+`supp(B_π)`; the primitive shoulder-chord case reads the selected port named
+by the actual recorded chord obstruction. -/
+theorem CapacityPresentation.tokenRoot_mem_pairConnectorSupport_of_charge
+    {Baseline Target : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {threshold order : Nat}
+    (active : ActiveSurplusDemands Baseline Target LengthOK object threshold)
+    (capacity : CapacityPresentation object threshold order)
+    (activationEq : capacity.activation =
+      recordSparsePairDEBlockers (Baseline := Baseline) (LengthOK := LengthOK)
+        (pairResponseActivation active) (object.portPairSchedule threshold))
+    {pair : Finset (object.Vertex × object.Vertex)}
+    {token : FiniteObject.CapacityToken object}
+    (pairSubset : pair ⊆ object.excessPorts threshold)
+    (connected : SupportComponents.Connected.ConnectedOn object
+      object.vertexFinset)
+    (charged : FiniteObject.capacityCharge capacity.activation capacity.carrier
+      threshold capacity.packing pair = some token) :
+    CapacityPresentation.tokenRoot token ∈
+      capacity.pairConnectorSupport pair := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  have chargeSubset := capacity.chargeSupport_subset_pairConnectorSupport
+    active activationEq pairSubset connected
+  rw [FiniteObject.capacityCharge] at charged
+  rcases windowCase : FiniteObject.windowJoinChoice capacity.activation
+      capacity.carrier capacity.packing pair with _ | incidence
+  · rw [windowCase] at charged
+    rcases crossCase : FiniteObject.crossWindowChoice capacity.activation
+        capacity.carrier capacity.packing pair with _ | incidence
+    · rw [crossCase] at charged
+      rcases remainderCase : FiniteObject.remainderVertexChoice
+          capacity.activation capacity.carrier threshold capacity.packing pair with
+        _ | vertex
+      · rw [remainderCase] at charged
+        rcases blockerCase : FiniteObject.canonicalBlocker capacity.activation pair with
+          _ | blocker
+        · rw [blockerCase] at charged
+          cases charged
+        · rw [blockerCase, Option.map_eq_some_iff] at charged
+          obtain ⟨item, carrier, rfl⟩ := charged
+          have blockerMem :=
+            FiniteObject.canonicalBlocker_mem capacity.activation blockerCase
+          cases blocker with
+          | sharedDeclaredSupport blockerItem =>
+              cases blockerItem with
+              | vertex root =>
+                  rw [FiniteObject.Blocker.carrier] at carrier
+                  cases carrier
+                  apply chargeSubset
+                  simp [FiniteObject.chargeSupport, blockerCase,
+                    FiniteObject.Blocker.declaredSupport,
+                    CapacityPresentation.tokenRoot]
+              | incidence incidence =>
+                  rw [FiniteObject.Blocker.carrier] at carrier
+                  cases carrier
+                  apply chargeSubset
+                  simp [FiniteObject.chargeSupport, blockerCase,
+                    FiniteObject.Blocker.declaredSupport,
+                    CapacityPresentation.tokenRoot]
+          | sharedReturnSupport blockerItem =>
+              cases blockerItem with
+              | vertex root =>
+                  rw [FiniteObject.Blocker.carrier] at carrier
+                  cases carrier
+                  apply chargeSubset
+                  simp [FiniteObject.chargeSupport, blockerCase,
+                    FiniteObject.Blocker.declaredSupport,
+                    CapacityPresentation.tokenRoot]
+              | incidence incidence =>
+                  rw [FiniteObject.Blocker.carrier] at carrier
+                  cases carrier
+                  apply chargeSubset
+                  simp [FiniteObject.chargeSupport, blockerCase,
+                    FiniteObject.Blocker.declaredSupport,
+                    CapacityPresentation.tokenRoot]
+          | sharedLocalBuffer root =>
+              rw [FiniteObject.Blocker.carrier] at carrier
+              cases carrier
+              apply chargeSubset
+              simp [FiniteObject.chargeSupport, blockerCase,
+                FiniteObject.Blocker.declaredSupport,
+                CapacityPresentation.tokenRoot]
+          | boundaryProfile coordinate =>
+              rw [FiniteObject.Blocker.carrier,
+                Option.map_eq_some_iff] at carrier
+              obtain ⟨root, rootHead, rfl⟩ := carrier
+              apply chargeSubset
+              simp only [FiniteObject.chargeSupport, blockerCase]
+              simp only [FiniteObject.Blocker.declaredSupport,
+                CapacityPresentation.tokenRoot]
+              simpa using List.mem_of_mem_head? rootHead
+          | targetResponse coordinate =>
+              rw [FiniteObject.Blocker.carrier,
+                Option.map_eq_some_iff] at carrier
+              obtain ⟨root, rootHead, rfl⟩ := carrier
+              apply chargeSubset
+              simp only [FiniteObject.chargeSupport, blockerCase]
+              simp only [FiniteObject.Blocker.declaredSupport,
+                CapacityPresentation.tokenRoot]
+              simpa using List.mem_of_mem_head? rootHead
+          | arithmeticChordSet chords =>
+              rw [FiniteObject.Blocker.carrier,
+                Option.map_eq_some_iff] at carrier
+              obtain ⟨port, portHead, rfl⟩ := carrier
+              have portChosen : port ∈
+                  (chords.image capacity.carrier.chordPort ∩
+                    object.excessPorts threshold) := by
+                simpa using List.mem_of_mem_head? portHead
+              have portActive := (Finset.mem_inter.mp portChosen).2
+              have portImage := (Finset.mem_inter.mp portChosen).1
+              obtain ⟨chord, chordMem, chordPortEq⟩ :=
+                Finset.mem_image.mp portImage
+              have chordPortConcrete : capacity.carrier.chordPort = id := by
+                simp [CapacityPresentation.carrier, activationEq,
+                  recordSparsePairDEBlockers]
+              have chordEq : chord = port := by
+                simpa [chordPortConcrete] using chordPortEq
+              subst chord
+              have chordsMem :
+                  chords ∈ capacity.activation.chordObstructions pair := by
+                simpa [FiniteObject.DemandActivation.blockers] using blockerMem
+              have baseChordsMem : chords ∈
+                  (pairResponseActivation active).chordObstructions pair := by
+                simpa [activationEq, recordSparsePairDEBlockers] using chordsMem
+              have obstruction :=
+                suppressionObstruction_of_mem_pairResponseChordObstructions
+                  active baseChordsMem
+              have portPair :=
+                chords_subset_pair_of_suppressionObstruction obstruction chordMem
+              have pairSupportSome :=
+                FiniteObject.DemandActivation.pairSupport_isSome_of_connected
+                  capacity.activation pair connected
+              obtain ⟨support, selected⟩ :=
+                Option.isSome_iff_exists.mp pairSupportSome
+              have supportFacts :=
+                FiniteObject.DemandActivation.pairSupport_mem_candidates selected
+              have endpointLocal :
+                  port.2 ∈ capacity.activation.localBuffer port := by
+                have baseLocal : port.2 ∈
+                    (pairResponseActivation active).localBuffer port := by
+                  rw [pairResponseActivation_localBuffer_of_mem active portActive]
+                  exact FiniteObject.SurplusPort.endpoint_mem_support _
+                simpa [activationEq, recordSparsePairDEBlockers] using baseLocal
+              have endpointSupport : port.2 ∈ support := by
+                apply supportFacts.1
+                apply FiniteObject.DemandActivation.declaredSupport_subset_pairSeed
+                  capacity.activation portPair
+                exact capacity.activation.localBuffer_subset_declaredSupport
+                  port endpointLocal
+              unfold CapacityPresentation.pairConnectorSupport
+              rw [selected]
+              exact Finset.mem_union_left _ endpointSupport
+      · rw [remainderCase] at charged
+        cases charged
+        apply chargeSubset
+        have inside : vertex ∈
+            (object.remainderSupport capacity.packing).filter fun candidate =>
+              candidate ∈ FiniteObject.chargeSupport capacity.activation
+                capacity.carrier pair ∧ threshold < object.degree candidate := by
+          simpa [FiniteObject.remainderVertexChoice] using
+            List.mem_of_mem_head? remainderCase
+        exact (Finset.mem_filter.mp inside).2.1
+    · rw [crossCase] at charged
+      cases charged
+      apply chargeSubset
+      have inside : incidence ∈
+          (object.crossWindowIncidences capacity.packing).filter fun candidate =>
+            candidate.1 ∈ FiniteObject.chargeSupport capacity.activation
+                capacity.carrier pair ∧
+              candidate.2 ∈ FiniteObject.chargeSupport capacity.activation
+                capacity.carrier pair := by
+        simpa [FiniteObject.crossWindowChoice] using
+          List.mem_of_mem_head? crossCase
+      exact (Finset.mem_filter.mp inside).2.1
+  · rw [windowCase] at charged
+    cases charged
+    apply chargeSubset
+    have inside : incidence ∈
+        (object.windowRemainderIncidences capacity.packing).filter fun candidate =>
+          candidate.1 ∈ FiniteObject.chargeSupport capacity.activation
+              capacity.carrier pair ∧
+            candidate.2 ∈ FiniteObject.chargeSupport capacity.activation
+              capacity.carrier pair := by
+      simpa [FiniteObject.windowJoinChoice] using
+        List.mem_of_mem_head? windowCase
+    exact (Finset.mem_filter.mp inside).2.1
+
+/-- The connector core carried by the concrete capacity presentation is
+connected: it is `X_π` with the active demands' already canonical returns
+glued at their selected endpoints. -/
+theorem CapacityPresentation.pairConnectorSupport_connectedOn
+    {Baseline Target : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {threshold order : Nat}
+    (active : ActiveSurplusDemands Baseline Target LengthOK object threshold)
+    (capacity : CapacityPresentation object threshold order)
+    (activationEq : capacity.activation =
+      recordSparsePairDEBlockers (Baseline := Baseline) (LengthOK := LengthOK)
+        (pairResponseActivation active) (object.portPairSchedule threshold))
+    {pair : Finset (object.Vertex × object.Vertex)}
+    (pairSubset : pair ⊆ object.excessPorts threshold)
+    (connected : SupportComponents.Connected.ConnectedOn object
+      object.vertexFinset) :
+    SupportComponents.Connected.ConnectedOn object
+      (capacity.pairConnectorSupport pair) := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  obtain ⟨support, selected⟩ := Option.isSome_iff_exists.mp
+    (FiniteObject.DemandActivation.pairSupport_isSome_of_connected
+      capacity.activation pair connected)
+  have selectedRecorded := selected
+  rw [activationEq] at selectedRecorded
+  have joined := recordedPairConnector_connectedOn active pairSubset
+    selectedRecorded
+  unfold CapacityPresentation.pairConnectorSupport
+  rw [selected]
+  simpa [activationEq, recordSparsePairDEBlockers] using joined
+
+/-- The paper-declared same-token connector configuration, derived from the
+registered active-family and capacity-presentation facts.  Its root is the
+canonical root of the shared token, and its support is exactly the existing
+`Z(π;t,r)` support definition. -/
+theorem CapacityPresentation.exists_sameRootRoutingConfiguration_of_charge
+    {Baseline Target : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {threshold order : Nat}
+    (active : ActiveSurplusDemands Baseline Target LengthOK object threshold)
+    (capacity : CapacityPresentation object threshold order)
+    (activationEq : capacity.activation =
+      recordSparsePairDEBlockers (Baseline := Baseline) (LengthOK := LengthOK)
+        (pairResponseActivation active) (object.portPairSchedule threshold))
+    {pair : Finset (object.Vertex × object.Vertex)}
+    {token : FiniteObject.CapacityToken object}
+    (pairSubset : pair ⊆ object.excessPorts threshold)
+    (connected : SupportComponents.Connected.ConnectedOn object
+      object.vertexFinset)
+    (charged : FiniteObject.capacityCharge capacity.activation capacity.carrier
+      threshold capacity.packing pair = some token)
+    {demand : object.Vertex × object.Vertex} (demandMem : demand ∈ pair) :
+    ∃ configuration : SameTokenRoutingGerms.RoutingConfiguration object
+        (capacity.sameTokenRoutingSupport token pair)
+          (CapacityPresentation.tokenSupport token)
+          (capacity.activation.localBuffer demand),
+      configuration.path.head? =
+        some (CapacityPresentation.tokenRoot token) ∧
+      configuration.path.getLast? = some demand.2 := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  have demandActive := pairSubset demandMem
+  have connectorConnected := capacity.pairConnectorSupport_connectedOn
+    active activationEq pairSubset connected
+  have rootConnector := capacity.tokenRoot_mem_pairConnectorSupport_of_charge
+    active activationEq pairSubset connected charged
+  have rootSource := CapacityPresentation.tokenRoot_mem_tokenSupport token
+  have endpointLocal : demand.2 ∈ capacity.activation.localBuffer demand := by
+    have baseLocal : demand.2 ∈
+        (pairResponseActivation active).localBuffer demand := by
+      rw [pairResponseActivation_localBuffer_of_mem active demandActive]
+      exact FiniteObject.SurplusPort.endpoint_mem_support _
+    simpa [activationEq, recordSparsePairDEBlockers] using baseLocal
+  have selectedNonempty :
+      (capacity.activation.localBuffer demand).Nonempty :=
+    ⟨demand.2, endpointLocal⟩
+  have selectedSubset : capacity.activation.localBuffer demand ⊆
+      capacity.pairConnectorSupport pair := by
+    intro vertex vertexLocal
+    obtain ⟨support, selected⟩ := Option.isSome_iff_exists.mp
+      (FiniteObject.DemandActivation.pairSupport_isSome_of_connected
+        capacity.activation pair connected)
+    have vertexSupport : vertex ∈ support := by
+      apply (FiniteObject.DemandActivation.pairSupport_mem_candidates selected).1
+      apply FiniteObject.DemandActivation.declaredSupport_subset_pairSeed
+        capacity.activation demandMem
+      exact capacity.activation.localBuffer_subset_declaredSupport demand vertexLocal
+    unfold CapacityPresentation.pairConnectorSupport
+    rw [selected]
+    exact Finset.mem_union_left _ vertexSupport
+  have connectorSubset : capacity.pairConnectorSupport pair ⊆
+      capacity.sameTokenRoutingSupport token pair := by
+    intro vertex member
+    unfold CapacityPresentation.sameTokenRoutingSupport
+    exact Finset.mem_union_right _ (Finset.mem_union_right _
+      (Finset.mem_union_right _ (Finset.mem_union_right _ member)))
+  obtain ⟨walk, isPath, inside⟩ :=
+    connectorConnected.2 rootConnector (selectedSubset endpointLocal)
+  let configuration := SameTokenRoutingGerms.RoutingConfiguration.ofWalk walk
+    isPath rootSource
+      (fun item member => connectorSubset (inside item member)) endpointLocal
+  refine ⟨configuration, ?_, ?_⟩
+  · change walk.support.head? =
+      some (CapacityPresentation.tokenRoot token)
+    rw [List.head?_eq_some_head walk.support_ne_nil, walk.head_support]
+  · change walk.support.getLast? = some demand.2
+    rw [List.getLast?_eq_getLast_of_ne_nil walk.support_ne_nil,
+      walk.getLast_support]
+
 /-- `n^k ≤ 2^{k(⌊log₂ n⌋+1)}`. -/
 theorem pow_le_two_pow_mul_log2_succ (n k : Nat) :
     n ^ k ≤ 2 ^ (k * (Nat.log2 n + 1)) := by

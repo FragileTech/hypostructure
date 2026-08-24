@@ -122,6 +122,22 @@ noncomputable def SparsePairSuppressionChordObstruction
           ((family.configuration index).center,
             (family.configuration index).vertex)) = chords
 
+theorem chords_subset_pair_of_suppressionObstruction
+    {Baseline Target : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {threshold : Nat}
+    {active : ActiveSurplusDemands Baseline Target LengthOK object threshold}
+    {pair chords : Finset (object.Vertex × object.Vertex)}
+    (obstruction : SparsePairSuppressionChordObstruction active pair chords) :
+    chords ⊆ pair := by
+  classical
+  obtain ⟨_pairActive, family, certificate, pairImage, _ends, chordImage⟩ :=
+    obstruction
+  intro demand demandMem
+  rw [← chordImage] at demandMem
+  obtain ⟨index, _used, rfl⟩ := Finset.mem_image.mp demandMem
+  rw [← pairImage]
+  exact Finset.mem_image_of_mem _ (Finset.mem_univ index)
+
 /-- The active-family certificate determines the concrete response activation
 used by `def:sparse-pair-response`.  Clauses (d) and (e) are populated by the
 failed quotient at `[132]`; clause (f) is already the exact finite family of
@@ -200,6 +216,31 @@ noncomputable def pairResponseActivation
     chordEnds := pairResponseChordEnds active
     chordPort := id }
 
+@[simp] theorem pairResponseActivation_chordEnds
+    {Baseline Target : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {threshold : Nat}
+    (active : ActiveSurplusDemands Baseline Target LengthOK object threshold) :
+    (pairResponseActivation active).chordEnds = pairResponseChordEnds active := by
+  rfl
+
+@[simp] theorem pairResponseActivation_chordPort
+    {Baseline Target : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {threshold : Nat}
+    (active : ActiveSurplusDemands Baseline Target LengthOK object threshold) :
+    (pairResponseActivation active).chordPort = id := by
+  rfl
+
+theorem suppressionObstruction_of_mem_pairResponseChordObstructions
+    {Baseline Target : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {threshold : Nat}
+    (active : ActiveSurplusDemands Baseline Target LengthOK object threshold)
+    {pair chords : Finset (object.Vertex × object.Vertex)}
+    (member : chords ∈ (pairResponseActivation active).chordObstructions pair) :
+    SparsePairSuppressionChordObstruction active pair chords := by
+  classical
+  simp only [pairResponseActivation] at member
+  exact of_decide_eq_true (List.mem_filter.mp member).2
+
 /-- The concrete activation reads the selected port's actual `T(p)` on every
 member of the active family. -/
 @[simp] theorem pairResponseActivation_localBuffer_of_mem
@@ -212,6 +253,58 @@ member of the active family. -/
       (object.surplusPortOfMem member).support := by
   classical
   simp [pairResponseActivation, member]
+
+/-- The two ends named by an active demand's shoulder chord both lie in its
+selected support `T(p)`. -/
+theorem pairResponseChordEnds_mem_localBuffer
+    {Baseline Target : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {threshold : Nat}
+    (active : ActiveSurplusDemands Baseline Target LengthOK object threshold)
+    {demand : object.Vertex × object.Vertex}
+    (member : demand ∈ object.excessPorts threshold) :
+    let ends := pairResponseChordEnds active demand
+    ends.1 ∈ (pairResponseActivation active).localBuffer demand ∧
+      ends.2 ∈ (pairResponseActivation active).localBuffer demand := by
+  classical
+  let shoulders := active.shoulderPair demand member
+  have leftShoulder : shoulders.choose ∈
+      (object.surplusPortOfMem member).shoulders :=
+    (shoulders.choose_spec.choose_spec.1 shoulders.choose).2 (Or.inl rfl)
+  have rightShoulder : shoulders.choose_spec.choose ∈
+      (object.surplusPortOfMem member).shoulders :=
+    (shoulders.choose_spec.choose_spec.1 shoulders.choose_spec.choose).2
+      (Or.inr rfl)
+  simp only [pairResponseChordEnds, dif_pos member,
+    pairResponseActivation_localBuffer_of_mem active member]
+  exact ⟨FiniteObject.SurplusPort.mem_support_of_mem_shoulders _ leftShoulder,
+    FiniteObject.SurplusPort.mem_support_of_mem_shoulders _ rightShoulder⟩
+
+/-- The canonical return registered by the active-family fact starts at the
+selected port endpoint. -/
+theorem pairResponseActivation_endpoint_mem_returnSupport_of_mem
+    {Baseline Target : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {threshold : Nat}
+    (active : ActiveSurplusDemands Baseline Target LengthOK object threshold)
+    {demand : object.Vertex × object.Vertex}
+    (member : demand ∈ object.excessPorts threshold) :
+    demand.2 ∈ (pairResponseActivation active).returnSupport demand := by
+  classical
+  simp only [pairResponseActivation, dif_pos member]
+  exact FiniteObject.SurplusPort.endpoint_mem_returnSupport _ _
+
+/-- Each canonical return entry `R_p` in the active-family activation is a
+connected declared support. -/
+theorem pairResponseActivation_connectedOn_returnSupport_of_mem
+    {Baseline Target : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {threshold : Nat}
+    (active : ActiveSurplusDemands Baseline Target LengthOK object threshold)
+    {demand : object.Vertex × object.Vertex}
+    (member : demand ∈ object.excessPorts threshold) :
+    SupportComponents.Connected.ConnectedOn object
+      ((pairResponseActivation active).returnSupport demand) := by
+  classical
+  simp only [pairResponseActivation, dif_pos member]
+  exact FiniteObject.SurplusPort.connectedOn_returnSupport _ _
 
 /-- `T(p)` is literally contained in the declared support `T(p) ∪ Γ(p)` of
 the same activated demand. -/
@@ -356,6 +449,153 @@ noncomputable def recordSparsePairDEBlockers
     chordObstructions := activation.chordObstructions
     chordEnds := activation.chordEnds
     chordPort := activation.chordPort }
+
+theorem coordinate_eq_of_mem_recordedProfileObstructions
+    {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {Coordinate Chord : Type u}
+    (activation : object.DemandActivation Coordinate Chord)
+    (pairs : Finset (Finset (object.Vertex × object.Vertex)))
+    {pair : Finset (object.Vertex × object.Vertex)}
+    {coordinate : object.PairCoordinate}
+    (member : coordinate ∈
+      (recordSparsePairDEBlockers (Baseline := Baseline)
+        (LengthOK := LengthOK) activation pairs).profileObstructions pair) :
+    coordinate = FiniteObject.DemandActivation.pairCoordinate pair
+      ((activation.pairSupport pair).getD ∅) := by
+  classical
+  simp only [recordSparsePairDEBlockers] at member
+  split at member
+  · simpa using member
+  · simp at member
+
+/-- Membership in the recorded clause-(d) row recovers the exact
+pair-indexed failed determination that caused that row to be present.  The
+recording `if` stores no detached witness: this theorem merely reads its true
+branch back. -/
+theorem profileObstructionAt_of_mem_recordedProfileObstructions
+    {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {Coordinate Chord : Type u}
+    (activation : object.DemandActivation Coordinate Chord)
+    (pairs : Finset (Finset (object.Vertex × object.Vertex)))
+    {pair : Finset (object.Vertex × object.Vertex)}
+    {coordinate : object.PairCoordinate}
+    (member : coordinate ∈
+      (recordSparsePairDEBlockers (Baseline := Baseline)
+        (LengthOK := LengthOK) activation pairs).profileObstructions pair) :
+    SparsePairDEProfileObstructionAt (Baseline := Baseline)
+      (LengthOK := LengthOK) activation pairs pair := by
+  classical
+  simp only [recordSparsePairDEBlockers] at member
+  split at member
+  · assumption
+  · simp at member
+
+theorem coordinate_eq_of_mem_recordedResponseObstructions
+    {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {Coordinate Chord : Type u}
+    (activation : object.DemandActivation Coordinate Chord)
+    (pairs : Finset (Finset (object.Vertex × object.Vertex)))
+    {pair : Finset (object.Vertex × object.Vertex)}
+    {coordinate : object.PairCoordinate}
+    (member : coordinate ∈
+      (recordSparsePairDEBlockers (Baseline := Baseline)
+        (LengthOK := LengthOK) activation pairs).responseObstructions pair) :
+    coordinate = FiniteObject.DemandActivation.pairCoordinate pair
+      ((activation.pairSupport pair).getD ∅) := by
+  classical
+  simp only [recordSparsePairDEBlockers] at member
+  split at member
+  · simpa using member
+  · simp at member
+
+/-- Membership in the recorded clause-(e) row recovers the exact
+pair-indexed target-response obstruction that caused that row to be present. -/
+theorem responseObstructionAt_of_mem_recordedResponseObstructions
+    {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {Coordinate Chord : Type u}
+    (activation : object.DemandActivation Coordinate Chord)
+    (pairs : Finset (Finset (object.Vertex × object.Vertex)))
+    {pair : Finset (object.Vertex × object.Vertex)}
+    {coordinate : object.PairCoordinate}
+    (member : coordinate ∈
+      (recordSparsePairDEBlockers (Baseline := Baseline)
+        (LengthOK := LengthOK) activation pairs).responseObstructions pair) :
+    SparsePairDEResponseObstructionAt (Baseline := Baseline)
+      (LengthOK := LengthOK) activation pairs pair := by
+  classical
+  simp only [recordSparsePairDEBlockers] at member
+  split at member
+  · assumption
+  · simp at member
+
+/-- `X_π` together with the canonical return entries of the demands in
+`π` is connected.  This is the declared connector support used by
+`def:same-token-routing-germs`: every `R_p` meets `X_π` at the endpoint of
+`p`, which lies in `T(p)`. -/
+theorem recordedPairConnector_connectedOn
+    {Baseline Target : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} [DecidableEq object.Vertex] {threshold : Nat}
+    (active : ActiveSurplusDemands Baseline Target LengthOK object threshold)
+    {pair : Finset (object.Vertex × object.Vertex)}
+    {support : Finset object.Vertex}
+    (pairSubset : pair ⊆ object.excessPorts threshold)
+    (selected :
+      (recordSparsePairDEBlockers (Baseline := Baseline)
+        (LengthOK := LengthOK) (pairResponseActivation active)
+        (object.portPairSchedule threshold)).pairSupport pair = some support) :
+    SupportComponents.Connected.ConnectedOn object
+      (support ∪ pair.biUnion
+        (recordSparsePairDEBlockers (Baseline := Baseline)
+          (LengthOK := LengthOK) (pairResponseActivation active)
+          (object.portPairSchedule threshold)).returnSupport) := by
+  classical
+  let activation := recordSparsePairDEBlockers (Baseline := Baseline)
+    (LengthOK := LengthOK) (pairResponseActivation active)
+    (object.portPairSchedule threshold)
+  have supportFacts :=
+    FiniteObject.DemandActivation.pairSupport_mem_candidates selected
+  have build : ∀ members : Finset (object.Vertex × object.Vertex),
+      members ⊆ pair →
+      SupportComponents.Connected.ConnectedOn object
+        (support ∪ members.biUnion activation.returnSupport) := by
+    intro members membersSubset
+    induction members using Finset.induction_on with
+    | empty => simpa using supportFacts.2
+    | @insert demand members fresh ih =>
+        have demandPair : demand ∈ pair :=
+          membersSubset (Finset.mem_insert_self demand members)
+        have demandActive : demand ∈ object.excessPorts threshold :=
+          pairSubset demandPair
+        have restSubset : members ⊆ pair := by
+          intro other otherMem
+          exact membersSubset (Finset.mem_insert_of_mem otherMem)
+        have previous := ih restSubset
+        have returnConnected :
+            SupportComponents.Connected.ConnectedOn object
+              (activation.returnSupport demand) := by
+          simpa [activation, recordSparsePairDEBlockers] using
+            (pairResponseActivation_connectedOn_returnSupport_of_mem
+              active demandActive)
+        have endpointReturn :
+            demand.2 ∈ activation.returnSupport demand := by
+          simpa [activation, recordSparsePairDEBlockers] using
+            (pairResponseActivation_endpoint_mem_returnSupport_of_mem
+              active demandActive)
+        have endpointLocal : demand.2 ∈ activation.localBuffer demand := by
+          change demand.2 ∈
+            (pairResponseActivation active).localBuffer demand
+          rw [pairResponseActivation_localBuffer_of_mem active demandActive]
+          exact FiniteObject.SurplusPort.endpoint_mem_support _
+        have endpointSupport : demand.2 ∈ support := by
+          apply supportFacts.1
+          apply FiniteObject.DemandActivation.declaredSupport_subset_pairSeed
+            activation demandPair
+          exact activation.localBuffer_subset_declaredSupport demand endpointLocal
+        have joined := SameTokenRoutingGerms.connectedOn_union_of_common previous
+          returnConnected (Finset.mem_union_left _ endpointSupport) endpointReturn
+        simpa [Finset.biUnion_insert, Finset.union_assoc, Finset.union_comm,
+          Finset.union_left_comm] using joined
+  exact build pair (fun _ member => member)
 
 theorem recordedSparsePairDEBlocker_nonempty
     {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}

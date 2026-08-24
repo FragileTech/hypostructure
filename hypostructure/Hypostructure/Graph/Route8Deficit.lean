@@ -111,10 +111,13 @@ the canonical decomposition of the remainder.
 
 A negative zero-surplus piece carries an exit-(4) witness for one of its routed
 loads, or an admissible route-8 residual profile, or a decorated Type B
-handoff; a negative positive-surplus piece is a Type B bridge component.
-`Route8Profile` and `Handoff` are the branch's registered notions of an
-admissible silent-core residual profile (`def:typeA-silent-core-residual`) and
-a produced decorated handoff envelope (`def:decorated-fan-envelope`); this
+handoff; a negative positive-surplus piece is a Type B bridge residual
+(`def:typeB-bridge-statements`: the B2 disjoint ledger with strictly negative
+remaining core, or a minimal overlap obstruction — the contrapositive of
+`prop:typeB-bridge-reduction`).  `Route8Profile`, `Handoff`, and `Bridge` are
+the branch's registered notions of an admissible silent-core residual profile
+(`def:typeA-silent-core-residual`), a produced decorated handoff envelope
+(`def:decorated-fan-envelope`), and the Type B bridge-residual datum; this
 module quantifies over them.
 
 Unlike `SilentClassification`, this statement does **not** make a negative
@@ -122,7 +125,7 @@ zero-surplus piece silent-first: per `rem:unified-covers-exit4`, an exit-(4)
 support may realize its exit through four visible receiver-entry returns and
 still belongs to the unified collection. -/
 def PieceClassification (Target : FiniteObject.{u} → Prop)
-    (Route8Profile Handoff : Finset object.Vertex → Prop)
+    (Route8Profile Handoff Bridge : Finset object.Vertex → Prop)
     (packing : Finset (Finset object.Vertex))
     (threshold scale : Nat) : Prop :=
   ∀ piece ∈ object.canonicalPieces (object.remainderSupport packing),
@@ -141,8 +144,7 @@ def PieceClassification (Target : FiniteObject.{u} → Prop)
           Handoff (object.pieceSupport (object.remainderSupport packing) piece)) ∧
       (0 < object.ambientSurplus
           (object.pieceSupport (object.remainderSupport packing) piece) threshold →
-        TypeBEnvelopeCharge.BridgeResidualComponentAt object
-          (object.pieceSupport (object.remainderSupport packing) piece) threshold scale)
+        Bridge (object.pieceSupport (object.remainderSupport packing) piece))
 
 /-- The excess mass a piece contributes to the census (`E(w)`-indexed; the
 paper's `𝒰(w)` on silent-first pieces): its indexed entries when it is a

@@ -1095,6 +1095,158 @@ noncomputable def envelopeOfSeparation {support : Finset object.Vertex}
         (Ne.symm separation.distinct) avoids, deniedSwap⟩
     · exact absurd rfl different
 
+/-! ## The same-token first-separator handoff
+
+`lem:same-token-bottleneck-routing` starts with two declared configurations at
+the primitive blocker support.  Unlike a Type-A continuation germ, those
+configurations are not presented through one completion-port edge.  What the
+paper uses after their first separator is exactly the data below: the two
+distinct next incidences, their separated tails, and the common remainder core
+on which those tails land.  This constructor therefore builds the same
+`Envelope` directly from `SeparatesAt`; it does not manufacture a Type-A
+`RootedGerm` or a completion-port carrier. -/
+
+/-- **The handoff constructor used by `lem:same-token-bottleneck-routing`.**
+
+This is `def:decorated-fan-envelope` at one first separator.  All arguments are
+clauses of that definition or projections of the two declared configurations;
+the result is the framework's existing `Envelope`, not a proof-specific data
+carrier. -/
+noncomputable def envelopeOfFirstSeparator
+    {LengthOK : Nat → Prop}
+    {HighDegree : object.Vertex → Prop}
+    {Absorbing : object.Vertex → object.Vertex → object.Vertex → Prop}
+    (support : Finset object.Vertex)
+    (separator nextLeft nextRight : object.Vertex)
+    (nextDifferent : nextLeft ≠ nextRight)
+    (nextLeftAdj : object.graph.Adj separator nextLeft)
+    (nextRightAdj : object.graph.Adj separator nextRight)
+    (armLeft armRight : List object.Vertex)
+    (armLeftIssued : armLeft.head? = some nextLeft)
+    (armRightIssued : armRight.head? = some nextRight)
+    (armLeftChain : armLeft.IsChain object.graph.Adj)
+    (armRightChain : armRight.IsChain object.graph.Adj)
+    (armLeftNodup : armLeft.Nodup) (armRightNodup : armRight.Nodup)
+    (armLeftLands : ∃ terminal, armLeft.getLast? = some terminal ∧
+      terminal ∈ support)
+    (armRightLands : ∃ terminal, armRight.getLast? = some terminal ∧
+      terminal ∈ support)
+    (armLeftInterior : ∀ vertex ∈ armLeft,
+      vertex ∈ support ∨ vertex = separator →
+      armLeft.getLast? = some vertex)
+    (armRightInterior : ∀ vertex ∈ armRight,
+      vertex ∈ support ∨ vertex = separator →
+      armRight.getLast? = some vertex)
+    (high : HighDegree separator)
+    (avoids : ¬ Graph.HasCycleWithLength LengthOK object)
+    (denied : ¬ Absorbing separator nextLeft nextRight)
+    (deniedSwap : ¬ Absorbing separator nextRight nextLeft) :
+    Envelope object LengthOK HighDegree Absorbing := by
+  classical
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  refine
+    { core := support
+      decorations := {separator}
+      decorations_high := ?_
+      assigned := fun _ => {nextLeft, nextRight}
+      assigned_nonempty := ?_
+      assigned_adj := ?_
+      arm := fun _ first => if first = nextLeft then armLeft else armRight
+      arm_issued := ?_
+      arm_chain := ?_
+      arm_nodup := ?_
+      arm_lands := ?_
+      arm_interior := ?_
+      fanSafe := ?_ }
+  · intro centre member
+    rw [Finset.mem_singleton] at member
+    exact member ▸ high
+  · intro _ _
+    exact ⟨nextLeft, by simp⟩
+  · intro centre member first assignedMember
+    rw [Finset.mem_singleton] at member
+    subst member
+    simp only [Finset.mem_insert, Finset.mem_singleton] at assignedMember
+    rcases assignedMember with rfl | rfl
+    · exact nextLeftAdj
+    · exact nextRightAdj
+  · intro _ _ first assignedMember
+    simp only [Finset.mem_insert, Finset.mem_singleton] at assignedMember
+    rcases assignedMember with firstEq | firstEq
+    · subst first
+      simpa using armLeftIssued
+    · have notLeft : first ≠ nextLeft := by
+        intro equal
+        exact nextDifferent (equal.symm.trans firstEq)
+      have rightNeLeft : nextRight ≠ nextLeft := Ne.symm nextDifferent
+      simpa [firstEq, rightNeLeft] using armRightIssued
+  · intro _ _ first assignedMember
+    simp only [Finset.mem_insert, Finset.mem_singleton] at assignedMember
+    rcases assignedMember with firstEq | firstEq
+    · subst first
+      simpa using armLeftChain
+    · have notLeft : first ≠ nextLeft := by
+        intro equal
+        exact nextDifferent (equal.symm.trans firstEq)
+      have rightNeLeft : nextRight ≠ nextLeft := Ne.symm nextDifferent
+      simpa [firstEq, rightNeLeft] using armRightChain
+  · intro _ _ first assignedMember
+    simp only [Finset.mem_insert, Finset.mem_singleton] at assignedMember
+    rcases assignedMember with firstEq | firstEq
+    · subst first
+      simpa using armLeftNodup
+    · have notLeft : first ≠ nextLeft := by
+        intro equal
+        exact nextDifferent (equal.symm.trans firstEq)
+      have rightNeLeft : nextRight ≠ nextLeft := Ne.symm nextDifferent
+      simpa [firstEq, rightNeLeft] using armRightNodup
+  · intro _ _ first assignedMember
+    simp only [Finset.mem_insert, Finset.mem_singleton] at assignedMember
+    rcases assignedMember with firstEq | firstEq
+    · subst first
+      simpa using armLeftLands
+    · have notLeft : first ≠ nextLeft := by
+        intro equal
+        exact nextDifferent (equal.symm.trans firstEq)
+      have rightNeLeft : nextRight ≠ nextLeft := Ne.symm nextDifferent
+      simpa [firstEq, rightNeLeft] using armRightLands
+  · intro centre member first assignedMember
+    rw [Finset.mem_singleton] at member
+    subst member
+    simp only [Finset.mem_insert, Finset.mem_singleton] at assignedMember
+    rcases assignedMember with firstEq | firstEq
+    · subst first
+      intro vertex vertexMember alternatives
+      simp only at vertexMember ⊢
+      refine armLeftInterior vertex vertexMember ?_
+      rcases alternatives with inside | rest
+      · exact Or.inl inside
+      · rcases rest with decoration | equal
+        · exact Or.inr (Finset.mem_singleton.mp decoration)
+        · exact Or.inr equal
+    · have notLeft : first ≠ nextLeft := by
+        intro equal
+        exact nextDifferent (equal.symm.trans firstEq)
+      intro vertex vertexMember alternatives
+      simp only [if_neg notLeft] at vertexMember ⊢
+      refine armRightInterior vertex vertexMember ?_
+      rcases alternatives with inside | rest
+      · exact Or.inl inside
+      · rcases rest with decoration | centreEq
+        · exact Or.inr (Finset.mem_singleton.mp decoration)
+        · exact Or.inr centreEq
+  · intro centre member first firstMember second secondMember different
+    rw [Finset.mem_singleton] at member
+    subst member
+    simp only [Finset.mem_insert, Finset.mem_singleton] at firstMember secondMember
+    rcases firstMember with rfl | rfl <;> rcases secondMember with rfl | rfl
+    · exact absurd rfl different
+    · exact ⟨fanSafe_geometric nextLeftAdj nextRightAdj nextDifferent avoids,
+        denied⟩
+    · exact ⟨fanSafe_geometric nextRightAdj nextLeftAdj
+        (Ne.symm nextDifferent) avoids, deniedSwap⟩
+    · exact absurd rfl different
+
 /-! ## `lem:decorated-fan-admissibility` -/
 
 /-- **The Type B fan-envelope data a decorated handoff carries.**

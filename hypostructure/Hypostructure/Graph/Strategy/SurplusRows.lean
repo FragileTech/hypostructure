@@ -1022,7 +1022,7 @@ canonical-fibre no-overcount identities. -/
             refine ⟨active, accounting, ?_,
               inputs.current.object.card_primitiveCarrier baseline,
               inputs.current.object.card_primitiveCarrier_le baseline
-                data.three_le_threshold handshake envelope, ?_⟩
+                data.three_le_threshold handshake envelope, ?_, connectedOn⟩
             · rfl
             change Graph.FiniteObject.ConcreteCapacityTokenLedgerStatement
               inputs.current.object data.threshold data.windowOrder activation

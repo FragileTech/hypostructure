@@ -1045,6 +1045,71 @@ theorem retainedReading_boundaryDegreeProfile (object : FiniteObject.{u})
     (minimumDegreeAtLeast_isomorphismInvariant threshold)
     (cycleTargetInterface LengthOK).isomorphismInvariant _).1
 
+/-- **The retained piece keeps every label-incident edge** — "an edge
+incident with a labelled boundary vertex is therefore owned by every
+restriction". -/
+theorem retainedBasinPiece_adj_of_label (object : FiniteObject.{u})
+    (basin retained : Finset object.Vertex)
+    (label : (Strategy.InterfaceReplacement.SupportAtom.boundary object
+      basin).Vertex)
+    (other : (Strategy.InterfaceReplacement.SupportAtom.boundary object
+        basin).Vertex ⊕
+      Strategy.InterfaceReplacement.SupportAtom.PieceInternal object basin)
+    (adjacent : (Strategy.InterfaceReplacement.SupportAtom.piece object
+      basin).graph.Adj (.inl label) other) :
+    (retainedBasinPiece object basin retained).graph.Adj (.inl label)
+      other := by
+  refine ⟨adjacent, ?_⟩
+  rw [SimpleGraph.fromRel_adj]
+  exact ⟨adjacent.ne, Or.inl (Or.inl rfl)⟩
+
+/-- **The retained reading is target-monotone toward the basin piece**
+(`lem:typeA-internal-quotient-mixed`'s one-sidedness, realized): an accepted
+cycle of a gluing of the retained reading yields one of the same gluing of the
+basin's full piece.  `glue_swap_target_iff` moves the certificate from the
+canonical representative to the retained piece — the basin piece with only the
+retained-owned internal edges — and `glueGraph_mono` with the identity
+embedding transports it to the unrestricted piece. -/
+theorem hasCycleWithLength_glue_of_retainedReading (object : FiniteObject.{u})
+    (support basin : Finset object.Vertex) (threshold : Nat)
+    (LengthOK : Nat → Prop)
+    (retained : Finset (TraceCoordinateSystem.Base.Coordinate object support))
+    (outside : OutsideContext
+      (Strategy.InterfaceReplacement.SupportAtom.boundary object basin))
+    (accepted : HasCycleWithLength LengthOK
+      (glue (retainedReading object support basin threshold LengthOK retained)
+        outside)) :
+    HasCycleWithLength LengthOK
+      (glue (Strategy.InterfaceReplacement.SupportAtom.piece object basin)
+        outside) := by
+  classical
+  have swapped : HasCycleWithLength LengthOK
+      (glue (retainedBasinPiece object basin
+        (retainedVertices object support retained)) outside) :=
+    (CanonicalPiece.glue_swap_target_iff
+      (minimumDegreeAtLeast_isomorphismInvariant threshold)
+      (cycleTargetInterface LengthOK).isomorphismInvariant
+      (retainedBasinPiece object basin
+        (retainedVertices object support retained)) outside).mp accepted
+  obtain ⟨certificate⟩ := swapped
+  have le : (retainedBasinPiece object basin
+        (retainedVertices object support retained)).graph ≤
+      (Strategy.InterfaceReplacement.SupportAtom.piece object basin).graph :=
+    inf_le_left
+  have glueLe : (glue (retainedBasinPiece object basin
+        (retainedVertices object support retained)) outside).graph ≤
+      (glue (Strategy.InterfaceReplacement.SupportAtom.piece object basin)
+        outside).graph :=
+    glueGraph_mono
+      (piece := Strategy.InterfaceReplacement.SupportAtom.piece object basin)
+      outside _
+      (retainedBasinPiece object basin
+        (retainedVertices object support retained)).decideAdj le
+  refine ⟨CycleCertificate.mapHom ?_ ?_ certificate⟩
+  · exact SimpleGraph.Hom.ofLE glueLe
+  · intro a b equal
+    exact equal
+
 end PresentedEntry
 
 namespace TraceBasin

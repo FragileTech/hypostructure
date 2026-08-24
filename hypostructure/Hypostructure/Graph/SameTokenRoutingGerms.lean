@@ -1,6 +1,7 @@
 import Hypostructure.Graph.SameTokenBlockerRoles
 import Hypostructure.Graph.DeclaredCoordinateSignature
 import Hypostructure.Graph.Object
+import Hypostructure.Graph.SupportComponents
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Finset.Card
 import Mathlib.Data.List.Basic
@@ -242,6 +243,137 @@ structure RoutingConfiguration (object : FiniteObject.{u})
   /-- It ends at one of the two selected port supports. -/
   lands : ∃ terminal, path.getLast? = some terminal ∧ terminal ∈ selected
 
+/-- Read an already declared simple connector walk as a routing configuration.
+This constructor does not select a walk; its `walk` argument is the connector
+proved from the declared support data by the owning ledger row. -/
+def RoutingConfiguration.ofWalk {object : FiniteObject.{u}}
+    {support source selected : Finset object.Vertex}
+    {root terminal : object.Vertex}
+    (walk : object.graph.Walk root terminal)
+    (isPath : walk.IsPath)
+    (rootSource : root ∈ source)
+    (inside : ∀ item ∈ walk.support, item ∈ support)
+    (terminalSelected : terminal ∈ selected) :
+    RoutingConfiguration object support source selected where
+  path := walk.support
+  chain := walk.isChain_adj_support
+  nodup := isPath.support_nodup
+  issued := ⟨root, by
+    rw [List.head?_eq_some_head walk.support_ne_nil, walk.head_support],
+    rootSource⟩
+  inside := inside
+  lands := ⟨terminal, by
+    rw [List.getLast?_eq_getLast_of_ne_nil walk.support_ne_nil,
+      walk.getLast_support], terminalSelected⟩
+
+/-- A connected declared sub-support containing the root and a selected-port
+vertex supplies a connector configuration in every larger declared support.
+The witness walk is the one carried by `ConnectedOn`; this theorem introduces
+no path selector or additional support. -/
+theorem exists_routingConfiguration_of_connectedOn
+    {object : FiniteObject.{u}}
+    {support connector source selected : Finset object.Vertex}
+    {root : object.Vertex}
+    (connected : SupportComponents.Connected.ConnectedOn object connector)
+    (rootMem : root ∈ connector)
+    (rootSource : root ∈ source)
+    (selectedNonempty : selected.Nonempty)
+    (selectedSubset : selected ⊆ connector)
+    (connectorSubset : connector ⊆ support) :
+    ∃ configuration : RoutingConfiguration object support source selected,
+      configuration.path.head? = some root := by
+  obtain ⟨terminal, terminalSelected⟩ := selectedNonempty
+  obtain ⟨walk, isPath, inside⟩ :=
+    connected.2 rootMem (selectedSubset terminalSelected)
+  let configuration := RoutingConfiguration.ofWalk walk isPath rootSource
+    (fun item member => connectorSubset (inside item member)) terminalSelected
+  exact ⟨configuration, by
+    change walk.support.head? = some root
+    rw [List.head?_eq_some_head walk.support_ne_nil, walk.head_support]⟩
+
+/-- The finite vertex support of an existing walk is connected in the ambient
+object. -/
+theorem connectedOn_walkSupport {object : FiniteObject.{u}}
+    [DecidableEq object.Vertex]
+    {start finish : object.Vertex}
+    (walk : object.graph.Walk start finish) :
+    SupportComponents.Connected.ConnectedOn object walk.support.toFinset := by
+  classical
+  constructor
+  · exact ⟨start, by simp⟩
+  · intro left right leftMem rightMem
+    have leftOnWalk : left ∈ walk.support := by simpa using leftMem
+    have rightOnWalk : right ∈ walk.support := by simpa using rightMem
+    let leftPart := (walk.takeUntil left leftOnWalk).reverse
+    let rightPart := walk.takeUntil right rightOnWalk
+    let joined := leftPart.append rightPart
+    let path := joined.toPath
+    refine ⟨path, path.isPath, ?_⟩
+    intro vertex vertexMem
+    have inJoined : vertex ∈ joined.support :=
+      SimpleGraph.Walk.support_toPath_subset_support joined vertexMem
+    rw [SimpleGraph.Walk.mem_support_append_iff] at inJoined
+    rcases inJoined with inLeft | inRight
+    · have inTaken : vertex ∈ (walk.takeUntil left leftOnWalk).support := by
+        simpa [leftPart, SimpleGraph.Walk.support_reverse] using inLeft
+      exact List.mem_toFinset.mpr
+        (walk.support_takeUntil_subset_support leftOnWalk inTaken)
+    · exact List.mem_toFinset.mpr
+        (walk.support_takeUntil_subset_support rightOnWalk inRight)
+
+/-- Two connected declared supports with a common vertex have connected union.
+This is the support-level gluing used for `X_π` and the already canonical
+return supports `R_p`. -/
+theorem connectedOn_union_of_common
+    {object : FiniteObject.{u}} [DecidableEq object.Vertex]
+    {left right : Finset object.Vertex}
+    (leftConnected : SupportComponents.Connected.ConnectedOn object left)
+    (rightConnected : SupportComponents.Connected.ConnectedOn object right)
+    {common : object.Vertex} (commonLeft : common ∈ left)
+    (commonRight : common ∈ right) :
+    SupportComponents.Connected.ConnectedOn object (left ∪ right) := by
+  classical
+  constructor
+  · obtain ⟨vertex, member⟩ := leftConnected.1
+    exact ⟨vertex, Finset.mem_union_left _ member⟩
+  · intro first second firstMem secondMem
+    rcases Finset.mem_union.mp firstMem with firstLeft | firstRight <;>
+      rcases Finset.mem_union.mp secondMem with secondLeft | secondRight
+    · obtain ⟨walk, path, inside⟩ := leftConnected.2 firstLeft secondLeft
+      exact ⟨walk, path, fun vertex member =>
+        Finset.mem_union_left _ (inside vertex member)⟩
+    · obtain ⟨toCommon, _, insideLeft⟩ :=
+        leftConnected.2 firstLeft commonLeft
+      obtain ⟨fromCommon, _, insideRight⟩ :=
+        rightConnected.2 commonRight secondRight
+      let joined := toCommon.append fromCommon
+      let path := joined.toPath
+      refine ⟨path, path.isPath, ?_⟩
+      intro vertex member
+      have inJoined : vertex ∈ joined.support :=
+        SimpleGraph.Walk.support_toPath_subset_support joined member
+      rw [SimpleGraph.Walk.mem_support_append_iff] at inJoined
+      exact inJoined.elim
+        (fun inside => Finset.mem_union_left _ (insideLeft vertex inside))
+        (fun inside => Finset.mem_union_right _ (insideRight vertex inside))
+    · obtain ⟨toCommon, _, insideRight⟩ :=
+        rightConnected.2 firstRight commonRight
+      obtain ⟨fromCommon, _, insideLeft⟩ :=
+        leftConnected.2 commonLeft secondLeft
+      let joined := toCommon.append fromCommon
+      let path := joined.toPath
+      refine ⟨path, path.isPath, ?_⟩
+      intro vertex member
+      have inJoined : vertex ∈ joined.support :=
+        SimpleGraph.Walk.support_toPath_subset_support joined member
+      rw [SimpleGraph.Walk.mem_support_append_iff] at inJoined
+      exact inJoined.elim
+        (fun inside => Finset.mem_union_right _ (insideRight vertex inside))
+        (fun inside => Finset.mem_union_left _ (insideLeft vertex inside))
+    · obtain ⟨walk, path, inside⟩ := rightConnected.2 firstRight secondRight
+      exact ⟨walk, path, fun vertex member =>
+        Finset.mem_union_right _ (inside vertex member)⟩
+
 /-- The length of the maximal common initial segment of two germs. -/
 def commonPrefixLength : List Item → List Item → Nat
   | [], _ => 0
@@ -324,6 +456,33 @@ theorem commonPrefix_eq_right_take (left right : List Item) :
 theorem length_commonPrefix (left right : List Item) :
     (commonPrefix left right).length = commonPrefixLength left right := by
   simp [commonPrefix, commonPrefixLength_le_left]
+
+/-- A list is its whole common prefix with any extension of itself. -/
+theorem commonPrefixLength_append_left (left suffix : List Item) :
+    commonPrefixLength left (left ++ suffix) = left.length := by
+  induction left with
+  | nil => simp [commonPrefixLength]
+  | cons head tail ih =>
+      simp [commonPrefixLength, ih]
+
+/-- Prefix-comparable configurations do not diverge at a first separator. -/
+theorem not_diverges_of_isPrefix {left right : List Item}
+    (prefixed : left <+: right) : ¬ Diverges left right := by
+  obtain ⟨suffix, rfl⟩ := prefixed
+  rw [Diverges, commonPrefixLength_append_left]
+  simp
+
+/-- The symmetric prefix-comparable case also cannot diverge. -/
+theorem not_diverges_of_isPrefix_right {left right : List Item}
+    (prefixed : right <+: left) : ¬ Diverges left right := by
+  obtain ⟨suffix, rfl⟩ := prefixed
+  have common : commonPrefixLength (right ++ suffix) right = right.length := by
+    induction right with
+    | nil => cases suffix <;> rfl
+    | cons head tail ih =>
+        simp [commonPrefixLength, ih]
+  rw [Diverges, common]
+  simp
 
 /-- Two configurations issued from the same root agree at their first item,
 so their common segment is nonempty. -/

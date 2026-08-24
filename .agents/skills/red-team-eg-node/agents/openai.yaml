@@ -1,0 +1,4 @@
+interface:
+  display_name: "Red-Team EG Proof Node"
+  short_description: "Stress-test one EG proof node cumulatively"
+  default_prompt: "Use $red-team-eg-node to adversarially audit one Erdős–Gyárfás proof node against its full accumulated residual and record the report."

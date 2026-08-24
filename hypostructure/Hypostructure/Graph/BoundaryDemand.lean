@@ -207,6 +207,25 @@ theorem internalDegree_add_internalDegree_compl (object : FiniteObject.{u})
     rw [rewrite, Nat.add_comm, Finset.card_sdiff_add_card_inter]
   simpa [internalDegree, FiniteObject.degree] using split
 
+/-- A closed region reads the same internal degree as its closure: when every
+neighbour landing in `mid` lands in `inner ⊆ mid`, the two internal degrees
+agree. -/
+theorem internalDegree_eq_of_closed (object : FiniteObject.{u})
+    {inner mid : Finset object.Vertex} {vertex : object.Vertex}
+    (innerMid : inner ⊆ mid)
+    (closed : ∀ other, object.graph.Adj vertex other → other ∈ mid →
+      other ∈ inner) :
+    object.internalDegree mid vertex =
+      object.internalDegree inner vertex := by
+  letI : FinEnum object.Vertex := object.vertices
+  letI : DecidableRel object.graph.Adj := object.decideAdj
+  classical
+  simp only [internalDegree]
+  refine congrArg Finset.card (Finset.ext fun other => ?_)
+  simp only [Finset.mem_inter, SimpleGraph.mem_neighborFinset]
+  exact ⟨fun pair => ⟨pair.1, closed other pair.1 pair.2⟩,
+    fun pair => ⟨pair.1, innerMid pair.2⟩⟩
+
 /-- **The boundary incidence is symmetric.**  Counting the incidences that
 leave a support from inside it, and counting them from outside, give the same
 number: both are the number of adjacent ordered pairs across the cut.
@@ -240,6 +259,7 @@ theorem sum_internalDegree_comm (object : FiniteObject.{u})
 /-- **`σ_W ≤ σ(G)`.**  Surplus is a sum of nonnegative vertex-local terms, so a
 larger region carries at least as much of it.  The manuscript's own reason for
 `σ_W ≤ σ(G)`: "the windows are vertex-disjoint and surplus is nonnegative". -/
+
 theorem ambientSurplus_le_of_subset (object : FiniteObject.{u})
     {small large : Finset object.Vertex} (contained : small ⊆ large)
     (threshold : Nat) :
@@ -287,6 +307,79 @@ theorem ambientSurplus_le_degreeSurplus (object : FiniteObject.{u})
   classical
   rw [← object.ambientSurplus_univ_eq_degreeSurplus threshold baseline]
   exact object.ambientSurplus_le_of_subset (Finset.subset_univ support) threshold
+
+/-- A covered set reads at most the covering pair's internal degrees.  The
+statement carries no set constructor, so it applies at any decidability
+flavour. -/
+theorem internalDegree_le_add_of_cover (object : FiniteObject.{u})
+    {covering left right : Finset object.Vertex} (vertex : object.Vertex)
+    (covered : ∀ other ∈ covering, other ∈ left ∨ other ∈ right) :
+    object.internalDegree covering vertex ≤
+      object.internalDegree left vertex +
+        object.internalDegree right vertex := by
+  letI : FinEnum object.Vertex := object.vertices
+  letI : DecidableRel object.graph.Adj := object.decideAdj
+  classical
+  simp only [internalDegree]
+  have subsetUnion : object.graph.neighborFinset vertex ∩ covering ⊆
+      (object.graph.neighborFinset vertex ∩ left) ∪
+        (object.graph.neighborFinset vertex ∩ right) := by
+    intro other omem
+    rw [Finset.mem_inter] at omem
+    rw [Finset.mem_union, Finset.mem_inter, Finset.mem_inter]
+    rcases covered other omem.2 with inLeft | inRight
+    · exact Or.inl ⟨omem.1, inLeft⟩
+    · exact Or.inr ⟨omem.1, inRight⟩
+  calc (object.graph.neighborFinset vertex ∩ covering).card
+      ≤ ((object.graph.neighborFinset vertex ∩ left) ∪
+          (object.graph.neighborFinset vertex ∩ right)).card :=
+        Finset.card_le_card subsetUnion
+    _ ≤ _ := Finset.card_union_le _ _
+
+open scoped Classical in
+/-- Deleting a vertex set transfers at most its support-internal degrees into
+new positive deficiency: each deleted edge opens one deficiency slot at its
+surviving endpoint. -/
+theorem positiveDeficiency_sdiff_le (object : FiniteObject.{u})
+    (support deleted : Finset object.Vertex) (threshold : Nat) :
+    object.positiveDeficiency (support \ deleted) threshold ≤
+      object.positiveDeficiency support threshold +
+        ∑ vertex ∈ deleted, object.internalDegree support vertex := by
+  classical
+  have pointwise : ∀ vertex ∈ support \ deleted,
+      threshold - object.internalDegree (support \ deleted) vertex ≤
+        (threshold - object.internalDegree support vertex) +
+          object.internalDegree deleted vertex := by
+    intro vertex _
+    have mono := object.internalDegree_mono
+      (Finset.sdiff_subset : support \ deleted ⊆ support) vertex
+    have cover := object.internalDegree_le_add_of_cover
+      (covering := support) (left := support \ deleted) (right := deleted)
+      vertex (fun other mem => by
+        by_cases odel : other ∈ deleted
+        · exact Or.inr odel
+        · exact Or.inl (Finset.mem_sdiff.mpr ⟨mem, odel⟩))
+    omega
+  have summed : object.positiveDeficiency (support \ deleted) threshold ≤
+      (∑ vertex ∈ support \ deleted,
+        (threshold - object.internalDegree support vertex)) +
+        ∑ vertex ∈ support \ deleted,
+          object.internalDegree deleted vertex := by
+    unfold positiveDeficiency
+    rw [← Finset.sum_add_distrib]
+    exact Finset.sum_le_sum pointwise
+  have deficiencyPart : (∑ vertex ∈ support \ deleted,
+      (threshold - object.internalDegree support vertex)) ≤
+      object.positiveDeficiency support threshold := by
+    unfold positiveDeficiency
+    exact Finset.sum_le_sum_of_subset Finset.sdiff_subset
+  have crossPart : (∑ vertex ∈ support \ deleted,
+      object.internalDegree deleted vertex) ≤
+      ∑ vertex ∈ deleted, object.internalDegree support vertex := by
+    rw [object.sum_internalDegree_comm (support \ deleted) deleted]
+    exact Finset.sum_le_sum fun vertex _ =>
+      object.internalDegree_mono Finset.sdiff_subset vertex
+  omega
 
 end FiniteObject
 

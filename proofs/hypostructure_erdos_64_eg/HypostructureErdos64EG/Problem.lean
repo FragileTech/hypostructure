@@ -222,6 +222,7 @@ noncomputable def spineData : Graph.Strategy.Spine.Data.{u} where
   dischargeScale_pos := by norm_num [erdosReceiverLoadProfile]
   bridgeMassFactor := 8
   bridgeMassSlack := by norm_num [erdosReceiverLoadProfile]
+  bridgeDeletionSlack := by norm_num [erdosReceiverLoadProfile]
 
 
 end HypostructureErdos64EG
