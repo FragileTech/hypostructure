@@ -374,24 +374,24 @@ route, separator, label map, profile callback, or handoff object is accepted as
 an argument.  The executor publishes the paper lemma and then its survivor
 specialization monotonically.
 
-The first remaining kernel obligation is deliberately exposed at the exact
-mathematical step where it occurs.  `def:declared-coordinate-signature`
-currently presents the eight supports used by `Z(π;t,r)` (including the
-upstream canonical returns `R_p,R_q`), but the existing declarations do not
-construct the paper's connector configurations or their graph-derived routing
-labels from those supports.  The unresolved goal below is therefore the
-paper's literal sparse-exit-or-Type-B conclusion.  No selector, replacement
+The row reads the complete earlier manuscript package needed by the routing
+argument: the active support and activation facts, canonical returns and target
+avoidance, the exact blocker/token ledgers, the boundary and window-label
+algebras, and the high-centre normal form.  The unresolved goal below remains
+the paper's literal sparse-exit-or-Type-B conclusion.  No selector, replacement
 datum, callback, or side carrier is postulated. -/
 
 @[reducible] noncomputable def sameTokenBottleneckRoutingRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.sameTokenBottleneckRouting
     { Requires := [K .homogeneousBottleneckPattern, K .activeSurplusDemands,
-        K .cubicBaseline,
+        K .sparsePortActivation, K .activeSurplusFamily, K .cubicBaseline,
         K .capacityTokenLedger, K .canonicalPairLedger,
         K .canonicalBlockerRoute, K .dependentPairFamily,
         K .sparseUpperEnvelope, K .maximalPacking,
-        K .sparseSurplusSurvivor, K .selection, K .degreeProfileFibres,
+        K .sparseSurplusSurvivor, K .selection, K .returnAvoidance,
+        K .tightEndpoint, K .slackIndependent, K .highCentreNormalForm,
+        K .localAlgebra, K .degreeProfileFibres,
         K .targetCompleteContextUniversality, K .replacementExclusion,
         K .uncompressible, K .noProperBaseline, K .remainderNormalized]
       Produces := [K .bottleneckRouting, K .typeBHandoff]
@@ -410,6 +410,10 @@ datum, callback, or side carrier is postulated. -/
           have active := (inputs.get (K .activeSurplusDemands)).down
           have activeEq : patternActive = active := Subsingleton.elim _ _
           subst patternActive
+          have _activationFacts :=
+            (inputs.get (K .sparsePortActivation)).down
+          have activeFamily :=
+            (inputs.get (K .activeSurplusFamily)).down
           have cubic := (inputs.get (K .cubicBaseline)).down
           have _capacityLedger :=
             (inputs.get (K .capacityTokenLedger)).down
@@ -425,6 +429,12 @@ datum, callback, or side carrier is postulated. -/
             (inputs.get (K .maximalPacking)).down
           have _survivor := (inputs.get (K .sparseSurplusSurvivor)).down
           have _selection := (inputs.get (K .selection)).down
+          have _returnAvoidance := (inputs.get (K .returnAvoidance)).down
+          have _tightEndpoint := (inputs.get (K .tightEndpoint)).down
+          have _slackIndependent := (inputs.get (K .slackIndependent)).down
+          have _highCentreNormalForm :=
+            (inputs.get (K .highCentreNormalForm)).down
+          have _localAlgebra := (inputs.get (K .localAlgebra)).down
           have _profiles := (inputs.get (K .degreeProfileFibres)).down
           have _contexts :=
             (inputs.get (K .targetCompleteContextUniversality)).down
@@ -484,20 +494,12 @@ datum, callback, or side carrier is postulated. -/
               intro endpointShoulder
               exact object.graph.loopless.irrefl _
                 ((port.mem_shoulders_iff port.endpoint).1 endpointShoulder).2
-            obtain ⟨left, right, description, distinct⟩ :=
-              active.shoulderPair demand member
-            have shouldersEq : port.shoulders = {left, right} := by
-              ext vertex
-              rw [description]
-              simp [or_comm]
-            have shoulderCard : port.shoulders.card = 2 := by
-              rw [shouldersEq]
-              simp [distinct]
-            have supportCard : port.support.card = data.threshold := by
-              unfold Graph.FiniteObject.SurplusPort.support
-              rw [Finset.card_insert_of_notMem endpointNotShoulder,
-                shoulderCard, cubic]
-            simpa only [selectedSupport, dif_pos member] using supportCard
+            have shoulderCard : port.shoulders.card = data.threshold - 1 :=
+              (activeFamily.2 demand member).2.2
+            unfold Graph.FiniteObject.SurplusPort.support
+            simp only [selectedSupport, dif_pos member]
+            rw [Finset.card_insert_of_notMem endpointNotShoulder, shoulderCard,
+              cubic]
 
           -- The boundary-degree profile of `T(p)`: enumerate its vertices in
           -- the object's fixed order and record their actual degrees in the

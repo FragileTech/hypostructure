@@ -6672,24 +6672,46 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
           data.surplusThreshold object.vertexCount)
   | .route8PiecesClassified, object =>
       -- `thm:branch-kill`'s all-pieces classification, exactly as stated: at a
-      -- negative zero-surplus piece, an exit-(4) witness for a routed load, an
-      -- admissible silent-core residual profile
-      -- (`def:typeA-silent-core-residual` at every saturated receiver, which
-      -- presupposes the `[93]`-no reduction), or a produced decorated Type B
-      -- handoff; at a negative positive-surplus piece, the Type B bridge
-      -- component pair.  Per `rem:unified-covers-exit4` this does not force
-      -- silent-first: an exit-(4) support may be visible.
+      -- negative zero-surplus piece, an exit-(4) witness for a routed load,
+      -- the route-8 residual profile — per saturated receiver, every unpaid
+      -- silent-excess and overloaded-port visible load is a route-8 entry or
+      -- realizes the exit-(5) plain response quotient (cased), the exact
+      -- per-load conclusion `K .typeAExclusion`'s arm 2 delivers
+      -- (`lem:typeA-reduced-silent-residual`, `rem:unified-covers-exit4`) —
+      -- or a produced decorated Type B handoff; at a negative positive-surplus
+      -- piece, the Type B bridge component pair.
       Graph.Route8Deficit.PieceClassification object
         (Graph.HasCycleWithLength data.LengthOK)
         (fun piece =>
-          Graph.Route8Deficit.SilentFirst object piece data.threshold
-              data.dischargeScale ∧
-            ∀ receiver ∈ Graph.VisibleEntry.saturatedReceivers object piece
-                data.threshold data.dischargeScale,
-              ∀ load ∈ Graph.VisibleEntry.silentExcess object piece
-                  data.threshold data.dischargeScale receiver,
-                Graph.Route8.TraceBasin.Route8Entry object piece data.threshold
-                  data.LengthOK receiver load)
+          ∀ receiver ∈ Graph.VisibleEntry.saturatedReceivers object piece
+              data.threshold data.dischargeScale,
+            (∀ load ∈ Graph.VisibleEntry.silentExcess object piece
+                data.threshold data.dischargeScale receiver,
+              Graph.Route8.TraceBasin.Route8Entry object piece data.threshold
+                  data.LengthOK receiver load ∨
+                ∃ basin : Finset object.Vertex,
+                  Graph.Route8.TraceBasin.select? object piece data.threshold
+                      receiver load = some basin ∧
+                    ∃ retained,
+                      Graph.Route8.TraceBasin.TraceResponseQuotient object
+                        piece data.threshold data.LengthOK receiver load basin
+                        retained) ∧
+              ∀ outside ∈ Graph.VisibleEntry.completionPorts object piece
+                  receiver,
+                data.dischargeScale ≤
+                  (Graph.VisibleEntry.visibleLoadsAt object piece
+                    data.threshold receiver outside).card →
+                ∀ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
+                    data.threshold data.dischargeScale receiver outside ∅,
+                  Graph.Route8.TraceBasin.Route8Entry object piece
+                      data.threshold data.LengthOK receiver load ∨
+                    ∃ basin : Finset object.Vertex,
+                      Graph.Route8.TraceBasin.select? object piece
+                          data.threshold receiver load = some basin ∧
+                        ∃ retained,
+                          Graph.Route8.TraceBasin.TraceResponseQuotient object
+                            piece data.threshold data.LengthOK receiver load
+                            basin retained)
         (fun piece =>
           HandoffProduced data object (canonicalWindowPacking data object) piece)
         (canonicalWindowPacking data object) data.threshold data.dischargeScale

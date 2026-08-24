@@ -632,6 +632,67 @@ stage closes (rate fails) or only route 8 remains. `K .route8PiecesClassified` s
     per-receiver conversion feeding the unchanged silent-quantified `[114]`/`[115]`
     Holds), and the two deletion-witness `loadRouted` derivations (one unwrap:
     `mem_entries` now yields `E(w)`-membership directly).
+  [123] REMAINING-PRODUCER GATE ANALYSIS 2026-08-24 (verified against live Lean; the tree is
+  green — vocabulary 8730 jobs, `SpineRows` elaboration shows only the user's WIP block):
+  the four outstanding items and their exact gates, after this session's groundwork
+  ([86] trichotomy, fact-2 dichotomy, excess census + silence-free burden + paper-exact
+  descent):
+  1. `K .route8UnifiedEntryCensus` (`route8UnifiedEntryCensusRow`): the per-entry
+     trichotomy (select? ∧ (minimal ∨ witness ∨ cased quotient)) is fully provable with the
+     [86]-row recipe, BUT the schema `Route8UnifiedEntryFacts` is positionally consumed by
+     `route8StageOutcomeDichotomy`'s survivor arm, which spends its `2 ≤ entry.alpha`
+     clause into `route8UnifiedTrueTwoCarrierEntry` for the [124] no-go (`alphaAtLeast` →
+     `coreNonempty`).  VERIFIED 2026-08-24: α is NOT the gate — the [114] cut-parity
+     proof lifts verbatim to unified entries (its only external input,
+     `basin ⊆ piece`, comes from `select?_traceComplete` at the entry's own
+     `selectedEq`; the rest is per-entry graph reasoning through
+     `presented.two_le_card_car`), and the minimal-arm α then follows from
+     `two_le_essentialCore_card_of_alternatives_refuted` with
+     `Alternatives := ∃ retained, TraceResponseQuotient …`, the [116]-row's
+     crossing-callback, and `minimal`'s own ¬(b) clause as `refuted`.  The REAL
+     gate: every provable schema must carry the cased exit-(5) quotient arm
+     (`minimal ∨ witness ∨ quotient`, as in [86]/fact-2), and the green
+     `route8StageOutcomeDichotomy` → `route8UnifiedTerminalNoGoRow` chain has
+     no decision for a quotient-carrying terminal `TrueEntryAt` (no witness to
+     peel, no α guarantee, no minimality for the [124] no-go) — the same
+     quotient-terminal gap as item 4.
+  2. `K .route8PiecesClassified` (`thm:branch-kill`): DONE 2026-08-24 — the Holds'
+     residual-profile arm is aligned with what `[86]` actually produces (per
+     saturated receiver, every silent-excess load and every overloaded-port
+     selected visible unpeeled load is `Route8Entry` ∨ the cased exit-(5)
+     plain quotient at the selected basin; the old SilentFirst-gated profile
+     is deleted; vocabulary builds green, key unconsumed so no consumer
+     breaks). The zero-surplus arm of the producer is now one read of
+     `K .typeAExclusion`. The positive-surplus arm remains gated:
+     VERIFIED 2026-08-24 against the three `selectedTypeBRoute8Continuation`
+     call sites in Assembly.lean (1688; calls at 1783/1849/1862+) —
+     `K .typeBDisjointLedger` is committed only on the `typeBExclusionDichotomy`
+     arms; the `fanCertificateDichotomy .right` residual arm reaches the
+     route-8 branch WITHOUT it, so the ∀-piece hygiene pair
+     (`lem:typeB-postledger-core-hygiene` / `prop:typeB-bridge-reduction`)
+     is genuinely absent from the common prefix and must be produced
+     upstream of `fanCertificateDichotomy` (the active TypeBMaximalCompletion
+     lane). No [123]-side edit can supply it.
+  3. `K .route8UnifiedDeficit` (`lem:typeA-unified-deficit`): per-piece over the canonical
+     decomposition, cases (i) unified and (ii) nonnegative are Nat-trivial; (iii)
+     negative-positive-surplus and (iv) negative-zero-surplus-handoff both need their
+     payment into the `2·F·s·T` slack through the same hygiene pair ((iii) via
+     `typeBBridgeMass`'s conditional clause, (iv) via
+     `envelopeFamilyNegativePart_le_degreeSurplus`'s routes/unsaturated/coverage
+     hypotheses) — the same Type B gate as item 2.
+  4. The failed-stage closure (`selectedRouteEightStageClosure`) and the composed wiring
+     (`selectedLargeBudgetPressureCensus` → the existing `selectedRouteEightCensus`): gated
+     on 2 and 3, plus one structural fact the corrected calibration makes load-bearing: a
+     terminal `TrueEntryAt` may carry the cased exit-(5) quotient (no witness, no
+     α-guarantee — `lem:typeA-one-terminal-collapse`'s four-fold is consistent with (b) at
+     α ≤ 1), and the paper parks exactly these in `Ξ_res` of `def:typeA-pressure-ledger`
+     with the open-demand accounting (`cor:typeA-large-budget-closure-open-pressure`) — the
+     [129]-side pressure machinery, not a per-entry no-go.  A widened survivor Holds or the
+     pressure-ledger port is required before the dichotomy can decide quotient-carrying
+     survivors.
+  An attempted census-schema simplification (dropping the α-clause) was REVERTED in full
+  after the consumer coupling surfaced — no unprovable row and no schema drift was left in
+  the tree.
 
 - [x] **Staged burden proven:** `Route8Pressure.stage_burden`, no flat burden assumed
 - [x] **Every peel recorded:** the descent's chain is ledger data; `StageRate` charges every

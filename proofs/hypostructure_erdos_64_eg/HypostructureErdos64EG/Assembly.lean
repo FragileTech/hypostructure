@@ -448,6 +448,8 @@ noncomputable def selectedBottleneckDischarge
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .homogeneousBottleneckPattern) known]
     [FactKeys.Has (K .activeSurplusDemands) known]
+    [FactKeys.Has (K .sparsePortActivation) known]
+    [FactKeys.Has (K .activeSurplusFamily) known]
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .capacityTokenLedger) known]
     [FactKeys.Has (K .canonicalPairLedger) known]
@@ -456,6 +458,11 @@ noncomputable def selectedBottleneckDischarge
     [FactKeys.Has (K .sparseUpperEnvelope) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .returnAvoidance) known]
+    [FactKeys.Has (K .tightEndpoint) known]
+    [FactKeys.Has (K .slackIndependent) known]
+    [FactKeys.Has (K .highCentreNormalForm) known]
+    [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .degreeProfileFibres) known]
     [FactKeys.Has (K .targetCompleteContextUniversality) known]
     [FactKeys.Has (K .replacementExclusion) known]
@@ -502,9 +509,16 @@ noncomputable def selectedSparsePressureOverloadCloses
     [FactKeys.Has (K .canonicalBlockerRoute) known]
     [FactKeys.Has (K .dependentPairFamily) known]
     [FactKeys.Has (K .activeSurplusDemands) known]
+    [FactKeys.Has (K .sparsePortActivation) known]
+    [FactKeys.Has (K .activeSurplusFamily) known]
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .sparseUpperEnvelope) known]
     [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .returnAvoidance) known]
+    [FactKeys.Has (K .tightEndpoint) known]
+    [FactKeys.Has (K .slackIndependent) known]
+    [FactKeys.Has (K .highCentreNormalForm) known]
+    [FactKeys.Has (K .localAlgebra) known]
     (windowFresh : K .windowClassOverload ∉ known)
     (windowAbsentFresh : K .windowClassAbsent ∉ known)
     (windowAuditFresh : K .windowIncidenceAudit ∉ known)
@@ -1278,7 +1292,13 @@ noncomputable def selectedStrictSurplusBranch
                   exact selectedSpineSurplusEstimateCloses estimate
               | .right overloadHistory =>
                   -- `[139]`--`[144]` on the literal overload residual.
-                  exact selectedSparsePressureOverloadCloses overloadHistory
+                  let normal :=
+                    (highCentreNormalFormRow (BranchState := BranchState)
+                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                      (presentation := erdosReceiverLoadProfile)
+                      (data := spineData)).run overloadHistory (by
+                        simp [highCentreNormalFormRow, K_eq_iff])
+                  exact selectedSparsePressureOverloadCloses normal
                     (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
                     (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
                     (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
