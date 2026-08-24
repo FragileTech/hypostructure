@@ -797,92 +797,132 @@
       "verdict": "MISSING RANGE OR DIVISIBILITY CHECK"
     },
     "162": {
-      "audited_at": null,
+      "audited_at": "2026-08-24T21:08:28Z",
       "current_contract_sha256": "69233163d8593ddd9ce6a86dc2ee5d3ed5602c3969b35a452923aafc5a928511",
       "label": "dense hot/cold pass: run [22]--[24] and [145]--[157] on the dense residual; [23], [149], [155], [156], [157] close as before; bounded arm of [153] and [146]/[160] arms return to [25]",
       "panel": "fig:proof-diagram-part-xii",
-      "recorded_contract_sha256": null,
+      "recorded_contract_sha256": "69233163d8593ddd9ce6a86dc2ee5d3ed5602c3969b35a452923aafc5a928511",
       "report": "reports/node-162.md",
       "shape": "assertion",
-      "status": "pending",
-      "verdict": null
+      "source_fingerprints": {
+        "graph_sha256": "dc67fae178f947a9607c167e383d85919633341bdd423e4c4a45e4c317b3a765",
+        "lean_audit_sha256": "50324ef5594d635a52d83aeb297f2ca3f3d30ef58de4ce3602816c7e78365b12",
+        "manuscript_sha256": "106a8205a1718fbf90e1686a107b2143b9edca574e2b0c11415e7f44aee2c0f9"
+      },
+      "status": "audited",
+      "verdict": "PROSE AMBIGUITY"
     },
     "163": {
-      "audited_at": null,
+      "audited_at": "2026-08-24T21:16:19Z",
       "current_contract_sha256": "0154a0b5d09dbfe4558ac244f9384eb39edda286ee4b894b0c9dad3edaa0f432",
       "label": "neutral equal-length terminal configuration: second strand graph-realized?",
       "panel": "fig:proof-diagram-part-xii",
-      "recorded_contract_sha256": null,
+      "recorded_contract_sha256": "0154a0b5d09dbfe4558ac244f9384eb39edda286ee4b894b0c9dad3edaa0f432",
       "report": "reports/node-163.md",
       "shape": "decision",
-      "status": "pending",
-      "verdict": null
+      "source_fingerprints": {
+        "graph_sha256": "dc67fae178f947a9607c167e383d85919633341bdd423e4c4a45e4c317b3a765",
+        "lean_audit_sha256": "50324ef5594d635a52d83aeb297f2ca3f3d30ef58de4ce3602816c7e78365b12",
+        "manuscript_sha256": "106a8205a1718fbf90e1686a107b2143b9edca574e2b0c11415e7f44aee2c0f9"
+      },
+      "status": "audited",
+      "verdict": "PROSE AMBIGUITY"
     },
     "164": {
-      "audited_at": null,
+      "audited_at": "2026-08-24T21:15:51Z",
       "current_contract_sha256": "9cbf530cc461b7c6a07c8055a1d901893050c8b694c32c2a495541b4a0f1473c",
       "label": "all-cold comparison closes: \\(|\\mathcal G(R)|\\le|\\mathcal G_{n,m}|\\) by the remainder glue",
       "panel": "fig:proof-diagram-part-xii",
-      "recorded_contract_sha256": null,
+      "recorded_contract_sha256": "9cbf530cc461b7c6a07c8055a1d901893050c8b694c32c2a495541b4a0f1473c",
       "report": "reports/node-164.md",
       "shape": "terminal",
-      "status": "pending",
-      "verdict": null
+      "source_fingerprints": {
+        "graph_sha256": "dc67fae178f947a9607c167e383d85919633341bdd423e4c4a45e4c317b3a765",
+        "lean_audit_sha256": "50324ef5594d635a52d83aeb297f2ca3f3d30ef58de4ce3602816c7e78365b12",
+        "manuscript_sha256": "106a8205a1718fbf90e1686a107b2143b9edca574e2b0c11415e7f44aee2c0f9"
+      },
+      "status": "audited",
+      "verdict": "PROSE AMBIGUITY"
     },
     "165": {
-      "audited_at": null,
+      "audited_at": "2026-08-24T21:16:57Z",
       "current_contract_sha256": "9622b4ebb004b014736d2968f66caf1dd8ee5fd69b4df4b1a58bb092c8fb2919",
       "label": "canonical replacement \\(E\\ne Q\\): swap \\(Q\\to E\\) gives a same-size counterexample",
       "panel": "fig:proof-diagram-part-xii",
-      "recorded_contract_sha256": null,
+      "recorded_contract_sha256": "9622b4ebb004b014736d2968f66caf1dd8ee5fd69b4df4b1a58bb092c8fb2919",
       "report": "reports/node-165.md",
       "shape": "assertion",
-      "status": "pending",
-      "verdict": null
+      "source_fingerprints": {
+        "graph_sha256": "dc67fae178f947a9607c167e383d85919633341bdd423e4c4a45e4c317b3a765",
+        "lean_audit_sha256": "50324ef5594d635a52d83aeb297f2ca3f3d30ef58de4ce3602816c7e78365b12",
+        "manuscript_sha256": "106a8205a1718fbf90e1686a107b2143b9edca574e2b0c11415e7f44aee2c0f9"
+      },
+      "status": "audited",
+      "verdict": "MISSING REPRESENTATIVE"
     },
     "166": {
-      "audited_at": null,
+      "audited_at": "2026-08-24T21:25:44Z",
       "current_contract_sha256": "853a21e10d3eb6ba37cb82454014de0d7a23f2f8b1cb0d3265726da95b73fe4b",
       "label": "refined lexicographic minimality: \\(Q=E\\)",
       "panel": "fig:proof-diagram-part-xii",
-      "recorded_contract_sha256": null,
+      "recorded_contract_sha256": "853a21e10d3eb6ba37cb82454014de0d7a23f2f8b1cb0d3265726da95b73fe4b",
       "report": "reports/node-166.md",
       "shape": "assertion",
-      "status": "pending",
-      "verdict": null
+      "source_fingerprints": {
+        "graph_sha256": "dc67fae178f947a9607c167e383d85919633341bdd423e4c4a45e4c317b3a765",
+        "lean_audit_sha256": "50324ef5594d635a52d83aeb297f2ca3f3d30ef58de4ce3602816c7e78365b12",
+        "manuscript_sha256": "106a8205a1718fbf90e1686a107b2143b9edca574e2b0c11415e7f44aee2c0f9"
+      },
+      "status": "audited",
+      "verdict": "MISSING REPRESENTATIVE"
     },
     "167": {
-      "audited_at": null,
+      "audited_at": "2026-08-24T21:23:35Z",
       "current_contract_sha256": "96046c41db45058985b08785661063b41d318e3521ce83d9372b3ea5d53ed549",
       "label": "symmetric strand pair: finite two-strand check on the closing lengths \\(2\\ell\\), \\(\\ell+d\\)",
       "panel": "fig:proof-diagram-part-xii",
-      "recorded_contract_sha256": null,
+      "recorded_contract_sha256": "96046c41db45058985b08785661063b41d318e3521ce83d9372b3ea5d53ed549",
       "report": "reports/node-167.md",
       "shape": "assertion",
-      "status": "pending",
-      "verdict": null
+      "source_fingerprints": {
+        "graph_sha256": "dc67fae178f947a9607c167e383d85919633341bdd423e4c4a45e4c317b3a765",
+        "lean_audit_sha256": "50324ef5594d635a52d83aeb297f2ca3f3d30ef58de4ce3602816c7e78365b12",
+        "manuscript_sha256": "106a8205a1718fbf90e1686a107b2143b9edca574e2b0c11415e7f44aee2c0f9"
+      },
+      "status": "audited",
+      "verdict": "PROSE AMBIGUITY"
     },
     "168": {
-      "audited_at": null,
+      "audited_at": "2026-08-24T21:23:03Z",
       "current_contract_sha256": "aae6443eecac880a9270eb1d87fd2535fec091de547488f113780cfc66cce6c8",
       "label": "surviving pair attaches only at endpoints: not a selected interior half-edge",
       "panel": "fig:proof-diagram-part-xii",
-      "recorded_contract_sha256": null,
+      "recorded_contract_sha256": "aae6443eecac880a9270eb1d87fd2535fec091de547488f113780cfc66cce6c8",
       "report": "reports/node-168.md",
       "shape": "terminal",
-      "status": "pending",
-      "verdict": null
+      "source_fingerprints": {
+        "graph_sha256": "dc67fae178f947a9607c167e383d85919633341bdd423e4c4a45e4c317b3a765",
+        "lean_audit_sha256": "50324ef5594d635a52d83aeb297f2ca3f3d30ef58de4ce3602816c7e78365b12",
+        "manuscript_sha256": "106a8205a1718fbf90e1686a107b2143b9edca574e2b0c11415e7f44aee2c0f9"
+      },
+      "status": "audited",
+      "verdict": "WRONG ROUTING DESTINATION"
     },
     "169": {
-      "audited_at": null,
+      "audited_at": "2026-08-24T21:30:23Z",
       "current_contract_sha256": "3ffb4989b31dfd6d5aa61f1a65e534eb83f7d4bcce1d5846c22182f7072fe540",
       "label": "trivial neutral-configuration residual: dense packing, every corridor terminal and neutral, \\(Q=E\\); every window is blocked at every dyadic scale",
       "panel": "fig:proof-diagram-part-xii",
-      "recorded_contract_sha256": null,
+      "recorded_contract_sha256": "3ffb4989b31dfd6d5aa61f1a65e534eb83f7d4bcce1d5846c22182f7072fe540",
       "report": "reports/node-169.md",
       "shape": "assertion",
-      "status": "pending",
-      "verdict": null
+      "source_fingerprints": {
+        "graph_sha256": "dc67fae178f947a9607c167e383d85919633341bdd423e4c4a45e4c317b3a765",
+        "lean_audit_sha256": "50324ef5594d635a52d83aeb297f2ca3f3d30ef58de4ce3602816c7e78365b12",
+        "manuscript_sha256": "106a8205a1718fbf90e1686a107b2143b9edca574e2b0c11415e7f44aee2c0f9"
+      },
+      "status": "audited",
+      "verdict": "NO ISSUE FOUND"
     },
     "17": {
       "audited_at": null,
@@ -896,114 +936,164 @@
       "verdict": null
     },
     "170": {
-      "audited_at": null,
+      "audited_at": "2026-08-24T22:08:02Z",
       "current_contract_sha256": "51614570d5f6467a0f948ac7786f02cb48187d158041efa9396079c17509a1db",
       "label": "conditional savings additive at every fixed scale?",
       "panel": "fig:proof-diagram-part-xii",
-      "recorded_contract_sha256": null,
+      "recorded_contract_sha256": "51614570d5f6467a0f948ac7786f02cb48187d158041efa9396079c17509a1db",
       "report": "reports/node-170.md",
       "shape": "decision",
-      "status": "pending",
-      "verdict": null
+      "source_fingerprints": {
+        "graph_sha256": "dc67fae178f947a9607c167e383d85919633341bdd423e4c4a45e4c317b3a765",
+        "lean_audit_sha256": "50324ef5594d635a52d83aeb297f2ca3f3d30ef58de4ce3602816c7e78365b12",
+        "manuscript_sha256": "106a8205a1718fbf90e1686a107b2143b9edca574e2b0c11415e7f44aee2c0f9"
+      },
+      "status": "audited",
+      "verdict": "PROSE AMBIGUITY"
     },
     "171": {
-      "audited_at": null,
+      "audited_at": "2026-08-24T21:29:14Z",
       "current_contract_sha256": "51d4320ec24dbce202a19fca9e466686e723ff272620b458724ddb1a1987c32f",
       "label": "compression closure:\\(|\\mathcal B(\\mathcal P)|<1\\)",
       "panel": "fig:proof-diagram-part-xii",
-      "recorded_contract_sha256": null,
+      "recorded_contract_sha256": "51d4320ec24dbce202a19fca9e466686e723ff272620b458724ddb1a1987c32f",
       "report": "reports/node-171.md",
       "shape": "terminal",
-      "status": "pending",
-      "verdict": null
+      "source_fingerprints": {
+        "graph_sha256": "dc67fae178f947a9607c167e383d85919633341bdd423e4c4a45e4c317b3a765",
+        "lean_audit_sha256": "50324ef5594d635a52d83aeb297f2ca3f3d30ef58de4ce3602816c7e78365b12",
+        "manuscript_sha256": "106a8205a1718fbf90e1686a107b2143b9edca574e2b0c11415e7f44aee2c0f9"
+      },
+      "status": "audited",
+      "verdict": "WRONG ROUTING DESTINATION"
     },
     "172": {
-      "audited_at": null,
+      "audited_at": "2026-08-24T21:35:43Z",
       "current_contract_sha256": "986ac18d8cae76a3d56ed6c4d0fd866bd38adb182a3fc522222966da6e1b66b7",
       "label": "fixed-scale overlap system:\\\\serial realization and increment arithmetic close",
       "panel": "fig:proof-diagram-part-xii",
-      "recorded_contract_sha256": null,
+      "recorded_contract_sha256": "986ac18d8cae76a3d56ed6c4d0fd866bd38adb182a3fc522222966da6e1b66b7",
       "report": "reports/node-172.md",
       "shape": "terminal",
-      "status": "pending",
-      "verdict": null
+      "source_fingerprints": {
+        "graph_sha256": "dc67fae178f947a9607c167e383d85919633341bdd423e4c4a45e4c317b3a765",
+        "lean_audit_sha256": "50324ef5594d635a52d83aeb297f2ca3f3d30ef58de4ce3602816c7e78365b12",
+        "manuscript_sha256": "106a8205a1718fbf90e1686a107b2143b9edca574e2b0c11415e7f44aee2c0f9"
+      },
+      "status": "audited",
+      "verdict": "MISSING RANGE OR DIVISIBILITY CHECK"
     },
     "173": {
-      "audited_at": null,
+      "audited_at": "2026-08-24T21:41:35Z",
       "current_contract_sha256": "fbaa029562894b303e501f2ed03d83edc7873f0d02566215699cb15f408066d3",
       "label": "exact collision\\\\test holds?",
       "panel": "fig:proof-diagram-part-v",
-      "recorded_contract_sha256": null,
+      "recorded_contract_sha256": "fbaa029562894b303e501f2ed03d83edc7873f0d02566215699cb15f408066d3",
       "report": "reports/node-173.md",
       "shape": "decision",
-      "status": "pending",
-      "verdict": null
+      "source_fingerprints": {
+        "graph_sha256": "dc67fae178f947a9607c167e383d85919633341bdd423e4c4a45e4c317b3a765",
+        "lean_audit_sha256": "50324ef5594d635a52d83aeb297f2ca3f3d30ef58de4ce3602816c7e78365b12",
+        "manuscript_sha256": "106a8205a1718fbf90e1686a107b2143b9edca574e2b0c11415e7f44aee2c0f9"
+      },
+      "status": "audited",
+      "verdict": "MISSING RANGE OR DIVISIBILITY CHECK"
     },
     "174": {
-      "audited_at": null,
+      "audited_at": "2026-08-24T21:39:03Z",
       "current_contract_sha256": "b062789ebc53dfb1f15a0fa96b51688c1a51a7ab16cbb17467b1b96661ae583a",
       "label": "absorbed-configuration residual:\\\\the exact collision fails and the selected cold corridors were charged to high-degree vertices",
       "panel": "fig:proof-diagram-part-v",
-      "recorded_contract_sha256": null,
+      "recorded_contract_sha256": "b062789ebc53dfb1f15a0fa96b51688c1a51a7ab16cbb17467b1b96661ae583a",
       "report": "reports/node-174.md",
       "shape": "assertion",
-      "status": "pending",
-      "verdict": null
+      "source_fingerprints": {
+        "graph_sha256": "dc67fae178f947a9607c167e383d85919633341bdd423e4c4a45e4c317b3a765",
+        "lean_audit_sha256": "50324ef5594d635a52d83aeb297f2ca3f3d30ef58de4ce3602816c7e78365b12",
+        "manuscript_sha256": "106a8205a1718fbf90e1686a107b2143b9edca574e2b0c11415e7f44aee2c0f9"
+      },
+      "status": "audited",
+      "verdict": "MISSING RANGE OR DIVISIBILITY CHECK"
     },
     "175": {
-      "audited_at": null,
+      "audited_at": "2026-08-24T21:44:19Z",
       "current_contract_sha256": "d87fcaca29f8e98c4cee2b5f178e317e02f89128443418ca81d76f4b54c5ce2a",
       "label": "selected corridor\\\\meets a high-degree vertex?",
       "panel": "fig:proof-diagram-part-v",
-      "recorded_contract_sha256": null,
+      "recorded_contract_sha256": "d87fcaca29f8e98c4cee2b5f178e317e02f89128443418ca81d76f4b54c5ce2a",
       "report": "reports/node-175.md",
       "shape": "decision",
-      "status": "pending",
-      "verdict": null
+      "source_fingerprints": {
+        "graph_sha256": "dc67fae178f947a9607c167e383d85919633341bdd423e4c4a45e4c317b3a765",
+        "lean_audit_sha256": "50324ef5594d635a52d83aeb297f2ca3f3d30ef58de4ce3602816c7e78365b12",
+        "manuscript_sha256": "106a8205a1718fbf90e1686a107b2143b9edca574e2b0c11415e7f44aee2c0f9"
+      },
+      "status": "audited",
+      "verdict": "WRONG ROUTING DESTINATION"
     },
     "176": {
-      "audited_at": null,
+      "audited_at": "2026-08-24T21:48:51Z",
       "current_contract_sha256": "a93912ae4eb2d0257eeabfdbf4f025b78367ec750ae5a7b34da9e4b01a93ad38",
       "label": "graph-realized (F5) configuration:\\\\closed by [154]--[157], [165]--[168]",
       "panel": "fig:proof-diagram-part-v",
-      "recorded_contract_sha256": null,
+      "recorded_contract_sha256": "a93912ae4eb2d0257eeabfdbf4f025b78367ec750ae5a7b34da9e4b01a93ad38",
       "report": "reports/node-176.md",
       "shape": "terminal",
-      "status": "pending",
-      "verdict": null
+      "source_fingerprints": {
+        "graph_sha256": "dc67fae178f947a9607c167e383d85919633341bdd423e4c4a45e4c317b3a765",
+        "lean_audit_sha256": "50324ef5594d635a52d83aeb297f2ca3f3d30ef58de4ce3602816c7e78365b12",
+        "manuscript_sha256": "106a8205a1718fbf90e1686a107b2143b9edca574e2b0c11415e7f44aee2c0f9"
+      },
+      "status": "audited",
+      "verdict": "WRONG ROUTING DESTINATION"
     },
     "177": {
-      "audited_at": null,
+      "audited_at": "2026-08-24T21:46:09Z",
       "current_contract_sha256": "0073811fba066d92ebd38deaf7c10ea7596e698204fecda108dcaf5ce5798bdd",
       "label": "decorated handoff fan data at the heavy centre \\(z\\):\\\\continue at Type B [65]",
       "panel": "fig:proof-diagram-part-v",
-      "recorded_contract_sha256": null,
+      "recorded_contract_sha256": "0073811fba066d92ebd38deaf7c10ea7596e698204fecda108dcaf5ce5798bdd",
       "report": "reports/node-177.md",
       "shape": "assertion",
-      "status": "pending",
-      "verdict": null
+      "source_fingerprints": {
+        "graph_sha256": "dc67fae178f947a9607c167e383d85919633341bdd423e4c4a45e4c317b3a765",
+        "lean_audit_sha256": "50324ef5594d635a52d83aeb297f2ca3f3d30ef58de4ce3602816c7e78365b12",
+        "manuscript_sha256": "106a8205a1718fbf90e1686a107b2143b9edca574e2b0c11415e7f44aee2c0f9"
+      },
+      "status": "audited",
+      "verdict": "WRONG ROUTING DESTINATION"
     },
     "178": {
-      "audited_at": null,
+      "audited_at": "2026-08-24T21:51:17Z",
       "current_contract_sha256": "99bb56f52d746efe11b4a73f13581a0e4d3d72782b54ed5723608833099d1a4b",
       "label": "pair-code unrealized residual: the entropy count of [131] or of the free side of [137] fails; \\cref{lem:pair-failure-overlap} gives a minimal pair overlap obstruction",
       "panel": "fig:proof-diagram-part-x",
-      "recorded_contract_sha256": null,
+      "recorded_contract_sha256": "99bb56f52d746efe11b4a73f13581a0e4d3d72782b54ed5723608833099d1a4b",
       "report": "reports/node-178.md",
       "shape": "assertion",
-      "status": "pending",
-      "verdict": null
+      "source_fingerprints": {
+        "graph_sha256": "dc67fae178f947a9607c167e383d85919633341bdd423e4c4a45e4c317b3a765",
+        "lean_audit_sha256": "50324ef5594d635a52d83aeb297f2ca3f3d30ef58de4ce3602816c7e78365b12",
+        "manuscript_sha256": "106a8205a1718fbf90e1686a107b2143b9edca574e2b0c11415e7f44aee2c0f9"
+      },
+      "status": "audited",
+      "verdict": "NONEXHAUSTIVE BRANCH"
     },
     "179": {
-      "audited_at": null,
+      "audited_at": "2026-08-24T21:55:04Z",
       "current_contract_sha256": "36e4029de5935fb9a16438109fed7f114ead0597fa0dab8ea10eb841b58ebef6",
       "label": "serial demand system: uncrossing yields a scale-spanning chain of interfaces with bounded system increments (\\cref{lem:pair-system-realizability})",
       "panel": "fig:proof-diagram-part-x",
-      "recorded_contract_sha256": null,
+      "recorded_contract_sha256": "36e4029de5935fb9a16438109fed7f114ead0597fa0dab8ea10eb841b58ebef6",
       "report": "reports/node-179.md",
       "shape": "assertion",
-      "status": "pending",
-      "verdict": null
+      "source_fingerprints": {
+        "graph_sha256": "dc67fae178f947a9607c167e383d85919633341bdd423e4c4a45e4c317b3a765",
+        "lean_audit_sha256": "50324ef5594d635a52d83aeb297f2ca3f3d30ef58de4ce3602816c7e78365b12",
+        "manuscript_sha256": "106a8205a1718fbf90e1686a107b2143b9edca574e2b0c11415e7f44aee2c0f9"
+      },
+      "status": "audited",
+      "verdict": "NONEXHAUSTIVE BRANCH"
     },
     "18": {
       "audited_at": null,
@@ -1017,15 +1107,20 @@
       "verdict": null
     },
     "180": {
-      "audited_at": null,
+      "audited_at": "2026-08-24T21:52:51Z",
       "current_contract_sha256": "97d693581c604425fb7ecf6e0c84ba5a2b30683c65be2c1d2156827526fd876b",
       "label": "pair increment arithmetic closes: power-of-two hit, or periodic response class routed to a sparse exit or Type B (\\cref{lem:pair-system-increment-arithmetic})",
       "panel": "fig:proof-diagram-part-x",
-      "recorded_contract_sha256": null,
+      "recorded_contract_sha256": "97d693581c604425fb7ecf6e0c84ba5a2b30683c65be2c1d2156827526fd876b",
       "report": "reports/node-180.md",
       "shape": "terminal",
-      "status": "pending",
-      "verdict": null
+      "source_fingerprints": {
+        "graph_sha256": "dc67fae178f947a9607c167e383d85919633341bdd423e4c4a45e4c317b3a765",
+        "lean_audit_sha256": "50324ef5594d635a52d83aeb297f2ca3f3d30ef58de4ce3602816c7e78365b12",
+        "manuscript_sha256": "106a8205a1718fbf90e1686a107b2143b9edca574e2b0c11415e7f44aee2c0f9"
+      },
+      "status": "audited",
+      "verdict": "MISSING RANGE OR DIVISIBILITY CHECK"
     },
     "19": {
       "audited_at": null,
@@ -2013,12 +2108,12 @@
   "source_snapshot": {
     "checked_graph_semantic_sha256": "dc67fae178f947a9607c167e383d85919633341bdd423e4c4a45e4c317b3a765",
     "checked_graph_sha256": "5814474c327838775eaa9cfaaca2213ce17e88ba487ebd0f33b5a27d3ad4fec8",
-    "git_commit": "757dae93a310ce9645f47f21349bf7a706e74590",
+    "git_commit": "1476db21484424440b649ed2c4d4eb83bc9611da",
     "git_dirty": true,
     "graph_drift": false,
     "graph_sha256": "dc67fae178f947a9607c167e383d85919633341bdd423e4c4a45e4c317b3a765",
     "lean_audit_sha256": "50324ef5594d635a52d83aeb297f2ca3f3d30ef58de4ce3602816c7e78365b12",
     "manuscript_sha256": "106a8205a1718fbf90e1686a107b2143b9edca574e2b0c11415e7f44aee2c0f9"
   },
-  "updated_at": "2026-08-24T21:11:41Z"
+  "updated_at": "2026-08-24T22:14:43Z"
 }
