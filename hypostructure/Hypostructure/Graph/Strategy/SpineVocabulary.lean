@@ -3661,14 +3661,54 @@ calibration — occurs at no entry.  Tested, never refuted from the invariants;
 the no arm retains its literal negation as the manuscript's profile-record
 residual lane. -/
 def Route8QuotientFreeStatement (data : Data.{u})
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  ∀ index ∈ route8UnifiedEntries data object,
-    ∀ basin : Finset object.Vertex,
-      Graph.Route8.TraceBasin.select? object index.1 data.threshold
-          index.2.1 index.2.2 = some basin →
-        ¬ ∃ retained,
-          Graph.Route8.TraceBasin.TraceResponseQuotient object index.1
-            data.threshold data.LengthOK index.2.1 index.2.2 basin retained
+    (object : Graph.FiniteObject.{u}) : Prop := by
+  classical
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  exact (∀ index ∈ route8UnifiedEntries data object,
+      ∀ basin : Finset object.Vertex,
+        Graph.Route8.TraceBasin.select? object index.1 data.threshold
+            index.2.1 index.2.2 = some basin →
+          ¬ ∃ retained,
+            Graph.Route8.TraceBasin.TraceResponseQuotient object index.1
+              data.threshold data.LengthOK index.2.1 index.2.2 basin retained) ∧
+    -- the same clause-(b) state at every candidate extracted core of the
+    -- bridge pieces (`lem:typeB-bridge-with-route8-core`'s deleted regions):
+    -- on the free arm every negative no-handoff core of a deleted region is
+    -- exactly a member of `route8ExtractedCores`.
+    ∀ component ∈ (object.canonicalPieces
+        (object.remainderSupport (canonicalWindowPacking data object))).filter
+          fun component =>
+            object.NegativeNetCharge
+                (object.pieceSupport
+                  (object.remainderSupport (canonicalWindowPacking data object))
+                  component)
+                data.threshold data.dischargeScale ∧
+              0 < object.ambientSurplus
+                (object.pieceSupport
+                  (object.remainderSupport (canonicalWindowPacking data object))
+                  component)
+                data.threshold,
+      let deleted := object.pieceSupport
+          (object.remainderSupport (canonicalWindowPacking data object))
+          component \
+        Graph.TypeBRefinedSupport.centres object data.threshold
+          (object.pieceSupport
+            (object.remainderSupport (canonicalWindowPacking data object))
+            component)
+      ∀ core ∈ (object.canonicalPieces deleted).image
+          (object.pieceSupport deleted),
+        object.NegativeNetCharge core data.threshold data.dischargeScale →
+        ¬ HandoffProduced data object (canonicalWindowPacking data object)
+          core →
+        ∀ receiver ∈ object.receivers core data.threshold,
+          ∀ load ∈ Graph.VisibleEntry.excessBasinReduced object core
+              data.threshold data.dischargeScale receiver ∅,
+            ∀ basin : Finset object.Vertex,
+              Graph.Route8.TraceBasin.select? object core data.threshold
+                  receiver load = some basin →
+                ¬ ∃ retained,
+                  Graph.Route8.TraceBasin.TraceResponseQuotient object core
+                    data.threshold data.LengthOK receiver load basin retained
 
 open scoped Classical in
 /-- **`def:typeA-pressure-ledger` with `lem:typeA-pressure-ledger-no-overcount`
@@ -3862,6 +3902,17 @@ abbrev Route8ExtractedEntryCensusFact (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∀ index ∈ route8ExtractedEntries data object,
     Route8UnifiedEntryFacts data object index
+
+/-- **`D_A(𝒜_X)` summed over the bridge pieces**
+(`lem:typeB-bridge-with-route8-core` / `lem:decorated-envelope-with-route8-core`:
+"Summing over `Y ∈ 𝒜_X` gives the route-8 core contribution `−D_A(𝒜_X)`"):
+the cleared route-8 deficit of the extracted cores, in `route8Deficit`'s own
+summand shape. -/
+noncomputable def route8ExtractedDeficit (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Nat :=
+  ∑ core ∈ route8ExtractedCores data object,
+    (core.card -
+      data.dischargeScale * object.positiveDeficiency core data.threshold)
 
 /-- **`thm:large-budget-route8-only`'s failed-stage arm** (node `[123]`): a
 recorded peel chain of the descent at which the stage rate fails. -/

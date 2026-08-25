@@ -3308,28 +3308,21 @@ noncomputable def typeBFanDegreeDichotomy
             fun above => heavy ⟨centre, member, above⟩
           simp only [Graph.IsHighCentre] at lower
           omega
-      · let cold := canonicalColdWindows data current.object
-        let cubic := cold.filter (AmbientCubicWindow data current.object)
-        by_cases heavy :
-            ∃ (baseline : Graph.MinimumDegreeAtLeast data.threshold current.object)
-                (bridgeless : ∀ contraction : Graph.EdgeContraction current.object,
-                  contraction.HasReturn)
-                (large : 2 < current.object.vertexCount)
-                (stub : {stub // stub ∈
-                  Graph.ColdCorridor.allSelectedStubs current.object cubic})
+      · by_cases heavy :
+            ∃ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+                  (Graph.MinimumDegreeAtLeast data.threshold)
+                  (Graph.HasCycleWithLength data.LengthOK) current.object)
                 (centre : current.object.Vertex),
-              AbsorbedGermFanEnvelopeWitness data current.object cubic baseline bridgeless
-                  large stub centre ∧
+              AbsorbedGermFanEnvelopeWitness data current.object germ centre ∧
                 data.threshold + 1 < current.object.degree centre
         · exact ⟨.inl ⟨Or.inr ⟨absorbed, heavy⟩⟩⟩
         · refine ⟨.inr ⟨Or.inr ⟨absorbed, ?_⟩⟩⟩
-          intro baseline bridgeless large stub
-          obtain ⟨centre, witness⟩ := absorbed baseline bridgeless large stub
-          refine ⟨centre, witness, ?_⟩
-          have lower : data.threshold < current.object.degree centre := witness.2.1
+          intro germ centre witness
+          have lower : data.threshold < current.object.degree centre :=
+            witness.2.2.1
           have upper : ¬ data.threshold + 1 < current.object.degree centre := by
             intro above
-            exact heavy ⟨baseline, bridgeless, large, stub, centre, witness, above⟩
+            exact heavy ⟨germ, centre, witness, above⟩
           omega)
     heavyFresh degreeFourFresh
 
@@ -3377,12 +3370,10 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                     centreHeavy triangular⟩
             · apply Or.inr
               refine ⟨absorbed.1, ?_⟩
-              obtain ⟨baseline, bridgeless, large, stub, centre, witness,
-                centreHeavy⟩ := absorbed.2
-              refine ⟨baseline, bridgeless, large, stub, centre, witness,
-                centreHeavy, ?_⟩
+              obtain ⟨germ, centre, witness, centreHeavy⟩ := absorbed.2
+              refine ⟨germ, centre, witness, centreHeavy, ?_⟩
               have highCentre : Graph.IsHighCentre inputs.current.object
-                  data.threshold centre := witness.2.1
+                  data.threshold centre := witness.2.2.1
               rcases Graph.heavyCentreLocalDichotomy (normal centre highCentre) with
                 compatible | triangular
               · exact Or.inl compatible
@@ -3456,12 +3447,11 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                 exact ⟨counted, identity⟩
             · apply Or.inr
               refine ⟨absorbed.1, ?_⟩
-              intro baseline bridgeless large stub
-              obtain ⟨centre, witness, degree⟩ :=
-                absorbed.2 baseline bridgeless large stub
-              refine ⟨centre, witness, degree, ?_, ?_, ?_⟩
+              intro germ centre witness
+              have degree := absorbed.2 germ centre witness
+              refine ⟨degree, ?_, ?_, ?_⟩
               · have high : Graph.IsHighCentre inputs.current.object
-                    data.threshold centre := witness.2.1
+                    data.threshold centre := witness.2.2.1
                 rcases Graph.heavyCentreLocalDichotomy (normal centre high) with
                   compatible | triangular
                 · exact Or.inl compatible
@@ -3534,7 +3524,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                   marking.degree_le_fanPackingCap⟩
             · apply Or.inr
               refine ⟨absorbed, ?_⟩
-              intro baseline bridgeless large stub centre _witness marking
+              intro germ centre witness marking
               exact marking.degree_le_fanPackingCap⟩)
         .nil)
     0 0
@@ -3610,31 +3600,23 @@ noncomputable def fanCertificateDichotomy
             TypeBAssignedCentres.high data current.object assigned centre member,
             unmarked⟩⟩⟩
       · obtain ⟨envelopes, cap⟩ := absorbed
-        let cold := canonicalColdWindows data current.object
-        let cubic := cold.filter (AmbientCubicWindow data current.object)
         by_cases marked :
-            ∀ (baseline : Graph.MinimumDegreeAtLeast data.threshold current.object)
-                (bridgeless : ∀ contraction : Graph.EdgeContraction current.object,
-                  contraction.HasReturn)
-                (large : 2 < current.object.vertexCount)
-                (stub : {stub // stub ∈
-                  Graph.ColdCorridor.allSelectedStubs current.object cubic})
+            ∀ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+                  (Graph.MinimumDegreeAtLeast data.threshold)
+                  (Graph.HasCycleWithLength data.LengthOK) current.object)
                 (centre : current.object.Vertex),
-              AbsorbedGermFanEnvelopeWitness data current.object cubic baseline
-                  bridgeless large stub centre →
+              AbsorbedGermFanEnvelopeWitness data current.object germ centre →
                 Nonempty (Graph.FanCertificateLabelling current.object
                   data.windowOrder centre)
         · exact ⟨.inl ⟨.inr ⟨envelopes,
-            fun baseline bridgeless large stub centre witness => by
-              obtain ⟨marking⟩ :=
-                marked baseline bridgeless large stub centre witness
+            fun germ centre witness => by
+              obtain ⟨marking⟩ := marked germ centre witness
               exact ⟨marking,
-                cap baseline bridgeless large stub centre witness marking⟩⟩⟩⟩
+                cap germ centre witness marking⟩⟩⟩⟩
         · push Not at marked
-          obtain ⟨baseline, bridgeless, large, stub, centre, witness, unmarked⟩ :=
-            marked
-          exact ⟨.inr ⟨.inr ⟨envelopes, baseline, bridgeless, large, stub,
-            centre, witness, unmarked⟩⟩⟩)
+          obtain ⟨germ, centre, witness, unmarked⟩ := marked
+          exact ⟨.inr ⟨.inr ⟨envelopes, germ, centre, witness,
+            unmarked⟩⟩⟩)
     markedFresh residualFresh
 
 /-! ## Node `[74]`/`[82]`: the hybrid B1 fan ledger
@@ -3716,10 +3698,8 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       · obtain ⟨envelopes, marked⟩ := absorbed
         exact ⟨.cons (key := K .typeBHybridEntry)
           (⟨.inr ⟨⟨envelopes, marked⟩,
-            fun baseline bridgeless large stub centre witness envelope
-                windowSupport => by
-              obtain ⟨_marking, capped⟩ :=
-                marked baseline bridgeless large stub centre witness
+            fun germ centre witness envelope windowSupport => by
+              obtain ⟨_marking, capped⟩ := marked germ centre witness
               have slack :
                   inputs.current.object.degree centre + 1 ≤
                     data.dischargeScale * data.threshold :=
@@ -3740,7 +3720,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                   _ _ data.three_le_threshold slack
               · intro two_le
                 exact Graph.TypeBHybridIncidence.positive_deficit_of_two_le_closedCount
-                  _ _ _ _ _ two_le witness.2.1 data.highCentreDeficitSlack⟩⟩)
+                  _ _ _ _ _ two_le witness.2.2.1 data.highCentreDeficitSlack⟩⟩)
           .nil⟩)
     0 0
 
@@ -3809,26 +3789,19 @@ noncomputable def directCycleDichotomy
         · exact ⟨.inr ⟨.inl ⟨packing, valid, maximal, component, present, centres,
               assigned, fun centre member high present =>
                 configuration ⟨centre, member, high, present⟩⟩⟩⟩
-      · let cold := canonicalColdWindows data current.object
-        let cubic := cold.filter (AmbientCubicWindow data current.object)
-        by_cases configuration :
-            ∃ (baseline : Graph.MinimumDegreeAtLeast data.threshold current.object)
-                (bridgeless : ∀ contraction : Graph.EdgeContraction current.object,
-                  contraction.HasReturn)
-                (large : 2 < current.object.vertexCount)
-                (stub : {stub // stub ∈
-                  Graph.ColdCorridor.allSelectedStubs current.object cubic})
+      · by_cases configuration :
+            ∃ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+                  (Graph.MinimumDegreeAtLeast data.threshold)
+                  (Graph.HasCycleWithLength data.LengthOK) current.object)
                 (centre : current.object.Vertex),
-              AbsorbedGermFanEnvelopeWitness data current.object cubic baseline
-                  bridgeless large stub centre ∧
+              AbsorbedGermFanEnvelopeWitness data current.object germ centre ∧
                 Graph.TypeBDirectCycle.DirectCycleConfiguration current.object
                   data.windowOrder data.LengthOK
                   (canonicalWindowPacking data current.object) centre
         · exact ⟨.inl ⟨.inr ⟨absorbed, configuration⟩⟩⟩
         · exact ⟨.inr ⟨.inr ⟨absorbed,
-            fun baseline bridgeless large stub centre witness present =>
-              configuration ⟨baseline, bridgeless, large, stub, centre,
-                witness, present⟩⟩⟩⟩)
+            fun germ centre witness present =>
+              configuration ⟨germ, centre, witness, present⟩⟩⟩⟩)
     cycleFresh freeFresh
 
 /-! ## Node `[72]`/`[81]`, second half: does the B2 disjoint ledger exist?
@@ -3903,48 +3876,33 @@ noncomputable def b2AssignmentDichotomy
               assigned', choice⟩⟩⟩
         · exact ⟨.inr ⟨.inl ⟨packing, valid, maximal, canonicalPiece, centres,
               assigned', obstruction⟩⟩⟩
-      · let cold := canonicalColdWindows data current.object
-        let cubic := cold.filter (AmbientCubicWindow data current.object)
-        let packing := canonicalWindowPacking data current.object
+      · let packing := canonicalWindowPacking data current.object
         by_cases choices :
-            ∀ (baseline : Graph.MinimumDegreeAtLeast data.threshold current.object)
-                (bridgeless : ∀ contraction : Graph.EdgeContraction current.object,
-                  contraction.HasReturn)
-                (large : 2 < current.object.vertexCount)
-                (stub : {stub // stub ∈
-                  Graph.ColdCorridor.allSelectedStubs current.object cubic})
+            ∀ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+                  (Graph.MinimumDegreeAtLeast data.threshold)
+                  (Graph.HasCycleWithLength data.LengthOK) current.object)
                 (centre : current.object.Vertex),
-              AbsorbedGermFanEnvelopeWitness data current.object cubic baseline
-                  bridgeless large stub centre →
+              AbsorbedGermFanEnvelopeWitness data current.object germ centre →
                 Graph.TypeBRefinedSupport.HasDisjointChoice current.object
                   data.threshold data.dischargeScale packing
-                  (Graph.ColdCorridor.stubGerm data.coldSignature data.threshold
-                    (Graph.HasCycleWithLength data.LengthOK) current.object cubic
-                      baseline bridgeless large stub).support
-                  {centre} {centre}
+                  germ.support {centre} {centre}
         · exact ⟨.inl ⟨.inr ⟨absorbed, choices⟩⟩⟩
         · push Not at choices
-          obtain ⟨baseline, bridgeless, large, stub, centre, witness,
-            failure⟩ := choices
+          obtain ⟨germ, centre, witness, failure⟩ := choices
           have noChoice : ¬ Graph.TypeBRefinedSupport.HasDisjointChoice
               current.object data.threshold data.dischargeScale packing
-              (Graph.ColdCorridor.stubGerm data.coldSignature data.threshold
-                (Graph.HasCycleWithLength data.LengthOK) current.object cubic
-                  baseline bridgeless large stub).support
-              {centre} {centre} := failure
+              germ.support {centre} {centre} := failure
           rcases Graph.TypeBRefinedSupport.b2_or_overlap current.object
               data.threshold data.dischargeScale packing
-              (Graph.ColdCorridor.stubGerm data.coldSignature data.threshold
-                (Graph.HasCycleWithLength data.LengthOK) current.object cubic
-                  baseline bridgeless large stub).support
+              germ.support
               {centre} (by
                 intro hub member
                 rw [Finset.mem_singleton] at member
-                exact member ▸ witness.2.1) with
+                exact member ▸ witness.2.2.1) with
             choice | obstruction
           · exact absurd choice noChoice
-          · exact ⟨.inr ⟨.inr ⟨absorbed, baseline, bridgeless, large, stub,
-                centre, witness, obstruction⟩⟩⟩)
+          · exact ⟨.inr ⟨.inr ⟨absorbed, germ, centre, witness,
+                obstruction⟩⟩⟩)
     choiceFresh obstructionFresh
 
 /-! ## B2 and the live Type B post-ledger core
@@ -4112,9 +4070,8 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
             componentFacts, groupedCoverage⟩
           rename_i absorbed
           refine .inr ⟨absorbed, ?_⟩
-          intro baseline bridgeless large stub centre witness
-          obtain ⟨choice⟩ :=
-            absorbed.2 baseline bridgeless large stub centre witness
+          intro germ centre witness
+          obtain ⟨choice⟩ := absorbed.2 germ centre witness
           refine ⟨choice, ?_⟩
           intro member
           exact (Graph.TypeBRefinedSupport.mem_candidateFamily_iff.mp
@@ -4436,12 +4393,10 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
             assigned, centre, centreMem, high, empty, fun envelope =>
               Graph.TypeBEnvelopeCharge.envelopeNegativePart_le envelope high
                 data.bridgeMassSlack⟩
-        · obtain ⟨envelopes, baseline, bridgeless, large, stub, centre, witness,
-            empty⟩ := absorbed
-          exact .inr ⟨envelopes, baseline, bridgeless, large, stub, centre,
-            witness, empty, fun envelope =>
+        · obtain ⟨envelopes, germ, centre, witness, empty⟩ := absorbed
+          exact .inr ⟨envelopes, germ, centre, witness, empty, fun envelope =>
               Graph.TypeBEnvelopeCharge.envelopeNegativePart_le envelope
-                witness.2.1 data.bridgeMassSlack⟩)
+                witness.2.2.1 data.bridgeMassSlack⟩)
       .nil)
     0 0
 
@@ -4476,12 +4431,10 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
               (TypeBAssignedCentres.high data inputs.current.object assigned centre member)
               data.bridgeMassSlack⟩
         rename_i absorbed
-        obtain ⟨directFree, baseline, bridgeless, large, stub, centre,
-          witness, obstruction⟩ := absorbed
-        exact .inr ⟨directFree, baseline, bridgeless, large, stub, centre,
-          witness, obstruction, fun envelope =>
+        obtain ⟨directFree, germ, centre, witness, obstruction⟩ := absorbed
+        exact .inr ⟨directFree, germ, centre, witness, obstruction, fun envelope =>
             Graph.TypeBEnvelopeCharge.envelopeNegativePart_le envelope
-              witness.2.1 data.bridgeMassSlack⟩)
+              witness.2.2.1 data.bridgeMassSlack⟩)
       .nil)
     0 0
 
@@ -6954,7 +6907,7 @@ set_option maxHeartbeats 1600000 in
                 piece data.threshold data.LengthOK receiver load
                 (Graph.Route8Census.basin inputs.current.object data.threshold
                   (piece, receiver, load)) retained :=
-            quotientFree (piece, receiver, load) indexMem _ selectedCensus
+            quotientFree.1 (piece, receiver, load) indexMem _ selectedCensus
           have noDeloc : ¬ Graph.Route8.TraceBasin.TraceDelocalization
               inputs.current.object piece data.threshold data.LengthOK receiver
               load (Graph.Route8Census.basin inputs.current.object data.threshold

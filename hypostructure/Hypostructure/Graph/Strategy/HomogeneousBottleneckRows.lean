@@ -209,16 +209,19 @@ audit and canonical pattern fact consumed at `[144]` on the same `ExactLedger`. 
           (ledger.presented.pairs_roleFibre token role) large
         have configurations :
             ∀ pair ∈ ledger.presented.roleFibre token role,
-              ∀ demand ∈ pair,
-                ∃ configuration :
-                    Graph.SameTokenRoutingGerms.RoutingConfiguration
-                      inputs.current.object
-                      (declared.sameTokenRoutingSupport token pair)
-                      (Graph.CapacityPresentation.tokenSupport token)
-                      (declared.activation.localBuffer demand),
-                  configuration.path.head? =
-                    some (Graph.CapacityPresentation.tokenRoot token) := by
-          intro pair pairFibre demand demandMem
+              ∃ responseSupport : Finset inputs.current.object.Vertex,
+                declared.activation.pairSupport pair = some responseSupport ∧
+                  ∀ demand ∈ pair,
+                    ∃ configuration :
+                        Graph.SameTokenRoutingGerms.RoutingConfiguration
+                          inputs.current.object
+                          (declared.sameTokenRoutingSupport token pair)
+                          (Graph.CapacityPresentation.tokenSupport token)
+                          (declared.activation.localBuffer demand),
+                      configuration.path.head? =
+                        some (Graph.CapacityPresentation.tokenRoot token) ∧
+                        configuration.path.getLast? = some demand.2 := by
+          intro pair pairFibre
           have pairTokenFibre : pair ∈ ledger.presented.fibre token :=
             Graph.PatternFamily.roleFibre_subset _ _ _ pairFibre
           have pairSchedule :
@@ -238,26 +241,32 @@ audit and canonical pattern fact consumed at `[144]` on the same `ExactLedger`. 
             have charged : declared.Eligible token pair :=
               Graph.CanonicalFibreLedger.applies_canonicalLabel labelled
             exact charged
-          exact
-            Graph.CapacityPresentation.exists_sameRootRoutingConfiguration_of_charge
-              active declared activationEq pairSubset connectedOn charge demandMem
+          exact Graph.CapacityPresentation.exists_sameRootRoutingConfigurationFamily_of_charge
+              active declared
+              activationEq pairSubset connectedOn charge
         refine ⟨ledger, token, tokenMem, role,
           Graph.CapacityPresentation.tokenRoot token, rfl, ?_⟩
         rcases structured with
             ⟨matching, matchingSubset, matchingShape, matchingLarge⟩ |
             ⟨centre, star, starSubset, starShape, starLarge⟩
         · refine Or.inl ⟨matching, matchingSubset, matchingShape, ?_, ?_⟩
-          · simpa [Graph.SameTokenRoutingGerms.patternBound,
-              Graph.SameTokenRoutingGerms.labelBound,
-              Graph.SameTokenBlockerRoles.geometricPatternBound,
-              data.routingLabelBound_eq] using matchingLarge
+          · change Fintype.card
+                (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+                  (Graph.WindowCurvature.Label data.windowOrder)) + 1 ≤
+              matching.card
+            rw [← data.routingLabelBound_eq]
+            simpa only [Graph.SameTokenBlockerRoles.geometricPatternBound] using
+              matchingLarge
           · intro pair pairMem
             exact configurations pair (matchingSubset pairMem)
         · refine Or.inr ⟨centre, star, starSubset, starShape, ?_, ?_⟩
-          · simpa [Graph.SameTokenRoutingGerms.patternBound,
-              Graph.SameTokenRoutingGerms.labelBound,
-              Graph.SameTokenBlockerRoles.geometricPatternBound,
-              data.routingLabelBound_eq] using starLarge
+          · change Fintype.card
+                (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+                  (Graph.WindowCurvature.Label data.windowOrder)) + 1 ≤
+              star.card
+            rw [← data.routingLabelBound_eq]
+            simpa only [Graph.SameTokenBlockerRoles.geometricPatternBound] using
+              starLarge
           · intro pair pairMem
             exact configurations pair (starSubset pairMem)
       .cons (key := K .windowIncidenceAudit)
@@ -338,16 +347,19 @@ audit and canonical pattern fact consumed at `[144]` on the same `ExactLedger`. 
           (ledger.presented.pairs_roleFibre token role) large
         have configurations :
             ∀ pair ∈ ledger.presented.roleFibre token role,
-              ∀ demand ∈ pair,
-                ∃ configuration :
-                    Graph.SameTokenRoutingGerms.RoutingConfiguration
-                      inputs.current.object
-                      (declared.sameTokenRoutingSupport token pair)
-                      (Graph.CapacityPresentation.tokenSupport token)
-                      (declared.activation.localBuffer demand),
-                  configuration.path.head? =
-                    some (Graph.CapacityPresentation.tokenRoot token) := by
-          intro pair pairFibre demand demandMem
+              ∃ responseSupport : Finset inputs.current.object.Vertex,
+                declared.activation.pairSupport pair = some responseSupport ∧
+                  ∀ demand ∈ pair,
+                    ∃ configuration :
+                        Graph.SameTokenRoutingGerms.RoutingConfiguration
+                          inputs.current.object
+                          (declared.sameTokenRoutingSupport token pair)
+                          (Graph.CapacityPresentation.tokenSupport token)
+                          (declared.activation.localBuffer demand),
+                      configuration.path.head? =
+                        some (Graph.CapacityPresentation.tokenRoot token) ∧
+                        configuration.path.getLast? = some demand.2 := by
+          intro pair pairFibre
           have pairTokenFibre : pair ∈ ledger.presented.fibre token :=
             Graph.PatternFamily.roleFibre_subset _ _ _ pairFibre
           have pairSchedule :
@@ -367,26 +379,32 @@ audit and canonical pattern fact consumed at `[144]` on the same `ExactLedger`. 
             have charged : declared.Eligible token pair :=
               Graph.CanonicalFibreLedger.applies_canonicalLabel labelled
             exact charged
-          exact
-            Graph.CapacityPresentation.exists_sameRootRoutingConfiguration_of_charge
-              active declared activationEq pairSubset connectedOn charge demandMem
+          exact Graph.CapacityPresentation.exists_sameRootRoutingConfigurationFamily_of_charge
+              active declared
+              activationEq pairSubset connectedOn charge
         refine ⟨ledger, token, tokenMem, role,
           Graph.CapacityPresentation.tokenRoot token, rfl, ?_⟩
         rcases structured with
             ⟨matching, matchingSubset, matchingShape, matchingLarge⟩ |
             ⟨centre, star, starSubset, starShape, starLarge⟩
         · refine Or.inl ⟨matching, matchingSubset, matchingShape, ?_, ?_⟩
-          · simpa [Graph.SameTokenRoutingGerms.patternBound,
-              Graph.SameTokenRoutingGerms.labelBound,
-              Graph.SameTokenBlockerRoles.geometricPatternBound,
-              data.routingLabelBound_eq] using matchingLarge
+          · change Fintype.card
+                (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+                  (Graph.WindowCurvature.Label data.windowOrder)) + 1 ≤
+              matching.card
+            rw [← data.routingLabelBound_eq]
+            simpa only [Graph.SameTokenBlockerRoles.geometricPatternBound] using
+              matchingLarge
           · intro pair pairMem
             exact configurations pair (matchingSubset pairMem)
         · refine Or.inr ⟨centre, star, starSubset, starShape, ?_, ?_⟩
-          · simpa [Graph.SameTokenRoutingGerms.patternBound,
-              Graph.SameTokenRoutingGerms.labelBound,
-              Graph.SameTokenBlockerRoles.geometricPatternBound,
-              data.routingLabelBound_eq] using starLarge
+          · change Fintype.card
+                (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+                  (Graph.WindowCurvature.Label data.windowOrder)) + 1 ≤
+              star.card
+            rw [← data.routingLabelBound_eq]
+            simpa only [Graph.SameTokenBlockerRoles.geometricPatternBound] using
+              starLarge
           · intro pair pairMem
             exact configurations pair (starSubset pairMem)
       .cons (key := K .remainderSurplusAudit)
@@ -467,16 +485,19 @@ carried by `[141]`'s no-arm, including every same-root configuration; no re-key.
           (ledger.presented.pairs_roleFibre token role) large
         have configurations :
             ∀ pair ∈ ledger.presented.roleFibre token role,
-              ∀ demand ∈ pair,
-                ∃ configuration :
-                    Graph.SameTokenRoutingGerms.RoutingConfiguration
-                      inputs.current.object
-                      (declared.sameTokenRoutingSupport token pair)
-                      (Graph.CapacityPresentation.tokenSupport token)
-                      (declared.activation.localBuffer demand),
-                  configuration.path.head? =
-                    some (Graph.CapacityPresentation.tokenRoot token) := by
-          intro pair pairFibre demand demandMem
+              ∃ responseSupport : Finset inputs.current.object.Vertex,
+                declared.activation.pairSupport pair = some responseSupport ∧
+                  ∀ demand ∈ pair,
+                    ∃ configuration :
+                        Graph.SameTokenRoutingGerms.RoutingConfiguration
+                          inputs.current.object
+                          (declared.sameTokenRoutingSupport token pair)
+                          (Graph.CapacityPresentation.tokenSupport token)
+                          (declared.activation.localBuffer demand),
+                      configuration.path.head? =
+                        some (Graph.CapacityPresentation.tokenRoot token) ∧
+                        configuration.path.getLast? = some demand.2 := by
+          intro pair pairFibre
           have pairTokenFibre : pair ∈ ledger.presented.fibre token :=
             Graph.PatternFamily.roleFibre_subset _ _ _ pairFibre
           have pairSchedule :
@@ -496,26 +517,32 @@ carried by `[141]`'s no-arm, including every same-root configuration; no re-key.
             have charged : declared.Eligible token pair :=
               Graph.CanonicalFibreLedger.applies_canonicalLabel labelled
             exact charged
-          exact
-            Graph.CapacityPresentation.exists_sameRootRoutingConfiguration_of_charge
-              active declared activationEq pairSubset connectedOn charge demandMem
+          exact Graph.CapacityPresentation.exists_sameRootRoutingConfigurationFamily_of_charge
+              active declared
+              activationEq pairSubset connectedOn charge
         refine ⟨ledger, token, tokenMem, role,
           Graph.CapacityPresentation.tokenRoot token, rfl, ?_⟩
         rcases structured with
             ⟨matching, matchingSubset, matchingShape, matchingLarge⟩ |
             ⟨centre, star, starSubset, starShape, starLarge⟩
         · refine Or.inl ⟨matching, matchingSubset, matchingShape, ?_, ?_⟩
-          · simpa [Graph.SameTokenRoutingGerms.patternBound,
-              Graph.SameTokenRoutingGerms.labelBound,
-              Graph.SameTokenBlockerRoles.geometricPatternBound,
-              data.routingLabelBound_eq] using matchingLarge
+          · change Fintype.card
+                (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+                  (Graph.WindowCurvature.Label data.windowOrder)) + 1 ≤
+              matching.card
+            rw [← data.routingLabelBound_eq]
+            simpa only [Graph.SameTokenBlockerRoles.geometricPatternBound] using
+              matchingLarge
           · intro pair pairMem
             exact configurations pair (matchingSubset pairMem)
         · refine Or.inr ⟨centre, star, starSubset, starShape, ?_, ?_⟩
-          · simpa [Graph.SameTokenRoutingGerms.patternBound,
-              Graph.SameTokenRoutingGerms.labelBound,
-              Graph.SameTokenBlockerRoles.geometricPatternBound,
-              data.routingLabelBound_eq] using starLarge
+          · change Fintype.card
+                (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+                  (Graph.WindowCurvature.Label data.windowOrder)) + 1 ≤
+              star.card
+            rw [← data.routingLabelBound_eq]
+            simpa only [Graph.SameTokenBlockerRoles.geometricPatternBound] using
+              starLarge
           · intro pair pairMem
             exact configurations pair (starSubset pairMem)
       .cons (key := K .primitiveCarrierAudit)
@@ -536,33 +563,20 @@ route, separator, label map, profile callback, or handoff object is accepted as
 an argument.  The executor publishes the paper lemma and then its survivor
 specialization monotonically.
 
-The row reads the complete earlier manuscript package needed by the routing
-argument: the active support and activation facts, canonical returns and target
-avoidance, the exact blocker/token ledgers, the boundary and window-label
-algebras, and the high-centre normal form.  The unresolved goal below remains
-the paper's literal sparse-exit-or-Type-B conclusion.  No selector, replacement
-datum, callback, or side carrier is postulated. -/
+The row reads exactly the earlier manuscript facts used by the routing
+argument: the sealed active-demand value (which already contains activation,
+the two-shoulder description, and sparse-exit survival), cubic baseline, and
+the sealed capacity/token presentation with its connectedness proof.  The
+unresolved goal below remains the paper's literal sparse-exit-or-Type-B
+conclusion.  No selector, callback, route record, or side carrier is
+postulated. -/
 
 @[reducible] noncomputable def sameTokenBottleneckRoutingRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.sameTokenBottleneckRouting
     { Requires := [K .homogeneousBottleneckPattern,
-        K .sparsePressureOverload, K .blockedPairEntropySandwich,
-        K .roleFibrePartition, K .fibrePressure,
-        K .baselineSpineDemand, K .sparseSlackSurplus, K .surplusAbove,
         K .activeSurplusDemands,
-        K .sparsePortActivation, K .activeSurplusFamily, K .cubicBaseline,
-        K .capacityTokenLedger, K .canonicalPairLedger,
-        K .canonicalBlockerRoute,
-        K .dependentPairFamily,
-        K .sparseUpperEnvelope, K .maximalPacking,
-        K .sparseSurplusSurvivor, K .selection, K .returnAvoidance,
-        K .noProperBaseline, K .tightEndpoint, K .slackIndependent,
-        K .highCentreNormalForm,
-        K .localAlgebra, K .degreeProfileFibres,
-        K .targetCompleteContextUniversality, K .replacementExclusion,
-        K .exactResponseProfile, K .admissibleRankQuotient,
-        K .uncompressible, K .remainderNormalized]
+        K .cubicBaseline, K .capacityTokenLedger]
       Produces := [K .bottleneckRouting, K .typeBHandoff]
       requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp [K_eq_iff]
@@ -576,69 +590,22 @@ datum, callback, or side carrier is postulated. -/
             patternFact
           -- Read every paper hypothesis through the sealed ledger.  These are
           -- intentionally not repackaged into a route or callback record.
-          have sparsePressureOverload :=
-            (inputs.get (K .sparsePressureOverload)).down
-          have blockedPairEntropySandwich :=
-            (inputs.get (K .blockedPairEntropySandwich)).down
-          have roleFibrePartition :=
-            (inputs.get (K .roleFibrePartition)).down
-          have fibrePressure := (inputs.get (K .fibrePressure)).down
-          have baselineSpineDemand :=
-            (inputs.get (K .baselineSpineDemand)).down
-          have sparseSlackSurplus :=
-            (inputs.get (K .sparseSlackSurplus)).down
-          have surplusAbove := (inputs.get (K .surplusAbove)).down
           have active := (inputs.get (K .activeSurplusDemands)).down
           have activeEq : patternActive = active := Subsingleton.elim _ _
           subst patternActive
-          have activationFacts :=
-            (inputs.get (K .sparsePortActivation)).down
-          have activeFamily :=
-            (inputs.get (K .activeSurplusFamily)).down
+          have activationFacts := active.activated
           have cubic := (inputs.get (K .cubicBaseline)).down
           have capacityLedger :=
             (inputs.get (K .capacityTokenLedger)).down
-          have pairLedger :=
-            (inputs.get (K .canonicalPairLedger)).down
-          have blockerRoute :=
-            (inputs.get (K .canonicalBlockerRoute)).down
-          have dependentPairFamily :=
-            (inputs.get (K .dependentPairFamily)).down
-          have sparseUpperEnvelope :=
-            (inputs.get (K .sparseUpperEnvelope)).down
-          have maximalPacking :=
-            (inputs.get (K .maximalPacking)).down
-          have survivor := (inputs.get (K .sparseSurplusSurvivor)).down
-          have selection := (inputs.get (K .selection)).down
-          have returnAvoidance := (inputs.get (K .returnAvoidance)).down
-          have noProperBaseline :=
-            (inputs.get (K .noProperBaseline)).down
-          have tightEndpoint := (inputs.get (K .tightEndpoint)).down
-          have slackIndependent := (inputs.get (K .slackIndependent)).down
-          have highCentreNormalForm :=
-            (inputs.get (K .highCentreNormalForm)).down
-          have localAlgebra := (inputs.get (K .localAlgebra)).down
-          have degreeProfileFibres :=
-            (inputs.get (K .degreeProfileFibres)).down
-          have contextUniversality :=
-            (inputs.get (K .targetCompleteContextUniversality)).down
-          have replacementExclusion :=
-            (inputs.get (K .replacementExclusion)).down
-          have exactResponseProfile :=
-            (inputs.get (K .exactResponseProfile)).down
-          have admissibleRankQuotient :=
-            (inputs.get (K .admissibleRankQuotient)).down
-          have uncompressible := (inputs.get (K .uncompressible)).down
-          -- Connectivity was proved and retained at `[136]`, then consumed by
-          -- the pattern producer; `[144]` does not re-prove or re-read it.
-          have remainderNormalized :=
-            (inputs.get (K .remainderNormalized)).down
-          obtain ⟨ledgerActive, ledgerCapacity, ledgerActivationEq,
-              primitiveCarrierCard, primitiveCarrierBound,
-              concreteCapacityLedger, objectConnected⟩ := capacityLedger
+          have survivor := active.survives
+          obtain ⟨_ledgerActive, _ledgerCapacity, _ledgerActivationEq,
+              _primitiveCarrierCard, _primitiveCarrierBound,
+              _concreteCapacityLedger, objectConnected⟩ := capacityLedger
           refine ⟨active, capacity, activationEq, concretePattern, ?_⟩
           let object := inputs.current.object
           let activation := capacity.activation
+          letI : FinEnum object.Vertex := object.vertices
+          letI : DecidableRel object.graph.Adj := object.decideAdj
           letI : DecidableEq object.Vertex := object.vertices.decEq
           -- The current-object baseline is part of the sealed residual itself.
           -- Name it here because the cubic-switch paragraph uses the actual
@@ -650,35 +617,11 @@ datum, callback, or side carrier is postulated. -/
           -- Fact-sized projections used by the two routing cases.  Each comes
           -- directly from an `inputs.get` value or the capacity presentation
           -- sealed in the homogeneous-pattern entry.
-          have avoids := selection.1
-          have minimal := selection.2
           have noSparseExit := survivor
-          have activeNoSparseExit := active.survives
+          have avoids : ¬ Graph.HasCycleWithLength data.LengthOK object :=
+            fun cycle => noSparseExit (.dyadic cycle)
           have packingValid := capacity.packingValid
           have packingMaximal := capacity.packingMaximal
-
-          -- Unpack the sparse-pair ledger entries once, at their exact types.
-          -- This makes every upstream witness visible at `[144]`: the
-          -- canonical blocker certificate, its accounting identities, and
-          -- node `[130]`'s attempted quotient on the declared pair-response
-          -- family.  Proof
-          -- witnesses of `ActiveSurplusDemands` are propositions, so their
-          -- equality is proof irrelevance rather than a reconstructed fact.
-          obtain ⟨pairLedgerActive, pairLedgerCertificate,
-              pairScheduleIdentity, pairScheduleCard,
-              recordedBlockedFreePartition, recordedIncidenceCard,
-              recordedMultiplicity, recordedBlockerExists⟩ := pairLedger
-          have pairLedgerActiveEq : pairLedgerActive = active :=
-            Subsingleton.elim _ _
-          obtain ⟨blockerRouteActive, blockerRouteCertificate⟩ :=
-            blockerRoute
-          have blockerRouteActiveEq : blockerRouteActive = active :=
-            Subsingleton.elim _ _
-          obtain ⟨dependentActive, dependentAttempt,
-              dependentFunctional, dependentReducing⟩ :=
-            dependentPairFamily
-          have dependentActiveEq : dependentActive = active :=
-            Subsingleton.elim _ _
           obtain ⟨ledger, token, tokenMem, role, root, rootEq, structured⟩ :=
             concretePattern
 
@@ -718,8 +661,15 @@ datum, callback, or side carrier is postulated. -/
               intro endpointShoulder
               exact object.graph.loopless.irrefl _
                 ((port.mem_shoulders_iff port.endpoint).1 endpointShoulder).2
-            have shoulderCard : port.shoulders.card = data.threshold - 1 :=
-              (activeFamily.2 demand member).2.2
+            obtain ⟨left, right, shoulderPair, shouldersDifferent⟩ :=
+              active.shoulderPair demand member
+            have shouldersEq : port.shoulders = {left, right} := by
+              ext vertex
+              rw [shoulderPair vertex]
+              simp
+            have shoulderCard :
+                port.shoulders.card = data.threshold - 1 := by
+              rw [shouldersEq, Finset.card_pair shouldersDifferent, cubic]
             simp only [selectedSupport, dif_pos member]
             unfold Graph.FiniteObject.SurplusPort.support
             rw [Finset.card_insert_of_notMem endpointNotShoulder, shoulderCard,
@@ -1007,6 +957,12 @@ datum, callback, or side carrier is postulated. -/
                     ((Graph.pairResponseActivation active).returnSupport right) :=
                 Graph.pairResponseActivation_connectedOn_returnSupport_of_mem
                   active rightActive
+              obtain ⟨firstResponseSupport, firstResponseSupportEq,
+                  firstConfigurations⟩ :=
+                configurations first.1 firstPattern
+              obtain ⟨secondResponseSupport, secondResponseSupportEq,
+                  secondConfigurations⟩ :=
+                configurations second.1 secondPattern
               have firstConfigurationExists :
                   ∃ configuration :
                       Graph.SameTokenRoutingGerms.RoutingConfiguration object
@@ -1015,7 +971,7 @@ datum, callback, or side carrier is postulated. -/
                         (capacity.activation.localBuffer left),
                     configuration.path.head? = some root ∧
                       configuration.path.getLast? = some left.2 :=
-                configurations first.1 firstPattern left leftMem
+                firstConfigurations left leftMem
               have secondConfigurationExists :
                   ∃ configuration :
                       Graph.SameTokenRoutingGerms.RoutingConfiguration object
@@ -1024,7 +980,7 @@ datum, callback, or side carrier is postulated. -/
                         (capacity.activation.localBuffer right),
                     configuration.path.head? = some root ∧
                       configuration.path.getLast? = some right.2 :=
-                configurations second.1 secondPattern right rightMem
+                secondConfigurations right rightMem
               obtain ⟨firstConfiguration, firstRoot, firstTerminalEndpoint⟩ :=
                 firstConfigurationExists
               obtain ⟨secondConfiguration, secondRoot, secondTerminalEndpoint⟩ :=
@@ -1059,7 +1015,7 @@ datum, callback, or side carrier is postulated. -/
                 congrArg (fun label => label.2.2.2.1) routingLabelsEqual
               have sameBoundaryProfileLabel :=
                 congrArg (fun label => label.2.2.2.2.1) routingLabelsEqual
-              have sameBoundaryDegreeFibreData := sameBoundaryProfileLabel
+              have sameBoundedPortProfileData := sameBoundaryProfileLabel
               have sameWindowLabel :=
                 congrArg (fun label => label.2.2.2.2.2.1) routingLabelsEqual
               have sameSuppressedChordFlag :=
@@ -1074,14 +1030,6 @@ datum, callback, or side carrier is postulated. -/
                   secondConfiguration.path.head? =
                     some (Graph.CapacityPresentation.tokenRoot token) := by
                 rw [secondRoot, rootIsCanonical]
-              obtain ⟨firstResponseSupport, firstResponseSupportEq⟩ :=
-                Option.isSome_iff_exists.mp
-                  (Graph.FiniteObject.DemandActivation.pairSupport_isSome_of_connected
-                    capacity.activation first.1 objectConnected)
-              obtain ⟨secondResponseSupport, secondResponseSupportEq⟩ :=
-                Option.isSome_iff_exists.mp
-                  (Graph.FiniteObject.DemandActivation.pairSupport_isSome_of_connected
-                    capacity.activation second.1 objectConnected)
               let firstResponseCoordinate : object.PairCoordinate :=
                 Graph.FiniteObject.DemandActivation.pairCoordinate first.1
                   firstResponseSupport
@@ -1268,114 +1216,45 @@ datum, callback, or side carrier is postulated. -/
                   exact Or.inr
                     (Graph.DecoratedHandoff.exists_separatesAt firstRoot
                       secondRoot notFirstPrefix notSecondPrefix)
-              have parallelAttemptExists :
-                  Graph.SameTokenRoutingGerms.Parallel
-                      firstConfiguration.path secondConfiguration.path
-                      commonSelectedSupport →
-                    ∃ attempt : Graph.AttemptedQuotient
-                        (Graph.MinimumDegreeAtLeast data.threshold)
-                        (Graph.HasCycleWithLength data.LengthOK) object
-                        responseFamily responseCoordinateSupport,
-                      attempt.support = parallelSupport ∧
-                        attempt.label firstResponseCoordinate =
-                          attempt.label secondResponseCoordinate := by
-                skip
-              have parallelProfileDefectRoutes :
-                  (∀ (support : Finset object.Vertex)
-                    (leftPiece rightPiece : Graph.BoundaryPiece
-                      (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary
-                        object support)),
-                    Graph.Response.TargetComplete
-                        Graph.BoundaryPiece.boundaryDegreeProfile
-                        (Graph.HasCycleWithLength data.LengthOK)
-                        leftPiece rightPiece →
-                      leftPiece.boundaryDegreeProfile =
-                        rightPiece.boundaryDegreeProfile) →
-                  ∀ (parallel : Graph.SameTokenRoutingGerms.Parallel
-                      firstConfiguration.path secondConfiguration.path
-                      commonSelectedSupport)
-                    (attempt : Graph.AttemptedQuotient
-                      (Graph.MinimumDegreeAtLeast data.threshold)
-                      (Graph.HasCycleWithLength data.LengthOK) object
-                      responseFamily responseCoordinateSupport),
-                    ∀ leftReading rightReading,
-                      attempt.support = parallelSupport →
-                      attempt.Identifies leftReading rightReading →
-                        leftReading.boundaryDegreeProfile ≠
-                            rightReading.boundaryDegreeProfile →
-                          Graph.SparseSurplusExit
-                            (Graph.MinimumDegreeAtLeast data.threshold)
-                            (Graph.HasCycleWithLength data.LengthOK)
-                            data.LengthOK object := by
-                skip
-              have parallelContextDefectRoutes :
-                  (∀ (support : Finset object.Vertex)
-                    (leftPiece rightPiece : Graph.BoundaryPiece
-                      (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary
-                        object support)),
-                    Graph.Response.TargetComplete
-                        Graph.BoundaryPiece.boundaryDegreeProfile
-                        (Graph.HasCycleWithLength data.LengthOK)
-                        leftPiece rightPiece →
-                      Graph.Response.ContextEquivalent
-                        (Graph.HasCycleWithLength data.LengthOK)
-                        leftPiece rightPiece) →
-                  ∀ (parallel : Graph.SameTokenRoutingGerms.Parallel
-                      firstConfiguration.path secondConfiguration.path
-                      commonSelectedSupport)
-                    (attempt : Graph.AttemptedQuotient
-                      (Graph.MinimumDegreeAtLeast data.threshold)
-                      (Graph.HasCycleWithLength data.LengthOK) object
-                      responseFamily responseCoordinateSupport),
-                    ∀ leftReading rightReading,
-                      attempt.support = parallelSupport →
-                      attempt.Identifies leftReading rightReading →
-                        Graph.Response.TargetDefect
-                            (Graph.HasCycleWithLength data.LengthOK)
-                            leftReading rightReading →
-                          Graph.SparseSurplusExit
-                            (Graph.MinimumDegreeAtLeast data.threshold)
-                            (Graph.HasCycleWithLength data.LengthOK)
-                            data.LengthOK object := by
-                skip
+              -- The parallel paragraph does not construct an arbitrary
+              -- `AttemptedQuotient`: doing so would require the proper and
+              -- closed representatives that the paragraph is meant to
+              -- obtain.  Record instead the literal paper implication from
+              -- the two declared coordinates and the connected common
+              -- support.  Every premise below has already been read from the
+              -- ledger or derived from its declared configurations.
               have parallelRoutes :
                   Graph.SameTokenRoutingGerms.Parallel
                       firstConfiguration.path secondConfiguration.path
                       commonSelectedSupport →
+                    Graph.SupportComponents.Connected.ConnectedOn object
+                        parallelSupport →
+                    responseCoordinateSupport firstResponseCoordinate ⊆
+                        parallelSupport →
+                    responseCoordinateSupport secondResponseCoordinate ⊆
+                        parallelSupport →
+                    firstResponseCoordinate ≠ secondResponseCoordinate →
+                    responseFamily ⊆ declaredResponseFamily →
+                    responseFamily ⊆ baseResponseFamily →
+                    (routingLabel first.1 (pairs first.1 firstPattern) left).2.2.2.2.1 =
+                        (routingLabel second.1
+                          (pairs second.1 secondPattern) right).2.2.2.2.1 →
+                    routingLabel first.1 (pairs first.1 firstPattern) left =
+                        routingLabel second.1
+                          (pairs second.1 secondPattern) right →
                     Graph.SparseSurplusExit
                       (Graph.MinimumDegreeAtLeast data.threshold)
                       (Graph.HasCycleWithLength data.LengthOK)
                       data.LengthOK object := by
-                intro parallel
-                obtain ⟨attempt, attemptSupportEq, identified⟩ :=
-                  parallelAttemptExists parallel
-                have reducing : ¬ Set.InjOn attempt.label
-                    (↑responseFamily : Set object.PairCoordinate) := by
-                  intro injective
-                  exact responseCoordinatesDifferent
-                    (injective (by simp [responseFamily])
-                      (by simp [responseFamily])
-                      identified)
-                rcases attempt.route reducing with
-                    ⟨leftReading, rightReading, readingsIdentified,
-                      profilesDifferent⟩ |
-                    ⟨leftReading, rightReading, readingsIdentified,
-                      targetDefect⟩ |
-                    replacement |
-                    ⟨representative, smaller, baseline, transfer⟩
-                · exact parallelProfileDefectRoutes degreeProfileFibres
-                    parallel attempt
-                    leftReading rightReading attemptSupportEq readingsIdentified
-                      profilesDifferent
-                · exact parallelContextDefectRoutes contextUniversality
-                    parallel attempt
-                    leftReading rightReading attemptSupportEq readingsIdentified
-                      targetDefect
-                · exact .compression attempt.support replacement
-                · exact .delocalization representative smaller baseline transfer
+                skip
               rcases routingDichotomy with parallel |
                   ⟨separator, separatesAt⟩
-              · exact Or.inl (parallelRoutes parallel)
+              · exact Or.inl (parallelRoutes parallel parallelSupportConnected
+                    firstResponseCarriedByParallelSupport
+                    secondResponseCarriedByParallelSupport
+                    responseCoordinatesDifferent responseFamily_subset_declared
+                    responseFamily_subset_base sameBoundedPortProfileData
+                    routingLabelsEqual)
               · exact by
                   obtain ⟨common, nextLeft, nextRight, tailLeft, tailRight,
                       leftDecomposition, rightDecomposition, nextDifferent⟩ :=
@@ -1451,13 +1330,9 @@ datum, callback, or side carrier is postulated. -/
                   have armRightIssued : armRight.head? = some nextRight := by
                     simpa using armRightHead
                   have armLeftChain : armLeft.IsChain object.graph.Adj := by
-                    obtain ⟨suffix, split⟩ := armLeftPrefix
-                    rw [split] at rawArmLeftChain
-                    exact (List.isChain_append.mp rawArmLeftChain).1
+                    exact rawArmLeftChain.prefix armLeftPrefix
                   have armRightChain : armRight.IsChain object.graph.Adj := by
-                    obtain ⟨suffix, split⟩ := armRightPrefix
-                    rw [split] at rawArmRightChain
-                    exact (List.isChain_append.mp rawArmRightChain).1
+                    exact rawArmRightChain.prefix armRightPrefix
                   have armLeftNodup : armLeft.Nodup :=
                     armLeftPrefix.nodup rawArmLeftNodup
                   have armRightNodup : armRight.Nodup :=
@@ -1565,13 +1440,13 @@ datum, callback, or side carrier is postulated. -/
                     rcases member with rfl | rfl
                     · exact firstResponseCarriedBySwitch
                     · exact secondResponseCarriedBySwitch
-                  -- At a cubic separator the paper forms one attempted
-                  -- declared quotient of these two response coordinates on
-                  -- `S_z`.  Keep its construction, its registered fibre, and
-                  -- the target-defect routing as three separate obligations;
-                  -- `AttemptedQuotient.route` then supplies the proper-support
-                  -- and whole-graph alternatives without another carrier.
-                  have switchAttemptExistsAtCubic :
+                  -- At a cubic separator the paper routes the two declared
+                  -- same-interface coordinates on `S_z` through its three
+                  -- target-completeness alternatives.  State that literal
+                  -- implication on all of its already-derived inputs; do not
+                  -- prepackage the desired representatives as fields of an
+                  -- `AttemptedQuotient`.
+                  have switchRoutesAtCubic :
                       ∀ (cubicDegree :
                           object.degree separator = data.threshold),
                         (∃ rootIncidence,
@@ -1635,72 +1510,18 @@ datum, callback, or side carrier is postulated. -/
                             switchSupport) →
                         responseFamily ⊆ declaredResponseFamily →
                         responseFamily ⊆ baseResponseFamily →
+                        (routingLabel first.1
+                            (pairs first.1 firstPattern) left).2.2.2.2.1 =
+                          (routingLabel second.1
+                            (pairs second.1 secondPattern) right).2.2.2.2.1 →
                         routingLabel first.1 (pairs first.1 firstPattern) left =
                           routingLabel second.1
                             (pairs second.1 secondPattern) right →
-                        ∃ attempt : Graph.AttemptedQuotient
-                            (Graph.MinimumDegreeAtLeast data.threshold)
-                            (Graph.HasCycleWithLength data.LengthOK) object
-                            responseFamily responseCoordinateSupport,
-                          attempt.support = switchSupport ∧
-                            attempt.label firstResponseCoordinate =
-                              attempt.label secondResponseCoordinate := by
-                    skip
-                  have switchProfileDefectRoutesAtCubic :
-                      (∀ (support : Finset object.Vertex)
-                        (leftPiece rightPiece : Graph.BoundaryPiece
-                          (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary
-                            object support)),
-                        Graph.Response.TargetComplete
-                            Graph.BoundaryPiece.boundaryDegreeProfile
-                            (Graph.HasCycleWithLength data.LengthOK)
-                            leftPiece rightPiece →
-                          leftPiece.boundaryDegreeProfile =
-                            rightPiece.boundaryDegreeProfile) →
-                      ∀ (cubicDegree :
-                          object.degree separator = data.threshold)
-                        (attempt : Graph.AttemptedQuotient
+                        firstResponseCoordinate ≠ secondResponseCoordinate →
+                        Graph.SparseSurplusExit
                           (Graph.MinimumDegreeAtLeast data.threshold)
-                          (Graph.HasCycleWithLength data.LengthOK) object
-                          responseFamily responseCoordinateSupport),
-                        ∀ leftReading rightReading,
-                          attempt.support = switchSupport →
-                          attempt.Identifies leftReading rightReading →
-                            leftReading.boundaryDegreeProfile ≠
-                                rightReading.boundaryDegreeProfile →
-                              Graph.SparseSurplusExit
-                                (Graph.MinimumDegreeAtLeast data.threshold)
-                                (Graph.HasCycleWithLength data.LengthOK)
-                                data.LengthOK object := by
-                    skip
-                  have switchContextDefectRoutesAtCubic :
-                      (∀ (support : Finset object.Vertex)
-                        (leftPiece rightPiece : Graph.BoundaryPiece
-                          (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary
-                            object support)),
-                        Graph.Response.TargetComplete
-                            Graph.BoundaryPiece.boundaryDegreeProfile
-                            (Graph.HasCycleWithLength data.LengthOK)
-                            leftPiece rightPiece →
-                          Graph.Response.ContextEquivalent
-                            (Graph.HasCycleWithLength data.LengthOK)
-                            leftPiece rightPiece) →
-                      ∀ (cubicDegree :
-                          object.degree separator = data.threshold)
-                        (attempt : Graph.AttemptedQuotient
-                          (Graph.MinimumDegreeAtLeast data.threshold)
-                          (Graph.HasCycleWithLength data.LengthOK) object
-                          responseFamily responseCoordinateSupport),
-                        ∀ leftReading rightReading,
-                          attempt.support = switchSupport →
-                          attempt.Identifies leftReading rightReading →
-                            Graph.Response.TargetDefect
-                                (Graph.HasCycleWithLength data.LengthOK)
-                                leftReading rightReading →
-                              Graph.SparseSurplusExit
-                                (Graph.MinimumDegreeAtLeast data.threshold)
-                                (Graph.HasCycleWithLength data.LengthOK)
-                                data.LengthOK object := by
+                          (Graph.HasCycleWithLength data.LengthOK)
+                          data.LengthOK object := by
                     skip
                   have cubicSeparatorRoutes :
                       object.degree separator = data.threshold →
@@ -1772,8 +1593,7 @@ datum, callback, or side carrier is postulated. -/
                           separatorNextRightAdj
                     have neighbourCard :
                         (object.graph.neighborFinset separator).card = 3 := by
-                      rw [SimpleGraph.card_neighborFinset_eq_degree,
-                        separatorDegreeThree]
+                      exact separatorDegreeThree
                     have usedIncidencesEq : usedIncidences =
                         object.graph.neighborFinset separator :=
                       Finset.eq_of_subset_of_card_le usedIncidencesSubset (by
@@ -1799,43 +1619,17 @@ datum, callback, or side carrier is postulated. -/
                                     neighbour = nextRight :=
                       ⟨rootIncidence, rootIncidenceAdj, rootIncidenceNeLeft,
                         rootIncidenceNeRight, cubicIncidencesExhausted⟩
-                    obtain ⟨attempt, attemptSupportEq, identified⟩ :=
-                      switchAttemptExistsAtCubic cubicDegree
-                        cubicIncidencePackage tokenMem firstAssignedRole
-                        secondAssignedRole firstCapacityCharge secondCapacityCharge
-                        leftPortActivation rightPortActivation
-                        firstConnectorIssued secondConnectorIssued switchConnected
-                        firstConfigurationCarriedBySwitch
-                        secondConfigurationCarriedBySwitch
-                        switchCarriesResponseFamily
-                        responseFamily_subset_declared
-                        responseFamily_subset_base routingLabelsEqual
-                    have reducing : ¬ Set.InjOn attempt.label
-                        (↑responseFamily : Set object.PairCoordinate) := by
-                      intro injective
-                      exact responseCoordinatesDifferent
-                        (injective (by simp [responseFamily])
-                          (by simp [responseFamily])
-                          identified)
-                    rcases attempt.route reducing with
-                        ⟨leftReading, rightReading, readingsIdentified,
-                          profilesDifferent⟩ |
-                        ⟨leftReading, rightReading, readingsIdentified,
-                          targetDefect⟩ |
-                        replacement |
-                        ⟨representative, smaller, baseline, transfer⟩
-                    · exact switchProfileDefectRoutesAtCubic
-                        degreeProfileFibres cubicDegree attempt
-                        leftReading rightReading attemptSupportEq
-                          readingsIdentified
-                          profilesDifferent
-                    · exact switchContextDefectRoutesAtCubic
-                        contextUniversality cubicDegree attempt
-                        leftReading rightReading attemptSupportEq
-                          readingsIdentified targetDefect
-                    · exact .compression attempt.support replacement
-                    · exact .delocalization representative smaller baseline
-                        transfer
+                    exact switchRoutesAtCubic cubicDegree
+                      cubicIncidencePackage tokenMem firstAssignedRole
+                      secondAssignedRole firstCapacityCharge secondCapacityCharge
+                      leftPortActivation rightPortActivation
+                      firstConnectorIssued secondConnectorIssued switchConnected
+                      firstConfigurationCarriedBySwitch
+                      secondConfigurationCarriedBySwitch
+                      switchCarriesResponseFamily
+                      responseFamily_subset_declared responseFamily_subset_base
+                      sameBoundedPortProfileData routingLabelsEqual
+                      responseCoordinatesDifferent
                   have separatorNotCubic :
                       object.degree separator ≠ data.threshold := by
                     intro cubicDegree
@@ -2012,6 +1806,12 @@ datum, callback, or side carrier is postulated. -/
                     ((Graph.pairResponseActivation active).returnSupport right) :=
                 Graph.pairResponseActivation_connectedOn_returnSupport_of_mem
                   active rightActive
+              obtain ⟨firstResponseSupport, firstResponseSupportEq,
+                  firstConfigurations⟩ :=
+                configurations first.1 firstPattern
+              obtain ⟨secondResponseSupport, secondResponseSupportEq,
+                  secondConfigurations⟩ :=
+                configurations second.1 secondPattern
               have firstConfigurationExists :
                   ∃ configuration :
                       Graph.SameTokenRoutingGerms.RoutingConfiguration object
@@ -2020,7 +1820,7 @@ datum, callback, or side carrier is postulated. -/
                         (capacity.activation.localBuffer left),
                     configuration.path.head? = some root ∧
                       configuration.path.getLast? = some left.2 :=
-                configurations first.1 firstPattern left leftMem
+                firstConfigurations left leftMem
               have secondConfigurationExists :
                   ∃ configuration :
                       Graph.SameTokenRoutingGerms.RoutingConfiguration object
@@ -2029,7 +1829,7 @@ datum, callback, or side carrier is postulated. -/
                         (capacity.activation.localBuffer right),
                     configuration.path.head? = some root ∧
                       configuration.path.getLast? = some right.2 :=
-                configurations second.1 secondPattern right rightMem
+                secondConfigurations right rightMem
               obtain ⟨firstConfiguration, firstRoot, firstTerminalEndpoint⟩ :=
                 firstConfigurationExists
               obtain ⟨secondConfiguration, secondRoot, secondTerminalEndpoint⟩ :=
@@ -2064,7 +1864,7 @@ datum, callback, or side carrier is postulated. -/
                 congrArg (fun label => label.2.2.2.1) routingLabelsEqual
               have sameBoundaryProfileLabel :=
                 congrArg (fun label => label.2.2.2.2.1) routingLabelsEqual
-              have sameBoundaryDegreeFibreData := sameBoundaryProfileLabel
+              have sameBoundedPortProfileData := sameBoundaryProfileLabel
               have sameWindowLabel :=
                 congrArg (fun label => label.2.2.2.2.2.1) routingLabelsEqual
               have sameSuppressedChordFlag :=
@@ -2079,14 +1879,6 @@ datum, callback, or side carrier is postulated. -/
                   secondConfiguration.path.head? =
                     some (Graph.CapacityPresentation.tokenRoot token) := by
                 rw [secondRoot, rootIsCanonical]
-              obtain ⟨firstResponseSupport, firstResponseSupportEq⟩ :=
-                Option.isSome_iff_exists.mp
-                  (Graph.FiniteObject.DemandActivation.pairSupport_isSome_of_connected
-                    capacity.activation first.1 objectConnected)
-              obtain ⟨secondResponseSupport, secondResponseSupportEq⟩ :=
-                Option.isSome_iff_exists.mp
-                  (Graph.FiniteObject.DemandActivation.pairSupport_isSome_of_connected
-                    capacity.activation second.1 objectConnected)
               let firstResponseCoordinate : object.PairCoordinate :=
                 Graph.FiniteObject.DemandActivation.pairCoordinate first.1
                   firstResponseSupport
@@ -2273,114 +2065,42 @@ datum, callback, or side carrier is postulated. -/
                   exact Or.inr
                     (Graph.DecoratedHandoff.exists_separatesAt firstRoot
                       secondRoot notFirstPrefix notSecondPrefix)
-              have parallelAttemptExists :
-                  Graph.SameTokenRoutingGerms.Parallel
-                      firstConfiguration.path secondConfiguration.path
-                      commonSelectedSupport →
-                    ∃ attempt : Graph.AttemptedQuotient
-                        (Graph.MinimumDegreeAtLeast data.threshold)
-                        (Graph.HasCycleWithLength data.LengthOK) object
-                        responseFamily responseCoordinateSupport,
-                      attempt.support = parallelSupport ∧
-                        attempt.label firstResponseCoordinate =
-                          attempt.label secondResponseCoordinate := by
-                skip
-              have parallelProfileDefectRoutes :
-                  (∀ (support : Finset object.Vertex)
-                    (leftPiece rightPiece : Graph.BoundaryPiece
-                      (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary
-                        object support)),
-                    Graph.Response.TargetComplete
-                        Graph.BoundaryPiece.boundaryDegreeProfile
-                        (Graph.HasCycleWithLength data.LengthOK)
-                        leftPiece rightPiece →
-                      leftPiece.boundaryDegreeProfile =
-                        rightPiece.boundaryDegreeProfile) →
-                  ∀ (parallel : Graph.SameTokenRoutingGerms.Parallel
-                      firstConfiguration.path secondConfiguration.path
-                      commonSelectedSupport)
-                    (attempt : Graph.AttemptedQuotient
-                      (Graph.MinimumDegreeAtLeast data.threshold)
-                      (Graph.HasCycleWithLength data.LengthOK) object
-                      responseFamily responseCoordinateSupport),
-                    ∀ leftReading rightReading,
-                      attempt.support = parallelSupport →
-                      attempt.Identifies leftReading rightReading →
-                        leftReading.boundaryDegreeProfile ≠
-                            rightReading.boundaryDegreeProfile →
-                          Graph.SparseSurplusExit
-                            (Graph.MinimumDegreeAtLeast data.threshold)
-                            (Graph.HasCycleWithLength data.LengthOK)
-                            data.LengthOK object := by
-                skip
-              have parallelContextDefectRoutes :
-                  (∀ (support : Finset object.Vertex)
-                    (leftPiece rightPiece : Graph.BoundaryPiece
-                      (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary
-                        object support)),
-                    Graph.Response.TargetComplete
-                        Graph.BoundaryPiece.boundaryDegreeProfile
-                        (Graph.HasCycleWithLength data.LengthOK)
-                        leftPiece rightPiece →
-                      Graph.Response.ContextEquivalent
-                        (Graph.HasCycleWithLength data.LengthOK)
-                        leftPiece rightPiece) →
-                  ∀ (parallel : Graph.SameTokenRoutingGerms.Parallel
-                      firstConfiguration.path secondConfiguration.path
-                      commonSelectedSupport)
-                    (attempt : Graph.AttemptedQuotient
-                      (Graph.MinimumDegreeAtLeast data.threshold)
-                      (Graph.HasCycleWithLength data.LengthOK) object
-                      responseFamily responseCoordinateSupport),
-                    ∀ leftReading rightReading,
-                      attempt.support = parallelSupport →
-                      attempt.Identifies leftReading rightReading →
-                        Graph.Response.TargetDefect
-                            (Graph.HasCycleWithLength data.LengthOK)
-                            leftReading rightReading →
-                          Graph.SparseSurplusExit
-                            (Graph.MinimumDegreeAtLeast data.threshold)
-                            (Graph.HasCycleWithLength data.LengthOK)
-                            data.LengthOK object := by
-                skip
+              -- The star arm consumes the same literal parallel-identification
+              -- implication as the matching arm.  No attempted quotient is
+              -- staged here: its representative clauses are conclusions of
+              -- this manuscript case, not inputs to a constructor.
               have parallelRoutes :
                   Graph.SameTokenRoutingGerms.Parallel
                       firstConfiguration.path secondConfiguration.path
                       commonSelectedSupport →
+                    Graph.SupportComponents.Connected.ConnectedOn object
+                        parallelSupport →
+                    responseCoordinateSupport firstResponseCoordinate ⊆
+                        parallelSupport →
+                    responseCoordinateSupport secondResponseCoordinate ⊆
+                        parallelSupport →
+                    firstResponseCoordinate ≠ secondResponseCoordinate →
+                    responseFamily ⊆ declaredResponseFamily →
+                    responseFamily ⊆ baseResponseFamily →
+                    (routingLabel first.1 (pairs first.1 firstPattern) left).2.2.2.2.1 =
+                        (routingLabel second.1
+                          (pairs second.1 secondPattern) right).2.2.2.2.1 →
+                    routingLabel first.1 (pairs first.1 firstPattern) left =
+                        routingLabel second.1
+                          (pairs second.1 secondPattern) right →
                     Graph.SparseSurplusExit
                       (Graph.MinimumDegreeAtLeast data.threshold)
                       (Graph.HasCycleWithLength data.LengthOK)
                       data.LengthOK object := by
-                intro parallel
-                obtain ⟨attempt, attemptSupportEq, identified⟩ :=
-                  parallelAttemptExists parallel
-                have reducing : ¬ Set.InjOn attempt.label
-                    (↑responseFamily : Set object.PairCoordinate) := by
-                  intro injective
-                  exact responseCoordinatesDifferent
-                    (injective (by simp [responseFamily])
-                      (by simp [responseFamily])
-                      identified)
-                rcases attempt.route reducing with
-                    ⟨leftReading, rightReading, readingsIdentified,
-                      profilesDifferent⟩ |
-                    ⟨leftReading, rightReading, readingsIdentified,
-                      targetDefect⟩ |
-                    replacement |
-                    ⟨representative, smaller, baseline, transfer⟩
-                · exact parallelProfileDefectRoutes degreeProfileFibres
-                    parallel attempt
-                    leftReading rightReading attemptSupportEq readingsIdentified
-                      profilesDifferent
-                · exact parallelContextDefectRoutes contextUniversality
-                    parallel attempt
-                    leftReading rightReading attemptSupportEq readingsIdentified
-                      targetDefect
-                · exact .compression attempt.support replacement
-                · exact .delocalization representative smaller baseline transfer
+                skip
               rcases routingDichotomy with parallel |
                   ⟨separator, separatesAt⟩
-              · exact Or.inl (parallelRoutes parallel)
+              · exact Or.inl (parallelRoutes parallel parallelSupportConnected
+                    firstResponseCarriedByParallelSupport
+                    secondResponseCarriedByParallelSupport
+                    responseCoordinatesDifferent responseFamily_subset_declared
+                    responseFamily_subset_base sameBoundedPortProfileData
+                    routingLabelsEqual)
               · exact by
                   obtain ⟨common, nextLeft, nextRight, tailLeft, tailRight,
                       leftDecomposition, rightDecomposition, nextDifferent⟩ :=
@@ -2452,13 +2172,9 @@ datum, callback, or side carrier is postulated. -/
                   have armRightIssued : armRight.head? = some nextRight := by
                     simpa using armRightHead
                   have armLeftChain : armLeft.IsChain object.graph.Adj := by
-                    obtain ⟨suffix, split⟩ := armLeftPrefix
-                    rw [split] at rawArmLeftChain
-                    exact (List.isChain_append.mp rawArmLeftChain).1
+                    exact rawArmLeftChain.prefix armLeftPrefix
                   have armRightChain : armRight.IsChain object.graph.Adj := by
-                    obtain ⟨suffix, split⟩ := armRightPrefix
-                    rw [split] at rawArmRightChain
-                    exact (List.isChain_append.mp rawArmRightChain).1
+                    exact rawArmRightChain.prefix armRightPrefix
                   have armLeftNodup : armLeft.Nodup :=
                     armLeftPrefix.nodup rawArmLeftNodup
                   have armRightNodup : armRight.Nodup :=
@@ -2560,7 +2276,11 @@ datum, callback, or side carrier is postulated. -/
                     rcases member with rfl | rfl
                     · exact firstResponseCarriedBySwitch
                     · exact secondResponseCarriedBySwitch
-                  have switchAttemptExistsAtCubic :
+                  -- The star arm uses the same literal cubic switch
+                  -- implication.  Its inputs are projections of the sealed
+                  -- pattern and the two configurations; no quotient carrier
+                  -- is constructed before the alternatives are proved.
+                  have switchRoutesAtCubic :
                       ∀ (cubicDegree :
                           object.degree separator = data.threshold),
                         (∃ rootIncidence,
@@ -2624,72 +2344,18 @@ datum, callback, or side carrier is postulated. -/
                             switchSupport) →
                         responseFamily ⊆ declaredResponseFamily →
                         responseFamily ⊆ baseResponseFamily →
+                        (routingLabel first.1
+                            (pairs first.1 firstPattern) left).2.2.2.2.1 =
+                          (routingLabel second.1
+                            (pairs second.1 secondPattern) right).2.2.2.2.1 →
                         routingLabel first.1 (pairs first.1 firstPattern) left =
                           routingLabel second.1
                             (pairs second.1 secondPattern) right →
-                        ∃ attempt : Graph.AttemptedQuotient
-                            (Graph.MinimumDegreeAtLeast data.threshold)
-                            (Graph.HasCycleWithLength data.LengthOK) object
-                            responseFamily responseCoordinateSupport,
-                          attempt.support = switchSupport ∧
-                            attempt.label firstResponseCoordinate =
-                              attempt.label secondResponseCoordinate := by
-                    skip
-                  have switchProfileDefectRoutesAtCubic :
-                      (∀ (support : Finset object.Vertex)
-                        (leftPiece rightPiece : Graph.BoundaryPiece
-                          (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary
-                            object support)),
-                        Graph.Response.TargetComplete
-                            Graph.BoundaryPiece.boundaryDegreeProfile
-                            (Graph.HasCycleWithLength data.LengthOK)
-                            leftPiece rightPiece →
-                          leftPiece.boundaryDegreeProfile =
-                            rightPiece.boundaryDegreeProfile) →
-                      ∀ (cubicDegree :
-                          object.degree separator = data.threshold)
-                        (attempt : Graph.AttemptedQuotient
+                        firstResponseCoordinate ≠ secondResponseCoordinate →
+                        Graph.SparseSurplusExit
                           (Graph.MinimumDegreeAtLeast data.threshold)
-                          (Graph.HasCycleWithLength data.LengthOK) object
-                          responseFamily responseCoordinateSupport),
-                        ∀ leftReading rightReading,
-                          attempt.support = switchSupport →
-                          attempt.Identifies leftReading rightReading →
-                            leftReading.boundaryDegreeProfile ≠
-                                rightReading.boundaryDegreeProfile →
-                              Graph.SparseSurplusExit
-                                (Graph.MinimumDegreeAtLeast data.threshold)
-                                (Graph.HasCycleWithLength data.LengthOK)
-                                data.LengthOK object := by
-                    skip
-                  have switchContextDefectRoutesAtCubic :
-                      (∀ (support : Finset object.Vertex)
-                        (leftPiece rightPiece : Graph.BoundaryPiece
-                          (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary
-                            object support)),
-                        Graph.Response.TargetComplete
-                            Graph.BoundaryPiece.boundaryDegreeProfile
-                            (Graph.HasCycleWithLength data.LengthOK)
-                            leftPiece rightPiece →
-                          Graph.Response.ContextEquivalent
-                            (Graph.HasCycleWithLength data.LengthOK)
-                            leftPiece rightPiece) →
-                      ∀ (cubicDegree :
-                          object.degree separator = data.threshold)
-                        (attempt : Graph.AttemptedQuotient
-                          (Graph.MinimumDegreeAtLeast data.threshold)
-                          (Graph.HasCycleWithLength data.LengthOK) object
-                          responseFamily responseCoordinateSupport),
-                        ∀ leftReading rightReading,
-                          attempt.support = switchSupport →
-                          attempt.Identifies leftReading rightReading →
-                            Graph.Response.TargetDefect
-                                (Graph.HasCycleWithLength data.LengthOK)
-                                leftReading rightReading →
-                              Graph.SparseSurplusExit
-                                (Graph.MinimumDegreeAtLeast data.threshold)
-                                (Graph.HasCycleWithLength data.LengthOK)
-                                data.LengthOK object := by
+                          (Graph.HasCycleWithLength data.LengthOK)
+                          data.LengthOK object := by
                     skip
                   have cubicSeparatorRoutes :
                       object.degree separator = data.threshold →
@@ -2761,8 +2427,7 @@ datum, callback, or side carrier is postulated. -/
                           separatorNextRightAdj
                     have neighbourCard :
                         (object.graph.neighborFinset separator).card = 3 := by
-                      rw [SimpleGraph.card_neighborFinset_eq_degree,
-                        separatorDegreeThree]
+                      exact separatorDegreeThree
                     have usedIncidencesEq : usedIncidences =
                         object.graph.neighborFinset separator :=
                       Finset.eq_of_subset_of_card_le usedIncidencesSubset (by
@@ -2788,43 +2453,17 @@ datum, callback, or side carrier is postulated. -/
                                     neighbour = nextRight :=
                       ⟨rootIncidence, rootIncidenceAdj, rootIncidenceNeLeft,
                         rootIncidenceNeRight, cubicIncidencesExhausted⟩
-                    obtain ⟨attempt, attemptSupportEq, identified⟩ :=
-                      switchAttemptExistsAtCubic cubicDegree
-                        cubicIncidencePackage tokenMem firstAssignedRole
-                        secondAssignedRole firstCapacityCharge secondCapacityCharge
-                        leftPortActivation rightPortActivation
-                        firstConnectorIssued secondConnectorIssued switchConnected
-                        firstConfigurationCarriedBySwitch
-                        secondConfigurationCarriedBySwitch
-                        switchCarriesResponseFamily
-                        responseFamily_subset_declared
-                        responseFamily_subset_base routingLabelsEqual
-                    have reducing : ¬ Set.InjOn attempt.label
-                        (↑responseFamily : Set object.PairCoordinate) := by
-                      intro injective
-                      exact responseCoordinatesDifferent
-                        (injective (by simp [responseFamily])
-                          (by simp [responseFamily])
-                          identified)
-                    rcases attempt.route reducing with
-                        ⟨leftReading, rightReading, readingsIdentified,
-                          profilesDifferent⟩ |
-                        ⟨leftReading, rightReading, readingsIdentified,
-                          targetDefect⟩ |
-                        replacement |
-                        ⟨representative, smaller, baseline, transfer⟩
-                    · exact switchProfileDefectRoutesAtCubic
-                        degreeProfileFibres cubicDegree attempt
-                        leftReading rightReading attemptSupportEq
-                          readingsIdentified
-                          profilesDifferent
-                    · exact switchContextDefectRoutesAtCubic
-                        contextUniversality cubicDegree attempt
-                        leftReading rightReading attemptSupportEq
-                          readingsIdentified targetDefect
-                    · exact .compression attempt.support replacement
-                    · exact .delocalization representative smaller baseline
-                        transfer
+                    exact switchRoutesAtCubic cubicDegree
+                      cubicIncidencePackage tokenMem firstAssignedRole
+                      secondAssignedRole firstCapacityCharge secondCapacityCharge
+                      leftPortActivation rightPortActivation
+                      firstConnectorIssued secondConnectorIssued switchConnected
+                      firstConfigurationCarriedBySwitch
+                      secondConfigurationCarriedBySwitch
+                      switchCarriesResponseFamily
+                      responseFamily_subset_declared responseFamily_subset_base
+                      sameBoundedPortProfileData routingLabelsEqual
+                      responseCoordinatesDifferent
                   have separatorNotCubic :
                       object.degree separator ≠ data.threshold := by
                     intro cubicDegree
@@ -2859,10 +2498,10 @@ datum, callback, or side carrier is postulated. -/
           exact routedOutcome
           ⟩
       let handoff : (K .typeBHandoff).At inputs.current := ⟨by
-          obtain ⟨_, _, _, _pattern, outcome⟩ := routing.down
+          obtain ⟨active, _, _, _pattern, outcome⟩ := routing.down
           rcases outcome with sparseExit | typeBHandoff
           · exact False.elim
-              ((inputs.get (K .sparseSurplusSurvivor)).down sparseExit)
+              (active.survives sparseExit)
           · exact typeBHandoff⟩
       .cons (key := K .bottleneckRouting)
         routing

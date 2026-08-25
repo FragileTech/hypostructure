@@ -1392,6 +1392,69 @@ stage closes (rate fails) or only route 8 remains. `K .route8PiecesClassified` s
   decomposition lemmas (card/def⁺/staged count over remaining-core
   components) and DisjointLedger trivial-instance viability for the choice
   definition.  Integration edits begin when A–C report.
+
+  ABSORPTION ENGINE LANDED 2026-08-24 (kernel-green, 8666 jobs, one new
+  file `Hypostructure/Graph/DecoratedAbsorption.lean`, no Strategy file
+  touched): the prose half of `lem:decorated-envelope-deficit-bound` +
+  `lem:window-handoff-center-accounting` is now theorem.  The absorbed set
+  is the committed excess basins `⋃_w E(w)` of the saturated receivers
+  (`absorbedExcess`) — the manuscript-faithful choice for which `routes`
+  off-absorbed is FREE (absorbed vertices are θ-full, receivers strictly
+  below θ) and `unsaturated` off-absorbed is exact (`card_payableSet_le`).
+  `envelopeFamily_of_absorbedExcess` closes the family payment
+  Σ cleared ≤ F·s·degreeSurplus from: σ=0, the [88]-shape routing, high
+  centres, pairwise-disjoint per-unit centre families, and ONE remaining
+  per-unit hypothesis — `assigned`: |absorbedExcess(unit)| ≤
+  Σ_{centre ∈ centresAt unit} closedCount(fanEnvelope centre, centre),
+  reducible by `card_absorbedExcess_le_of_centreAssignment` +
+  `pair_le_closedCount_of_separation` + `closedCount_eq_degree_of_tight`
+  (tightness = the committed [67] `neighbourTight`) to a per-receiver
+  centre assignment maps/injective/slots.  VERIFIED IRREDUCIBLE: no
+  committed structure carries the per-load fan-out injection (the
+  manuscript also takes this as DATA — `def:typeB-assigned-ledger`'s fan
+  assignment — and its own alternative proof is the
+  `lem:typeA-saturated-handoff` iteration with exit-(4) peeling, a
+  well-founded recursion not yet formalized).  CONSEQUENT DECISION for the
+  final push: keys 345/346 are NOT deleted outright — their Holds SHRINKS
+  from the fat 4-clause-plus-coverage package to exactly the manuscript's
+  assigned-ledger fan-assignment cardinality datum (per handoff unit:
+  centres, fanEnvelope, maps/injective/slots; across units: centre
+  disjointness), quantified over the handoff units (σ=0 negative handoff
+  canonical pieces ∪ negative handoff cores of the deleted regions); the
+  indices, labels, and residual lane are unchanged; everything else the
+  old statement carried is consumed as theorems (clause (i) replaced by
+  the identity route; clause (ii)'s pair/coverage by the engine).  The
+  follow-up that would delete the test entirely is the saturated-handoff
+  iteration engine.
+
+  DESIGN v3 (2026-08-24, after agent A's verdict; SUPERSEDES v2's re-base):
+  agent A verified exhaustively that NO committed carrier pays a piece's mass
+  from an `OverlapObstruction` (the structure carries no numeric field; both
+  obstruction keys are single-support existentials with per-centre
+  `envelopeNegativePart` bounds), and that the paper's own payment
+  (`lem:typeB-bridge-deficit-bound`, tex 14396) is deliberately
+  B2-arm-independent ("It does not assume that the B2 disjoint-incidence
+  ledger exists").  Consequently the remainingCore re-base is DEAD (its 344
+  casing dies on the obstruction arm) and M2's landed X∖centres collection
+  STANDS.  The deficit row's σ>0-negative arm needs NO staged count and NO
+  routing: |X| = |centres| + Σ_components |C|; per component the ℕ-identity
+  |C| ≤ s·def⁺(C) + (|C| ∸ s·def⁺(C)) with the truncated term vanishing on
+  nonneg components; Σ s·def⁺(C) = s·def⁺(X∖centres) ≤ s·def⁺(X) +
+  s·Σ_centres internalDegree (`positiveDeficiency_sdiff_le`, kernel-built);
+  centre cost ≤ (1 + s·θ + s)·σ(X) ≤ F·s·σ(X) by the registered
+  `bridgeDeletionSlack`; negative components split DEFINITIONALLY into
+  M2-filtered (→ the fact's extracted-deficit term), quotient-carrying
+  (killed by the extended quotient-free conjunct on the free arm), and
+  handoff (→ the role-2 envelope payment, agent B pending).  The handoff
+  σ=0 canonical pieces are the same handoff unit with centres = ∅.  Slack
+  stays the committed two-role 2·F·s·T(n); StageRateFailed/PeelingDescent
+  keys are UNTOUCHED; the descent row extends its burden per extracted core
+  by the staged count (committed routing applies at σ=0 cores).  Assembly:
+  `selectedRouteEightQuotientResidual` is a loud undefined continuation
+  (Assembly 1618 is its only occurrence), so moving the quotient dichotomy
+  before the deficit row breaks no signature.  M2's census row gets wired
+  before `route8UnifiedEntryCensusRow`, which repairs its union split by
+  reading key 350.
     the deficit row rewritten to consume `K .typeBBridgeReduction` (committed:
     ledger + exact refinement + negative core + per-component
     `PostLedgerComponent` + exit-seven grouped envelopes, or overlap) with the
@@ -1496,14 +1559,19 @@ table; their exact environments supply the inherited quantifiers and hypotheses.
 **Current combinator / shared continuation.** The three residual-local `factOnly` class-audit
 rows each publish their class audit and the shared `K .homogeneousBottleneckPattern`. The one
 anonymous Type-A `factOnly` owner for this label requires that pattern together with
-`K .activeSurplusDemands`, `K .sparseSurplusSurvivor`, and the inherited selection,
-profile, context, replacement, and uncompressibility facts. Its literal manifest produces
+`K .activeSurplusDemands`, `K .cubicBaseline`, and `K .capacityTokenLedger`.
+The sealed active-family value already contains the survivor, activation, and
+two-shoulder clauses proved at `[128]`, so `[144]` projects those clauses from
+that one `FactInputs.get` instead of reading duplicate keys. Its literal manifest produces
 `K .bottleneckRouting` and the survivor specialization `K .typeBHandoff`. The owner is loud
 inside its proof, before either output can be committed.
 
 **Primary defect class.** mathematical proof absent after the declared-connector step of
-`lem:same-token-bottleneck-routing`: the paper's two configurations are now registered upstream,
-but the parallel/first-separator case analysis and its sparse-exit/Type-B consequences remain open.
+`lem:same-token-bottleneck-routing`. The former local `AttemptedQuotient` obligations were
+circular: constructing that structure already required the proper and closed representatives
+which the paragraph was meant to derive. They have been removed. The row now exposes the paper's
+literal parallel-routing and cubic-switch implications, plus the common-prefix/root-incidence
+alternative, once on each of the matching and star arms.
 
 **Fresh audit diagnosis.** ⚠ DECLARED-CONNECTOR STEP REPAIRED — Node [136] already proved the
 current object connected while constructing the canonical pair support `X_π`; that proposition was
@@ -1528,15 +1596,27 @@ registered provider. It proves that their heads coincide and that this head is t
 root. The former [144] code that re-proved graph connectivity, re-read the token charge, rebuilt
 `X_π`, and redefined the token root has been deleted.
 
-The first remaining formula is therefore the next manuscript step. In the context containing the
-two equal-label, same-root configurations, the open goal is
-`SparseSurplusExit (MinimumDegreeAtLeast data.threshold)
-(HasCycleWithLength data.LengthOK) data.LengthOK current.object ∨
-SameTokenTypeBHandoffStatement data current.object`. The proof must now apply the paper's
-parallel/first-separator alternatives in order. On `K .sparseSurplusSurvivor`, the same executor
-eliminates the first arm and publishes only the Type B arm. No whole-graph replacement path, extra
-support entry, caller-supplied bottleneck, undefined selector, or detached quotient theorem is an
-admissible substitute.
+The six remaining formulas are three obligations duplicated by the matching/star endpoint choice.
+First, a parallel pair of configurations, together with the connected common support carrying the
+two distinct declared response coordinates and their equal routing label, must produce a
+`SparseSurplusExit`. Second, at a cubic first separator, the exhausted three-incidence package,
+the two carried configurations and response coordinates, and the same ledger data must produce a
+`SparseSurplusExit`. Third, before that package can be formed, Lean requires the manuscript's
+implicit assertion
+`SparseSurplusExit ... current.object ∨ common ≠ []`
+from the two same-root path decompositions and `nextLeft ≠ nextRight`.
+
+The third assertion is not a consequence of the registered configuration schema. A legal token
+`CapacityToken.primitive (.inl v)` has `tokenSupport = {v}`; the producer supplies simple paths
+whose head is `v`, and two such paths may diverge immediately at a cubic `v`. Then the
+`SeparatesAt` decomposition has `common = []`, so no predecessor/root incidence exists. The
+remainder-surplus constructor is different (membership makes its root high), but the primitive
+vertex constructor shows that the general [144] assertion is missing. Likewise, the parallel and
+cubic paragraphs need two actual readings on one common boundary and a concrete admissible
+identification/representative. `pairResponseReading` presents each `X_π` on its own boundary,
+and equality of the finite routing label does not construct those same-interface readings or the
+representatives required by `AttemptedQuotient`. No whole-graph replacement path, arbitrary third
+neighbour, extra support entry, or detached quotient theorem is an admissible substitute.
 
 **What must be implemented or corrected.**
 
@@ -1544,8 +1624,9 @@ admissible substitute.
   concrete homogeneous-pattern package and exact sparse-exit-or-decorated-Type-B alternative. Do
   not restore a universal theorem about a separately supplied bottleneck.
 - Finish the anonymous proof inside `sameTokenBottleneckRoutingRow` from the two configurations now
-  read from `K .homogeneousBottleneckPattern`; construct only the paper's temporary
-  quotient/separator/envelope witnesses locally and return the two exact declared outputs.
+  read from `K .homogeneousBottleneckPattern`. This requires a manuscript proof of the common-boundary
+  response identification and a manuscript case for immediate divergence at a singleton token root;
+  neither may be replaced by an arbitrary `AttemptedQuotient` or third neighbour.
 - Use the registered configurations with the ledger's canonical `R_p,R_q`; never select a
   replacement path. The paper's parallel case must follow its attempted-quotient/context/compression/smearing/closed-
   representative alternatives, and the separated case must follow its cubic-switch and fan-safety
@@ -1571,11 +1652,12 @@ admissible substitute.
   cannot be committed until the remaining case analysis closes
 - [x] **No invented path strategy:** the global path fields, two extra support entries, collision
   wrappers, undefined selector, detached carriers, and conditional row are deleted
-- [ ] **Exact manuscript proof:** first absent at selection and reading of the declared connector
-  configurations
+- [ ] **Exact manuscript proof:** first absent at the parallel common-boundary identification; the
+  separated arm additionally lacks the immediate-divergence/root-incidence case
 - [x] **Independent kernel check:** `SameTokenRoutingGerms`, `ObjectCapacityLedger`, and
-  `SpineVocabulary` build; the narrow row reports only the displayed unsolved disjunction, and
-  searches find no obsolete routing carrier or fake producer
+  `SpineVocabulary` build; the narrow row reports exactly six unsolved goals (the three displayed
+  obligations on the matching and star arms), and searches find no obsolete routing carrier or fake
+  producer
 
 **Exit criterion.** Reinspect the declaration body and call site, update this node row and every
 listed paper-fact row from the compiled term, run the table/API checks, and remove this section

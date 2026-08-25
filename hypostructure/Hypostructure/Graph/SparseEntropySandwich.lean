@@ -468,28 +468,6 @@ theorem coordinate_eq_of_mem_recordedProfileObstructions
   · simpa using member
   · simp at member
 
-/-- Membership in the recorded clause-(d) row recovers the exact
-pair-indexed failed determination that caused that row to be present.  The
-recording `if` stores no detached witness: this theorem merely reads its true
-branch back. -/
-theorem profileObstructionAt_of_mem_recordedProfileObstructions
-    {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
-    {object : FiniteObject.{u}} {Coordinate Chord : Type u}
-    (activation : object.DemandActivation Coordinate Chord)
-    (pairs : Finset (Finset (object.Vertex × object.Vertex)))
-    {pair : Finset (object.Vertex × object.Vertex)}
-    {coordinate : object.PairCoordinate}
-    (member : coordinate ∈
-      (recordSparsePairDEBlockers (Baseline := Baseline)
-        (LengthOK := LengthOK) activation pairs).profileObstructions pair) :
-    SparsePairDEProfileObstructionAt (Baseline := Baseline)
-      (LengthOK := LengthOK) activation pairs pair := by
-  classical
-  simp only [recordSparsePairDEBlockers] at member
-  split at member
-  · assumption
-  · simp at member
-
 theorem coordinate_eq_of_mem_recordedResponseObstructions
     {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
     {object : FiniteObject.{u}} {Coordinate Chord : Type u}
@@ -506,26 +484,6 @@ theorem coordinate_eq_of_mem_recordedResponseObstructions
   simp only [recordSparsePairDEBlockers] at member
   split at member
   · simpa using member
-  · simp at member
-
-/-- Membership in the recorded clause-(e) row recovers the exact
-pair-indexed target-response obstruction that caused that row to be present. -/
-theorem responseObstructionAt_of_mem_recordedResponseObstructions
-    {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
-    {object : FiniteObject.{u}} {Coordinate Chord : Type u}
-    (activation : object.DemandActivation Coordinate Chord)
-    (pairs : Finset (Finset (object.Vertex × object.Vertex)))
-    {pair : Finset (object.Vertex × object.Vertex)}
-    {coordinate : object.PairCoordinate}
-    (member : coordinate ∈
-      (recordSparsePairDEBlockers (Baseline := Baseline)
-        (LengthOK := LengthOK) activation pairs).responseObstructions pair) :
-    SparsePairDEResponseObstructionAt (Baseline := Baseline)
-      (LengthOK := LengthOK) activation pairs pair := by
-  classical
-  simp only [recordSparsePairDEBlockers] at member
-  split at member
-  · assumption
   · simp at member
 
 /-- `X_π` together with the canonical return entries of the demands in

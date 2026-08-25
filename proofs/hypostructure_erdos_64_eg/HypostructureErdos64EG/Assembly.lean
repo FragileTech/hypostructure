@@ -1462,53 +1462,18 @@ noncomputable def selectedRankDropCloses
               exact (closeIncompatible barrier (K .selection) (K .globalBarrier)
                 (by simp [K_eq_iff, closureFresh])).elimClosed (by infer_instance)
 
-/-- **The failed-rate stage of `thm:large-budget-route8-only`** — the arm the
-manuscript closes by the large-budget net-deficiency cap, `thm:branch-kill`,
-and the external-demand accounting of `rem:why-unified`.  The clause-(L1)
-dichotomy of `def:typeA-pressure-ledger` runs first: a minimal unified entry
-with at most `δ − 1` private essential incidences and no exit-(4) witness is
-the terminal two-support route-8 obstruction, closed by the same `[124]`
-no-go row; otherwise the maximal pinned 2/3-demand ledger is committed with
-its no-overcount counts and canonical records, and the demand accounting
-continues at the next producer. -/
-noncomputable def selectedRouteEightStageClosure
-    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .selection) known]
-    (survivorFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known := by
-      simp [K_eq_iff])
-    (ledgerFresh : K .route8DemandLedger ∉ known := by simp [K_eq_iff])
-    (terminalFresh : K .route8TerminalNoGo ∉ known := by simp [K_eq_iff]) :
-    False := by
-  match route8DemandLedgerDichotomy (data := spineData) history
-      survivorFresh ledgerFresh with
-  | .left survivorStage =>
-      -- `thm:typeA-two-carrier-nogo`: the same `[124]` terminal exclusion.
-      let closed :=
-        (route8UnifiedTerminalNoGoRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          survivorStage (by simp [K_eq_iff, terminalFresh])
-      exact (closed.get (K .route8TerminalNoGo)).down.elim
-  | .right ledgerStage =>
-      -- `def:typeA-pressure-absorbers` onward: the demand-defect absorption
-      -- ledger of the manuscript's S24 — the next producer.
-      exact selectedRouteEightDemandAbsorption ledgerStage
-
 /-- **Node `[123]`, the shared unified-demand continuation.**
 
 This continuation reads the unified deficit (`K .route8UnifiedDeficit`), the
-visible exit-(4) routing (`K .route8VisibleExitFourRouting`), and the
-per-entry census (`K .route8UnifiedEntryCensus`); it performs the recorded
-finite exit-`(4)` descent, decides the terminal stage, closes the true
-two-support survivor through node `[124]`, and hands the failed-rate stage to
-the branch-kill closure. -/
+receiver-routing fact (`K .typeAReceiverRouting`), and the per-entry census
+(`K .route8UnifiedEntryCensus`); it performs the recorded finite exit-`(4)`
+descent, decides the terminal stage, closes the true two-support survivor
+through node `[124]`, and hands the failed-rate stage to the branch-kill
+closure. -/
 noncomputable def selectedRouteEightCensus
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .route8UnifiedDeficit) known]
-    [FactKeys.Has (K .route8VisibleExitFourRouting) known]
     [FactKeys.Has (K .typeAReceiverRouting) known]
     [FactKeys.Has (K .route8UnifiedEntryCensus) known]
     (peelingFresh : K .route8PeelingDescent ∉ known)
@@ -1533,9 +1498,12 @@ noncomputable def selectedRouteEightCensus
           trueStage (by simp [K_eq_iff, terminalFresh])
       exact (closed.get (K .route8TerminalNoGo)).down.elim
   | .right failedStage =>
-      -- `thm:large-budget-route8-only`: "the large-budget net-deficiency cap
-      -- and `thm:branch-kill` close that stage" — the next producer.
-      exact selectedRouteEightStageClosure failedStage
+      -- `thm:large-budget-route8-only`: the paper says the large-budget
+      -- net-deficiency cap and `thm:branch-kill` close this exact failed-rate
+      -- stage.  Keep that producer loud until the implication is proved from
+      -- the preceding ledger facts; the conditional S24 open-demand criteria
+      -- are not a substitute for it.
+      exact selectedRouteEightFailedStageClosure failedStage
 
 /-- **Node `[123]`: the unified pressure census** — `lem:typeA-unified-deficit`,
 `def:typeA-unified-entries`/`lem:typeA-unified-carriers`, `thm:branch-kill`'s
@@ -1569,7 +1537,7 @@ noncomputable def selectedLargeBudgetPressureCensus
     (quotientResidualFresh : K .route8QuotientResidual ∉ known := by
       simp [K_eq_iff])
     (censusFresh : K .route8UnifiedEntryCensus ∉ known := by simp [K_eq_iff])
-    (visibleFresh : K .route8VisibleExitFourRouting ∉ known := by
+    (extractedCensusFresh : K .route8ExtractedEntryCensus ∉ known := by
       simp [K_eq_iff])
     (peelingFresh : K .route8PeelingDescent ∉ known := by simp [K_eq_iff])
     (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known := by
@@ -1595,41 +1563,45 @@ noncomputable def selectedLargeBudgetPressureCensus
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       bridged (by simp [K_eq_iff, classifiedFresh])
-  -- the tested `prop:typeB-bridge-sublinear` hypotheses.
-  match typeBSublinearDichotomy (data := spineData) classified
-      (by simp [K_eq_iff, sublinearFresh])
-      (by simp [K_eq_iff, sublinearResidualFresh]) with
+  -- the cased quotient-freeness of the unified census, before the deficit
+  -- row: the ratified casing is the branch surrogate of the exit-(5) closure
+  -- that `lem:typeB-bridge-with-route8-core`'s proof invokes through
+  -- `lem:typeA-exclusion`.
+  match route8QuotientDichotomy (data := spineData) classified
+      (by simp [K_eq_iff, quotientFreeFresh])
+      (by simp [K_eq_iff, quotientResidualFresh]) with
   | .right residual =>
-      -- the manuscript's Part IX bridge-residual lane.
-      exact selectedTypeBSublinearResidual residual
-  | .left ledgered =>
-      -- `lem:typeA-unified-deficit`.
-      let deficit :=
-        (route8UnifiedDeficitRow (BranchState := BranchState)
+      -- the manuscript's profile demand-record lane.
+      exact selectedRouteEightQuotientResidual residual
+  | .left quotientFree =>
+      -- `def:typeA-unified-entries` at the extracted route-8 cores
+      -- (`lem:typeB-bridge-with-route8-core`'s `𝒜_X`).
+      let extractedCensus :=
+        (route8ExtractedEntryCensusRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          ledgered (by simp [K_eq_iff, deficitFresh])
-      -- the tested quotient-freeness of the unified census.
-      match route8QuotientDichotomy (data := spineData) deficit
-          (by simp [K_eq_iff, quotientFreeFresh])
-          (by simp [K_eq_iff, quotientResidualFresh]) with
+          quotientFree (by simp [K_eq_iff, extractedCensusFresh])
+      -- the tested `prop:typeB-bridge-sublinear` hypotheses.
+      match typeBSublinearDichotomy (data := spineData) extractedCensus
+          (by simp [K_eq_iff, sublinearFresh])
+          (by simp [K_eq_iff, sublinearResidualFresh]) with
       | .right residual =>
-          -- the manuscript's profile demand-record lane.
-          exact selectedRouteEightQuotientResidual residual
-      | .left quotientFree =>
+          -- the manuscript's Part IX bridge-residual lane.
+          exact selectedTypeBSublinearResidual residual
+      | .left ledgered =>
+          -- `lem:typeA-unified-deficit`.
+          let deficit :=
+            (route8UnifiedDeficitRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              ledgered (by simp [K_eq_iff, deficitFresh])
           -- `def:typeA-unified-entries` with `lem:typeA-unified-carriers`.
           let census :=
             (route8UnifiedEntryCensusRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              quotientFree (by simp [K_eq_iff, censusFresh])
-          -- fact 2, `lem:typeA-unpeeled-visible-routing` at the collection.
-          let visible :=
-            (route8VisibleRoutingRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              census (by simp [K_eq_iff, visibleFresh])
-          exact selectedRouteEightCensus visible
+              deficit (by simp [K_eq_iff, censusFresh])
+          exact selectedRouteEightCensus census
             (by simp [K_eq_iff, peelingFresh])
             (by simp [K_eq_iff, unifiedTrueFresh])
             (by simp [K_eq_iff, stageFailedFresh])

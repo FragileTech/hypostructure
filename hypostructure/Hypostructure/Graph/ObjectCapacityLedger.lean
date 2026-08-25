@@ -629,23 +629,31 @@ def HomogeneousBottleneckPatternStatement (object : FiniteObject.{u})
           ((∃ pattern ⊆ ledger.presented.roleFibre token role,
               PatternFamily.IsMatching pattern ∧
                 SameTokenRoutingGerms.patternBound Label ≤ pattern.card ∧
-                ∀ pair ∈ pattern, ∀ demand ∈ pair,
-                  ∃ configuration : SameTokenRoutingGerms.RoutingConfiguration
-                      object (data.sameTokenRoutingSupport token pair)
-                        (CapacityPresentation.tokenSupport token)
-                        (data.activation.localBuffer demand),
-                    configuration.path.head? = some root ∧
-                      configuration.path.getLast? = some demand.2) ∨
+                ∀ pair ∈ pattern,
+                  ∃ responseSupport : Finset object.Vertex,
+                    data.activation.pairSupport pair = some responseSupport ∧
+                      ∀ demand ∈ pair,
+                        ∃ configuration :
+                            SameTokenRoutingGerms.RoutingConfiguration
+                              object (data.sameTokenRoutingSupport token pair)
+                                (CapacityPresentation.tokenSupport token)
+                                (data.activation.localBuffer demand),
+                          configuration.path.head? = some root ∧
+                            configuration.path.getLast? = some demand.2) ∨
             (∃ centre, ∃ pattern ⊆ ledger.presented.roleFibre token role,
               PatternFamily.IsStar pattern centre ∧
                 SameTokenRoutingGerms.patternBound Label ≤ pattern.card ∧
-                ∀ pair ∈ pattern, ∀ demand ∈ pair,
-                  ∃ configuration : SameTokenRoutingGerms.RoutingConfiguration
-                      object (data.sameTokenRoutingSupport token pair)
-                        (CapacityPresentation.tokenSupport token)
-                        (data.activation.localBuffer demand),
-                    configuration.path.head? = some root ∧
-                      configuration.path.getLast? = some demand.2))
+                ∀ pair ∈ pattern,
+                  ∃ responseSupport : Finset object.Vertex,
+                    data.activation.pairSupport pair = some responseSupport ∧
+                      ∀ demand ∈ pair,
+                        ∃ configuration :
+                            SameTokenRoutingGerms.RoutingConfiguration
+                              object (data.sameTokenRoutingSupport token pair)
+                                (CapacityPresentation.tokenSupport token)
+                                (data.activation.localBuffer demand),
+                          configuration.path.head? = some root ∧
+                            configuration.path.getLast? = some demand.2))
 
 /-- **Node `[144]`, the near-cubic outcome**:
 `cor:homogeneous-same-token-caps-close` at the counted `L_geom`, together with

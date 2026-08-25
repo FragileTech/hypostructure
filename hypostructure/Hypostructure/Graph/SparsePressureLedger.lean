@@ -34,60 +34,6 @@ open Hypostructure.Graph.SameTokenBlockerRoles
 
 universe u
 
-/-- A canonical clause-(d) blocker in the recorded capacity presentation reads
-back the exact pair-indexed failed determination stored by node `[134]`. -/
-theorem CapacityPresentation.profileObstructionAt_of_canonicalBlocker
-    {Baseline Target : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
-    {object : FiniteObject.{u}} {threshold order : Nat}
-    (active : ActiveSurplusDemands Baseline Target LengthOK object threshold)
-    (capacity : CapacityPresentation object threshold order)
-    (activationEq : capacity.activation =
-      recordSparsePairDEBlockers (Baseline := Baseline) (LengthOK := LengthOK)
-        (pairResponseActivation active) (object.portPairSchedule threshold))
-    {pair : Finset (object.Vertex × object.Vertex)}
-    {coordinate : object.PairCoordinate}
-    (selected : FiniteObject.canonicalBlocker capacity.activation pair =
-      some (.boundaryProfile coordinate)) :
-    SparsePairDEProfileObstructionAt (Baseline := Baseline)
-      (LengthOK := LengthOK) (pairResponseActivation active)
-        (object.portPairSchedule threshold) pair := by
-  have blockerMem :=
-    FiniteObject.canonicalBlocker_mem capacity.activation selected
-  have obstructs :
-      coordinate ∈ capacity.activation.profileObstructions pair := by
-    simpa [FiniteObject.DemandActivation.blockers] using blockerMem
-  rw [activationEq] at obstructs
-  exact profileObstructionAt_of_mem_recordedProfileObstructions
-    (pairResponseActivation active) (object.portPairSchedule threshold)
-      obstructs
-
-/-- A canonical clause-(e) blocker reads back its exact pair-indexed
-target-response obstruction from the same monotone activation row. -/
-theorem CapacityPresentation.responseObstructionAt_of_canonicalBlocker
-    {Baseline Target : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
-    {object : FiniteObject.{u}} {threshold order : Nat}
-    (active : ActiveSurplusDemands Baseline Target LengthOK object threshold)
-    (capacity : CapacityPresentation object threshold order)
-    (activationEq : capacity.activation =
-      recordSparsePairDEBlockers (Baseline := Baseline) (LengthOK := LengthOK)
-        (pairResponseActivation active) (object.portPairSchedule threshold))
-    {pair : Finset (object.Vertex × object.Vertex)}
-    {coordinate : object.PairCoordinate}
-    (selected : FiniteObject.canonicalBlocker capacity.activation pair =
-      some (.targetResponse coordinate)) :
-    SparsePairDEResponseObstructionAt (Baseline := Baseline)
-      (LengthOK := LengthOK) (pairResponseActivation active)
-        (object.portPairSchedule threshold) pair := by
-  have blockerMem :=
-    FiniteObject.canonicalBlocker_mem capacity.activation selected
-  have obstructs :
-      coordinate ∈ capacity.activation.responseObstructions pair := by
-    simpa [FiniteObject.DemandActivation.blockers] using blockerMem
-  rw [activationEq] at obstructs
-  exact responseObstructionAt_of_mem_recordedResponseObstructions
-    (pairResponseActivation active) (object.portPairSchedule threshold)
-      obstructs
-
 /-- Every vertex of the canonical blocker support lies in the already declared
 connector core `X_π ∪ ⋃ R_p`.  This is the clause-by-clause support
 reading needed to turn the paper's blocker object into a connector; no support
@@ -561,6 +507,43 @@ theorem CapacityPresentation.exists_sameRootRoutingConfiguration_of_charge
   · change walk.support.getLast? = some demand.2
     rw [List.getLast?_eq_getLast_of_ne_nil walk.support_ne_nil,
       walk.getLast_support]
+
+/-- The canonical response support `X_π` and all declared same-token
+configurations of one charged pair, published together.  This is the package
+the homogeneous-pattern rows retain for node `[144]`: a consumer never chooses
+`X_π` again after reading the ledger entry. -/
+theorem CapacityPresentation.exists_sameRootRoutingConfigurationFamily_of_charge
+    {Baseline Target : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {threshold order : Nat}
+    (active : ActiveSurplusDemands Baseline Target LengthOK object threshold)
+    (capacity : CapacityPresentation object threshold order)
+    (activationEq : capacity.activation =
+      recordSparsePairDEBlockers (Baseline := Baseline) (LengthOK := LengthOK)
+        (pairResponseActivation active) (object.portPairSchedule threshold))
+    {pair : Finset (object.Vertex × object.Vertex)}
+    {token : FiniteObject.CapacityToken object}
+    (pairSubset : pair ⊆ object.excessPorts threshold)
+    (connected : SupportComponents.Connected.ConnectedOn object
+      object.vertexFinset)
+    (charged : FiniteObject.capacityCharge capacity.activation capacity.carrier
+      threshold capacity.packing pair = some token) :
+    ∃ responseSupport : Finset object.Vertex,
+      capacity.activation.pairSupport pair = some responseSupport ∧
+        ∀ demand ∈ pair,
+          ∃ configuration : SameTokenRoutingGerms.RoutingConfiguration object
+              (capacity.sameTokenRoutingSupport token pair)
+                (CapacityPresentation.tokenSupport token)
+                (capacity.activation.localBuffer demand),
+            configuration.path.head? =
+                some (CapacityPresentation.tokenRoot token) ∧
+              configuration.path.getLast? = some demand.2 := by
+  obtain ⟨responseSupport, selected⟩ := Option.isSome_iff_exists.mp
+    (FiniteObject.DemandActivation.pairSupport_isSome_of_connected
+      capacity.activation pair connected)
+  refine ⟨responseSupport, selected, ?_⟩
+  intro demand demandMem
+  exact capacity.exists_sameRootRoutingConfiguration_of_charge active
+    activationEq pairSubset connected charged demandMem
 
 /-- `n^k ≤ 2^{k(⌊log₂ n⌋+1)}`. -/
 theorem pow_le_two_pow_mul_log2_succ (n k : Nat) :
