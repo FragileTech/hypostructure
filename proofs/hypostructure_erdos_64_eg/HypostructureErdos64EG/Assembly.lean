@@ -166,24 +166,22 @@ noncomputable def selectedSurplusDichotomy
     else
       .inr ⟨Nat.le_of_not_lt above⟩)
 
-/-- Node `[125]`, `def:named-surplus-exits`: the selected minimal counterexample
-survives the sparse surplus exits, on the literal strict-surplus residual. -/
+/-- Node `[125]`, `def:named-surplus-exits`, on the literal strict-surplus
+residual.  The left ledger carries a named sparse exit; the right ledger is the
+paper's "after sparse exits" survivor residual. -/
 -- EG-NODE [125] sparse-pressure survivor after P13 label algebra and sparse exits
-noncomputable def selectedSparseSurplusSurvivor
+noncomputable def selectedSparseSurplusDichotomy
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .surplusAbove, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) :
-    ExactLedger EGInput.{u} selected
-      [K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-        K .selection] :=
-  (sparseSurplusSurvivorRow (BranchState := BranchState)
+    Decision (K .sparsePairExit) (K .sparseSurplusSurvivor) history :=
+  sparseSurplusSurvivorDichotomy (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-    (presentation := erdosReceiverLoadProfile) (data := spineData)).run history
-      (by simp [sparseSurplusSurvivorRow, K_eq_iff])
+    (presentation := erdosReceiverLoadProfile) (data := spineData) history
+      (by simp [K_eq_iff])
+      (by simp [K_eq_iff])
 
 /-- Nodes `[125]`--`[128]`, sparse-surplus activation on node `[125]`'s
 literal survivor residual. -/
@@ -1166,9 +1164,9 @@ noncomputable def selectedCoupledExcessDichotomy
 /-- Node `[20]`, the strict (non-near-cubic) surplus branch, run node by node
 along the Part X/XI diagram on the literal `K .surplusAbove` ledger:
 
-* `[125]` `sparseSurplusSurvivorRow` — `def:named-surplus-exits`: each of the
-  five conclusions is a contradiction at the selected minimal counterexample,
-  so the survivor fact is a row, not a decision (the manuscript's box);
+* `[125]` `sparseSurplusSurvivorDichotomy` — `def:named-surplus-exits`: the
+  five named exits form the left arm, while their joint negation is exactly the
+  paper's "after sparse exits" survivor arm;
 * `[126]`--`[128]` activation, `[129]` baseline spine demand, `[130]` canonical
   pair split;
 * `[130]` yes: `[131]` decides the paper's full-pair code count on the exact
@@ -1191,12 +1189,14 @@ next producers of this branch (see the audit rows `[131]`, `[137]`). -/
 noncomputable def selectedStrictSurplusBranch
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
-      [K .surplusAbove, K .localAlgebra, K .maximalPacking,
+      [K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
+        K .maximalPacking,
         K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .selection]) : False := by
-  -- `[125]`: the survivor fact, then `[126]`--`[128]` and `[129]`.
-  let survivor := selectedSparseSurplusSurvivor history
-  let activated := selectedSparseSurplusActivation survivor
+  -- This continuation is the right arm of `[125]`; its input type already
+  -- contains the survivor fact.  Hence only this literal ledger can enter
+  -- `[126]`--`[128]` and `[129]`.
+  let activated := selectedSparseSurplusActivation history
   let baseline := selectedBaselineSpineDemand activated
   match selectedPairResponseIndependenceDichotomy baseline with
   | .left independentHistory =>
@@ -1467,24 +1467,34 @@ noncomputable def selectedRankDropCloses
 This continuation reads the unified deficit (`K .route8UnifiedDeficit`), the
 receiver-routing fact (`K .typeAReceiverRouting`), and the per-entry census
 (`K .route8UnifiedEntryCensus`); it performs the recorded finite exit-`(4)`
-descent, decides the terminal stage, closes the true two-support survivor
-through node `[124]`, and hands the failed-rate stage to the branch-kill
-closure. -/
+descent and decides the terminal stage.  Every true two-support survivor is
+closed through node `[124]`.  A failed-rate stage retains the exact peeled
+accounting, runs the full demand/absorption/window-blocker ledger, and is
+published as the explicit residual at node `[181]`. -/
 noncomputable def selectedRouteEightCensus
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .route8UnifiedDeficit) known]
     [FactKeys.Has (K .typeAReceiverRouting) known]
     [FactKeys.Has (K .route8UnifiedEntryCensus) known]
+    [FactKeys.Has (K .selection) known]
     (peelingFresh : K .route8PeelingDescent ∉ known)
     (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known)
     (stageFailedFresh : K .route8StageRateFailed ∉ known)
-    (terminalFresh : K .route8TerminalNoGo ∉ known) : False := by
+    (terminalFresh : K .route8TerminalNoGo ∉ known)
+    (demandLedgerFresh : K .route8DemandLedger ∉ known)
+    (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known)
+    (windowBlockersFresh : K .route8WindowBlockers ∉ known)
+    (demandResidualFresh : K .route8PeeledDemandResidual ∉ known) :
+    ExactLedger EGInput.{u} selected
+      ([K .route8PeeledDemandResidual, K .route8WindowBlockers,
+        K .route8DemandAbsorption, K .route8DemandLedger,
+        K .route8StageRateFailed, K .route8PeelingDescent] ++ known) := by
   let descended :=
     (route8PeelingDescentRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by simp [K_eq_iff, peelingFresh])
+      history (by simp [peelingFresh])
   match route8StageOutcomeDichotomy (data := spineData) descended
       (by simp [K_eq_iff, unifiedTrueFresh])
       (by simp [K_eq_iff, stageFailedFresh]) with
@@ -1498,12 +1508,34 @@ noncomputable def selectedRouteEightCensus
           trueStage (by simp [K_eq_iff, terminalFresh])
       exact (closed.get (K .route8TerminalNoGo)).down.elim
   | .right failedStage =>
-      -- `thm:large-budget-route8-only`: the paper says the large-budget
-      -- net-deficiency cap and `thm:branch-kill` close this exact failed-rate
-      -- stage.  Keep that producer loud until the implication is proved from
-      -- the preceding ledger facts; the conditional S24 open-demand criteria
-      -- are not a substitute for it.
-      exact selectedRouteEightFailedStageClosure failedStage
+      match route8DemandLedgerDichotomy (data := spineData) failedStage
+          (by simp [K_eq_iff, unifiedTrueFresh])
+          (by simp [K_eq_iff, demandLedgerFresh]) with
+      | .left trueEntry =>
+          -- The demand-ledger L1 terminal is the same `[124]` obstruction;
+          -- reuse its sole producer instead of duplicating the deletion proof.
+          let closed :=
+            (route8UnifiedTerminalNoGoRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              trueEntry (by simp [K_eq_iff, terminalFresh])
+          exact (closed.get (K .route8TerminalNoGo)).down.elim
+      | .right demandHistory =>
+          let absorbed :=
+            (route8DemandAbsorptionRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              demandHistory (by simp [K_eq_iff, demandAbsorptionFresh])
+          let blocked :=
+            (route8WindowBlockersRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              absorbed (by simp [K_eq_iff, windowBlockersFresh])
+          exact
+            (route8PeeledDemandResidualRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              blocked (by simp [K_eq_iff, demandResidualFresh])
 
 /-- **Node `[123]`: the unified pressure census** — `lem:typeA-unified-deficit`,
 `def:typeA-unified-entries`/`lem:typeA-unified-carriers`, `thm:branch-kill`'s
@@ -1543,7 +1575,14 @@ noncomputable def selectedLargeBudgetPressureCensus
     (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known := by
       simp [K_eq_iff])
     (stageFailedFresh : K .route8StageRateFailed ∉ known := by simp [K_eq_iff])
-    (terminalFresh : K .route8TerminalNoGo ∉ known := by simp [K_eq_iff]) :
+    (terminalFresh : K .route8TerminalNoGo ∉ known := by simp [K_eq_iff])
+    (demandLedgerFresh : K .route8DemandLedger ∉ known := by simp [K_eq_iff])
+    (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known := by
+      simp [K_eq_iff])
+    (windowBlockersFresh : K .route8WindowBlockers ∉ known := by
+      simp [K_eq_iff])
+    (demandResidualFresh : K .route8PeeledDemandResidual ∉ known := by
+      simp [K_eq_iff]) :
     False := by
   -- `[86]`, `lem:typeA-exclusion`, on this exact ledger.
   let excluded :=
@@ -1601,11 +1640,18 @@ noncomputable def selectedLargeBudgetPressureCensus
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile) (data := spineData)).run
               deficit (by simp [K_eq_iff, censusFresh])
-          exact selectedRouteEightCensus census
+          let demandResidual := selectedRouteEightCensus census
             (by simp [K_eq_iff, peelingFresh])
             (by simp [K_eq_iff, unifiedTrueFresh])
             (by simp [K_eq_iff, stageFailedFresh])
             (by simp [K_eq_iff, terminalFresh])
+            (by simp [K_eq_iff, demandLedgerFresh])
+            (by simp [K_eq_iff, demandAbsorptionFresh])
+            (by simp [K_eq_iff, windowBlockersFresh])
+            (by simp [K_eq_iff, demandResidualFresh])
+          -- `[181]`: the exact peeled target-defect demand ledger is the only
+          -- unclosed continuation of this repaired arm.
+          exact selectedRouteEightPeeledDemandResidual demandResidual
 
 /-- **Nodes `[110]`--`[116]`: the route-8 residual of Part IX**, on the shared
   `[109]` residual reached by the no-edge of exit `(7)` (index-polymorphic).
@@ -5055,7 +5101,14 @@ theorem selectedLedgerClosure
     (history : ExactLedger EGInput.{u} selected [EGSelectionKey]) : False := by
   match selectedSurplusDichotomy history with
   | .left strictHistory =>
-      exact selectedStrictSurplusBranch strictHistory
+      match selectedSparseSurplusDichotomy strictHistory with
+      | .left exitHistory =>
+          -- `[125]`'s sparse-exit ledger leaves the survivor chain here.  Its
+          -- paper continuation is intentionally named at the first missing
+          -- route rather than being coerced into a survivor or discarded.
+          exact selectedSparseSurplusExitContinuation exitHistory
+      | .right survivorHistory =>
+          exact selectedStrictSurplusBranch survivorHistory
   | .right nearCubicHistory =>
       exact selectedNearCubicBranch nearCubicHistory
 

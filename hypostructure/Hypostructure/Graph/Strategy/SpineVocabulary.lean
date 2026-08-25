@@ -1234,10 +1234,10 @@ inductive Key where
   at least two essential incidences, and is a route-8 entry with no exit-(4)
   witness or a target-defect entry through alternative (a) with its witness. -/
   | route8UnifiedEntryCensus
-  /-- Node `[123]`, `thm:large-budget-route8-only`'s failed-stage arm: a
-  recorded peel chain whose stage rate fails.  The manuscript closes this stage
-  by the large-budget net-deficiency cap and `thm:branch-kill`; that closure is
-  the arm's consumer, never a standing invariant. -/
+  /-- Node `[123]`, the repaired failed-stage arm: a recorded target-defect
+  peel chain, the exact partition of the full ledger into reduced and peeled
+  entries, both deficit inequalities, and failure of the sufficient stage
+  rate. -/
   | route8StageRateFailed
   /-- Node `[123]`, `def:typeA-pressure-absorbers` with
   `lem:typeA-pressure-absorber-no-overcount`: on every committed maximal
@@ -1252,6 +1252,10 @@ inductive Key where
   incidence of its component support, and the open demand is exactly the
   window-blocker load partition `𝖯_open = Σ_P B_open(P)`. -/
   | route8WindowBlockers
+  /-- Node `[181]`: the explicit residual left by node `[123]` after exact
+  peeling accounting, the maximal 2/3-demand ledger, demand absorption, and
+  packed-window blocker accounting. -/
+  | route8PeeledDemandResidual
   /-- Node `[117]`, yes: some indexed route-8 entry of `𝒳_A` has at most `δ`
   private essential carriers (`prop:typeA-route8-carrier-reduction`). -/
   | route8TwoCarrierEntry
@@ -3914,8 +3918,10 @@ noncomputable def route8ExtractedDeficit (data : Data.{u})
     (core.card -
       data.dischargeScale * object.positiveDeficiency core data.threshold)
 
-/-- **`thm:large-budget-route8-only`'s failed-stage arm** (node `[123]`): a
-recorded peel chain of the descent at which the stage rate fails. -/
+/-- **The repaired failed-stage arm of `thm:large-budget-route8-only`** (node
+`[123]`): a recorded target-defect peel chain, its exact reduced/full
+stage accounting, and failure of the sufficient stage rate.  This is routed
+to node `[181]`; it is not a contradiction. -/
 abbrev Route8StageRateFailedFact (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
   let packing := canonicalWindowPacking data object
@@ -3925,6 +3931,9 @@ abbrev Route8StageRateFailedFact (data : Data.{u})
   ∃ chain : List (Graph.Route8Census.Index object),
     Graph.Route8Pressure.PeelChain object packing entries data.threshold
         data.dischargeScale bridgeSlack data.LengthOK chain ∧
+      Graph.Route8Pressure.StageAccounting object packing entries
+        (route8UnifiedComponents data object) data.threshold
+        data.dischargeScale bridgeSlack chain ∧
       ¬ Graph.Route8Pressure.StageRate object packing data.threshold
           data.dischargeScale bridgeSlack chain.toFinset
 
@@ -4039,6 +4048,18 @@ noncomputable def Route8WindowBlockersStatement (data : Data.{u})
             ∑ window ∈ canonicalWindowPacking data object,
               ((P.demandUnits \ (A.absorbed ∪ dep)).filter
                 fun υ => blocker υ = window).card
+
+/-- **Node `[181]`, the explicit peeled target-defect demand residual.**  The
+failed peeling stage keeps its exact accounting, and the full unified entries
+have been passed through the maximal 2/3-demand ledger, maximal absorption,
+and exact packed-window blocker partition.  No smallness or same-window cap is
+asserted here. -/
+noncomputable def Route8PeeledDemandResidualStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  Route8StageRateFailedFact data object ∧
+    Route8DemandLedgerStatement data object ∧
+    Route8DemandAbsorptionStatement data object ∧
+    Route8WindowBlockersStatement data object
 
 /-- Node `[111]`, `def:typeA-large-budget-deficit`: extract the canonical
 collection `𝒳_A` of Type A pieces all of whose saturated receivers survive in
@@ -7299,6 +7320,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       Route8DemandAbsorptionStatement data object
   | .route8WindowBlockers, object =>
       Route8WindowBlockersStatement data object
+  | .route8PeeledDemandResidual, object =>
+      Route8PeeledDemandResidualStatement data object
   | .route8TwoCarrierEntry, object =>
       let packing := canonicalWindowPacking data object
       let support := object.remainderSupport packing
@@ -7426,7 +7449,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
         data.surplusThreshold object.vertexCount)
       ∃ final : List (Graph.Route8Census.Index object),
         Graph.Route8Pressure.StageOutcome object (canonicalWindowPacking data object)
-          entries data.threshold data.dischargeScale bridgeSlack data.LengthOK final
+          entries (route8UnifiedComponents data object) data.threshold
+          data.dischargeScale bridgeSlack data.LengthOK final
   | .route8UnifiedTrueTwoCarrierEntry, object =>
       letI : DecidableEq object.Vertex := object.vertices.decEq
       let entries := route8UnifiedEntries data object
@@ -8164,6 +8188,7 @@ def label : Key → String
   | .route8StageRateFailed => "route8StageRateFailed"
   | .route8DemandAbsorption => "route8DemandAbsorption"
   | .route8WindowBlockers => "route8WindowBlockers"
+  | .route8PeeledDemandResidual => "route8PeeledDemandResidual"
   | .route8TwoCarrierEntry => "route8TwoCarrierEntry"
   | .route8NoTwoCarrierEntry => "route8NoTwoCarrierEntry"
   | .route8TrueTwoCarrierEntry => "route8TrueTwoCarrierEntry"
@@ -8408,6 +8433,8 @@ example : label .route8UnifiedEntryCensus = "route8UnifiedEntryCensus" := rfl
 example : label .route8StageRateFailed = "route8StageRateFailed" := rfl
 example : label .route8DemandAbsorption = "route8DemandAbsorption" := rfl
 example : label .route8WindowBlockers = "route8WindowBlockers" := rfl
+example : label .route8PeeledDemandResidual =
+    "route8PeeledDemandResidual" := rfl
 example : label .route8TwoCarrierEntry = "route8TwoCarrierEntry" := rfl
 example : label .route8NoTwoCarrierEntry = "route8NoTwoCarrierEntry" := rfl
 example : label .route8TrueTwoCarrierEntry = "route8TrueTwoCarrierEntry" := rfl
@@ -8660,6 +8687,7 @@ def idx : Key → Nat
   | .route8StageRateFailed => 342
   | .route8DemandAbsorption => 351
   | .route8WindowBlockers => 352
+  | .route8PeeledDemandResidual => 353
   | .route8TwoCarrierEntry => 261
   | .route8NoTwoCarrierEntry => 262
   | .route8TrueTwoCarrierEntry => 280
@@ -8894,6 +8922,7 @@ def ofIdx : Nat → Key
   | 342 => .route8StageRateFailed
   | 351 => .route8DemandAbsorption
   | 352 => .route8WindowBlockers
+  | 353 => .route8PeeledDemandResidual
   | 261 => .route8TwoCarrierEntry
   | 262 => .route8NoTwoCarrierEntry
   | 280 => .route8TrueTwoCarrierEntry
@@ -9389,6 +9418,9 @@ def name : Key → Lean.Name
   | .route8WindowBlockers =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "route8WindowBlockers") 352
+  | .route8PeeledDemandResidual =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "route8PeeledDemandResidual") 353
   | .route8TwoCarrierEntry =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8TwoCarrierEntry") 261
   | .route8NoTwoCarrierEntry =>

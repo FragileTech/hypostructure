@@ -32,8 +32,9 @@ times …"*
 * `thm:large-budget-route8-only`'s procedure is `descent`: from any stage with
   the stage rate one reaches, by target-defect peels, either a stage with a true
   (route-8) two-carrier entry — node `[124]` — or a stage where the stage rate
-  fails (the manuscript's "the stage closes by the large-budget net-deficiency
-  cap and `thm:branch-kill`").
+  fails.  The latter is not a contradiction: `StageAccounting` retains the
+  peeled target-defect mass and routes it to the demand residual at node
+  `[181]`.
 -/
 
 namespace Hypostructure.Graph.Route8Pressure
@@ -254,12 +255,43 @@ inductive PeelChain (packing : Finset (Finset object.Vertex))
         (HasCycleWithLength LengthOK) chain.toFinset index) :
       PeelChain packing entries threshold discharge slack LengthOK (index :: chain)
 
+/-- **Exact accounting at one peeling stage.**  This is the denominator-cleared
+form of the repaired `def:typeA-peeling-reduced-ledger`.  The full entry ledger
+is the disjoint union of the reduced ledger and the recorded peels; the latter
+remain charged in the original deficit.  Consequently the reduced deficit
+`s*D - |P₄|` is bounded by the reduced census, while the full large-budget
+inequality retains both the reduced and peeled terms. -/
+def StageAccounting (packing : Finset (Finset object.Vertex))
+    (entries : Finset (Route8Census.Index object))
+    (components : Finset (SupportComponents.Connected.Component object
+      (object.remainderSupport packing)))
+    (threshold discharge slack : Nat)
+    (chain : List (Route8Census.Index object)) : Prop :=
+  let peeled := chain.toFinset
+  let reduced := peeledEntries object entries peeled
+  let scaledDeficit := TypeBEnvelopeCharge.route8Deficit object
+    (object.remainderSupport packing) threshold discharge components
+  peeled ⊆ entries ∧
+    entries = reduced ∪ peeled ∧
+    Disjoint reduced peeled ∧
+    peeled.card ≤ scaledDeficit ∧
+    scaledDeficit = scaledDeficit - peeled.card + peeled.card ∧
+    scaledDeficit ≤ reduced.card + peeled.card ∧
+    scaledDeficit - peeled.card ≤ reduced.card ∧
+    (object.remainderSupport packing).card ≤
+      reduced.card + peeled.card +
+        discharge * (Route8Census.supply object packing).card + slack
+
 /-- **The outcome of a stage** of `thm:large-budget-route8-only`'s procedure. -/
 def StageOutcome (packing : Finset (Finset object.Vertex))
     (entries : Finset (Route8Census.Index object))
+    (components : Finset (SupportComponents.Connected.Component object
+      (object.remainderSupport packing)))
     (threshold discharge slack : Nat) (LengthOK : Nat → Prop)
     (chain : List (Route8Census.Index object)) : Prop :=
   PeelChain object packing entries threshold discharge slack LengthOK chain ∧
+    StageAccounting object packing entries components threshold discharge slack
+      chain ∧
     ((StageRate object packing threshold discharge slack chain.toFinset ∧
         ∃ index,
           TrueEntryAt object packing entries threshold discharge LengthOK chain.toFinset index) ∨

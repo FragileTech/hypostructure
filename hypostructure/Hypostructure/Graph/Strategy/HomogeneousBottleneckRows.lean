@@ -576,7 +576,9 @@ postulated. -/
   factOnly `Hypostructure.Graph.Strategy.Spine.sameTokenBottleneckRouting
     { Requires := [K .homogeneousBottleneckPattern,
         K .activeSurplusDemands,
-        K .cubicBaseline, K .capacityTokenLedger]
+        K .cubicBaseline, K .capacityTokenLedger, K .selection,
+        K .degreeProfileFibres, K .targetCompleteContextUniversality,
+        K .replacementExclusion, K .uncompressible]
       Produces := [K .bottleneckRouting, K .typeBHandoff]
       requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp [K_eq_iff]
@@ -597,6 +599,14 @@ postulated. -/
           have cubic := (inputs.get (K .cubicBaseline)).down
           have capacityLedger :=
             (inputs.get (K .capacityTokenLedger)).down
+          have selection := (inputs.get (K .selection)).down
+          have degreeProfileFibres :=
+            (inputs.get (K .degreeProfileFibres)).down
+          have contextUniversality :=
+            (inputs.get (K .targetCompleteContextUniversality)).down
+          have replacementExclusion :=
+            (inputs.get (K .replacementExclusion)).down
+          have uncompressible := (inputs.get (K .uncompressible)).down
           have survivor := active.survives
           obtain ⟨_ledgerActive, _ledgerCapacity, _ledgerActivationEq,
               _primitiveCarrierCard, _primitiveCarrierBound,
@@ -624,6 +634,7 @@ postulated. -/
           have packingMaximal := capacity.packingMaximal
           obtain ⟨ledger, token, tokenMem, role, root, rootEq, structured⟩ :=
             concretePattern
+          letI : Nonempty object.Vertex := ⟨root⟩
 
           -- The token support and canonical root are already indices of the
           -- configurations carried by `structured`.  They are deliberately
@@ -805,6 +816,172 @@ postulated. -/
               capacity.packingMaximal, core, envelope, envelopeCore,
               decorated⟩
 
+          -- The paper's cubic switch uses exactly three incidences at the first
+          -- separator.  When the registered common prefix is nonempty, its last
+          -- edge supplies the blocker-side incidence.  Immediate divergence at
+          -- the token root is the same finite incidence calculation: the two
+          -- registered next edges occupy two distinct neighbours and cubicity
+          -- supplies the unique remaining neighbour.  Keeping this calculation
+          -- here avoids assuming a nonempty prefix that the current connector
+          -- schema does not promise.
+          have cubicThirdIncidence
+              (separator nextLeft nextRight : object.Vertex)
+              (nextLeftAdj : object.graph.Adj separator nextLeft)
+              (nextRightAdj : object.graph.Adj separator nextRight)
+              (nextDifferent : nextLeft ≠ nextRight)
+              (cubicDegree : object.degree separator = data.threshold) :
+              ∃ rootIncidence,
+                object.graph.Adj rootIncidence separator ∧
+                  rootIncidence ≠ nextLeft ∧
+                  rootIncidence ≠ nextRight ∧
+                  ∀ neighbour,
+                    object.graph.Adj separator neighbour →
+                      neighbour = rootIncidence ∨
+                        neighbour = nextLeft ∨ neighbour = nextRight := by
+            let usedNext : Finset object.Vertex := {nextLeft, nextRight}
+            have usedNextCard : usedNext.card = 2 := by
+              simp [usedNext, nextDifferent]
+            have usedNextSubset :
+                usedNext ⊆ object.graph.neighborFinset separator := by
+              intro neighbour member
+              simp only [usedNext, Finset.mem_insert, Finset.mem_singleton] at member
+              rcases member with rfl | rfl
+              · exact (SimpleGraph.mem_neighborFinset _ _ _).2 nextLeftAdj
+              · exact (SimpleGraph.mem_neighborFinset _ _ _).2 nextRightAdj
+            have neighbourCard :
+                (object.graph.neighborFinset separator).card = 3 := by
+              exact cubicDegree.trans cubic
+            have remaining : ∃ rootIncidence,
+                rootIncidence ∈ object.graph.neighborFinset separator ∧
+                  rootIncidence ∉ usedNext := by
+              by_contra absent
+              push_neg at absent
+              have allUsed : object.graph.neighborFinset separator ⊆ usedNext := by
+                intro neighbour member
+                exact absent neighbour member
+              have counted := Finset.card_le_card allUsed
+              rw [neighbourCard, usedNextCard] at counted
+              omega
+            obtain ⟨rootIncidence, rootMember, rootFresh⟩ := remaining
+            have rootAdj : object.graph.Adj rootIncidence separator :=
+              ((SimpleGraph.mem_neighborFinset _ _ _).1 rootMember).symm
+            have rootNeLeft : rootIncidence ≠ nextLeft := by
+              intro equal
+              apply rootFresh
+              simp [usedNext, equal]
+            have rootNeRight : rootIncidence ≠ nextRight := by
+              intro equal
+              apply rootFresh
+              simp [usedNext, equal]
+            let usedIncidences : Finset object.Vertex :=
+              {rootIncidence, nextLeft, nextRight}
+            have usedIncidencesCard : usedIncidences.card = 3 := by
+              simp [usedIncidences, rootNeLeft, rootNeRight, nextDifferent]
+            have usedIncidencesSubset :
+                usedIncidences ⊆ object.graph.neighborFinset separator := by
+              intro neighbour member
+              simp only [usedIncidences, Finset.mem_insert,
+                Finset.mem_singleton] at member
+              rcases member with rfl | rfl | rfl
+              · exact rootMember
+              · exact (SimpleGraph.mem_neighborFinset _ _ _).2 nextLeftAdj
+              · exact (SimpleGraph.mem_neighborFinset _ _ _).2 nextRightAdj
+            have usedIncidencesEq : usedIncidences =
+                object.graph.neighborFinset separator :=
+              Finset.eq_of_subset_of_card_le usedIncidencesSubset (by
+                rw [usedIncidencesCard, neighbourCard])
+            refine ⟨rootIncidence, rootAdj, rootNeLeft, rootNeRight, ?_⟩
+            intro neighbour adjacent
+            have member : neighbour ∈ usedIncidences := by
+              rw [usedIncidencesEq]
+              exact (SimpleGraph.mem_neighborFinset _ _ _).2 adjacent
+            simpa [usedIncidences] using member
+
+          have cubicIncidenceOfSeparation
+              (firstPath secondPath common : List object.Vertex)
+              (separator nextLeft nextRight : object.Vertex)
+              (tailLeft tailRight : List object.Vertex)
+              (firstChain : firstPath.IsChain object.graph.Adj)
+              (secondChain : secondPath.IsChain object.graph.Adj)
+              (firstNodup : firstPath.Nodup)
+              (secondNodup : secondPath.Nodup)
+              (leftDecomposition :
+                firstPath = common ++ separator :: nextLeft :: tailLeft)
+              (rightDecomposition :
+                secondPath = common ++ separator :: nextRight :: tailRight)
+              (nextDifferent : nextLeft ≠ nextRight)
+              (cubicDegree : object.degree separator = data.threshold) :
+              ∃ rootIncidence,
+                object.graph.Adj rootIncidence separator ∧
+                  rootIncidence ≠ nextLeft ∧
+                  rootIncidence ≠ nextRight ∧
+                  ∀ neighbour,
+                    object.graph.Adj separator neighbour →
+                      neighbour = rootIncidence ∨
+                        neighbour = nextLeft ∨ neighbour = nextRight := by
+            have nextLeftAdj : object.graph.Adj separator nextLeft := by
+              have chain := firstChain
+              rw [leftDecomposition] at chain
+              obtain ⟨_, rest, _⟩ := List.isChain_append.mp chain
+              exact (List.isChain_cons.mp rest).1 nextLeft (by simp)
+            have nextRightAdj : object.graph.Adj separator nextRight := by
+              have chain := secondChain
+              rw [rightDecomposition] at chain
+              obtain ⟨_, rest, _⟩ := List.isChain_append.mp chain
+              exact (List.isChain_cons.mp rest).1 nextRight (by simp)
+            by_cases commonEmpty : common = []
+            · exact cubicThirdIncidence separator nextLeft nextRight nextLeftAdj
+                nextRightAdj nextDifferent cubicDegree
+            · let rootIncidence := common.getLast commonEmpty
+              have rootIncidenceLast :
+                  common.getLast? = some rootIncidence :=
+                List.getLast?_eq_some_getLast commonEmpty
+              have rootIncidenceAdj :
+                  object.graph.Adj rootIncidence separator := by
+                have chain := firstChain
+                rw [leftDecomposition] at chain
+                obtain ⟨_, _, joint⟩ := List.isChain_append.mp chain
+                exact joint rootIncidence rootIncidenceLast separator (by simp)
+              have rootIncidenceNeLeft : rootIncidence ≠ nextLeft := by
+                have nodup := firstNodup
+                rw [leftDecomposition] at nodup
+                exact (List.nodup_append.mp nodup).2.2 rootIncidence
+                  (List.getLast_mem commonEmpty) nextLeft (by simp)
+              have rootIncidenceNeRight : rootIncidence ≠ nextRight := by
+                have nodup := secondNodup
+                rw [rightDecomposition] at nodup
+                exact (List.nodup_append.mp nodup).2.2 rootIncidence
+                  (List.getLast_mem commonEmpty) nextRight (by simp)
+              let usedIncidences : Finset object.Vertex :=
+                {rootIncidence, nextLeft, nextRight}
+              have usedIncidencesCard : usedIncidences.card = 3 := by
+                simp [usedIncidences, rootIncidenceNeLeft,
+                  rootIncidenceNeRight, nextDifferent]
+              have usedIncidencesSubset :
+                  usedIncidences ⊆ object.graph.neighborFinset separator := by
+                intro neighbour member
+                simp only [usedIncidences, Finset.mem_insert,
+                  Finset.mem_singleton] at member
+                rcases member with rfl | rfl | rfl
+                · exact (SimpleGraph.mem_neighborFinset _ _ _).2
+                    rootIncidenceAdj.symm
+                · exact (SimpleGraph.mem_neighborFinset _ _ _).2 nextLeftAdj
+                · exact (SimpleGraph.mem_neighborFinset _ _ _).2 nextRightAdj
+              have neighbourCard :
+                  (object.graph.neighborFinset separator).card = 3 :=
+                cubicDegree.trans cubic
+              have usedIncidencesEq : usedIncidences =
+                  object.graph.neighborFinset separator :=
+                Finset.eq_of_subset_of_card_le usedIncidencesSubset (by
+                  rw [usedIncidencesCard, neighbourCard])
+              refine ⟨rootIncidence, rootIncidenceAdj, rootIncidenceNeLeft,
+                rootIncidenceNeRight, ?_⟩
+              intro neighbour adjacent
+              have member : neighbour ∈ usedIncidences := by
+                rw [usedIncidencesEq]
+                exact (SimpleGraph.mem_neighborFinset _ _ _).2 adjacent
+              simpa [usedIncidences] using member
+
           -- `ρ_t(π)`, in the seven coordinates and order fixed by
           -- `def:same-token-routing-germs`.  The cardinality proof is part of
           -- the local call, so there is no off-pattern fallback label.  The
@@ -827,6 +1004,127 @@ postulated. -/
               (portStatus first, portStatus second),
               (boundaryProfile first, boundaryProfile second),
               windowLabel pair, chordFlag pair)
+
+          -- Route one actual declared identification by the framework theorem
+          -- implementing `def:admissible-rank-quotient`.  The first arm is
+          -- excluded by the registered common boundary-degree fibre; the
+          -- remaining three arms are exactly sparse exits (b)--(d).  No case
+          -- of `AttemptedQuotient.route` is reproved here.
+          have routeAttemptedIdentification
+              {family : Finset (Graph.FiniteObject.PairCoordinate object)}
+              {coordinateSupport :
+                Graph.FiniteObject.PairCoordinate object →
+                  Finset object.Vertex}
+              (attempt : Graph.AttemptedQuotient
+                (Graph.MinimumDegreeAtLeast data.threshold)
+                (Graph.HasCycleWithLength data.LengthOK)
+                object family coordinateSupport)
+              (reducing : ¬ Set.InjOn attempt.label ↑family)
+              (sameFibre : ∀ left right,
+                attempt.Identifies left right →
+                  left.boundaryDegreeProfile =
+                    right.boundaryDegreeProfile) :
+              Graph.SparseSurplusExit
+                (Graph.MinimumDegreeAtLeast data.threshold)
+                (Graph.HasCycleWithLength data.LengthOK)
+                data.LengthOK object := by
+            rcases attempt.route reducing with
+              profiles | defect | replacement |
+                ⟨representative, smaller, baseline, transfer⟩
+            · obtain ⟨leftPiece, rightPiece, identified, different⟩ :=
+                profiles
+              exact False.elim
+                (different (sameFibre leftPiece rightPiece identified))
+            · obtain ⟨leftPiece, rightPiece, _identified, targetDefect⟩ :=
+                defect
+              exact .targetDefect leftPiece rightPiece targetDefect
+            · exact .compression attempt.support replacement
+            · exact .delocalization representative smaller baseline transfer
+
+          -- Every recorded type-(e) obstruction already carries the exact
+          -- failed-response quotient obtained at `[132]`.  Read that retained
+          -- obstruction from the activation instead of constructing another
+          -- quotient at `[144]`: its final disjunction is literally sparse
+          -- exit (b) or sparse exit (c).  This applies even when an earlier
+          -- blocker clause (a)--(d) is the pair's canonical capacity charge.
+          have responseObstructionRoutes
+              (pair : Finset (object.Vertex × object.Vertex))
+              (coordinate : Graph.FiniteObject.PairCoordinate object)
+              (obstructs : coordinate ∈
+                capacity.activation.responseObstructions pair) :
+              Graph.SparseSurplusExit
+                (Graph.MinimumDegreeAtLeast data.threshold)
+                (Graph.HasCycleWithLength data.LengthOK)
+                data.LengthOK object := by
+            have recordedObstructs : coordinate ∈
+                ((Graph.recordSparsePairDEBlockers
+                  (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+                  (LengthOK := data.LengthOK)
+                  (Graph.pairResponseActivation active)
+                  (object.portPairSchedule data.threshold)).responseObstructions
+                    pair) := by
+              rw [← activationEq]
+              exact obstructs
+            have obstruction :
+                Graph.SparsePairDEResponseObstructionAt
+                  (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+                  (LengthOK := data.LengthOK)
+                  (Graph.pairResponseActivation active)
+                  (object.portPairSchedule data.threshold) pair := by
+              simp only [Graph.recordSparsePairDEBlockers] at recordedObstructs
+              split at recordedObstructs
+              next present => exact present
+              next absent => simp at recordedObstructs
+            rcases obstruction with
+              ⟨attempt, _functional, _reducing, _determination,
+                defect | replacement⟩
+            · obtain ⟨leftPiece, rightPiece, _identified,
+                targetDefect⟩ := defect
+              exact .targetDefect leftPiece rightPiece targetDefect
+            · exact .compression attempt.support replacement
+
+          -- If type (e) is the canonical role, canonical-blocker membership
+          -- supplies the recorded response coordinate consumed above.
+          have targetResponseRoleRoutes
+              (pair : Finset (object.Vertex × object.Vertex))
+              (assigned : capacity.role pair = role)
+              (targetRole : role.blocker =
+                Graph.SameTokenBlockerRoles.BlockerKind.targetResponse) :
+              Graph.SparseSurplusExit
+                (Graph.MinimumDegreeAtLeast data.threshold)
+                (Graph.HasCycleWithLength data.LengthOK)
+                data.LengthOK object := by
+            have canonicalKind :
+                ((Graph.FiniteObject.canonicalBlocker capacity.activation pair).map
+                    Graph.FiniteObject.Blocker.kind).getD
+                    .sharedDeclaredSupport = role.blocker := by
+              have roleEq := congrArg
+                Graph.SameTokenBlockerRoles.Role.blocker assigned
+              simpa [Graph.CapacityPresentation.role,
+                Graph.FiniteObject.capacityRole] using roleEq
+            cases selectedBlocker :
+                Graph.FiniteObject.canonicalBlocker capacity.activation pair with
+            | none =>
+                simp [selectedBlocker, targetRole] at canonicalKind
+            | some blocker =>
+                have blockerKind : Graph.FiniteObject.Blocker.kind blocker =
+                    Graph.SameTokenBlockerRoles.BlockerKind.targetResponse := by
+                  simpa [selectedBlocker, targetRole] using canonicalKind
+                have blockerMem :=
+                  Graph.FiniteObject.canonicalBlocker_mem
+                    capacity.activation selectedBlocker
+                cases blocker with
+                | sharedDeclaredSupport item => cases blockerKind
+                | sharedReturnSupport item => cases blockerKind
+                | sharedLocalBuffer vertex => cases blockerKind
+                | boundaryProfile coordinate => cases blockerKind
+                | arithmeticChordSet chords => cases blockerKind
+                | targetResponse coordinate =>
+                    have obstructs : coordinate ∈
+                        capacity.activation.responseObstructions pair := by
+                      simpa [Graph.FiniteObject.DemandActivation.blockers] using
+                        blockerMem
+                    exact responseObstructionRoutes pair coordinate obstructs
 
           have routedOutcome :
               Graph.SparseSurplusExit
@@ -1246,7 +1544,47 @@ postulated. -/
                       (Graph.MinimumDegreeAtLeast data.threshold)
                       (Graph.HasCycleWithLength data.LengthOK)
                       data.LengthOK object := by
-                skip
+                by_cases firstResponded : ∃ coordinate, coordinate ∈
+                    capacity.activation.responseObstructions first.1
+                · obtain ⟨coordinate, obstructs⟩ := firstResponded
+                  intros
+                  exact responseObstructionRoutes first.1 coordinate obstructs
+                · by_cases secondResponded : ∃ coordinate, coordinate ∈
+                      capacity.activation.responseObstructions second.1
+                  · obtain ⟨coordinate, obstructs⟩ := secondResponded
+                    intros
+                    exact responseObstructionRoutes second.1 coordinate obstructs
+                  · by_cases targetRole : role.blocker =
+                        Graph.SameTokenBlockerRoles.BlockerKind.targetResponse
+                    · intros
+                      exact targetResponseRoleRoutes first.1 firstAssignedRole
+                        targetRole
+                    · intros
+                      have quotientRealization :
+                          ∃ attempt : Graph.AttemptedQuotient
+                              (Graph.MinimumDegreeAtLeast data.threshold)
+                              (Graph.HasCycleWithLength data.LengthOK)
+                              object responseFamily responseCoordinateSupport,
+                            attempt.support = parallelSupport ∧
+                              attempt.label firstResponseCoordinate =
+                                attempt.label secondResponseCoordinate ∧
+                              ∀ leftPiece rightPiece,
+                                attempt.Identifies leftPiece rightPiece →
+                                  leftPiece.boundaryDegreeProfile =
+                                    rightPiece.boundaryDegreeProfile := by
+                        skip
+                      obtain ⟨attempt, _supportEq, identifiesCoordinates,
+                          sameFibre⟩ := quotientRealization
+                      have reducing :
+                          ¬ Set.InjOn attempt.label ↑responseFamily := by
+                        intro injective
+                        apply responseCoordinatesDifferent
+                        apply injective
+                        · simp [responseFamily]
+                        · simp [responseFamily]
+                        · exact identifiesCoordinates
+                      exact routeAttemptedIdentification attempt reducing
+                        sameFibre
               rcases routingDichotomy with parallel |
                   ⟨separator, separatesAt⟩
               · exact Or.inl (parallelRoutes parallel parallelSupportConnected
@@ -1522,7 +1860,47 @@ postulated. -/
                           (Graph.MinimumDegreeAtLeast data.threshold)
                           (Graph.HasCycleWithLength data.LengthOK)
                           data.LengthOK object := by
-                    skip
+                    by_cases firstResponded : ∃ coordinate, coordinate ∈
+                        capacity.activation.responseObstructions first.1
+                    · obtain ⟨coordinate, obstructs⟩ := firstResponded
+                      intros
+                      exact responseObstructionRoutes first.1 coordinate obstructs
+                    · by_cases secondResponded : ∃ coordinate, coordinate ∈
+                          capacity.activation.responseObstructions second.1
+                      · obtain ⟨coordinate, obstructs⟩ := secondResponded
+                        intros
+                        exact responseObstructionRoutes second.1 coordinate obstructs
+                      · by_cases targetRole : role.blocker =
+                            Graph.SameTokenBlockerRoles.BlockerKind.targetResponse
+                        · intros
+                          exact targetResponseRoleRoutes first.1 firstAssignedRole
+                            targetRole
+                        · intros
+                          have quotientRealization :
+                              ∃ attempt : Graph.AttemptedQuotient
+                                  (Graph.MinimumDegreeAtLeast data.threshold)
+                                  (Graph.HasCycleWithLength data.LengthOK)
+                                  object responseFamily responseCoordinateSupport,
+                                attempt.support = switchSupport ∧
+                                  attempt.label firstResponseCoordinate =
+                                    attempt.label secondResponseCoordinate ∧
+                                  ∀ leftPiece rightPiece,
+                                    attempt.Identifies leftPiece rightPiece →
+                                      leftPiece.boundaryDegreeProfile =
+                                        rightPiece.boundaryDegreeProfile := by
+                            skip
+                          obtain ⟨attempt, _supportEq, identifiesCoordinates,
+                              sameFibre⟩ := quotientRealization
+                          have reducing :
+                              ¬ Set.InjOn attempt.label ↑responseFamily := by
+                            intro injective
+                            apply responseCoordinatesDifferent
+                            apply injective
+                            · simp [responseFamily]
+                            · simp [responseFamily]
+                            · exact identifiesCoordinates
+                          exact routeAttemptedIdentification attempt reducing
+                            sameFibre
                   have cubicSeparatorRoutes :
                       object.degree separator = data.threshold →
                         Graph.SparseSurplusExit
@@ -1530,83 +1908,6 @@ postulated. -/
                           (Graph.HasCycleWithLength data.LengthOK)
                           data.LengthOK object := by
                     intro cubicDegree
-                    have cubicCommonPrefixNonemptyOrSparseExit :
-                        firstConfiguration.path.head? =
-                            some (Graph.CapacityPresentation.tokenRoot token) →
-                        secondConfiguration.path.head? =
-                            some (Graph.CapacityPresentation.tokenRoot token) →
-                        firstConfiguration.path =
-                            common ++ separator :: nextLeft :: tailLeft →
-                        secondConfiguration.path =
-                            common ++ separator :: nextRight :: tailRight →
-                        nextLeft ≠ nextRight →
-                        Graph.SparseSurplusExit
-                            (Graph.MinimumDegreeAtLeast data.threshold)
-                            (Graph.HasCycleWithLength data.LengthOK)
-                            data.LengthOK object ∨
-                          common ≠ [] := by
-                      skip
-                    rcases cubicCommonPrefixNonemptyOrSparseExit
-                        firstConfigurationCanonicalRoot
-                        secondConfigurationCanonicalRoot leftDecomposition
-                        rightDecomposition nextDifferent with sparseExit |
-                        commonNonempty
-                    · exact sparseExit
-                    let rootIncidence := common.getLast commonNonempty
-                    have rootIncidenceLast :
-                        common.getLast? = some rootIncidence :=
-                      List.getLast?_eq_some_getLast commonNonempty
-                    have rootIncidenceAdj :
-                        object.graph.Adj rootIncidence separator := by
-                      have chain := firstConnectorChain
-                      rw [leftDecomposition] at chain
-                      obtain ⟨_, _, joint⟩ := List.isChain_append.mp chain
-                      exact joint rootIncidence rootIncidenceLast separator (by simp)
-                    have rootIncidenceNeLeft : rootIncidence ≠ nextLeft := by
-                      have nodup := firstConnectorSimple
-                      rw [leftDecomposition] at nodup
-                      exact (List.nodup_append.mp nodup).2.2 rootIncidence
-                        (List.getLast_mem commonNonempty) nextLeft (by simp)
-                    have rootIncidenceNeRight : rootIncidence ≠ nextRight := by
-                      have nodup := secondConnectorSimple
-                      rw [rightDecomposition] at nodup
-                      exact (List.nodup_append.mp nodup).2.2 rootIncidence
-                        (List.getLast_mem commonNonempty) nextRight (by simp)
-                    have separatorDegreeThree :
-                        object.degree separator = 3 := cubicDegree.trans cubic
-                    let usedIncidences : Finset object.Vertex :=
-                      {rootIncidence, nextLeft, nextRight}
-                    have usedIncidencesCard : usedIncidences.card = 3 := by
-                      simp [usedIncidences, rootIncidenceNeLeft,
-                        rootIncidenceNeRight, nextDifferent]
-                    have usedIncidencesSubset :
-                        usedIncidences ⊆ object.graph.neighborFinset separator := by
-                      intro neighbour member
-                      simp only [usedIncidences, Finset.mem_insert,
-                        Finset.mem_singleton] at member
-                      rcases member with rfl | rfl | rfl
-                      · exact (SimpleGraph.mem_neighborFinset _ _ _).2
-                          rootIncidenceAdj.symm
-                      · exact (SimpleGraph.mem_neighborFinset _ _ _).2
-                          separatorNextLeftAdj
-                      · exact (SimpleGraph.mem_neighborFinset _ _ _).2
-                          separatorNextRightAdj
-                    have neighbourCard :
-                        (object.graph.neighborFinset separator).card = 3 := by
-                      exact separatorDegreeThree
-                    have usedIncidencesEq : usedIncidences =
-                        object.graph.neighborFinset separator :=
-                      Finset.eq_of_subset_of_card_le usedIncidencesSubset (by
-                        rw [usedIncidencesCard, neighbourCard])
-                    have cubicIncidencesExhausted :
-                        ∀ neighbour, object.graph.Adj separator neighbour →
-                          neighbour = rootIncidence ∨
-                            neighbour = nextLeft ∨ neighbour = nextRight := by
-                      intro neighbour adjacent
-                      have member : neighbour ∈ usedIncidences := by
-                        rw [usedIncidencesEq]
-                        exact (SimpleGraph.mem_neighborFinset _ _ _).2 adjacent
-                      simpa [usedIncidences] using member
                     have cubicIncidencePackage :
                         ∃ rootIncidence,
                           object.graph.Adj rootIncidence separator ∧
@@ -1617,8 +1918,12 @@ postulated. -/
                                 neighbour = rootIncidence ∨
                                   neighbour = nextLeft ∨
                                     neighbour = nextRight :=
-                      ⟨rootIncidence, rootIncidenceAdj, rootIncidenceNeLeft,
-                        rootIncidenceNeRight, cubicIncidencesExhausted⟩
+                      cubicIncidenceOfSeparation firstConfiguration.path
+                        secondConfiguration.path common separator nextLeft
+                        nextRight tailLeft tailRight firstConnectorChain
+                        secondConnectorChain firstConnectorSimple
+                        secondConnectorSimple leftDecomposition rightDecomposition
+                        nextDifferent cubicDegree
                     exact switchRoutesAtCubic cubicDegree
                       cubicIncidencePackage tokenMem firstAssignedRole
                       secondAssignedRole firstCapacityCharge secondCapacityCharge
@@ -2092,7 +2397,47 @@ postulated. -/
                       (Graph.MinimumDegreeAtLeast data.threshold)
                       (Graph.HasCycleWithLength data.LengthOK)
                       data.LengthOK object := by
-                skip
+                by_cases firstResponded : ∃ coordinate, coordinate ∈
+                    capacity.activation.responseObstructions first.1
+                · obtain ⟨coordinate, obstructs⟩ := firstResponded
+                  intros
+                  exact responseObstructionRoutes first.1 coordinate obstructs
+                · by_cases secondResponded : ∃ coordinate, coordinate ∈
+                      capacity.activation.responseObstructions second.1
+                  · obtain ⟨coordinate, obstructs⟩ := secondResponded
+                    intros
+                    exact responseObstructionRoutes second.1 coordinate obstructs
+                  · by_cases targetRole : role.blocker =
+                        Graph.SameTokenBlockerRoles.BlockerKind.targetResponse
+                    · intros
+                      exact targetResponseRoleRoutes first.1 firstAssignedRole
+                        targetRole
+                    · intros
+                      have quotientRealization :
+                          ∃ attempt : Graph.AttemptedQuotient
+                              (Graph.MinimumDegreeAtLeast data.threshold)
+                              (Graph.HasCycleWithLength data.LengthOK)
+                              object responseFamily responseCoordinateSupport,
+                            attempt.support = parallelSupport ∧
+                              attempt.label firstResponseCoordinate =
+                                attempt.label secondResponseCoordinate ∧
+                              ∀ leftPiece rightPiece,
+                                attempt.Identifies leftPiece rightPiece →
+                                  leftPiece.boundaryDegreeProfile =
+                                    rightPiece.boundaryDegreeProfile := by
+                        skip
+                      obtain ⟨attempt, _supportEq, identifiesCoordinates,
+                          sameFibre⟩ := quotientRealization
+                      have reducing :
+                          ¬ Set.InjOn attempt.label ↑responseFamily := by
+                        intro injective
+                        apply responseCoordinatesDifferent
+                        apply injective
+                        · simp [responseFamily]
+                        · simp [responseFamily]
+                        · exact identifiesCoordinates
+                      exact routeAttemptedIdentification attempt reducing
+                        sameFibre
               rcases routingDichotomy with parallel |
                   ⟨separator, separatesAt⟩
               · exact Or.inl (parallelRoutes parallel parallelSupportConnected
@@ -2356,7 +2701,47 @@ postulated. -/
                           (Graph.MinimumDegreeAtLeast data.threshold)
                           (Graph.HasCycleWithLength data.LengthOK)
                           data.LengthOK object := by
-                    skip
+                    by_cases firstResponded : ∃ coordinate, coordinate ∈
+                        capacity.activation.responseObstructions first.1
+                    · obtain ⟨coordinate, obstructs⟩ := firstResponded
+                      intros
+                      exact responseObstructionRoutes first.1 coordinate obstructs
+                    · by_cases secondResponded : ∃ coordinate, coordinate ∈
+                          capacity.activation.responseObstructions second.1
+                      · obtain ⟨coordinate, obstructs⟩ := secondResponded
+                        intros
+                        exact responseObstructionRoutes second.1 coordinate obstructs
+                      · by_cases targetRole : role.blocker =
+                            Graph.SameTokenBlockerRoles.BlockerKind.targetResponse
+                        · intros
+                          exact targetResponseRoleRoutes first.1 firstAssignedRole
+                            targetRole
+                        · intros
+                          have quotientRealization :
+                              ∃ attempt : Graph.AttemptedQuotient
+                                  (Graph.MinimumDegreeAtLeast data.threshold)
+                                  (Graph.HasCycleWithLength data.LengthOK)
+                                  object responseFamily responseCoordinateSupport,
+                                attempt.support = switchSupport ∧
+                                  attempt.label firstResponseCoordinate =
+                                    attempt.label secondResponseCoordinate ∧
+                                  ∀ leftPiece rightPiece,
+                                    attempt.Identifies leftPiece rightPiece →
+                                      leftPiece.boundaryDegreeProfile =
+                                        rightPiece.boundaryDegreeProfile := by
+                            skip
+                          obtain ⟨attempt, _supportEq, identifiesCoordinates,
+                              sameFibre⟩ := quotientRealization
+                          have reducing :
+                              ¬ Set.InjOn attempt.label ↑responseFamily := by
+                            intro injective
+                            apply responseCoordinatesDifferent
+                            apply injective
+                            · simp [responseFamily]
+                            · simp [responseFamily]
+                            · exact identifiesCoordinates
+                          exact routeAttemptedIdentification attempt reducing
+                            sameFibre
                   have cubicSeparatorRoutes :
                       object.degree separator = data.threshold →
                         Graph.SparseSurplusExit
@@ -2364,83 +2749,6 @@ postulated. -/
                           (Graph.HasCycleWithLength data.LengthOK)
                           data.LengthOK object := by
                     intro cubicDegree
-                    have cubicCommonPrefixNonemptyOrSparseExit :
-                        firstConfiguration.path.head? =
-                            some (Graph.CapacityPresentation.tokenRoot token) →
-                        secondConfiguration.path.head? =
-                            some (Graph.CapacityPresentation.tokenRoot token) →
-                        firstConfiguration.path =
-                            common ++ separator :: nextLeft :: tailLeft →
-                        secondConfiguration.path =
-                            common ++ separator :: nextRight :: tailRight →
-                        nextLeft ≠ nextRight →
-                        Graph.SparseSurplusExit
-                            (Graph.MinimumDegreeAtLeast data.threshold)
-                            (Graph.HasCycleWithLength data.LengthOK)
-                            data.LengthOK object ∨
-                          common ≠ [] := by
-                      skip
-                    rcases cubicCommonPrefixNonemptyOrSparseExit
-                        firstConfigurationCanonicalRoot
-                        secondConfigurationCanonicalRoot leftDecomposition
-                        rightDecomposition nextDifferent with sparseExit |
-                        commonNonempty
-                    · exact sparseExit
-                    let rootIncidence := common.getLast commonNonempty
-                    have rootIncidenceLast :
-                        common.getLast? = some rootIncidence :=
-                      List.getLast?_eq_some_getLast commonNonempty
-                    have rootIncidenceAdj :
-                        object.graph.Adj rootIncidence separator := by
-                      have chain := firstConnectorChain
-                      rw [leftDecomposition] at chain
-                      obtain ⟨_, _, joint⟩ := List.isChain_append.mp chain
-                      exact joint rootIncidence rootIncidenceLast separator (by simp)
-                    have rootIncidenceNeLeft : rootIncidence ≠ nextLeft := by
-                      have nodup := firstConnectorSimple
-                      rw [leftDecomposition] at nodup
-                      exact (List.nodup_append.mp nodup).2.2 rootIncidence
-                        (List.getLast_mem commonNonempty) nextLeft (by simp)
-                    have rootIncidenceNeRight : rootIncidence ≠ nextRight := by
-                      have nodup := secondConnectorSimple
-                      rw [rightDecomposition] at nodup
-                      exact (List.nodup_append.mp nodup).2.2 rootIncidence
-                        (List.getLast_mem commonNonempty) nextRight (by simp)
-                    have separatorDegreeThree :
-                        object.degree separator = 3 := cubicDegree.trans cubic
-                    let usedIncidences : Finset object.Vertex :=
-                      {rootIncidence, nextLeft, nextRight}
-                    have usedIncidencesCard : usedIncidences.card = 3 := by
-                      simp [usedIncidences, rootIncidenceNeLeft,
-                        rootIncidenceNeRight, nextDifferent]
-                    have usedIncidencesSubset :
-                        usedIncidences ⊆ object.graph.neighborFinset separator := by
-                      intro neighbour member
-                      simp only [usedIncidences, Finset.mem_insert,
-                        Finset.mem_singleton] at member
-                      rcases member with rfl | rfl | rfl
-                      · exact (SimpleGraph.mem_neighborFinset _ _ _).2
-                          rootIncidenceAdj.symm
-                      · exact (SimpleGraph.mem_neighborFinset _ _ _).2
-                          separatorNextLeftAdj
-                      · exact (SimpleGraph.mem_neighborFinset _ _ _).2
-                          separatorNextRightAdj
-                    have neighbourCard :
-                        (object.graph.neighborFinset separator).card = 3 := by
-                      exact separatorDegreeThree
-                    have usedIncidencesEq : usedIncidences =
-                        object.graph.neighborFinset separator :=
-                      Finset.eq_of_subset_of_card_le usedIncidencesSubset (by
-                        rw [usedIncidencesCard, neighbourCard])
-                    have cubicIncidencesExhausted :
-                        ∀ neighbour, object.graph.Adj separator neighbour →
-                          neighbour = rootIncidence ∨
-                            neighbour = nextLeft ∨ neighbour = nextRight := by
-                      intro neighbour adjacent
-                      have member : neighbour ∈ usedIncidences := by
-                        rw [usedIncidencesEq]
-                        exact (SimpleGraph.mem_neighborFinset _ _ _).2 adjacent
-                      simpa [usedIncidences] using member
                     have cubicIncidencePackage :
                         ∃ rootIncidence,
                           object.graph.Adj rootIncidence separator ∧
@@ -2451,8 +2759,12 @@ postulated. -/
                                 neighbour = rootIncidence ∨
                                   neighbour = nextLeft ∨
                                     neighbour = nextRight :=
-                      ⟨rootIncidence, rootIncidenceAdj, rootIncidenceNeLeft,
-                        rootIncidenceNeRight, cubicIncidencesExhausted⟩
+                      cubicIncidenceOfSeparation firstConfiguration.path
+                        secondConfiguration.path common separator nextLeft
+                        nextRight tailLeft tailRight firstConnectorChain
+                        secondConnectorChain firstConnectorSimple
+                        secondConnectorSimple leftDecomposition rightDecomposition
+                        nextDifferent cubicDegree
                     exact switchRoutesAtCubic cubicDegree
                       cubicIncidencePackage tokenMem firstAssignedRole
                       secondAssignedRole firstCapacityCharge secondCapacityCharge
@@ -2527,31 +2839,32 @@ publish the manuscript's homogeneous-cap closure statement. -/
             (inputs.get (K .sparseSlackSurplus)).down⟩)
         .nil)
 
-/-- Node `[125]`, `def:named-surplus-exits`: the selected minimal counterexample
-survives the sparse surplus exits.  Each of the five conclusions is refuted
-where the manuscript refutes it (`survivesSparseExits_of_selected`): (a) by the
-selection's avoidance, (b) by `lem:context-universality`, (c) by
-`lem:replacement`/`cor:uncompressible` (`K .replacementExclusion`), (d) by the
-selection's minimality, (e) by `lem:suppressed-family-critical-cycle`.  The
-row reads exactly the two facts it spends. -/
-@[reducible] noncomputable def sparseSurplusSurvivorRow :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.sparseSurplusSurvivor
-    { Requires := [K .selection, K .replacementExclusion]
-      Produces := [K .sparseSurplusSurvivor]
-      requiresUnique := by simp [K_eq_iff]
-      producesUnique := by simp
-      producesNonempty := by simp }
-    (fun inputs =>
-      let selected := (inputs.get (K .selection)).down
-      let exclusion := (inputs.get (K .replacementExclusion)).down
-      .cons (key := K .sparseSurplusSurvivor)
-        (show Value BranchState Presentation presentation data
-            .sparseSurplusSurvivor inputs.current from
-          ⟨Graph.survivesSparseExits_of_selected selected.1
-            (fun smaller lexSmaller baseline => selected.2 smaller lexSmaller baseline)
-            exclusion⟩)
-        .nil)
+/-- Node `[125]`, `def:named-surplus-exits`: test the paper's five named
+sparse-surplus exits on the literal incoming ledger.  The left arm publishes
+the concrete exit; the right arm publishes exactly its negation, namely that
+the current object survives all five exits.  This is the manuscript's
+"after sparse exits" branch point: selection and replacement facts are not
+re-proved here, and no `DeclaredQuotient` is fabricated for the target-defect
+alternative. -/
+noncomputable def sparseSurplusSurvivorDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger (Input BranchState Presentation presentation data)
+      current known)
+    (exitFresh : K .sparsePairExit ∉ known)
+    (survivorFresh : K .sparseSurplusSurvivor ∉ known) :
+    Decision (K .sparsePairExit) (K .sparseSurplusSurvivor) previous :=
+  Decision.run previous (K .sparsePairExit) (K .sparseSurplusSurvivor)
+    `Hypostructure.Graph.Strategy.Spine.sparseSurplusSurvivorDichotomy
+    (Classical.choice (show Nonempty
+        ((K .sparsePairExit).At current ⊕
+          (K .sparseSurplusSurvivor).At current) from by
+      by_cases exit : Graph.SparseSurplusExit
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK current.object
+      · exact ⟨.inl ⟨exit⟩⟩
+      · exact ⟨.inr ⟨exit⟩⟩))
+    exitFresh survivorFresh
 
 /-! ## Nodes `[131]`, `[137]` and `[138]`: the entropy count, the certified capacity
 ledger, and the square-root surplus estimate

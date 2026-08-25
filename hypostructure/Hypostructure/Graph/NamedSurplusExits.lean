@@ -6,9 +6,9 @@ import Hypostructure.Graph.SparsePortActivation
 import Hypostructure.Graph.ExcessPortFamily
 
 /-!
-# The sparse surplus exits, and why a selected minimal counterexample survives
+# The named sparse-surplus exits
 
-`def:named-surplus-exits`, and the fact node `[125]` carries.
+`def:named-surplus-exits`, and the alternative node `[125]` tests.
 
 > A *sparse surplus exit* is one of the following conclusions, each of which is
 > defined without invoking the near-cubic Type A/Type B branch machinery:
@@ -24,23 +24,16 @@ import Hypostructure.Graph.ExcessPortFamily
 > A graph *survives the sparse surplus exits* when none of these conclusions
 > occurs.
 
-The point of this module is `survives`: a *selected minimal counterexample*
-survives, and the proof spends only what the selection entry already carries --
-its avoidance and its minimality -- together with `lem:replacement` at that
-selection.  Nothing is assumed: each of the five clauses is refuted where the
-manuscript refutes it.
+This module declares the five alternatives and their joint negation.  Node
+`[125]` performs the manuscript's branch test through `ExactLedger`: an exit is
+published on one arm, and `SurvivesSparseExits` is published on the other.  In
+particular, this declaration does not claim that selection or replacement
+alone rules out target defects, delocalizations, or suppression chords.
 
-* (a) is the selection's own avoidance.
-* (b) is `DeclaredQuotient.targetComplete_of_identified`: an identified pair of
-  boundaried pieces of an admissible quotient shares a boundary-degree profile
-  and is context-equivalent, so neither separation can occur.
-* (c) is `cor:uncompressible`, which node `[11]`--`[14]` already committed: the
-  caller passes that fact rather than re-deriving it.
-* (d) is minimality: a strictly smaller representative meeting the baseline has
-  an accepted cycle, and the delocalization coordinate transfers it back.
-* (e) is `lem:suppressed-family-critical-cycle`: the expansion of an accepted
-  cycle of `G/𝒬` is a simple cycle of `G` of length `2^j + |𝒮|`, so accepting
-  that length would be an accepted cycle of `G`.
+Clause (b) is deliberately raw boundary data rather than a
+`DeclaredQuotient`: a declared admissible quotient is already target-complete,
+so using one to represent a target-defective attempted identification would
+assume away the exit being tested.
 -/
 
 namespace Hypostructure.Graph
@@ -54,24 +47,16 @@ inductive SparseSurplusExit (Baseline Target : FiniteObject.{u} → Prop)
     (LengthOK : Nat → Prop) (object : FiniteObject.{u}) : Prop
   /-- (a) a direct dyadic contradiction: an accepted cycle. -/
   | dyadic (cycle : Graph.HasCycleWithLength LengthOK object)
-  /-- (b) a target-defective quotient, as `lem:context-universality` defines
-  one: an admissible quotient identifying two boundaried pieces that are
-  nonetheless separated, by their boundary-degree profiles or by an outside
-  context. -/
-  | targetDefect {Coordinate : Type u} {family : Finset Coordinate}
-      {coordinateSupport : Coordinate → Finset object.Vertex}
-      (quotient : DeclaredQuotient Baseline Target object family coordinateSupport)
-      (left right : BoundaryPiece (SupportAtom.boundary object quotient.support))
-      (identified : ∀ coordinate ∈ family,
-        quotient.value left (quotient.label coordinate) =
-          quotient.value right (quotient.label coordinate))
-      (separated : left.boundaryDegreeProfile ≠ right.boundaryDegreeProfile ∨
-        Response.TargetDefect Target left right)
-  /-- (c) a nontrivial target-complete compression of a proper atom.
-  *Target-complete* is the two-way clause: the replacement realizes the target
-  against an outside context exactly when the original piece does.  That is
-  `CompressibleSupport`, which `cor:uncompressible` forbids -- not the one-way
-  `ReplacementSupport`, which is the weaker `lem:replacement` obstruction. -/
+  /-- (b) a target-defective quotient, exactly as
+  `lem:context-universality` defines it: the proposed reduced and full
+  realizations live on one fixed boundary, and a compatible outside context
+  distinguishes their target responses.  This is an attempted local
+  identification, not an already target-complete `DeclaredQuotient`. -/
+  | targetDefect {boundary : Boundary.{u}}
+      (reduced full : BoundaryPiece boundary)
+      (defect : Response.TargetDefect Target reduced full)
+  /-- (c) a nontrivial target-complete compression of a proper atom, recorded
+  at the one-way `ReplacementSupport` strength used by `lem:replacement`. -/
   | compression (support : Finset object.Vertex)
       (replacement : ReplacementSupport Baseline Target object support)
   /-- (d) a proper or global delocalization coordinate: a strictly smaller
@@ -93,46 +78,6 @@ conclusions occurs. -/
 def SurvivesSparseExits (Baseline Target : FiniteObject.{u} → Prop)
     (LengthOK : Nat → Prop) (object : FiniteObject.{u}) : Prop :=
   ¬ SparseSurplusExit Baseline Target LengthOK object
-
-/-- **Node `[125]`: a selected minimal counterexample survives the sparse
-surplus exits.**  Each of the five conclusions of `def:named-surplus-exits` is
-refuted where the manuscript refutes it: (a) by the selection's avoidance; (b)
-by `lem:context-universality` (`DeclaredQuotient.targetComplete_of_identified`:
-an admissible quotient never identifies a separated pair); (c) by
-`lem:replacement`/`cor:uncompressible`, the replacement exclusion the branch
-carries; (d) by minimality — a strictly smaller representative meeting the
-baseline has an accepted cycle, and the delocalization coordinate transfers it
-back; (e) by `lem:suppressed-family-critical-cycle` — the expansion of an
-accepted cycle of `G/𝒬` is a cycle of `G` of length `2^j + |𝒮|`, so accepting
-that length is an accepted cycle of `G`. -/
-theorem survivesSparseExits_of_selected
-    {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
-    {object : FiniteObject.{u}}
-    (avoids : ¬ Graph.HasCycleWithLength LengthOK object)
-    (minimal : ∀ smaller : FiniteObject.{u},
-      smaller.LexicographicallySmaller object → Baseline smaller →
-        Graph.HasCycleWithLength LengthOK smaller)
-    (exclusion : ∀ support : Finset object.Vertex,
-      ¬ ReplacementSupport Baseline (Graph.HasCycleWithLength LengthOK) object support) :
-    SurvivesSparseExits Baseline (Graph.HasCycleWithLength LengthOK) LengthOK object := by
-  intro exit
-  cases exit with
-  | dyadic cycle => exact avoids cycle
-  | targetDefect quotient left right identified separated =>
-      obtain ⟨profiles, universal⟩ :=
-        quotient.targetComplete_of_identified left right identified
-      rcases separated with profileSeparated | defect
-      · exact profileSeparated profiles
-      · obtain ⟨outside, distinguishes⟩ := defect
-        exact distinguishes (universal outside)
-  | compression support replacement => exact exclusion support replacement
-  | delocalization representative smaller baseline transfer =>
-      exact avoids (transfer (minimal representative smaller baseline))
-  | suppressionChord family certificate violates =>
-      let expanded := family.expandCycle certificate
-      refine avoids ⟨⟨_, expanded.walk, expanded.isCycle, ?_⟩⟩
-      rw [expanded.length_eq]
-      exact violates
 
 /-- **`def:active-surplus-demands`.**
 

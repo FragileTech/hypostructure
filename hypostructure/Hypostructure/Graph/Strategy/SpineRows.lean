@@ -7941,7 +7941,8 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                 scaledDeficit, slack] using raw
             show ∃ final : List (Graph.Route8Census.Index inputs.current.object),
               Graph.Route8Pressure.StageOutcome inputs.current.object packing entries
-                data.threshold data.dischargeScale slack data.LengthOK final
+                components data.threshold data.dischargeScale slack data.LengthOK
+                final
             suffices key : ∀ n : Nat,
                 ∀ chain : List (Graph.Route8Census.Index inputs.current.object),
                   Graph.Route8Pressure.PeelChain inputs.current.object packing entries
@@ -7950,32 +7951,97 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                     (entries \ chain.toFinset).card = n →
                     ∃ final,
                       Graph.Route8Pressure.StageOutcome inputs.current.object packing entries
-                        data.threshold data.dischargeScale slack data.LengthOK final from
+                        components data.threshold data.dischargeScale slack data.LengthOK
+                        final from
               key _ [] Graph.Route8Pressure.PeelChain.nil (by simp) rfl
             intro n
             induction n using Nat.strong_induction_on with
             | _ n ih =>
               intro chain valid' chainSub cardEq
+              -- The stage-local four-class accounting is independent of the
+              -- rate test.  In particular it remains available on the failed
+              -- arm routed to node `[181]`.
+              have burden := Graph.Route8Pressure.stage_burden
+                inputs.current.object packing components data.threshold
+                data.dischargeScale dischargePos baseline componentsSub
+                surplusZero routedFact chain.toFinset
+              have burden' : scaledDeficit ≤
+                  (Graph.Route8Pressure.peeledEntries inputs.current.object
+                      entries chain.toFinset).card + chain.toFinset.card := by
+                simpa [scaledDeficit, support, entries, route8UnifiedEntries]
+                  using burden
+              have stageDeficit : support.card ≤
+                  (Graph.Route8Pressure.peeledEntries inputs.current.object
+                      entries chain.toFinset).card + chain.toFinset.card +
+                    data.dischargeScale *
+                      (Graph.Route8Census.supply inputs.current.object
+                        packing).card +
+                    slack := by
+                omega
+              have partition : entries =
+                  Graph.Route8Pressure.peeledEntries inputs.current.object
+                      entries chain.toFinset ∪ chain.toFinset := by
+                ext index
+                simp only [Graph.Route8Pressure.peeledEntries,
+                  Finset.mem_union, Finset.mem_sdiff]
+                constructor
+                · intro indexMem
+                  by_cases peeledMem : index ∈ chain.toFinset
+                  · exact Or.inr peeledMem
+                  · exact Or.inl ⟨indexMem, peeledMem⟩
+                · rintro (⟨indexMem, _⟩ | peeledMem)
+                  · exact indexMem
+                  · exact chainSub peeledMem
+              have reducedDisjoint : Disjoint
+                  (Graph.Route8Pressure.peeledEntries inputs.current.object
+                    entries chain.toFinset) chain.toFinset := by
+                rw [Finset.disjoint_left]
+                intro index reducedMem peeledMem
+                exact (Finset.mem_sdiff.1 reducedMem).2 peeledMem
+              have peeledLeDeficit : chain.toFinset.card ≤ scaledDeficit := by
+                induction valid' with
+                | nil => simp
+                | @cons previousChain index previous previousRate member _ _ ih =>
+                    have fresh : index ∉ previousChain.toFinset :=
+                      (Finset.mem_sdiff.1 member).2
+                    have rateRaw :
+                        (data.threshold * data.dischargeScale + 1) *
+                            (Graph.Route8Census.supply inputs.current.object
+                              packing).card +
+                            data.threshold * slack +
+                            data.threshold * previousChain.toFinset.card <
+                          data.threshold * support.card := by
+                      simpa only [Graph.Route8Pressure.StageRate, support] using
+                        previousRate
+                    have scaledBudget := Nat.mul_le_mul_left data.threshold
+                      unifiedDeficit
+                    simp only [Nat.mul_add, Nat.add_mul, Nat.mul_assoc] at scaledBudget
+                    simp only [Nat.mul_add, Nat.add_mul, Nat.mul_assoc] at rateRaw
+                    have scaledPeel :
+                        data.threshold * previousChain.toFinset.card <
+                          data.threshold * scaledDeficit := by
+                      omega
+                    have previousLt : previousChain.toFinset.card <
+                        scaledDeficit := Nat.lt_of_mul_lt_mul_left scaledPeel
+                    rw [List.toFinset_cons,
+                      Finset.card_insert_of_notMem fresh]
+                    omega
+              have exactReduced : scaledDeficit =
+                  scaledDeficit - chain.toFinset.card + chain.toFinset.card :=
+                (Nat.sub_add_cancel peeledLeDeficit).symm
+              have reducedBurden : scaledDeficit - chain.toFinset.card ≤
+                  (Graph.Route8Pressure.peeledEntries inputs.current.object
+                    entries chain.toFinset).card := by
+                omega
+              have accounting : Graph.Route8Pressure.StageAccounting
+                  inputs.current.object packing entries components data.threshold
+                    data.dischargeScale slack chain := by
+                exact ⟨chainSub, partition, reducedDisjoint, peeledLeDeficit,
+                  exactReduced, burden', reducedBurden, stageDeficit⟩
               by_cases rate : Graph.Route8Pressure.StageRate
                   inputs.current.object packing data.threshold data.dischargeScale
                   slack chain.toFinset
-              · -- the silence-free staged burden covers every stage
-                have burden := Graph.Route8Pressure.stage_burden
-                  inputs.current.object packing components data.threshold
-                  data.dischargeScale dischargePos baseline componentsSub
-                  surplusZero routedFact chain.toFinset
-                have stageDeficit : support.card ≤
-                    (Graph.Route8Pressure.peeledEntries inputs.current.object
-                        entries chain.toFinset).card + chain.toFinset.card +
-                      data.dischargeScale *
-                        (Graph.Route8Census.supply inputs.current.object
-                          packing).card +
-                      slack := by
-                  have burden' : scaledDeficit ≤
-                      (Graph.Route8Pressure.peeledEntries inputs.current.object
-                          entries chain.toFinset).card +
-                        chain.toFinset.card := burden
-                  omega
+              ·
                 obtain ⟨index, member, two⟩ :=
                   Graph.Route8Pressure.exists_twoCarrierEntry_staged
                     inputs.current.object packing entries data.threshold
@@ -8006,19 +8072,17 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                   refine ih _ smaller (index :: chain) valid'' ?_ rfl
                   rw [List.toFinset_cons]
                   exact Finset.insert_subset idxAll chainSub
-                · exact ⟨chain, valid', Or.inl ⟨rate, index, member, two,
-                    targetDefect⟩⟩
-              · exact ⟨chain, valid', Or.inr rate⟩⟩)
+                · exact ⟨chain, valid', accounting,
+                    Or.inl ⟨rate, index, member, two, targetDefect⟩⟩
+              · exact ⟨chain, valid', accounting, Or.inr rate⟩⟩)
         .nil)
     0 0
 
 /-! The terminal decision of node `[123]`.  Finite exit-(4) descent either
 reaches a true two-support entry — sent to `[124]` — or exhibits a recorded
-failed-rate stage, which `thm:large-budget-route8-only` closes by the
-large-budget net-deficiency cap and `thm:branch-kill` ("the still-unresolved
-negative mass is too small to realize the large-budget branch").  No standing
-stage-rate invariant is assumed: the stage test is decided here, exactly as
-the manuscript's procedure decides it. -/
+failed-rate stage.  The failed arm retains `StageAccounting`; it is routed to
+the target-defect demand ledger and node `[181]`, not treated as a
+contradiction. -/
 omit [FactSystem (Input BranchState Presentation presentation data)] in
 noncomputable def route8StageOutcomeDichotomy
     {current : Input BranchState Presentation presentation data}
@@ -8048,7 +8112,7 @@ noncomputable def route8StageOutcomeDichotomy
     (by
       classical
       apply Classical.choice
-      obtain ⟨final, chain, ends⟩ :=
+      obtain ⟨final, chain, accounting, ends⟩ :=
         (@ExactLedger.get (Input BranchState Presentation presentation data) _
           (factSystem BranchState Presentation presentation data)
           current known previous (K .route8PeelingDescent)).down
@@ -8073,7 +8137,7 @@ noncomputable def route8StageOutcomeDichotomy
             (Graph.HasCycleWithLength data.LengthOK) final.toFinset index
             fresh witness witnessLoad
           exact (isTrue.2.2 currentDefect).elim
-      · exact ⟨.inr ⟨⟨final, chain, rateFails⟩⟩⟩)
+      · exact ⟨.inr ⟨⟨final, chain, accounting, rateFails⟩⟩⟩)
     survivorFresh failedFresh
 
 /-! ## Node `[124]`: terminal unified two-support route-8 exclusion
@@ -8540,6 +8604,41 @@ set_option maxHeartbeats 1000000 in
               (canonicalWindowPacking data inputs.current.object) blocker
               assigned⟩⟩)
         .nil)
+    0 0
+
+/-! ## Node `[181]`: the explicit peeled target-defect demand residual
+
+This row proves no closure.  It publishes the exact residual assembled by node
+`[123]`: the failed peeling stage with its stage-local accounting, the maximal
+demand partition, its maximal absorption, and the exact packed-window blocker
+partition. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def route8PeeledDemandResidualRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.route8PeeledDemandResidual
+    { Requires := [K .route8StageRateFailed, K .route8DemandLedger,
+        K .route8DemandAbsorption, K .route8WindowBlockers]
+      Produces := [K .route8PeeledDemandResidual]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let failed := inputs.get (K .route8StageRateFailed)
+      let ledger := inputs.get (K .route8DemandLedger)
+      let absorption := inputs.get (K .route8DemandAbsorption)
+      let blockers := inputs.get (K .route8WindowBlockers)
+      .cons (key := K .route8PeeledDemandResidual)
+        ⟨failed.down, ledger.down, absorption.down, blockers.down⟩ .nil)
     0 0
 
 omit [FactSystem (Input BranchState Presentation presentation data)] in
