@@ -183,6 +183,29 @@ noncomputable def selectedSparseSurplusDichotomy
       (by simp [K_eq_iff])
       (by simp [K_eq_iff])
 
+/-- Node `[125]`, the exact named-exit continuation.  Direct target,
+replacement, delocalization, and suppression-arithmetic exits terminate in the
+sealed row.  Its only output is the concrete target-defect residual, retaining
+the complete strict-surplus ancestry for the later peeling handoff. -/
+noncomputable def selectedSparseSurplusExitContinuation
+    {selected : EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected
+      [K .sparsePairExit, K .surplusAbove, K .localAlgebra,
+        K .maximalPacking, K .uncompressible, K .replacementExclusion,
+        K .targetCompleteContextUniversality, K .degreeProfileFibres,
+        K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
+        K .returnAvoidance, K .selection]) :
+    ExactLedger EGInput.{u} selected
+      [K .sparseTargetDefectResidual, K .sparsePairExit, K .surplusAbove,
+        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .replacementExclusion, K .targetCompleteContextUniversality,
+        K .degreeProfileFibres, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+  (sparseSurplusExitRoutingRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    history (by simp [sparseSurplusExitRoutingRow, K_eq_iff])
+
 /-- Nodes `[125]`--`[128]`, sparse-surplus activation on node `[125]`'s
 literal survivor residual. -/
 -- EG-NODE [126] sparse envelope m<=2n-2, sigma=n-6-2 lambda
@@ -424,22 +447,13 @@ noncomputable def selectedSpineSurplusEstimateCloses
   exact Nat.not_lt_of_ge (by
     simpa [Graph.Strategy.Spine.Data.surplusThreshold] using upper) lower
 
-/-- **Node `[144]`, through the canonical ExactLedger row.**  The row reads the
-concrete `L_geom` pattern, active-family returns, survivor, and the quotient /
-replacement facts from this exact history; it publishes the paper's
-sparse-exit-or-handoff conclusion and its survivor specialization.  Its first
-kernel obligation is to construct the paper's graph-derived routing label and
-declared connector configurations from those facts, exposed inside
-`sameTokenBottleneckRoutingRow` rather than represented by a caller-supplied
-route object.
-
-After that construction is proved locally, the remaining loud call is
-deliberately a downstream Type B boundary: `[144]` produces an arbitrary connected
-`P₁₃`-free remainder core `Y`, exactly as the paper states, whereas the
-current `[65]` entry accepts only a canonical negative remainder component or
-the indexed `[177]` corridor lane.  Converting `Y` into either of those would
-add hypotheses not proved at `[144]`; the Type B entry schema must instead gain
-the paper's same-token handoff lane. -/
+/-- **Node `[144]`, same-token bottleneck discharge.**  Run the
+paper's routing lemma on the literal overload ledger.  Sparse exits are
+incompatible with the retained survivor fact, so the surviving output is the
+decorated same-token Type B handoff.  Node `[65]` then appends the common
+`typeBFanEntry` key for exactly that packing, core, envelope, and decoration
+data.  This boundary returns the routed ledger; it does not assert closure or
+import facts from the low-surplus Type B branch. -/
 -- EG-NODE [144] bottleneck discharge: sparse exit, Type B, or near-cubic spine
 noncomputable def selectedBottleneckDischarge
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
@@ -476,107 +490,22 @@ noncomputable def selectedBottleneckDischarge
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .remainderNormalized) known]
-    [FactKeys.Has (K .sparseSurplusSurvivor) known] : False := by
+    [FactKeys.Has (K .sparseSurplusSurvivor) known]
+    (routingFresh : K .bottleneckRouting ∉ known)
+    (handoffFresh : K .typeBHandoff ∉ known)
+    (fanEntryFresh : K .typeBFanEntry ∉ known) :
+    ExactLedger EGInput.{u} selected
+      ([K .typeBFanEntry, K .bottleneckRouting, K .typeBHandoff] ++ known) := by
   let routed :=
     (sameTokenBottleneckRoutingRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by simp [K_eq_iff])
-  have _handoff :
-      SameTokenTypeBHandoffStatement spineData routed.current.object :=
-    (routed.get (K .typeBHandoff)).down
-  -- The paper routes this exact ledger fact into the common Type B
-  -- continuation.  The current downstream entry has no same-token lane: it
-  -- accepts only its canonical-negative-component and indexed-[177] schemas.
-  -- Leave that schema mismatch as the next literal proof obligation; do not
-  -- convert the handoff into either stronger datum.
-  skip
-
-/-- **Nodes `[139]`--`[144]`, on the literal overload residual of `[137]`**: the
-window-incidence test `[139]` and its audit `[140]`, the remainder-surplus test
-`[141]` and its audit `[142]`, the primitive-carrier verdict and audit `[143]`,
-each discharged at `[144]`. -/
--- EG-NODE [139] token in T_W?
--- EG-NODE [140] window-incidence geometric audit
--- EG-NODE [141] token in T_R?
--- EG-NODE [142] remainder-surplus geometric audit
--- EG-NODE [143] primitive-carrier geometric audit
-noncomputable def selectedSparsePressureOverloadCloses
-    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .sparsePressureOverload) known]
-    [FactKeys.Has (K .baselineSpineDemand) known]
-    [FactKeys.Has (K .sparseSlackSurplus) known]
-    [FactKeys.Has (K .surplusAbove) known]
-    [FactKeys.Has (K .selection) known]
-    [FactKeys.Has (K .uncompressible) known]
-    [FactKeys.Has (K .replacementExclusion) known]
-    [FactKeys.Has (K .targetCompleteContextUniversality) known]
-    [FactKeys.Has (K .degreeProfileFibres) known]
-    [FactKeys.Has (K .exactResponseProfile) known]
-    [FactKeys.Has (K .admissibleRankQuotient) known]
-    [FactKeys.Has (K .noProperBaseline) known]
-    [FactKeys.Has (K .sparseSurplusSurvivor) known]
-    [FactKeys.Has (K .blockedPairEntropySandwich) known]
-    [FactKeys.Has (K .roleFibrePartition) known]
-    [FactKeys.Has (K .fibrePressure) known]
-    [FactKeys.Has (K .capacityTokenLedger) known]
-    [FactKeys.Has (K .canonicalPairLedger) known]
-    [FactKeys.Has (K .canonicalBlockerRoute) known]
-    [FactKeys.Has (K .dependentPairFamily) known]
-    [FactKeys.Has (K .activeSurplusDemands) known]
-    [FactKeys.Has (K .sparsePortActivation) known]
-    [FactKeys.Has (K .activeSurplusFamily) known]
-    [FactKeys.Has (K .cubicBaseline) known]
-    [FactKeys.Has (K .sparseUpperEnvelope) known]
-    [FactKeys.Has (K .maximalPacking) known]
-    [FactKeys.Has (K .returnAvoidance) known]
-    [FactKeys.Has (K .tightEndpoint) known]
-    [FactKeys.Has (K .slackIndependent) known]
-    [FactKeys.Has (K .highCentreNormalForm) known]
-    [FactKeys.Has (K .localAlgebra) known]
-    (windowFresh : K .windowClassOverload ∉ known)
-    (windowAbsentFresh : K .windowClassAbsent ∉ known)
-    (windowAuditFresh : K .windowIncidenceAudit ∉ known)
-    (remainderFresh : K .remainderClassOverload ∉ known)
-    (remainderAbsentFresh : K .remainderClassAbsent ∉ known)
-    (remainderAuditFresh : K .remainderSurplusAudit ∉ known)
-    (primitiveAuditFresh : K .primitiveCarrierAudit ∉ known)
-    (patternFresh : K .homogeneousBottleneckPattern ∉ known)
-    (remainderNormalizedFresh : K .remainderNormalized ∉ known) : False := by
-  let normalized :=
-    (remainderNormalizationRow (BranchState := BranchState)
+      history (by simp [routingFresh, handoffFresh])
+  exact
+    (sameTokenTypeBFanEntryRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by simpa using remainderNormalizedFresh)
-  match windowOverloadClassDichotomy (data := spineData) normalized windowFresh
-      windowAbsentFresh with
-  | .left windowHistory =>
-      let audited :=
-        (windowIncidenceAuditRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          windowHistory (by simp [K_eq_iff, windowAuditFresh, patternFresh])
-      exact selectedBottleneckDischarge audited
-  | .right windowAbsent =>
-      match remainderOverloadClassDichotomy (data := spineData) windowAbsent
-          (by simp [K_eq_iff, remainderFresh]) (by simp [K_eq_iff, remainderAbsentFresh]) with
-      | .left remainderHistory =>
-          let audited :=
-            (remainderSurplusAuditRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              remainderHistory
-                (by simp [K_eq_iff, remainderAuditFresh, patternFresh])
-          exact selectedBottleneckDischarge audited
-      | .right remainderAbsent =>
-          let audited :=
-            (primitiveCarrierAuditRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              remainderAbsent
-                (by simp [K_eq_iff, primitiveAuditFresh, patternFresh])
-          exact selectedBottleneckDischarge audited
+      routed (by simp [K_eq_iff, fanEntryFresh])
 
 /-- Node `[22]`: the canonical hot/cold partition (`def:cold-window-ledger`),
 then the live-hot entropy cap decision on `𝒫_hot`.
@@ -1339,10 +1268,291 @@ noncomputable def selectedStrictSurplusBranch
                       (data := spineData)).run cubic (by
                         simp [curvatureTargetRankRow, cubicBaselineRow,
                           highCentreNormalFormRow, K_eq_iff])
-                  exact selectedSparsePressureOverloadCloses quotientFacts
-                    (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
-                    (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
-                    (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
+                  let normalized :=
+                    (remainderNormalizationRow (BranchState := BranchState)
+                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                      (presentation := erdosReceiverLoadProfile)
+                      (data := spineData)).run quotientFacts (by simp [K_eq_iff])
+                  match windowOverloadClassDichotomy (data := spineData) normalized
+                      (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+                  | .left windowHistory =>
+                      let audited :=
+                        (windowIncidenceAuditRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile)
+                          (data := spineData)).run windowHistory (by simp [K_eq_iff])
+                      match typeBFanDegreeDichotomy (data := spineData)
+                          (selectedBottleneckDischarge audited
+                            (by simp [K_eq_iff]) (by simp [K_eq_iff])
+                            (by simp [K_eq_iff])) (by simp [K_eq_iff])
+                            (by simp [K_eq_iff]) with
+                      | .left heavyHistory =>
+                          let compatibleHistory :=
+                            (sameCenterOpenPortCompatibilityRow
+                              (BranchState := BranchState)
+                              (Presentation :=
+                                Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile)
+                              (data := spineData)).run heavyHistory (by
+                                simp [K_eq_iff])
+                          let localDichotomy :=
+                            (typeBFanLocalDichotomyRow
+                              (BranchState := BranchState)
+                              (Presentation :=
+                                Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile)
+                              (data := spineData)).run compatibleHistory (by
+                                simp [K_eq_iff])
+                          let capped :=
+                            (fanCertificateCapRow (BranchState := BranchState)
+                              (Presentation :=
+                                Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile)
+                              (data := spineData)).run localDichotomy (by
+                                simp [K_eq_iff])
+                          match fanCertificateDichotomy (data := spineData) capped
+                              (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+                          | .left markedHistory =>
+                              exact directCycleDichotomy (data := spineData)
+                                markedHistory (by simp [K_eq_iff])
+                                (by simp [K_eq_iff])
+                          | .right residualHistory =>
+                              exact
+                                (fanCertificateResidualMassRow
+                                  (BranchState := BranchState)
+                                  (Presentation :=
+                                    Graph.ReceiverLoad.LoadCapacityProfile)
+                                  (presentation := erdosReceiverLoadProfile)
+                                  (data := spineData)).run residualHistory (by
+                                    simp [K_eq_iff])
+                      | .right degreeFourHistory =>
+                          let profile :=
+                            (typeBFanDegreeFourProfileRow
+                              (BranchState := BranchState)
+                              (Presentation :=
+                                Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile)
+                              (data := spineData)).run degreeFourHistory (by
+                                simp [K_eq_iff])
+                          let triangularCore :=
+                            (triangularFanCoreRow
+                              (BranchState := BranchState)
+                              (Presentation :=
+                                Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile)
+                              (data := spineData)).run profile (by
+                                simp [K_eq_iff])
+                          let capped :=
+                            (fanCertificateCapRow (BranchState := BranchState)
+                              (Presentation :=
+                                Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile)
+                              (data := spineData)).run triangularCore (by
+                                simp [K_eq_iff])
+                          match fanCertificateDichotomy (data := spineData) capped
+                              (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+                          | .left markedHistory =>
+                              exact directCycleDichotomy (data := spineData)
+                                markedHistory (by simp [K_eq_iff])
+                                (by simp [K_eq_iff])
+                          | .right residualHistory =>
+                              exact
+                                (fanCertificateResidualMassRow
+                                  (BranchState := BranchState)
+                                  (Presentation :=
+                                    Graph.ReceiverLoad.LoadCapacityProfile)
+                                  (presentation := erdosReceiverLoadProfile)
+                                  (data := spineData)).run residualHistory (by
+                                    simp [K_eq_iff])
+                  | .right windowAbsent =>
+                      match remainderOverloadClassDichotomy (data := spineData)
+                          windowAbsent (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+                      | .left remainderHistory =>
+                          let audited :=
+                            (remainderSurplusAuditRow (BranchState := BranchState)
+                              (Presentation :=
+                                Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile)
+                              (data := spineData)).run remainderHistory (by
+                                simp [K_eq_iff])
+                          match typeBFanDegreeDichotomy (data := spineData)
+                              (selectedBottleneckDischarge audited
+                                (by simp [K_eq_iff]) (by simp [K_eq_iff])
+                                (by simp [K_eq_iff])) (by simp [K_eq_iff])
+                                (by simp [K_eq_iff]) with
+                          | .left heavyHistory =>
+                              let compatibleHistory :=
+                                (sameCenterOpenPortCompatibilityRow
+                                  (BranchState := BranchState)
+                                  (Presentation :=
+                                    Graph.ReceiverLoad.LoadCapacityProfile)
+                                  (presentation := erdosReceiverLoadProfile)
+                                  (data := spineData)).run heavyHistory (by
+                                    simp [K_eq_iff])
+                              let localDichotomy :=
+                                (typeBFanLocalDichotomyRow
+                                  (BranchState := BranchState)
+                                  (Presentation :=
+                                    Graph.ReceiverLoad.LoadCapacityProfile)
+                                  (presentation := erdosReceiverLoadProfile)
+                                  (data := spineData)).run compatibleHistory (by
+                                    simp [K_eq_iff])
+                              let capped :=
+                                (fanCertificateCapRow
+                                  (BranchState := BranchState)
+                                  (Presentation :=
+                                    Graph.ReceiverLoad.LoadCapacityProfile)
+                                  (presentation := erdosReceiverLoadProfile)
+                                  (data := spineData)).run localDichotomy (by
+                                    simp [K_eq_iff])
+                              match fanCertificateDichotomy (data := spineData) capped
+                                  (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+                              | .left markedHistory =>
+                                  exact directCycleDichotomy (data := spineData)
+                                    markedHistory (by simp [K_eq_iff])
+                                    (by simp [K_eq_iff])
+                              | .right residualHistory =>
+                                  exact
+                                    (fanCertificateResidualMassRow
+                                      (BranchState := BranchState)
+                                      (Presentation :=
+                                        Graph.ReceiverLoad.LoadCapacityProfile)
+                                      (presentation := erdosReceiverLoadProfile)
+                                      (data := spineData)).run residualHistory (by
+                                        simp [K_eq_iff])
+                          | .right degreeFourHistory =>
+                              let profile :=
+                                (typeBFanDegreeFourProfileRow
+                                  (BranchState := BranchState)
+                                  (Presentation :=
+                                    Graph.ReceiverLoad.LoadCapacityProfile)
+                                  (presentation := erdosReceiverLoadProfile)
+                                  (data := spineData)).run degreeFourHistory (by
+                                    simp [K_eq_iff])
+                              let triangularCore :=
+                                (triangularFanCoreRow
+                                  (BranchState := BranchState)
+                                  (Presentation :=
+                                    Graph.ReceiverLoad.LoadCapacityProfile)
+                                  (presentation := erdosReceiverLoadProfile)
+                                  (data := spineData)).run profile (by
+                                    simp [K_eq_iff])
+                              let capped :=
+                                (fanCertificateCapRow
+                                  (BranchState := BranchState)
+                                  (Presentation :=
+                                    Graph.ReceiverLoad.LoadCapacityProfile)
+                                  (presentation := erdosReceiverLoadProfile)
+                                  (data := spineData)).run triangularCore (by
+                                    simp [K_eq_iff])
+                              match fanCertificateDichotomy (data := spineData) capped
+                                  (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+                              | .left markedHistory =>
+                                  exact directCycleDichotomy (data := spineData)
+                                    markedHistory (by simp [K_eq_iff])
+                                    (by simp [K_eq_iff])
+                              | .right residualHistory =>
+                                  exact
+                                    (fanCertificateResidualMassRow
+                                      (BranchState := BranchState)
+                                      (Presentation :=
+                                        Graph.ReceiverLoad.LoadCapacityProfile)
+                                      (presentation := erdosReceiverLoadProfile)
+                                      (data := spineData)).run residualHistory (by
+                                        simp [K_eq_iff])
+                      | .right remainderAbsent =>
+                          let audited :=
+                            (primitiveCarrierAuditRow (BranchState := BranchState)
+                              (Presentation :=
+                                Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile)
+                              (data := spineData)).run remainderAbsent (by
+                                simp [K_eq_iff])
+                          match typeBFanDegreeDichotomy (data := spineData)
+                              (selectedBottleneckDischarge audited
+                                (by simp [K_eq_iff]) (by simp [K_eq_iff])
+                                (by simp [K_eq_iff])) (by simp [K_eq_iff])
+                                (by simp [K_eq_iff]) with
+                          | .left heavyHistory =>
+                              let compatibleHistory :=
+                                (sameCenterOpenPortCompatibilityRow
+                                  (BranchState := BranchState)
+                                  (Presentation :=
+                                    Graph.ReceiverLoad.LoadCapacityProfile)
+                                  (presentation := erdosReceiverLoadProfile)
+                                  (data := spineData)).run heavyHistory (by
+                                    simp [K_eq_iff])
+                              let localDichotomy :=
+                                (typeBFanLocalDichotomyRow
+                                  (BranchState := BranchState)
+                                  (Presentation :=
+                                    Graph.ReceiverLoad.LoadCapacityProfile)
+                                  (presentation := erdosReceiverLoadProfile)
+                                  (data := spineData)).run compatibleHistory (by
+                                    simp [K_eq_iff])
+                              let capped :=
+                                (fanCertificateCapRow
+                                  (BranchState := BranchState)
+                                  (Presentation :=
+                                    Graph.ReceiverLoad.LoadCapacityProfile)
+                                  (presentation := erdosReceiverLoadProfile)
+                                  (data := spineData)).run localDichotomy (by
+                                    simp [K_eq_iff])
+                              match fanCertificateDichotomy (data := spineData) capped
+                                  (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+                              | .left markedHistory =>
+                                  exact directCycleDichotomy (data := spineData)
+                                    markedHistory (by simp [K_eq_iff])
+                                    (by simp [K_eq_iff])
+                              | .right residualHistory =>
+                                  exact
+                                    (fanCertificateResidualMassRow
+                                      (BranchState := BranchState)
+                                      (Presentation :=
+                                        Graph.ReceiverLoad.LoadCapacityProfile)
+                                      (presentation := erdosReceiverLoadProfile)
+                                      (data := spineData)).run residualHistory (by
+                                        simp [K_eq_iff])
+                          | .right degreeFourHistory =>
+                              let profile :=
+                                (typeBFanDegreeFourProfileRow
+                                  (BranchState := BranchState)
+                                  (Presentation :=
+                                    Graph.ReceiverLoad.LoadCapacityProfile)
+                                  (presentation := erdosReceiverLoadProfile)
+                                  (data := spineData)).run degreeFourHistory (by
+                                    simp [K_eq_iff])
+                              let triangularCore :=
+                                (triangularFanCoreRow
+                                  (BranchState := BranchState)
+                                  (Presentation :=
+                                    Graph.ReceiverLoad.LoadCapacityProfile)
+                                  (presentation := erdosReceiverLoadProfile)
+                                  (data := spineData)).run profile (by
+                                    simp [K_eq_iff])
+                              let capped :=
+                                (fanCertificateCapRow
+                                  (BranchState := BranchState)
+                                  (Presentation :=
+                                    Graph.ReceiverLoad.LoadCapacityProfile)
+                                  (presentation := erdosReceiverLoadProfile)
+                                  (data := spineData)).run triangularCore (by
+                                    simp [K_eq_iff])
+                              match fanCertificateDichotomy (data := spineData) capped
+                                  (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+                              | .left markedHistory =>
+                                  exact directCycleDichotomy (data := spineData)
+                                    markedHistory (by simp [K_eq_iff])
+                                    (by simp [K_eq_iff])
+                              | .right residualHistory =>
+                                  exact
+                                    (fanCertificateResidualMassRow
+                                      (BranchState := BranchState)
+                                      (Presentation :=
+                                        Graph.ReceiverLoad.LoadCapacityProfile)
+                                      (presentation := erdosReceiverLoadProfile)
+                                      (data := spineData)).run residualHistory (by
+                                        simp [K_eq_iff])
 
 set_option maxHeartbeats 2000000 in
 /-- **`lem:refined-minimality-swap`, node `[165]`, size-reducing case.**  A
@@ -1537,40 +1747,23 @@ noncomputable def selectedRouteEightCensus
               (presentation := erdosReceiverLoadProfile) (data := spineData)).run
               blocked (by simp [K_eq_iff, demandResidualFresh])
 
-/-- **Node `[123]`: the unified pressure census** — `lem:typeA-unified-deficit`,
-`def:typeA-unified-entries`/`lem:typeA-unified-carriers`, `thm:branch-kill`'s
-all-pieces classification, and `thm:large-budget-route8-only`'s descent, on the
-literal `[77]` ledger.  `[86]` and the ∀-piece `prop:typeB-bridge-reduction`
-contrapositive are produced first and combined into the classification; the
-bridge-sublinear hypotheses and the census quotient-freeness are tested exactly
-(the `[113]` pattern) — their residual arms are the manuscript's Part IX
-bridge-residual lane and profile demand-record lane, held at their loud
-continuations. -/
--- EG-NODE [123] unified negative collection: classification, deficit, census, descent
+/-- **Node `[123]`: exact large-budget descent.**
+
+The unified deficit and entry census are literal prerequisites of this node.
+The node performs only the finite exit-`(4)` descent prescribed by
+`thm:large-budget-route8-only`: true route-8 entries close at `[124]`, while a
+failed reduced-rate stage is returned as the exact peeled-demand ledger at
+`[181]`.  In particular this wrapper does not claim `False` from `[181]` and
+does not absorb the earlier quotient or Type B residual decisions into node
+`[123]`. -/
+-- EG-NODE [123] exact descent to [124] or [181]
 noncomputable def selectedLargeBudgetPressureCensus
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .route8UnifiedNegative) known]
+    [FactKeys.Has (K .route8UnifiedDeficit) known]
+    [FactKeys.Has (K .route8UnifiedEntryCensus) known]
     [FactKeys.Has (K .selection) known]
-    [FactKeys.Has (K .replacementExclusion) known]
-    [FactKeys.Has (K .cubicBaseline) known]
-    [FactKeys.Has (K .uncompressible) known]
-    [FactKeys.Has (K .remainderNormalized) known]
-    [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .typeAReceiverRouting) known]
-    (exclusionFresh : K .typeAExclusion ∉ known := by simp [K_eq_iff])
-    (bridgeReductionFresh : K .typeBBridgeReduction ∉ known := by simp [K_eq_iff])
-    (classifiedFresh : K .route8PiecesClassified ∉ known := by simp [K_eq_iff])
-    (sublinearFresh : K .typeBSublinearLedger ∉ known := by simp [K_eq_iff])
-    (sublinearResidualFresh : K .typeBSublinearResidual ∉ known := by
-      simp [K_eq_iff])
-    (deficitFresh : K .route8UnifiedDeficit ∉ known := by simp [K_eq_iff])
-    (quotientFreeFresh : K .route8QuotientFree ∉ known := by simp [K_eq_iff])
-    (quotientResidualFresh : K .route8QuotientResidual ∉ known := by
-      simp [K_eq_iff])
-    (censusFresh : K .route8UnifiedEntryCensus ∉ known := by simp [K_eq_iff])
-    (extractedCensusFresh : K .route8ExtractedEntryCensus ∉ known := by
-      simp [K_eq_iff])
     (peelingFresh : K .route8PeelingDescent ∉ known := by simp [K_eq_iff])
     (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known := by
       simp [K_eq_iff])
@@ -1583,75 +1776,19 @@ noncomputable def selectedLargeBudgetPressureCensus
       simp [K_eq_iff])
     (demandResidualFresh : K .route8PeeledDemandResidual ∉ known := by
       simp [K_eq_iff]) :
-    False := by
-  -- `[86]`, `lem:typeA-exclusion`, on this exact ledger.
-  let excluded :=
-    (typeAExclusionRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by simp [K_eq_iff, exclusionFresh])
-  -- the ∀-piece `prop:typeB-bridge-reduction` contrapositive.
-  let bridged :=
-    (typeBBridgeReductionRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      excluded (by simp [K_eq_iff, bridgeReductionFresh])
-  -- `thm:branch-kill`'s all-pieces classification.
-  let classified :=
-    (route8PiecesClassifiedRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      bridged (by simp [K_eq_iff, classifiedFresh])
-  -- the cased quotient-freeness of the unified census, before the deficit
-  -- row: the ratified casing is the branch surrogate of the exit-(5) closure
-  -- that `lem:typeB-bridge-with-route8-core`'s proof invokes through
-  -- `lem:typeA-exclusion`.
-  match route8QuotientDichotomy (data := spineData) classified
-      (by simp [K_eq_iff, quotientFreeFresh])
-      (by simp [K_eq_iff, quotientResidualFresh]) with
-  | .right residual =>
-      -- the manuscript's profile demand-record lane.
-      exact selectedRouteEightQuotientResidual residual
-  | .left quotientFree =>
-      -- `def:typeA-unified-entries` at the extracted route-8 cores
-      -- (`lem:typeB-bridge-with-route8-core`'s `𝒜_X`).
-      let extractedCensus :=
-        (route8ExtractedEntryCensusRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          quotientFree (by simp [K_eq_iff, extractedCensusFresh])
-      -- the tested `prop:typeB-bridge-sublinear` hypotheses.
-      match typeBSublinearDichotomy (data := spineData) extractedCensus
-          (by simp [K_eq_iff, sublinearFresh])
-          (by simp [K_eq_iff, sublinearResidualFresh]) with
-      | .right residual =>
-          -- the manuscript's Part IX bridge-residual lane.
-          exact selectedTypeBSublinearResidual residual
-      | .left ledgered =>
-          -- `lem:typeA-unified-deficit`.
-          let deficit :=
-            (route8UnifiedDeficitRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              ledgered (by simp [K_eq_iff, deficitFresh])
-          -- `def:typeA-unified-entries` with `lem:typeA-unified-carriers`.
-          let census :=
-            (route8UnifiedEntryCensusRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              deficit (by simp [K_eq_iff, censusFresh])
-          let demandResidual := selectedRouteEightCensus census
-            (by simp [K_eq_iff, peelingFresh])
-            (by simp [K_eq_iff, unifiedTrueFresh])
-            (by simp [K_eq_iff, stageFailedFresh])
-            (by simp [K_eq_iff, terminalFresh])
-            (by simp [K_eq_iff, demandLedgerFresh])
-            (by simp [K_eq_iff, demandAbsorptionFresh])
-            (by simp [K_eq_iff, windowBlockersFresh])
-            (by simp [K_eq_iff, demandResidualFresh])
-          -- `[181]`: the exact peeled target-defect demand ledger is the only
-          -- unclosed continuation of this repaired arm.
-          exact selectedRouteEightPeeledDemandResidual demandResidual
+    ExactLedger EGInput.{u} selected
+      ([K .route8PeeledDemandResidual, K .route8WindowBlockers,
+        K .route8DemandAbsorption, K .route8DemandLedger,
+        K .route8StageRateFailed, K .route8PeelingDescent] ++ known) :=
+  selectedRouteEightCensus history
+    (by simp [K_eq_iff, peelingFresh])
+    (by simp [K_eq_iff, unifiedTrueFresh])
+    (by simp [K_eq_iff, stageFailedFresh])
+    (by simp [K_eq_iff, terminalFresh])
+    (by simp [K_eq_iff, demandLedgerFresh])
+    (by simp [K_eq_iff, demandAbsorptionFresh])
+    (by simp [K_eq_iff, windowBlockersFresh])
+    (by simp [K_eq_iff, demandResidualFresh])
 
 /-- **Nodes `[110]`--`[116]`: the route-8 residual of Part IX**, on the shared
   `[109]` residual reached by the no-edge of exit `(7)` (index-polymorphic).
@@ -1986,7 +2123,7 @@ noncomputable def selectedTypeBDecoratedCertificate
           (by simp [K_eq_iff, cycleFresh]) (by simp [K_eq_iff, freeFresh]) with
       | .left cycleHistory =>
           rcases (cycleHistory.get (K .typeBDirectCycle)).down with
-            canonical | absorbed
+            canonical | absorbed | sameToken
           · obtain ⟨packing, valid, _maximal, _component, _present, _centres,
               _assigned, _centre, _member, _high, directCycle⟩ := canonical
             exact (cycleHistory.get (K .selection)).down.1
@@ -2002,21 +2139,30 @@ noncomputable def selectedTypeBDecoratedCertificate
             exact (cycleHistory.get (K .selection)).down.1
               (Graph.TypeBDirectCycle.hasCycleWithLength_of_directCycleConfiguration
                 valid directCycle)
+          · obtain ⟨packing, valid, _maximal, _core, _envelope, _coreEq,
+                _nonempty, _marked, _centre, _member, _high, directCycle⟩ :=
+              sameToken
+            exact (cycleHistory.get (K .selection)).down.1
+              (Graph.TypeBDirectCycle.hasCycleWithLength_of_directCycleConfiguration
+                valid directCycle)
       | .right freeHistory =>
-          match b2AssignmentDichotomy (data := spineData) freeHistory
+          -- B1 is a fact of every direct-cycle-free marked fan, independently
+          -- of whether B2 succeeds.  Publish it before the B2 split so both
+          -- resulting exact ledgers retain the same local incidence proof.
+          let hybrid :=
+            (hybridEntryRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              freeHistory (by simp [K_eq_iff, hybridFresh])
+          match b2AssignmentDichotomy (data := spineData) hybrid
               (by simp [K_eq_iff, choiceFresh])
               (by simp [K_eq_iff, obstructionFresh]) with
           | .left choiceHistory =>
-              let hybrid :=
-                (hybridEntryRow (BranchState := BranchState)
-                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                  choiceHistory (by simp [K_eq_iff, hybridFresh])
               let ledger :=
                 (disjointPostLedgerComponentsRow (BranchState := BranchState)
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                  hybrid (by simp [K_eq_iff, ledgerFresh])
+                  choiceHistory (by simp [K_eq_iff, ledgerFresh])
               match typeBExclusionDichotomy (data := spineData) ledger
                   (by simp [K_eq_iff, excludedFresh])
                   (by simp [K_eq_iff, exclusionResidualFresh]) with
@@ -2105,7 +2251,10 @@ noncomputable def selectedTypeBDecoratedContinuation
     (decoratedHeavyFresh : K .typeBFanHeavyCentre ∉ known)
     (decoratedDegreeFourFresh : K .typeBFanDegreeFourCentres ∉ known)
     (decoratedLocalFresh : K .typeBFanLocalDichotomy ∉ known)
+    (decoratedCompatibilityFresh :
+      K .sameCenterOpenPortCompatibility ∉ known)
     (decoratedProfileFresh : K .typeBFanDegreeFourProfile ∉ known)
+    (decoratedTriangularCoreFresh : K .triangularFanCore ∉ known)
     (fanCapFresh : K .fanCertificateCap ∉ known)
     (decoratedMarkedFresh : K .fanCertificateMarked ∉ known)
     (decoratedResidualFresh : K .fanCertificateResidual ∉ known)
@@ -2163,12 +2312,19 @@ noncomputable def selectedTypeBDecoratedContinuation
       (by simp [K_eq_iff, decoratedHeavyFresh])
       (by simp [K_eq_iff, decoratedDegreeFourFresh]) with
   | .left heavyHistory =>
-      -- `[69]`
+      -- `[69]`: the compatibility lemma is a first-class ledger fact consumed
+      -- by the heavy-centre dichotomy on this same decorated envelope.
+      let compatibleHistory :=
+        (sameCenterOpenPortCompatibilityRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          heavyHistory
+            (by simp [K_eq_iff, decoratedCompatibilityFresh])
       let localDichotomy :=
         (typeBFanLocalDichotomyRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          heavyHistory (by simp [K_eq_iff, decoratedLocalFresh])
+          compatibleHistory (by simp [K_eq_iff, decoratedLocalFresh])
       -- `[70]`
       let capped :=
         (fanCertificateCapRow (BranchState := BranchState)
@@ -2200,12 +2356,17 @@ noncomputable def selectedTypeBDecoratedContinuation
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           degreeFourHistory (by simp [K_eq_iff, decoratedProfileFresh])
+      let triangularCore :=
+        (triangularFanCoreRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          profile (by simp [K_eq_iff, decoratedTriangularCoreFresh])
       -- `[70]`/`[80]`
       let capped :=
         (fanCertificateCapRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          profile (by simp [K_eq_iff, fanCapFresh])
+          triangularCore (by simp [K_eq_iff, fanCapFresh])
       exact selectedTypeBDecoratedCertificate capped
         (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh])
         (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh])
@@ -2252,7 +2413,10 @@ noncomputable def selectedTypeADecoratedHandoff
     (decoratedHeavyFresh : K .typeBFanHeavyCentre ∉ known)
     (decoratedDegreeFourFresh : K .typeBFanDegreeFourCentres ∉ known)
     (decoratedLocalFresh : K .typeBFanLocalDichotomy ∉ known)
+    (decoratedCompatibilityFresh :
+      K .sameCenterOpenPortCompatibility ∉ known)
     (decoratedProfileFresh : K .typeBFanDegreeFourProfile ∉ known)
+    (decoratedTriangularCoreFresh : K .triangularFanCore ∉ known)
     (fanCapFresh : K .fanCertificateCap ∉ known)
     (decoratedMarkedFresh : K .fanCertificateMarked ∉ known)
     (decoratedResidualFresh : K .fanCertificateResidual ∉ known)
@@ -2288,7 +2452,10 @@ noncomputable def selectedTypeADecoratedHandoff
   exact selectedTypeBDecoratedContinuation assigned
     (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh])
     (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh])
-    (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedProfileFresh])
+    (by simp [K_eq_iff, decoratedLocalFresh])
+    (by simp [K_eq_iff, decoratedCompatibilityFresh])
+    (by simp [K_eq_iff, decoratedProfileFresh])
+    (by simp [K_eq_iff, decoratedTriangularCoreFresh])
     (by simp [K_eq_iff, fanCapFresh])
     (by simp [K_eq_iff, decoratedMarkedFresh])
     (by simp [K_eq_iff, decoratedResidualFresh])
@@ -2373,7 +2540,10 @@ noncomputable def selectedTypeAExitFiveToSeven
     (decoratedHeavyFresh : K .typeBFanHeavyCentre ∉ known)
     (decoratedDegreeFourFresh : K .typeBFanDegreeFourCentres ∉ known)
     (decoratedLocalFresh : K .typeBFanLocalDichotomy ∉ known)
+    (decoratedCompatibilityFresh :
+      K .sameCenterOpenPortCompatibility ∉ known)
     (decoratedProfileFresh : K .typeBFanDegreeFourProfile ∉ known)
+    (decoratedTriangularCoreFresh : K .triangularFanCore ∉ known)
     (fanCapFresh : K .fanCertificateCap ∉ known)
     (decoratedMarkedFresh : K .fanCertificateMarked ∉ known)
     (decoratedResidualFresh : K .fanCertificateResidual ∉ known)
@@ -2437,7 +2607,7 @@ noncomputable def selectedTypeAExitFiveToSeven
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                   producedHistory (by simp [K_eq_iff, sevenHandoffFresh])
               exact selectedTypeADecoratedHandoff handoff (by simp [K_eq_iff, decoratedFresh])
-                (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
+                (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedCompatibilityFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, decoratedTriangularCoreFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
                 (by simp [K_eq_iff, censusFresh]) (by simp [K_eq_iff, twoFresh])
                 (by simp [K_eq_iff, noTwoFresh]) (by simp [K_eq_iff, trueEntryFresh])
                 (by simp [K_eq_iff, unifiedNegativeFresh])
@@ -2519,7 +2689,10 @@ noncomputable def selectedTypeAExitFiveToSevenSilent
     (decoratedHeavyFresh : K .typeBFanHeavyCentre ∉ known)
     (decoratedDegreeFourFresh : K .typeBFanDegreeFourCentres ∉ known)
     (decoratedLocalFresh : K .typeBFanLocalDichotomy ∉ known)
+    (decoratedCompatibilityFresh :
+      K .sameCenterOpenPortCompatibility ∉ known)
     (decoratedProfileFresh : K .typeBFanDegreeFourProfile ∉ known)
+    (decoratedTriangularCoreFresh : K .triangularFanCore ∉ known)
     (fanCapFresh : K .fanCertificateCap ∉ known)
     (decoratedMarkedFresh : K .fanCertificateMarked ∉ known)
     (decoratedResidualFresh : K .fanCertificateResidual ∉ known)
@@ -2598,7 +2771,7 @@ noncomputable def selectedTypeAExitFiveToSevenSilent
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                   producedHistory (by simp [K_eq_iff, sevenHandoffFresh])
               exact selectedTypeADecoratedHandoff handoff (by simp [K_eq_iff, decoratedFresh])
-                (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
+                (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedCompatibilityFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, decoratedTriangularCoreFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
                 (by simp [K_eq_iff, censusFresh]) (by simp [K_eq_iff, twoFresh])
                 (by simp [K_eq_iff, noTwoFresh]) (by simp [K_eq_iff, trueEntryFresh])
                 (by simp [K_eq_iff, unifiedNegativeFresh])
@@ -2716,7 +2889,10 @@ noncomputable def selectedTypeAExitFourChain
     (decoratedHeavyFresh : K .typeBFanHeavyCentre ∉ known)
     (decoratedDegreeFourFresh : K .typeBFanDegreeFourCentres ∉ known)
     (decoratedLocalFresh : K .typeBFanLocalDichotomy ∉ known)
+    (decoratedCompatibilityFresh :
+      K .sameCenterOpenPortCompatibility ∉ known)
     (decoratedProfileFresh : K .typeBFanDegreeFourProfile ∉ known)
+    (decoratedTriangularCoreFresh : K .triangularFanCore ∉ known)
     (fanCapFresh : K .fanCertificateCap ∉ known)
     (decoratedMarkedFresh : K .fanCertificateMarked ∉ known)
     (decoratedResidualFresh : K .fanCertificateResidual ∉ known)
@@ -2782,7 +2958,7 @@ noncomputable def selectedTypeAExitFourChain
             (by simp [K_eq_iff, sixProperFresh]) (by simp [K_eq_iff, sixGlobalFresh])
             (by simp [K_eq_iff, sevenProducedFresh]) (by simp [K_eq_iff, sevenFreeFresh])
             (by simp [K_eq_iff, sevenHandoffFresh]) (by simp [K_eq_iff, decoratedFresh])
-            (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
+            (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedCompatibilityFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, decoratedTriangularCoreFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
             (by simp [K_eq_iff, censusFresh]) (by simp [K_eq_iff, twoFresh])
             (by simp [K_eq_iff, noTwoFresh]) (by simp [K_eq_iff, trueEntryFresh])
             (by simp [K_eq_iff, unifiedNegativeFresh])
@@ -2813,7 +2989,7 @@ noncomputable def selectedTypeAExitFourChain
         (by simp [K_eq_iff, sixProperFresh]) (by simp [K_eq_iff, sixGlobalFresh])
         (by simp [K_eq_iff, sevenProducedFresh]) (by simp [K_eq_iff, sevenFreeFresh])
         (by simp [K_eq_iff, sevenHandoffFresh]) (by simp [K_eq_iff, decoratedFresh])
-        (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
+        (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedCompatibilityFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, decoratedTriangularCoreFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
         (by simp [K_eq_iff, censusFresh]) (by simp [K_eq_iff, twoFresh])
         (by simp [K_eq_iff, noTwoFresh]) (by simp [K_eq_iff, trueEntryFresh])
         (by simp [K_eq_iff, unifiedNegativeFresh])
@@ -2860,7 +3036,10 @@ noncomputable def selectedTypeAExitFourChainSilent
     (decoratedHeavyFresh : K .typeBFanHeavyCentre ∉ known)
     (decoratedDegreeFourFresh : K .typeBFanDegreeFourCentres ∉ known)
     (decoratedLocalFresh : K .typeBFanLocalDichotomy ∉ known)
+    (decoratedCompatibilityFresh :
+      K .sameCenterOpenPortCompatibility ∉ known)
     (decoratedProfileFresh : K .typeBFanDegreeFourProfile ∉ known)
+    (decoratedTriangularCoreFresh : K .triangularFanCore ∉ known)
     (fanCapFresh : K .fanCertificateCap ∉ known)
     (decoratedMarkedFresh : K .fanCertificateMarked ∉ known)
     (decoratedResidualFresh : K .fanCertificateResidual ∉ known)
@@ -2930,7 +3109,7 @@ noncomputable def selectedTypeAExitFourChainSilent
             (by simp [K_eq_iff, sixProperFresh]) (by simp [K_eq_iff, sixGlobalFresh])
             (by simp [K_eq_iff, sevenProducedFresh]) (by simp [K_eq_iff, sevenFreeFresh])
             (by simp [K_eq_iff, sevenHandoffFresh]) (by simp [K_eq_iff, decoratedFresh])
-            (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh]) (by simp [K_eq_iff, decoratedExcludedFresh]) (by simp [K_eq_iff, decoratedExclusionResidualFresh]) (by simp [K_eq_iff, decoratedExclusionMassFresh]) (by simp [K_eq_iff, decoratedObstructionMassFresh]) (by simp [K_eq_iff, decoratedClosureFresh])
+            (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedCompatibilityFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, decoratedTriangularCoreFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh]) (by simp [K_eq_iff, decoratedExcludedFresh]) (by simp [K_eq_iff, decoratedExclusionResidualFresh]) (by simp [K_eq_iff, decoratedExclusionMassFresh]) (by simp [K_eq_iff, decoratedObstructionMassFresh]) (by simp [K_eq_iff, decoratedClosureFresh])
             (by simp [K_eq_iff, profileFresh]) (by simp [K_eq_iff, squeezeFresh])
             (by simp [K_eq_iff, burdenFresh]) (by simp [K_eq_iff, deficitFresh])
             (by simp [K_eq_iff, deficitFailsFresh])
@@ -2964,7 +3143,7 @@ noncomputable def selectedTypeAExitFourChainSilent
         (by simp [K_eq_iff, sixProperFresh]) (by simp [K_eq_iff, sixGlobalFresh])
         (by simp [K_eq_iff, sevenProducedFresh]) (by simp [K_eq_iff, sevenFreeFresh])
         (by simp [K_eq_iff, sevenHandoffFresh]) (by simp [K_eq_iff, decoratedFresh])
-        (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh]) (by simp [K_eq_iff, decoratedExcludedFresh]) (by simp [K_eq_iff, decoratedExclusionResidualFresh]) (by simp [K_eq_iff, decoratedExclusionMassFresh]) (by simp [K_eq_iff, decoratedObstructionMassFresh]) (by simp [K_eq_iff, decoratedClosureFresh])
+        (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedCompatibilityFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, decoratedTriangularCoreFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh]) (by simp [K_eq_iff, decoratedExcludedFresh]) (by simp [K_eq_iff, decoratedExclusionResidualFresh]) (by simp [K_eq_iff, decoratedExclusionMassFresh]) (by simp [K_eq_iff, decoratedObstructionMassFresh]) (by simp [K_eq_iff, decoratedClosureFresh])
         (by simp [K_eq_iff, profileFresh]) (by simp [K_eq_iff, squeezeFresh])
         (by simp [K_eq_iff, burdenFresh]) (by simp [K_eq_iff, deficitFresh])
         (by simp [K_eq_iff, deficitFailsFresh])
@@ -3038,7 +3217,10 @@ noncomputable def selectedTypeAVisibleExitFour
     (decoratedHeavyFresh : K .typeBFanHeavyCentre ∉ known)
     (decoratedDegreeFourFresh : K .typeBFanDegreeFourCentres ∉ known)
     (decoratedLocalFresh : K .typeBFanLocalDichotomy ∉ known)
+    (decoratedCompatibilityFresh :
+      K .sameCenterOpenPortCompatibility ∉ known)
     (decoratedProfileFresh : K .typeBFanDegreeFourProfile ∉ known)
+    (decoratedTriangularCoreFresh : K .triangularFanCore ∉ known)
     (fanCapFresh : K .fanCertificateCap ∉ known)
     (decoratedMarkedFresh : K .fanCertificateMarked ∉ known)
     (decoratedResidualFresh : K .fanCertificateResidual ∉ known)
@@ -3091,7 +3273,7 @@ noncomputable def selectedTypeAVisibleExitFour
     (by simp [K_eq_iff, sixProperFresh]) (by simp [K_eq_iff, sixGlobalFresh])
     (by simp [K_eq_iff, sevenProducedFresh]) (by simp [K_eq_iff, sevenFreeFresh])
     (by simp [K_eq_iff, sevenHandoffFresh]) (by simp [K_eq_iff, decoratedFresh])
-    (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
+    (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedCompatibilityFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, decoratedTriangularCoreFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
     (by simp [K_eq_iff, censusFresh]) (by simp [K_eq_iff, twoFresh])
     (by simp [K_eq_iff, noTwoFresh]) (by simp [K_eq_iff, trueEntryFresh])
     (by simp [K_eq_iff, unifiedNegativeFresh])
@@ -3138,7 +3320,10 @@ noncomputable def selectedTypeASilentExitChain
     (decoratedHeavyFresh : K .typeBFanHeavyCentre ∉ known)
     (decoratedDegreeFourFresh : K .typeBFanDegreeFourCentres ∉ known)
     (decoratedLocalFresh : K .typeBFanLocalDichotomy ∉ known)
+    (decoratedCompatibilityFresh :
+      K .sameCenterOpenPortCompatibility ∉ known)
     (decoratedProfileFresh : K .typeBFanDegreeFourProfile ∉ known)
+    (decoratedTriangularCoreFresh : K .triangularFanCore ∉ known)
     (fanCapFresh : K .fanCertificateCap ∉ known)
     (decoratedMarkedFresh : K .fanCertificateMarked ∉ known)
     (decoratedResidualFresh : K .fanCertificateResidual ∉ known)
@@ -3196,7 +3381,7 @@ noncomputable def selectedTypeASilentExitChain
     (by simp [K_eq_iff, sixProperFresh]) (by simp [K_eq_iff, sixGlobalFresh])
     (by simp [K_eq_iff, sevenProducedFresh]) (by simp [K_eq_iff, sevenFreeFresh])
     (by simp [K_eq_iff, sevenHandoffFresh]) (by simp [K_eq_iff, decoratedFresh])
-    (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh]) (by simp [K_eq_iff, decoratedExcludedFresh]) (by simp [K_eq_iff, decoratedExclusionResidualFresh]) (by simp [K_eq_iff, decoratedExclusionMassFresh]) (by simp [K_eq_iff, decoratedObstructionMassFresh]) (by simp [K_eq_iff, decoratedClosureFresh])
+    (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedCompatibilityFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, decoratedTriangularCoreFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh]) (by simp [K_eq_iff, decoratedExcludedFresh]) (by simp [K_eq_iff, decoratedExclusionResidualFresh]) (by simp [K_eq_iff, decoratedExclusionMassFresh]) (by simp [K_eq_iff, decoratedObstructionMassFresh]) (by simp [K_eq_iff, decoratedClosureFresh])
     (by simp [K_eq_iff, profileFresh]) (by simp [K_eq_iff, squeezeFresh])
     (by simp [K_eq_iff, burdenFresh]) (by simp [K_eq_iff, deficitFresh])
     (by simp [K_eq_iff, deficitFailsFresh])
@@ -3290,7 +3475,10 @@ noncomputable def selectedTypeAVisibleExitChain
     (decoratedHeavyFresh : K .typeBFanHeavyCentre ∉ known)
     (decoratedDegreeFourFresh : K .typeBFanDegreeFourCentres ∉ known)
     (decoratedLocalFresh : K .typeBFanLocalDichotomy ∉ known)
+    (decoratedCompatibilityFresh :
+      K .sameCenterOpenPortCompatibility ∉ known)
     (decoratedProfileFresh : K .typeBFanDegreeFourProfile ∉ known)
+    (decoratedTriangularCoreFresh : K .triangularFanCore ∉ known)
     (fanCapFresh : K .fanCertificateCap ∉ known)
     (decoratedMarkedFresh : K .fanCertificateMarked ∉ known)
     (decoratedResidualFresh : K .fanCertificateResidual ∉ known)
@@ -3366,7 +3554,7 @@ noncomputable def selectedTypeAVisibleExitChain
                 (by simp [K_eq_iff, sevenProducedFresh])
                 (by simp [K_eq_iff, sevenFreeFresh]) (by simp [K_eq_iff, sevenHandoffFresh])
                 (by simp [K_eq_iff, decoratedFresh])
-                (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
+                (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedCompatibilityFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, decoratedTriangularCoreFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
                 (by simp [K_eq_iff, censusFresh]) (by simp [K_eq_iff, twoFresh])
                 (by simp [K_eq_iff, noTwoFresh]) (by simp [K_eq_iff, trueEntryFresh])
                 (by simp [K_eq_iff, unifiedNegativeFresh])
@@ -3453,7 +3641,10 @@ noncomputable def selectedTypeALowSurplusContinuation
     (decoratedHeavyFresh : K .typeBFanHeavyCentre ∉ known := by simp [K_eq_iff])
     (decoratedDegreeFourFresh : K .typeBFanDegreeFourCentres ∉ known := by simp [K_eq_iff])
     (decoratedLocalFresh : K .typeBFanLocalDichotomy ∉ known := by simp [K_eq_iff])
+    (decoratedCompatibilityFresh :
+      K .sameCenterOpenPortCompatibility ∉ known := by simp [K_eq_iff])
     (decoratedProfileFresh : K .typeBFanDegreeFourProfile ∉ known := by simp [K_eq_iff])
+    (decoratedTriangularCoreFresh : K .triangularFanCore ∉ known := by simp [K_eq_iff])
     (fanCapFresh : K .fanCertificateCap ∉ known := by simp [K_eq_iff])
     (decoratedMarkedFresh : K .fanCertificateMarked ∉ known := by simp [K_eq_iff])
     (decoratedResidualFresh : K .fanCertificateResidual ∉ known := by simp [K_eq_iff])
@@ -3566,7 +3757,7 @@ noncomputable def selectedTypeALowSurplusContinuation
             (by simp [K_eq_iff, sixProperFresh]) (by simp [K_eq_iff, sixGlobalFresh])
             (by simp [K_eq_iff, sevenProducedFresh]) (by simp [K_eq_iff, sevenFreeFresh])
             (by simp [K_eq_iff, sevenHandoffFresh]) (by simp [K_eq_iff, decoratedFresh])
-            (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
+            (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedCompatibilityFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, decoratedTriangularCoreFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
             (by simp [K_eq_iff, censusFresh]) (by simp [K_eq_iff, twoFresh])
             (by simp [K_eq_iff, noTwoFresh]) (by simp [K_eq_iff, trueEntryFresh])
             (by simp [K_eq_iff, unifiedNegativeFresh])
@@ -3586,7 +3777,7 @@ noncomputable def selectedTypeALowSurplusContinuation
             (by simp [K_eq_iff, sixProperFresh]) (by simp [K_eq_iff, sixGlobalFresh])
             (by simp [K_eq_iff, sevenProducedFresh]) (by simp [K_eq_iff, sevenFreeFresh])
             (by simp [K_eq_iff, sevenHandoffFresh]) (by simp [K_eq_iff, decoratedFresh])
-            (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh]) (by simp [K_eq_iff, decoratedExcludedFresh]) (by simp [K_eq_iff, decoratedExclusionResidualFresh]) (by simp [K_eq_iff, decoratedExclusionMassFresh]) (by simp [K_eq_iff, decoratedObstructionMassFresh]) (by simp [K_eq_iff, decoratedClosureFresh])
+            (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedCompatibilityFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, decoratedTriangularCoreFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh]) (by simp [K_eq_iff, decoratedExcludedFresh]) (by simp [K_eq_iff, decoratedExclusionResidualFresh]) (by simp [K_eq_iff, decoratedExclusionMassFresh]) (by simp [K_eq_iff, decoratedObstructionMassFresh]) (by simp [K_eq_iff, decoratedClosureFresh])
             (by simp [K_eq_iff, profileFresh]) (by simp [K_eq_iff, squeezeFresh])
             (by simp [K_eq_iff, burdenFresh]) (by simp [K_eq_iff, deficitFresh])
             (by simp [K_eq_iff, deficitFailsFresh])
@@ -3644,6 +3835,8 @@ noncomputable def selectedTypeBHighSurplusContinuation
     (heavyFresh : K .typeBFanHeavyCentre ∉ known := by simp [K_eq_iff])
     (degreeFourFresh : K .typeBFanDegreeFourCentres ∉ known := by simp [K_eq_iff])
     (localFresh : K .typeBFanLocalDichotomy ∉ known := by simp [K_eq_iff])
+    (compatibilityFresh : K .sameCenterOpenPortCompatibility ∉ known := by
+      simp [K_eq_iff])
     (capFresh : K .fanCertificateCap ∉ known := by simp [K_eq_iff])
     (markedFresh : K .fanCertificateMarked ∉ known := by simp [K_eq_iff])
     (residualFresh : K .fanCertificateResidual ∉ known := by simp [K_eq_iff])
@@ -3675,6 +3868,7 @@ noncomputable def selectedTypeBHighSurplusContinuation
     (obstructionMassFresh : K .typeBOverlapObstructionMass ∉ known := by simp [K_eq_iff])
     (certificateMassFresh : K .fanCertificateResidualMass ∉ known := by simp [K_eq_iff])
     (degreeFourProfileFresh : K .typeBFanDegreeFourProfile ∉ known := by simp [K_eq_iff])
+    (triangularCoreFresh : K .triangularFanCore ∉ known := by simp [K_eq_iff])
     (closureFresh : closed ∉ known := by simp [K_eq_iff]) :
     False := by
   -- The common Part IX census reads the object-wide receiver routing of
@@ -3701,12 +3895,18 @@ noncomputable def selectedTypeBHighSurplusContinuation
   match typeBFanDegreeDichotomy (data := spineData) normal
       (by simp [K_eq_iff, heavyFresh]) (by simp [K_eq_iff, degreeFourFresh]) with
   | .left heavyHistory =>
-      -- `[69]`: `cor:heavy-center-local-dichotomy` at every heavy fan centre.
+      -- `[69]`: publish `lem:same-center-open-port-compatibility`, then derive
+      -- `cor:heavy-center-local-dichotomy` from that registered fact.
+      let compatibleHistory :=
+        (sameCenterOpenPortCompatibilityRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          heavyHistory (by simp [K_eq_iff, compatibilityFresh])
       let localDichotomy :=
         (typeBFanLocalDichotomyRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          heavyHistory (by simp [K_eq_iff, localFresh])
+          compatibleHistory (by simp [K_eq_iff, localFresh])
       -- `[70]`: `lem:fan-certificate`, the certificate-marked degree cap.
       let capped :=
         (fanCertificateCapRow (BranchState := BranchState)
@@ -3734,6 +3934,11 @@ noncomputable def selectedTypeBHighSurplusContinuation
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           degreeFourHistory (by simp [K_eq_iff, degreeFourProfileFresh])
+      let triangularCore :=
+        (triangularFanCoreRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          profile (by simp [K_eq_iff, triangularCoreFresh])
       -- `lem:fan-certificate` (the `[70]` cap, a fact of the object: every
       -- certificate-marked centre is capped by the label packing number), which
       -- `[82]`'s certificate-closed entries and the B1 budget read.
@@ -3741,7 +3946,7 @@ noncomputable def selectedTypeBHighSurplusContinuation
         (fanCertificateCapRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          profile (by simp [K_eq_iff, capFresh])
+          triangularCore (by simp [K_eq_iff, capFresh])
       exact selectedTypeBDecoratedCertificate capped
         (by simp [K_eq_iff, markedFresh]) (by simp [K_eq_iff, residualFresh])
         (by simp [K_eq_iff, certificateMassFresh]) (by simp [K_eq_iff, cycleFresh])
@@ -4150,6 +4355,8 @@ noncomputable def selectedNetChargeContinuation
     (fanHeavyFresh : K .typeBFanHeavyCentre ∉ known := by simp [K_eq_iff])
     (fanDegreeFourFresh : K .typeBFanDegreeFourCentres ∉ known := by simp [K_eq_iff])
     (fanLocalFresh : K .typeBFanLocalDichotomy ∉ known := by simp [K_eq_iff])
+    (fanCompatibilityFresh : K .sameCenterOpenPortCompatibility ∉ known := by
+      simp [K_eq_iff])
     (fanCapFresh : K .fanCertificateCap ∉ known := by simp [K_eq_iff])
     (decoratedMarkedFresh : K .fanCertificateMarked ∉ known := by simp [K_eq_iff])
     (decoratedResidualFresh : K .fanCertificateResidual ∉ known := by simp [K_eq_iff])
@@ -4186,13 +4393,17 @@ noncomputable def selectedNetChargeContinuation
     (obstructionMassFresh : K .typeBOverlapObstructionMass ∉ known := by simp [K_eq_iff])
     (certificateMassFresh : K .fanCertificateResidualMass ∉ known := by simp [K_eq_iff])
     (degreeFourProfileFresh : K .typeBFanDegreeFourProfile ∉ known := by simp [K_eq_iff])
+    (triangularCoreFresh : K .triangularFanCore ∉ known := by simp [K_eq_iff])
     -- `[108]` decorated handoff, `[110]`--`[116]` route 8, `[76]`/`[85]` → `[123]`.
     (decoratedFresh : K .typeBDecoratedAssignedSupport ∉ known := by simp [K_eq_iff])
     (cubicBaselineFresh : K .cubicBaseline ∉ known := by simp [K_eq_iff])
     (decoratedHeavyFresh : K .typeBFanHeavyCentre ∉ known := by simp [K_eq_iff])
     (decoratedDegreeFourFresh : K .typeBFanDegreeFourCentres ∉ known := by simp [K_eq_iff])
     (decoratedLocalFresh : K .typeBFanLocalDichotomy ∉ known := by simp [K_eq_iff])
+    (decoratedCompatibilityFresh :
+      K .sameCenterOpenPortCompatibility ∉ known := by simp [K_eq_iff])
     (decoratedProfileFresh : K .typeBFanDegreeFourProfile ∉ known := by simp [K_eq_iff])
+    (decoratedTriangularCoreFresh : K .triangularFanCore ∉ known := by simp [K_eq_iff])
     (profileFresh : K .route8ResidualProfile ∉ known := by simp [K_eq_iff])
     (squeezeFresh : K .route8GlobalSqueeze ∉ known := by simp [K_eq_iff])
     (burdenFresh : K .route8BasinBurden ∉ known := by simp [K_eq_iff])
@@ -4303,7 +4514,7 @@ noncomputable def selectedNetChargeContinuation
                 (by simp [K_eq_iff, sevenProducedFresh])
                 (by simp [K_eq_iff, sevenFreeFresh]) (by simp [K_eq_iff, sevenHandoffFresh])
                 (by simp [K_eq_iff, decoratedFresh])
-                (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh]) (by simp [K_eq_iff, decoratedExcludedFresh]) (by simp [K_eq_iff, decoratedExclusionResidualFresh]) (by simp [K_eq_iff, decoratedExclusionMassFresh]) (by simp [K_eq_iff, decoratedObstructionMassFresh]) (by simp [K_eq_iff, decoratedClosureFresh])
+                (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedCompatibilityFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, decoratedTriangularCoreFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh]) (by simp [K_eq_iff, decoratedExcludedFresh]) (by simp [K_eq_iff, decoratedExclusionResidualFresh]) (by simp [K_eq_iff, decoratedExclusionMassFresh]) (by simp [K_eq_iff, decoratedObstructionMassFresh]) (by simp [K_eq_iff, decoratedClosureFresh])
                 (by simp [K_eq_iff, profileFresh]) (by simp [K_eq_iff, squeezeFresh])
                 (by simp [K_eq_iff, burdenFresh]) (by simp [K_eq_iff, deficitFresh])
                 (by simp [K_eq_iff, deficitFailsFresh])
@@ -4329,7 +4540,9 @@ noncomputable def selectedNetChargeContinuation
                 (by simp [K_eq_iff, routingFresh])
                 (by simp [K_eq_iff, typeBAssignedFresh]) (by simp [K_eq_iff, typeBFanEntryFresh]) (by simp [K_eq_iff, normalFormFresh])
                 (by simp [K_eq_iff, fanHeavyFresh]) (by simp [K_eq_iff, fanDegreeFourFresh])
-                (by simp [K_eq_iff, fanLocalFresh]) (by simp [K_eq_iff, fanCapFresh])
+                (by simp [K_eq_iff, fanLocalFresh])
+                (by simp [K_eq_iff, fanCompatibilityFresh])
+                (by simp [K_eq_iff, fanCapFresh])
                 (by simp [K_eq_iff, fanMarkedFresh]) (by simp [K_eq_iff, fanResidualFresh])
                 (by simp [K_eq_iff, cycleFresh]) (by simp [K_eq_iff, freeFresh])
                 (by simp [K_eq_iff, choiceFresh]) (by simp [K_eq_iff, obstructionFresh])
@@ -4347,6 +4560,7 @@ noncomputable def selectedNetChargeContinuation
                 (by simp [K_eq_iff, exclusionMassFresh]) (by simp [K_eq_iff, obstructionMassFresh])
                 (by simp [K_eq_iff, certificateMassFresh])
                 (by simp [K_eq_iff, degreeFourProfileFresh])
+                (by simp [K_eq_iff, triangularCoreFresh])
                 (by simp [K_eq_iff, closureFresh])
 
 
@@ -5103,10 +5317,12 @@ theorem selectedLedgerClosure
   | .left strictHistory =>
       match selectedSparseSurplusDichotomy strictHistory with
       | .left exitHistory =>
-          -- `[125]`'s sparse-exit ledger leaves the survivor chain here.  Its
-          -- paper continuation is intentionally named at the first missing
-          -- route rather than being coerced into a survivor or discarded.
-          exact selectedSparseSurplusExitContinuation exitHistory
+          -- `[125]` closes four literal exit forms and retains only the exact
+          -- attempted-quotient target-defect payload for its later peeling
+          -- handoff.  It is not coerced into the survivor branch.
+          let targetDefectHistory :=
+            selectedSparseSurplusExitContinuation exitHistory
+          exact selectedSparseTargetDefectContinuation targetDefectHistory
       | .right survivorHistory =>
           exact selectedStrictSurplusBranch survivorHistory
   | .right nearCubicHistory =>
