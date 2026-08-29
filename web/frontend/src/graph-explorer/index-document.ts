@@ -23,8 +23,18 @@ export function indexDocument(document: ProofGraphDocument): ProofIndex {
     for (const key of node.itemRefs) push(nodesByItem, key, node.id);
   }
 
+  // A step split into a sub-diamond keeps its collective number in the prose and
+  // tables: once [172] becomes the run [172a]--[172c], the manuscript still writes
+  // "[172]" for the whole. Point that bare number at the sub-diamond's entry so the
+  // reference lands on a real step -- but never over a drawn node of that number.
+  const nodeById = new Map(document.nodes.map((node) => [node.id, node]));
+  for (const node of document.nodes) {
+    const entry = /^(.*?\d+)a$/.exec(node.id);
+    if (entry && !nodeById.has(entry[1])) nodeById.set(entry[1], node);
+  }
+
   return {
-    nodeById: new Map(document.nodes.map((node) => [node.id, node])),
+    nodeById,
     itemByKey: new Map(document.items.map((item) => [item.key, item])),
     equationByKey: new Map(
       (document.equations ?? []).map((equation) => [equation.key, equation]),
