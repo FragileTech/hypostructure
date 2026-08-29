@@ -110,9 +110,11 @@ describe.each([...DOCUMENTS])("the %s document", (_slug, document) => {
     expect(document.source.files.length).toBeGreaterThan(0);
   });
 
-  it("marks a step open only when it is a terminal", () => {
+  it("marks a step open only when the manuscript declares it open", () => {
+    // Open residuals are drawn with whatever shape the flow layout needs, so
+    // openness rides on the manuscript's explicit "OPEN:" marker, not the shape.
     for (const node of document.nodes) {
-      if (node.open) expect(node.shape).toBe("terminal");
+      if (node.open) expect(node.label).toMatch(/open/i);
     }
   });
 
@@ -209,12 +211,15 @@ describe("the Erdos-Gyarfas terminal at [124]", () => {
 });
 
 describe("the Erdos-Gyarfas neutral configuration at [163]", () => {
-  it("is now a branch test in Part XII, and the paper leaves no outcome open", () => {
+  it("is a branch test in Part XII, with the open residuals declared elsewhere", () => {
     const node = ERDOS.nodes.find((candidate) => candidate.id === "163")!;
     expect(node.open).toBeUndefined();
     expect(node.shape).toBe("decision");
     expect(node.group).toBe("fig:proof-diagram-part-xii");
-    expect(ERDOS.nodes.filter((candidate) => candidate.open)).toEqual([]);
+    // The manuscript now closes into three named residuals and no others.
+    expect(
+      ERDOS.nodes.filter((candidate) => candidate.open).map((candidate) => candidate.id).sort(),
+    ).toEqual(["172a", "181", "182"]);
 
     show(ERDOS, "163");
     expect(screen.getByText("Branch test")).toBeInTheDocument();
@@ -266,7 +271,7 @@ describe("referee mode", () => {
     // Its own result, what it builds on, and where it falls.
     expect(within(panel).getAllByText("cor:p13-exists").length).toBeGreaterThan(0);
     expect(within(panel).getByText("Rests on").parentElement).toHaveTextContent(/Hegde/);
-    expect(within(panel).getByText(/165 later steps/)).toBeInTheDocument();
+    expect(within(panel).getByText(/169 later steps/)).toBeInTheDocument();
     const where = locate(ERDOS, "erdos-gyarfas", "cor:p13-exists")!;
     expect(within(panel).getAllByText(`page ${where.page} of The paper`)[0]).toHaveAttribute(
       "href",
@@ -404,13 +409,15 @@ describe("referee mode", () => {
     // Kernel-verified steps carry a check; steps still resting on an unfinished
     // producer do not.  [7] counts as proved even though it is a terminal the
     // proof only ever refutes -- discharging the branch is the proof of it.
-    // [124] has no Lean at all: its one route runs through an undefined producer.
+    // [172a] is one of the three residuals the manuscript still leaves open, so
+    // no Lean stands behind it and it carries no check.
     const badge = (id: string) =>
       view.container
         .querySelector(`.react-flow__node[data-id="${id}"] .proof-node-verified`);
     expect(badge("5")).not.toBeNull();
     expect(badge("7")).not.toBeNull();
-    expect(badge("124")).toBeNull();
+    expect(view.container.querySelector(`.react-flow__node[data-id="172a"]`)).not.toBeNull();
+    expect(badge("172a")).toBeNull();
     expect(screen.getByRole("status")).toHaveTextContent("clear");
 
     changes.length = 0;

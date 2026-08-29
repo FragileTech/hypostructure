@@ -197,9 +197,12 @@ export function GraphExplorer({ document, state, onChange }: GraphExplorerProps)
 
   const selectNode = useCallback(
     (id: string) => {
-      onChange({ selected: id, item: null, ...reveal(id) });
+      // A collective number (e.g. "[172]") resolves to the sub-diamond's entry;
+      // select that real node so the canvas highlights it.
+      const canonical = index.nodeById.get(id)?.id ?? id;
+      onChange({ selected: canonical, item: null, ...reveal(canonical) });
     },
-    [onChange, reveal],
+    [index, onChange, reveal],
   );
 
   /**
