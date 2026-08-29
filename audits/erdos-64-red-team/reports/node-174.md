@@ -50,7 +50,7 @@ where (H=|\mathcal P_{\rm hot}|) and (C=|\mathcal P_{\rm cold}|).  Write (W=\big
 
 On the ordinary spine route, the only live edge to [24] is the bounded arm of [153], so that tagged residual also carries
 \[
-13C\le(13+B_{\rm cold})\sigma(G)
+9C\le(9+B_{\rm cold})\sigma(G)
 \]
 in the exact Lean normalization.  This is an upper bound on cold mass, not a positive lower bound and not a witness that a selected corridor exists.  The graph ancestry extractor also lists the dense [159]--[161] route.  On the manuscript's [160]-yes route, [161] already supplies the exact negative-net-charge comparison, so the [173]-no arm is empty there; this does not supply `coldMassBounded` as an untagged common premise.
 
@@ -74,7 +74,7 @@ The facts usable at [174] are:
 - `[22]`: the actual hot/cold partition and (p_{13}=H+C).
 - `[146] -- no`, on the ordinary cold route: (p_{13}/n\ge1/78).
 - `[148] -- no`: the live-hot code does not overflow the exact skeleton budget.  Its asymptotic consequence is (H\le\theta_{\rm win}n+o(n)); no exact positive value of (n-73H-4(\sigma_W-\sigma_R)) is retained.
-- `[153] -- bounded`, on the ordinary route: (13C\le(13+B_{\rm cold})\sigma(G)), followed by the finite density slack at [24].  This permits (C=0).
+- `[153] -- bounded`, on the ordinary route: (9C\le(9+B_{\rm cold})\sigma(G)), followed by the finite density slack at [24].  This permits (C=0).
 - `[55]`--`[57]`: the large-budget residual and the object-exact decision at [173].
 - `[173] -- no`: the failed strict collision, hence only the weak cleared inequality at [174].
 
@@ -216,7 +216,7 @@ The no-arm of [173] is
 Move the (60H+60C) terms to the right-hand support identity and collect the packing terms:
 \[
 60H+60C+4\sigma_W-4\sigma_R
-\ge n-13H-13C,
+\ge n-13(H+C),
 \]
 hence
 \[

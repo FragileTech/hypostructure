@@ -653,7 +653,7 @@
     "152": {
       "audited_at": null,
       "current_contract_sha256": "fdf22e609b857ed0c4bb53576ca8f354dd1210193b3a0962bc8ca2b73c8ff6c7",
-      "label": "stub excess:\\\\\\(b(\\mathfrak S_{\\rm cold})\\ge13C-o(n)\\)",
+      "label": "selected interior-stub excess:\\\\\\(b_{\\rm int}(\\mathfrak S_{\\rm cold})\\ge9C-o(n)\\)",
       "panel": "fig:proof-diagram-part-xi",
       "recorded_contract_sha256": null,
       "report": "reports/node-152.md",
@@ -664,7 +664,7 @@
     "153": {
       "audited_at": null,
       "current_contract_sha256": "7322a792392d031a0508883f38ca5029defd90ac3556e1f922e4c2f9ed2b1d78",
-      "label": "linear first-failure\\\\extraction?\\\\\\(N_{\\rm conf}\\ge13C/D_{\\rm cold}-o(n)\\)",
+      "label": "linear first-failure\\\\extraction?\\\\\\(N_{\\rm conf}\\ge9C/D_{\\rm cold}-o(n)\\)",
       "panel": "fig:proof-diagram-part-xi",
       "recorded_contract_sha256": null,
       "report": "reports/node-153.md",
@@ -893,7 +893,7 @@
       "verdict": "PROSE AMBIGUITY"
     },
     "168": {
-      "audited_at": "2026-08-24T21:23:03Z",
+      "audited_at": "2026-08-29T00:00:00Z",
       "current_contract_sha256": "aae6443eecac880a9270eb1d87fd2535fec091de547488f113780cfc66cce6c8",
       "label": "surviving pair attaches only at endpoints: not a selected interior half-edge",
       "panel": "fig:proof-diagram-part-xii",
@@ -906,7 +906,7 @@
         "manuscript_sha256": "106a8205a1718fbf90e1686a107b2143b9edca574e2b0c11415e7f44aee2c0f9"
       },
       "status": "audited",
-      "verdict": "WRONG ROUTING DESTINATION"
+      "verdict": "NO ISSUE FOUND"
     },
     "169": {
       "audited_at": "2026-08-24T21:30:23Z",
@@ -1032,7 +1032,7 @@
       "verdict": "WRONG ROUTING DESTINATION"
     },
     "176": {
-      "audited_at": "2026-08-24T21:48:51Z",
+      "audited_at": "2026-08-29T00:00:00Z",
       "current_contract_sha256": "a93912ae4eb2d0257eeabfdbf4f025b78367ec750ae5a7b34da9e4b01a93ad38",
       "label": "graph-realized (F5) configuration:\\\\closed by [154]--[157], [165]--[168]",
       "panel": "fig:proof-diagram-part-v",
@@ -1045,7 +1045,7 @@
         "manuscript_sha256": "106a8205a1718fbf90e1686a107b2143b9edca574e2b0c11415e7f44aee2c0f9"
       },
       "status": "audited",
-      "verdict": "WRONG ROUTING DESTINATION"
+      "verdict": "NO ISSUE FOUND"
     },
     "177": {
       "audited_at": "2026-08-24T21:46:09Z",
@@ -1064,17 +1064,17 @@
       "verdict": "WRONG ROUTING DESTINATION"
     },
     "178": {
-      "audited_at": "2026-08-24T21:51:17Z",
-      "current_contract_sha256": "99bb56f52d746efe11b4a73f13581a0e4d3d72782b54ed5723608833099d1a4b",
+      "audited_at": "2026-08-27T13:06:03Z",
+      "current_contract_sha256": "18f6912bb239244d9a2cbf1803781cf094fc7429604404a3a336a9d19fefa46b",
       "label": "pair-code unrealized residual: the entropy count of [131] or of the free side of [137] fails; \\cref{lem:pair-failure-overlap} gives a minimal pair overlap obstruction",
       "panel": "fig:proof-diagram-part-x",
-      "recorded_contract_sha256": "99bb56f52d746efe11b4a73f13581a0e4d3d72782b54ed5723608833099d1a4b",
+      "recorded_contract_sha256": "18f6912bb239244d9a2cbf1803781cf094fc7429604404a3a336a9d19fefa46b",
       "report": "reports/node-178.md",
       "shape": "assertion",
       "source_fingerprints": {
-        "graph_sha256": "dc67fae178f947a9607c167e383d85919633341bdd423e4c4a45e4c317b3a765",
+        "graph_sha256": "37b29997d8ae5f2ff7a4f060cb96f7f67d5fdfdd01e0463ccb9be9f8149ba4fe",
         "lean_audit_sha256": "50324ef5594d635a52d83aeb297f2ca3f3d30ef58de4ce3602816c7e78365b12",
-        "manuscript_sha256": "106a8205a1718fbf90e1686a107b2143b9edca574e2b0c11415e7f44aee2c0f9"
+        "manuscript_sha256": "2fa93b8b4fdaf54ce6f72f172aaac06b6d6ca3065d97e5d9988508f0e7b74ef9"
       },
       "status": "audited",
       "verdict": "NONEXHAUSTIVE BRANCH"
@@ -2108,12 +2108,12 @@
   "source_snapshot": {
     "checked_graph_semantic_sha256": "dc67fae178f947a9607c167e383d85919633341bdd423e4c4a45e4c317b3a765",
     "checked_graph_sha256": "5814474c327838775eaa9cfaaca2213ce17e88ba487ebd0f33b5a27d3ad4fec8",
-    "git_commit": "1476db21484424440b649ed2c4d4eb83bc9611da",
+    "git_commit": "51172eec2c3982780922fb3a0afc86480dd99b31",
     "git_dirty": true,
-    "graph_drift": false,
-    "graph_sha256": "dc67fae178f947a9607c167e383d85919633341bdd423e4c4a45e4c317b3a765",
+    "graph_drift": true,
+    "graph_sha256": "37b29997d8ae5f2ff7a4f060cb96f7f67d5fdfdd01e0463ccb9be9f8149ba4fe",
     "lean_audit_sha256": "50324ef5594d635a52d83aeb297f2ca3f3d30ef58de4ce3602816c7e78365b12",
-    "manuscript_sha256": "106a8205a1718fbf90e1686a107b2143b9edca574e2b0c11415e7f44aee2c0f9"
+    "manuscript_sha256": "2fa93b8b4fdaf54ce6f72f172aaac06b6d6ca3065d97e5d9988508f0e7b74ef9"
   },
-  "updated_at": "2026-08-24T22:14:43Z"
+  "updated_at": "2026-08-27T13:07:30Z"
 }

@@ -38,6 +38,72 @@ def flatCount (leftLength rightLength : Nat) : Nat :=
         (profile.row (leftLength + rightLength) source)).cpop).toNat
     else 0
 
+/-- The finite carrier counted by `flatCount`.  Naming the carrier prevents an
+application from silently treating an absent semantic completion as a legal
+empty-label triple. -/
+def flatStates (leftLength rightLength : Nat) :
+    Finset (Fin size × Fin size × Fin size) :=
+  Finset.univ.filter fun triple =>
+    (profile.row leftLength triple.1).getLsb triple.2.1 &&
+    (profile.row rightLength triple.2.1).getLsb triple.2.2 &&
+    (profile.row (leftLength + rightLength) triple.1).getLsb triple.2.2
+
+/-- Population count is the cardinality of the set of true bit positions. -/
+private theorem card_filter_getLsb_eq_cpop {width : Nat} (bits : BitVec width) :
+    (Finset.univ.filter fun i : Fin width => bits.getLsb i).card =
+      bits.cpop.toNat := by
+  have cpopNatRec_eq_sum_range : ∀ n : Nat,
+      bits.cpopNatRec n 0 =
+        ∑ i ∈ Finset.range n, (bits.getLsbD i).toNat := by
+    intro n
+    induction n with
+    | zero => simp
+    | succ n ih =>
+        rw [BitVec.cpopNatRec_succ, BitVec.cpopNatRec_eq, ih,
+          Finset.sum_range_succ]
+        simp
+  rw [BitVec.toNat_cpop, cpopNatRec_eq_sum_range]
+  rw [← Fin.sum_univ_eq_sum_range]
+  rw [Finset.card_filter]
+  apply Finset.sum_congr rfl
+  intro i _
+  have hd : bits.getLsbD i = bits.getLsb i := by simp
+  rw [hd]
+  cases bits.getLsb i <;> simp
+
+/-- The explicit flat-state carrier has exactly the packed-popcount cardinality
+stored in `flatCount`. -/
+theorem card_flatStates (leftLength rightLength : Nat) :
+    (profile.flatStates leftLength rightLength).card =
+      profile.flatCount leftLength rightLength := by
+  rw [flatStates, Finset.card_filter]
+  change (∑ triple : Fin size × Fin size × Fin size,
+      if (profile.row leftLength triple.1).getLsb triple.2.1 &&
+        (profile.row rightLength triple.2.1).getLsb triple.2.2 &&
+        (profile.row (leftLength + rightLength) triple.1).getLsb triple.2.2
+      then 1 else 0) = _
+  rw [Fintype.sum_prod_type]
+  simp_rw [Fintype.sum_prod_type]
+  unfold flatCount
+  apply Finset.sum_congr rfl
+  intro source _
+  apply Finset.sum_congr rfl
+  intro middle _
+  by_cases left : (profile.row leftLength source).getLsb middle
+  · simp only [left, Bool.true_and]
+    rw [← card_filter_getLsb_eq_cpop
+      ((profile.row rightLength middle) &&&
+        (profile.row (leftLength + rightLength) source))]
+    rw [Finset.card_filter]
+    apply Finset.sum_congr rfl
+    intro target _
+    simp
+  · have leftFalse :
+        (profile.row leftLength source).getLsb middle = false :=
+      Bool.eq_false_of_not_eq_true left
+    simp only [leftFalse, Bool.false_and, Bool.false_eq_true, ↓reduceIte]
+    simp
+
 /-- Complementary, composition-obstructed triple count. -/
 def obstructedCount (leftLength rightLength : Nat) : Nat :=
   profile.safeCount leftLength rightLength -

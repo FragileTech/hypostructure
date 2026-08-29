@@ -131,14 +131,14 @@ GHOST_STYLES = {"route"}
 OPEN_STYLES = {"open"}
 
 _NODE_DECL = re.compile(r"\\node\[([^\]]*)\]\s*\(([^)]*)\)\s*")
-_NODE_NUMBER = re.compile(r"\\textbf\{\[(\d+)\]\}[~\s]*")
+_NODE_NUMBER = re.compile(r"\\textbf\{\[(\d+[a-z]?)\]\}[~\s]*")
 _EDGE_LABEL = re.compile(r"node\[[^\]]*\]\s*\{")
 _COORDINATE = re.compile(r"^[\s\d.,+\-]*$")
 _FIGURE_LABEL = re.compile(r"\\label\{(fig:[^}]*)\}")
 _CAPTION = re.compile(r"\\caption(?:of\{figure\})?(?:\[[^\]]*\])?\s*\{")
 #: Arrows that leave the panel say where they land, e.g. `continue at [14]`.
-_GOES_TO = re.compile(r"continue[sd]?\s+(?:at|to|in)\s+\[(\d+)\]", re.IGNORECASE)
-_COMES_FROM = re.compile(r"\bfrom\s+\[(\d+)\]", re.IGNORECASE)
+_GOES_TO = re.compile(r"continue[sd]?\s+(?:at|to|in)\s+\[(\d+[a-z]?)\]", re.IGNORECASE)
+_COMES_FROM = re.compile(r"\bfrom\s+\[(\d+[a-z]?)\]", re.IGNORECASE)
 
 
 @dataclass
@@ -191,7 +191,11 @@ def parse_nodes(picture: str) -> tuple[dict[str, dict[str, Any]], dict[str, str]
             "shape": shape,
             "label": _NODE_NUMBER.sub("", label, count=1).strip(),
         }
-        if style in OPEN_STYLES:
+        # Open residuals are sometimes drawn with their semantic shape
+        # (`open`) and sometimes with the shape needed by the flow layout.
+        # The manuscript's explicit `OPEN:` marker is authoritative in both
+        # cases, so the interactive graph keeps those nodes red.
+        if style in OPEN_STYLES or re.search(r"(?i)\bopen\s*:", record["label"]):
             record["open"] = True
         nodes.setdefault(node_id, record)
 
@@ -640,7 +644,7 @@ def _add(target: list[str], values: Iterable[str]) -> None:
             target.append(value)
 
 
-_FIRST_NODE = re.compile(r"\[(\d+)\]")
+_FIRST_NODE = re.compile(r"\[(\d+[a-z]?)\]")
 
 
 def _apply_map(text: str, chapter: ChapterSpec, panels: list[Panel]) -> None:
@@ -651,7 +655,13 @@ def _apply_map(text: str, chapter: ChapterSpec, panels: list[Panel]) -> None:
     spreads a row over several lines, so the range is awkward to parse but the
     first number is always there.
     """
-    by_first = {panel.nodes and min(panel.nodes, key=int): panel for panel in panels}
+    def node_sort_key(value: str) -> tuple[int, str]:
+        match = re.match(r"(\d+)([a-z]?)$", value)
+        return (int(match.group(1)), match.group(2)) if match else (10**9, value)
+
+    by_first = {
+        panel.nodes and min(panel.nodes, key=node_sort_key): panel for panel in panels
+    }
 
     for spec in chapter.map_tables:
         for row in table_rows(text, spec):

@@ -1,5 +1,5 @@
 import Hypostructure.Graph.BlockedClass
-import Hypostructure.Graph.WindowCurvatureAlgebra
+import Hypostructure.Graph.WindowLabelCollision
 import Hypostructure.Core.Finite.CertifiedTableAggregation
 
 /-!
@@ -16,8 +16,8 @@ encodes `H` as (outside edges, all barrier states), paying
 
 This module builds exactly that object and the counting it feeds:
 
-* `labelAt` -- `app:curv-code`'s label of an outside vertex at a positioned
-  window, read on a labelled skeleton;
+* `WindowLabelCollision.attachmentLabel` -- `app:curv-code`'s label in the
+  induced-path order retained by the completion support;
 * `CompletionSupport` -- `def:barrier-overlap-system`'s canonical edge-rooted
   completion at a scale, for a packed window `P`: the two *outside* arms of
   lengths `a` and `b`, their first and last window incidences, and the
@@ -32,10 +32,10 @@ This module builds exactly that object and the counting it feeds:
 * `outsideEdges` and `code` -- the encoding map whose conditional fibres
   `lem:scale-additivity` bounds, one exposure coordinate per window per scale.
 
-The a-priori range `W_{a,b}` and the surviving set `F_{a,b}` are *not* named
-here: they are the certified finite barrier table's own two columns
-(`Core.Finite.CertifiedTableAggregation`, `safeCount`/`flatCount`), which the
-presentation already registers (`blockedAprioriCount`/`blockedSurvivingCount`).
+The certified table counts present safe/flat triples.  The distinguished
+`none` state is retained separately by the strategy's auxiliary state-fibre
+bound; it is not added to the paper's `W_{a,b}` or `F_{a,b}` ratio and is never
+conflated with an illegal empty label.
 No numeral, rate, scale count or density constant occurs in this file.
 -/
 
@@ -49,23 +49,6 @@ universe u v
 /-! ## The label algebra on a labelled skeleton -/
 
 variable {n : Nat}
-
-/-- The `index`-th vertex of a window position, in the ambient labelling's own
-vertex order.  This is the deterministic tie-breaking rule
-`lem:skeleton-dominates` fixes. -/
-noncomputable def windowPosition (window : Finset (Fin n)) (index : Nat) :
-    Option (Fin n) :=
-  (window.sort (· ≤ ·))[index]?
-
-/-- **`app:curv-code`'s label of an outside vertex at a window**: the set of
-window coordinates it attaches to. -/
-noncomputable def labelAt (order : Nat) (H : LabelledOn n)
-    (window : Finset (Fin n)) (outside : Fin n) :
-    Graph.WindowCurvature.Label order := by
-  classical
-  exact Finset.univ.filter fun index : Fin order =>
-    ∃ vertex, windowPosition window index.1 = some vertex ∧
-      H.graph.Adj outside vertex
 
 /-- **`def:barrier-overlap-system`'s completion support** at a scale, for a
 packed window `P`: "the canonical simple edge-rooted completion used to test its
@@ -81,8 +64,14 @@ Mersenne completion through the window", so it runs through `P` and the window
 segments it uses are part of the support.  It therefore carries no avoidance
 constraint -- forbidding it the windows would make the tester blind to exactly
 the cycles `def:blocked-class` blocks. -/
-structure CompletionSupport (H : LabelledOn n) (interiors : Finset (Fin n))
+structure CompletionSupport (order : Nat) (H : LabelledOn n)
+    (interiors : Finset (Fin n))
     (window : Finset (Fin n)) (left right scale : Nat) : Type where
+  /-- The root window in its induced-path order.  Curvature coordinates are
+  positions on this path, never ambient vertex-label order. -/
+  presentation : TypeBDirectCycle.Presentation H.toFiniteObject order
+  presentation_support : presentation.support = window
+  presentationInsideInteriors : presentation.support ⊆ interiors
   /-- The root incidence of the first arm. -/
   source : Fin n
   /-- The incidence the first arm reaches. -/
@@ -92,14 +81,27 @@ structure CompletionSupport (H : LabelledOn n) (interiors : Finset (Fin n))
   /-- The first outside arm, of length `a`. -/
   firstArm : H.graph.Walk source middle
   firstArm_length : firstArm.length = left
+  firstArm_path : firstArm.IsPath
   /-- The second outside arm, of length `b`. -/
   secondArm : H.graph.Walk middle target
   secondArm_length : secondArm.length = right
+  secondArm_path : secondArm.IsPath
+  /-- The composed outside arm is simple; separate simplicity does not exclude
+  an intersection between its two pieces. -/
+  composedArm_path : (firstArm.append secondArm).IsPath
   /-- The edge-rooted completion closing the two arms at the tested scale. -/
   completion : H.graph.Walk target source
   completion_length : left + right + completion.length = scale
   /-- The two arms are outside paths: they meet no window interior. -/
   armsOutside : ∀ vertex ∈ firstArm.support ++ secondArm.support, vertex ∉ interiors
+  /-- The three vertices really are window incidences, so their labels are
+  nonempty. -/
+  sourceIncident :
+    (WindowLabelCollision.attachmentLabel presentation source).Nonempty
+  middleIncident :
+    (WindowLabelCollision.attachmentLabel presentation middle).Nonempty
+  targetIncident :
+    (WindowLabelCollision.attachmentLabel presentation target).Nonempty
   /-- The completion is the edge-rooted Mersenne completion *through* the
   window: it uses a window segment of `P`. -/
   completionThroughWindow : ∃ vertex ∈ completion.support, vertex ∈ window
@@ -107,20 +109,25 @@ structure CompletionSupport (H : LabelledOn n) (interiors : Finset (Fin n))
 /-- **The `(a,b)`-barrier state of a window at a scale**: the triple `(S,A,T)`
 of the labels of the canonical completion support's three window incidences.
 It is a function of the labelled skeleton -- the support is chosen by the fixed
-deterministic rule -- and the default `(∅,∅,∅)` records that no completion of
-the tested shape exists. -/
+deterministic rule.  Absence is retained as `none`; it is not confused with an
+illegal empty curvature label. -/
 noncomputable def barrierState (order : Nat) (H : LabelledOn n)
     (interiors : Finset (Fin n)) (left right scale : Nat)
     (window : Finset (Fin n)) :
-    Graph.WindowCurvature.Label order × Graph.WindowCurvature.Label order ×
-      Graph.WindowCurvature.Label order := by
+    Option (Graph.WindowCurvature.Label order ×
+      Graph.WindowCurvature.Label order ×
+        Graph.WindowCurvature.Label order) := by
   classical
   exact
-    if support : Nonempty (CompletionSupport H interiors window left right scale) then
-      (labelAt order H window support.some.source,
-        labelAt order H window support.some.middle,
-        labelAt order H window support.some.target)
-    else (∅, ∅, ∅)
+    if support : Nonempty
+        (CompletionSupport order H interiors window left right scale) then
+      some (WindowLabelCollision.attachmentLabel support.some.presentation
+          support.some.source,
+        WindowLabelCollision.attachmentLabel support.some.presentation
+          support.some.middle,
+        WindowLabelCollision.attachmentLabel support.some.presentation
+          support.some.target)
+    else none
 
 /-- The edges of the skeleton outside the window interiors -- the first half of
 `lem:blocked-graphs-compress`'s encoding. -/
@@ -133,8 +140,8 @@ noncomputable def outsideEdges (H : LabelledOn n) (interiors : Finset (Fin n)) :
 /-- The barrier states of one window at one scale: one `(S,A,T)` triple per
 certified barrier row. -/
 abbrev RowStates (order : Nat) (Row : Type v) : Type v :=
-  Row → Graph.WindowCurvature.Label order × Graph.WindowCurvature.Label order ×
-    Graph.WindowCurvature.Label order
+  Row → Option (Graph.WindowCurvature.Label order ×
+    Graph.WindowCurvature.Label order × Graph.WindowCurvature.Label order)
 
 /-- The exposure coordinates of `lem:blocked-graphs-compress`: one per window
 per selected scale. -/

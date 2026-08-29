@@ -173,4 +173,78 @@ def cycleProperSubgraphMinimalityProfile
   targetMonotone := cycleProperSubgraphTargetMonotone LengthOK
   stateOf := stateOf
 
+/-- A nonempty minimum-degree object with no proper baseline-preserving
+induced subgraph is connected.  This is the component argument implicit in
+`lem:no-proper-core`: a connected component is an induced proper subgraph and
+retains every ambient degree. -/
+theorem FiniteObject.connected_of_noProperBaseline
+    (object : FiniteObject.{u}) (threshold : Nat)
+    (thresholdPositive : 0 < threshold)
+    (baseline : threshold ≤ object.minDegree)
+    (noProper : ∀ subgraph : ProperSubgraph object,
+      ¬ threshold ≤ subgraph.value.minDegree) :
+    object.graph.Connected := by
+  classical
+  have objectNonempty : Nonempty object.Vertex := by
+    cases isEmpty_or_nonempty object.Vertex with
+    | inl empty =>
+        letI : IsEmpty object.Vertex := empty
+        have zero : object.minDegree = 0 := by
+          letI : FinEnum object.Vertex := object.vertices
+          letI : DecidableRel object.graph.Adj := object.decideAdj
+          unfold FiniteObject.minDegree
+          exact SimpleGraph.minDegree_of_isEmpty object.graph
+        omega
+    | inr nonempty => exact nonempty
+  letI : Nonempty object.Vertex := objectNonempty
+  let root : object.Vertex := Classical.choice (inferInstance : Nonempty object.Vertex)
+  let support : Finset object.Vertex :=
+    object.vertexFinset.filter fun vertex =>
+      object.graph.connectedComponentMk vertex =
+        object.graph.connectedComponentMk root
+  by_contra disconnected
+  have rootMem : root ∈ support := by
+    simp [support]
+  have supportCardLt : support.card < object.vertexCount := by
+    have notAllReachable :
+        ¬ ∀ vertex : object.Vertex, object.graph.Reachable root vertex := by
+      intro allReachable
+      apply disconnected
+      exact object.graph.connected_iff_exists_forall_reachable.mpr
+        ⟨root, allReachable⟩
+    push Not at notAllReachable
+    rcases notAllReachable with ⟨outside, unreachable⟩
+    have outsideNotMem : outside ∉ support := by
+      simp only [support, Finset.mem_filter, object.mem_vertexFinset, true_and,
+        SimpleGraph.ConnectedComponent.eq]
+      exact fun reachable => unreachable reachable.symm
+    have strict : support ⊂ object.vertexFinset := by
+      refine Finset.ssubset_iff_subset_ne.mpr ⟨?_, ?_⟩
+      · intro vertex _
+        exact object.mem_vertexFinset vertex
+      · intro equal
+        exact outsideNotMem (equal ▸ object.mem_vertexFinset outside)
+    simpa only [object.card_vertexFinset] using Finset.card_lt_card strict
+  let component : ProperSubgraph object :=
+    ProperSubgraph.ofInducedSupport object support supportCardLt
+  letI : Nonempty component.value.Vertex := ⟨⟨root, rootMem⟩⟩
+  have neighborSubset (vertex : component.value.Vertex) :
+      object.graph.neighborSet vertex.1 ⊆ (support : Set object.Vertex) := by
+    intro neighbor adjacent
+    change neighbor ∈ support
+    simp only [support, Finset.mem_filter, object.mem_vertexFinset, true_and,
+      SimpleGraph.ConnectedComponent.eq]
+    exact (show object.graph.Adj vertex.1 neighbor from adjacent).reachable.symm.trans
+      (by
+        simpa only [support, Finset.mem_filter, object.mem_vertexFinset, true_and,
+          SimpleGraph.ConnectedComponent.eq] using vertex.2)
+  have componentMinimumDegree : threshold ≤ component.value.minDegree := by
+    apply component.value.le_minDegree_of_forall_le_degree threshold
+    intro vertex
+    rw [show component.value.degree vertex = object.degree vertex.1 from
+      object.degree_induce_of_neighborSet_subset support vertex
+        (neighborSubset vertex)]
+    exact baseline.trans (object.minDegree_le_degree vertex.1)
+  exact noProper component componentMinimumDegree
+
 end Hypostructure.Graph

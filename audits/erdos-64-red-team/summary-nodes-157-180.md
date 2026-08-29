@@ -1,12 +1,50 @@
 # Proof status after red-team review of nodes [157]–[180]
 
-Date: 2026-08-25
+Audit date: 2026-08-25
+
+Implementation status updated: 2026-08-29
 
 Scope: the cumulative residuals and routing contracts at nodes [157]–[180] of the Erdős–Gyárfás structural-exhaustion proof.
 
 Sources: the live manuscript, directed proof graph, node ledgers, current Lean declarations where present, and the 24 canonical reports in [`reports/`](reports/). The campaign ledger is [`coverage.json`](coverage.json).
 
-## Executive conclusion
+## Post-audit implementation status
+
+The verdicts below record what the red-team campaign found in the 2026-08-25
+snapshot. A 2026-08-29 code-first recheck confirms that the node-`[177]`
+**WRONG ROUTING DESTINATION** verdict still applies to manuscript fidelity,
+although its earlier mechanical projection failures are fixed.
+
+The repairs through `[157]`, `[160]`–`[161]`, `[165]`–`[171]`, and
+`[173]`–`[176]` are implemented on the literal incoming `ExactLedger`. In
+particular:
+
+- `[175]` partitions the retained incidence family without losing the heavy
+  complement on mixed families;
+- `[176]` runs the registered `[154]`–`[157]`, `[163]`, and `[165]`–`[168]`
+  owners on the selected local residual;
+- `[177]` constructs a cold heavy-centre corridor witness and its seven former
+  projection failures are repaired, but the implementation then weakens
+  `TypeBFanEntryStatement` by adding that witness as a new disjunct. No theorem
+  constructs the manuscript's assigned Type-B support/decorated envelope, so
+  `[177]` remains an implementation bug;
+- `[171]` executes the additive compression closure, while the exact
+  nonadditive fibre is retained only at `[172a]`;
+- the covered arms of `[178]`–`[180]` are implemented, and only their precise
+  negative complements are retained at `[182]`.
+
+The same-token `[144]` route, although outside this report's node range, now
+executes the shared `[68]`–`[85]` continuation mechanically. That continuation
+still omits the manuscript's shoulder-completion, port-return, first-landing,
+cross-shoulder, and fan-closed routing facts, so its successful build is not a
+proof of the Type-B chain. The remaining bugs are therefore not limited to
+`[172a]`, `[181]`, and `[182]`; see
+[`../../EG_incomplete_nodes_repair_plan.md`](../../EG_incomplete_nodes_repair_plan.md).
+
+The remainder of this document preserves the original findings and proposed
+repairs for audit provenance.
+
+## Original executive conclusion
 
 The audit found no graph satisfying the complete accumulated hypotheses that disproves the Erdős–Gyárfás theorem. It also found no `VALID LOCAL COUNTEREXAMPLE`. Many attractive counterexamples fail an earlier minimum-degree, target-avoidance, packing, or branch-selection invariant.
 
@@ -81,13 +119,19 @@ Correction:
 
 Isomorphism invariance is not required; a fixed labelled canonical graph code is enough. What is required is a globally declared order and a proved strict decrease.
 
-### 4. The selected-stub family is incompatible with the endpoint contradiction — [168], [176]
+### 4. Selected interior-stub closure — [168], [176]
 
-The original construction selects 13 stubs by dropping two transit stubs from all 15 external stubs of an ambient-cubic induced \(P_{13}\). It does not select only interior stubs. Since the path has 11 interior stubs, the selected 13-set necessarily contains endpoint stubs. The graph-realized pair reaching [Node 168](reports/node-168.md) is indexed by one of those selected stubs, while the contradiction assumes that this same stub was interior. [Node 176](reports/node-176.md) reuses the same incompatible condition.
+The manuscript and Lean select the same family before corridor extraction: the eleven one-stub interior incidences of each ambient-cubic induced \(P_{13}\), with the first two absorbed corridor incidences dropped.
 
-Correction: before corridor extraction, retain the intersection of the original selected set with the interior stubs. It contains at least nine stubs per window. Build every corridor and germ from that same retained interior family. The endpoint geometry then contradicts a graph-realized second strand without changing the selected witness midway through the proof.
+The resulting supply is exactly \(9C-o(n)\), and the greedy extraction gives \(9C/D_{\rm cold}-o(n)\).
 
-Completion criterion: reprove the greedy extraction and every downstream charge threshold with \(9C\) in place of \(13C\), including the finite small-order inequalities. Keeping the original 13-set instead requires a new destination for endpoint-origin survivors.
+[Node 168](reports/node-168.md) retains the selected interior origin through
+the graph-realized two-strand branch. A genuine pair needs two distinct
+external stubs at each attachment and therefore attaches at endpoints, whereas
+the selected occurrence lies at a one-stub interior vertex. The corresponding
+facts are incompatible and close through the sealed executor. [Node
+176](reports/node-176.md) applies this continuation to each surviving [175]
+part on its literal monotone ledger.
 
 ### 5. Barrier compression subtracts an uncharged entropy baseline — [171]
 

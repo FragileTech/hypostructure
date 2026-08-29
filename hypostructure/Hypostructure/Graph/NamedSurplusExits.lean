@@ -30,10 +30,10 @@ published on one arm, and `SurvivesSparseExits` is published on the other.  In
 particular, this declaration does not claim that selection or replacement
 alone rules out target defects, delocalizations, or suppression chords.
 
-Clause (b) is deliberately raw boundary data rather than a
-`DeclaredQuotient`: a declared admissible quotient is already target-complete,
-so using one to represent a target-defective attempted identification would
-assume away the exit being tested.
+Clause (b) retains the actual rank-reducing `AttemptedQuotient` on the declared
+family, together with the two realizations it identifies and their separating
+context.  It is not a `DeclaredQuotient`: a declared admissible quotient is
+already target-complete and would assume away the exit being tested.
 -/
 
 namespace Hypostructure.Graph
@@ -49,11 +49,18 @@ inductive SparseSurplusExit (Baseline Target : FiniteObject.{u} → Prop)
   | dyadic (cycle : Graph.HasCycleWithLength LengthOK object)
   /-- (b) a target-defective quotient, exactly as
   `lem:context-universality` defines it: the proposed reduced and full
-  realizations live on one fixed boundary, and a compatible outside context
-  distinguishes their target responses.  This is an attempted local
-  identification, not an already target-complete `DeclaredQuotient`. -/
-  | targetDefect {boundary : Boundary.{u}}
-      (reduced full : BoundaryPiece boundary)
+  realizations are identified by the incoming rank-reducing attempt, and a
+  compatible outside context distinguishes their target responses.  This is
+  the residual's attempted local identification, not arbitrary boundary data
+  or an already target-complete `DeclaredQuotient`. -/
+  | targetDefect {Coordinate : Type u} (family : Finset Coordinate)
+      (coordinateSupport : Coordinate → Finset object.Vertex)
+      (attempt : AttemptedQuotient Baseline Target object family
+        coordinateSupport)
+      (reducing : ¬ Set.InjOn attempt.label ↑family)
+      (reduced full : BoundaryPiece
+        (SupportAtom.boundary object attempt.support))
+      (identified : attempt.Identifies reduced full)
       (defect : Response.TargetDefect Target reduced full)
   /-- (c) a nontrivial target-complete compression of a proper atom, recorded
   at the one-way `ReplacementSupport` strength used by `lem:replacement`. -/

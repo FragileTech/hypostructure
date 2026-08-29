@@ -63,9 +63,11 @@ structure DeclaredSignature where
   /-- The declared coordinates of one kind. -/
   Generator : Clause → Type
   generatorEnum : ∀ clause, FinEnum (Generator clause)
-  /-- The value alphabet `val_X(r)` reads into. -/
-  Value : Type
-  valueEnum : FinEnum Value
+  /-- The exact value type `val_X(r)` reads into.  It is indexed by the
+  generating coordinate: unrelated kinds are not coerced into a guessed
+  common scalar alphabet. -/
+  Value : (clause : Clause) → Generator clause → Type
+  valueEnum : ∀ clause generator, FinEnum (Value clause generator)
   /-- The label alphabet of (D8)'s labelled copies and quotient images. -/
   Label : Type
   labelEnum : FinEnum Label
@@ -84,7 +86,8 @@ variable (S : DeclaredSignature)
 instance : FinEnum S.Clause := S.clauseEnum
 instance (clause : S.Clause) : FinEnum (S.Generator clause) :=
   S.generatorEnum clause
-instance : FinEnum S.Value := S.valueEnum
+instance (clause : S.Clause) (generator : S.Generator clause) :
+    FinEnum (S.Value clause generator) := S.valueEnum clause generator
 instance : FinEnum S.Label := S.labelEnum
 
 end DeclaredSignature
@@ -217,6 +220,13 @@ theorem clauseNumber_mem (clause : SignatureClause) :
 
 end SignatureClause
 
+/-- A finite relational label over a bounded active interface.  It records one
+oriented path, incidence relation, window placement, trace, fan, port, or
+quotient-image label.  Families of such entries are formed by the paper's D8
+product constructor, not folded into a second powerset here. -/
+abbrev CoordinateLabel (interfaceBound : Nat) :=
+  Finset (Fin interfaceBound × Fin interfaceBound)
+
 /-- **One declared coordinate of a generating kind**, at a bounded active
 interface.
 
@@ -235,8 +245,11 @@ of cold corridor states is bounded by a constant of the signature. -/
 structure Coordinate (interfaceBound : Nat) where
   /-- `supp_X(r)`, inside the bounded active interface. -/
   support : Finset (Fin interfaceBound)
-  /-- `ι`, the coordinate's label. -/
-  label : Fin interfaceBound
+  /-- The distinguished labelled position when the coordinate has one (D1's
+  boundary vertex and the rooted entries of D2--D7). -/
+  anchor : Fin interfaceBound
+  /-- `ι`, the coordinate's full finite relational label. -/
+  label : CoordinateLabel interfaceBound
   deriving DecidableEq
 
 namespace Coordinate
@@ -245,9 +258,13 @@ namespace Coordinate
 `Coordinate`. -/
 @[simps] def equivProduct (interfaceBound : Nat) :
     Coordinate interfaceBound ≃
-      Finset (Fin interfaceBound) × Fin interfaceBound where
-  toFun coordinate := (coordinate.support, coordinate.label)
-  invFun pair := { support := pair.1, label := pair.2 }
+      Finset (Fin interfaceBound) ×
+        (Fin interfaceBound × CoordinateLabel interfaceBound) where
+  toFun coordinate := (coordinate.support, coordinate.anchor, coordinate.label)
+  invFun tuple :=
+    { support := tuple.1
+      anchor := tuple.2.1
+      label := tuple.2.2 }
   left_inv := by intro coordinate; cases coordinate; rfl
   right_inv := by intro pair; rfl
 
@@ -264,15 +281,34 @@ carries `2·order + 2·2` positions.  Nothing else in this file supplies a size,
 and no caller may choose one. -/
 def interfaceWidth (order : Nat) : Nat := 2 * order + 2 * 2
 
-/-- **`def:declared-coordinate-signature`, complete.**
+/-- **The exact bounded embedded value of one declared coordinate.**
 
-The signature "fixed once and for all": its generating kinds are the
-thirty-two of clauses (D1)--(D7), its coordinates are the tuples
-`(k, ι, supp_X(r))` bounded by the active interface of a window of the given
-order, and its closure clause (D8) is `Generated`.  A reading is a bounded
-value together with the outcome of the test the coordinate carries -- a degree,
-a return length, a connector length, or a window label on the one hand; a
-Mersenne, legality, incidence, curvature, or response test on the other.
+The coordinate index already records its kind, label, and declared support.
+Its value therefore records the remaining embedded datum on the bounded active
+interface: which interface positions are present, every graph incidence from
+the declared support into that interface, and the degree of the labelled
+position inside the same interface.  Canonical returns, channels, window
+labels, traces, fans, and sparse-port data are evaluated from this labelled
+finite incidence datum together with their coordinate index; no cardinality or
+membership summary is substituted for them.
+
+The two `Finset` factors and the bounded degree are all finite.  The clause and
+generator parameters are retained in the type so unrelated declared
+coordinates remain dependent entries of the signature. -/
+abbrev EmbeddedCoordinateValue (interfaceBound : Nat)
+    (_clause : SignatureClause) (_generator : Coordinate interfaceBound) : Type :=
+  Finset (Fin interfaceBound) ×
+    Finset (Fin interfaceBound × Fin interfaceBound) ×
+      Fin (interfaceBound + 1)
+
+/-- The finite cold-state signature.
+
+Its generating kinds are the thirty-two names in clauses (D1)--(D7), its
+coordinate indices are bounded support/label pairs, and its closure clause
+(D8) is `Generated`.  A generating value is the exact bounded embedded datum
+above, indexed by the coordinate's own clause and generator.  In particular,
+the signature does not collapse a declared reading to a support cardinality or
+to one distinguished-vertex bit.
 
 No number is supplied by a caller: the interface width is the manuscript's own
 `2·order + 2·2`, and every other bound is that width. -/
@@ -281,9 +317,9 @@ def declaredSignature (order : Nat) (order_pos : 0 < order) : DeclaredSignature 
   clauseEnum := inferInstance
   Generator := fun _clause => Coordinate (interfaceWidth order)
   generatorEnum := fun _clause => inferInstance
-  Value := Fin (interfaceWidth order + 1) × Fin 2
-  valueEnum := inferInstance
-  Label := Fin (interfaceWidth order)
+  Value := EmbeddedCoordinateValue (interfaceWidth order)
+  valueEnum := fun _clause _generator => inferInstance
+  Label := CoordinateLabel (interfaceWidth order)
   labelEnum := inferInstance
   degreeBound := interfaceWidth order
   windowOrder := order
@@ -321,7 +357,8 @@ generated from, which is the whole content of "with support equal to the union
 of the supports of the entries used": a derived coordinate reads nothing of the
 support that its entries did not already read. -/
 inductive Reading (S : DeclaredSignature) : Type where
-  | base (value : S.Value)
+  | base (clause : S.Clause) (generator : S.Generator clause)
+      (value : S.Value clause generator)
   | product (left right : Reading S)
   | copy (label : S.Label) (base : Reading S)
   | restriction (base region : Reading S)
@@ -355,7 +392,8 @@ structure CutState (S : DeclaredSignature) where
   offsets : Fin 2 → Fin S.windowOrder
   /-- The declared local coordinates whose support is contained in the bounded
   active interface, with their values. -/
-  declared : (clause : S.Clause) → S.Generator clause → Option S.Value
+  declared : (clause : S.Clause) → (generator : S.Generator clause) →
+    Option (S.Value clause generator)
 
 namespace CutState
 
@@ -368,7 +406,8 @@ through it. -/
     CutState S ≃
       ((Fin 2 → Fin (S.degreeBound + 1)) × (Fin 2 → Fin (S.degreeBound + 1))) ×
         (Fin 2 → Fin S.windowOrder) ×
-        ((clause : S.Clause) → S.Generator clause → Option S.Value) where
+        ((clause : S.Clause) → (generator : S.Generator clause) →
+          Option (S.Value clause generator)) where
   toFun state :=
     ((state.boundaryDegrees, state.halfEdges), state.offsets, state.declared)
   invFun tuple :=
@@ -382,13 +421,13 @@ through it. -/
 noncomputable instance : Fintype (CutState S) := by
   letI : FinEnum S.Clause := S.clauseEnum
   letI : ∀ clause : S.Clause, FinEnum (S.Generator clause) := S.generatorEnum
-  letI : FinEnum S.Value := S.valueEnum
+  letI : ∀ clause generator, FinEnum (S.Value clause generator) := S.valueEnum
   exact Fintype.ofEquiv _ equivProduct.symm
 
 noncomputable instance : DecidableEq (CutState S) := by
   letI : FinEnum S.Clause := S.clauseEnum
   letI : ∀ clause : S.Clause, FinEnum (S.Generator clause) := S.generatorEnum
-  letI : FinEnum S.Value := S.valueEnum
+  letI : ∀ clause generator, FinEnum (S.Value clause generator) := S.valueEnum
   exact fun left right =>
     decidable_of_iff (equivProduct left = equivProduct right)
       equivProduct.injective.eq_iff
@@ -416,6 +455,21 @@ its factor `15` read off the registered order and baseline rather than written:
 /-- **`Q_cold`.**  The number of possible cold corridor states. -/
 noncomputable def stateBound (S : DeclaredSignature) : Nat :=
   Fintype.card (CutState S)
+
+/-- The state alphabet already contains every cold-window offset, so its
+cardinality dominates the registered window order. -/
+theorem windowOrder_le_stateBound (S : DeclaredSignature) :
+    S.windowOrder ≤ stateBound S := by
+  let encode : Fin S.windowOrder → CutState S := fun offset =>
+    { boundaryDegrees := fun _ => ⟨0, Nat.zero_lt_succ _⟩
+      halfEdges := fun _ => ⟨0, Nat.zero_lt_succ _⟩
+      offsets := fun _ => offset
+      declared := fun _ _ => none }
+  have injective : Function.Injective encode := by
+    intro left right same
+    have offsets := congrArg CutState.offsets same
+    exact congrFun offsets 0
+  simpa [stateBound] using Fintype.card_le_of_injective encode injective
 
 /-- The manuscript's additive `30`: the two window interfaces and the two
 boundary stubs, at the registered window order. -/
@@ -456,11 +510,15 @@ structure Presentation (S : DeclaredSignature) (object : FiniteObject.{u}) where
   Segment : Type u
   /-- `T(J)`: the bounded active interface of a segment. -/
   activeInterface : Segment → Finset object.Vertex
-  /-- `supp_X(r)` for a generating coordinate. -/
-  generatorSupport : (clause : S.Clause) → S.Generator clause →
+  /-- `supp_J(r)` for a generating coordinate, read in the current prefix
+  `J`.  The support is prefix-indexed: return, trace, fan, and surplus
+  coordinates may enter or leave the bounded active interface as the corridor
+  advances. -/
+  generatorSupport : Segment → (clause : S.Clause) → S.Generator clause →
     Finset object.Vertex
   /-- `val_X(r)` for a generating coordinate, read at a segment. -/
-  generatorValue : Segment → (clause : S.Clause) → S.Generator clause → S.Value
+  generatorValue : Segment → (clause : S.Clause) →
+    (generator : S.Generator clause) → S.Value clause generator
   /-- The retained boundary-degree profile of the two active interfaces. -/
   boundaryDegrees : Segment → Fin 2 → Fin (S.degreeBound + 1)
   /-- The two active boundary half-edges. -/
@@ -474,23 +532,25 @@ variable {S : DeclaredSignature} {object : FiniteObject.{u}}
 
 /-- `supp_X(r)` for every declared coordinate, generating or derived.  Clause
 (D8)'s support is the union of the supports of the entries used. -/
-def support (presentation : Presentation.{u} S object) :
+def support (presentation : Presentation.{u} S object)
+    (segment : presentation.Segment) :
     Generated S → Set object.Vertex
   | .gen clause generator =>
-      ↑(presentation.generatorSupport clause generator)
+      ↑(presentation.generatorSupport segment clause generator)
   | .product left right =>
-      presentation.support left ∪ presentation.support right
-  | .copy _label base => presentation.support base
+      presentation.support segment left ∪ presentation.support segment right
+  | .copy _label base => presentation.support segment base
   | .restriction base region =>
-      presentation.support base ∪ presentation.support region
-  | .image _label base => presentation.support base
+      presentation.support segment base ∪ presentation.support segment region
+  | .image _label base => presentation.support segment base
 
 /-- `val_X(r)` for every declared coordinate.  A derived coordinate is
 evaluated from the entries it was generated from and reads nothing else. -/
 def reading (presentation : Presentation.{u} S object)
     (segment : presentation.Segment) : Generated S → Reading S
   | .gen clause generator =>
-      .base (presentation.generatorValue segment clause generator)
+      .base clause generator
+        (presentation.generatorValue segment clause generator)
   | .product left right =>
       .product (presentation.reading segment left)
         (presentation.reading segment right)
@@ -511,7 +571,7 @@ noncomputable def state (segment : presentation.Segment) : CutState S := by
       halfEdges := presentation.halfEdges segment
       offsets := presentation.offsets segment
       declared := fun clause generator =>
-        if presentation.generatorSupport clause generator ⊆
+        if presentation.generatorSupport segment clause generator ⊆
             presentation.activeInterface segment then
           some (presentation.generatorValue segment clause generator)
         else
@@ -529,16 +589,16 @@ theorem generatorValue_eq_of_state_eq
     {left right : presentation.Segment}
     (same : presentation.state left = presentation.state right)
     (clause : S.Clause) (generator : S.Generator clause)
-    (inside : presentation.generatorSupport clause generator ⊆
+    (inside : presentation.generatorSupport left clause generator ⊆
       presentation.activeInterface left) :
-    presentation.generatorSupport clause generator ⊆
+    presentation.generatorSupport right clause generator ⊆
         presentation.activeInterface right ∧
       presentation.generatorValue left clause generator =
         presentation.generatorValue right clause generator := by
   classical
   have entries := congrArg (fun s => CutState.declared s clause generator) same
   simp only [state, inside, if_true] at entries
-  by_cases outside : presentation.generatorSupport clause generator ⊆
+  by_cases outside : presentation.generatorSupport right clause generator ⊆
       presentation.activeInterface right
   · simp only [outside, if_true] at entries
     exact ⟨outside, Option.some.inj entries⟩
@@ -558,7 +618,7 @@ theorem reading_eq_of_state_eq
     {left right : presentation.Segment}
     (same : presentation.state left = presentation.state right) :
     ∀ coordinate : Generated S,
-      presentation.support coordinate ⊆
+      presentation.support left coordinate ⊆
           ↑(presentation.activeInterface left) →
         presentation.reading left coordinate =
           presentation.reading right coordinate := by
@@ -566,7 +626,7 @@ theorem reading_eq_of_state_eq
   induction coordinate with
   | gen clause generator =>
       intro inside
-      exact congrArg Reading.base
+      exact congrArg (Reading.base clause generator)
         ((presentation.generatorValue_eq_of_state_eq same clause generator
           (by exact_mod_cast inside)).2)
   | product left' right' leftIH rightIH =>
@@ -870,6 +930,23 @@ noncomputable def corridorOfOutsideComponent (object : FiniteObject.{u})
   entry := entry
   connected := outside.2.2 _ _
 
+/-- The canonical cold corridor whose entry is a specified boundary stub.
+
+This is the selected-half-edge form used by
+`def:cold-corridor-first-failure`: membership in the canonical ordered stub
+list determines a unique index (the list is noduplicated), and the ordinary
+outside-component constructor then supplies the lexicographically first
+inside path.  No corridor witness is transported separately from the graph. -/
+noncomputable def corridorOfBoundaryStub (object : FiniteObject.{u})
+    (windows component : Finset object.Vertex)
+    (outside : IsOutsideComponent object windows component)
+    (bridgeless : ∀ contraction : EdgeContraction object, contraction.HasReturn)
+    (stub : object.Vertex × object.Vertex)
+    (member : stub ∈ boundaryStubs object windows component) :
+    Corridor object windows component :=
+  corridorOfOutsideComponent object windows component outside bridgeless
+    (Classical.choose ((List.mem_iff_get).1 member))
+
 @[simp] theorem corridorOfOutsideComponent_entry (object : FiniteObject.{u})
     (windows component : Finset object.Vertex)
     (outside : IsOutsideComponent object windows component)
@@ -894,6 +971,16 @@ noncomputable def entryStub {object : FiniteObject.{u}}
     object.Vertex × object.Vertex :=
   (boundaryStubs object windows component).get corridor.entry
 
+@[simp] theorem corridorOfBoundaryStub_entryStub (object : FiniteObject.{u})
+    (windows component : Finset object.Vertex)
+    (outside : IsOutsideComponent object windows component)
+    (bridgeless : ∀ contraction : EdgeContraction object, contraction.HasReturn)
+    (stub : object.Vertex × object.Vertex)
+    (member : stub ∈ boundaryStubs object windows component) :
+    (corridorOfBoundaryStub object windows component outside bridgeless stub
+      member).entryStub = stub := by
+  exact Classical.choose_spec ((List.mem_iff_get).1 member)
+
 /-- `hᵢ₊₁`, its cyclic successor stub. -/
 noncomputable def successorStub {object : FiniteObject.{u}}
     {windows component : Finset object.Vertex}
@@ -901,6 +988,42 @@ noncomputable def successorStub {object : FiniteObject.{u}}
     object.Vertex × object.Vertex :=
   (boundaryStubs object windows component).get
     (successorIndex corridor.positive corridor.entry)
+
+/-- The canonical inside path together with the length-major property of the
+framework schedule that selected it. -/
+structure SelectedInside {object : FiniteObject.{u}}
+    {windows component : Finset object.Vertex}
+    (corridor : Corridor object windows component) where
+  path : (object.induce component).graph.Path
+    (stubFoot object windows component corridor.entry)
+    (stubFoot object windows component
+      (successorIndex corridor.positive corridor.entry))
+  shortest : ∀ other : (object.induce component).graph.Path
+    (stubFoot object windows component corridor.entry)
+    (stubFoot object windows component
+      (successorIndex corridor.positive corridor.entry)),
+    path.1.length ≤ other.1.length
+
+/-- The framework-selected inside path, with its schedule-minimality retained
+at the producer. -/
+noncomputable def selectedInside {object : FiniteObject.{u}}
+    {windows component : Finset object.Vertex}
+    (corridor : Corridor object windows component) :
+    SelectedInside corridor := by
+  letI : FinEnum (object.induce component).Vertex :=
+    (object.induce component).vertices
+  letI : Fintype (object.induce component).Vertex := inferInstance
+  letI : DecidableEq (object.induce component).Vertex :=
+    (object.induce component).vertices.decEq
+  letI : DecidableRel (object.induce component).graph.Adj :=
+    (object.induce component).decideAdj
+  let selected := Hypostructure.Graph.FinitePathSelection.selectOfReachable
+    (object.induce component).graph corridor.connected
+  exact {
+    path := selected.path
+    shortest := fun other =>
+      Hypostructure.Graph.FinitePathSelection.selectOfReachable_length_le
+        (object.induce component).graph corridor.connected other }
 
 /-- **The path inside `K`**: the lexicographically first simple path joining the
 two outside endpoints, selected by the framework's own canonical schedule --
@@ -911,16 +1034,21 @@ noncomputable def inside {object : FiniteObject.{u}}
     (object.induce component).graph.Path
       (stubFoot object windows component corridor.entry)
       (stubFoot object windows component
-        (successorIndex corridor.positive corridor.entry)) := by
-  letI : FinEnum (object.induce component).Vertex :=
-    (object.induce component).vertices
-  letI : Fintype (object.induce component).Vertex := inferInstance
-  letI : DecidableEq (object.induce component).Vertex :=
-    (object.induce component).vertices.decEq
-  letI : DecidableRel (object.induce component).graph.Adj :=
-    (object.induce component).decideAdj
-  exact (Hypostructure.Graph.FinitePathSelection.selectOfReachable
-    (object.induce component).graph corridor.connected).path
+        (successorIndex corridor.positive corridor.entry)) :=
+  corridor.selectedInside.path
+
+/-- The canonical corridor path is no longer than any other path with the same
+endpoints.  This is the length-major part of the canonical path schedule used
+by `inside`. -/
+theorem inside_length_le {object : FiniteObject.{u}}
+    {windows component : Finset object.Vertex}
+    (corridor : Corridor object windows component)
+    (other : (object.induce component).graph.Path
+      (stubFoot object windows component corridor.entry)
+      (stubFoot object windows component
+        (successorIndex corridor.positive corridor.entry))) :
+    corridor.inside.1.length ≤ other.1.length :=
+  corridor.selectedInside.shortest other
 
 /-- **The initial segments `J` of the corridor**, indexed by how far along the
 inside path they reach.  Segment `0` is the entry stub alone and the last is the
@@ -981,15 +1109,16 @@ reads. -/
 noncomputable def presentation {object : FiniteObject.{u}}
     {windows component : Finset object.Vertex}
     (corridor : Corridor object windows component) (S : DeclaredSignature)
+    (active : corridor.Segment → Finset object.Vertex)
     (offsetOf : object.Vertex → Fin S.windowOrder)
-    (support : (clause : S.Clause) → S.Generator clause →
-      Finset object.Vertex)
-    (value : corridor.Segment → (clause : S.Clause) → S.Generator clause →
-      S.Value) :
+    (support : corridor.Segment → (clause : S.Clause) →
+      S.Generator clause → Finset object.Vertex)
+    (value : corridor.Segment → (clause : S.Clause) →
+      (generator : S.Generator clause) → S.Value clause generator) :
     Presentation.{u} S object where
   Segment := ULift corridor.Segment
-  activeInterface := fun segment => corridor.activeInterface segment.down
-  generatorSupport := support
+  activeInterface := fun segment => active segment.down
+  generatorSupport := fun segment => support segment.down
   generatorValue := fun segment => value segment.down
   boundaryDegrees := fun segment index =>
     ⟨min (object.degree (if index = 0 then corridor.entryStub.1
@@ -1006,14 +1135,16 @@ noncomputable def presentation {object : FiniteObject.{u}}
 @[simp] theorem presentation_activeInterface {object : FiniteObject.{u}}
     {windows component : Finset object.Vertex}
     (corridor : Corridor object windows component) (S : DeclaredSignature)
+    (active : corridor.Segment → Finset object.Vertex)
     (offsetOf : object.Vertex → Fin S.windowOrder)
-    (support : (clause : S.Clause) → S.Generator clause →
-      Finset object.Vertex)
-    (value : corridor.Segment → (clause : S.Clause) → S.Generator clause →
-      S.Value) (segment : corridor.Segment) :
-    (corridor.presentation S offsetOf support value).activeInterface
+    (support : corridor.Segment → (clause : S.Clause) →
+      S.Generator clause → Finset object.Vertex)
+    (value : corridor.Segment → (clause : S.Clause) →
+      (generator : S.Generator clause) → S.Value clause generator)
+    (segment : corridor.Segment) :
+    (corridor.presentation S active offsetOf support value).activeInterface
         (ULift.up segment) =
-      corridor.activeInterface segment := rfl
+      active segment := rfl
 
 /-- **"Each selected branch-excess half-edge has exactly one corridor."**
 
@@ -1059,11 +1190,12 @@ section CorridorState
 
 variable {object : FiniteObject.{u}} {windows component : Finset object.Vertex}
 variable (corridor : Corridor object windows component) (S : DeclaredSignature)
+variable (active : corridor.Segment → Finset object.Vertex)
 variable (offsetOf : object.Vertex → Fin S.windowOrder)
-variable (support : (clause : S.Clause) → S.Generator clause →
-  Finset object.Vertex)
-variable (value : corridor.Segment → (clause : S.Clause) → S.Generator clause →
-  S.Value)
+variable (support : corridor.Segment → (clause : S.Clause) →
+  S.Generator clause → Finset object.Vertex)
+variable (value : corridor.Segment → (clause : S.Clause) →
+  (generator : S.Generator clause) → S.Value clause generator)
 
 /-- **`lem:cold-corridor-first-failure`, the pigeonhole of (F5).**
 
@@ -1077,28 +1209,29 @@ exist. -/
 theorem exists_repeated_state
     (segments : Fin (stateBound S + 1) → corridor.Segment) :
     ∃ left right, left ≠ right ∧
-      (corridor.presentation S offsetOf support value).state
+      (corridor.presentation S active offsetOf support value).state
           (ULift.up (segments left)) =
-        (corridor.presentation S offsetOf support value).state
+        (corridor.presentation S active offsetOf support value).state
           (ULift.up (segments right)) :=
-  (corridor.presentation S offsetOf support value).exists_state_eq_of_stateBound_lt
+  (corridor.presentation S active offsetOf support value).exists_state_eq_of_stateBound_lt
     (fun index => ULift.up (segments index))
 
 /-- **The retention is complete on a real corridor.**  Two initial segments with
 the same cold corridor state agree at every declared coordinate supported in the
 active interface, derived (D8) coordinates included. -/
 theorem reading_eq_of_state_eq {left right : corridor.Segment}
-    (same : (corridor.presentation S offsetOf support value).state
+    (same : (corridor.presentation S active offsetOf support value).state
         (ULift.up left) =
-      (corridor.presentation S offsetOf support value).state (ULift.up right))
+      (corridor.presentation S active offsetOf support value).state (ULift.up right))
     (coordinate : Generated S)
-    (inside : (corridor.presentation S offsetOf support value).support coordinate
-      ⊆ ↑(corridor.activeInterface left)) :
-    (corridor.presentation S offsetOf support value).reading (ULift.up left)
+    (inside : (corridor.presentation S active offsetOf support value).support
+        (ULift.up left) coordinate
+      ⊆ ↑(active left)) :
+    (corridor.presentation S active offsetOf support value).reading (ULift.up left)
         coordinate =
-      (corridor.presentation S offsetOf support value).reading (ULift.up right)
+      (corridor.presentation S active offsetOf support value).reading (ULift.up right)
         coordinate :=
-  (corridor.presentation S offsetOf support value).reading_eq_of_state_eq same
+  (corridor.presentation S active offsetOf support value).reading_eq_of_state_eq same
     coordinate inside
 
 end CorridorState
@@ -1268,10 +1401,16 @@ structure BoundedGerm (S : DeclaredSignature)
     (Baseline Target : FiniteObject.{u} → Prop) (object : FiniteObject.{u}) where
   /-- The bounded support the germ occupies. -/
   support : Finset object.Vertex
+  /-- `M_cold` is part of the definition of a bounded configuration, rather
+  than an optional fact supplied only by a later occurrence witness. -/
+  bounded : support.card ≤ exchangeBound S
   connected : Graph.SupportComponents.Connected.ConnectedOn object support
   proper : ∃ vertex, vertex ∉ support
   /-- `E`: the second same-interface representative. -/
   canonical : BoundaryPiece (rowAtom object support connected proper).interface
+  /-- The second representative is bounded by the same fixed cut-state
+  constant as the actual exchange support. -/
+  canonicalBounded : canonical.internalVertexCount ≤ exchangeBound S
   /-- The inherited boundary-degree profile is shared. -/
   sameProfile :
     canonical.boundaryDegreeProfile =
@@ -1698,6 +1837,52 @@ def ColdGermExtractionLocal (S : DeclaredSignature) (threshold : Nat)
         ExtractedGermFamily S threshold Baseline Target object candidates
           disjointFamily
 
+/-- The candidate intersection graph on *occurrences* of bounded germs.
+
+The manuscript indexes candidates by selected branch-excess half-edges.  Two
+different half-edges may determine definitionally equal bounded germs, so an
+ordinary `Finset BoundedGerm` is not an adequate counting domain.  This
+predicate keeps the selected occurrence index and reads only the support of
+the germ attached to it. -/
+def CandidateGermOccurrenceFamily (S : DeclaredSignature) (threshold : Nat)
+    (Baseline Target : FiniteObject.{u} → Prop) (object : FiniteObject.{u})
+    {Index : Type v} [DecidableEq Index]
+    (germAt : Index → BoundedGerm S Baseline Target object)
+    (candidates : Finset Index) : Prop :=
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  ∀ candidate ∈ candidates,
+    (candidates.filter fun other =>
+      ¬ Disjoint (germAt candidate).support (germAt other).support).card ≤
+        exchangeBound S * overlapBound threshold S
+
+/-- A vertex-disjoint extracted family of selected-half-edge occurrences.
+Unlike the later positive linear arm, the finite greedy statement itself also
+applies to the empty family. -/
+def ExtractedGermOccurrenceFamily (S : DeclaredSignature) (threshold : Nat)
+    (Baseline Target : FiniteObject.{u} → Prop) (object : FiniteObject.{u})
+    {Index : Type v} [DecidableEq Index]
+    (germAt : Index → BoundedGerm S Baseline Target object)
+    (candidates disjointFamily : Finset Index) : Prop :=
+  disjointFamily ⊆ candidates ∧
+    (∀ left ∈ disjointFamily, ∀ right ∈ disjointFamily, left ≠ right →
+      Disjoint (germAt left).support (germAt right).support) ∧
+    candidates.card ≤
+      disjointFamily.card * extractionDenominator threshold S
+
+/-- `lem:cold-germ-extraction` as the generic greedy extraction on the
+paper's selected-half-edge occurrence domain. -/
+def ColdGermOccurrenceExtractionLocal (S : DeclaredSignature) (threshold : Nat)
+    (Baseline Target : FiniteObject.{u} → Prop) (object : FiniteObject.{u}) :
+    Prop :=
+  ∀ (Index : Type u) (_ : DecidableEq Index)
+      (germAt : Index → BoundedGerm S Baseline Target object)
+      (candidates : Finset Index),
+    CandidateGermOccurrenceFamily S threshold Baseline Target object
+        germAt candidates →
+      ∃ disjointFamily : Finset Index,
+        ExtractedGermOccurrenceFamily S threshold Baseline Target object
+          germAt candidates disjointFamily
+
 /-- A candidate family whose members are all still terminal after the
 length-changing trichotomy. -/
 def TerminalLengthChangingFamily (S : DeclaredSignature) (threshold : Nat)
@@ -1744,7 +1929,8 @@ same-interface table have been routed on the current residual. -/
 theorem noTerminalColdResidual_of_routing {S : DeclaredSignature}
     {threshold : Nat} {LengthOK : Nat → Prop}
     {Baseline Target : FiniteObject.{u} → Prop} {object : FiniteObject.{u}}
-    (extraction : ColdGermExtractionLocal S threshold Baseline Target object)
+    (_extraction :
+      ColdGermOccurrenceExtractionLocal S threshold Baseline Target object)
     (routed :
       ∀ germ : BoundedGerm S Baseline Target object,
         germ.increment < 0 →
@@ -1767,10 +1953,7 @@ theorem noTerminalColdResidual_of_routing {S : DeclaredSignature}
   intro terminal
   rcases terminal with terminalFamily | terminalTable | terminalSelf
   · rcases terminalFamily with ⟨candidates, candidateFamily, terminal⟩
-    obtain ⟨disjointFamily, extracted⟩ := extraction candidates candidateFamily
-    rcases extracted with ⟨subset, _independent, _cover, positive⟩
-    obtain ⟨germ, memberDisjoint⟩ := Finset.card_pos.mp positive
-    have memberCandidates : germ ∈ candidates := subset memberDisjoint
+    obtain ⟨germ, memberCandidates⟩ := Finset.card_pos.mp candidateFamily.1
     exact (terminal germ memberCandidates).2
       (routed germ (terminal germ memberCandidates).1).1
   · rcases terminalTable with ⟨Handoff, row, noHandoff, noDistinguishing⟩

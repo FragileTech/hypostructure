@@ -63,6 +63,20 @@ def ConnectedOn (object : FiniteObject.{u})
       ∃ path : object.graph.Walk left right,
         path.IsPath ∧ ∀ vertex ∈ path.support, vertex ∈ core
 
+/-- Ambient graph connectedness, expressed on the explicit full support used
+by canonical support selection. -/
+theorem connectedOn_vertexFinset (object : FiniteObject.{u})
+    (connected : object.graph.Connected) :
+    ConnectedOn object object.vertexFinset := by
+  classical
+  letI : Nonempty object.Vertex := connected.nonempty
+  refine ⟨⟨Classical.choice connected.nonempty,
+    object.mem_vertexFinset _⟩, ?_⟩
+  intro left right _ _
+  obtain ⟨path⟩ := connected.preconnected left right
+  exact ⟨path.toPath, path.toPath.isPath, fun vertex _ =>
+    object.mem_vertexFinset vertex⟩
+
 @[simp] theorem mem_members_iff (object : FiniteObject.{u})
     (support : Finset object.Vertex) (component : Component object support)
     (vertex : object.Vertex) :

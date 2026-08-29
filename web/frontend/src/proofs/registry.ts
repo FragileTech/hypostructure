@@ -56,13 +56,13 @@ export const PROOFS: ProofEntry[] = [
     question:
       "Does every graph with minimum degree three contain a cycle whose length is a power of two?",
     tagline:
-      "Erdős and Gyárfás asked this in 1995. One manuscript, 180 steps, answered by contradiction; every branch closes.",
+      "Erdős and Gyárfás asked this in 1995. The manuscript now exposes 182 numbered steps plus the [172a] subnode; only [172a], [181], and [182] remain open.",
     papers: [{ file: "erdos_64_proof.pdf", title: "The paper", chapter: "erdos-gyarfas" }],
     overview: [
       "Erdős and Gyárfás asked this in 1995. The paper this site accompanies answers yes, and it does so by contradiction: assume a counterexample exists, take the smallest one, and squeeze it until nothing is left. The argument is long, and it branches. This is a way to walk it.",
       "A cycle of length $2^k$ exists exactly when some edge has a return path of length $2^k-1$ — a Mersenne number. That turns a question about geometry into one about arithmetic, and it is the target the whole proof aims at. If a minimal counterexample $G$ exists, then no edge of it has such a return, and every later step is a consequence of that single prohibition.",
       "From there the proof forces structure. Minimality makes $G$ edge-critical and its high-degree vertices independent. An external theorem says a $P_{13}$-free graph of minimum degree three already has a power-of-two cycle, so $G$ must contain induced paths on thirteen vertices. Packing those paths splits the graph into windows and a remainder, and the rest of the argument is an accounting contest between the two: how much two-step obstruction the remainder must supply against how much the windows can pay for. Wherever the books fail to balance, a branch closes.",
-      "Every branch does. The dense-packing side was the last to give way: the no-branch of the realization test [158] and the exact collision test [173], drawn in Parts X and XII, once left two outcomes that no fact on the ledger contradicted. They are closed now — by the fixed-scale overlap system at [172], the graph-realized configuration at [176], and the pair increment arithmetic at [180] — so no terminal is drawn in red, and the contradiction is complete.",
+      "The implemented branches are now tracked against the manuscript's exact local contracts. The dense-packing continuation closes its covered arms through [173]–[180]; the remaining boundaries are shown explicitly in red at [172a], [181], and [182]. Those red nodes are honest residual obligations, not claimed closures.",
     ],
   },
   {

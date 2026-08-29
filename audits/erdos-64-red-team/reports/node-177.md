@@ -20,6 +20,20 @@
 
 Verdict: **WRONG ROUTING DESTINATION**
 
+### Post-audit recheck — 2026-08-29
+
+The aggregate noncandidate family, heavy-centre corridor witness, and same-ledger
+call into the common Type-B continuation have now been implemented, and the old
+seven projection errors are fixed. This resolves the earlier mechanical
+failure, but not the semantic conversion identified by this report.
+`AbsorbedGermFanEnvelopeWitness` still explicitly says that it does not produce
+the counted connected remainder core of `DecoratedHandoff.Envelope`, and
+`TypeBFanEntryStatement` admits it as a separate disjunct. No theorem converting
+that cold datum to the manuscript's assigned Type-B support was found. Thus the
+original **WRONG ROUTING DESTINATION** verdict remains applicable to manuscript
+fidelity even though `SpineRows.lean` and `Assembly.lean` now compile. The
+code-first correction ledger in `Assembly_node_audit.md` is the current status.
+
 The selected corridor does provide a high-degree vertex (z), cubic neighbours, and two distinct simple corridor tails.  Those data are not the decorated handoff envelope required at Type B node [65].  In particular, the incoming residual does not identify a counted connected (P_{13})-free remainder core (Y), does not make (z) a surviving first separator of declared response coordinates through one completion port, and does not exclude the target-defect, compression, and support-dependence failures in clauses (iii)--(v) of the fan-safe relation.  The cited `lem:typeA-high-degree-handoff` assumes all of those facts; it cannot manufacture them from one cold return corridor.  The current Lean source confirms the type mismatch by defining a weaker cold-corridor witness, expressly saying that it is not a decorated envelope, and then adding that witness as a new disjunct to the Type B entry and its descendants.  That is a parallel formal lane, not a proof that node [177]'s actual residual satisfies node [65]'s manuscript contract.
 
 ## 2. Exact node contract

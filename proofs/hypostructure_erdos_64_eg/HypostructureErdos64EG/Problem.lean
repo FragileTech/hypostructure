@@ -148,6 +148,7 @@ noncomputable def spineData : Graph.Strategy.Spine.Data.{u} where
   threshold_eq_three := by norm_num [erdosReceiverLoadProfile]
   three_le_threshold := by norm_num [erdosReceiverLoadProfile]
   LengthOK := PowerOfTwoLength
+  lengthOK_iff_powerOfTwo := fun _length => Iff.rfl
   windowOrder := inducedPathOrder
   windowOrder_pos := by norm_num [inducedPathOrder]
   labelCount := WindowAlgebra.labels_enumeration.1
@@ -183,10 +184,17 @@ noncomputable def spineData : Graph.Strategy.Spine.Data.{u} where
       Graph.SameTokenBlockerRoles.card_blockerKind,
       Graph.SameTokenBlockerRoles.card_tokenSubtype]
     norm_num
-  coldSignature := Graph.ColdCorridor.declaredSignature inducedPathOrder
-    (by norm_num [inducedPathOrder])
-  coldSignature_windowOrder := rfl
   surplusScale := surplusScaleCoefficient
+  baselineDeficitSafety := by
+    norm_num [Graph.baselineDeficitCoefficient, surplusScaleCoefficient,
+      Graph.SameTokenBlockerRoles.homogeneousTokenCap,
+      Graph.SameTokenBlockerRoles.homogeneousCapCharge,
+      Graph.SameTokenBlockerRoles.geometricPatternBound,
+      Graph.SameTokenBlockerRoles.sameTokenRoleBound,
+      Graph.SameTokenBlockerRoles.card_role,
+      Graph.SameTokenBlockerRoles.card_blockerKind,
+      Graph.SameTokenBlockerRoles.card_tokenSubtype,
+      erdosReceiverLoadProfile]
   windowRate := FiniteChecks.P13Barrier.windowRate
   windowBarrier :=
     { size := FiniteChecks.P13Barrier.labelCount
@@ -200,6 +208,15 @@ noncomputable def spineData : Graph.Strategy.Spine.Data.{u} where
       table := FiniteChecks.P13Barrier.certifiedTable
       flatPositive := by native_decide
       improves := by native_decide }
+  windowBarrierLabel := FiniteChecks.P13Barrier.barrierLabel
+  windowBarrierLabel_mem := FiniteChecks.P13Barrier.barrierLabel_mem
+  windowBarrierLabel_injective :=
+    FiniteChecks.P13Barrier.barrierLabel_injective
+  windowBarrierLabel_surjective :=
+    FiniteChecks.P13Barrier.barrierLabel_surjective
+  windowBarrier_left_semantic := FiniteChecks.P13Barrier.leftRow_eq_safe
+  windowBarrier_right_semantic := FiniteChecks.P13Barrier.rightRow_eq_safe
+  windowBarrier_sum_semantic := FiniteChecks.P13Barrier.sumRow_eq_safe
   windowRate_eq_barrier := rfl
   separatedScaleCount := Nat.log2
   separatedScaleCount_le := fun _size => le_refl _

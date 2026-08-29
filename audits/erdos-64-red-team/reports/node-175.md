@@ -20,6 +20,20 @@
 
 Verdict: **WRONG ROUTING DESTINATION**
 
+### Post-audit resolution — 2026-08-29
+
+This verdict describes the audited 2026-08-24 snapshot. The current
+implementation repairs the diagnosed loss of typing and family data. Node
+`[175]` now publishes the exact per-incidence split and decides whether the
+subcubic candidate class is inhabited without discarding the heavy-centre
+complement. Consequently a mixed family retains both facts on one monotone
+`ExactLedger`: its selected candidate enters `[176]`, and its complete
+noncandidate family remains available for `[177]`. The empty-candidate arm
+enters `[177]` directly with the same aggregate complement package. The updated
+node row in `Assembly_node_audit.md` and the complete `Assembly.lean` build are
+the current status authorities; the original analysis below is retained as the
+failure report that motivated this repair.
+
 The decision whether the actual first-failure support (J) meets
 (V_{\ge4}(G)) is exhaustive, and node [10] correctly makes every neighbour
 of a chosen high-degree (z\in J) cubic.  The yes-edge nevertheless does not

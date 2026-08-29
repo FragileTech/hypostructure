@@ -1,19 +1,19 @@
 # Erdős–Gyárfás Lean port: unresolved compliance work
 
-This ledger describes the present Lean implementation and the unresolved work needed for full
-180-node compliance. `Assembly_node_audit.md` is the status authority. A node belongs here exactly
-when its current audit row fails at least one implementation, wiring, residual-locality,
-canonical-ledger, manuscript-fidelity, or kernel gate.
+This ledger records the current Lean implementation and the obligations that prevent full
+diagram compliance. `Assembly_node_audit.md` is the status authority. A node belongs here when
+its current audit row fails an implementation, wiring, residual-locality, canonical-ledger,
+manuscript-fidelity, or kernel gate.
 
 ## 1. Authorities and compliance gates
 
 The mathematical authority is `to_formalize/erdos_64_proof.tex`. Its statements, inherited
 hypotheses, alternatives, branch order, and terminal behavior determine the required proposition.
-The implementation authority is the current Lean declaration type and body, its literal call
-site, its semantic-key manifest, and a kernel check. Lean comments and `EG-NODE` annotations are
-locators, not implementation evidence.
+The implementation authority is each current Lean declaration type and body, its literal call
+site, its semantic-key manifest, and its kernel status. Lean comments and `EG-NODE` annotations
+are locators rather than implementation evidence.
 
-A node is compliant when all of the following hold:
+A compliant node satisfies all of the following conditions:
 
 1. The exact manuscript proposition or exhaustive alternative is represented.
 2. A sealed `factOnly`/`AtomicCT.run`, `Decision.run`, canonical terminal, or straight-line
@@ -30,139 +30,180 @@ A node is compliant when all of the following hold:
 
 The unresolved diagram nodes are:
 
-`[123]`, `[144]`, `[162]`, `[165]`, `[166]`, `[167]`, `[168]`, `[170]`, `[171]`,
-`[172]`, `[175]`, `[176]`, `[178]`, `[179]`, and `[180]`.
+`[168]`, `[170]`, `[171]`,
+`[172]`, `[175]`, `[176]`, `[181]`, and `[182]`.
 
 The current `Assembly.lean` call sites contain these unresolved continuation identifiers:
 
-- `selectedRouteEightFailedStageClosure`
-- `selectedRouteEightQuotientResidual`
-- `selectedTypeBSublinearResidual`
+- `selectedSparseTargetDefectContinuation`
 - `selectedDenseSameSizeCanonicalSwap`
-- `selectedGenuineSecondStrandCloses`
-- `selectedBarrierOverlapSerialSystem`
-- `selectedRouteEightBudgetEdge`
-- `selectedAbsorbedTypeBFanHeavyContinuation`
-- `selectedAbsorbedTypeBFanDegreeFourContinuation`
-- `selectedSparsePairSerialSystem`
 
-`StrategyDag.lean` contains presentation-equality examples but no final `strategyDag`; the package
-root imports `Assembly.lean`. The sealed topology endpoint therefore remains absent.
+`StrategyDag.lean` contains presentation-equality examples and no final `strategyDag`. The package
+root imports `Assembly.lean`, so the sealed topology endpoint is absent.
 
 ## 3. Dependency order
 
-1. Close the unified route-8 failed-rate arm at `[123]` and its two tested residual lanes.
-2. Prove the three same-token routing implications used twice by `[144]`.
-3. Complete the cold/dense branch at `[165]`--`[172]` and the two Type B continuations reached
-   through `[175]`--`[176]`.
-4. Construct the pair-obstruction, serial-system, and arithmetic chain `[178]`--`[180]`.
-5. Define the sealed topology in `StrategyDag.lean` after every node owner composes.
+1. Produce node `[123]`'s declared unified-deficit and entry-census prerequisites on each incoming
+   lane, then continue the explicit peeled-demand output at `[181]`.
+2. Continue `[125]`'s exact target-defect handoff at the downstream peeling frontier `[181]`.
+3. Complete the cold/dense branch at `[168]`--`[172]` and the Type B continuations reached through
+   `[175]`--`[176]`.
+4. Close node `[182]` by proving the first exact implication that fails in the covered
+   `[178]`--`[180]` chain: conditional factorization, exhaustive pair-system uncrossing, or
+   exhaustive increment-arithmetic/periodic routing.
+5. Define the sealed topology in `StrategyDag.lean` when every node owner composes.
 
 ## 4. Node specifications
 
-### Node [123] — large-budget demand descent
+### Node [153] — actual first-failure incidence and extraction accounting
 
-**Current implementation.** `route8PeelingDescentRow` constructs the finite peel chain.
-`route8StageOutcomeDichotomy` separates the true route-8 survivor from
-`∃ chain, PeelChain chain ∧ ¬ StageRate chain.toFinset`. The survivor reaches
-`route8UnifiedTerminalNoGoRow` and node `[124]`. The failed-rate arm calls
-`selectedRouteEightFailedStageClosure`. `selectedLargeBudgetPressureCensus` also exposes the
-tested quotient and Type B sublinear residuals through `selectedRouteEightQuotientResidual` and
-`selectedTypeBSublinearResidual`.
+**Partially implemented.** The corridor, the two actual window interfaces, their offsets, the
+bounded active-interface estimate, and the structural terminal/least-repeat support are
+current-object constructions. `DeclaredSignature.Value` is indexed by the generating coordinate,
+so each D1--D7 kind carries its own current-object value type. The least-repeat witness derives from
+state equality and retains, in the published `K .coldCorridorState` fact, equality of every
+supported generated reading (including every (D8) combination) together with the complete table
+record at both repeated endpoints. The extraction
+owner also proves the least high-degree corridor head and every earlier bounded head inside its
+atomic executor, publishes that fact once as `K .coldHandoffTransfer`, and
+`coldGermCandidatesRow` reads it with `inputs.get`. This is distinct from the paper's F4 Type B or
+route-8 handoff, which remains under `K .coldFailureHandoff`.
 
-**Unresolved obligation.** Prove the manuscript's claimed contradiction for the exact failed
-stage from the large-budget net-deficiency cap and `thm:branch-kill`, including the bridge slack
-present in `StageRate`. Route the quotient and Type B sublinear residuals through their stated
-manuscript continuations on the same ledger.
+`valueAt` reads the supported positions, their graph-incidence relation, and the anchored labelled
+degree from the current object for each heterogeneous generated coordinate. The F5 owner constructs
+both terminal and least-repeat germs inside its atomic executor, carries the complete endpoint
+record, and bounds both the actual support and the selected second representative by `M_cold`.
+Target response remains an explicit later F2/G2 test; the owner assumes no all-context target
+equivalence. The bounded-germ and first-failure witnesses are constructed inside the atomic owner
+rather than supplied by detached declarations.
 
-**Required validation.** The descent, both decision arms, both residual lanes, and the `[124]`
-survivor must elaborate as one composition. The failed-rate proof must not use a conditional S24
-criterion as an unconditional contradiction.
+One linked obligation remains.  The row proves the generic implications attached to F1--F4 but
+does not construct their earliest occurrence and then select F5 only on the remaining corridors.
+Consequently the complement currently called `routedLoss` is only the set-theoretic difference
+between all selected stubs and the subcubic eligible F5 occurrences.  In particular it also
+contains selected stubs whose second endpoint lies directly in another packed window; no current
+ExactLedger input proves that this cross-window class is in the paper's already routed Type B or
+route-8 handoff loss, or bounds it by the registered `o(n)` surplus allowance.  Until that literal
+F4 routing/absence fact is produced on the surviving cold residual, the displayed
+`9C/D_cold-o(n)` inequality must not be inferred from the existing `routedLoss` field.
 
-### Node [144] — same-token bottleneck discharge
+**Validation.** `ColdCorridor`, `ColdGermFamily`, `SpineVocabulary`, `ColdCorridorRows`,
+`SpineRows`, and `HomogeneousBottleneckRows` kernel-build. This validates the bounded-germ owner,
+but not the paper's complete node-[153] conclusion while the occurrence-level F4
+handoff and routed-loss bound remain absent.
 
-**Current implementation.** `sameTokenBottleneckRoutingRow` reads
-`homogeneousBottleneckPattern`, `activeSurplusDemands`, `cubicBaseline`,
-`capacityTokenLedger`, `selection`, `degreeProfileFibres`,
-`targetCompleteContextUniversality`, `replacementExclusion`, and `uncompressible`. It derives the
-matching/star endpoint choice, routing-label collision, registered configurations, common root,
-connected parallel/switch supports, first-separator tails, and the high-degree envelope after
-the cubic exclusion.  Its cubic incidence argument is exhaustive: it uses the last common-prefix
-vertex when the prefix is nonempty and derives the unique third incidence from the registered
-cubic degree equation when the routes diverge immediately.
+### Node [123] — exact large-budget descent (implemented)
 
-**Unresolved obligation.** Four mathematical goals remain: for each of the matching and star
-shapes, prove the parallel declared-identification route and the cubic-switch route.  The remaining
-work is to expose through the registered homogeneous-pattern fact the two same-boundary response
-readings and the proper/closed representative data used by those quotient arguments; immediate
-divergence no longer leaves an obligation.
+**Current implementation.** `selectedLargeBudgetPressureCensus` requires the literal
+`K .route8UnifiedDeficit` and `K .route8UnifiedEntryCensus` facts and delegates to
+`selectedRouteEightCensus`. The latter runs the finite exit-(4) descent, closes both true route-8
+origins only through node `[124]`, and returns the exact
+`K .route8PeeledDemandResidual` ledger on failed reduced rate. The wrapper's return type is that
+ledger, not `False`.
 
-**Required validation.** The one sealed owner must publish `bottleneckRouting` and `typeBHandoff`
-for all three class routes without an admitted goal or auxiliary route carrier.
+**Status.** Node `[123]` is complete and paper-faithful. The current incoming call at
+`Assembly.lean:1880` currently stops before this node because it has produced only
+`K .route8UnifiedNegative`, not the two declared prerequisites. That is an upstream wiring task,
+not a missing proposition or continuation inside node `[123]`.
 
-### Node [162] — dense hot/cold pass
+**Validation.** The complete ExactLedger/Strategy fixture set and `SpineRows` build successfully;
+direct elaboration passes the node wrapper and reports the first mismatch at the current incoming call.
 
-**Current implementation.** The `.right` arm of `selectedNearCubicBranch` runs the shared
-`[22]`--`[23]` hot/cold split and state-count contradiction on the literal dense residual. The
-larger-residual path retests the supply bound at `[160]` and enters the cold owners.
+### Node [125] — named sparse-exit continuation (implemented)
 
-**Unresolved obligation.** The composed branch reaches the same-size canonical swap, genuine
-second-strand, barrier-overlap serial-system, and exact route-8 budget-edge frontiers. Complete
-those owners and preserve the dense residual through every call.
+**Current implementation.** `selectedSparseSurplusDichotomy` publishes either `K .sparsePairExit`
+or `K .sparseSurplusSurvivor`. `selectedLedgerClosure` sends the survivor ledger to
+`selectedStrictSurplusBranch` and sends the sparse-exit ledger through
+`sparseSurplusExitRoutingRow`. The four terminal constructors close inside that sealed row. The
+target-defect constructor produces the exact `K .sparseTargetDefectResidual` ledger, which reaches
+`selectedSparseTargetDefectContinuation`.
 
-**Required validation.** Both dense arms must elaborate through their terminal continuations;
-the shared hot/cold decision must append only its declared key pair.
+**Status.** Node `[125]` is complete.  The left arm closes the four terminal constructors and
+publishes the concrete attempted-quotient defect under `K .sparseTargetDefectResidual`; the right
+arm alone writes `K .sparseSurplusSurvivor` into the exact ledger consumed by `[126]`--`[129]`.
+Processing the published target-defect handoff is a downstream peeling obligation, currently
+named `selectedSparseTargetDefectContinuation`, not missing work inside node `[125]`.
 
-### Node [165] — same-size canonical replacement
+**Required validation.** The target-defect handoff must preserve its exact key and complete
+ancestry and must continue through registered Strategy owners.
 
-**Current implementation.** `canonicalSwapSizeDichotomy` separates
-`coldCanonicalSwapSmaller` from `coldCanonicalSwapSameSize`. `selectedCanonicalSwapCloses`
-closes the strictly smaller vertex-count arm. The same-size arm calls
-`selectedDenseSameSizeCanonicalSwap`.
+### Node [162] — dense hot/cold pass (implemented)
 
-**Unresolved obligation.** Implement the manuscript's same-size swap using the refined order
-`(|V|, |E|, Φ)` and close the `coldCanonicalSwapSameSize` ledger. The current two-coordinate
-`lexicographicProgress` API does not express the `Φ` tie-break.
+**Current implementation.** The dense arm of `selectedNearCubicBranch` executes the shared
+hot/cold decisions and cold first-failure rows on the literal dense residual. On the linear cold
+arm, `remainderNormalizationRow` supplies induced-(P_{13})-freeness for the remainder of the
+same canonical maximal packing. `coldFirstFailureRoutingRow` publishes the retained corridor
+state with every component and selected path inside that remainder.
+`denseColdCorridorsTerminalRow` reads `K .coldCorridorState`, `K .remainderNormalized`, and
+`K .hotColdPartition` with `inputs.get`, uses the canonical path's schedule-minimality to bound
+its length, and publishes the exact incoming state together with terminality of every corridor
+under `K .denseColdCorridorsTerminal`.
 
-**Required validation.** The constructed canonical germs must make the two decision arms
-exhaustive, and the same-size arm must close through a sealed terminal owner.
+**Status.** Node `[162]` is complete and paper-faithful. The exact output ledger continues to the
+neutral configuration decision `[163]`; the all-cold branch reaches `[164]`. The canonical arm
+has the exact `[165]`--`[166]` replacement/minimality owners. The graph-realized arm runs the
+exact `[167]` finite check and passes its survivor ledger to the endpoint exclusion at `[168]`.
 
-### Node [166] — refined lexicographic minimality
+**Validation.** The exact `[163]` decision, `[167]` owner, restricted `9C` selection, and `[168]`
+endpoint-exclusion owner kernel-check in isolated slices.
 
-**Current implementation.** No declaration publishes node `[166]`. The case assumption
-`coldCanonicalSwapSameSize` reaches `selectedDenseSameSizeCanonicalSwap`.
+### Nodes [165]--[166] — refined minimality swap
 
-**Unresolved obligation.** Extend the progress proposition to the manuscript's
-`(|V|, |E|, Φ)` order, prove the `Q = E` consequence at the selected canonical germ, and expose
-that proof through the `[165]` terminal owner.
+**Current implementation.** `CanonicalReplacementSwapStatement` is quantified over every
+neutral equal-length terminal configuration of the selected object. `canonicalReplacementSwapRow`
+reads the canonical branch entry with `inputs.get` and publishes the universal exchange:
+whenever `E ≠ Q`, gluing `E` into the retained outside context preserves the baseline, target
+avoidance, vertex count, and edge count and strictly decreases the canonical-decomposition
+coordinate. `canonicalReplacementTrivialRow` reads that exchange and `K .selection` with
+`inputs.get`; refined minimality rules out `E ≠ Q` and publishes universal `Q = E` under
+`K .coldCanonicalReplacementTrivial`.
 
-**Required validation.** The proposition must be residual-local and must not be encoded as an
-application callback or an unregistered side theorem.
+**Status.** Nodes `[165]` and `[166]` implement `lem:refined-minimality-swap`. The universal
+equality remains in the ExactLedger for `[169]` and for later identifications of neutral pieces.
 
-### Node [167] — finite two-strand closure
+**Validation.** `SpineVocabulary.lean` and an isolated current [165]--[166] ExactLedger
+executor check kernel-check. Whole-module `ColdCorridorRows.lean` validation remains pending
+because its full [145]--[177] elaboration exceeds the bounded validation window.
 
-**Current implementation.** `TwoStrandEnumeration.lean` contains a `decide`-checked arithmetic
-enumeration, but no Strategy key, row, or Assembly declaration instantiates it at the selected
-graph-realized strand pair. The corresponding branch calls `selectedGenuineSecondStrandCloses`.
+### Node [167] — finite two-strand check (implemented)
 
-**Unresolved obligation.** Instantiate the finite check with the selected pair and its closing
-lengths `2ℓ` and `ℓ+d`, connect the arithmetic survivor statement to
-`HasCycleWithLength`, and publish the terminal contradiction on the incoming ledger.
+**Current implementation.** `K .coldGenuineSecondStrand` retains the two equal-length ambient
+strands, their common attachment vertices, the window segment, the path and disjointness
+certificates needed to form the pair and segment cycles, their exact lengths, and the registered
+finite bound. `twoStrandSurvivorRow` reads that key and `K .selection` with `inputs.get` and
+constructs the cycles of lengths `2ℓ` and `ℓ+d` inside the executor. If either length is dyadic,
+`Data.lengthOK_iff_powerOfTwo` makes that cycle an accepted target and contradicts the selected
+graph. The remaining arm is published as `K .coldTwoStrandSurvivor`, with membership in
+`Graph.TwoStrand.survivors data.windowOrder (twoStrandEnumerationBound data)`.
 
-**Required validation.** The Strategy owner and the application branch must kernel-check; a
-module import or doc comment is not implementation evidence.
+**Status.** Node `[167]` is complete. Both graph-realized Assembly branches run its registered
+owner and expose the literal survivor ledger to `[168]`; `[167]` does not claim `False` on that
+arm.
+
+**Validation.** `SpineVocabulary.lean`, the isolated `[163]` decision, and the isolated `[167]`
+`factOnly` owner kernel-check.
 
 ### Node [168] — endpoint attachment of the surviving pair
 
-**Current implementation.** `coldWindowStubStructureRow` publishes the selected-stub and
-endpoint hypotheses. It does not state either conclusion of `lem:symmetric-pair-endpoint`; the
-symmetric-pair exclusion appears only in prose.
+**Current implementation.** `selectedStubs` is the paper's restricted selection: the external
+stub list is filtered to the one-stub interior window vertices and the two corridor ends are
+absorbed. `coldInteriorBranchExcess` is therefore the registered `9` per ambient-cubic `P₁₃`,
+and the `[152]`--`[153]` extraction uses its `9C` lower bound. The `[163]` witness retains the exact
+selected occurrence that produced its germ, proves that occurrence belongs to the same window,
+and identifies it with one of the pair's four strand stubs.
 
-**Unresolved obligation.** Publish the two endpoint conclusions for the selected surviving pair
-and consume them in the node `[167]` closure.
+`symmetricPairEndpointExclusionRow` reads `K .coldWindowStubStructure` and
+`K .coldTwoStrandSurvivor` through `inputs.get`. Two distinct stubs at each attachment force both
+attachments into the published endpoint set. The retained selected occurrence has external
+degree one, while either endpoint has external degree two, so the row publishes
+`K .coldSymmetricPairExcluded`. Both Assembly paths run the stub-structure owner and use
+`AtomicCT.runAndCloseIncompatible` to commit the distinguished closure against the survivor.
 
-**Required validation.** The owner must read the actual selected pair and append a semantic key
-whose `Holds` proposition is exactly the manuscript lemma.
+**Status.** Node `[168]` is complete.
+
+**Validation.** `ColdGermFamily.lean` and `SpineVocabulary.lean` kernel-check; isolated checks for
+the restricted `[152]` mass, `[153]` positivity, `[168]` owner, and canonical incompatibility
+closure kernel-check.
 
 ### Node [170] — scale-additivity decision
 
@@ -171,109 +212,174 @@ whose `Holds` proposition is exactly the manuscript lemma.
 bound with node `[171]`'s global compression inequality. Its complement is
 `¬ BlockedScaleAdditivityStatement`.
 
-**Unresolved obligation.** Make node `[170]` decide only the fixed-scale additivity assertion.
+**Missing obligation.** Make node `[170]` decide only the fixed-scale additivity assertion.
 Derive node `[171]`'s global inequality on the positive arm. On the negative arm, publish the
 specific failed fixed-scale inequality required by `lem:barrier-failure-overlap`.
 
-**Required validation.** Neither decision arm may assume the conclusion of its successor, and
-the negative arm must be strong enough to construct the overlap obstruction.
+**Required validation.** Each decision arm must state its own node proposition, and the negative
+arm must imply the overlap obstruction's hypothesis.
 
 ### Node [171] — blocked-class compression
 
-**Current implementation.** `blockedClassCompressionCloses` reads
-`blockedScaleAdditive`, `blockedClassMember`, and `densePackingOverflow` and derives
-`card 𝓑(𝒫) < 1`. The needed global compression inequality is already a conjunct of
-`BlockedScaleAdditivityStatement`.
+**Current implementation.** `blockedCompressionRow` reads `blockedClassMember` and
+`blockedScaleAdditive` through `inputs.get`. Its sealed executor performs the canonical finite
+prefix exposure, multiplies the conditional `F/W` fibre inequalities, converts the registered
+products to the package-bit rate, and publishes `blockedCompressionBound` and
+`blockedCompressionCap`. `blockedCompressionCloses` runs that row and closes the cap against the
+inherited `densePackingOverflow` fact with `AtomicCT.runAndCloseIncompatible`.
 
-**Unresolved obligation.** Prove the encoding injectivity and uncompressed baseline inside a
-sealed owner, derive the global compression inequality from node `[170]`'s fixed-scale facts,
-and then run the existing arithmetic terminal.
+**Missing obligation.** In `selectedCanonicalReplacementContinuation`, match the live node `[170]`
+decision, invoke `blockedCompressionCloses` on the additive arm, and pass the nonadditive arm to
+node `[172a]`'s overlap producer.
 
-**Required validation.** The compression bound must be produced, registered, and consumed on
-the literal additive-arm ledger rather than assumed by the decision proposition.
+**Required validation.** The complete application composition must elaborate with the additive
+arm closed at `[171]` and the nonadditive arm entering `[172a]` on its literal ledger.
 
 ### Node [172] — fixed-scale overlap serial system
 
 **Current implementation.** The negative arm of `scaleAdditivityDichotomy` calls
 `selectedBarrierOverlapSerialSystem`. `SerialSystemArithmetic.lean` supplies a graph-free
-arithmetic core, while no owner constructs the graph-derived overlap obstruction or the
-scale-spanning window system.
+arithmetic core. No owner constructs the graph-derived overlap obstruction or scale-spanning
+window system.
 
-**Unresolved obligation.** From the exact failed fixed-scale additivity statement, construct the
-minimal connected barrier-overlap obstruction, uncross it into the manuscript's serial window
-system, instantiate the spectrum, and connect the realized outcome to the terminal target cycle.
+**Missing obligation.** Construct the minimal connected barrier-overlap obstruction from the
+failed fixed-scale additivity statement, uncross it into the manuscript's serial window system,
+instantiate the spectrum, and connect the realized outcome to the target cycle.
 
 **Required validation.** The obstruction and serial system require registered semantic keys and
 one monotone ledger path through the arithmetic terminal.
 
 ### Node [175] — selected-corridor high-degree split
 
-**Current implementation.** `absorbedGermSplitRow` publishes the manuscript's per-half-edge
-subcubic-support or heavy-centre alternative. `absorbedGermDichotomy` then chooses globally
-between a nonempty candidate family and the all-heavy fan-data branch. In a mixed residual, the
-candidate branch does not route its heavy-centre incidences to Type B.
+**Current implementation.** `absorbedGermSplitRow` reads `K .coldCorridorState` and
+`K .slackIndependent`, retains the routing state's exact incidence, and publishes the
+per-half-edge subcubic-support or heavy-centre alternative. The subcubic member is in the exact
+filtered image of that incidence; the heavy-centre member has threshold-degree neighbours.
+`absorbedGermDichotomy` chooses globally between a nonempty candidate family and the all-heavy
+fan-data branch. A mixed residual enters the candidate branch without transferring its
+heavy-centre incidences to Type B. The EG call site cannot enter the split until node `[153]`
+publishes `K .coldCorridorState` and the extraction estimates.
 
-**Unresolved obligation.** Preserve and consume the per-half-edge split so that subcubic
-incidences enter the graph-realized chain and heavy-centre incidences enter the Type B chain on
-the same residual. Cover the empty ambient-cubic family explicitly.
+**Missing obligation.** Preserve and consume the per-half-edge split so that subcubic incidences
+enter the graph-realized chain and heavy-centre incidences enter the Type B chain on the same
+residual. The empty ambient-cubic family also requires an explicit branch.
 
-**Required validation.** Mixed, all-subcubic, all-heavy, and empty cases must be exhaustive, and
-each output must retain the selected corridor and first-failure support that justified it.
+**Required validation.** Mixed, all-subcubic, all-heavy, and empty cases must be exhaustive. Each
+output must retain the selected corridor and first-failure support. Validation of the composed
+path requires the exact upstream state producer.
 
 ### Node [176] — graph-realized cold configuration
 
-**Current implementation.** The candidate arm of `selectedAbsorbedGermResidual` runs the germ
+**Current implementation.** The candidate arm is built from the exact subcubic filtered image of
+the routing incidence and retains its overlap and charged-count inequalities. It runs the germ
 trichotomy, same-interface table, cold-branch row, neutral-symmetry decision, and canonical-size
-decision. It reaches `selectedDenseSameSizeCanonicalSwap` or
-`selectedGenuineSecondStrandCloses`. The all-heavy arm reaches the two unresolved Type B fan
-continuations.
+decision. The canonical same-size arm reaches `selectedDenseSameSizeCanonicalSwap`; the
+graph-realized arm runs `twoStrandSurvivorRow` and reaches `[168]` with
+`K .coldTwoStrandSurvivor`. The all-heavy arm constructs [177]'s `typeBFanEntry` from the
+actual return corridor and returns that exact ledger directly to the common Type B node [65].
 
-**Unresolved obligation.** Complete nodes `[165]`--`[168]`, preserve the per-half-edge routing
-from `[175]`, and implement the heavy and degree-four Type B continuations without bypassing
-their common `typeBFanEntry` ledger.
+The graph-realized arm runs the `[168]` endpoint/interior exclusion and closes through the
+distinguished ExactLedger closure. The canonical arm uses the `[165]`--`[166]` owners.
+
+**Implementation bug.** The per-half-edge routing is preserved and the common
+node-[65] function is now called, but its input contract was weakened:
+`TypeBFanEntryStatement` admits `AbsorbedGermFanEnvelopeStatement` as a new
+disjunct even though that witness explicitly lacks the manuscript's counted
+connected assigned support. Remove the parallel disjunct and prove the actual
+`[177]` → `[65]` conversion, or repair the manuscript if that implication is
+false.
 
 **Required validation.** Every candidate and heavy-centre arm must terminate through its
-manuscript continuation, with no unregistered application-level branch function.
+manuscript continuation.
 
 ### Node [178] — pair-overlap obstruction
 
-**Current implementation.** `freePairEntropyDichotomy` and `blockedPairEntropyDichotomy`
-publish the bare negations of their pair-entropy sandwich propositions. The code defines no key
-for the minimal pair-overlap obstruction and both residual arms call
-`selectedSparsePairSerialSystem`.
+**Implemented system owner.** `pairOverlapSystemRow` publishes the actual fixed-`(n,m)` skeleton
+model and the correctly polarized binary predicate: an exposure order must retain at least two
+response values at every conditional prefix. Its finite-prefix branching count is proved
+anonymously inside the sealed executor and committed only as `K .pairOverlapSystem`; the former
+standalone `branching_card_bound` proof has been removed. `pairConditionalFactorizationDichotomy`
+then decides the paper's two graph-level factorization clauses on that exact model.
 
-**Unresolved obligation.** Construct `lem:pair-failure-overlap`'s minimal obstruction from each
-exact entropy failure, publish it under a semantic key, and retain every prerequisite used in
-the construction.
+**Implemented overlap owner.** The positive ledger is the only input accepted by
+`pairFailureOverlapRow`. Inside that sealed executor, the row inclusion-minimizes the failed
+family, obtains two distinct off-return overlapping coordinates from the retained separated
+clause, and proves
+`ConnectedOn inputs.current.object (system.overlapSupport family)` by the manuscript's component
+argument. If the support were disconnected, its components split the family into two proper
+nonempty blocks; the stored minimality realizes both blocks and the stored concatenation clause
+realizes their union, contradicting the obstruction. The former detached theorem
+`connectedOn_biUnion_of_minimal_not_realizing` has been deleted. No factorization fact is derived
+from blocker absence.
 
-**Required validation.** Both entropy-failure lanes must reach the same obstruction owner on
-their literal ledgers.
+**Next separate topology defect.** The later `lem:pair-count-or-arithmetic` composition still uses
+the custom `selectedPairCountFailureContinuation` `Sum` wrapper. That wrapper is not part of the
+now-complete `lem:pair-failure-overlap` owner and must be replaced at its own label by literal
+typed `ExactLedger` branch composition.
+
+**Complement.** If conditional factorization is unavailable, the decision publishes
+`PairUncoveredResidual.factorization system failure` under the single node-[182] key. The exact
+model and `¬ system.ConditionalFactorization` are retained; the branch is not renamed as a
+blocker, quotient, sparse exit, or Type B witness.
 
 ### Node [179] — pair serial demand system
 
-**Current implementation.** No Strategy declaration publishes a graph-derived pair serial
-system. `SerialSystem.Spectrum` is graph-free, and `D_sp` and `ℓ_ret` are not instantiated in
-the Assembly path.
+**Implemented covered arm.** `pairDemandReturnsRow` is the first sealed `[179]` owner. It reads
+`K .pairFailureOverlap`, recovers the failed schedule member's two literal active demands, and
+publishes `K .pairDemandReturns` on the same `ExactLedger`.  The value reuses the canonical return
+selected by `pairResponseActivation`, proves both endpoints of both demands lie in the connected
+`X_π ∪ R_p ∪ R_q` connector, selects the two oppositely oriented connector paths, derives
+`ℓ_ret` as the maximum of the two actual return lengths, and defines
+`D_sp = 2 M_cold + 2 ℓ_ret`. `PairSerialDemandSystem` represents the paper object itself: ordered
+interfaces, nonempty length families, actual graph walks, path/support/incidence proofs,
+within-cell and cross-cell interior disjointness, the two exact closing returns, graph-derived
+increment bounds, and an actual simple cycle for every route choice. The other outcomes carry an
+actual target cycle, named sparse exit, or Type B entry. `pairSystemOutcomeDichotomy` routes these
+forms without reconstructing any proof.
 
-**Unresolved obligation.** Uncross the node `[178]` obstruction into a scale-spanning chain of
-interfaces with the manuscript's bounded increments and return length, and publish that system
-on the same branch ledger.
-
-**Required validation.** The semantic key, `Holds` proposition, manifest, owner, and Assembly
-call must all refer to the active graph and selected obstruction.
+**Complement.** `pairSystemRealizabilityDichotomy` publishes
+`PairUncoveredResidual.systemRealizability returns failure` at [182] when the manuscript's five-way
+uncrossing proposition is not available for the exact return package.
 
 ### Node [180] — pair increment arithmetic
 
-**Current implementation.** `Spectrum.exists_pow_realized` proves the natural-number arithmetic
-core. No graph-derived `Spectrum` discharges `ScaleSpanning`, and no `S.Realized` value is
-connected to the target cycle or periodic-response routing.
+**Implemented covered arm.** `pairIncrementOutcomeDichotomy` retains either a concrete periodic
+sparse-exit/Type-B outcome or `PairSerialArithmetic` for the exact graph-realized `[179]` system.
+The arithmetic package uses the full modulus and the complete central-range doubling orbit.
+`pairPowerOfTwoCycleRow` constructs the canonical `SerialSystem.System.spectrum`, whose `Realized`
+predicate is definitionally `PairSerialRealized` on the selected graph, applies
+`Spectrum.exists_pow_realized`, proves the exponent is at least two from cycle simplicity, and
+publishes the registered target cycle before the standard incompatible closure against selection.
 
-**Unresolved obligation.** Instantiate the arithmetic core on node `[179]`'s system, turn a
-realized power-of-two increment into `HasCycleWithLength`, and route the periodic response class
-to the named sparse exit or Type B alternative.
+**Complement.** If neither covered increment outcome exists,
+`pairIncrementCoveredDichotomy` publishes
+`PairUncoveredResidual.incrementArithmetic serial failure` at [182].
 
-**Required validation.** The Assembly path must use a sealed sequence of registered rows and
-terminal continuations that kernel-check from both node `[178]` lanes.
+### Node [182] — uncovered pair-chain implication
+
+**Open by construction.** `PairUncoveredResidual` is the disjoint union of exactly three negated
+paper implications: conditional factorization of the actual skeleton model, exhaustive `[179]`
+uncrossing of the actual return package, or exhaustive `[180]` arithmetic/periodic routing of the
+actual graph-realized serial system. `selectedPairCountFailureContinuation` runs the complete
+covered `[178]`--`[180]` chain and returns only a genuine Type B entry or this ExactLedger-published
+residual; a power-of-two cycle closes internally.
+
+**Missing obligation.** Prove the relevant retained implication on the specific selected residual.
+Until then the public theorem is intentionally reduced to closure of `selectedLedgerBoundary`; no
+unconditional theorem silently assumes away [182].
+
+### Node [181] — peeled target-defect demand residual
+
+**Current implementation.** The failed-rate arm of `selectedRouteEightCensus` constructs the
+stage accounting, maximal demand ledger, maximal absorption, unique-window blockers, and
+`K .route8PeeledDemandResidual`. `selectedLargeBudgetPressureCensus` returns that exact ledger to
+the enclosing topology. The residual proposition contains no smallness or terminal contradiction.
+
+**Missing obligation.** Supply the manuscript continuation for the peeled target-defect demand
+residual and close or route every constructor using the facts retained in its ledger.
+
+**Required validation.** The consumer must read `K .route8PeeledDemandResidual` from the literal
+node `[123]` ledger and terminate through registered rows or a named manuscript handoff.
 
 ## 5. Validation contract
 
@@ -288,6 +394,6 @@ For each resolved node:
 6. Keep the corresponding paper-fact and node rows in `Assembly_node_audit.md` synchronized with
    the compiled term.
 
-The label groups relevant to this ledger are L17 (`[123]`), L24 (`[144]`), L26
-(`[162]`, `[165]`--`[168]`), L27 (`[170]`--`[172]`), L28 (`[175]`--`[176]`), and
-L29 (`[178]`--`[180]`).
+The label groups relevant to this ledger are L17 (`[123]`, `[181]`), L19 (`[125]`), L26
+(`[167]`--`[168]`), L27 (`[170]`--`[172]`), L28 (`[175]`--`[176]`), and L29
+(`[178]`--`[180]`, `[182]`).

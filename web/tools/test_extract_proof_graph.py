@@ -285,7 +285,7 @@ def test_navier_stokes_publishes_four_tables_per_paper() -> None:
 
 def test_erdos_review_sidecar_covers_all_nodes() -> None:
     review = ERDOS["review"]
-    assert len(review["nodes"]) == 180
+    assert len(review["nodes"]) == 183
     valid = {"verified", "partial", "absent"}
     for nid, entry in review["nodes"].items():
         assert entry["lean"] in valid, f"node {nid}: lean={entry['lean']}"
@@ -293,7 +293,7 @@ def test_erdos_review_sidecar_covers_all_nodes() -> None:
 
 
 def test_review_states_come_from_the_node_audit() -> None:
-    """Every dimension is read from the 180-node audit, never inferred."""
+    """Every numeric-node dimension is read from the audit, never inferred."""
     from lean_review import load_audit
 
     audit = load_audit(REPO_ROOT)["nodes"]

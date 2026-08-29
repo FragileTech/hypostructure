@@ -203,34 +203,147 @@ positive-surplus vertex of the current object. -/
 @[reducible] noncomputable def coldStubExcessRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldStubExcess
-    { Requires := [K .coldAmbientCubic]
-      Produces := [K .coldStubExcess]
-      requiresUnique := by simp
-      producesUnique := by simp
+    { Requires := [K .hotColdPartition, K .coldAmbientCubic]
+      Produces := [K .coldSelectedBranchExcess,
+        K .coldAmbientCubicStubExcess, K .coldStubExcess]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp [K_eq_iff]
       producesNonempty := by simp }
     (fun inputs =>
+      let split := (inputs.get (K .hotColdPartition)).down
       let cubic := (inputs.get (K .coldAmbientCubic)).down
-      .cons (key := K .coldStubExcess)
+      let exactStubs : ColdAmbientCubicStubExcessStatement data
+          inputs.current.object := by
+        classical
+        let object := inputs.current.object
+        let packing := canonicalWindowPacking data object
+        let cold := canonicalColdWindows data object
+        let cubicWindows := cold.filter (AmbientCubicWindow data object)
+        rcases split with
+          ⟨valid, _attains, _maximal, _hotFacts, coldIff, _hotCold, _cover⟩
+        intro window member
+        have packingMem : window ∈ packing :=
+          (coldIff window).mp (Finset.mem_filter.mp member).1 |>.1
+        have stubCount :=
+          Graph.ColdCorridor.externalStubList_length_add_internal_eq_stubCount
+            object window (valid.1 window packingMem)
+              (Finset.mem_filter.mp member).2
+        simpa only [coldExternalStubCount] using
+          Nat.eq_sub_of_add_eq stubCount
+      .cons (key := K .coldSelectedBranchExcess)
         ⟨by
           classical
-          change ColdStubExcessStatement data inputs.current.object
-          simpa [ColdStubExcessStatement, ColdAmbientCubicStatement] using
-            Graph.ColdCorridor.branchExcess_ge_of_cubic
-              (Graph.ColdCorridor.branchExcessOf (coldExternalStubCount data))
-              ((canonicalColdWindows data inputs.current.object).filter
-                (AmbientCubicWindow data inputs.current.object)).card
-              (canonicalColdWindows data inputs.current.object).card
-              (inputs.current.object.degreeSurplus data.threshold) cubic.1⟩
-        .nil)
+          let object := inputs.current.object
+          let packing := canonicalWindowPacking data object
+          let cold := canonicalColdWindows data object
+          let cubicWindows := cold.filter (AmbientCubicWindow data object)
+          rcases split with
+            ⟨valid, _attains, _maximal, _hotFacts, coldIff, _hotCold, _cover⟩
+          have cubicSubset : cubicWindows ⊆ packing := by
+            intro window member
+            exact (coldIff window).mp (Finset.mem_filter.mp member).1 |>.1
+          have cubicDisjoint : ∀ left ∈ cubicWindows, ∀ right ∈ cubicWindows,
+              left ≠ right → Disjoint left right := by
+            intro left leftMem right rightMem different
+            exact valid.2 left (cubicSubset leftMem) right (cubicSubset rightMem) different
+          change ColdSelectedBranchExcessStatement data object
+          refine ⟨?_, ?_⟩
+          · rw [Graph.ColdCorridor.card_allSelectedStubs object cubicWindows
+                cubicDisjoint]
+            calc
+              ∑ window ∈ cubicWindows,
+                    ((Graph.ColdCorridor.interiorStubList object window).length - 2) =
+                  ∑ _window ∈ cubicWindows,
+                    coldInteriorBranchExcess data := by
+                refine Finset.sum_congr rfl fun window member => ?_
+                have packingMem : window ∈ packing :=
+                  (coldIff window).mp (Finset.mem_filter.mp member).1 |>.1
+                have induces : object.InducesWindow data.windowOrder window :=
+                  valid.1 window packingMem
+                have cubicDegree : ∀ vertex ∈ window,
+                    object.degree vertex = data.threshold :=
+                  (Finset.mem_filter.mp member).2
+                obtain ⟨ends, endsSubset, endsCard, interior, endpoints⟩ :=
+                  Graph.FiniteObject.exists_ends_externalNeighbours window
+                    data.three_le_windowOrder induces cubicDegree
+                have interiorVertices : window.filter (fun vertex =>
+                    (object.externalNeighbours window vertex).card = 1) =
+                    window \ ends := by
+                  ext vertex
+                  simp only [Finset.mem_filter, Finset.mem_sdiff]
+                  constructor
+                  · rintro ⟨vertexMem, one⟩
+                    refine ⟨vertexMem, ?_⟩
+                    intro vertexEnd
+                    have count := endpoints vertex vertexEnd
+                    rw [data.threshold_eq_three] at count
+                    omega
+                  · rintro ⟨vertexMem, notEnd⟩
+                    refine ⟨vertexMem, ?_⟩
+                    have count := interior vertex vertexMem notEnd
+                    simpa [data.threshold_eq_three] using count
+                have interiorLength :
+                    (Graph.ColdCorridor.interiorStubList object window).length =
+                      data.windowOrder - 2 := by
+                  rw [Graph.ColdCorridor.interiorStubList_length_eq_sum,
+                    interiorVertices]
+                  calc
+                    ∑ vertex ∈ window \ ends,
+                          (object.externalNeighbours window vertex).card =
+                        ∑ _vertex ∈ window \ ends, 1 := by
+                      refine Finset.sum_congr rfl fun vertex vertexMem => ?_
+                      simpa [data.threshold_eq_three] using
+                        interior vertex (Finset.mem_sdiff.1 vertexMem).1
+                          (Finset.mem_sdiff.1 vertexMem).2
+                    _ = (window \ ends).card := by simp
+                    _ = window.card - ends.card :=
+                      Finset.card_sdiff_of_subset endsSubset
+                    _ = data.windowOrder - 2 := by rw [induces.2, endsCard]
+                rw [interiorLength]
+                rfl
+              _ = coldInteriorBranchExcess data * cubicWindows.card := by
+                simp [Nat.mul_comm]
+          · intro stub stubMem
+            have represented : ∃ window ∈ cubicWindows,
+                stub ∈ Graph.ColdCorridor.selectedStubs object window := by
+              change stub ∈
+                Graph.ColdCorridor.allSelectedStubs object cubicWindows at stubMem
+              simpa only [Graph.ColdCorridor.allSelectedStubs,
+                Finset.mem_biUnion] using stubMem
+            obtain ⟨window, windowMem, stubInWindow⟩ := represented
+            refine ⟨window, ⟨windowMem, stubInWindow⟩, ?_⟩
+            intro other otherFacts
+            rcases otherFacts with ⟨otherMem, stubInOther⟩
+            by_contra different
+            have disjoint := cubicDisjoint window windowMem other otherMem
+              (Ne.symm different)
+            exact Finset.disjoint_left.mp disjoint
+              (Graph.ColdCorridor.mem_selectedStubs_isStub object stubInWindow).1
+              (Graph.ColdCorridor.mem_selectedStubs_isStub object stubInOther).1⟩
+        (.cons (key := K .coldAmbientCubicStubExcess) ⟨exactStubs⟩
+          (.cons (key := K .coldStubExcess)
+            ⟨by
+              classical
+              change ColdStubExcessStatement data inputs.current.object
+              simpa [ColdStubExcessStatement, ColdAmbientCubicStatement] using
+                Graph.ColdCorridor.branchExcess_ge_of_cubic
+                  (coldInteriorBranchExcess data)
+                  ((canonicalColdWindows data inputs.current.object).filter
+                    (AmbientCubicWindow data inputs.current.object)).card
+                  (canonicalColdWindows data inputs.current.object).card
+                  (inputs.current.object.degreeSurplus data.threshold) cubic.1⟩
+            .nil)))
 
 /-! ## Node `[153]`: the exact finite form of "positive for sufficiently large n"
 
-`lem:cold-germ-extraction` bounds the germ family from below by
-`13C/D_cold − o(n)`; `thm:cold-branch-quantitative-closure` uses that "the
+`lem:cold-germ-extraction`, with node `[168]`'s endpoint repair, bounds the
+selected interior germ family below by `9C/D_cold − o(n)`;
+`thm:cold-branch-quantitative-closure` uses that "the
 displayed lower bound is positive for all sufficiently large `n`".  In exact
 finite form the two `o(n)` losses of `[151]`--`[153]` are `perWindow·σ(G)` (the
-non-ambient-cubic windows) and `B_cold·σ(G)` (the high-degree candidate loss), so
-the branch that forces a germ is `(perWindow + B_cold)·σ(G) < perWindow·C`, and
+non-ambient-cubic windows) and `(threshold+1)·B_cold·σ(G)` (the oriented
+high-to-subcubic candidate loss), so the branch that forces a germ is
+`(perWindow + (threshold+1)·B_cold)·σ(G) < perWindow·C`, and
 its complement is where the spine continues to `[24]`. -/
 
 /-- Node `[153]`'s exhaustive comparison on the literal `[152]` residual. -/
@@ -251,15 +364,17 @@ noncomputable def coldMassDichotomy
       .inl ⟨linear⟩
     else
       .inr ⟨by
-        change ¬ ((Graph.ColdCorridor.branchExcessOf (coldExternalStubCount data) +
-            Graph.ColdCorridor.overlapBound data.threshold data.coldSignature) *
+        change ¬ ((coldInteriorBranchExcess data +
+            (data.threshold + 1) *
+              Graph.ColdCorridor.overlapBound data.threshold data.coldSignature) *
           current.object.degreeSurplus data.threshold <
-            Graph.ColdCorridor.branchExcessOf (coldExternalStubCount data) *
+            coldInteriorBranchExcess data *
               (canonicalColdWindows data current.object).card) at linear
-        change Graph.ColdCorridor.branchExcessOf (coldExternalStubCount data) *
+        change coldInteriorBranchExcess data *
             (canonicalColdWindows data current.object).card ≤
-          (Graph.ColdCorridor.branchExcessOf (coldExternalStubCount data) +
-            Graph.ColdCorridor.overlapBound data.threshold data.coldSignature) *
+          (coldInteriorBranchExcess data +
+            (data.threshold + 1) *
+              Graph.ColdCorridor.overlapBound data.threshold data.coldSignature) *
             current.object.degreeSurplus data.threshold
         exact Nat.le_of_not_lt linear⟩)
     linearFresh boundedFresh
@@ -275,83 +390,1303 @@ ledger; the connection is the component's own. -/
 @[reducible] noncomputable def coldReturnCorridorRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldReturnCorridors
-    { Requires := [K .bridgeless]
+    { Requires := [K .bridgeless, K .hotColdPartition]
       Produces := [K .coldReturnCorridors]
       requiresUnique := by simp
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       let bridgeless := (inputs.get (K .bridgeless)).down
+      let split := (inputs.get (K .hotColdPartition)).down
       .cons (key := K .coldReturnCorridors)
-        ⟨fun component outside entry =>
-          ⟨Graph.ColdCorridor.corridorOfOutsideComponent inputs.current.object
-            (coldAmbientCubicSupport data inputs.current.object) component
-            outside bridgeless entry, rfl⟩⟩
+        ⟨by
+          classical
+          let object := inputs.current.object
+          letI : FinEnum object.Vertex := object.vertices
+          let cubic := (canonicalColdWindows data object).filter
+            (AmbientCubicWindow data object)
+          let packing := canonicalWindowPacking data object
+          let windows := coldCorridorWindows data object
+          change HotColdWindowStatement data object at split
+          obtain ⟨_validPacking, _attains, _maximal, _hot,
+            coldIff, _disjoint, _cover⟩ := split
+          change ColdReturnCorridorsStatement data object
+          simp only [ColdReturnCorridorsStatement]
+          refine ⟨?_, ?_, ?_⟩
+          · intro component outside entry
+            exact ⟨Graph.ColdCorridor.corridorOfOutsideComponent object windows
+              component outside bridgeless entry, rfl⟩
+          · intro epsilon
+            by_cases outsideFoot : epsilon.1.2 ∉ windows
+            · left
+              have selected := Graph.ColdCorridor.selected_facts object cubic
+                ⟨epsilon.1, epsilon.property⟩
+              let component := Graph.ColdCorridor.outsideComponentOf object windows
+                epsilon.1.2 outsideFoot
+              have outside :=
+                Graph.ColdCorridor.outsideComponentOf_isOutsideComponent object
+                  windows epsilon.1.2 outsideFoot
+              have footMem : epsilon.1.2 ∈ component :=
+                Graph.ColdCorridor.foot_mem_outsideComponentOf object windows
+                  epsilon.1.2 outsideFoot
+              have sourceInWindows : epsilon.1.1 ∈ windows := by
+                obtain ⟨window, windowMember, sourceMember⟩ :=
+                  (Graph.ColdCorridor.mem_windowsOf object cubic epsilon.1.1).1
+                    selected.1
+                have windowPacking : window ∈ packing :=
+                  ((coldIff window).1 (Finset.mem_filter.1 windowMember).1).1
+                change epsilon.1.1 ∈ Graph.ColdCorridor.windowsOf object packing
+                exact (Graph.ColdCorridor.mem_windowsOf object packing _).2
+                  ⟨window, windowPacking, sourceMember⟩
+              have boundaryMember : (epsilon.1.2, epsilon.1.1) ∈
+                  Graph.ColdCorridor.boundaryStubs object windows component :=
+                (Graph.ColdCorridor.mem_boundaryStubs_iff object windows component
+                  (epsilon.1.2, epsilon.1.1)).2
+                  ⟨footMem, sourceInWindows, selected.2.symm⟩
+              let corridor := Graph.ColdCorridor.corridorOfBoundaryStub object
+                windows component outside bridgeless
+                (epsilon.1.2, epsilon.1.1) boundaryMember
+              exact ⟨outsideFoot, component, corridor, outside,
+                Graph.ColdCorridor.Corridor.corridorOfBoundaryStub_entryStub object windows
+                  component outside bridgeless (epsilon.1.2, epsilon.1.1)
+                  boundaryMember⟩
+            · exact Or.inr (not_not.mp outsideFoot)
+          · have partition := Finset.card_filter_add_card_filter_not
+              (s := Graph.ColdCorridor.allSelectedStubs object cubic)
+              (fun stub => stub.2 ∉ windows)
+            simpa only [not_not] using partition.symm⟩
         .nil)
 
-/-! ## Node `[153]`, `lem:cold-corridor-first-failure`: cut-states and routing
+/-! ## Node `[145]`, declared F4 support registry
 
-On the linear arm every surviving selected outside half-edge already has the
-paper's first-failure incidence in `K .coldFailureRouting`: its actual
-corridor, presentation, retained readings, first terminal/repeat support, and
-bounded configuration.  This row reads that fact from the incoming ledger and
-publishes its state together with the separately named (F1)--(F4) routing
-consequences.  It does not create a presentation, record, representative, or
-candidate family. -/
-@[reducible] noncomputable def coldFirstFailureRoutingRow :
+`def:cold-corridor-first-failure` reaches this residual only after the Type-B
+and route-8 handoff edges have been taken.  This owner therefore publishes the
+exact empty active F4 registry; the occurrence row reads it through
+`inputs.get`. -/
+@[reducible] noncomputable def coldDeclaredHandoffLedgerRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.coldFirstFailureRouting
-    { Requires := [K .coldFailureRouting, K .selection, K .uncompressible]
-      Produces := [K .coldCorridorState, K .coldFailureCycle,
-        K .coldFailureDefect, K .coldFailureCompression,
-        K .coldFailureHandoff]
-      requiresUnique := by simp [K_eq_iff]
+  factOnly `Hypostructure.Graph.Strategy.Spine.coldDeclaredHandoffLedger
+    { Requires := []
+      Produces := [K .coldDeclaredHandoffLedger]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .coldDeclaredHandoffLedger)
+        ⟨⟨fun _support => False, fun _support impossible => impossible⟩⟩
+        .nil)
+
+/-! ## Node `[153]`, `lem:cold-corridor-first-failure`: routing
+
+This is the joint owner of `K .coldCorridorState` and
+`K .coldFailureRouting`.  It reads the selected-stub partition from
+`K .coldReturnCorridors`, constructs the current finite prefix-code
+presentation from the literal corridor and its bounded active interface, and
+performs the terminal-or-first-repeat construction locally in this atomic
+executor.  Its support, offset, relational label, embedded-incidence, and
+labelled-degree data are all read from the current graph.  In particular, the
+former `(support.card, head ∈ support)` surrogate is absent: equal retained
+values mean equal labelled embedded data for the declared coordinate.
+
+The second representative is selected only from the retained finite-state
+class: it preserves the inherited boundary-degree profile and baseline, while
+the target response is left to the manuscript's (F2)/G2 test.  In particular
+the executor does not call `CanonicalPiece.cutStateRepresentative`, whose
+all-context `ContextEquivalent` field would circularly erase that alternative.
+
+The separately named (F1)--(F4) consequences are committed in the same atomic
+row.  Candidate overlap and mass accounting belong to
+`lem:cold-germ-extraction` and are not published under this key. -/
+
+set_option maxHeartbeats 1600000 in
+@[reducible] noncomputable def coldCorridorStateRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.coldCorridorState
+    { Requires := [K .coldReturnCorridors, K .hotColdPartition]
+      Produces := [K .coldCorridorState]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let corridors := (inputs.get (K .coldReturnCorridors)).down
+      let split := (inputs.get (K .hotColdPartition)).down
+      let state : ColdCorridorStateStatement data inputs.current.object := by
+          classical
+          let object := inputs.current.object
+          letI : FinEnum object.Vertex := object.vertices
+          let cubic := (canonicalColdWindows data object).filter
+            (AmbientCubicWindow data object)
+          let packing := canonicalWindowPacking data object
+          let windows := coldCorridorWindows data object
+          let Selected := {stub : object.Vertex × object.Vertex //
+            stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic}
+          change HotColdWindowStatement data object at split
+          obtain ⟨validPacking, _attains, _maximal, _hot,
+            coldIff, _disjoint, _cover⟩ := split
+          have cubicWindow : ∀ window ∈ cubic,
+              object.InducesWindow data.windowOrder window := by
+            intro window member
+            have coldMember : window ∈ canonicalColdWindows data object :=
+              (Finset.mem_filter.mp member).1
+            have packingMember : window ∈ canonicalWindowPacking data object :=
+              (coldIff window).mp coldMember |>.1
+            exact validPacking.1 window packingMember
+          have packingWindow : ∀ window ∈ packing,
+              object.InducesWindow data.windowOrder window := by
+            intro window member
+            exact validPacking.1 window member
+          change ColdReturnCorridorsStatement data object at corridors
+          simp only [ColdReturnCorridorsStatement] at corridors
+          obtain ⟨_componentwise, partition, _cardinality⟩ := corridors
+          have corridorExists : ∀ epsilon : ColdEligibleHalfEdge data object,
+              ∃ (component : Finset object.Vertex)
+                (corridor : Graph.ColdCorridor.Corridor object windows component),
+                Graph.ColdCorridor.IsOutsideComponent object windows component ∧
+                  corridor.entryStub = (epsilon.1.2, epsilon.1.1) := by
+            intro epsilon
+            let selectedEpsilon : Selected := ⟨epsilon.1, epsilon.property.1⟩
+            rcases partition selectedEpsilon with outside | crossWindow
+            · obtain ⟨_outsideFoot, component, corridor, outsideComponent,
+                  entry⟩ := outside
+              exact ⟨component, corridor, outsideComponent, entry⟩
+            · exact (epsilon.property.2 crossWindow).elim
+          let componentAt : ColdEligibleHalfEdge data object → Finset object.Vertex :=
+            fun epsilon => Classical.choose (corridorExists epsilon)
+          let corridorAt : (epsilon : ColdEligibleHalfEdge data object) →
+              Graph.ColdCorridor.Corridor object windows (componentAt epsilon) :=
+            fun epsilon => Classical.choose (Classical.choose_spec
+              (corridorExists epsilon))
+          have corridorFacts : ∀ epsilon : ColdEligibleHalfEdge data object,
+              Graph.ColdCorridor.IsOutsideComponent object windows
+                  (componentAt epsilon) ∧
+                (corridorAt epsilon).entryStub =
+                  (epsilon.1.2, epsilon.1.1) := by
+            intro epsilon
+            exact Classical.choose_spec (Classical.choose_spec
+              (corridorExists epsilon))
+          let entryWindowAt : ColdEligibleHalfEdge data object →
+              Finset object.Vertex := fun epsilon =>
+            Classical.choose
+              ((Graph.ColdCorridor.mem_windowsOf object cubic epsilon.1.1).1
+                (Graph.ColdCorridor.selected_facts object cubic
+                  (⟨epsilon.1, epsilon.2.1⟩ :
+                    ColdSelectedHalfEdge data object)).1)
+          let successorWindowAt : (epsilon : ColdEligibleHalfEdge data object) →
+              Finset object.Vertex := fun epsilon => by
+            have boundaryMember : (corridorAt epsilon).successorStub ∈
+                Graph.ColdCorridor.boundaryStubs object windows
+                  (componentAt epsilon) := List.get_mem _ _
+            have inWindows : (corridorAt epsilon).successorStub.2 ∈ windows :=
+              ((Graph.ColdCorridor.mem_boundaryStubs_iff object windows
+                (componentAt epsilon) _).1 boundaryMember).2.1
+            exact Classical.choose
+              ((Graph.ColdCorridor.mem_windowsOf object packing
+                (corridorAt epsilon).successorStub.2).1 inWindows)
+          let activeAt := fun (epsilon : ColdEligibleHalfEdge data object)
+              (segment : (corridorAt epsilon).Segment) =>
+            entryWindowAt epsilon ∪ successorWindowAt epsilon ∪
+              ({(corridorAt epsilon).entryStub.1,
+                (corridorAt epsilon).head segment} : Finset object.Vertex)
+          let offsetAt : object.Vertex → Fin data.coldSignature.windowOrder :=
+            fun vertex => by
+              by_cases contained : ∃ window ∈ packing, vertex ∈ window
+              · let window := Classical.choose contained
+                have windowFacts := Classical.choose_spec contained
+                have windowMember : window ∈ packing := windowFacts.1
+                have vertexMember : vertex ∈ window := windowFacts.2
+                have induced := packingWindow window windowMember
+                letI : FinEnum (object.induce window).Vertex :=
+                  (object.induce window).vertices
+                let embedding := Classical.choice induced.1
+                have cardInduced :
+                    Fintype.card (object.induce window).Vertex = window.card := by
+                  simpa [FiniteObject.vertexCount,
+                    FinEnum.card_eq_fintypeCard] using
+                    object.vertexCount_induce window
+                have embeddingSurjective : Function.Surjective embedding := by
+                  exact ((Fintype.bijective_iff_injective_and_card embedding).2
+                    ⟨embedding.injective, by
+                      rw [Fintype.card_fin, cardInduced, induced.2]⟩).2
+                exact Classical.choose (embeddingSurjective ⟨vertex, vertexMember⟩)
+              · exact
+                  ⟨(FinEnum.equiv vertex).1 % data.coldSignature.windowOrder,
+                    Nat.mod_lt _ data.coldSignature.windowOrder_pos⟩
+          let supportOn := fun (activeSet : Finset object.Vertex)
+              (_clause : data.coldSignature.Clause)
+              (generator : Graph.ColdCorridor.Coordinate
+                (Graph.ColdCorridor.interfaceWidth data.windowOrder)) => by
+            let active := activeSet.toList
+            let valid := generator.support.filter fun position =>
+              position.1 < active.length
+            exact valid.attach.image fun position => by
+              have member := position.property
+              change position.1 ∈ generator.support.filter
+                (fun slot => slot.1 < active.length) at member
+              exact active.get ⟨position.1.1,
+                (Finset.mem_filter.1 member).2⟩
+          let valueOn : (activeSet : Finset object.Vertex) →
+              (clause : data.coldSignature.Clause) →
+              (generator : data.coldSignature.Generator clause) →
+              data.coldSignature.Value clause generator :=
+            fun activeSet clause generator => by
+            let width := Graph.ColdCorridor.interfaceWidth data.windowOrder
+            let active := activeSet.toList
+            let activePositions : Finset (Fin width) :=
+              Finset.univ.filter fun position => position.1 < active.length
+            let supportPositions : Finset (Fin width) :=
+              generator.support.filter fun position => position.1 < active.length
+            let incidences : Finset (Fin width × Fin width) :=
+              (generator.support.product activePositions).filter fun incidence =>
+                if leftBound : incidence.1.1 < active.length then
+                  if rightBound : incidence.2.1 < active.length then
+                    object.graph.Adj
+                      (active.get ⟨incidence.1.1, leftBound⟩)
+                      (active.get ⟨incidence.2.1, rightBound⟩)
+                  else False
+                else False
+            let labelNeighbors : Finset (Fin width) :=
+              activePositions.filter fun position =>
+                if labelBound : generator.anchor.1 < active.length then
+                  if positionBound : position.1 < active.length then
+                    object.graph.Adj
+                      (active.get ⟨generator.anchor.1, labelBound⟩)
+                      (active.get ⟨position.1, positionBound⟩)
+                  else False
+                else False
+            have labelDegreeBound : labelNeighbors.card ≤ width := by
+              calc
+                labelNeighbors.card ≤ activePositions.card :=
+                  Finset.card_le_card (Finset.filter_subset _ _)
+                _ ≤ (Finset.univ : Finset (Fin width)).card :=
+                  Finset.card_le_card (Finset.subset_univ _)
+                _ = width := Fintype.card_fin width
+            change Graph.ColdCorridor.EmbeddedCoordinateValue width clause generator
+            exact (supportPositions, incidences,
+              ⟨labelNeighbors.card, Nat.lt_succ_of_le labelDegreeBound⟩)
+          let supportAt := fun (epsilon : ColdEligibleHalfEdge data object)
+              (segment : (corridorAt epsilon).Segment) =>
+            supportOn (activeAt epsilon segment)
+          let valueAt : (epsilon : ColdEligibleHalfEdge data object) →
+              (corridorAt epsilon).Segment →
+              (clause : data.coldSignature.Clause) →
+              (generator : data.coldSignature.Generator clause) →
+              data.coldSignature.Value clause generator :=
+            fun epsilon segment => valueOn (activeAt epsilon segment)
+          let presentationAt : ColdEligibleHalfEdge data object →
+              Graph.ColdCorridor.Presentation data.coldSignature object :=
+            fun epsilon => (corridorAt epsilon).presentation data.coldSignature
+              (activeAt epsilon) offsetAt (supportAt epsilon) (valueAt epsilon)
+          let indexAt : (epsilon : ColdEligibleHalfEdge data object) →
+              (corridorAt epsilon).Segment → (presentationAt epsilon).Segment :=
+            fun _epsilon segment => ULift.up segment
+          let makeGerm : (support : Finset object.Vertex) →
+              support.card ≤ Graph.ColdCorridor.exchangeBound data.coldSignature →
+              Graph.SupportComponents.Connected.ConnectedOn object support →
+              (∃ vertex, vertex ∉ support) →
+              Graph.ColdCorridor.Record data.coldSignature →
+              Graph.ColdCorridor.BoundedGerm data.coldSignature
+                (Graph.MinimumDegreeAtLeast data.threshold)
+                (Graph.HasCycleWithLength data.LengthOK) object :=
+            fun support bounded connected proper record => by
+              let atom := Graph.ColdCorridor.rowAtom object support connected proper
+              let reading : Graph.CanonicalPiece atom.interface → Prop :=
+                fun candidate =>
+                  candidate.toPiece.boundaryDegreeProfile =
+                      atom.piece.boundaryDegreeProfile ∧
+                    ∀ outside : Graph.OutsideContext atom.interface,
+                      Graph.MinimumDegreeAtLeast data.threshold
+                          (Graph.glue atom.piece outside) →
+                        Graph.MinimumDegreeAtLeast data.threshold
+                          (Graph.glue candidate.toPiece outside)
+              have sourceReading : reading atom.piece.toCanonical := by
+                refine ⟨?_, ?_⟩
+                · rw [Graph.BoundaryPiece.toCanonical_toPiece]
+                  exact atom.piece.transport_boundaryDegreeProfile _
+                · intro outside sourceBaseline
+                  exact
+                    ((Graph.minimumDegreeAtLeast_isomorphismInvariant
+                      data.threshold).iff_of_iso
+                        (atom.piece.toCanonical_glue_isomorphic outside)).2
+                      sourceBaseline
+              have realizable : ∃ candidate, reading candidate :=
+                ⟨atom.piece.toCanonical, sourceReading⟩
+              let selected :=
+                Graph.CanonicalPiece.canonicalRepresentative reading realizable
+              have selectedReading : reading selected :=
+                Graph.CanonicalPiece.canonicalRepresentative_reading reading
+                  realizable
+              have pieceSizeLe : atom.piece.internalVertexCount ≤ support.card := by
+                let embedding : atom.piece.Internal →
+                    {vertex // vertex ∈ support} :=
+                  fun vertex => ⟨vertex.1, vertex.2.1⟩
+                have injective : Function.Injective embedding := by
+                  intro left right same
+                  apply Subtype.ext
+                  exact congrArg
+                    (fun vertex : {vertex // vertex ∈ support} => vertex.1) same
+                letI : FinEnum atom.piece.Internal := atom.piece.internalVertices
+                letI : Fintype atom.piece.Internal :=
+                  @FinEnum.instFintype atom.piece.Internal
+                    atom.piece.internalVertices
+                have cardBound := Fintype.card_le_of_injective embedding injective
+                change @FinEnum.card atom.piece.Internal
+                    atom.piece.internalVertices ≤ support.card
+                rw [FinEnum.card_eq_fintypeCard]
+                simpa using cardBound
+              have selectedBound : selected.toPiece.internalVertexCount ≤
+                  Graph.ColdCorridor.exchangeBound data.coldSignature := by
+                calc
+                  selected.toPiece.internalVertexCount = selected.size := by simp
+                  _ ≤ atom.piece.toCanonical.size :=
+                    Graph.CanonicalPiece.canonicalRepresentative_size_le
+                      reading realizable sourceReading
+                  _ = atom.piece.internalVertexCount := rfl
+                  _ ≤ support.card := pieceSizeLe
+                  _ ≤ Graph.ColdCorridor.exchangeBound data.coldSignature := bounded
+              have sourceBaseline :
+                  Graph.MinimumDegreeAtLeast data.threshold
+                    (Graph.glue atom.piece atom.outside) :=
+                ((Graph.minimumDegreeAtLeast_isomorphismInvariant
+                  data.threshold).iff_of_iso ⟨atom.reconstructionIso⟩).mpr
+                    inputs.current.baseline
+              exact
+                { support := support
+                  bounded := bounded
+                  connected := connected
+                  proper := proper
+                  canonical := selected.toPiece
+                  canonicalBounded := selectedBound
+                  sameProfile := selectedReading.1
+                  baseline := selectedReading.2 atom.outside sourceBaseline
+                  record := record }
+          have germExists : ∀ epsilon : ColdEligibleHalfEdge data object,
+              ∃ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+                  (Graph.MinimumDegreeAtLeast data.threshold)
+                  (Graph.HasCycleWithLength data.LengthOK) object,
+                (corridorAt epsilon).FirstFailureGermWitness
+                  (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
+                  (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant
+                  (presentationAt epsilon) (indexAt epsilon) germ := by
+            intro epsilon
+            let corridor := corridorAt epsilon
+            let presentation := presentationAt epsilon
+            let index := indexAt epsilon
+            rcases corridor.exists_firstFailure presentation index
+                ULift.up_injective with terminal | repeated
+            · let support := corridor.prefixSupport corridor.statesRead
+              let terminalSegment : corridor.Segment :=
+                ⟨corridor.inside.1.length, Nat.lt_succ_self _⟩
+              let record := corridor.recordAt presentation index terminalSegment
+              have supportBound : support.card ≤
+                  Graph.ColdCorridor.exchangeBound data.coldSignature := by
+                have supportCard :=
+                  corridor.prefixSupport_card_le corridor.statesRead
+                have terminalBound : corridor.statesRead ≤
+                    Graph.ColdCorridor.stateBound data.coldSignature := terminal
+                have budgetPositive : 1 ≤
+                    Graph.ColdCorridor.interfaceBudget data.coldSignature := by
+                  unfold Graph.ColdCorridor.interfaceBudget
+                  omega
+                change support.card ≤
+                  Graph.ColdCorridor.exchangeBound data.coldSignature
+                dsimp [support]
+                unfold Graph.ColdCorridor.exchangeBound
+                omega
+              let germ := makeGerm support supportBound
+                (corridor.prefixSupport_connectedOn corridor.statesRead)
+                (corridor.prefixSupport_proper (corridorFacts epsilon).1
+                  corridor.statesRead) record
+              refine ⟨germ, supportBound, ?_, Or.inl ⟨terminal, rfl, ?_⟩⟩
+              · intro vertex member
+                exact corridor.prefixSupport_subset_inside
+                  corridor.statesRead vertex member
+              · rfl
+            · obtain ⟨left, right, rightBound, before, same, first⟩ := repeated
+              let support := corridor.intervalSupport left right
+              let record := corridor.recordAt presentation index left
+              have supportBound : support.card ≤
+                  Graph.ColdCorridor.exchangeBound data.coldSignature := by
+                have supportCard := corridor.intervalSupport_card_le left right
+                have budgetPositive : 1 ≤
+                    Graph.ColdCorridor.interfaceBudget data.coldSignature := by
+                  unfold Graph.ColdCorridor.interfaceBudget
+                  omega
+                change support.card ≤
+                  Graph.ColdCorridor.exchangeBound data.coldSignature
+                dsimp [support]
+                unfold Graph.ColdCorridor.exchangeBound
+                omega
+              let germ := makeGerm support supportBound
+                (corridor.intervalSupport_connectedOn left right)
+                (corridor.intervalSupport_proper (corridorFacts epsilon).1
+                  left right) record
+              have recordSame : corridor.recordAt presentation index left =
+                  corridor.recordAt presentation index right := by
+                unfold Graph.ColdCorridor.Corridor.recordAt
+                have boundaryDegrees :
+                    presentation.boundaryDegrees (index left) =
+                      presentation.boundaryDegrees (index right) := by
+                  simpa only [Graph.ColdCorridor.Presentation.state] using
+                    congrArg Graph.ColdCorridor.CutState.boundaryDegrees same
+                have halfEdges : presentation.halfEdges (index left) =
+                    presentation.halfEdges (index right) := by
+                  simpa only [Graph.ColdCorridor.Presentation.state] using
+                    congrArg Graph.ColdCorridor.CutState.halfEdges same
+                have offsets : presentation.offsets (index left) =
+                    presentation.offsets (index right) := by
+                  simpa only [Graph.ColdCorridor.Presentation.state] using
+                    congrArg Graph.ColdCorridor.CutState.offsets same
+                rw [boundaryDegrees, halfEdges, offsets, same]
+              refine ⟨germ, supportBound, ?_, Or.inr
+                ⟨left, right, rightBound, before, same,
+                  presentation.reading_eq_of_state_eq same, first, rfl, rfl,
+                    recordSame⟩⟩
+              · intro vertex member
+                exact corridor.intervalSupport_subset_inside left right vertex member
+          let outsideIncidence := fun epsilon =>
+            Classical.choose (germExists epsilon)
+          have crossGermExists : ∀ epsilon : ColdCrossWindowHalfEdge data object,
+              ∃ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+                  (Graph.MinimumDegreeAtLeast data.threshold)
+                  (Graph.HasCycleWithLength data.LengthOK) object,
+                germ.support = {epsilon.1.1, epsilon.1.2} := by
+            intro epsilon
+            let selectedEpsilon : Selected := ⟨epsilon.1, epsilon.property.1⟩
+            have selectedFacts :=
+              Graph.ColdCorridor.selected_facts object cubic selectedEpsilon
+            obtain ⟨sourceWindow, sourceWindowMem, sourceMem⟩ :=
+              (Graph.ColdCorridor.mem_windowsOf object cubic epsilon.1.1).1
+                selectedFacts.1
+            obtain ⟨targetWindow, targetWindowMem, targetMem⟩ :=
+              (Graph.ColdCorridor.mem_windowsOf object packing epsilon.1.2).1
+                epsilon.property.2
+            let support : Finset object.Vertex := {epsilon.1.1, epsilon.1.2}
+            have adjacent : object.graph.Adj epsilon.1.1 epsilon.1.2 := by
+              simpa only [selectedEpsilon] using selectedFacts.2
+            have connected :
+                Graph.SupportComponents.Connected.ConnectedOn object support := by
+              refine ⟨⟨epsilon.1.1, by simp [support]⟩, ?_⟩
+              intro left right leftMem rightMem
+              simp only [support, Finset.mem_insert, Finset.mem_singleton] at leftMem rightMem
+              rcases leftMem with rfl | rfl <;> rcases rightMem with rfl | rfl
+              · exact ⟨SimpleGraph.Walk.nil, by simp, by simp [support]⟩
+              · have isPath : (SimpleGraph.Walk.cons adjacent
+                    SimpleGraph.Walk.nil).IsPath :=
+                  (SimpleGraph.Walk.cons_isPath_iff adjacent
+                    SimpleGraph.Walk.nil).2 ⟨by simp, by simpa using adjacent.ne⟩
+                refine ⟨SimpleGraph.Walk.cons adjacent
+                    SimpleGraph.Walk.nil, isPath, ?_⟩
+                simp [support]
+              · have isPath : (SimpleGraph.Walk.cons adjacent.symm
+                    SimpleGraph.Walk.nil).IsPath :=
+                  (SimpleGraph.Walk.cons_isPath_iff adjacent.symm
+                    SimpleGraph.Walk.nil).2 ⟨by simp, by simpa using adjacent.symm.ne⟩
+                refine ⟨SimpleGraph.Walk.cons adjacent.symm
+                    SimpleGraph.Walk.nil, isPath, ?_⟩
+                simp [support]
+              · exact ⟨SimpleGraph.Walk.nil, by simp, by simp [support]⟩
+            have proper : ∃ vertex, vertex ∉ support := by
+              have sourceCard : sourceWindow.card = data.windowOrder :=
+                (cubicWindow sourceWindow sourceWindowMem).2
+              have supportCard : support.card ≤ 2 := by
+                exact (Finset.card_insert_le _ _).trans
+                  (Nat.succ_le_succ (Finset.card_singleton _).le)
+              have notContained : ¬ sourceWindow ⊆ support := by
+                intro contained
+                have cardBound := Finset.card_le_card contained
+                have orderBound := data.five_le_windowOrder
+                omega
+              obtain ⟨vertex, _sourceMem, notSupport⟩ :=
+                Finset.not_subset.mp notContained
+              exact ⟨vertex, notSupport⟩
+            have bounded : support.card ≤
+                Graph.ColdCorridor.exchangeBound data.coldSignature := by
+              have supportCard : support.card ≤ 2 := by
+                exact (Finset.card_insert_le _ _).trans
+                  (Nat.succ_le_succ (Finset.card_singleton _).le)
+              unfold Graph.ColdCorridor.exchangeBound
+                Graph.ColdCorridor.interfaceBudget
+              omega
+            let endpointAt : Fin 2 → object.Vertex := fun position =>
+              if position = 0 then epsilon.1.1 else epsilon.1.2
+            let reverseEndpointAt : Fin 2 → object.Vertex := fun position =>
+              if position = 0 then epsilon.1.2 else epsilon.1.1
+            let boundedDegree : Fin 2 →
+                Fin (data.coldSignature.degreeBound + 1) := fun position =>
+              ⟨min (object.degree (endpointAt position))
+                  data.coldSignature.degreeBound,
+                Nat.lt_succ_of_le (Nat.min_le_right _ _)⟩
+            let halfEdgeCode : Fin 2 →
+                Fin (data.coldSignature.degreeBound + 1) := fun position =>
+              ⟨min ((FinEnum.equiv
+                    (endpointAt position, reverseEndpointAt position)).1)
+                  data.coldSignature.degreeBound,
+                Nat.lt_succ_of_le (Nat.min_le_right _ _)⟩
+            let directState : Graph.ColdCorridor.CutState data.coldSignature :=
+              { boundaryDegrees := boundedDegree
+                halfEdges := halfEdgeCode
+                offsets := fun position => offsetAt (endpointAt position)
+                declared := fun clause generator =>
+                  some (valueOn support clause generator) }
+            let record : Graph.ColdCorridor.Record data.coldSignature :=
+              { boundaryDegrees := boundedDegree
+                stubs := halfEdgeCode
+                offsets := fun position => offsetAt (endpointAt position)
+                state := directState
+                truth := false }
+            let germ := makeGerm support bounded connected proper record
+            exact ⟨germ, rfl⟩
+          let crossIncidence := fun epsilon =>
+            Classical.choose (crossGermExists epsilon)
+          have componentInR : ∀ epsilon : ColdEligibleHalfEdge data object,
+              componentAt epsilon ⊆ object.remainderSupport packing := by
+            intro epsilon vertex vertexMember
+            apply Finset.mem_sdiff.2
+            refine ⟨Finset.mem_univ vertex, ?_⟩
+            have outsideWindows : vertex ∉ windows :=
+              Finset.disjoint_left.1 (corridorFacts epsilon).1.1
+                vertexMember
+            intro inPackedSupport
+            apply outsideWindows
+            exact inPackedSupport
+          refine ⟨outsideIncidence, componentAt, corridorAt, presentationAt, indexAt,
+            ?_, ?_, ?_, componentInR, ?_, crossIncidence, ?_⟩
+          · intro epsilon
+            refine ⟨(corridorFacts epsilon).1, (corridorFacts epsilon).2,
+              ULift.up_injective, Classical.choose_spec (germExists epsilon)⟩
+          · intro epsilon segment
+            change (activeAt epsilon segment).card ≤
+              Graph.ColdCorridor.interfaceWidth data.windowOrder
+            have entryFacts := Classical.choose_spec
+              ((Graph.ColdCorridor.mem_windowsOf object cubic epsilon.1.1).1
+                (Graph.ColdCorridor.selected_facts object cubic
+                  (⟨epsilon.1, epsilon.2.1⟩ :
+                    ColdSelectedHalfEdge data object)).1)
+            have entryCard : (entryWindowAt epsilon).card = data.windowOrder :=
+              (cubicWindow (entryWindowAt epsilon) entryFacts.1).2
+            have boundaryMember : (corridorAt epsilon).successorStub ∈
+                Graph.ColdCorridor.boundaryStubs object windows
+                  (componentAt epsilon) := List.get_mem _ _
+            have successorInside : (corridorAt epsilon).successorStub.2 ∈ windows :=
+              ((Graph.ColdCorridor.mem_boundaryStubs_iff object windows
+                (componentAt epsilon) _).1 boundaryMember).2.1
+            have successorFacts := Classical.choose_spec
+              ((Graph.ColdCorridor.mem_windowsOf object packing
+                (corridorAt epsilon).successorStub.2).1 successorInside)
+            have successorCard : (successorWindowAt epsilon).card =
+                data.windowOrder :=
+              (packingWindow (successorWindowAt epsilon) successorFacts.1).2
+            have pairCard :
+                ({(corridorAt epsilon).entryStub.1,
+                  (corridorAt epsilon).head segment} :
+                    Finset object.Vertex).card ≤ 2 := by
+              exact (Finset.card_insert_le _ _).trans
+                (Nat.succ_le_succ (Finset.card_singleton _).le)
+            calc
+              (activeAt epsilon segment).card ≤
+                  (entryWindowAt epsilon ∪ successorWindowAt epsilon).card +
+                    ({(corridorAt epsilon).entryStub.1,
+                      (corridorAt epsilon).head segment} :
+                        Finset object.Vertex).card := by
+                simpa [activeAt] using
+                  (Finset.card_union_le
+                    (entryWindowAt epsilon ∪ successorWindowAt epsilon)
+                    ({(corridorAt epsilon).entryStub.1,
+                      (corridorAt epsilon).head segment} :
+                        Finset object.Vertex))
+              _ ≤ ((entryWindowAt epsilon).card +
+                    (successorWindowAt epsilon).card) + 2 :=
+                Nat.add_le_add
+                  (Finset.card_union_le (entryWindowAt epsilon)
+                    (successorWindowAt epsilon)) pairCard
+              _ ≤ Graph.ColdCorridor.interfaceWidth data.windowOrder := by
+                rw [entryCard, successorCard]
+                unfold Graph.ColdCorridor.interfaceWidth
+                omega
+          · intro epsilon crossWindow
+            obtain ⟨sourceWindow, sourceMember, sourceInside⟩ :=
+              (Graph.ColdCorridor.mem_windowsOf object cubic epsilon.1.1).1
+                (Graph.ColdCorridor.selected_facts object cubic epsilon).1
+            obtain ⟨targetWindow, targetMember, targetInside⟩ :=
+              (Graph.ColdCorridor.mem_windowsOf object packing epsilon.1.2).1
+                crossWindow
+            exact ⟨sourceWindow, sourceMember, targetWindow, targetMember,
+              sourceInside, targetInside,
+              (Graph.ColdCorridor.selected_facts object cubic epsilon).2⟩
+          · intro epsilon vertex vertexMember
+            apply componentInR epsilon
+            obtain ⟨inner, _innerMember, rfl⟩ := List.mem_map.1 vertexMember
+            exact inner.2
+          · intro epsilon
+            exact Classical.choose_spec (crossGermExists epsilon)
+      .cons (key := K .coldCorridorState) ⟨state⟩ .nil)
+
+/-- Node `[153]`: select the first event in the manuscript's ordered
+(F1)--(F5) list for every retained cold corridor. -/
+@[reducible] noncomputable def coldFirstFailureOccurrenceRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.coldFirstFailureOccurrence
+    { Requires := [K .coldCorridorState, K .coldDeclaredHandoffLedger]
+      Produces := [K .coldFirstFailureOccurrence]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let state := (inputs.get (K .coldCorridorState)).down
+      let handoffLedger := (inputs.get (K .coldDeclaredHandoffLedger)).down
+      let Handoff : Finset inputs.current.object.Vertex → Prop :=
+        Classical.choose handoffLedger
+      let handoffAbsent := Classical.choose_spec handoffLedger
+      let occurrence : ColdFirstFailureOccurrenceStatement data
+          inputs.current.object := by
+        classical
+        let object := inputs.current.object
+        letI : FinEnum object.Vertex := object.vertices
+        refine ⟨⟨Handoff, handoffAbsent, state, ?_⟩⟩
+        intro Eligible incidence stateOne componentAt stateTwo corridorAt stateTail
+          presentationAt indexAt epsilon
+        let indexTail := Classical.choose_spec stateTail
+        let stateFacts := (Classical.choose_spec indexTail).1
+        let germ := incidence epsilon
+        let corridor := corridorAt epsilon
+        let presentation := presentationAt epsilon
+        let index := indexAt epsilon
+        let packing := canonicalWindowPacking data object
+        let cycleAt : corridor.Segment → Prop := fun segment =>
+          ∃ windowSupport ∈ packing,
+            ∃ window : Graph.ColdCorridor.Window object data.windowOrder,
+              (∀ vertex, vertex ∈ windowSupport ↔
+                ∃ position, window.place position = vertex) ∧
+              corridor.FirstFailureCycle window data.LengthOK segment
+        let defectAt : corridor.Segment → Prop := fun segment =>
+          ∃ left : corridor.Segment,
+            left.1 < segment.1 ∧
+              Graph.ColdCorridor.Corridor.FirstFailureDefect corridor presentation
+                index (Graph.HasCycleWithLength data.LengthOK)
+                (fun stage => corridor.prefixSupport stage.1) left segment
+        let compressionAt : corridor.Segment → Prop := fun segment =>
+          ∃ failure : Graph.ColdCorridor.Corridor.FirstFailureCompression corridor
+              presentation index (Graph.MinimumDegreeAtLeast data.threshold)
+              (Graph.HasCycleWithLength data.LengthOK)
+              (fun stage => corridor.prefixSupport stage.1),
+            failure.stage = segment
+        let handoffAt : corridor.Segment → Prop := fun segment =>
+          Graph.ColdCorridor.Corridor.FirstFailureHandoff corridor Handoff segment
+        let germAt : corridor.Segment → Prop := fun segment =>
+          (corridor.TerminalCorridor data.coldSignature ∧
+            germ.support = corridor.prefixSupport corridor.statesRead ∧
+            (let terminal : corridor.Segment :=
+              ⟨corridor.inside.1.length, Nat.lt_succ_self _⟩
+             germ.record = corridor.recordAt presentation index terminal) ∧
+            segment.1 = corridor.inside.1.length) ∨
+          ∃ left right : corridor.Segment,
+            right.1 ≤ Graph.ColdCorridor.stateBound data.coldSignature ∧
+            left.1 < right.1 ∧
+            presentation.state (index left) = presentation.state (index right) ∧
+            (∀ coordinate : Graph.ColdCorridor.Generated data.coldSignature,
+              presentation.support (index left) coordinate ⊆
+                  ↑(presentation.activeInterface (index left)) →
+                presentation.reading (index left) coordinate =
+                  presentation.reading (index right) coordinate) ∧
+            (∀ earlierLeft earlierRight : corridor.Segment,
+              earlierLeft.1 < earlierRight.1 → earlierRight.1 < right.1 →
+                presentation.state (index earlierLeft) ≠
+                  presentation.state (index earlierRight)) ∧
+            germ.support = corridor.intervalSupport left right ∧
+            germ.record = corridor.recordAt presentation index left ∧
+            germ.record = corridor.recordAt presentation index right ∧
+            segment = right
+        let failureAt : corridor.Segment → Prop := fun segment =>
+          ColdFirstFailureEvent data object corridor presentation index germ
+            Handoff segment
+        change ∃ first : corridor.Segment,
+          failureAt first ∧
+            ∀ earlier : corridor.Segment, earlier.1 < first.1 →
+              ¬ failureAt earlier
+        have germWitness : corridor.FirstFailureGermWitness
+            (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
+            (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant
+            presentation index germ :=
+          (stateFacts epsilon).2.2.2
+        have germEvent : ∃ segment : corridor.Segment, germAt segment := by
+          rcases germWitness.2.2 with terminal | repeated
+          · let segment : corridor.Segment :=
+              ⟨corridor.inside.1.length, Nat.lt_succ_self _⟩
+            exact ⟨segment, Or.inl
+              ⟨terminal.1, terminal.2.1, terminal.2.2, rfl⟩⟩
+          · obtain ⟨left, right, rightBound, before, same, readings, first,
+              supportEq, leftRecord, rightRecord⟩ := repeated
+            exact ⟨right, Or.inr
+              ⟨left, right, rightBound, before, same, readings, first,
+                supportEq, leftRecord, rightRecord, rfl⟩⟩
+        let failures : Finset corridor.Segment :=
+          Finset.univ.filter failureAt
+        have failuresNonempty : failures.Nonempty := by
+          obtain ⟨segment, event⟩ := germEvent
+          exact ⟨segment, Finset.mem_filter.2 ⟨Finset.mem_univ _,
+            .germ event⟩⟩
+        let first := failures.min' failuresNonempty
+        have firstMember : first ∈ failures :=
+          Finset.min'_mem failures failuresNonempty
+        refine ⟨first, (Finset.mem_filter.1 firstMember).2, ?_⟩
+        intro earlier earlierBefore earlierFailure
+        have earlierMember : earlier ∈ failures :=
+          Finset.mem_filter.2 ⟨Finset.mem_univ _, earlierFailure⟩
+        have firstLeEarlier := Finset.min'_le failures earlier earlierMember
+        exact (Nat.not_lt_of_ge firstLeEarlier) earlierBefore
+      .cons (key := K .coldFirstFailureOccurrence) ⟨occurrence⟩ .nil)
+
+/-- The concrete sparse-exit route supplied by (F2). -/
+theorem coldFailureDefectRoutes
+    (data : Data.{u}) (object : Graph.FiniteObject.{u}) :
+    ColdFailureDefectRoutesStatement data object := by
+      intro windows component corridor presentation index left right
+      intro failure
+      classical
+      let support := corridor.prefixSupport right.1
+      let reduced :=
+        Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece
+          object support (corridor.prefixSupport left.1)
+      let full :=
+        Graph.Strategy.InterfaceReplacement.SupportAtom.piece object support
+      let family : Finset (ULift.{u} (Fin 2)) := Finset.univ
+      let coordinateSupport : ULift.{u} (Fin 2) →
+          Finset object.Vertex := fun _ => ∅
+      let attempt : Graph.AttemptedQuotient
+          (Coordinate := ULift.{u} (Fin 2))
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK)
+          object family coordinateSupport :=
+        { support := support
+          connected := corridor.prefixSupport_connectedOn right.1
+          carries := by
+            intro coordinate member vertex vertexMember
+            simp [coordinateSupport] at vertexMember
+          Label := ULift.{u + 1} Unit
+          Value := ULift.{u + 1} Unit
+          label := fun _ => ULift.up ()
+          value := fun _ _ => ULift.up ()
+          properRepresentative := by
+            intro _proper _reducing complete
+            exfalso
+            obtain ⟨outside, separates⟩ := failure.2
+            apply separates
+            exact (complete reduced full
+              (by intro coordinate member; rfl)).2 outside
+          closedRepresentative := by
+            intro _closed _reducing complete
+            exfalso
+            obtain ⟨outside, separates⟩ := failure.2
+            apply separates
+            exact (complete reduced full
+              (by intro coordinate member; rfl)).2 outside }
+      have reducing : ¬ Set.InjOn attempt.label ↑family := by
+        intro injective
+        have equal : ULift.up (0 : Fin 2) = ULift.up 1 :=
+          injective (by simp [family]) (by simp [family]) rfl
+        have downEqual : (0 : Fin 2) = 1 := congrArg ULift.down equal
+        omega
+      have identified : attempt.Identifies reduced full := by
+        intro coordinate member
+        rfl
+      exact .targetDefect family coordinateSupport attempt reducing
+        reduced full identified failure.2
+
+/-- The F2-free context-equivalence conclusion on the same two prefixes. -/
+theorem coldFailureDefectEquivalent
+    (data : Data.{u}) (object : Graph.FiniteObject.{u}) :
+    ColdFailureDefectEquivalentStatement data object := by
+      intro windows component corridor presentation index left right
+        excluded same
+      classical
+      intro outside
+      by_contra distinguishes
+      exact excluded ⟨same, ⟨outside, distinguishes⟩⟩
+
+/-- The complete local content of (F2), assembled from the two sealed fields
+before it is packaged in the dependent exact-ledger output. -/
+theorem coldFailureDefectFact
+    (data : Data.{u}) (object : Graph.FiniteObject.{u}) :
+    ColdFailureDefectStatement data object :=
+  { routes := coldFailureDefectRoutes data object
+    equivalent := coldFailureDefectEquivalent data object }
+
+set_option maxHeartbeats 1600000 in
+/-- Node `[153]`, (F2): register the concrete sparse-exit route and the
+F2-free context equivalence on the current object. -/
+@[reducible] noncomputable def coldFailureDefectRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.coldFailureDefect
+    { Requires := []
+      Produces := [K .coldFailureDefect, K .coldFailureDefectRoute]
+      requiresUnique := by simp
       producesUnique := by simp [K_eq_iff]
       producesNonempty := by simp }
     (fun inputs =>
-      let routing := (inputs.get (K .coldFailureRouting)).down
+      let failureDefect := coldFailureDefectFact data inputs.current.object
+      .cons (key := K .coldFailureDefect) ⟨failureDefect⟩
+        (.cons (key := K .coldFailureDefectRoute)
+          ⟨coldFailureDefectRoutes data inputs.current.object⟩ .nil))
+
+
+/-- Node `[153]`, (F1): the selected residual contains no target cycle. -/
+@[reducible] noncomputable def coldFailureCycleRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.coldFailureCycle
+    { Requires := [K .selection]
+      Produces := [K .coldFailureCycle]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
       let selected := (inputs.get (K .selection)).down
+      .cons (key := K .coldFailureCycle)
+        ⟨by
+          intro windows component corridor order window segment failure
+          exact selected.1
+            (Graph.ColdCorridor.Corridor.hasCycleWithLength_of_firstFailureCycle
+              failure)⟩
+        .nil)
+
+/-- Node `[153]`, (F3): uncompressibility excludes a smaller proper
+representative on the current residual. -/
+@[reducible] noncomputable def coldFailureCompressionRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.coldFailureCompression
+    { Requires := [K .uncompressible]
+      Produces := [K .coldFailureCompression]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
       let uncompressible := (inputs.get (K .uncompressible)).down
-      .cons (key := K .coldCorridorState)
+      .cons (key := K .coldFailureCompression)
+        ⟨by
+          intro windows component corridor presentation index support
+          exact Graph.ColdCorridor.Corridor.FirstFailureCompression.not_occurs
+            uncompressible⟩
+        .nil)
+
+/-- Node `[153]`, (F4): a declared Type-B/route-8 support is returned to
+the already-declared handoff ledger. -/
+@[reducible] noncomputable def coldFailureHandoffRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.coldFailureHandoff
+    { Requires := []
+      Produces := [K .coldFailureHandoff]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun _inputs =>
+      .cons (key := K .coldFailureHandoff)
+        ⟨by
+          intro windows component corridor Handoff segment failure
+          exact Graph.ColdCorridor.Corridor.handoff_mem failure⟩
+        .nil)
+
+/-- The least high-degree segment of a non-subcubic retained prefix. -/
+theorem coldFirstHighOfNotBounded
+    {object : Graph.FiniteObject.{u}}
+    {windows component : Finset object.Vertex}
+    (corridor : Graph.ColdCorridor.Corridor object windows component)
+    (n threshold : Nat)
+    (notBounded : ¬ ∀ vertex ∈ corridor.prefixSupport n,
+      object.degree vertex ≤ threshold) :
+    ∃ first : corridor.Segment,
+      first.1 ≤ n ∧ threshold < object.degree (corridor.head first) ∧
+        ∀ earlier : corridor.Segment, earlier.1 < first.1 →
+          object.degree (corridor.head earlier) ≤ threshold := by
+  classical
+  push Not at notBounded
+  obtain ⟨vertex, vertexMember, vertexHigh⟩ := notBounded
+  obtain ⟨inner, innerMember, innerEq⟩ :=
+    (corridor.mem_prefixSupport n vertex).1 vertexMember
+  obtain ⟨segmentIndex, indexEq, _indexBound⟩ :=
+    SimpleGraph.Walk.mem_support_iff_exists_getVert.mp innerMember
+  have segmentBound : segmentIndex ≤ n := by
+    have takeLength := SimpleGraph.Walk.take_length corridor.inside.1 n
+    omega
+  have segmentIndexLt : segmentIndex < corridor.inside.1.length + 1 := by
+    have takeLength := SimpleGraph.Walk.take_length corridor.inside.1 n
+    have lengthBound : (corridor.inside.1.take n).length ≤
+        corridor.inside.1.length := by omega
+    omega
+  let segment : corridor.Segment := ⟨segmentIndex, segmentIndexLt⟩
+  have headEq : corridor.head segment = vertex := by
+    have takeEq : (corridor.inside.1.take n).getVert segmentIndex =
+        corridor.inside.1.getVert segmentIndex := by
+      rw [SimpleGraph.Walk.take_getVert]
+      simp [Nat.min_eq_right segmentBound]
+    exact congrArg Subtype.val (takeEq.symm.trans indexEq) |>.trans innerEq
+  let highSegments : Finset corridor.Segment :=
+    Finset.univ.filter fun current =>
+      current.1 ≤ n ∧ threshold < object.degree (corridor.head current)
+  have highNonempty : highSegments.Nonempty := by
+    refine ⟨segment, Finset.mem_filter.2
+      ⟨Finset.mem_univ _, segmentBound, ?_⟩⟩
+    simpa [headEq] using vertexHigh
+  let first := highSegments.min' highNonempty
+  have firstMember : first ∈ highSegments :=
+    Finset.min'_mem highSegments highNonempty
+  have firstFacts := (Finset.mem_filter.1 firstMember).2
+  refine ⟨first, firstFacts.1, firstFacts.2, ?_⟩
+  intro earlier earlierBefore
+  apply le_of_not_gt
+  intro earlierHigh
+  have earlierMember : earlier ∈ highSegments :=
+    Finset.mem_filter.2 ⟨Finset.mem_univ _,
+      le_trans (Nat.le_of_lt earlierBefore) firstFacts.1, earlierHigh⟩
+  have firstLeEarlier := Finset.min'_le highSegments earlier earlierMember
+  exact (Nat.not_lt_of_ge firstLeEarlier) earlierBefore
+
+/-- The first-high handoff conclusion obtained from the retained corridor
+state.  This is the manuscript's bounded-prefix/high-degree dichotomy. -/
+theorem coldHandoffTransferFact
+    {data : Data.{u}} {object : Graph.FiniteObject.{u}}
+    (state : ColdCorridorStateStatement data object) :
+    ColdFirstHighHandoffStatement data object := by
+  classical
+  change ColdFirstHighHandoffStatement data object
+  simp only [ColdFirstHighHandoffStatement]
+  letI : FinEnum object.Vertex := object.vertices
+  letI : Fintype object.Vertex := @FinEnum.instFintype _ object.vertices
+  let cold := canonicalColdWindows data object
+  let cubic := cold.filter (AmbientCubicWindow data object)
+  let windows := coldCorridorWindows data object
+  intro retained
+  have retainedEq : retained = state := Subsingleton.elim _ _
+  subst retained
+  intro epsilon
+  let incidence := Classical.choose state
+  let stateOne := Classical.choose_spec state
+  let componentAt := Classical.choose stateOne
+  let stateTwo := Classical.choose_spec stateOne
+  let corridorAt := Classical.choose stateTwo
+  let stateTail := Classical.choose_spec stateTwo
+  let presentationAt := Classical.choose stateTail
+  let indexAt := Classical.choose (Classical.choose_spec stateTail)
+  let stateFacts := (Classical.choose_spec
+    (Classical.choose_spec stateTail)).1
+  let traceEnd := fun routed : ColdEligibleHalfEdge data object =>
+    Classical.choose
+      (Graph.ColdCorridor.Corridor.FirstFailureGermWitness.exists_traceEnd
+        (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
+        (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant
+        (corridorAt routed) (presentationAt routed) (indexAt routed)
+        (incidence routed) (stateFacts routed).2.2.2)
+  by_cases subcubic : ∀ vertex ∈
+      (corridorAt epsilon).prefixSupport (traceEnd epsilon),
+        object.degree vertex ≤ data.threshold
+  · exact Or.inl subcubic
+  · obtain ⟨first, firstBound, firstHigh, earlierBound⟩ :=
+      coldFirstHighOfNotBounded (corridorAt epsilon)
+        (traceEnd epsilon) data.threshold subcubic
+    refine Or.inr ⟨first, firstBound, firstHigh, earlierBound, ?_⟩
+    let corridor := corridorAt epsilon
+    have entryWindowFacts := Classical.choose_spec
+      ((Graph.ColdCorridor.mem_windowsOf object cubic epsilon.1.1).1
+        (Graph.ColdCorridor.selected_facts object cubic
+          (⟨epsilon.1, epsilon.2.1⟩ : ColdSelectedHalfEdge data object)).1)
+    have sourceSubcubic : object.degree epsilon.1.1 ≤ data.threshold := by
+      exact le_of_eq ((Finset.mem_filter.1 entryWindowFacts.1).2
+        epsilon.1.1 entryWindowFacts.2)
+    by_cases firstZero : first.1 = 0
+    · let root := epsilon.1.1
+      have headEq : corridor.head first = epsilon.1.2 := by
+        simpa [corridor, corridorAt, Graph.ColdCorridor.Corridor.head,
+          Graph.ColdCorridor.Corridor.entryStub,
+          Graph.ColdCorridor.stubFoot, firstZero] using
+            congrArg Prod.fst (stateFacts epsilon).2.1
+      have adjacent : object.graph.Adj (corridor.head first) root := by
+        rw [headEq]
+        exact (Graph.ColdCorridor.selected_facts object cubic
+          (⟨epsilon.1, epsilon.2.1⟩ :
+            ColdSelectedHalfEdge data object)).2.symm
+      refine ⟨root, adjacent, sourceSubcubic, ?_⟩
+      refine (Graph.SubcubicReach.mem_reach object.graph).2
+        ⟨SimpleGraph.Walk.nil, by simp, by simp, ?_, ?_⟩
+      · simp
+      · simp
+    · have firstPositive : 0 < first.1 := Nat.pos_of_ne_zero firstZero
+      let previous : corridor.Segment := ⟨first.1 - 1, by
+        dsimp [corridor]
+        omega⟩
+      let root := corridor.head previous
+      have previousBefore : previous.1 < first.1 := by
+        dsimp [previous]
+        omega
+      have rootSubcubic : object.degree root ≤ data.threshold :=
+        earlierBound previous previousBefore
+      have adjacent : object.graph.Adj (corridor.head first) root := by
+        have step := corridor.inside.1.adj_getVert_succ
+          (i := previous.1) (by
+            change previous.1 < (corridorAt epsilon).inside.1.length
+            have firstLt := first.2
+            dsimp [previous]
+            omega)
+        change object.graph.Adj
+          (corridor.inside.1.getVert first.1).1
+          (corridor.inside.1.getVert previous.1).1
+        have succEq : previous.1 + 1 = first.1 := by
+          dsimp [previous]
+          omega
+        rw [← succEq]
+        exact step.symm
+      have prefixSubcubic : ∀ vertex ∈
+          corridor.prefixSupport previous.1,
+            object.degree vertex ≤ data.threshold := by
+        intro vertex member
+        obtain ⟨inner, innerMember, innerEq⟩ :=
+          (corridor.mem_prefixSupport previous.1 vertex).1 member
+        obtain ⟨segmentIndex, indexEq, indexBound⟩ :=
+          SimpleGraph.Walk.mem_support_iff_exists_getVert.mp innerMember
+        have segmentLe : segmentIndex ≤ previous.1 := by
+          have takeLength := SimpleGraph.Walk.take_length
+            corridor.inside.1 previous.1
+          omega
+        let segment : corridor.Segment :=
+          ⟨segmentIndex, by
+            have previousLt : previous.1 < corridor.inside.1.length := by
+              change previous.1 < (corridorAt epsilon).inside.1.length
+              have firstLt := first.2
+              dsimp [previous]
+              omega
+            omega⟩
+        have segmentBefore : segment.1 < first.1 :=
+          lt_of_le_of_lt segmentLe previousBefore
+        have headEq : corridor.head segment = vertex := by
+          have takeEq :
+              (corridor.inside.1.take previous.1).getVert segmentIndex =
+                corridor.inside.1.getVert segmentIndex := by
+            rw [SimpleGraph.Walk.take_getVert]
+            simp [Nat.min_eq_right segmentLe]
+          exact congrArg Subtype.val
+            (takeEq.symm.trans indexEq) |>.trans innerEq
+        simpa [corridor, headEq] using earlierBound segment segmentBefore
+      let short := corridor.inside.1.take previous.1
+      let embedding := object.induceEmbedding (componentAt epsilon)
+      let backwards := short.reverse.map embedding.toHom
+      have shortEnd :
+          embedding (corridor.inside.1.getVert previous.1) = root := rfl
+      have shortStart : embedding
+          (Graph.ColdCorridor.stubFoot object windows
+            (componentAt epsilon) corridor.entry) =
+            corridor.entryStub.1 := rfl
+      let toFoot : object.graph.Walk root corridor.entryStub.1 :=
+        backwards.copy shortEnd shortStart
+      have entryMember : corridor.entryStub ∈
+          Graph.ColdCorridor.boundaryStubs object windows
+            (componentAt epsilon) := List.get_mem _ _
+      have entryAdjacent : object.graph.Adj corridor.entryStub.1
+          corridor.entryStub.2 :=
+        ((Graph.ColdCorridor.mem_boundaryStubs_iff object windows
+          (componentAt epsilon) corridor.entryStub).1 entryMember).2.2
+      let joined : object.graph.Walk root corridor.entryStub.2 :=
+        toFoot.concat entryAdjacent
+      have sourceEq : corridor.entryStub.2 = epsilon.1.1 :=
+        congrArg Prod.snd (stateFacts epsilon).2.1
+      let sourceWalk : object.graph.Walk root epsilon.1.1 :=
+        joined.copy rfl sourceEq
+      let path := sourceWalk.toPath
+      refine ⟨root, adjacent, rootSubcubic, ?_⟩
+      refine (Graph.SubcubicReach.mem_reach object.graph).2
+        ⟨path.1, path.2, ?_, ?_, ?_⟩
+      · calc
+          path.1.length ≤ sourceWalk.length :=
+            sourceWalk.length_bypass_le_length
+          _ = short.length + 1 := by
+            simp [sourceWalk, joined, toFoot, backwards]
+          _ ≤ previous.1 + 1 := by
+            simp [short, SimpleGraph.Walk.take_length]
+          _ ≤ Graph.ColdCorridor.exchangeBound data.coldSignature + 2 := by
+            have stateBound : traceEnd epsilon ≤
+                Graph.ColdCorridor.stateBound data.coldSignature := by
+              dsimp [traceEnd]
+              exact (Classical.choose_spec
+                (Graph.ColdCorridor.Corridor.FirstFailureGermWitness.exists_traceEnd
+                  (Graph.minimumDegreeAtLeast_isomorphismInvariant
+                    data.threshold)
+                  (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant
+                  corridor (presentationAt epsilon) (indexAt epsilon)
+                  (incidence epsilon) (stateFacts epsilon).2.2.2)).1
+            unfold Graph.ColdCorridor.exchangeBound
+            dsimp [previous]
+            omega
+      · intro current currentMember
+        have currentSourceWalk : current ∈ sourceWalk.support :=
+          SimpleGraph.Walk.support_toPath_subset_support sourceWalk
+            (List.mem_of_mem_dropLast currentMember)
+        simp only [sourceWalk, SimpleGraph.Walk.support_copy,
+          joined, SimpleGraph.Walk.support_concat,
+          List.mem_append, List.mem_singleton] at currentSourceWalk
+        rcases currentSourceWalk with currentBackwards | currentSource
+        · simp only [toFoot, SimpleGraph.Walk.support_copy,
+            backwards, SimpleGraph.Walk.support_map,
+            SimpleGraph.Walk.support_reverse, List.mem_map]
+            at currentBackwards
+          obtain ⟨inner, innerMember, innerEq⟩ := currentBackwards
+          refine Finset.mem_filter.2 ⟨object.mem_vertexFinset _, ?_⟩
+          apply prefixSubcubic current
+          exact (corridor.mem_prefixSupport previous.1 current).2
+            ⟨inner, by simpa [short] using innerMember, innerEq⟩
+        · refine Finset.mem_filter.2 ⟨object.mem_vertexFinset _, ?_⟩
+          simpa [currentSource, sourceEq] using sourceSubcubic
+      · intro nonnil same
+        have firstAdjacent := path.1.adj_getVert_succ
+          (i := 0) (by
+            simpa [SimpleGraph.Walk.not_nil_iff_lt_length] using nonnil)
+        exact firstAdjacent.ne
+          (by simpa [SimpleGraph.Walk.getVert_zero, same])
+
+/-! Node `[153]`: eliminate (F1)--(F4) on the literal surviving-cold
+residual and retain the manuscript's (F5) conclusion. -/
+
+set_option maxHeartbeats 1600000 in
+@[reducible] noncomputable def coldFirstFailureRoutingRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.coldFirstFailureRouting
+    { Requires := [K .coldFirstFailureOccurrence, K .coldFailureCycle,
+        K .coldFailureDefectRoute,
+        K .coldFailureCompression, K .coldFailureHandoff,
+        K .sparseSurplusSurvivor]
+      Produces := [K .coldFailureRouting]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let occurrence := (inputs.get (K .coldFirstFailureOccurrence)).down
+      let failureCycle := (inputs.get (K .coldFailureCycle)).down
+      let failureDefectRoute :=
+        (inputs.get (K .coldFailureDefectRoute)).down
+      let failureCompression := (inputs.get (K .coldFailureCompression)).down
+      let failureHandoff := (inputs.get (K .coldFailureHandoff)).down
+      let sparseSurvivor := (inputs.get (K .sparseSurplusSurvivor)).down
+      let occurrenceData := Classical.choice occurrence
+      let surviving : ColdSurvivingFirstFailureStatement data
+          inputs.current.object :=
+        Classical.choice (show Nonempty
+            (ColdSurvivingFirstFailureStatement data inputs.current.object) from
+          by
+            refine ⟨⟨⟨occurrenceData, ?_⟩⟩⟩
+            intro epsilon
+            obtain ⟨first, event, minimal⟩ := occurrenceData.occurs epsilon
+            cases event with
+            | cycle cycle =>
+                exact (failureCycle _ _ _ _ _ _
+                  (Classical.choose_spec
+                    (Classical.choose_spec cycle).2).2).elim
+            | defect defect =>
+                exact (sparseSurvivor
+                  (failureDefectRoute _ _ _ _ _ (Classical.choose defect) first
+                    (Classical.choose_spec defect).2)).elim
+            | compression compression =>
+                exact (failureCompression _ _ _ _ _ _
+                  ⟨Classical.choose compression⟩).elim
+            | handoff handoff =>
+                obtain ⟨support, supportHandoff, _⟩ :=
+                  failureHandoff _ _ _ _ _ handoff
+                exact (occurrenceData.handoffAbsent support supportHandoff).elim
+            | germ germ => exact ⟨⟨first, germ, minimal⟩⟩)
+      .cons (key := K .coldFailureRouting)
+        ⟨⟨sparseSurvivor, surviving⟩⟩
+        .nil)
+
+/-- Node `[153]`: publish the bounded-prefix/first-high handoff conclusion
+from the retained corridor state. -/
+@[reducible] noncomputable def coldHandoffTransferRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.coldHandoffTransfer
+    { Requires := [K .coldCorridorState]
+      Produces := [K .coldHandoffTransfer]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let state := (inputs.get (K .coldCorridorState)).down
+      .cons (key := K .coldHandoffTransfer)
+        ⟨coldHandoffTransferFact state⟩ .nil)
+
+/-! ## Node `[162]`, `lem:dense-cold-pass`: terminality in the remainder
+
+The corridor producer records that its component and selected path lie in the
+normalized remainder of the fixed maximal packing.  This row consumes that
+literal state together with node `[27]`'s normalization fact.  The canonical
+path is shortest by `FinitePathSelection.selectOfReachable_length_le`; an
+induced-`P_windowOrder`-free remainder therefore bounds its length by
+`windowOrder - 2`, which is below the registered cold-state bound. -/
+@[reducible] noncomputable def denseColdCorridorsTerminalRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.denseColdCorridorsTerminal
+    { Requires := [K .coldCorridorState, K .remainderNormalized,
+        K .hotColdPartition]
+      Produces := [K .denseColdCorridorsTerminal]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let state := (inputs.get (K .coldCorridorState)).down
+      let normalized := (inputs.get (K .remainderNormalized)).down
+      let split := (inputs.get (K .hotColdPartition)).down
+      .cons (key := K .denseColdCorridorsTerminal)
         ⟨by
           classical
-          change ColdFailureRoutingStatement data inputs.current.object at routing
-          simp only [ColdFailureRoutingStatement] at routing
-          exact Classical.choose routing.2⟩
-        (.cons (key := K .coldFailureCycle)
-          ⟨by
-            intro windows component corridor order window segment failure
-            exact selected.1
-              (Graph.ColdCorridor.Corridor.hasCycleWithLength_of_firstFailureCycle
-                failure)⟩
-          (.cons (key := K .coldFailureDefect)
-            ⟨by
-              intro windows component corridor presentation index boundary carrier
-                left right
-              exact ⟨fun Profile profile failure =>
-                  Graph.ColdCorridor.Corridor.not_targetComplete_of_firstFailureDefect
-                    (Profile := Profile) (profile := profile) failure,
-                fun excluded same =>
-                  Graph.ColdCorridor.Corridor.contextEquivalent_of_not_firstFailureDefect
-                    excluded same⟩⟩
-            (.cons (key := K .coldFailureCompression)
-              ⟨by
-                intro windows component corridor presentation index support
-                exact Graph.ColdCorridor.Corridor.FirstFailureCompression.not_occurs
-                  uncompressible⟩
-              (.cons (key := K .coldFailureHandoff)
-                ⟨by
-                  intro windows component corridor Handoff segment failure
-                  exact Graph.ColdCorridor.Corridor.handoff_mem failure⟩
-                .nil)))))
+          let object := inputs.current.object
+          letI : FinEnum object.Vertex := object.vertices
+          change HotColdWindowStatement data object at split
+          change ColdCorridorStateStatement data object at state
+          obtain ⟨validPacking, _attains, maximal, _hot,
+            _coldIff, _disjoint, _cover⟩ := split
+          change DenseColdCorridorsTerminalStatement data object
+          refine ⟨state, ?_⟩
+          let stateOne := Classical.choose_spec state
+          let componentAt := Classical.choose stateOne
+          let stateTwo := Classical.choose_spec stateOne
+          let corridorAt := Classical.choose stateTwo
+          let stateTail := Classical.choose_spec stateTwo
+          let _presentationAt := Classical.choose stateTail
+          let stateBundle := Classical.choose_spec
+            (Classical.choose_spec stateTail)
+          have componentInR := stateBundle.2.2.2.1
+          change ∀ epsilon : ColdEligibleHalfEdge data object,
+            Graph.ColdCorridor.Corridor.TerminalCorridor
+              (corridorAt epsilon) data.coldSignature
+          intro epsilon
+          let component := componentAt epsilon
+          let corridor := corridorAt epsilon
+          have componentFree : Graph.InducedPathFree (object.induce component)
+              data.windowOrder :=
+            object.inducedPathFree_induce_of_forall
+              (fun support inside =>
+                (normalized (canonicalWindowPacking data object) validPacking
+                  maximal support
+                  (inside.trans (componentInR epsilon))).1)
+          obtain ⟨shortest, shortestPath, shortestLength⟩ :=
+            corridor.connected.exists_path_of_dist
+          have shortestBound : shortest.length ≤ data.windowOrder - 2 :=
+            Graph.shortestPath_length_le_order_sub_two
+              (object.induce component) data.windowOrder
+              data.three_le_windowOrder shortest shortestPath shortestLength
+              componentFree
+          have selectedBound : corridor.inside.1.length ≤ shortest.length := by
+            exact corridor.inside_length_le ⟨shortest, shortestPath⟩
+          change corridor.statesRead ≤
+            Graph.ColdCorridor.stateBound data.coldSignature
+          have orderBound :=
+            Graph.ColdCorridor.windowOrder_le_stateBound data.coldSignature
+          have threeLeOrder := data.three_le_windowOrder
+          change corridor.inside.1.length + 1 ≤
+            Graph.ColdCorridor.stateBound data.coldSignature
+          rw [data.coldSignature_windowOrder] at orderBound
+          omega⟩
+        .nil)
 
 /-! ## Node `[153]`, `lem:cold-germ-extraction`: exchange bound and extraction
 
 The first-failure cold exchange is bounded by `M_cold` (`exchange_card_le`),
-and a candidate family with the paper's overlap bound has a positive disjoint
-subfamily of size at least `|𝒢_cand|/D_cold` (greedy independent set,
-`coldGermExtractionLocal`).  Both are published on the same residual, on top of
-the routing facts. -/
+and an occurrence-indexed candidate family with the paper's overlap bound has
+a disjoint subfamily of size at least `|𝒢_cand|/D_cold` (greedy independent
+set, `coldGermOccurrenceExtractionLocal`).  Positivity belongs to the later
+linear arm, not to this finite extraction theorem. -/
 @[reducible] noncomputable def coldGermExtractionRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldGermExtraction
@@ -368,121 +1703,774 @@ the routing facts. -/
       .cons (key := K .coldExchangeBound)
         ⟨exchange⟩
         (.cons (key := K .coldGermExtraction)
-          ⟨⟨exchange, Graph.ColdCorridor.coldGermExtractionLocal⟩⟩
+          ⟨⟨exchange, Graph.ColdCorridor.coldGermOccurrenceExtractionLocal⟩⟩
           .nil))
 
 /-! ## Node `[153]`, `lem:cold-germ-extraction`: the (F5) candidate family
 
-The candidates are exactly the image of the paper's surviving first-failure
-incidence retained by `K .coldFailureRouting`, filtered to the subcubic
-supports.  The same incoming fact supplies the count and overlap estimates;
-the linear-mass and ambient-cubic facts prove positivity, and the generic
-extraction fact supplies the disjoint subfamily.  No germ or record is
-reconstructed in this row. -/
-set_option maxHeartbeats 800000 in
+The candidates are exactly the manuscript's complete repaired occurrence
+family: outside-corridor F5 prefixes and immediate two-vertex terminal germs
+for selected cross-window incidences.  A noncandidate occurrence is charged
+at its first high-to-subcubic edge; there is no separate conditional or
+unbounded cross-window loss. -/
+set_option maxHeartbeats 4000000 in
 @[reducible] noncomputable def coldGermCandidatesRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldGermCandidates
-    { Requires := [K .coldFailureRouting, K .coldAmbientCubic,
-        K .coldMassLinear, K .coldGermExtraction]
+    { Requires := [K .coldFailureRouting, K .coldGermExtraction,
+        K .coldHandoffTransfer]
       Produces := [K .coldGermCandidates]
       requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       let routing := (inputs.get (K .coldFailureRouting)).down
-      let ambient := (inputs.get (K .coldAmbientCubic)).down
-      let linear := (inputs.get (K .coldMassLinear)).down
       let extraction := (inputs.get (K .coldGermExtraction)).down
+      let handoff := (inputs.get (K .coldHandoffTransfer)).down
       .cons (key := K .coldGermCandidates)
+        ⟨by
+          classical
+          let object := inputs.current.object
+          letI : FinEnum object.Vertex := object.vertices
+          letI : DecidableEq object.Vertex := object.vertices.decEq
+          letI : DecidableRel object.graph.Adj := object.decideAdj
+          let cold := canonicalColdWindows data object
+          let cubic := cold.filter (AmbientCubicWindow data object)
+          let windows := coldCorridorWindows data object
+          let Eligible := ColdEligibleHalfEdge data object
+          let Cross := ColdCrossWindowHalfEdge data object
+          let Occurrence := ColdGermOccurrence data object
+          let Selected := ColdSelectedHalfEdge data object
+          change ColdFailureRoutingStatement data object at routing
+          let classified := coldRoutedClassified data object routing
+          let classification := Classical.choose_spec routing.surviving.holds
+          let state := classified.state
+          change ColdCorridorStateStatement data object at state
+          let outsideIncidence : Eligible →
+              Graph.ColdCorridor.BoundedGerm data.coldSignature
+                (Graph.MinimumDegreeAtLeast data.threshold)
+                (Graph.HasCycleWithLength data.LengthOK) object :=
+            coldOccurrenceIncidence data object classified
+          let corridorAt := coldOccurrenceCorridorAt data object classified
+          let presentationAt :=
+            coldOccurrencePresentationAt data object classified
+          let indexAt := coldOccurrenceIndexAt data object classified
+          let stateFacts := coldOccurrenceStateFacts data object classified
+          let traceEnd := coldRoutedTraceEnd data object routing
+          let traceFacts := fun epsilon : Eligible => Classical.choose_spec
+            (Graph.ColdCorridor.Corridor.FirstFailureGermWitness.exists_traceEnd
+              (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
+              (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant
+              (corridorAt epsilon) (presentationAt epsilon) (indexAt epsilon)
+              (outsideIncidence epsilon) (stateFacts epsilon).2.2.2)
+          let firstFailureGerm :=
+            ColdFirstFailureGermOccurrence data object classified
+          let firstFailureHandoff :=
+            ColdFirstFailureHandoffOccurrence data object classified
+          let stateOne := Classical.choose_spec state
+          let stateTwo := Classical.choose_spec (Classical.choose_spec stateOne)
+          let stateBundle := Classical.choose_spec (Classical.choose_spec stateTwo)
+          let crossIncidence := coldRoutedCrossIncidence data object routing
+          let crossFacts := Classical.choose_spec stateBundle.2.2.2.2.2
+          let incidence := coldRoutedOccurrenceIncidence data object routing
+          let candidates := coldRoutedCandidates data object routing
+          have occurrenceStubInjective : Function.Injective
+              (@ColdGermOccurrence.stub data object) := by
+            intro left right same
+            cases left with
+            | inl left =>
+                cases right with
+                | inl right =>
+                    exact congrArg Sum.inl (Subtype.ext same)
+                | inr right =>
+                    exfalso
+                    have targetSame := congrArg Prod.snd same
+                    exact left.property.2 (targetSame ▸ right.property.2)
+            | inr left =>
+                cases right with
+                | inl right =>
+                    exfalso
+                    have targetSame := congrArg Prod.snd same
+                    exact right.property.2 (targetSame.symm ▸ left.property.2)
+                | inr right =>
+                    exact congrArg Sum.inr (Subtype.ext same)
+          change ColdExchangeBoundStatement data object ∧
+            Graph.ColdCorridor.ColdGermOccurrenceExtractionLocal data.coldSignature
+              data.threshold (Graph.MinimumDegreeAtLeast data.threshold)
+              (Graph.HasCycleWithLength data.LengthOK) object at extraction
+          have candidateFamily :
+              Graph.ColdCorridor.CandidateGermOccurrenceFamily data.coldSignature
+                data.threshold (Graph.MinimumDegreeAtLeast data.threshold)
+                (Graph.HasCycleWithLength data.LengthOK) object incidence candidates := by
+            apply Graph.ColdCorridor.overlap_card_le_of_vertex_multiplicity
+              (support := fun epsilon => (incidence epsilon).support)
+              (supportBound := Graph.ColdCorridor.exchangeBound data.coldSignature)
+              (multiplicityBound :=
+                Graph.ColdCorridor.overlapBound data.threshold data.coldSignature)
+            · intro epsilon _epsilonMem
+              exact (incidence epsilon).bounded
+            · intro vertex
+              let through := candidates.filter fun epsilon =>
+                vertex ∈ (incidence epsilon).support
+              let subcubic := object.vertexFinset.filter fun current =>
+                object.degree current ≤ data.threshold
+              let reach := @Graph.SubcubicReach.reach object.Vertex
+                (@FinEnum.instFintype _ object.vertices) object.graph
+                subcubic vertex
+                (Graph.ColdCorridor.exchangeBound data.coldSignature + 2) vertex
+              let sourceRegion := reach ∩ Graph.ColdCorridor.windowsOf object cubic
+              have throughToIncidences : through.card ≤
+                  (object.incidences.filter fun pair : object.Vertex × object.Vertex =>
+                    pair.1 ∈ sourceRegion).card := by
+                exact Finset.card_le_card_of_injOn
+                  (@ColdGermOccurrence.stub data object)
+                  (by
+                    intro occurrence occurrenceMem
+                    have occurrenceCandidate :=
+                      (Finset.mem_filter.1 occurrenceMem).1
+                    have vertexMem := (Finset.mem_filter.1 occurrenceMem).2
+                    have selectedMem : ColdGermOccurrence.stub occurrence ∈
+                        Graph.ColdCorridor.allSelectedStubs object cubic := by
+                      cases occurrence with
+                      | inl epsilon => exact epsilon.property.1
+                      | inr epsilon => exact epsilon.property.1
+                    let selected : Selected :=
+                      ⟨ColdGermOccurrence.stub occurrence, selectedMem⟩
+                    have selectedFacts :=
+                      Graph.ColdCorridor.selected_facts object cubic selected
+                    have sourceReach :
+                        (ColdGermOccurrence.stub occurrence).1 ∈ reach := by
+                      cases occurrence with
+                      | inl epsilon =>
+                          have prefixSubcubic :
+                              ∀ current ∈ (corridorAt epsilon).prefixSupport
+                                  (traceEnd epsilon),
+                                object.degree current ≤ data.threshold :=
+                            (Finset.mem_filter.1 occurrenceCandidate).2.2
+                          have facts := stateFacts epsilon
+                          have sourceSubcubic :
+                              object.degree (corridorAt epsilon).entryStub.2 ≤
+                                data.threshold := by
+                            obtain ⟨window, windowMem, stubMem⟩ :=
+                              (Graph.ColdCorridor.mem_windowsOf object cubic
+                                epsilon.1.1).1 selectedFacts.1
+                            have ambient := (Finset.mem_filter.1 windowMem).2
+                            have entryEq : (corridorAt epsilon).entryStub.2 =
+                                epsilon.1.1 := by
+                              simpa only [corridorAt, coldOccurrenceCorridorAt] using
+                                congrArg Prod.snd facts.2.1
+                            rw [entryEq]
+                            exact le_of_eq (ambient epsilon.1.1 stubMem)
+                          have vertexMemOutside :
+                              vertex ∈ (outsideIncidence epsilon).support := by
+                            simpa [incidence] using vertexMem
+                          have reached :=
+                            Graph.ColdCorridor.Corridor.FirstFailureGermWitness.source_mem_subcubicReach_of_trace
+                              (corridorAt epsilon) (outsideIncidence epsilon)
+                              (traceEnd epsilon) (traceFacts epsilon).1
+                              (traceFacts epsilon).2 data.threshold
+                              prefixSubcubic sourceSubcubic vertexMemOutside
+                          have entryEq : (corridorAt epsilon).entryStub.2 =
+                              epsilon.1.1 := by
+                            simpa only [corridorAt, coldOccurrenceCorridorAt] using
+                              congrArg Prod.snd facts.2.1
+                          rw [entryEq] at reached
+                          exact reached
+                      | inr epsilon =>
+                          have supportBound : ∀ current ∈
+                              (crossIncidence epsilon).support,
+                                object.degree current ≤ data.threshold :=
+                            (Finset.mem_filter.1 occurrenceCandidate).2
+                          have sourceBound :
+                              object.degree epsilon.1.1 ≤ data.threshold := by
+                            apply supportBound epsilon.1.1
+                            rw [crossFacts epsilon]
+                            simp
+                          have targetBound :
+                              object.degree epsilon.1.2 ≤ data.threshold := by
+                            apply supportBound epsilon.1.2
+                            rw [crossFacts epsilon]
+                            simp
+                          have vertexPair : vertex = epsilon.1.1 ∨
+                              vertex = epsilon.1.2 := by
+                            rw [crossFacts epsilon] at vertexMem
+                            simpa using vertexMem
+                          rcases vertexPair with rfl | rfl
+                          · exact Graph.SubcubicReach.self_mem_reach object.graph
+                              subcubic epsilon.1.1
+                              (Graph.ColdCorridor.exchangeBound
+                                data.coldSignature + 2) epsilon.1.1
+                          · exact Graph.SubcubicReach.adjacent_mem_reach object.graph
+                              subcubic selectedFacts.2.symm
+                              (Finset.mem_filter.2
+                                ⟨Finset.mem_univ _, targetBound⟩)
+                              selectedFacts.2.ne (by omega)
+                    refine Finset.mem_filter.2
+                      ⟨(object.mem_incidences_iff
+                          (ColdGermOccurrence.stub occurrence)).2 selectedFacts.2, ?_⟩
+                    exact Finset.mem_inter.2
+                      ⟨sourceReach, selectedFacts.1⟩)
+                  (by
+                    intro left _leftMem right _rightMem same
+                    exact occurrenceStubInjective same)
+              have sourceRegionBounded : ∀ current ∈ sourceRegion,
+                  object.degree current ≤ data.threshold := by
+                intro current currentMem
+                obtain ⟨window, windowMem, currentMem⟩ :=
+                  (Graph.ColdCorridor.mem_windowsOf object cubic current).1
+                    (Finset.mem_inter.1 currentMem).2
+                exact le_of_eq ((Finset.mem_filter.1 windowMem).2 current currentMem)
+              have incidenceBound :=
+                Graph.ColdCorridor.card_incidences_filter_fst_le object
+                  sourceRegion data.threshold sourceRegionBounded
+              have cubicBound : ∀ current ∈ subcubic,
+                  object.graph.degree current ≤ 3 := by
+                intro current currentMem
+                have bounded := (Finset.mem_filter.1 currentMem).2
+                have graphDegree : object.graph.degree current =
+                    (object.graph.neighborSet current).ncard := by
+                  rw [Set.ncard_eq_toFinset_card']
+                  rfl
+                calc
+                  object.graph.degree current =
+                      (object.graph.neighborSet current).ncard := graphDegree
+                  _ = object.degree current :=
+                    (object.degree_eq_ncard_neighborSet current).symm
+                  _ ≤ 3 := by simpa [data.threshold_eq_three] using bounded
+              have reachBound := Graph.SubcubicReach.card_reach_le object.graph
+                subcubic cubicBound vertex
+                (Graph.ColdCorridor.exchangeBound data.coldSignature + 2)
+              have stubExcessBound : data.threshold ≤
+                  Graph.ColdCorridor.stubExcess data.threshold data.coldSignature := by
+                rw [Graph.ColdCorridor.stubExcess, data.threshold_eq_three,
+                  data.coldSignature_windowOrder]
+                have orderBound := data.three_le_windowOrder
+                omega
+              calc
+                through.card ≤
+                    (object.incidences.filter
+                      fun pair : object.Vertex × object.Vertex =>
+                        pair.1 ∈ sourceRegion).card := throughToIncidences
+                _ ≤ data.threshold * sourceRegion.card := incidenceBound
+                _ ≤ data.threshold * reach.card :=
+                  Nat.mul_le_mul_left _ (Finset.card_le_card Finset.inter_subset_left)
+                _ ≤ data.threshold *
+                    (1 + data.threshold *
+                      (2 ^ (Graph.ColdCorridor.exchangeBound data.coldSignature + 2) - 1)) := by
+                  apply Nat.mul_le_mul_left
+                  simpa [reach, data.threshold_eq_three] using reachBound
+                _ ≤ Graph.ColdCorridor.stubExcess data.threshold data.coldSignature *
+                    (1 + data.threshold *
+                      (2 ^ (Graph.ColdCorridor.exchangeBound data.coldSignature + 2) - 1)) :=
+                  Nat.mul_le_mul_right _ stubExcessBound
+                _ = Graph.ColdCorridor.overlapBound data.threshold
+                    data.coldSignature := rfl
+          obtain ⟨disjointFamily, extracted⟩ :=
+            extraction.2 Occurrence (Classical.decEq Occurrence) incidence candidates
+              candidateFamily
+          have failureClassified : ∀ epsilon : Eligible,
+              firstFailureGerm epsilon := by
+            intro epsilon
+            simpa only [firstFailureHandoff, firstFailureGerm] using
+              classification epsilon
+          have noncandidateClassified : ∀ occurrence : Occurrence,
+              occurrence ∉ candidates →
+                ∃ charged root : object.Vertex,
+                  data.threshold < object.degree charged ∧
+                    object.graph.Adj charged root ∧
+                    object.degree root ≤ data.threshold ∧
+                    (ColdGermOccurrence.stub occurrence).1 ∈
+                      @Graph.SubcubicReach.reach object.Vertex
+                        (@FinEnum.instFintype _ object.vertices) object.graph
+                        (object.vertexFinset.filter fun current =>
+                          object.degree current ≤ data.threshold)
+                        root
+                        (Graph.ColdCorridor.exchangeBound data.coldSignature + 2)
+                        root := by
+            intro occurrence notCandidate
+            cases occurrence with
+            | inl epsilon =>
+                rcases handoff state epsilon with subcubic | high
+                · exfalso
+                  apply notCandidate
+                  exact Finset.mem_filter.2
+                    ⟨Finset.mem_univ _, failureClassified epsilon, subcubic⟩
+                · obtain ⟨first, _bound, firstHigh, _earlier,
+                      root, adjacent, rootSubcubic, sourceReach⟩ := high
+                  exact ⟨(corridorAt epsilon).head first, root, firstHigh,
+                    adjacent, rootSubcubic, sourceReach⟩
+            | inr epsilon =>
+                have notSubcubic : ¬ ∀ vertex ∈
+                    (crossIncidence epsilon).support,
+                      object.degree vertex ≤ data.threshold := by
+                  intro subcubic
+                  exact notCandidate (Finset.mem_filter.2
+                    ⟨Finset.mem_univ _, subcubic⟩)
+                push_neg at notSubcubic
+                obtain ⟨charged, chargedMem, chargedHigh⟩ := notSubcubic
+                have chargedPair : charged = epsilon.1.1 ∨
+                    charged = epsilon.1.2 := by
+                  rw [crossFacts epsilon] at chargedMem
+                  simpa using chargedMem
+                have selectedFacts := Graph.ColdCorridor.selected_facts object cubic
+                  (⟨epsilon.1, epsilon.property.1⟩ : Selected)
+                obtain ⟨sourceWindow, sourceWindowMem, sourceMem⟩ :=
+                  (Graph.ColdCorridor.mem_windowsOf object cubic epsilon.1.1).1
+                    selectedFacts.1
+                have sourceDegree : object.degree epsilon.1.1 = data.threshold :=
+                  (Finset.mem_filter.1 sourceWindowMem).2 epsilon.1.1 sourceMem
+                have chargedEq : charged = epsilon.1.2 := by
+                  rcases chargedPair with sourceEq | targetEq
+                  · subst charged
+                    omega
+                  · exact targetEq
+                subst charged
+                refine ⟨epsilon.1.2, epsilon.1.1, chargedHigh,
+                  selectedFacts.2.symm, le_of_eq sourceDegree, ?_⟩
+                exact Graph.SubcubicReach.self_mem_reach object.graph
+                  (object.vertexFinset.filter fun current =>
+                    object.degree current ≤ data.threshold)
+                  epsilon.1.1
+                  (Graph.ColdCorridor.exchangeBound data.coldSignature + 2)
+                  epsilon.1.1
+          have eligibleUniverseCount : (Finset.univ : Finset Eligible).card =
+              ((Graph.ColdCorridor.allSelectedStubs object cubic).filter
+                fun stub => stub.2 ∉ windows).card := by
+            let filtered :=
+              (Graph.ColdCorridor.allSelectedStubs object cubic).filter
+                fun stub => stub.2 ∉ windows
+            let toFiltered : Eligible → {stub // stub ∈ filtered} :=
+              fun epsilon => ⟨epsilon.1, Finset.mem_filter.2 epsilon.property⟩
+            let fromFiltered : {stub // stub ∈ filtered} → Eligible :=
+              fun epsilon => ⟨epsilon.1, Finset.mem_filter.1 epsilon.property⟩
+            let equivalence : Eligible ≃ {stub // stub ∈ filtered} :=
+              { toFun := toFiltered
+                invFun := fromFiltered
+                left_inv := by intro epsilon; apply Subtype.ext; rfl
+                right_inv := by intro epsilon; apply Subtype.ext; rfl }
+            calc
+              (Finset.univ : Finset Eligible).card = Fintype.card Eligible :=
+                Finset.card_univ
+              _ = Fintype.card {stub // stub ∈ filtered} :=
+                Fintype.card_congr equivalence
+              _ = filtered.card := Fintype.card_coe filtered
+              _ = ((Graph.ColdCorridor.allSelectedStubs object cubic).filter
+                    fun stub => stub.2 ∉ windows).card := rfl
+          have crossUniverseCount : (Finset.univ : Finset Cross).card =
+              ((Graph.ColdCorridor.allSelectedStubs object cubic).filter
+                fun stub => stub.2 ∈ windows).card := by
+            let filtered :=
+              (Graph.ColdCorridor.allSelectedStubs object cubic).filter
+                fun stub => stub.2 ∈ windows
+            let toFiltered : Cross → {stub // stub ∈ filtered} :=
+              fun epsilon => ⟨epsilon.1, Finset.mem_filter.2 epsilon.property⟩
+            let fromFiltered : {stub // stub ∈ filtered} → Cross :=
+              fun epsilon => ⟨epsilon.1, Finset.mem_filter.1 epsilon.property⟩
+            let equivalence : Cross ≃ {stub // stub ∈ filtered} :=
+              { toFun := toFiltered
+                invFun := fromFiltered
+                left_inv := by intro epsilon; apply Subtype.ext; rfl
+                right_inv := by intro epsilon; apply Subtype.ext; rfl }
+            calc
+              (Finset.univ : Finset Cross).card = Fintype.card Cross :=
+                Finset.card_univ
+              _ = Fintype.card {stub // stub ∈ filtered} :=
+                Fintype.card_congr equivalence
+              _ = filtered.card := Fintype.card_coe filtered
+              _ = ((Graph.ColdCorridor.allSelectedStubs object cubic).filter
+                    fun stub => stub.2 ∈ windows).card := rfl
+          have selectedPartition :
+              (Graph.ColdCorridor.allSelectedStubs object cubic).card =
+                ((Graph.ColdCorridor.allSelectedStubs object cubic).filter
+                    fun stub => stub.2 ∉ windows).card +
+                  ((Graph.ColdCorridor.allSelectedStubs object cubic).filter
+                    fun stub => stub.2 ∈ windows).card := by
+            have partition := Finset.card_filter_add_card_filter_not
+              (s := Graph.ColdCorridor.allSelectedStubs object cubic)
+              (fun stub => stub.2 ∉ windows)
+            simpa only [not_not] using partition.symm
+          have occurrenceUniverseCount :
+              (Finset.univ : Finset Occurrence).card =
+                (Graph.ColdCorridor.allSelectedStubs object cubic).card := by
+            calc
+              (Finset.univ : Finset Occurrence).card = Fintype.card Occurrence :=
+                Finset.card_univ
+              _ = Fintype.card Eligible + Fintype.card Cross :=
+                Fintype.card_sum
+              _ = (Finset.univ : Finset Eligible).card +
+                    (Finset.univ : Finset Cross).card := by simp
+              _ = (Graph.ColdCorridor.allSelectedStubs object cubic).card := by
+                rw [eligibleUniverseCount, crossUniverseCount, selectedPartition]
+          have candidateCount : candidates.card ≤
+              (Finset.univ : Finset Occurrence).card :=
+            Finset.card_le_card (Finset.subset_univ _)
+          let corridorLoss :=
+            (Finset.univ : Finset Occurrence).card - candidates.card
+          have corridorCount : (Finset.univ : Finset Occurrence).card =
+              candidates.card + corridorLoss := by
+            simpa only [corridorLoss] using
+              (Nat.add_sub_of_le candidateCount).symm
+          have totalCount :
+              (Graph.ColdCorridor.allSelectedStubs object cubic).card =
+                candidates.card + corridorLoss := by
+            rw [← occurrenceUniverseCount, corridorCount]
+          let losses := (Finset.univ : Finset Occurrence).filter fun occurrence =>
+            occurrence ∉ candidates
+          have lossCard : losses.card = corridorLoss := by
+            have partition := Finset.card_filter_add_card_filter_not
+              (s := (Finset.univ : Finset Occurrence))
+              (fun occurrence => occurrence ∈ candidates)
+            have candidateFilter :
+                ((Finset.univ : Finset Occurrence).filter fun occurrence =>
+                  occurrence ∈ candidates) = candidates := by
+              ext occurrence
+              simp
+            rw [candidateFilter] at partition
+            have lossFilter :
+                ((Finset.univ : Finset Occurrence).filter fun occurrence =>
+                  occurrence ∉ candidates) = losses := rfl
+            rw [lossFilter] at partition
+            omega
+          let chargePair : Occurrence → object.Vertex × object.Vertex :=
+            fun occurrence =>
+              if missing : occurrence ∉ candidates then
+                let witness := noncandidateClassified occurrence missing
+                (Classical.choose witness,
+                  Classical.choose (Classical.choose_spec witness))
+              else
+                ((ColdGermOccurrence.stub occurrence).1,
+                  (ColdGermOccurrence.stub occurrence).1)
+          have chargeFacts : ∀ occurrence : Occurrence,
+              occurrence ∉ candidates →
+                data.threshold < object.degree (chargePair occurrence).1 ∧
+                  object.graph.Adj (chargePair occurrence).1
+                    (chargePair occurrence).2 ∧
+                  object.degree (chargePair occurrence).2 ≤ data.threshold ∧
+                  (ColdGermOccurrence.stub occurrence).1 ∈
+                    @Graph.SubcubicReach.reach object.Vertex
+                      (@FinEnum.instFintype _ object.vertices) object.graph
+                      (object.vertexFinset.filter fun current =>
+                        object.degree current ≤ data.threshold)
+                      (chargePair occurrence).2
+                      (Graph.ColdCorridor.exchangeBound data.coldSignature + 2)
+                      (chargePair occurrence).2 := by
+            intro occurrence missing
+            dsimp only [chargePair]
+            rw [dif_pos missing]
+            exact Classical.choose_spec
+              (Classical.choose_spec (noncandidateClassified occurrence missing))
+          let highIncidences := object.incidences.filter
+            fun pair : object.Vertex × object.Vertex =>
+              data.threshold < object.degree pair.1 ∧
+                object.degree pair.2 ≤ data.threshold
+          let sourceFibre := fun pair : object.Vertex × object.Vertex =>
+            (Finset.univ : Finset Occurrence).filter fun occurrence =>
+              (ColdGermOccurrence.stub occurrence).1 ∈
+                @Graph.SubcubicReach.reach object.Vertex
+                  (@FinEnum.instFintype _ object.vertices) object.graph
+                  (object.vertexFinset.filter fun current =>
+                    object.degree current ≤ data.threshold)
+                  pair.2
+                  (Graph.ColdCorridor.exchangeBound data.coldSignature + 2)
+                  pair.2
+          have lossesCovered : losses ⊆ highIncidences.biUnion sourceFibre := by
+            intro occurrence occurrenceMem
+            have missing := (Finset.mem_filter.1 occurrenceMem).2
+            have facts := chargeFacts occurrence missing
+            have chargeMember : chargePair occurrence ∈ highIncidences := by
+              refine Finset.mem_filter.2
+                ⟨(object.mem_incidences_iff (chargePair occurrence)).2 facts.2.1,
+                  facts.1, facts.2.2.1⟩
+            exact Finset.mem_biUnion.2
+              ⟨chargePair occurrence, chargeMember,
+                Finset.mem_filter.2 ⟨Finset.mem_univ _, facts.2.2.2⟩⟩
+          have sourceFibreBound : ∀ pair ∈ highIncidences,
+              (sourceFibre pair).card ≤
+                Graph.ColdCorridor.overlapBound data.threshold
+                  data.coldSignature := by
+            intro pair pairMem
+            let subcubic := object.vertexFinset.filter fun current =>
+              object.degree current ≤ data.threshold
+            let reach := @Graph.SubcubicReach.reach object.Vertex
+              (@FinEnum.instFintype _ object.vertices) object.graph
+              subcubic pair.2
+              (Graph.ColdCorridor.exchangeBound data.coldSignature + 2) pair.2
+            let sourceRegion := reach ∩ Graph.ColdCorridor.windowsOf object cubic
+            have fibreToIncidences : (sourceFibre pair).card ≤
+                (object.incidences.filter fun incidencePair :
+                    object.Vertex × object.Vertex =>
+                  incidencePair.1 ∈ sourceRegion).card := by
+              exact Finset.card_le_card_of_injOn
+                (@ColdGermOccurrence.stub data object)
+                (by
+                  intro occurrence occurrenceMem
+                  have sourceReach := (Finset.mem_filter.1 occurrenceMem).2
+                  have selectedMem : ColdGermOccurrence.stub occurrence ∈
+                      Graph.ColdCorridor.allSelectedStubs object cubic := by
+                    cases occurrence with
+                    | inl epsilon => exact epsilon.property.1
+                    | inr epsilon => exact epsilon.property.1
+                  have selectedFacts := Graph.ColdCorridor.selected_facts object cubic
+                    (⟨ColdGermOccurrence.stub occurrence, selectedMem⟩ : Selected)
+                  refine Finset.mem_filter.2
+                    ⟨(object.mem_incidences_iff
+                        (ColdGermOccurrence.stub occurrence)).2 selectedFacts.2, ?_⟩
+                  exact Finset.mem_inter.2 ⟨sourceReach, selectedFacts.1⟩)
+                (by
+                  intro left _leftMem right _rightMem same
+                  exact occurrenceStubInjective same)
+            have sourceRegionBounded : ∀ current ∈ sourceRegion,
+                object.degree current ≤ data.threshold := by
+              intro current currentMem
+              obtain ⟨window, windowMem, currentMem⟩ :=
+                (Graph.ColdCorridor.mem_windowsOf object cubic current).1
+                  (Finset.mem_inter.1 currentMem).2
+              exact le_of_eq
+                ((Finset.mem_filter.1 windowMem).2 current currentMem)
+            have incidenceBound :=
+              Graph.ColdCorridor.card_incidences_filter_fst_le object
+                sourceRegion data.threshold sourceRegionBounded
+            have cubicBound : ∀ current ∈ subcubic,
+                object.graph.degree current ≤ 3 := by
+              intro current currentMem
+              have bounded := (Finset.mem_filter.1 currentMem).2
+              have graphDegree : object.graph.degree current =
+                  (object.graph.neighborSet current).ncard := by
+                rw [Set.ncard_eq_toFinset_card']
+                rfl
+              calc
+                object.graph.degree current =
+                    (object.graph.neighborSet current).ncard := graphDegree
+                _ = object.degree current :=
+                  (object.degree_eq_ncard_neighborSet current).symm
+                _ ≤ 3 := by simpa [data.threshold_eq_three] using bounded
+            have reachBound := Graph.SubcubicReach.card_reach_le object.graph
+              subcubic cubicBound pair.2
+              (Graph.ColdCorridor.exchangeBound data.coldSignature + 2)
+            have stubExcessBound : data.threshold ≤
+                Graph.ColdCorridor.stubExcess data.threshold
+                  data.coldSignature := by
+              rw [Graph.ColdCorridor.stubExcess, data.threshold_eq_three,
+                data.coldSignature_windowOrder]
+              have orderBound := data.three_le_windowOrder
+              omega
+            calc
+              (sourceFibre pair).card ≤
+                  (object.incidences.filter fun incidencePair :
+                      object.Vertex × object.Vertex =>
+                    incidencePair.1 ∈ sourceRegion).card := fibreToIncidences
+              _ ≤ data.threshold * sourceRegion.card := incidenceBound
+              _ ≤ data.threshold * reach.card :=
+                Nat.mul_le_mul_left _
+                  (Finset.card_le_card Finset.inter_subset_left)
+              _ ≤ data.threshold *
+                  (1 + data.threshold *
+                    (2 ^ (Graph.ColdCorridor.exchangeBound
+                      data.coldSignature + 2) - 1)) := by
+                apply Nat.mul_le_mul_left
+                simpa [reach, data.threshold_eq_three] using reachBound
+              _ ≤ Graph.ColdCorridor.stubExcess data.threshold
+                    data.coldSignature *
+                  (1 + data.threshold *
+                    (2 ^ (Graph.ColdCorridor.exchangeBound
+                      data.coldSignature + 2) - 1)) :=
+                Nat.mul_le_mul_right _ stubExcessBound
+              _ = Graph.ColdCorridor.overlapBound data.threshold
+                  data.coldSignature := rfl
+          have lossesPerHighIncidence : losses.card ≤
+              highIncidences.card *
+                Graph.ColdCorridor.overlapBound data.threshold
+                  data.coldSignature := by
+            calc
+              losses.card ≤ (highIncidences.biUnion sourceFibre).card :=
+                Finset.card_le_card lossesCovered
+              _ ≤ ∑ pair ∈ highIncidences, (sourceFibre pair).card :=
+                Finset.card_biUnion_le
+              _ ≤ ∑ _pair ∈ highIncidences,
+                    Graph.ColdCorridor.overlapBound data.threshold
+                      data.coldSignature :=
+                Finset.sum_le_sum sourceFibreBound
+              _ = highIncidences.card *
+                    Graph.ColdCorridor.overlapBound data.threshold
+                      data.coldSignature := by simp
+          let highVertices := (Finset.univ : Finset object.Vertex).filter
+            fun vertex => data.threshold < object.degree vertex
+          let incidencesFromHigh := object.incidences.filter
+            fun pair : object.Vertex × object.Vertex => pair.1 ∈ highVertices
+          have highIncidencesSubset : highIncidences ⊆ incidencesFromHigh := by
+            intro pair pairMem
+            have facts := (Finset.mem_filter.1 pairMem).2
+            exact Finset.mem_filter.2
+              ⟨(Finset.mem_filter.1 pairMem).1,
+                Finset.mem_filter.2 ⟨Finset.mem_univ _, facts.1⟩⟩
+          have incidencesFromHighBound : incidencesFromHigh.card ≤
+              ∑ vertex ∈ highVertices, object.degree vertex := by
+            dsimp only [incidencesFromHigh]
+            exact Graph.ColdCorridor.card_incidences_filter_fst_le_sum_degree
+              object highVertices
+          have highDegreeSumBound :
+              (∑ vertex ∈ highVertices, object.degree vertex) ≤
+                (data.threshold + 1) *
+                  object.ambientSurplus highVertices data.threshold := by
+            unfold Graph.FiniteObject.ambientSurplus
+            calc
+              (∑ vertex ∈ highVertices, object.degree vertex) ≤
+                  ∑ vertex ∈ highVertices,
+                    (data.threshold + 1) *
+                      (object.degree vertex - data.threshold) := by
+                exact Finset.sum_le_sum fun vertex vertexMem => by
+                  have high := (Finset.mem_filter.1 vertexMem).2
+                  have oneLe : 1 ≤ object.degree vertex - data.threshold := by
+                    omega
+                  have multiplied := Nat.mul_le_mul_left data.threshold oneLe
+                  have multiplied' : data.threshold ≤ data.threshold *
+                      (object.degree vertex - data.threshold) := by
+                    calc
+                      data.threshold = data.threshold * 1 := by simp
+                      _ ≤ data.threshold *
+                          (object.degree vertex - data.threshold) := multiplied
+                  calc
+                    object.degree vertex = data.threshold +
+                        (object.degree vertex - data.threshold) := by omega
+                    _ ≤ data.threshold *
+                          (object.degree vertex - data.threshold) +
+                        (object.degree vertex - data.threshold) :=
+                      Nat.add_le_add_right multiplied'
+                        (object.degree vertex - data.threshold)
+                    _ = (data.threshold + 1) *
+                        (object.degree vertex - data.threshold) := by ring
+              _ = (data.threshold + 1) *
+                    ∑ vertex ∈ highVertices,
+                      (object.degree vertex - data.threshold) := by
+                exact (Finset.mul_sum highVertices
+                  (fun vertex => object.degree vertex - data.threshold)
+                  (data.threshold + 1)).symm
+          have baselineDegree : ∀ vertex : object.Vertex,
+              data.threshold ≤ object.degree vertex := fun vertex =>
+            le_trans inputs.current.baseline (object.minDegree_le_degree vertex)
+          have highIncidencesBound : highIncidences.card ≤
+              (data.threshold + 1) * object.degreeSurplus data.threshold := by
+            calc
+              highIncidences.card ≤ incidencesFromHigh.card :=
+                Finset.card_le_card highIncidencesSubset
+              _ ≤ ∑ vertex ∈ highVertices, object.degree vertex :=
+                incidencesFromHighBound
+              _ ≤ (data.threshold + 1) *
+                    object.ambientSurplus highVertices data.threshold :=
+                highDegreeSumBound
+              _ ≤ (data.threshold + 1) *
+                    object.degreeSurplus data.threshold :=
+                Nat.mul_le_mul_left _
+                  (object.ambientSurplus_le_degreeSurplus highVertices
+                    data.threshold baselineDegree)
+          have routedLossBound : corridorLoss ≤
+              (data.threshold + 1) *
+                Graph.ColdCorridor.overlapBound data.threshold
+                  data.coldSignature * object.degreeSurplus data.threshold := by
+            calc
+              corridorLoss = losses.card := lossCard.symm
+              _ ≤ highIncidences.card *
+                    Graph.ColdCorridor.overlapBound data.threshold
+                      data.coldSignature := lossesPerHighIncidence
+              _ ≤ ((data.threshold + 1) *
+                    object.degreeSurplus data.threshold) *
+                    Graph.ColdCorridor.overlapBound data.threshold
+                      data.coldSignature :=
+                Nat.mul_le_mul_right _ highIncidencesBound
+              _ = (data.threshold + 1) *
+                    Graph.ColdCorridor.overlapBound data.threshold
+                      data.coldSignature * object.degreeSurplus data.threshold := by
+                ring
+          have quantitative :
+              (Graph.ColdCorridor.allSelectedStubs object cubic).card ≤
+                disjointFamily.card *
+                    Graph.ColdCorridor.extractionDenominator data.threshold
+                      data.coldSignature +
+                  corridorLoss := by
+            have cover := extracted.2.2
+            omega
+          change ColdGermCandidatesStatement data object
+          simp only [ColdGermCandidatesStatement]
+          refine ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
+            ?_⟩
+          simp only [ColdGermFamilyWitness]
+          exact ⟨rfl, rfl, candidateFamily, extracted,
+            noncandidateClassified, corridorCount, totalCount,
+            routedLossBound, quantitative⟩
+        ⟩
+        .nil)
+/-! ## Node `[153]`, `lem:cold-germ-extraction`: strict positivity
+
+On the linear arm, the selected `9C` mass is strictly larger than the sum of
+the non-ambient-window loss and the first-high incidence loss.  The exact
+count and charge bound retained above therefore make the candidate family,
+and hence its greedy disjoint subfamily, nonempty. -/
+@[reducible] noncomputable def coldGermFamilyPositiveRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.coldGermFamilyPositive
+    { Requires := [K .coldGermCandidates, K .coldMassLinear,
+        K .coldSelectedBranchExcess, K .coldStubExcess]
+      Produces := [K .coldGermFamilyPositive]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let family := (inputs.get (K .coldGermCandidates)).down
+      let linear := (inputs.get (K .coldMassLinear)).down
+      let selectedExcess := (inputs.get (K .coldSelectedBranchExcess)).down
+      let stubExcess := (inputs.get (K .coldStubExcess)).down
+      .cons (key := K .coldGermFamilyPositive)
         ⟨by
           classical
           let object := inputs.current.object
           letI : FinEnum object.Vertex := object.vertices
           let cold := canonicalColdWindows data object
           let cubic := cold.filter (AmbientCubicWindow data object)
-          let windows := Graph.ColdCorridor.windowsOf object cubic
-          let Eligible := {stub : object.Vertex × object.Vertex //
-            stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic ∧
-              stub.2 ∉ windows}
-          change ColdFailureRoutingStatement data object at routing
-          simp only [ColdFailureRoutingStatement] at routing
-          obtain ⟨state, overlap, count⟩ := routing.2
-          let incidence : Eligible →
-              Graph.ColdCorridor.BoundedGerm data.coldSignature
-                (Graph.MinimumDegreeAtLeast data.threshold)
-                (Graph.HasCycleWithLength data.LengthOK) object :=
-            Classical.choose state
-          let candidates :=
-            ((Finset.univ : Finset Eligible).filter fun epsilon =>
-              ∀ vertex ∈ (incidence epsilon).support,
-                object.degree vertex ≤ data.threshold).image incidence
-          have coldCount : cold.card ≤
-              cubic.card + object.degreeSurplus data.threshold := ambient.1
-          change (Graph.ColdCorridor.branchExcessOf (coldExternalStubCount data) +
-              Graph.ColdCorridor.overlapBound data.threshold data.coldSignature) *
-              object.degreeSurplus data.threshold <
-            Graph.ColdCorridor.branchExcessOf (coldExternalStubCount data) * cold.card
-            at linear
-          change ColdExchangeBoundStatement data object ∧
-            Graph.ColdCorridor.ColdGermExtractionLocal data.coldSignature
-              data.threshold (Graph.MinimumDegreeAtLeast data.threshold)
-              (Graph.HasCycleWithLength data.LengthOK) object at extraction
-          have candidateFamily :
-              Graph.ColdCorridor.CandidateGermFamily data.coldSignature
-                data.threshold (Graph.MinimumDegreeAtLeast data.threshold)
-                (Graph.HasCycleWithLength data.LengthOK) object candidates := by
-            refine ⟨?_, ?_⟩
-            · by_contra empty
-              have zero : candidates.card = 0 := Nat.eq_zero_of_not_pos empty
-              have countZero := count
-              rw [zero, Nat.mul_zero, Nat.zero_add] at countZero
-              have coldToCubic := Nat.mul_le_mul_left
-                (Graph.ColdCorridor.branchExcessOf (coldExternalStubCount data))
-                coldCount
-              rw [Nat.mul_add] at coldToCubic
-              have upper :
-                  Graph.ColdCorridor.branchExcessOf (coldExternalStubCount data) *
-                      cold.card ≤
-                    (Graph.ColdCorridor.branchExcessOf
-                        (coldExternalStubCount data) +
-                      Graph.ColdCorridor.overlapBound data.threshold
-                        data.coldSignature) * object.degreeSurplus data.threshold := by
-                calc
-                  _ ≤ Graph.ColdCorridor.branchExcessOf
-                        (coldExternalStubCount data) * cubic.card +
-                      Graph.ColdCorridor.branchExcessOf
-                        (coldExternalStubCount data) *
-                          object.degreeSurplus data.threshold := coldToCubic
-                  _ ≤ Graph.ColdCorridor.overlapBound data.threshold
-                          data.coldSignature * object.degreeSurplus data.threshold +
-                        Graph.ColdCorridor.branchExcessOf
-                          (coldExternalStubCount data) *
-                            object.degreeSurplus data.threshold :=
-                      Nat.add_le_add_right countZero _
-                  _ = _ := by
-                    simp only [Nat.add_mul]
-                    omega
-              exact (Nat.not_lt_of_ge upper) linear
-            · intro candidate member
-              have denominator :
-                  Graph.ColdCorridor.extractionDenominator data.threshold
-                      data.coldSignature - 1 =
-                    Graph.ColdCorridor.exchangeBound data.coldSignature *
-                      Graph.ColdCorridor.overlapBound data.threshold
-                        data.coldSignature := by
-                simp only [Graph.ColdCorridor.extractionDenominator,
-                  Nat.add_sub_cancel]
-              rw [← denominator]
-              exact overlap candidate member
-          obtain ⟨disjointFamily, extracted⟩ :=
-            extraction.2 candidates candidateFamily
-          change ColdGermCandidatesStatement data object
-          simp only [ColdGermCandidatesStatement]
-          exact ⟨candidates, disjointFamily, state, rfl, candidateFamily,
-            extracted, count⟩⟩
+          let selected := Graph.ColdCorridor.allSelectedStubs object cubic
+          let perWindow := coldInteriorBranchExcess data
+          change ColdGermCandidatesStatement data object at family
+          change ColdMassLinearStatement data object at linear
+          change ColdSelectedBranchExcessStatement data object at selectedExcess
+          change ColdStubExcessStatement data object at stubExcess
+          rcases family with
+            ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
+              familyWitness⟩
+          simp only [ColdGermFamilyWitness] at familyWitness
+          rcases familyWitness with
+            ⟨incidenceEq, candidatesEq, candidateFamily, extracted,
+              noncandidateClassified, occurrenceCount, selectedCount,
+              lossBound, quantitative⟩
+          have lossSmall : corridorLoss < selected.card := by
+            have selectedExact := selectedExcess.1
+            change selected.card = perWindow * cubic.card at selectedExact
+            change perWindow * cold.card ≤
+              perWindow * cubic.card +
+                perWindow * object.degreeSurplus data.threshold at stubExcess
+            change (perWindow + (data.threshold + 1) *
+                Graph.ColdCorridor.overlapBound data.threshold
+                  data.coldSignature) * object.degreeSurplus data.threshold <
+              perWindow * cold.card at linear
+            change corridorLoss ≤ (data.threshold + 1) *
+                Graph.ColdCorridor.overlapBound data.threshold
+                  data.coldSignature * object.degreeSurplus data.threshold at lossBound
+            rw [Nat.add_mul] at linear
+            rw [selectedExact]
+            omega
+          have candidatePositive : 0 < candidates.card := by
+            change selected.card = candidates.card + corridorLoss at selectedCount
+            omega
+          have disjointPositive : 0 < disjointFamily.card :=
+            Graph.ColdCorridor.coldGerm_nonempty extracted.2.2 candidatePositive
+          change ColdGermFamilyPositiveStatement data object
+          simp only [ColdGermFamilyPositiveStatement]
+          exact ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
+            by
+              simp only [ColdGermFamilyWitness]
+              exact ⟨incidenceEq, candidatesEq, candidateFamily, extracted,
+                noncandidateClassified, occurrenceCount, selectedCount,
+                lossBound, quantitative⟩,
+            disjointPositive⟩⟩
         .nil)
-
 /-! ## Node `[175]`, `lem:absorbed-germ-fan-data`: the per-half-edge dichotomy
 
 On the absorbed-configuration residual every selected branch-excess half-edge
@@ -496,151 +2484,201 @@ sit exactly at the threshold, so `z` is a heavy centre.  The row publishes
 that dichotomy for every selected half-edge, on the literal residual; the
 exhaustive object-level decision that follows (`absorbedGermDichotomy`) only
 chooses which continuation closes the branch. -/
+set_option maxHeartbeats 4000000 in
 @[reducible] noncomputable def absorbedGermSplitRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.absorbedGermSplit
-    { Requires := [K .bridgeless, K .hotColdPartition, K .slackIndependent]
+    { Requires := [K .coldGermCandidates, K .coldHandoffTransfer,
+        K .slackIndependent]
       Produces := [K .absorbedGermSplit]
       requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let _bridgeless := (inputs.get (K .bridgeless)).down
-      let _split := (inputs.get (K .hotColdPartition)).down
+      let family := (inputs.get (K .coldGermCandidates)).down
+      let handoff := (inputs.get (K .coldHandoffTransfer)).down
       let independent := (inputs.get (K .slackIndependent)).down
       .cons (key := K .absorbedGermSplit)
         ⟨by
           classical
+          let object := inputs.current.object
+          letI : FinEnum object.Vertex := object.vertices
+          letI : Fintype object.Vertex := @FinEnum.instFintype _ object.vertices
+          letI : Fintype (ColdEligibleHalfEdge data object) :=
+            coldEligibleHalfEdgeFintype data object
+          change ColdGermCandidatesStatement data object at family
+          rcases family with
+            ⟨routing, _incidence, _candidates, _disjointFamily, _corridorLoss,
+              _familyWitness⟩
           change AbsorbedGermSplitStatement data inputs.current.object
           simp only [AbsorbedGermSplitStatement]
-          intro baseline bridgeless large stub
-          set germ := Graph.ColdCorridor.stubGerm data.coldSignature data.threshold
-            (Graph.HasCycleWithLength data.LengthOK) inputs.current.object
-            ((canonicalColdWindows data inputs.current.object).filter
-              (AmbientCubicWindow data inputs.current.object))
-            baseline bridgeless large stub with germDef
-          by_cases subcubic : ∀ vertex ∈ germ.support,
-              inputs.current.object.degree vertex ≤ data.threshold
-          · refine Or.inl ⟨subcubic, ?_⟩
-            rw [germDef]
-            simp only [Graph.ColdCorridor.candidateGerms, Finset.mem_filter,
-              Finset.mem_image, Finset.mem_attach, true_and]
-            exact ⟨⟨stub, rfl⟩, subcubic⟩
-          · push_neg at subcubic
-            obtain ⟨centre, member, high⟩ := subcubic
-            refine Or.inr ⟨centre, member, high, fun neighbour adjacent => ?_⟩
+          refine ⟨routing, ?_⟩
+          intro epsilon
+          let classified := coldRoutedClassified data object routing
+          let state := classified.state
+          rcases handoff state epsilon with subcubic | high
+          · apply Or.inl
+            exact Finset.mem_filter.2
+              ⟨Finset.mem_univ _,
+                Classical.choose_spec routing.surviving.holds epsilon,
+                subcubic⟩
+          · rcases high with
+              ⟨first, firstBound, firstHigh, earlierBound, _root⟩
+            refine Or.inr ⟨first, firstBound, firstHigh, earlierBound,
+              fun neighbour adjacent => ?_⟩
             apply le_antisymm
             · by_contra above
-              push_neg at above
-              exact independent centre neighbour high above adjacent
+              push Not at above
+              exact independent ((coldOccurrenceCorridorAt data object classified
+                epsilon).head first) neighbour firstHigh above adjacent
             · exact le_trans inputs.current.baseline
                 (inputs.current.object.minDegree_le_degree neighbour)⟩
         .nil)
 
 /-! ## Nodes `[174]`--`[177]`, `lem:absorbed-germ-fan-data`: the absorbed-germ split
 
-On the absorbed-germ residual (`[173]`'s no arm) the linear cold count of
-`[174]` is not needed by the extraction: node `[175]` decides, per the selected
-branch-excess half-edges of the ambient-cubic cold windows, whether some
-first-failure exchange germ has a subcubic support.  If one does, the candidate
-family of `lem:cold-germ-extraction` is positive and the germs are routed as in
-`[153]`--`[157]` (node `[176]`); if none does, every selected corridor meets a
-vertex of degree above the threshold — a heavy centre by node `[10]` — and the
-half-edge is decorated handoff fan data for Type B (node `[177]`,
-`K .absorbedGermFanData`).  This is that decision on the literal residual; its
-yes arm publishes exactly `K .coldGermCandidates` (the count clause is
-`selected_le_candidates`, the overlap clause `candidateGerms_overlap_le`, the
-positivity the decision itself, the extraction `K .coldGermExtraction`). -/
+On the absorbed-germ residual (`[173]`'s no arm), node `[175]` tests whether
+the literal case-(i) occurrence class is nonempty.  The yes arm records only
+that exact predicate as `K .coldPositiveGerm`; node `[176]` obtains the
+candidate extraction from its existing node-`[153]` owner.  Independently of
+that test, `absorbedGermSplitRow` retains the case-(ii) witness for every
+occurrence outside the candidate set, so mixed families continue through both
+paper routes without losing either subfamily.  On the no arm the same
+complement is the whole selected family. -/
 noncomputable def absorbedGermDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger
       (Input BranchState Presentation presentation data) current known)
-    [FactKeys.Has (K .bridgeless) known]
-    [FactKeys.Has (K .hotColdPartition) known]
-    [FactKeys.Has (K .coldGermExtraction) known]
-    (candidatesFresh : K .coldGermCandidates ∉ known)
+    [FactKeys.Has (K .absorbedGermSplit) known]
+    [FactKeys.Has (K .coldGermCandidates) known]
+    (positiveFresh : K .coldPositiveGerm ∉ known)
     (absorbedFresh : K .absorbedGermFanData ∉ known) :
-    Decision (K .coldGermCandidates) (K .absorbedGermFanData) previous := by
+    Decision (K .coldPositiveGerm) (K .absorbedGermFanData) previous := by
   classical
-  let bridgeless := (previous.get (K .bridgeless)).down
-  let split := (previous.get (K .hotColdPartition)).down
-  let extraction := (previous.get (K .coldGermExtraction)).down
+  let split := (previous.get (K .absorbedGermSplit)).down
   let object := current.object
-  have baseline : Graph.MinimumDegreeAtLeast data.threshold object := current.baseline
-  have large : 2 < object.vertexCount :=
-    Graph.ColdCorridor.two_lt_vertexCount_of_minDegree data.three_le_threshold baseline
-  let packing := canonicalWindowPacking data object
-  let cold := canonicalColdWindows data object
-  let cubic := cold.filter (AmbientCubicWindow data object)
-  let candidates := Graph.ColdCorridor.candidateGerms data.coldSignature data.threshold
-    (Graph.HasCycleWithLength data.LengthOK) object cubic baseline bridgeless large
-  exact Decision.run previous (K .coldGermCandidates) (K .absorbedGermFanData)
+  letI : FinEnum object.Vertex := object.vertices
+  change AbsorbedGermSplitStatement data object at split
+  simp only [AbsorbedGermSplitStatement] at split
+  let routing := Classical.choose split
+  let alternatives := Classical.choose_spec split
+  let routedCandidates := coldRoutedCandidates data object routing
+  exact Decision.run previous (K .coldPositiveGerm) (K .absorbedGermFanData)
     `Hypostructure.Graph.Strategy.Spine.absorbedGermDichotomy
-    (if positive : 0 < candidates.card then
+    (if positive : 0 < routedCandidates.card then
       .inl ⟨by
-        have cubicSub : cubic ⊆ packing :=
-          (Finset.filter_subset _ _).trans Finset.sdiff_subset
-        have valid : object.IsWindowPacking data.windowOrder packing := split.1
-        have induced : ∀ window ∈ cubic, object.InducesWindow data.windowOrder window :=
-          fun window member => valid.1 window (cubicSub member)
-        have disjoint : ∀ left ∈ cubic, ∀ right ∈ cubic, left ≠ right →
-            Disjoint left right :=
-          fun left leftMem right rightMem => valid.2 left (cubicSub leftMem) right
-            (cubicSub rightMem)
-        have windowsCubic : ∀ vertex ∈ Graph.ColdCorridor.windowsOf object cubic,
-            object.degree vertex = data.threshold := by
-          intro vertex member
-          obtain ⟨window, windowMem, vertexMem⟩ :=
-            (Graph.ColdCorridor.mem_windowsOf object cubic vertex).1 member
-          exact (Finset.mem_filter.1 windowMem).2 vertex vertexMem
-        have perWindowEq : Graph.ColdCorridor.branchExcessOf (coldExternalStubCount data) =
-            data.threshold * data.windowOrder - 2 * (data.windowOrder - 1) - 2 := by
-          simp only [Graph.ColdCorridor.branchExcessOf, coldExternalStubCount]
-        change ColdExchangeBoundStatement data object ∧
-          Graph.ColdCorridor.ColdGermExtractionLocal data.coldSignature
-            data.threshold (Graph.MinimumDegreeAtLeast data.threshold)
-            (Graph.HasCycleWithLength data.LengthOK) object at extraction
-        change ColdGermCandidatesStatement data object
-        simp only [ColdGermCandidatesStatement]
-        have count := Graph.ColdCorridor.selected_le_candidates data.coldSignature
-          data.threshold (Graph.HasCycleWithLength data.LengthOK) object cubic
-          data.threshold_eq_three baseline bridgeless large induced disjoint windowsCubic
-        rw [← perWindowEq] at count
-        have candidateFamily : Graph.ColdCorridor.CandidateGermFamily data.coldSignature
-            data.threshold (Graph.MinimumDegreeAtLeast data.threshold)
-            (Graph.HasCycleWithLength data.LengthOK) object candidates := by
-          refine ⟨positive, ?_⟩
-          intro candidate member
-          have overlap := Graph.ColdCorridor.candidateGerms_overlap_le data.coldSignature
-            data.threshold (Graph.HasCycleWithLength data.LengthOK) object cubic
-            data.threshold_eq_three baseline bridgeless large candidate member
-          convert overlap using 2
-          exact Finset.filter_congr_decidable _ _ _
-        obtain ⟨disjointFamily, extracted⟩ := extraction.2 candidates candidateFamily
-        exact ⟨candidates, disjointFamily, candidateFamily, extracted, count⟩⟩
+        change ColdPositiveGermStatement data object
+        exact ⟨routing, positive⟩⟩
     else
       .inr ⟨by
+        let family := (previous.get (K .coldGermCandidates)).down
+        change ColdGermCandidatesStatement data object at family
+        rcases family with
+          ⟨familyRouting, incidence, candidates, disjointFamily, corridorLoss,
+            familyWitness⟩
+        have routingEq : familyRouting = routing := Subsingleton.elim _ _
+        subst familyRouting
         change AbsorbedGermFanDataStatement data object
         simp only [AbsorbedGermFanDataStatement]
-        intro baseline' bridgeless' large' stub
-        have empty : candidates = ∅ := Finset.card_eq_zero.1 (Nat.eq_zero_of_not_pos positive)
-        by_contra none
-        push_neg at none
-        have member : Graph.ColdCorridor.stubGerm data.coldSignature data.threshold
-            (Graph.HasCycleWithLength data.LengthOK) object cubic baseline bridgeless large
-              stub ∈ candidates := by
-          simp only [candidates, Graph.ColdCorridor.candidateGerms, Finset.mem_filter,
-            Finset.mem_image, Finset.mem_attach, true_and]
-          exact ⟨⟨stub, rfl⟩, none⟩
-        rw [empty] at member
-        exact Finset.notMem_empty _ member⟩)
-    candidatesFresh absorbedFresh
+        refine ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
+          familyWitness, ?_⟩
+        intro epsilon _notCandidate
+        rcases alternatives epsilon with candidate | high
+        · exact (positive (Finset.card_pos.2 ⟨_, candidate⟩)).elim
+        · exact high⟩)
+    positiveFresh absorbedFresh
+
+/-- Node `[177]` on `[175]`'s positive arm.  The node-`[153]` package already
+contains the exact candidate/loss identity and the `B_cold·σ(G)` loss bound;
+the per-incidence split supplies the least-high witness on its complement.
+This owner combines those two previously proved facts in the ledger.  It is
+run before the decorated-envelope owner, so a mixed family publishes its
+complete case-(ii) accounting without re-proving node `[153]`. -/
+@[reducible] noncomputable def absorbedGermFanDataRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.absorbedGermFanData
+    { Requires := [K .absorbedGermSplit, K .coldGermCandidates]
+      Produces := [K .absorbedGermFanData]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let split := (inputs.get (K .absorbedGermSplit)).down
+      let family := (inputs.get (K .coldGermCandidates)).down
+      .cons (key := K .absorbedGermFanData)
+        ⟨by
+          classical
+          let object := inputs.current.object
+          letI : FinEnum object.Vertex := object.vertices
+          change AbsorbedGermSplitStatement data object at split
+          change ColdGermCandidatesStatement data object at family
+          simp only [AbsorbedGermSplitStatement] at split
+          obtain ⟨splitRouting, alternatives⟩ := split
+          obtain ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
+              familyWitness⟩ := family
+          have routingEq : splitRouting = routing := Subsingleton.elim _ _
+          subst splitRouting
+          change AbsorbedGermFanDataStatement data object
+          simp only [AbsorbedGermFanDataStatement]
+          refine ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
+            familyWitness, ?_⟩
+          intro epsilon notCandidate
+          rcases alternatives epsilon with candidate | high
+          · exact (notCandidate candidate).elim
+          · exact high⟩
+        .nil)
+
+/-- Node `[176]`: the positive class chosen at `[175]` is the exact candidate
+set inside node `[153]`'s retained extraction.  Hence the already-published
+greedy extraction theorem makes that same disjoint family nonempty. -/
+@[reducible] noncomputable def absorbedGermFamilyPositiveRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.absorbedGermFamilyPositive
+    { Requires := [K .coldPositiveGerm, K .coldGermCandidates]
+      Produces := [K .coldGermFamilyPositive]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let positive := (inputs.get (K .coldPositiveGerm)).down
+      let family := (inputs.get (K .coldGermCandidates)).down
+      .cons (key := K .coldGermFamilyPositive)
+        ⟨by
+          classical
+          let object := inputs.current.object
+          letI : FinEnum object.Vertex := object.vertices
+          change ColdPositiveGermStatement data object at positive
+          change ColdGermCandidatesStatement data object at family
+          rcases positive with ⟨positiveRouting, positiveCard⟩
+          rcases family with
+            ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
+              familyWitness⟩
+          have routingEq : positiveRouting = routing := Subsingleton.elim _ _
+          subst positiveRouting
+          simp only [ColdGermFamilyWitness] at familyWitness
+          rcases familyWitness with
+            ⟨incidenceEq, candidatesEq, candidateFamily, extracted,
+              noncandidateClassified, occurrenceCount, selectedCount,
+              lossBound, quantitative⟩
+          have candidatePositive : 0 < candidates.card := by
+            rw [candidatesEq]
+            exact positiveCard
+          have disjointPositive : 0 < disjointFamily.card :=
+            Graph.ColdCorridor.coldGerm_nonempty extracted.2.2 candidatePositive
+          change ColdGermFamilyPositiveStatement data object
+          refine ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
+            ?_, disjointPositive⟩
+          simp only [ColdGermFamilyWitness]
+          exact ⟨incidenceEq, candidatesEq, candidateFamily, extracted,
+            noncandidateClassified, occurrenceCount, selectedCount,
+            lossBound, quantitative⟩⟩
+        .nil)
 
 /-! ## Node `[177]`, `lem:absorbed-germ-fan-data` (ii): decorated handoff fan data
 
-On the arm of `[175]` where every selected corridor meets a heavy centre, the
-manuscript reads case (ii) at each such centre `z`: *"the corridor enters `z`
+For every occurrence in `[175]`'s case-(ii) complement, the manuscript reads
+the configuration at its centre `z`: *"the corridor enters `z`
 through one of its incidences and leaves through another: `z` is a heavy
 centre and the corridor's two configurations at `z` are separated connector
 tails in the sense of `lem:typeA-high-degree-handoff`,
@@ -654,16 +2692,17 @@ the entry stub and of the successor stub; the clique condition on `K_z` is
 `lem:typeA-high-degree-handoff`'s: a fan return of accepted length closes a
 target cycle with the two fan edges, and the label-collision clause is a
 target cycle, both refuted by the selection.  The row publishes only case
-(ii)'s indexed handoff data: it does not assert that the cold-window union is
+(ii)'s indexed handoff data, restricted by nonmembership in node `[153]`'s
+exact candidate set: it does not assert that the cold-window union is
 a canonical Type B core or attach negative-charge or zero-surplus hypotheses,
 none of which is a conclusion of `[177]`.  The family is the absorbed
 alternative of the common `K .typeBFanEntry`, so the ledger edge is literally
 `[177] → [65]`; it does not construct a canonical negative support. -/
-set_option maxHeartbeats 4000000 in
+set_option maxHeartbeats 8000000 in
 @[reducible] noncomputable def absorbedGermFanEnvelopeRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.absorbedGermFanEnvelope
-    { Requires := [K .selection, K .absorbedGermFanData, K .absorbedGermSplit]
+    { Requires := [K .selection, K .absorbedGermFanData]
       Produces := [K .typeBFanEntry]
       requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp
@@ -671,366 +2710,357 @@ set_option maxHeartbeats 4000000 in
     (fun inputs =>
       let selected := (inputs.get (K .selection)).down
       let fanData := (inputs.get (K .absorbedGermFanData)).down
-      let split := (inputs.get (K .absorbedGermSplit)).down
       .cons (key := K .typeBFanEntry)
         ⟨by
           classical
           change TypeBFanEntryStatement data inputs.current.object
           apply Or.inr
+          apply Or.inl
           simp only [AbsorbedGermFanEnvelopeStatement]
           change AbsorbedGermFanDataStatement data inputs.current.object at fanData
           simp only [AbsorbedGermFanDataStatement] at fanData
-          change AbsorbedGermSplitStatement data inputs.current.object at split
-          simp only [AbsorbedGermSplitStatement] at split
-          intro baseline bridgeless large stub
-          obtain ⟨fanCentre, fanMember, fanHigh⟩ :=
-            fanData baseline bridgeless large stub
-          rcases split baseline bridgeless large stub with subcubic | heavyCentre
-          · exact absurd fanHigh
-              (Nat.not_lt_of_ge (subcubic.1 fanCentre fanMember))
-          obtain ⟨centre, member, high, neighboursCubic⟩ := heavyCentre
-          refine ⟨centre, member, high, neighboursCubic, ?_⟩
-          simp only [Graph.ColdCorridor.stubGerm] at member
+          obtain ⟨routing, _incidence, _candidates, _disjointFamily,
+              _corridorLoss, _familyWitness, fanData⟩ := fanData
+          refine ⟨routing, ?_⟩
+          intro epsilon notCandidate
+          obtain ⟨firstIndex, firstBound, high, earlierBound,
+              neighboursCubic⟩ := fanData epsilon notCandidate
+          let classified := coldRoutedClassified data inputs.current.object routing
+          let state := classified.state
+          let stateOne := Classical.choose_spec state
+          let componentAt := Classical.choose stateOne
+          let stateTwo := Classical.choose_spec stateOne
+          let corridorAt := Classical.choose stateTwo
+          let stateThree := Classical.choose_spec stateTwo
+          let presentationAt := Classical.choose stateThree
+          let stateFour := Classical.choose_spec stateThree
+          let indexAt := Classical.choose stateFour
+          let stateBundle := Classical.choose_spec stateFour
+          let routed : ColdEligibleHalfEdge data inputs.current.object := epsilon
+          let component := componentAt routed
+          let corridor := corridorAt routed
+          let _presentation := presentationAt routed
+          let _index := indexAt routed
+          let centre := corridor.head firstIndex
+          refine ⟨centre, ⟨routing, epsilon, rfl, firstIndex, rfl,
+            firstBound, high, earlierBound, neighboursCubic, ?_⟩⟩
+          obtain ⟨outsideComponent, entryEq, _indexInjective, firstFailure⟩ :=
+            stateBundle.1 routed
           have avoids : ¬ Graph.HasCycleWithLength data.LengthOK inputs.current.object := selected.1
-          have windowsCubic : ∀ vertex ∈ (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))), inputs.current.object.degree vertex = data.threshold := by
-            intro vertex vertexMem
-            obtain ⟨window, windowMem, inWindow⟩ :=
-              (Graph.ColdCorridor.mem_windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object)) vertex).1 vertexMem
-            exact (Finset.mem_filter.1 windowMem).2 vertex inWindow
           have denied : ∀ c a b,
               ¬ handoffAbsorbing data inputs.current.object (canonicalWindowPacking data inputs.current.object) c a b :=
             fun _ _ _ collision => avoids
               (Graph.WindowLabelCollision.hasCycleWithLength_of_labelCollision
                 data.degenerateClosureRejected collision)
-          obtain ⟨inWindow, adjacent⟩ := Graph.ColdCorridor.selected_facts inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object)) stub
-          by_cases outsideAll : stub.1.2 ∈ (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object)))
-          · -- The edge germ: both endpoints are window vertices at the threshold.
-            exfalso
-            rw [dif_pos outsideAll, Graph.ColdCorridor.support_edgeGerm,
-              Graph.ColdCorridor.mem_edgeSupport] at member
-            rcases member with rfl | rfl
-            · rw [windowsCubic _ inWindow] at high
-              exact Nat.lt_irrefl _ high
-            · rw [windowsCubic _ outsideAll] at high
-              exact Nat.lt_irrefl _ high
-          · have isStub : stub.1.1 ∈ (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) ∧ stub.1.2 ∉ (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) ∧
-                inputs.current.object.graph.Adj stub.1.1 stub.1.2 := ⟨inWindow, outsideAll, adjacent⟩
-            rw [dif_neg outsideAll, Graph.ColdCorridor.support_corridorGerm,
-              Graph.ColdCorridor.Corridor.mem_prefixSupport] at member
-            obtain ⟨inner, innerMem, innerEq⟩ := member
-            -- The corridor of `ε`, its inside path and that path's vertex list.
-            have outside := Graph.ColdCorridor.outsideComponentOf_isOutsideComponent inputs.current.object
-              (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) stub.1.2 outsideAll
-            have componentOutside : ∀ vertex ∈ Graph.ColdCorridor.outsideComponentOf inputs.current.object (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object)))
-                stub.1.2 outsideAll, vertex ∉ (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) :=
-              fun vertex vertexMem => Finset.disjoint_left.1 outside.1 vertexMem
-            have entryEq := Graph.ColdCorridor.stubCorridor_entryStub inputs.current.object (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) bridgeless isStub
-            set corridor := Graph.ColdCorridor.stubCorridor inputs.current.object (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) bridgeless isStub
-              with corridorDef
-            have innerMemWalk : inner ∈ corridor.inside.1.support := by
-              rw [SimpleGraph.Walk.support_take] at innerMem
-              exact List.mem_of_mem_take innerMem
-            set trail := corridor.inside.1.support.map Subtype.val with trailDef
-            have trailChain : trail.IsChain inputs.current.object.graph.Adj := by
-              rw [trailDef, List.isChain_map]
-              exact corridor.inside.1.isChain_adj_support.imp fun _ _ adj => adj
-            have trailNodup : trail.Nodup :=
-              corridor.inside.2.support_nodup.map Subtype.val_injective
-            have trailComponent : ∀ vertex ∈ trail,
-                vertex ∈ Graph.ColdCorridor.outsideComponentOf inputs.current.object (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) stub.1.2 outsideAll := by
-              intro vertex vertexMem
-              obtain ⟨inner', _, innerEq'⟩ := List.mem_map.1 vertexMem
-              exact innerEq' ▸ inner'.2
-            have footEq : corridor.entryStub.1 = stub.1.2 := by rw [entryEq]
-            have trailHead : trail.head? = some stub.1.2 := by
-              have insideHead : corridor.inside.1.support.head? =
-                  some (Graph.ColdCorridor.stubFoot inputs.current.object
-                    (Graph.ColdCorridor.windowsOf inputs.current.object
-                      ((canonicalColdWindows data inputs.current.object).filter
-                        (AmbientCubicWindow data inputs.current.object)))
-                    (Graph.ColdCorridor.outsideComponentOf inputs.current.object
-                      (Graph.ColdCorridor.windowsOf inputs.current.object
-                        ((canonicalColdWindows data inputs.current.object).filter
-                          (AmbientCubicWindow data inputs.current.object)))
-                      stub.1.2 outsideAll)
-                    corridor.entry) := by
-                rw [List.head?_eq_some_head corridor.inside.1.support_ne_nil]
-                exact congrArg some corridor.inside.1.head_support
-              have entryHead : trail.head? = some corridor.entryStub.1 := by
-                calc
-                  trail.head? =
-                      (corridor.inside.1.support.map Subtype.val).head? :=
-                    congrArg List.head? trailDef
-                  _ = corridor.inside.1.support.head?.map Subtype.val :=
-                    List.head?_map
-                  _ = (some (Graph.ColdCorridor.stubFoot inputs.current.object
-                        (Graph.ColdCorridor.windowsOf inputs.current.object
-                          ((canonicalColdWindows data inputs.current.object).filter
-                            (AmbientCubicWindow data inputs.current.object)))
-                        (Graph.ColdCorridor.outsideComponentOf inputs.current.object
-                          (Graph.ColdCorridor.windowsOf inputs.current.object
-                            ((canonicalColdWindows data inputs.current.object).filter
-                              (AmbientCubicWindow data inputs.current.object)))
-                          stub.1.2 outsideAll)
-                        corridor.entry)).map Subtype.val :=
-                    congrArg (Option.map Subtype.val) insideHead
-                  _ = some corridor.entryStub.1 := rfl
-              exact entryHead.trans (congrArg some footEq)
-            have trailLast : trail.getLast? = some corridor.successorStub.1 := by
-              have insideLast : corridor.inside.1.support.getLast? =
-                  some (Graph.ColdCorridor.stubFoot inputs.current.object
-                    (Graph.ColdCorridor.windowsOf inputs.current.object
-                      ((canonicalColdWindows data inputs.current.object).filter
-                        (AmbientCubicWindow data inputs.current.object)))
-                    (Graph.ColdCorridor.outsideComponentOf inputs.current.object
-                      (Graph.ColdCorridor.windowsOf inputs.current.object
-                        ((canonicalColdWindows data inputs.current.object).filter
-                          (AmbientCubicWindow data inputs.current.object)))
-                      stub.1.2 outsideAll)
-                    (Graph.ColdCorridor.successorIndex corridor.positive
-                      corridor.entry)) := by
-                rw [List.getLast?_eq_some_getLast corridor.inside.1.support_ne_nil]
-                exact congrArg some corridor.inside.1.getLast_support
+          obtain ⟨inWindow, adjacent⟩ :=
+            Graph.ColdCorridor.selected_facts inputs.current.object
+              ((canonicalColdWindows data inputs.current.object).filter
+                (AmbientCubicWindow data inputs.current.object))
+              (⟨epsilon.1, epsilon.2.1⟩ :
+                ColdSelectedHalfEdge data inputs.current.object)
+          have inPackedWindows : epsilon.1.1 ∈
+              coldCorridorWindows data inputs.current.object := by
+            obtain ⟨window, windowMember, sourceMember⟩ :=
+              (Graph.ColdCorridor.mem_windowsOf inputs.current.object
+                ((canonicalColdWindows data inputs.current.object).filter
+                  (AmbientCubicWindow data inputs.current.object)) epsilon.1.1).1
+                inWindow
+            exact (Graph.ColdCorridor.mem_windowsOf inputs.current.object
+              (canonicalWindowPacking data inputs.current.object) epsilon.1.1).2
+                ⟨window, Finset.sdiff_subset (Finset.mem_filter.1 windowMember).1,
+                  sourceMember⟩
+          have componentOutside : ∀ vertex ∈ component,
+                vertex ∉ coldCorridorWindows data inputs.current.object :=
+              fun vertex vertexMem =>
+                Finset.disjoint_left.1 outsideComponent.1 vertexMem
+          let trail := corridor.inside.1.support.map (fun inner => inner.1)
+          have centreTrail : centre ∈ trail := by
+            exact List.mem_map.2
+              ⟨corridor.inside.1.getVert firstIndex.1,
+                SimpleGraph.Walk.getVert_mem_support corridor.inside.1 firstIndex.1,
+                rfl⟩
+          have trailChain : trail.IsChain inputs.current.object.graph.Adj := by
+            simp only [trail, List.isChain_map]
+            exact corridor.inside.1.isChain_adj_support.imp fun _ _ adj => adj
+          have trailNodup : trail.Nodup :=
+            corridor.inside.2.support_nodup.map fun _ _ equality =>
+              Subtype.ext equality
+          have trailComponent : ∀ vertex ∈ trail,
+              vertex ∈ component := by
+            intro vertex vertexMem
+            obtain ⟨inner', _, innerEq'⟩ := List.mem_map.1 vertexMem
+            exact innerEq' ▸ inner'.2
+          have footEq : corridor.entryStub.1 = epsilon.1.2 :=
+            congrArg Prod.fst entryEq
+          have trailHead : trail.head? = some epsilon.1.2 := by
+            have insideHead : corridor.inside.1.support.head? =
+                some (Graph.ColdCorridor.stubFoot inputs.current.object
+                  (coldCorridorWindows data inputs.current.object)
+                  component
+                  corridor.entry) := by
+              rw [List.head?_eq_some_head corridor.inside.1.support_ne_nil]
+              exact congrArg some corridor.inside.1.head_support
+            have entryHead : trail.head? = some corridor.entryStub.1 := by
               calc
-                trail.getLast? =
-                    (corridor.inside.1.support.map Subtype.val).getLast? :=
-                  congrArg List.getLast? trailDef
-                _ = corridor.inside.1.support.getLast?.map Subtype.val :=
-                  List.getLast?_map
-                _ = (some (Graph.ColdCorridor.stubFoot inputs.current.object
-                      (Graph.ColdCorridor.windowsOf inputs.current.object
-                        ((canonicalColdWindows data inputs.current.object).filter
-                          (AmbientCubicWindow data inputs.current.object)))
-                      (Graph.ColdCorridor.outsideComponentOf inputs.current.object
-                        (Graph.ColdCorridor.windowsOf inputs.current.object
-                          ((canonicalColdWindows data inputs.current.object).filter
-                            (AmbientCubicWindow data inputs.current.object)))
-                        stub.1.2 outsideAll)
-                      (Graph.ColdCorridor.successorIndex corridor.positive
-                        corridor.entry))).map Subtype.val :=
-                  congrArg (Option.map Subtype.val) insideLast
-                _ = some corridor.successorStub.1 := rfl
-            -- The successor stub `h_{i+1}` and its distinctness from `ε`.
-            have successorMem : corridor.successorStub ∈
-                Graph.ColdCorridor.boundaryStubs inputs.current.object (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) _ := List.get_mem _ _
-            obtain ⟨successorFoot, successorWindow, successorAdj⟩ :=
-              (Graph.ColdCorridor.mem_boundaryStubs_iff inputs.current.object (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) _ _).1 successorMem
-            have index_ne_successor : ∀ {count : Nat} (two : 2 ≤ count)
-                (index : Fin count),
-                index ≠ Graph.ColdCorridor.successorIndex
-                  (Nat.lt_of_lt_of_le Nat.zero_lt_two two) index := by
-              intro count two index sameIndex
-              have valEq := congrArg Fin.val sameIndex
-              simp only [Graph.ColdCorridor.successorIndex] at valEq
-              have bound := index.2
-              rcases Nat.lt_or_ge (index.1 + 1) count with small | big
-              · rw [Nat.mod_eq_of_lt small] at valEq
-                omega
-              · have top : index.1 + 1 = count := by omega
-                rw [top, Nat.mod_self] at valEq
-                omega
-            have stubsDistinct : corridor.entryStub ≠ corridor.successorStub := by
-              intro same
-              have indexEq :=
-                (Graph.ColdCorridor.boundaryStubs_nodup inputs.current.object (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) _).get_inj_iff.1 same
-              exact index_ne_successor corridor.twoStubs corridor.entry indexEq
-            -- Split the inside path at the heavy centre.
-            have centreTrail : centre ∈ trail := List.mem_map.2 ⟨inner, innerMemWalk, innerEq⟩
-            obtain ⟨left, right, splitEq⟩ := List.append_of_mem centreTrail
-            have chainSplit := trailChain
-            rw [splitEq, List.isChain_append, List.isChain_cons] at chainSplit
-            obtain ⟨leftChain, ⟨centreRight, rightChain⟩, leftCentre⟩ := chainSplit
-            have nodupSplit := trailNodup
-            rw [splitEq, List.nodup_middle, List.nodup_cons] at nodupSplit
-            obtain ⟨centreNotMem, leftRightNodup⟩ := nodupSplit
-            have centreNotLeft : centre ∉ left :=
-              fun h => centreNotMem (List.mem_append.2 (Or.inl h))
-            have centreNotRight : centre ∉ right :=
-              fun h => centreNotMem (List.mem_append.2 (Or.inr h))
-            have leftNodup : left.Nodup := leftRightNodup.of_append_left
-            have rightNodup : right.Nodup := leftRightNodup.of_append_right
-            have leftRightDisjoint : ∀ v, v ∈ left → v ∈ right → False :=
-              fun v hl hr => List.disjoint_of_nodup_append leftRightNodup hl hr
-            have leftComponent : ∀ v ∈ left,
-                v ∈ Graph.ColdCorridor.outsideComponentOf inputs.current.object (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) stub.1.2 outsideAll :=
-              fun v h => trailComponent v (by rw [splitEq]; exact List.mem_append.2 (Or.inl h))
-            have rightComponent : ∀ v ∈ right,
-                v ∈ Graph.ColdCorridor.outsideComponentOf inputs.current.object (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) stub.1.2 outsideAll :=
-              fun v h => trailComponent v
-                (by rw [splitEq]; exact List.mem_append.2 (Or.inr (List.mem_cons_of_mem _ h)))
-            have headSplit : (left ++ centre :: right).head? = some stub.1.2 := by
-              rw [← splitEq]; exact trailHead
-            have lastSplit : (left ++ centre :: right).getLast? =
-                some corridor.successorStub.1 := by
-              rw [← splitEq]; exact trailLast
-            -- The two arms and the two corridor incidences at the centre.
-            obtain ⟨armLeft, armLeftDef⟩ :
-                ∃ arm : List inputs.current.object.Vertex, arm = left.reverse ++ [stub.1.1] :=
-              ⟨_, rfl⟩
-            obtain ⟨armRight, armRightDef⟩ :
-                ∃ arm : List inputs.current.object.Vertex,
-                  arm = right ++ [corridor.successorStub.2] :=
-              ⟨_, rfl⟩
-            have armLeftNe : armLeft ≠ [] := by simp [armLeftDef]
-            have armRightNe : armRight ≠ [] := by simp [armRightDef]
-            obtain ⟨first, firstHead⟩ : ∃ a, armLeft.head? = some a :=
-              ⟨_, List.head?_eq_some_head armLeftNe⟩
-            obtain ⟨second, secondHead⟩ : ∃ b, armRight.head? = some b :=
-              ⟨_, List.head?_eq_some_head armRightNe⟩
-            have firstCases : (left = [] ∧ first = stub.1.1) ∨
-                (∃ h : left ≠ [], first = left.getLast h ∧ first ∈ left) := by
-              rcases eq_or_ne left [] with nil | ne
-              · left
-                refine ⟨nil, ?_⟩
-                have : armLeft.head? = some stub.1.1 := by simp [armLeftDef, nil]
-                rw [firstHead] at this
-                exact Option.some.inj this
-              · right
-                have headEq : armLeft.head? = some (left.getLast ne) := by
-                  rw [armLeftDef, List.head?_append, List.head?_reverse,
-                    List.getLast?_eq_some_getLast ne]
+                trail.head? =
+                    (corridor.inside.1.support.map (fun inner => inner.1)).head? :=
                   rfl
-                rw [firstHead] at headEq
-                refine ⟨ne, Option.some.inj headEq, ?_⟩
-                rw [Option.some.inj headEq]
-                exact List.getLast_mem ne
-            have secondCases : (right = [] ∧ second = corridor.successorStub.2) ∨
-                (∃ h : right ≠ [], second = right.head h ∧ second ∈ right) := by
-              rcases right with _ | ⟨x, rest⟩
-              · left
-                refine ⟨rfl, ?_⟩
-                have : armRight.head? = some corridor.successorStub.2 := by simp [armRightDef]
-                rw [secondHead] at this
-                exact Option.some.inj this
-              · right
-                have headEq : armRight.head? = some x := by simp [armRightDef]
-                rw [secondHead] at headEq
-                refine ⟨List.cons_ne_nil _ _, Option.some.inj headEq, ?_⟩
-                rw [Option.some.inj headEq]
-                exact List.mem_cons_self
-            -- When the corridor starts (ends) at the centre, the centre is the foot.
-            have centreFootOfLeftNil : left = [] → centre = stub.1.2 := by
-              intro nil
-              rw [nil] at headSplit
-              exact Option.some.inj headSplit
-            have centreSuccessorOfRightNil : right = [] → centre = corridor.successorStub.1 := by
-              intro nil
-              rw [nil, List.getLast?_append] at lastSplit
-              exact Option.some.inj lastSplit
-            have adjFirst : inputs.current.object.graph.Adj centre first := by
-              rcases firstCases with ⟨nil, eq⟩ | ⟨ne, eq, _⟩
-              · rw [eq, centreFootOfLeftNil nil]
-                exact adjacent.symm
-              · rw [eq]
-                exact (leftCentre _ (List.getLast?_eq_some_getLast ne) centre rfl).symm
-            have adjSecond : inputs.current.object.graph.Adj centre second := by
-              rcases secondCases with ⟨nil, eq⟩ | ⟨ne, eq, _⟩
-              · rw [eq, centreSuccessorOfRightNil nil]
-                exact successorAdj
-              · rw [eq]
-                exact centreRight _ (List.head?_eq_some_head ne)
-            have distinct : first ≠ second := by
-              intro same
-              rcases firstCases with ⟨leftNil, firstEq⟩ | ⟨_, _, firstMem⟩
-              · rcases secondCases with ⟨rightNil, secondEq⟩ | ⟨_, _, secondMem⟩
-                · -- both arms are bare stubs: the two stubs would coincide
-                  apply stubsDistinct
-                  have footEq : stub.1.2 = corridor.successorStub.1 :=
-                    (centreFootOfLeftNil leftNil).symm.trans (centreSuccessorOfRightNil rightNil)
-                  have windowEq : stub.1.1 = corridor.successorStub.2 :=
-                    firstEq.symm.trans (same.trans secondEq)
-                  exact entryEq.trans (Prod.ext footEq windowEq)
-                · exact componentOutside second (rightComponent _ secondMem)
-                    (by rw [← same, firstEq]; exact inWindow)
-              · rcases secondCases with ⟨_, secondEq⟩ | ⟨_, _, secondMem⟩
-                · exact componentOutside first (leftComponent _ firstMem)
-                    (by rw [same, secondEq]; exact successorWindow)
-                · exact leftRightDisjoint first firstMem (same ▸ secondMem)
-            -- Arm facts.
-            have armLeftChain : armLeft.IsChain inputs.current.object.graph.Adj := by
-              rw [armLeftDef]
-              refine List.isChain_append.mpr
-                ⟨List.isChain_reverse.2 (leftChain.imp fun _ _ adj => adj.symm),
-                List.isChain_singleton _, ?_⟩
-              intro x xMem y yMem
-              rw [List.getLast?_reverse] at xMem
-              rw [List.head?_cons, Option.mem_def, Option.some.injEq] at yMem
-              rcases left with _ | ⟨f, rest⟩
-              · simp at xMem
-              · rw [List.head?_cons, Option.mem_def, Option.some.injEq] at xMem
-                rw [List.cons_append, List.head?_cons, Option.some.injEq] at headSplit
-                rw [← xMem, ← yMem, headSplit]
-                exact adjacent.symm
-            have armRightChain : armRight.IsChain inputs.current.object.graph.Adj := by
-              rw [armRightDef]
-              refine List.isChain_append.mpr ⟨rightChain, List.isChain_singleton _, ?_⟩
-              intro x xMem y yMem
-              rw [List.head?_cons, Option.mem_def, Option.some.injEq] at yMem
-              rcases eq_or_ne right [] with nil | ne
-              · rw [nil] at xMem
-                simp at xMem
-              · rw [List.getLast?_eq_some_getLast ne, Option.mem_def, Option.some.injEq] at xMem
-                have lastEq : right.getLast ne = corridor.successorStub.1 := by
-                  rw [List.getLast?_append, List.getLast?_cons,
-                    List.getLast?_eq_some_getLast ne] at lastSplit
-                  simpa using lastSplit
-                rw [← xMem, ← yMem, lastEq]
-                exact successorAdj
-            have armLeftNodup : armLeft.Nodup := by
-              rw [armLeftDef]
-              refine List.nodup_append.mpr
-                ⟨List.nodup_reverse.mpr leftNodup, List.nodup_singleton _, ?_⟩
-              intro v vMem v' vMem' equality
-              rw [List.mem_singleton] at vMem'
-              rw [List.mem_reverse] at vMem
-              exact componentOutside v (leftComponent v vMem)
-                (equality ▸ vMem' ▸ inWindow)
-            have armRightNodup : armRight.Nodup := by
-              rw [armRightDef]
-              refine List.nodup_append.mpr ⟨rightNodup, List.nodup_singleton _, ?_⟩
-              intro v vMem v' vMem' equality
-              rw [List.mem_singleton] at vMem'
-              exact componentOutside v (rightComponent v vMem)
-                (equality ▸ vMem' ▸ successorWindow)
-            have armLeftLast : armLeft.getLast? = some stub.1.1 := by
-              simp [armLeftDef]
-            have armRightLast : armRight.getLast? = some corridor.successorStub.2 := by
-              simp [armRightDef]
-            have armLeftInterior : ∀ v ∈ armLeft,
-                v ∈ (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) ∨ v = centre →
-                armLeft.getLast? = some v := by
-              intro v vMem vCase
-              simp only [armLeftDef, List.mem_append, List.mem_reverse, List.mem_singleton] at vMem
-              rcases vMem with vLeft | rfl
-              · exfalso
-                rcases vCase with vWindow | vCentre
-                · exact componentOutside v (leftComponent v vLeft) vWindow
-                · exact centreNotLeft (vCentre ▸ vLeft)
-              · exact armLeftLast
-            have armRightInterior : ∀ v ∈ armRight,
-                v ∈ (Graph.ColdCorridor.windowsOf inputs.current.object ((canonicalColdWindows data inputs.current.object).filter (AmbientCubicWindow data inputs.current.object))) ∨ v = centre →
-                armRight.getLast? = some v := by
-              intro v vMem vCase
-              simp only [armRightDef, List.mem_append, List.mem_singleton] at vMem
-              rcases vMem with vRight | rfl
-              · exfalso
-                rcases vCase with vWindow | vCentre
-                · exact componentOutside v (rightComponent v vRight) vWindow
-                · exact centreNotRight (vCentre ▸ vRight)
-              · exact armRightLast
-            -- Publish precisely the two corridor incidences and tails.  The
-            -- packed-window union is their landing set, not a fabricated Type
-            -- A core of a `DecoratedHandoff.Envelope`.
-            refine ⟨first, second, distinct, adjFirst, adjSecond, armLeft,
-              armRight, firstHead, secondHead, armLeftChain, armRightChain,
-              armLeftNodup, armRightNodup,
-              ⟨stub.1.1, armLeftLast, inWindow⟩,
-              ⟨corridor.successorStub.2, armRightLast, successorWindow⟩,
-              armLeftInterior, armRightInterior, ?_, ?_⟩
-            · exact ⟨Graph.DecoratedHandoff.fanSafe_geometric adjFirst adjSecond
-                distinct avoids, denied centre first second⟩
-            · exact ⟨Graph.DecoratedHandoff.fanSafe_geometric adjSecond adjFirst
-                (Ne.symm distinct) avoids, denied centre second first⟩⟩
+                _ = corridor.inside.1.support.head?.map (fun inner => inner.1) :=
+                  List.head?_map
+                _ = (some (Graph.ColdCorridor.stubFoot inputs.current.object
+                    (coldCorridorWindows data inputs.current.object)
+                      component
+                      corridor.entry)).map Subtype.val :=
+                  congrArg (Option.map fun inner => inner.1) insideHead
+                _ = some corridor.entryStub.1 := rfl
+            exact entryHead.trans (congrArg some footEq)
+          have trailLast : trail.getLast? = some corridor.successorStub.1 := by
+            have insideLast : corridor.inside.1.support.getLast? =
+                some (Graph.ColdCorridor.stubFoot inputs.current.object
+                  (coldCorridorWindows data inputs.current.object)
+                  component
+                  (Graph.ColdCorridor.successorIndex corridor.positive
+                    corridor.entry)) := by
+              rw [List.getLast?_eq_some_getLast corridor.inside.1.support_ne_nil]
+              exact congrArg some corridor.inside.1.getLast_support
+            calc
+              trail.getLast? =
+                  (corridor.inside.1.support.map (fun inner => inner.1)).getLast? :=
+                rfl
+              _ = corridor.inside.1.support.getLast?.map (fun inner => inner.1) :=
+                List.getLast?_map
+              _ = (some (Graph.ColdCorridor.stubFoot inputs.current.object
+                    (coldCorridorWindows data inputs.current.object)
+                    component
+                    (Graph.ColdCorridor.successorIndex corridor.positive
+                      corridor.entry))).map Subtype.val :=
+                congrArg (Option.map fun inner => inner.1) insideLast
+              _ = some corridor.successorStub.1 := rfl
+          -- The successor stub `h_{i+1}` and its distinctness from `ε`.
+          have successorMem : corridor.successorStub ∈
+              Graph.ColdCorridor.boundaryStubs inputs.current.object
+                (coldCorridorWindows data inputs.current.object) _ := List.get_mem _ _
+          obtain ⟨successorFoot, successorWindow, successorAdj⟩ :=
+            (Graph.ColdCorridor.mem_boundaryStubs_iff inputs.current.object
+              (coldCorridorWindows data inputs.current.object) _ _).1 successorMem
+          have index_ne_successor : ∀ {count : Nat} (two : 2 ≤ count)
+              (index : Fin count),
+              index ≠ Graph.ColdCorridor.successorIndex
+                (Nat.lt_of_lt_of_le Nat.zero_lt_two two) index := by
+            intro count two index sameIndex
+            have valEq := congrArg Fin.val sameIndex
+            simp only [Graph.ColdCorridor.successorIndex] at valEq
+            have bound := index.2
+            rcases Nat.lt_or_ge (index.1 + 1) count with small | big
+            · rw [Nat.mod_eq_of_lt small] at valEq
+              omega
+            · have top : index.1 + 1 = count := by omega
+              rw [top, Nat.mod_self] at valEq
+              omega
+          have stubsDistinct : corridor.entryStub ≠ corridor.successorStub := by
+            intro same
+            have indexEq :=
+              (Graph.ColdCorridor.boundaryStubs_nodup inputs.current.object
+                (coldCorridorWindows data inputs.current.object) _).get_inj_iff.1 same
+            exact index_ne_successor corridor.twoStubs corridor.entry indexEq
+          -- Split the inside path at the heavy centre.
+          obtain ⟨left, right, splitEq⟩ := List.append_of_mem centreTrail
+          have chainSplit := trailChain
+          rw [splitEq, List.isChain_append, List.isChain_cons] at chainSplit
+          obtain ⟨leftChain, ⟨centreRight, rightChain⟩, leftCentre⟩ := chainSplit
+          have nodupSplit := trailNodup
+          rw [splitEq, List.nodup_middle, List.nodup_cons] at nodupSplit
+          obtain ⟨centreNotMem, leftRightNodup⟩ := nodupSplit
+          have centreNotLeft : centre ∉ left :=
+            fun h => centreNotMem (List.mem_append.2 (Or.inl h))
+          have centreNotRight : centre ∉ right :=
+            fun h => centreNotMem (List.mem_append.2 (Or.inr h))
+          have leftNodup : left.Nodup := leftRightNodup.of_append_left
+          have rightNodup : right.Nodup := leftRightNodup.of_append_right
+          have leftRightDisjoint : ∀ v, v ∈ left → v ∈ right → False :=
+            fun v hl hr => List.disjoint_of_nodup_append leftRightNodup hl hr
+          have leftComponent : ∀ v ∈ left,
+              v ∈ component :=
+            fun v h => trailComponent v (by rw [splitEq]; exact List.mem_append.2 (Or.inl h))
+          have rightComponent : ∀ v ∈ right,
+              v ∈ component :=
+            fun v h => trailComponent v
+              (by rw [splitEq]; exact List.mem_append.2 (Or.inr (List.mem_cons_of_mem _ h)))
+          have headSplit : (left ++ centre :: right).head? = some epsilon.1.2 := by
+            rw [← splitEq]; exact trailHead
+          have lastSplit : (left ++ centre :: right).getLast? =
+              some corridor.successorStub.1 := by
+            rw [← splitEq]; exact trailLast
+          -- The two arms and the two corridor incidences at the centre.
+          obtain ⟨armLeft, armLeftDef⟩ :
+              ∃ arm : List inputs.current.object.Vertex,
+                arm = left.reverse ++ [epsilon.1.1] :=
+            ⟨_, rfl⟩
+          obtain ⟨armRight, armRightDef⟩ :
+              ∃ arm : List inputs.current.object.Vertex,
+                arm = right ++ [corridor.successorStub.2] :=
+            ⟨_, rfl⟩
+          have armLeftNe : armLeft ≠ [] := by simp [armLeftDef]
+          have armRightNe : armRight ≠ [] := by simp [armRightDef]
+          obtain ⟨first, firstHead⟩ : ∃ a, armLeft.head? = some a :=
+            ⟨_, List.head?_eq_some_head armLeftNe⟩
+          obtain ⟨second, secondHead⟩ : ∃ b, armRight.head? = some b :=
+            ⟨_, List.head?_eq_some_head armRightNe⟩
+          have firstCases : (left = [] ∧ first = epsilon.1.1) ∨
+              (∃ h : left ≠ [], first = left.getLast h ∧ first ∈ left) := by
+            rcases eq_or_ne left [] with nil | ne
+            · left
+              refine ⟨nil, ?_⟩
+              have : armLeft.head? = some epsilon.1.1 := by
+                simp [armLeftDef, nil]
+              rw [firstHead] at this
+              exact Option.some.inj this
+            · right
+              have headEq : armLeft.head? = some (left.getLast ne) := by
+                rw [armLeftDef, List.head?_append, List.head?_reverse,
+                  List.getLast?_eq_some_getLast ne]
+                rfl
+              rw [firstHead] at headEq
+              refine ⟨ne, Option.some.inj headEq, ?_⟩
+              rw [Option.some.inj headEq]
+              exact List.getLast_mem ne
+          have secondCases : (right = [] ∧ second = corridor.successorStub.2) ∨
+              (∃ h : right ≠ [], second = right.head h ∧ second ∈ right) := by
+            rcases right with _ | ⟨x, rest⟩
+            · left
+              refine ⟨rfl, ?_⟩
+              have : armRight.head? = some corridor.successorStub.2 := by simp [armRightDef]
+              rw [secondHead] at this
+              exact Option.some.inj this
+            · right
+              have headEq : armRight.head? = some x := by simp [armRightDef]
+              rw [secondHead] at headEq
+              refine ⟨List.cons_ne_nil _ _, Option.some.inj headEq, ?_⟩
+              rw [Option.some.inj headEq]
+              exact List.mem_cons_self
+          -- When the corridor starts (ends) at the centre, the centre is the foot.
+          have centreFootOfLeftNil : left = [] → centre = epsilon.1.2 := by
+            intro nil
+            rw [nil] at headSplit
+            exact Option.some.inj headSplit
+          have centreSuccessorOfRightNil : right = [] → centre = corridor.successorStub.1 := by
+            intro nil
+            rw [nil, List.getLast?_append] at lastSplit
+            exact Option.some.inj lastSplit
+          have adjFirst : inputs.current.object.graph.Adj centre first := by
+            rcases firstCases with ⟨nil, eq⟩ | ⟨ne, eq, _⟩
+            · rw [eq, centreFootOfLeftNil nil]
+              exact adjacent.symm
+            · rw [eq]
+              exact (leftCentre _ (List.getLast?_eq_some_getLast ne) centre rfl).symm
+          have adjSecond : inputs.current.object.graph.Adj centre second := by
+            rcases secondCases with ⟨nil, eq⟩ | ⟨ne, eq, _⟩
+            · rw [eq, centreSuccessorOfRightNil nil]
+              exact successorAdj
+            · rw [eq]
+              exact centreRight _ (List.head?_eq_some_head ne)
+          have distinct : first ≠ second := by
+            intro same
+            rcases firstCases with ⟨leftNil, firstEq⟩ | ⟨_, _, firstMem⟩
+            · rcases secondCases with ⟨rightNil, secondEq⟩ | ⟨_, _, secondMem⟩
+              · -- both arms are bare stubs: the two stubs would coincide
+                apply stubsDistinct
+                have footEq : epsilon.1.2 = corridor.successorStub.1 :=
+                  (centreFootOfLeftNil leftNil).symm.trans (centreSuccessorOfRightNil rightNil)
+                have windowEq : epsilon.1.1 = corridor.successorStub.2 :=
+                  firstEq.symm.trans (same.trans secondEq)
+                exact entryEq.trans (Prod.ext footEq windowEq)
+              · exact componentOutside second (rightComponent _ secondMem)
+                  (by rw [← same, firstEq]; exact inPackedWindows)
+            · rcases secondCases with ⟨_, secondEq⟩ | ⟨_, _, secondMem⟩
+              · exact componentOutside first (leftComponent _ firstMem)
+                  (by rw [same, secondEq]; exact successorWindow)
+              · exact leftRightDisjoint first firstMem (same ▸ secondMem)
+          -- Arm facts.
+          have armLeftChain : armLeft.IsChain inputs.current.object.graph.Adj := by
+            rw [armLeftDef]
+            refine List.isChain_append.mpr
+              ⟨List.isChain_reverse.2 (leftChain.imp fun _ _ adj => adj.symm),
+              List.isChain_singleton _, ?_⟩
+            intro x xMem y yMem
+            rw [List.getLast?_reverse] at xMem
+            rw [List.head?_cons, Option.mem_def, Option.some.injEq] at yMem
+            rcases left with _ | ⟨f, rest⟩
+            · simp at xMem
+            · rw [List.head?_cons, Option.mem_def, Option.some.injEq] at xMem
+              rw [List.cons_append, List.head?_cons, Option.some.injEq] at headSplit
+              rw [← xMem, ← yMem, headSplit]
+              exact adjacent.symm
+          have armRightChain : armRight.IsChain inputs.current.object.graph.Adj := by
+            rw [armRightDef]
+            refine List.isChain_append.mpr ⟨rightChain, List.isChain_singleton _, ?_⟩
+            intro x xMem y yMem
+            rw [List.head?_cons, Option.mem_def, Option.some.injEq] at yMem
+            rcases eq_or_ne right [] with nil | ne
+            · rw [nil] at xMem
+              simp at xMem
+            · rw [List.getLast?_eq_some_getLast ne, Option.mem_def, Option.some.injEq] at xMem
+              have lastEq : right.getLast ne = corridor.successorStub.1 := by
+                rw [List.getLast?_append, List.getLast?_cons,
+                  List.getLast?_eq_some_getLast ne] at lastSplit
+                simpa using lastSplit
+              rw [← xMem, ← yMem, lastEq]
+              exact successorAdj
+          have armLeftNodup : armLeft.Nodup := by
+            rw [armLeftDef]
+            refine List.nodup_append.mpr
+              ⟨List.nodup_reverse.mpr leftNodup, List.nodup_singleton _, ?_⟩
+            intro v vMem v' vMem' equality
+            rw [List.mem_singleton] at vMem'
+            rw [List.mem_reverse] at vMem
+            exact componentOutside v (leftComponent v vMem)
+              (equality ▸ vMem' ▸ inPackedWindows)
+          have armRightNodup : armRight.Nodup := by
+            rw [armRightDef]
+            refine List.nodup_append.mpr ⟨rightNodup, List.nodup_singleton _, ?_⟩
+            intro v vMem v' vMem' equality
+            rw [List.mem_singleton] at vMem'
+            exact componentOutside v (rightComponent v vMem)
+              (equality ▸ vMem' ▸ successorWindow)
+          have armLeftLast : armLeft.getLast? = some epsilon.1.1 := by
+            simp [armLeftDef]
+          have armRightLast : armRight.getLast? = some corridor.successorStub.2 := by
+            simp [armRightDef]
+          have armLeftInterior : ∀ v ∈ armLeft,
+              v ∈ coldCorridorWindows data inputs.current.object ∨ v = centre →
+              armLeft.getLast? = some v := by
+            intro v vMem vCase
+            simp only [armLeftDef, List.mem_append, List.mem_reverse, List.mem_singleton] at vMem
+            rcases vMem with vLeft | rfl
+            · exfalso
+              rcases vCase with vWindow | vCentre
+              · exact componentOutside v (leftComponent v vLeft) vWindow
+              · exact centreNotLeft (vCentre ▸ vLeft)
+            · exact armLeftLast
+          have armRightInterior : ∀ v ∈ armRight,
+              v ∈ coldCorridorWindows data inputs.current.object ∨ v = centre →
+              armRight.getLast? = some v := by
+            intro v vMem vCase
+            simp only [armRightDef, List.mem_append, List.mem_singleton] at vMem
+            rcases vMem with vRight | rfl
+            · exfalso
+              rcases vCase with vWindow | vCentre
+              · exact componentOutside v (rightComponent v vRight) vWindow
+              · exact centreNotRight (vCentre ▸ vRight)
+            · exact armRightLast
+          -- Publish precisely the two corridor incidences and tails.  The
+          -- packed-window union is their landing set, not a fabricated Type
+          -- A core of a `DecoratedHandoff.Envelope`.
+          refine ⟨first, second, distinct, adjFirst, adjSecond, armLeft,
+            armRight, firstHead, secondHead, armLeftChain, armRightChain,
+            armLeftNodup, armRightNodup,
+            ⟨epsilon.1.1, armLeftLast, inPackedWindows⟩,
+            ⟨corridor.successorStub.2, armRightLast, successorWindow⟩,
+            armLeftInterior, armRightInterior, ?_, ?_⟩
+          · exact ⟨Graph.DecoratedHandoff.fanSafe_geometric adjFirst adjSecond
+              distinct avoids, denied centre first second⟩
+          · exact ⟨Graph.DecoratedHandoff.fanSafe_geometric adjSecond adjFirst
+              (Ne.symm distinct) avoids, denied centre second first⟩⟩
         .nil)
 
 /-! ## Nodes `[154]`--`[156]`, `lem:cold-bounded-germ-trichotomy` and
@@ -1138,14 +3168,14 @@ survive their smear and are routed the same way; and the table is finite. -/
           fun Handoff row => row.increment_eq_zero⟩⟩
         .nil)
 
-/-! ## Node `[167]`: the stub structure of the ambient-cubic cold windows
+/-! ## Node `[168]`: the stub structure of the ambient-cubic cold windows
 
 `lem:cold-window-stub-excess` counted `15` external stubs per ambient-cubic
 window; here they are located: the two path endpoints carry `δ − 1` stubs each
 and every interior vertex carries `δ − 2` (`Graph/WindowStubStructure.lean`).
 This is what the symmetric-pair analysis of the dense residual charges: two
 internally disjoint strands leaving one attachment vertex need two stubs there,
-so a genuine symmetric strand pair (`[167]`) attaches only at endpoints, a window
+so a genuine symmetric strand pair attaches only at endpoints, a window
 carries at most one, and the `(order − 2)(δ − 2)` interior stubs are asymmetric
 single-stub attachments. -/
 @[reducible] noncomputable def coldWindowStubStructureRow :
@@ -1190,7 +3220,8 @@ class is dominated by the skeleton budget (`lem:skeleton-dominates`,
 @[reducible] noncomputable def blockedClassRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.blockedClassMember
-    { Requires := [K .selection, K .hotColdPartition]
+    { Requires := [K .selection, K .hotColdPartition,
+        K .coldCanonicalReplacementTrivial]
       Produces := [K .blockedClassMember]
       requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp
@@ -1198,6 +3229,8 @@ class is dominated by the skeleton budget (`lem:skeleton-dominates`,
     (fun inputs =>
       let avoids := (inputs.get (K .selection)).down.1
       let split := (inputs.get (K .hotColdPartition)).down
+      let _trivial :=
+        (inputs.get (K .coldCanonicalReplacementTrivial)).down
       .cons (key := K .blockedClassMember)
         ⟨Graph.BlockedClass.minDegree_objectSkeleton inputs.current.object data.threshold
             inputs.current.baseline,
@@ -1214,27 +3247,470 @@ symmetry.  The manuscript's question is whether its second representative is
 graph-realized as a genuine second strand.  The yes-arm is the two-strand route
 `[167]`; the no-arm is the canonical-replacement route `[165]`--`[166]`.
 Canonical order is deliberately absent from this decision.  Both arms retain
-the exact extracted-family fact read from the incoming `ExactLedger`. -/
+the exact marked configuration read from the incoming `ExactLedger`. -/
+@[reducible] noncomputable def neutralEqualLengthTerminalRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.neutralEqualLengthTerminal
+    { Requires := [K .coldGermFamilyPositive, K .denseColdCorridorsTerminal,
+        K .selection]
+      Produces := [K .coldNeutralEqualLengthTerminal]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let positive := (inputs.get (K .coldGermFamilyPositive)).down
+      let terminal := (inputs.get (K .denseColdCorridorsTerminal)).down
+      let selected := (inputs.get (K .selection)).down
+      .cons (key := K .coldNeutralEqualLengthTerminal)
+        ⟨by
+          classical
+          let object := inputs.current.object
+          letI : FinEnum object.Vertex := object.vertices
+          change ColdGermFamilyPositiveStatement data object at positive
+          rcases positive with
+            ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
+              familyWitness, positiveCard⟩
+          obtain ⟨epsilon, epsilonMem⟩ := Finset.card_pos.mp positiveCard
+          let germ := incidence epsilon
+          have active : ActiveColdGermStatement data object germ := by
+            refine ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
+              familyWitness, ?_⟩
+            exact ⟨epsilon, epsilonMem, rfl⟩
+          let baselineInvariant :=
+            Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold
+          let targetInvariant :=
+            (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant
+          let Reading : Graph.CanonicalPiece germ.atom.interface → Prop :=
+            fun candidate =>
+              Graph.CanonicalPiece.CutStateReading
+                  (Graph.MinimumDegreeAtLeast data.threshold)
+                  (Graph.HasCycleWithLength data.LengthOK)
+                  germ.piece candidate ∧
+                (Graph.glue candidate.toPiece germ.atom.outside).edgeCount =
+                  (Graph.glue germ.piece germ.atom.outside).edgeCount
+          have sourceCutState :
+              Graph.CanonicalPiece.CutStateReading
+                (Graph.MinimumDegreeAtLeast data.threshold)
+                (Graph.HasCycleWithLength data.LengthOK)
+                germ.piece germ.piece.toCanonical :=
+            Graph.CanonicalPiece.cutStateReading_toCanonical
+              baselineInvariant targetInvariant germ.piece
+          have sourceEdgeCount :
+              (Graph.glue germ.piece.toCanonical.toPiece germ.atom.outside).edgeCount =
+                (Graph.glue germ.piece germ.atom.outside).edgeCount :=
+            Graph.FiniteObject.edgeCount_eq_of_isomorphic
+              (germ.piece.toCanonical_glue_isomorphic germ.atom.outside)
+          have sourceReading : Reading germ.piece.toCanonical :=
+            ⟨sourceCutState, sourceEdgeCount⟩
+          have realizable : ∃ candidate, Reading candidate :=
+            ⟨germ.piece.toCanonical, sourceReading⟩
+          let canonical :=
+            Graph.CanonicalPiece.canonicalRepresentative Reading realizable
+          have canonicalReading : Reading canonical :=
+            Graph.CanonicalPiece.canonicalRepresentative_reading Reading realizable
+          have canonicalSizeLe :
+              canonical.size ≤ germ.piece.internalVertexCount := by
+            calc
+              canonical.size ≤ germ.piece.toCanonical.size :=
+                Graph.CanonicalPiece.canonicalRepresentative_size_le
+                  Reading realizable sourceReading
+              _ = germ.piece.internalVertexCount := rfl
+          have sourceAvoids :
+              ¬ Graph.HasCycleWithLength data.LengthOK
+                  (Graph.glue germ.piece germ.atom.outside) := by
+            intro hit
+            exact selected.1
+              ((targetInvariant.iff_of_iso
+                ⟨germ.atom.reconstructionIso⟩).mp hit)
+          have sourceBaseline :
+              Graph.MinimumDegreeAtLeast data.threshold
+                (Graph.glue germ.piece germ.atom.outside) :=
+            (baselineInvariant.iff_of_iso
+              ⟨germ.atom.reconstructionIso⟩).mpr
+                inputs.current.baseline
+          have canonicalNotShorter :
+              ¬ canonical.size < germ.piece.internalVertexCount := by
+            intro shorter
+            have cutState := canonicalReading.1
+            have swappedBaseline :
+                Graph.MinimumDegreeAtLeast data.threshold
+                  (Graph.glue canonical.toPiece germ.atom.outside) :=
+              cutState.2.2 germ.atom.outside sourceBaseline
+            have swappedAvoids :
+                ¬ Graph.HasCycleWithLength data.LengthOK
+                    (Graph.glue canonical.toPiece germ.atom.outside) := by
+              intro hit
+              exact sourceAvoids ((cutState.2.1 germ.atom.outside).mp hit)
+            have swappedSmaller :
+                Graph.FiniteObject.LexicographicallySmaller
+                  (Graph.glue canonical.toPiece germ.atom.outside) object := by
+              refine (Graph.FiniteObject.lexicographicallySmaller_congr_right
+                ⟨germ.atom.reconstructionIso⟩).mp ?_
+              apply Graph.FiniteObject.lexicographicallySmaller_of_vertexCount_lt
+              have sourcePieceCount :
+                  germ.atom.piece.internalVertexCount =
+                    germ.piece.internalVertexCount := rfl
+              simp only [Graph.glue_vertexCount,
+                Graph.CanonicalPiece.toPiece_internalVertexCount]
+              rw [sourcePieceCount]
+              omega
+            exact swappedAvoids
+              (selected.2 (Graph.glue canonical.toPiece germ.atom.outside)
+                swappedSmaller swappedBaseline)
+          have canonicalEqualLength :
+              canonical.size = germ.piece.internalVertexCount :=
+            Nat.le_antisymm canonicalSizeLe
+              (Nat.le_of_not_gt canonicalNotShorter)
+          let representative :=
+            if RefinedLexicographicallySmaller
+                (Graph.glue canonical.toPiece germ.atom.outside) object then
+              canonical
+            else
+              germ.piece.toCanonical
+          have representativeReading : Reading representative := by
+            dsimp only [representative]
+            split
+            · exact canonicalReading
+            · exact sourceReading
+          have equalLength :
+              representative.size = germ.piece.internalVertexCount := by
+            dsimp only [representative]
+            split
+            · exact canonicalEqualLength
+            · rfl
+          have canonicalPosition :
+              representative = germ.piece.toCanonical ∨
+                (Graph.CanonicalPiece.Precedes representative
+                    germ.piece.toCanonical ∧
+                  RefinedLexicographicallySmaller
+                    (Graph.glue representative.toPiece germ.atom.outside)
+                    object) := by
+            classical
+            dsimp only [representative]
+            split <;> rename_i decrease
+            · by_cases same : canonical = germ.piece.toCanonical
+              · exact Or.inl same
+              · exact Or.inr ⟨
+                  Graph.CanonicalPiece.canonicalRepresentative_precedes
+                    Reading realizable sourceReading (Ne.symm same),
+                  decrease⟩
+            · exact Or.inl rfl
+          refine ⟨terminal, germ, representative, ?_⟩
+          change ActiveColdGermStatement data object germ ∧
+            (Graph.CanonicalPiece.CutStateReading
+                (Graph.MinimumDegreeAtLeast data.threshold)
+                (Graph.HasCycleWithLength data.LengthOK)
+                germ.piece representative ∧
+              (Graph.glue representative.toPiece germ.atom.outside).edgeCount =
+                (Graph.glue germ.piece germ.atom.outside).edgeCount) ∧
+            representative.size = germ.piece.internalVertexCount ∧
+            (representative = germ.piece.toCanonical ∨
+              (Graph.CanonicalPiece.Precedes representative
+                  germ.piece.toCanonical ∧
+                RefinedLexicographicallySmaller
+                  (Graph.glue representative.toPiece germ.atom.outside)
+                  object)) ∧
+            ¬ Graph.HasCycleWithLength data.LengthOK
+                (Graph.glue germ.piece germ.atom.outside)
+          exact ⟨active, representativeReading, equalLength,
+            canonicalPosition, sourceAvoids⟩
+        ⟩
+        .nil)
+
 noncomputable def neutralGermSymmetryDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger
       (Input BranchState Presentation presentation data) current known)
-    [FactKeys.Has (K .coldGermCandidates) known]
+    [FactKeys.Has (K .coldNeutralEqualLengthTerminal) known]
     (canonicalFresh : K .coldCanonicalNeutralConfiguration ∉ known)
     (genuineFresh : K .coldGenuineSecondStrand ∉ known) :
     Decision (K .coldCanonicalNeutralConfiguration)
       (K .coldGenuineSecondStrand) previous := by
   classical
-  let candidates := (previous.get (K .coldGermCandidates)).down
+  let neutral := (previous.get (K .coldNeutralEqualLengthTerminal)).down
+  let germ := Classical.choose neutral.2
+  let representative := Classical.choose (Classical.choose_spec neutral.2)
+  let configuration := Classical.choose_spec
+    (Classical.choose_spec neutral.2)
   exact Decision.run previous (K .coldCanonicalNeutralConfiguration)
     (K .coldGenuineSecondStrand)
     `Hypostructure.Graph.Strategy.Spine.neutralGermSymmetryDichotomy
-    (if genuine : GenuineSecondStrandStatement data current.object then
-      .inr ⟨genuine⟩
+    (if realized : ∃ config : Graph.TwoStrand.Configuration,
+        GenuineSecondStrandConfiguration data current.object germ representative config then
+      let config := Classical.choose realized
+      .inr ⟨germ, representative, config, configuration,
+        Classical.choose_spec realized⟩
     else
-      .inl ⟨candidates, genuine⟩)
+      .inl ⟨germ, representative, configuration, realized⟩)
     canonicalFresh genuineFresh
+
+/-! ## Node `[167]`, `lem:two-strand-check`: the literal finite check
+
+The genuine arm of `[163]` retains the two ambient strands and the window
+segment.  This owner constructs the cycles of lengths `2ℓ` and `ℓ+d` from
+those paths.  Either dyadic arm contradicts the selected graph's target
+avoidance; the only produced fact is the exact finite-enumeration survivor
+consumed by `[168]`. -/
+@[reducible] noncomputable def twoStrandSurvivorRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.twoStrandSurvivor
+    { Requires := [K .selection, K .coldGenuineSecondStrand]
+      Produces := [K .coldTwoStrandSurvivor]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let selected := (inputs.get (K .selection)).down
+      let genuine := (inputs.get (K .coldGenuineSecondStrand)).down
+      .cons (key := K .coldTwoStrandSurvivor)
+        ⟨by
+          classical
+          change GenuineSecondStrandStatement data inputs.current.object at genuine
+          change TwoStrandSurvivorStatement data inputs.current.object
+          obtain ⟨germ, representative, config, neutral, realized⟩ := genuine
+          obtain ⟨witness⟩ := realized
+          refine ⟨germ, representative, config, neutral, ⟨witness⟩, ?_⟩
+          apply Graph.TwoStrand.mem_survivors.2
+          refine ⟨witness.length_le, witness.gap_lt, ?_⟩
+          intro dyadic
+          rcases dyadic with segmentDyadic | pairDyadic
+          · let segmentCycle : Graph.CommonEndpointsCycle inputs.current.object :=
+              { ends := (witness.left, witness.right)
+                forward := witness.firstStrand
+                backward := witness.windowSegment
+                forward_isPath := witness.firstStrand_isPath
+                backward_isPath := witness.windowSegment_isPath
+                internallyDisjoint := witness.firstSegment_internallyDisjoint
+                nondegenerate := witness.firstSegment_nondegenerate }
+            apply selected.1
+            refine ⟨segmentCycle.target data.LengthOK ?_⟩
+            have accepted : data.LengthOK config.segmentClosing :=
+              (data.lengthOK_iff_powerOfTwo config.segmentClosing).2 segmentDyadic
+            simpa [segmentCycle, Graph.TwoStrand.Configuration.segmentClosing,
+              witness.firstStrand_length, witness.windowSegment_length] using accepted
+          · let pairCycle : Graph.CommonEndpointsCycle inputs.current.object :=
+              { ends := (witness.left, witness.right)
+                forward := witness.firstStrand
+                backward := witness.secondStrand
+                forward_isPath := witness.firstStrand_isPath
+                backward_isPath := witness.secondStrand_isPath
+                internallyDisjoint := witness.strands_internallyDisjoint
+                nondegenerate := witness.pair_nondegenerate }
+            apply selected.1
+            refine ⟨pairCycle.target data.LengthOK ?_⟩
+            have accepted : data.LengthOK config.pairClosing :=
+              (data.lengthOK_iff_powerOfTwo config.pairClosing).2 pairDyadic
+            simpa [pairCycle, Graph.TwoStrand.Configuration.pairClosing,
+              witness.firstStrand_length, witness.secondStrand_length,
+              two_mul] using accepted⟩
+        .nil)
+
+/-! ## Node `[168]`, `lem:symmetric-pair-endpoint`
+
+The selected occurrence retained at `[163]` is one of the nine interior
+single-stub incidences of its ambient-cubic window.  The two distinct stubs of
+a genuine pair force each attachment into the two-endpoint set published by
+`coldWindowStubStructureRow`.  Hence the selected occurrence cannot be one of
+the pair's four endpoint stubs. -/
+
+noncomputable instance instIncompatibleTwoStrandSurvivorEndpointExclusion :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K .coldTwoStrandSurvivor) (K .coldSymmetricPairExcluded) where
+  contradiction := fun _residual survivor excluded =>
+    excluded.down survivor.down
+
+@[reducible] noncomputable def symmetricPairEndpointExclusionRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.symmetricPairEndpointExclusion
+    { Requires := [K .coldWindowStubStructure, K .coldTwoStrandSurvivor]
+      Produces := [K .coldSymmetricPairExcluded]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let stubStructure := (inputs.get (K .coldWindowStubStructure)).down
+      let incoming := (inputs.get (K .coldTwoStrandSurvivor)).down
+      .cons (key := K .coldSymmetricPairExcluded)
+        ⟨by
+          classical
+          change TwoStrandSurvivorStatement data inputs.current.object at incoming
+          change ¬ TwoStrandSurvivorStatement data inputs.current.object
+          intro survivor
+          obtain ⟨germ, representative, config, neutral, realized, survives⟩ := survivor
+          obtain ⟨witness⟩ := realized
+          have windowMember : witness.window ∈
+              (canonicalColdWindows data inputs.current.object).filter
+                (AmbientCubicWindow data inputs.current.object) :=
+            Finset.mem_filter.2 ⟨witness.window_mem, witness.window_cubic⟩
+          obtain ⟨ends, _endsSubset, _endsCard, interior, endpoints,
+              _interiorCount⟩ := stubStructure witness.window windowMember
+          have leftTwo : 2 ≤
+              (inputs.current.object.externalNeighbours witness.window
+                witness.left).card :=
+            Finset.one_lt_card.mpr
+              ⟨witness.leftFirst, witness.leftFirst_mem,
+                witness.leftSecond, witness.leftSecond_mem,
+                witness.leftStubs_distinct⟩
+          have rightTwo : 2 ≤
+              (inputs.current.object.externalNeighbours witness.window
+                witness.right).card :=
+            Finset.one_lt_card.mpr
+              ⟨witness.rightFirst, witness.rightFirst_mem,
+                witness.rightSecond, witness.rightSecond_mem,
+                witness.rightStubs_distinct⟩
+          have leftEnd : witness.left ∈ ends := by
+            by_contra notEnd
+            have one := interior witness.left witness.left_mem notEnd
+            rw [data.threshold_eq_three] at one
+            omega
+          have rightEnd : witness.right ∈ ends := by
+            by_contra notEnd
+            have one := interior witness.right witness.right_mem notEnd
+            rw [data.threshold_eq_three] at one
+            omega
+          have leftEndpointCount :
+              (inputs.current.object.externalNeighbours witness.window
+                witness.left).card = 2 := by
+            have count := endpoints witness.left leftEnd
+            simpa [data.threshold_eq_three] using count
+          have rightEndpointCount :
+              (inputs.current.object.externalNeighbours witness.window
+                witness.right).card = 2 := by
+            have count := endpoints witness.right rightEnd
+            simpa [data.threshold_eq_three] using count
+          have selectedInterior :=
+            Graph.ColdCorridor.mem_selectedStubs_isInterior
+              inputs.current.object witness.origin_mem_window
+          have originFoot :
+              (ColdGermOccurrence.stub witness.origin).1 = witness.left ∨
+                (ColdGermOccurrence.stub witness.origin).1 = witness.right := by
+            rcases witness.origin_is_pair_stub with h | h | h | h
+            · exact Or.inl (congrArg Prod.fst h)
+            · exact Or.inl (congrArg Prod.fst h)
+            · exact Or.inr (congrArg Prod.fst h)
+            · exact Or.inr (congrArg Prod.fst h)
+          rcases originFoot with foot | foot
+          · rw [foot] at selectedInterior
+            omega
+          · rw [foot] at selectedInterior
+            omega⟩
+        .nil)
+
+/-! ## Node `[165]`, `lem:refined-minimality-swap`: the canonical exchange
+
+The no-arm of `[163]` enters the canonical-replacement case.  This row proves
+the manuscript's exchange uniformly: for every neutral configuration, if its
+canonical representative `E` is different from the corridor piece `Q`, gluing
+`E` into the retained outside context preserves the baseline, target
+avoidance, vertex count, and edge count, and replaces `Q` by a strict
+predecessor in the fixed canonical piece order.  The refined-minimality
+contradiction belongs to node `[166]`.
+-/
+@[reducible] noncomputable def canonicalReplacementSwapRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.canonicalReplacementSwap
+    { Requires := [K .coldCanonicalNeutralConfiguration]
+      Produces := [K .coldCanonicalReplacementSwap]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let canonical :=
+        (inputs.get (K .coldCanonicalNeutralConfiguration)).down
+      .cons (key := K .coldCanonicalReplacementSwap)
+        ⟨by
+          classical
+          change CanonicalNeutralConfigurationStatement data
+            inputs.current.object at canonical
+          change CanonicalReplacementSwapStatement data inputs.current.object
+          obtain ⟨_markedGerm, _markedRepresentative, _markedConfiguration,
+            _notRealized⟩ := canonical
+          intro germ representative configuration different
+          dsimp only
+          obtain ⟨_active, representativeReading, equalSize, canonicalPosition,
+            sourceAvoids⟩ := configuration
+          let baselineInvariant :=
+            Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold
+          have reconstruction :
+              (Graph.glue germ.piece germ.atom.outside).Isomorphic
+                inputs.current.object :=
+            ⟨germ.atom.reconstructionIso⟩
+          have sourceBaseline :
+              Graph.MinimumDegreeAtLeast data.threshold
+                (Graph.glue germ.piece germ.atom.outside) :=
+            (baselineInvariant.iff_of_iso reconstruction).mpr
+              inputs.current.baseline
+          have swappedBaseline :
+              Graph.MinimumDegreeAtLeast data.threshold
+                (Graph.glue representative.toPiece germ.atom.outside) :=
+            representativeReading.1.2.2 germ.atom.outside sourceBaseline
+          have swappedAvoids :
+              ¬ Graph.HasCycleWithLength data.LengthOK
+                (Graph.glue representative.toPiece germ.atom.outside) := by
+            intro hit
+            exact sourceAvoids
+              ((representativeReading.1.2.1 germ.atom.outside).mp hit)
+          have vertexCountEq :
+              (Graph.glue representative.toPiece germ.atom.outside).vertexCount =
+                inputs.current.object.vertexCount := by
+            calc
+              (Graph.glue representative.toPiece
+                  germ.atom.outside).vertexCount =
+                  (Graph.glue germ.piece germ.atom.outside).vertexCount := by
+                    simp only [Graph.glue_vertexCount,
+                      Graph.CanonicalPiece.toPiece_internalVertexCount]
+                    omega
+              _ = inputs.current.object.vertexCount :=
+                Graph.FiniteObject.vertexCount_eq_of_isomorphic reconstruction
+          have edgeCountEq :
+              (Graph.glue representative.toPiece germ.atom.outside).edgeCount =
+                inputs.current.object.edgeCount := by
+            calc
+              (Graph.glue representative.toPiece
+                  germ.atom.outside).edgeCount =
+                  (Graph.glue germ.piece germ.atom.outside).edgeCount :=
+                    representativeReading.2
+              _ = inputs.current.object.edgeCount :=
+                Graph.FiniteObject.edgeCount_eq_of_isomorphic reconstruction
+          obtain ⟨representativePrecedes, refinedDecrease⟩ :=
+            canonicalPosition.resolve_left different
+          exact ⟨swappedBaseline, swappedAvoids, vertexCountEq, edgeCountEq,
+            representativePrecedes, refinedDecrease⟩⟩
+        .nil)
+
+/-! ## Node `[166]`: refined minimality forces the trivial replacement -/
+
+@[reducible] noncomputable def canonicalReplacementTrivialRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.canonicalReplacementTrivial
+    { Requires := [K .selection, K .coldCanonicalReplacementSwap]
+      Produces := [K .coldCanonicalReplacementTrivial]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let selected := (inputs.get (K .selection)).down
+      let swap := (inputs.get (K .coldCanonicalReplacementSwap)).down
+      .cons (key := K .coldCanonicalReplacementTrivial)
+        ⟨by
+          classical
+          change CanonicalReplacementSwapStatement data inputs.current.object at swap
+          change CanonicalReplacementTrivialStatement data inputs.current.object
+          intro germ representative configuration
+          by_contra different
+          let swapped := Graph.glue representative.toPiece germ.atom.outside
+          obtain ⟨baseline, avoids, _vertexCount, _edgeCount,
+              _precedes, refinedDecrease⟩ :=
+            swap germ representative configuration different
+          have smaller :
+              (refinedProgress BranchState Presentation presentation data).Smaller
+                swapped inputs.current.object :=
+            (refinedProgress_smaller_iff BranchState Presentation presentation data).2
+              refinedDecrease
+          exact avoids
+            (selected.2.refinedMinimal swapped smaller baseline)⟩
+        .nil)
 
 /-! ## `lem:refined-minimality-swap`, the size split of the canonical replacement
 
@@ -1328,7 +3804,8 @@ manuscript's Part XI leaves are drawn. -/
 
 "cold branch begins; continued at `[145]`--`[157]`; after closure,
 `θ ≤ θ_win + o(1)`."  On the `[153]` bounded arm the cold mass is
-`C ≤ (1 + B_cold)·σ(G)`; with `lem:hot-failure-cold-mass` (`K .coldMass`,
+`C ≤ (1 + (threshold+1)·B_cold)·σ(G)`; with
+`lem:hot-failure-cold-mass` (`K .coldMass`,
 `bitRate·|𝒫| ≤ bitRate·C + allowance`) and the near-cubic surplus bound
 `σ(G) ≤ T(n)` (`K .coldAmbientCubic`) this is the manuscript's window-only
 density cap with its exact `o(1)`. -/
@@ -1352,25 +3829,23 @@ density cap with its exact `o(1)`. -/
           let object := inputs.current.object
           let packing := canonicalWindowPacking data object
           let cold := canonicalColdWindows data object
-          let perWindow := Graph.ColdCorridor.branchExcessOf
-            (coldExternalStubCount data)
+          let perWindow := coldInteriorBranchExcess data
           have perWindowPos : 0 < perWindow := by
-            have order := data.windowOrder_pos
-            have three := data.three_le_threshold
-            have : data.threshold * data.windowOrder ≥ 3 * data.windowOrder :=
-              Nat.mul_le_mul_right _ three
-            simp only [perWindow, Graph.ColdCorridor.branchExcessOf,
-              coldExternalStubCount]
+            have order := data.five_le_windowOrder
+            simp only [perWindow, coldInteriorBranchExcess,
+              Graph.ColdCorridor.branchExcessOf]
             omega
           let overlap := Graph.ColdCorridor.overlapBound data.threshold data.coldSignature
-          have coldBound : cold.card ≤ (1 + overlap) * object.degreeSurplus data.threshold := by
+          let highLoss := (data.threshold + 1) * overlap
+          have coldBound : cold.card ≤
+              (1 + highLoss) * object.degreeSurplus data.threshold := by
             change perWindow * cold.card ≤
-              (perWindow + overlap) * object.degreeSurplus data.threshold at bounded
+              (perWindow + highLoss) * object.degreeSurplus data.threshold at bounded
             have : perWindow * cold.card ≤
-                perWindow * ((1 + overlap) * object.degreeSurplus data.threshold) := by
+                perWindow * ((1 + highLoss) * object.degreeSurplus data.threshold) := by
               refine bounded.trans ?_
-              have : perWindow + overlap ≤ perWindow * (1 + overlap) := by
-                have := Nat.mul_le_mul_right overlap perWindowPos
+              have : perWindow + highLoss ≤ perWindow * (1 + highLoss) := by
+                have := Nat.mul_le_mul_right highLoss perWindowPos
                 rw [Nat.mul_add]; omega
               rw [← Nat.mul_assoc]
               exact Nat.mul_le_mul_right _ this
@@ -1403,12 +3878,12 @@ density cap with its exact `o(1)`. -/
             calc 2 * (data.windowRate * data.separatedScaleCount object.vertexCount) *
                   cold.card
                 ≤ 2 * (data.windowRate * data.separatedScaleCount object.vertexCount) *
-                    ((1 + overlap) * data.surplusThreshold object.vertexCount) :=
+                    ((1 + highLoss) * data.surplusThreshold object.vertexCount) :=
                   Nat.mul_le_mul_left _ (coldBound.trans
-                    (Nat.mul_le_mul_left (1 + overlap) surplusBound))
+                    (Nat.mul_le_mul_left (1 + highLoss) surplusBound))
               _ = data.densitySlack * (data.windowRate * data.separatedScaleCount object.vertexCount) *
                     data.surplusThreshold object.vertexCount := by
-                  simp only [Data.densitySlack, overlap]; ring
+                  simp only [Data.densitySlack, highLoss, overlap]; ring
           simp only [coldWindowBitRate, coldSkeletonAllowance] at mass
           have key := le_trans mass (Nat.add_le_add_right coldTerm _)
           calc 2 * (data.windowRate * data.separatedScaleCount object.vertexCount *

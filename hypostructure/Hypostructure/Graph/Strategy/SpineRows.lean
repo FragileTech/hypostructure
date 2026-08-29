@@ -164,13 +164,19 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       producesNonempty := by simp }
     (fun inputs =>
       let fact := inputs.get (K .selection)
+      let noProper : ∀ subgraph : Graph.ProperSubgraph inputs.current.object,
+          ¬ Graph.MinimumDegreeAtLeast data.threshold subgraph.value :=
+        fun subgraph baseline =>
+          fact.down.1
+            ((Graph.cycleProperSubgraphTargetMonotone data.LengthOK).map subgraph
+              (fact.down.2 subgraph.value subgraph.decreases baseline))
       .cons (key := K .noProperBaseline)
         (show Value BranchState Presentation presentation data
             .noProperBaseline inputs.current from
-          ⟨fun subgraph baseline =>
-          fact.down.1
-            ((Graph.cycleProperSubgraphTargetMonotone data.LengthOK).map subgraph
-              (fact.down.2 subgraph.value subgraph.decreases baseline))⟩)
+          ⟨noProper,
+            inputs.current.object.connected_of_noProperBaseline data.threshold
+              (lt_of_lt_of_le (by omega) data.three_le_threshold)
+              inputs.current.baseline noProper⟩)
         .nil)
     0 0
 
@@ -210,7 +216,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     (fun inputs =>
       let object := inputs.current.object
       let profile := Graph.minimumDegreeDeletionCriticalityProfile data.threshold
-      let noProper := (inputs.get (K .noProperBaseline)).down
+      let noProper := (inputs.get (K .noProperBaseline)).down.1
       -- Node `[9]`: an edge with two slack endpoints would survive deletion.
       let tight : ∀ dart : object.graph.Dart,
           object.degree dart.fst = data.threshold ∨
@@ -233,6 +239,55 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
             | .inl atThreshold => Nat.ne_of_lt' leftSlack atThreshold
             | .inr atThreshold => Nat.ne_of_lt' rightSlack atThreshold⟩)
           .nil))
+    0 0
+
+/-! ## `lem:cycle-rank`: the selected graph's rank lower bound
+
+The manuscript defines `β(G) = m - n + 1` and proves
+`β(G) ≥ n/2 + 1` from the handshake inequality `3n ≤ 2m`.  The ExactLedger
+stores the division-free Nat statement `n + 2 ≤ 2β(G)`.  Its only input is
+the active residual's registered minimum-degree baseline; no earlier proof is
+reopened and no numerical graph data are supplied separately. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def cycleRankConstraintRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.cycleRankConstraint
+    (sourceFreeManifest (K .cycleRankConstraint))
+    (fun inputs =>
+      let object := inputs.current.object
+      let lower : ∀ vertex : object.Vertex,
+          data.threshold ≤ object.degree vertex :=
+        fun vertex => inputs.current.baseline.trans
+          (object.minDegree_le_degree vertex)
+      let thresholdHandshake :
+          data.threshold * object.vertexCount ≤ 2 * object.edgeCount :=
+        Graph.baselineDegree_mul_vertexCount_le_two_mul_edgeCount
+          object data.threshold lower
+      let handshake : 3 * object.vertexCount ≤ 2 * object.edgeCount :=
+        (Nat.mul_le_mul_right object.vertexCount data.three_le_threshold).trans
+          thresholdHandshake
+      .cons (key := K .cycleRankConstraint)
+        (show Value BranchState Presentation presentation data
+            .cycleRankConstraint inputs.current from
+          ⟨by
+            change object.vertexCount + 2 ≤
+              2 * (object.edgeCount + 1 - object.vertexCount)
+            have rankNontruncated :
+                object.vertexCount ≤ object.edgeCount + 1 := by
+              omega
+            rw [Nat.mul_sub_left_distrib]
+            exact Nat.le_sub_of_add_le (by omega)⟩)
+        .nil)
     0 0
 
 /-! ## Node `[11]`: boundary-degree fibres
@@ -398,7 +453,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           baseline := inputs.current.baseline
           state := inputs.current.branchState
           avoids := fact.down.1
-          minimal := fact.down.2 }
+          minimal := fact.down.2.sizeMinimal }
       let targetInvariant : Core.TargetInvariant
           (Graph.isomorphismEquivalenceWithPresentation
             (Graph.MinimumDegreeAtLeast data.threshold) BranchState
@@ -1235,7 +1290,11 @@ remainder `R` of every maximal packing.
   `def:target-complete-quotient`, and the two representative clauses of
   `def:admissible-rank-quotient`; a rank-reducing one is therefore represented
   by a strictly smaller proper representative or a strictly smaller admissible
-  closed representative (`DeclaredQuotient.localize`).
+  closed representative (`DeclaredQuotient.localize`).  That routing is
+  published at the definition's own generality — every declared family on every
+  connected support carrying it — because `DeclaredQuotient.localize` is stated
+  there and the manuscript applies the definition well outside the remainder;
+  the raw curvature reading this row needs is one instance.
 * The admissible quotient system used to compute target rank consists of the
   admissible quotients that are functional on the family
   (`RankQuotient.FunctionalOn`); a subfamily survives it when every such
@@ -1289,7 +1348,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
         (.cons (key := K .admissibleRankQuotient)
           (show Value BranchState Presentation presentation data
               .admissibleRankQuotient inputs.current from
-            ⟨fun _packing _valid _card quotient reducing =>
+            ⟨fun _Coordinate _family _coordinateSupport quotient reducing =>
               quotient.localize reducing⟩)
           (.cons (key := K .curvatureTargetRank)
             (show Value BranchState Presentation presentation data
@@ -3165,9 +3224,10 @@ at most two endpoints are open; and every remaining port is triangular.  The
 place the *heaviness* of the centre is spent, and it spends it exactly as the
 manuscript does: `k − 2 ≥ 3`.
 
-The atomic row below reads exactly the normal-form fact and the selected heavy
-support through `FactInputs.get`; the latter fixes the support on which this
-universally quantified local conclusion is published. -/
+The first atomic row below reads the normal form and publishes
+`lem:same-center-open-port-compatibility`.  The second reads that registered
+fact together with the same normal form and selected heavy support; the latter
+fixes the carrier on which the corollary is published. -/
 
 /-! ## Nodes `[64]`--`[65]`, `[68]`, `[69]` on the common Type B fan entry
 
@@ -3293,7 +3353,7 @@ noncomputable def typeBFanDegreeDichotomy
       apply Classical.choice
       have entry := (ExactLedger.get previous (K .typeBFanEntry)).down
       change TypeBFanEntryStatement data current.object at entry
-      rcases entry with canonical | absorbed
+      rcases entry with canonical | absorbed | sameToken
       · obtain ⟨packing, valid, maximal, component, present, centres, assigned,
           _nonempty, high⟩ := canonical
         by_cases heavy :
@@ -3315,16 +3375,68 @@ noncomputable def typeBFanDegreeDichotomy
                 (centre : current.object.Vertex),
               AbsorbedGermFanEnvelopeWitness data current.object germ centre ∧
                 data.threshold + 1 < current.object.degree centre
-        · exact ⟨.inl ⟨Or.inr ⟨absorbed, heavy⟩⟩⟩
-        · refine ⟨.inr ⟨Or.inr ⟨absorbed, ?_⟩⟩⟩
+        · exact ⟨.inl ⟨Or.inr (Or.inl ⟨absorbed, heavy⟩)⟩⟩
+        · refine ⟨.inr ⟨Or.inr (Or.inl ⟨absorbed, ?_⟩)⟩⟩
           intro germ centre witness
           have lower : data.threshold < current.object.degree centre :=
-            witness.2.2.1
+            by
+              rcases witness with ⟨routing, epsilon, germEq, firstIndex,
+                centreEq, indexLe, high, tail⟩
+              exact high
           have upper : ¬ data.threshold + 1 < current.object.degree centre := by
             intro above
             exact heavy ⟨germ, centre, witness, above⟩
+          omega
+      · obtain ⟨packing, valid, maximal, core, envelope, coreEq, nonempty⟩ :=
+          sameToken
+        by_cases heavy :
+            ∃ centre ∈ envelope.decorations,
+              data.threshold + 1 < current.object.degree centre
+        · exact ⟨.inl ⟨Or.inr (Or.inr ⟨packing, valid, maximal, core,
+              envelope, coreEq, nonempty, heavy⟩)⟩⟩
+        · refine ⟨.inr ⟨Or.inr (Or.inr ⟨packing, valid, maximal, core,
+              envelope, coreEq, nonempty, ?_⟩)⟩⟩
+          intro centre member
+          have lower : data.threshold < current.object.degree centre := by
+            exact envelope.decorations_high centre member
+          have upper : ¬ data.threshold + 1 < current.object.degree centre := by
+            intro above
+            exact heavy ⟨centre, member, above⟩
           omega)
     heavyFresh degreeFourFresh
+
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def sameCenterOpenPortCompatibilityRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.sameCenterOpenPortCompatibility
+    { Requires := [K .highCentreNormalForm]
+      Produces := [K .sameCenterOpenPortCompatibility]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let normal := (inputs.get (K .highCentreNormalForm)).down
+      .cons (key := K .sameCenterOpenPortCompatibility)
+        (show Value BranchState Presentation presentation data
+            .sameCenterOpenPortCompatibility inputs.current from
+          ⟨by
+            intro centre high left right centreLeft centreRight distinct nonadjacent
+              leftOpen rightOpen
+            exact Graph.fanCompatible_of_endpoints_nonadjacent
+              (normal centre high) centreLeft centreRight distinct nonadjacent
+                leftOpen rightOpen⟩)
+        .nil)
+    0 0
 
 omit [FactSystem (Input BranchState Presentation presentation data)] in
 @[reducible] noncomputable def typeBFanLocalDichotomyRow :
@@ -3340,7 +3452,8 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       (Presentation := Presentation) (presentation := presentation)
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.typeBFanLocalDichotomy
-    { Requires := [K .highCentreNormalForm, K .typeBFanHeavyCentre]
+    { Requires := [K .highCentreNormalForm, K .typeBFanHeavyCentre,
+        K .sameCenterOpenPortCompatibility]
       Produces := [K .typeBFanLocalDichotomy]
       requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp
@@ -3348,13 +3461,52 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     (fun inputs =>
       let normal := (inputs.get (K .highCentreNormalForm)).down
       let heavy := (inputs.get (K .typeBFanHeavyCentre)).down
+      let compatibility :=
+        (inputs.get (K .sameCenterOpenPortCompatibility)).down
+      let localAt : ∀ centre : inputs.current.object.Vertex,
+          Graph.IsHighCentre inputs.current.object data.threshold centre →
+            ((∃ left right : inputs.current.object.Vertex,
+                Graph.FanCompatible inputs.current.object centre left right) ∨
+              inputs.current.object.degree centre - 2 ≤
+                (Graph.triangularEndpoints inputs.current.object centre).card) := by
+        intro centre high
+        classical
+        by_cases pair : ∃ left right : inputs.current.object.Vertex,
+            Graph.FanCompatible inputs.current.object centre left right
+        · exact Or.inl pair
+        · apply Or.inr
+          have inside : ∀ endpoint ∈
+              Graph.openEndpoints inputs.current.object centre,
+                inputs.current.object.graph.Adj centre endpoint := by
+            intro endpoint member
+            exact (Graph.mem_openEndpoints_iff.mp member).1
+          have clique : ∀ first ∈
+              Graph.openEndpoints inputs.current.object centre,
+              ∀ second ∈ Graph.openEndpoints inputs.current.object centre,
+                first ≠ second →
+                  inputs.current.object.graph.Adj first second := by
+            intro first firstMember second secondMember different
+            by_cases adjacent : inputs.current.object.graph.Adj first second
+            · exact adjacent
+            · exact False.elim <| pair ⟨first, second,
+                compatibility centre high first second
+                  (Graph.mem_openEndpoints_iff.mp firstMember).1
+                  (Graph.mem_openEndpoints_iff.mp secondMember).1 different
+                  adjacent (Graph.mem_openEndpoints_iff.mp firstMember).2
+                  (Graph.mem_openEndpoints_iff.mp secondMember).2⟩
+          have openAtMostTwo := Graph.card_le_two_of_pairwise_adj
+            (normal centre high)
+            (Graph.openEndpoints inputs.current.object centre) inside clique
+          have partition := Graph.openEndpoints_card_add_triangularEndpoints_card
+            inputs.current.object centre
+          omega
       .cons (key := K .typeBFanLocalDichotomy)
         (show Value BranchState Presentation presentation data
             .typeBFanLocalDichotomy inputs.current from
           ⟨by
             change TypeBFanLocalDichotomyStatement data inputs.current.object
             unfold TypeBFanLocalDichotomyStatement
-            rcases heavy with canonical | absorbed
+            rcases heavy with canonical | absorbed | sameToken
             · apply Or.inl
               obtain ⟨packing, valid, maximal, component, present, centres, assigned,
                 _heavyWitness⟩ := canonical
@@ -3362,19 +3514,38 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
               intro centre member centreHeavy
               have highCentre :=
                 TypeBAssignedCentres.high data inputs.current.object assigned centre member
-              rcases Graph.heavyCentreLocalDichotomy (normal centre highCentre) with
+              rcases localAt centre highCentre with
                 compatible | triangular
               · exact Or.inl compatible
               · exact Or.inr ⟨triangular,
                   Graph.three_le_triangularEndpoints_card data.three_le_threshold
                     centreHeavy triangular⟩
             · apply Or.inr
+              apply Or.inl
               refine ⟨absorbed.1, ?_⟩
               obtain ⟨germ, centre, witness, centreHeavy⟩ := absorbed.2
               refine ⟨germ, centre, witness, centreHeavy, ?_⟩
               have highCentre : Graph.IsHighCentre inputs.current.object
-                  data.threshold centre := witness.2.2.1
-              rcases Graph.heavyCentreLocalDichotomy (normal centre highCentre) with
+                  data.threshold centre := by
+                rcases witness with ⟨routing, epsilon, germEq, firstIndex,
+                  centreEq, indexLe, high, tail⟩
+                exact high
+              rcases localAt centre highCentre with
+                compatible | triangular
+              · exact Or.inl compatible
+              · exact Or.inr ⟨triangular,
+                  Graph.three_le_triangularEndpoints_card data.three_le_threshold
+                    centreHeavy triangular⟩
+            · apply Or.inr
+              apply Or.inr
+              obtain ⟨packing, valid, maximal, core, envelope, coreEq, nonempty,
+                  _heavyWitness⟩ := sameToken
+              refine ⟨packing, valid, maximal, core, envelope, coreEq, nonempty, ?_⟩
+              intro centre member centreHeavy
+              have highCentre : Graph.IsHighCentre inputs.current.object
+                  data.threshold centre := by
+                exact envelope.decorations_high centre member
+              rcases localAt centre highCentre with
                 compatible | triangular
               · exact Or.inl compatible
               · exact Or.inr ⟨triangular,
@@ -3423,7 +3594,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           ⟨by
             change TypeBFanDegreeFourProfileStatement data inputs.current.object
             unfold TypeBFanDegreeFourProfileStatement
-            rcases degreeFour with canonical | absorbed
+            rcases degreeFour with canonical | absorbed | sameToken
             · apply Or.inl
               obtain ⟨packing, valid, maximal, component, present, centres, assigned,
                 degrees⟩ := canonical
@@ -3446,12 +3617,16 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                     data.threshold data.dischargeScale fanEnvelope degree
                 exact ⟨counted, identity⟩
             · apply Or.inr
+              apply Or.inl
               refine ⟨absorbed.1, ?_⟩
               intro germ centre witness
               have degree := absorbed.2 germ centre witness
               refine ⟨degree, ?_, ?_, ?_⟩
               · have high : Graph.IsHighCentre inputs.current.object
-                    data.threshold centre := witness.2.2.1
+                    data.threshold centre := by
+                  rcases witness with ⟨routing, epsilon, germEq, firstIndex,
+                    centreEq, indexLe, high, tail⟩
+                  exact high
                 rcases Graph.heavyCentreLocalDichotomy (normal centre high) with
                   compatible | triangular
                 · exact Or.inl compatible
@@ -3463,7 +3638,148 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                 obtain ⟨_surplus, counted, identity, _range⟩ :=
                   Graph.TypeBFanIncidence.degreeFourProfile inputs.current.object
                     data.threshold data.dischargeScale fanEnvelope degree
+                exact ⟨counted, identity⟩
+            · apply Or.inr
+              apply Or.inr
+              obtain ⟨packing, valid, maximal, core, envelope, coreEq, nonempty,
+                  degrees⟩ := sameToken
+              refine ⟨packing, valid, maximal, core, envelope, coreEq, nonempty, ?_⟩
+              intro centre member
+              have degree := degrees centre member
+              have high : Graph.IsHighCentre inputs.current.object
+                  data.threshold centre := by
+                exact envelope.decorations_high centre member
+              refine ⟨degree, ?_, ?_, ?_⟩
+              · rcases Graph.heavyCentreLocalDichotomy (normal centre high) with
+                  compatible | triangular
+                · exact Or.inl compatible
+                · refine Or.inr ?_
+                  rw [degree] at triangular
+                  omega
+              · omega
+              · intro fanEnvelope
+                obtain ⟨_surplus, counted, identity, _range⟩ :=
+                  Graph.TypeBFanIncidence.degreeFourProfile inputs.current.object
+                    data.threshold data.dischargeScale fanEnvelope degree
                 exact ⟨counted, identity⟩⟩)
+        .nil)
+    0 0
+
+/-! ## Node `[79]`: the triangular fan core
+
+`def:triangular-fan-core` is the paper's source-normal-form construction at a
+heavy centre.  A nonempty selected family of triangular ports determines its
+two shoulders at each endpoint, the induced core vertex set, and the four
+declared completion-edge classes.  This row reads only the already committed
+heavy-centre normal form.  In particular it does not assert that a shoulder
+has a completion edge; that is the following manuscript lemma. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def triangularFanCoreRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.triangularFanCore
+    { Requires := [K .highCentreNormalForm]
+      Produces := [K .triangularFanCore]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let normal := (inputs.get (K .highCentreNormalForm)).down
+      .cons (key := K .triangularFanCore)
+        (show Value BranchState Presentation presentation data
+            .triangularFanCore inputs.current from
+          ⟨by
+            change TriangularFanCoreStatement data inputs.current.object
+            intro centre centreHeavy ports portsNonempty triangular
+            classical
+            let shoulders : inputs.current.object.Vertex →
+                Finset inputs.current.object.Vertex := fun endpoint =>
+              (inputs.current.object.orderedNeighbors endpoint).toFinset.erase centre
+            let core : Finset inputs.current.object.Vertex :=
+              insert centre (ports ∪ ports.biUnion shoulders)
+            let completion : inputs.current.object.Vertex →
+                inputs.current.object.Vertex →
+                  inputs.current.object.Vertex → Prop :=
+              fun endpoint shoulder target =>
+                endpoint ∈ ports ∧ shoulder ∈ shoulders endpoint ∧
+                  inputs.current.object.graph.Adj shoulder target ∧
+                    target ≠ endpoint ∧ target ∉ shoulders endpoint
+            let central : inputs.current.object.Vertex →
+                inputs.current.object.Vertex →
+                  inputs.current.object.Vertex → Prop :=
+              fun endpoint shoulder target =>
+                completion endpoint shoulder target ∧ target = centre
+            let crossTriangular : inputs.current.object.Vertex →
+                inputs.current.object.Vertex →
+                  inputs.current.object.Vertex → Prop :=
+              fun endpoint shoulder target =>
+                completion endpoint shoulder target ∧
+                  ∃ other ∈ ports,
+                    other ≠ endpoint ∧ target ∈ shoulders other
+            let outside : inputs.current.object.Vertex →
+                inputs.current.object.Vertex →
+                  inputs.current.object.Vertex → Prop :=
+              fun endpoint shoulder target =>
+                completion endpoint shoulder target ∧ target ∉ core ∧
+                  ¬ inputs.current.object.graph.Adj centre target
+            refine ⟨shoulders, core, completion, central, crossTriangular, outside,
+              ?_, ?_, ?_, ?_, ?_, ?_⟩
+            · intro endpoint endpointMem
+              have triangularMem := triangular endpointMem
+              have centreEndpoint :=
+                (Graph.mem_triangularEndpoints_iff.mp triangularMem).1
+              have centreHigh : Graph.IsHighCentre inputs.current.object
+                  data.threshold centre := by
+                exact Nat.lt_trans (Nat.lt_succ_self data.threshold) centreHeavy
+              have endpointDegree :=
+                (normal centre centreHigh).neighbourTight centreEndpoint
+              have centreMember : centre ∈
+                  (inputs.current.object.orderedNeighbors endpoint).toFinset := by
+                simpa [inputs.current.object.mem_orderedNeighbors_iff] using
+                  centreEndpoint.symm
+              have neighbourCard :
+                  (inputs.current.object.orderedNeighbors endpoint).toFinset.card =
+                    inputs.current.object.degree endpoint := by
+                rw [List.toFinset_card_of_nodup
+                  (inputs.current.object.orderedNeighbors_nodup endpoint),
+                  inputs.current.object.orderedNeighbors_length endpoint]
+              refine ⟨?_, ?_, ?_⟩
+              · intro vertex
+                simp [shoulders, Graph.IsShoulder,
+                  inputs.current.object.mem_orderedNeighbors_iff, and_comm]
+              · rw [show shoulders endpoint =
+                    (inputs.current.object.orderedNeighbors endpoint).toFinset.erase
+                      centre from rfl,
+                  Finset.card_erase_of_mem centreMember, neighbourCard,
+                  endpointDegree, data.threshold_eq_three]
+              · obtain ⟨left, right, leftShoulder, rightShoulder, chord⟩ :=
+                  (Graph.mem_triangularEndpoints_iff.mp triangularMem).2
+                refine ⟨left, right, ?_, ?_, chord.ne, chord⟩
+                · simpa [shoulders, Graph.IsShoulder,
+                    inputs.current.object.mem_orderedNeighbors_iff, and_comm] using
+                    leftShoulder
+                · simpa [shoulders, Graph.IsShoulder,
+                    inputs.current.object.mem_orderedNeighbors_iff, and_comm] using
+                    rightShoulder
+            · intro vertex
+              simp [core]
+            · intro endpoint shoulder target
+              rfl
+            · intro endpoint shoulder target
+              rfl
+            · intro endpoint shoulder target
+              rfl
+            · intro endpoint shoulder target
+              rfl⟩)
         .nil)
     0 0
 
@@ -3515,7 +3831,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           ⟨by
             change TypeBFanCertificateCapStatement data inputs.current.object
             unfold TypeBFanCertificateCapStatement
-            rcases entry with canonical | absorbed
+            rcases entry with canonical | absorbed | sameToken
             · apply Or.inl
               obtain ⟨packing, valid, maximal, component, present, centres,
                 assigned, _nonempty, _high⟩ := canonical
@@ -3523,9 +3839,17 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                 assigned, fun _centre _member marking =>
                   marking.degree_le_fanPackingCap⟩
             · apply Or.inr
+              apply Or.inl
               refine ⟨absorbed, ?_⟩
               intro germ centre witness marking
-              exact marking.degree_le_fanPackingCap⟩)
+              exact marking.degree_le_fanPackingCap
+            · apply Or.inr
+              apply Or.inr
+              obtain ⟨packing, valid, maximal, core, envelope, coreEq, nonempty⟩ :=
+                sameToken
+              exact ⟨packing, valid, maximal, core, envelope, coreEq, nonempty,
+                fun _centre _member marking =>
+                  marking.degree_le_fanPackingCap⟩⟩)
         .nil)
     0 0
 
@@ -3580,7 +3904,7 @@ noncomputable def fanCertificateDichotomy
       classical
       apply Classical.choice
       rcases (ExactLedger.get previous (K .fanCertificateCap)).down with
-        support | absorbed
+        support | absorbed | sameToken
       · obtain ⟨packing, valid, maximal, component, present, centres, assigned,
           cap⟩ := support
         by_cases marked :
@@ -3608,25 +3932,40 @@ noncomputable def fanCertificateDichotomy
               AbsorbedGermFanEnvelopeWitness data current.object germ centre →
                 Nonempty (Graph.FanCertificateLabelling current.object
                   data.windowOrder centre)
-        · exact ⟨.inl ⟨.inr ⟨envelopes,
+        · exact ⟨.inl ⟨Or.inr (Or.inl ⟨envelopes,
             fun germ centre witness => by
               obtain ⟨marking⟩ := marked germ centre witness
               exact ⟨marking,
-                cap germ centre witness marking⟩⟩⟩⟩
+                cap germ centre witness marking⟩⟩)⟩⟩
         · push Not at marked
           obtain ⟨germ, centre, witness, unmarked⟩ := marked
-          exact ⟨.inr ⟨.inr ⟨envelopes, germ, centre, witness,
-            unmarked⟩⟩⟩)
+          exact ⟨.inr ⟨Or.inr (Or.inl ⟨envelopes, germ, centre, witness,
+            unmarked⟩)⟩⟩
+      · obtain ⟨packing, valid, maximal, core, envelope, coreEq, nonempty,
+          cap⟩ := sameToken
+        by_cases marked :
+            ∀ centre ∈ envelope.decorations,
+              Nonempty (Graph.FanCertificateLabelling current.object
+                data.windowOrder centre)
+        · exact ⟨.inl ⟨Or.inr (Or.inr ⟨packing, valid, maximal, core,
+            envelope, coreEq, nonempty, fun centre member => by
+              obtain ⟨marking⟩ := marked centre member
+              exact ⟨marking, cap centre member marking⟩⟩)⟩⟩
+        · push Not at marked
+          obtain ⟨centre, member, unmarked⟩ := marked
+          exact ⟨.inr ⟨Or.inr (Or.inr ⟨packing, valid, maximal, core,
+            envelope, coreEq, nonempty, centre, member,
+            envelope.decorations_high centre member, unmarked⟩)⟩⟩)
     markedFresh residualFresh
 
 /-! ## Node `[74]`/`[82]`: the hybrid B1 fan ledger
 
 `lem:typeB-hybrid-B1`, and with it `lem:typeB-hybrid-incidence-budget`,
 `def:typeB-hybrid-incidence` and parts (a)--(b) of
-`prop:fan-closed-port-typeB-routing`.  The B2 arm of node `[72]`/`[81]` has
-supplied the global disjointness; this row supplies the *local* payment, which is
-what B2's clause (b) chooses between: at every certificate-marked centre of an
-assigned Type B support, the non-`h` incidences of its cubic-closed neighbours
+`prop:fan-closed-port-typeB-routing`.  This row supplies the *local* payment
+before the global B2 split, so B2's success and minimal-obstruction arms both
+retain it: at every certificate-marked centre of an assigned Type B support,
+the non-`h` incidences of its cubic-closed neighbours
 are pairwise distinct carriers, they split into `I_W` and `I_N`, their half-credit
 pays `D_B`, the non-window half-credit covers the remaining demand `D_N`, and two
 cubic-closed neighbours already make `D_B` positive.
@@ -3641,9 +3980,9 @@ spends — the manuscript's "and `k ≤ 8`".
 `typeBDirectCycleFree` is *not* declared.  The manuscript states the budget lemma
 under "none of the direct-cycle conclusions occurs", but its proof of the
 disjointness uses only dyadic safety, and no other clause reads it either; the
-fact is on this branch's index because the row runs after node `[72]`, and that is
-a property of the cursor rather than of the manifest.  Declaring it would be a
-false dependency. -/
+fact is on this branch's index because the row runs after the direct-cycle half
+of node `[72]`/`[81]`, and that is a property of the cursor rather than of the
+manifest.  Declaring it would be a false dependency. -/
 omit [FactSystem (Input BranchState Presentation presentation data)] in
 @[reducible] noncomputable def hybridEntryRow :
     @AtomicStrategy (Input BranchState Presentation presentation data) _
@@ -3665,7 +4004,8 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       producesNonempty := by simp }
     (fun inputs => Classical.choice <| by
       let avoids := (inputs.get (K .selection)).down.1
-      rcases (inputs.get (K .fanCertificateMarked)).down with support | absorbed
+      rcases (inputs.get (K .fanCertificateMarked)).down with
+        support | absorbed | sameToken
       · obtain ⟨packing, valid, maximal, component, present, centres, assigned,
           marked⟩ := support
         exact ⟨.cons (key := K .typeBHybridEntry)
@@ -3696,32 +4036,65 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                   _ _ _ _ _ two_le high data.highCentreDeficitSlack⟩⟩)
           .nil⟩
       · obtain ⟨envelopes, marked⟩ := absorbed
-        exact ⟨.cons (key := K .typeBHybridEntry)
-          (⟨.inr ⟨⟨envelopes, marked⟩,
-            fun germ centre witness envelope windowSupport => by
-              obtain ⟨_marking, capped⟩ := marked germ centre witness
-              have slack :
-                  inputs.current.object.degree centre + 1 ≤
-                    data.dischargeScale * data.threshold :=
-                le_trans (Nat.succ_le_succ capped) data.fanCapSlack
-              refine ⟨?_, ?_, ?_, ?_, ?_⟩
-              · intro left leftMember right rightMember different shared
-                  leftIncidence rightIncidence
-                exact Graph.TypeBHybridIncidence.endpoints_not_shared avoids
-                  data.quadrilateralAccepted
-                  (Graph.TypeBFanIncidence.mem_closedNeighbours_iff.mp leftMember)
-                  (Graph.TypeBFanIncidence.mem_closedNeighbours_iff.mp rightMember)
-                  different leftIncidence rightIncidence
-              · exact Graph.TypeBHybridIncidence.windowIncidences_add_nonWindowIncidences
-                  _ _ _ _ _
-              · exact Graph.TypeBHybridIncidence.hybridCapacity_pays _ _ _ _ _ _
-                  data.three_le_threshold slack
-              · exact Graph.TypeBHybridIncidence.nonWindowCredit_ge_demand _ _ _ _
-                  _ _ data.three_le_threshold slack
-              · intro two_le
-                exact Graph.TypeBHybridIncidence.positive_deficit_of_two_le_closedCount
-                  _ _ _ _ _ two_le witness.2.2.1 data.highCentreDeficitSlack⟩⟩)
-          .nil⟩)
+        refine ⟨.cons (key := K .typeBHybridEntry)
+          (⟨Or.inr (Or.inl ⟨⟨envelopes, marked⟩, ?_⟩)⟩) .nil⟩
+        intro germ centre witness envelope windowSupport
+        obtain ⟨_marking, capped⟩ := marked germ centre witness
+        have slack :
+            inputs.current.object.degree centre + 1 ≤
+              data.dischargeScale * data.threshold :=
+          le_trans (Nat.succ_le_succ capped) data.fanCapSlack
+        refine ⟨?_, ?_, ?_, ?_, ?_⟩
+        · intro left leftMember right rightMember different shared
+            leftIncidence rightIncidence
+          exact Graph.TypeBHybridIncidence.endpoints_not_shared avoids
+            data.quadrilateralAccepted
+            (Graph.TypeBFanIncidence.mem_closedNeighbours_iff.mp leftMember)
+            (Graph.TypeBFanIncidence.mem_closedNeighbours_iff.mp rightMember)
+            different leftIncidence rightIncidence
+        · exact Graph.TypeBHybridIncidence.windowIncidences_add_nonWindowIncidences
+            _ _ _ _ _
+        · exact Graph.TypeBHybridIncidence.hybridCapacity_pays _ _ _ _ _ _
+            data.three_le_threshold slack
+        · exact Graph.TypeBHybridIncidence.nonWindowCredit_ge_demand _ _ _ _
+            _ _ data.three_le_threshold slack
+        · intro two_le
+          have high : Graph.IsHighCentre inputs.current.object
+              data.threshold centre := by
+            rcases witness with ⟨routing, epsilon, germEq, firstIndex,
+              centreEq, indexLe, high, tail⟩
+            exact high
+          exact Graph.TypeBHybridIncidence.positive_deficit_of_two_le_closedCount
+            _ _ _ _ _ two_le high data.highCentreDeficitSlack
+      · obtain ⟨packing, valid, maximal, core, handoff, coreEq, nonempty,
+            marked⟩ := sameToken
+        refine ⟨.cons (key := K .typeBHybridEntry)
+          (⟨Or.inr (Or.inr ⟨packing, valid, maximal, core, handoff, coreEq,
+            nonempty, marked, ?_⟩)⟩) .nil⟩
+        intro centre member envelope windowSupport
+        obtain ⟨_marking, capped⟩ := marked centre member
+        have slack :
+            inputs.current.object.degree centre + 1 ≤
+              data.dischargeScale * data.threshold :=
+          le_trans (Nat.succ_le_succ capped) data.fanCapSlack
+        refine ⟨?_, ?_, ?_, ?_, ?_⟩
+        · intro left leftMember right rightMember different shared
+            leftIncidence rightIncidence
+          exact Graph.TypeBHybridIncidence.endpoints_not_shared avoids
+            data.quadrilateralAccepted
+            (Graph.TypeBFanIncidence.mem_closedNeighbours_iff.mp leftMember)
+            (Graph.TypeBFanIncidence.mem_closedNeighbours_iff.mp rightMember)
+            different leftIncidence rightIncidence
+        · exact Graph.TypeBHybridIncidence.windowIncidences_add_nonWindowIncidences
+            _ _ _ _ _
+        · exact Graph.TypeBHybridIncidence.hybridCapacity_pays _ _ _ _ _ _
+            data.three_le_threshold slack
+        · exact Graph.TypeBHybridIncidence.nonWindowCredit_ge_demand _ _ _ _
+            _ _ data.three_le_threshold slack
+        · intro two_le
+          exact Graph.TypeBHybridIncidence.positive_deficit_of_two_le_closedCount
+            _ _ _ _ _ two_le (handoff.decorations_high centre member)
+              data.highCentreDeficitSlack)
     0 0
 
 /-! ## Node `[72]`, first half: is a direct fan-window cycle present?
@@ -3776,7 +4149,7 @@ noncomputable def directCycleDichotomy
       classical
       apply Classical.choice
       rcases (ExactLedger.get previous (K .fanCertificateMarked)).down with
-        support | absorbed
+        support | absorbed | sameToken
       · obtain ⟨packing, valid, maximal, component, present, centres, assigned,
           _marked⟩ := support
         by_cases configuration :
@@ -3798,10 +4171,23 @@ noncomputable def directCycleDichotomy
                 Graph.TypeBDirectCycle.DirectCycleConfiguration current.object
                   data.windowOrder data.LengthOK
                   (canonicalWindowPacking data current.object) centre
-        · exact ⟨.inl ⟨.inr ⟨absorbed, configuration⟩⟩⟩
-        · exact ⟨.inr ⟨.inr ⟨absorbed,
+        · exact ⟨.inl ⟨Or.inr (Or.inl ⟨absorbed, configuration⟩)⟩⟩
+        · exact ⟨.inr ⟨Or.inr (Or.inl ⟨absorbed,
             fun germ centre witness present =>
-              configuration ⟨germ, centre, witness, present⟩⟩⟩⟩)
+              configuration ⟨germ, centre, witness, present⟩⟩)⟩⟩
+      · obtain ⟨packing, valid, maximal, core, envelope, coreEq, nonempty,
+          marked⟩ := sameToken
+        by_cases configuration :
+            ∃ centre ∈ envelope.decorations,
+              Graph.IsHighCentre current.object data.threshold centre ∧
+                Graph.TypeBDirectCycle.DirectCycleConfiguration current.object
+                  data.windowOrder data.LengthOK packing centre
+        · exact ⟨.inl ⟨Or.inr (Or.inr ⟨packing, valid, maximal, core,
+            envelope, coreEq, nonempty, marked, configuration⟩)⟩⟩
+        · exact ⟨.inr ⟨Or.inr (Or.inr ⟨packing, valid, maximal, core,
+            envelope, coreEq, nonempty, marked,
+            fun centre member high present =>
+              configuration ⟨centre, member, high, present⟩⟩)⟩⟩)
     cycleFresh freeFresh
 
 /-! ## Node `[72]`/`[81]`, second half: does the B2 disjoint ledger exist?
@@ -3860,7 +4246,7 @@ noncomputable def b2AssignmentDichotomy
       -- This both consumes the first half of `[81]` and prevents the B2 choice
       -- from silently selecting a different existential Type B support.
       rcases (ExactLedger.get previous (K .typeBDirectCycleFree)).down with
-        canonical | absorbed
+        canonical | absorbed | sameToken
       · obtain ⟨packing, valid, maximal, component, componentMem, centres,
           assigned, _directFree⟩ := canonical
         let canonicalPiece :
@@ -3886,7 +4272,7 @@ noncomputable def b2AssignmentDichotomy
                 Graph.TypeBRefinedSupport.HasDisjointChoice current.object
                   data.threshold data.dischargeScale packing
                   germ.support {centre} {centre}
-        · exact ⟨.inl ⟨.inr ⟨absorbed, choices⟩⟩⟩
+        · exact ⟨.inl ⟨Or.inr (Or.inl ⟨absorbed, choices⟩)⟩⟩
         · push Not at choices
           obtain ⟨germ, centre, witness, failure⟩ := choices
           have noChoice : ¬ Graph.TypeBRefinedSupport.HasDisjointChoice
@@ -3898,11 +4284,26 @@ noncomputable def b2AssignmentDichotomy
               {centre} (by
                 intro hub member
                 rw [Finset.mem_singleton] at member
-                exact member ▸ witness.2.2.1) with
+                subst hub
+                rcases witness with ⟨routing, epsilon, germEq, firstIndex,
+                  centreEq, indexLe, high, tail⟩
+                exact high) with
             choice | obstruction
           · exact absurd choice noChoice
-          · exact ⟨.inr ⟨.inr ⟨absorbed, germ, centre, witness,
-                obstruction⟩⟩⟩)
+          · exact ⟨.inr ⟨Or.inr (Or.inl ⟨absorbed, germ, centre, witness,
+                obstruction⟩)⟩⟩
+      · obtain ⟨packing, valid, maximal, core, envelope, coreEq, nonempty,
+            marked, directFree⟩ := sameToken
+        rcases Graph.TypeBRefinedSupport.b2_or_overlap current.object
+            data.threshold data.dischargeScale packing core
+            envelope.decorations (fun centre member =>
+              envelope.decorations_high centre member) with
+          choice | obstruction
+        · exact ⟨.inl ⟨Or.inr (Or.inr ⟨packing, valid, maximal, core,
+              envelope, coreEq, nonempty, marked, directFree, choice⟩)⟩⟩
+        · exact ⟨.inr ⟨Or.inr (Or.inr ⟨packing, valid, maximal, core,
+              envelope, coreEq, nonempty, marked, directFree,
+              obstruction⟩)⟩⟩)
     choiceFresh obstructionFresh
 
 /-! ## B2 and the live Type B post-ledger core
@@ -4065,17 +4466,26 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
               exact Graph.TypeBMaximalCompletion.Grouped.mem_centres_iff
                 ledger components production avoids windowFree
                 uncompressibleFact centre
-          exact Or.inl ⟨packing, valid, maximal, canonicalPiece, centres, assigned,
-            ledger, ledger.exactAugmentedLedgerRefinement,
+          exact Or.inl ⟨packing, valid, maximal, canonicalPiece, centres,
+            assigned, ledger, ledger.exactAugmentedLedgerRefinement,
             componentFacts, groupedCoverage⟩
-          rename_i absorbed
-          refine .inr ⟨absorbed, ?_⟩
-          intro germ centre witness
-          obtain ⟨choice⟩ := absorbed.2 germ centre witness
-          refine ⟨choice, ?_⟩
-          intro member
-          exact (Graph.TypeBRefinedSupport.mem_candidateFamily_iff.mp
-            (choice.eligible centre member)).2.entryRefines
+          rename_i remaining
+          rcases remaining with absorbed | sameToken
+          · refine Or.inr (Or.inl ⟨absorbed, ?_⟩)
+            intro germ centre witness
+            obtain ⟨choice⟩ := absorbed.2 germ centre witness
+            refine ⟨choice, ?_⟩
+            intro member
+            exact (Graph.TypeBRefinedSupport.mem_candidateFamily_iff.mp
+              (choice.eligible centre member)).2.entryRefines
+          · obtain ⟨packing, valid, maximal, core, envelope, coreEq, nonempty,
+                marked, directFree, choice⟩ := sameToken
+            obtain ⟨selected⟩ := choice
+            exact Or.inr (Or.inr ⟨packing, valid, maximal, core, envelope,
+              coreEq, nonempty, marked, directFree, selected,
+              fun centre member =>
+                (Graph.TypeBRefinedSupport.mem_candidateFamily_iff.mp
+                  (selected.eligible centre member)).2.entryRefines⟩)
         ⟩)
         .nil)
     0 0
@@ -4386,7 +4796,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       let residual := inputs.get (K .fanCertificateResidual)
       .cons (key := K .fanCertificateResidualMass) (by
         refine ⟨?_⟩
-        rcases residual.down with support | absorbed
+        rcases residual.down with support | absorbed | sameToken
         · obtain ⟨packing, valid, maximal, component, componentMem, centres, assigned,
             centre, centreMem, high, empty⟩ := support
           exact .inl ⟨packing, valid, maximal, component, componentMem, centres,
@@ -4394,9 +4804,21 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
               Graph.TypeBEnvelopeCharge.envelopeNegativePart_le envelope high
                 data.bridgeMassSlack⟩
         · obtain ⟨envelopes, germ, centre, witness, empty⟩ := absorbed
-          exact .inr ⟨envelopes, germ, centre, witness, empty, fun envelope =>
+          have high : Graph.IsHighCentre inputs.current.object
+              data.threshold centre := by
+            rcases witness with ⟨routing, epsilon, germEq, firstIndex,
+              centreEq, indexLe, high, tail⟩
+            exact high
+          exact .inr (.inl ⟨envelopes, germ, centre, witness, empty,
+            fun envelope =>
               Graph.TypeBEnvelopeCharge.envelopeNegativePart_le envelope
-                witness.2.2.1 data.bridgeMassSlack⟩)
+                high data.bridgeMassSlack⟩)
+        · obtain ⟨packing, valid, maximal, core, handoff, coreEq, nonempty,
+              centre, member, high, empty⟩ := sameToken
+          exact .inr (.inr ⟨packing, valid, maximal, core, handoff, coreEq,
+            nonempty, centre, member, high, empty, fun envelope =>
+              Graph.TypeBEnvelopeCharge.envelopeNegativePart_le envelope high
+                data.bridgeMassSlack⟩))
       .nil)
     0 0
 
@@ -4423,18 +4845,33 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       let residual := inputs.get (K .typeBOverlapObstruction)
       .cons (key := K .typeBOverlapObstructionMass) (by
         refine ⟨?_⟩
-        obtain ⟨packing, valid, maximal, canonicalPiece, centres, assigned,
-          obstruction⟩ := residual.down
-        exact Or.inl ⟨packing, valid, maximal, canonicalPiece, centres, assigned,
-          obstruction, fun centre member envelope =>
-            Graph.TypeBEnvelopeCharge.envelopeNegativePart_le envelope
-              (TypeBAssignedCentres.high data inputs.current.object assigned centre member)
-              data.bridgeMassSlack⟩
-        rename_i absorbed
-        obtain ⟨directFree, germ, centre, witness, obstruction⟩ := absorbed
-        exact .inr ⟨directFree, germ, centre, witness, obstruction, fun envelope =>
-            Graph.TypeBEnvelopeCharge.envelopeNegativePart_le envelope
-              witness.2.2.1 data.bridgeMassSlack⟩)
+        rcases residual.down with support | absorbed | sameToken
+        · obtain ⟨packing, valid, maximal, canonicalPiece, centres, assigned,
+            obstruction⟩ := support
+          exact Or.inl ⟨packing, valid, maximal, canonicalPiece, centres, assigned,
+            obstruction, fun centre member envelope =>
+              Graph.TypeBEnvelopeCharge.envelopeNegativePart_le envelope
+                (TypeBAssignedCentres.high data inputs.current.object assigned
+                  centre member)
+                data.bridgeMassSlack⟩
+        · obtain ⟨directFree, germ, centre, witness, obstruction⟩ := absorbed
+          have high : Graph.IsHighCentre inputs.current.object
+              data.threshold centre := by
+            rcases witness with ⟨routing, epsilon, germEq, firstIndex,
+              centreEq, indexLe, high, tail⟩
+            exact high
+          exact .inr (.inl ⟨directFree, germ, centre, witness, obstruction,
+            fun envelope =>
+              Graph.TypeBEnvelopeCharge.envelopeNegativePart_le envelope
+                high data.bridgeMassSlack⟩)
+        · obtain ⟨packing, valid, maximal, core, envelope, coreEq, nonempty,
+              marked, directFree, obstruction⟩ := sameToken
+          exact .inr (.inr ⟨packing, valid, maximal, core, envelope, coreEq,
+            nonempty, marked, directFree, obstruction,
+            fun centre member localEnvelope =>
+              Graph.TypeBEnvelopeCharge.envelopeNegativePart_le localEnvelope
+                (envelope.decorations_high centre member)
+                data.bridgeMassSlack⟩))
       .nil)
     0 0
 
@@ -4515,7 +4952,7 @@ noncomputable def typeBExclusionDichotomy
       classical
       apply Classical.choice
       rcases (ExactLedger.get previous (K .typeBDisjointLedger)).down with
-        canonical | absorbed
+        canonical | absorbed | sameToken
       · obtain ⟨packing, valid, maximal, canonicalPiece, centres, assigned,
           ledger, exact, postLedger, _groupedCoverage⟩ := canonical
         -- Both manuscript forms of an assigned support carry the negative net
@@ -4543,7 +4980,11 @@ noncomputable def typeBExclusionDichotomy
             by simpa [charge] using clean⟩⟩
       · -- `[177]` has a successful B2 entry, so it follows the paper's
         -- yes edge `[74]`/`[82]` → `[76]`/`[85]`, never `[84]`.
-        exact ⟨.inl ⟨.inr absorbed⟩⟩)
+        exact ⟨.inl ⟨.inr (.inl absorbed)⟩⟩
+      · -- The same-token handoff has exactly the same successful B2(a)--(c)
+        -- status.  Retain its literal packing, core, envelope, and choice on
+        -- the yes edge; no canonical post-ledger core is asserted here.
+        exact ⟨.inl ⟨.inr (.inr sameToken)⟩⟩)
     closedFresh residualFresh
 
 /-! ## Node `[87]`: the bounded selected Type A support
@@ -4648,153 +5089,10 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
               induced.reachable.exists_path_of_dist
             have shortestBound :
                 shortest.length ≤ data.windowOrder - 2 := by
-              by_contra tooLong
-              have initialSegmentLe :
-                  data.windowOrder - 1 ≤ shortest.length := by omega
-              let initialSegment := shortest.take (data.windowOrder - 1)
-              have initialSegmentPath : initialSegment.IsPath :=
-                shortestPath.take _
-              have initialSegmentLength :
-                  initialSegment.length = data.windowOrder - 1 := by
-                simp only [initialSegment, SimpleGraph.Walk.take_length]
-                rw [Nat.min_eq_left initialSegmentLe]
-              have initialSegmentShortest :=
-                SimpleGraph.length_eq_dist_of_subwalk shortestLength
-                  (SimpleGraph.Walk.isSubwalk_take shortest
-                    (data.windowOrder - 1))
-              have forbiddenPath :
-                  SimpleGraph.IsIndContained
-                    (SimpleGraph.pathGraph (initialSegment.length + 1))
-                    (inputs.current.object.induce piece).graph := by
-                have inducedSubgraph :
-                    initialSegment.toSubgraph.IsInduced := by
-                  intro x xMem y yMem adjacent
-                  have xSupport : x ∈ initialSegment.support :=
-                    initialSegment.mem_verts_toSubgraph.mp xMem
-                  have ySupport : y ∈ initialSegment.support :=
-                    initialSegment.mem_verts_toSubgraph.mp yMem
-                  obtain ⟨i, xEq, iLe⟩ :=
-                    SimpleGraph.Walk.mem_support_iff_exists_getVert.mp xSupport
-                  obtain ⟨j, yEq, jLe⟩ :=
-                    SimpleGraph.Walk.mem_support_iff_exists_getVert.mp ySupport
-                  have ijNe : i ≠ j := by
-                    intro equal
-                    exact adjacent.ne (calc
-                      x = initialSegment.getVert i := xEq.symm
-                      _ = initialSegment.getVert j :=
-                        congrArg initialSegment.getVert equal
-                      _ = y := yEq)
-                  rcases lt_or_gt_of_ne ijNe with iLt | jLt
-                  · let segment := (initialSegment.drop i).take (j - i)
-                    have segmentSub : segment.IsSubwalk initialSegment :=
-                      (SimpleGraph.Walk.isSubwalk_take
-                        (initialSegment.drop i) (j - i)).trans
-                        (SimpleGraph.Walk.isSubwalk_drop initialSegment i)
-                    have segmentShortest :=
-                      SimpleGraph.length_eq_dist_of_subwalk
-                        initialSegmentShortest segmentSub
-                    have segmentLength : segment.length = j - i := by
-                      simp only [segment, SimpleGraph.Walk.take_length,
-                        SimpleGraph.Walk.drop_length]
-                      rw [Nat.min_eq_left
-                        (by omega : j - i ≤ initialSegment.length - i)]
-                    have segmentTarget :
-                        (initialSegment.drop i).getVert (j - i) =
-                          initialSegment.getVert j := by
-                      rw [SimpleGraph.Walk.drop_getVert]
-                      congr 1
-                      omega
-                    have distanceTarget :
-                        (SimpleGraph.induce
-                            (↑piece : Set inputs.current.object.Vertex)
-                            inputs.current.object.graph).dist
-                              (initialSegment.getVert i)
-                              ((initialSegment.drop i).getVert (j - i)) =
-                          (SimpleGraph.induce
-                            (↑piece : Set inputs.current.object.Vertex)
-                            inputs.current.object.graph).dist
-                              (initialSegment.getVert i)
-                              (initialSegment.getVert j) :=
-                      congrArg (fun target =>
-                        (SimpleGraph.induce
-                          (↑piece : Set inputs.current.object.Vertex)
-                          inputs.current.object.graph).dist
-                            (initialSegment.getVert i) target) segmentTarget
-                    have distanceOne :
-                        (SimpleGraph.induce
-                            (↑piece : Set inputs.current.object.Vertex)
-                            inputs.current.object.graph).dist
-                              (initialSegment.getVert i)
-                              (initialSegment.getVert j) = 1 := by
-                      have distanceXY :=
-                        SimpleGraph.dist_eq_one_iff_adj.mpr adjacent
-                      simpa only [xEq, yEq] using distanceXY
-                    have consecutive : j = i + 1 := by omega
-                    subst j
-                    simpa [xEq, yEq] using
-                      initialSegment.toSubgraph_adj_getVert
-                        (by omega : i < initialSegment.length)
-                  · have adjacent' := adjacent.symm
-                    let segment := (initialSegment.drop j).take (i - j)
-                    have segmentSub : segment.IsSubwalk initialSegment :=
-                      (SimpleGraph.Walk.isSubwalk_take
-                        (initialSegment.drop j) (i - j)).trans
-                        (SimpleGraph.Walk.isSubwalk_drop initialSegment j)
-                    have segmentShortest :=
-                      SimpleGraph.length_eq_dist_of_subwalk
-                        initialSegmentShortest segmentSub
-                    have segmentLength : segment.length = i - j := by
-                      simp only [segment, SimpleGraph.Walk.take_length,
-                        SimpleGraph.Walk.drop_length]
-                      rw [Nat.min_eq_left
-                        (by omega : i - j ≤ initialSegment.length - j)]
-                    have segmentTarget :
-                        (initialSegment.drop j).getVert (i - j) =
-                          initialSegment.getVert i := by
-                      rw [SimpleGraph.Walk.drop_getVert]
-                      congr 1
-                      omega
-                    have distanceTarget :
-                        (SimpleGraph.induce
-                            (↑piece : Set inputs.current.object.Vertex)
-                            inputs.current.object.graph).dist
-                              (initialSegment.getVert j)
-                              ((initialSegment.drop j).getVert (i - j)) =
-                          (SimpleGraph.induce
-                            (↑piece : Set inputs.current.object.Vertex)
-                            inputs.current.object.graph).dist
-                              (initialSegment.getVert j)
-                              (initialSegment.getVert i) :=
-                      congrArg (fun target =>
-                        (SimpleGraph.induce
-                          (↑piece : Set inputs.current.object.Vertex)
-                          inputs.current.object.graph).dist
-                            (initialSegment.getVert j) target) segmentTarget
-                    have distanceOne :
-                        (SimpleGraph.induce
-                            (↑piece : Set inputs.current.object.Vertex)
-                            inputs.current.object.graph).dist
-                              (initialSegment.getVert j)
-                              (initialSegment.getVert i) = 1 := by
-                      have distanceYX :=
-                        SimpleGraph.dist_eq_one_iff_adj.mpr adjacent'
-                      simpa only [xEq, yEq] using distanceYX
-                    have consecutive : i = j + 1 := by omega
-                    subst i
-                    simpa [xEq, yEq] using
-                      (initialSegment.toSubgraph_adj_getVert
-                        (by omega : j < initialSegment.length)).symm
-                exact initialSegmentPath.pathGraphIsoToSubgraph.isIndContained.trans
-                  inducedSubgraph.isIndContained
-              apply pieceFree
-              show Graph.HasInducedPath
+              exact Graph.shortestPath_length_le_order_sub_two
                 (inputs.current.object.induce piece) data.windowOrder
-              unfold Graph.HasInducedPath Graph.HasInducedObstruction
-              have orderAtLeast := data.three_le_windowOrder
-              have orderEq :
-                  initialSegment.length + 1 = data.windowOrder := by omega
-              rw [orderEq] at forbiddenPath
-              exact forbiddenPath
+                data.three_le_windowOrder shortest shortestPath shortestLength
+                pieceFree
             let embedding := inputs.current.object.induceEmbedding piece
             let ambient := shortest.map embedding.toHom
             have ambientPath : ambient.IsPath :=

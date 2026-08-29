@@ -256,7 +256,8 @@ abbrev residualCTypeBHeavyCentreKeys
 abbrev residualCTypeBLocalDichotomyKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBFanLocalDichotomy :: residualCTypeBHeavyCentreKeys known
+  K .typeBFanLocalDichotomy :: K .sameCenterOpenPortCompatibility ::
+    residualCTypeBHeavyCentreKeys known
 
 abbrev residualCTypeBHeavyFanCapKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
@@ -412,23 +413,25 @@ abbrev fanDirectCycleFreeKeys
     FactKeys (Input BranchState Presentation presentation data) :=
   K .typeBDirectCycleFree :: known
 
-/-- `[72]`/`[81]`, second half, yes — the entry of `[74]`/`[82]`. -/
-abbrev fanB2ChoiceKeys
-    (known : FactKeys (Input BranchState Presentation presentation data)) :
-    FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBB2Choice :: fanDirectCycleFreeKeys known
-
-/-- `[74]`/`[82]`: the hybrid B1 fan ledger. -/
+/-- `[74]`/`[82]`: the hybrid B1 fan ledger, published before the global B2
+split so both B2 arms retain the local payment fact. -/
 abbrev fanHybridEntryKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBHybridEntry :: fanB2ChoiceKeys known
+  K .typeBHybridEntry :: fanDirectCycleFreeKeys known
+
+/-- `[72]`/`[81]`, second half, yes — the entry of the successful B2
+continuation, with B1 already present in the exact prefix. -/
+abbrev fanB2ChoiceKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeBB2Choice :: fanHybridEntryKeys known
 
 /-- `[76]`/`[85]`: the exact post-ledger disjoint component fact. -/
 abbrev fanDisjointLedgerKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBDisjointLedger :: fanHybridEntryKeys known
+  K .typeBDisjointLedger :: fanB2ChoiceKeys known
 
 /-- `[76]`/`[85]`, closed arm. -/
 abbrev fanExcludedKeys
@@ -446,7 +449,7 @@ abbrev fanExclusionResidualKeys
 abbrev fanOverlapObstructionKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBOverlapObstruction :: fanDirectCycleFreeKeys known
+  K .typeBOverlapObstruction :: fanHybridEntryKeys known
 
 /-- `[75]`/`[84]` on an overlap-obstruction cursor. -/
 abbrev fanOverlapObstructionMassKeys

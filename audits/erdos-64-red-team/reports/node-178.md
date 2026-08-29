@@ -5,12 +5,12 @@
   "node": 178,
   "node_label": "pair-code unrealized residual: the entropy count of [131] or of the free side of [137] fails; \\cref{lem:pair-failure-overlap} gives a minimal pair overlap obstruction",
   "panel": "fig:proof-diagram-part-x",
-  "contract_sha256": "99bb56f52d746efe11b4a73f13581a0e4d3d72782b54ed5723608833099d1a4b",
-  "manuscript_sha256": "106a8205a1718fbf90e1686a107b2143b9edca574e2b0c11415e7f44aee2c0f9",
-  "graph_sha256": "dc67fae178f947a9607c167e383d85919633341bdd423e4c4a45e4c317b3a765",
+  "contract_sha256": "18f6912bb239244d9a2cbf1803781cf094fc7429604404a3a336a9d19fefa46b",
+  "manuscript_sha256": "2fa93b8b4fdaf54ce6f72f172aaac06b6d6ca3065d97e5d9988508f0e7b74ef9",
+  "graph_sha256": "37b29997d8ae5f2ff7a4f060cb96f7f67d5fdfdd01e0463ccb9be9f8149ba4fe",
   "lean_audit_sha256": "50324ef5594d635a52d83aeb297f2ca3f3d30ef58de4ce3602816c7e78365b12",
   "verdict": "NONEXHAUSTIVE BRANCH",
-  "audited_at": "2026-08-24T21:51:17Z"
+  "audited_at": "2026-08-27T13:06:03Z"
 }
 -->
 
@@ -21,20 +21,24 @@
 Verdict: **NONEXHAUSTIVE BRANCH**
 
 The two incoming count-failure arms do not imply the “pair overlap
-obstruction” defined at node [178].  Failure to realize one binary bit per pair
-means that, after some prefix assignment, a pair coordinate has at most one
-realized continuation.  The definition uses the opposite condition: it calls
+obstruction” defined at node [178].  The concern is not missing blocker data:
+on the [137] route the concrete capacity presentation proves that its free side
+is contained in the activation's blocker-free side.  The failure is in the
+next inference.  Failure to realize one binary bit per pair means that, after
+some realized prefix assignment, a pair coordinate has at most one realized
+continuation.  The definition uses the opposite global condition: it calls
 (\mathcal U) an obstruction when *no* ordering makes *every* pair coordinate
 have conditional cardinality at most one.  Thus a one-coordinate constant
-fibre is a count-failure residual but has no obstruction, whereas the full
-binary product satisfies the displayed obstruction predicate.  The proof also
-changes one pair response without constructing a graph in the current
-fixed-((n,m)) conditional fibre, so disconnected support components need not
-factor.  Consequently the unconditional edge to [179] leaves the
+fibre is a code defect but is not an obstruction, whereas the full binary
+product satisfies the displayed obstruction predicate.  The proof also changes
+one pair response without constructing a graph in the current fixed-((n,m))
+conditional fibre, so disconnected support components need not factor.
+Consequently the unconditional edge to [179] leaves the
 code-unrealized-but-determined residual unassigned.  The smallest repair is to
-retain an actual minimal *binary code defect*, reverse the conditional-fibre
-inequality, and either prove a boundary-profile- and edge-count-preserving
-factorization lemma for disconnected supports or route its failure separately.
+retain an actual minimal *binary code defect*, put the “at most one
+continuation” condition in the witness of failure, and either prove a
+boundary-profile- and edge-count-preserving factorization lemma for
+disconnected supports or route its failure separately.
 
 ## 2. Exact node contract
 
@@ -66,12 +70,16 @@ induced-(P_{13}) packing, and the strict non-near-cubic surplus branch.  Nodes
 and an independently target-testable baseline family with deficit
 (E_{\rm spine}(n)\le C_E n).
 
-The selected branch fact is not an abstract rank failure.  It is the failure
-of graph realization of the mixed code among the labelled skeletons of the
-current fixed-((n,m)) class.  The manuscript explicitly says this is a
-genuine residual because the pair response coordinates are functions of the
-graph and their supports share spine routes; abstract label-injectivity alone
-does not realize all response combinations.
+In the manuscript, the selected branch fact is not merely an abstract rank
+failure: it is the failure of graph realization of the mixed code among the
+labelled skeletons of the current fixed-((n,m)) class.  The manuscript
+explicitly says this is a genuine residual because the pair response
+coordinates are functions of the graph and their supports share spine routes;
+abstract label-injectivity alone does not realize all response combinations.
+The current Lean propositions are weaker: they retain the common baseline (and
+the concrete capacity presentation on the [137] lane) together with the
+negation of the numerical power-of-two inequality, but no realized conditional
+fibre or missing pair extension.
 
 ### Accumulated facts
 
@@ -98,11 +106,14 @@ The common facts available at [178] are:
 
 On the [137] route only, the canonical blocked/free partition, one blocker and
 capacity token per blocked pair, exact token no-overcounting, and the literal
-free set of that presentation are retained.  No common or route-specific fact
-at [178] supplies a nonempty subfamily (mathcal U), its realized joint state
-set (mathcal S(\mathcal U)), a missing binary extension, connected overlap
-support, or a gluing representative for changing one support while fixing the
-other exposed data.
+free set of that presentation are retained.  The theorem
+`CapacityPresentation.freeSide_subset_activationFree` proves that this literal
+free set has no recorded blocker, so `lem:sparse-pair-dependence-exit` is
+applicable there without importing the [131] sibling ledger.  No common or
+route-specific fact at [178], however, supplies a nonempty subfamily
+(mathcal U), its realized joint state set (mathcal S(\mathcal U)), a missing
+binary extension, connected overlap support, or a gluing representative for
+changing one support while fixing the other exposed data.
 
 The Lean branch values match that limitation.  `FreePairCodeUnrealizedStatement`
 and `BlockedPairCodeUnrealizedStatement` retain the appropriate baseline and
@@ -497,7 +508,10 @@ Negative searches found no manuscript or Lean lemma that factors current
 fixed-((n,m)) conditional graph fibres over disconnected pair-response
 supports, no nonemptiness proof for the [137] free side on the false arm, no
 semantic representation of (mathcal S(\mathcal U)) in Lean, and no producer
-of a minimal connected pair overlap obstruction.  The only closely analogous
+of a minimal connected pair overlap obstruction.  A positive search found
+`CapacityPresentation.freeSide_subset_activationFree`, which discharges the
+possible no-blocker concern on the [137] lane but does not provide graph-state
+factorization.  The only closely analogous
 conditional-fibre lemma is the barrier *upper-bound* product argument, whose
 inequality has the opposite role.
 
@@ -512,5 +526,8 @@ fixed-edge-count conditional gluing theorem, and it may fail without exposing
 additional per-component edge counts and boundary profiles; that failure is
 why the separated-support arm is retained.  I did not audit the uncrossing or
 doubling-orbit mathematics of nodes [179] and [180] beyond checking their
-entry dependency on node [178].  No manuscript, proof-flow, Lean, diagram,
-audit-source, or coverage-ledger file was changed.
+entry dependency on node [178].  The fresh dossier reports graph drift: the
+live graph fingerprint differs from the checked semantic graph fingerprint,
+so the proof-flow graph should be regenerated before relying on its coverage
+state.  No manuscript, proof-flow, Lean, or diagram source was changed by this
+audit.

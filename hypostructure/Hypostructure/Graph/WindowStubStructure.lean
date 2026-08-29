@@ -56,14 +56,14 @@ theorem card_windowNeighbours_add_card_externalNeighbours (window : Finset objec
 
 /-- **The endpoint/interior stub structure of an ambient-cubic induced window.**
 
-There is a set `ends` of at most two window vertices (the two path endpoints)
+There is a set `ends` of exactly two window vertices (the two path endpoints)
 such that every window vertex outside `ends` has exactly `threshold − 2`
 external stubs, and every vertex of `ends` has exactly `threshold − 1`. -/
 theorem exists_ends_externalNeighbours {order threshold : Nat}
     (window : Finset object.Vertex) (three : 3 ≤ order)
     (induces : object.InducesWindow order window)
     (cubic : ∀ vertex ∈ window, object.degree vertex = threshold) :
-    ∃ ends : Finset object.Vertex, ends ⊆ window ∧ ends.card ≤ 2 ∧
+    ∃ ends : Finset object.Vertex, ends ⊆ window ∧ ends.card = 2 ∧
       (∀ vertex ∈ window, vertex ∉ ends →
         (object.externalNeighbours window vertex).card = threshold - 2) ∧
       (∀ vertex ∈ ends,
@@ -123,7 +123,12 @@ theorem exists_ends_externalNeighbours {order threshold : Nat}
   · intro v hv
     simp only [Finset.mem_insert, Finset.mem_singleton] at hv
     rcases hv with rfl | rfl <;> exact toVertexMem _
-  · exact Finset.card_le_two
+  · rw [Finset.card_pair]
+    intro same
+    have indexSame : first = last := toVertexInj same
+    rw [Fin.ext_iff] at indexSame
+    simp only [first, last] at indexSame
+    omega
   · intro vertex vertexMem notEnd
     obtain ⟨i, rfl⟩ := toVertexRange vertex vertexMem
     have iNotFirst : i ≠ first := fun h => notEnd (by simp [h])

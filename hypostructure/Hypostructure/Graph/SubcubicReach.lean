@@ -37,6 +37,30 @@ theorem mem_reach {S : Finset V} {x : V} {j : Nat} {a w : V} :
   classical
   simp [reach]
 
+/-- The centre belongs to every reach set, witnessed by the trivial path. -/
+theorem self_mem_reach (S : Finset V) (x : V) (j : Nat) (a : V) :
+    x ∈ reach G S x j a := by
+  rw [mem_reach]
+  exact ⟨.nil, .nil, by simp, by simp, by simp⟩
+
+/-- A single allowed step from a vertex in `S` belongs to the reach set. -/
+theorem adjacent_mem_reach (S : Finset V) {x w a : V} {j : Nat}
+    (adjacent : G.Adj x w) (inside : x ∈ S) (avoids : w ≠ a)
+    (one_le : 1 ≤ j) :
+    w ∈ reach G S x j a := by
+  rw [mem_reach]
+  let walk := SimpleGraph.Walk.cons adjacent SimpleGraph.Walk.nil
+  have path : walk.IsPath :=
+    (SimpleGraph.Walk.cons_isPath_iff adjacent SimpleGraph.Walk.nil).2
+      ⟨.nil, by simpa using adjacent.ne⟩
+  refine ⟨walk, path, ?_, ?_, ?_⟩
+  · simpa [walk] using one_le
+  · intro vertex member
+    have : vertex = x := by simpa [walk] using member
+    simpa [this] using inside
+  · intro _
+    simpa [walk] using avoids
+
 /-- One step of the recursion: a path of length `≤ j+1` from `x` avoiding `a` is
 `x` itself or a step to a neighbour `y ≠ a` followed by a path of length `≤ j`
 from `y` avoiding `x`; and if `x ∉ S` only the trivial path qualifies. -/

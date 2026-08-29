@@ -1,5 +1,7 @@
 import Hypostructure.Core.TargetRank
 import Hypostructure.Graph.DeclaredCoordinateSignature
+import Hypostructure.Graph.PackedWindowRealization
+import Hypostructure.Graph.RootedReturn
 import Hypostructure.Graph.SkeletonBudget
 
 /-!
@@ -435,6 +437,212 @@ scale that dominates it.  At the registered cubic baseline this is
 def cubicBaselineExponent (vertexCount baselineDegree : Nat) : Nat :=
   cubicBaselineEdgeCount vertexCount baselineDegree * (Nat.log2 vertexCount + 2)
 
+/-- A concrete linear coefficient for the loss between the convenient cubic
+upper exponent and the binomial lower exponent.  It depends only on the fixed
+baseline degree. -/
+def baselineDeficitCoefficient (baselineDegree : Nat) : Nat :=
+  (baselineDegree + 1) *
+    (Nat.clog 2 (2 * (baselineDegree + 1)) + 3)
+
+/-- The realizable lower exponent in the cubic labelled-skeleton stratum.
+`pow_pred_le_cubicBaselineBudget_mul` proves that this many Boolean states fit;
+the difference from `cubicBaselineExponent` is at most
+`baselineDeficitCoefficient baselineDegree * vertexCount`. -/
+def realizableBaselineExponent (vertexCount baselineDegree : Nat) : Nat :=
+  cubicBaselineEdgeCount vertexCount baselineDegree *
+    (Nat.log2 (vertexCount - 1) -
+      Nat.clog 2 (2 * (baselineDegree + 1)))
+
+/-- The lower exponent is an actually realizable Boolean code in the cubic
+baseline stratum.  The weak room hypothesis is exactly what is needed in the
+zero-rate case.  At positive rate the logarithmic gap itself supplies the
+stronger room hypothesis used by `pow_pred_le_cubicBaselineBudget_mul`. -/
+theorem two_pow_realizableBaselineExponent_le_cubicBaselineBudget
+    (vertexCount baselineDegree : Nat)
+    (room : cubicBaselineEdgeCount vertexCount baselineDegree ≤
+      vertexCount.choose 2) :
+    2 ^ realizableBaselineExponent vertexCount baselineDegree ≤
+      cubicBaselineBudget vertexCount baselineDegree := by
+  let edgeBaseline := cubicBaselineEdgeCount vertexCount baselineDegree
+  let denominator := 2 * (baselineDegree + 1)
+  let denominatorBits := Nat.clog 2 denominator
+  let rate := Nat.log2 (vertexCount - 1) - denominatorBits
+  change 2 ^ (edgeBaseline * rate) ≤
+    cubicBaselineBudget vertexCount baselineDegree
+  by_cases rateZero : rate = 0
+  · rw [rateZero, Nat.mul_zero, pow_zero]
+    exact Nat.one_le_iff_ne_zero.mpr (Nat.choose_ne_zero room)
+  have ratePositive : 0 < rate := Nat.pos_of_ne_zero rateZero
+  have denominatorBitsLt : denominatorBits < Nat.log2 (vertexCount - 1) := by
+    simpa [rate, Nat.sub_pos_iff_lt] using ratePositive
+  have denominatorLePow : denominator ≤ 2 ^ denominatorBits := by
+    exact Nat.le_pow_clog (by norm_num) denominator
+  have doubledDenominatorLePred : 2 * denominator ≤ vertexCount - 1 := by
+    have exponentStep : denominatorBits + 1 ≤ Nat.log2 (vertexCount - 1) := by
+      omega
+    calc
+      2 * denominator ≤ 2 * 2 ^ denominatorBits :=
+        Nat.mul_le_mul_left 2 denominatorLePow
+      _ = 2 ^ (denominatorBits + 1) := by ring
+      _ ≤ 2 ^ Nat.log2 (vertexCount - 1) :=
+        Nat.pow_le_pow_right (by norm_num) exponentStep
+      _ ≤ vertexCount - 1 := by
+        simpa [Nat.log2_eq_log_two] using
+          Nat.pow_log_le_self 2
+            (show vertexCount - 1 ≠ 0 by
+              intro zero
+              simp [zero] at denominatorBitsLt)
+  have strongRoom : 2 * edgeBaseline ≤ vertexCount.choose 2 := by
+    have edgeBound := two_mul_cubicBaselineEdgeCount_le vertexCount baselineDegree
+    have pairsIdentity := Core.FiniteEntropy.two_mul_choose_two vertexCount
+    have vertexPositive : 0 < vertexCount := by omega
+    have degreeBound : baselineDegree * vertexCount + 1 ≤
+        denominator * vertexCount := by
+      dsimp [denominator]
+      nlinarith
+    have doubledBound :
+        2 * (baselineDegree * vertexCount + 1) ≤
+          2 * vertexCount.choose 2 := by
+      rw [pairsIdentity]
+      calc
+        2 * (baselineDegree * vertexCount + 1) ≤
+            denominator * vertexCount := by
+          dsimp [denominator]
+          nlinarith
+        _ ≤ (vertexCount - 1) * vertexCount :=
+          Nat.mul_le_mul_right vertexCount (by omega)
+    omega
+  have lower := pow_pred_le_cubicBaselineBudget_mul vertexCount strongRoom
+  have rateAdd : rate + denominatorBits ≤ Nat.log2 (vertexCount - 1) := by
+    dsimp [rate]
+    omega
+  have codeBase : 2 ^ rate * denominator ≤ vertexCount - 1 := by
+    calc
+      2 ^ rate * denominator ≤ 2 ^ rate * 2 ^ denominatorBits :=
+        Nat.mul_le_mul_left _ denominatorLePow
+      _ = 2 ^ (rate + denominatorBits) := by rw [pow_add]
+      _ ≤ 2 ^ Nat.log2 (vertexCount - 1) :=
+        Nat.pow_le_pow_right (by norm_num) rateAdd
+      _ ≤ vertexCount - 1 := by
+        simpa [Nat.log2_eq_log_two] using
+          Nat.pow_log_le_self 2
+            (show vertexCount - 1 ≠ 0 by
+              dsimp [denominator] at doubledDenominatorLePred
+              omega)
+  have powered := Nat.pow_le_pow_left codeBase edgeBaseline
+  have multiplied :
+      2 ^ (edgeBaseline * rate) * denominator ^ edgeBaseline ≤
+        cubicBaselineBudget vertexCount baselineDegree *
+          denominator ^ edgeBaseline := by
+    calc
+      2 ^ (edgeBaseline * rate) * denominator ^ edgeBaseline =
+          (2 ^ rate * denominator) ^ edgeBaseline := by
+        calc
+          2 ^ (edgeBaseline * rate) * denominator ^ edgeBaseline =
+              2 ^ (rate * edgeBaseline) * denominator ^ edgeBaseline := by
+                rw [Nat.mul_comm edgeBaseline rate]
+          _ = (2 ^ rate) ^ edgeBaseline * denominator ^ edgeBaseline := by
+                rw [pow_mul]
+          _ = (2 ^ rate * denominator) ^ edgeBaseline := by
+                exact (Nat.mul_pow (2 ^ rate) denominator edgeBaseline).symm
+      _ ≤ (vertexCount - 1) ^ edgeBaseline := powered
+      _ ≤ cubicBaselineBudget vertexCount baselineDegree *
+          denominator ^ edgeBaseline := by
+        simpa [edgeBaseline, denominator] using lower
+  exact Nat.le_of_mul_le_mul_right multiplied (by positivity)
+
+/-- Up to the middle binomial stratum, every object-edge skeleton budget
+contains at least the cubic baseline stratum. -/
+theorem cubicBaselineBudget_le_skeletonBudget_of_le_half
+    (object : FiniteObject.{v}) (baselineDegree : Nat)
+    (above : cubicBaselineEdgeCount object.vertexCount baselineDegree ≤
+      object.edgeCount)
+    (half : object.edgeCount ≤ object.vertexCount.choose 2 / 2) :
+    cubicBaselineBudget object.vertexCount baselineDegree ≤
+      skeletonBudget object := by
+  change (object.vertexCount.choose 2).choose
+      (cubicBaselineEdgeCount object.vertexCount baselineDegree) ≤
+    (object.vertexCount.choose 2).choose object.edgeCount
+  generalize cubicBaselineEdgeCount object.vertexCount baselineDegree =
+    edgeBaseline at above ⊢
+  induction above using Nat.decreasingInduction with
+  | self => rfl
+  | of_succ edge edgeLt induction =>
+      exact (Nat.choose_le_succ_of_lt_half_left
+        (edgeLt.trans_le half)).trans induction
+
+/-- The realizable baseline code fits the current sparse object's own labelled
+skeleton stratum.  When its rate is zero this is positivity of the current
+stratum.  At positive rate, the logarithmic gap and the sparse envelope place
+both edge counts below the middle binomial stratum. -/
+theorem two_pow_realizableBaselineExponent_le_skeletonBudget
+    (object : FiniteObject.{v}) (baselineDegree : Nat)
+    (above : cubicBaselineEdgeCount object.vertexCount baselineDegree ≤
+      object.edgeCount)
+    (envelope : object.edgeCount + 2 ≤
+      (baselineDegree - 1) * object.vertexCount) :
+    2 ^ realizableBaselineExponent object.vertexCount baselineDegree ≤
+      skeletonBudget object := by
+  let denominator := 2 * (baselineDegree + 1)
+  let denominatorBits := Nat.clog 2 denominator
+  let rate := Nat.log2 (object.vertexCount - 1) - denominatorBits
+  by_cases rateZero : rate = 0
+  · change 2 ^ (cubicBaselineEdgeCount object.vertexCount baselineDegree *
+        rate) ≤ skeletonBudget object
+    rw [rateZero, Nat.mul_zero, pow_zero]
+    exact Nat.one_le_iff_ne_zero.mpr
+      (Nat.choose_ne_zero object.edgeCount_le_choose_two)
+  have ratePositive : 0 < rate := Nat.pos_of_ne_zero rateZero
+  have denominatorBitsLt : denominatorBits <
+      Nat.log2 (object.vertexCount - 1) := by
+    simpa [rate, Nat.sub_pos_iff_lt] using ratePositive
+  have denominatorLePow : denominator ≤ 2 ^ denominatorBits :=
+    Nat.le_pow_clog (by norm_num) denominator
+  have doubledDenominatorLePred :
+      2 * denominator ≤ object.vertexCount - 1 := by
+    have exponentStep : denominatorBits + 1 ≤
+        Nat.log2 (object.vertexCount - 1) := by omega
+    calc
+      2 * denominator ≤ 2 * 2 ^ denominatorBits :=
+        Nat.mul_le_mul_left 2 denominatorLePow
+      _ = 2 ^ (denominatorBits + 1) := by ring
+      _ ≤ 2 ^ Nat.log2 (object.vertexCount - 1) :=
+        Nat.pow_le_pow_right (by norm_num) exponentStep
+      _ ≤ object.vertexCount - 1 := by
+        simpa [Nat.log2_eq_log_two] using
+          Nat.pow_log_le_self 2
+            (show object.vertexCount - 1 ≠ 0 by
+              intro zero
+              have logZero : Nat.log2 (object.vertexCount - 1) = 0 := by
+                rw [zero]
+                rfl
+              rw [logZero] at exponentStep
+              omega)
+  have half : object.edgeCount ≤ object.vertexCount.choose 2 / 2 := by
+    have fourEdges : 4 * object.edgeCount ≤
+        (object.vertexCount - 1) * object.vertexCount := by
+      calc
+        4 * object.edgeCount ≤
+            4 * ((baselineDegree - 1) * object.vertexCount) := by
+          apply Nat.mul_le_mul_left
+          omega
+        _ = (4 * (baselineDegree - 1)) * object.vertexCount := by ring
+        _ ≤ (object.vertexCount - 1) * object.vertexCount := by
+          apply Nat.mul_le_mul_right
+          dsimp [denominator] at doubledDenominatorLePred
+          omega
+    have pairsIdentity := Core.FiniteEntropy.two_mul_choose_two
+      object.vertexCount
+    apply (Nat.le_div_iff_mul_le (by norm_num : 0 < 2)).mpr
+    rw [Nat.mul_comm]
+    rw [← pairsIdentity] at fourEdges
+    omega
+  exact (two_pow_realizableBaselineExponent_le_cubicBaselineBudget
+      object.vertexCount baselineDegree
+      (above.trans object.edgeCount_le_choose_two)).trans
+    (cubicBaselineBudget_le_skeletonBudget_of_le_half object baselineDegree
+      above half)
+
 /-- The baseline stratum fits in its own bit count. -/
 theorem cubicBaselineBudget_le_two_pow (vertexCount : Nat)
     {baselineDegree : Nat} (baseline : 2 ≤ baselineDegree) :
@@ -467,6 +675,68 @@ exceeds the baseline leaves no deficit. -/
 def spineDeficit (vertexCount baselineDegree lowerBound : Nat) : Nat :=
   cubicBaselineExponent vertexCount baselineDegree - lowerBound
 
+/-- The loss between the convenient cubic upper exponent and the realizable
+lower exponent is linear in the order of the object. -/
+theorem spineDeficit_realizableBaselineExponent_le
+    (vertexCount baselineDegree : Nat) :
+    spineDeficit vertexCount baselineDegree
+        (realizableBaselineExponent vertexCount baselineDegree) ≤
+      baselineDeficitCoefficient baselineDegree * vertexCount := by
+  let edgeBaseline := cubicBaselineEdgeCount vertexCount baselineDegree
+  let denominatorBits := Nat.clog 2 (2 * (baselineDegree + 1))
+  let rate := Nat.log2 (vertexCount - 1) - denominatorBits
+  have logStep : Nat.log2 vertexCount ≤
+      Nat.log2 (vertexCount - 1) + 1 := by
+    cases vertexCount with
+    | zero => simp
+    | succ predecessor =>
+        cases predecessor with
+        | zero => norm_num [Nat.log2_eq_log_two]
+        | succ earlier =>
+            have orderBound : earlier + 2 ≤ (earlier + 1) * 2 := by omega
+            calc
+              Nat.log2 (earlier + 2) ≤ Nat.log2 ((earlier + 1) * 2) := by
+                simpa [Nat.log2_eq_log_two] using
+                  (Nat.log_mono_right (b := 2) orderBound)
+              _ = Nat.log2 (earlier + 1) + 1 := by
+                simpa [Nat.log2_eq_log_two] using
+                  (Nat.log_mul_base (b := 2) (n := earlier + 1)
+                    (by norm_num) (by omega))
+  have perEdge : Nat.log2 vertexCount + 2 ≤
+      rate + (denominatorBits + 3) := by
+    dsimp [rate]
+    omega
+  have edgeLinear : edgeBaseline ≤ (baselineDegree + 1) * vertexCount := by
+    have edgeBound := two_mul_cubicBaselineEdgeCount_le
+      vertexCount baselineDegree
+    dsimp [edgeBaseline]
+    nlinarith
+  have total : edgeBaseline * (Nat.log2 vertexCount + 2) ≤
+      edgeBaseline * rate + edgeBaseline * (denominatorBits + 3) := by
+    calc
+      edgeBaseline * (Nat.log2 vertexCount + 2) ≤
+          edgeBaseline * (rate + (denominatorBits + 3)) :=
+        Nat.mul_le_mul_left edgeBaseline perEdge
+      _ = edgeBaseline * rate + edgeBaseline * (denominatorBits + 3) := by
+        ring
+  have loss : edgeBaseline * (denominatorBits + 3) ≤
+      baselineDeficitCoefficient baselineDegree * vertexCount := by
+    calc
+      edgeBaseline * (denominatorBits + 3) ≤
+          ((baselineDegree + 1) * vertexCount) *
+            (denominatorBits + 3) :=
+        Nat.mul_le_mul_right (denominatorBits + 3) edgeLinear
+      _ = baselineDeficitCoefficient baselineDegree * vertexCount := by
+        simp [baselineDeficitCoefficient, denominatorBits]
+        ring
+  have combined : edgeBaseline * (Nat.log2 vertexCount + 2) ≤
+      edgeBaseline * rate +
+        baselineDeficitCoefficient baselineDegree * vertexCount :=
+    total.trans (Nat.add_le_add_left loss _)
+  unfold spineDeficit cubicBaselineExponent realizableBaselineExponent
+  simpa [edgeBaseline, rate, denominatorBits, Nat.add_comm] using
+    (Nat.sub_le_iff_le_add.mpr combined)
+
 /-- The deficit is admissible at its own package: `B₀(n) ≤ L + E_spine(n)` in
 bits, for every lower bound `L`.  This is what makes `spineDeficit` an output
 rather than a registered constant. -/
@@ -486,6 +756,85 @@ theorem spineDeficit_le_of_le (vertexCount baselineDegree : Nat)
     spineDeficit vertexCount baselineDegree larger ≤
       spineDeficit vertexCount baselineDegree smaller :=
   Nat.sub_le_sub_left supply _
+
+/-- An actual realization of every Boolean word on the selected baseline
+coordinate family by labelled graphs in the current fixed-edge stratum.
+
+The family is not an arbitrary collection of names and its response is not an
+uninterpreted state map.  Its entries are literal clause-(D8) labelled copies
+of quotient images of one full-support clause-(D2) return-data profile.  The
+profile records, for every ordered labelled root, whether the root edge is
+present and, when it is, the exact finite set of simple return lengths.  Thus
+the source value is fixed by the manuscript's D2 semantics rather than chosen
+by a realization package.  `quotientMap` computes each Boolean D8 image from
+that exact profile, and `realized` says that every resulting word occurs on an
+actual member of `ᵊ_{n,m}`. -/
+structure BaselineCodeRealization (object : FiniteObject.{v})
+    {Coordinate : Type w} (family : Finset Coordinate) where
+  Label : Type w
+  asDeclared : Coordinate →
+    DeclaredSignature.Coordinate object.Vertex Label
+  source : DeclaredSignature.Coordinate object.Vertex Label
+  source_is_returnProfile : ∃ label,
+    source = .base .returnData label object.vertexFinset
+  quotientImage : ∀ coordinate : {coordinate // coordinate ∈ family},
+    ∃ label, asDeclared coordinate.1 =
+      .copy label (.quotientImage source)
+  returnProfile : LabelledOn object.vertexCount →
+    Fin object.vertexCount → Fin object.vertexCount →
+      Option (Finset Nat)
+  returnProfile_edge : ∀ member left right
+      (adjacent : member.graph.Adj left right),
+    returnProfile member left right =
+      some (EdgeRootedReturn.returnLengthFinset member.toFiniteObject
+        ⟨(left, right), adjacent⟩)
+  returnProfile_nonedge : ∀ member left right,
+    ¬ member.graph.Adj left right →
+      returnProfile member left right = none
+  quotientMap : {coordinate // coordinate ∈ family} →
+    (Fin object.vertexCount → Fin object.vertexCount →
+      Option (Finset Nat)) → Bool
+  realized : ∀ assignment : {coordinate // coordinate ∈ family} → Bool,
+    ∃ member : PackedWindowRealization.Skeleton
+        object.vertexCount object.edgeCount,
+      (fun coordinate => quotientMap coordinate (returnProfile member.1)) =
+        assignment
+
+namespace BaselineCodeRealization
+
+/-- The baseline response word is derived from the exact D2 return profile by
+the declared D8 quotient maps. -/
+def response {object : FiniteObject.{v}} {Coordinate : Type w}
+    {family : Finset Coordinate}
+    (realization : BaselineCodeRealization object family)
+    (member : LabelledOn object.vertexCount) :
+    {coordinate // coordinate ∈ family} → Bool :=
+  fun coordinate =>
+    realization.quotientMap coordinate (realization.returnProfile member)
+
+/-- The cardinal consequence of an actual baseline-code realization. -/
+theorem two_pow_le_skeletonBudget {object : FiniteObject.{v}}
+    {Coordinate : Type w} {family : Finset Coordinate}
+    (realization : BaselineCodeRealization object family) :
+    2 ^ family.card ≤ skeletonBudget object := by
+  let stateOf : PackedWindowRealization.Skeleton
+      object.vertexCount object.edgeCount →
+      ({coordinate // coordinate ∈ family} → Bool) :=
+    fun member => realization.response member.1
+  have stateOfSurjective : Function.Surjective stateOf := by
+    intro assignment
+    obtain ⟨member, realizes⟩ := realization.realized assignment
+    exact ⟨member, realizes⟩
+  have cardBound := Nat.card_le_card_of_surjective stateOf stateOfSurjective
+  have codeCard : Nat.card ({coordinate // coordinate ∈ family} → Bool) =
+      2 ^ family.card := by
+    rw [Nat.card_fun]
+    simp [Nat.card_congr family.equivFin]
+  rw [← codeCard]
+  simpa [skeletonBudget, edgeStratumCount,
+    PackedWindowRealization.card_skeleton] using cardBound
+
+end BaselineCodeRealization
 
 /-! ## `def:baseline-spine-demand` -/
 

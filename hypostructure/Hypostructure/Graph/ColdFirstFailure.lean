@@ -42,7 +42,7 @@ namespace Hypostructure.Graph.ColdCorridor
 
 open Hypostructure
 
-universe u
+universe u v
 
 /-! ## The cold window a corridor returns through
 
@@ -182,23 +182,25 @@ target-defective quotient."*
 The distinguishing context is quantified, not collapsed to one ambient
 evaluation: `Response.TargetDefect` is `∃ outside, ¬(Target (glue left outside)
 ↔ Target (glue right outside))` over *all* outside contexts of the shared
-interface.  The carrier is a parameter, so the clause holds at every reading of
-the corridor's responses. -/
+interface.  The shared interface is the later prefix's canonical cut boundary;
+the earlier prefix is read as the retained subpiece on that same boundary. -/
 
-/-- **Clause (F2)** at two initial segments, against a reading of their
-responses.
-
-It is not a new object: it is `def:cold-corridor-first-failure`'s own recorded
-discrepancy, `Presentation.FirstFailureResponse`, read at the two segments.  The
-definition names the same thing once. -/
-def FirstFailureDefect {boundary : Graph.Boundary.{u}} {S : DeclaredSignature}
+/-- **Clause (F2)** at two initial segments, read on their actual prefix
+supports.  The later support fixes the shared cut boundary and the earlier
+support is retained inside it, so the discrepancy cannot be witnessed by an
+unrelated caller-supplied boundary piece. -/
+noncomputable def FirstFailureDefect {S : DeclaredSignature}
     (corridor : Corridor object windows component)
     (presentation : Presentation.{u} S object)
     (index : corridor.Segment → presentation.Segment)
     (Target : Graph.FiniteObject.{u} → Prop)
-    (carrier : presentation.Segment → Graph.BoundaryPiece boundary)
+    (support : corridor.Segment → Finset object.Vertex)
     (left right : corridor.Segment) : Prop :=
-  presentation.FirstFailureResponse Target carrier (index left) (index right)
+  presentation.state (index left) = presentation.state (index right) ∧
+    Graph.Response.TargetDefect Target
+      (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
+        (support right) (support left))
+      (Graph.Strategy.InterfaceReplacement.SupportAtom.piece object (support right))
 
 /-- **`lem:cold-corridor-first-failure` (ii), through `lem:context-universality`:
 "case (F2) is a target-defective quotient".**
@@ -208,19 +210,22 @@ would contain a power-of-two cycle and the other would not.  The quotient would
 fail to preserve the target predicate for `Y₀` and therefore would not be
 target-complete."*  So an identification of the two prefixes is not
 target-complete in *any* immutable profile fibre. -/
-theorem not_targetComplete_of_firstFailureDefect {boundary : Graph.Boundary.{u}}
-    {S : DeclaredSignature}
+theorem not_targetComplete_of_firstFailureDefect {S : DeclaredSignature}
     {corridor : Corridor object windows component}
     {presentation : Presentation.{u} S object}
     {index : corridor.Segment → presentation.Segment}
     {Target : Graph.FiniteObject.{u} → Prop}
-    {carrier : presentation.Segment → Graph.BoundaryPiece boundary}
+    {support : corridor.Segment → Finset object.Vertex}
     {left right : corridor.Segment} {Profile : Type}
-    {profile : Graph.BoundaryPiece boundary → Profile}
-    (failure : FirstFailureDefect corridor presentation index Target carrier
+    {profile : Graph.BoundaryPiece
+      (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary object
+        (support right)) → Profile}
+    (failure : FirstFailureDefect corridor presentation index Target support
       left right) :
     ¬ Graph.Response.TargetComplete profile Target
-      (carrier (index left)) (carrier (index right)) :=
+      (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
+        (support right) (support left))
+      (Graph.Strategy.InterfaceReplacement.SupportAtom.piece object (support right)) :=
   Graph.Response.notTargetComplete_of_targetDefect failure.2
 
 /-- **The (F2)-free reading is context-equivalent.**  This is the other half of
@@ -228,20 +233,24 @@ theorem not_targetComplete_of_firstFailureDefect {boundary : Graph.Boundary.{u}}
 row consumes: with the discrepancy excluded, two prefixes carrying the same cold
 corridor state have the same target response against every compatible
 context. -/
-theorem contextEquivalent_of_not_firstFailureDefect {boundary : Graph.Boundary.{u}}
-    {S : DeclaredSignature}
+theorem contextEquivalent_of_not_firstFailureDefect {S : DeclaredSignature}
     {corridor : Corridor object windows component}
     {presentation : Presentation.{u} S object}
     {index : corridor.Segment → presentation.Segment}
     {Target : Graph.FiniteObject.{u} → Prop}
-    {carrier : presentation.Segment → Graph.BoundaryPiece boundary}
+    {support : corridor.Segment → Finset object.Vertex}
     {left right : corridor.Segment}
-    (excluded : ¬ FirstFailureDefect corridor presentation index Target carrier
+    (excluded : ¬ FirstFailureDefect corridor presentation index Target support
       left right)
     (same : presentation.state (index left) = presentation.state (index right)) :
     Graph.Response.ContextEquivalent Target
-      (carrier (index left)) (carrier (index right)) :=
-  presentation.contextEquivalent_of_state_eq excluded same
+      (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
+        (support right) (support left))
+      (Graph.Strategy.InterfaceReplacement.SupportAtom.piece object (support right)) := by
+  classical
+  intro outside
+  by_contra distinguishes
+  exact excluded ⟨same, ⟨outside, distinguishes⟩⟩
 
 /-! ## (F3): a strictly smaller proper representative
 
@@ -435,7 +444,7 @@ def RepeatedState {S : DeclaredSignature}
     (presentation : Presentation.{u} S object)
     (index : corridor.Segment → presentation.Segment) : Prop :=
   ∃ left right : corridor.Segment,
-    left.1 < right.1 ∧
+    right.1 ≤ stateBound S ∧ left.1 < right.1 ∧
       presentation.state (index left) = presentation.state (index right) ∧
       ∀ earlierLeft earlierRight : corridor.Segment,
         earlierLeft.1 < earlierRight.1 → earlierRight.1 < right.1 →
@@ -479,18 +488,21 @@ theorem exists_firstFailure {S : DeclaredSignature}
     obtain ⟨left, right, distinct, same⟩ :=
       presentation.exists_state_eq_of_stateBound_lt (fun position => index (sample position))
     have repeated : ∃ later : corridor.Segment,
-        ∃ earlier : corridor.Segment, earlier.1 < later.1 ∧
-          presentation.state (index earlier) = presentation.state (index later) := by
+        later.1 ≤ stateBound S ∧
+          ∃ earlier : corridor.Segment, earlier.1 < later.1 ∧
+            presentation.state (index earlier) = presentation.state (index later) := by
       rcases lt_or_gt_of_ne (fun equal => distinct (sampleInjective (Fin.ext equal))) with
         before | after
-      · exact ⟨sample right, sample left, before, same⟩
-      · exact ⟨sample left, sample right, after, same.symm⟩
+      · exact ⟨sample right, by simp only [sample]; omega,
+          sample left, before, same⟩
+      · exact ⟨sample left, by simp only [sample]; omega,
+          sample right, after, same.symm⟩
     let repeatedRights : Finset corridor.Segment :=
       Finset.univ.filter fun later =>
         ∃ earlier : corridor.Segment, earlier.1 < later.1 ∧
           presentation.state (index earlier) = presentation.state (index later)
     have repeatedRights_nonempty : repeatedRights.Nonempty := by
-      obtain ⟨later, earlier, before, same⟩ := repeated
+      obtain ⟨later, _laterBound, earlier, before, same⟩ := repeated
       exact ⟨later, Finset.mem_filter.2
         ⟨Finset.mem_univ _, ⟨earlier, before, same⟩⟩⟩
     let firstRight : corridor.Segment :=
@@ -499,7 +511,14 @@ theorem exists_firstFailure {S : DeclaredSignature}
       exact Finset.min'_mem repeatedRights repeatedRights_nonempty
     obtain ⟨firstLeft, firstBefore, firstSame⟩ :=
       (Finset.mem_filter.1 firstRight_mem).2
-    refine ⟨firstLeft, firstRight, firstBefore, firstSame, ?_⟩
+    obtain ⟨later, laterBound, earlier, before, same⟩ := repeated
+    have laterMem : later ∈ repeatedRights :=
+      Finset.mem_filter.2 ⟨Finset.mem_univ _, ⟨earlier, before, same⟩⟩
+    have firstRight_le_later : firstRight.1 ≤ later.1 := by
+      exact Finset.min'_le repeatedRights later laterMem
+    have firstRightBound : firstRight.1 ≤ stateBound S :=
+      Nat.le_trans firstRight_le_later laterBound
+    refine ⟨firstLeft, firstRight, firstRightBound, firstBefore, firstSame, ?_⟩
     intro earlierLeft earlierRight earlierBefore rightBefore sameEarlier
     have earlierRight_mem : earlierRight ∈ repeatedRights := by
       exact Finset.mem_filter.2 ⟨Finset.mem_univ _,
@@ -801,6 +820,50 @@ theorem coldGermExtraction {Germ : Type u} [DecidableEq Germ]
   exists_independent_card_le_mul Overlaps symmetric (exchangeBound * overlapBound)
     candidates boundedOverlap
 
+/-- A support of size at most `supportBound` meets at most
+`supportBound * multiplicityBound` indexed occurrences when each vertex lies
+in at most `multiplicityBound` occurrence supports.  The indices, rather than
+the support values, are counted. -/
+theorem overlap_card_le_of_vertex_multiplicity
+    {Index Vertex : Type u} [DecidableEq Index] [DecidableEq Vertex]
+    (support : Index → Finset Vertex) (candidates : Finset Index)
+    (supportBound multiplicityBound : Nat)
+    (boundedSupport : ∀ index ∈ candidates,
+      (support index).card ≤ supportBound)
+    (boundedMultiplicity : ∀ vertex,
+      (candidates.filter fun index => vertex ∈ support index).card ≤
+        multiplicityBound) :
+    ∀ candidate ∈ candidates,
+      (candidates.filter fun other =>
+        ¬ Disjoint (support candidate) (support other)).card ≤
+          supportBound * multiplicityBound := by
+  classical
+  intro candidate candidateMem
+  let conflicts := candidates.filter fun other =>
+    ¬ Disjoint (support candidate) (support other)
+  let through := fun vertex => candidates.filter fun other =>
+    vertex ∈ support other
+  have conflictsSubset : conflicts ⊆ (support candidate).biUnion through := by
+    intro other otherMem
+    have overlap := (Finset.mem_filter.1 otherMem).2
+    rw [Finset.not_disjoint_iff] at overlap
+    obtain ⟨vertex, inCandidate, inOther⟩ := overlap
+    exact Finset.mem_biUnion.2
+      ⟨vertex, inCandidate, Finset.mem_filter.2
+        ⟨(Finset.mem_filter.1 otherMem).1, inOther⟩⟩
+  calc
+    conflicts.card ≤ ((support candidate).biUnion through).card :=
+      Finset.card_le_card conflictsSubset
+    _ ≤ ∑ vertex ∈ support candidate, (through vertex).card :=
+      Finset.card_biUnion_le
+    _ ≤ ∑ _vertex ∈ support candidate, multiplicityBound :=
+      Finset.sum_le_sum fun vertex _ => boundedMultiplicity vertex
+    _ = (support candidate).card * multiplicityBound := by
+      simp [Nat.mul_comm]
+    _ ≤ supportBound * multiplicityBound :=
+      Nat.mul_le_mul_right multiplicityBound
+        (boundedSupport candidate candidateMem)
+
 /-- A positive candidate family gives a nonempty extracted independent family. -/
 theorem coldGerm_nonempty {Germ : Type u} [DecidableEq Germ]
     {candidates disjointFamily : Finset Germ}
@@ -852,6 +915,42 @@ theorem coldGermExtractionLocal {S : DeclaredSignature} {threshold : Nat}
   exact ⟨disjointFamily, subset, disjointSupports, cover',
     coldGerm_nonempty cover' positive⟩
 
+/-- The same greedy proof on the manuscript's actual candidate occurrences,
+indexed by selected branch-excess half-edges.  Positivity is intentionally not
+part of this local theorem: node `[153]` obtains it only on its later linear
+arm after the routed loss has been compared with the branch-excess mass. -/
+theorem coldGermOccurrenceExtractionLocal
+    {S : DeclaredSignature} {threshold : Nat}
+    {Baseline Target : FiniteObject.{u} → Prop} {object : FiniteObject.{u}} :
+    ColdGermOccurrenceExtractionLocal S threshold Baseline Target object := by
+  intro Index decidableEq germAt candidates candidateFamily
+  letI : DecidableEq Index := decidableEq
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  classical
+  obtain ⟨disjointFamily, subset, independent, cover⟩ :=
+    coldGermExtraction
+      (Germ := Index)
+      (Overlaps := fun left right : Index =>
+        ¬ Disjoint (germAt left).support (germAt right).support)
+      (symmetric := by
+        intro left right overlaps rightLeft
+        exact overlaps rightLeft.symm)
+      (exchangeBound := exchangeBound S)
+      (overlapBound := overlapBound threshold S)
+      (candidates := candidates)
+      candidateFamily
+  have cover' :
+      candidates.card ≤ disjointFamily.card *
+        extractionDenominator threshold S := by
+    simpa [extractionDenominator] using cover
+  have disjointSupports :
+      ∀ left ∈ disjointFamily, ∀ right ∈ disjointFamily, left ≠ right →
+        Disjoint (germAt left).support (germAt right).support := by
+    intro left leftMember right rightMember different
+    by_contra overlaps
+    exact independent left leftMember right rightMember different overlaps
+  exact ⟨disjointFamily, subset, disjointSupports, cover'⟩
+
 /-- The quantitative chain proving a remaining cold candidate is nonempty. -/
 theorem coldGerm_positive {Germ : Type u} [DecidableEq Germ]
     {candidates disjointFamily : Finset Germ}
@@ -890,7 +989,7 @@ theorem selectedBranchExcess_length {Stub : Type} (stubs : List Stub) :
     (selectedBranchExcess stubs).length = branchExcessOf stubs.length := by
   simp [selectedBranchExcess, branchExcessOf]
 
-/-! **`lem:cold-window-stub-excess`, the per-window count.**
+/-! **The unrestricted external-stub count.**
 
 *"`P` has exactly `39 − 24 = 15` external stubs.  In the skeleton, a
 degree-two corridor through `p` can absorb at most two of these stubs without
@@ -901,9 +1000,13 @@ the window's own stub count at the registered baseline and order -- the same
 expression node `[28]` compares -- and `b(P)` is `branchExcessOf` of it.  There
 is no lemma here, because at that stub count `branchExcessOf` *is* the count by
 definition; `Fixtures.ColdCorridorLedger` evaluates both to the manuscript's
-`15` and `13`. -/
+`15` and `13`.  This unrestricted 13-set is not the selected cold family used
+by nodes `[152]`--`[168]`: that family first restricts to the 11 one-stub
+interior incidences and then drops two, giving 9. -/
 
-/-- **`b(𝔖_cold) ≥ 13C − o(n)`.**
+/-- Generic subtraction-free transfer of any chosen per-window count across
+the non-ambient-cubic loss.  The repaired cold application instantiates
+`perWindow` with the selected interior count `9`.
 
 *"By `def:surviving-cold-branch`, `|𝒫_cold \ 𝒫_cold^cub| = o(n)`. … Summing
 over the remaining windows gives the claim."*  Stated subtraction-free: the

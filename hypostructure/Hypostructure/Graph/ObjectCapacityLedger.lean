@@ -502,12 +502,14 @@ the geometric caps, and some role fibre absorbs its average share over the
 `Q_st|𝔗_cap|` slots, hence carries a role-homogeneous same-token matching or
 star.  `class(t)` of that token is the one datum nodes `[140]`, `[142]`, `[143]`
 dispatch on, and it is read off the token rather than carried beside it. -/
-def OverloadAtClass (object : FiniteObject.{u}) (threshold order : Nat)
+def OverloadAtClass (object : FiniteObject.{u}) (threshold order deficitScale : Nat)
     (routingLabelBound : Nat)
     (data : CapacityPresentation.{u} object threshold order)
     (Selects : TokenClass → Prop) : Prop :=
-  ∃ (ledger : ObjectCapacityLedger.{u} object threshold order data)
-      (token : ledger.presented.Token) (role : Role),
+  ∃ (certified : CertifiedObjectCapacityLedger object threshold order
+      deficitScale data),
+    let ledger := certified.ledger
+    ∃ (token : ledger.presented.Token) (role : Role),
       token ∈ ledger.presented.tokens ∧
         Selects (ledger.presented.tokenClass token) ∧
         (0 < ledger.presented.coupledExcess
@@ -534,9 +536,10 @@ def OverloadAtClass (object : FiniteObject.{u}) (threshold order : Nat)
 /-- **Node `[137]`, overload arm**, with no class selected: the overload occurs
 somewhere. -/
 def SparsePressureOverloadStatement (object : FiniteObject.{u})
-    (threshold order routingLabelBound : Nat)
+    (threshold order deficitScale routingLabelBound : Nat)
     (data : CapacityPresentation.{u} object threshold order) : Prop :=
-  OverloadAtClass object threshold order routingLabelBound data fun _ => True
+  OverloadAtClass object threshold order deficitScale routingLabelBound data
+    fun _ => True
 
 /-- **Nodes `[139]` and `[141]`, the two class tests.**
 
@@ -544,21 +547,21 @@ def SparsePressureOverloadStatement (object : FiniteObject.{u})
 lies in `𝔗_R`; `class(t)` is read off the token by `tokenClass`, not carried
 beside it, so a token cannot be routed to an audit of a class it is not in. -/
 def SparsePressureOverloadInClass (object : FiniteObject.{u})
-    (threshold order routingLabelBound : Nat)
+    (threshold order deficitScale routingLabelBound : Nat)
     (data : CapacityPresentation.{u} object threshold order)
     (value : TokenClass) : Prop :=
-  OverloadAtClass object threshold order routingLabelBound data fun class' =>
-    class' = value
+  OverloadAtClass object threshold order deficitScale routingLabelBound data
+    fun class' => class' = value
 
 /-- The concrete overload witness selected upstream has a token outside the
 given class.  This is the negative residual of the paper's class test; it is
 not the stronger assertion that no overload witness exists in that class. -/
 def SparsePressureOverloadOutsideClass (object : FiniteObject.{u})
-    (threshold order routingLabelBound : Nat)
+    (threshold order deficitScale routingLabelBound : Nat)
     (data : CapacityPresentation.{u} object threshold order)
     (value : TokenClass) : Prop :=
-  OverloadAtClass object threshold order routingLabelBound data fun class' =>
-    class' ≠ value
+  OverloadAtClass object threshold order deficitScale routingLabelBound data
+    fun class' => class' ≠ value
 
 /-- **`cor:quantitative-homogeneous-overload` at the object.**
 
@@ -618,13 +621,32 @@ declared connector configurations for every endpoint of every pattern edge.
 All configurations start at the canonical root of the shared token; this is
 the same-root datum consumed by `lem:same-token-bottleneck-routing`. -/
 def HomogeneousBottleneckPatternStatement (object : FiniteObject.{u})
-    (threshold order : Nat)
+    (threshold order deficitScale routingLabelBound : Nat)
     (data : CapacityPresentation.{u} object threshold order)
     (Label : Type) [Fintype Label] : Prop :=
-  ∃ (ledger : ObjectCapacityLedger.{u} object threshold order data)
-      (token : ledger.presented.Token),
+  ∃ (certified : CertifiedObjectCapacityLedger object threshold order
+      deficitScale data),
+    let ledger := certified.ledger
+    ∃ (token : ledger.presented.Token) (role : Role),
       token ∈ ledger.presented.tokens ∧
-        ∃ (role : Role) (root : object.Vertex),
+        0 < ledger.presented.coupledExcess ledger.presented.tokenClass
+          (fun _ => geometricPatternBound routingLabelBound) ∧
+        ledger.presented.coupledExcess ledger.presented.tokenClass
+            (fun _ => geometricPatternBound routingLabelBound) ≤
+          sameTokenRoleBound * ledger.presented.tokens.card *
+            ledger.presented.roleFibreExcess ledger.presented.tokenClass
+              (fun _ => geometricPatternBound routingLabelBound) token role ∧
+        ((∃ pattern ⊆ ledger.presented.roleFibre token role,
+            PatternFamily.IsMatching pattern ∧
+              PatternFamily.patternThreshold
+                  (ledger.presented.roleFibre token role).card ≤ pattern.card) ∨
+          (∃ centre, ∃ pattern ⊆ ledger.presented.roleFibre token role,
+            PatternFamily.IsStar pattern centre ∧
+              PatternFamily.patternThreshold
+                  (ledger.presented.roleFibre token role).card ≤ pattern.card)) ∧
+        ∃ (sourceClass : TokenClass),
+          ledger.presented.tokenClass token = sourceClass ∧
+          ∃ (root : object.Vertex),
           root = CapacityPresentation.tokenRoot token ∧
           ((∃ pattern ⊆ ledger.presented.roleFibre token role,
               PatternFamily.IsMatching pattern ∧
@@ -699,24 +721,25 @@ theorem quantitativeOverloadStatement (object : FiniteObject.{u})
 /-- After node `[139]` records that its concrete overload token is not a window
 token, that same witness lies either in the remainder or primitive class. -/
 theorem overloadClassExhaustive (object : FiniteObject.{u})
-    (threshold order routingLabelBound : Nat)
+    (threshold order deficitScale routingLabelBound : Nat)
     (data : CapacityPresentation.{u} object threshold order)
     (notWindow : SparsePressureOverloadOutsideClass object threshold order
-      routingLabelBound data .windowIncidence) :
-    SparsePressureOverloadInClass object threshold order routingLabelBound data
-        .remainderSurplus ∨
-      SparsePressureOverloadInClass object threshold order routingLabelBound data
-        .primitiveCarrier := by
-  obtain ⟨ledger, token, role, tokenMem,
+      deficitScale routingLabelBound data .windowIncidence) :
+    SparsePressureOverloadInClass object threshold order deficitScale
+        routingLabelBound data .remainderSurplus ∨
+      SparsePressureOverloadInClass object threshold order deficitScale
+        routingLabelBound data .primitiveCarrier := by
+  obtain ⟨certified, token, role, tokenMem,
     outsideWindow, rest⟩ := notWindow
+  let ledger := certified.ledger
   cases classified : ledger.presented.tokenClass token with
   | windowIncidence =>
       exact absurd classified outsideWindow
   | remainderSurplus =>
-      exact Or.inl ⟨ledger, token, role, tokenMem,
+      exact Or.inl ⟨certified, token, role, tokenMem,
         classified, rest⟩
   | primitiveCarrier =>
-      exact Or.inr ⟨ledger, token, role, tokenMem,
+      exact Or.inr ⟨certified, token, role, tokenMem,
         classified, rest⟩
 
 /-- **Node `[144]`, proved.**

@@ -70,7 +70,7 @@ noncomputable instance instIncompatibleAtomCompression :
         (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold))
       { G := residual.object, baseline := residual.baseline,
         state := residual.branchState, avoids := selected.down.1,
-        minimal := selected.down.2 }
+        minimal := selected.down.2.sizeMinimal }
       quotient.support replacement
 
 /-- **The terminal `[42]` closes against the selected object.**  The proper
@@ -93,7 +93,7 @@ noncomputable instance instIncompatibleProperDelocalization :
         (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold))
       { G := residual.object, baseline := residual.baseline,
         state := residual.branchState, avoids := selected.down.1,
-        minimal := selected.down.2 }
+        minimal := selected.down.2.sizeMinimal }
       quotient.support replacement
 
 /-- **The terminal `[46]` closes against the selected object.**  The global

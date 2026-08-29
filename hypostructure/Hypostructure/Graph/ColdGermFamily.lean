@@ -1,5 +1,8 @@
 import Hypostructure.Graph.ColdFirstFailure
 import Hypostructure.Graph.SubcubicReach
+import Hypostructure.Graph.CanonicalRealization
+import Hypostructure.Graph.PrimitiveCarrier
+import Hypostructure.Graph.WindowStubStructure
 
 /-!
 # The (F5) cold bounded germs of the selected half-edges
@@ -13,11 +16,12 @@ import Hypostructure.Graph.SubcubicReach
 * the geometric support on which the ledger-retained cold bounded configuration
   is read.
 
-This file deliberately does not construct a `BoundedGerm`.  The two
-same-interface representatives and their exact retained record are semantic
-witnesses of `K .coldCorridorState`; manufacturing a default record or replacing
-the paper's exchange representative by the corridor piece would change the
-proof.
+The construction below produces the paper's `BoundedGerm` only from an actual
+corridor presentation.  Its record is `Corridor.recordAt` at the terminal or
+first repeated state, and its second representative is the framework's
+canonical realization of that retained cut state.  The resulting
+`FirstFailureGermWitness` is the semantic payload registered by
+`K .coldCorridorState`; no default record or self-representative is used.
 -/
 
 namespace Hypostructure.Graph.ColdCorridor
@@ -25,6 +29,66 @@ namespace Hypostructure.Graph.ColdCorridor
 open Hypostructure
 
 universe u
+
+/-- Oriented incidences whose first endpoint lies in `region` are bounded by
+the exact degree mass of that region. -/
+theorem card_incidences_filter_fst_le_sum_degree (object : FiniteObject.{u})
+    [DecidableEq object.Vertex] (region : Finset object.Vertex) :
+    (object.incidences.filter fun pair : object.Vertex × object.Vertex =>
+      pair.1 ∈ region).card ≤
+      ∑ vertex ∈ region, object.degree vertex := by
+  classical
+  letI : Fintype object.Vertex := @FinEnum.instFintype _ object.vertices
+  letI : DecidableRel object.graph.Adj := object.decideAdj
+  rw [Finset.card_eq_sum_card_fiberwise
+    (f := Prod.fst) (t := region) (by
+      intro pair member
+      exact (Finset.mem_filter.1 member).2)]
+  calc
+    ∑ vertex ∈ region,
+          ((object.incidences.filter fun pair : object.Vertex × object.Vertex =>
+              pair.1 ∈ region).filter
+            fun pair => pair.1 = vertex).card
+        ≤ ∑ vertex ∈ region, object.degree vertex := by
+          refine Finset.sum_le_sum fun vertex vertexMem => ?_
+          let fibre := (object.incidences.filter
+              fun pair : object.Vertex × object.Vertex => pair.1 ∈ region).filter
+            fun pair => pair.1 = vertex
+          exact Finset.card_le_card_of_injOn Prod.snd
+            (by
+              intro pair pairMem
+              change pair ∈ fibre at pairMem
+              simp only [fibre, Finset.mem_filter] at pairMem
+              have incidence := (object.mem_incidences_iff pair).1
+                pairMem.1.1
+              exact (SimpleGraph.mem_neighborFinset object.graph vertex pair.2).2
+                (pairMem.2 ▸ incidence))
+            (by
+              intro left leftMem right rightMem same
+              change left ∈ fibre at leftMem
+              change right ∈ fibre at rightMem
+              simp only [fibre, Finset.mem_filter] at leftMem rightMem
+              apply Prod.ext
+              · exact leftMem.2.trans rightMem.2.symm
+              · exact same)
+
+/-- The number of oriented graph incidences whose first endpoint lies in a
+bounded-degree region is at most `threshold` times the size of that region. -/
+theorem card_incidences_filter_fst_le (object : FiniteObject.{u})
+    [DecidableEq object.Vertex] (region : Finset object.Vertex) (threshold : Nat)
+    (bounded : ∀ vertex ∈ region, object.degree vertex ≤ threshold) :
+    (object.incidences.filter fun pair : object.Vertex × object.Vertex =>
+      pair.1 ∈ region).card ≤
+      threshold * region.card := by
+  calc
+    (object.incidences.filter fun pair : object.Vertex × object.Vertex =>
+        pair.1 ∈ region).card
+        ≤ ∑ vertex ∈ region, object.degree vertex :=
+          card_incidences_filter_fst_le_sum_degree object region
+    _ ≤ ∑ _vertex ∈ region, threshold :=
+      Finset.sum_le_sum fun vertex vertexMem => bounded vertex vertexMem
+    _ = threshold * region.card := by
+      simp [Nat.mul_comm]
 
 variable {object : FiniteObject.{u}}
 
@@ -225,6 +289,164 @@ theorem prefixSupport_proper (corridor : Corridor object windows component)
     (List.get_mem _ corridor.entry)
   exact Finset.disjoint_left.mp outside.1 inComponent isStub.2.1
 
+theorem prefixSupport_subset_inside
+    (corridor : Corridor object windows component) (n : Nat) :
+    ∀ vertex ∈ corridor.prefixSupport n,
+      vertex ∈ corridor.inside.1.support.map (fun inner => inner.1) := by
+  classical
+  intro vertex member
+  obtain ⟨inner, innerMem, rfl⟩ :=
+    (corridor.mem_prefixSupport n vertex).1 member
+  simp only [List.mem_map]
+  exact ⟨inner, (corridor.inside.1.isSubwalk_take n).support_subset innerMem, rfl⟩
+
+/-- The support between two retained corridor states.  This is the literal
+`drop left; take (right-left)` interval used in the repeat subcase (F5). -/
+noncomputable def intervalSupport (corridor : Corridor object windows component)
+    (left right : corridor.Segment) : Finset object.Vertex := by
+  classical
+  exact ((((corridor.inside.1.drop left.1).take (right.1 - left.1)).support.map
+    (fun vertex => vertex.1)).toFinset)
+
+theorem mem_intervalSupport (corridor : Corridor object windows component)
+    (left right : corridor.Segment) (vertex : object.Vertex) :
+    vertex ∈ corridor.intervalSupport left right ↔
+      ∃ inner ∈ ((corridor.inside.1.drop left.1).take
+        (right.1 - left.1)).support, inner.1 = vertex := by
+  classical
+  simp [intervalSupport]
+
+theorem intervalSupport_subset_component
+    (corridor : Corridor object windows component)
+    (left right : corridor.Segment) :
+    corridor.intervalSupport left right ⊆ component := by
+  intro vertex member
+  obtain ⟨inner, _, rfl⟩ :=
+    (corridor.mem_intervalSupport left right vertex).1 member
+  exact inner.2
+
+theorem intervalSupport_card_le (corridor : Corridor object windows component)
+    (left right : corridor.Segment) :
+    (corridor.intervalSupport left right).card ≤ right.1 - left.1 + 1 := by
+  classical
+  refine le_trans (List.toFinset_card_le _) ?_
+  rw [List.length_map, SimpleGraph.Walk.length_support,
+    SimpleGraph.Walk.take_length, SimpleGraph.Walk.drop_length]
+  omega
+
+theorem intervalSupport_connectedOn
+    (corridor : Corridor object windows component)
+    (left right : corridor.Segment) :
+    Graph.SupportComponents.Connected.ConnectedOn object
+      (corridor.intervalSupport left right) := by
+  classical
+  let walk := (corridor.inside.1.drop left.1).take (right.1 - left.1)
+  let embedding := object.induceEmbedding component
+  let start := corridor.inside.1.getVert left.1
+  refine ⟨⟨start.1, ?_⟩, ?_⟩
+  · exact (corridor.mem_intervalSupport left right _).2
+      ⟨start, SimpleGraph.Walk.start_mem_support walk, rfl⟩
+  · intro a b aMem bMem
+    obtain ⟨aInner, aSupport, aEq⟩ :=
+      (corridor.mem_intervalSupport left right a).1 aMem
+    obtain ⟨bInner, bSupport, bEq⟩ :=
+      (corridor.mem_intervalSupport left right b).1 bMem
+    let toA := walk.takeUntil aInner aSupport
+    let toB := walk.takeUntil bInner bSupport
+    let joined := toA.reverse.append toB
+    let mapped := joined.map embedding.toHom
+    have mappedSupport : ∀ vertex ∈ mapped.support,
+        vertex ∈ corridor.intervalSupport left right := by
+      intro vertex member
+      simp only [mapped, SimpleGraph.Walk.support_map, List.mem_map] at member
+      obtain ⟨inner, innerMem, rfl⟩ := member
+      refine (corridor.mem_intervalSupport left right _).2 ⟨inner, ?_, rfl⟩
+      simp only [joined, SimpleGraph.Walk.support_append,
+        SimpleGraph.Walk.support_reverse, List.mem_append, List.mem_reverse] at innerMem
+      rcases innerMem with member | member
+      · exact walk.support_takeUntil_subset_support aSupport member
+      · exact walk.support_takeUntil_subset_support bSupport
+          (List.mem_of_mem_tail member)
+    have aEq' : embedding aInner = a := aEq
+    have bEq' : embedding bInner = b := bEq
+    refine ⟨((mapped.copy aEq' bEq').toPath).1,
+      ((mapped.copy aEq' bEq').toPath).2, ?_⟩
+    intro vertex member
+    have subset := SimpleGraph.Walk.support_toPath_subset_support _ member
+    rw [SimpleGraph.Walk.support_copy] at subset
+    exact mappedSupport vertex subset
+
+theorem intervalSupport_proper (corridor : Corridor object windows component)
+    (outside : IsOutsideComponent object windows component)
+    (left right : corridor.Segment) :
+    ∃ vertex, vertex ∉ corridor.intervalSupport left right := by
+  refine ⟨corridor.entryStub.2, fun member => ?_⟩
+  have inComponent := corridor.intervalSupport_subset_component left right member
+  have isStub := (mem_boundaryStubs_iff object windows component _).1
+    (List.get_mem _ corridor.entry)
+  exact Finset.disjoint_left.mp outside.1 inComponent isStub.2.1
+
+theorem intervalSupport_subset_inside
+    (corridor : Corridor object windows component)
+    (left right : corridor.Segment) :
+    ∀ vertex ∈ corridor.intervalSupport left right,
+      vertex ∈ corridor.inside.1.support.map (fun inner => inner.1) := by
+  classical
+  intro vertex member
+  obtain ⟨inner, innerMem, rfl⟩ :=
+    (corridor.mem_intervalSupport left right vertex).1 member
+  simp only [List.mem_map]
+  refine ⟨inner, ?_, rfl⟩
+  have taken : inner ∈ (corridor.inside.1.drop left.1).support :=
+    ((corridor.inside.1.drop left.1).isSubwalk_take
+      (right.1 - left.1)).support_subset innerMem
+  exact (corridor.inside.1.isSubwalk_drop left.1).support_subset taken
+
+/-- Initial corridor supports grow monotonically with the prefix length.  This
+is the initial-segment monotonicity used by the subcubic-ball count in
+`lem:cold-germ-extraction`. -/
+theorem prefixSupport_mono (corridor : Corridor object windows component)
+    {left right : Nat} (bounded : left ≤ right) :
+    corridor.prefixSupport left ⊆ corridor.prefixSupport right := by
+  classical
+  intro vertex member
+  obtain ⟨inner, innerMem, rfl⟩ :=
+    (corridor.mem_prefixSupport left vertex).1 member
+  refine (corridor.mem_prefixSupport right _).2 ⟨inner, ?_, rfl⟩
+  exact (corridor.inside.1.take_isSubwalk_take bounded).support_subset innerMem
+
+/-- A repeated-state exchange interval lies in the initial prefix ending at
+the repeated right state. -/
+theorem intervalSupport_subset_prefixSupport
+    (corridor : Corridor object windows component)
+    (left right : corridor.Segment) (leftLe : left.1 ≤ right.1) :
+    corridor.intervalSupport left right ⊆ corridor.prefixSupport right.1 := by
+  classical
+  intro vertex member
+  obtain ⟨inner, innerMem, rfl⟩ :=
+    (corridor.mem_intervalSupport left right vertex).1 member
+  refine (corridor.mem_prefixSupport right.1 _).2 ⟨inner, ?_, rfl⟩
+  have sum : left.1 + (right.1 - left.1) = right.1 := Nat.add_sub_of_le leftLe
+  have decomposed := corridor.inside.1.take_add_eq left.1 (right.1 - left.1)
+  have intervalSub :
+      ((corridor.inside.1.drop left.1).take
+          (right.1 - left.1)).IsSubwalk
+        ((corridor.inside.1.take left.1).append
+          ((corridor.inside.1.drop left.1).take (right.1 - left.1))) :=
+    SimpleGraph.Walk.isSubwalk_of_append_right rfl
+  have inAppend := intervalSub.support_subset innerMem
+  have supportEq : (corridor.inside.1.take right.1).support =
+      ((corridor.inside.1.take left.1).append
+        ((corridor.inside.1.drop left.1).take (right.1 - left.1))).support := by
+    have supportEq0 := congrArg SimpleGraph.Walk.support decomposed
+    simp only [SimpleGraph.Walk.support_copy] at supportEq0
+    calc
+      (corridor.inside.1.take right.1).support =
+          (corridor.inside.1.take
+            (left.1 + (right.1 - left.1))).support := by rw [sum]
+      _ = _ := supportEq0
+  rwa [supportEq]
+
 end Corridor
 
 namespace Corridor
@@ -238,14 +460,207 @@ theorem foot_mem_prefixSupport (corridor : Corridor object windows component)
 
 end Corridor
 
+namespace Corridor
+
+/-- The table record read at one actual corridor segment.  Every field is a
+projection of the declared presentation; the only additional entry is the
+false target bit of the selected counterexample branch. -/
+noncomputable def recordAt {S : DeclaredSignature}
+    (corridor : Corridor object windows component)
+    (presentation : Presentation.{u} S object)
+    (index : corridor.Segment → presentation.Segment)
+    (segment : corridor.Segment) : Record S :=
+  { boundaryDegrees := presentation.boundaryDegrees (index segment)
+    stubs := presentation.halfEdges (index segment)
+    offsets := presentation.offsets (index segment)
+    state := presentation.state (index segment)
+    truth := false }
+
+/-- The literal (F5) witness carried by one selected cold half-edge.  This is
+the mathematical payload of node `[153]`; it is a predicate on the actual
+corridor, presentation, and germ, not a transport structure.  In the repeated
+arm it retains not only equality of the two finite states, but the induced
+equality of every supported generated reading (including (D8)) and the full
+table record at both endpoints.  Thus no declared coordinate proved equal by
+the first repeat is forgotten when the germ is published. -/
+noncomputable def FirstFailureGermWitness {S : DeclaredSignature}
+    {Baseline Target : FiniteObject.{u} → Prop}
+    (baselineInvariant : FiniteObject.IsomorphismInvariant Baseline)
+    (targetInvariant : FiniteObject.IsomorphismInvariant Target)
+    (corridor : Corridor object windows component)
+    (presentation : Presentation.{u} S object)
+    (index : corridor.Segment → presentation.Segment)
+    (germ : BoundedGerm S Baseline Target object) : Prop :=
+  germ.support.card ≤ exchangeBound S ∧
+    (∀ vertex ∈ germ.support,
+      vertex ∈ corridor.inside.1.support.map (fun inner => inner.1)) ∧
+    ((corridor.TerminalCorridor S ∧
+        germ.support = corridor.prefixSupport corridor.statesRead ∧
+        let terminal : corridor.Segment :=
+          ⟨corridor.inside.1.length, Nat.lt_succ_self _⟩
+        germ.record = corridor.recordAt presentation index terminal) ∨
+      ∃ left right : corridor.Segment,
+        right.1 ≤ stateBound S ∧ left.1 < right.1 ∧
+          presentation.state (index left) = presentation.state (index right) ∧
+          (∀ coordinate : Generated S,
+            presentation.support (index left) coordinate ⊆
+                ↑(presentation.activeInterface (index left)) →
+              presentation.reading (index left) coordinate =
+                presentation.reading (index right) coordinate) ∧
+          (∀ earlierLeft earlierRight : corridor.Segment,
+            earlierLeft.1 < earlierRight.1 → earlierRight.1 < right.1 →
+              presentation.state (index earlierLeft) ≠
+                presentation.state (index earlierRight)) ∧
+          germ.support = corridor.intervalSupport left right ∧
+          germ.record = corridor.recordAt presentation index left ∧
+          germ.record = corridor.recordAt presentation index right)
+
+/-- The support of an (F5) germ lies in the first `Q_cold` corridor steps.
+This is the precise bounded-prefix fact used by the manuscript before applying
+the subcubic ball estimate. -/
+theorem FirstFailureGermWitness.support_subset_statePrefix
+    {S : DeclaredSignature} {Baseline Target : FiniteObject.{u} → Prop}
+    (baselineInvariant : FiniteObject.IsomorphismInvariant Baseline)
+    (targetInvariant : FiniteObject.IsomorphismInvariant Target)
+    (corridor : Corridor object windows component)
+    (presentation : Presentation.{u} S object)
+    (index : corridor.Segment → presentation.Segment)
+    (germ : BoundedGerm S Baseline Target object)
+    (witness : corridor.FirstFailureGermWitness baselineInvariant targetInvariant
+      presentation index germ) :
+    germ.support ⊆ corridor.prefixSupport (stateBound S) := by
+  rcases witness.2.2 with terminal | repeated
+  · obtain ⟨terminalBound, supportEq, _record⟩ := terminal
+    rw [supportEq]
+    exact corridor.prefixSupport_mono terminalBound
+  · obtain ⟨left, right, rightBound, before, _same, _readings, _first, supportEq,
+    _leftRecord, _rightRecord⟩ := repeated
+    rw [supportEq]
+    exact (corridor.intervalSupport_subset_prefixSupport left right
+      (Nat.le_of_lt before)).trans (corridor.prefixSupport_mono rightBound)
+
+/-- The exact trace endpoint at which (F5) fires.  In the terminal case it is
+`statesRead`; in the repeated case it is the first repeated right endpoint.
+Keeping this endpoint prevents the multiplicity argument from inspecting
+corridor vertices that occur only after the paper's first failure. -/
+theorem FirstFailureGermWitness.exists_traceEnd
+    {S : DeclaredSignature} {Baseline Target : FiniteObject.{u} → Prop}
+    (baselineInvariant : FiniteObject.IsomorphismInvariant Baseline)
+    (targetInvariant : FiniteObject.IsomorphismInvariant Target)
+    (corridor : Corridor object windows component)
+    (presentation : Presentation.{u} S object)
+    (index : corridor.Segment → presentation.Segment)
+    (germ : BoundedGerm S Baseline Target object)
+    (witness : corridor.FirstFailureGermWitness baselineInvariant targetInvariant
+      presentation index germ) :
+    ∃ traceEnd : Nat, traceEnd ≤ stateBound S ∧
+      germ.support ⊆ corridor.prefixSupport traceEnd := by
+  rcases witness.2.2 with terminal | repeated
+  · obtain ⟨terminalBound, supportEq, _record⟩ := terminal
+    refine ⟨corridor.statesRead, terminalBound, ?_⟩
+    rw [supportEq]
+  · obtain ⟨left, right, rightBound, before, _same, _readings, _first, supportEq,
+    _leftRecord, _rightRecord⟩ := repeated
+    refine ⟨right.1, rightBound, ?_⟩
+    rw [supportEq]
+    exact corridor.intervalSupport_subset_prefixSupport left right
+      (Nat.le_of_lt before)
+
+set_option maxHeartbeats 800000 in
+/-- If the trace up to the actual first-failure endpoint is subcubic, every
+vertex of its germ is within the manuscript's `M_cold + 2` ball of the
+originating window endpoint.  This is the geometric input to the multiplicity
+estimate; the origin is the corridor's actual entry stub. -/
+lemma FirstFailureGermWitness.source_mem_subcubicReach_of_trace
+    {S : DeclaredSignature} {Baseline Target : FiniteObject.{u} → Prop}
+    (corridor : Corridor object windows component)
+    (germ : BoundedGerm S Baseline Target object)
+    (traceEnd : Nat) (traceEndBound : traceEnd ≤ stateBound S)
+    (supportInTrace : germ.support ⊆ corridor.prefixSupport traceEnd)
+    (threshold : Nat)
+    (prefixSubcubic : ∀ vertex ∈ corridor.prefixSupport traceEnd,
+      object.degree vertex ≤ threshold)
+    (sourceSubcubic : object.degree corridor.entryStub.2 ≤ threshold)
+    {vertex : object.Vertex} (vertexMem : vertex ∈ germ.support) :
+    corridor.entryStub.2 ∈
+      @Graph.SubcubicReach.reach object.Vertex
+        (@FinEnum.instFintype _ object.vertices) object.graph
+        (object.vertexFinset.filter
+          fun current => object.degree current ≤ threshold)
+        vertex (exchangeBound S + 2) vertex := by
+  classical
+  letI : FinEnum object.Vertex := object.vertices
+  letI : Fintype object.Vertex := @FinEnum.instFintype _ object.vertices
+  letI : DecidableRel object.graph.Adj := object.decideAdj
+  have inPrefix : vertex ∈ corridor.prefixSupport traceEnd :=
+    supportInTrace vertexMem
+  obtain ⟨inner, innerMem, innerEq⟩ :=
+    (corridor.mem_prefixSupport traceEnd vertex).1 inPrefix
+  let short := corridor.inside.1.take traceEnd
+  let toInner := short.takeUntil inner innerMem
+  let embedding := object.induceEmbedding component
+  let backwards := toInner.reverse.map embedding.toHom
+  have startEq : embedding inner = vertex := by
+    exact innerEq
+  have endEq : embedding
+      (Graph.ColdCorridor.stubFoot object windows component corridor.entry) =
+        corridor.entryStub.1 := by
+    rfl
+  let toFoot : object.graph.Walk vertex corridor.entryStub.1 :=
+    backwards.copy startEq endEq
+  have entryFacts := (mem_boundaryStubs_iff object windows component _).1
+    (List.get_mem _ corridor.entry)
+  let joined : object.graph.Walk vertex corridor.entryStub.2 :=
+    toFoot.concat entryFacts.2.2
+  let path := joined.toPath
+  refine (Graph.SubcubicReach.mem_reach object.graph).2 ⟨path.1, path.2, ?_, ?_, ?_⟩
+  · calc
+      path.1.length ≤ joined.length := joined.length_bypass_le_length
+      _ = toFoot.length + 1 := SimpleGraph.Walk.length_concat _ _
+      _ = toInner.length + 1 := by
+        simp [toFoot, backwards]
+      _ ≤ short.length + 1 :=
+        Nat.add_le_add_right (short.length_takeUntil_le_length innerMem) 1
+      _ ≤ traceEnd + 1 := by
+        simp [short, SimpleGraph.Walk.take_length]
+      _ ≤ stateBound S + 1 := Nat.add_le_add_right traceEndBound 1
+      _ ≤ exchangeBound S + 2 := by
+        unfold exchangeBound interfaceBudget
+        omega
+  · intro current currentMem
+    have currentJoined : current ∈ joined.support :=
+      SimpleGraph.Walk.support_toPath_subset_support joined
+        (List.mem_of_mem_dropLast currentMem)
+    rw [SimpleGraph.Walk.support_concat] at currentJoined
+    simp only [List.mem_append, List.mem_singleton] at currentJoined
+    refine Finset.mem_filter.2 ⟨object.mem_vertexFinset _, ?_⟩
+    rcases currentJoined with currentFoot | currentSource
+    · have currentBackwards : current ∈ backwards.support := by
+        simpa [toFoot, SimpleGraph.Walk.support_copy] using currentFoot
+      simp only [backwards, SimpleGraph.Walk.support_map, List.mem_map] at currentBackwards
+      obtain ⟨inside, insideMem, rfl⟩ := currentBackwards
+      have insideToInner : inside ∈ toInner.support := by
+        simpa [toInner, SimpleGraph.Walk.support_reverse] using insideMem
+      have insideShort : inside ∈ short.support :=
+        short.support_takeUntil_subset_support innerMem insideToInner
+      apply prefixSubcubic inside.1
+      exact (corridor.mem_prefixSupport traceEnd _).2
+        ⟨inside, by simpa [short] using insideShort, rfl⟩
+    · simpa [currentSource] using sourceSubcubic
+  · intro nonnil same
+    have adjacent := path.1.adj_getVert_succ
+      (i := 0) (by simpa [SimpleGraph.Walk.not_nil_iff_lt_length] using nonnil)
+    exact adjacent.ne (by simpa [SimpleGraph.Walk.getVert_zero, same])
+
+end Corridor
+
 /-! ## The selected branch-excess half-edges and their germs
 
 `def:cold-skeleton-excess`: *"keep one incident half-edge for every edge of `G`
 leaving `P` … the first two stubs of `P` are called the transit stubs; the
 remaining `s(P)−2` stubs are the selected branch-excess half-edges of `P`."*
-Only selected half-edges whose outside endpoint lies in the outside graph enter
-the paper's cold-return construction.  No replacement object is assigned to a
-half-edge that does not satisfy that hypothesis. -/
+Node `[168]` applies the manuscript's endpoint repair by selecting from the
+eleven interior single-stub incidences and absorbing two corridor ends. -/
 
 section Family
 
@@ -277,27 +692,100 @@ theorem externalStubList_nodup (window : Finset object.Vertex) :
   letI : FinEnum object.Vertex := object.vertices
   exact List.Nodup.filter _ FinEnum.nodup_toList
 
-/-- **The selected branch-excess half-edges of a window**: its external stubs
-with the two transit stubs dropped. -/
+/-- The external stubs whose window endpoint is an interior vertex of the
+ambient-cubic path.  At the registered cubic baseline this is exactly the
+sublist whose endpoint has one external neighbour. -/
+noncomputable def interiorStubList (window : Finset object.Vertex) :
+    List (object.Vertex × object.Vertex) := by
+  classical
+  exact (externalStubList object window).filter fun stub =>
+    decide ((object.externalNeighbours window stub.1).card = 1)
+
+theorem interiorStubList_nodup (window : Finset object.Vertex) :
+    (interiorStubList object window).Nodup := by
+  classical
+  exact (externalStubList_nodup object window).filter _
+
+/-- Counting the interior-stub list fibrewise gives the sum of the external
+degrees of its one-stub window endpoints. -/
+theorem interiorStubList_length_eq_sum (window : Finset object.Vertex) :
+    (interiorStubList object window).length =
+      ∑ vertex ∈ window.filter (fun vertex =>
+        (object.externalNeighbours window vertex).card = 1),
+        (object.externalNeighbours window vertex).card := by
+  classical
+  let stubsAt : object.Vertex → Finset (object.Vertex × object.Vertex) :=
+    fun vertex => (object.externalNeighbours window vertex).image fun outside =>
+      (vertex, outside)
+  have listFinset : (interiorStubList object window).toFinset =
+      (window.filter fun vertex =>
+        (object.externalNeighbours window vertex).card = 1).biUnion stubsAt := by
+    ext stub
+    simp only [interiorStubList, List.mem_toFinset, List.mem_filter,
+      decide_eq_true_eq, Finset.mem_biUnion, Finset.mem_filter]
+    constructor
+    · intro member
+      have external := (mem_externalStubList object window stub).1 member.1
+      refine ⟨stub.1, ⟨external.1, member.2⟩, ?_⟩
+      refine Finset.mem_image.2 ⟨stub.2, ?_, rfl⟩
+      simp only [FiniteObject.externalNeighbours, Finset.mem_filter,
+        SimpleGraph.mem_neighborFinset]
+      exact ⟨external.2.2, external.2.1⟩
+    · rintro ⟨vertex, ⟨vertexMem, one⟩, stubMem⟩
+      obtain ⟨outside, outsideMem, rfl⟩ := Finset.mem_image.1 stubMem
+      simp only [FiniteObject.externalNeighbours, Finset.mem_filter,
+        SimpleGraph.mem_neighborFinset] at outsideMem
+      refine ⟨(mem_externalStubList object window _).2 ?_, one⟩
+      exact ⟨vertexMem, outsideMem.2, outsideMem.1⟩
+  rw [← List.toFinset_card_of_nodup (interiorStubList_nodup object window),
+    listFinset, Finset.card_biUnion]
+  · refine Finset.sum_congr rfl fun vertex _ => ?_
+    exact Finset.card_image_of_injective _ fun left right same =>
+      congrArg Prod.snd same
+  · intro left _ right _ different
+    change Disjoint (stubsAt left) (stubsAt right)
+    rw [Finset.disjoint_left]
+    intro stub leftMem rightMem
+    obtain ⟨leftOutside, _, leftEq⟩ := Finset.mem_image.1 leftMem
+    obtain ⟨rightOutside, _, rightEq⟩ := Finset.mem_image.1 rightMem
+    apply different
+    exact congrArg Prod.fst (leftEq.trans rightEq.symm)
+
+/-- **The selected branch-excess half-edges of a window**: its interior stubs
+with the two absorbed corridor ends dropped.  Thus an ambient-cubic window of
+order `r` contributes the manuscript's `(r - 2) - 2` selected incidences. -/
 noncomputable def selectedStubs (window : Finset object.Vertex) :
     Finset (object.Vertex × object.Vertex) := by
   classical
-  exact ((externalStubList object window).drop 2).toFinset
+  exact ((interiorStubList object window).drop 2).toFinset
 
 theorem card_selectedStubs (window : Finset object.Vertex) :
-    (selectedStubs object window).card = (externalStubList object window).length - 2 := by
+    (selectedStubs object window).card = (interiorStubList object window).length - 2 := by
   classical
   simp only [selectedStubs]
-  rw [List.toFinset_card_of_nodup ((externalStubList_nodup object window).sublist
+  rw [List.toFinset_card_of_nodup ((interiorStubList_nodup object window).sublist
     (List.drop_sublist _ _))]
   simp
+
+/-- Membership in the selected family retains the defining one-stub interior
+incidence. -/
+theorem mem_selectedStubs_isInterior {window : Finset object.Vertex}
+    {stub : object.Vertex × object.Vertex} (member : stub ∈ selectedStubs object window) :
+    (object.externalNeighbours window stub.1).card = 1 := by
+  classical
+  simp only [selectedStubs, List.mem_toFinset] at member
+  have interior := List.mem_of_mem_drop member
+  simp only [interiorStubList, List.mem_filter, decide_eq_true_eq] at interior
+  exact interior.2
 
 theorem mem_selectedStubs_isStub {window : Finset object.Vertex}
     {stub : object.Vertex × object.Vertex} (member : stub ∈ selectedStubs object window) :
     stub.1 ∈ window ∧ stub.2 ∉ window ∧ object.graph.Adj stub.1 stub.2 := by
   classical
   simp only [selectedStubs, List.mem_toFinset] at member
-  exact (mem_externalStubList object window stub).1 (List.mem_of_mem_drop member)
+  have interior := List.mem_of_mem_drop member
+  simp only [interiorStubList, List.mem_filter] at interior
+  exact (mem_externalStubList object window stub).1 interior.1
 
 /-- All selected half-edges of a family of windows. -/
 noncomputable def allSelectedStubs (family : Finset (Finset object.Vertex)) :
@@ -308,7 +796,7 @@ noncomputable def allSelectedStubs (family : Finset (Finset object.Vertex)) :
 theorem card_allSelectedStubs (family : Finset (Finset object.Vertex))
     (disjoint : ∀ left ∈ family, ∀ right ∈ family, left ≠ right → Disjoint left right) :
     (allSelectedStubs object family).card =
-      ∑ window ∈ family, ((externalStubList object window).length - 2) := by
+      ∑ window ∈ family, ((interiorStubList object window).length - 2) := by
   classical
   simp only [allSelectedStubs]
   rw [Finset.card_biUnion]
@@ -422,13 +910,15 @@ theorem card_pathGraph_adjPairs (n : Nat) :
       rw [split, Finset.card_union_of_disjoint disjoint, forwardCard, backwardCard]
       omega
 
-/-- **The external stubs of an ambient-cubic induced window** number
-`δ·order − 2(order − 1)`; here the lower bound the count needs. -/
-theorem stubCount_le_externalStubList_length {order threshold : Nat}
+/-- **The external stubs of an ambient-cubic induced window** number exactly
+`δ·order − 2(order − 1)`.  The addition form avoids hiding a
+truncated subtraction in the generic graph statement. -/
+theorem externalStubList_length_add_internal_eq_stubCount {order threshold : Nat}
     (window : Finset object.Vertex)
     (induces : object.InducesWindow order window)
     (cubic : ∀ vertex ∈ window, object.degree vertex = threshold) :
-    threshold * order ≤ (externalStubList object window).length + 2 * (order - 1) := by
+    (externalStubList object window).length + 2 * (order - 1) =
+      threshold * order := by
   classical
   letI : FinEnum object.Vertex := object.vertices
   letI : DecidableRel object.graph.Adj := object.decideAdj

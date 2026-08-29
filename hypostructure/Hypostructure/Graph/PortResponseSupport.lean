@@ -110,6 +110,17 @@ theorem endpoint_mem_returnSupport
   letI : DecidableEq object.Vertex := object.vertices.decEq
   simp [returnSupport]
 
+/-- The centre is the terminal vertex of the canonical return and therefore
+also belongs to `R_p`. -/
+theorem centre_mem_returnSupport
+    (port : SurplusPort object threshold) {left right : object.Vertex}
+    (returns : Nonempty (PortReturn object port.centre port.endpoint left right)) :
+    port.centre ∈ port.returnSupport returns := by
+  letI : FinEnum object.Vertex := object.vertices
+  letI : Fintype object.Vertex := by infer_instance
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  simp [returnSupport]
+
 /-- The canonical return support is connected because it is the support of the
 canonical simple return path already carried by the active demand. -/
 theorem connectedOn_returnSupport

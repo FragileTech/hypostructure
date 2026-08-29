@@ -191,19 +191,22 @@ def crefs(text: str) -> list[str]:
     return found
 
 
-_NODE_RANGE = re.compile(r"\[(\d+)\](?:\s*--\s*\[(\d+)\])?")
+_NODE_RANGE = re.compile(r"\[(\d+[a-z]?)\](?:\s*--\s*\[(\d+[a-z]?)\])?")
 
 
 def node_ids(text: str) -> list[str]:
     """Expand a diagram-node cell such as ``[63], [86]--[109]`` into ids."""
     found: list[str] = []
     for start, stop in _NODE_RANGE.findall(text):
-        low = int(start)
-        high = int(stop) if stop else low
-        for value in range(low, high + 1):
-            key = str(value)
-            if key not in found:
-                found.append(key)
+        if stop and start.isdigit() and stop.isdigit():
+            for value in range(int(start), int(stop) + 1):
+                key = str(value)
+                if key not in found:
+                    found.append(key)
+        elif start not in found:
+            found.append(start)
+        if stop and stop not in found:
+            found.append(stop)
     return found
 
 

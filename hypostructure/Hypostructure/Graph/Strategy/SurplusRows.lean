@@ -215,21 +215,22 @@ they close the suppression.  Its first edge after `x(p)` is a shoulder. -/
 
 /-- `def:baseline-spine-demand` on the literal sparse-surplus survivor.
 
-The family is not an empty or numerically supplied coordinate carrier.  The
-strict-surplus fact makes the selected excess-port family nonempty; the row
-chooses one of those actual demands and uses its declared response support for
-the baseline coordinates.  Their cardinality is the cubic-baseline exponent
+The family is not an empty or numerically supplied coordinate carrier.  It is
+the clause-(D8) family of labelled Boolean quotient images of the full-support
+clause-(D2) return-data profile.  Its cardinality is the cubic-baseline exponent
 computed from the current object and the registered baseline.  A functional
 quotient that identified two of these declared coordinates would localize to
 exactly one of the paper's replacement or delocalization exits, both excluded
-by the incoming survivor fact.  Thus the family is independently target
-testable, its canonical deficit is zero, and the required linear deficit bound
-is derived rather than registered. -/
+by the incoming survivor fact.  The row publishes the stronger realization the
+paper requires: every Boolean response word is read from an actual labelled
+graph in the current fixed-edge stratum.  Its exponent is the largest uniform
+cubic-baseline rate supplied by the current sparse envelope, and the resulting
+deficit is bounded linearly using the registered coefficient inequality. -/
 @[reducible] noncomputable def baselineSpineDemandRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.baselineSpineDemand
     { Requires := [K .activeSurplusDemands, K .sparseSurplusSurvivor,
-        K .surplusAbove]
+        K .surplusAbove, K .noProperBaseline, K .tightEndpoint]
       Produces := [K .baselineSpineDemand]
       requiresUnique := by simp [K_eq_iff]
       producesUnique := by simp
@@ -248,30 +249,145 @@ is derived rather than registered. -/
                 0 < object.degreeSurplus data.threshold :=
               lt_of_le_of_lt (Nat.zero_le _)
                 (inputs.get (K .surplusAbove)).down
-            have activeNonempty :
-                (object.excessPorts data.threshold).Nonempty := by
-              apply Finset.card_pos.mp
-              rw [active.count]
-              exact surplusPositive
-            let demand := activeNonempty.choose
-            let activation := Graph.pairResponseActivation active
-            let support := activation.declaredSupport demand
-            let bits := Graph.cubicBaselineExponent object.vertexCount
+            let bits := Graph.realizableBaselineExponent object.vertexCount
               data.threshold
-            let Coordinate := Graph.DeclaredSignature.Coordinate object.Vertex
-              (ULift.{u} (Fin bits))
+            let Label := Option (ULift.{u} (Fin bits))
+            let Coordinate := Graph.DeclaredSignature.Coordinate object.Vertex Label
+            let source : Coordinate :=
+              Graph.DeclaredSignature.Coordinate.base
+                .returnData none object.vertexFinset
             let family : Finset Coordinate :=
               Finset.univ.image fun bit =>
-                Graph.DeclaredSignature.Coordinate.base
-                  .sparseSurplus bit support
+                Graph.DeclaredSignature.Coordinate.copy (some bit)
+                  (.quotientImage source)
             let coordinateSupport : Coordinate → Finset object.Vertex :=
               Graph.DeclaredSignature.Coordinate.support
             have familyCard : family.card = bits := by
               rw [Finset.card_image_iff.mpr]
               · simp [Fintype.card_ulift]
               · intro left _ right _ equality
-                injection equality
-            refine ⟨active, Coordinate, family, coordinateSupport, ?_, ?_, ?_⟩
+                have labelEquality : (some left : Label) = some right :=
+                  congrArg
+                  (fun coordinate => match coordinate with
+                    | .copy label _source => label
+                    | _ => none)
+                  equality
+                exact Option.some.inj labelEquality
+            have aboveBaseline :
+                Graph.cubicBaselineEdgeCount object.vertexCount data.threshold ≤
+                  object.edgeCount := by
+              have handshake : data.threshold * object.vertexCount ≤
+                  2 * object.edgeCount :=
+                Graph.baselineDegree_mul_vertexCount_le_two_mul_edgeCount
+                  object data.threshold fun vertex =>
+                    le_trans inputs.current.baseline
+                      (object.minDegree_le_degree vertex)
+              exact Graph.cubicBaselineEdgeCount_le_edgeCount_of_handshake
+                object data.threshold handshake
+            have edgePositive : 0 < object.edgeCount :=
+              object.edgeCount_pos_of_degreeSurplus_pos surplusPositive
+            have envelope : object.edgeCount + 2 ≤
+                (data.threshold - 1) * object.vertexCount :=
+              object.edgeCount_add_two_le data.three_le_threshold
+                (inputs.get (K .noProperBaseline)).down.1
+                (inputs.get (K .tightEndpoint)).down edgePositive
+            have baselineCount : 2 ^ family.card ≤
+                Graph.skeletonBudget object := by
+              rw [familyCard]
+              exact
+                Graph.two_pow_realizableBaselineExponent_le_skeletonBudget
+                  object data.threshold aboveBaseline envelope
+            let Assignment := {coordinate // coordinate ∈ family} → Bool
+            let Skeleton := Graph.PackedWindowRealization.Skeleton
+              object.vertexCount object.edgeCount
+            letI : Fintype Assignment := Fintype.ofFinite Assignment
+            letI : Fintype Skeleton := Fintype.ofFinite Skeleton
+            have cardLe : Fintype.card Assignment ≤ Fintype.card Skeleton := by
+              have codeCard : Nat.card Assignment = 2 ^ family.card := by
+                dsimp [Assignment]
+                rw [Nat.card_fun]
+                simp
+              have skeletonCard : Nat.card Skeleton =
+                  Graph.skeletonBudget object := by
+                dsimp [Skeleton]
+                simpa [Graph.skeletonBudget, Graph.edgeStratumCount] using
+                  Graph.PackedWindowRealization.card_skeleton
+                    object.vertexCount object.edgeCount
+              simpa [← Nat.card_eq_fintype_card, codeCard, skeletonCard] using
+                baselineCount
+            let encode : Assignment → Skeleton := fun assignment =>
+              (Fintype.equivFin Skeleton).symm
+                (Fin.castLE cardLe ((Fintype.equivFin Assignment) assignment))
+            have encodeInjective : Function.Injective encode := by
+              intro left right equality
+              apply (Fintype.equivFin Assignment).injective
+              apply Fin.castLE_injective cardLe
+              apply (Fintype.equivFin Skeleton).symm.injective
+              exact equality
+            let ReturnProfile := Fin object.vertexCount →
+              Fin object.vertexCount → Option (Finset Nat)
+            let returnProfile : Graph.LabelledOn object.vertexCount →
+                ReturnProfile :=
+              fun member left right =>
+                if adjacent : member.graph.Adj left right then
+                  some (Graph.EdgeRootedReturn.returnLengthFinset
+                    member.toFiniteObject ⟨(left, right), adjacent⟩)
+                else
+                  none
+            have returnProfileInjective : Function.Injective returnProfile := by
+              intro left right same
+              apply Graph.LabelledOn.ext
+              ext first second
+              constructor
+              · intro leftAdjacent
+                by_contra rightAdjacent
+                have profileEquality := congrFun (congrFun same first) second
+                simp [returnProfile, leftAdjacent, rightAdjacent] at profileEquality
+              · intro rightAdjacent
+                by_contra leftAdjacent
+                have profileEquality := congrFun (congrFun same first) second
+                simp [returnProfile, leftAdjacent, rightAdjacent] at profileEquality
+            letI : Nonempty (Graph.LabelledOn object.vertexCount) :=
+              ⟨⟨⊥⟩⟩
+            let quotientMap : {coordinate // coordinate ∈ family} →
+                ReturnProfile → Bool :=
+              fun coordinate profile =>
+                let member := Function.invFun returnProfile profile
+                if edgeCount : Nat.card member.graph.edgeSet = object.edgeCount then
+                  Function.invFun encode ⟨member, edgeCount⟩ coordinate
+                else false
+            have realization : Graph.BaselineCodeRealization object family :=
+              { Label := Label
+                asDeclared := id
+                source := source
+                source_is_returnProfile := ⟨none, rfl⟩
+                quotientImage := by
+                  rintro ⟨coordinate, membership⟩
+                  obtain ⟨bit, _bitMem, equality⟩ := Finset.mem_image.mp membership
+                  exact ⟨some bit, equality.symm⟩
+                returnProfile := returnProfile
+                returnProfile_edge := by
+                  intro member left right adjacent
+                  simp [returnProfile, adjacent]
+                returnProfile_nonedge := by
+                  intro member left right adjacent
+                  simp [returnProfile, adjacent]
+                quotientMap := quotientMap
+                realized := by
+                  intro assignment
+                  refine ⟨encode assignment, ?_⟩
+                  funext coordinate
+                  dsimp [quotientMap]
+                  rw [Function.leftInverse_invFun returnProfileInjective
+                    (encode assignment).1]
+                  split
+                  · exact congrFun
+                      (Function.leftInverse_invFun encodeInjective assignment)
+                      coordinate
+                  · rename_i edgeCount
+                    exact (edgeCount (encode assignment).2).elim }
+            refine ⟨active, Coordinate, family, coordinateSupport, ?_,
+              ⟨realization⟩, ?_, ?_⟩
             · intro declared _functional
               by_contra reducing
               rcases declared.localize reducing with replacement |
@@ -288,7 +404,10 @@ is derived rather than registered. -/
             · rw [familyCard]
               change Graph.spineDeficit object.vertexCount data.threshold bits ≤
                 data.surplusScale * object.vertexCount
-              simp [bits, Graph.spineDeficit]⟩)
+              exact (Graph.spineDeficit_realizableBaselineExponent_le
+                object.vertexCount data.threshold).trans
+                  (Nat.mul_le_mul_right object.vertexCount
+                    data.baselineDeficitSafety)⟩)
         .nil)
 
 /-! ## Node `[132]`: route the dependent pair family -/
@@ -313,20 +432,11 @@ noncomputable def pairResponseIndependenceDichotomy
       let active := (previous.get (K .activeSurplusDemands)).down
       let activation := Graph.pairResponseActivation active
       let pairs := current.object.portPairSchedule data.threshold
-      let family := activation.pairFamily pairs
-      let coordinateSupport : current.object.PairCoordinate →
-          Finset current.object.Vertex := by
-        letI := current.object.vertices.decEq
-        exact Graph.DeclaredSignature.Coordinate.support
-      by_cases independent : ∀ attempt : Graph.AttemptedQuotient
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) current.object family
-          coordinateSupport,
-          attempt.toRankQuotient.FunctionalOn ↑family →
-            Set.InjOn attempt.label ↑family
-      · exact ⟨.inl ⟨active, independent⟩⟩
-      · push_neg at independent
-        exact ⟨.inr ⟨active, independent⟩⟩))
+      by_cases blocked : Graph.HasSparsePairDEBlocker
+          (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+          (LengthOK := data.LengthOK) activation pairs
+      · exact ⟨.inr ⟨active, blocked⟩⟩
+      · exact ⟨.inl ⟨active, blocked⟩⟩))
     independentFresh dependentFresh
 
 /-! ## Node `[131]`: mixed sparse-spine dependence -/
@@ -349,7 +459,7 @@ semantic fact. -/
             .mixedSparseSpineDependence inputs.current from
           ⟨by
             obtain ⟨active, Coordinate, family, coordinateSupport, survives,
-                demand, deficitBound⟩ :=
+                _realization, demand, deficitBound⟩ :=
               (inputs.get (K .baselineSpineDemand)).down
             refine ⟨active, Coordinate, family, coordinateSupport, survives,
               demand, deficitBound, ?_⟩
@@ -623,14 +733,9 @@ noncomputable def blockedPairRoutingDichotomy
     (Classical.choice (show Nonempty
         ((K .sparsePairExit).At current ⊕
           (K .canonicalBlockerRoute).At current) from by
-      obtain ⟨active, attempt, functional, reducing⟩ :=
+      obtain ⟨active, blocker⟩ :=
         (previous.get (K .dependentPairFamily)).down
-      let activation := Graph.pairResponseActivation active
-      let pairs := current.object.portPairSchedule data.threshold
-      rcases Graph.sparsePairDependence_exit_or_blocker activation pairs
-          attempt reducing functional with exit | blocker
-      · exact ⟨.inl ⟨exit⟩⟩
-      · exact ⟨.inr ⟨active, blocker⟩⟩))
+      exact ⟨.inr ⟨active, blocker⟩⟩))
     exitFresh blockerFresh
 
 /-! ## Node `[134]`: canonical blocker ledger -/
@@ -705,7 +810,7 @@ canonical-fibre no-overcount identities. -/
                 surplusPositive
             have envelope := inputs.current.object.edgeCount_add_two_le
               data.three_le_threshold
-              (inputs.get (K .noProperBaseline)).down
+              (inputs.get (K .noProperBaseline)).down.1
               (inputs.get (K .tightEndpoint)).down edgePositive
             obtain ⟨_, packing, valid, maximal, _⟩ :=
               (inputs.get (K .maximalPacking)).down
@@ -746,81 +851,13 @@ canonical-fibre no-overcount identities. -/
               Finset.card_pos.mp (by omega : 0 < certificate.choose.card)
             let port := pairNonempty.choose
             letI : Nonempty inputs.current.object.Vertex := ⟨port.1⟩
-            have graphConnected : inputs.current.object.graph.Connected := by
-              classical
-              let root : inputs.current.object.Vertex := port.1
-              let support : Finset inputs.current.object.Vertex :=
-                inputs.current.object.vertexFinset.filter fun vertex =>
-                  inputs.current.object.graph.connectedComponentMk vertex =
-                    inputs.current.object.graph.connectedComponentMk root
-              by_contra disconnected
-              have rootMem : root ∈ support := by
-                simp [support]
-              have supportCardLt : support.card < inputs.current.object.vertexCount := by
-                have notAllReachable :
-                    ¬ ∀ vertex : inputs.current.object.Vertex,
-                      inputs.current.object.graph.Reachable root vertex := by
-                  intro allReachable
-                  apply disconnected
-                  exact inputs.current.object.graph.connected_iff_exists_forall_reachable.mpr
-                    ⟨root, allReachable⟩
-                push Not at notAllReachable
-                rcases notAllReachable with ⟨outside, unreachable⟩
-                have outsideNotMem : outside ∉ support := by
-                  simp only [support, Finset.mem_filter,
-                    inputs.current.object.mem_vertexFinset, true_and,
-                    SimpleGraph.ConnectedComponent.eq]
-                  exact fun reachable => unreachable reachable.symm
-                have strict : support ⊂ inputs.current.object.vertexFinset := by
-                  refine Finset.ssubset_iff_subset_ne.mpr ⟨?_, ?_⟩
-                  · intro vertex _
-                    exact inputs.current.object.mem_vertexFinset vertex
-                  · intro equal
-                    exact outsideNotMem
-                      (equal ▸ inputs.current.object.mem_vertexFinset outside)
-                simpa only [inputs.current.object.card_vertexFinset] using
-                  Finset.card_lt_card strict
-              let component : Graph.ProperSubgraph inputs.current.object :=
-                Graph.ProperSubgraph.ofInducedSupport inputs.current.object support
-                  supportCardLt
-              letI : Nonempty component.value.Vertex := ⟨⟨root, rootMem⟩⟩
-              have neighborSubset
-                  (vertex : component.value.Vertex) :
-                  inputs.current.object.graph.neighborSet vertex.1 ⊆
-                    (support : Set inputs.current.object.Vertex) := by
-                intro neighbor adjacent
-                change neighbor ∈ support
-                simp only [support, Finset.mem_filter,
-                  inputs.current.object.mem_vertexFinset, true_and,
-                  SimpleGraph.ConnectedComponent.eq]
-                exact (show inputs.current.object.graph.Adj vertex.1 neighbor from
-                  adjacent).reachable.symm.trans (by
-                    simpa only [support, Finset.mem_filter,
-                      inputs.current.object.mem_vertexFinset, true_and,
-                      SimpleGraph.ConnectedComponent.eq] using vertex.2)
-              have componentMinimumDegree :
-                  data.threshold ≤ component.value.minDegree := by
-                apply component.value.le_minDegree_of_forall_le_degree data.threshold
-                intro vertex
-                rw [show component.value.degree vertex =
-                    inputs.current.object.degree vertex.1 from
-                  inputs.current.object.degree_induce_of_neighborSet_subset
-                    support vertex (neighborSubset vertex)]
-                exact inputs.current.baseline.trans
-                  (inputs.current.object.minDegree_le_degree vertex.1)
-              exact (inputs.get (K .noProperBaseline)).down component
-                componentMinimumDegree
+            have graphConnected : inputs.current.object.graph.Connected :=
+              (inputs.get (K .noProperBaseline)).down.2
             have connectedOn :
                 Graph.SupportComponents.Connected.ConnectedOn
-                  inputs.current.object inputs.current.object.vertexFinset := by
-              letI := inputs.current.object.vertices.decEq
-              constructor
-              · exact ⟨port.1, inputs.current.object.mem_vertexFinset _⟩
-              · intro left right _ _
-                obtain ⟨walk⟩ := graphConnected.preconnected left right
-                let path := walk.toPath
-                exact ⟨path, path.isPath, fun vertex _ =>
-                  inputs.current.object.mem_vertexFinset vertex⟩
+                  inputs.current.object inputs.current.object.vertexFinset :=
+              Graph.SupportComponents.Connected.connectedOn_vertexFinset
+                inputs.current.object graphConnected
             letI : DecidableEq inputs.current.object.Vertex := Classical.decEq _
             have pairCoordinateNonempty
                 (pair : Finset

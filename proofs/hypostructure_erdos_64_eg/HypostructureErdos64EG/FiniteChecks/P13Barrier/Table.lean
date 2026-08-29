@@ -69,6 +69,77 @@ def certifiedTable :
   semantic := semanticCertificate
   counts := countCertificate
 
+/-! ## Semantic presentation consumed by the strategy backend -/
+
+/-- The legal window label named by a certified table index. -/
+abbrev barrierLabel : Fin labelCount →
+    Hypostructure.Graph.WindowCurvature.Label WindowAlgebra.windowOrder :=
+  WindowAlgebra.windowLabel
+
+theorem barrierLabel_mem (index : Fin labelCount) :
+    barrierLabel index ∈
+      Hypostructure.Graph.WindowCurvature.Labels WindowAlgebra.windowOrder :=
+  WindowAlgebra.windowLabel_mem_Labels index
+
+theorem barrierLabel_injective : Function.Injective barrierLabel :=
+  WindowAlgebra.windowLabel_injective
+
+theorem barrierLabel_surjective
+    (label : Hypostructure.Graph.WindowCurvature.Label WindowAlgebra.windowOrder)
+    (member : label ∈
+      Hypostructure.Graph.WindowCurvature.Labels WindowAlgebra.windowOrder) :
+    ∃ index, barrierLabel index = label :=
+  WindowAlgebra.windowLabel_surjective member
+
+theorem leftRow_eq_safe (row : AcceptedPair)
+    (source target : Fin labelCount) :
+    (semanticProfile.row (certifiedTable.counts.leftLength row) source).getLsb
+        target =
+      decide (Hypostructure.Graph.WindowCurvature.Safe
+        (certifiedTable.counts.leftLength row)
+        (barrierLabel source) (barrierLabel target)) := by
+  change (Certificate.profile.row (leftLength row) source).getLsb target =
+    decide (Hypostructure.Graph.WindowCurvature.Safe (leftLength row)
+      (WindowAlgebra.windowLabel source) (WindowAlgebra.windowLabel target))
+  rw [certifiedTable.semantic.row_semantic
+    ⟨leftLength row, Nat.lt_of_le_of_lt
+      (Nat.le_trans (Nat.le_add_right _ _) row.2.2.2) (by norm_num)⟩]
+  exact WindowAlgebra.windowRelation_eq_safe _ source target
+
+theorem rightRow_eq_safe (row : AcceptedPair)
+    (source target : Fin labelCount) :
+    (semanticProfile.row (certifiedTable.counts.rightLength row) source).getLsb
+        target =
+      decide (Hypostructure.Graph.WindowCurvature.Safe
+        (certifiedTable.counts.rightLength row)
+        (barrierLabel source) (barrierLabel target)) := by
+  change (Certificate.profile.row (rightLength row) source).getLsb target =
+    decide (Hypostructure.Graph.WindowCurvature.Safe (rightLength row)
+      (WindowAlgebra.windowLabel source) (WindowAlgebra.windowLabel target))
+  rw [certifiedTable.semantic.row_semantic
+    ⟨rightLength row, Nat.lt_of_le_of_lt
+      (Nat.le_trans (Nat.le_add_left _ _) row.2.2.2) (by norm_num)⟩]
+  exact WindowAlgebra.windowRelation_eq_safe _ source target
+
+theorem sumRow_eq_safe (row : AcceptedPair)
+    (source target : Fin labelCount) :
+    (semanticProfile.row
+      (certifiedTable.counts.leftLength row +
+        certifiedTable.counts.rightLength row) source).getLsb target =
+      decide (Hypostructure.Graph.WindowCurvature.Safe
+        (certifiedTable.counts.leftLength row +
+          certifiedTable.counts.rightLength row)
+        (barrierLabel source) (barrierLabel target)) := by
+  change (Certificate.profile.row (leftLength row + rightLength row) source).getLsb
+      target =
+    decide (Hypostructure.Graph.WindowCurvature.Safe
+      (leftLength row + rightLength row)
+      (WindowAlgebra.windowLabel source) (WindowAlgebra.windowLabel target))
+  rw [certifiedTable.semantic.row_semantic
+    ⟨leftLength row + rightLength row,
+      Nat.lt_of_le_of_lt row.2.2.2 (by norm_num)⟩]
+  exact WindowAlgebra.windowRelation_eq_safe _ source target
+
 def flatProduct : Nat :=
   Hypostructure.Core.Finite.CertifiedTableAggregation.flatProduct certifiedTable
 

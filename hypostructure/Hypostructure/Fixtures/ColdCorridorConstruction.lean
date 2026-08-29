@@ -46,30 +46,32 @@ real subject.  The offsets and the clause readings are supplied by the packing
 and by the owners of the clauses, as `def:declared-coordinate-signature`
 requires. -/
 noncomputable example (corridor : Corridor object windows component) (S : DeclaredSignature)
+    (active : corridor.Segment → Finset object.Vertex)
     (offsetOf : object.Vertex → Fin S.windowOrder)
-    (support : (clause : S.Clause) → S.Generator clause →
+    (support : corridor.Segment → (clause : S.Clause) → S.Generator clause →
       Finset object.Vertex)
-    (value : corridor.Segment → (clause : S.Clause) → S.Generator clause →
-      S.Value) :
+    (value : corridor.Segment → (clause : S.Clause) →
+      (generator : S.Generator clause) → S.Value clause generator) :
     Presentation.{u} S object :=
-  corridor.presentation S offsetOf support value
+  corridor.presentation S active offsetOf support value
 
 /-- **`Q_cold + 1` initial segments of a real corridor repeat a state.**  This
 is the pigeonhole `lem:cold-corridor-first-failure` reaches the repeat subcase
 of (F5) by, read at the corridor rather than at an abstract interface. -/
 noncomputable example (corridor : Corridor object windows component) (S : DeclaredSignature)
+    (active : corridor.Segment → Finset object.Vertex)
     (offsetOf : object.Vertex → Fin S.windowOrder)
-    (support : (clause : S.Clause) → S.Generator clause →
+    (support : corridor.Segment → (clause : S.Clause) → S.Generator clause →
       Finset object.Vertex)
-    (value : corridor.Segment → (clause : S.Clause) → S.Generator clause →
-      S.Value)
+    (value : corridor.Segment → (clause : S.Clause) →
+      (generator : S.Generator clause) → S.Value clause generator)
     (segments : Fin (stateBound S + 1) → corridor.Segment) :
     ∃ left right, left ≠ right ∧
-      (corridor.presentation S offsetOf support value).state
+      (corridor.presentation S active offsetOf support value).state
           (ULift.up (segments left)) =
-        (corridor.presentation S offsetOf support value).state
+        (corridor.presentation S active offsetOf support value).state
           (ULift.up (segments right)) :=
-  corridor.exists_repeated_state S offsetOf support value segments
+  corridor.exists_repeated_state S active offsetOf support value segments
 
 /-- **"Each selected branch-excess half-edge has exactly one corridor."** -/
 example (left right : Corridor object windows component)

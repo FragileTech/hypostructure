@@ -2,6 +2,7 @@ import Hypostructure.Graph.BaselineSpineDemand
 import Hypostructure.Graph.DeclaredRankQuotient
 import Hypostructure.Graph.NamedSurplusExits
 import Hypostructure.Graph.SparsePairResponse
+import Hypostructure.Graph.BarrierOverlapSystem
 
 /-!
 # The sparse pair dependence dichotomy and the entropy sandwich
@@ -292,6 +293,117 @@ theorem pairResponseActivation_endpoint_mem_returnSupport_of_mem
   simp only [pairResponseActivation, dif_pos member]
   exact FiniteObject.SurplusPort.endpoint_mem_returnSupport _ _
 
+/-- The same registered canonical return terminates at the selected port's
+centre. -/
+theorem pairResponseActivation_centre_mem_returnSupport_of_mem
+    {Baseline Target : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {threshold : Nat}
+    (active : ActiveSurplusDemands Baseline Target LengthOK object threshold)
+    {demand : object.Vertex × object.Vertex}
+    (member : demand ∈ object.excessPorts threshold) :
+    demand.1 ∈ (pairResponseActivation active).returnSupport demand := by
+  classical
+  simp only [pairResponseActivation, dif_pos member]
+  exact FiniteObject.SurplusPort.centre_mem_returnSupport _ _
+
+/-- The literal canonical return path used by `pairResponseActivation` at an
+active demand.  This is not a second choice of return data: the shoulders,
+activation witness, and length-major path selector are definitionally the same
+ones used to compute the activation's `returnSupport`. -/
+noncomputable def ActiveSurplusDemands.canonicalPairReturnPath
+    {Baseline Target : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {threshold : Nat}
+    (active : ActiveSurplusDemands Baseline Target LengthOK object threshold)
+    (demand : object.Vertex × object.Vertex)
+    (member : demand ∈ object.excessPorts threshold) :
+    (object.surplusPortOfMem member).deletedPortGraph.Walk demand.2 demand.1 := by
+  classical
+  letI : FinEnum object.Vertex := object.vertices
+  letI : Fintype object.Vertex := @FinEnum.instFintype _ object.vertices
+  let shoulders := active.shoulderPair demand member
+  let activated := active.activated demand member shoulders.choose
+    shoulders.choose_spec.choose shoulders.choose_spec.choose_spec.1
+    shoulders.choose_spec.choose_spec.2
+  exact ((object.surplusPortOfMem member).canonicalReturn activated.1).path.1
+
+/-- The active demand's canonical return is a simple path. -/
+theorem ActiveSurplusDemands.canonicalPairReturnPath_isPath
+    {Baseline Target : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {threshold : Nat}
+    (active : ActiveSurplusDemands Baseline Target LengthOK object threshold)
+    (demand : object.Vertex × object.Vertex)
+    (member : demand ∈ object.excessPorts threshold) :
+    (active.canonicalPairReturnPath demand member).IsPath := by
+  classical
+  letI : FinEnum object.Vertex := object.vertices
+  letI : Fintype object.Vertex := @FinEnum.instFintype _ object.vertices
+  unfold canonicalPairReturnPath
+  exact ((object.surplusPortOfMem member).canonicalReturn _).path.2
+
+/-- The same canonical return, included back into the ambient graph.  The map
+is the identity-on-vertices inclusion of `G - c(p)x(p)` into `G`, so this
+declaration does not select or transport a second return. -/
+noncomputable def ActiveSurplusDemands.canonicalPairReturnAmbientPath
+    {Baseline Target : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {threshold : Nat}
+    (active : ActiveSurplusDemands Baseline Target LengthOK object threshold)
+    (demand : object.Vertex × object.Vertex)
+    (member : demand ∈ object.excessPorts threshold) :
+    object.graph.Walk demand.2 demand.1 :=
+  (active.canonicalPairReturnPath demand member).map
+    (.ofLE (by
+      unfold FiniteObject.SurplusPort.deletedPortGraph
+      exact object.graph.deleteEdges_le {s(demand.1, demand.2)}))
+
+/-- Ambient inclusion preserves simplicity of the registered return. -/
+theorem ActiveSurplusDemands.canonicalPairReturnAmbientPath_isPath
+    {Baseline Target : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {threshold : Nat}
+    (active : ActiveSurplusDemands Baseline Target LengthOK object threshold)
+    (demand : object.Vertex × object.Vertex)
+    (member : demand ∈ object.excessPorts threshold) :
+    (active.canonicalPairReturnAmbientPath demand member).IsPath := by
+  classical
+  apply SimpleGraph.Walk.map_isPath_of_injective
+    (f := SimpleGraph.Hom.ofLE (by
+      unfold FiniteObject.SurplusPort.deletedPortGraph
+      exact object.graph.deleteEdges_le {s(demand.1, demand.2)}))
+  · intro left right equal
+    exact equal
+  · exact active.canonicalPairReturnPath_isPath demand member
+
+/-- Viewing the registered return in the ambient graph does not change its
+length. -/
+@[simp] theorem ActiveSurplusDemands.canonicalPairReturnAmbientPath_length
+    {Baseline Target : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {threshold : Nat}
+    (active : ActiveSurplusDemands Baseline Target LengthOK object threshold)
+    (demand : object.Vertex × object.Vertex)
+    (member : demand ∈ object.excessPorts threshold) :
+    (active.canonicalPairReturnAmbientPath demand member).length =
+      (active.canonicalPairReturnPath demand member).length := by
+  unfold canonicalPairReturnAmbientPath
+  exact SimpleGraph.Walk.length_map (f := SimpleGraph.Hom.ofLE (by
+    unfold FiniteObject.SurplusPort.deletedPortGraph
+    exact object.graph.deleteEdges_le {s(demand.1, demand.2)}))
+    (p := active.canonicalPairReturnPath demand member)
+
+/-- The registered return-length bound used by node `[179]`, derived from the
+finite active object rather than hard-coded: every canonical port return has
+strictly fewer than `vertexCount` edges. -/
+theorem ActiveSurplusDemands.canonicalPairReturnPath_length_lt
+    {Baseline Target : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {threshold : Nat}
+    (active : ActiveSurplusDemands Baseline Target LengthOK object threshold)
+    (demand : object.Vertex × object.Vertex)
+    (member : demand ∈ object.excessPorts threshold) :
+    (active.canonicalPairReturnPath demand member).length < object.vertexCount := by
+  classical
+  letI : FinEnum object.Vertex := object.vertices
+  letI : Fintype object.Vertex := @FinEnum.instFintype _ object.vertices
+  rw [FiniteObject.vertexCount, FinEnum.card_eq_fintypeCard]
+  exact (active.canonicalPairReturnPath_isPath demand member).length_lt
+
 /-- Each canonical return entry `R_p` in the active-family activation is a
 connected declared support. -/
 theorem pairResponseActivation_connectedOn_returnSupport_of_mem
@@ -326,6 +438,201 @@ theorem existsPairResponseActivation
     Nonempty (object.DemandActivation (object.PairCoordinate)
       (object.Vertex × object.Vertex)) :=
   ⟨pairResponseActivation active⟩
+
+/-! ## Exact conditional skeleton responses
+
+The rank quotient detects a dependence, but the overlap argument at node
+`[178]` uses the stronger graph statement in the manuscript: after fixing the
+baseline word and the edges outside the port returns, separated pair supports
+realize their response product in the actual fixed-edge skeleton class.  The
+following model records exactly that class and no abstract state carrier. -/
+
+/-- One graph-derived value of a sparse pair-response coordinate. -/
+structure SparsePairSkeletonResponse (LengthOK : Nat → Prop) where
+  boundary : Boundary.{u}
+  response : OutsideContext boundary → Prop
+
+/-- The exact skeleton response model for a nonempty subfamily of a declared
+pair schedule.  Every support is the canonical `X_π`; every state is read from
+an actual member of the current fixed-`(n,m)` skeleton class. -/
+structure SparsePairSkeletonModel
+    {object : FiniteObject.{u}} {Coordinate Chord : Type u}
+    (activation : object.DemandActivation Coordinate Chord)
+    (schedule : Finset (Finset (object.Vertex × object.Vertex))) where
+  BaseCoordinate : Type u
+  baselineFamily : Finset BaseCoordinate
+  baseline : BaselineCodeRealization object baselineFamily
+  pairSet : Finset (Finset (object.Vertex × object.Vertex))
+  pairSet_nonempty : pairSet.Nonempty
+  pairSet_subset_schedule : pairSet ⊆ schedule
+  responseSupport : {pair // pair ∈ pairSet} → Finset object.Vertex
+  responseSupport_selected : ∀ pair,
+    activation.pairSupport pair.1 = some (responseSupport pair)
+  responseSupport_connected : ∀ pair,
+    SupportComponents.Connected.ConnectedOn object (responseSupport pair)
+
+namespace SparsePairSkeletonModel
+
+abbrev Skeleton
+    {object : FiniteObject.{u}} {Coordinate Chord : Type u}
+    {activation : object.DemandActivation Coordinate Chord}
+    {schedule : Finset (Finset (object.Vertex × object.Vertex))}
+    (_model : SparsePairSkeletonModel activation schedule) :=
+  PackedWindowRealization.Skeleton object.vertexCount object.edgeCount
+
+/-- The literal union of the selected port-return seeds fixed by
+`def:pair-overlap-system`. -/
+noncomputable def portReturns
+    {object : FiniteObject.{u}} {Coordinate Chord : Type u}
+    {activation : object.DemandActivation Coordinate Chord}
+    {schedule : Finset (Finset (object.Vertex × object.Vertex))}
+    (model : SparsePairSkeletonModel activation schedule) :
+    Finset object.Vertex := by
+  classical
+  exact model.pairSet.biUnion activation.pairSeed
+
+/-- The exact all-context target response of `X_π` in a labelled skeleton. -/
+noncomputable def response
+    {LengthOK : Nat → Prop} {object : FiniteObject.{u}}
+    {Coordinate Chord : Type u}
+    {activation : object.DemandActivation Coordinate Chord}
+    {schedule : Finset (Finset (object.Vertex × object.Vertex))}
+    (model : SparsePairSkeletonModel activation schedule)
+    (member : model.Skeleton) (pair : {pair // pair ∈ model.pairSet}) :
+    SparsePairSkeletonResponse LengthOK :=
+  let candidate : FiniteObject.{u} :=
+    { Vertex := object.Vertex
+      graph := member.1.graph.comap object.vertices.equiv
+      vertices := object.vertices
+      decideAdj := Classical.decRel _ }
+  let support := model.responseSupport pair
+  { boundary := Strategy.InterfaceReplacement.SupportAtom.boundary
+      candidate support
+    response := fun outside =>
+      HasCycleWithLength LengthOK
+        (glue
+          (Strategy.InterfaceReplacement.SupportAtom.piece candidate support)
+          outside) }
+
+/-- The paper's conditioning datum: outside edges and the already realized
+baseline word.  Earlier pair responses are conditioned by `conditionalValues`,
+not hidden in this code. -/
+noncomputable def outsideCode
+    {object : FiniteObject.{u}} {Coordinate Chord : Type u}
+    {activation : object.DemandActivation Coordinate Chord}
+    {schedule : Finset (Finset (object.Vertex × object.Vertex))}
+    (model : SparsePairSkeletonModel activation schedule)
+    (member : model.Skeleton) :
+    Finset (Sym2 (Fin object.vertexCount)) ×
+      ({coordinate // coordinate ∈ model.baselineFamily} → Bool) :=
+  (BarrierSystem.outsideEdges member.1
+      (model.portReturns.map object.vertices.equiv.toEmbedding),
+    model.baseline.response member.1)
+
+def conditionalFibre
+    {object : FiniteObject.{u}} {Coordinate Chord : Type u}
+    {activation : object.DemandActivation Coordinate Chord}
+    {schedule : Finset (Finset (object.Vertex × object.Vertex))}
+    (model : SparsePairSkeletonModel activation schedule)
+    (reference : model.Skeleton) : Set model.Skeleton :=
+  {candidate | model.outsideCode candidate = model.outsideCode reference}
+
+/-- Exact response values realized after the earlier coordinates in `order`
+have been exposed. -/
+def conditionalValues
+    {LengthOK : Nat → Prop} {object : FiniteObject.{u}}
+    {Coordinate Chord : Type u}
+    {activation : object.DemandActivation Coordinate Chord}
+    {schedule : Finset (Finset (object.Vertex × object.Vertex))}
+    (model : SparsePairSkeletonModel activation schedule)
+    (family : Finset {pair // pair ∈ model.pairSet})
+    (order : Fin family.card ≃ {pair // pair ∈ family})
+    (reference : model.Skeleton) (index : Fin family.card) :
+    Set (SparsePairSkeletonResponse LengthOK) :=
+  {state | ∃ candidate,
+    candidate ∈ model.conditionalFibre reference ∧
+      (∀ earlier : Fin family.card, earlier.1 < index.1 →
+        model.response (LengthOK := LengthOK) candidate (order earlier).1 =
+          model.response (LengthOK := LengthOK) reference (order earlier).1) ∧
+      model.response (LengthOK := LengthOK) candidate (order index).1 = state}
+
+/-- An exposure order realizes one binary response coordinate at every step in
+every nonempty conditional fibre. -/
+def RealizingOrder
+    {LengthOK : Nat → Prop} {object : FiniteObject.{u}}
+    {Coordinate Chord : Type u}
+    {activation : object.DemandActivation Coordinate Chord}
+    {schedule : Finset (Finset (object.Vertex × object.Vertex))}
+    (model : SparsePairSkeletonModel activation schedule)
+    (family : Finset {pair // pair ∈ model.pairSet}) : Prop :=
+  ∃ order : Fin family.card ≃ {pair // pair ∈ family},
+    ∀ reference : model.Skeleton, ∀ index : Fin family.card,
+      2 ≤ Nat.card (model.conditionalValues (LengthOK := LengthOK)
+        family order reference index)
+
+def Overlaps
+    {object : FiniteObject.{u}} {Coordinate Chord : Type u}
+    {activation : object.DemandActivation Coordinate Chord}
+    {schedule : Finset (Finset (object.Vertex × object.Vertex))}
+    (model : SparsePairSkeletonModel activation schedule)
+    (left right : {pair // pair ∈ model.pairSet}) : Prop :=
+  ∃ vertex,
+    vertex ∈ model.responseSupport left ∧
+      vertex ∈ model.responseSupport right ∧
+      vertex ∉ activation.pairSeed left.1 ∧
+      vertex ∉ activation.pairSeed right.1
+
+def PairwiseSeparated
+    {object : FiniteObject.{u}} {Coordinate Chord : Type u}
+    {activation : object.DemandActivation Coordinate Chord}
+    {schedule : Finset (Finset (object.Vertex × object.Vertex))}
+    (model : SparsePairSkeletonModel activation schedule)
+    (family : Finset {pair // pair ∈ model.pairSet}) : Prop :=
+  ∀ left, left ∈ family → ∀ right, right ∈ family → left ≠ right →
+    ¬ model.Overlaps left right
+
+noncomputable def familyUnion
+    {object : FiniteObject.{u}} {Coordinate Chord : Type u}
+    {activation : object.DemandActivation Coordinate Chord}
+    {schedule : Finset (Finset (object.Vertex × object.Vertex))}
+    (model : SparsePairSkeletonModel activation schedule)
+    (left right : Finset {pair // pair ∈ model.pairSet}) :
+    Finset {pair // pair ∈ model.pairSet} := by
+  classical
+  exact left ∪ right
+
+noncomputable def responseSupportUnion
+    {object : FiniteObject.{u}} {Coordinate Chord : Type u}
+    {activation : object.DemandActivation Coordinate Chord}
+    {schedule : Finset (Finset (object.Vertex × object.Vertex))}
+    (model : SparsePairSkeletonModel activation schedule)
+    (family : Finset {pair // pair ∈ model.pairSet}) :
+    Finset object.Vertex := by
+  classical
+  exact family.biUnion model.responseSupport
+
+/-- The paper's conditional-factorization theorem on actual skeletons.  The
+second clause is the component-concatenation step used to prove connectedness
+of a minimal obstruction. -/
+structure ConditionalFactorization
+    {LengthOK : Nat → Prop} {object : FiniteObject.{u}}
+    {Coordinate Chord : Type u}
+    {activation : object.DemandActivation Coordinate Chord}
+    {schedule : Finset (Finset (object.Vertex × object.Vertex))}
+    (model : SparsePairSkeletonModel activation schedule) : Prop where
+  separated : ∀ family, model.PairwiseSeparated family →
+    model.RealizingOrder (LengthOK := LengthOK) family
+  concatenate : ∀ left right,
+    left.Nonempty → right.Nonempty → Disjoint left right →
+      (∀ leftPair, leftPair ∈ left → ∀ rightPair, rightPair ∈ right →
+        ¬ model.Overlaps leftPair rightPair) →
+      model.RealizingOrder (LengthOK := LengthOK) left →
+        model.RealizingOrder (LengthOK := LengthOK) right →
+          model.RealizingOrder (LengthOK := LengthOK)
+            (model.familyUnion left right)
+
+
+end SparsePairSkeletonModel
 
 /-- Clause (d) at a specified pair: a functional attempted quotient is
 rank-reducing, has an inclusion-minimal determination certificate for that
