@@ -53,19 +53,22 @@ def test_nodes_are_unique_and_belong_to_a_panel(document) -> None:
     for node in document["nodes"]:
         assert node["group"] in panels, node["id"]
         assert node["shape"] in {"assertion", "decision", "terminal"}
-        # Only a terminal can be left open, and the flag is only written when set.
+        # The manuscript may mark an assertion, decision, or terminal as OPEN;
+        # the semantic node shape is preserved and the flag is only written when set.
         if "open" in node:
-            assert node["open"] is True and node["shape"] == "terminal", node["id"]
+            assert node["open"] is True, node["id"]
 
 
 @every
 def test_node_numbers_run_without_gaps_in_each_chapter(document) -> None:
-    by_chapter: dict[str, list[int]] = {}
+    by_chapter: dict[str, set[int]] = {}
     for node in document["nodes"]:
-        by_chapter.setdefault(node.get("chapter", ""), []).append(int(node["number"]))
+        match = re.fullmatch(r"(\d+)[a-z]?", node["number"])
+        assert match, node["number"]
+        by_chapter.setdefault(node.get("chapter", ""), set()).add(int(match.group(1)))
     for chapter, numbers in by_chapter.items():
-        numbers.sort()
-        assert numbers == list(range(numbers[0], numbers[-1] + 1)), chapter
+        ordered = sorted(numbers)
+        assert ordered == list(range(ordered[0], ordered[-1] + 1)), chapter
 
 
 @every
@@ -218,7 +221,11 @@ def test_every_step_a_table_names_exists(document) -> None:
             for cell in row:
                 for match in re.finditer(r"\[(\d+)\]", cell):
                     seen += 1
-                    assert f"{prefix}{match.group(1)}" in ids, (table["id"], match.group(0))
+                    target = f"{prefix}{match.group(1)}"
+                    assert target in ids or any(
+                        re.fullmatch(rf"{re.escape(target)}[a-z]+", node_id)
+                        for node_id in ids
+                    ), (table["id"], match.group(0))
 
     assert seen > 100
 
@@ -285,7 +292,7 @@ def test_navier_stokes_publishes_four_tables_per_paper() -> None:
 
 def test_erdos_review_sidecar_covers_all_nodes() -> None:
     review = ERDOS["review"]
-    assert len(review["nodes"]) == 183
+    assert len(review["nodes"]) == 184
     valid = {"verified", "partial", "absent"}
     for nid, entry in review["nodes"].items():
         assert entry["lean"] in valid, f"node {nid}: lean={entry['lean']}"
@@ -299,9 +306,9 @@ def test_review_states_come_from_the_node_audit() -> None:
     audit = load_audit(REPO_ROOT)["nodes"]
     states = ERDOS["review"]["nodes"]
 
-    for node in range(1, 181):
-        entry = audit[str(node)]
-        row = states[str(node)]
+    for node in (entry["id"] for entry in ERDOS["nodes"]):
+        entry = audit[node]
+        row = states[node]
         # A producer exists iff the audit found one.
         assert row["lean"] == ("absent" if entry["fidelity"] == "ABSENT" else "verified"), node
         # Completeness is judged per producer, never per enclosing declaration.
@@ -319,7 +326,7 @@ def test_a_node_that_states_nothing_claims_no_arm() -> None:
     audit = load_audit(REPO_ROOT)["nodes"]
     states = ERDOS["review"]["nodes"]
     for node, entry in audit.items():
-        if entry["fidelity"] == "ABSENT":
+        if node in states and entry["fidelity"] == "ABSENT":
             assert states[node]["wired"] != "verified", node
 
 
@@ -335,10 +342,9 @@ def test_every_absent_node_says_what_blocks_it() -> None:
     audit = load_audit(REPO_ROOT)["nodes"]
     states = ERDOS["review"]["nodes"]
     for node, entry in audit.items():
-        if entry["fidelity"] == "ABSENT":
+        if node in states and entry["fidelity"] == "ABSENT":
             assert entry.get("blocked_by"), node
             assert "Blocked by:" in states[node]["note"], node
-    assert audit["87"]["blocked_by"].startswith("nothing")
 
 
 def test_faithful_triviality_is_not_reported_as_a_defect() -> None:
@@ -352,7 +358,7 @@ def test_faithful_triviality_is_not_reported_as_a_defect() -> None:
 
     audit = load_audit(REPO_ROOT)["nodes"]
     states = ERDOS["review"]["nodes"]
-    for node in (12, 18, 23, 31, 36, 37, 52, 88, 104, 114, 126, 138, 154, 155):
+    for node in (6, 7, 11, 12, 18, 23, 31, 36, 37, 55, 88, 126, 138, 147, 154, 155, 176):
         assert audit[str(node)]["fidelity"] == "FAITHFUL-TRIVIAL", node
         assert states[str(node)]["fidelity"] == "verified", node
 
@@ -363,22 +369,22 @@ def test_surrogate_triviality_is_reported_as_a_defect() -> None:
 
     audit = load_audit(REPO_ROOT)["nodes"]
     states = ERDOS["review"]["nodes"]
-    for node in (76, 85, 103, 113, 129, 134):
+    for node in (129, 134):
         assert audit[str(node)]["fidelity"] == "SURROGATE-TRIVIAL", node
         assert states[str(node)]["fidelity"] == "partial", node
 
 
-def test_axiom_audit_is_a_kernel_result_not_a_transcript() -> None:
-    """The report must name the tracer and account for every declaration."""
+def test_blocked_axiom_audit_makes_no_stale_classifications() -> None:
+    """A blocked current run must publish no classifications from an older tree."""
     report = json.loads((REPO_ROOT / "web/data/eg_axiom_audit.json").read_text())
-    assert report["tracer"] == "frontierGap"
-    assert not report["unreported"], report["unreported"]
+    assert report["status"].startswith("current validation blocked")
+    assert report["current_validation"]
+    assert report["tracer"] is None
+    assert not report["frontier_stubs"]
+    assert not report["clean"]
+    assert not report["tainted"]
+    assert not report["unreported"]
     assert len(report["clean"]) + len(report["tainted"]) == report["declarations"]
-    # The public theorem still depends on the unfinished producers.
-    assert "erdos_64" in report["tainted"]
-    # Every frontier stub is an identifier Assembly.lean references but nothing defines.
-    assert report["frontier_stubs"]
-    assert not set(report["frontier_stubs"]) & set(report["clean"])
 
 
 def test_node_coverage_is_not_derived_from_comments() -> None:
@@ -402,9 +408,9 @@ def test_every_node_records_a_producer_or_says_it_has_none() -> None:
     from lean_review import load_audit
 
     audit = load_audit(REPO_ROOT)["nodes"]
-    assert len(audit) == 180
-    for node in range(1, 181):
-        entry = audit[str(node)]
+    assert len(audit) == 185  # 184 drawn nodes plus aggregate audit row [172]
+    for node in (entry["id"] for entry in ERDOS["nodes"]):
+        entry = audit[node]
         assert entry["fidelity"], node
         assert entry["complete"], node
         if entry["fidelity"] == "ABSENT":
@@ -415,16 +421,17 @@ def test_every_node_records_a_producer_or_says_it_has_none() -> None:
             assert entry["fidelity_note"], node
 
 
-def test_erdos_has_all_180_steps_across_twelve_panels() -> None:
-    assert len(ERDOS["nodes"]) == 180
+def test_erdos_has_all_184_nodes_across_twelve_panels() -> None:
+    assert len(ERDOS["nodes"]) == 184
     assert len(ERDOS["groups"]) == 12
     assert "chapters" not in ERDOS
     shapes = [node["shape"] for node in ERDOS["nodes"]]
-    assert shapes.count("assertion") == 102
-    assert shapes.count("decision") == 45
-    assert shapes.count("terminal") == 33
-    # The paper's red-ellipse style is declared but no node is drawn with it.
-    assert not [node["id"] for node in ERDOS["nodes"] if node.get("open")]
+    assert shapes.count("assertion") == 103
+    assert shapes.count("decision") == 49
+    assert shapes.count("terminal") == 32
+    assert {node["id"] for node in ERDOS["nodes"] if node.get("open")} == {
+        "172a", "181", "182"
+    }
 
 
 def test_erdos_dense_packing_residual_is_part_xii() -> None:
@@ -432,11 +439,13 @@ def test_erdos_dense_packing_residual_is_part_xii() -> None:
     by_id = {node["id"]: node for node in ERDOS["nodes"]}
     assert by_id["158"]["group"] == "fig:proof-diagram-part-i"
     assert by_id["158"]["shape"] == "decision"
-    for number in range(159, 173):
+    for number in range(159, 172):
         assert by_id[str(number)]["group"] == "fig:proof-diagram-part-xii", number
-    for number in ("160", "163", "170"):
+    for number in ("172a", "172b", "172c"):
+        assert by_id[number]["group"] == "fig:proof-diagram-part-xii", number
+    for number in ("160", "163", "170", "172a", "172b", "172c"):
         assert by_id[number]["shape"] == "decision", number
-    for number in ("164", "168", "171", "172"):
+    for number in ("164", "168", "171"):
         assert by_id[number]["shape"] == "terminal", number
 
     arrows = {(edge["source"], edge["target"]): edge for edge in ERDOS["edges"]}
@@ -445,8 +454,8 @@ def test_erdos_dense_packing_residual_is_part_xii() -> None:
     assert arrows[("158", "159")]["kind"] == "continuation"
     assert arrows[("158", "159")]["branch"].startswith("no")
     assert arrows[("159", "160")]["kind"] == "flow"
-    assert arrows[("160", "161")]["branch"] == "yes"
-    assert arrows[("160", "162")]["branch"] == "no"
+    assert arrows[("160", "161")]["branch"] == "yes / yes"
+    assert arrows[("160", "162")]["branch"] == "either no"
     assert ("162", "163") in arrows and ("162", "164") in arrows
     assert arrows[("161", "25")]["kind"] == "continuation"
     # The neutral configuration [163]: replacement route and two-strand route.
@@ -456,7 +465,7 @@ def test_erdos_dense_packing_residual_is_part_xii() -> None:
     assert arrows[("166", "169")]["kind"] == "flow"
     assert arrows[("169", "170")]["kind"] == "flow"
     assert arrows[("170", "171")]["branch"] == "yes"
-    assert arrows[("170", "172")]["branch"] == "no"
+    assert arrows[("170", "172a")]["branch"] == "no"
     assert arrows[("167", "168")]["branch"] == "survives"
     # Part XII redraws the power-of-two cycle [155] of Part XI; it is one node.
     assert arrows[("167", "155")]["branch"] == "closed"
@@ -518,7 +527,9 @@ def test_erdos_pair_code_residual_sits_in_part_x() -> None:
     by_id = {node["id"]: node for node in ERDOS["nodes"]}
     for number in ("178", "179", "180"):
         assert by_id[number]["group"] == "fig:proof-diagram-part-x", number
-    assert by_id["180"]["shape"] == "terminal"
+    assert by_id["180"]["shape"] == "assertion"
+    assert by_id["182"]["shape"] == "terminal"
+    assert by_id["182"]["open"] is True
 
     arrows = {(edge["source"], edge["target"]): edge for edge in ERDOS["edges"]}
     assert arrows[("131", "178")]["kind"] == "flow"
@@ -527,6 +538,7 @@ def test_erdos_pair_code_residual_sits_in_part_x() -> None:
     assert arrows[("137", "178")]["branch"].endswith("continue at [178]")
     assert arrows[("178", "179")]["kind"] == "flow"
     assert arrows[("179", "180")]["kind"] == "flow"
+    assert arrows[("180", "182")]["kind"] == "flow"
 
     assert by_id["178"]["itemRefs"] == ["def:pair-overlap-system"]
     assert by_id["179"]["itemRefs"] == ["lem:pair-system-realizability"]

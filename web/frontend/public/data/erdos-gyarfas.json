@@ -3937,7 +3937,7 @@
   {
    "number": "85",
    "tikzId": "closed",
-   "shape": "terminal",
+   "shape": "assertion",
    "label": "degree-\\(4\\) Type B cannot carry linear deficit outside route 8 once the fan-mass residual is sublinear",
    "id": "85",
    "group": "fig:proof-diagram-part-vii",
@@ -8264,15 +8264,34 @@
    "id": "172a",
    "group": "fig:proof-diagram-part-xii",
    "chapter": "erdos-gyarfas",
-   "overview": "",
+   "overview": "the residual left by [166] is exposed barrier by barrier; additive conditional fibres give the blocked-class compression [171], while failure at one scale retains the failing fibre and minimal connected overlap support for [172a]; uncrossing alternatives (i)--(iv) carry their destination witnesses, and the serial alternative enters [172b]'s exact compatible central-lift test; its no-arm enters [172c] with the full finite state and routes only after producing the cold-table, G2, actual G3-representative, or declared-trace entry data",
    "itemRefs": [
     "def:barrier-overlap-system"
    ],
-   "blocks": [],
+   "blocks": [
+    {
+     "name": "Trivial neutral configuration: compression or typed overlap residual",
+     "range": "[169]--[172]",
+     "itemRefs": [
+      "def:blocked-class",
+      "lem:barrier-failure-overlap",
+      "def:serial-window-system",
+      "lem:window-system-realizability",
+      "lem:serial-system-sumset",
+      "lem:system-increment-arithmetic",
+      "lem:scale-additivity",
+      "lem:blocked-graphs-compress"
+     ]
+    }
+   ],
    "invariantRefs": [],
    "constantRefs": [],
-   "topics": [],
-   "aliases": []
+   "topics": [
+    "Trivial neutral configuration: compression or typed overlap residual"
+   ],
+   "aliases": [],
+   "formalContent": "the residual left by [166] is exposed barrier by barrier; additive conditional fibres give the blocked-class compression [171], while failure at one scale retains the failing fibre and minimal connected overlap support for [172a]; uncrossing alternatives (i)--(iv) carry their destination witnesses, and the serial alternative enters [172b]'s exact compatible central-lift test; its no-arm enters [172c] with the full finite state and routes only after producing the cold-table, G2, actual G3-representative, or declared-trace entry data",
+   "failureRoute": "[155], [156], [157], [65], or [109], with the corresponding typed witness"
   },
   {
    "number": "172b",
@@ -8282,13 +8301,33 @@
    "id": "172b",
    "group": "fig:proof-diagram-part-xii",
    "chapter": "erdos-gyarfas",
-   "overview": "",
+   "overview": "the residual left by [166] is exposed barrier by barrier; additive conditional fibres give the blocked-class compression [171], while failure at one scale retains the failing fibre and minimal connected overlap support for [172a]; uncrossing alternatives (i)--(iv) carry their destination witnesses, and the serial alternative enters [172b]'s exact compatible central-lift test; its no-arm enters [172c] with the full finite state and routes only after producing the cold-table, G2, actual G3-representative, or declared-trace entry data",
    "itemRefs": [],
-   "blocks": [],
+   "blocks": [
+    {
+     "name": "Trivial neutral configuration: compression or typed overlap residual",
+     "range": "[169]--[172]",
+     "itemRefs": [
+      "def:blocked-class",
+      "def:barrier-overlap-system",
+      "lem:barrier-failure-overlap",
+      "def:serial-window-system",
+      "lem:window-system-realizability",
+      "lem:serial-system-sumset",
+      "lem:system-increment-arithmetic",
+      "lem:scale-additivity",
+      "lem:blocked-graphs-compress"
+     ]
+    }
+   ],
    "invariantRefs": [],
    "constantRefs": [],
-   "topics": [],
-   "aliases": []
+   "topics": [
+    "Trivial neutral configuration: compression or typed overlap residual"
+   ],
+   "aliases": [],
+   "formalContent": "the residual left by [166] is exposed barrier by barrier; additive conditional fibres give the blocked-class compression [171], while failure at one scale retains the failing fibre and minimal connected overlap support for [172a]; uncrossing alternatives (i)--(iv) carry their destination witnesses, and the serial alternative enters [172b]'s exact compatible central-lift test; its no-arm enters [172c] with the full finite state and routes only after producing the cold-table, G2, actual G3-representative, or declared-trace entry data",
+   "failureRoute": "[155], [156], [157], [65], or [109], with the corresponding typed witness"
   },
   {
    "number": "172c",
@@ -8298,15 +8337,34 @@
    "id": "172c",
    "group": "fig:proof-diagram-part-xii",
    "chapter": "erdos-gyarfas",
-   "overview": "",
+   "overview": "the residual left by [166] is exposed barrier by barrier; additive conditional fibres give the blocked-class compression [171], while failure at one scale retains the failing fibre and minimal connected overlap support for [172a]; uncrossing alternatives (i)--(iv) carry their destination witnesses, and the serial alternative enters [172b]'s exact compatible central-lift test; its no-arm enters [172c] with the full finite state and routes only after producing the cold-table, G2, actual G3-representative, or declared-trace entry data",
    "itemRefs": [
     "def:barrier-overlap-system"
    ],
-   "blocks": [],
+   "blocks": [
+    {
+     "name": "Trivial neutral configuration: compression or typed overlap residual",
+     "range": "[169]--[172]",
+     "itemRefs": [
+      "def:blocked-class",
+      "lem:barrier-failure-overlap",
+      "def:serial-window-system",
+      "lem:window-system-realizability",
+      "lem:serial-system-sumset",
+      "lem:system-increment-arithmetic",
+      "lem:scale-additivity",
+      "lem:blocked-graphs-compress"
+     ]
+    }
+   ],
    "invariantRefs": [],
    "constantRefs": [],
-   "topics": [],
-   "aliases": []
+   "topics": [
+    "Trivial neutral configuration: compression or typed overlap residual"
+   ],
+   "aliases": [],
+   "formalContent": "the residual left by [166] is exposed barrier by barrier; additive conditional fibres give the blocked-class compression [171], while failure at one scale retains the failing fibre and minimal connected overlap support for [172a]; uncrossing alternatives (i)--(iv) carry their destination witnesses, and the serial alternative enters [172b]'s exact compatible central-lift test; its no-arm enters [172c] with the full finite state and routes only after producing the cold-table, G2, actual G3-representative, or declared-trace entry data",
+   "failureRoute": "[155], [156], [157], [65], or [109], with the corresponding typed witness"
   }
  ],
  "edges": [
@@ -17593,7 +17651,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. The counts are in the tree: `Certificate.lean:6036`/`:6265` index 16 are 543958 and 111286, tied to the enumeration predicate by `storedSafe_eq`/`storedFlat_eq`, so the existential asserts all three of `lem:curv-enum`'s displays. The `logb` clause closing by `rfl` is the paper's own “the entropy value is then the elementary calculation”."
+    "note": "FAITHFUL — The counts are in the tree: `Certificate.lean:6036`/`:6265` index 16 are 543958 and 111286, tied to the enumeration predicate by `storedSafe_eq`/`storedFlat_eq`, so the existential asserts all three of `lem:curv-enum`'s displays. The `logb` clause closing by `rfl` is the paper's own “the entropy value is then the elementary calculation”."
    },
    "22": {
     "lean": "verified",
@@ -17601,7 +17659,7 @@
     "wired": "verified",
     "local": "absent",
     "fidelity": "verified",
-    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. `def:window-realization-test` *defines* realization as a counting statement and gives the paper's own “equivalently θ > θ_win”; tex:7351 says the sentence “is a branch test, not an assertion”. The injectivity content is at [21], where the paper proves it, and [22] is entitled to read it. This settles the question that also spanned [23], [52] and [158]."
+    "note": "FAITHFUL — `def:window-realization-test` *defines* realization as a counting statement and gives the paper's own “equivalently θ > θ_win”; tex:7351 says the sentence “is a branch test, not an assertion”. The injectivity content is at [21], where the paper proves it, and [22] is entitled to read it. This settles the question that also spanned [23], [52] and [158]."
    },
    "23": {
     "lean": "verified",
@@ -17617,7 +17675,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. The sharper cap cannot be derived here in the manuscript either — its proof runs through `prop:two-budget`, nodes [49]–[52] — so placing it at [24] would be a forward reference. `eq:feasibility` is in the tree at the node that proves it."
+    "note": "FAITHFUL — The sharper cap cannot be derived here in the manuscript either — its proof runs through `prop:two-budget`, nodes [49]–[52] — so placing it at [24] would be a forward reference. `eq:feasibility` is in the tree at the node that proves it."
    },
    "25": {
     "lean": "verified",
@@ -17625,7 +17683,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. “R is large” is carried forward from [24], not derived here: `lem:remainder-empty-internal-3-core` states only componentwise P₁₃-freeness and the empty internal 3-core, both of which Lean proves and more strongly."
+    "note": "FAITHFUL — “R is large” is carried forward from [24], not derived here: `lem:remainder-empty-internal-3-core` states only componentwise P₁₃-freeness and the empty internal 3-core, both of which Lean proves and more strongly."
    },
    "26": {
     "lean": "verified",
@@ -17665,7 +17723,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. The density conversion is in the tree in exact form at the node that consumes it — `strictCap_of_densityCap_of_sufficientlyLarge` yields 4·15p₁₃ < |R| + o(n), the integer form of τ(θ) < 1/4. [30]'s consumer substitutes r_Ω = W₂ and never needs the normalized ω_win form."
+    "note": "FAITHFUL — The density conversion is in the tree in exact form at the node that consumes it — `strictCap_of_densityCap_of_sufficientlyLarge` yields 4·15p₁₃ < |R| + o(n), the integer form of τ(θ) < 1/4. [30]'s consumer substitutes r_Ω = W₂ and never needs the normalized ω_win form."
    },
    "31": {
     "lean": "verified",
@@ -17745,7 +17803,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. Connectivity is the `DeclaredQuotient.connected` field, and inclusion-minimality is on the incoming ledger at `K .branchDependence`/`K .contextUniversal` — re-stating it would violate the transport discipline. The union is not the paper's Z; `quotient.support` is."
+    "note": "FAITHFUL — Connectivity is the `DeclaredQuotient.connected` field, and inclusion-minimality is on the incoming ledger at `K .branchDependence`/`K .contextUniversal` — re-stating it would violate the transport discipline. The union is not the paper's Z; `quotient.support` is."
    },
    "41": {
     "lean": "verified",
@@ -17761,7 +17819,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. The paper's Z is the support the quotient is defined on, and `delocalizationSupport` is never the domain of any quotient. `ReplacementSupport … quotient.support` is the manuscript's step."
+    "note": "FAITHFUL — The paper's Z is the support the quotient is defined on, and `delocalizationSupport` is never the domain of any quotient. `ReplacementSupport … quotient.support` is the manuscript's step."
    },
    "43": {
     "lean": "verified",
@@ -17777,7 +17835,7 @@
     "wired": "verified",
     "local": "absent",
     "fidelity": "verified",
-    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. “Is a repair network” is stipulated by `def:repair-network-terms`, and its content is exactly `Component`'s fields. The dead-fact complaint is exculpated: `lem:smearing-support-repair` is never consumed arithmetically in the manuscript either — it is invariant 35, a routing record."
+    "note": "FAITHFUL — “Is a repair network” is stipulated by `def:repair-network-terms`, and its content is exactly `Component`'s fields. The dead-fact complaint is exculpated: `lem:smearing-support-repair` is never consumed arithmetically in the manuscript either — it is invariant 35, a routing record."
    },
    "45": {
     "lean": "verified",
@@ -17817,7 +17875,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. The allegedly missing subcubicity conjunct is the first line of `RemainderClass`. All four paper clauses are present plus an extra; the two deviations tighten rather than drop, so 𝒢(R) shrinks and the high arm is safe."
+    "note": "FAITHFUL — The remainder class contains the manuscript's subcubicity and entropy data; its low arm now continues to the separate rooted-type coordinate split."
    },
    "50": {
     "lean": "verified",
@@ -17833,7 +17891,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL-TRIVIAL — A branch-arm box whose content is `prop:two-budget` (a); the paper's proof of the arm is one sentence — “The condition η(R) ≥ (1/10)log₂n and its negation partition all remainders.” The key is that display in cleared integer form and is the sole `Requires` of [52]. The three-way split collapses by the paper's own `rem:positive-fraction` and `rem:closure-robust`, and structurally because `forcedCurvatureCost` is on the ledger *before* the split, on both arms — so routing the low arm to Residual C drops nothing."
+    "note": "FAITHFUL — The repetitive low-entropy residual receives its proved dominant rooted type; only the root-wedge arm enters the independent-translate executor."
    },
    "52": {
     "lean": "verified",
@@ -17841,7 +17899,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL-TRIVIAL — The paper's step is the one-sentence addition of two already-established bit contributions; the substantive comparison is [53], which Lean performs."
+    "note": "FAITHFUL — The high-entropy arm keeps the entropy-package route; the low arm explicitly represents the nonrepetitive, wedge-free, and repetitive-wedge budget cases."
    },
    "53": {
     "lean": "verified",
@@ -17849,7 +17907,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. `eq:entropy-cap` as displayed is itself two-term, and the K-term is what the manuscript removes here: the invariant table assigns `rem:closure-robust` to [54] with the gloss “Closure already holds at K=0”."
+    "note": "FAITHFUL — `eq:entropy-cap` as displayed is itself two-term, and the K-term is what the manuscript removes here: the invariant table assigns `rem:closure-robust` to [54] with the gloss “Closure already holds at K=0”."
    },
    "54": {
     "lean": "verified",
@@ -17857,7 +17915,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. The curvature factor is not discarded — `retainedCode` contains `2^(curvatureCost · remainderCurvatureTargetRank)`, and `Nat.one_le_two_pow` enlarges the retained-code side, strengthening the hypothesis. The non-retained arm is discharged by every caller. | API: FLAG — `entropyCap_closes` and friends are absent from `allowed-api.md` and it takes an `ExactLedger` argument; the catalog is demonstrably stale, so this is unresolved rather than a proven violation."
+    "note": "FAITHFUL — The curvature factor is not discarded — `retainedCode` contains `2^(curvatureCost · remainderCurvatureTargetRank)`, and `Nat.one_le_two_pow` enlarges the retained-code side, strengthening the hypothesis. The non-retained arm is discharged by every caller. | API: FLAG — `entropyCap_closes` and friends are absent from `allowed-api.md` and it takes an `ExactLedger` argument; the catalog is demonstrably stale, so this is unresolved rather than a proven violation."
    },
    "55": {
     "lean": "verified",
@@ -17983,7 +18041,7 @@
     "lean": "verified",
     "kernel": "verified",
     "wired": "partial",
-    "local": "absent",
+    "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL — The cap is derived from the registered `fanPackingCap`; it is not a free numeral."
    },
@@ -18029,19 +18087,19 @@
    },
    "76": {
     "lean": "verified",
-    "kernel": "absent",
-    "wired": "absent",
+    "kernel": "verified",
+    "wired": "partial",
     "local": "verified",
-    "fidelity": "partial",
-    "note": "SURROGATE-TRIVIAL — The paper spends the sublinear fan mass and explicit slack in a four-way no-survivor argument; this row only republishes the large-budget and negative-support premises. | API: ⚠ `typeBBridgeSublinear` is present in the prefix but absent from `branchKillClosedRow.Requires` and never read"
+    "fidelity": "verified",
+    "note": "FAITHFUL — The bridge mass and sublinearity facts are consumed immediately by branch-kill and the unified route-8 classification on the same ledger."
    },
    "77": {
     "lean": "verified",
-    "kernel": "absent",
-    "wired": "absent",
+    "kernel": "verified",
+    "wired": "partial",
     "local": "absent",
-    "fidelity": "partial",
-    "note": "PLUMBING — A cross-figure handoff with no separate manuscript theorem; it preserves the exact Type B ledger before entering Part IX."
+    "fidelity": "verified",
+    "note": "FAITHFUL — The extracted census preserves the complete Type-B prefix and immediately enters the tested Part-IX continuation."
    },
    "78": {
     "lean": "verified",
@@ -18101,11 +18159,11 @@
    },
    "85": {
     "lean": "verified",
-    "kernel": "absent",
-    "wired": "absent",
+    "kernel": "verified",
+    "wired": "partial",
     "local": "verified",
-    "fidelity": "partial",
-    "note": "SURROGATE-TRIVIAL — [84] publishes the finite `M_B ≤ 8S_B ≤ 16σ(G)` estimate and near-cubic bound; this row does not read it or prove the paper's linear-deficit comparison. | API: ⚠ `typeBBridgeSublinear` is present in the prefix but absent from `branchKillClosedRow.Requires` and never read"
+    "fidelity": "verified",
+    "note": "FAITHFUL — The degree-four ledger reaches either the paid B2 arm or a minimal obstruction carrying the full global/local bridge before fan-mass accounting."
    },
    "86": {
     "lean": "verified",
@@ -18185,7 +18243,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. The manuscript's exit (1) is stated at the port fixed by [93], not port-universally. On the quantifier that matters Lean is stronger: no anchored return at all through that port is Mersenne."
+    "note": "FAITHFUL — The manuscript's exit (1) is stated at the port fixed by [93], not port-universally. On the quantifier that matters Lean is stronger: no anchored return at all through that port is Mersenne."
    },
    "96": {
     "lean": "verified",
@@ -18217,7 +18275,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. A local collision is a fortiori a `LabelCollision` at the same packing, so the manuscript's case is covered; the no arm carries the stronger `LabelCollisionFree`. The unused binder costs nothing because the configuration is conjoined on both arms."
+    "note": "FAITHFUL — A local collision is a fortiori a `LabelCollision` at the same packing, so the manuscript's case is covered; the no arm carries the stronger `LabelCollisionFree`. The unused binder costs nothing because the configuration is conjoined on both arms."
    },
    "100": {
     "lean": "verified",
@@ -18233,7 +18291,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. `family`, `generated` and `declared` are all tied to the object and the load. The unlinked `left`/`right` are exactly how `def:typeA-exit4-peeling` lists them — stipulated alongside q, not derived."
+    "note": "FAITHFUL — `family`, `generated` and `declared` are all tied to the object and the load. The unlinked `left`/`right` are exactly how `def:typeA-exit4-peeling` lists them — stipulated alongside q, not derived."
    },
    "102": {
     "lean": "verified",
@@ -18252,12 +18310,12 @@
     "note": "FAITHFUL — Exit (5) is decided only for eligible loads in the incoming visible/silent post-exit-(4) residual. Its selected trace basin carries the filtered declared u-supported coordinates, a genuinely internal nontrivial quotient, same-profile all-context target completeness, and the proper-realization / trace-response-only split."
    },
    "104": {
-    "lean": "absent",
-    "kernel": "absent",
-    "wired": "absent",
+    "lean": "verified",
+    "kernel": "verified",
+    "wired": "partial",
     "local": "verified",
-    "fidelity": "absent",
-    "note": "ABSENT — The proper-realization arm gives the same-basin `CompressibleSupport` contradiction. The response-only arm gives exactly `not TargetCompleteMinimal`, hence `not Route8Entry`, but no contradiction from the literal incoming uncompressibility fact. The manuscript calls the former an uncompressibility contradiction and the latter merely non-admissible for route 8, so its terminal `False` is not proved."
+    "fidelity": "verified",
+    "note": "FAITHFUL — The exact [103] exit-(5) datum is an admissible compression with a proper representative, so the inherited uncompressibility fact closes every yes ledger."
    },
    "105": {
     "lean": "verified",
@@ -18297,7 +18355,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. A definition-introducing node with no manuscript proof step. The positive tuple exists and is consumed downstream: trace basins at `Route8Residual.TraceBasin`, silent excess at [112], connector bands at `SignatureClause.connectorBand`."
+    "note": "FAITHFUL — A definition-introducing node with no manuscript proof step. The positive tuple exists and is consumed downstream: trace basins at `Route8Residual.TraceBasin`, silent excess at [112], connector bands at `SignatureClause.connectorBand`."
    },
    "110": {
     "lean": "verified",
@@ -18425,7 +18483,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — All five manuscript exits (a)–(e) are the five constructors of `SparseSurplusExit`, each refuted from `K .selection` and `K .replacementExclusion`."
+    "note": "FAITHFUL — Routing-only identity: accepts only an incoming ledger containing `K .sparseSurplusSurvivor` and passes that exact ledger to [126]."
    },
    "126": {
     "lean": "verified",
@@ -18449,7 +18507,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. The manuscript fixes a canonical choice as notation and proves nothing about lexicographic-firstness. Lean has a real deterministic selector: `canonicalReturn` is `FinitePathSelection.selectOfReachable` with a schedule-minimality field."
+    "note": "FAITHFUL — The manuscript fixes a canonical choice as notation and proves nothing about lexicographic-firstness. Lean has a real deterministic selector: `canonicalReturn` is `FinitePathSelection.selectOfReachable` with a schedule-minimality field."
    },
    "129": {
     "lean": "verified",
@@ -18473,7 +18531,7 @@
     "wired": "verified",
     "local": "partial",
     "fidelity": "verified",
-    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. `freeCount_le_of_sandwich` is invoked twice on the live path. And the case split is the manuscript's own: tex:1044 calls the [131] and free-side-[137] entropy counts “branch tests, exactly as at [158]”."
+    "note": "FAITHFUL — `freeCount_le_of_sandwich` is invoked twice on the live path. And the case split is the manuscript's own: tex:1044 calls the [131] and free-side-[137] entropy counts “branch tests, exactly as at [158]”."
    },
    "132": {
     "lean": "verified",
@@ -18521,7 +18579,7 @@
     "wired": "verified",
     "local": "absent",
     "fidelity": "verified",
-    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. The verdict graded one of three covering declarations. `coupledExcessDichotomy` performs the D_all > 0 decision, matching the caption arm for arm; `RoleFibrePartitionStatement` is a combinatorial identity, unconditional in the manuscript too."
+    "note": "FAITHFUL — The verdict graded one of three covering declarations. `coupledExcessDichotomy` performs the D_all > 0 decision, matching the caption arm for arm; `RoleFibrePartitionStatement` is a combinatorial identity, unconditional in the manuscript too."
    },
    "138": {
     "lean": "verified",
@@ -18545,7 +18603,7 @@
     "wired": "partial",
     "local": "partial",
     "fidelity": "verified",
-    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. `lem:same-token-matching-star` is proved for an arbitrary graph and instantiated three times, and `cor:homogeneous-same-token-caps-close` says so. One term proving all three instances is the faithful mirror. Unconsumed, but the content reaches [137] and [144] by two other routes. | API: ⚠ `Requires` bound and discarded"
+    "note": "FAITHFUL — `lem:same-token-matching-star` is proved for an arbitrary graph and instantiated three times, and `cor:homogeneous-same-token-caps-close` says so. One term proving all three instances is the faithful mirror. Unconsumed, but the content reaches [137] and [144] by two other routes. | API: ⚠ `Requires` bound and discarded"
    },
    "141": {
     "lean": "verified",
@@ -18561,7 +18619,7 @@
     "wired": "partial",
     "local": "partial",
     "fidelity": "verified",
-    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. Same as [140]: one class-agnostic lemma, three instantiations. | API: ⚠ `Requires` bound and discarded"
+    "note": "FAITHFUL — Same as [140]: one class-agnostic lemma, three instantiations. | API: ⚠ `Requires` bound and discarded"
    },
    "143": {
     "lean": "verified",
@@ -18573,11 +18631,11 @@
    },
    "144": {
     "lean": "verified",
-    "kernel": "absent",
-    "wired": "absent",
+    "kernel": "verified",
+    "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — The caps arm genuinely closes; the pattern arm's routing is proved by the manuscript's own pigeonhole, and `RoutedBottleneck.outcome` is a real theorem."
+    "note": "FAITHFUL — The caps complement routes to [138], while the positive same-token pattern publishes the exact Type-B handoff with its strict-surplus ancestry."
    },
    "145": {
     "lean": "verified",
@@ -18641,7 +18699,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. `coldExternalStubCount` is the paper's 39−24; 13 is nowhere a numeral. `b(P) := max{0,s(P)−2}` is the paper's definition and ℕ truncated subtraction is that. s(P) is computed from `object.degree`, and `b(𝔖_cold)` is formed by `card_allSelectedStubs`."
+    "note": "FAITHFUL — `coldExternalStubCount` is the paper's 39−24; 13 is nowhere a numeral. `b(P) := max{0,s(P)−2}` is the paper's definition and ℕ truncated subtraction is that. s(P) is computed from `object.degree`, and `b(𝔖_cold)` is formed by `card_allSelectedStubs`."
    },
    "153": {
     "lean": "verified",
@@ -18649,7 +18707,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. The germ-count bound is present and proved by `selected_le_candidates`; the earlier pass measured coverage by the `EG-NODE` comment, which reads `none` while the docstring correctly says “Node [153]”. Annotation defect only."
+    "note": "FAITHFUL — The germ-count bound is present and proved by `selected_le_candidates`; the earlier pass measured coverage by the `EG-NODE` comment, which reads `none` while the docstring correctly says “Node [153]”. Annotation defect only."
    },
    "154": {
     "lean": "verified",
@@ -18673,7 +18731,7 @@
     "wired": "partial",
     "local": "partial",
     "fidelity": "verified",
-    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. “Exit (4), or handoff” is the name of the ledger the defect lands in, already excluded by `def:surviving-cold-branch`. The sign guard matches the manuscript's own orientation convention and is what the G3 descent needs."
+    "note": "FAITHFUL — “Exit (4), or handoff” is the name of the ledger the defect lands in, already excluded by `def:surviving-cold-branch`. The sign guard matches the manuscript's own orientation convention and is what the G3 descent needs."
    },
    "157": {
     "lean": "verified",
@@ -18681,7 +18739,7 @@
     "wired": "partial",
     "local": "partial",
     "fidelity": "verified",
-    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. “Nothing constructs a `TableRow`” is the manuscript's shape too — the paper never exhibits a row; the working lemma is “every row is routed” and the consumer negates existentials. `admissible` is `def:admissible-rank-quotient`, cited as a definition at exactly this point."
+    "note": "FAITHFUL — “Nothing constructs a `TableRow`” is the manuscript's shape too — the paper never exhibits a row; the working lemma is “every row is routed” and the consumer negates existentials. `admissible` is `def:admissible-rank-quotient`, cited as a definition at exactly this point."
    },
    "158": {
     "lean": "verified",
@@ -18689,7 +18747,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. The collapse to a counting comparison is the manuscript's own reading, stated twice in the same paragraph; since any assignment's range is at most its domain, target-completeness cannot tighten the test."
+    "note": "FAITHFUL — The collapse to a counting comparison is the manuscript's own reading, stated twice in the same paragraph; since any assignment's range is at most its domain, target-completeness cannot tighten the test."
    },
    "159": {
     "lean": "verified",
@@ -18697,7 +18755,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — The dense-packing residual is published on the exact selected object and carries the manuscript's joint-code overflow obligation."
+    "note": "FAITHFUL — The [158] no-ledger publishes the manuscript's exact strict dense-packing overflow on the selected object."
    },
    "160": {
     "lean": "verified",
@@ -18705,7 +18763,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — 4·(15p + T(n)) < |R| is τ(θ) < 1/4 with the exact √n allowance; def⁺(R) is replaced by [29]'s supply bound, so the yes arm implies the manuscript's test."
+    "note": "FAITHFUL — The implementation separately decides the manuscript's 1/4 deficiency rate and 3/13 private-carrier rate; only the double-yes arm enters [161]."
    },
    "161": {
     "lean": "verified",
@@ -18721,7 +18779,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — updated Lean-backed manuscript contract for node [162]. | API: ⚠ the [22] decision is re-derived inline rather than reusing `selectedBarrierDichotomy` — two decision sites for one node"
+    "note": "FAITHFUL — Either exact rate failure enters the dense hot/cold pass on its literal residual; the double-yes arm alone goes to [161]."
    },
    "163": {
     "lean": "verified",
@@ -18729,7 +18787,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — updated Lean-backed manuscript contract for node [163]. | API: ⚠ `_structure` bound and discarded"
+    "note": "FAITHFUL — The selected occurrence, germ, representative, window membership, paths, lengths, disjointness, and finite bound are retained through both symmetry arms."
    },
    "164": {
     "lean": "verified",
@@ -18745,7 +18803,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — The manuscript's [165] is the same-size case, closed by refining node [4]'s order to (|V|,|E|,Φ). The Lean declaration closes the strictly-smaller-vertex-count case, which needs no refinement."
+    "note": "FAITHFUL — For every neutral equal-length terminal configuration, `E ≠ Q.toCanonical` publishes the same-size target-avoiding replacement and strict canonical-profile decrease consumed at [166]."
    },
    "166": {
     "lean": "verified",
@@ -18753,7 +18811,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — updated Lean-backed manuscript contract for node [166]. | Blocked by: `selectedDenseSameSizeCanonicalSwap` (Assembly.lean:3493, 4269). `lexicographicProgress` carries only (vertexCount, edgeCount); the canonical-atom order `CanonicalPiece.Precedes` exists but is unused for Φ."
+    "note": "FAITHFUL — Refined minimality consumes [165]'s universal exchange and publishes `E = Q.toCanonical` for every retained neutral configuration."
    },
    "167": {
     "lean": "verified",
@@ -18761,7 +18819,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — updated Lean-backed manuscript contract for node [167]. | Blocked by: nothing by name — `TwoStrandEnumeration.lean` is real and `decide`-checked but imported only by the aggregate root; Assembly names it in a comment. Its own `three_zero_survives` shows the finite check cannot close the case alone, so it must compose with [168]."
+    "note": "FAITHFUL — Constructs the two manuscript cycles; dyadic alternatives close and the exact finite non-dyadic survivor continues to [168]."
    },
    "168": {
     "lean": "verified",
@@ -18785,7 +18843,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — updated Lean-backed manuscript contract for node [170]. | API: ⚠ `_blocked` bound and discarded"
+    "note": "FAITHFUL — The decision retains the exact relative graph-fibre inequality on the additive arm and the least failed fixed-scale fibre with all auxiliary bounds on the negative arm."
    },
    "171": {
     "lean": "verified",
@@ -18793,15 +18851,31 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — updated Lean-backed manuscript contract for node [171]."
+    "note": "FAITHFUL — The additive arm publishes the denominator-cleared blocked-class compression inequality and closes it against the inherited dense-packing overflow."
    },
-   "172": {
+   "172a": {
     "lean": "absent",
     "kernel": "absent",
     "wired": "absent",
     "local": "absent",
     "fidelity": "absent",
-    "note": "ABSENT — Discharged by an undefined producer. `SerialSystemArithmetic.lean` is imported only by the aggregate root; `BarrierOverlapSystem.lean` defines no obstruction and no uncrossing. | Blocked by: `selectedBarrierOverlapSerialSystem` (Assembly.lean:3390). The input does not exist as data either: the key is the bare negation of [170], with no obstruction object attached."
+    "note": "ABSENT — The manuscript's minimal fixed-scale overlap/uncrossing obligation remains open. | Blocked by: the [172a] connected-overlap construction"
+   },
+   "172b": {
+    "lean": "absent",
+    "kernel": "absent",
+    "wired": "absent",
+    "local": "absent",
+    "fidelity": "absent",
+    "note": "ABSENT — The exact compatible central-lift test is not wired on a graph-realized system. | Blocked by: [172a]"
+   },
+   "172c": {
+    "lean": "absent",
+    "kernel": "absent",
+    "wired": "absent",
+    "local": "absent",
+    "fidelity": "absent",
+    "note": "ABSENT — The full-state negative-lift routing is not wired. | Blocked by: [172a]-[172b]"
    },
    "173": {
     "lean": "verified",
@@ -18809,7 +18883,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Re-checked against the manuscript's proof: the earlier WEAKER/DIVERGENT verdict does not hold. The complaint is [174]'s content. [173] is the test, and Lean decides the object-exact form, which the manuscript's bounded surrogate implies — so the yes arm is the weaker hypothesis and the no arm is stronger."
+    "note": "FAITHFUL — The complaint is [174]'s content. [173] is the test, and Lean decides the object-exact form, which the manuscript's bounded surrogate implies — so the yes arm is the weaker hypothesis and the no arm is stronger."
    },
    "174": {
     "lean": "verified",
@@ -18833,7 +18907,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL-TRIVIAL — updated Lean-backed manuscript contract for node [176]."
+    "note": "FAITHFUL-TRIVIAL — The selected candidate remains attached to its germ through [154]-[157], [163], and [165]-[168]; genuine strands close and canonical representatives retain the heavy complement."
    },
    "177": {
     "lean": "verified",
@@ -18841,7 +18915,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — updated Lean-backed manuscript contract for node [177]."
+    "note": "FAITHFUL — Constructs the counted connected core, assigned high decoration, actual envelope, and common admissibility proof, then consumes [75]-[77] on the same ledger."
    },
    "178": {
     "lean": "verified",
@@ -18849,7 +18923,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — The pair-code continuation publishes the exact minimal connected overlap obstruction or retains the uncovered residual. | API: ⚠ both dichotomies bind and discard a required fact"
+    "note": "FAITHFUL — The pair-code continuation publishes the exact minimal connected overlap obstruction or retains the uncovered residual."
    },
    "179": {
     "lean": "verified",
@@ -18857,7 +18931,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — updated Lean-backed manuscript contract for node [179]. | Blocked by: `selectedSparsePairSerialSystem` (Assembly.lean:1420, 1446). Nothing between “¬additive” and a `SerialSystem.System` exists."
+    "note": "FAITHFUL — The covered arm retains ordered interfaces, graph paths, disjointness, closing returns, increment bounds, and simple-cycle realization for every route choice."
    },
    "180": {
     "lean": "verified",
@@ -18865,7 +18939,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — updated Lean-backed manuscript contract for node [180]. | Blocked by: `selectedSparsePairSerialSystem`. The ℕ arithmetic `Spectrum.exists_pow_realized` is proved but unreachable — no `Spectrum` is built from a graph and `Realized` is never `HasCycleWithLength`. The periodic-response-class disjunct has no counterpart at all."
+    "note": "FAITHFUL — The covered arithmetic arm builds its spectrum from the graph-realized [179] system and returns an actual selected-graph power-of-two cycle; periodic outcomes route concretely."
    },
    "181": {
     "lean": "verified",
@@ -18873,7 +18947,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Exact peeled target-defect demand residual is published; its final closure remains open. | Blocked by: selectedRouteEightPeeledDemandResidual"
+    "note": "FAITHFUL — Exact peeled target-defect demand residual is published; its final closure remains open. | Blocked by: no manuscript-prescribed consumer has been implemented on this exact residual"
    },
    "182": {
     "lean": "verified",
@@ -18882,14 +18956,6 @@
     "local": "verified",
     "fidelity": "verified",
     "note": "FAITHFUL — Exact uncovered implication residual is published after the covered [178]–[180] alternatives. | Blocked by: the manuscript's uncovered [178]–[180] implication"
-   },
-   "172a": {
-    "lean": "absent",
-    "kernel": "absent",
-    "wired": "absent",
-    "local": "absent",
-    "fidelity": "absent",
-    "note": "ABSENT — The manuscript's minimal fixed-scale overlap/uncrossing obligation remains open. | Blocked by: selectedBarrierOverlapSerialSystem"
    }
   }
  }

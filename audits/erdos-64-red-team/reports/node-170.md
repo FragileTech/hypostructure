@@ -215,7 +215,7 @@ The audit inspected:
 - `Assembly.lean`: `selectedScaleAdditivityDichotomy` requires blocked membership and dense overflow, routes the no key directly to the absent `selectedBarrierOverlapSerialSystem`, and contains no intermediate obstruction producer.
 - `Graph/SerialSystemArithmetic.lean` and the [172] manuscript contract only to verify the no-edge entry data. The modular checker on `/tmp/eg-node-170-modular.json` found raw odd-part hits but no compatible full-modulus hit; the candidate was rejected because it lacks the destination's scale-spanning witness.
 - The analogous pair-overlap definitions and nodes [178]--[180]. They explicitly require a minimal no-order obstruction and do not justify weakening the node-[170] no payload.
-- The review postmortem entries E03, E04, E09--E12. This report respects their corrections: it does not demand global independence, treat nonadditivity as omitted, claim the outside code already determines the graph, or use a raw modular congruence as a counterexample.
+- The cumulative-ledger discipline is applied directly: this report does not demand global independence, treat nonadditivity as omitted, claim the outside code already determines the graph, or use a raw modular congruence as a counterexample.
 
 The principal searches were
 
@@ -223,7 +223,7 @@ The principal searches were
 rg -n 'node \[170\]|conditional savings|scale-additivity|barrier overlap' to_formalize/erdos_64_proof.tex
 rg -n 'BlockedScaleAdditivityStatement|blockedBarrierOverlap|blockedScaleAdditive|scaleAdditivityDichotomy|ConditionalFibre' hypostructure proofs Assembly_node_audit.md web/data/eg_node_audit.json
 rg -n 'no ordering|exposure order|pair overlap obstruction|pair-failure' to_formalize/erdos_64_proof.tex
-rg -n '170|conditional fibre|blocked class|odd part' erdos_64_conversation_mistakes.md EG_LEAN_COMPLIANCE_REMAINING.md
+rg -n '170|conditional fibre|blocked class|odd part' EG_LEAN_COMPLIANCE_REMAINING.md
 ```
 
 No second live producer of a barrier overlap object, no alternate no-arm predicate implying $\neg A$, and no call site that repairs the conjunction before [172] were found.

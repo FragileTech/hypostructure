@@ -1354,6 +1354,11 @@ inductive Key where
   `def:typeB-overlap-obstruction`.  The fact records the obstruction, not the
   bare failure: the minimality is what the fan-mass accounting consumes. -/
   | typeBOverlapObstruction
+  /-- Node `[73]`/`[83]`: the canonical minimal obstruction together with all
+  five global-to-local reflection clauses.  Auxiliary indexed and same-token
+  obstruction carriers are retained unchanged because they enter fan mass
+  directly rather than asserting a canonical remainder component. -/
+  | typeBGlobalLocalBridge
   /-- Nodes `[73]`/`[75]`: the fan-mass bound instantiated at the certificate
   residual selected by the incoming ledger. -/
   | fanCertificateResidualMass
@@ -5154,6 +5159,40 @@ noncomputable def TypeBB2ObstructionStatement (data : Data.{u})
             Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction object
               data.threshold data.dischargeScale packing core
                 envelope.decorations)
+
+/-- `prop:typeB-global-local-bridge` on the literal B2-obstruction carrier.
+The canonical arm enriches its actual obstruction with the complete five-clause
+reflection.  The two auxiliary handoff arms are retained verbatim: neither is
+silently converted into a canonical remainder component. -/
+noncomputable def TypeBGlobalLocalBridgeStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  TypeBAssignedLedgerWith data object (fun packing canonicalPiece centres =>
+    ∃ obstruction : Graph.TypeBRefinedSupport.OverlapObstruction object
+        data.threshold data.dischargeScale packing canonicalPiece.vertices centres,
+      Graph.TypeBRefinedSupport.GlobalLocalReflectionACE data.typeABPresentation
+        object data.windowOrder data.LengthOK data.threshold data.dischargeScale
+        canonicalPiece centres obstruction) ∨
+  AbsorbedGermFanB2ObstructionStatement data object ∨
+  (∃ packing : Finset (Finset object.Vertex),
+    object.IsWindowPacking data.windowOrder packing ∧
+      packing.card = object.windowPackingNumber data.windowOrder ∧
+      ∃ core : Finset object.Vertex,
+        ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
+            (handoffHighDegree data object)
+            (handoffAbsorbing data object packing),
+          envelope.core = core ∧ envelope.decorations.Nonempty ∧
+            (∀ centre ∈ envelope.decorations,
+              ∃ _marking : Graph.FanCertificateLabelling object
+                  data.windowOrder centre,
+                object.degree centre ≤
+                  Graph.WindowCurvature.fanPackingCap data.windowOrder) ∧
+            (∀ centre ∈ envelope.decorations,
+              Graph.IsHighCentre object data.threshold centre →
+                Graph.TypeBDirectCycle.DirectCycleFree object
+                  data.windowOrder data.LengthOK packing centre) ∧
+            Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction object
+              data.threshold data.dischargeScale packing core
+                envelope.decorations))
 
 /-- **A decorated handoff fan envelope is produced at a support.**  The test
 node `[107]` splits on: `def:decorated-fan-envelope`'s data, with the Type A
@@ -9774,6 +9813,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- support then carries is a *minimal* Type B overlap obstruction among
       -- its assigned centres.
       TypeBB2ObstructionStatement data object
+  | .typeBGlobalLocalBridge, object =>
+      TypeBGlobalLocalBridgeStatement data object
   | .fanCertificateResidualMass, object =>
       -- Node `[75]`/`[84]`: the residual centre's fan mass is charged to the
       -- bridge mass (`def:typeB-residual-mass`).
@@ -11531,6 +11572,7 @@ def label : Key → String
   | .typeBB2Choice => "typeBB2Choice"
   | .typeBDisjointLedger => "typeBDisjointLedger"
   | .typeBOverlapObstruction => "typeBOverlapObstruction"
+  | .typeBGlobalLocalBridge => "typeBGlobalLocalBridge"
   | .fanCertificateResidualMass => "fanCertificateResidualMass"
   | .typeBOverlapObstructionMass => "typeBOverlapObstructionMass"
   | .typeBExclusionResidualMass => "typeBExclusionResidualMass"
@@ -11832,6 +11874,7 @@ example : label .typeBDirectCycleFree = "typeBDirectCycleFree" := rfl
 example : label .typeBB2Choice = "typeBB2Choice" := rfl
 example : label .typeBDisjointLedger = "typeBDisjointLedger" := rfl
 example : label .typeBOverlapObstruction = "typeBOverlapObstruction" := rfl
+example : label .typeBGlobalLocalBridge = "typeBGlobalLocalBridge" := rfl
 example : label .fanCertificateResidualMass = "fanCertificateResidualMass" := rfl
 example : label .typeBOverlapObstructionMass = "typeBOverlapObstructionMass" := rfl
 example : label .typeBExclusionResidualMass = "typeBExclusionResidualMass" := rfl
@@ -12153,6 +12196,7 @@ def idx : Key → Nat
   | .typeBB2Choice => 149
   | .typeBDisjointLedger => 150
   | .typeBOverlapObstruction => 84
+  | .typeBGlobalLocalBridge => 447
   | .fanCertificateResidualMass => 186
   | .typeBOverlapObstructionMass => 187
   | .typeBExclusionResidualMass => 188
@@ -12444,6 +12488,7 @@ def ofIdx : Nat → Key
   | 149 => .typeBB2Choice
   | 150 => .typeBDisjointLedger
   | 84 => .typeBOverlapObstruction
+  | 447 => .typeBGlobalLocalBridge
   | 186 => .fanCertificateResidualMass
   | 187 => .typeBOverlapObstructionMass
   | 188 => .typeBExclusionResidualMass
@@ -12990,6 +13035,9 @@ def name : Key → Lean.Name
   | .typeBOverlapObstruction =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "typeBOverlapObstruction") 84
+  | .typeBGlobalLocalBridge =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "typeBGlobalLocalBridge") 447
   | .fanCertificateResidualMass =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "fanCertificateResidualMass") 186

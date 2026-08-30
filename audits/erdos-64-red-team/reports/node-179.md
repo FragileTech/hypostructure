@@ -409,8 +409,8 @@ The audit inspected:
   `lem:typeA-cubic-switch-absorption`, and the full entry contract and proof of
   `lem:same-token-bottleneck-routing`;
 - the directed ancestor set in the fresh dossier, which excludes node [166],
-  and the review postmortem's warnings about preserving branch facts and
-  treating residual routing as routing rather than an automatic
+  and the requirements to preserve branch facts and to treat residual routing
+  as routing rather than an automatic
   contradiction;
 - `Assembly.lean` on both entropy-failure arms,
   `HomogeneousBottleneckRows.lean`,

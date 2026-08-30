@@ -141,8 +141,8 @@ Inspected the manuscript's [152]--[168] path, `interiorStubList`,
 `selectedStubs`, `allSelectedStubs`, `coldStubExcessRow`, the germ extraction
 rows, `coldWindowStubStructureRow`, `symmetricPairEndpointExclusionRow`, both
 Assembly call sites, the node table, campaign summary, and coverage record.
-Searches for the superseded extraction coefficient and selected-family prose
-return no audit occurrence.
+Searches confirm that no conflicting extraction coefficient or selected-family
+formulation remains in the current audit record.
 
 ## 8. Residual uncertainty
 

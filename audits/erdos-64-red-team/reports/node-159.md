@@ -217,7 +217,7 @@ The audit inspected these repeated uses and consumers:
 - `def:target-rank`, `lem:independent-target-entropy`, `lem:skeleton-dominates`, `lem:state-count-comparison`, `lem:p13-window-package`, `def:window-realization-test`, `rem:dense-residual-status`, `lem:blocked-graphs-compress`, and `prop:p13-density`.
 - The live declarations `WindowPackageRealized`, `Holds .windowPackageRealized`, `Holds .windowPackageUnrealized`, `Holds .densePackingOverflow`, `densePackingOverflowRow`, `selectedWindowPackageRealizationDichotomy`, and the literal no-arm in `selectedNearCubicBranch`.
 - The node [158]--[162] rows of `Assembly_node_audit.md` and the node [159]--[162] entries of `web/data/eg_node_audit.json`. These locators disagree about current formalization status, but neither status table is mathematical authority.
-- Review-postmortem entry E08.  This report accepts its correction that the registered node-[158] predicate is the exact cardinal branch test and does not call the branch nonexhaustive; it flags only the manuscript's simultaneous semantic wording and supplies the already-supported cardinal wording as the repair.
+- The registered node-[158] predicate is the exact cardinal branch test. This report does not call that branch nonexhaustive; it flags only the manuscript's simultaneous semantic wording and supplies the supported cardinal wording as the repair.
 
 The principal search was
 

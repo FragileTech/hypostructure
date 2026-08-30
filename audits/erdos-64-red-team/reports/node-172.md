@@ -244,7 +244,7 @@ The sources inspected sentence by sentence were:
 - the Part-X and Part-XII nodes, edges, captions, overview rows 53--54, detailed dependency rows, and downstream uses of the three arithmetic lemmas;
 - `Graph/SerialSystemArithmetic.lean`'s `Spectrum`, `ScaleSpanning`, `realized_of_congruent`, `exists_pow_realized`, serial `System`, and progression construction;
 - the selected [170]--[172] branch in `Assembly.lean`, the barrier/additivity vocabulary and rows, and the node-[172] entries in `Assembly_node_audit.md` and `web/data/eg_node_audit.json`.
-- review-postmortem entry E12.  That entry correctly rejects a range objection that simply drops scale-spanning and the central interval.  The present `g=48` test keeps both hypotheses and separates the still-missing full-modulus compatibility from the raw odd-part hit.
+- The `g=48` test keeps both scale-spanning and central-interval hypotheses and separates the still-missing full-modulus compatibility from the raw odd-part hit.
 
 No manuscript lemma was found that upgrades min/max scale-spanning to a full doubling orbit inside every central range.  No source supplies the omitted (2^a\mid L+r) restriction, the normalized odd-part residue set, or an exact check of (t\in[C_{\rm sys},T_r-C_{\rm sys}]).  The only source with an explicit central-range congruence theorem is Lean's `Spectrum.realized_of_congruent`; its caller assumes the stronger full-orbit `ScaleSpanning` predicate rather than proving it from the manuscript definition.  No graph-level construction instantiates that spectrum at [172], and no live declaration named `selectedBarrierOverlapSerialSystem` was found.
 

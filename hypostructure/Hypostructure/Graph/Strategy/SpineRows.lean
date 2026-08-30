@@ -6676,6 +6676,70 @@ noncomputable def b2AssignmentDichotomy
               obstruction⟩)⟩⟩)
     choiceFresh obstructionFresh
 
+/-! ## Nodes `[73]`/`[83]`: full global-to-local bridge
+
+The B2 failure already carries the cardinality-minimal obstruction.  This row
+does not rebuild it: it reads that exact obstruction, selection, and global
+high-centre normal form from the incoming ledger and appends the five-clause
+reflection.  The indexed and same-token handoff carriers are retained without
+being coerced into canonical remainder components. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def typeBGlobalLocalBridgeRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.typeBGlobalLocalBridge
+    { Requires := [K .typeBOverlapObstruction, K .selection,
+        K .highCentreNormalForm]
+      Produces := [K .typeBGlobalLocalBridge]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let avoids := (inputs.get (K .selection)).down.1
+      let normalForms := (inputs.get (K .highCentreNormalForm)).down
+      .cons (key := K .typeBGlobalLocalBridge)
+        (⟨by
+          classical
+          rcases (inputs.get (K .typeBOverlapObstruction)).down with
+            canonical | absorbed | sameToken
+          · obtain ⟨packing, valid, maximal, canonicalPiece, centres, assigned,
+                ⟨obstruction⟩⟩ := canonical
+            have directFree : ∀ hub ∈ obstruction.demands,
+                Graph.TypeBDirectCycle.DirectCycleFree inputs.current.object
+                  data.windowOrder data.LengthOK packing hub := by
+              intro hub _hubMem configuration
+              exact avoids
+                (Graph.TypeBDirectCycle.hasCycleWithLength_of_directCycleConfiguration
+                  valid configuration)
+            have reflected :=
+              Graph.TypeBRefinedSupport.globalLocalReflectionACE
+                (presentation := data.typeABPresentation)
+                (order := data.windowOrder) (LengthOK := data.LengthOK)
+                (threshold := data.threshold)
+                (dischargeScale := data.dischargeScale)
+                obstruction
+                (by
+                  simpa [Graph.TypeAB.ContextuallyDyadicSafe,
+                    Data.typeABPresentation] using avoids)
+                (fun hub hubMem => normalForms hub
+                  (obstruction.demands_high hub hubMem))
+                directFree
+            exact Or.inl ⟨packing, valid, maximal, canonicalPiece, centres,
+              assigned, obstruction, reflected⟩
+          · exact Or.inr (Or.inl absorbed)
+          · exact Or.inr (Or.inr sameToken)⟩)
+        .nil)
+    0 0
+
 /-! ## B2 and the live Type B post-ledger core
 
 The successful finite choice above is turned into the manuscript's literal
@@ -7206,20 +7270,21 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       (Presentation := Presentation) (presentation := presentation)
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.typeBOverlapObstructionMass
-    { Requires := [K .typeBOverlapObstruction]
+    { Requires := [K .typeBGlobalLocalBridge]
       Produces := [K .typeBOverlapObstructionMass]
       requiresUnique := by simp
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let residual := inputs.get (K .typeBOverlapObstruction)
+      let residual := inputs.get (K .typeBGlobalLocalBridge)
       .cons (key := K .typeBOverlapObstructionMass) (by
         refine ⟨?_⟩
         rcases residual.down with support | absorbed | sameToken
         · obtain ⟨packing, valid, maximal, canonicalPiece, centres, assigned,
             obstruction⟩ := support
+          obtain ⟨obstruction, _reflection⟩ := obstruction
           exact Or.inl ⟨packing, valid, maximal, canonicalPiece, centres, assigned,
-            obstruction, fun centre member envelope =>
+            ⟨obstruction⟩, fun centre member envelope =>
               Graph.TypeBEnvelopeCharge.envelopeNegativePart_le envelope
                 (TypeBAssignedCentres.high data inputs.current.object assigned
                   centre member)
@@ -11330,7 +11395,9 @@ set_option maxHeartbeats 1000000 in
 This row proves no closure.  It publishes the exact residual assembled by node
 `[123]`: the failed peeling stage with its stage-local accounting, the maximal
 demand partition, its maximal absorption, and the exact packed-window blocker
-partition. -/
+partition.  `AtomicCT.run` appends that one key to the literal incoming
+`ExactLedger`; every fact in the node-`[123]` prefix therefore remains in the
+type index and is available to the eventual node-`[181]` continuation. -/
 omit [FactSystem (Input BranchState Presentation presentation data)] in
 @[reducible] noncomputable def route8PeeledDemandResidualRow :
     @AtomicStrategy (Input BranchState Presentation presentation data) _

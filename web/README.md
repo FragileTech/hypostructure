@@ -10,7 +10,7 @@ Two proofs are published:
 
 | Proof | Source | Size |
 | --- | --- | --- |
-| **Erdős–Gyárfás** — does every graph of minimum degree three contain a cycle of length a power of two? | `erdos_64_proof.tex` | 180 steps, 12 panels |
+| **Erdős–Gyárfás** — does every graph of minimum degree three contain a cycle of length a power of two? | `erdos_64_proof.tex` | 184 diagram nodes, 12 panels |
 | **Navier–Stokes** — can a finite-energy solution develop a local singularity? | `proof_setup.tex`, `type_I_residual_closure.tex`, `type_II_regularity.tex` | 333 steps, 23 panels, 3 papers |
 
 The Navier–Stokes argument is written across three manuscripts, each numbering
@@ -39,8 +39,7 @@ condensed reading of `to_formalize/structural_exhaustion.tex` — the account of
 Structural Exhaustion, the method both proofs were built with — together with
 a table of the proof moves, drawn from the tactic library of
 `branch_closure_methodology_extended.tex` and each proof's chapter 1, and an
-account of red-teaming and repair built on three repairs read from the
-manuscripts' history; and the *Hypostructure*
+account of red-teaming and repair built from the live proof review; and the *Hypostructure*
 documentation under `frontend/src/docs/`, described below. The
 Navier–Stokes panel summaries are the manuscripts' own — they live in each
 paper's *Diagram map*, so improving them there improves both the paper and this
@@ -175,7 +174,7 @@ or a number the ledger does not list, is flagged), the cases of a branch test as
 the closure of a leaf, the results, what arrives, what falls downstream, and
 where each result sits in the PDF. Everything is derived from the document; the
 Lean and review dimensions read an optional `review` side-car keyed by step,
-which no host supplies yet.
+which the Erdős–Gyárfás host supplies from the checked-in Lean audit side-car.
 
 `make web-data` also runs the structural checks: numbering without gaps in each
 paper, every arrow resolving, the whole diagram connected, every cross-reference

@@ -96,15 +96,14 @@ Every fact below is on the branch state $\mathcal B_{181}$. "Produced by" names 
 | # | Fact | Source | Produced by | Row |
 |---|---|---|---|---|
 | C-1 | no cycle of $G$ has length in $\mathrm{Pow}=\{2^j\}$; $R_e(G)\cap\mathrm{Mers}=\varnothing$ for every oriented edge | `lem:return-equivalence` | T08 | C02, C03 |
-| C-2 | every non-triangle edge lies on a $(2^k+1)$-cycle, $k\ge2$; every completion port $(w,h)$ not in a triangle with a degree-3 third vertex has an anchored return of length exactly $2^k$ | Theorem 2.1, Corollary 2.2 | T03/T02 | C02, C05 |
-| C-3 | every completion port has at least one anchored return | `lem:typeA-port-return` | T08 | C02 |
+| C-2 | every completion port has at least one actual anchored return | `lem:typeA-port-return` | T08 | C02 |
+| C-3 | receiver-entry returns are actual simple connector–channel paths, and the finite schedule contains every such return | `def:typeA-visible-load`; `VisibleReceiverEntry.lean` | T08/T16 | C01, C02 |
 | C-4 | connector/channel arithmetic: for a receiver-entry return $\Gamma\circ Q$ through $(w,h)$ with connector length $g$, $g+\lambda\notin\mathrm{Mers}$ for all $\lambda\in\Lambda_X(r,w)$; interval form with $I_X(r,w)$ | `lem:typeA-spectral-pressure`, `def:typeA-channel-spectrum` | T09 | C01, C04 |
 | C-5 | theta closure: all branch-pair sums in a theta avoid $\mathrm{Pow}$; ear closure; symmetric difference of overlapping cycles avoids $\mathrm{Pow}$ | invariants 31–33 | T08/T09 | C05–C07 |
 | C-6 | two-path criterion: two internally disjoint returns through one port with lengths summing to $2^k$ give a forbidden cycle | `lem:typeA-common-port-return-cycle`, invariant 30 | T08 | C05 |
 | C-7 | every cycle length has an odd prime divisor; no single odd prime divides all cycle lengths; overlap formula $q_p(E)=q_p(C)+q_p(D)-2t$ flat and non-killing | invariants 36–38 | T09/T11 | C04 |
 | C-8 | $G$ has an induced $P_{13}$; $R$ has none; every component of $R$ has diameter $\le11$ and $\le6142$ vertices | `cor:p13-exists`, `lem:remainder-empty-internal-3-core` | T18/T06 | C08 |
 | C-9 | $p_{13}$ is the **maximum** number of vertex-disjoint induced $P_{13}$'s; $\theta=p_{13}/n\le\theta^\ast+o(1)$ | [17], Theorem 1.5 | T06/T12 | C09, G09 |
-| C-13 | a component with $\ge2^{\ell+1}$ vertices has an induced path on $\ell+2$ vertices from each receiver; a window with two attached induced $R$-paths at positions $i<j$ of lengths $\ge12-i$, $\ge j$, disjoint, non-adjacent, avoiding stubs into the retained segments, gives $p_{13}+1$ windows | Lemmas 3.15, 3.16 | T06/T15 | C08, C09 |
 
 ### D — local configurations, motifs, overlap, symmetry
 
@@ -215,6 +214,12 @@ From the inventory (`repair_and_closure.md` §4.7): B02–B04 beyond bridgelessn
 
 ## 6. The closure theorem for [181]
 
-**Theorem [181].** Let $G$ be a finite simple graph and suppose that all of the following hold: the facts of §2 (A-1 through I-4), with the arms of §1 as stated, and the leaf data (R1)–(R3) of §4 with $p_4=\Theta(\lvert R\rvert)$ peeled two-support target-defect entries carrying the data listed there. Then $G$ contains a cycle whose length is a power of two.
+**Theorem [181].** Let \(G\) be a finite simple graph and suppose that all
+facts of §2 (A-1 through I-4), with the arms of §1 as stated, and all leaf data
+(R1)–(R3) of §4 hold. Then \(G\) contains a cycle whose length is a power of
+two.
 
-Equivalently, the conjunction of §1–§4 is unsatisfiable. Any proof must consume at least one row of §5, because every other present row is already accounted by the step named in §1–§3, and re-applying an accounted row returns a fact already on the ledger.
+Equivalently, the complete declared-support residual routed from [123] after
+[124] is empty. The proof must act on the target-defect two-support entries
+themselves; it may not replace their declared carriers by the weaker
+event-carrier implementation.

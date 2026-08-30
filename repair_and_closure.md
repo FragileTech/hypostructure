@@ -1,15 +1,21 @@
 # Repair and closure in a structural-exhaustion proof
 
+> **Methodology and repair-history document.** This file contains diagnoses, rejected moves, and
+> proposed continuations; it is not the live Lean status authority. In particular, proposals after
+> `[182]` and the candidate closures discussed for `[181]` are not implemented merely because they
+> appear here. Current implementation status is recorded in
+> [`Assembly_node_audit.md`](Assembly_node_audit.md), with the 2026-08-30 frontier summarized in
+> [`EG_LEAN_COMPLIANCE_REMAINING.md`](EG_LEAN_COMPLIANCE_REMAINING.md).
+
 An operating manual for repairing a structural-exhaustion proof when a step fails, and for choosing and executing the mathematical move that closes the residual branch the repair creates. It is written for two readers at once: a mathematician who has to decide whether a branch is closed, and a language model that has to propose the next step without losing the state.
 
-Nothing here is new. Every rule is taken from one of four sources in this repository, and every example is taken from the Erdős–Gyárfás manuscript or the Navier–Stokes and Stokes developments. The purpose of this document is to put the rules, the decision procedure, and the worked examples in one place and in the order in which they are actually used.
+Nothing here is new. Every rule is taken from the live sources in this repository, and every example is taken from the Erdős–Gyárfás manuscript or the Navier–Stokes and Stokes developments. The purpose of this document is to put the rules, the decision procedure, and the worked examples in one place and in the order in which they are actually used.
 
 | Source | What it supplies | Where |
 |---|---|---|
 | The web app methodology page | The branch tuple, the both-sides test, the move table, the eight LLM failure modes, the repair rule, three worked repairs | `web/frontend/src/components/MethodologySection.tsx` (rendered at the site landing page, "The methodology") |
 | The PDE methodology draft | The formal definitions (branch state, valid transition, exhausted graph), the closure theorems, the branch-preserving repair theorem, the Stokes instantiation | `to_formalize/llm_auditable_proof_architecture_draft.tex` |
 | The Erdős–Gyárfás manuscript | The repairs actually performed (nodes [125]–[182]) and the lemmas that closed them | `to_formalize/erdos_64_proof.tex` |
-| The reviewer postmortem | How a reader misreads a branch, objection by objection | `erdos_64_conversation_mistakes.md` |
 
 The reference manual for the move vocabulary is `to_formalize/branch_closure_methodology_extended.tex` (tactics CT1–CT17, certificate alphabet C1–C5); the general methodology paper is `to_formalize/structural_exhaustion.tex`.
 
@@ -113,7 +119,7 @@ The PDE draft explains why the coordinates are kept apart: a bound can survive r
 
 ### 2.3 Reading a branch before touching it
 
-The postmortem `erdos_64_conversation_mistakes.md` records what happens when a reader treats a structural-exhaustion proof as a linear proof. Its root causes are the reading rules, stated negatively:
+Treating a structural-exhaustion proof as a linear proof produces the following reading errors:
 
 1. **Wrong semantic unit.** The unit is *incoming ledger state + branch condition + local lemma*, not the lemma statement. Do not ask whether a fact holds in every graph when the proof uses it only after a diamond selected the branch on which it holds.
 2. **Erased routed residuals.** "The desired property fails" is not "the proof has failed." In this proof, failure usually *creates the next residual object*: a minimal overlap obstruction, a cold bounded configuration, a target-defect ledger entry, a decorated Type B handoff, a route-8 support.
@@ -228,7 +234,7 @@ $$\{s:A(s)\wedge\neg T(s)\}\subseteq\bigcup_{L\ \text{open}}\llbracket L\rrbrack
 
 with $B^-$ as its additional residual class (Theorem 3.5). Finally, *monotone closure* (Theorem 3.9): a repair partitions one region and leaves all other regions and their evidence unchanged, so closing or refining one open branch never reopens another.
 
-This is why dependency information is diagnostic rather than destructive. It identifies the interface at which to insert the dichotomy and the continuation to attach to its positive arm; it does not mark a forward set of statements as invalid. The postmortem's mistake E04 ("treating a failure branch as an omitted case") is exactly the destructive reading.
+This is why dependency information is diagnostic rather than destructive. It identifies the interface at which to insert the dichotomy and the continuation to attach to its positive arm; it does not mark a forward set of statements as invalid or treat a routed failure branch as an omitted case.
 
 ### 4.3 The ordered first-failure split
 
@@ -909,8 +915,8 @@ In `selectedRouteEightCensus` the `.right failedStage` arm currently runs `route
 - **Sufficient-order conditions.** A residual that carries a quantity exactly must be decided on the object, not by "$n$ large."
 - **Bounding a routed residual into nothing.** A remainder that is "$o(n)$ and discarded" is a residual with a consumer, not a loss (6.1).
 - **Reading a structural-exhaustion proof as a linear proof.** All five reading errors of 2.3.
-- **Treating a terminal as universal.** Target defect is a contradiction at [37] *because* the branch also carries a context-universal quotient; elsewhere it is a routed exit (postmortem E23).
-- **Using a routed-forward closure interface as an upstream hypothesis** and then announcing circularity (postmortem E05–E07).
+- **Treating a terminal as universal.** Target defect is a contradiction at [37] *because* the branch also carries a context-universal quotient; elsewhere it is a routed exit.
+- **Using a routed-forward closure interface as an upstream hypothesis** and then announcing circularity.
 
 ### 9.3 What is not a repair
 
@@ -1122,7 +1128,6 @@ Paste this verbatim at the start of any session that works on an open node. It i
 | Peeled demand residual [181] | same | `def:typeA-peeled-demand-residual` (≈16830), `thm:large-budget-route8-only` |
 | Resilience appendix, cross-check table, "No leaf degrades to nothing" | same | `app:resilience` (≈17456–17775) |
 | Note on human–AI collaboration ("157 to 180 nodes") | same | ≈17780–17870 |
-| Reading errors and objection ledger | `erdos_64_conversation_mistakes.md` | §2, §4 |
 | CT1–CT17, certificate alphabet C1–C5 | `to_formalize/branch_closure_methodology_extended.tex` | Part II |
 | Lean carrier and sealing | `hypostructure/Hypostructure/Core/Residual/ExactLedger.lean` | `RefinementSystem`, `FactSystem`, `value_subsingleton` |
 | Node [123] routing, pure closure row | `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly.lean` | `selectedRouteEightCensus`, `selectedSpineSurplusEstimateCloses`, `selectedLedgerBoundary` |

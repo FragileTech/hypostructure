@@ -1,5 +1,9 @@
 # Closure proofs for nodes [181] and [182]
 
+> **Exploratory proof record, not a completion certificate.** Arguments and finite searches in
+> this file are candidate closure work. They do not establish that the corresponding Lean branch
+> is wired or closed. See [`Assembly_node_audit.md`](Assembly_node_audit.md) for current status.
+
 Structural-exhaustion proofs on the two open nodes of `to_formalize/erdos_64_proof.tex`. Every cited statement is a displayed statement of the manuscript (by `\label`) or a definition of the Lean sources (by file and name). Notation is the manuscript's: $G$ the lexicographically minimal counterexample, $n=\lvert V(G)\rvert$, $R$ the $P_{13}$-free remainder, $W=V(\mathcal P)$ the packed-window vertex set, $p_{13}=\lvert\mathcal P\rvert$, $\theta=p_{13}/n$, $\defp,\sigma,\No$ as there, $\mathrm{Pow}=\{2^k\}$.
 
 ---
@@ -150,4 +154,3 @@ From `hypostructure/Hypostructure/Graph/SparseEntropySandwich.lean`: `Skeleton n
    *The 2026-08-25 edit.* It replaced the false first step by the exact identity $4\tilde D_A=4\tilde D_A^{P_4}+p_4$, named the failed reduced-rate stage node [181], and marked the cold-branch closure as conditional on its absence. It did not remove or alter any closing lemma; it removed a claim that was inconsistent with two other unchanged statements of the same manuscript. The commit is authored `guillemdb <guillem@fragile.tech>`.
 
    *On [124].* Node [124] closes only route-8 two-support entries; it never closed the target-defect ones, which in both versions are peeled. Theorem 3.2 shows that under the unchanged definitions every two-support entry realizes exit (4), so no two-support entry is a true route-8 entry and [124]'s arm is empty in the original as well. Hence the original's large-budget closure rested entirely on the deleted step, and the gap at [181] is a gap of the original, made explicit on 2026-08-25, not one created by that edit.
-

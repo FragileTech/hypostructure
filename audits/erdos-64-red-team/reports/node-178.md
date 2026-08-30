@@ -490,7 +490,7 @@ The audit inspected:
 - `Assembly_node_audit.md` and `web/data/eg_node_audit.json` as locators,
   followed by the actual declarations.  They likewise record that no pair
   overlap key, producer, or serial-system handoff exists.
-- review-postmortem entries E04 and E32.  Those entries correctly reject the
+- The live contract correctly rejects the
   generic claim that pair-code failure has no structural branch.  This report
   tests the branch that is present and finds the opposite conditional-fibre
   inequality in its defining predicate; it does not demand independence on

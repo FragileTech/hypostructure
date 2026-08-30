@@ -246,7 +246,7 @@ The audit inspected:
 - `Assembly.lean`: every call to `selectedNetChargeContinuation`, the direct right-arm call to `selectedAbsorbedGermResidual`, and the contrasting `selectedRouteEightRateFailure` branch, which performs `coldFamilyDichotomy` first.
 - `ColdCorridorRows.lean`: the literal complement decision (0<C) versus (C=0).
 - The implementation status table and JSON locator. Their statement that the complaint belongs only to [174] does not supply the missing positivity premise on the [173] edge.
-- The review postmortem's cumulative-ledger and routed-residual warnings. This report does not demand a global hot-window independence statement, import a sibling fact, or call the exact failure itself a contradiction; it checks whether the routed payload meets its stated destination.
+- The cumulative-ledger and routed-residual rules are applied directly. This report does not demand a global hot-window independence statement, import a sibling fact, or call the exact failure itself a contradiction; it checks whether the routed payload meets its stated destination.
 
 The principal searches were
 
@@ -254,7 +254,7 @@ The principal searches were
 rg -n -F -e '[173]' -e 'exact collision' -e 'absorbed-configuration' -e 'configuration-extraction loss' to_formalize/erdos_64_proof.tex
 rg -n -F -e 'exactCollisionDichotomy' -e 'absorbedConfigurationResidualRow' -e 'exactCollisionFails' -e 'absorbedConfigurationResidual' hypostructure proofs Assembly_node_audit.md web/data/eg_node_audit.json
 rg -n -F -e 'coldMassLinear' -e 'coldMassBounded' -e 'coldFamilyPositive' -e 'coldFamilyEmpty' hypostructure proofs
-rg -n -F -e 'linearly many cold' -e 'small-order repair' -e 'No sufficient-order condition' to_formalize/erdos_64_proof.tex erdos_64_conversation_mistakes.md
+rg -n -F -e 'linearly many cold' -e 'small-order repair' -e 'No sufficient-order condition' to_formalize/erdos_64_proof.tex
 ```
 
 No proof of (N>0) for all finite incoming objects, no `coldFamilyPositive` premise on node [173]'s no edge, and no closed all-hot exact-budget destination for that edge were found.

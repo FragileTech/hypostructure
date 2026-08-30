@@ -58,7 +58,7 @@ There is no backend. Two proofs are published:
 
 | Proof | Manuscripts | Size                           |
 | --- | --- |--------------------------------|
-| Erdős–Gyárfás | `erdos_64_proof.tex` | 180 steps, 12 panels           |
+| Erdős–Gyárfás | `erdos_64_proof.tex` | 184 diagram nodes, 12 panels  |
 | Navier–Stokes | `proof_setup.tex`, `type_I_residual_closure.tex`, `type_II_regularity.tex` | 333 steps, 23 panels, 3 papers |
 
 For each proof the site offers:
@@ -126,15 +126,15 @@ make web-test          # extractor assertions, typecheck, frontend suite
 
 ## Implementation status
 
-This is work in progress. Everything below was checked against the live audit
-and targeted builds of the current tree on 2026-08-29.
+This is work in progress. Everything below was checked against the live source,
+the synchronized audit tables, and bounded single-worker checks on 2026-08-30.
 
 | Component | Status                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | --- |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Manuscripts | Erdős–Gyárfás and the three Navier–Stokes papers are complete drafts with chapter-1 diagrams, ledgers and audit tables; the methodology papers are the reference.                                                                                                                                                                                                                                                                                                                   |
 | Proof explorer | Both proofs published, all features above live. Referee mode's Lean and review dimensions are supplied for the Erdős–Gyárfás proof from the checked-in node audit (`web/data/eg_node_audit.json`, folded into the site data by `web/tools/lean_review.py`); the Navier–Stokes document carries no such side-car yet.                                                                                                                     |
 | Framework core | Builds (`lake build Hypostructure`). `ExactLedger`, `AtomicCT`, problem registration and the fixtures are live and are the only API; ongoing deprecation of stale code — the quarantine lint gate (`make lint`) currently fails, flagging several previously-quarantined modules back in the build plus a handful of parallel ledger-shaped APIs still to retire. Implementing the high level API of problem-independent proof moves is pending.                                                                                                                                                                                                                                                           |
-| Erdős–Gyárfás in Lean | Advanced, not closed. `SpineRows`, `Assembly`, and `StrategyDag` kernel-check, but a code-first semantic audit shows that the final Assembly codomain is **not** reduced to `[172a]`, `[181]`, and `[182]`. In addition to those three genuine boundaries, the live proof still exposes sparse target-defect, raw/common Type-B accounting, route-8 sublinear/quotient/rate, and absorbed-germ outputs. The common Type-B plumbing from `[144]` and `[177]` composes, but `[79]`–`[81]` skip the manuscript's shoulder-completion/port-return/first-landing/cross-shoulder chain, and `[177]` uses a weaker cold witness as a parallel Type-B disjunct rather than proving the prescribed assigned-support conversion. `C_sp` is also registered from the baseline degree instead of the routing-label alphabet bound. See [`Assembly_node_audit.md`](Assembly_node_audit.md) and [`EG_incomplete_nodes_repair_plan.md`](EG_incomplete_nodes_repair_plan.md). |
+| Erdős–Gyárfás in Lean | Advanced, not closed. The live code implements the low-entropy route `[49]`–`[52]`, the exact Type-B local chain `[79]`–`[85]`, node `[123]` with its full incoming ledger and exact `[124]`/`[181]` outcomes, routing-only `[125]`, `[153]`, `[157]`, `[168]`, `[170]`–`[171]`, and the covered arms of `[173]`–`[180]`. ExactLedger ancestry is repaired at `[64]`, `[144]`, and `[177]`: `[64]` and `[177]` consume `[75]`–`[77]` through branch-kill and Part IX, while strict-surplus `[144]` returns the manuscript's exact Type-B handoff rather than importing the incompatible low-surplus estimate. `[172a]` has no graph-derived overlap producer, `[181]` and `[182]` remain explicit open residuals, and the final `StrategyDag.lean` topology endpoint is absent. The aggregate Assembly check elaborates these repairs and next stops at a later generic cold-route freshness boundary. See [`Assembly_node_audit.md`](Assembly_node_audit.md), [`EG_LEAN_COMPLIANCE_REMAINING.md`](EG_LEAN_COMPLIANCE_REMAINING.md), and [`EG_incomplete_nodes_repair_plan.md`](EG_incomplete_nodes_repair_plan.md). |
 | Navier–Stokes in Lean | Not started; queued after the Erdős–Gyárfás application, in manuscript dependency order.                                                                                                                                                                                                                                                                                                                                                                                            |
 
 The authoritative per-fact and per-node record is
@@ -154,7 +154,7 @@ hypostructure/                     Lean 4 framework
   scripts/                           the gates
 proofs/hypostructure_erdos_64_eg/  the Erdős–Gyárfás application
 Assembly_node_audit.md             implementation status, per fact and per node
-LEGACY_REMOVAL_AUDIT.md            what the canonical-ledger rewrite retired
+audits/erdos-64-red-team/          live red-team reports, summary, and coverage ledger
 ```
 
 ## Citing

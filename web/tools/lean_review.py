@@ -1,7 +1,7 @@
 """Per-node review status for the Erdos-Gyarfas proof.
 
 Read from ``web/data/eg_node_audit.json``, the current numeric-node audit plus
-the manuscript's alphanumeric [172a] subnode.
+the manuscript's alphanumeric [172a]--[172c] subnodes.
 Nothing here parses ``-- EG-NODE`` comments or infers coverage from prose:
 those annotations are unreliable in both directions (declarations that
 implement a node carry none, and one umbrella claims 44 nodes it merely
@@ -36,7 +36,7 @@ from pathlib import Path
 AUDIT_REL = Path("web/data/eg_node_audit.json")
 
 NODE_COUNT = 182
-EXTRA_NODE_IDS = ("172a",)
+EXTRA_NODE_IDS = ("172a", "172b", "172c")
 
 #: Gate B verdicts that mean the producer publishes the manuscript's statement.
 _FAITHFUL = {"FAITHFUL", "FAITHFUL-TRIVIAL", "STRONGER"}
@@ -63,7 +63,11 @@ def build_review(repo_root: Path) -> dict | None:
     entries = audit["nodes"]
 
     nodes: dict[str, dict[str, str]] = {}
-    node_ids = [str(number) for number in range(1, NODE_COUNT + 1)] + list(EXTRA_NODE_IDS)
+    node_ids = (
+        [str(number) for number in range(1, 172)]
+        + list(EXTRA_NODE_IDS)
+        + [str(number) for number in range(173, NODE_COUNT + 1)]
+    )
     for number in node_ids:
         entry = entries.get(number)
         if entry is None:

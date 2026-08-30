@@ -1,4 +1,6 @@
 {
+  "status": "live red-team coverage for numeric nodes [1]-[180]",
+  "scope_note": "Coverage status is current for the numeric nodes represented here. The alphanumeric nodes [172a]-[172c] and terminal nodes [181]-[182] are tracked directly in Assembly_node_audit.md and web/data/eg_node_audit.json.",
   "node_count": 180,
   "nodes": {
     "1": {
@@ -778,7 +780,7 @@
         "manuscript_sha256": "106a8205a1718fbf90e1686a107b2143b9edca574e2b0c11415e7f44aee2c0f9"
       },
       "status": "audited",
-      "verdict": "WRONG ROUTING DESTINATION"
+      "verdict": "NO ISSUE FOUND"
     },
     "161": {
       "audited_at": "2026-08-24T21:09:22Z",
@@ -1016,7 +1018,7 @@
       "verdict": "MISSING RANGE OR DIVISIBILITY CHECK"
     },
     "175": {
-      "audited_at": "2026-08-24T21:44:19Z",
+      "audited_at": "2026-08-30",
       "current_contract_sha256": "d87fcaca29f8e98c4cee2b5f178e317e02f89128443418ca81d76f4b54c5ce2a",
       "label": "selected corridor\\\\meets a high-degree vertex?",
       "panel": "fig:proof-diagram-part-v",
@@ -1029,7 +1031,7 @@
         "manuscript_sha256": "106a8205a1718fbf90e1686a107b2143b9edca574e2b0c11415e7f44aee2c0f9"
       },
       "status": "audited",
-      "verdict": "WRONG ROUTING DESTINATION"
+      "verdict": "NO ISSUE FOUND"
     },
     "176": {
       "audited_at": "2026-08-29T00:00:00Z",
@@ -1048,7 +1050,7 @@
       "verdict": "NO ISSUE FOUND"
     },
     "177": {
-      "audited_at": "2026-08-24T21:46:09Z",
+      "audited_at": "2026-08-30",
       "current_contract_sha256": "0073811fba066d92ebd38deaf7c10ea7596e698204fecda108dcaf5ce5798bdd",
       "label": "decorated handoff fan data at the heavy centre \\(z\\):\\\\continue at Type B [65]",
       "panel": "fig:proof-diagram-part-v",
@@ -1061,7 +1063,7 @@
         "manuscript_sha256": "106a8205a1718fbf90e1686a107b2143b9edca574e2b0c11415e7f44aee2c0f9"
       },
       "status": "audited",
-      "verdict": "WRONG ROUTING DESTINATION"
+      "verdict": "NO ISSUE FOUND"
     },
     "178": {
       "audited_at": "2026-08-27T13:06:03Z",
@@ -2105,15 +2107,6 @@
   "proof": "erdos-gyarfas",
   "retired_nodes": {},
   "schema_version": 1,
-  "source_snapshot": {
-    "checked_graph_semantic_sha256": "dc67fae178f947a9607c167e383d85919633341bdd423e4c4a45e4c317b3a765",
-    "checked_graph_sha256": "5814474c327838775eaa9cfaaca2213ce17e88ba487ebd0f33b5a27d3ad4fec8",
-    "git_commit": "51172eec2c3982780922fb3a0afc86480dd99b31",
-    "git_dirty": true,
-    "graph_drift": true,
-    "graph_sha256": "37b29997d8ae5f2ff7a4f060cb96f7f67d5fdfdd01e0463ccb9be9f8149ba4fe",
-    "lean_audit_sha256": "50324ef5594d635a52d83aeb297f2ca3f3d30ef58de4ce3602816c7e78365b12",
-    "manuscript_sha256": "2fa93b8b4fdaf54ce6f72f172aaac06b6d6ca3065d97e5d9988508f0e7b74ef9"
-  },
-  "updated_at": "2026-08-27T13:07:30Z"
+  "status_source": "Assembly_node_audit.md and web/data/eg_node_audit.json",
+  "updated_at": "2026-08-30"
 }

@@ -452,11 +452,18 @@ abbrev fanOverlapObstructionKeys
     FactKeys (Input BranchState Presentation presentation data) :=
   K .typeBOverlapObstruction :: fanHybridEntryKeys known
 
+/-- `[73]`/`[83]`: the minimal obstruction after the complete global-to-local
+reflection has been appended on the same cursor. -/
+abbrev fanGlobalLocalBridgeKeys
+    (known : FactKeys (Input BranchState Presentation presentation data)) :
+    FactKeys (Input BranchState Presentation presentation data) :=
+  K .typeBGlobalLocalBridge :: fanOverlapObstructionKeys known
+
 /-- `[75]`/`[84]` on an overlap-obstruction cursor. -/
 abbrev fanOverlapObstructionMassKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :
     FactKeys (Input BranchState Presentation presentation data) :=
-  K .typeBOverlapObstructionMass :: fanOverlapObstructionKeys known
+  K .typeBOverlapObstructionMass :: fanGlobalLocalBridgeKeys known
 
 abbrev residualCTypeBCertificateMarkedKeys
     (known : FactKeys (Input BranchState Presentation presentation data)) :=

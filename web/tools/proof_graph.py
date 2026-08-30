@@ -796,6 +796,20 @@ def _apply_tables(part: dict[str, Any]) -> tuple[list[dict], list[dict]]:
             return
         _add(node["itemRefs"], resolve(labels))
 
+    def diagram_targets(targets: Iterable[str]) -> list[str]:
+        """Resolve an aggregate numeric table id to its drawn lettered subnodes."""
+        resolved: list[str] = []
+        for target in targets:
+            if target in by_id:
+                _add(resolved, [target])
+                continue
+            suffixes = sorted(
+                node_id for node_id in by_id
+                if re.fullmatch(rf"{re.escape(target)}[a-z]+", node_id)
+            )
+            _add(resolved, suffixes)
+        return resolved
+
     for node in part["nodes"]:
         node.setdefault("overview", "")
         node.setdefault("itemRefs", [])
@@ -813,7 +827,7 @@ def _apply_tables(part: dict[str, Any]) -> tuple[list[dict], list[dict]]:
     # every result the block uses. Those are kept separately as block context.
     for spec in chapter.node_tables:
         for row in table_rows(text, spec):
-            targets = _expand(cell(row, spec.nodes), prefix)
+            targets = diagram_targets(_expand(cell(row, spec.nodes), prefix))
             name = to_plain(cell(row, spec.name))
             detail = to_plain(cell(row, spec.detail))
             outcome = to_plain(cell(row, spec.outcome))

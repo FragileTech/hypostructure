@@ -185,7 +185,6 @@ None. The diagram, caption, detailed dependency row, dense-residual subsection, 
 - Inspected `web/tools/papers/erdos64.py`; its explicit continuation is [158] → [159], and the freshly extracted graph has `graph_drift: false`.
 - Inspected the literal Lean contract `WindowPackageRealized`, its `Holds` clauses, the incoming `ExactLedger`, `selectedWindowPackageRealizationDichotomy`, `skeletonDominatesRow`, the [22] partition consumer, and `densePackingOverflowRow`. The decision arms are exact negations and the latter constructs the identity-range witness.
 - Inspected `Assembly_node_audit.md` and `web/data/eg_node_audit.json` only as locators/status evidence, then verified their claims in the actual declarations. Formalization gaps downstream at other nodes were not promoted to a mathematical finding at [158].
-- Inspected E08 of `erdos_64_conversation_mistakes.md`, then independently checked its warning against the live manuscript and Lean sources.
 - Search commands/patterns included `rg -n 'def:window-realization-test|lem:p13-window-package|lem:skeleton-dominates|lem:independent-target-entropy|lem:state-count-comparison|prop:p13-density|dense-packing residual|joint window package' to_formalize/erdos_64_proof.tex` and `rg -n 'WindowPackageRealized|windowPackageUnrealized|densePackingOverflow|selectedWindowPackageRealizationDichotomy' hypostructure proofs Assembly_node_audit.md web/data/eg_node_audit.json`. No second manuscript definition or contradictory outgoing edge was found.
 
 ## 8. Residual uncertainty

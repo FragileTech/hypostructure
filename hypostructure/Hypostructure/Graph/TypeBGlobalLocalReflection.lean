@@ -2,15 +2,15 @@ import Hypostructure.Graph.TypeBOverlapResponseCoordinate
 import Hypostructure.Graph.TypeABCertificate
 import Hypostructure.Graph.HighCentreNormalForm
 import Hypostructure.Graph.TypeBDirectCycle
+import Hypostructure.Graph.DeclaredRankQuotient
 
 /-!
-# Derived Type B overlap reflection, clauses (a)--(c) and (e)
+# Type B overlap reflection
 
-This module records only the four clauses of
-`lem:typeB-global-local-reflection` which are presently derived from the live
-canonical obstruction and inherited graph facts.  The replacement/quotient
-clause (d) is deliberately absent: it requires an actual response-coordinate
-identification theorem, not a field on the obstruction.
+This module records all five clauses of `lem:typeB-global-local-reflection`.
+Clause (d) is stated on the literal finite overlap-coordinate schedule and is
+proved by the canonical declared-rank quotient routing theorem; no response
+classification is stored in the obstruction.
 -/
 
 namespace Hypostructure.Graph
@@ -86,8 +86,7 @@ theorem CandidateData.packedWindowIncidences_subset_localWindowBoundaryIncidence
           ⟨ownerInPiece, adjacent,
             piece.vertices_subset_remainder ownerInPiece, window⟩
 
-/-- The four currently derived clauses of the manuscript's Type B
-global-to-local reflection.  There is intentionally no clause (d). -/
+/-- All five clauses of the manuscript's Type B global-to-local reflection. -/
 structure GlobalLocalReflectionACE
     (presentation : TypeAB.Presentation.{u})
     (object : FiniteObject.{u}) (order : ℕ) (LengthOK : ℕ → Prop)
@@ -118,6 +117,31 @@ structure GlobalLocalReflectionACE
   directCycleFree :
     ∀ hub ∈ obstruction.demands,
       TypeBDirectCycle.DirectCycleFree object order LengthOK packing hub
+  /-- Manuscript clause (d).  Every rank-reducing identification attempted on
+  the literal overlap-coordinate schedule is routed by the declared response
+  calculus: degree-profile failure, contextual target defect, a proper
+  replacement, or a smaller closed representative. -/
+  replacementObstruction :
+    ∀ attempt : AttemptedQuotient (TypeAB.Baseline presentation)
+        presentation.Target object
+        (overlapCoordinateSchedule object threshold dischargeScale packing
+          piece.vertices assigned obstruction).toFinset
+        (fun _ => obstruction.overlapSupport),
+      attempt.support = obstruction.overlapSupport →
+      ¬ Set.InjOn attempt.label
+        ↑(overlapCoordinateSchedule object threshold dischargeScale packing
+          piece.vertices assigned obstruction).toFinset →
+      (∃ left right, attempt.Identifies left right ∧
+          left.boundaryDegreeProfile ≠ right.boundaryDegreeProfile) ∨
+        (∃ left right, attempt.Identifies left right ∧
+          Response.TargetDefect presentation.Target left right) ∨
+        Strategy.InterfaceReplacement.ReplacementSupport
+          (TypeAB.Baseline presentation) presentation.Target object
+          attempt.support ∨
+        (∃ representative : FiniteObject.{u},
+          representative.LexicographicallySmaller object ∧
+            TypeAB.Baseline presentation representative ∧
+              (presentation.Target representative → presentation.Target object))
   /-- Manuscript clause (e).  This is stated for every proper nonempty demand
   subfamily and therefore includes every proper connected sub-obstruction. -/
   minimalOverlap :
@@ -161,6 +185,9 @@ theorem globalLocalReflectionACE
     intro hub _hubMem data eligible
     exact data.packedWindowIncidences_subset_localWindowBoundaryIncidences eligible
   directCycleFree := cycleFree
+  replacementObstruction := by
+    intro attempt _supportEq reducing
+    exact attempt.route reducing
   minimalOverlap := obstruction.minimal
 
 end

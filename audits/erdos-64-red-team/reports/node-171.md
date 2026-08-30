@@ -314,7 +314,7 @@ and inspected:
 - `Strategy/BlockedCompressionRows.lean`'s decision and `blockedClassCompressionCloses` proof;
 - the literal `selectedScaleAdditivityDichotomy` consumer in Assembly and every reference to the proposed injectivity/baseline producers;
 - the [169]--[172] rows in `Assembly_node_audit.md` and `web/data/eg_node_audit.json`.
-- review-postmortem entry E11.  That entry correctly withdraws the different claim that the outside-edge record already determines the graph.  This report accepts the stated injective code; its narrower objection is that the proof never charges the uncompressed `W_c` ranges against the ambient budget before subtracting them.
+- The report accepts the stated injective code. Its narrower objection is that the proof never charges the uncompressed `W_c` ranges against the ambient budget before subtracting them.
 
 No manuscript or Lean theorem proving a fiberwise uncompressed barrier baseline, an injection of the displayed product type, or even injectivity of `blockedBarrierCode` was found.  The idiom search found no separate “word for word,” “same proof,” or analogous compression argument that supplies it.  The only relevant `verbatim` occurrence is a Lean comment claiming fidelity for `BlockedScaleAdditivityStatement`; its actual type includes the desired saving as an assumption.
 

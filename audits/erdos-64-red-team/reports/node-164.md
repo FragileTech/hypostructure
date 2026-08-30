@@ -234,7 +234,7 @@ The audit inspected the following repeated uses and consumers:
 
 - The Part XII diagram, its caption and summary, the incoming `[53] active` edge, the terminal node [164], the detailed dependency row for `def:all-cold-comparison`/`lem:remainder-glue-injection`, and `rem:dense-residual-status`.
 - The full statements and proofs of `def:all-cold-comparison`, `lem:remainder-glue-injection`, `def:remainder-entropy`, `lem:skeleton-dominates`, `prop:two-budget`, `prop:entropy-high-theta`, and `rem:closure-robust`.
-- The prior correction ledger entries E14 and E15. This report does not repeat the withdrawn claim that no injection exists or reverse the state-count inequality; it accepts the explicit glue and isolates only whether its exact-edge domain is the class previously counted.
+- The explicit glue is accepted; the remaining question is whether its exact-edge domain is the class counted by the live entropy definition.
 - `Graph/RemainderEntropy.lean`: all five conjuncts of `RemainderClass`, the exact `edgeCount` parameter, `remainderStateCount`, and the integer entropy-rate predicates.
 - `Graph/RemainderGlue.lean`: the labelled embeddings, outer/inner edge split, disjointness, loop-freeness, edge-count preservation, recovery by filtering, `glue_injective`, and `remainderStateCount_le_skeletonBudget`.
 - `Strategy/SpineVocabulary.lean`: `remainderStates`, `retainedCode`, `jointPackageDemand`, `IsHotColdWindowPartition`, and the exact `entropyCapActive`/`entropyCapBound` predicates. The formal remainder count receives the object's inherited internal edge count.

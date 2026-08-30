@@ -146,7 +146,7 @@ Node [180] is drawn as terminal and has no graph edge leaving it.  Its proof nev
 2. a periodic response class whose visible quotient is sparse exit (b), or whose invisible proper-support quotient is sparse exit (c), both refuted by node [125]; or
 3. a periodic response class reaching a same-token routed bottleneck, sent by `lem:same-token-bottleneck-routing` to a sparse exit or Type B fan data.
 
-The first outcome is terminal only after (2) is checked and the corresponding realized length is tied to an actual simple cycle.  The second must retain the two actual equal-phase response states, their common boundaried support, the quotient, and proper-support status.  The third is routing, not contradiction; a Type B outcome must enter the same typed Type B continuation used from node [144].  The live graph has no edge from [180] to that continuation.  This missing continuation is subordinate to the arithmetic failure: the explicit candidates below are wrongly consumed by the direct-hit arm before any periodic routing is attempted.
+The first outcome is terminal only after (2) is checked and the corresponding realized length is tied to an actual simple cycle.  The second must retain the two actual equal-phase response states, their common boundaried support, the quotient, and proper-support status.  The third is routing, not contradiction; a Type B outcome must publish the same typed Type B handoff contract used at node [144], with its complete carrier and ledger ancestry.  The live graph has no such outgoing edge from [180].  This missing continuation is subordinate to the arithmetic failure: the explicit candidates below are wrongly consumed by the direct-hit arm before any periodic routing is attempted.
 
 ## 3. Sentence audit
 
@@ -165,7 +165,7 @@ The first outcome is terminal only after (2) is checked and the corresponding re
 | S11 | A congruence (2^k\equiv L+r\pmod g) is a power-of-two cycle. | S10 and target avoidance. | Compute (t) and check its central range before invoking realization. | (g=17), exact congruent powers only far below or above the active interval. | FAILED |
 | S12 | Scale-spanning puts the congruent quotient in the central range once bounded scales enter the cold table. | Manuscript scale-spanning and bounded-end routing. | One straddled dyadic scale does not place a full residue orbit in range; the exceptional distance need not be bounded uniformly. | Place (2^{100}) in a four-integer gap between consecutive realized blocks. | FAILED |
 | S13 | Under avoidance, route-length residue modulo the odd part is well-defined through every corridor. | All increments are multiples of (g). | Different choices differ by multiples of (g), which is sufficient, but the selected response state should preserve the full post-transient phase. | Two states equal modulo (u) but unequal modulo (2^a). | AMBIGUOUS/WEAKENED |
-| S14 | Sparse exits are refuted and the Type B outcome is the continuation of [144]. | Node [125], `lem:same-token-bottleneck-routing`. | Type B must be a live outgoing handoff with its complete carrier data. | Inspect `immediate_outgoing` for node [180]. | FAILED AS A TERMINAL GRAPH CONTRACT |
+| S14 | Sparse exits are refuted and the Type B outcome satisfies the typed handoff contract published at [144]. | Node [125], `lem:same-token-bottleneck-routing`. | Type B must be a live outgoing handoff with its complete carrier data. | Inspect `immediate_outgoing` for node [180]. | FAILED AS A TERMINAL GRAPH CONTRACT |
 
 ## 4. Counterexample attempts
 
@@ -333,7 +333,7 @@ Replace the terminal ellipse by the exact subdiamond
 [180a] -- no exact hit; target-complete proper support --> sparse exit (c)
 [180a] -- no exact hit; proper/whole-graph dependence --> sparse exit (d)
 [180a] -- full phase reaches same-token bottleneck -->
-          sparse exit or typed Type B continuation from [144]
+          sparse exit or the typed Type B handoff contract used at [144]
 ```
 
 Every edge must retain the same serial system, (L,g,mathcal R,C_{\rm sys},T_r), the actual interface phase states, and the graph-realization proof from [179].  The Type B edge must be explicit in the proof graph; [180] cannot remain terminal if that outcome is live.
@@ -358,7 +358,7 @@ The following uses and analogues were inspected:
 - `hypostructure/Hypostructure/Graph/SerialSystemArithmetic.lean` in full.  Its `ScaleSpanning`, `realized_of_congruent`, and `exists_pow_realized` declarations use a full orbit and exact finite range.  `lake env lean Hypostructure/Graph/SerialSystemArithmetic.lean` succeeded with only deprecation warnings.
 - `rg -n "selectedSparsePairSerialSystem|Spectrum.exists_pow_realized|pair-system-increment-arithmetic" hypostructure proofs Assembly_node_audit.md web/data/eg_node_audit.json` found only calls to the undefined assembly producer, the graph-free arithmetic helper, and the audit records.  No graph-to-`Spectrum` constructor or periodic-response producer was found.
 - The modular checker was run on `/tmp/eg-node-180-modular.json` and `/tmp/eg-node-180-range.json`.  The former separated numerous raw odd-part hits from zero valid full hits; the latter found full congruence lifts only outside the finite coefficient range.
-- Review-postmortem entry E12 was rechecked.  Unlike the withdrawn candidate recorded there, the present `g=24` construction retains a scale-spanning central spectrum after bounded end deletion; it fails because the odd-part projection does not satisfy the omitted `2^a` compatibility.
+- The `g=24` construction retains a scale-spanning central spectrum after bounded end deletion, but fails because the odd-part projection does not satisfy the required `2^a` compatibility.
 
 The fresh dossier reports no reverse item dependency beyond the named pair wrapper, but flags sparse-exit and Type B routing families without a directed edge.  No proof, manuscript, diagram, Lean, audit source, or coverage-ledger file was modified.
 
