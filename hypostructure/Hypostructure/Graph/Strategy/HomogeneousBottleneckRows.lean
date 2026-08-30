@@ -3830,9 +3830,7 @@ literal conditional-fibre overlap system. -/
             Finite.of_surjective toBroad toBroadSurjective
           let narrowToBroad : Narrow → Broad := fun state =>
             ⟨state.1, by
-              obtain ⟨candidate, sameCode, earlierEq, responseEq⟩ := state.2
-              have baseEq : baselineState candidate = baselineState member :=
-                congrArg Prod.snd sameCode
+              obtain ⟨candidate, baseEq, earlierEq, responseEq⟩ := state.2
               exact ⟨candidate, baseEq, earlierEq, responseEq⟩⟩
           have narrowToBroadInjective : Function.Injective narrowToBroad := by
             intro left right equal

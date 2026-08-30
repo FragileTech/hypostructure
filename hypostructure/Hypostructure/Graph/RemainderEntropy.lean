@@ -20,7 +20,9 @@ graphs is prescribed, and only `|𝒢(R)|` is ever consumed".
 So this module does exactly that: it names the class by the constraints, gives
 it a cardinality, and provides no enumeration.  A candidate has no induced
 window of the registered order, no subregion meeting the registered baseline,
-and no more positive deficiency than the literal incoming remainder.  The last
+and no more positive deficiency than the literal incoming remainder.  A
+maximum-degree bound is not among the incoming facts and is therefore not part
+of the class.  The last
 parameter is essential: without it `𝒢(R)` silently forgets a branch-local
 ledger constraint and is not the class used by `def:remainder-entropy`.
 
@@ -39,8 +41,7 @@ universe u
 
 /-- **`𝒢(X)` of `def:remainder-entropy`.**  The labelled simple graphs on the
 inherited vertex set carrying "the remainder constraints already imposed on the
-branch": subcubicity on the atom part (every degree at most the registered
-baseline), window-freeness at the registered order (componentwise
+branch": window-freeness at the registered order (componentwise
 `P₁₃`-freeness), no subregion at the registered baseline (no internal `3`-core),
 positive deficiency at most the inherited cap, and — "every candidate carries
 the same inherited vertex set, so the density comparison is equivalently the
@@ -48,10 +49,12 @@ comparison of its net-deficiency numerator with the inherited one" — the
 inherited edge count.  The last constraint is the branch's *glue*: a candidate
 with the inherited edge count replaces the object's own remainder inside the
 object without changing the vertex or edge count, which is what makes `𝒢(X)`
-a subclass of the labelled skeleton class `𝒢_{n,m}` (`RemainderGlue`). -/
+a subclass of the labelled skeleton class `𝒢_{n,m}` (`RemainderGlue`).  There
+is deliberately no maximum-degree conjunct: the incoming normalized-remainder
+fact excludes an internal baseline core, which does not imply a maximum-degree
+bound (a star is the elementary counterexample). -/
 def RemainderClass (order threshold deficiencyCap edgeCount size : Nat) : Type :=
   {member : LabelledOn size //
-    (∀ vertex : Fin size, member.toFiniteObject.degree vertex ≤ threshold) ∧
     (∀ support : Finset (Fin size),
       ¬ member.toFiniteObject.InducesWindow order support) ∧
     (∀ support : Finset (Fin size),

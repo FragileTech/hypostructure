@@ -281,13 +281,13 @@ actual return corridor and returns that exact ledger directly to the common Type
 The graph-realized arm runs the `[168]` endpoint/interior exclusion and closes through the
 distinguished ExactLedger closure. The canonical arm uses the `[165]`--`[166]` owners.
 
-**Implementation bug.** The per-half-edge routing is preserved and the common
-node-[65] function is now called, but its input contract was weakened:
-`TypeBFanEntryStatement` admits `AbsorbedGermFanEnvelopeStatement` as a new
-disjunct even though that witness explicitly lacks the manuscript's counted
-connected assigned support. Remove the parallel disjunct and prove the actual
-`[177]` → `[65]` conversion, or repair the manuscript if that implication is
-false.
+**Current Type-B handoff.** For every complementary half-edge, node `[177]`
+uses the retained first-high corridor prefix as a connected counted core in the
+canonical remainder. It publishes the high decoration, its assigned neighbour
+set, an actual `DecoratedHandoff.Envelope`, and the common
+`DecoratedHandoff.Admissible` proof. The row reads selection,
+uncompressibility, remainder normalization, and the aggregate fan data through
+`inputs.get`, and the returned ExactLedger enters node `[65]` directly.
 
 **Required validation.** Every candidate and heavy-centre arm must terminate through its
 manuscript continuation.

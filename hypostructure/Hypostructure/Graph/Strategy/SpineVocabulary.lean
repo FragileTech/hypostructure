@@ -17,6 +17,7 @@ import Hypostructure.Graph.FanCertificate
 import Hypostructure.Graph.TypeBDirectCycle
 import Hypostructure.Graph.TypeBFanIncidence
 import Hypostructure.Graph.TypeBHybridIncidence
+import Hypostructure.Graph.TypeBFanClosedPorts
 import Hypostructure.Graph.TypeBRefinedSupport
 import Hypostructure.Graph.TypeBEnvelopeCharge
 import Hypostructure.Graph.TypeBPostLedgerCore
@@ -55,6 +56,9 @@ import Hypostructure.Graph.SeparatedPackageSkeleton
 import Hypostructure.Graph.WindowTargetPackage
 import Hypostructure.Graph.NetCharge
 import Hypostructure.Graph.RemainderEntropy
+import Hypostructure.Graph.LabelledRelabeling
+import Hypostructure.Graph.AddedEdgeClosure
+import Hypostructure.Graph.RootedLocalType
 import Hypostructure.Graph.SkeletonBudget
 import Hypostructure.Graph.Strategy.InterfaceReplacement
 import Hypostructure.Graph.ColdCorridor
@@ -602,6 +606,12 @@ inductive Key where
   /-- The registered problem presentation identifies the spine threshold with
   the paper's cubic baseline. -/
   | cubicBaseline
+  /-- `lem:gadget-closure`: the two-terminal closure lemma and its three
+  manuscript specializations, with every piece condition bound internally. -/
+  | gadgetClosure
+  /-- `lem:contraction-critical`: contracting an edge with no common cubic
+  neighbour exposes an exact dyadic return through that edge. -/
+  | contractionCritical
   /-- Nodes `[5]`--`[7]`: the return-length set is disjoint from the shifted
   accepted set at every oriented edge.  This is the return-set form of target
   avoidance, the standing invariant the rest of the spine consumes. -/
@@ -769,6 +779,29 @@ inductive Key where
   /-- Node `[50]`, no arm: `η(R) < (1/d)·log₂ n`, the low-entropy branch
   `prop:two-budget` (b) and (c) share. -/
   | remainderEntropyLow
+  /-- `prop:two-budget` (b): on the low-entropy residual, the radius-two
+  rooted-type coordinate lies below the exact finite relabelling threshold. -/
+  | localTypeCoordinateRepetitive
+  /-- `prop:two-budget` (c): the same literal coordinate is not structurally
+  repetitive.  This arm passes unchanged to the large-budget analysis. -/
+  | localTypeCoordinateNonrepetitive
+  /-- `lem:dominant-type`: the repetitive coordinate has a single rooted
+  radius-two type outside only the registered finite `o(n)` allowance. -/
+  | dominantRootedType
+  /-- The wedge-free subarm after `lem:dominant-type`; the manuscript makes no
+  translate-rank claim and passes this arm to the large-budget analysis. -/
+  | dominantRootedTypeWedgeFree
+  /-- The literal incoming wedge subarm of `lem:translates-independent`: the
+  preceding executor proved the dominant rooted type and the decision found an
+  internal root wedge in that same type. -/
+  | dominantRootedWedgeType
+  /-- Nodes `[51]`--`[52]`, `lem:translates-independent`: a dominant rooted
+  radius-`r` type with an internal root wedge admits a maximal `2r`-separated
+  family of translates.  Its radius-`r` balls are disjoint, the radius-`2r`
+  balls cover the dominant centres, and full obstruction rank gives the exact
+  finite inequality whose asymptotic form is
+  `r_Ω(R) ≥ c_r|R| - o(|R|)`. -/
+  | independentObstructionTranslates
   /-- Node `[52]`: the window package and the remainder accounting, joined.
   `eq:feasibility`'s left-hand side in exact integer form — the joint
   window/remainder/curvature coordinate family realizes at least
@@ -870,6 +903,54 @@ inductive Key where
   vertex set, and completion-incidence classifications of every nonempty
   triangular-port family at a heavy centre. -/
   | triangularFanCore
+  /-- `lem:triangular-shoulder-completion`: the four completion-incidence
+  conclusions for every triangular port at a heavy centre. -/
+  | triangularShoulderCompletion
+  /-- `lem:triangular-port-return`: deleting a triangular port edge leaves a
+  simple return through a shoulder; its restored cycle is forbidden, and the
+  shoulder tail contains a noncentral completion incidence. -/
+  | triangularPortReturn
+  /-- `lem:triangular-first-landing`: every completion incidence in a
+  triangular fan core is uniquely central, cross-triangular, or outside. -/
+  | triangularFirstLanding
+  /-- `lem:triangular-cross-shoulder`: two cross edges between distinct
+  triangular shoulder pairs force a high shoulder; after that branch is
+  routed away, the surviving cross edges have cardinality at most one. -/
+  | triangularCrossShoulder
+  /-- `def:open-port-suppression`: the literal compatible family and its
+  simultaneous delete-and-add graph. -/
+  | openPortSuppression
+  /-- `lem:open-port-suppression-safe`: every vertex surviving a suppressible
+  family of open ports has degree at least three.  Finiteness and simplicity
+  are carried by the canonical `FiniteObject` suppression output itself. -/
+  | openPortSuppressionSafe
+  /-- `lem:single-open-port-suppression-witness`: an open tight port has a
+  simple shoulder-to-shoulder path in the vertex-deleted graph whose restored
+  length is an accepted dyadic cycle length. -/
+  | singleOpenPortSuppressionWitness
+  /-- `lem:suppressed-family-critical-cycle`: a nonempty suppressible family
+  has an accepted suppressed cycle using added chords, and every such cycle
+  expands to a forbidden source-cycle length. -/
+  | suppressedFamilyCriticalCycle
+  /-- `def:typeB-fan-safe`: the five-clause fan-safe relation, with the four
+  non-geometric failures represented by their literal branch predicates. -/
+  | typeBFanSafe
+  /-- `def:fan-closed-port`: the canonical assigned-profile predicate, exposed
+  with all three manuscript clauses. -/
+  | fanClosedPort
+  /-- `lem:compatible-pair-fan-closure`: compatible open ports recorded by one
+  assigned profile are distinct fan-closed ports. -/
+  | compatiblePairFanClosure
+  /-- `prop:fan-closed-port-typeB-routing`: two or more fan-closed ports give
+  the positive local Type-B deficit bound. -/
+  | fanClosedPortTypeBRouting
+  /-- `cor:compatible-pair-typeB-routing`: a recorded compatible open pair
+  gives the positive local Type-B deficit. -/
+  | compatiblePairTypeBRouting
+  /-- `prop:triangular-port-typeB-routing`: a degree-`k` heavy triangular
+  family of exactly `k - 2` assigned ports gives the stronger positive local
+  Type-B deficit bound `(5k - 19) / 4`. -/
+  | triangularPortTypeBRouting
   /-- Node `[88]`: the routing and threshold algebra of a Type A support.
   `lem:typeA-receiver-loads` — every vertex spending the whole baseline inside
   the support is routed by the canonical trace to exactly one receiver — and
@@ -935,6 +1016,9 @@ inductive Key where
   anchored returns of a port, and without this fact "no return of the port has
   property `p`" would be satisfied by a port with no returns at all. -/
   | typeAPortReturn
+  /-- `cor:port-power-return`: every eligible completion port of the selected
+  Type A support carries an anchored return of exact dyadic length. -/
+  | portPowerReturn
   /-- Node `[93]`, yes arm — the entry of the saturated exit chain at node
   `[95]`: some completion port of a saturated receiver of the Type A support
   carries `s` visible receiver-entry returns, in the sense of
@@ -1695,6 +1779,10 @@ inductive Key where
   The witnesses are derived from `LiveHotWindow` on the incoming residual;
   they are not supplied as routing data. -/
   | hotColdPartition
+  /-- Exact finite orbit lower bound for every normalized remainder support. -/
+  | remainderRelabelingEntropy
+  /-- Exact finite invariant-state cap under relabellings fixing packed windows. -/
+  | relabelingDensityCap
   /-- Node `[130]`, blocked/dependent arm: a concrete `Π`, its declared
   response family `ℛ_Π`, and the rank-reducing attempted quotient consumed by
   node `[132]`. -/
@@ -1732,6 +1820,78 @@ noncomputable abbrev remainderCurvatureTargetRank (data : Data.{u})
     (packing : Finset (Finset object.Vertex)) : Nat :=
   object.curvatureTargetRank (Graph.MinimumDegreeAtLeast data.threshold)
     (Graph.HasCycleWithLength data.LengthOK) (object.remainderSupport packing)
+
+/-- The manuscript's boundaried-piece part of the remainder: vertices whose
+ambient degree is at the registered cubic baseline.  Near-cubic surplus bounds
+the omitted high-degree vertices, while this support is exactly the one on
+which the rooted-ball count is subcubic. -/
+noncomputable def remainderSubcubicSupport (data : Data.{u})
+    (object : Graph.FiniteObject.{u})
+    (packing : Finset (Finset object.Vertex)) : Finset object.Vertex := by
+  classical
+  exact (object.remainderSupport packing).filter fun vertex =>
+    object.degree vertex ≤ data.threshold
+
+/-- The exact finite coordinate tested by `prop:two-budget` (b)/(c).  Its code
+is the radius-two rooted type on the literal subcubic remainder support, and
+the registered near-cubic threshold is the finite `o(n)` tolerance. -/
+noncomputable def RemainderTypeCoordinateRepetitive (data : Data.{u})
+    (object : Graph.FiniteObject.{u})
+    (packing : Finset (Finset object.Vertex)) : Prop := by
+  classical
+  let support := remainderSubcubicSupport data object packing
+  exact Graph.RootedLocalType.StructurallyRepetitive
+    (object.rootedLocalTypeCode support 2)
+    (data.surplusThreshold object.vertexCount)
+
+/-- Unfolding bridge for the literal remainder coordinate.  Rows use this
+named equality instead of asking the simplifier to unfold the complete
+strategy vocabulary. -/
+theorem remainderTypeCoordinateRepetitive_iff (data : Data.{u})
+    (object : Graph.FiniteObject.{u})
+    (packing : Finset (Finset object.Vertex)) :
+    RemainderTypeCoordinateRepetitive data object packing ↔
+      (by
+        classical
+        exact Graph.RootedLocalType.StructurallyRepetitive
+          (object.rootedLocalTypeCode
+            (remainderSubcubicSupport data object packing) 2)
+          (data.surplusThreshold object.vertexCount)) := by
+  classical
+  rfl
+
+/-- The common dominant-rooted-type payload.  `RootClause` distinguishes the
+plain conclusion of `lem:dominant-type`, its root-wedge arm, and its wedge-free
+arm without allowing any branch to choose different packing/dominant/root
+witnesses. -/
+noncomputable def DominantRootedTypeStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u})
+    (RootClause : Finset object.Vertex → object.Vertex → Prop) : Prop := by
+  classical
+  exact ∃ packing : Finset (Finset object.Vertex),
+    object.IsWindowPacking data.windowOrder packing ∧
+      packing.card = object.windowPackingNumber data.windowOrder ∧
+      remainderCurvatureTargetRank data object packing =
+        object.internalWedgeCount (object.remainderSupport packing) ∧
+      let support := object.remainderSupport packing
+      let subcubic := remainderSubcubicSupport data object packing
+      ∃ dominant : Finset object.Vertex, ∃ root : object.Vertex,
+        ∃ dominantSubset : dominant ⊆ subcubic,
+          ∃ rootMem : root ∈ dominant,
+            support.card ≤ dominant.card +
+              2 * data.surplusThreshold object.vertexCount ∧
+            (∀ vertex, ∀ vertexMem : vertex ∈ dominant,
+              object.rootedLocalTypeCode subcubic 2
+                ⟨root, dominantSubset rootMem⟩ =
+              object.rootedLocalTypeCode subcubic 2
+                ⟨vertex, dominantSubset vertexMem⟩) ∧
+            RootClause subcubic root
+
+/-- The root of the selected dominant type contains the internal length-two
+wedge tested by `prop:two-budget` (b). -/
+noncomputable def DominantRootWedgeClause (object : Graph.FiniteObject.{u})
+    (subcubic : Finset object.Vertex) (root : object.Vertex) : Prop :=
+  object.RootedInternalWedgeClause subcubic root
 
 /-- **An admissible rank quotient of the remainder**, in the manuscript's own
 sense: `Graph.CurvatureQuotient` is `def:admissible-rank-quotient` at the raw
@@ -3574,15 +3734,14 @@ abbrev handoffWindowFree (data : Data.{u}) (object : Graph.FiniteObject.{u}) :
     ∀ internal : Finset object.Vertex, internal ⊆ support →
       ¬ Graph.MinimumDegreeAtLeast data.threshold (object.induce internal)
 
-/-- The exact case-(ii) witness of `lem:absorbed-germ-fan-data` for one selected
-branch-excess half-edge: a high centre on its first-failure support, its cubic
-neighbourhood, and the two distinct corridor incidences and simple tails at
-that centre.  The tails land in the selected packed-window union, exactly as
-the corridor construction proves.  In particular this proposition does **not**
-misdeclare that union to be the `P₁₃`-free remainder core of a
-`DecoratedHandoff.Envelope`; the manuscript supplies fan data here, not a Type A
-exit-`(7)` core.  The indices remain part of the proposition so later Type B
-decisions classify the same literal corridor datum. -/
+/-- The exact case-(ii) handoff of `lem:absorbed-germ-fan-data` for one selected
+branch-excess half-edge.  Besides retaining the literal first-high corridor
+datum, it carries the manuscript destination: an actual
+`DecoratedHandoff.Envelope` whose counted core is the connected first-failure
+prefix, lies in the canonical remainder, and satisfies the common decorated
+handoff admissibility interface.  The routing and first-high indices retain
+the source coordinates used by the later Type B decisions; the envelope is
+the handoff payload. -/
 noncomputable def AbsorbedGermFanEnvelopeWitness (data : Data.{u})
     (object : Graph.FiniteObject.{u})
     (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
@@ -3591,7 +3750,6 @@ noncomputable def AbsorbedGermFanEnvelopeWitness (data : Data.{u})
     (centre : object.Vertex) : Prop := by
   classical
   letI : FinEnum object.Vertex := object.vertices
-  let windows := coldCorridorWindows data object
   exact ∃ routing : ColdFailureRoutingStatement data object,
     ∃ epsilon : ColdEligibleHalfEdge data object,
     let classified := coldRoutedClassified data object routing
@@ -3606,45 +3764,33 @@ noncomputable def AbsorbedGermFanEnvelopeWitness (data : Data.{u})
           object.degree (corridor.head earlier) ≤ data.threshold) ∧
         (∀ neighbour : object.Vertex, object.graph.Adj centre neighbour →
           object.degree neighbour = data.threshold) ∧
-      ∃ first second : object.Vertex,
-        first ≠ second ∧
-          object.graph.Adj centre first ∧
-          object.graph.Adj centre second ∧
-          ∃ left right : List object.Vertex,
-            left.head? = some first ∧
-            right.head? = some second ∧
-            left.IsChain object.graph.Adj ∧
-            right.IsChain object.graph.Adj ∧
-            left.Nodup ∧
-            right.Nodup ∧
-            (∃ terminal, left.getLast? = some terminal ∧
-              terminal ∈ windows) ∧
-            (∃ terminal, right.getLast? = some terminal ∧
-              terminal ∈ windows) ∧
-            (∀ vertex ∈ left,
-              vertex ∈ windows ∨
-                  vertex = centre →
-                left.getLast? = some vertex) ∧
-            (∀ vertex ∈ right,
-              vertex ∈ windows ∨
-                  vertex = centre →
-                right.getLast? = some vertex) ∧
-            Graph.DecoratedHandoff.FanSafe object data.LengthOK
-              (handoffAbsorbing data object
-                (canonicalWindowPacking data object)) centre first second ∧
-            Graph.DecoratedHandoff.FanSafe object data.LengthOK
-              (handoffAbsorbing data object
-                (canonicalWindowPacking data object)) centre second first
+      let core := corridor.prefixSupport traceEnd
+      Graph.SupportComponents.Connected.ConnectedOn object core ∧
+        core ⊆ object.remainderSupport
+          (canonicalWindowPacking data object) ∧
+        ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
+            (handoffHighDegree data object)
+            (handoffAbsorbing data object
+              (canonicalWindowPacking data object)),
+          envelope.core = core ∧
+            envelope.decorations = {centre} ∧
+            Graph.DecoratedHandoff.Admissible object data.LengthOK
+              (handoffUncompressible data object)
+              (handoffWindowFree data object) envelope ∧
+            ∃ first second : object.Vertex,
+              first ≠ second ∧
+                first ∈ envelope.assigned centre ∧
+                second ∈ envelope.assigned centre
 
 /-- Node `[177]`, `lem:absorbed-germ-fan-data` (ii), the decorated handoff fan
-data at the heavy centre.  For every selected branch-excess half-edge `ε` of an
-ambient-cubic cold window, choose the heavy vertex `z` supplied by case (ii) of
-the first-failure split.  Every neighbour of `z` is cubic, and the two distinct
-corridor incidences at `z`, together with the corridor tails on their two sides,
-form the geometric decorated handoff fan data used by the Type B calculation.
-This is the indexed case-(ii) datum; it does not invent a Type A core, a
-canonical negative remainder support, or a zero-surplus hypothesis. -/
-noncomputable def AbsorbedGermFanEnvelopeStatement (data : Data.{u})
+support at the first high centre.  For every selected branch-excess half-edge
+`ε` outside the subcubic candidate set, the retained first-failure prefix is a
+connected subset of the canonical remainder and supplies the counted core.
+The retained high vertex is its decoration; its actual neighbours are the
+assigned first-neighbour set, with simple arms landing in that core and the
+common fan-safe and admissibility conditions.  Thus every indexed datum has
+the concrete decorated-envelope payload consumed at the Type B entry. -/
+noncomputable def AbsorbedGermDecoratedAssignedSupportStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
   letI : FinEnum object.Vertex := object.vertices
@@ -3767,17 +3913,18 @@ def SameTokenTypeBHandoffStatement (data : Data.{u})
         SameTokenTypeBHandoffEnvelopeStatement data object
 
 /-- **Node `[65]`, the common Type B entry.**  The manuscript has three literal
-input forms at this node.  The ordinary `[64]` lane and the Type A exit-`(7)`
-lane carry a canonical assigned support.  Node `[177]` carries indexed
-decorated fan data for selected cold half-edges.  Node `[144]` carries its own
-maximal packing and decorated same-token handoff envelope.  Keeping all three
-alternatives in the semantic value of the one common key makes both handoffs
-direct ledger edges rather than conversion interfaces. -/
+input forms at this node.  The ordinary `[64]` lane carries a canonical
+assigned support.  Node `[177]` carries indexed assigned supports containing
+an actual connected remainder core, decorated envelope, and admissibility
+proof.  Node `[144]` carries its own maximal packing and decorated same-token
+handoff envelope.  All alternatives therefore expose the concrete Type B data
+used by their common continuation; no corridor-tail-only proposition is an
+entry contract. -/
 def TypeBFanEntryStatement (data : Data.{u}) (object : Graph.FiniteObject.{u}) : Prop :=
   TypeBFanSupportWith data object (fun _packing _piece centres =>
     centres.Nonempty ∧
       ∀ centre ∈ centres, Graph.IsHighCentre object data.threshold centre) ∨
-  AbsorbedGermFanEnvelopeStatement data object ∨
+  AbsorbedGermDecoratedAssignedSupportStatement data object ∨
   SameTokenTypeBHandoffEnvelopeStatement data object
 
 /-- Node `[68]`, yes arm, for the indexed `[177]` input.  The complete family
@@ -3787,7 +3934,7 @@ baseline rather than with an EG-specific numeral. -/
 noncomputable def AbsorbedGermFanHeavyCentreStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
-  exact AbsorbedGermFanEnvelopeStatement data object ∧
+  exact AbsorbedGermDecoratedAssignedSupportStatement data object ∧
     ∃ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
           (Graph.MinimumDegreeAtLeast data.threshold)
           (Graph.HasCycleWithLength data.LengthOK) object)
@@ -3801,7 +3948,7 @@ at the unique high-but-not-heavy degree, namely `threshold + 1`. -/
 noncomputable def AbsorbedGermFanDegreeFourCentresStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
-  exact AbsorbedGermFanEnvelopeStatement data object ∧
+  exact AbsorbedGermDecoratedAssignedSupportStatement data object ∧
     ∀ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
           (Graph.MinimumDegreeAtLeast data.threshold)
           (Graph.HasCycleWithLength data.LengthOK) object)
@@ -3855,7 +4002,7 @@ alternative as on an ordinary Type B support. -/
 noncomputable def AbsorbedGermFanLocalDichotomyStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
-  exact AbsorbedGermFanEnvelopeStatement data object ∧
+  exact AbsorbedGermDecoratedAssignedSupportStatement data object ∧
     ∃ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
           (Graph.MinimumDegreeAtLeast data.threshold)
           (Graph.HasCycleWithLength data.LengthOK) object)
@@ -3875,7 +4022,7 @@ No canonical remainder piece is inserted into this statement. -/
 noncomputable def AbsorbedGermFanDegreeFourProfileStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
-  exact AbsorbedGermFanEnvelopeStatement data object ∧
+  exact AbsorbedGermDecoratedAssignedSupportStatement data object ∧
     ∀ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
           (Graph.MinimumDegreeAtLeast data.threshold)
           (Graph.HasCycleWithLength data.LengthOK) object)
@@ -4037,7 +4184,395 @@ def TriangularFanCoreStatement (data : Data.{u})
                   ∀ endpoint shoulder target : object.Vertex,
                     outside endpoint shoulder target ↔
                       completion endpoint shoulder target ∧ target ∉ core ∧
-                        ¬ object.graph.Adj centre target
+                    ¬ object.graph.Adj centre target
+
+/-- `lem:triangular-shoulder-completion`, stated directly on the active graph.
+`completion` is the paper's incidence predicate: an edge at a shoulder other
+than the two edges inside its triangular port. -/
+def TriangularShoulderCompletionStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∀ centre : object.Vertex,
+    data.threshold + 1 < object.degree centre →
+      ∀ endpoint ∈ Graph.triangularEndpoints object centre,
+        ∃ left right : object.Vertex,
+          Graph.IsShoulder object centre endpoint left ∧
+          Graph.IsShoulder object centre endpoint right ∧ left ≠ right ∧
+          object.graph.Adj left right ∧
+          (∀ shoulder, shoulder = left ∨ shoulder = right →
+            ∃ target : object.Vertex,
+              object.graph.Adj shoulder target ∧ target ≠ endpoint ∧
+                target ≠ left ∧ target ≠ right) ∧
+          ¬ (object.graph.Adj centre left ∧ object.graph.Adj centre right) ∧
+          (∀ shoulder, shoulder = left ∨ shoulder = right →
+            object.graph.Adj centre shoulder →
+              object.degree shoulder = data.threshold ∧
+              ∀ target : object.Vertex,
+                (object.graph.Adj shoulder target ∧ target ≠ endpoint ∧
+                  target ≠ left ∧ target ≠ right) ↔ target = centre) ∧
+          ∀ shoulder target,
+            shoulder = left ∨ shoulder = right →
+            object.graph.Adj shoulder target → target ≠ endpoint →
+              target ≠ left → target ≠ right →
+                object.graph.Adj centre target → target = centre
+
+/-- `lem:triangular-port-return`, with `R_p` the endpoint-to-centre return and
+`Q_p = R_p.tail`.  Thus the restored cycle has length `|Q_p| + 2 = |R_p| + 1`.
+The final conjunct is precisely the noncentral shoulder-completion incidence
+used by the next first-landing lemma. -/
+def TriangularPortReturnStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∀ centre : object.Vertex,
+    data.threshold + 1 < object.degree centre →
+      ∀ endpoint ∈ Graph.triangularEndpoints object centre,
+        ∃ left right : object.Vertex,
+          Graph.IsShoulder object centre endpoint left ∧
+          Graph.IsShoulder object centre endpoint right ∧ left ≠ right ∧
+          ∃ return' : Graph.FiniteObject.SurplusPort.PortReturn
+              object centre endpoint left right,
+            endpoint ∉ return'.path.tail.support ∧
+            ¬ data.LengthOK (return'.path.length + 1) ∧
+            (return'.path.tail.length ≠ 1 →
+              ∃ shoulder target : object.Vertex,
+                (shoulder = left ∨ shoulder = right) ∧
+                object.graph.Adj shoulder target ∧ target ≠ endpoint ∧
+                target ≠ left ∧ target ≠ right ∧ target ≠ centre ∧
+                s(shoulder, target) ∈ return'.path.tail.edges)
+
+/-- `lem:triangular-first-landing`, stated for the literal predicates supplied
+by `def:triangular-fan-core`.  The three displayed arms include their mutual
+exclusions, so “exactly one” is part of the proposition rather than prose. -/
+def TriangularFirstLandingStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∀ centre : object.Vertex,
+    data.threshold + 1 < object.degree centre →
+      ∀ ports : Finset object.Vertex,
+        ports.Nonempty →
+          ports ⊆ Graph.triangularEndpoints object centre →
+            ∀ shoulders : object.Vertex → Finset object.Vertex,
+              ∀ core : Finset object.Vertex,
+                ∀ completion central crossTriangular outside :
+                    object.Vertex → object.Vertex → object.Vertex → Prop,
+                  (∀ endpoint ∈ ports,
+                    (∀ vertex : object.Vertex,
+                      vertex ∈ shoulders endpoint ↔
+                        Graph.IsShoulder object centre endpoint vertex) ∧
+                    (shoulders endpoint).card = 2 ∧
+                    ∃ left right : object.Vertex,
+                      left ∈ shoulders endpoint ∧
+                        right ∈ shoulders endpoint ∧ left ≠ right ∧
+                          object.graph.Adj left right) →
+                  (∀ vertex : object.Vertex,
+                    vertex ∈ core ↔
+                      vertex = centre ∨ vertex ∈ ports ∨
+                        ∃ endpoint ∈ ports, vertex ∈ shoulders endpoint) →
+                  (∀ endpoint shoulder target : object.Vertex,
+                    completion endpoint shoulder target ↔
+                      endpoint ∈ ports ∧ shoulder ∈ shoulders endpoint ∧
+                        object.graph.Adj shoulder target ∧ target ≠ endpoint ∧
+                          target ∉ shoulders endpoint) →
+                  (∀ endpoint shoulder target : object.Vertex,
+                    central endpoint shoulder target ↔
+                      completion endpoint shoulder target ∧ target = centre) →
+                  (∀ endpoint shoulder target : object.Vertex,
+                    crossTriangular endpoint shoulder target ↔
+                      completion endpoint shoulder target ∧
+                        ∃ other ∈ ports,
+                          other ≠ endpoint ∧ target ∈ shoulders other) →
+                  (∀ endpoint shoulder target : object.Vertex,
+                    outside endpoint shoulder target ↔
+                      completion endpoint shoulder target ∧ target ∉ core ∧
+                        ¬ object.graph.Adj centre target) →
+                  ∀ endpoint shoulder target : object.Vertex,
+                    completion endpoint shoulder target →
+                      ((central endpoint shoulder target ∧
+                          ¬ crossTriangular endpoint shoulder target ∧
+                          ¬ outside endpoint shoulder target) ∨
+                        (crossTriangular endpoint shoulder target ∧
+                          ¬ central endpoint shoulder target ∧
+                          ¬ outside endpoint shoulder target) ∨
+                        (outside endpoint shoulder target ∧
+                          ¬ central endpoint shoulder target ∧
+                          ¬ crossTriangular endpoint shoulder target)) ∧
+                      (object.graph.Adj centre target → target = centre) ∧
+                      target ∉ ports
+
+/-- `lem:triangular-cross-shoulder` on the target-safe selected object.
+An edge between two distinct shoulder pairs is represented by the literal
+cross-incidence predicate in both orientations.  The first conclusion is the
+paper's high-shoulder arm after its quadrilateral arm is discharged by target
+safety; the second is the stated matching-size consequence on the residual
+where every shoulder has degree below four. -/
+def TriangularCrossShoulderStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∀ centre : object.Vertex,
+    data.threshold + 1 < object.degree centre →
+      ∀ ports : Finset object.Vertex,
+        ports.Nonempty →
+          ports ⊆ Graph.triangularEndpoints object centre →
+            ∀ shoulders : object.Vertex → Finset object.Vertex,
+              ∀ crossTriangular :
+                  object.Vertex → object.Vertex → object.Vertex → Prop,
+                (∀ endpoint ∈ ports,
+                  (∀ vertex : object.Vertex,
+                    vertex ∈ shoulders endpoint ↔
+                      Graph.IsShoulder object centre endpoint vertex) ∧
+                  (shoulders endpoint).card = 2 ∧
+                  ∃ left right : object.Vertex,
+                    left ∈ shoulders endpoint ∧
+                      right ∈ shoulders endpoint ∧ left ≠ right ∧
+                        object.graph.Adj left right) →
+                (∀ endpoint shoulder target : object.Vertex,
+                  crossTriangular endpoint shoulder target ↔
+                    endpoint ∈ ports ∧ shoulder ∈ shoulders endpoint ∧
+                      object.graph.Adj shoulder target ∧ target ≠ endpoint ∧
+                        target ∉ shoulders endpoint ∧
+                        ∃ other ∈ ports,
+                          other ≠ endpoint ∧ target ∈ shoulders other) →
+                ∀ first ∈ ports, ∀ second ∈ ports, first ≠ second →
+                  let between := fun source target =>
+                    crossTriangular first source target ∧
+                      crossTriangular second target source
+                  (∀ source target source' target',
+                    between source target → between source' target' →
+                      (source ≠ source' ∨ target ≠ target') →
+                        ∃ shoulder,
+                          (shoulder ∈ shoulders first ∨
+                            shoulder ∈ shoulders second) ∧
+                          4 ≤ object.degree shoulder) ∧
+                  ((∀ shoulder,
+                      (shoulder ∈ shoulders first ∨
+                        shoulder ∈ shoulders second) →
+                      object.degree shoulder < 4) →
+                    ∀ source target source' target',
+                      between source target → between source' target' →
+                        source = source' ∧ target = target')
+
+/-- `def:open-port-suppression`, identified with the generic simultaneous
+tight-vertex suppression construction.  `CompatibleFamily` contains clauses
+(a)--(c), `CenterCapacity` is clause (d), and `suppressed_adj` is the displayed
+definition of `G / Q`. -/
+noncomputable def OpenPortSuppressionStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop := by
+  classical
+  exact ∀ family : Graph.TightVertexSuppression.CompatibleFamily object,
+    (∀ index,
+      data.threshold <
+        object.degree (family.configuration index).center) →
+      (∀ index other,
+        object.graph.Adj (family.configuration index).vertex other ↔
+          other = (family.configuration index).center ∨
+            other = (family.configuration index).left ∨
+              other = (family.configuration index).right) ∧
+      (∀ ⦃first second⦄, first ≠ second →
+        Disjoint
+          ({(family.configuration first).vertex,
+            (family.configuration first).left,
+            (family.configuration first).right} : Set object.Vertex)
+          {(family.configuration second).vertex,
+            (family.configuration second).left,
+            (family.configuration second).right}) ∧
+      (∀ first second,
+        (family.configuration first).center ≠
+            (family.configuration second).vertex ∧
+          (family.configuration first).center ≠
+            (family.configuration second).left ∧
+          (family.configuration first).center ≠
+            (family.configuration second).right) ∧
+      Function.Injective (fun index =>
+        s((family.configuration index).left,
+          (family.configuration index).right)) ∧
+      (∀ index,
+        ¬ object.graph.Adj (family.configuration index).left
+          (family.configuration index).right) ∧
+      (family.CenterCapacity data.threshold ↔
+        ∀ centre, data.threshold < object.degree centre →
+          family.centerLoad centre ≤ object.degree centre - data.threshold) ∧
+      family.deletedVertices = Finset.univ.image
+        (fun index => (family.configuration index).vertex) ∧
+      ∀ left right : family.suppressed.Vertex,
+        family.suppressed.graph.Adj left right ↔
+          object.graph.Adj left.1 right.1 ∨
+            ∃ index,
+              (left.1 = (family.configuration index).left ∧
+                right.1 = (family.configuration index).right) ∨
+              (left.1 = (family.configuration index).right ∧
+                right.1 = (family.configuration index).left)
+
+/-- `lem:open-port-suppression-safe`.  The capacity hypothesis is written in
+the paper's clause-(d) form; the preceding definition fact identifies it with
+the canonical simultaneous-suppression `CenterCapacity`.  The suppressed
+graph is already a `FiniteObject`, so its finiteness and simplicity are
+present in the type and the mathematical conclusion left to prove is the
+paper's pointwise minimum-degree assertion. -/
+noncomputable def OpenPortSuppressionSafeStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop := by
+  classical
+  exact ∀ family : Graph.TightVertexSuppression.CompatibleFamily object,
+    (∀ index,
+      data.threshold <
+        object.degree (family.configuration index).center) →
+    (∀ centre, data.threshold < object.degree centre →
+      family.centerLoad centre ≤ object.degree centre - data.threshold) →
+    ∀ vertex : family.suppressed.Vertex,
+      3 ≤ family.suppressed.degree vertex
+
+/-- `lem:single-open-port-suppression-witness`.  `OpenPortWitness` states that
+the path is simple, avoids the deleted port vertex, and has accepted restored
+length.  Via `lengthOK_iff_powerOfTwo`, this is exactly a path of length
+`2^j - 1` for some `j ≥ 2`. -/
+noncomputable def SingleOpenPortSuppressionWitnessStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop := by
+  classical
+  exact ∀ configuration : Graph.TightVertexSuppression.Configuration object,
+    data.threshold < object.degree configuration.center →
+      Nonempty (Graph.FiniteObject.SurplusPort.OpenPortWitness object
+        data.LengthOK configuration.vertex configuration.left
+          configuration.right)
+
+/-- `lem:suppressed-family-critical-cycle`.  The first conjunct is the
+minimality-produced accepted cycle using a nonempty set of added chords.  The
+second is the paper's conclusion for every accepted suppressed cycle: its
+simultaneous expansion is a simple source cycle, has one extra edge per used
+chord, and its lifted length is not accepted. -/
+noncomputable def SuppressedFamilyCriticalCycleStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop := by
+  classical
+  exact ∀ family : Graph.TightVertexSuppression.CompatibleFamily object,
+    Nonempty family.Index →
+    (∀ index,
+      data.threshold <
+        object.degree (family.configuration index).center) →
+    (∀ centre, data.threshold < object.degree centre →
+      family.centerLoad centre ≤ object.degree centre - data.threshold) →
+    (∃ certificate : Graph.CycleCertificate family.suppressed data.LengthOK,
+      (family.usedChords certificate.walk).Nonempty) ∧
+    ∀ certificate : Graph.CycleCertificate family.suppressed data.LengthOK,
+      (family.usedChords certificate.walk).Nonempty ∧
+        ∃ expanded : Graph.TightVertexSuppression.CompatibleFamily.ExpandedCycle
+            family certificate,
+          expanded.walk.length = certificate.walk.length +
+              (family.usedChords certificate.walk).card ∧
+            ¬ data.LengthOK expanded.walk.length
+
+/-- `def:typeB-fan-safe`, without collapsing clauses (ii)--(v).  For any
+literal predicates expressing the label, target-defect, target-compression,
+and delocalization failures, the canonical fan-safe relation is the geometric
+return prohibition together with the denial of each of those four failures. -/
+def TypeBFanSafeStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∀ (labelFailure targetDefect targetCompression delocalization :
+      object.Vertex → object.Vertex → object.Vertex → Prop)
+    (centre first second : object.Vertex),
+    Graph.DecoratedHandoff.FanSafe object data.LengthOK
+        (fun h u v => labelFailure h u v ∨ targetDefect h u v ∨
+          targetCompression h u v ∨ delocalization h u v)
+        centre first second ↔
+      (∀ return' : Graph.DecoratedHandoff.FanReturn object centre first second,
+        ¬ data.LengthOK (return'.walk.length + 2)) ∧
+      ¬ labelFailure centre first second ∧
+      ¬ targetDefect centre first second ∧
+      ¬ targetCompression centre first second ∧
+      ¬ delocalization centre first second
+
+/-- `def:fan-closed-port`, using the canonical upstream assigned Type-B
+profile.  The equivalence exposes clauses (a)--(c) of the manuscript; clause
+(c) is the derived incidence classification proved by
+`TypeBFanClosedPorts.IsFanClosed.incidence_classified`. -/
+def FanClosedPortStatement (_data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∀ (profile : Graph.TypeBFanClosedPorts.Profile object)
+      (endpoint : object.Vertex),
+    profile.IsFanClosed endpoint ↔
+      endpoint ∈ profile.remainder ∧
+      (∀ shoulder,
+        Graph.IsShoulder object profile.marked.fan.hub endpoint shoulder →
+          shoulder ∈ profile.envelope) ∧
+      (∀ shoulder,
+        Graph.IsShoulder object profile.marked.fan.hub endpoint shoulder →
+          profile.IsWindowIncidence endpoint shoulder ∨
+            profile.IsNonWindowIncidence endpoint shoulder)
+
+/-- `lem:compatible-pair-fan-closure`, in the exact canonical upstream form. -/
+def CompatiblePairFanClosureStatement (_data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∀ (profile : Graph.TypeBFanClosedPorts.Profile object)
+      (left right : object.Vertex),
+    Graph.FanCompatible object profile.marked.fan.hub left right →
+    left ∈ profile.remainder →
+    right ∈ profile.remainder →
+    (∀ shoulder,
+      Graph.IsShoulder object profile.marked.fan.hub left shoulder →
+        shoulder ∈ profile.envelope) →
+    (∀ shoulder,
+      Graph.IsShoulder object profile.marked.fan.hub right shoulder →
+        shoulder ∈ profile.envelope) →
+    profile.IsFanClosed left ∧ profile.IsFanClosed right ∧ left ≠ right
+
+/-- `prop:fan-closed-port-typeB-routing`, in the canonical upstream form. -/
+def FanClosedPortTypeBRoutingStatement (_data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∀ (profile : Graph.TypeBFanClosedPorts.Profile object)
+      (ledger : Graph.ReceiverLoad.LoadCapacityProfile)
+      (normal : Graph.NormalForm object 3 profile.marked.fan.hub),
+    ledger.loadMultiplier = 4 →
+    ∀ ports : Finset object.Vertex,
+      (∀ vertex ∈ ports, profile.IsFanClosed vertex) →
+      2 ≤ ports.card →
+      ports.card ≤ profile.closedCount ∧
+        (ports.card : ℚ) -
+            (3 - ((object.degree profile.marked.fan.hub : ℚ) + 1) *
+              (1 / (ledger.loadMultiplier : ℚ)))
+          ≤ profile.closedNeighbourDeficit ledger ∧
+        ((object.degree profile.marked.fan.hub : ℚ) + 1) *
+            (1 / (ledger.loadMultiplier : ℚ)) - 1
+          ≤ profile.closedNeighbourDeficit ledger ∧
+        0 < profile.closedNeighbourDeficit ledger
+
+/-- `cor:compatible-pair-typeB-routing`, in the canonical upstream form. -/
+def CompatiblePairTypeBRoutingStatement (_data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∀ (profile : Graph.TypeBFanClosedPorts.Profile object)
+      (ledger : Graph.ReceiverLoad.LoadCapacityProfile)
+      (normal : Graph.NormalForm object 3 profile.marked.fan.hub),
+    ledger.loadMultiplier = 4 →
+    ∀ left right : object.Vertex,
+      Graph.FanCompatible object profile.marked.fan.hub left right →
+      left ∈ profile.remainder →
+      right ∈ profile.remainder →
+      (∀ shoulder,
+        Graph.IsShoulder object profile.marked.fan.hub left shoulder →
+          shoulder ∈ profile.envelope) →
+      (∀ shoulder,
+        Graph.IsShoulder object profile.marked.fan.hub right shoulder →
+          shoulder ∈ profile.envelope) →
+      2 ≤ profile.closedCount ∧
+        ((object.degree profile.marked.fan.hub : ℚ) + 1) *
+            (1 / (ledger.loadMultiplier : ℚ)) - 1
+          ≤ profile.closedNeighbourDeficit ledger ∧
+      0 < profile.closedNeighbourDeficit ledger
+
+/-- `prop:triangular-port-typeB-routing`, in the canonical upstream form.
+The family has the manuscript's exact size `k - 2`; every endpoint is recorded
+on the remainder side and both of its triangular shoulder incidences are
+assigned to the fan envelope. -/
+def TriangularPortTypeBRoutingStatement (_data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∀ (profile : Graph.TypeBFanClosedPorts.Profile object)
+      (ledger : Graph.ReceiverLoad.LoadCapacityProfile)
+      (normal : Graph.NormalForm object 3 profile.marked.fan.hub),
+    ledger.loadMultiplier = 4 →
+    ∀ ports : Finset object.Vertex,
+      ports ⊆ Graph.triangularEndpoints object profile.marked.fan.hub →
+      ports.card = object.degree profile.marked.fan.hub - 2 →
+      5 ≤ object.degree profile.marked.fan.hub →
+      (∀ endpoint ∈ ports, endpoint ∈ profile.remainder) →
+      (∀ endpoint ∈ ports, ∀ shoulder,
+        Graph.IsShoulder object profile.marked.fan.hub endpoint shoulder →
+          shoulder ∈ profile.envelope) →
+      ports.card ≤ profile.closedCount ∧
+        (5 * (object.degree profile.marked.fan.hub : ℚ) - 19) / 4 ≤
+          profile.closedNeighbourDeficit ledger ∧
+        0 < profile.closedNeighbourDeficit ledger
 
 /-- Node `[70]` on the indexed `[177]` lane.  The fan-certificate cap is
 pointwise and therefore applies directly to every actual decorated centre;
@@ -4046,7 +4581,7 @@ manufactured. -/
 noncomputable def AbsorbedGermFanCertificateCapStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
-  exact AbsorbedGermFanEnvelopeStatement data object ∧
+  exact AbsorbedGermDecoratedAssignedSupportStatement data object ∧
     ∀ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
           (Graph.MinimumDegreeAtLeast data.threshold)
           (Graph.HasCycleWithLength data.LengthOK) object)
@@ -4087,7 +4622,7 @@ the cap already proved at `[70]`. -/
 noncomputable def AbsorbedGermFanCertificateMarkedStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
-  exact AbsorbedGermFanEnvelopeStatement data object ∧
+  exact AbsorbedGermDecoratedAssignedSupportStatement data object ∧
     ∀ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
           (Graph.MinimumDegreeAtLeast data.threshold)
           (Graph.HasCycleWithLength data.LengthOK) object)
@@ -4102,7 +4637,7 @@ centres has no fan-certificate labelling. -/
 noncomputable def AbsorbedGermFanCertificateResidualStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
-  exact AbsorbedGermFanEnvelopeStatement data object ∧
+  exact AbsorbedGermDecoratedAssignedSupportStatement data object ∧
     ∃ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
           (Graph.MinimumDegreeAtLeast data.threshold)
           (Graph.HasCycleWithLength data.LengthOK) object)
@@ -4463,7 +4998,7 @@ noncomputable def AbsorbedGermFanB2ObstructionMassStatement (data : Data.{u})
 noncomputable def AbsorbedGermFanCertificateResidualMassStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
-  exact AbsorbedGermFanEnvelopeStatement data object ∧
+  exact AbsorbedGermDecoratedAssignedSupportStatement data object ∧
     ∃ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
           (Graph.MinimumDegreeAtLeast data.threshold)
           (Graph.HasCycleWithLength data.LengthOK) object)
@@ -7197,6 +7732,57 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       (¬ Graph.HasCycleWithLength data.LengthOK object ∧
         SelectionMinimality BranchState Presentation presentation data object)
   | .cubicBaseline, _object => data.threshold = 3
+  | .gadgetClosure, object =>
+      let avoids (piece : Graph.FiniteObject.{u}) :=
+        ¬ Graph.HasCycleWithLength data.LengthOK piece
+      let cubicPiece (piece : Graph.FiniteObject.{u}) (x y : piece.Vertex) :=
+        x ≠ y ∧ piece.degree x = 2 ∧ piece.degree y = 2 ∧
+          ∀ vertex, vertex ≠ x → vertex ≠ y → piece.degree vertex = 3
+      (∀ (left right : Graph.FiniteObject.{u})
+          (a b : left.Vertex) (c d : right.Vertex),
+        cubicPiece left a b → cubicPiece right c d →
+        avoids left → avoids right →
+        left.vertexCount + right.vertexCount < object.vertexCount →
+        3 ≤ (Graph.TwoTerminalClosure.close left right a b c d).minDegree →
+        ∃ leftPath : left.graph.Walk a b, ∃ rightPath : right.graph.Walk c d,
+          leftPath.IsPath ∧ rightPath.IsPath ∧
+          Core.DyadicLength.PowerOfTwoLength
+            (leftPath.length + rightPath.length + 2)) ∧
+      (∀ (piece : Graph.FiniteObject.{u}) (a b : piece.Vertex),
+        piece.vertexCount < object.vertexCount → cubicPiece piece a b →
+        avoids piece → 3 ≤ (piece.addEdge a b).minDegree →
+        ∃ path : piece.graph.Walk a b, ∃ exponent : Nat,
+          path.IsPath ∧ 1 ≤ exponent ∧ path.length = 2 ^ exponent - 1) ∧
+      (∀ (piece : Graph.FiniteObject.{u}) (a b : piece.Vertex),
+        2 * piece.vertexCount < object.vertexCount → cubicPiece piece a b →
+        avoids piece →
+        3 ≤ (Graph.TwoTerminalClosure.close piece piece a b a b).minDegree →
+        ∃ first second : piece.graph.Walk a b, ∃ exponent : Nat,
+          first.IsPath ∧ second.IsPath ∧
+            first.length + second.length = 2 ^ exponent - 2) ∧
+      (∀ (support complementSupport : Finset object.Vertex),
+        let piece := object.induce support
+        let complement := object.induce complementSupport
+        ∀ (t1 t2 : piece.Vertex) (u1 u2 : complement.Vertex),
+          (∀ vertex, vertex ∈ complementSupport ↔ vertex ∉ support) →
+          cubicPiece piece t1 t2 → avoids piece → avoids complement →
+          u1 ≠ u2 → ¬ complement.graph.Adj u1 u2 →
+          (∀ z : piece.Vertex, ∀ u : complement.Vertex,
+            object.graph.Adj z.1 u.1 ↔
+              (z = t1 ∧ u = u1) ∨ (z = t2 ∧ u = u2)) →
+          (complement.addEdge u1 u2).LexicographicallySmaller object →
+          3 ≤ (complement.addEdge u1 u2).minDegree →
+          ∃ path : complement.graph.Walk u1 u2, ∃ exponent : Nat,
+            path.IsPath ∧ 1 ≤ exponent ∧ path.length = 2 ^ exponent - 1)
+  | .contractionCritical, object =>
+      ∀ contraction : Graph.EdgeContraction object,
+        (∀ common : object.Vertex,
+          object.graph.Adj contraction.tail common →
+          object.graph.Adj contraction.head common →
+          object.degree common ≠ data.threshold) →
+        ∃ path : contraction.severed.Path contraction.tail contraction.head,
+          ∃ exponent : Nat,
+            2 ≤ exponent ∧ path.1.length = 2 ^ exponent
   | .returnAvoidance, object =>
       (∀ dart : object.graph.Dart,
         Disjoint (Graph.returnLengthSet object dart)
@@ -8218,6 +8804,46 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
               data.threshold)
             (object.internalEdgeCount (object.remainderSupport packing))
             (object.remainderSupport packing).card)
+  | .localTypeCoordinateRepetitive, object =>
+      -- The literal maximum-packing coordinate selected from the full-rank
+      -- residual lies below the finite relabelling threshold.
+      ∃ packing : Finset (Finset object.Vertex),
+        object.IsWindowPacking data.windowOrder packing ∧
+          packing.card = object.windowPackingNumber data.windowOrder ∧
+          remainderCurvatureTargetRank data object packing =
+            remainderWedgeSupply object packing ∧
+          RemainderTypeCoordinateRepetitive data object packing
+  | .localTypeCoordinateNonrepetitive, object =>
+      -- Exact complementary arm of the same coordinate decision.
+      ∃ packing : Finset (Finset object.Vertex),
+        object.IsWindowPacking data.windowOrder packing ∧
+          packing.card = object.windowPackingNumber data.windowOrder ∧
+          remainderCurvatureTargetRank data object packing =
+            remainderWedgeSupply object packing ∧
+          ¬ RemainderTypeCoordinateRepetitive data object packing
+  | .dominantRootedType, object =>
+      DominantRootedTypeStatement data object fun _subcubic _root => True
+  | .dominantRootedTypeWedgeFree, object =>
+      DominantRootedTypeStatement data object fun subcubic root =>
+        ¬ DominantRootWedgeClause object subcubic root
+  | .dominantRootedWedgeType, object =>
+      DominantRootedTypeStatement data object
+        (DominantRootWedgeClause object)
+  | .independentObstructionTranslates, object =>
+      -- `lem:translates-independent`, in the unconditional finite form stored
+      -- on the node `[51]` output ledger.  The registered surplus threshold is
+      -- the branch's explicit `o(|R|)` allowance, and the multiplier is the
+      -- presentation-parametric form of the manuscript's
+      -- `1 + 3(2^(2r)-1)` (the presentation proves `threshold = 3`).
+      ∃ packing : Finset (Finset object.Vertex),
+        object.IsWindowPacking data.windowOrder packing ∧
+          packing.card = object.windowPackingNumber data.windowOrder ∧
+          ∃ radius : Nat, 2 ≤ radius ∧
+            (object.remainderSupport packing).card ≤
+              (1 + data.threshold *
+                  ((data.threshold - 1) ^ (2 * radius) - 1)) *
+                remainderCurvatureTargetRank data object packing +
+                  2 * data.surplusThreshold object.vertexCount
   | .entropyPackageDemand, object =>
       -- Node `[52]`: `eq:feasibility`'s left-hand side.  Raising the joint
       -- demand to the `d`-th power clears the `1/d` the entropy split carries,
@@ -8439,6 +9065,34 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
   | .triangularFanCore, object =>
       -- Node `[79]`, `def:triangular-fan-core`, on the active object.
       TriangularFanCoreStatement data object
+  | .triangularShoulderCompletion, object =>
+      TriangularShoulderCompletionStatement data object
+  | .triangularPortReturn, object =>
+      TriangularPortReturnStatement data object
+  | .triangularFirstLanding, object =>
+      TriangularFirstLandingStatement data object
+  | .triangularCrossShoulder, object =>
+      TriangularCrossShoulderStatement data object
+  | .openPortSuppression, object =>
+      OpenPortSuppressionStatement data object
+  | .openPortSuppressionSafe, object =>
+      OpenPortSuppressionSafeStatement data object
+  | .singleOpenPortSuppressionWitness, object =>
+      SingleOpenPortSuppressionWitnessStatement data object
+  | .suppressedFamilyCriticalCycle, object =>
+      SuppressedFamilyCriticalCycleStatement data object
+  | .typeBFanSafe, object =>
+      TypeBFanSafeStatement data object
+  | .fanClosedPort, object =>
+      FanClosedPortStatement data object
+  | .compatiblePairFanClosure, object =>
+      CompatiblePairFanClosureStatement data object
+  | .fanClosedPortTypeBRouting, object =>
+      FanClosedPortTypeBRoutingStatement data object
+  | .compatiblePairTypeBRouting, object =>
+      CompatiblePairTypeBRoutingStatement data object
+  | .triangularPortTypeBRouting, object =>
+      TriangularPortTypeBRoutingStatement data object
   | .typeAReceiverRouting, object =>
       -- Node `[88]`.  Stated at every Type A support the object carries, in
       -- the same way node `[27]` is stated at every subregion of a remainder:
@@ -8755,6 +9409,34 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                     receiver,
                   Nonempty
                     (Graph.VisibleEntry.AnchoredReturn object receiver outside))
+  | .portPowerReturn, object =>
+      (∃ packing : Finset (Finset object.Vertex),
+        object.IsWindowPacking data.windowOrder packing ∧
+          (∀ window : Finset object.Vertex,
+            object.InducesWindow data.windowOrder window →
+            ∃ member ∈ packing, ¬ Disjoint window member) ∧
+          ∃ component ∈ object.canonicalPieces
+              (object.remainderSupport packing),
+            let piece := object.pieceSupport
+              (object.remainderSupport packing) component
+            object.NegativeNetCharge piece data.threshold
+                data.dischargeScale ∧
+              object.ambientSurplus piece data.threshold = 0 ∧
+              (∃ selectedReceiver : object.Vertex,
+                object.IsReceiver piece data.threshold selectedReceiver ∧
+                  object.Saturated piece data.threshold data.dischargeScale
+                    selectedReceiver) ∧
+              ∀ receiver : object.Vertex,
+                object.IsReceiver piece data.threshold receiver →
+                ∀ outside ∈ Graph.VisibleEntry.completionPorts object piece
+                    receiver,
+                  (∀ common : object.Vertex,
+                    object.graph.Adj receiver common →
+                    object.graph.Adj outside common →
+                    object.degree common ≠ data.threshold) →
+                  ∃ return' : Graph.VisibleEntry.AnchoredReturn object receiver outside,
+                    ∃ exponent : Nat,
+                      2 ≤ exponent ∧ return'.path.length = 2 ^ exponent)
   | .typeAVisibleEntry, object =>
       -- Node `[93]`, yes: `def:typeA-visible-load`'s count at a completion port
       -- of a saturated receiver of the Type A support has reached the
@@ -10623,12 +11305,53 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
         data.threshold
   | .hotColdPartition, object =>
       HotColdWindowStatement data object
+  | .remainderRelabelingEntropy, object =>
+      ∀ packing : Finset (Finset object.Vertex),
+        object.IsWindowPacking data.windowOrder packing →
+        (∀ window : Finset object.Vertex,
+          object.InducesWindow data.windowOrder window →
+          ∃ member ∈ packing, ¬ Disjoint window member) →
+        ∀ support : Finset object.Vertex,
+          support ⊆ object.remainderSupport packing →
+          Nat.factorial support.card ≤
+            Graph.remainderStateCount data.windowOrder data.threshold
+                (object.positiveDeficiency support data.threshold)
+                (object.internalEdgeCount support) support.card *
+              Nat.card (MulAction.stabilizer
+                (Equiv.Perm (Fin support.card))
+                (object.labelledInduce support))
+  | .relabelingDensityCap, object =>
+      ∀ packing : Finset (Finset object.Vertex),
+        object.IsWindowPacking data.windowOrder packing →
+        ∀ labels : object.Vertex ≃ Fin object.vertexCount,
+          let window : Finset (Fin object.vertexCount) :=
+            (object.windowSupport packing).map labels.toEmbedding
+          let remainder : Finset (Fin object.vertexCount) := Finset.univ \ window
+          ∀ (State : Type u) (_stateDecidable : DecidableEq State)
+              (skeletons : Finset (Graph.LabelledOn object.vertexCount))
+              (state : Graph.LabelledOn object.vertexCount → State)
+              (stabilizerBound : Nat),
+            (∀ permutation : Graph.LabelledRelabeling.FixedSupportPermutations window,
+              ∀ graph ∈ skeletons, permutation • graph ∈ skeletons) →
+            (∀ permutation : Graph.LabelledRelabeling.FixedSupportPermutations window,
+              ∀ graph ∈ skeletons,
+                state (permutation • graph) = state graph) →
+            (∀ graph ∈ skeletons,
+              Nat.card (MulAction.stabilizer
+                (Graph.LabelledRelabeling.FixedSupportPermutations window) graph) ≤
+                  stabilizerBound) →
+            (by
+              letI : DecidableEq State := _stateDecidable
+              exact (skeletons.image state).card * Nat.factorial remainder.card ≤
+                skeletons.card * stabilizerBound)
 
 /-- Audit labels.  They are diagnostics; every routing and lookup decision
 compares exact keys. -/
 def label : Key → String
   | .selection => "selection"
   | .cubicBaseline => "cubicBaseline"
+  | .gadgetClosure => "gadgetClosure"
+  | .contractionCritical => "contractionCritical"
   | .returnAvoidance => "returnAvoidance"
   | .noProperBaseline => "noProperBaseline"
   | .tightEndpoint => "tightEndpoint"
@@ -10675,6 +11398,12 @@ def label : Key → String
   | .forcedCurvatureCost => "forcedCurvatureCost"
   | .remainderEntropyHigh => "remainderEntropyHigh"
   | .remainderEntropyLow => "remainderEntropyLow"
+  | .localTypeCoordinateRepetitive => "localTypeCoordinateRepetitive"
+  | .localTypeCoordinateNonrepetitive => "localTypeCoordinateNonrepetitive"
+  | .dominantRootedType => "dominantRootedType"
+  | .dominantRootedTypeWedgeFree => "dominantRootedTypeWedgeFree"
+  | .dominantRootedWedgeType => "dominantRootedWedgeType"
+  | .independentObstructionTranslates => "independentObstructionTranslates"
   | .entropyPackageDemand => "entropyPackageDemand"
   | .entropyCapActive => "entropyCapActive"
   | .entropyCapBound => "entropyCapBound"
@@ -10698,6 +11427,20 @@ def label : Key → String
   | .typeBFanLocalDichotomy => "typeBFanLocalDichotomy"
   | .typeBFanDegreeFourProfile => "typeBFanDegreeFourProfile"
   | .triangularFanCore => "triangularFanCore"
+  | .triangularShoulderCompletion => "triangularShoulderCompletion"
+  | .triangularPortReturn => "triangularPortReturn"
+  | .triangularFirstLanding => "triangularFirstLanding"
+  | .triangularCrossShoulder => "triangularCrossShoulder"
+  | .openPortSuppression => "openPortSuppression"
+  | .openPortSuppressionSafe => "openPortSuppressionSafe"
+  | .singleOpenPortSuppressionWitness => "singleOpenPortSuppressionWitness"
+  | .suppressedFamilyCriticalCycle => "suppressedFamilyCriticalCycle"
+  | .typeBFanSafe => "typeBFanSafe"
+  | .fanClosedPort => "fanClosedPort"
+  | .compatiblePairFanClosure => "compatiblePairFanClosure"
+  | .fanClosedPortTypeBRouting => "fanClosedPortTypeBRouting"
+  | .compatiblePairTypeBRouting => "compatiblePairTypeBRouting"
+  | .triangularPortTypeBRouting => "triangularPortTypeBRouting"
   | .typeAReceiverRouting => "typeAReceiverRouting"
   | .typeASaturatedReceiver => "typeASaturatedReceiver"
   | .typeAUnsaturatedReceivers => "typeAUnsaturatedReceivers"
@@ -10711,6 +11454,7 @@ def label : Key → String
   | .route8DemandLedger => "route8DemandLedger"
   | .route8ExtractedEntryCensus => "route8ExtractedEntryCensus"
   | .typeAPortReturn => "typeAPortReturn"
+  | .portPowerReturn => "portPowerReturn"
   | .typeAVisibleEntry => "typeAVisibleEntry"
   | .typeAVisibleFirstExcess => "typeAVisibleFirstExcess"
   | .typeAExitOneReturn => "typeAExitOneReturn"
@@ -10890,6 +11634,8 @@ def label : Key → String
   | .sparseSurplusSurvivor => "sparseSurplusSurvivor"
   | .activeSurplusDemands => "activeSurplusDemands"
   | .hotColdPartition => "hotColdPartition"
+  | .remainderRelabelingEntropy => "remainderRelabelingEntropy"
+  | .relabelingDensityCap => "relabelingDensityCap"
   | .dependentPairFamily => "dependentPairFamily"
   | .independentPairFamily => "independentPairFamily"
   | .mixedSparseSpineDependence => "mixedSparseSpineDependence"
@@ -10907,6 +11653,7 @@ label. -/
 
 section LabelPins
 example : label .selection = "selection" := rfl
+example : label .contractionCritical = "contractionCritical" := rfl
 example : label .returnAvoidance = "returnAvoidance" := rfl
 example : label .noProperBaseline = "noProperBaseline" := rfl
 example : label .tightEndpoint = "tightEndpoint" := rfl
@@ -10952,6 +11699,16 @@ example : label .windowPackageSeparated = "windowPackageSeparated" := rfl
 example : label .forcedCurvatureCost = "forcedCurvatureCost" := rfl
 example : label .remainderEntropyHigh = "remainderEntropyHigh" := rfl
 example : label .remainderEntropyLow = "remainderEntropyLow" := rfl
+example : label .localTypeCoordinateRepetitive =
+    "localTypeCoordinateRepetitive" := rfl
+example : label .localTypeCoordinateNonrepetitive =
+    "localTypeCoordinateNonrepetitive" := rfl
+example : label .dominantRootedType = "dominantRootedType" := rfl
+example : label .dominantRootedTypeWedgeFree =
+    "dominantRootedTypeWedgeFree" := rfl
+example : label .dominantRootedWedgeType = "dominantRootedWedgeType" := rfl
+example : label .independentObstructionTranslates =
+    "independentObstructionTranslates" := rfl
 example : label .entropyPackageDemand = "entropyPackageDemand" := rfl
 example : label .entropyCapActive = "entropyCapActive" := rfl
 example : label .entropyCapBound = "entropyCapBound" := rfl
@@ -10980,6 +11737,24 @@ example : label .sameCenterOpenPortCompatibility =
 example : label .typeBFanLocalDichotomy = "typeBFanLocalDichotomy" := rfl
 example : label .typeBFanDegreeFourProfile = "typeBFanDegreeFourProfile" := rfl
 example : label .triangularFanCore = "triangularFanCore" := rfl
+example : label .triangularShoulderCompletion =
+    "triangularShoulderCompletion" := rfl
+example : label .triangularPortReturn = "triangularPortReturn" := rfl
+example : label .triangularFirstLanding = "triangularFirstLanding" := rfl
+example : label .triangularCrossShoulder = "triangularCrossShoulder" := rfl
+example : label .openPortSuppression = "openPortSuppression" := rfl
+example : label .openPortSuppressionSafe = "openPortSuppressionSafe" := rfl
+example : label .singleOpenPortSuppressionWitness =
+    "singleOpenPortSuppressionWitness" := rfl
+example : label .suppressedFamilyCriticalCycle =
+    "suppressedFamilyCriticalCycle" := rfl
+example : label .typeBFanSafe = "typeBFanSafe" := rfl
+example : label .fanClosedPort = "fanClosedPort" := rfl
+example : label .compatiblePairFanClosure = "compatiblePairFanClosure" := rfl
+example : label .fanClosedPortTypeBRouting = "fanClosedPortTypeBRouting" := rfl
+example : label .compatiblePairTypeBRouting = "compatiblePairTypeBRouting" := rfl
+example : label .triangularPortTypeBRouting =
+    "triangularPortTypeBRouting" := rfl
 example : label .typeAReceiverRouting = "typeAReceiverRouting" := rfl
 example : label .typeASaturatedReceiver = "typeASaturatedReceiver" := rfl
 example : label .typeAUnsaturatedReceivers = "typeAUnsaturatedReceivers" := rfl
@@ -10994,6 +11769,7 @@ example : label .route8DemandLedger = "route8DemandLedger" := rfl
 example : label .route8ExtractedEntryCensus = "route8ExtractedEntryCensus" :=
   rfl
 example : label .typeAPortReturn = "typeAPortReturn" := rfl
+example : label .portPowerReturn = "portPowerReturn" := rfl
 example : label .typeAVisibleEntry = "typeAVisibleEntry" := rfl
 example : label .typeAVisibleFirstExcess = "typeAVisibleFirstExcess" := rfl
 example : label .typeAExitOneReturn = "typeAExitOneReturn" := rfl
@@ -11199,6 +11975,8 @@ renumber the audit names an earlier run emitted. -/
 def idx : Key → Nat
   | .selection => 0
   | .cubicBaseline => 221
+  | .gadgetClosure => 500
+  | .contractionCritical => 439
   | .returnAvoidance => 1
   | .noProperBaseline => 2
   | .tightEndpoint => 3
@@ -11270,6 +12048,12 @@ def idx : Key → Nat
   | .forcedCurvatureCost => 37
   | .remainderEntropyHigh => 38
   | .remainderEntropyLow => 39
+  | .localTypeCoordinateRepetitive => 429
+  | .localTypeCoordinateNonrepetitive => 430
+  | .dominantRootedType => 431
+  | .dominantRootedTypeWedgeFree => 432
+  | .dominantRootedWedgeType => 428
+  | .independentObstructionTranslates => 421
   | .entropyPackageDemand => 40
   | .entropyCapActive => 41
   | .entropyCapBound => 325
@@ -11294,6 +12078,20 @@ def idx : Key → Nat
   | .typeBFanLocalDichotomy => 253
   | .typeBFanDegreeFourProfile => 254
   | .triangularFanCore => 355
+  | .triangularShoulderCompletion => 426
+  | .triangularPortReturn => 427
+  | .triangularFirstLanding => 433
+  | .triangularCrossShoulder => 434
+  | .openPortSuppression => 435
+  | .openPortSuppressionSafe => 436
+  | .singleOpenPortSuppressionWitness => 437
+  | .suppressedFamilyCriticalCycle => 438
+  | .typeBFanSafe => 441
+  | .fanClosedPort => 442
+  | .compatiblePairFanClosure => 443
+  | .fanClosedPortTypeBRouting => 444
+  | .compatiblePairTypeBRouting => 445
+  | .triangularPortTypeBRouting => 446
   | .typeAReceiverRouting => 53
   | .typeASaturatedReceiver => 54
   | .typeAUnsaturatedReceivers => 55
@@ -11307,6 +12105,7 @@ def idx : Key → Nat
   | .route8DemandLedger => 349
   | .route8ExtractedEntryCensus => 350
   | .typeAPortReturn => 121
+  | .portPowerReturn => 440
   | .typeAVisibleEntry => 56
   | .typeAVisibleFirstExcess => 57
   | .typeAExitOneReturn => 58
@@ -11464,12 +12263,16 @@ def idx : Key → Nat
   | .exactResponseProfile => 207
   | .admissibleRankQuotient => 208
   | .targetRankCircuit => 210
+  | .remainderRelabelingEntropy => 501
+  | .relabelingDensityCap => 502
 
 /-- Left inverse of `idx`.  Writing it out is also what checks the numbering:
 two keys sharing an index would make `ofIdx_idx` unprovable. -/
 def ofIdx : Nat → Key
   | 0 => .selection
   | 221 => .cubicBaseline
+  | 500 => .gadgetClosure
+  | 439 => .contractionCritical
   | 1 => .returnAvoidance
   | 2 => .noProperBaseline
   | 3 => .tightEndpoint
@@ -11515,6 +12318,8 @@ def ofIdx : Nat → Key
   | 11 => .barrierOverflow
   | 12 => .densityCap
   | 13 => .remainderNormalized
+  | 501 => .remainderRelabelingEntropy
+  | 502 => .relabelingDensityCap
   | 14 => .boundaryDemand
   | 15 => .stubSupply
   | 16 => .wedgeSupply
@@ -11540,6 +12345,12 @@ def ofIdx : Nat → Key
   | 37 => .forcedCurvatureCost
   | 38 => .remainderEntropyHigh
   | 39 => .remainderEntropyLow
+  | 429 => .localTypeCoordinateRepetitive
+  | 430 => .localTypeCoordinateNonrepetitive
+  | 431 => .dominantRootedType
+  | 432 => .dominantRootedTypeWedgeFree
+  | 428 => .dominantRootedWedgeType
+  | 421 => .independentObstructionTranslates
   | 40 => .entropyPackageDemand
   | 41 => .entropyCapActive
   | 325 => .entropyCapBound
@@ -11564,6 +12375,20 @@ def ofIdx : Nat → Key
   | 253 => .typeBFanLocalDichotomy
   | 254 => .typeBFanDegreeFourProfile
   | 355 => .triangularFanCore
+  | 426 => .triangularShoulderCompletion
+  | 427 => .triangularPortReturn
+  | 433 => .triangularFirstLanding
+  | 434 => .triangularCrossShoulder
+  | 435 => .openPortSuppression
+  | 436 => .openPortSuppressionSafe
+  | 437 => .singleOpenPortSuppressionWitness
+  | 438 => .suppressedFamilyCriticalCycle
+  | 441 => .typeBFanSafe
+  | 442 => .fanClosedPort
+  | 443 => .compatiblePairFanClosure
+  | 444 => .fanClosedPortTypeBRouting
+  | 445 => .compatiblePairTypeBRouting
+  | 446 => .triangularPortTypeBRouting
   | 53 => .typeAReceiverRouting
   | 54 => .typeASaturatedReceiver
   | 55 => .typeAUnsaturatedReceivers
@@ -11699,6 +12524,7 @@ def ofIdx : Nat → Key
   | 119 => .sparseSurplusSurvivor
   | 120 => .activeSurplusDemands
   | 121 => .typeAPortReturn
+  | 440 => .portPowerReturn
   | 123 => .typeASaturatedExitEntry
   | 124 => .typeAExitSevenHandoff
   | 220 => .typeBDecoratedAssignedSupport
@@ -11751,6 +12577,10 @@ def name : Key → Lean.Name
   | .selection => .num (.str `Hypostructure.Graph.Strategy.Spine "selection") 0
   | .cubicBaseline =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "cubicBaseline") 221
+  | .gadgetClosure =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "gadgetClosure") 500
+  | .contractionCritical =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "contractionCritical") 439
   | .returnAvoidance =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "returnAvoidance") 1
   | .noProperBaseline =>
@@ -11904,6 +12734,23 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "remainderEntropyHigh") 38
   | .remainderEntropyLow =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "remainderEntropyLow") 39
+  | .localTypeCoordinateRepetitive =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "localTypeCoordinateRepetitive") 429
+  | .localTypeCoordinateNonrepetitive =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "localTypeCoordinateNonrepetitive") 430
+  | .dominantRootedType =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "dominantRootedType") 431
+  | .dominantRootedTypeWedgeFree =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "dominantRootedTypeWedgeFree") 432
+  | .dominantRootedWedgeType =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "dominantRootedWedgeType") 428
+  | .independentObstructionTranslates =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "independentObstructionTranslates") 421
   | .entropyPackageDemand =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "entropyPackageDemand") 40
   | .entropyCapActive =>
@@ -11953,6 +12800,46 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeBFanDegreeFourProfile") 254
   | .triangularFanCore =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "triangularFanCore") 355
+  | .triangularShoulderCompletion =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "triangularShoulderCompletion") 426
+  | .triangularPortReturn =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "triangularPortReturn") 427
+  | .triangularFirstLanding =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "triangularFirstLanding") 433
+  | .triangularCrossShoulder =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "triangularCrossShoulder") 434
+  | .openPortSuppression =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "openPortSuppression") 435
+  | .openPortSuppressionSafe =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "openPortSuppressionSafe") 436
+  | .singleOpenPortSuppressionWitness =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "singleOpenPortSuppressionWitness") 437
+  | .suppressedFamilyCriticalCycle =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "suppressedFamilyCriticalCycle") 438
+  | .typeBFanSafe =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeBFanSafe") 441
+  | .fanClosedPort =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "fanClosedPort") 442
+  | .compatiblePairFanClosure =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "compatiblePairFanClosure") 443
+  | .fanClosedPortTypeBRouting =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "fanClosedPortTypeBRouting") 444
+  | .compatiblePairTypeBRouting =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "compatiblePairTypeBRouting") 445
+  | .triangularPortTypeBRouting =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "triangularPortTypeBRouting") 446
   | .typeAReceiverRouting =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAReceiverRouting") 53
   | .typeASaturatedReceiver =>
@@ -11989,6 +12876,8 @@ def name : Key → Lean.Name
         "route8ExtractedEntryCensus") 350
   | .typeAPortReturn =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPortReturn") 121
+  | .portPowerReturn =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "portPowerReturn") 440
   | .typeAVisibleEntry =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAVisibleEntry") 56
   | .typeAVisibleFirstExcess =>
@@ -12379,6 +13268,11 @@ def name : Key → Lean.Name
         "admissibleRankQuotient") 208
   | .targetRankCircuit =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "targetRankCircuit") 210
+  | .remainderRelabelingEntropy =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "remainderRelabelingEntropy") 501
+  | .relabelingDensityCap =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "relabelingDensityCap") 502
 
 /-- The written-out names agree with `label` and `idx`.  `name` is spelled out
 so that reducing it in a downstream audit proof costs one unfolding rather

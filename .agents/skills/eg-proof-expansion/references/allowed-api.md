@@ -80,9 +80,9 @@ Run `python3 .agents/skills/eg-proof-expansion/scripts/api_catalog.py refresh
 --repo-root .` to populate this section.
 
 <!-- BEGIN GENERATED API -->
-Compiled declarations: **1178**.
+Compiled declarations: **1183**.
 
-Category counts: **Canonical execution** 33, **Canonical exhaustive decisions** 11, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 35, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 120, **Minimum-degree cycle spine vocabulary** 820, **Sealed topology** 6, **Sealed total closure** 12, **Typed partial topology and sealed completion** 16.
+Category counts: **Canonical execution** 33, **Canonical exhaustive decisions** 11, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 35, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 122, **Minimum-degree cycle spine vocabulary** 823, **Sealed topology** 6, **Sealed total closure** 12, **Typed partial topology and sealed completion** 16.
 
 The `type` fields below come from the compiled Lean environment.  Docstrings
 and comments are deliberately excluded.
@@ -8098,6 +8098,17 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.independentObstructionTranslates`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.independentPairFamily`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -9166,6 +9177,17 @@ Graph.Strategy.Spine.Key → ℕ
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.triangularFanCore`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.triangularShoulderCompletion`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -12582,6 +12604,17 @@ Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
 Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.TriangularShoulderCompletionStatement`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Data → Graph.FiniteObject → Prop
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.TwoStrandSurvivorStatement`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -14128,6 +14161,25 @@ Graph.Strategy.Spine.Key → ℕ
 Function.Injective Graph.Strategy.Spine.idx
 ```
 
+### `Hypostructure.Graph.Strategy.SpineRows`
+
+#### `Hypostructure.Graph.Strategy.Spine.independentObstructionTranslatesRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+### `Hypostructure.Graph.Strategy.SpineVocabulary`
+
 #### `Hypostructure.Graph.Strategy.Spine.instDecidableEqKey`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -15466,6 +15518,21 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Graph.Ro
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.triangularFanCoreRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.triangularShoulderCompletionRow`
 
 - Category: Minimum-degree cycle spine rows
 - Kind: `definition`

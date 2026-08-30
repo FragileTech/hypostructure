@@ -22,7 +22,7 @@ open Hypostructure.Core.Residual
 open Hypostructure.Core.Strategy
 open Hypostructure.Graph.Strategy.Spine
 
-universe u
+universe u w
 
 -- EG-NODE none (establishes no manuscript DAG node)
 noncomputable abbrev EGProblem :=
@@ -71,13 +71,41 @@ noncomputable def selectedEntryPrefix
         K .degreeProfileFibres,
         K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline,
-        K .returnAvoidance, K .selection] := by
+        K .returnAvoidance, K .contractionCritical, K .gadgetClosure,
+        K .relabelingDensityCap,
+        K .cubicBaseline, K .selection] := by
+  let hCubic :=
+    (cubicBaselineRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      history (by simp [cubicBaselineRow, EGSelectionKey, K_eq_iff])
+  let hDensity :=
+    (relabelingDensityCapRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      hCubic (by
+        simp [relabelingDensityCapRow, cubicBaselineRow, EGSelectionKey, K_eq_iff])
+  let hGadget :=
+    (gadgetClosureRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      hDensity (by
+        simp [gadgetClosureRow, relabelingDensityCapRow, cubicBaselineRow,
+          EGSelectionKey, K_eq_iff])
+  let hCritical :=
+    (contractionCriticalRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      hGadget (by
+        simp [contractionCriticalRow, gadgetClosureRow, cubicBaselineRow, EGSelectionKey,
+          K_eq_iff])
   let h1 :=
     (returnAvoidanceRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by
-        simp [returnAvoidanceRow, EGSelectionKey, K_eq_iff])
+      hCritical (by
+        simp [returnAvoidanceRow, contractionCriticalRow, cubicBaselineRow,
+          EGSelectionKey, K_eq_iff])
   let h2 :=
     (noProperBaselineRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -177,16 +205,17 @@ noncomputable def selectedSurplusDichotomy
     else
       .inr ⟨Nat.le_of_not_lt above⟩)
 
-/-- Node `[125]`, `def:named-surplus-exits`, on the literal strict-surplus
-residual.  The left ledger carries a named sparse exit; the right ledger is the
-paper's "after sparse exits" survivor residual. -/
--- EG-NODE [125] sparse-pressure survivor after P13 label algebra and sparse exits
+/-- The enclosing node-`[20]` routing performs `def:named-surplus-exits` before
+node `[125]`.  Its left ledger carries a named sparse exit; its right ledger is
+the paper's literal "after P13 label algebra and sparse exits" survivor
+residual, which is the sole input accepted by `[125]`. -/
+-- EG-NODE [20] named sparse-surplus exit classification before node [125]
 noncomputable def selectedSparseSurplusDichotomy
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .surplusAbove, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
     Decision (K .sparsePairExit) (K .sparseSurplusSurvivor) history :=
   sparseSurplusSurvivorDichotomy (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -194,10 +223,11 @@ noncomputable def selectedSparseSurplusDichotomy
       (by simp [K_eq_iff])
       (by simp [K_eq_iff])
 
-/-- Node `[125]`, the exact named-exit continuation.  Direct target,
+/-- The enclosing node-`[20]` exact named-exit continuation.  Direct target,
 replacement, delocalization, and suppression-arithmetic exits terminate in the
 sealed row.  Its only output is the concrete target-defect residual, retaining
-the complete strict-surplus ancestry for the later peeling handoff. -/
+the complete strict-surplus ancestry for the later peeling handoff.  This is
+not an output of node `[125]`. -/
 noncomputable def selectedSparseSurplusExitContinuation
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -205,20 +235,32 @@ noncomputable def selectedSparseSurplusExitContinuation
         K .maximalPacking, K .uncompressible, K .replacementExclusion,
         K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
-        K .returnAvoidance, K .selection]) :
+        K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .sparseTargetDefectResidual, K .sparsePairExit, K .surplusAbove,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality,
         K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection] :=
   (sparseSurplusExitRoutingRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
     (presentation := erdosReceiverLoadProfile) (data := spineData)).run
     history (by simp [sparseSurplusExitRoutingRow, K_eq_iff])
 
-/-- Nodes `[125]`--`[128]`, sparse-surplus activation on node `[125]`'s
-literal survivor residual. -/
+/-- Node `[125]` is the manuscript's routing-only survivor node.  It accepts
+only an incoming ledger on which the enclosing sparse-exit classification has
+already published `K .sparseSurplusSurvivor`, and passes that exact ledger on
+without proving, reconstructing, dropping, or appending any fact. -/
+-- EG-NODE [125] sparse-load survivor after P13 label algebra and sparse exits
+@[reducible] def selectedSparseSurplusSurvivorNode125
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .sparseSurplusSurvivor) known] :
+    ExactLedger EGInput.{u} selected known :=
+  history
+
+/-- Nodes `[126]`--`[128]`, sparse-surplus activation on node `[125]`'s
+unchanged literal survivor residual. -/
 -- EG-NODE [126] sparse envelope m<=2n-2, sigma=n-6-2 lambda
 -- EG-NODE [127] excess-port extraction A=P_exc, |A|=sigma(G)
 -- EG-NODE [128] canonical activation returns R_p; open Q_p; triangular response
@@ -227,20 +269,52 @@ noncomputable def selectedSparseSurplusActivation
     (history : ExactLedger EGInput.{u} selected
       [K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
         K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .activeSurplusDemands, K .sparsePortActivation,
+        K .suppressedFamilyCriticalCycle,
+        K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
+        K .openPortSuppression,
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
         K .selection] := by
+  let suppressionDefined :=
+    (openPortSuppressionRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      history (by simp [openPortSuppressionRow, K_eq_iff])
+  let suppressionSafe :=
+    (openPortSuppressionSafeRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      suppressionDefined (by
+        simp [openPortSuppressionSafeRow, openPortSuppressionRow, K_eq_iff])
+  let singleSuppressionWitnessed :=
+    (singleOpenPortSuppressionWitnessRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      suppressionSafe (by
+        simp [singleOpenPortSuppressionWitnessRow, openPortSuppressionSafeRow,
+          openPortSuppressionRow, K_eq_iff])
+  let familyCritical :=
+    (suppressedFamilyCriticalCycleRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      singleSuppressionWitnessed (by
+        simp [suppressedFamilyCriticalCycleRow,
+          singleOpenPortSuppressionWitnessRow, openPortSuppressionSafeRow,
+          openPortSuppressionRow, K_eq_iff])
   let h2 :=
     (sparseSlackSurplusRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by simp [sparseSlackSurplusRow, K_eq_iff])
+      familyCritical (by
+        simp [sparseSlackSurplusRow, suppressedFamilyCriticalCycleRow,
+          singleOpenPortSuppressionWitnessRow, openPortSuppressionSafeRow,
+          openPortSuppressionRow, K_eq_iff])
   let h3 :=
     (activeSurplusFamilyRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -269,21 +343,25 @@ noncomputable def selectedBaselineSpineDemand
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .activeSurplusDemands, K .sparsePortActivation,
-        K .activeSurplusFamily, K .sparseSlackSurplus,
+        K .suppressedFamilyCriticalCycle,
+        K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
+        K .openPortSuppression, K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .replacementExclusion,
         K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
-        K .returnAvoidance, K .selection]) :
+        K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .baselineSpineDemand, K .activeSurplusDemands,
-        K .sparsePortActivation, K .activeSurplusFamily,
+        K .sparsePortActivation, K .suppressedFamilyCriticalCycle,
+        K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
+        K .openPortSuppression, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .replacementExclusion,
         K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
-        K .returnAvoidance, K .selection] :=
+        K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection] :=
   (baselineSpineDemandRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
     (presentation := erdosReceiverLoadProfile) (data := spineData)).run history
@@ -296,10 +374,12 @@ noncomputable def selectedPairResponseIndependenceDichotomy
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .baselineSpineDemand, K .activeSurplusDemands, K .sparsePortActivation,
-        K .activeSurplusFamily, K .sparseSlackSurplus,
+        K .suppressedFamilyCriticalCycle,
+        K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
+        K .openPortSuppression, K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
         K .selection]) :
     Decision (K .independentPairFamily) (K .dependentPairFamily) history :=
   pairResponseIndependenceDichotomy (data := spineData) history
@@ -312,11 +392,13 @@ noncomputable def selectedBlockedPairRoutingDichotomy
     (history : ExactLedger EGInput.{u} selected
       [K .dependentPairFamily, K .baselineSpineDemand,
         K .activeSurplusDemands,
-        K .sparsePortActivation, K .activeSurplusFamily,
+        K .sparsePortActivation, K .suppressedFamilyCriticalCycle,
+        K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
+        K .openPortSuppression, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
         K .selection]) :
     Decision
       (K (BranchState := BranchState)
@@ -337,11 +419,13 @@ noncomputable def selectedSparsePairExitCloses
     (history : ExactLedger EGInput.{u} selected
       [K .sparsePairExit, K .dependentPairFamily, K .baselineSpineDemand,
         K .activeSurplusDemands,
-        K .sparsePortActivation, K .activeSurplusFamily,
+        K .sparsePortActivation, K .suppressedFamilyCriticalCycle,
+        K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
+        K .openPortSuppression, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
         K .selection]) : False := by
   exact (history.get (K .sparseSurplusSurvivor)).down
     (history.get (K .sparsePairExit)).down
@@ -357,24 +441,28 @@ noncomputable def selectedCanonicalPairFacts
       [K .canonicalBlockerRoute, K .dependentPairFamily,
         K .baselineSpineDemand,
         K .activeSurplusDemands, K .sparsePortActivation,
-        K .activeSurplusFamily, K .sparseSlackSurplus,
+        K .suppressedFamilyCriticalCycle,
+        K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
+        K .openPortSuppression, K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .replacementExclusion,
         K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
-        K .returnAvoidance, K .selection]) :
+        K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .canonicalPairLedger, K .canonicalBlockerRoute,
         K .dependentPairFamily, K .baselineSpineDemand,
         K .activeSurplusDemands,
-        K .sparsePortActivation, K .activeSurplusFamily,
+        K .sparsePortActivation, K .suppressedFamilyCriticalCycle,
+        K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
+        K .openPortSuppression, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .replacementExclusion,
         K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
-        K .returnAvoidance, K .selection] :=
+        K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection] :=
   (canonicalPairLedgerRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
     (presentation := erdosReceiverLoadProfile) (data := spineData)).run history (by
@@ -388,20 +476,24 @@ noncomputable def selectedExactWindowJoinPressure
       [K .canonicalPairLedger, K .canonicalBlockerRoute,
         K .dependentPairFamily, K .baselineSpineDemand,
         K .activeSurplusDemands, K .sparsePortActivation,
-        K .activeSurplusFamily, K .sparseSlackSurplus,
+        K .suppressedFamilyCriticalCycle,
+        K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
+        K .openPortSuppression, K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
         K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .sparseUpperEnvelope, K .canonicalPairLedger,
         K .canonicalBlockerRoute, K .dependentPairFamily,
         K .baselineSpineDemand, K .activeSurplusDemands,
-        K .sparsePortActivation, K .activeSurplusFamily,
+        K .sparsePortActivation, K .suppressedFamilyCriticalCycle,
+        K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
+        K .openPortSuppression, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection] :=
   (exactWindowJoinPressureRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
     (presentation := erdosReceiverLoadProfile) (data := spineData)).run history (by
@@ -415,20 +507,24 @@ noncomputable def selectedCapacityTokenFacts
       [K .sparseUpperEnvelope, K .canonicalPairLedger,
         K .canonicalBlockerRoute, K .dependentPairFamily,
         K .baselineSpineDemand, K .activeSurplusDemands,
-        K .sparsePortActivation, K .activeSurplusFamily,
+        K .sparsePortActivation, K .suppressedFamilyCriticalCycle,
+        K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
+        K .openPortSuppression, K .activeSurplusFamily,
         K .sparseSlackSurplus, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .capacityTokenLedger, K .sparseUpperEnvelope,
         K .canonicalPairLedger, K .canonicalBlockerRoute,
         K .dependentPairFamily, K .baselineSpineDemand,
         K .activeSurplusDemands, K .sparsePortActivation,
-        K .activeSurplusFamily, K .sparseSlackSurplus,
+        K .suppressedFamilyCriticalCycle,
+        K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
+        K .openPortSuppression, K .activeSurplusFamily, K .sparseSlackSurplus,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
         K .selection] :=
   (capacityTokenLedgerRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -501,6 +597,7 @@ noncomputable def selectedBottleneckDischarge
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .noProperBaseline) known]
     [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     (routingFresh : K .bottleneckRouting ∉ known)
     (handoffFresh : K .typeBHandoff ∉ known)
@@ -584,7 +681,7 @@ noncomputable def selectedDensityBudget
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .densityCap, K .coldMassBounded, K .coldSelectedBranchExcess, K .coldAmbientCubicStubExcess,
         K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
@@ -592,7 +689,7 @@ noncomputable def selectedDensityBudget
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection] :=
   (densityBudgetRow (data := spineData)).run history (by simp [K_eq_iff])
 
 /-- Node `[145]` is a control-flow edge: node `[146]` reads node `[22]`'s
@@ -606,7 +703,7 @@ noncomputable def selectedColdRoute8Dichotomy
       [K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
         K .selection]) :=
   coldRoute8Dichotomy (data := spineData) history
     (by simp [K_eq_iff]) (by simp [K_eq_iff])
@@ -620,7 +717,7 @@ noncomputable def selectedColdHotEntropyDichotomy
       [K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
         K .selection]) :=
   coldHotEntropyDichotomy (data := spineData) history
     (by simp [K_eq_iff]) (by simp [K_eq_iff])
@@ -670,7 +767,7 @@ noncomputable def selectedColdMass
         K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
         K .selection]) :=
   (coldMassRow (data := spineData)).run history (by simp [K_eq_iff])
 
@@ -684,7 +781,7 @@ noncomputable def selectedColdAmbientCubic
         K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
         K .selection]) :=
   (coldAmbientCubicRow (data := spineData)).run history (by simp [K_eq_iff])
 
@@ -698,7 +795,7 @@ noncomputable def selectedColdStubExcess
         K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
         K .selection]) :=
   (coldStubExcessRow (data := spineData)).run history (by simp [K_eq_iff])
 
@@ -716,7 +813,7 @@ noncomputable def selectedColdMassDichotomy
         K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
         K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
         K .selection]) :=
   coldMassDichotomy (data := spineData) history
     (by simp [K_eq_iff]) (by simp [K_eq_iff])
@@ -733,7 +830,7 @@ noncomputable def selectedBridgeless
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .bridgeless, K .coldMassLinear, K .coldSelectedBranchExcess, K .coldAmbientCubicStubExcess,
         K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
@@ -741,7 +838,7 @@ noncomputable def selectedBridgeless
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection] :=
   (bridgelessRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
     (presentation := erdosReceiverLoadProfile) (data := spineData)).run history
@@ -759,7 +856,7 @@ noncomputable def selectedColdReturnCorridors
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .coldReturnCorridors, K .bridgeless, K .coldMassLinear, K .coldSelectedBranchExcess, K .coldAmbientCubicStubExcess,
         K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
@@ -767,7 +864,7 @@ noncomputable def selectedColdReturnCorridors
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection] :=
   (coldReturnCorridorRow (data := spineData)).run history (by simp [K_eq_iff])
 
 /-- Node `[153]`, `lem:cold-corridor-first-failure`: cut-states and (F1)--(F5)
@@ -783,7 +880,7 @@ noncomputable def selectedColdFirstFailureRouting
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .coldFailureRouting, K .coldHandoffTransfer, K .coldFailureHandoff,
         K .coldFailureCompression, K .coldFailureDefect,
@@ -797,7 +894,7 @@ noncomputable def selectedColdFirstFailureRouting
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection] := by
+        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection] := by
   let declared :=
     (coldDeclaredHandoffLedgerRow (data := spineData)).run history
       (by simp [K_eq_iff])
@@ -840,7 +937,7 @@ noncomputable def selectedColdGermExtraction
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .coldExchangeBound, K .coldGermExtraction,
         K .coldCorridorState, K .coldFirstFailureOccurrence, K .coldFailureRouting, K .coldFailureCycle,
@@ -851,7 +948,7 @@ noncomputable def selectedColdGermExtraction
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection] :=
   (coldGermExtractionRow (data := spineData)).run history (by simp [K_eq_iff])
 
 /-- Node `[153]`, `lem:cold-germ-extraction`: the (F5) candidate germ family of
@@ -871,7 +968,7 @@ noncomputable def selectedColdGermCandidates
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .coldGermCandidates, K .coldExchangeBound, K .coldGermExtraction,
         K .coldCorridorState, K .coldFirstFailureOccurrence, K .coldFailureRouting, K .coldFailureCycle,
@@ -882,7 +979,7 @@ noncomputable def selectedColdGermCandidates
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection] :=
   (coldGermCandidatesRow (data := spineData)).run history (by simp [K_eq_iff])
 
 /-- Node `[153]`, terminal linear-arm obligation: pay the two registered
@@ -916,7 +1013,7 @@ noncomputable def selectedColdGermTrichotomy
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
     ExactLedger EGInput.{u} selected [K .coldGermRealized, K .coldGermDistinguished, K .coldGermSilent,
         K .coldGermRouted, K .coldGermFamilyPositive, K .coldGermCandidates, K .coldExchangeBound, K .coldGermExtraction,
         K .coldCorridorState, K .coldFirstFailureOccurrence, K .coldFailureRouting, K .coldFailureCycle,
@@ -927,7 +1024,7 @@ noncomputable def selectedColdGermTrichotomy
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection] :=
   (coldGermTrichotomyRow (data := spineData)).run history (by simp [K_eq_iff])
 
 /-- Node `[157]`, `lem:cold-same-interface-table` with the short self-return
@@ -945,7 +1042,7 @@ noncomputable def selectedColdSameInterfaceTable
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
     ExactLedger EGInput.{u} selected [K .coldSameInterfaceTable, K .coldGermRealized, K .coldGermDistinguished, K .coldGermSilent,
         K .coldGermRouted, K .coldGermFamilyPositive, K .coldGermCandidates, K .coldExchangeBound, K .coldGermExtraction,
         K .coldCorridorState, K .coldFirstFailureOccurrence, K .coldFailureRouting, K .coldFailureCycle,
@@ -956,7 +1053,7 @@ noncomputable def selectedColdSameInterfaceTable
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection] :=
   (coldSameInterfaceTableRow (data := spineData)).run history (by simp [K_eq_iff])
 
 /-- `thm:cold-branch-quantitative-closure`: no terminal cold residual remains;
@@ -974,7 +1071,7 @@ noncomputable def selectedColdBranchClosed
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
     ExactLedger EGInput.{u} selected [K .coldBranchClosed, K .coldSameInterfaceTable, K .coldGermRealized, K .coldGermDistinguished, K .coldGermSilent,
         K .coldGermRouted, K .coldGermFamilyPositive, K .coldGermCandidates, K .coldExchangeBound, K .coldGermExtraction,
         K .coldCorridorState, K .coldFirstFailureOccurrence, K .coldFailureRouting, K .coldFailureCycle,
@@ -985,7 +1082,7 @@ noncomputable def selectedColdBranchClosed
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection] :=
+        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection] :=
   (coldBranchClosedRow (data := spineData)).run history (by simp [K_eq_iff])
 
 -- EG-NODE [4] choose lexicographically minimal counterexample
@@ -1038,7 +1135,7 @@ noncomputable def selectedNearCubicNode21
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality,
         K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
         K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
@@ -1046,7 +1143,7 @@ noncomputable def selectedNearCubicNode21
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality,
         K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
         K .selection] :=
   let enumerated :=
     (barrierEnumerationRow (BranchState := BranchState)
@@ -1079,7 +1176,7 @@ noncomputable def selectedWindowPackageRealizationDichotomy
         K .localAlgebra, K .maximalPacking, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality,
         K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
         K .selection]) :=
   Decision.run dominated (K .windowPackageRealized) (K .windowPackageUnrealized)
     `HypostructureErdos64EG.selectedWindowPackageRealizationDichotomy
@@ -1115,9 +1212,10 @@ noncomputable def selectedCoupledExcessDichotomy
 /-! Node `[20]`, the strict (non-near-cubic) surplus branch, run node by node
 along the Part X/XI diagram on the literal `K .surplusAbove` ledger:
 
-* `[125]` `sparseSurplusSurvivorDichotomy` — `def:named-surplus-exits`: the
-  five named exits form the left arm, while their joint negation is exactly the
-  paper's "after sparse exits" survivor arm;
+* the enclosing `[20]` routing runs `sparseSurplusSurvivorDichotomy` for
+  `def:named-surplus-exits`; the five named exits form the left arm, while
+  their joint negation is exactly the incoming residual of routing-only
+  `[125]`, "after P13 label algebra and sparse exits";
 * `[126]`--`[128]` activation, `[129]` baseline spine demand, `[130]` canonical
   pair split;
 * `[130]` yes: `[131]` decides the paper's full-pair code count on the exact
@@ -1481,6 +1579,7 @@ noncomputable def selectedRouteEightResidual
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .cubicBaseline) known] :
     SelectedRouteEightBoundary selected := by
   -- `[110]`
@@ -1692,6 +1791,7 @@ noncomputable def selectedTypeBRoute8Continuation
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .cubicBaseline) known]
     (bridgeMassFresh : K .typeBBridgeMass ∉ known := by simp [K_eq_iff])
     (bridgeSublinearFresh : K .typeBBridgeSublinear ∉ known := by simp [K_eq_iff])
@@ -1816,6 +1916,40 @@ private abbrev TypeBCertificateBoundary
             K .typeBHybridEntry, K .typeBDirectCycleFree,
             K .fanCertificateMarked] ++ known))))
 
+/-- The paper's common `[72]` port-routing prefix.  Each fact is published by
+its registered producer exactly once; later local alternatives retrieve these
+facts from the resulting ExactLedger. -/
+private noncomputable def selectedTypeBPortRoutingPrefix
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    (fanClosedFresh : K .fanClosedPort ∉ known)
+    (compatibleClosureFresh : K .compatiblePairFanClosure ∉ known)
+    (fanClosedRoutingFresh : K .fanClosedPortTypeBRouting ∉ known)
+    (compatibleRoutingFresh : K .compatiblePairTypeBRouting ∉ known) :
+    ExactLedger EGInput selected
+      ([K .compatiblePairTypeBRouting, K .fanClosedPortTypeBRouting,
+        K .compatiblePairFanClosure, K .fanClosedPort] ++ known) := by
+  let fanClosed :=
+    (fanClosedPortRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      history (by simp [K_eq_iff, fanClosedFresh])
+  let compatibleClosure :=
+    (compatiblePairFanClosureRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      fanClosed (by simp [K_eq_iff, compatibleClosureFresh])
+  let fanClosedRouting :=
+    (fanClosedPortTypeBRoutingRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      compatibleClosure (by simp [K_eq_iff, fanClosedRoutingFresh])
+  exact
+    (compatiblePairTypeBRoutingRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      fanClosedRouting (by simp [K_eq_iff, compatibleRoutingFresh])
+
 /-- **The common Type B core `[71]`--`[75]` / `[80]`--`[84]`.**
 
 This function consumes only the facts named by those nodes.  Direct cycles and
@@ -1827,7 +1961,7 @@ enclosing branch decides how `[76]`/`[85]` spends the returned mass. -/
 -- EG-NODE [75] bridge fan-mass: fan-certificate centers and B2 failures charged
 -- EG-NODE [80] certificate labelling present?
 -- EG-NODE [84] fan-mass route: certificate failures and B2 failures charged
-noncomputable def selectedTypeBCertificateBoundary
+private noncomputable def selectedTypeBCertificateBoundaryAfterPortRouting
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .typeBFanEntry) known]
@@ -1835,6 +1969,11 @@ noncomputable def selectedTypeBCertificateBoundary
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
+    [FactKeys.Has (K .fanClosedPort) known]
+    [FactKeys.Has (K .compatiblePairFanClosure) known]
+    [FactKeys.Has (K .fanClosedPortTypeBRouting) known]
+    [FactKeys.Has (K .compatiblePairTypeBRouting) known]
     (markedFresh : K .fanCertificateMarked ∉ known := by simp [K_eq_iff])
     (residualFresh : K .fanCertificateResidual ∉ known := by simp [K_eq_iff])
     (certificateMassFresh : K .fanCertificateResidualMass ∉ known := by
@@ -1849,7 +1988,8 @@ noncomputable def selectedTypeBCertificateBoundary
     (exclusionResidualFresh : K .typeBExclusionResidual ∉ known := by simp [K_eq_iff])
     (exclusionMassFresh : K .typeBExclusionResidualMass ∉ known := by simp [K_eq_iff])
     (obstructionMassFresh : K .typeBOverlapObstructionMass ∉ known := by
-      simp [K_eq_iff]) :
+      simp [K_eq_iff])
+    :
     TypeBCertificateBoundary selected known := by
   -- `[71]`/`[80]`: certificate labelling present at every assigned centre?
   match fanCertificateDichotomy (data := spineData) history
@@ -1936,6 +2076,62 @@ noncomputable def selectedTypeBCertificateBoundary
                   obstructionHistory (by simp [K_eq_iff, obstructionMassFresh])
               exact Sum.inr (Sum.inr (Sum.inr mass))
 
+/-- Compatibility wrapper for callers entering the common Type-B certificate
+walk before node `[72]`.  It runs the four registered port producers and then
+hands their literal output ledger to the certificate core. -/
+noncomputable def selectedTypeBCertificateBoundary
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .typeBFanEntry) known]
+    [FactKeys.Has (K .fanCertificateCap) known]
+    [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .uncompressible) known]
+    [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
+    (markedFresh : K .fanCertificateMarked ∉ known := by simp [K_eq_iff])
+    (residualFresh : K .fanCertificateResidual ∉ known := by simp [K_eq_iff])
+    (certificateMassFresh : K .fanCertificateResidualMass ∉ known := by
+      simp [K_eq_iff])
+    (cycleFresh : K .typeBDirectCycle ∉ known := by simp [K_eq_iff])
+    (freeFresh : K .typeBDirectCycleFree ∉ known := by simp [K_eq_iff])
+    (choiceFresh : K .typeBB2Choice ∉ known := by simp [K_eq_iff])
+    (obstructionFresh : K .typeBOverlapObstruction ∉ known := by simp [K_eq_iff])
+    (hybridFresh : K .typeBHybridEntry ∉ known := by simp [K_eq_iff])
+    (ledgerFresh : K .typeBDisjointLedger ∉ known := by simp [K_eq_iff])
+    (excludedFresh : K .typeBExcluded ∉ known := by simp [K_eq_iff])
+    (exclusionResidualFresh : K .typeBExclusionResidual ∉ known := by
+      simp [K_eq_iff])
+    (exclusionMassFresh : K .typeBExclusionResidualMass ∉ known := by
+      simp [K_eq_iff])
+    (obstructionMassFresh : K .typeBOverlapObstructionMass ∉ known := by
+      simp [K_eq_iff])
+    (fanClosedFresh : K .fanClosedPort ∉ known := by simp [K_eq_iff])
+    (compatibleClosureFresh : K .compatiblePairFanClosure ∉ known := by
+      simp [K_eq_iff])
+    (fanClosedRoutingFresh : K .fanClosedPortTypeBRouting ∉ known := by
+      simp [K_eq_iff])
+    (compatibleRoutingFresh : K .compatiblePairTypeBRouting ∉ known := by
+      simp [K_eq_iff]) :
+    TypeBCertificateBoundary selected
+      ([K .compatiblePairTypeBRouting, K .fanClosedPortTypeBRouting,
+        K .compatiblePairFanClosure, K .fanClosedPort] ++ known) := by
+  let routed := selectedTypeBPortRoutingPrefix history fanClosedFresh
+    compatibleClosureFresh fanClosedRoutingFresh compatibleRoutingFresh
+  exact selectedTypeBCertificateBoundaryAfterPortRouting routed
+    (by simp [K_eq_iff, markedFresh])
+    (by simp [K_eq_iff, residualFresh])
+    (by simp [K_eq_iff, certificateMassFresh])
+    (by simp [K_eq_iff, cycleFresh])
+    (by simp [K_eq_iff, freeFresh])
+    (by simp [K_eq_iff, choiceFresh])
+    (by simp [K_eq_iff, obstructionFresh])
+    (by simp [K_eq_iff, hybridFresh])
+    (by simp [K_eq_iff, ledgerFresh])
+    (by simp [K_eq_iff, excludedFresh])
+    (by simp [K_eq_iff, exclusionResidualFresh])
+    (by simp [K_eq_iff, exclusionMassFresh])
+    (by simp [K_eq_iff, obstructionMassFresh])
+
 /- The complete carrier-neutral output of nodes `[67]`--`[85]`.  The outer
 sum remembers the literal degree arm of `[68]`; the inner boundary remembers
 the first Type B ledger edge that still needs the enclosing branch's global
@@ -1944,13 +2140,22 @@ private abbrev TypeBContinuationBoundary
     (selected : EGInput.{u}) (known : FactKeys EGInput.{u}) :=
   Sum
     (TypeBCertificateBoundary selected
-      ([K .fanCertificateCap, K .typeBFanLocalDichotomy,
+      ([K .fanCertificateCap, K .compatiblePairTypeBRouting,
+        K .fanClosedPortTypeBRouting, K .compatiblePairFanClosure,
+        K .fanClosedPort, K .typeBFanLocalDichotomy,
         K .sameCenterOpenPortCompatibility, K .typeBFanHeavyCentre,
-        K .highCentreNormalForm] ++ known))
+        K .typeBFanSafe, K .highCentreNormalForm] ++ known))
     (TypeBCertificateBoundary selected
-      ([K .fanCertificateCap, K .triangularFanCore,
+      ([K .fanCertificateCap, K .triangularPortTypeBRouting,
+        K .compatiblePairTypeBRouting, K .fanClosedPortTypeBRouting,
+        K .compatiblePairFanClosure, K .fanClosedPort,
+        K .triangularCrossShoulder,
+        K .triangularFirstLanding,
+        K .triangularPortReturn,
+        K .triangularShoulderCompletion,
+        K .triangularFanCore,
         K .typeBFanDegreeFourProfile, K .typeBFanDegreeFourCentres,
-        K .highCentreNormalForm] ++ known))
+        K .typeBFanSafe, K .highCentreNormalForm] ++ known))
 
 /- The same boundary when node `[67]` is already present on the incoming
 ledger.  This is the literal situation at `[144]`: the bottleneck audit needs
@@ -1961,11 +2166,22 @@ private abbrev TypeBAfterNormalFormBoundary
     (selected : EGInput.{u}) (known : FactKeys EGInput.{u}) :=
   Sum
     (TypeBCertificateBoundary selected
-      ([K .fanCertificateCap, K .typeBFanLocalDichotomy,
-        K .sameCenterOpenPortCompatibility, K .typeBFanHeavyCentre] ++ known))
+      ([K .fanCertificateCap, K .compatiblePairTypeBRouting,
+        K .fanClosedPortTypeBRouting, K .compatiblePairFanClosure,
+        K .fanClosedPort, K .typeBFanLocalDichotomy,
+        K .sameCenterOpenPortCompatibility, K .typeBFanHeavyCentre,
+        K .typeBFanSafe] ++ known))
     (TypeBCertificateBoundary selected
-      ([K .fanCertificateCap, K .triangularFanCore,
-        K .typeBFanDegreeFourProfile, K .typeBFanDegreeFourCentres] ++ known))
+      ([K .fanCertificateCap, K .triangularPortTypeBRouting,
+        K .compatiblePairTypeBRouting, K .fanClosedPortTypeBRouting,
+        K .compatiblePairFanClosure, K .fanClosedPort,
+        K .triangularCrossShoulder,
+        K .triangularFirstLanding,
+        K .triangularPortReturn,
+        K .triangularShoulderCompletion,
+        K .triangularFanCore,
+        K .typeBFanDegreeFourProfile, K .typeBFanDegreeFourCentres,
+        K .typeBFanSafe] ++ known))
 
 /-- The common Type B continuation after `[67]` has already been published on
 the same exact ledger.  No fact is reconstructed: `[68]` and every subsequent
@@ -1976,10 +2192,12 @@ private noncomputable def selectedTypeBAfterNormalFormContinuation
     [FactKeys.Has (K .typeBFanEntry) known]
     [FactKeys.Has (K .highCentreNormalForm) known]
     [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .tightEndpoint) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     (heavyFresh : K .typeBFanHeavyCentre ∉ known)
     (degreeFourFresh : K .typeBFanDegreeFourCentres ∉ known)
     (compatibilityFresh : K .sameCenterOpenPortCompatibility ∉ known)
@@ -1999,10 +2217,34 @@ private noncomputable def selectedTypeBAfterNormalFormContinuation
     (excludedFresh : K .typeBExcluded ∉ known)
     (exclusionResidualFresh : K .typeBExclusionResidual ∉ known)
     (exclusionMassFresh : K .typeBExclusionResidualMass ∉ known)
-    (obstructionMassFresh : K .typeBOverlapObstructionMass ∉ known) :
+    (obstructionMassFresh : K .typeBOverlapObstructionMass ∉ known)
+    (fanClosedFresh : K .fanClosedPort ∉ known := by simp [K_eq_iff])
+    (compatibleClosureFresh : K .compatiblePairFanClosure ∉ known := by
+      simp [K_eq_iff])
+    (fanClosedRoutingFresh : K .fanClosedPortTypeBRouting ∉ known := by
+      simp [K_eq_iff])
+    (compatibleRoutingFresh : K .compatiblePairTypeBRouting ∉ known := by
+      simp [K_eq_iff])
+    (triangularRoutingFresh : K .triangularPortTypeBRouting ∉ known := by
+      simp [K_eq_iff])
+    (shoulderCompletionFresh : K .triangularShoulderCompletion ∉ known := by
+      simp [K_eq_iff])
+    (portReturnFresh : K .triangularPortReturn ∉ known := by
+      simp [K_eq_iff])
+    (firstLandingFresh : K .triangularFirstLanding ∉ known := by
+      simp [K_eq_iff])
+    (crossShoulderFresh : K .triangularCrossShoulder ∉ known := by
+      simp [K_eq_iff])
+    (fanSafeFresh : K .typeBFanSafe ∉ known := by simp [K_eq_iff]) :
     TypeBAfterNormalFormBoundary selected known := by
-  match typeBFanDegreeDichotomy (data := spineData) history
-      heavyFresh degreeFourFresh with
+  let fanSafe :=
+    (typeBFanSafeRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      history (by simp [K_eq_iff, fanSafeFresh])
+  match typeBFanDegreeDichotomy (data := spineData) fanSafe
+      (by simp [K_eq_iff, heavyFresh])
+      (by simp [K_eq_iff, degreeFourFresh]) with
   | .left heavyHistory =>
       let compatible :=
         (sameCenterOpenPortCompatibilityRow (BranchState := BranchState)
@@ -2014,12 +2256,17 @@ private noncomputable def selectedTypeBAfterNormalFormContinuation
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           compatible (by simp [K_eq_iff, localFresh])
+      let portRouted := selectedTypeBPortRoutingPrefix localHistory
+        (by simp [K_eq_iff, fanClosedFresh])
+        (by simp [K_eq_iff, compatibleClosureFresh])
+        (by simp [K_eq_iff, fanClosedRoutingFresh])
+        (by simp [K_eq_iff, compatibleRoutingFresh])
       let capped :=
         (fanCertificateCapRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          localHistory (by simp [K_eq_iff, capFresh])
-      exact Sum.inl (selectedTypeBCertificateBoundary capped
+          portRouted (by simp [K_eq_iff, capFresh])
+      exact Sum.inl (selectedTypeBCertificateBoundaryAfterPortRouting capped
         (by simp [K_eq_iff, markedFresh])
         (by simp [K_eq_iff, residualFresh])
         (by simp [K_eq_iff, certificateMassFresh])
@@ -2044,12 +2291,42 @@ private noncomputable def selectedTypeBAfterNormalFormContinuation
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           profile (by simp [K_eq_iff, triangularCoreFresh])
+      let completed :=
+        (triangularShoulderCompletionRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          triangular (by simp [K_eq_iff, shoulderCompletionFresh])
+      let returned :=
+        (triangularPortReturnRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          completed (by simp [K_eq_iff, portReturnFresh])
+      let firstLanded :=
+        (triangularFirstLandingRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          returned (by simp [K_eq_iff, firstLandingFresh])
+      let crossShouldered :=
+        (triangularCrossShoulderRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          firstLanded (by simp [K_eq_iff, crossShoulderFresh])
+      let portRouted := selectedTypeBPortRoutingPrefix crossShouldered
+        (by simp [K_eq_iff, fanClosedFresh])
+        (by simp [K_eq_iff, compatibleClosureFresh])
+        (by simp [K_eq_iff, fanClosedRoutingFresh])
+        (by simp [K_eq_iff, compatibleRoutingFresh])
+      let triangularRouted :=
+        (triangularPortTypeBRoutingRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          portRouted (by simp [K_eq_iff, triangularRoutingFresh])
       let capped :=
         (fanCertificateCapRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          triangular (by simp [K_eq_iff, capFresh])
-      exact Sum.inr (selectedTypeBCertificateBoundary capped
+          triangularRouted (by simp [K_eq_iff, capFresh])
+      exact Sum.inr (selectedTypeBCertificateBoundaryAfterPortRouting capped
         (by simp [K_eq_iff, markedFresh])
         (by simp [K_eq_iff, residualFresh])
         (by simp [K_eq_iff, certificateMassFresh])
@@ -2076,10 +2353,12 @@ noncomputable def selectedTypeBContinuation
     (history : ExactLedger EGInput.{u} selected known)
     [fanEntryHas : FactKeys.Has (K .typeBFanEntry) known]
     [selectionHas : FactKeys.Has (K .selection) known]
+    [bridgelessHas : FactKeys.Has (K .bridgeless) known]
     [replacementHas : FactKeys.Has (K .replacementExclusion) known]
     [tightHas : FactKeys.Has (K .tightEndpoint) known]
     [uncompressibleHas : FactKeys.Has (K .uncompressible) known]
     [remainderHas : FactKeys.Has (K .remainderNormalized) known]
+    [relabelingEntropyHas : FactKeys.Has (K .remainderRelabelingEntropy) known]
     (normalFormFresh : K .highCentreNormalForm ∉ known)
     (heavyFresh : K .typeBFanHeavyCentre ∉ known)
     (degreeFourFresh : K .typeBFanDegreeFourCentres ∉ known)
@@ -2100,7 +2379,25 @@ noncomputable def selectedTypeBContinuation
     (excludedFresh : K .typeBExcluded ∉ known)
     (exclusionResidualFresh : K .typeBExclusionResidual ∉ known)
     (exclusionMassFresh : K .typeBExclusionResidualMass ∉ known)
-    (obstructionMassFresh : K .typeBOverlapObstructionMass ∉ known) :
+    (obstructionMassFresh : K .typeBOverlapObstructionMass ∉ known)
+    (fanClosedFresh : K .fanClosedPort ∉ known := by simp [K_eq_iff])
+    (compatibleClosureFresh : K .compatiblePairFanClosure ∉ known := by
+      simp [K_eq_iff])
+    (fanClosedRoutingFresh : K .fanClosedPortTypeBRouting ∉ known := by
+      simp [K_eq_iff])
+    (compatibleRoutingFresh : K .compatiblePairTypeBRouting ∉ known := by
+      simp [K_eq_iff])
+    (triangularRoutingFresh : K .triangularPortTypeBRouting ∉ known := by
+      simp [K_eq_iff])
+    (shoulderCompletionFresh : K .triangularShoulderCompletion ∉ known := by
+      simp [K_eq_iff])
+    (portReturnFresh : K .triangularPortReturn ∉ known := by
+      simp [K_eq_iff])
+    (firstLandingFresh : K .triangularFirstLanding ∉ known := by
+      simp [K_eq_iff])
+    (crossShoulderFresh : K .triangularCrossShoulder ∉ known := by
+      simp [K_eq_iff])
+    (fanSafeFresh : K .typeBFanSafe ∉ known := by simp [K_eq_iff]) :
     TypeBContinuationBoundary selected known := by
   -- `[67]`, `lem:heavy-neighbourhood-normal-form`, is already object-wide and
   -- uses exactly the selection and tight-endpoint facts in its manifest.
@@ -2115,6 +2412,9 @@ noncomputable def selectedTypeBContinuation
   letI : FactKeys.Has (K .selection)
       ([K .highCentreNormalForm] ++ known) :=
     ⟨.tail selectionHas.member⟩
+  letI : FactKeys.Has (K .bridgeless)
+      ([K .highCentreNormalForm] ++ known) :=
+    ⟨.tail bridgelessHas.member⟩
   letI : FactKeys.Has (K .replacementExclusion)
       ([K .highCentreNormalForm] ++ known) :=
     ⟨.tail replacementHas.member⟩
@@ -2127,6 +2427,9 @@ noncomputable def selectedTypeBContinuation
   letI : FactKeys.Has (K .remainderNormalized)
       ([K .highCentreNormalForm] ++ known) :=
     ⟨.tail remainderHas.member⟩
+  letI : FactKeys.Has (K .remainderRelabelingEntropy)
+      ([K .highCentreNormalForm] ++ known) :=
+    ⟨.tail relabelingEntropyHas.member⟩
   exact selectedTypeBAfterNormalFormContinuation
       (known := [K .highCentreNormalForm] ++ known) normal
     (by simp [K_eq_iff, heavyFresh])
@@ -2149,6 +2452,16 @@ noncomputable def selectedTypeBContinuation
     (by simp [K_eq_iff, exclusionResidualFresh])
     (by simp [K_eq_iff, exclusionMassFresh])
     (by simp [K_eq_iff, obstructionMassFresh])
+    (fanClosedFresh := by simp [K_eq_iff, fanClosedFresh])
+    (compatibleClosureFresh := by simp [K_eq_iff, compatibleClosureFresh])
+    (fanClosedRoutingFresh := by simp [K_eq_iff, fanClosedRoutingFresh])
+    (compatibleRoutingFresh := by simp [K_eq_iff, compatibleRoutingFresh])
+    (triangularRoutingFresh := by simp [K_eq_iff, triangularRoutingFresh])
+    (shoulderCompletionFresh := by simp [K_eq_iff, shoulderCompletionFresh])
+    (portReturnFresh := by simp [K_eq_iff, portReturnFresh])
+    (firstLandingFresh := by simp [K_eq_iff, firstLandingFresh])
+    (crossShoulderFresh := by simp [K_eq_iff, crossShoulderFresh])
+    (fanSafeFresh := by simp [K_eq_iff, fanSafeFresh])
 
 /- The four literal accounting outputs of the common `[65]`--`[85]` path.
 This proposition deliberately records only facts actually published by the
@@ -2215,10 +2528,12 @@ private noncomputable def selectedSameTokenTypeBContinuation
     [FactKeys.Has (K .typeBFanEntry) known]
     [FactKeys.Has (K .highCentreNormalForm) known]
     [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .tightEndpoint) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     (heavyFresh : K .typeBFanHeavyCentre ∉ known := by simp [K_eq_iff])
     (degreeFourFresh : K .typeBFanDegreeFourCentres ∉ known := by simp [K_eq_iff])
     (compatibilityFresh : K .sameCenterOpenPortCompatibility ∉ known := by
@@ -2243,6 +2558,21 @@ private noncomputable def selectedSameTokenTypeBContinuation
     (exclusionMassFresh : K .typeBExclusionResidualMass ∉ known := by
       simp [K_eq_iff])
     (obstructionMassFresh : K .typeBOverlapObstructionMass ∉ known := by
+      simp [K_eq_iff])
+    (fanClosedFresh : K .fanClosedPort ∉ known := by simp [K_eq_iff])
+    (compatibleClosureFresh : K .compatiblePairFanClosure ∉ known := by
+      simp [K_eq_iff])
+    (fanClosedRoutingFresh : K .fanClosedPortTypeBRouting ∉ known := by
+      simp [K_eq_iff])
+    (compatibleRoutingFresh : K .compatiblePairTypeBRouting ∉ known := by
+      simp [K_eq_iff])
+    (triangularRoutingFresh : K .triangularPortTypeBRouting ∉ known := by
+      simp [K_eq_iff])
+    (shoulderCompletionFresh : K .triangularShoulderCompletion ∉ known := by
+      simp [K_eq_iff])
+    (portReturnFresh : K .triangularPortReturn ∉ known := by simp [K_eq_iff])
+    (firstLandingFresh : K .triangularFirstLanding ∉ known := by simp [K_eq_iff])
+    (crossShoulderFresh : K .triangularCrossShoulder ∉ known := by
       simp [K_eq_iff]) :
     SelectedTypeBChargeOutcome selected :=
   selectedTypeBChargeBoundaryOfContinuation
@@ -2250,7 +2580,16 @@ private noncomputable def selectedSameTokenTypeBContinuation
       compatibilityFresh localFresh profileFresh triangularCoreFresh capFresh
       markedFresh residualFresh certificateMassFresh cycleFresh freeFresh
       choiceFresh obstructionFresh hybridFresh ledgerFresh excludedFresh
-      exclusionResidualFresh exclusionMassFresh obstructionMassFresh)
+      exclusionResidualFresh exclusionMassFresh obstructionMassFresh
+      (fanClosedFresh := fanClosedFresh)
+      (compatibleClosureFresh := compatibleClosureFresh)
+      (fanClosedRoutingFresh := fanClosedRoutingFresh)
+      (compatibleRoutingFresh := compatibleRoutingFresh)
+      (triangularRoutingFresh := triangularRoutingFresh)
+      (shoulderCompletionFresh := shoulderCompletionFresh)
+      (portReturnFresh := portReturnFresh)
+      (firstLandingFresh := firstLandingFresh)
+      (crossShoulderFresh := crossShoulderFresh))
 
 noncomputable def selectedStrictSurplusBranch
     {selected : EGInput.{u}}
@@ -2258,15 +2597,16 @@ noncomputable def selectedStrictSurplusBranch
       [K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
         K .maximalPacking,
         K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
     Sum
       (Sum ((K .typeBFanEntry).At selected)
         (SelectedTypeBChargeOutcome selected))
       ((K .pairConditionalFactorizationResidual).At selected) := by
-  -- This continuation is the right arm of `[125]`; its input type already
-  -- contains the survivor fact.  Hence only this literal ledger can enter
-  -- `[126]`--`[128]` and `[129]`.
-  let activated := selectedSparseSurplusActivation history
+  -- The enclosing `[20]` decision has already selected the survivor arm.
+  -- `[125]` is the exact identity edge prescribed by the diagram; only that
+  -- same ledger can enter `[126]`--`[128]` and `[129]`.
+  let node125 := selectedSparseSurplusSurvivorNode125 history
+  let activated := selectedSparseSurplusActivation node125
   let baseline := selectedBaselineSpineDemand activated
   match selectedPairResponseIndependenceDichotomy baseline with
   | .left independentHistory =>
@@ -2607,7 +2947,12 @@ noncomputable def selectedStrictSurplusBranch
                       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                       (presentation := erdosReceiverLoadProfile)
                       (data := spineData)).run quotientFacts (by simp [K_eq_iff])
-                  match windowOverloadClassDichotomy (data := spineData) normalized
+                  let relabelingEntropy :=
+                    (remainderRelabelingEntropyRow (BranchState := BranchState)
+                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                      (presentation := erdosReceiverLoadProfile)
+                      (data := spineData)).run normalized (by simp [K_eq_iff])
+                  match windowOverloadClassDichotomy (data := spineData) relabelingEntropy
                       (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
                   | .left windowHistory =>
                       let audited :=
@@ -2718,6 +3063,7 @@ private noncomputable def selectedAbsorbedFanChargeContinuation
     [FactKeys.Has (K .tightEndpoint) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
     (normalFormFresh : K .highCentreNormalForm ∉ known)
     (heavyFresh : K .typeBFanHeavyCentre ∉ known)
@@ -2821,7 +3167,7 @@ private noncomputable def selectedAbsorbedFanChargeContinuation
 the paper actually supplies the ordinary route-8 census facts.  This wrapper is
 deliberately separate from `selectedTypeBCertificateBoundary`; `[144]` and
 `[177]` cannot enter it merely because they also reach node `[65]`. -/
-noncomputable def selectedTypeBNearCubicCertificate
+noncomputable def selectedTypeBNearCubicCertificateAfterPortRouting
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .typeBFanEntry) known]
@@ -2830,12 +3176,17 @@ noncomputable def selectedTypeBNearCubicCertificate
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .negativeSupport) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .route8Rate) known]
     [FactKeys.Has (K .typeAReceiverRouting) known]
+    [FactKeys.Has (K .fanClosedPort) known]
+    [FactKeys.Has (K .compatiblePairFanClosure) known]
+    [FactKeys.Has (K .fanClosedPortTypeBRouting) known]
+    [FactKeys.Has (K .compatiblePairTypeBRouting) known]
     (markedFresh : K .fanCertificateMarked ∉ known)
     (residualFresh : K .fanCertificateResidual ∉ known)
     (certificateMassFresh : K .fanCertificateResidualMass ∉ known)
@@ -2879,7 +3230,7 @@ noncomputable def selectedTypeBNearCubicCertificate
       simp [K_eq_iff])
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known) :
     SelectedRouteEightBoundary selected := by
-  match selectedTypeBCertificateBoundary history markedFresh residualFresh
+  match selectedTypeBCertificateBoundaryAfterPortRouting history markedFresh residualFresh
       certificateMassFresh cycleFresh freeFresh choiceFresh obstructionFresh
       hybridFresh ledgerFresh excludedFresh exclusionResidualFresh
       exclusionMassFresh obstructionMassFresh with
@@ -2987,6 +3338,12 @@ noncomputable def selectedTypeBNearCubicCertificate
         (demandResidualFresh := by simp [K_eq_iff, demandResidualFresh])
         (unifiedTerminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
 
+/-- Compatibility name for callers that already carry the common `[72]`
+port-routing ledger.  New branch assembly uses the explicit
+`AfterPortRouting` name so duplicate publication is impossible. -/
+noncomputable abbrev selectedTypeBNearCubicCertificate :=
+  @selectedTypeBNearCubicCertificateAfterPortRouting
+
 /-- **Type B `[67]`--`[70]` on the decorated envelope** (`def:decorated-fan-envelope`,
 `def:typeB-assigned-ledger`), on the `[108]`/`[65]` decorated residual
 (index-polymorphic).  `[67]` `lem:heavy-neighbourhood-normal-form` and the
@@ -3016,6 +3373,7 @@ noncomputable def selectedTypeBDecoratedContinuation
     [FactKeys.Has (K .negativeSupport) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .route8Rate) known]
     [FactKeys.Has (K .typeAReceiverRouting) known]
@@ -3060,7 +3418,16 @@ noncomputable def selectedTypeBDecoratedContinuation
     (decoratedExcludedFresh : K .typeBExcluded ∉ known)
     (decoratedExclusionResidualFresh : K .typeBExclusionResidual ∉ known)
     (decoratedExclusionMassFresh : K .typeBExclusionResidualMass ∉ known)
-    (decoratedObstructionMassFresh : K .typeBOverlapObstructionMass ∉ known) :
+    (decoratedObstructionMassFresh : K .typeBOverlapObstructionMass ∉ known)
+    (fanClosedFresh : K .fanClosedPort ∉ known := by simp [K_eq_iff])
+    (compatibleClosureFresh : K .compatiblePairFanClosure ∉ known := by simp [K_eq_iff])
+    (fanClosedRoutingFresh : K .fanClosedPortTypeBRouting ∉ known := by simp [K_eq_iff])
+    (compatibleRoutingFresh : K .compatiblePairTypeBRouting ∉ known := by simp [K_eq_iff])
+    (shoulderCompletionFresh : K .triangularShoulderCompletion ∉ known := by simp [K_eq_iff])
+    (portReturnFresh : K .triangularPortReturn ∉ known := by simp [K_eq_iff])
+    (firstLandingFresh : K .triangularFirstLanding ∉ known := by simp [K_eq_iff])
+    (crossShoulderFresh : K .triangularCrossShoulder ∉ known := by simp [K_eq_iff])
+    (triangularRoutingFresh : K .triangularPortTypeBRouting ∉ known := by simp [K_eq_iff]) :
     SelectedRouteEightBoundary selected := by
   -- `[67]`
   let normalForm :=
@@ -3086,13 +3453,18 @@ noncomputable def selectedTypeBDecoratedContinuation
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           compatibleHistory (by simp [K_eq_iff, decoratedLocalFresh])
+      let portRouted := selectedTypeBPortRoutingPrefix localDichotomy
+        (by simp [K_eq_iff, fanClosedFresh])
+        (by simp [K_eq_iff, compatibleClosureFresh])
+        (by simp [K_eq_iff, fanClosedRoutingFresh])
+        (by simp [K_eq_iff, compatibleRoutingFresh])
       -- `[70]`
       let capped :=
         (fanCertificateCapRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          localDichotomy (by simp [K_eq_iff, fanCapFresh])
-      exact selectedTypeBNearCubicCertificate capped
+          portRouted (by simp [K_eq_iff, fanCapFresh])
+      exact selectedTypeBNearCubicCertificateAfterPortRouting capped
         (by simp [K_eq_iff, decoratedMarkedFresh])
         (by simp [K_eq_iff, decoratedResidualFresh])
         (by simp [K_eq_iff, decoratedCertificateMassFresh])
@@ -3139,13 +3511,43 @@ noncomputable def selectedTypeBDecoratedContinuation
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           profile (by simp [K_eq_iff, decoratedTriangularCoreFresh])
+      let completed :=
+        (triangularShoulderCompletionRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          triangularCore (by simp [K_eq_iff, shoulderCompletionFresh])
+      let returned :=
+        (triangularPortReturnRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          completed (by simp [K_eq_iff, portReturnFresh])
+      let firstLanded :=
+        (triangularFirstLandingRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          returned (by simp [K_eq_iff, firstLandingFresh])
+      let crossShouldered :=
+        (triangularCrossShoulderRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          firstLanded (by simp [K_eq_iff, crossShoulderFresh])
+      let portRouted := selectedTypeBPortRoutingPrefix crossShouldered
+        (by simp [K_eq_iff, fanClosedFresh])
+        (by simp [K_eq_iff, compatibleClosureFresh])
+        (by simp [K_eq_iff, fanClosedRoutingFresh])
+        (by simp [K_eq_iff, compatibleRoutingFresh])
+      let triangularRouted :=
+        (triangularPortTypeBRoutingRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          portRouted (by simp [K_eq_iff, triangularRoutingFresh])
       -- `[70]`/`[80]`
       let capped :=
         (fanCertificateCapRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          triangularCore (by simp [K_eq_iff, fanCapFresh])
-      exact selectedTypeBNearCubicCertificate capped
+          triangularRouted (by simp [K_eq_iff, fanCapFresh])
+      exact selectedTypeBNearCubicCertificateAfterPortRouting capped
         (by simp [K_eq_iff, decoratedMarkedFresh])
         (by simp [K_eq_iff, decoratedResidualFresh])
         (by simp [K_eq_iff, decoratedCertificateMassFresh])
@@ -3202,6 +3604,7 @@ noncomputable def selectedTypeADecoratedHandoff
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .route8Rate) known]
     [FactKeys.Has (K .typeAReceiverRouting) known]
     (decoratedFresh : K .typeBDecoratedAssignedSupport ∉ known)
@@ -3325,6 +3728,7 @@ noncomputable def selectedTypeAExitFiveToSeven
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .largeBudgetResidual) known]
@@ -3534,6 +3938,7 @@ noncomputable def selectedTypeAExitFiveToSevenSilent
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .largeBudgetResidual) known]
@@ -3732,6 +4137,7 @@ noncomputable def selectedTypeAExitFourDischargedRetest
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .typeAReceiverRouting) known]
@@ -3835,6 +4241,7 @@ noncomputable def selectedTypeAExitFourChain
     [FactKeys.Has (K .typeASaturatedExitEntry) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .route8Rate) known]
@@ -4068,6 +4475,7 @@ noncomputable def selectedTypeAExitFourChainSilent
     [FactKeys.Has (K .typeASaturatedExitEntry) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .largeBudgetResidual) known]
@@ -4298,6 +4706,7 @@ noncomputable def selectedTypeAVisibleExitFour
     [FactKeys.Has (K .typeAExitThreeFree) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .route8Rate) known]
@@ -4448,6 +4857,7 @@ noncomputable def selectedTypeASilentExitChain
     [FactKeys.Has (K .typeAVisibleFirstExcess) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .largeBudgetResidual) known]
@@ -4633,6 +5043,7 @@ noncomputable def selectedTypeAVisibleExitChain
     -- Type A exits `(4)`--`(7)`, `[101]`--`[109]` (`selectedTypeAExitFourChain`).
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .replacementExclusion) known]
     (entryFresh : K .typeASaturatedExitEntry ∉ known)
     (descentFresh : K .typeAExitFourFiniteDescent ∉ known)
@@ -4809,6 +5220,7 @@ noncomputable def selectedTypeALowSurplusContinuation
     [FactKeys.Has (K .tightEndpoint) known]
     [FactKeys.Has (K .typeALowSurplus) known]
     [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .selection) known]
     (boundedFresh : K .typeABoundedSupport ∉ known := by simp [K_eq_iff])
     (routingFresh : K .typeAReceiverRouting ∉ known := by simp [K_eq_iff])
@@ -4816,6 +5228,7 @@ noncomputable def selectedTypeALowSurplusContinuation
     (unsaturatedFresh : K .typeAUnsaturatedReceivers ∉ known := by simp [K_eq_iff])
     (dischargeFresh : K .typeAUnsaturatedDischarge ∉ known := by simp [K_eq_iff])
     (portFresh : K .typeAPortReturn ∉ known := by simp [K_eq_iff])
+    (powerReturnFresh : K .portPowerReturn ∉ known := by simp [K_eq_iff])
     (visibleFresh : K .typeAVisibleEntry ∉ known := by simp [K_eq_iff])
     (excessFresh : K .typeAVisibleFirstExcess ∉ known := by simp [K_eq_iff])
     -- exits `(1)`--`(3)`, `[95]`--`[100]`
@@ -4956,8 +5369,14 @@ noncomputable def selectedTypeALowSurplusContinuation
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           saturatedHistory (by simp [K_eq_iff, portFresh])
+      -- `cor:port-power-return`, on the same saturated support and before `[93]`.
+      let powerReturns :=
+        (portPowerReturnRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          ports (by simp [K_eq_iff, powerReturnFresh])
       -- `[93]`
-      match typeAVisibleEntryDichotomy (data := spineData) ports
+      match typeAVisibleEntryDichotomy (data := spineData) powerReturns
           (by simp [K_eq_iff, visibleFresh]) (by simp [K_eq_iff, excessFresh]) with
       | .left visibleHistory =>
           -- `[95]`--`[107]`: the saturated exit chain on the visible arm.
@@ -5104,6 +5523,7 @@ noncomputable def selectedTypeBHighSurplusContinuation
     -- `[72]`--`[85]` continue on this same exact ledger.
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .negativeSupport) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
@@ -5140,7 +5560,16 @@ noncomputable def selectedTypeBHighSurplusContinuation
     (obstructionMassFresh : K .typeBOverlapObstructionMass ∉ known := by simp [K_eq_iff])
     (certificateMassFresh : K .fanCertificateResidualMass ∉ known := by simp [K_eq_iff])
     (degreeFourProfileFresh : K .typeBFanDegreeFourProfile ∉ known := by simp [K_eq_iff])
-    (triangularCoreFresh : K .triangularFanCore ∉ known := by simp [K_eq_iff]) :
+    (triangularCoreFresh : K .triangularFanCore ∉ known := by simp [K_eq_iff])
+    (fanClosedFresh : K .fanClosedPort ∉ known := by simp [K_eq_iff])
+    (compatibleClosureFresh : K .compatiblePairFanClosure ∉ known := by simp [K_eq_iff])
+    (fanClosedRoutingFresh : K .fanClosedPortTypeBRouting ∉ known := by simp [K_eq_iff])
+    (compatibleRoutingFresh : K .compatiblePairTypeBRouting ∉ known := by simp [K_eq_iff])
+    (shoulderCompletionFresh : K .triangularShoulderCompletion ∉ known := by simp [K_eq_iff])
+    (portReturnFresh : K .triangularPortReturn ∉ known := by simp [K_eq_iff])
+    (firstLandingFresh : K .triangularFirstLanding ∉ known := by simp [K_eq_iff])
+    (crossShoulderFresh : K .triangularCrossShoulder ∉ known := by simp [K_eq_iff])
+    (triangularRoutingFresh : K .triangularPortTypeBRouting ∉ known := by simp [K_eq_iff]) :
     SelectedRouteEightBoundary selected := by
   -- The common Part IX census reads the object-wide receiver routing of
   -- `[88]`.  Publish that paper fact on this literal Type B residual before
@@ -5183,13 +5612,18 @@ noncomputable def selectedTypeBHighSurplusContinuation
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           compatibleHistory (by simp [K_eq_iff, localFresh])
+      let portRouted := selectedTypeBPortRoutingPrefix localDichotomy
+        (by simp [K_eq_iff, fanClosedFresh])
+        (by simp [K_eq_iff, compatibleClosureFresh])
+        (by simp [K_eq_iff, fanClosedRoutingFresh])
+        (by simp [K_eq_iff, compatibleRoutingFresh])
       -- `[70]`: `lem:fan-certificate`, the certificate-marked degree cap.
       let capped :=
         (fanCertificateCapRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          localDichotomy (by simp [K_eq_iff, capFresh])
-      exact selectedTypeBNearCubicCertificate capped
+          portRouted (by simp [K_eq_iff, capFresh])
+      exact selectedTypeBNearCubicCertificateAfterPortRouting capped
         (by simp [K_eq_iff, markedFresh])
         (by simp [K_eq_iff, residualFresh])
         (by simp [K_eq_iff, certificateMassFresh])
@@ -5236,6 +5670,36 @@ noncomputable def selectedTypeBHighSurplusContinuation
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           profile (by simp [K_eq_iff, triangularCoreFresh])
+      let completed :=
+        (triangularShoulderCompletionRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          triangularCore (by simp [K_eq_iff, shoulderCompletionFresh])
+      let returned :=
+        (triangularPortReturnRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          completed (by simp [K_eq_iff, portReturnFresh])
+      let firstLanded :=
+        (triangularFirstLandingRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          returned (by simp [K_eq_iff, firstLandingFresh])
+      let crossShouldered :=
+        (triangularCrossShoulderRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          firstLanded (by simp [K_eq_iff, crossShoulderFresh])
+      let portRouted := selectedTypeBPortRoutingPrefix crossShouldered
+        (by simp [K_eq_iff, fanClosedFresh])
+        (by simp [K_eq_iff, compatibleClosureFresh])
+        (by simp [K_eq_iff, fanClosedRoutingFresh])
+        (by simp [K_eq_iff, compatibleRoutingFresh])
+      let triangularRouted :=
+        (triangularPortTypeBRoutingRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          portRouted (by simp [K_eq_iff, triangularRoutingFresh])
       -- `lem:fan-certificate` (the `[70]` cap, a fact of the object: every
       -- certificate-marked centre is capped by the label packing number), which
       -- `[82]`'s certificate-closed entries and the B1 budget read.
@@ -5243,8 +5707,8 @@ noncomputable def selectedTypeBHighSurplusContinuation
         (fanCertificateCapRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          triangularCore (by simp [K_eq_iff, capFresh])
-      exact selectedTypeBNearCubicCertificate capped
+          triangularRouted (by simp [K_eq_iff, capFresh])
+      exact selectedTypeBNearCubicCertificateAfterPortRouting capped
         (by simp [K_eq_iff, markedFresh])
         (by simp [K_eq_iff, residualFresh])
         (by simp [K_eq_iff, certificateMassFresh])
@@ -5426,6 +5890,7 @@ noncomputable def selectedAbsorbedGermPrerequisites
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .hotColdPartition) known]
     [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .absorbedConfigurationResidual) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     (bridgelessFresh : K .bridgeless ∉ known)
@@ -5509,6 +5974,7 @@ noncomputable def selectedAbsorbedGermResidual
     [FactKeys.Has (K .slackIndependent) known]
     [FactKeys.Has (K .tightEndpoint) known]
     [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .absorbedConfigurationResidual) known]
     [FactKeys.Has (K .coldGermCandidates) known]
     [FactKeys.Has (K .coldGermExtraction) known]
@@ -5833,6 +6299,7 @@ noncomputable def selectedNetChargeContinuation
     (typeBFresh : K .typeBHighSurplus ∉ known := by simp [K_eq_iff])
     -- Type A `[63]`, `[86]`--`[94]` freshness on the same ledger.
     [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .selection) known]
     (boundedFresh : K .typeABoundedSupport ∉ known := by simp [K_eq_iff])
     (routingFresh : K .typeAReceiverRouting ∉ known := by simp [K_eq_iff])
@@ -6175,19 +6642,88 @@ noncomputable def selectedNetChargeContinuation
 
 
 
+/-! ## Nodes `[50]`--`[52]` on the literal low-entropy residual -/
+
+/-- Run the manuscript's complete low-entropy refinement without erasing any
+fact from the incoming `ExactLedger`: structural repetitiveness, dominant
+rooted type, the root-wedge split, and—only on the wedge arm—the independent
+translate estimate.  Every surviving arm is then written as Residual C before
+the caller's next node is invoked. -/
+noncomputable def selectedLowTypeToLargeBudget
+    {Result : Sort w} {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    {downstream : FactKey EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .remainderEntropyLow) known]
+    [FactKeys.Has (K .curvatureFullRank) known]
+    [FactKeys.Has (K .surplusAtOrBelow) known]
+    [FactKeys.Has downstream known]
+    (continue : ∀ {known' : FactKeys EGInput.{u}},
+      ExactLedger EGInput.{u} selected known' →
+      [FactKeys.Has (K .largeBudgetResidual) known'] →
+      [FactKeys.Has downstream known'] → Result)
+    (repetitiveFresh : K .localTypeCoordinateRepetitive ∉ known := by
+      simp [K_eq_iff])
+    (nonrepetitiveFresh : K .localTypeCoordinateNonrepetitive ∉ known := by
+      simp [K_eq_iff])
+    (dominantFresh : K .dominantRootedType ∉ known := by simp [K_eq_iff])
+    (wedgeFresh : K .dominantRootedWedgeType ∉ known := by simp [K_eq_iff])
+    (wedgeFreeFresh : K .dominantRootedTypeWedgeFree ∉ known := by
+      simp [K_eq_iff])
+    (translateFresh : K .independentObstructionTranslates ∉ known := by
+      simp [K_eq_iff])
+    (largeFresh : K .largeBudgetResidual ∉ known := by simp [K_eq_iff]) :
+    Result := by
+  match localTypeCoordinateDichotomy (data := spineData) history
+      repetitiveFresh nonrepetitiveFresh with
+  | .right nonrepetitiveHistory =>
+      let large :=
+        (lowEntropyLargeBudgetRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          nonrepetitiveHistory (by simp [K_eq_iff, largeFresh])
+      exact continue large
+  | .left repetitiveHistory =>
+      let dominant :=
+        (dominantRootedTypeRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          repetitiveHistory (by simp [K_eq_iff, dominantFresh])
+      match dominantRootedTypeWedgeDichotomy (data := spineData) dominant
+          (by simp [K_eq_iff, wedgeFresh])
+          (by simp [K_eq_iff, wedgeFreeFresh]) with
+      | .right wedgeFreeHistory =>
+          let large :=
+            (lowEntropyLargeBudgetRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              wedgeFreeHistory (by simp [K_eq_iff, largeFresh])
+          exact continue large
+      | .left wedgeHistory =>
+          let translated :=
+            (independentObstructionTranslatesRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              wedgeHistory (by simp [K_eq_iff, translateFresh])
+          let large :=
+            (lowEntropyLargeBudgetRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              translated (by simp [K_eq_iff, largeFresh])
+          exact continue large
+
 /-! ## Nodes `[25]`--`[55]` on any near-cubic residual
 
 The remainder normalization, boundary demand, stub supply, wedge lower bound,
 curvature target-rank and circuit (`[25]`--`[31]`), the rank split `[32]` with
 Branch D closed on its yes arm (`[33]`--`[46]`), `cor:forced-curvature-cost`
-`[48]`, the remainder-entropy split `[49]`/`[50]`, the window-plus-remainder
-accounting and entropy cap `[52]`/`[53]` with `[54]` closed when the comparison
-retains a code, and Residual C `[55]` on both entropy arms.  The rows are the
-same on every arm of the spine; only node `[56]`'s density input differs, so
-this def returns the two surviving Residual C cursors and, separately, the
-`[53]`-active cursor on which the `[22]` comparison retains no code at all
-(`def:curvature-target-rank`'s complementary cold residual), for the caller to
-close from its own arm's facts. -/
+`[48]`, the remainder-entropy split `[49]`/`[50]`, the rooted-type refinement
+and independent-translate argument `[51]`, the window-plus-remainder accounting
+and entropy cap `[52]`/`[53]` with `[54]` closed when the comparison retains a
+code, and Residual C `[55]` on every surviving entropy/type arm.  The rows are
+the same on every arm of the spine; only node `[56]`'s density input differs.
+The caller therefore supplies one tail-polymorphic continuation, which receives
+the literal Residual-C ledger from the high-entropy route, the nonrepetitive or
+wedge-free low-entropy routes, or the repetitive rooted-wedge translate route. -/
 -- EG-NODE [25] Residual A: R=G-union V(P) large and componentwise P13-free
 -- EG-NODE [26] Residual A: R large and componentwise P13-free
 -- EG-NODE [27] no component of R has an internal 3-core
@@ -6203,13 +6739,14 @@ close from its own arm's facts. -/
 -- EG-NODE [48] forced curvature cost c_Omega W_2(R)>=K_win|R|-o(|R|)
 -- EG-NODE [49] per-vertex remainder entropy eta(R)=log2|G(R)|/|R|
 -- EG-NODE [50] eta(R)>=(1/10)log2 n ?
--- EG-NODE [51] high-entropy remainder branch
+-- EG-NODE [51] repetitive dominant rooted type and independent translates
 -- EG-NODE [52] window plus remainder accounting bounds theta
 -- EG-NODE [53] remaining non-curvature budget < K|R| ?
 -- EG-NODE [54] entropy cap closes
 -- EG-NODE [55] Residual C: large-budget branch; theta<=theta_win+o(1)
 noncomputable def selectedSpineToLargeBudget
-    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    {Result : Sort w} {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    {downstream : FactKey EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
@@ -6220,6 +6757,11 @@ noncomputable def selectedSpineToLargeBudget
     [FactKeys.Has (K .hotColdPartition) known]
     [FactKeys.Has (K .windowPackageSeparated) known]
     [FactKeys.Has (K .skeletonDominates) known]
+    [FactKeys.Has downstream known]
+    (continue : ∀ {known' : FactKeys EGInput.{u}},
+      ExactLedger EGInput.{u} selected known' →
+      [FactKeys.Has (K .largeBudgetResidual) known'] →
+      [FactKeys.Has downstream known'] → Result)
     (remainderFresh : K .remainderNormalized ∉ known := by simp [K_eq_iff])
     (boundaryFresh : K .boundaryDemand ∉ known := by simp [K_eq_iff])
     (stubFresh : K .stubSupply ∉ known := by simp [K_eq_iff])
@@ -6248,29 +6790,22 @@ noncomputable def selectedSpineToLargeBudget
     (packageFresh : K .entropyPackageDemand ∉ known := by simp [K_eq_iff])
     (activeFresh : K .entropyCapActive ∉ known := by simp [K_eq_iff])
     (largeFresh : K .largeBudgetResidual ∉ known := by simp [K_eq_iff]) :
-    Sum
-      (ExactLedger EGInput.{u} selected
-        (K .largeBudgetResidual :: K .entropyPackageDemand :: K .remainderEntropyHigh ::
-          K .forcedCurvatureCost :: K .curvatureFullRank :: K .targetRankCircuit ::
-          K .exactResponseProfile :: K .admissibleRankQuotient :: K .curvatureTargetRank ::
-          K .wedgeSupply :: K .stubSupply :: K .boundaryDemand :: K .remainderNormalized ::
-          known))
-      (ExactLedger EGInput.{u} selected
-        (K .largeBudgetResidual :: K .remainderEntropyLow ::
-          K .forcedCurvatureCost :: K .curvatureFullRank :: K .targetRankCircuit ::
-          K .exactResponseProfile :: K .admissibleRankQuotient :: K .curvatureTargetRank ::
-          K .wedgeSupply :: K .stubSupply :: K .boundaryDemand :: K .remainderNormalized ::
-          known)) := by
+    Result := by
   let remainder :=
     (remainderNormalizationRow (BranchState := BranchState)
         (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
         (presentation := erdosReceiverLoadProfile) (data := spineData)).run
         history (by simp [K_eq_iff, remainderFresh])
+  let relabelingEntropy :=
+    (remainderRelabelingEntropyRow (BranchState := BranchState)
+        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+        remainder (by simp [K_eq_iff])
   let boundary :=
     (boundaryDemandRow (BranchState := BranchState)
         (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
         (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-        remainder (by simp [K_eq_iff, boundaryFresh])
+        relabelingEntropy (by simp [K_eq_iff, boundaryFresh])
   let stubSupply :=
     (stubSupplyRow (BranchState := BranchState)
         (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -6325,7 +6860,8 @@ noncomputable def selectedSpineToLargeBudget
   match remainderEntropyDichotomy (data := spineData) cost
       (by simp [K_eq_iff, highFresh]) (by simp [K_eq_iff, lowFresh]) with
   | .left highHistory =>
-      -- `[51]`/`[52]`/`[53]`.
+      -- `[52]`/`[53]`: the high arm performs only the manuscript's independent
+      -- window/remainder accounting and entropy-cap test.
       let package :=
         (entropyPackageRow (BranchState := BranchState)
         (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -6347,14 +6883,12 @@ noncomputable def selectedSpineToLargeBudget
                 (by simp [K_eq_iff, closureFresh])
           exact (closedHistory.elimClosed (by infer_instance)).elim
       | .right largeHistory =>
-          exact .inl largeHistory
+          exact continue largeHistory
   | .right lowHistory =>
-      let large :=
-        (lowEntropyLargeBudgetRow (BranchState := BranchState)
-        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-        lowHistory (by simp [K_eq_iff, largeFresh])
-      exact .inr large
+      exact selectedLowTypeToLargeBudget lowHistory continue
+        (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
+        (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
+        (by simp [K_eq_iff, largeFresh])
 
 /-- The near-cubic branch after node `[19]`: node `[21]`, the `[22]` split and
 live-hot cap, and — on the cap arm, exactly as `[24]` prescribes — the cold
@@ -6382,7 +6916,7 @@ its target-defect/handoff discharge. -/
 -- EG-NODE [48] forced curvature cost c_Omega W_2(R)>=K_win|R|-o(|R|)
 -- EG-NODE [49] per-vertex remainder entropy eta(R)
 -- EG-NODE [50] eta(R)>=(1/10)log2 n ?
--- EG-NODE [51] high-entropy remainder branch
+-- EG-NODE [51] repetitive dominant rooted type and independent translates
 -- EG-NODE [52] window plus remainder accounting bounds theta
 -- EG-NODE [53] remaining non-curvature budget < K|R| ?
 -- EG-NODE [54] entropy cap closes
@@ -6426,7 +6960,7 @@ noncomputable def selectedNearCubicSurvivorBranch
       [K .sparseSurplusSurvivor, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
         K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
     SelectedNearCubicSurvivorBoundary selected := by
   let dominated := selectedNearCubicNode21 history
   match selectedWindowPackageRealizationDichotomy dominated with
@@ -6485,25 +7019,17 @@ noncomputable def selectedNearCubicSurvivorBranch
                       (presentation := erdosReceiverLoadProfile)
                       (data := spineData)).run coldBelowHistory
                       (by simp [K_eq_iff])
-                  match selectedSpineToLargeBudget coldBelowHistory with
-                  | .inl highHistory =>
+                  exact selectedSpineToLargeBudget
+                    (downstream := K .coldRoute8Below) coldBelowHistory
+                    (fun spineHistory =>
                       let netCap :=
                         (routeEightNetDeficiencyCapRow
                           (BranchState := BranchState)
                           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                           (presentation := erdosReceiverLoadProfile)
-                          (data := spineData)).run highHistory
+                          (data := spineData)).run spineHistory
                           (by simp [K_eq_iff])
-                      exact Or.inl (selectedNetChargeContinuation netCap)
-                  | .inr lowHistory =>
-                      let netCap :=
-                        (routeEightNetDeficiencyCapRow
-                          (BranchState := BranchState)
-                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                          (presentation := erdosReceiverLoadProfile)
-                          (data := spineData)).run lowHistory
-                          (by simp [K_eq_iff])
-                      exact Or.inl (selectedNetChargeContinuation netCap)
+                      Or.inl (selectedNetChargeContinuation netCap))
               | .right coldAtOrAboveHistory =>
               match coldHotEntropyDichotomy (data := spineData)
                   coldAtOrAboveHistory (by simp [K_eq_iff])
@@ -6529,11 +7055,16 @@ noncomputable def selectedNearCubicSurvivorBranch
                       (presentation := erdosReceiverLoadProfile)
                       (data := spineData)).run linearHistory
                       (by simp [K_eq_iff])
+                  let relabelingEntropy :=
+                    (remainderRelabelingEntropyRow (BranchState := BranchState)
+                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                      (presentation := erdosReceiverLoadProfile)
+                      (data := spineData)).run normalized (by simp [K_eq_iff])
                   let bridgeless :=
                     (bridgelessRow (BranchState := BranchState)
                       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                       (presentation := erdosReceiverLoadProfile)
-                      (data := spineData)).run normalized
+                      (data := spineData)).run relabelingEntropy
                       (by simp [K_eq_iff])
                   let corridors :=
                     (coldReturnCorridorRow (data := spineData)).run bridgeless
@@ -6624,21 +7155,15 @@ noncomputable def selectedNearCubicSurvivorBranch
                   exact Or.inr (Or.inl
                     (density.get (K .route8RateFails)).down)
           | .left belowHistory =>
-          match selectedSpineToLargeBudget belowHistory with
-          | .inl highHistory =>
+          exact selectedSpineToLargeBudget
+            (downstream := K .denseDeficiencyBelow) belowHistory
+            (fun spineHistory =>
               let netCap :=
                 (denseNetDeficiencyCapRow (BranchState := BranchState)
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                  highHistory (by simp [K_eq_iff])
-              exact Or.inl (selectedNetChargeContinuation netCap)
-          | .inr lowHistory =>
-              let netCap :=
-                (denseNetDeficiencyCapRow (BranchState := BranchState)
-                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                  lowHistory (by simp [K_eq_iff])
-              exact Or.inl (selectedNetChargeContinuation netCap)
+                  spineHistory (by simp [K_eq_iff])
+              Or.inl (selectedNetChargeContinuation netCap))
       | .right denseHistory =>
           -- `τ(θ) ≥ 1/4`, the dense residual: `[22]`'s live-hot cap decision and the
           -- cold branch `[145]`--`[157]` on it.
@@ -6659,21 +7184,15 @@ noncomputable def selectedNearCubicSurvivorBranch
                   belowHistory (by simp [K_eq_iff])
               -- `[147]`: `τ(θ) < 3/13`, the spine's route-8 closure with that
               -- inequality as `[56]`'s input.
-              match selectedSpineToLargeBudget belowHistory with
-              | .inl highHistory =>
+              exact selectedSpineToLargeBudget
+                (downstream := K .coldRoute8Below) belowHistory
+                (fun spineHistory =>
                   let netCap :=
                     (routeEightNetDeficiencyCapRow (BranchState := BranchState)
                       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                      highHistory (by simp [K_eq_iff])
-                  exact Or.inl (selectedNetChargeContinuation netCap)
-              | .inr lowHistory =>
-                  let netCap :=
-                    (routeEightNetDeficiencyCapRow (BranchState := BranchState)
-                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                      lowHistory (by simp [K_eq_iff])
-                  exact Or.inl (selectedNetChargeContinuation netCap)
+                      spineHistory (by simp [K_eq_iff])
+                  Or.inl (selectedNetChargeContinuation netCap))
           | .right atOrAboveHistory =>
           match coldHotEntropyDichotomy (data := spineData) atOrAboveHistory
               (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
@@ -6708,11 +7227,16 @@ noncomputable def selectedNearCubicSurvivorBranch
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                   linearHistory (by simp [K_eq_iff])
+              let relabelingEntropy :=
+                (remainderRelabelingEntropyRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run normalized (by simp [K_eq_iff])
               let bridgeless :=
                 (bridgelessRow (BranchState := BranchState)
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                  normalized (by simp [K_eq_iff])
+                  relabelingEntropy (by simp [K_eq_iff])
               let corridors :=
                 (coldReturnCorridorRow (data := spineData)).run bridgeless (by simp [K_eq_iff])
               let declared :=
@@ -6812,21 +7336,15 @@ noncomputable def selectedNearCubicSurvivorBranch
                   exact Or.inr (Or.inl
                     (rateFails.get (K .route8RateFails)).down)
               | .left density =>
-              match selectedSpineToLargeBudget density with
-              | .inl highHistory =>
+              exact selectedSpineToLargeBudget
+                (downstream := K .densityCap) density
+                (fun spineHistory =>
                   let netCap :=
                     (netDeficiencyCapRow (BranchState := BranchState)
                       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                      highHistory (by simp [K_eq_iff])
-                  exact Or.inl (selectedNetChargeContinuation netCap)
-              | .inr lowHistory =>
-                  let netCap :=
-                    (netDeficiencyCapRow (BranchState := BranchState)
-                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                      lowHistory (by simp [K_eq_iff])
-                  exact Or.inl (selectedNetChargeContinuation netCap)
+                      spineHistory (by simp [K_eq_iff])
+                  Or.inl (selectedNetChargeContinuation netCap))
   | .left enumerated =>
   let partitioned :=
     (hotColdPartitionRow (BranchState := BranchState)
@@ -6863,11 +7381,16 @@ noncomputable def selectedNearCubicSurvivorBranch
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile) (data := spineData)).run
               belowHistory (by simp [K_eq_iff])
+          let relabelingEntropy :=
+            (remainderRelabelingEntropyRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile)
+              (data := spineData)).run remainder (by simp [K_eq_iff])
           let boundary :=
             (boundaryDemandRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              remainder (by simp [K_eq_iff])
+              relabelingEntropy (by simp [K_eq_iff])
           let stubSupply :=
             (stubSupplyRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -6923,8 +7446,8 @@ noncomputable def selectedNearCubicSurvivorBranch
           match remainderEntropyDichotomy (data := spineData) cost
               (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
           | .left highHistory =>
-              -- `[51]`/`[52]`: the high-entropy remainder branch and the window plus
-              -- remainder accounting; `[53]`: the admissible entropy cap.
+              -- `[52]`: join the high-entropy remainder and window accounts;
+              -- `[53]`: test the resulting entropy cap.
               let package :=
                 (entropyPackageRow (BranchState := BranchState)
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -6956,21 +7479,17 @@ noncomputable def selectedNearCubicSurvivorBranch
                   -- `[57]` onward on this residual is the next producer.
                   exact Or.inl (selectedNetChargeContinuation netCap)
           | .right lowHistory =>
-              -- `[55]`: Residual C on the low-entropy arm, routed forward unchanged.
-              let large :=
-                (lowEntropyLargeBudgetRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                  lowHistory (by simp [K_eq_iff])
-              -- `[56]` on the route-8 arm: `Δ_net(R) < 1/4` from `τ(θ) < 3/13`
-              -- (`K .coldRoute8Below`), which is the density input of this arm.
-              let netCap :=
-                (routeEightNetDeficiencyCapRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                  large (by simp [K_eq_iff])
-              -- `[57]` onward on this residual is the next producer.
-              exact Or.inl (selectedNetChargeContinuation netCap)
+              -- `[50]`--`[52]`: perform the manuscript's repetitive/nonrepetitive
+              -- and root-wedge splits before writing Residual C.
+              exact selectedLowTypeToLargeBudget
+                (downstream := K .coldRoute8Below) lowHistory
+                (fun largeHistory =>
+                  let netCap :=
+                    (routeEightNetDeficiencyCapRow (BranchState := BranchState)
+                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                      (presentation := erdosReceiverLoadProfile)
+                      (data := spineData)).run largeHistory (by simp [K_eq_iff])
+                  Or.inl (selectedNetChargeContinuation netCap))
       | .right atOrAboveHistory =>
           match coldHotEntropyDichotomy (data := spineData) atOrAboveHistory
               (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
@@ -7069,11 +7588,16 @@ noncomputable def selectedNearCubicSurvivorBranch
                       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                       density (by simp [K_eq_iff])
+                  let relabelingEntropy :=
+                    (remainderRelabelingEntropyRow (BranchState := BranchState)
+                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                      (presentation := erdosReceiverLoadProfile)
+                      (data := spineData)).run remainder (by simp [K_eq_iff])
                   let boundary :=
                     (boundaryDemandRow (BranchState := BranchState)
                       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                      remainder (by simp [K_eq_iff])
+                      relabelingEntropy (by simp [K_eq_iff])
                   let stubSupply :=
                     (stubSupplyRow (BranchState := BranchState)
                       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -7131,8 +7655,8 @@ noncomputable def selectedNearCubicSurvivorBranch
                   match remainderEntropyDichotomy (data := spineData) cost
                       (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
                   | .left highHistory =>
-                      -- `[51]`/`[52]`: the high-entropy remainder branch and the window plus
-                      -- remainder accounting; `[53]`: the admissible entropy cap.
+                      -- `[52]`: join the high-entropy remainder and window accounts;
+                      -- `[53]`: test the resulting entropy cap.
                       let package :=
                         (entropyPackageRow (BranchState := BranchState)
                           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -7163,26 +7687,26 @@ noncomputable def selectedNearCubicSurvivorBranch
                           -- `[57]` onward on this residual is the next producer.
                           exact Or.inl (selectedNetChargeContinuation netCap)
                   | .right lowHistory =>
-                      -- `[55]`: Residual C on the low-entropy arm, routed forward unchanged.
-                      let large :=
-                        (lowEntropyLargeBudgetRow (BranchState := BranchState)
-                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                          lowHistory (by simp [K_eq_iff])
-                      -- `[56]`: `Δ_net(R) ≤ τ_win + o(1) < 1/4` from `[24]`'s density cap.
-                      let netCap :=
-                        (netDeficiencyCapRow (BranchState := BranchState)
-                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                          large (by simp [K_eq_iff])
-                      -- `[57]` onward on this residual is the next producer.
-                      exact Or.inl (selectedNetChargeContinuation netCap)
+                      -- `[50]`--`[52]`: retain the exact low-arm refinement and
+                      -- invoke the translate row only on the root-wedge arm.
+                      exact selectedLowTypeToLargeBudget
+                        (downstream := K .densityCap) lowHistory
+                        (fun largeHistory =>
+                          let netCap :=
+                            (netDeficiencyCapRow (BranchState := BranchState)
+                              (Presentation :=
+                                Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile)
+                              (data := spineData)).run largeHistory
+                              (by simp [K_eq_iff])
+                          Or.inl (selectedNetChargeContinuation netCap))
   | .right overflowHistory =>
       exact (selectedBarrierOverflowCloses overflowHistory
         (by simp [K_eq_iff]) (by simp [K_eq_iff])).elim
 
-/-- The literal target-defect exit left by node `[125]`.  It is an outgoing
-residual, not a contradiction and not a survivor fact. -/
+/-- The literal target-defect exit left by the enclosing `[20]` sparse-exit
+classification.  It is an outgoing residual, not a contradiction, not a
+survivor fact, and not an output of routing-only node `[125]`. -/
 abbrev SelectedSparseTargetDefectBoundary (selected : EGInput.{u}) :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
     erdosReceiverLoadProfile spineData .sparseTargetDefectResidual
@@ -7196,8 +7720,9 @@ abbrev SelectedNearCubicBoundary (selected : EGInput.{u}) :=
     SelectedNearCubicSurvivorBoundary selected
 
 /-- Establish `def:surviving-cold-branch` before entering any hot/cold or
-net-charge descendant.  This is the single exhaustive node-`[125]` split; the
-survivor fact is then retained monotonically by every later ExactLedger. -/
+net-charge descendant.  The exhaustive sparse-exit split belongs to the
+enclosing routing; its survivor ledger crosses `[125]` unchanged and is then
+retained monotonically by every later ExactLedger. -/
 noncomputable def selectedNearCubicBranch
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -7205,7 +7730,7 @@ noncomputable def selectedNearCubicBranch
         K .uncompressible, K .replacementExclusion,
         K .targetCompleteContextUniversality, K .degreeProfileFibres,
         K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .selection]) :
+        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
     SelectedNearCubicBoundary selected := by
   match sparseSurplusSurvivorDichotomy
       (BranchState := BranchState)
@@ -7223,7 +7748,8 @@ noncomputable def selectedNearCubicBranch
           (by simp [K_eq_iff])
       exact Or.inl (targetDefect.get (K .sparseTargetDefectResidual)).down
   | .right survivorHistory =>
-      exact Or.inr (selectedNearCubicSurvivorBranch survivorHistory)
+      let node125 := selectedSparseSurplusSurvivorNode125 survivorHistory
+      exact Or.inr (selectedNearCubicSurvivorBranch node125)
 
 /-- Selected-root boundary, assembled directly from the exact-ledger rows.
 The raw Type B entry alternative is retained only for the earlier
@@ -7249,9 +7775,9 @@ noncomputable def selectedLedgerBoundary
   | .left strictHistory =>
       match selectedSparseSurplusDichotomy strictHistory with
       | .left exitHistory =>
-          -- `[125]` closes four literal exit forms and retains only the exact
-          -- attempted-quotient target-defect payload for its later peeling
-          -- handoff.  It is not coerced into the survivor branch.
+          -- The enclosing `[20]` classification routes the literal exit forms
+          -- and retains only the exact attempted-quotient target-defect
+          -- payload for its later peeling handoff.  It never enters `[125]`.
           let targetDefectHistory :=
             selectedSparseSurplusExitContinuation exitHistory
           exact Or.inl

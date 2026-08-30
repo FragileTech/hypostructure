@@ -19,36 +19,52 @@ itself a contradiction.
 
 ## Current boundary
 
-The earlier plan is obsolete in treating `[171]`, `[175]`, and `[176]` as
-unimplemented. Those owners now run. A fresh inspection of proposition bodies,
-Assembly call sites, and the final result type proves that the claim “only
-`[172a]`, `[181]`, and `[182]` remain” is false. The remaining bugs and proof
-boundaries are:
+The earlier plan is obsolete in treating `[19]`, `[171]`, `[175]`, `[176]`, and
+`[177]` as unimplemented or incorrectly specified. Those repairs are present in
+the live source. A fresh inspection of proposition bodies, Assembly call sites,
+the audit tables, and the final result type still proves that the claim “only
+`[172a]`, `[181]`, and `[182]` remain” is false. The current proof boundaries
+are:
 
-1. **Implementation bug at `[19]`** — `C_sp` is computed from the baseline
-   degree instead of the routing-label alphabet bound required by the
-   manuscript and by `homogeneousTokenCap`;
-2. **Missing implementation at `[51]`–`[52]`** —
-   `lem:translates-independent` has not been formalized; the entropy rows are
-   not that theorem;
-3. **Missing implementation at `[79]`–`[81]`** — the shoulder-completion,
-   port-return, first-landing, cross-shoulder, and open-port-suppression chain is
-   absent, and the code incorrectly jumps from the core definition to a
-   conditional certificate cap;
-4. **Implementation bug at `[177]`** — the code weakens the required assigned
-   Type-B support by adding `AbsorbedGermFanEnvelopeStatement` as a new
-   `TypeBFanEntryStatement` disjunct. That is a specification violation, not an
-   admissible alternative route;
-5. **Uncomposed implementation outputs** — `SelectedLedgerBoundaryResult`
+1. **Missing predecessor split at `[50]`–`[52]`** — the ExactLedger executor
+   `independentObstructionTranslatesRow` now implements
+   `lem:translates-independent`, but no live residual publishes its required
+   `K .dominantRootedWedgeType`. The binary high/low entropy split therefore
+   still omits the manuscript's repetitive-low versus nonrepetitive-low split,
+   and the implemented `[51]` row is unreachable;
+2. **Triangular continuation at `[79]`–`[81]` and `[85]` repaired** —
+   `lem:triangular-shoulder-completion`, `lem:triangular-port-return`, the exact
+   first-landing exhaustion, and cross-shoulder multiplicity are implemented
+   and wired on the literal degree-four Type-B ledger. The four independently
+   proved suppression facts are not Node `[85]` outputs: their ExactLedger
+   producers now run on the sparse-surplus survivor before `[128]`.
+   `sparsePortActivationRow` reads
+   `lem:single-open-port-suppression-witness` through `inputs.get` instead of
+   reproving its minimality argument. The canonical upstream
+   `def:fan-closed-port` is now published once as `K .fanClosedPort` in the
+   common `[72]` port-routing prefix and inherited by its surviving Node `[85]`
+   continuations. `lem:compatible-pair-fan-closure` now reads that definition
+   through `inputs.get` and invokes the canonical upstream theorem. The first
+   quantitative routing proposition now reads the same definition key and
+   invokes the canonical upstream theorem. The compatible-pair routing
+   corollary then reads both preceding `[72]` keys through `inputs.get` and
+   invokes its canonical upstream corollary.  Finally
+   `triangularPortTypeBRoutingRow` reads `K .fanClosedPort` and
+   `K .fanClosedPortTypeBRouting` through `inputs.get`, invokes the canonical
+   upstream `triangularPortTypeBRouting`, and publishes the exact
+   `(5k-19)/4` positive-deficit conclusion before the certificate split.
+   `def:typeB-fan-safe` is instead published at the common Type-B entry, where
+   the paper and the exit-(7) handoff first use that standing definition;
+3. **Uncomposed implementation outputs** — `SelectedLedgerBoundaryResult`
    still returns sparse target-defect, raw/common Type-B accounting, route-8
    sublinear/quotient/rate, and absorbed-germ propositions instead of closing
    or routing them as the manuscript prescribes;
-6. **`[172a]`** — on the nonadditive arm of `[170]`, construct the manuscript's
+4. **`[172a]`** — on the nonadditive arm of `[170]`, construct the manuscript's
    cardinality-minimal connected barrier-overlap producer and route its actual
    uncrossing outcomes;
-7. **`[181]`** — close or type-route the peeled target-defect demand residual
+5. **`[181]`** — close or type-route the peeled target-defect demand residual
    from its retained stage-accounting and blocker facts;
-8. **`[182]`** — prove the uncovered implications left by the exact decisions
+6. **`[182]`** — prove the uncovered implications left by the exact decisions
    at `[178]`–`[180]`.
 
 Nodes `[178]`–`[180]` are not gaps on their covered arms. Their exact negative
@@ -60,46 +76,47 @@ definitionally `False`, so successful elaboration does not close them.
 
 ## Correctness classification from the live code
 
-### Implementation bug: node `[19]`
+### Implemented prefix and remaining gap: nodes `[79]`–`[81]`, `[85]`
 
-`SameTokenBlockerRoles.homogeneousTokenCap` accepts the routing-label alphabet
-bound `Q_geom` and internally forms `L_geom = Q_geom + 1`. The application
-currently passes `erdosReceiverLoadProfile.baselineDegree`, while the actual
-routing-label count is stored separately in `spineData.routingLabelBound`.
-Factor that count into one application constant and use it in both places.
+The live `triangularFanCoreRow` still owns only the core and incidence
+definitions. It is now followed on the same `ExactLedger` by two exact owners:
 
-### Implementation bug: nodes `[79]`–`[81]`
+- `triangularShoulderCompletionRow` reads `K .highCentreNormalForm` and
+  `K .triangularFanCore`, publishes all four clauses of
+  `lem:triangular-shoulder-completion`, and appends only
+  `K .triangularShoulderCompletion`;
+- `triangularPortReturnRow` reads `K .bridgeless`, `K .selection`,
+  `K .highCentreNormalForm`, and `K .triangularShoulderCompletion`. For each
+  triangular port it constructs the simple return, records
+  `Q = R.tail ⊆ G-x`, excludes the restored dyadic cycle length, and witnesses
+  the manuscript's conditional noncentral shoulder-completion incidence. It
+  appends only `K .triangularPortReturn`.
 
-The live `triangularFanCoreRow` proves only the core and incidence definitions.
-Its own comment correctly says it does not prove completion existence. The
-common Assembly continuation then jumps directly to `fanCertificateCapRow`.
-There are no live propositions or owners for:
+`selectedTypeBAfterNormalFormContinuation` runs these rows consecutively before
+the existing certificate cap. Thus the old claim that Assembly jumps directly
+from `triangularFanCoreRow` to `fanCertificateCapRow` is no longer true.
 
-- `lem:triangular-shoulder-completion`;
-- `lem:triangular-port-return`;
-- `lem:triangular-first-landing`;
-- `lem:triangular-cross-shoulder`;
-- `def:open-port-suppression`.
-
-The conditional cap for an already supplied labelling does not prove any of
-these statements. The required fix is to implement them on the literal Type-B
-ledger and route their exact alternatives before the certificate/B2 owners.
-
-### Implementation bug: node `[177]`
-
-The aggregate candidate/complement split and corridor-tail witness are real,
-but they do not satisfy the manuscript destination. The definition of
-`AbsorbedGermFanEnvelopeWitness` expressly denies that it provides the counted
-connected remainder core of `DecoratedHandoff.Envelope`. The implementation
-then changes `TypeBFanEntryStatement` by accepting that weaker witness as a new
-disjunct. This is the bug: the destination contract was weakened to make the
-call type-check.
-
-The fix must remove that weaker disjunct from the common Type-B contract and
-prove the manuscript's actual assigned-support/decorated-envelope statement
-from the incoming `[177]` ledger. If the manuscript does not imply that
-conversion, then `[177]` is a manuscript bug and must be repaired there; the
-implementation still may not invent a parallel definition.
+`triangularFirstLandingRow` now reads the core, shoulder-completion, and
+port-return facts and publishes the mutually exclusive central,
+cross-triangular, and outside classification, together with the two explicit
+nonlanding conclusions. `triangularCrossShoulderRow` then implements the
+shared-shoulder degree alternative and the disjoint-edge quadrilateral
+argument. `openPortSuppressionRow` then publishes the paper's four
+suppressibility conditions and literal delete-and-add graph.
+`openPortSuppressionSafeRow` reads that exact definition fact, converts clause
+(d) to `CenterCapacity`, and applies the proved centre-load degree identity to
+every surviving vertex. `singleOpenPortSuppressionWitnessRow` then specializes
+the upstream tight-vertex suppression theorem to the selected ExactLedger
+object and publishes its simple shoulder path avoiding the deleted port. The
+`suppressedFamilyCriticalCycleRow` now supplies the nonempty-family baseline
+and minimality step, and publishes both the nonempty used-chord cycle and the
+universal simple expansion with forbidden lifted length. The standing
+`def:typeB-fan-safe` is published at the common Type-B producer, while the
+canonical `def:fan-closed-port` interface is published by the common `[72]`
+prefix. Its surviving Node `[85]` continuations inherit both. The exact
+`prop:triangular-port-typeB-routing` producer now reads that definition and the
+fan-closed routing theorem through `inputs.get`, publishes the stronger
+triangular deficit bound, and feeds the existing certificate/B1/B2 continuation.
 
 ### Manuscript and implementation agreement at `[153]`
 
@@ -111,13 +128,25 @@ dropped as absorbed corridor incidences. Thus `[152]` supplies `9C-o(n)` and
 `lem:cold-germ-extraction` supplies `9C/D_cold-o(n)`. The diagram, proof,
 dependency ledger, and quantitative closure all use this family.
 
-### Missing implementation: `lem:translates-independent`
+### Implemented but unreachable: `lem:translates-independent`
 
-No live theorem proves the manuscript's dominant rooted type, wedge, separated
-balls, or full-rank translate conclusion. `remainderEntropyDichotomy` and
-`entropyPackageRow` do not implement it. Either formalize the lemma exactly, or
-prove a replacement route that closes the same incoming branch from the same
-ledger. Until one of those proofs exists, the node is not correct.
+`independentObstructionTranslatesRow` is the live ExactLedger owner for the
+manuscript lemma. It reads `K .curvatureFullRank` and
+`K .dominantRootedWedgeType`, constructs the maximal separated translate family
+on the current object, and publishes `K .independentObstructionTranslates`.
+
+The remaining defect is upstream and topological: the current entropy
+dichotomy publishes only high entropy or undifferentiated low entropy. It does
+not separate the repetitive-low arm carrying the dominant rooted type and
+internal root wedge from the nonrepetitive-low arm. Consequently no live
+Assembly caller can satisfy the row's exact manifest. Node `[51]` is therefore
+implemented but unreachable, while node `[52]` remains incomplete.
+
+The present full `SpineRows` build also reports a later elaboration mismatch in
+this executor's subcubic-ball bound: the local hypothesis is phrased through
+`FiniteObject.degree`, while `SubcubicReach.card_reach_le` expects the graph
+degree expression. This is an implementation-level type mismatch in the live
+checkout, not permission to replace the manuscript lemma or alter its strategy.
 
 ### Unclosed outputs visible at the root
 
@@ -135,6 +164,34 @@ by the manuscript. Merely naming it a boundary or returning it in a disjunction
 does not close the proof.
 
 ## Repairs completed since the previous plan
+
+### Node `[19]`: routing-alphabet coefficient
+
+The surplus threshold now uses `spineData.routingLabelBound`, the certified
+cardinality bound for the complete seven-coordinate routing alphabet.
+`homogeneousTokenCap` receives that same quantity and forms the manuscript's
+augmented alphabet internally. The baseline degree remains only in the two
+boundary-profile cardinal factors; it is no longer substituted for `Q_geom`.
+
+### Node `[85]`: triangular prefix and corrected producer ownership
+
+The common degree-four Type-B continuation now publishes, in manuscript order,
+`K .triangularShoulderCompletion`, `K .triangularPortReturn`, and
+`K .triangularFirstLanding`, and `K .triangularCrossShoulder` through canonical
+`factOnly` rows.  The four suppression labels are not introduced at `[85]`:
+their rows run on the sparse-surplus producer before `[128]`, and the activation
+consumer reads `K .singleOpenPortSuppressionWitness` with `inputs.get`.
+Likewise `K .typeBFanSafe` is published once at the common Type-B entry
+`[65]`/`[108]`, before the degree split; it is not re-proved at `[85]`.  All
+these proofs are anonymous executor bodies over the literal `FactInputs`; no
+detached theorem, callback, alternate carrier, or second ledger was introduced.
+The common `[72]` prefix then publishes the fan-closed definition and routing
+facts exactly once.  `triangularPortTypeBRoutingRow` consumes those registered
+facts with `inputs.get` and appends `K .triangularPortTypeBRouting` between
+cross-shoulder completion and the fan-certificate cap.  Thus the triangular
+local route into the existing B1/B2/exclusion ledger is complete; the later
+bridge-mass and sublinear owners remain at `[84]`/`[85]` and are not re-proved
+on this branch.
 
 ### Nodes `[160]`–`[161]`: exact route-8 rate routing
 
@@ -405,24 +462,25 @@ Every remaining repair must satisfy all of the following:
 
 ## Recommended order
 
-1. Fix `[19]`'s coefficient and implement `[79]`–`[81]`; these affect every
-   downstream use of the common Type-B continuation.
-2. Repair `[177]` without weakening `TypeBFanEntryStatement`, then compose the
-   remaining Type-B and sparse target-defect outputs into their real consumers.
-3. Implement `[172a]`'s minimal connected overlap producer from the exact
+1. Repair the `[50]` entropy topology so the repetitive-low residual publishes
+   `K .dominantRootedWedgeType` and can run the existing `[51]` executor, while
+   the nonrepetitive-low residual remains distinct. Resolve the current local
+   degree-expression elaboration mismatch without changing the lemma.
+3. Compose the remaining Type-B and sparse target-defect outputs into their
+   manuscript consumers.
+4. Implement `[172a]`'s minimal connected overlap producer from the exact
    failed `[170]` fibre.
-4. Prove one exact pressure/smallness or typed-routing theorem for `[181]`.
-5. Address `[182]` constructor-by-constructor: conditional factorization,
+5. Prove one exact pressure/smallness or typed-routing theorem for `[181]`.
+6. Address `[182]` constructor-by-constructor: conditional factorization,
    pair uncrossing/realizability, then full-state increment routing.
-6. Formalize `lem:translates-independent` or prove a fully local replacement
-   that closes the identical incoming branch.
 7. Re-run the narrow owners, complete `Assembly.lean`, fixtures, API catalog,
    audit consistency checks, and `git diff --check` after each repair.
 
 ## Repository-audit note
 
-The detailed `[171]`, `[175]`, and `[176]` rows agree with the compiled source.
-The `[144]` and `[177]` rows describe real ledger composition but previously
-misclassified that composition as a correct manuscript proof. The code-first
-correction ledger in `Assembly_node_audit.md` supersedes those green claims.
-The mathematical open set is not yet exactly `[172a]`, `[181]`, and `[182]`.
+The detailed `[19]`, `[171]`, and `[175]`–`[177]` rows agree with the live
+implementation. Node `[144]` reaches the common Type-B continuation on the
+same ledger, including the completed triangular-port routing producer and the
+existing B1/B2/exclusion continuation. The remaining mathematical open set
+still includes the `[50]`–`[52]` entropy split/reachability defect, `[172a]`,
+`[181]`, `[182]`, and the uncomposed root boundary outputs.

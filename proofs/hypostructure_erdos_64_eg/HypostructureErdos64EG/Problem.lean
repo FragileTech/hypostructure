@@ -114,15 +114,22 @@ def target : Core.Target problem :=
 `C_sp` of node `[19]`.  The manuscript fixes it as one more than the uniform
 homogeneous-token cap of `cor:homogeneous-same-token-caps-close`, so that the
 successor absorbs the additive one in the routed bound `1 + √(M₀ n)` that the
-non-near-cubic branch supplies.  Both factors are read: the cap from the
-framework's role alphabet at this problem's own baseline degree, and the scale
-from the framework's `⌈√n⌉`. -/
+non-near-cubic branch supplies.  The cap is computed from the cardinality of
+the manuscript's complete routing-label alphabet at this presentation's
+baseline degree and window order; the scale is the framework's `⌈√n⌉`. -/
 
 /-- `C_sp`, one more than the uniform homogeneous-token cap at the registered
-baseline degree. -/
+seven-coordinate routing-label alphabet. -/
 def surplusScaleCoefficient : Nat :=
+  let threshold := erdosReceiverLoadProfile.baselineDegree
+  let order := inducedPathOrder
   Graph.SameTokenBlockerRoles.homogeneousTokenCap
-      erdosReceiverLoadProfile.baselineDegree + 1
+      (Fintype.card Graph.SameTokenBlockerRoles.Role *
+        Fintype.card Graph.SameTokenBlockerRoles.TokenSubtype * 2 *
+        (Fintype.card Graph.SameTokenRoutingGerms.PortStatus *
+          Fintype.card Graph.SameTokenRoutingGerms.PortStatus) *
+        ((threshold ^ threshold) * (threshold ^ threshold)) *
+        (2 ^ order) * 2) + 1
 
 
 /-! ## The registered curvature coordinate cost
@@ -171,10 +178,14 @@ noncomputable def spineData : Graph.Strategy.Spine.Data.{u} where
       Fintype.card Graph.SameTokenBlockerRoles.TokenSubtype * 2 *
       (Fintype.card Graph.SameTokenRoutingGerms.PortStatus *
         Fintype.card Graph.SameTokenRoutingGerms.PortStatus) *
-      ((3 ^ 3) * (3 ^ 3)) * (2 ^ 13) * 2
+      ((erdosReceiverLoadProfile.baselineDegree ^
+          erdosReceiverLoadProfile.baselineDegree) *
+        (erdosReceiverLoadProfile.baselineDegree ^
+          erdosReceiverLoadProfile.baselineDegree)) *
+      (2 ^ inducedPathOrder) * 2
   routingLabelBound_eq := by
     rw [Graph.SameTokenRoutingGerms.card_routingLabel]
-    simp only [Fintype.card_fun, Fintype.card_fin, Fintype.card_bool,
+    simp only [Fintype.card_fun, Fintype.card_fin,
       Graph.WindowCurvature.Label]
     norm_num [erdosReceiverLoadProfile, inducedPathOrder]
   roleSafety := by
@@ -186,6 +197,9 @@ noncomputable def spineData : Graph.Strategy.Spine.Data.{u} where
     norm_num
   surplusScale := surplusScaleCoefficient
   baselineDeficitSafety := by
+    have statusCard :
+        Fintype.card Graph.SameTokenRoutingGerms.PortStatus = 2 := by
+      decide
     norm_num [Graph.baselineDeficitCoefficient, surplusScaleCoefficient,
       Graph.SameTokenBlockerRoles.homogeneousTokenCap,
       Graph.SameTokenBlockerRoles.homogeneousCapCharge,
@@ -194,7 +208,7 @@ noncomputable def spineData : Graph.Strategy.Spine.Data.{u} where
       Graph.SameTokenBlockerRoles.card_role,
       Graph.SameTokenBlockerRoles.card_blockerKind,
       Graph.SameTokenBlockerRoles.card_tokenSubtype,
-      erdosReceiverLoadProfile]
+      statusCard, erdosReceiverLoadProfile, inducedPathOrder]
   windowRate := FiniteChecks.P13Barrier.windowRate
   windowBarrier :=
     { size := FiniteChecks.P13Barrier.labelCount

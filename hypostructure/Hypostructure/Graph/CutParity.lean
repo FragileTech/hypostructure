@@ -23,6 +23,69 @@ variable {V : Type u} {G : SimpleGraph V}
 
 variable (S : Set V) [DecidablePred (· ∈ S)]
 
+/-- Orient a simple cycle so that a selected edge is its first dart. -/
+theorem exists_oriented_cycle_of_edge [DecidableEq V]
+    {left right start : V} (different : left ≠ right)
+    (cycle : G.Walk start start) (isCycle : cycle.IsCycle)
+    (uses : s(left, right) ∈ cycle.edges) :
+    ∃ oriented : G.Walk left left,
+      oriented.IsCycle ∧ oriented.length = cycle.length ∧
+        oriented.snd = right := by
+  have leftMember : left ∈ cycle.support :=
+    cycle.fst_mem_support_of_mem_edges uses
+  let forward := cycle.rotate left leftMember
+  have forwardCycle : forward.IsCycle := isCycle.rotate leftMember
+  have forwardUses : s(left, right) ∈ forward.edges :=
+    (cycle.rotate_edges left leftMember).mem_iff.mpr uses
+  have forwardLength : forward.length = cycle.length :=
+    cycle.length_rotate left leftMember
+  by_cases firstIsRight : forward.snd = right
+  · exact ⟨forward, forwardCycle, forwardLength, firstIsRight⟩
+  · have forwardNotNil : ¬ forward.Nil := forwardCycle.not_nil
+    have rebuilt : (Walk.cons (forward.adj_snd forwardNotNil)
+        forward.tail).IsCycle := by
+      rw [forward.cons_tail_eq forwardNotNil]
+      exact forwardCycle
+    have tailData : forward.tail.IsPath ∧
+        s(left, forward.snd) ∉ forward.tail.edges :=
+      (Walk.cons_isCycle_iff forward.tail
+        (forward.adj_snd forwardNotNil)).mp rebuilt
+    have tailNotNil : ¬ forward.tail.Nil := by
+      rw [Walk.not_nil_iff_lt_length]
+      have cycleLength := forwardCycle.three_le_length
+      have exactDrop := forward.length_tail_add_one forwardNotNil
+      omega
+    have tailUses : s(left, right) ∈ forward.tail.edges := by
+      have split := forwardUses
+      rw [← forward.cons_tail_eq forwardNotNil,
+        Walk.edges_cons, List.mem_cons] at split
+      rcases split with first | later
+      · have rightIsSnd : right = forward.snd := by
+          rw [Sym2.eq_iff] at first
+          rcases first with same | reversed
+          · exact same.2
+          · exact (different reversed.2.symm).elim
+        exact (firstIsRight rightIsSnd.symm).elim
+      · exact later
+    have rightIsPenultimate : right = forward.tail.penultimate :=
+      tailData.1.eq_penultimate_of_mem_edges tailUses
+    have forwardPenultimate : forward.penultimate =
+        forward.tail.penultimate := by
+      calc
+        forward.penultimate =
+            (Walk.cons (forward.adj_snd forwardNotNil)
+              forward.tail).penultimate := by
+                rw [forward.cons_tail_eq forwardNotNil]
+        _ = forward.tail.penultimate :=
+          Walk.penultimate_cons_of_not_nil
+            (forward.adj_snd forwardNotNil) forward.tail tailNotNil
+    have reverseSnd : forward.reverse.snd = right := by
+      rw [Walk.snd_reverse, forwardPenultimate]
+      exact rightIsPenultimate.symm
+    exact ⟨forward.reverse, forwardCycle.reverse,
+      by simpa only [Walk.length_reverse] using forwardLength,
+      reverseSnd⟩
+
 /-- Which side of the cut a vertex is on. -/
 def side (vertex : V) : Bool := decide (vertex ∈ S)
 
@@ -42,6 +105,133 @@ theorem crossings_cons {u v w : V} (adjacency : G.Adj u v) (walk : G.Walk v w) :
       crossings S walk + (if side S u = side S v then 0 else 1) := by
   simp only [crossings, Walk.darts_cons, List.countP_cons, crosses]
   by_cases same : side S u = side S v <;> simp [same]
+
+@[simp] theorem crossings_copy {u v u' v' : V} (walk : G.Walk u v)
+    (start : u = u') (finish : v = v') :
+    crossings S (walk.copy start finish) = crossings S walk := by
+  simp [crossings]
+
+theorem crossings_append {u v w : V} (first : G.Walk u v)
+    (second : G.Walk v w) :
+    crossings S (first.append second) =
+      crossings S first + crossings S second := by
+  simp [crossings, Walk.darts_append, List.countP_append]
+
+theorem crossings_reverse {u v : V} (walk : G.Walk u v) :
+    crossings S walk.reverse = crossings S walk := by
+  induction walk with
+  | nil => rfl
+  | @cons u v w adjacent rest ih =>
+      have ih' : List.countP (crosses S) rest.reverse.darts =
+          List.countP (crosses S) rest.darts := by
+        simpa [crossings] using ih
+      have crossesSymm : (crosses (G := G) S) ∘ Dart.symm = crosses S := by
+        funext dart
+        simp [crosses, Bool.xor_comm]
+      rw [crossings_cons]
+      simp [crossings, Walk.darts_append, ih', crossesSymm, crosses, side,
+        Bool.xor_comm, Nat.add_comm]
+
+@[simp] theorem crossings_rotate [DecidableEq V] {u v : V} (cycle : G.Walk u u)
+    (member : v ∈ cycle.support) :
+    crossings S (cycle.rotate v member) = crossings S cycle := by
+  unfold crossings
+  exact (cycle.rotate_darts v member).perm.countP_eq (crosses S)
+
+/-- Orient a selected cycle edge while preserving its exact cut-crossing
+count. -/
+theorem exists_oriented_cycle_of_edge_with_crossings [DecidableEq V]
+    {left right start : V} (different : left ≠ right)
+    (cycle : G.Walk start start) (isCycle : cycle.IsCycle)
+    (uses : s(left, right) ∈ cycle.edges) :
+    ∃ oriented : G.Walk left left,
+      oriented.IsCycle ∧ oriented.length = cycle.length ∧
+        oriented.snd = right ∧ crossings S oriented = crossings S cycle := by
+  have leftMember : left ∈ cycle.support :=
+    cycle.fst_mem_support_of_mem_edges uses
+  let forward := cycle.rotate left leftMember
+  have forwardCycle : forward.IsCycle := isCycle.rotate leftMember
+  have forwardUses : s(left, right) ∈ forward.edges :=
+    (cycle.rotate_edges left leftMember).mem_iff.mpr uses
+  have forwardLength : forward.length = cycle.length :=
+    cycle.length_rotate left leftMember
+  have forwardCrossings : crossings S forward = crossings S cycle :=
+    crossings_rotate S cycle leftMember
+  by_cases firstIsRight : forward.snd = right
+  · exact ⟨forward, forwardCycle, forwardLength, firstIsRight, forwardCrossings⟩
+  · have forwardNotNil : ¬ forward.Nil := forwardCycle.not_nil
+    have rebuilt : (Walk.cons (forward.adj_snd forwardNotNil)
+        forward.tail).IsCycle := by
+      rw [forward.cons_tail_eq forwardNotNil]
+      exact forwardCycle
+    have tailData : forward.tail.IsPath ∧
+        s(left, forward.snd) ∉ forward.tail.edges :=
+      (Walk.cons_isCycle_iff forward.tail
+        (forward.adj_snd forwardNotNil)).mp rebuilt
+    have tailNotNil : ¬ forward.tail.Nil := by
+      rw [Walk.not_nil_iff_lt_length]
+      have cycleLength := forwardCycle.three_le_length
+      have exactDrop := forward.length_tail_add_one forwardNotNil
+      omega
+    have tailUses : s(left, right) ∈ forward.tail.edges := by
+      have split := forwardUses
+      rw [← forward.cons_tail_eq forwardNotNil,
+        Walk.edges_cons, List.mem_cons] at split
+      rcases split with first | later
+      · have rightIsSnd : right = forward.snd := by
+          rw [Sym2.eq_iff] at first
+          rcases first with same | reversed
+          · exact same.2
+          · exact (different reversed.2.symm).elim
+        exact (firstIsRight rightIsSnd.symm).elim
+      · exact later
+    have rightIsPenultimate : right = forward.tail.penultimate :=
+      tailData.1.eq_penultimate_of_mem_edges tailUses
+    have forwardPenultimate : forward.penultimate =
+        forward.tail.penultimate := by
+      calc
+        forward.penultimate =
+            (Walk.cons (forward.adj_snd forwardNotNil)
+              forward.tail).penultimate := by
+                rw [forward.cons_tail_eq forwardNotNil]
+        _ = forward.tail.penultimate :=
+          Walk.penultimate_cons_of_not_nil
+            (forward.adj_snd forwardNotNil) forward.tail tailNotNil
+    have reverseSnd : forward.reverse.snd = right := by
+      rw [Walk.snd_reverse, forwardPenultimate]
+      exact rightIsPenultimate.symm
+    exact ⟨forward.reverse, forwardCycle.reverse,
+      by simpa only [Walk.length_reverse] using forwardLength,
+      reverseSnd, (crossings_reverse S forward).trans forwardCrossings⟩
+
+theorem crossings_tail_add_first {u v : V} (walk : G.Walk u v)
+    (notNil : ¬ walk.Nil) :
+    crossings S walk.tail +
+      (if side S u = side S walk.snd then 0 else 1) = crossings S walk := by
+  have identity := crossings_cons S (walk.adj_snd notNil) walk.tail
+  rw [walk.cons_tail_eq notNil] at identity
+  exact identity.symm
+
+theorem crossings_dropLast_add_last {u v : V} (walk : G.Walk u v)
+    (notNil : ¬ walk.Nil) :
+    crossings S walk.dropLast +
+      (if side S walk.penultimate = side S v then 0 else 1) =
+        crossings S walk := by
+  induction walk with
+  | nil => exact (notNil .nil).elim
+  | @cons u next v adjacent rest ih =>
+      cases rest with
+      | nil => simp [crossings, crosses, side]
+      | @cons next finish v adjacent' remaining =>
+          have restNotNil : ¬ (Walk.cons adjacent' remaining).Nil := by simp
+          rw [Walk.dropLast_cons_of_not_nil adjacent
+            (Walk.cons adjacent' remaining) restNotNil]
+          simp only [crossings_cons, crossings_copy,
+            Walk.penultimate_cons_of_not_nil adjacent
+              (Walk.cons adjacent' remaining) restNotNil]
+          have restIdentity := ih restNotNil
+          have restCross := crossings_cons S adjacent' remaining
+          omega
 
 /-- **Cut parity.**  A walk's crossing count is even exactly when its two
 endpoints lie on the same side of the cut. -/

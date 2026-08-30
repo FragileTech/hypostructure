@@ -134,12 +134,11 @@ At a selected port whose endpoint carries a shoulder *pair* -- which at the
 manuscript's `δ = 3` is every selected port, by the previous row's `|s(p)| =
 δ − 1` -- the two cases of the lemma are:
 
-* the port is *open*, and suppressing its endpoint gives a strictly smaller
-  object meeting the baseline; minimality supplies an accepted cycle there,
-  avoidance forces it through the inserted shoulder chord, and the
-  reconstruction returns the simple shoulder-to-shoulder path `Q_p ⊆ G − x(p)`
-  whose restored length is accepted.  That is the manuscript's `2^{j(p)} − 1`
-  with `j(p) ≥ 2`, at whatever accepted set is registered;
+* the port is *open*, and the row reads the already published single-port
+  suppression witness through `FactInputs.get`.  That witness is the simple
+  shoulder-to-shoulder path `Q_p ⊆ G − x(p)` whose restored length is accepted,
+  namely the manuscript's `2^{j(p)} − 1` with `j(p) ≥ 2` at the registered
+  accepted set;
 * the port is *triangular*, and the triangle `x a_p b_p x` is present.
 
 Clause (a) is the shoulder pair itself, which is the row's own hypothesis at
@@ -150,7 +149,7 @@ they close the suppression.  Its first edge after `x(p)` is a shoulder. -/
 @[reducible] noncomputable def sparsePortActivationRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.sparsePortActivation
-    { Requires := [K .selection]
+    { Requires := [K .selection, K .singleOpenPortSuppressionWitness]
       Produces := [K .sparsePortActivation]
       requiresUnique := by simp
       producesUnique := by simp
@@ -158,6 +157,8 @@ they close the suppression.  Its first edge after `x(p)` is a shoulder. -/
     (fun inputs =>
       let object := inputs.current.object
       let fact := (inputs.get (K .selection)).down
+      let suppressionWitness :=
+        (inputs.get (K .singleOpenPortSuppressionWitness)).down
       let avoids := fact.1
       let minimal := fact.2
       .cons (key := K .sparsePortActivation)
@@ -166,10 +167,10 @@ they close the suppression.  Its first edge after `x(p)` is a shoulder. -/
           ⟨fun _pair member left right shoulders distinct =>
           ⟨(object.surplusPortOfMem member).portReturn_of_minimal
               shoulders inputs.current.baseline avoids minimal,
-            fun openPort =>
-              (object.surplusPortOfMem member).openPortWitness_of_minimal
-                shoulders distinct openPort inputs.current.baseline avoids
-                minimal,
+            fun openPort => suppressionWitness
+              ((object.surplusPortOfMem member).configuration
+                shoulders distinct openPort)
+              (object.surplusPortOfMem member).centre_high,
             fun adjacent =>
               (object.surplusPortOfMem member).triangle_of_shoulders_adj
                 (shoulders left |>.2 (Or.inl rfl))

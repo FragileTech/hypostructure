@@ -557,6 +557,179 @@ theorem severedWalk_of_avoids_tail (contraction : EdgeContraction object)
         exact image ▸ contraction.ne_head candidate
   exact ⟨mapped.transfer _ severedEdges⟩
 
+/-- The path-preserving form of `severedWalk_of_avoids_tail`. -/
+theorem severedPath_of_avoids_tail (contraction : EdgeContraction object)
+    {source target : contraction.contracted.Vertex}
+    (walk : contraction.contracted.graph.Walk source target)
+    (isPath : walk.IsPath)
+    (avoidsTail : contraction.tailVertex ∉ walk.support) :
+    Nonempty (contraction.severed.Path source.val target.val) := by
+  have kept : ∀ edge ∈ walk.edges,
+      edge ∈ (contraction.pullback Subtype.val).graph.edgeSet := by
+    intro edge member
+    revert member
+    induction edge using Sym2.ind with
+    | _ left right =>
+      intro member
+      have leftNe : left ≠ contraction.tailVertex := by
+        rintro rfl
+        exact avoidsTail (walk.fst_mem_support_of_mem_edges member)
+      have rightNe : right ≠ contraction.tailVertex := by
+        rintro rfl
+        exact avoidsTail (walk.snd_mem_support_of_mem_edges member)
+      exact (contraction.contracted_adj_of_ne_tail leftNe rightNe).mp
+        (walk.edges_subset_edgeSet member)
+  let transferred := walk.transfer _ kept
+  let mapped := transferred.map (contraction.pullbackHom Subtype.val)
+  have mappedPath : mapped.IsPath :=
+    SimpleGraph.Walk.map_isPath_of_injective Subtype.val_injective
+      (isPath.transfer kept)
+  have severedEdges : ∀ edge ∈ mapped.edges,
+      edge ∈ contraction.severed.edgeSet := by
+    intro edge member
+    revert member
+    induction edge using Sym2.ind with
+    | _ left right =>
+      intro member
+      have adjacent : object.graph.Adj left right :=
+        mapped.edges_subset_edgeSet member
+      have images : mapped.support =
+          transferred.support.map (contraction.pullbackHom Subtype.val) :=
+        SimpleGraph.Walk.support_map
+          (f := contraction.pullbackHom Subtype.val) (p := transferred)
+      refine contraction.severed_adj_of_ne_head adjacent ?_ ?_
+      · obtain ⟨candidate, _, image⟩ := List.mem_map.1
+          (images ▸ mapped.fst_mem_support_of_mem_edges member)
+        exact image ▸ contraction.ne_head candidate
+      · obtain ⟨candidate, _, image⟩ := List.mem_map.1
+          (images ▸ mapped.snd_mem_support_of_mem_edges member)
+        exact image ▸ contraction.ne_head candidate
+  let result : contraction.severed.Path source.val target.val :=
+    ⟨mapped.transfer _ severedEdges, mappedPath.transfer severedEdges⟩
+  exact ⟨result⟩
+
+/-- A mixed pair of incidences gives the exact severed path obtained by
+splicing the remaining path between the two endpoints of the contracted edge. -/
+theorem exactReturn_of_mixed_incidences (contraction : EdgeContraction object)
+    {source target : contraction.contracted.Vertex}
+    (walk : contraction.contracted.graph.Walk source target)
+    (isPath : walk.IsPath)
+    (avoidsTail : contraction.tailVertex ∉ walk.support)
+    (fromHead : object.graph.Adj contraction.head source.val)
+    (fromTail : object.graph.Adj contraction.tail target.val) :
+    ∃ path : contraction.severed.Path contraction.tail contraction.head,
+      path.1.length = walk.length + 2 := by
+  have kept : ∀ edge ∈ walk.edges,
+      edge ∈ (contraction.pullback Subtype.val).graph.edgeSet := by
+    intro edge member
+    revert member
+    induction edge using Sym2.ind with
+    | _ left right =>
+      intro member
+      have leftNe : left ≠ contraction.tailVertex := by
+        rintro rfl
+        exact avoidsTail (walk.fst_mem_support_of_mem_edges member)
+      have rightNe : right ≠ contraction.tailVertex := by
+        rintro rfl
+        exact avoidsTail (walk.snd_mem_support_of_mem_edges member)
+      exact (contraction.contracted_adj_of_ne_tail leftNe rightNe).mp
+        (walk.edges_subset_edgeSet member)
+  let transferred := walk.transfer (contraction.pullback Subtype.val).graph kept
+  let mapped := transferred.map (contraction.pullbackHom Subtype.val)
+  have mappedPath : mapped.IsPath :=
+    SimpleGraph.Walk.map_isPath_of_injective Subtype.val_injective
+      (isPath.transfer kept)
+  have severedEdges : ∀ edge ∈ mapped.edges,
+      edge ∈ contraction.severed.edgeSet := by
+    intro edge member
+    revert member
+    induction edge using Sym2.ind with
+    | _ left right =>
+      intro member
+      have adjacent : object.graph.Adj left right :=
+        mapped.edges_subset_edgeSet member
+      have images : mapped.support =
+          transferred.support.map (contraction.pullbackHom Subtype.val) :=
+        SimpleGraph.Walk.support_map
+          (f := contraction.pullbackHom Subtype.val) (p := transferred)
+      refine contraction.severed_adj_of_ne_head adjacent ?_ ?_
+      · obtain ⟨candidate, _, image⟩ := List.mem_map.1
+          (images ▸ mapped.fst_mem_support_of_mem_edges member)
+        exact image ▸ contraction.ne_head candidate
+      · obtain ⟨candidate, _, image⟩ := List.mem_map.1
+          (images ▸ mapped.snd_mem_support_of_mem_edges member)
+        exact image ▸ contraction.ne_head candidate
+  let image := mapped.transfer contraction.severed severedEdges
+  have imagePath : image.IsPath := mappedPath.transfer severedEdges
+  have imageLength : image.length = walk.length := by
+    calc
+      image.length = mapped.length := SimpleGraph.Walk.length_transfer _ _
+      _ = transferred.length := by
+        simpa only [mapped] using
+          SimpleGraph.Walk.length_map (contraction.pullbackHom Subtype.val)
+            transferred
+      _ = walk.length := SimpleGraph.Walk.length_transfer _ _
+  have imageSupport : image.support = mapped.support :=
+    SimpleGraph.Walk.support_transfer _ _
+  have mappedSupport : mapped.support = transferred.support.map
+      (contraction.pullbackHom Subtype.val) := SimpleGraph.Walk.support_map _ _
+  have transferredSupport : transferred.support = walk.support :=
+    SimpleGraph.Walk.support_transfer _ _
+  have tailAvoids : contraction.tail ∉ image.support := by
+    rw [imageSupport, mappedSupport, transferredSupport]
+    intro member
+    obtain ⟨candidate, candidateMem, equality⟩ := List.mem_map.mp member
+    change candidate.1 = contraction.tail at equality
+    have valEq : candidate.1 = contraction.tailVertex.1 := by
+      simpa only [tailVertex_val] using equality
+    exact avoidsTail (Subtype.val_injective valEq ▸ candidateMem)
+  have headAvoids : contraction.head ∉ image.support := by
+    rw [imageSupport, mappedSupport, transferredSupport]
+    intro member
+    obtain ⟨candidate, _candidateMem, equality⟩ := List.mem_map.mp member
+    change candidate.1 = contraction.head at equality
+    exact (contraction.ne_head candidate) equality
+  have sourceNotTail : Subtype.val source ≠ contraction.tail := by
+    intro equality
+    have isTail : source = contraction.tailVertex := by
+      apply Subtype.ext
+      exact equality
+    exact avoidsTail (isTail ▸ walk.start_mem_support)
+  have firstEdge : contraction.severed.Adj contraction.tail (Subtype.val target) :=
+    contraction.severed_adj_of_ne_head fromTail
+      (fun equality => contraction.adjacent.ne equality)
+      (contraction.ne_head target)
+  have lastEdge : contraction.severed.Adj (Subtype.val source) contraction.head :=
+    contraction.severed_adj_of_avoids fromHead.symm
+      (Or.inl ⟨sourceNotTail, contraction.ne_head source⟩)
+  let inner := image.reverse.concat lastEdge
+  have innerPath : inner.IsPath := by
+    apply (SimpleGraph.Walk.concat_isPath_iff lastEdge).2
+    refine ⟨imagePath.reverse, ?_⟩
+    intro member
+    have supportEq := SimpleGraph.Walk.support_reverse image
+    exact headAvoids (List.mem_reverse.mp (supportEq ▸ member))
+  have innerAvoids : contraction.tail ∉ inner.support := by
+    intro member
+    have supportEq := SimpleGraph.Walk.support_concat image.reverse lastEdge
+    rw [supportEq, List.mem_append] at member
+    rcases member with inImage | isHead
+    · have reverseSupport := SimpleGraph.Walk.support_reverse image
+      exact tailAvoids (List.mem_reverse.mp (reverseSupport ▸ inImage))
+    · exact contraction.adjacent.ne (List.mem_singleton.mp isHead)
+  have innerLength : inner.length = image.length + 1 := by
+    rw [show inner.length = image.reverse.length + 1 from
+      SimpleGraph.Walk.length_concat image.reverse lastEdge,
+      SimpleGraph.Walk.length_reverse]
+  let result := SimpleGraph.Walk.cons firstEdge inner
+  have resultPath : result.IsPath := by
+    dsimp only [result]
+    exact (SimpleGraph.Walk.cons_isPath_iff firstEdge inner).2
+      ⟨innerPath, innerAvoids⟩
+  refine ⟨⟨result, resultPath⟩, ?_⟩
+  rw [show result.length = inner.length + 1 from
+    SimpleGraph.Walk.length_cons firstEdge inner, innerLength, imageLength]
+
 /-- **A cycle of the contraction cannot change kind at the tail.**  If one of
 its two tail incidences is an original tail edge and the other is a transplanted
 head edge, splicing them along the rest of the cycle is a return of the

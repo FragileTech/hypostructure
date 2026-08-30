@@ -268,7 +268,7 @@ theorem remainderStateCount_le_skeletonBudget (order threshold deficiencyCap : N
     (fun candidate : RemainderClass order threshold deficiencyCap
         (object.internalEdgeCount support) support.card =>
       (⟨glue support candidate.val, card_edgeSet_glue support candidate.val
-        candidate.property.2.2.2.2⟩ :
+        candidate.property.2.2.2⟩ :
         PackedWindowRealization.Skeleton object.vertexCount object.edgeCount)) ?_)
     (le_of_eq (PackedWindowRealization.card_skeleton object.vertexCount object.edgeCount))
   intro left right same

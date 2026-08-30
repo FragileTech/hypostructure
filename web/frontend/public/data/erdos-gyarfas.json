@@ -3937,7 +3937,7 @@
   {
    "number": "85",
    "tikzId": "closed",
-   "shape": "assertion",
+   "shape": "terminal",
    "label": "degree-\\(4\\) Type B cannot carry linear deficit outside route 8 once the fan-mass residual is sublinear",
    "id": "85",
    "group": "fig:proof-diagram-part-vii",

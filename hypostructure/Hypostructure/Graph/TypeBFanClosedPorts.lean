@@ -402,6 +402,66 @@ theorem compatiblePairTypeBRouting (profile : Profile object)
   rw [pairCard] at counted
   exact ⟨counted, deficitBound, positive⟩
 
+/-! ## `prop:triangular-port-typeB-routing` -/
+
+/-- `prop:triangular-port-typeB-routing`, manuscript nodes `[78]`–`[81]`
+feeding node `[72]`.
+
+Let `h` have degree `k ≥ 5`, and let `ports` be the selected family of
+`k - 2` triangular ports at `h`.  If the assigned Type B profile records their
+endpoints on the remainder side and assigns every shoulder incidence to the
+fan envelope, then every selected triangular port is fan-closed.  Applying
+`fanClosedPortTypeBRouting` to that same family gives at least `k - 2`
+cubic-closed neighbours and the manuscript's stronger bound
+
+`D_B(𝔉_h) ≥ (5k - 19) / 4 > 0`.
+
+The triangular-family hypothesis is retained explicitly because it is part of
+the paper statement; fan-closedness itself follows at this stage from the two
+profile-recording hypotheses, exactly by `def:fan-closed-port`. -/
+theorem triangularPortTypeBRouting (profile : Profile object)
+    (ledger : LoadCapacityProfile)
+    (normal : NormalForm object 3 profile.marked.fan.hub)
+    (scale : ledger.loadMultiplier = 4)
+    {ports : Finset object.Vertex}
+    (triangular : ports ⊆
+      triangularEndpoints object profile.marked.fan.hub)
+    (cardPorts : ports.card = object.degree profile.marked.fan.hub - 2)
+    (degreeFive : 5 ≤ object.degree profile.marked.fan.hub)
+    (remainder : ∀ endpoint ∈ ports, endpoint ∈ profile.remainder)
+    (assigned : ∀ endpoint ∈ ports, ∀ shoulder,
+      IsShoulder object profile.marked.fan.hub endpoint shoulder →
+        shoulder ∈ profile.envelope) :
+    ports.card ≤ profile.closedCount ∧
+      ((5 * (object.degree profile.marked.fan.hub : ℚ) - 19) / 4)
+        ≤ profile.closedNeighbourDeficit ledger ∧
+      0 < profile.closedNeighbourDeficit ledger := by
+  have fanClosed : ∀ endpoint ∈ ports, profile.IsFanClosed endpoint := by
+    intro endpoint member
+    have endpointTriangular :
+        endpoint ∈ triangularEndpoints object profile.marked.fan.hub :=
+      triangular member
+    have _endpointAdjacency :
+        object.graph.Adj profile.marked.fan.hub endpoint :=
+      (mem_triangularEndpoints_iff.mp endpointTriangular).1
+    exact ⟨remainder endpoint member, assigned endpoint member⟩
+  have two : 2 ≤ ports.card := by
+    omega
+  obtain ⟨counted, familyBound, _, positive⟩ :=
+    fanClosedPortTypeBRouting profile ledger normal scale fanClosed two
+  have cardCast : (ports.card : ℚ) =
+      (object.degree profile.marked.fan.hub : ℚ) - 2 := by
+    rw [cardPorts, Nat.cast_sub (by omega)]
+    norm_num
+  have stronger :
+      ((5 * (object.degree profile.marked.fan.hub : ℚ) - 19) / 4)
+        ≤ profile.closedNeighbourDeficit ledger := by
+    rw [scale] at familyBound
+    rw [cardCast] at familyBound
+    norm_num at familyBound ⊢
+    linarith
+  exact ⟨counted, stronger, positive⟩
+
 /-! ## Non-vacuity
 
 Every hypothesis above is realised simultaneously by an explicit finite graph:

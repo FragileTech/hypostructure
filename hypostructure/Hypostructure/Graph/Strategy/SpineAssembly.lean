@@ -85,7 +85,7 @@ abbrev forcedCurvatureCostKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   K .forcedCurvatureCost :: completedKeys
 
-/-- Node `[51]`: the high-entropy arm of the node-`[50]` split. -/
+/-- Node `[50]`: the high-entropy arm of the entropy split. -/
 abbrev remainderEntropyHighKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   K .remainderEntropyHigh :: forcedCurvatureCostKeys
@@ -95,7 +95,8 @@ abbrev entropyPackageKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   K .entropyPackageDemand :: remainderEntropyHighKeys
 
-/-- Node `[50]`'s low-entropy arm. -/
+/-- Node `[50]`'s low-entropy arm.  It does not yet distinguish the paper's
+repetitive and nonrepetitive subcases. -/
 abbrev remainderEntropyLowKeys :
     FactKeys (Input BranchState Presentation presentation data) :=
   K .remainderEntropyLow :: forcedCurvatureCostKeys

@@ -1,4 +1,4 @@
-import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Strategy.DominantRootedType
 import Hypostructure.Graph.TypeADischarge
 import Hypostructure.Graph.TypeBMaximalCompletion
 
@@ -133,6 +133,1398 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           ((Graph.not_hasCycleWithLength_iff_returnLengthSets_disjoint data.LengthOK
               inputs.current.object).mp
             (inputs.get (K .selection)).down.1)⟩)
+        .nil)
+    0 0
+
+/-! ## `lem:contraction-critical`
+
+Contract one edge whose common neighbours are not cubic.  Avoidance of the
+accepted quadrilateral makes that common neighbour unique; hence contraction
+preserves the cubic baseline.  Selection minimality supplies an accepted
+cycle of the contraction.  Its two incidences at the contracted vertex either
+lift on one side, contradicting avoidance, or are mixed and splice into the
+paper's exact dyadic severed return. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def contractionCriticalRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.contractionCritical
+    { Requires := [K .selection, K .cubicBaseline]
+      Produces := [K .contractionCritical]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let selection := (inputs.get (K .selection)).down
+      let cubic := (inputs.get (K .cubicBaseline)).down
+      .cons (key := K .contractionCritical) ⟨by
+        change ∀ contraction : Graph.EdgeContraction inputs.current.object,
+          (∀ common : inputs.current.object.Vertex,
+            inputs.current.object.graph.Adj contraction.tail common →
+            inputs.current.object.graph.Adj contraction.head common →
+            inputs.current.object.degree common ≠ data.threshold) →
+          ∃ path : contraction.severed.Path contraction.tail contraction.head,
+            ∃ exponent : Nat,
+              2 ≤ exponent ∧ path.1.length = 2 ^ exponent
+        classical
+        intro contraction commonNotThreshold
+        have accepted : ∀ length,
+            data.LengthOK length ↔
+              Core.DyadicLength.PowerOfTwoLength length :=
+          data.lengthOK_iff_powerOfTwo
+        have baseline : 3 ≤ inputs.current.object.minDegree := by
+          rw [← cubic]
+          exact inputs.current.baseline
+        have avoids := selection.1
+        have minimal : ∀ smaller : Graph.FiniteObject.{u},
+            smaller.LexicographicallySmaller inputs.current.object →
+            3 ≤ smaller.minDegree →
+            Graph.HasCycleWithLength data.LengthOK smaller := by
+          intro smaller smallerProgress smallerBaseline
+          apply selection.2.sizeMinimal smaller smallerProgress
+          rw [cubic]
+          exact smallerBaseline
+        have commonNotCubic : ∀ common : inputs.current.object.Vertex,
+            inputs.current.object.graph.Adj contraction.tail common →
+            inputs.current.object.graph.Adj contraction.head common →
+            inputs.current.object.degree common ≠ 3 := by
+          intro common tailCommon headCommon
+          intro degreeThree
+          apply commonNotThreshold common tailCommon headCommon
+          exact degreeThree.trans cubic.symm
+        have four : data.LengthOK 4 :=
+          (accepted 4).2 Core.DyadicLength.powerOfTwoLength_four
+        have commonUnique : ∀ left right : inputs.current.object.Vertex,
+            inputs.current.object.graph.Adj contraction.tail left →
+            inputs.current.object.graph.Adj contraction.head left →
+            inputs.current.object.graph.Adj contraction.tail right →
+            inputs.current.object.graph.Adj contraction.head right →
+            left = right := by
+          intro left right tailLeft headLeft tailRight headRight
+          by_contra distinct
+          exact Graph.not_quadrilateral avoids four tailLeft headLeft.symm headRight
+            tailRight.symm contraction.adjacent.ne distinct
+        have contractedBaseline : 3 ≤ contraction.contracted.minDegree := by
+          letI : Fintype inputs.current.object.Vertex := @FinEnum.instFintype _ inputs.current.object.vertices
+          letI : Nonempty contraction.contracted.Vertex := ⟨contraction.tailVertex⟩
+          refine contraction.contracted.le_minDegree_of_forall_le_degree 3 ?_
+          intro vertex
+          have sourceBaseline : 3 ≤ inputs.current.object.degree vertex.1 :=
+            le_trans baseline (inputs.current.object.minDegree_le_degree vertex.1)
+          by_cases isTail : vertex = contraction.tailVertex
+          · subst isTail
+            let leftSet := inputs.current.object.graph.neighborSet contraction.tail \ {contraction.head}
+            let rightSet := inputs.current.object.graph.neighborSet contraction.head \ {contraction.tail}
+            have imageCard :
+                contraction.contracted.degree contraction.tailVertex =
+                  (leftSet ∪ rightSet).ncard := by
+              rw [Graph.FiniteObject.degree_eq_ncard_neighborSet]
+              calc
+                _ = (Subtype.val ''
+                    contraction.contracted.graph.neighborSet
+                      contraction.tailVertex).ncard := by
+                  exact (Set.ncard_image_of_injective _ Subtype.val_injective).symm
+                _ = _ := by rw [contraction.image_neighborSet_tail]
+            have leftCard : 2 ≤ leftSet.ncard := by
+              have drop := Set.ncard_sdiff_singleton_add_one contraction.adjacent
+                (Set.toFinite (inputs.current.object.graph.neighborSet contraction.tail))
+              change leftSet.ncard + 1 =
+                (inputs.current.object.graph.neighborSet contraction.tail).ncard at drop
+              rw [← Graph.FiniteObject.degree_eq_ncard_neighborSet] at drop
+              have lower := le_trans baseline
+                (inputs.current.object.minDegree_le_degree contraction.tail)
+              omega
+            have rightCard : 2 ≤ rightSet.ncard := by
+              have drop := Set.ncard_sdiff_singleton_add_one contraction.adjacent.symm
+                (Set.toFinite (inputs.current.object.graph.neighborSet contraction.head))
+              change rightSet.ncard + 1 =
+                (inputs.current.object.graph.neighborSet contraction.head).ncard at drop
+              rw [← Graph.FiniteObject.degree_eq_ncard_neighborSet] at drop
+              have lower := le_trans baseline
+                (inputs.current.object.minDegree_le_degree contraction.head)
+              omega
+            have intersectionCard : (leftSet ∩ rightSet).ncard ≤ 1 := by
+              by_cases empty : leftSet ∩ rightSet = ∅
+              · simp [empty]
+              · obtain ⟨witness, witnessMem⟩ := Set.nonempty_iff_ne_empty.mpr empty
+                have subset : leftSet ∩ rightSet ⊆ {witness} := by
+                  intro other otherMem
+                  have equality := commonUnique other witness otherMem.1.1
+                    otherMem.2.1 witnessMem.1.1 witnessMem.2.1
+                  simpa [equality]
+                exact le_trans (Set.ncard_le_ncard subset (Set.toFinite _)) (by simp)
+            have unionEquation := Set.ncard_union_add_ncard_inter leftSet rightSet
+              (Set.toFinite leftSet) (Set.toFinite rightSet)
+            rw [imageCard]
+            omega
+          · by_cases fromHead : inputs.current.object.graph.Adj contraction.head vertex.1
+            · have imageCard : contraction.contracted.degree vertex =
+                  (insert contraction.tail
+                    (inputs.current.object.graph.neighborSet vertex.1 \ {contraction.head})).ncard := by
+                rw [Graph.FiniteObject.degree_eq_ncard_neighborSet]
+                calc
+                  _ = (Subtype.val ''
+                      contraction.contracted.graph.neighborSet vertex).ncard := by
+                    exact (Set.ncard_image_of_injective _ Subtype.val_injective).symm
+                  _ = _ := by
+                    rw [contraction.image_neighborSet_of_adj_head isTail fromHead]
+              rw [imageCard]
+              have headMem : contraction.head ∈ inputs.current.object.graph.neighborSet vertex.1 :=
+                fromHead.symm
+              have drop := Set.ncard_sdiff_singleton_add_one headMem
+                (Set.toFinite (inputs.current.object.graph.neighborSet vertex.1))
+              by_cases fromTail : inputs.current.object.graph.Adj contraction.tail vertex.1
+              · have nonCubic := commonNotCubic vertex.1 fromTail fromHead
+                have sourceDegree : inputs.current.object.degree vertex.1 ≠ 3 := nonCubic
+                have lower : 4 ≤ inputs.current.object.degree vertex.1 := by omega
+                have insertBound := Set.ncard_le_ncard_insert contraction.tail
+                  (inputs.current.object.graph.neighborSet vertex.1 \ {contraction.head})
+                rw [← Graph.FiniteObject.degree_eq_ncard_neighborSet] at drop
+                omega
+              · have tailNotMem : contraction.tail ∉
+                    inputs.current.object.graph.neighborSet vertex.1 \ {contraction.head} := by
+                  rintro ⟨tailAdj, _⟩
+                  exact fromTail tailAdj.symm
+                rw [Set.ncard_insert_of_notMem tailNotMem (Set.toFinite _)]
+                rw [← Graph.FiniteObject.degree_eq_ncard_neighborSet] at drop
+                omega
+            · have imageCard : contraction.contracted.degree vertex =
+                  (inputs.current.object.graph.neighborSet vertex.1).ncard := by
+                rw [Graph.FiniteObject.degree_eq_ncard_neighborSet]
+                calc
+                  _ = (Subtype.val ''
+                      contraction.contracted.graph.neighborSet vertex).ncard := by
+                    exact (Set.ncard_image_of_injective _ Subtype.val_injective).symm
+                  _ = _ := by
+                    rw [contraction.image_neighborSet_of_ne_tail isTail fromHead]
+              rw [imageCard, ← Graph.FiniteObject.degree_eq_ncard_neighborSet]
+              exact sourceBaseline
+        obtain ⟨certificate⟩ := minimal contraction.contracted
+          contraction.lexicographicallySmaller contractedBaseline
+        by_cases tailMem : contraction.tailVertex ∈ certificate.walk.support
+        · let rotated := certificate.walk.rotate contraction.tailVertex tailMem
+          have rotatedCycle : rotated.IsCycle := certificate.isCycle.rotate tailMem
+          have rotatedLength : rotated.length = certificate.walk.length :=
+            certificate.walk.length_rotate contraction.tailVertex tailMem
+          let rotatedCertificate :
+          Graph.CycleCertificate contraction.contracted data.LengthOK :=
+            { vertex := contraction.tailVertex
+              walk := rotated
+              isCycle := rotatedCycle
+              length_ok := rotatedLength ▸ certificate.length_ok }
+          have notNil : ¬ rotated.Nil := rotatedCycle.not_nil
+          have firstAdj : contraction.contracted.graph.Adj
+              contraction.tailVertex rotated.snd := rotated.adj_snd notNil
+          have rebuilt : (SimpleGraph.Walk.cons firstAdj rotated.tail).IsCycle := by
+            rw [rotated.cons_tail_eq notNil]
+            exact rotatedCycle
+          have forwardData :=
+            (SimpleGraph.Walk.cons_isCycle_iff rotated.tail firstAdj).mp rebuilt
+          let back := rotated.tail.reverse
+          have backPath : back.IsPath := forwardData.1.reverse
+          have backNotNil : ¬ back.Nil := by
+            rw [SimpleGraph.Walk.not_nil_iff_lt_length]
+            have three := rotatedCycle.three_le_length
+            have drop := rotated.length_tail_add_one notNil
+            have reversed : back.length = rotated.tail.length :=
+              SimpleGraph.Walk.length_reverse rotated.tail
+            omega
+          have secondAdj : contraction.contracted.graph.Adj
+              contraction.tailVertex back.snd := back.adj_snd backNotNil
+          have backRebuilt : (SimpleGraph.Walk.cons secondAdj back.tail).IsPath := by
+            rw [back.cons_tail_eq backNotNil]
+            exact backPath
+          have backData :=
+            (SimpleGraph.Walk.cons_isPath_iff secondAdj back.tail).mp backRebuilt
+          have edgeCases : ∀ edge ∈ rotated.edges,
+              edge = s(contraction.tailVertex, rotated.snd) ∨
+                edge = s(contraction.tailVertex, back.snd) ∨
+                  edge ∈ back.tail.edges := by
+            intro edge member
+            rw [← rotated.cons_tail_eq notNil, SimpleGraph.Walk.edges_cons,
+              List.mem_cons] at member
+            rcases member with first | later
+            · exact Or.inl first
+            · have inBack : edge ∈ back.edges := by
+                change edge ∈ rotated.tail.reverse.edges
+                rw [SimpleGraph.Walk.edges_reverse]
+                exact List.mem_reverse.mpr later
+              rw [← back.cons_tail_eq backNotNil, SimpleGraph.Walk.edges_cons,
+                List.mem_cons] at inBack
+              rcases inBack with second | inner
+              · exact Or.inr (Or.inl second)
+              · exact Or.inr (Or.inr inner)
+          have inner : ∀ label : contraction.contracted.Vertex → inputs.current.object.Vertex,
+              (∀ vertex : contraction.contracted.Vertex,
+                vertex ≠ contraction.tailVertex → label vertex = vertex.1) →
+              ∀ edge ∈ back.tail.edges,
+                edge ∈ (contraction.pullback label).graph.edgeSet := by
+            intro label agrees edge member
+            revert member
+            induction edge using Sym2.ind with
+            | _ left right =>
+              intro member
+              have leftNe : left ≠ contraction.tailVertex := by
+                rintro rfl
+                exact backData.2 (back.tail.fst_mem_support_of_mem_edges member)
+              have rightNe : right ≠ contraction.tailVertex := by
+                rintro rfl
+                exact backData.2 (back.tail.snd_mem_support_of_mem_edges member)
+              have adjacent : inputs.current.object.graph.Adj left.1 right.1 :=
+                (contraction.contracted_adj_of_ne_tail leftNe rightNe).mp
+                  (back.tail.edges_subset_edgeSet member)
+              show inputs.current.object.graph.Adj (label left) (label right)
+              rw [agrees left leftNe, agrees right rightNe]
+              exact adjacent
+          obtain ⟨forwardNotTail, forwardKind⟩ :=
+            (contraction.contracted_adj_tail rotated.snd).mp firstAdj
+          obtain ⟨backNotTail, backKind⟩ :=
+            (contraction.contracted_adj_tail back.snd).mp secondAdj
+          have exactDyadic (path : contraction.severed.Path
+              contraction.tail contraction.head)
+              (pathLength : path.1.length = back.tail.length + 2) :
+              ∃ exponent : Nat, 2 ≤ exponent ∧ path.1.length = 2 ^ exponent := by
+            have cycleLength : certificate.walk.length = back.tail.length + 2 := by
+              have firstDrop := rotated.length_tail_add_one notNil
+              have reversed : back.length = rotated.tail.length :=
+                SimpleGraph.Walk.length_reverse rotated.tail
+              have secondDrop := back.length_tail_add_one backNotNil
+              omega
+            obtain ⟨exponent, lower, power⟩ :=
+              (Core.DyadicLength.powerOfTwoLength_iff certificate.walk.length).1
+                ((accepted certificate.walk.length).1 certificate.length_ok)
+            exact ⟨exponent, lower, by omega⟩
+          rcases forwardKind with forwardTail | forwardHead
+          · rcases backKind with backTail | backHead
+            · exfalso
+              apply avoids
+              exact ⟨contraction.certificateOfPullback Subtype.val
+                Subtype.val_injective rotatedCertificate (by
+                  intro edge member
+                  rcases edgeCases edge member with first | second | later
+                  · exact first ▸ forwardTail
+                  · exact second ▸ backTail
+                  · exact inner Subtype.val (fun _ _ => rfl) edge later)⟩
+            · obtain ⟨path, pathLength⟩ :=
+                contraction.exactReturn_of_mixed_incidences back.tail backData.1
+                  backData.2 backHead forwardTail
+              exact ⟨path, exactDyadic path pathLength⟩
+          · rcases backKind with backTail | backHead
+            · obtain ⟨path, pathLength⟩ :=
+                contraction.exactReturn_of_mixed_incidences back.tail.reverse
+                  backData.1.reverse (by
+                    rw [SimpleGraph.Walk.support_reverse]
+                    exact fun member => backData.2 (List.mem_reverse.mp member))
+                  forwardHead backTail
+              refine ⟨path, ?_⟩
+              apply exactDyadic path
+              rw [pathLength, SimpleGraph.Walk.length_reverse]
+            · exfalso
+              apply avoids
+              exact ⟨contraction.certificateOfPullback contraction.merge
+                contraction.merge_injective rotatedCertificate (by
+                  intro edge member
+                  rcases edgeCases edge member with first | second | later
+                  · rw [first]
+                    show inputs.current.object.graph.Adj
+                      (contraction.merge contraction.tailVertex)
+                      (contraction.merge rotated.snd)
+                    rw [contraction.merge_tailVertex,
+                      contraction.merge_of_ne_tail forwardNotTail]
+                    exact forwardHead
+                  · rw [second]
+                    show inputs.current.object.graph.Adj
+                      (contraction.merge contraction.tailVertex)
+                      (contraction.merge back.snd)
+                    rw [contraction.merge_tailVertex,
+                      contraction.merge_of_ne_tail backNotTail]
+                    exact backHead
+                  · exact inner contraction.merge
+                      (fun _ notTail => contraction.merge_of_ne_tail notTail)
+                      edge later)⟩
+        · exfalso
+          apply avoids
+          exact ⟨contraction.certificateOfPullback Subtype.val
+            Subtype.val_injective certificate (by
+              intro edge member
+              revert member
+              induction edge using Sym2.ind with
+              | _ left right =>
+                intro member
+                have leftNe : left ≠ contraction.tailVertex := by
+                  rintro rfl
+                  exact tailMem (certificate.walk.fst_mem_support_of_mem_edges member)
+                have rightNe : right ≠ contraction.tailVertex := by
+                  rintro rfl
+                  exact tailMem (certificate.walk.snd_mem_support_of_mem_edges member)
+                exact (contraction.contracted_adj_of_ne_tail leftNe rightNe).mp
+                  (certificate.walk.edges_subset_edgeSet member))⟩
+        ⟩ .nil)
+    0 0
+
+/-! ## `lem:gadget-closure` -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def gadgetClosureRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.gadgetClosure
+    { Requires := [K .selection, K .cubicBaseline]
+      Produces := [K .gadgetClosure]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let selection := (inputs.get (K .selection)).down
+      let cubic := (inputs.get (K .cubicBaseline)).down
+      .cons (key := K .gadgetClosure) ⟨by
+        classical
+        dsimp only [Holds]
+        let avoids (piece : Graph.FiniteObject.{u}) :=
+          ¬ Graph.HasCycleWithLength data.LengthOK piece
+        let cubicPiece (piece : Graph.FiniteObject.{u}) (x y : piece.Vertex) :=
+          x ≠ y ∧ piece.degree x = 2 ∧ piece.degree y = 2 ∧
+            ∀ vertex, vertex ≠ x → vertex ≠ y → piece.degree vertex = 3
+        have minimal : ∀ candidate : Graph.FiniteObject.{u},
+            candidate.LexicographicallySmaller inputs.current.object →
+            3 ≤ candidate.minDegree →
+            Graph.HasCycleWithLength data.LengthOK candidate := by
+          intro candidate smaller baseline
+          apply selection.2.sizeMinimal candidate smaller
+          rw [cubic]
+          exact baseline
+        have accepted (length : Nat) : data.LengthOK length ↔
+            Core.DyadicLength.PowerOfTwoLength length :=
+          data.lengthOK_iff_powerOfTwo length
+        constructor
+        · intro left right a b c d leftCubic rightCubic leftAvoids rightAvoids
+            count baseline
+          have smaller :
+              (Graph.TwoTerminalClosure.close left right a b c d).LexicographicallySmaller
+                inputs.current.object :=
+            Graph.FiniteObject.lexicographicallySmaller_of_vertexCount_lt (by
+              rw [Graph.TwoTerminalClosure.vertexCount_close]
+              exact count)
+          obtain ⟨leftPath, rightPath, leftIsPath, rightIsPath, lengthOK⟩ :=
+            Graph.TwoTerminalClosure.terminal_paths_of_minimal_closure
+              inputs.current.object left right a b c d leftCubic.1 rightCubic.1
+              leftAvoids rightAvoids smaller baseline minimal
+          exact ⟨leftPath, rightPath, leftIsPath, rightIsPath,
+            (accepted _).mp lengthOK⟩
+        · constructor
+          · intro piece a b count pieceCubic pieceAvoids baseline
+            have smaller : (piece.addEdge a b).LexicographicallySmaller
+                inputs.current.object :=
+              Graph.FiniteObject.lexicographicallySmaller_of_vertexCount_lt (by
+                simpa using count)
+            obtain ⟨path, pathIsPath, lengthOK⟩ :=
+              Graph.AddedEdgeClosure.terminalPath_of_minimal_addedEdge
+                inputs.current.object piece a b pieceCubic.1 pieceAvoids smaller
+                baseline minimal
+            obtain ⟨exponent, exponentLower, equality⟩ :=
+              (Core.DyadicLength.powerOfTwoLength_iff _).mp
+                ((accepted _).mp lengthOK)
+            exact ⟨path, exponent, pathIsPath, by omega, by omega⟩
+          · constructor
+            · intro piece a b count pieceCubic pieceAvoids baseline
+              have smaller :
+                  (Graph.TwoTerminalClosure.close piece piece a b a b).LexicographicallySmaller
+                    inputs.current.object :=
+                Graph.FiniteObject.lexicographicallySmaller_of_vertexCount_lt (by
+                  rw [Graph.TwoTerminalClosure.vertexCount_close]
+                  simpa [two_mul] using count)
+              obtain ⟨first, second, firstPath, secondPath, lengthOK⟩ :=
+                Graph.TwoTerminalClosure.terminal_paths_of_minimal_closure
+                  inputs.current.object piece piece a b a b pieceCubic.1 pieceCubic.1
+                  pieceAvoids pieceAvoids smaller baseline minimal
+              obtain ⟨exponent, _lower, equality⟩ :=
+                (Core.DyadicLength.powerOfTwoLength_iff _).mp
+                  ((accepted _).mp lengthOK)
+              exact ⟨first, second, exponent, firstPath, secondPath, by omega⟩
+            · intro support complementSupport
+              dsimp
+              intro t1 t2 u1 u2 _isComplement _pieceCubic _pieceAvoids complementAvoids
+                different _nonadjacent _attachment smaller baseline
+              obtain ⟨path, pathIsPath, lengthOK⟩ :=
+                Graph.AddedEdgeClosure.terminalPath_of_minimal_addedEdge
+                  inputs.current.object _ u1 u2 different complementAvoids smaller
+                  baseline minimal
+              obtain ⟨exponent, exponentLower, equality⟩ :=
+                (Core.DyadicLength.powerOfTwoLength_iff _).mp
+                  ((accepted _).mp lengthOK)
+              exact ⟨path, exponent, pathIsPath, by omega, by omega⟩
+      ⟩ .nil)
+    0 0
+
+/-! ## `def:open-port-suppression`
+
+This source-free definition row publishes the exact identification of the
+paper's suppressible open-port families with the generic compatible-family
+construction.  The next label, not this one, proves minimum-degree safety. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def openPortSuppressionRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.openPortSuppression
+    { Requires := []
+      Produces := [K .openPortSuppression]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .openPortSuppression) ⟨by
+        change OpenPortSuppressionStatement data inputs.current.object
+        classical
+        intro family _highCentres
+        letI : DecidableEq inputs.current.object.Vertex :=
+          inputs.current.object.vertices.decEq
+        letI : DecidableEq family.Index := family.indices.decEq
+        refine ⟨?_, family.support_disjoint, family.center_outside_support,
+          family.chord_injective, ?_, ?_, ?_, ?_⟩
+        · intro index other
+          constructor
+          · exact (family.configuration index).neighbors other
+          · rintro (rfl | rfl | rfl)
+            · exact (family.configuration index).vertex_center
+            · exact (family.configuration index).vertex_left
+            · exact (family.configuration index).vertex_right
+        · intro index
+          exact (family.configuration index).shoulder_missing
+        · have centreOfPositive : ∀ vertex,
+              0 < family.centerLoad vertex →
+                ∃ index, (family.configuration index).center = vertex := by
+            intro vertex positive
+            rw [Graph.TightVertexSuppression.CompatibleFamily.centerLoad] at positive
+            obtain ⟨index, indexMem⟩ := Finset.card_pos.mp positive
+            simp only [Finset.mem_filter, Finset.mem_univ, true_and] at indexMem
+            exact ⟨index, indexMem⟩
+          constructor
+          · intro capacity centre centreHigh
+            by_cases loadZero : family.centerLoad centre = 0
+            · omega
+            · obtain ⟨index, indexCentre⟩ :=
+                centreOfPositive centre (Nat.pos_of_ne_zero loadZero)
+              have centreRemaining : centre ∈ family.remainingVertices := by
+                rw [Graph.TightVertexSuppression.CompatibleFamily.remainingVertices]
+                refine Finset.mem_sdiff.mpr
+                  ⟨inputs.current.object.mem_vertexFinset centre, ?_⟩
+                intro deleted
+                rw [Graph.TightVertexSuppression.CompatibleFamily.deletedVertices] at deleted
+                obtain ⟨other, _otherMem, otherVertex⟩ := Finset.mem_image.mp deleted
+                exact (family.center_outside_support index other).1
+                  (indexCentre.trans otherVertex.symm)
+              exact capacity centre centreRemaining
+          · intro highCapacity vertex vertexRemaining
+            by_cases vertexHigh : data.threshold <
+                inputs.current.object.degree vertex
+            · exact highCapacity vertex vertexHigh
+            · by_cases loadZero : family.centerLoad vertex = 0
+              · omega
+              · obtain ⟨index, indexCentre⟩ :=
+                  centreOfPositive vertex (Nat.pos_of_ne_zero loadZero)
+                have := _highCentres index
+                rw [indexCentre] at this
+                exact (vertexHigh this).elim
+        · ext vertex
+          simp [Graph.TightVertexSuppression.CompatibleFamily.deletedVertices]
+        · intro left right
+          exact family.suppressed_adj left right⟩
+        .nil)
+    0 0
+
+/-! ## `lem:open-port-suppression-safe`
+
+The preceding definition identifies the paper's four suppressibility clauses
+with the canonical compatible-family construction.  This row reads that exact
+definition fact and applies the proved simultaneous degree balance: shoulder
+losses are compensated by their new chords, while the only uncompensated
+losses are the centre loads bounded by clause (d). -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def openPortSuppressionSafeRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.openPortSuppressionSafe
+    { Requires := [K .openPortSuppression]
+      Produces := [K .openPortSuppressionSafe]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .openPortSuppressionSafe) ⟨by
+        change OpenPortSuppressionSafeStatement data inputs.current.object
+        classical
+        intro family highCentres paperCapacity vertex
+        have suppressionDefinition :=
+          (inputs.get (K .openPortSuppression)).down family highCentres
+        rcases suppressionDefinition with
+          ⟨_neighbors, _supports, _centres, _chords, _missing,
+            capacityIff, _deleted, _adjacency⟩
+        have capacity : family.CenterCapacity data.threshold :=
+          capacityIff.mpr paperCapacity
+        have oldLower :
+            data.threshold ≤ inputs.current.object.degree vertex.1 :=
+          inputs.current.baseline.trans
+            (inputs.current.object.minDegree_le_degree vertex.1)
+        have loadBound := capacity vertex.1 vertex.2
+        have balance := family.degree_add_centerLoad vertex
+        have thresholdLower :
+            data.threshold ≤ family.suppressed.degree vertex := by
+          omega
+        exact data.three_le_threshold.trans thresholdLower⟩
+        .nil)
+    0 0
+
+/-! ## `lem:single-open-port-suppression-witness`
+
+The generic tight-vertex suppression theorem already formalizes the paper's
+argument: minimality gives an accepted cycle after suppression, avoidance
+forces that cycle through the new shoulder chord, and deleting that chord
+reconstructs the predecessor-length path in `G - x`.  This row exposes that
+existing proof on the selected ExactLedger object. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def singleOpenPortSuppressionWitnessRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.singleOpenPortSuppressionWitness
+    { Requires := [K .selection]
+      Produces := [K .singleOpenPortSuppressionWitness]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let selection := (inputs.get (K .selection)).down
+      .cons (key := K .singleOpenPortSuppressionWitness) ⟨by
+        change SingleOpenPortSuppressionWitnessStatement data
+          inputs.current.object
+        classical
+        intro configuration centreHigh
+        obtain ⟨_certificate, ⟨reconstructed⟩⟩ :=
+          configuration.singleSuppressionWitness_of_minimal
+            (LengthOK := data.LengthOK) (threshold := data.threshold)
+            inputs.current.baseline selection.1
+            (fun smaller smallerDecrease baseline =>
+              selection.2.sizeMinimal smaller smallerDecrease baseline)
+            centreHigh
+        exact Graph.FiniteObject.SurplusPort.openPortWitness_of_deleted
+          (endpoint := configuration.vertex) reconstructed.path
+            reconstructed.isPath reconstructed.restored_length_ok⟩
+        .nil)
+    0 0
+
+/-! ## `lem:suppressed-family-critical-cycle`
+
+This row supplies the selected-object baseline and minimality to the generic
+simultaneous suppression development.  That development already proves the
+paper's chord-use and simultaneous simple-cycle expansion argument. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def suppressedFamilyCriticalCycleRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.suppressedFamilyCriticalCycle
+    { Requires := [K .selection, K .openPortSuppressionSafe]
+      Produces := [K .suppressedFamilyCriticalCycle]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let selection := (inputs.get (K .selection)).down
+      let suppressionSafe := (inputs.get (K .openPortSuppressionSafe)).down
+      .cons (key := K .suppressedFamilyCriticalCycle) ⟨by
+        change SuppressedFamilyCriticalCycleStatement data inputs.current.object
+        classical
+        letI : DecidableEq inputs.current.object.Vertex :=
+          inputs.current.object.vertices.decEq
+        intro family familyNonempty highCentres paperCapacity
+        letI : DecidableEq family.Index := family.indices.decEq
+        letI : Nonempty family.Index := familyNonempty
+        let chosen : family.Index := Classical.choice familyNonempty
+        have centreRemaining :
+            (family.configuration chosen).center ∈ family.remainingVertices := by
+          rw [Graph.TightVertexSuppression.CompatibleFamily.remainingVertices]
+          refine Finset.mem_sdiff.mpr
+            ⟨inputs.current.object.mem_vertexFinset _, ?_⟩
+          intro deleted
+          rw [Graph.TightVertexSuppression.CompatibleFamily.deletedVertices] at deleted
+          obtain ⟨other, _otherMem, otherVertex⟩ := Finset.mem_image.mp deleted
+          exact (family.center_outside_support chosen other).1 otherVertex.symm
+        letI : Nonempty family.suppressed.Vertex :=
+          ⟨⟨(family.configuration chosen).center, centreRemaining⟩⟩
+        have preserved : data.threshold ≤ family.suppressed.minDegree := by
+          apply family.suppressed.le_minDegree_of_forall_le_degree
+          intro vertex
+          rw [data.threshold_eq_three]
+          exact suppressionSafe family highCentres paperCapacity vertex
+        have target : Graph.HasCycleWithLength data.LengthOK family.suppressed :=
+          selection.2.sizeMinimal family.suppressed
+            family.lexicographicallySmaller preserved
+        obtain ⟨certificate⟩ := target
+        have firstExpansion :=
+          family.suppressedFamilyExpansion selection.1 certificate
+        refine ⟨⟨certificate, firstExpansion.1⟩, ?_⟩
+        intro arbitraryCertificate
+        obtain ⟨usedNonempty, ⟨expanded, lengthEq⟩⟩ :=
+          family.suppressedFamilyExpansion selection.1 arbitraryCertificate
+        refine ⟨usedNonempty, ⟨expanded, lengthEq, ?_⟩⟩
+        intro accepted
+        apply selection.1
+        exact ⟨{
+          vertex := _
+          walk := expanded.walk
+          isCycle := expanded.isCycle
+          length_ok := accepted }⟩⟩
+        .nil)
+    0 0
+
+/-! ## `lem:triangular-cross-shoulder`
+
+Two distinct cross edges either share a shoulder, giving that shoulder four
+distinct neighbours, or are disjoint and close with the two shoulder chords
+to the manuscript's quadrilateral.  Target safety removes the latter case. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def triangularCrossShoulderRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.triangularCrossShoulder
+    { Requires := [K .selection, K .triangularFanCore,
+        K .triangularFirstLanding]
+      Produces := [K .triangularCrossShoulder]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let avoids := (inputs.get (K .selection)).down.1
+      let _fanCore := (inputs.get (K .triangularFanCore)).down
+      let _firstLanding := (inputs.get (K .triangularFirstLanding)).down
+      .cons (key := K .triangularCrossShoulder) ⟨by
+        change TriangularCrossShoulderStatement data inputs.current.object
+        classical
+        intro centre centreHeavy ports portsNonempty portsSubset shoulders
+          crossTriangular shoulderSpec crossSpec first firstMem second secondMem
+          firstNeSecond
+        dsimp only
+        have chordOfDistinct : ∀ endpoint ∈ ports,
+            ∀ left ∈ shoulders endpoint, ∀ right ∈ shoulders endpoint,
+              left ≠ right → inputs.current.object.graph.Adj left right := by
+          intro endpoint endpointMem left leftMem right rightMem leftNeRight
+          obtain ⟨left₀, right₀, left₀Mem, right₀Mem, left₀NeRight₀, chord⟩ :=
+            (shoulderSpec endpoint endpointMem).2.2
+          have pairEq : ({left₀, right₀} :
+              Finset inputs.current.object.Vertex) = shoulders endpoint :=
+            Finset.eq_of_subset_of_card_le (by
+              intro candidate candidateMem
+              simp only [Finset.mem_insert, Finset.mem_singleton] at candidateMem
+              rcases candidateMem with h | h
+              · simpa [h] using left₀Mem
+              · simpa [h] using right₀Mem) (by
+                simp [left₀NeRight₀, (shoulderSpec endpoint endpointMem).2.1])
+          have every : ∀ vertex ∈ shoulders endpoint,
+              vertex = left₀ ∨ vertex = right₀ := by
+            intro vertex vertexMem
+            have : vertex ∈ ({left₀, right₀} :
+                Finset inputs.current.object.Vertex) := by
+              rw [pairEq]
+              exact vertexMem
+            simpa using this
+          rcases every left leftMem with rfl | rfl <;>
+            rcases every right rightMem with rfl | rfl
+          · exact (leftNeRight rfl).elim
+          · exact chord
+          · exact chord.symm
+          · exact (leftNeRight rfl).elim
+        have fourNeighbours : ∀ vertex a b c d,
+            inputs.current.object.graph.Adj vertex a →
+            inputs.current.object.graph.Adj vertex b →
+            inputs.current.object.graph.Adj vertex c →
+            inputs.current.object.graph.Adj vertex d →
+            a ≠ b → a ≠ c → a ≠ d → b ≠ c → b ≠ d → c ≠ d →
+              4 ≤ inputs.current.object.degree vertex := by
+          intro vertex a b c d va vb vc vd ab ac ad bc bd cd
+          have subset : ({a, b, c, d} :
+              Finset inputs.current.object.Vertex) ⊆
+                (inputs.current.object.orderedNeighbors vertex).toFinset := by
+            intro candidate candidateMem
+            simp only [Finset.mem_insert, Finset.mem_singleton] at candidateMem
+            rcases candidateMem with rfl | rfl | rfl | rfl
+            · simpa [inputs.current.object.mem_orderedNeighbors_iff] using va
+            · simpa [inputs.current.object.mem_orderedNeighbors_iff] using vb
+            · simpa [inputs.current.object.mem_orderedNeighbors_iff] using vc
+            · simpa [inputs.current.object.mem_orderedNeighbors_iff] using vd
+          have cardFour : ({a, b, c, d} :
+              Finset inputs.current.object.Vertex).card = 4 := by
+            simp [ab, ac, ad, bc, bd, cd]
+          have count := Finset.card_le_card subset
+          rw [List.toFinset_card_of_nodup
+            (inputs.current.object.orderedNeighbors_nodup vertex),
+            inputs.current.object.orderedNeighbors_length] at count
+          simpa [cardFour] using count
+        have highOfDistinct : ∀ source target source' target',
+            (crossTriangular first source target ∧
+              crossTriangular second target source) →
+            (crossTriangular first source' target' ∧
+              crossTriangular second target' source') →
+            (source ≠ source' ∨ target ≠ target') →
+              ∃ shoulder,
+                (shoulder ∈ shoulders first ∨ shoulder ∈ shoulders second) ∧
+                  4 ≤ inputs.current.object.degree shoulder := by
+          intro source target source' target' edge edge' distinct
+          have firstEdge := (crossSpec first source target).mp edge.1
+          have secondEdge := (crossSpec second target source).mp edge.2
+          have firstEdge' := (crossSpec first source' target').mp edge'.1
+          have secondEdge' := (crossSpec second target' source').mp edge'.2
+          by_cases sameSource : source = source'
+          · have targetNe : target ≠ target' := by
+              rcases distinct with sourceNe | targetNe
+              · exact (sourceNe sameSource).elim
+              · exact targetNe
+            subst source'
+            obtain ⟨other, otherMem, otherNe, sourceOther⟩ :
+                ∃ other ∈ shoulders first, other ≠ source ∧
+                  inputs.current.object.graph.Adj source other := by
+              obtain ⟨left, right, leftMem, rightMem, leftNeRight, chord⟩ :=
+                (shoulderSpec first firstMem).2.2
+              have sourceCases : source = left ∨ source = right := by
+                have pairEq : ({left, right} :
+                    Finset inputs.current.object.Vertex) = shoulders first :=
+                  Finset.eq_of_subset_of_card_le (by
+                    intro vertex vertexMem
+                    simp only [Finset.mem_insert, Finset.mem_singleton] at vertexMem
+                    rcases vertexMem with h | h
+                    · simpa [h] using leftMem
+                    · simpa [h] using rightMem) (by
+                      simp [leftNeRight, (shoulderSpec first firstMem).2.1])
+                have : source ∈ ({left, right} :
+                    Finset inputs.current.object.Vertex) := by
+                  rw [pairEq]
+                  exact firstEdge.2.1
+                simpa using this
+              rcases sourceCases with rfl | rfl
+              · exact ⟨right, rightMem, leftNeRight.symm, chord⟩
+              · exact ⟨left, leftMem, leftNeRight, chord.symm⟩
+            refine ⟨source, Or.inl firstEdge.2.1, ?_⟩
+            exact fourNeighbours source first other target target'
+              (((shoulderSpec first firstMem).1 source).mp firstEdge.2.1).1.symm
+              sourceOther firstEdge.2.2.1 firstEdge'.2.2.1
+              ((((shoulderSpec first firstMem).1 other).mp otherMem).1.ne)
+              firstEdge.2.2.2.1.symm firstEdge'.2.2.2.1.symm
+              (by exact fun h => firstEdge.2.2.2.2.1 (h ▸ otherMem))
+              (by exact fun h => firstEdge'.2.2.2.2.1 (h ▸ otherMem)) targetNe
+          · by_cases sameTarget : target = target'
+            · subst target'
+              have sourceNe : source ≠ source' := sameSource
+              obtain ⟨other, otherMem, otherNe, targetOther⟩ :
+                  ∃ other ∈ shoulders second, other ≠ target ∧
+                    inputs.current.object.graph.Adj target other := by
+                obtain ⟨left, right, leftMem, rightMem, leftNeRight, chord⟩ :=
+                  (shoulderSpec second secondMem).2.2
+                have targetCases : target = left ∨ target = right := by
+                  have pairEq : ({left, right} :
+                      Finset inputs.current.object.Vertex) = shoulders second :=
+                    Finset.eq_of_subset_of_card_le (by
+                      intro vertex vertexMem
+                      simp only [Finset.mem_insert, Finset.mem_singleton] at vertexMem
+                      rcases vertexMem with h | h
+                      · simpa [h] using leftMem
+                      · simpa [h] using rightMem) (by
+                        simp [leftNeRight, (shoulderSpec second secondMem).2.1])
+                  have : target ∈ ({left, right} :
+                      Finset inputs.current.object.Vertex) := by
+                    rw [pairEq]
+                    exact secondEdge.2.1
+                  simpa using this
+                rcases targetCases with rfl | rfl
+                · exact ⟨right, rightMem, leftNeRight.symm, chord⟩
+                · exact ⟨left, leftMem, leftNeRight, chord.symm⟩
+              refine ⟨target, Or.inr secondEdge.2.1, ?_⟩
+              exact fourNeighbours target second other source source'
+                (((shoulderSpec second secondMem).1 target).mp secondEdge.2.1).1.symm
+                targetOther secondEdge.2.2.1 secondEdge'.2.2.1
+                ((((shoulderSpec second secondMem).1 other).mp otherMem).1.ne)
+                secondEdge.2.2.2.1.symm secondEdge'.2.2.2.1.symm
+                (by exact fun h => secondEdge.2.2.2.2.1 (h ▸ otherMem))
+                (by exact fun h => secondEdge'.2.2.2.2.1 (h ▸ otherMem)) sourceNe
+            · have sourceChord := chordOfDistinct first firstMem source
+                firstEdge.2.1 source' firstEdge'.2.1 sameSource
+              have targetChord := chordOfDistinct second secondMem target
+                secondEdge.2.1 target' secondEdge'.2.1 sameTarget
+              have sourceNeTarget' : source ≠ target' := by
+                intro equality
+                exact secondEdge.2.2.2.2.1 (equality ▸ secondEdge'.2.1)
+              have targetNeSource' : target ≠ source' := by
+                intro equality
+                exact firstEdge.2.2.2.2.1 (equality ▸ firstEdge'.2.1)
+              exact (Graph.not_quadrilateral avoids data.quadrilateralAccepted
+                firstEdge.2.2.1 targetChord secondEdge'.2.2.1 sourceChord.symm
+                sourceNeTarget' targetNeSource').elim
+        refine ⟨highOfDistinct, ?_⟩
+        intro low source target source' target' edge edge'
+        by_cases sameSource : source = source'
+        · refine ⟨sameSource, ?_⟩
+          by_contra targetNe
+          obtain ⟨shoulder, shoulderMem, high⟩ :=
+            highOfDistinct source target source' target' edge edge'
+              (Or.inr targetNe)
+          exact (Nat.not_lt_of_ge high) (low shoulder shoulderMem)
+        · obtain ⟨shoulder, shoulderMem, high⟩ :=
+            highOfDistinct source target source' target' edge edge'
+              (Or.inl sameSource)
+          exact ((Nat.not_lt_of_ge high) (low shoulder shoulderMem)).elim⟩
+        .nil)
+    0 0
+
+/-! ## `lem:triangular-first-landing`
+
+The row reads the literal triangular-core predicates.  Shoulder completion
+excludes every noncentral landing in `N(h)`; core membership then leaves only
+another port's shoulder, while nonmembership is exactly the outside arm. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def triangularFirstLandingRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.triangularFirstLanding
+    { Requires := [K .triangularFanCore, K .triangularShoulderCompletion,
+        K .triangularPortReturn]
+      Produces := [K .triangularFirstLanding]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let fanCore := (inputs.get (K .triangularFanCore)).down
+      let shoulderCompletion :=
+        (inputs.get (K .triangularShoulderCompletion)).down
+      let portReturns := (inputs.get (K .triangularPortReturn)).down
+      .cons (key := K .triangularFirstLanding) ⟨by
+        change TriangularFirstLandingStatement data inputs.current.object
+        classical
+        intro centre centreHeavy ports portsNonempty portsSubset shoulders core
+          completion central crossTriangular outside shoulderSpec coreSpec
+          completionSpec centralSpec crossSpec outsideSpec endpoint shoulder target
+          incidence
+        -- Read the exact core witness on this family; the supplied predicates
+        -- are its literal definitions, and no alternate carrier is introduced.
+        have _coreWitness :=
+          fanCore centre centreHeavy ports portsNonempty portsSubset
+        obtain ⟨endpointMem, shoulderMem, shoulderTarget, targetEndpoint,
+          targetNotOwnShoulders⟩ :=
+            (completionSpec endpoint shoulder target).mp incidence
+        have endpointTriangular := portsSubset endpointMem
+        -- `lem:triangular-port-return` is the inherited nonvacuity fact for the
+        -- same port; first-landing classification then uses its shoulder data.
+        obtain ⟨_leftReturn, _rightReturn, _leftReturnShoulder,
+          _rightReturnShoulder, _returnDistinct, _returnWitness⟩ :=
+            portReturns centre centreHeavy endpoint endpointTriangular
+        obtain ⟨left, right, leftShoulder, rightShoulder, leftNeRight,
+          leftRight, _completes, _notBothCentral, centralOnly⟩ :=
+            shoulderCompletion centre centreHeavy endpoint endpointTriangular
+        have shoulderData := shoulderSpec endpoint endpointMem
+        have pairSubset : ({left, right} :
+            Finset inputs.current.object.Vertex) ⊆ shoulders endpoint := by
+          intro vertex vertexMem
+          simp only [Finset.mem_insert, Finset.mem_singleton] at vertexMem
+          rcases vertexMem with vertexEq | vertexEq
+          · subst vertex
+            exact (shoulderData.1 left).2 leftShoulder
+          · subst vertex
+            exact (shoulderData.1 right).2 rightShoulder
+        have pairCard : ({left, right} :
+            Finset inputs.current.object.Vertex).card = 2 := by
+          simp [leftNeRight]
+        have pairEq : ({left, right} :
+            Finset inputs.current.object.Vertex) = shoulders endpoint :=
+          Finset.eq_of_subset_of_card_le pairSubset (by
+            rw [shoulderData.2.1, pairCard])
+        have shoulderCases : shoulder = left ∨ shoulder = right := by
+          have : shoulder ∈ ({left, right} :
+              Finset inputs.current.object.Vertex) := by
+            rw [pairEq]
+            exact shoulderMem
+          simpa using this
+        have targetNotLeft : target ≠ left := by
+          intro equality
+          apply targetNotOwnShoulders
+          rw [equality]
+          exact (shoulderData.1 left).2 leftShoulder
+        have targetNotRight : target ≠ right := by
+          intro equality
+          apply targetNotOwnShoulders
+          rw [equality]
+          exact (shoulderData.1 right).2 rightShoulder
+        have noOtherNeighbour :
+            inputs.current.object.graph.Adj centre target → target = centre := by
+          intro centreTarget
+          exact centralOnly.2 shoulder target shoulderCases shoulderTarget
+            targetEndpoint targetNotLeft targetNotRight centreTarget
+        have targetNotPorts : target ∉ ports := by
+          intro targetPort
+          have centreTarget :=
+            (Graph.mem_triangularEndpoints_iff.mp (portsSubset targetPort)).1
+          have targetCentre := noOtherNeighbour centreTarget
+          subst target
+          exact centreTarget.ne rfl
+        have centreInCore : centre ∈ core :=
+          (coreSpec centre).2 (Or.inl rfl)
+        have crossNotOutside (crossing :
+            crossTriangular endpoint shoulder target) :
+            ¬ outside endpoint shoulder target := by
+          intro external
+          obtain ⟨_, other, otherMem, otherNe, targetShoulder⟩ :=
+            (crossSpec endpoint shoulder target).mp crossing
+          have targetCore : target ∈ core :=
+            (coreSpec target).2
+              (Or.inr (Or.inr ⟨other, otherMem, targetShoulder⟩))
+          exact (outsideSpec endpoint shoulder target).mp external |>.2.1 targetCore
+        have outsideNotCross (external : outside endpoint shoulder target) :
+            ¬ crossTriangular endpoint shoulder target := by
+          intro crossing
+          exact crossNotOutside crossing external
+        have centralNotCross (centralLanding :
+            central endpoint shoulder target) :
+            ¬ crossTriangular endpoint shoulder target := by
+          intro crossing
+          have targetCentre :=
+            (centralSpec endpoint shoulder target).mp centralLanding |>.2
+          obtain ⟨_, other, otherMem, _otherNe, targetShoulder⟩ :=
+            (crossSpec endpoint shoulder target).mp crossing
+          have targetNotCentre :=
+            ((shoulderSpec other otherMem).1 target).1 targetShoulder |>.2
+          exact targetNotCentre targetCentre
+        have centralNotOutside (centralLanding :
+            central endpoint shoulder target) :
+            ¬ outside endpoint shoulder target := by
+          intro external
+          have targetCentre :=
+            (centralSpec endpoint shoulder target).mp centralLanding |>.2
+          exact (outsideSpec endpoint shoulder target).mp external |>.2.1
+            (targetCentre ▸ centreInCore)
+        have crossNotCentral (crossing :
+            crossTriangular endpoint shoulder target) :
+            ¬ central endpoint shoulder target := by
+          intro centralLanding
+          exact centralNotCross centralLanding crossing
+        have outsideNotCentral (external : outside endpoint shoulder target) :
+            ¬ central endpoint shoulder target := by
+          intro centralLanding
+          exact centralNotOutside centralLanding external
+        refine ⟨?_, noOtherNeighbour, targetNotPorts⟩
+        by_cases targetCentre : target = centre
+        · have centralLanding : central endpoint shoulder target :=
+            (centralSpec endpoint shoulder target).2 ⟨incidence, targetCentre⟩
+          exact Or.inl ⟨centralLanding, centralNotCross centralLanding,
+            centralNotOutside centralLanding⟩
+        · by_cases targetCore : target ∈ core
+          · rcases (coreSpec target).1 targetCore with
+              targetCentre' | targetPort | ⟨other, otherMem, targetShoulder⟩
+            · exact (targetCentre targetCentre').elim
+            · exact (targetNotPorts targetPort).elim
+            · have otherNe : other ≠ endpoint := by
+                intro equality
+                subst other
+                exact targetNotOwnShoulders targetShoulder
+              have crossing : crossTriangular endpoint shoulder target :=
+                (crossSpec endpoint shoulder target).2
+                  ⟨incidence, other, otherMem, otherNe, targetShoulder⟩
+              exact Or.inr (Or.inl ⟨crossing, crossNotCentral crossing,
+                crossNotOutside crossing⟩)
+          · have targetNotAdjacent :
+                ¬ inputs.current.object.graph.Adj centre target := by
+              intro adjacent
+              exact targetCentre (noOtherNeighbour adjacent)
+            have external : outside endpoint shoulder target :=
+              (outsideSpec endpoint shoulder target).2
+                ⟨incidence, targetCore, targetNotAdjacent⟩
+            exact Or.inr (Or.inr ⟨external, outsideNotCentral external,
+              outsideNotCross external⟩)⟩
+        .nil)
+    0 0
+
+/-! ## `lem:triangular-port-return`
+
+The port edge is restored to the return supplied by `lem:bridgeless`.  Its
+first endpoint incidence is one of the two shoulders.  Target avoidance rules
+out the two-edge shoulder route, so after discarding a possible triangular
+shoulder edge the tail contains a noncentral completion incidence. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def triangularPortReturnRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.triangularPortReturn
+    { Requires := [K .bridgeless, K .selection, K .highCentreNormalForm,
+        K .triangularShoulderCompletion]
+      Produces := [K .triangularPortReturn]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let bridgeless := (inputs.get (K .bridgeless)).down
+      let selection := (inputs.get (K .selection)).down
+      let normal := (inputs.get (K .highCentreNormalForm)).down
+      let completion := (inputs.get (K .triangularShoulderCompletion)).down
+      .cons (key := K .triangularPortReturn) ⟨by
+        change TriangularPortReturnStatement data inputs.current.object
+        classical
+        intro centre centreHeavy endpoint endpointMem
+        obtain ⟨left, right, leftShoulder, rightShoulder, leftNeRight,
+          leftRight, completes, notBothCentral, centralCompletion⟩ :=
+            completion centre centreHeavy endpoint endpointMem
+        have centreEndpoint :=
+          (Graph.mem_triangularEndpoints_iff.mp endpointMem).1
+        have centreHigh : Graph.IsHighCentre inputs.current.object
+            data.threshold centre :=
+          Nat.lt_trans (Nat.lt_succ_self data.threshold) centreHeavy
+        have nf := normal centre centreHigh
+        have endpointDegreeThree :
+            inputs.current.object.degree endpoint = 3 := by
+          rw [nf.neighbourTight centreEndpoint, data.threshold_eq_three]
+        have neighbourCard (vertex : inputs.current.object.Vertex) :
+            (inputs.current.object.orderedNeighbors vertex).toFinset.card =
+              inputs.current.object.degree vertex := by
+          rw [List.toFinset_card_of_nodup
+            (inputs.current.object.orderedNeighbors_nodup vertex),
+            inputs.current.object.orderedNeighbors_length vertex]
+        have exhaustEndpoint (target : inputs.current.object.Vertex)
+            (targetAdj : inputs.current.object.graph.Adj endpoint target) :
+            target = centre ∨ target = left ∨ target = right := by
+          by_contra distinct
+          push_neg at distinct
+          rcases distinct with ⟨targetCentre, targetLeft, targetRight⟩
+          have subset : ({centre, left, right, target} :
+              Finset inputs.current.object.Vertex) ⊆
+              (inputs.current.object.orderedNeighbors endpoint).toFinset := by
+            intro item itemMem
+            simp only [Finset.mem_insert, Finset.mem_singleton] at itemMem
+            rcases itemMem with rfl | rfl | rfl | rfl
+            · simpa [inputs.current.object.mem_orderedNeighbors_iff] using
+                centreEndpoint.symm
+            · simpa [inputs.current.object.mem_orderedNeighbors_iff] using
+                leftShoulder.1
+            · simpa [inputs.current.object.mem_orderedNeighbors_iff] using
+                rightShoulder.1
+            · simpa [inputs.current.object.mem_orderedNeighbors_iff] using targetAdj
+          have four : 4 ≤ ({centre, left, right, target} :
+              Finset inputs.current.object.Vertex).card := by
+            simp [leftShoulder.2, rightShoulder.2, leftNeRight,
+              targetCentre, targetLeft, targetRight,
+              leftShoulder.2.symm, rightShoulder.2.symm, leftNeRight.symm,
+              targetCentre.symm, targetLeft.symm, targetRight.symm]
+          have bound := Finset.card_le_card subset
+          rw [neighbourCard, endpointDegreeThree] at bound
+          omega
+        let contraction : Graph.EdgeContraction inputs.current.object :=
+          { tail := centre
+            head := endpoint
+            adjacent := centreEndpoint }
+        obtain ⟨forward, forwardPath⟩ := bridgeless contraction
+        let path := forward.reverse
+        have pathNotNil : ¬ path.Nil :=
+          SimpleGraph.Walk.not_nil_of_ne (fun equality =>
+            contraction.adjacent.ne equality.symm)
+        have firstAdjSevered : contraction.severed.Adj endpoint path.snd :=
+          path.adj_snd pathNotNil
+        obtain ⟨firstAdj, firstNotPort⟩ :=
+          contraction.severed_adj.mp firstAdjSevered
+        have firstNotCentre : path.snd ≠ centre := by
+          intro equality
+          rw [equality] at firstNotPort
+          exact firstNotPort Sym2.eq_swap
+        have firstShoulder : path.snd = left ∨ path.snd = right := by
+          rcases exhaustEndpoint path.snd firstAdj with centreCase | result
+          · exact (firstNotCentre centreCase).elim
+          · exact result
+        let return' : Graph.FiniteObject.SurplusPort.PortReturn
+            inputs.current.object centre endpoint left right :=
+          { path := path
+            isPath := forwardPath.reverse
+            first_shoulder := firstShoulder }
+        refine ⟨left, right, leftShoulder, rightShoulder, leftNeRight,
+          return', ?_, ?_, ?_⟩
+        · change endpoint ∉ path.tail.support
+          have nodup : path.support.Nodup := forwardPath.reverse.support_nodup
+          rw [← path.cons_support_tail pathNotNil] at nodup
+          intro member
+          exact (List.pairwise_cons.mp nodup).1 endpoint member rfl
+        · intro accepted
+          let certificate : Graph.EdgeRootedReturn inputs.current.object
+              Graph.EdgeRootedReturn.AnyLength :=
+            { dart := ⟨(centre, endpoint), centreEndpoint⟩
+              path := path
+              isPath := forwardPath.reverse
+              length_ok := trivial }
+          apply selection.1
+          exact ⟨{
+            vertex := centre
+            walk := certificate.cycle
+            isCycle := certificate.cycle_isCycle
+            length_ok := by
+              rw [certificate.cycle_length]
+              exact accepted }⟩
+        · intro notCentralEdge
+          let shoulder := path.snd
+          let q := path.tail
+          have qNotNil : ¬ q.Nil := by
+            exact SimpleGraph.Walk.not_nil_of_ne firstNotCentre
+          have qPath : q.IsPath := forwardPath.reverse.tail
+          have firstQAdjSevered : contraction.severed.Adj shoulder q.snd :=
+            q.adj_snd qNotNil
+          have firstQAdj : inputs.current.object.graph.Adj shoulder q.snd :=
+            (contraction.severed_adj.mp firstQAdjSevered).1
+          have firstQEdge : s(shoulder, q.snd) ∈ q.edges := by
+            change s(path.snd, q.snd) ∈ q.edges
+            rw [← q.cons_tail_eq qNotNil, SimpleGraph.Walk.edges_cons]
+            simp
+          have endpointAvoids : endpoint ∉ q.support := by
+            have nodup : path.support.Nodup := forwardPath.reverse.support_nodup
+            rw [← path.cons_support_tail pathNotNil] at nodup
+            intro member
+            exact (List.pairwise_cons.mp nodup).1 endpoint
+              (by simpa [q] using member) rfl
+          have qSndNotEndpoint : q.snd ≠ endpoint := by
+            intro equality
+            apply endpointAvoids
+            rw [← equality]
+            exact List.mem_of_mem_tail (q.snd_mem_tail_support qNotNil)
+          have shoulderCases : shoulder = left ∨ shoulder = right :=
+            firstShoulder
+          rcases shoulderCases with shoulderLeft | shoulderRight
+          · have shoulderEq : shoulder = left := shoulderLeft
+            by_cases targetRight : q.snd = right
+            · let q2 := q.tail
+              have q2NotNil : ¬ q2.Nil := by
+                apply SimpleGraph.Walk.not_nil_of_ne
+                simpa [q2, targetRight] using rightShoulder.2
+              have q2AdjSevered : contraction.severed.Adj right q2.snd := by
+                simpa [q2, targetRight] using q2.adj_snd q2NotNil
+              have q2Adj := (contraction.severed_adj.mp q2AdjSevered).1
+              have q2Edge : s(right, q2.snd) ∈ q2.edges := by
+                have generic : s(q.snd, q2.snd) ∈ q2.edges := by
+                  rw [← q2.cons_tail_eq q2NotNil, SimpleGraph.Walk.edges_cons]
+                  simp
+                simpa [targetRight] using generic
+              have q2EdgeQ : s(right, q2.snd) ∈ q.edges := by
+                have tailEdge : s(right, q2.snd) ∈ q.tail.edges := by
+                  simpa [q2] using q2Edge
+                generalize q2.snd = target at tailEdge ⊢
+                rw [← q.cons_tail_eq qNotNil, SimpleGraph.Walk.edges_cons,
+                  List.mem_cons]
+                exact Or.inr tailEdge
+              have q2NotEndpoint : q2.snd ≠ endpoint := by
+                intro equality
+                apply endpointAvoids
+                rw [← q.cons_support_tail qNotNil]
+                exact List.mem_cons_of_mem _ (by
+                  simpa [q2, equality] using
+                    List.mem_of_mem_tail (q2.snd_mem_tail_support q2NotNil))
+              have q2NotLeft : q2.snd ≠ left := by
+                intro equality
+                have nodup := qPath.support_nodup
+                rw [← q.cons_support_tail qNotNil] at nodup
+                exact (List.pairwise_cons.mp nodup).1 q2.snd (by
+                  simpa [q2] using
+                    List.mem_of_mem_tail (q2.snd_mem_tail_support q2NotNil))
+                  (by simpa [shoulderEq, equality])
+              have q2NotRight : q2.snd ≠ right := q2Adj.ne.symm
+              have q2NotCentre : q2.snd ≠ centre := by
+                intro equality
+                have q2Path : q2.IsPath := qPath.tail
+                have q2One : q2.length = 1 := by
+                  apply q2Path.length_eq_one_of_mem_edges
+                  simpa [q2, targetRight, equality] using q2Edge
+                have qLength : q.length = 2 := by
+                  have := q.length_tail_add_one qNotNil
+                  simpa [q2, q2One] using this.symm
+                have pathLength : path.length = 3 := by
+                  have := path.length_tail_add_one pathNotNil
+                  simpa [q, qLength] using this.symm
+                apply (show ¬ data.LengthOK (path.length + 1) from by
+                  intro accepted
+                  apply selection.1
+                  let certificate : Graph.EdgeRootedReturn
+                      inputs.current.object Graph.EdgeRootedReturn.AnyLength :=
+                    { dart := ⟨(centre, endpoint), centreEndpoint⟩
+                      path := path
+                      isPath := forwardPath.reverse
+                      length_ok := trivial }
+                  exact ⟨{
+                    vertex := centre
+                    walk := certificate.cycle
+                    isCycle := certificate.cycle_isCycle
+                    length_ok := by
+                      rw [certificate.cycle_length]
+                      exact accepted }⟩)
+                rw [pathLength]
+                rw [data.lengthOK_iff_powerOfTwo]
+                exact ⟨⟨2, by norm_num⟩, by norm_num, by norm_num⟩
+              exact ⟨right, q2.snd, Or.inr rfl, q2Adj, q2NotEndpoint,
+                q2NotLeft, q2NotRight, q2NotCentre, q2EdgeQ⟩
+            · have targetLeft : q.snd ≠ left := by
+                simpa [shoulderEq] using firstQAdj.ne.symm
+              have targetCentre : q.snd ≠ centre := by
+                intro equality
+                apply notCentralEdge
+                apply qPath.length_eq_one_of_mem_edges
+                simpa [equality] using firstQEdge
+              exact ⟨left, q.snd, Or.inl rfl, by simpa [shoulderEq] using firstQAdj,
+                qSndNotEndpoint, targetLeft, targetRight, targetCentre,
+                by change s(left, q.snd) ∈ q.edges
+                   simpa [shoulderEq] using firstQEdge⟩
+          · have shoulderEq : shoulder = right := shoulderRight
+            by_cases targetLeft : q.snd = left
+            · let q2 := q.tail
+              have q2NotNil : ¬ q2.Nil := by
+                apply SimpleGraph.Walk.not_nil_of_ne
+                simpa [q2, targetLeft] using leftShoulder.2
+              have q2AdjSevered : contraction.severed.Adj left q2.snd := by
+                simpa [q2, targetLeft] using q2.adj_snd q2NotNil
+              have q2Adj := (contraction.severed_adj.mp q2AdjSevered).1
+              have q2Edge : s(left, q2.snd) ∈ q2.edges := by
+                have generic : s(q.snd, q2.snd) ∈ q2.edges := by
+                  rw [← q2.cons_tail_eq q2NotNil, SimpleGraph.Walk.edges_cons]
+                  simp
+                simpa [targetLeft] using generic
+              have q2EdgeQ : s(left, q2.snd) ∈ q.edges := by
+                have tailEdge : s(left, q2.snd) ∈ q.tail.edges := by
+                  simpa [q2] using q2Edge
+                generalize q2.snd = target at tailEdge ⊢
+                rw [← q.cons_tail_eq qNotNil, SimpleGraph.Walk.edges_cons,
+                  List.mem_cons]
+                exact Or.inr tailEdge
+              have q2NotEndpoint : q2.snd ≠ endpoint := by
+                intro equality
+                apply endpointAvoids
+                rw [← q.cons_support_tail qNotNil]
+                exact List.mem_cons_of_mem _ (by
+                  simpa [q2, equality] using
+                    List.mem_of_mem_tail (q2.snd_mem_tail_support q2NotNil))
+              have q2NotRight : q2.snd ≠ right := by
+                intro equality
+                have nodup := qPath.support_nodup
+                rw [← q.cons_support_tail qNotNil] at nodup
+                exact (List.pairwise_cons.mp nodup).1 q2.snd (by
+                  simpa [q2] using
+                    List.mem_of_mem_tail (q2.snd_mem_tail_support q2NotNil))
+                  (by simpa [shoulderEq, equality])
+              have q2NotLeft : q2.snd ≠ left := q2Adj.ne.symm
+              have q2NotCentre : q2.snd ≠ centre := by
+                intro equality
+                have q2One : q2.length = 1 := by
+                  apply qPath.tail.length_eq_one_of_mem_edges
+                  simpa [q2, targetLeft, equality] using q2Edge
+                have qLength : q.length = 2 := by
+                  have := q.length_tail_add_one qNotNil
+                  simpa [q2, q2One] using this.symm
+                have pathLength : path.length = 3 := by
+                  have := path.length_tail_add_one pathNotNil
+                  simpa [q, qLength] using this.symm
+                have power : data.LengthOK (path.length + 1) := by
+                  rw [pathLength, data.lengthOK_iff_powerOfTwo]
+                  exact ⟨⟨2, by norm_num⟩, by norm_num, by norm_num⟩
+                exact (show ¬ data.LengthOK (path.length + 1) from by
+                  intro accepted
+                  apply selection.1
+                  let certificate : Graph.EdgeRootedReturn
+                      inputs.current.object Graph.EdgeRootedReturn.AnyLength :=
+                    { dart := ⟨(centre, endpoint), centreEndpoint⟩
+                      path := path
+                      isPath := forwardPath.reverse
+                      length_ok := trivial }
+                  exact ⟨{
+                    vertex := centre
+                    walk := certificate.cycle
+                    isCycle := certificate.cycle_isCycle
+                    length_ok := by
+                      rw [certificate.cycle_length]
+                      exact accepted }⟩) power
+              exact ⟨left, q2.snd, Or.inl rfl, q2Adj, q2NotEndpoint,
+                q2NotLeft, q2NotRight, q2NotCentre, q2EdgeQ⟩
+            · have targetRight : q.snd ≠ right := by
+                simpa [shoulderEq] using firstQAdj.ne.symm
+              have targetCentre : q.snd ≠ centre := by
+                intro equality
+                apply notCentralEdge
+                apply qPath.length_eq_one_of_mem_edges
+                simpa [equality] using firstQEdge
+              exact ⟨right, q.snd, Or.inr rfl, by simpa [shoulderEq] using firstQAdj,
+                qSndNotEndpoint, targetLeft, targetRight, targetCentre,
+                by change s(right, q.snd) ∈ q.edges
+                   simpa [shoulderEq] using firstQEdge⟩⟩
         .nil)
     0 0
 
@@ -1086,6 +2478,103 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
             ⟨object.not_inducesWindow_of_subset_remainderSupport maximal inside,
               object.not_baseline_induce_of_subset_remainderSupport
                 data.freeForcesTarget avoids maximal inside⟩⟩)
+        .nil)
+    0 0
+
+/- Exact finite relabelling-orbit lower bound for every support in a
+normalized remainder. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def remainderRelabelingEntropyRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.remainderRelabelingEntropy
+    { Requires := [K .remainderNormalized]
+      Produces := [K .remainderRelabelingEntropy]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let normalized := inputs.get (K .remainderNormalized)
+      .cons (key := K .remainderRelabelingEntropy)
+        (show Value BranchState Presentation presentation data
+            .remainderRelabelingEntropy inputs.current from
+          ⟨fun packing valid maximal support inside => by
+            have windowFree : ∀ inner : Finset inputs.current.object.Vertex,
+                inner ⊆ support →
+                ¬ inputs.current.object.InducesWindow data.windowOrder inner := by
+              intro inner innerInside
+              exact (normalized.down packing valid maximal inner
+                (innerInside.trans inside)).1
+            have coreFree : ∀ inner : Finset inputs.current.object.Vertex,
+                inner ⊆ support →
+                ¬ Graph.MinimumDegreeAtLeast data.threshold
+                  (inputs.current.object.induce inner) := by
+              intro inner innerInside
+              exact (normalized.down packing valid maximal inner
+                (innerInside.trans inside)).2
+            have orbit :=
+              Graph.LabelledRelabeling.factorial_le_remainderStateCount_mul_stabilizer
+                inputs.current.object support data.windowOrder data.threshold
+                windowFree coreFree
+            dsimp only at orbit
+            rw [Graph.FiniteObject.positiveDeficiency_labelledInduce,
+              Graph.FiniteObject.card_edgeSet_labelledInduce] at orbit
+            exact orbit⟩)
+        .nil)
+    0 0
+
+/- Exact finite invariant-state cap for relabellings fixing the packed window
+support pointwise.  All class, state, invariance, and stabilizer data are bound
+inside the published proposition. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def relabelingDensityCapRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.relabelingDensityCap
+    (sourceFreeManifest (K .relabelingDensityCap))
+    (fun inputs =>
+      .cons (key := K .relabelingDensityCap)
+        (show Value BranchState Presentation presentation data
+            .relabelingDensityCap inputs.current from
+          ⟨fun packing _valid labels => by
+            dsimp only
+            intro State stateDecidable skeletons state stabilizerBound
+              closed invariant bounded
+            classical
+            letI : DecidableEq State := stateDecidable
+            have cap :=
+              Core.FiniteRelabelingOrbit.card_image_mul_card_group_le_card_mul_stabilizerBound
+                skeletons state stabilizerBound closed invariant bounded
+            rw [Graph.LabelledRelabeling.card_fixedSupportPermutations] at cap
+            have complementCard :
+                inputs.current.object.vertexCount -
+                    ((inputs.current.object.windowSupport packing).map
+                      labels.toEmbedding).card =
+                  (Finset.univ \ ((inputs.current.object.windowSupport packing).map
+                    labels.toEmbedding)).card := by
+              rw [Finset.card_sdiff, Finset.inter_univ, Finset.card_univ,
+                Finset.card_map]
+              simp only [Fintype.card_fin]
+            rw [complementCard] at cap
+            exact cap⟩)
         .nil)
     0 0
 
@@ -2156,6 +3645,456 @@ noncomputable def remainderEntropyDichotomy
         exact ⟨packing, valid,
           (Graph.not_atLeastEntropyRate_iff _ _ _ _ _ _ _).mp below⟩)
     highFresh lowFresh
+
+/-! ## Node `[50]`, the manuscript's second low-entropy split
+
+The scalar entropy test does not imply a dominant rooted type.  On its low
+arm, `prop:two-budget` next tests the literal maximum-packing radius-two type
+coordinate for structural repetitiveness.  These two facts are exact
+complements on the same packing selected by the incoming full-rank residual. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+noncomputable def localTypeCoordinateDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : @FactKeys (Input BranchState Presentation presentation data)
+      _ (factSystem BranchState Presentation presentation data)}
+    (previous :
+      @ExactLedger (Input BranchState Presentation presentation data)
+        _ (factSystem BranchState Presentation presentation data) current known)
+    [@FactKeys.Has (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data)
+      (K .remainderEntropyLow) known]
+    [@FactKeys.Has (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data)
+      (K .curvatureFullRank) known]
+    (repetitiveFresh : K .localTypeCoordinateRepetitive ∉ known)
+    (nonrepetitiveFresh : K .localTypeCoordinateNonrepetitive ∉ known) :
+    @Decision (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data) current known
+      (K .localTypeCoordinateRepetitive)
+      (K .localTypeCoordinateNonrepetitive) previous :=
+  let _low := (@ExactLedger.get
+    (Input BranchState Presentation presentation data) _
+    (factSystem BranchState Presentation presentation data)
+    current known previous (K .remainderEntropyLow)).down
+  let fullRank := (@ExactLedger.get
+    (Input BranchState Presentation presentation data) _
+    (factSystem BranchState Presentation presentation data)
+    current known previous (K .curvatureFullRank)).down
+  @Decision.run (Input BranchState Presentation presentation data) _
+    (factSystem BranchState Presentation presentation data) current known
+    previous (K .localTypeCoordinateRepetitive)
+      (K .localTypeCoordinateNonrepetitive)
+    `Hypostructure.Graph.Strategy.Spine.localTypeCoordinateDichotomy
+    (by
+      classical
+      let packing := Classical.choose fullRank
+      have fullRankSpec := Classical.choose_spec fullRank
+      have valid := fullRankSpec.1
+      have maximal := fullRankSpec.2.1
+      have rankEq := fullRankSpec.2.2
+      by_cases repetitive :
+          RemainderTypeCoordinateRepetitive data current.object packing
+      · exact .inl ⟨packing, valid, maximal, rankEq, repetitive⟩
+      · exact .inr ⟨packing, valid, maximal, rankEq, repetitive⟩)
+    repetitiveFresh nonrepetitiveFresh
+
+/-! ## Node `[51]`, `lem:dominant-type`
+
+The repetitive coordinate is a finite relabelling-orbit statement.  Its
+multinomial threshold supplies a fibre covering all but `T(n)` vertices of the
+subcubic remainder.  At most another `T(n)` vertices lie outside that support,
+by the incoming near-cubic surplus bound. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def dominantRootedTypeRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.dominantRootedType
+    { Requires := [K .localTypeCoordinateRepetitive, K .surplusAtOrBelow]
+      Produces := [K .dominantRootedType]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let repetitiveInput :=
+        (inputs.get (K .localTypeCoordinateRepetitive)).down
+      let nearCubic := (inputs.get (K .surplusAtOrBelow)).down
+      .cons (key := K .dominantRootedType)
+        (show Value BranchState Presentation presentation data
+            .dominantRootedType inputs.current from
+          ⟨dominantRootedType_of_repetitive data inputs.current.object
+            inputs.current.baseline repetitiveInput nearCubic⟩)
+        .nil)
+    0 0
+
+/-! The dominant type has exactly the manuscript's next local dichotomy: its
+root contains an internal wedge or it does not.  Both outputs retain the same
+packing, dominant fibre, root, count, and type-equality witnesses. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+noncomputable def dominantRootedTypeWedgeDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : @FactKeys (Input BranchState Presentation presentation data)
+      _ (factSystem BranchState Presentation presentation data)}
+    (previous :
+      @ExactLedger (Input BranchState Presentation presentation data)
+        _ (factSystem BranchState Presentation presentation data) current known)
+    [@FactKeys.Has (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data)
+      (K .dominantRootedType) known]
+    (wedgeFresh : K .dominantRootedWedgeType ∉ known)
+    (wedgeFreeFresh : K .dominantRootedTypeWedgeFree ∉ known) :
+    @Decision (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data) current known
+      (K .dominantRootedWedgeType) (K .dominantRootedTypeWedgeFree) previous :=
+  let dominantInput := (@ExactLedger.get
+    (Input BranchState Presentation presentation data) _
+    (factSystem BranchState Presentation presentation data)
+    current known previous (K .dominantRootedType)).down
+  @Decision.run (Input BranchState Presentation presentation data) _
+    (factSystem BranchState Presentation presentation data) current known
+    previous (K .dominantRootedWedgeType) (K .dominantRootedTypeWedgeFree)
+    `Hypostructure.Graph.Strategy.Spine.dominantRootedTypeWedgeDichotomy
+    (by
+      classical
+      let packing := Classical.choose dominantInput
+      have packingSpec := Classical.choose_spec dominantInput
+      have valid := packingSpec.1
+      have maximal := packingSpec.2.1
+      have rankEq := packingSpec.2.2.1
+      have dominantData := packingSpec.2.2.2
+      dsimp only at dominantData
+      let dominant := Classical.choose dominantData
+      have dominantSpec := Classical.choose_spec dominantData
+      let root := Classical.choose dominantSpec
+      have rootSpec := Classical.choose_spec dominantSpec
+      let dominantSubset := Classical.choose rootSpec
+      have dominantSubsetSpec := Classical.choose_spec rootSpec
+      let rootMem := Classical.choose dominantSubsetSpec
+      have payload := Classical.choose_spec dominantSubsetSpec
+      have count := payload.1
+      have sameType := payload.2.1
+      let subcubic := remainderSubcubicSupport data current.object packing
+      by_cases wedge : DominantRootWedgeClause current.object subcubic root
+      · exact .inl ⟨packing, valid, maximal, rankEq, dominant, root,
+          dominantSubset, rootMem, count, sameType, wedge⟩
+      · exact .inr ⟨packing, valid, maximal, rankEq, dominant, root,
+          dominantSubset, rootMem, count, sameType, wedge⟩)
+    wedgeFresh wedgeFreeFresh
+
+/-! ## Nodes `[51]`--`[52]`: independent obstruction translates
+
+`lem:translates-independent` is not an entropy inequality.  On the literal
+full-rank remainder, a dominant rooted radius-`r` type containing an internal
+root wedge supplies a translated raw wedge at every dominant centre.  Choose a
+maximum `2r`-separated set of those centres.  Maximality covers the dominant set
+by radius-`2r` balls; the radius-`r` balls are pairwise disjoint; and
+`SubcubicReach.card_reach_le` gives the manuscript's exact bound
+`b' = 1 + 3(2^(2r)-1)`.  Distinct centres give distinct raw wedge labels, and
+the incoming full-rank fact identifies their supply with `r_Ω(R)`.
+
+The committed statement is the division-free finite form
+`|R| ≤ b'·r_Ω(R) + T(n)`, where the already registered near-cubic
+threshold `T(n)` is the finite representative of the manuscript's `o(|R|)`
+set.  No unbounded existential error is admitted. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def independentObstructionTranslatesRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.independentObstructionTranslates
+    { Requires := [K .curvatureFullRank, K .dominantRootedWedgeType]
+      Produces := [K .independentObstructionTranslates]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let _fullRank := (inputs.get (K .curvatureFullRank)).down
+      let dominantInput := (inputs.get (K .dominantRootedWedgeType)).down
+      .cons (key := K .independentObstructionTranslates)
+        (show Value BranchState Presentation presentation data
+            .independentObstructionTranslates inputs.current from ⟨by
+          classical
+          obtain ⟨packing, valid, maximal, rankEq, dominant, root,
+            dominantSubset, rootMem, dominantCount, sameType, rootWedge⟩ :=
+            dominantInput
+          let radius := 2
+          refine ⟨packing, valid, maximal, radius, by simp [radius], ?_⟩
+          let support := inputs.current.object.remainderSupport packing
+          let subcubic := remainderSubcubicSupport data inputs.current.object packing
+          have subcubicSubsetSupport : subcubic ⊆ support := by
+            intro vertex member
+            exact (Finset.mem_filter.mp member).1
+          have dominantSubsetSupport : dominant ⊆ support :=
+            dominantSubset.trans subcubicSubsetSupport
+          change support.card ≤ dominant.card +
+            2 * data.surplusThreshold inputs.current.object.vertexCount at dominantCount
+          change support.card ≤
+            (1 + data.threshold *
+                ((data.threshold - 1) ^ (2 * radius) - 1)) *
+              remainderCurvatureTargetRank data inputs.current.object packing +
+                2 * data.surplusThreshold inputs.current.object.vertexCount
+          have rootedWedges : ∀ vertex ∈ dominant,
+              ∃ wedge : inputs.current.object.InternalWedge support,
+                wedge.1 = vertex ∧
+                  wedge ∈ inputs.current.object.internalWedgeFamily support := by
+            intro vertex member
+            have localWedge :=
+              inputs.current.object.rootedInternalWedgeClause_of_code_eq
+                subcubic radius
+                ⟨root, dominantSubset rootMem⟩
+                ⟨vertex, dominantSubset member⟩
+                (sameType vertex member) rootWedge
+            obtain ⟨wedge, centre, familyMember⟩ := localWedge
+            let enlarged := inputs.current.object.internalWedgeOfSubset
+              subcubicSubsetSupport wedge
+            refine ⟨enlarged, ?_, ?_⟩
+            · simpa [enlarged, Graph.FiniteObject.internalWedgeOfSubset] using centre
+            · exact inputs.current.object.internalWedgeOfSubset_mem_family
+                subcubicSubsetSupport wedge familyMember
+          letI : FinEnum inputs.current.object.Vertex :=
+            inputs.current.object.vertices
+          letI : Fintype inputs.current.object.Vertex := inferInstance
+          letI : DecidableEq inputs.current.object.Vertex :=
+            inputs.current.object.vertices.decEq
+          letI : DecidableRel inputs.current.object.graph.Adj :=
+            inputs.current.object.decideAdj
+          let ball := fun centre : inputs.current.object.Vertex =>
+            Graph.SubcubicReach.reach inputs.current.object.graph subcubic centre
+                (2 * radius) centre ∩ subcubic
+          have reverseReach : ∀ {left right : inputs.current.object.Vertex},
+              left ∈ subcubic → right ∈ subcubic →
+                right ∈ ball left → left ∈ ball right := by
+            intro left right leftMem rightMem member
+            obtain ⟨memberReach, _memberSupport⟩ := Finset.mem_inter.mp member
+            obtain ⟨path, pathIsPath, pathLength, pathInside, _pathAvoids⟩ :=
+              (Graph.SubcubicReach.mem_reach inputs.current.object.graph).1 memberReach
+            apply Finset.mem_inter.mpr
+            refine ⟨(Graph.SubcubicReach.mem_reach inputs.current.object.graph).2
+              ⟨path.reverse, pathIsPath.reverse, ?_, ?_, ?_⟩, leftMem⟩
+            · simpa [ball, SimpleGraph.Walk.length_reverse] using pathLength
+            · intro vertex vertexMem
+              have reverseSupport : vertex ∈ path.reverse.support :=
+                List.mem_of_mem_dropLast vertexMem
+              rw [SimpleGraph.Walk.support_reverse] at reverseSupport
+              have originalSupport : vertex ∈ path.support := by
+                simpa using reverseSupport
+              by_cases atEnd : vertex = right
+              · simpa [atEnd] using rightMem
+              · apply pathInside vertex
+                apply List.mem_dropLast_of_mem_of_ne_getLast originalSupport
+                simpa [SimpleGraph.Walk.getLast_support] using atEnd
+            · intro notNil same
+              have indexZero :=
+                (pathIsPath.reverse.getVert_eq_start_iff_of_not_nil
+                  (i := 1) notNil).1 same
+              exact absurd indexZero (by decide)
+          have ballSymm : ∀ {left right : inputs.current.object.Vertex},
+              left ∈ subcubic → right ∈ subcubic →
+                (right ∈ ball left ↔ left ∈ ball right) := by
+            intro left right leftMem rightMem
+            exact ⟨reverseReach leftMem rightMem, reverseReach rightMem leftMem⟩
+          let candidates : Finset (Finset inputs.current.object.Vertex) :=
+            dominant.powerset.filter fun selected =>
+              (selected : Set inputs.current.object.Vertex).Pairwise
+                fun left right => right ∉ ball left
+          have candidatesNonempty : candidates.Nonempty := by
+            refine ⟨∅, ?_⟩
+            simp [candidates]
+          obtain ⟨selected, selectedMem, maximalSelected⟩ :=
+            Finset.exists_max_image candidates Finset.card candidatesNonempty
+          have selectedSubset : selected ⊆ dominant :=
+            (Finset.mem_filter.mp selectedMem).1 |> Finset.mem_powerset.mp
+          have selectedSeparated :
+              (selected : Set inputs.current.object.Vertex).Pairwise
+                fun left right => right ∉ ball left :=
+            (Finset.mem_filter.mp selectedMem).2
+          have covers : dominant ⊆ selected.biUnion ball := by
+            intro vertex vertexMem
+            by_contra uncovered
+            have vertexNotSelected : vertex ∉ selected := by
+              intro member
+              apply uncovered
+              exact Finset.mem_biUnion.mpr ⟨vertex, member,
+                Finset.mem_inter.mpr
+                  ⟨Graph.SubcubicReach.self_mem_reach
+                      inputs.current.object.graph subcubic vertex (2 * radius) vertex,
+                    dominantSubset vertexMem⟩⟩
+            have separatedInsert :
+                ((insert vertex selected : Finset inputs.current.object.Vertex) :
+                    Set inputs.current.object.Vertex).Pairwise
+                  (fun left right => right ∉ ball left) := by
+              rw [Finset.coe_insert, Set.pairwise_insert_of_notMem vertexNotSelected]
+              refine ⟨selectedSeparated, ?_⟩
+              intro other otherMem
+              have otherSupport : other ∈ subcubic :=
+                dominantSubset (selectedSubset otherMem)
+              have vertexSupport : vertex ∈ subcubic := dominantSubset vertexMem
+              have notCovered : vertex ∉ ball other := by
+                intro covered
+                apply uncovered
+                exact Finset.mem_biUnion.mpr ⟨other, otherMem, covered⟩
+              exact ⟨(ballSymm vertexSupport otherSupport).not.mpr notCovered,
+                notCovered⟩
+            have insertMem : insert vertex selected ∈ candidates := by
+              rw [Finset.mem_filter, Finset.mem_powerset]
+              exact ⟨Finset.insert_subset vertexMem selectedSubset, separatedInsert⟩
+            have maximalCard := maximalSelected (insert vertex selected) insertMem
+            rw [Finset.card_insert_of_notMem vertexNotSelected] at maximalCard
+            omega
+          have ballCard : ∀ centre ∈ selected,
+              (ball centre).card ≤ 1 + data.threshold *
+                ((data.threshold - 1) ^ (2 * radius) - 1) := by
+            intro centre _centreMem
+            have paperBound :=
+              (Graph.SubcubicReach.card_reach_le inputs.current.object.graph
+                subcubic (by
+                  intro vertex member
+                  change inputs.current.object.degree vertex ≤ 3
+                  simpa [data.threshold_eq_three] using
+                    (Finset.mem_filter.mp member).2)
+                centre (2 * radius))
+            simpa [data.threshold_eq_three] using
+              (Finset.card_le_card Finset.inter_subset_left).trans paperBound
+          let smallBall := fun centre : inputs.current.object.Vertex =>
+            Graph.SubcubicReach.reach inputs.current.object.graph subcubic centre
+                radius centre ∩ subcubic
+          have _separatedBalls : ∀ left ∈ selected, ∀ right ∈ selected,
+              left ≠ right → Disjoint (smallBall left) (smallBall right) := by
+            intro left leftMem right rightMem different
+            apply Finset.disjoint_left.mpr
+            intro vertex vertexLeft vertexRight
+            obtain ⟨leftReach, vertexSupport⟩ := Finset.mem_inter.mp vertexLeft
+            obtain ⟨rightReach, _vertexSupport⟩ := Finset.mem_inter.mp vertexRight
+            obtain ⟨leftPath, leftIsPath, leftLength, leftInside, _leftAvoids⟩ :=
+              (Graph.SubcubicReach.mem_reach inputs.current.object.graph).1 leftReach
+            obtain ⟨rightPath, rightIsPath, rightLength, rightInside,
+              _rightAvoids⟩ :=
+              (Graph.SubcubicReach.mem_reach inputs.current.object.graph).1 rightReach
+            let joined := leftPath.append rightPath.reverse
+            let reduced := joined.toPath
+            have joinedInside : ∀ member ∈ joined.support, member ∈ subcubic := by
+              intro member memberMem
+              rw [SimpleGraph.Walk.mem_support_append_iff] at memberMem
+              rcases memberMem with memberMem | memberMem
+              · by_cases atEnd : member = vertex
+                · simpa [atEnd] using vertexSupport
+                · apply leftInside member
+                  apply List.mem_dropLast_of_mem_of_ne_getLast memberMem
+                  simpa [SimpleGraph.Walk.getLast_support] using atEnd
+              · rw [SimpleGraph.Walk.support_reverse] at memberMem
+                have originalMem : member ∈ rightPath.support := by
+                  simpa using memberMem
+                by_cases atEnd : member = vertex
+                · simpa [atEnd] using vertexSupport
+                · apply rightInside member
+                  apply List.mem_dropLast_of_mem_of_ne_getLast originalMem
+                  simpa [SimpleGraph.Walk.getLast_support] using atEnd
+            have reducedLength :
+                (reduced : inputs.current.object.graph.Walk left right).length ≤
+                  2 * radius := by
+              calc
+                (reduced : inputs.current.object.graph.Walk left right).length ≤
+                    joined.length :=
+                  SimpleGraph.Walk.length_bypass_le_length joined
+                _ = leftPath.length + rightPath.length := by
+                  simp [joined, SimpleGraph.Walk.length_append,
+                    SimpleGraph.Walk.length_reverse]
+                _ ≤ radius + radius := Nat.add_le_add leftLength rightLength
+                _ = 2 * radius := by omega
+            have reducedInside : ∀ member ∈
+                (reduced : inputs.current.object.graph.Walk left right).support.dropLast,
+                member ∈ subcubic := by
+              intro member memberMem
+              apply joinedInside member
+              exact SimpleGraph.Walk.support_toPath_subset_support joined
+                (List.mem_of_mem_dropLast memberMem)
+            have reducedAvoids : ∀ notNil :
+                ¬ (reduced : inputs.current.object.graph.Walk left right).Nil,
+                (reduced : inputs.current.object.graph.Walk left right).getVert 1 ≠
+                  left := by
+              intro notNil same
+              have indexZero :=
+                (reduced.property.getVert_eq_start_iff_of_not_nil
+                  (i := 1) notNil).1 same
+              exact absurd indexZero (by decide)
+            have rightCovered : right ∈ ball left := Finset.mem_inter.mpr ⟨
+              (Graph.SubcubicReach.mem_reach inputs.current.object.graph).2
+                ⟨reduced, reduced.property, reducedLength, reducedInside,
+                  reducedAvoids⟩,
+              dominantSubset (selectedSubset rightMem)⟩
+            exact (selectedSeparated leftMem rightMem different) rightCovered
+          have dominantLe : dominant.card ≤
+              (1 + data.threshold *
+                  ((data.threshold - 1) ^ (2 * radius) - 1)) * selected.card := by
+            calc
+              dominant.card ≤ (selected.biUnion ball).card :=
+                Finset.card_le_card covers
+              _ ≤ ∑ centre ∈ selected, (ball centre).card :=
+                Finset.card_biUnion_le
+              _ ≤ ∑ _centre ∈ selected,
+                  (1 + data.threshold *
+                    ((data.threshold - 1) ^ (2 * radius) - 1)) :=
+                Finset.sum_le_sum ballCard
+              _ = (1 + data.threshold *
+                    ((data.threshold - 1) ^ (2 * radius) - 1)) * selected.card := by
+                rw [Finset.sum_const, nsmul_eq_mul]
+                exact Nat.mul_comm _ _
+          let wedgeAt : {vertex // vertex ∈ selected} →
+              inputs.current.object.InternalWedge support := fun vertex =>
+            Classical.choose (rootedWedges vertex.1 (selectedSubset vertex.2))
+          have wedgeAtSpec : ∀ vertex : {vertex // vertex ∈ selected},
+              (wedgeAt vertex).1 = vertex.1 ∧
+                wedgeAt vertex ∈ inputs.current.object.internalWedgeFamily support := by
+            intro vertex
+            exact Classical.choose_spec
+              (rootedWedges vertex.1 (selectedSubset vertex.2))
+          let translates := selected.attach.image wedgeAt
+          have wedgeInjective : Function.Injective wedgeAt := by
+            intro left right equal
+            apply Subtype.ext
+            have leftCentre := (wedgeAtSpec left).1
+            have rightCentre := (wedgeAtSpec right).1
+            exact leftCentre.symm.trans (congrArg Sigma.fst equal) |>.trans rightCentre
+          have translatesCard : translates.card = selected.card := by
+            rw [show translates = selected.attach.image wedgeAt from rfl,
+              Finset.card_image_of_injective _ wedgeInjective, Finset.card_attach]
+          have translatesSubset :
+              translates ⊆ inputs.current.object.internalWedgeFamily support := by
+            intro wedge wedgeMem
+            obtain ⟨vertex, _vertexMem, rfl⟩ := Finset.mem_image.mp wedgeMem
+            exact (wedgeAtSpec vertex).2
+          have rankEq' : remainderCurvatureTargetRank data inputs.current.object packing =
+              inputs.current.object.internalWedgeCount support := by
+            simpa only [support, remainderWedgeSupply] using rankEq
+          have selectedLeRank : selected.card ≤
+              remainderCurvatureTargetRank data inputs.current.object packing := by
+            rw [← translatesCard, rankEq',
+              ← inputs.current.object.internalWedgeFamily_card support]
+            exact Finset.card_le_card translatesSubset
+          have dominantLeRank : dominant.card ≤
+              (1 + data.threshold *
+                  ((data.threshold - 1) ^ (2 * radius) - 1)) *
+                remainderCurvatureTargetRank data inputs.current.object packing :=
+            dominantLe.trans (Nat.mul_le_mul_left _ selectedLeRank)
+          omega⟩)
+        .nil)
+    0 0
 
 
 omit [FactSystem (Input BranchState Presentation presentation data)] in
@@ -3781,6 +5720,437 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
             · intro endpoint shoulder target
               rfl⟩)
         .nil)
+    0 0
+
+/-! ## `lem:triangular-shoulder-completion`
+
+The row is the paper's four-part bookkeeping lemma.  It reads the literal
+normal form and triangular-core facts and publishes the completion statement
+on the same residual. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def triangularShoulderCompletionRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.triangularShoulderCompletion
+    { Requires := [K .highCentreNormalForm, K .triangularFanCore]
+      Produces := [K .triangularShoulderCompletion]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let normal := (inputs.get (K .highCentreNormalForm)).down
+      .cons (key := K .triangularShoulderCompletion) ⟨by
+        change TriangularShoulderCompletionStatement data inputs.current.object
+        classical
+        intro centre centreHeavy endpoint endpointMem
+        have centreEndpoint :=
+          (Graph.mem_triangularEndpoints_iff.mp endpointMem).1
+        have centreHigh : Graph.IsHighCentre inputs.current.object
+            data.threshold centre :=
+          Nat.lt_trans (Nat.lt_succ_self data.threshold) centreHeavy
+        have nf := normal centre centreHigh
+        obtain ⟨left, right, leftShoulder, rightShoulder, leftRight⟩ :=
+          (Graph.mem_triangularEndpoints_iff.mp endpointMem).2
+        have endpointDegree := nf.neighbourTight centreEndpoint
+        have neighbourCard (vertex : inputs.current.object.Vertex) :
+            (inputs.current.object.orderedNeighbors vertex).toFinset.card =
+              inputs.current.object.degree vertex := by
+          rw [List.toFinset_card_of_nodup
+            (inputs.current.object.orderedNeighbors_nodup vertex),
+            inputs.current.object.orderedNeighbors_length vertex]
+        have thirdNeighbour (vertex first second : inputs.current.object.Vertex)
+            (firstAdj : inputs.current.object.graph.Adj vertex first)
+            (secondAdj : inputs.current.object.graph.Adj vertex second)
+            (different : first ≠ second)
+            (three : 3 ≤ inputs.current.object.degree vertex) :
+            ∃ target, inputs.current.object.graph.Adj vertex target ∧
+              target ≠ first ∧ target ≠ second := by
+          by_contra absent
+          push_neg at absent
+          have subset :
+              (inputs.current.object.orderedNeighbors vertex).toFinset ⊆
+                {first, second} := by
+            intro target targetMem
+            have adjacent : inputs.current.object.graph.Adj vertex target := by
+              simpa [inputs.current.object.mem_orderedNeighbors_iff] using targetMem
+            rcases eq_or_ne target first with rfl | targetFirst
+            · simp
+            have targetSecond := absent target adjacent targetFirst
+            simp [targetSecond]
+          have bound := Finset.card_le_card subset
+          rw [neighbourCard] at bound
+          have pairCard : ({first, second} : Finset inputs.current.object.Vertex).card = 2 := by
+            simp [different]
+          rw [pairCard] at bound
+          omega
+        have exhaustThree (vertex first second third target :
+            inputs.current.object.Vertex)
+            (degreeThree : inputs.current.object.degree vertex = 3)
+            (firstAdj : inputs.current.object.graph.Adj vertex first)
+            (secondAdj : inputs.current.object.graph.Adj vertex second)
+            (thirdAdj : inputs.current.object.graph.Adj vertex third)
+            (firstSecond : first ≠ second) (firstThird : first ≠ third)
+            (secondThird : second ≠ third)
+            (targetAdj : inputs.current.object.graph.Adj vertex target) :
+            target = first ∨ target = second ∨ target = third := by
+          by_contra distinct
+          push_neg at distinct
+          rcases distinct with ⟨targetFirst, targetSecond, targetThird⟩
+          have subset : ({first, second, third, target} :
+              Finset inputs.current.object.Vertex) ⊆
+              (inputs.current.object.orderedNeighbors vertex).toFinset := by
+            intro item itemMem
+            simp only [Finset.mem_insert, Finset.mem_singleton] at itemMem
+            rcases itemMem with rfl | rfl | rfl | rfl
+            all_goals simpa [inputs.current.object.mem_orderedNeighbors_iff]
+          have four : 4 ≤
+              ({first, second, third, target} :
+                Finset inputs.current.object.Vertex).card := by
+            simp [targetFirst, targetSecond, targetThird, firstSecond,
+              firstThird, secondThird, targetFirst.symm, targetSecond.symm,
+              targetThird.symm, firstSecond.symm, firstThird.symm,
+              secondThird.symm]
+          have bound := Finset.card_le_card subset
+          rw [neighbourCard, degreeThree] at bound
+          omega
+        have shoulderCompletion (shoulder other : inputs.current.object.Vertex)
+            (shoulderData : Graph.IsShoulder inputs.current.object centre endpoint shoulder)
+            (otherData : Graph.IsShoulder inputs.current.object centre endpoint other)
+            (shoulderOther : inputs.current.object.graph.Adj shoulder other)
+            (different : shoulder ≠ other) :
+            ∃ target, inputs.current.object.graph.Adj shoulder target ∧
+              target ≠ endpoint ∧ target ≠ shoulder ∧ target ≠ other := by
+          have three : 3 ≤ inputs.current.object.degree shoulder :=
+            le_trans data.three_le_threshold
+              (le_trans inputs.current.baseline
+                (inputs.current.object.minDegree_le_degree shoulder))
+          obtain ⟨target, targetAdj, targetEndpoint, targetOther⟩ :=
+            thirdNeighbour shoulder endpoint other shoulderData.1.symm shoulderOther
+              otherData.1.ne three
+          exact ⟨target, targetAdj, targetEndpoint, targetAdj.ne.symm, targetOther⟩
+        refine ⟨left, right, leftShoulder, rightShoulder, leftRight.ne, leftRight,
+          ?_, ?_, ?_, ?_⟩
+        · intro shoulder shoulderCases
+          rcases shoulderCases with shoulderEq | shoulderEq
+          · subst shoulder
+            simpa [leftRight.ne] using
+              shoulderCompletion left right leftShoulder rightShoulder leftRight
+                leftRight.ne
+          · subst shoulder
+            obtain ⟨target, adjacent, endpointNe, rightNe, leftNe⟩ :=
+              shoulderCompletion right left rightShoulder leftShoulder leftRight.symm
+                leftRight.ne.symm
+            exact ⟨target, adjacent, endpointNe, leftNe, rightNe⟩
+        · intro both
+          exact nf.inducedMatching both.1 centreEndpoint both.2 leftRight.ne
+            leftShoulder.1.symm rightShoulder.1
+        · intro shoulder shoulderCases centreShoulder
+          have degreeShoulder := nf.neighbourTight centreShoulder
+          have degreeShoulderThree :
+              inputs.current.object.degree shoulder = 3 := by
+            rw [degreeShoulder, data.threshold_eq_three]
+          refine ⟨degreeShoulder, ?_⟩
+          intro target
+          constructor
+          · rintro ⟨targetAdj, targetEndpoint, targetLeft, targetRight⟩
+            rcases shoulderCases with shoulderEq | shoulderEq
+            · subst shoulder
+              rcases exhaustThree left centre endpoint right target
+                  degreeShoulderThree centreShoulder.symm leftShoulder.1.symm leftRight
+                  centreEndpoint.ne rightShoulder.2.symm rightShoulder.1.ne targetAdj with
+                rfl | rfl | rfl
+              · rfl
+              · exact (targetEndpoint rfl).elim
+              · exact (targetRight rfl).elim
+            · subst shoulder
+              rcases exhaustThree right centre endpoint left target
+                  degreeShoulderThree centreShoulder.symm rightShoulder.1.symm leftRight.symm
+                  centreEndpoint.ne leftShoulder.2.symm leftShoulder.1.ne targetAdj with
+                rfl | rfl | rfl
+              · rfl
+              · exact (targetEndpoint rfl).elim
+              · exact (targetLeft rfl).elim
+          · intro targetCentre
+            subst target
+            refine ⟨centreShoulder.symm, centreEndpoint.ne, ?_, ?_⟩
+            · exact leftShoulder.2.symm
+            · exact rightShoulder.2.symm
+        · intro shoulder target shoulderCases targetAdj targetEndpoint targetLeft
+            targetRight centreTarget
+          by_cases targetCentre : target = centre
+          · exact targetCentre
+          have endpointDegreeThree : inputs.current.object.degree endpoint = 3 := by
+            rw [endpointDegree, data.threshold_eq_three]
+          have endpointTarget : ¬ inputs.current.object.graph.Adj endpoint target := by
+            intro adjacent
+            rcases exhaustThree endpoint centre left right target endpointDegreeThree
+                centreEndpoint.symm leftShoulder.1 rightShoulder.1
+                leftShoulder.2.symm rightShoulder.2.symm leftRight.ne adjacent with
+              targetCentre' | targetLeft' | targetRight'
+            · exact targetCentre targetCentre'
+            · exact targetLeft targetLeft'
+            · exact targetRight targetRight'
+          rcases shoulderCases with shoulderEq | shoulderEq
+          · subst shoulder
+            exact False.elim (nf.noCommonNeighbourOutside centreEndpoint centreTarget
+              targetEndpoint.symm endpointTarget leftShoulder.2
+              leftShoulder.1 targetAdj.symm)
+          · subst shoulder
+            exact False.elim (nf.noCommonNeighbourOutside centreEndpoint centreTarget
+              targetEndpoint.symm endpointTarget rightShoulder.2
+              rightShoulder.1 targetAdj.symm)
+        ⟩ .nil)
+    0 0
+
+/-! ## Standing Type B fan-safe interface
+
+`def:typeB-fan-safe` is a standing interface definition used by both ordinary
+Type B supports and decorated handoffs.  Its four non-geometric failure
+predicates remain separate, so later producers instantiate them with their
+literal label, target-defect, compression, and delocalization exits. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def typeBFanSafeRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.typeBFanSafe
+    { Requires := []
+      Produces := [K .typeBFanSafe]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .typeBFanSafe) ⟨by
+        change TypeBFanSafeStatement data inputs.current.object
+        simp [TypeBFanSafeStatement, Graph.DecoratedHandoff.FanSafe]
+      ⟩ .nil)
+    0 0
+
+/-! ## Node `[72]`: canonical fan-closed-port definition
+
+This row publishes the manuscript definition by exposing the already proved
+`TypeBFanClosedPorts.Profile.IsFanClosed` predicate.  It does not introduce a
+second predicate or repeat any graph argument. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def fanClosedPortRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.fanClosedPort
+    { Requires := []
+      Produces := [K .fanClosedPort]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .fanClosedPort) ⟨by
+        change FanClosedPortStatement data inputs.current.object
+        intro profile endpoint
+        constructor
+        · intro closed
+          exact ⟨closed.1, closed.2,
+            fun shoulder member =>
+              closed.incidence_classified member⟩
+        · rintro ⟨remainder, envelope, _classified⟩
+          exact ⟨remainder, envelope⟩
+      ⟩ .nil)
+    0 0
+
+/-! ## Node `[72]`: compatible open pairs close in the assigned fan -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def compatiblePairFanClosureRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.compatiblePairFanClosure
+    { Requires := [K .fanClosedPort]
+      Produces := [K .compatiblePairFanClosure]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let fanClosedDefinition := (inputs.get (K .fanClosedPort)).down
+      .cons (key := K .compatiblePairFanClosure) ⟨by
+        change CompatiblePairFanClosureStatement data inputs.current.object
+        intro profile left right compatible leftRemainder rightRemainder
+          leftAssigned rightAssigned
+        have closed := Graph.TypeBFanClosedPorts.compatiblePairFanClosure
+          profile compatible leftRemainder rightRemainder leftAssigned
+            rightAssigned
+        exact ⟨(fanClosedDefinition profile left).2
+            ((fanClosedDefinition profile left).1 closed.1),
+          (fanClosedDefinition profile right).2
+            ((fanClosedDefinition profile right).1 closed.2.1),
+          closed.2.2⟩
+      ⟩ .nil)
+    0 0
+
+/-! ## Node `[72]`: fan-closed ports enter the positive Type-B ledger -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def fanClosedPortTypeBRoutingRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.fanClosedPortTypeBRouting
+    { Requires := [K .fanClosedPort]
+      Produces := [K .fanClosedPortTypeBRouting]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let fanClosedDefinition := (inputs.get (K .fanClosedPort)).down
+      .cons (key := K .fanClosedPortTypeBRouting) ⟨by
+        change FanClosedPortTypeBRoutingStatement data inputs.current.object
+        intro profile ledger normal scale ports fanClosed two
+        apply Graph.TypeBFanClosedPorts.fanClosedPortTypeBRouting
+          profile ledger normal scale
+        · intro vertex member
+          exact (fanClosedDefinition profile vertex).2
+            ((fanClosedDefinition profile vertex).1 (fanClosed vertex member))
+        · exact two
+      ⟩ .nil)
+    0 0
+
+/-! ## Node `[72]`: compatible-pair positive Type-B routing -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def compatiblePairTypeBRoutingRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.compatiblePairTypeBRouting
+    { Requires := [K .compatiblePairFanClosure,
+        K .fanClosedPortTypeBRouting]
+      Produces := [K .compatiblePairTypeBRouting]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let pairClosure := (inputs.get (K .compatiblePairFanClosure)).down
+      let fanClosedRouting :=
+        (inputs.get (K .fanClosedPortTypeBRouting)).down
+      .cons (key := K .compatiblePairTypeBRouting) ⟨by
+        classical
+        change CompatiblePairTypeBRoutingStatement data inputs.current.object
+        intro profile ledger normal scale left right compatible leftRemainder
+          rightRemainder leftAssigned rightAssigned
+        obtain ⟨leftClosed, rightClosed, distinct⟩ :=
+          pairClosure profile left right compatible leftRemainder rightRemainder
+            leftAssigned rightAssigned
+        have pairCard : ({left, right} : Finset inputs.current.object.Vertex).card = 2 :=
+          Finset.card_pair distinct
+        have fanClosed : ∀ vertex ∈
+            ({left, right} : Finset inputs.current.object.Vertex),
+            profile.IsFanClosed vertex := by
+          intro vertex member
+          rcases Finset.mem_insert.1 member with rfl | member
+          · exact leftClosed
+          · rw [Finset.mem_singleton] at member
+            subst member
+            exact rightClosed
+        have routed := fanClosedRouting profile ledger normal scale
+          ({left, right} : Finset inputs.current.object.Vertex) fanClosed
+          (by rw [pairCard])
+        have canonical := Graph.TypeBFanClosedPorts.compatiblePairTypeBRouting
+          profile ledger normal scale compatible leftRemainder rightRemainder
+            leftAssigned rightAssigned
+        rw [pairCard] at routed
+        exact ⟨routed.1, canonical.2⟩
+      ⟩ .nil)
+    0 0
+
+/-! ## Nodes `[78]`--`[81]`, feeding `[72]`: triangular-port Type-B routing -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def triangularPortTypeBRoutingRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.triangularPortTypeBRouting
+    { Requires := [K .fanClosedPort, K .fanClosedPortTypeBRouting]
+      Produces := [K .triangularPortTypeBRouting]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let fanClosedDefinition := (inputs.get (K .fanClosedPort)).down
+      let fanClosedRouting :=
+        (inputs.get (K .fanClosedPortTypeBRouting)).down
+      .cons (key := K .triangularPortTypeBRouting) ⟨by
+        classical
+        change TriangularPortTypeBRoutingStatement data inputs.current.object
+        intro profile ledger normal scale ports triangular cardPorts degreeFive
+          remainder assigned
+        have fanClosed : ∀ endpoint ∈ ports,
+            profile.IsFanClosed endpoint := by
+          intro endpoint member
+          have direct : profile.IsFanClosed endpoint :=
+            ⟨remainder endpoint member, assigned endpoint member⟩
+          exact (fanClosedDefinition profile endpoint).2
+            ((fanClosedDefinition profile endpoint).1 direct)
+        have two : 2 ≤ ports.card := by omega
+        have routed :=
+          fanClosedRouting profile ledger normal scale ports fanClosed two
+        have canonical := Graph.TypeBFanClosedPorts.triangularPortTypeBRouting
+          profile ledger normal scale triangular cardPorts degreeFive remainder
+            assigned
+        exact ⟨routed.1, canonical.2⟩
+      ⟩ .nil)
     0 0
 
 /-! ## Node `[70]`: the certificate-marked fan-degree cap
@@ -5570,6 +7940,57 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                 inputs.current.baseline selection.1 selection.2
                 piece receiver outside port⟩)
         .nil)
+    0 0
+
+/-! ## `cor:port-power-return`
+
+For each eligible completion port of the exact saturated Type A support, apply
+the ledger's contraction-criticality fact to the oriented port edge and delete
+that edge from the resulting cycle.  The same severed path becomes an anchored
+return without changing its exact dyadic length. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+@[reducible] noncomputable def portPowerReturnRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.portPowerReturn
+    { Requires := [K .typeASaturatedReceiver, K .contractionCritical]
+      Produces := [K .portPowerReturn]
+      requiresUnique := by simp [K_eq_iff]
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      let saturated := (inputs.get (K .typeASaturatedReceiver)).down
+      let contractionCritical := (inputs.get (K .contractionCritical)).down
+      .cons (key := K .portPowerReturn) ⟨by
+        obtain ⟨packing, valid, maximal, component, present, negative, zero,
+          selectedReceiver, selectedIsReceiver, selectedSaturated⟩ := saturated
+        let piece := inputs.current.object.pieceSupport
+          (inputs.current.object.remainderSupport packing) component
+        refine ⟨packing, valid, maximal, component, present, negative, zero,
+          ⟨selectedReceiver, selectedIsReceiver, selectedSaturated⟩, ?_⟩
+        intro receiver receiverIsReceiver outside outsideMem noCommonCubic
+        have adjacent : inputs.current.object.graph.Adj receiver outside :=
+          (Graph.VisibleEntry.mem_completionPorts.mp outsideMem).1
+        let contraction : Graph.EdgeContraction inputs.current.object :=
+          ⟨outside, receiver, adjacent.symm⟩
+        obtain ⟨path, exponent, lower, pathLength⟩ :=
+          contractionCritical contraction (by
+            intro common outsideCommon receiverCommon
+            exact noCommonCubic common receiverCommon outsideCommon)
+        let return' := Graph.VisibleEntry.anchoredReturnOfSeveredPath
+          adjacent path
+        refine ⟨return', exponent, lower, ?_⟩
+        simpa [return', Graph.VisibleEntry.anchoredReturnOfSeveredPath] using
+          pathLength⟩ .nil)
     0 0
 
 /-! ## Nodes `[107]`--`[109]` and dashed input `[66]`

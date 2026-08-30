@@ -538,7 +538,17 @@ def conditionalFibre
   {candidate | model.outsideCode candidate = model.outsideCode reference}
 
 /-- Exact response values realized after the earlier coordinates in `order`
-have been exposed. -/
+have been exposed, among skeletons carrying the reference's baseline word.
+
+The candidates are conditioned on the realized baseline word and on the
+exposed prefix only — not on the outside edges of the reference.  Conditioning
+on outside edges made the predicate depend on the reference's own edges among
+the connector vertices of a support: a reference with a power-of-two cycle
+there has one response on its whole fibre, so the ∀-reference branching
+condition was false for every model with two connector vertices in some
+support (`closure_proofs.md`, Theorem 9(a)).  The `[178]` entropy count
+(`HomogeneousBottleneckRows`) doubles the number of realized
+`(baseline word, prefix)` signatures, which is exactly this set. -/
 def conditionalValues
     {LengthOK : Nat → Prop} {object : FiniteObject.{u}}
     {Coordinate Chord : Type u}
@@ -549,15 +559,15 @@ def conditionalValues
     (order : Fin family.card ≃ {pair // pair ∈ family})
     (reference : model.Skeleton) (index : Fin family.card) :
     Set (SparsePairSkeletonResponse LengthOK) :=
-  {state | ∃ candidate,
-    candidate ∈ model.conditionalFibre reference ∧
+  {state | ∃ candidate : model.Skeleton,
+    model.baseline.response candidate.1 = model.baseline.response reference.1 ∧
       (∀ earlier : Fin family.card, earlier.1 < index.1 →
         model.response (LengthOK := LengthOK) candidate (order earlier).1 =
           model.response (LengthOK := LengthOK) reference (order earlier).1) ∧
       model.response (LengthOK := LengthOK) candidate (order index).1 = state}
 
-/-- An exposure order realizes one binary response coordinate at every step in
-every nonempty conditional fibre. -/
+/-- An exposure order realizes one binary response coordinate at every step of
+every realized `(baseline word, prefix)` signature. -/
 def RealizingOrder
     {LengthOK : Nat → Prop} {object : FiniteObject.{u}}
     {Coordinate Chord : Type u}

@@ -874,7 +874,7 @@ every node/.style={font=\scriptsize}
 \node[wide] (closedledger) at (-5.20,-4.25) {\textbf{[82]}~yes:\\certificate-closed or B2-paid; \(\No(X)\ge0\) outside route 8};
 \node[wide] (overlap) at (5.45,-4.25) {\textbf{[83]}~no:\\\(c\ge2\) and B2 fails; minimal Type B overlap obstruction};
 \node[wide] (fanmass) at (5.45,-6.95) {\textbf{[84]}~fan-mass route:\\certificate failures and B2 failures charged to assigned surplus};
-\node[wide] (closed) at (0.00,-9.25) {\textbf{[85]}~degree-\(4\) Type B cannot carry linear deficit outside route 8 once the fan-mass residual is sublinear};
+\node[term] (closed) at (0.00,-9.25) {\textbf{[85]}~degree-\(4\) Type B cannot carry linear deficit outside route 8 once the fan-mass residual is sublinear};
 \draw[arrow] (split)--node[right]{no}(profile);
 \draw[arrow] (profile)--(certq);
 \draw[arrow] (certq)--node[left]{yes}(ledgerq);
