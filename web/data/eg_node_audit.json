@@ -847,11 +847,11 @@
    "producer": "completed triangular prefix; certificate/B1/B2 rows; `typeBGlobalLocalBridgeRow`; mass/sublinear tail",
    "fidelity": "FAITHFUL",
    "fidelity_note": "The degree-four ledger reaches either the paid B2 arm or a minimal obstruction carrying the full global/local bridge before fan-mass accounting.",
-   "complete": "YES for the local [71]/[83]/[85] route",
+   "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "The local route is paper-complete and its low-surplus accounting outputs are consumed by the shared [75]-[77] continuation.",
-   "on_probed_closed_arm": false
+   "difference": "None. The paper-complete local route and its low-surplus accounting outputs are consumed by the shared [75]-[77] continuation on the same ExactLedger.",
+   "on_probed_closed_arm": true
   },
   "86": {
    "producer": "`typeSplitDichotomy` (SpineRows.lean:2540), left arm",

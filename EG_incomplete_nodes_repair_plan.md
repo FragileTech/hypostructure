@@ -1,6 +1,6 @@
 # Erdős–Gyárfás incomplete nodes and repair plan
 
-Status date: 2026-08-30
+Status date: 2026-08-31
 
 This plan lists only work that remains after reconciling the manuscript, live Lean declarations,
 literal call sites, and [`Assembly_node_audit.md`](Assembly_node_audit.md).
@@ -17,6 +17,13 @@ The manuscript determines the proposition, branch order, and destination. Every 
   a stronger/weaker substitute for the paper's statement.
 
 ## Current boundary
+
+Node `[85]` is closed. Its degree-four Type-B route now executes the complete triangular
+shoulder/port prefix, the fan-closed and triangular routing corollaries, the certificate/B1/B2
+split, the five-clause global/local bridge on the obstruction arm, and the fan-mass/sublinear
+tail on one monotone `ExactLedger`. The full `Assembly.lean` file kernel-checks with one Lean
+worker under the 16 GiB ceiling. None of the remaining repairs below is a missing premise of
+Node `[85]`.
 
 The live root is not reduced to `[172a]`, `[181]`, and `[182]`. It also exposes the enclosing
 `[20]` sparse target-defect handoff, routed pair-system and strict-surplus Type-B entries,

@@ -1540,6 +1540,11 @@ inductive Key where
   peeling accounting, the maximal 2/3-demand ledger, demand absorption, and
   packed-window blocker accounting. -/
   | route8PeeledDemandResidual
+  /-- Node 182: one-entry augmentation exhausts every unpaid entry with
+  three private carriers; the no-exit-(4) arm routes to node 124, and the sole
+  survivor consists of two-carrier unpaid entries with canonical exit-(4)
+  witnesses. -/
+  | route8UnpaidExitFourResidual
   /-- Node `[117]`, yes: some indexed route-8 entry of `𝒳_A` has at most `δ`
   private essential carriers (`prop:typeA-route8-carrier-reduction`). -/
   | route8TwoCarrierEntry
@@ -6023,6 +6028,43 @@ noncomputable def Route8PeeledDemandResidualStatement (data : Data.{u})
     Route8DemandLedgerStatement data object ∧
     Route8DemandAbsorptionStatement data object ∧
     Route8WindowBlockersStatement data object
+
+open scoped Classical in
+/-- **The maximal-ledger exit-(4) reduction after the peeled residual.**
+
+The complete peeled-demand ledger remains in the enclosing exact ledger.
+This additional fact chooses the same maximal demand partition supplied by
+Route8DemandLedgerStatement and records the strict structural reduction:
+every unpaid entry has at most delta-minus-one private essential carriers and
+carries its canonical exit-(4) witness.  The complementary no-witness arm is
+exactly route8UnifiedTrueTwoCarrierEntry and routes to the already closed
+terminal node. -/
+noncomputable def Route8UnpaidExitFourResidualStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  let entries := route8UnifiedEntries data object
+  let core := Graph.Route8Census.core object data.threshold data.LengthOK
+  let pinned := entries.filter fun index =>
+    Graph.Route8.TraceBasin.TargetCompleteMinimal object index.1 data.threshold
+        data.LengthOK index.2.1 index.2.2
+        (Graph.Route8Census.basin object data.threshold index) ∧
+      data.threshold ≤
+        Graph.Route8.indexedPrivateCoreCount entries core index
+  ∃ P : Graph.DemandPartition.Partition entries core,
+    Graph.DemandPartition.Partition.Pinned pinned
+        (Graph.Route8.indexedPrivateCoreCarriers entries core) P ∧
+      (∀ Q : Graph.DemandPartition.Partition entries core,
+        Graph.DemandPartition.Partition.Pinned pinned
+          (Graph.Route8.indexedPrivateCoreCarriers entries core) Q →
+        Q.three.card ≤ P.three.card ∧
+          (Q.three.card = P.three.card → Q.two.card ≤ P.two.card)) ∧
+      ∀ index ∈ P.two ∪ P.residual,
+        Graph.Route8.IndexedTwoCarrierCore entries core
+            (data.threshold - 1) index ∧
+          ∃ witness : Graph.ExitFour.Witness
+              (Graph.HasCycleWithLength data.LengthOK) index.1 data.threshold
+              data.dischargeScale index.2.1 ∅,
+            witness.load = index.2.2
 
 /-- Node `[111]`, `def:typeA-large-budget-deficit`: extract the canonical
 collection `𝒳_A` of Type A pieces all of whose saturated receivers survive in
@@ -10652,6 +10694,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       Route8WindowBlockersStatement data object
   | .route8PeeledDemandResidual, object =>
       Route8PeeledDemandResidualStatement data object
+  | .route8UnpaidExitFourResidual, object =>
+      Route8UnpaidExitFourResidualStatement data object
   | .route8TwoCarrierEntry, object =>
       let packing := canonicalWindowPacking data object
       let support := object.remainderSupport packing
@@ -11620,6 +11664,7 @@ def label : Key → String
   | .route8DemandAbsorption => "route8DemandAbsorption"
   | .route8WindowBlockers => "route8WindowBlockers"
   | .route8PeeledDemandResidual => "route8PeeledDemandResidual"
+  | .route8UnpaidExitFourResidual => "route8UnpaidExitFourResidual"
   | .route8TwoCarrierEntry => "route8TwoCarrierEntry"
   | .route8NoTwoCarrierEntry => "route8NoTwoCarrierEntry"
   | .route8TrueTwoCarrierEntry => "route8TrueTwoCarrierEntry"
@@ -11932,6 +11977,8 @@ example : label .route8DemandAbsorption = "route8DemandAbsorption" := rfl
 example : label .route8WindowBlockers = "route8WindowBlockers" := rfl
 example : label .route8PeeledDemandResidual =
     "route8PeeledDemandResidual" := rfl
+example : label .route8UnpaidExitFourResidual =
+    "route8UnpaidExitFourResidual" := rfl
 example : label .route8TwoCarrierEntry = "route8TwoCarrierEntry" := rfl
 example : label .route8NoTwoCarrierEntry = "route8NoTwoCarrierEntry" := rfl
 example : label .route8TrueTwoCarrierEntry = "route8TrueTwoCarrierEntry" := rfl
@@ -12243,6 +12290,7 @@ def idx : Key → Nat
   | .route8DemandAbsorption => 351
   | .route8WindowBlockers => 352
   | .route8PeeledDemandResidual => 353
+  | .route8UnpaidExitFourResidual => 503
   | .route8TwoCarrierEntry => 261
   | .route8NoTwoCarrierEntry => 262
   | .route8TrueTwoCarrierEntry => 280
@@ -12535,6 +12583,7 @@ def ofIdx : Nat → Key
   | 351 => .route8DemandAbsorption
   | 352 => .route8WindowBlockers
   | 353 => .route8PeeledDemandResidual
+  | 503 => .route8UnpaidExitFourResidual
   | 261 => .route8TwoCarrierEntry
   | 262 => .route8NoTwoCarrierEntry
   | 280 => .route8TrueTwoCarrierEntry
@@ -13157,6 +13206,9 @@ def name : Key → Lean.Name
   | .route8PeeledDemandResidual =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "route8PeeledDemandResidual") 353
+  | .route8UnpaidExitFourResidual =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "route8UnpaidExitFourResidual") 503
   | .route8TwoCarrierEntry =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8TwoCarrierEntry") 261
   | .route8NoTwoCarrierEntry =>

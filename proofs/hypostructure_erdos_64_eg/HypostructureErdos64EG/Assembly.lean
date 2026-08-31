@@ -1499,6 +1499,45 @@ noncomputable def selectedLargeBudgetPressureCensus
     (by simp [K_eq_iff, windowBlockersFresh])
     (by simp [K_eq_iff, demandResidualFresh])
 
+/-- **Nodes `[181]`--`[183]`: maximal-ledger exit-`(4)` reduction.**
+
+The incoming ledger is retained verbatim.  Maximality of its demand partition
+rules out an unpaid entry with three private carriers by a one-entry
+augmentation.  If an unpaid two-carrier entry has no exit-`(4)` witness, the
+unified census identifies the already closed `[124]` input.  Consequently the
+only outgoing residual consists entirely of unpaid two-carrier entries carrying
+their canonical exit-`(4)` witnesses. -/
+-- EG-NODE [181] maximal-ledger augmentation: high-private unpaid entries vanish
+-- EG-NODE [183] every unpaid two-carrier entry has a canonical exit-(4) witness
+noncomputable def selectedRouteEightUnpaidExitFourReduction
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .route8PeeledDemandResidual) known]
+    [FactKeys.Has (K .route8UnifiedEntryCensus) known]
+    (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known := by
+      simp [K_eq_iff])
+    (residualFresh : K .route8UnpaidExitFourResidual ∉ known := by
+      simp [K_eq_iff])
+    (terminalFresh : K .route8TerminalNoGo ∉
+        (K .route8UnifiedTrueTwoCarrierEntry :: known) := by
+      simp [K_eq_iff]) :
+    ExactLedger EGInput.{u} selected
+      (K .route8UnpaidExitFourResidual :: known) := by
+  match route8UnpaidExitFourDichotomy (data := spineData) history
+      (by simp [K_eq_iff, unifiedTrueFresh])
+      (by simp [K_eq_iff, residualFresh]) with
+  | .left trueEntry =>
+      -- This is literally the node `[124]` proposition, so its existing local
+      -- deletion contradiction closes the arm without weakening the ledger.
+      let closed :=
+        (route8UnifiedTerminalNoGoRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          trueEntry (by simp [K_eq_iff, terminalFresh])
+      exact (closed.get (K .route8TerminalNoGo)).down.elim
+  | .right residualHistory =>
+      exact residualHistory
+
 /-- **Nodes `[110]`--`[116]`: the route-8 residual of Part IX**, on the shared
   `[109]` residual reached by the no-edge of exit `(7)` (index-polymorphic).
   This is exactly the edge drawn in Part VIII after the visible/silent
@@ -1552,7 +1591,7 @@ abbrev SelectedRouteEightBoundary (selected : EGInput.{u}) :=
         erdosReceiverLoadProfile spineData .route8QuotientResidual
         selected.object ∨
       Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-        erdosReceiverLoadProfile spineData .route8PeeledDemandResidual
+        erdosReceiverLoadProfile spineData .route8UnpaidExitFourResidual
         selected.object
 
 noncomputable def selectedRouteEightResidual
@@ -1601,6 +1640,8 @@ noncomputable def selectedRouteEightResidual
     (windowBlockersFresh : K .route8WindowBlockers ∉ known)
     (demandResidualFresh : K .route8PeeledDemandResidual ∉ known)
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known)
+    (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known := by
+      simp [K_eq_iff])
     [FactKeys.Has (K .typeAReceiverRouting) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .selection) known]
@@ -1807,8 +1848,16 @@ noncomputable def selectedRouteEightResidual
                   simp [K_eq_iff, windowBlockersFresh])
                 (demandResidualFresh := by
                   simp [K_eq_iff, demandResidualFresh])
+              let unpaidExitFour :=
+                selectedRouteEightUnpaidExitFourReduction peeled
+                  (unifiedTrueFresh := by
+                    simp [K_eq_iff, unifiedTrueFresh])
+                  (residualFresh := by
+                    simp [K_eq_iff, unpaidExitFourFresh])
+                  (terminalFresh := by
+                    simp [K_eq_iff, unifiedTerminalFresh])
               exact Or.inr (Or.inr
-                (peeled.get (K .route8PeeledDemandResidual)).down)
+                (unpaidExitFour.get (K .route8UnpaidExitFourResidual)).down)
 
 /- The ordinary negative-support wrapper is retained separately from the
 absorbed `[177]` carrier.  Its existing enclosing branches already provide the
@@ -1855,7 +1904,9 @@ noncomputable def selectedTypeBRoute8Continuation
     (windowBlockersFresh : K .route8WindowBlockers ∉ known := by simp [K_eq_iff])
     (demandResidualFresh : K .route8PeeledDemandResidual ∉ known := by
       simp [K_eq_iff])
-    (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known := by simp [K_eq_iff]) :
+    (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known := by simp [K_eq_iff])
+    (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known := by
+      simp [K_eq_iff]) :
     SelectedRouteEightBoundary selected := by
   let bridgeMass :=
     (bridgeFanMassRow (BranchState := BranchState)
@@ -1926,8 +1977,13 @@ noncomputable def selectedTypeBRoute8Continuation
               simp [K_eq_iff, demandAbsorptionFresh])
             (windowBlockersFresh := by simp [K_eq_iff, windowBlockersFresh])
             (demandResidualFresh := by simp [K_eq_iff, demandResidualFresh])
+          let unpaidExitFour :=
+            selectedRouteEightUnpaidExitFourReduction peeled
+              (unifiedTrueFresh := by simp [K_eq_iff, unifiedTrueFresh])
+              (residualFresh := by simp [K_eq_iff, unpaidExitFourFresh])
+              (terminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
           exact Or.inr (Or.inr
-            (peeled.get (K .route8PeeledDemandResidual)).down)
+            (unpaidExitFour.get (K .route8UnpaidExitFourResidual)).down)
 
 /- The four non-closing outputs of the common Type B certificate calculation.
 They are exactly the paper's two local-payment and two fan-mass boundaries:
@@ -2941,7 +2997,7 @@ noncomputable def selectedTypeBChargedRoute8Continuation
     (bridgeMassFresh : K .typeBBridgeMass ∉ known := by simp [K_eq_iff])
     (bridgeSublinearFresh : K .typeBBridgeSublinear ∉ known := by
       simp [K_eq_iff])
-    (cubicFresh : K .cubicBaseline ∉ known := by simp [K_eq_iff])
+    (cubicFresh : FactKeys.Has (K .cubicBaseline) known := by infer_instance)
     (routingFresh : K .typeAReceiverRouting ∉ known := by simp [K_eq_iff])
     (extractedFresh : K .route8ExtractedEntryCensus ∉ known := by
       simp [K_eq_iff])
@@ -2966,11 +3022,9 @@ noncomputable def selectedTypeBChargedRoute8Continuation
     (demandResidualFresh : K .route8PeeledDemandResidual ∉ known := by simp [K_eq_iff])
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known := by simp [K_eq_iff]) :
     SelectedRouteEightBoundary selected := by
-  let cubic :=
-    (cubicBaselineRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by simp [K_eq_iff, cubicFresh])
+  letI := cubicFresh
+  let _cubicBaseline := (history.get (K .cubicBaseline)).down
+  let cubic := history
   let routed :=
     (typeAReceiverRoutingRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -3050,7 +3104,7 @@ private noncomputable def selectedAbsorbedFanChargeContinuation
     (fanSafeFresh : K .typeBFanSafe ∉ known)
     (bridgeMassFresh : K .typeBBridgeMass ∉ known)
     (bridgeSublinearFresh : K .typeBBridgeSublinear ∉ known)
-    (cubicFresh : K .cubicBaseline ∉ known)
+    (cubicFresh : FactKeys.Has (K .cubicBaseline) known := by infer_instance)
     (extractedFresh : K .route8ExtractedEntryCensus ∉ known)
     (routingFresh : K .typeAReceiverRouting ∉ known := by simp [K_eq_iff])
     (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known := by simp [K_eq_iff])
@@ -3074,6 +3128,8 @@ private noncomputable def selectedAbsorbedFanChargeContinuation
     (demandResidualFresh : K .route8PeeledDemandResidual ∉ known := by simp [K_eq_iff])
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known := by simp [K_eq_iff]) :
     SelectedRouteEightBoundary selected := by
+  letI := cubicFresh
+  let _cubicBaseline := (history.get (K .cubicBaseline)).down
   let boundary := selectedTypeBContinuation history
     (by simp [K_eq_iff, normalFormFresh])
     (by simp [K_eq_iff, heavyFresh])
@@ -3113,7 +3169,7 @@ private noncomputable def selectedAbsorbedFanChargeContinuation
     | exact selectedTypeBChargedRoute8Continuation mass
         (by simp [K_eq_iff, bridgeMassFresh])
         (by simp [K_eq_iff, bridgeSublinearFresh])
-        (by simp [K_eq_iff, cubicFresh])
+        (by infer_instance)
         (by simp [K_eq_iff, routingFresh])
         (by simp [K_eq_iff, extractedFresh])
         (unifiedNegativeFresh := by simp [K_eq_iff, unifiedNegativeFresh])
@@ -3138,7 +3194,7 @@ private noncomputable def selectedAbsorbedFanChargeContinuation
     | exact selectedTypeBChargedRoute8Continuation paid
         (by simp [K_eq_iff, bridgeMassFresh])
         (by simp [K_eq_iff, bridgeSublinearFresh])
-        (by simp [K_eq_iff, cubicFresh])
+        (by infer_instance)
         (by simp [K_eq_iff, routingFresh])
         (by simp [K_eq_iff, extractedFresh])
         (unifiedNegativeFresh := by simp [K_eq_iff, unifiedNegativeFresh])
@@ -4264,7 +4320,9 @@ noncomputable def selectedTypeAExitFourDischargedRetest
     (demandLedgerFresh : K .route8DemandLedger ∉ known)
     (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known)
     (windowBlockersFresh : K .route8WindowBlockers ∉ known)
-    (demandResidualFresh : K .route8PeeledDemandResidual ∉ known) :
+    (demandResidualFresh : K .route8PeeledDemandResidual ∉ known)
+    (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known := by
+      simp [K_eq_iff]) :
     SelectedRouteEightBoundary selected := by
   -- Read the discharged receiver fact from the accumulated ledger.
   let _discharged := history.get (K .typeAExitFourReceiverDischarged)
@@ -4338,8 +4396,13 @@ noncomputable def selectedTypeAExitFourDischargedRetest
               simp [K_eq_iff, demandAbsorptionFresh])
             (windowBlockersFresh := by simp [K_eq_iff, windowBlockersFresh])
             (demandResidualFresh := by simp [K_eq_iff, demandResidualFresh])
+          let unpaidExitFour :=
+            selectedRouteEightUnpaidExitFourReduction peeled
+              (unifiedTrueFresh := by simp [K_eq_iff, unifiedTrueFresh])
+              (residualFresh := by simp [K_eq_iff, unpaidExitFourFresh])
+              (terminalFresh := by simp [K_eq_iff, terminalFresh])
           exact Or.inr (Or.inr
-            (peeled.get (K .route8PeeledDemandResidual)).down)
+            (unpaidExitFour.get (K .route8UnpaidExitFourResidual)).down)
 
 /-- **Nodes `[101]`--`[102]` and their loop back to `[89]`**, on the shared
 saturated exit entry (index-polymorphic).  `lem:typeA-exit4-finite-descent` is
@@ -4397,7 +4460,7 @@ noncomputable def selectedTypeAExitFourChain
     (sevenFreeFresh : K .typeAExitSevenFree ∉ known)
     (sevenHandoffFresh : K .typeAExitSevenHandoff ∉ known)
     (decoratedFresh : K .typeBDecoratedAssignedSupport ∉ known)
-    (cubicBaselineFresh : K .cubicBaseline ∉ known)
+    (cubicBaselineFresh : FactKeys.Has (K .cubicBaseline) known := by infer_instance)
     (normalFormFresh : K .highCentreNormalForm ∉ known)
     (decoratedHeavyFresh : K .typeBFanHeavyCentre ∉ known)
     (decoratedDegreeFourFresh : K .typeBFanDegreeFourCentres ∉ known)
@@ -4460,11 +4523,9 @@ noncomputable def selectedTypeAExitFourChain
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .negativeSupport) known]
     (closureFresh : closed ∉ known) : SelectedRouteEightBoundary selected := by
-  let cubic :=
-    (cubicBaselineRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by simp [K_eq_iff, cubicBaselineFresh])
+  letI := cubicBaselineFresh
+  let _cubicBaseline := (history.get (K .cubicBaseline)).down
+  let cubic := history
   -- `lem:typeA-exit4-finite-descent` on the ledger (read again at `[123]`).
   let descended :=
     (typeAExitFourFiniteDescentRow (BranchState := BranchState)
@@ -4655,7 +4716,7 @@ noncomputable def selectedTypeAExitFourChainSilent
     (sevenFreeFresh : K .typeAExitSevenFree ∉ known)
     (sevenHandoffFresh : K .typeAExitSevenHandoff ∉ known)
     (decoratedFresh : K .typeBDecoratedAssignedSupport ∉ known)
-    (cubicBaselineFresh : K .cubicBaseline ∉ known)
+    (cubicBaselineFresh : FactKeys.Has (K .cubicBaseline) known := by infer_instance)
     (normalFormFresh : K .highCentreNormalForm ∉ known)
     (decoratedHeavyFresh : K .typeBFanHeavyCentre ∉ known)
     (decoratedDegreeFourFresh : K .typeBFanDegreeFourCentres ∉ known)
@@ -4732,11 +4793,9 @@ noncomputable def selectedTypeAExitFourChainSilent
     (triangularRoutingFresh : K .triangularPortTypeBRouting ∉ known)
     [FactKeys.Has (K .negativeSupport) known]
     (closureFresh : closed ∉ known) : SelectedRouteEightBoundary selected := by
-  let cubic :=
-    (cubicBaselineRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by simp [K_eq_iff, cubicBaselineFresh])
+  letI := cubicBaselineFresh
+  let _cubicBaseline := (history.get (K .cubicBaseline)).down
+  let cubic := history
   -- `lem:typeA-exit4-finite-descent` on the ledger (read again at `[123]`).
   let descended :=
     (typeAExitFourFiniteDescentRow (BranchState := BranchState)
@@ -4941,7 +5000,7 @@ noncomputable def selectedTypeAVisibleExitFour
     (sevenFreeFresh : K .typeAExitSevenFree ∉ known)
     (sevenHandoffFresh : K .typeAExitSevenHandoff ∉ known)
     (decoratedFresh : K .typeBDecoratedAssignedSupport ∉ known)
-    (cubicBaselineFresh : K .cubicBaseline ∉ known)
+    (cubicBaselineFresh : FactKeys.Has (K .cubicBaseline) known := by infer_instance)
     (normalFormFresh : K .highCentreNormalForm ∉ known)
     (decoratedHeavyFresh : K .typeBFanHeavyCentre ∉ known)
     (decoratedDegreeFourFresh : K .typeBFanDegreeFourCentres ∉ known)
@@ -5004,6 +5063,8 @@ noncomputable def selectedTypeAVisibleExitFour
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .negativeSupport) known]
     (closureFresh : closed ∉ known) : SelectedRouteEightBoundary selected := by
+  letI := cubicBaselineFresh
+  let _cubicBaseline := (history.get (K .cubicBaseline)).down
   let entered :=
     (typeAVisibleExitEntryRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -5027,7 +5088,7 @@ noncomputable def selectedTypeAVisibleExitFour
     (by simp [K_eq_iff, sixProperFresh]) (by simp [K_eq_iff, sixGlobalFresh])
     (by simp [K_eq_iff, sevenProducedFresh]) (by simp [K_eq_iff, sevenFreeFresh])
     (by simp [K_eq_iff, sevenHandoffFresh]) (by simp [K_eq_iff, decoratedFresh])
-    (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedCompatibilityFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, decoratedTriangularCoreFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
+    (by infer_instance) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedCompatibilityFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, decoratedTriangularCoreFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
     (by simp [K_eq_iff, censusFresh]) (by simp [K_eq_iff, twoFresh])
     (by simp [K_eq_iff, noTwoFresh]) (by simp [K_eq_iff, trueEntryFresh])
     (by simp [K_eq_iff, unifiedNegativeFresh])
@@ -5099,7 +5160,7 @@ noncomputable def selectedTypeASilentExitChain
     (sevenFreeFresh : K .typeAExitSevenFree ∉ known)
     (sevenHandoffFresh : K .typeAExitSevenHandoff ∉ known)
     (decoratedFresh : K .typeBDecoratedAssignedSupport ∉ known)
-    (cubicBaselineFresh : K .cubicBaseline ∉ known)
+    (cubicBaselineFresh : FactKeys.Has (K .cubicBaseline) known := by infer_instance)
     (normalFormFresh : K .highCentreNormalForm ∉ known)
     (decoratedHeavyFresh : K .typeBFanHeavyCentre ∉ known)
     (decoratedDegreeFourFresh : K .typeBFanDegreeFourCentres ∉ known)
@@ -5176,6 +5237,8 @@ noncomputable def selectedTypeASilentExitChain
     (triangularRoutingFresh : K .triangularPortTypeBRouting ∉ known)
     [FactKeys.Has (K .negativeSupport) known]
     (closureFresh : closed ∉ known) : SelectedRouteEightBoundary selected := by
+  letI := cubicBaselineFresh
+  let _cubicBaseline := (history.get (K .cubicBaseline)).down
   let entered :=
     (typeASilentExitEntryRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -5190,7 +5253,7 @@ noncomputable def selectedTypeASilentExitChain
     (by simp [K_eq_iff, sixProperFresh]) (by simp [K_eq_iff, sixGlobalFresh])
     (by simp [K_eq_iff, sevenProducedFresh]) (by simp [K_eq_iff, sevenFreeFresh])
     (by simp [K_eq_iff, sevenHandoffFresh]) (by simp [K_eq_iff, decoratedFresh])
-    (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedCompatibilityFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, decoratedTriangularCoreFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh]) (by simp [K_eq_iff, decoratedExcludedFresh]) (by simp [K_eq_iff, decoratedExclusionResidualFresh]) (by simp [K_eq_iff, decoratedExclusionMassFresh]) (by simp [K_eq_iff, decoratedObstructionMassFresh])
+    (by infer_instance) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedCompatibilityFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, decoratedTriangularCoreFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh]) (by simp [K_eq_iff, decoratedExcludedFresh]) (by simp [K_eq_iff, decoratedExclusionResidualFresh]) (by simp [K_eq_iff, decoratedExclusionMassFresh]) (by simp [K_eq_iff, decoratedObstructionMassFresh])
     (by simp [K_eq_iff, profileFresh]) (by simp [K_eq_iff, squeezeFresh])
     (by simp [K_eq_iff, burdenFresh]) (by simp [K_eq_iff, deficitFresh])
     (by simp [K_eq_iff, deficitFailsFresh])
@@ -5306,7 +5369,7 @@ noncomputable def selectedTypeAVisibleExitChain
     (sevenFreeFresh : K .typeAExitSevenFree ∉ known)
     (sevenHandoffFresh : K .typeAExitSevenHandoff ∉ known)
     (decoratedFresh : K .typeBDecoratedAssignedSupport ∉ known)
-    (cubicBaselineFresh : K .cubicBaseline ∉ known)
+    (cubicBaselineFresh : FactKeys.Has (K .cubicBaseline) known := by infer_instance)
     (normalFormFresh : K .highCentreNormalForm ∉ known)
     (decoratedHeavyFresh : K .typeBFanHeavyCentre ∉ known)
     (decoratedDegreeFourFresh : K .typeBFanDegreeFourCentres ∉ known)
@@ -5369,6 +5432,8 @@ noncomputable def selectedTypeAVisibleExitChain
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .negativeSupport) known]
     (closureFresh : closed ∉ known) : SelectedRouteEightBoundary selected := by
+  letI := cubicBaselineFresh
+  let _cubicBaseline := (history.get (K .cubicBaseline)).down
   -- `[95]`
   match typeAExitOneDichotomy (data := spineData) history returnFresh oneFreeFresh with
   | .left returnHistory =>
@@ -5415,7 +5480,7 @@ noncomputable def selectedTypeAVisibleExitChain
                 (by simp [K_eq_iff, sevenProducedFresh])
                 (by simp [K_eq_iff, sevenFreeFresh]) (by simp [K_eq_iff, sevenHandoffFresh])
                 (by simp [K_eq_iff, decoratedFresh])
-                (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedCompatibilityFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, decoratedTriangularCoreFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
+                (by infer_instance) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedCompatibilityFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, decoratedTriangularCoreFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
                 (by simp [K_eq_iff, censusFresh]) (by simp [K_eq_iff, twoFresh])
                 (by simp [K_eq_iff, noTwoFresh]) (by simp [K_eq_iff, trueEntryFresh])
                 (by simp [K_eq_iff, unifiedNegativeFresh])
@@ -5492,6 +5557,10 @@ noncomputable def selectedTypeALowSurplusContinuation
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .contractionCritical) known]
+    [FactKeys.Has (K .slackIndependent) known]
+    [FactKeys.Has (K .sparseSurplusSurvivor) known]
+    [FactKeys.Has (K .returnAvoidance) known]
+    [FactKeys.Has (K .tightEndpoint) known]
     (boundedFresh : K .typeABoundedSupport ∉ known := by simp [K_eq_iff])
     (routingFresh : K .typeAReceiverRouting ∉ known := by simp [K_eq_iff])
     (saturatedFresh : K .typeASaturatedReceiver ∉ known := by simp [K_eq_iff])
@@ -5530,7 +5599,7 @@ noncomputable def selectedTypeALowSurplusContinuation
     -- `[108]` → Type B `[65]` (decorated) and `[109]` → Part IX `[110]`--`[116]`.
     [FactKeys.Has (K .largeBudgetResidual) known]
     (decoratedFresh : K .typeBDecoratedAssignedSupport ∉ known := by simp [K_eq_iff])
-    (cubicBaselineFresh : K .cubicBaseline ∉ known := by simp [K_eq_iff])
+    (cubicBaselineFresh : FactKeys.Has (K .cubicBaseline) known := by infer_instance)
     (normalFormFresh : K .highCentreNormalForm ∉ known := by simp [K_eq_iff])
     (decoratedHeavyFresh : K .typeBFanHeavyCentre ∉ known := by simp [K_eq_iff])
     (decoratedDegreeFourFresh : K .typeBFanDegreeFourCentres ∉ known := by simp [K_eq_iff])
@@ -5614,6 +5683,8 @@ noncomputable def selectedTypeALowSurplusContinuation
     [FactKeys.Has (K .negativeSupport) known]
     (closureFresh : closed ∉ known := by simp [K_eq_iff]) :
     SelectedRouteEightBoundary selected := by
+  letI := cubicBaselineFresh
+  let _cubicBaseline := (history.get (K .cubicBaseline)).down
   -- `[87]`: the selected incoming Type A piece is P13-free, has diameter at
   -- most 11, and has at most 6142 vertices.
   let bounded :=
@@ -5684,7 +5755,7 @@ noncomputable def selectedTypeALowSurplusContinuation
             (by simp [K_eq_iff, sixProperFresh]) (by simp [K_eq_iff, sixGlobalFresh])
             (by simp [K_eq_iff, sevenProducedFresh]) (by simp [K_eq_iff, sevenFreeFresh])
             (by simp [K_eq_iff, sevenHandoffFresh]) (by simp [K_eq_iff, decoratedFresh])
-            (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedCompatibilityFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, decoratedTriangularCoreFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
+            (by infer_instance) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedCompatibilityFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, decoratedTriangularCoreFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
             (by simp [K_eq_iff, censusFresh]) (by simp [K_eq_iff, twoFresh])
             (by simp [K_eq_iff, noTwoFresh]) (by simp [K_eq_iff, trueEntryFresh])
             (by simp [K_eq_iff, unifiedNegativeFresh])
@@ -5733,7 +5804,7 @@ noncomputable def selectedTypeALowSurplusContinuation
             (by simp [K_eq_iff, sixProperFresh]) (by simp [K_eq_iff, sixGlobalFresh])
             (by simp [K_eq_iff, sevenProducedFresh]) (by simp [K_eq_iff, sevenFreeFresh])
             (by simp [K_eq_iff, sevenHandoffFresh]) (by simp [K_eq_iff, decoratedFresh])
-            (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedCompatibilityFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, decoratedTriangularCoreFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh]) (by simp [K_eq_iff, decoratedExcludedFresh]) (by simp [K_eq_iff, decoratedExclusionResidualFresh]) (by simp [K_eq_iff, decoratedExclusionMassFresh]) (by simp [K_eq_iff, decoratedObstructionMassFresh])
+            (by infer_instance) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedCompatibilityFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, decoratedTriangularCoreFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh]) (by simp [K_eq_iff, decoratedExcludedFresh]) (by simp [K_eq_iff, decoratedExclusionResidualFresh]) (by simp [K_eq_iff, decoratedExclusionMassFresh]) (by simp [K_eq_iff, decoratedObstructionMassFresh])
             (by simp [K_eq_iff, profileFresh]) (by simp [K_eq_iff, squeezeFresh])
             (by simp [K_eq_iff, burdenFresh]) (by simp [K_eq_iff, deficitFresh])
             (by simp [K_eq_iff, deficitFailsFresh])
@@ -5813,7 +5884,7 @@ noncomputable def selectedTypeBHighSurplusContinuation
     [FactKeys.Has (K .route8Rate) known]
     [FactKeys.Has (K .bridgeless) known]
     (routingFresh : K .typeAReceiverRouting ∉ known := by simp [K_eq_iff])
-    (cubicFresh : K .cubicBaseline ∉ known := by simp [K_eq_iff])
+    (cubicFresh : FactKeys.Has (K .cubicBaseline) known := by infer_instance)
     (assignedFresh : K .typeBAssignedSupport ∉ known := by simp [K_eq_iff])
     (fanEntryFresh : K .typeBFanEntry ∉ known := by simp [K_eq_iff])
     (normalFormFresh : K .highCentreNormalForm ∉ known := by simp [K_eq_iff])
@@ -5879,6 +5950,8 @@ noncomputable def selectedTypeBHighSurplusContinuation
     (triangularRoutingFresh : K .triangularPortTypeBRouting ∉ known := by simp [K_eq_iff])
     (globalLocalBridgeFresh : K .typeBGlobalLocalBridge ∉ known := by simp [K_eq_iff]) :
     SelectedRouteEightBoundary selected := by
+  letI := cubicFresh
+  let _cubicBaseline := (history.get (K .cubicBaseline)).down
   -- The common Part IX census reads the object-wide receiver routing of
   -- `[88]`.  Publish that paper fact on this literal Type B residual before
   -- adding the branch-specific fan support; no handoff carrier is needed.
@@ -5887,11 +5960,7 @@ noncomputable def selectedTypeBHighSurplusContinuation
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) spineData).run
       history (by simp [K_eq_iff, routingFresh])
-  let cubic :=
-    (cubicBaselineRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      routed (by simp [K_eq_iff, cubicFresh])
+  let cubic := routed
   -- `[65]`: the ordinary Type B assigned support.
   let assigned :=
     (typeBAssignedSupportRow (BranchState := BranchState)
@@ -6347,7 +6416,7 @@ noncomputable def selectedAbsorbedGermResidual
     (absorbedBridgeMassFresh : K .typeBBridgeMass ∉ known := by simp [K_eq_iff])
     (absorbedBridgeSublinearFresh : K .typeBBridgeSublinear ∉ known := by
       simp [K_eq_iff])
-    (absorbedCubicFresh : K .cubicBaseline ∉ known := by simp [K_eq_iff])
+    (absorbedCubicFresh : FactKeys.Has (K .cubicBaseline) known := by infer_instance)
     (absorbedExtractedFresh : K .route8ExtractedEntryCensus ∉ known := by
       simp [K_eq_iff])
     (absorbedGlobalLocalBridgeFresh : K .typeBGlobalLocalBridge ∉ known := by simp [K_eq_iff])
@@ -6384,6 +6453,8 @@ noncomputable def selectedAbsorbedGermResidual
     (absorbedDemandResidualFresh : K .route8PeeledDemandResidual ∉ known := by simp [K_eq_iff])
     (absorbedUnifiedTerminalFresh : K .route8TerminalNoGo ∉ known := by simp [K_eq_iff]) :
     SelectedAbsorbedGermBoundary selected := by
+  letI := absorbedCubicFresh
+  let _cubicBaseline := (history.get (K .cubicBaseline)).down
   let _absorbed := (history.get (K .absorbedConfigurationResidual)).down
   let _candidates := (history.get (K .coldGermCandidates)).down
   -- `[175]`, `lem:absorbed-germ-fan-data`: the per-half-edge dichotomy — every
@@ -6482,7 +6553,7 @@ noncomputable def selectedAbsorbedGermResidual
             (by simp [K_eq_iff, absorbedFanSafeFresh])
             (by simp [K_eq_iff, absorbedBridgeMassFresh])
             (by simp [K_eq_iff, absorbedBridgeSublinearFresh])
-            (by simp [K_eq_iff, absorbedCubicFresh])
+            (by infer_instance)
             (by simp [K_eq_iff, absorbedExtractedFresh])
             (routingFresh := by simp [K_eq_iff, absorbedRoutingFresh])
             (unifiedNegativeFresh := by simp [K_eq_iff, absorbedUnifiedNegativeFresh])
@@ -6567,7 +6638,7 @@ noncomputable def selectedAbsorbedGermResidual
         (by simp [K_eq_iff, absorbedFanSafeFresh])
         (by simp [K_eq_iff, absorbedBridgeMassFresh])
         (by simp [K_eq_iff, absorbedBridgeSublinearFresh])
-        (by simp [K_eq_iff, absorbedCubicFresh])
+        (by infer_instance)
         (by simp [K_eq_iff, absorbedExtractedFresh])
         (routingFresh := by simp [K_eq_iff, absorbedRoutingFresh])
         (unifiedNegativeFresh := by simp [K_eq_iff, absorbedUnifiedNegativeFresh])
@@ -6788,7 +6859,7 @@ noncomputable def selectedNetChargeContinuation
     (triangularCoreFresh : K .triangularFanCore ∉ known := by simp [K_eq_iff])
     -- `[108]` decorated handoff, `[110]`--`[116]` route 8, `[76]`/`[85]` → `[123]`.
     (decoratedFresh : K .typeBDecoratedAssignedSupport ∉ known := by simp [K_eq_iff])
-    (cubicBaselineFresh : K .cubicBaseline ∉ known := by simp [K_eq_iff])
+    (cubicBaselineFresh : FactKeys.Has (K .cubicBaseline) known := by infer_instance)
     (decoratedHeavyFresh : K .typeBFanHeavyCentre ∉ known := by simp [K_eq_iff])
     (decoratedDegreeFourFresh : K .typeBFanDegreeFourCentres ∉ known := by simp [K_eq_iff])
     (decoratedLocalFresh : K .typeBFanLocalDichotomy ∉ known := by simp [K_eq_iff])
@@ -6852,6 +6923,8 @@ noncomputable def selectedNetChargeContinuation
     (crossShoulderFresh : K .triangularCrossShoulder ∉ known := by simp [K_eq_iff])
     (fanSafeFresh : K .typeBFanSafe ∉ known := by simp [K_eq_iff]) :
     SelectedNetChargeBoundary selected := by
+  letI := cubicBaselineFresh
+  let _cubicBaseline := (history.get (K .cubicBaseline)).down
   -- `[57]` = `[173]`, `lem:exact-collision-test`: node `[56]`'s collision decided
   -- exactly on the current object (`K .netChargeCap`), with no condition on `n`.
   let bridgeless :=
@@ -6932,7 +7005,7 @@ noncomputable def selectedNetChargeContinuation
         (absorbedTerminalFresh := by simp [K_eq_iff, closureFresh])
         (by simp [K_eq_iff, bridgeMassFresh])
         (by simp [K_eq_iff, bridgeSublinearFresh])
-        (by simp [K_eq_iff, cubicBaselineFresh])
+        (by infer_instance)
         (by simp [K_eq_iff, extractedEntryCensusFresh])
         (absorbedGlobalLocalBridgeFresh := by simp [K_eq_iff, globalLocalBridgeFresh])
         (absorbedFanClosedFresh := by simp [K_eq_iff, fanClosedFresh])
@@ -7018,7 +7091,7 @@ noncomputable def selectedNetChargeContinuation
                 (by simp [K_eq_iff, sevenProducedFresh])
                 (by simp [K_eq_iff, sevenFreeFresh]) (by simp [K_eq_iff, sevenHandoffFresh])
                 (by simp [K_eq_iff, decoratedFresh])
-                (by simp [K_eq_iff, cubicBaselineFresh]) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedCompatibilityFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, decoratedTriangularCoreFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh]) (by simp [K_eq_iff, decoratedExcludedFresh]) (by simp [K_eq_iff, decoratedExclusionResidualFresh]) (by simp [K_eq_iff, decoratedExclusionMassFresh]) (by simp [K_eq_iff, decoratedObstructionMassFresh])
+                (by infer_instance) (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedCompatibilityFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, decoratedTriangularCoreFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh]) (by simp [K_eq_iff, decoratedExcludedFresh]) (by simp [K_eq_iff, decoratedExclusionResidualFresh]) (by simp [K_eq_iff, decoratedExclusionMassFresh]) (by simp [K_eq_iff, decoratedObstructionMassFresh])
                 (by simp [K_eq_iff, profileFresh]) (by simp [K_eq_iff, squeezeFresh])
                 (by simp [K_eq_iff, burdenFresh]) (by simp [K_eq_iff, deficitFresh])
                 (by simp [K_eq_iff, deficitFailsFresh])
@@ -7068,7 +7141,7 @@ noncomputable def selectedNetChargeContinuation
           | .right typeBHistory =>
               exact Or.inl (selectedTypeBHighSurplusContinuation typeBHistory
                 (by simp [K_eq_iff, routingFresh])
-                (by simp [K_eq_iff, cubicBaselineFresh])
+                (by infer_instance)
                 (by simp [K_eq_iff, typeBAssignedFresh]) (by simp [K_eq_iff, typeBFanEntryFresh]) (by simp [K_eq_iff, normalFormFresh])
                 (by simp [K_eq_iff, fanHeavyFresh]) (by simp [K_eq_iff, fanDegreeFourFresh])
                 (by simp [K_eq_iff, fanLocalFresh])
@@ -7116,299 +7189,6 @@ noncomputable def selectedNetChargeContinuation
                 (globalLocalBridgeFresh := by simp [K_eq_iff, globalLocalBridgeFresh]))
 
 
-
-/-! ## Nodes `[50]`--`[52]` on the literal low-entropy residual -/
-
-/-- Run the manuscript's complete low-entropy refinement without erasing any
-fact from the incoming `ExactLedger`: structural repetitiveness, dominant
-rooted type, the root-wedge split, and—only on the wedge arm—the independent
-translate estimate.  Every surviving arm is then written as Residual C before
-the caller's next node is invoked. -/
-noncomputable def selectedLowTypeToLargeBudget
-    {Result : Sort w} {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
-    {downstream : FactKey EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .remainderEntropyLow) known]
-    [FactKeys.Has (K .curvatureFullRank) known]
-    [FactKeys.Has (K .surplusAtOrBelow) known]
-    [FactKeys.Has (K .route8Rate) known]
-    [FactKeys.Has (K .stubSupply) known]
-    [FactKeys.Has (K .boundaryDemand) known]
-    [FactKeys.Has (K .maximalPacking) known]
-    [FactKeys.Has (K .hotColdPartition) known]
-    [FactKeys.Has (K .remainderNormalized) known]
-    [FactKeys.Has (K .remainderRelabelingEntropy) known]
-    [FactKeys.Has (K .selection) known]
-    [FactKeys.Has (K .uncompressible) known]
-    [FactKeys.Has (K .replacementExclusion) known]
-    [FactKeys.Has downstream known]
-    (next : ∀ {known' : FactKeys EGInput.{u}},
-      ExactLedger EGInput.{u} selected known' →
-      [FactKeys.Has (K .largeBudgetResidual) known'] →
-      [FactKeys.Has (K .route8Rate) known'] →
-      [FactKeys.Has (K .surplusAtOrBelow) known'] →
-      [FactKeys.Has (K .stubSupply) known'] →
-      [FactKeys.Has (K .boundaryDemand) known'] →
-      [FactKeys.Has (K .maximalPacking) known'] →
-      [FactKeys.Has (K .hotColdPartition) known'] →
-      [FactKeys.Has (K .remainderNormalized) known'] →
-      [FactKeys.Has (K .remainderRelabelingEntropy) known'] →
-      [FactKeys.Has (K .selection) known'] →
-      [FactKeys.Has (K .uncompressible) known'] →
-      [FactKeys.Has (K .replacementExclusion) known'] →
-      [FactKeys.Has downstream known'] → Result)
-    (repetitiveFresh : K .localTypeCoordinateRepetitive ∉ known := by
-      simp [K_eq_iff])
-    (nonrepetitiveFresh : K .localTypeCoordinateNonrepetitive ∉ known := by
-      simp [K_eq_iff])
-    (dominantFresh : K .dominantRootedType ∉ known := by simp [K_eq_iff])
-    (wedgeFresh : K .dominantRootedWedgeType ∉ known := by simp [K_eq_iff])
-    (wedgeFreeFresh : K .dominantRootedTypeWedgeFree ∉ known := by
-      simp [K_eq_iff])
-    (translateFresh : K .independentObstructionTranslates ∉ known := by
-      simp [K_eq_iff])
-    (largeFresh : K .largeBudgetResidual ∉ known := by simp [K_eq_iff]) :
-    Result := by
-  match localTypeCoordinateDichotomy (data := spineData) history
-      repetitiveFresh nonrepetitiveFresh with
-  | .right nonrepetitiveHistory =>
-      let large :=
-        (lowEntropyLargeBudgetRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          nonrepetitiveHistory (by simp [K_eq_iff, largeFresh])
-      exact next large
-  | .left repetitiveHistory =>
-      let dominant :=
-        (dominantRootedTypeRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          repetitiveHistory (by simp [K_eq_iff, dominantFresh])
-      match dominantRootedTypeWedgeDichotomy (data := spineData) dominant
-          (by simp [K_eq_iff, wedgeFresh])
-          (by simp [K_eq_iff, wedgeFreeFresh]) with
-      | .right wedgeFreeHistory =>
-          let large :=
-            (lowEntropyLargeBudgetRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              wedgeFreeHistory (by simp [K_eq_iff, largeFresh])
-          exact next large
-      | .left wedgeHistory =>
-          let translated :=
-            (independentObstructionTranslatesRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              wedgeHistory (by simp [K_eq_iff, translateFresh])
-          let large :=
-            (lowEntropyLargeBudgetRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              translated (by simp [K_eq_iff, largeFresh])
-          exact next large
-
-/-! ## Nodes `[25]`--`[55]` on any near-cubic residual
-
-The remainder normalization, boundary demand, stub supply, wedge lower bound,
-curvature target-rank and circuit (`[25]`--`[31]`), the rank split `[32]` with
-Branch D closed on its yes arm (`[33]`--`[46]`), `cor:forced-curvature-cost`
-`[48]`, the remainder-entropy split `[49]`/`[50]`, the rooted-type refinement
-and independent-translate argument `[51]`, the window-plus-remainder accounting
-and entropy cap `[52]`/`[53]` with `[54]` closed when the comparison retains a
-code, and Residual C `[55]` on every surviving entropy/type arm.  The rows are
-the same on every arm of the spine; only node `[56]`'s density input differs.
-The caller therefore supplies one tail-polymorphic continuation, which receives
-the literal Residual-C ledger from the high-entropy route, the nonrepetitive or
-wedge-free low-entropy routes, or the repetitive rooted-wedge translate route. -/
--- EG-NODE [25] Residual A: R=G-union V(P) large and componentwise P13-free
--- EG-NODE [26] Residual A: R large and componentwise P13-free
--- EG-NODE [27] no component of R has an internal 3-core
--- EG-NODE [28] positive deficiency def+(X)=sum_v max(0,3-d_X(v))
--- EG-NODE [29] external-incidence supply def+(R)<=15p13+o(n)
--- EG-NODE [30] wedge lower bound W_2(R)>=omega_win|R|-o(|R|)
--- EG-NODE [31] curvature target-rank r_Omega(R)
--- EG-NODE [32] rank drop? r_Omega(R)<W_2(R)-o(W_2)
--- EG-NODE [33] Branch D: rank-reducing curvature dependence
--- EG-NODE [34] Residual B: no rank drop; full curvature rank
--- EG-NODE [35] Branch D: rank-reducing obstruction dependence
--- EG-NODE [47] Residual B: full curvature rank r_Omega(R)>=W_2(R)-o(W_2)
--- EG-NODE [48] forced curvature cost c_Omega W_2(R)>=K_win|R|-o(|R|)
--- EG-NODE [49] per-vertex remainder entropy eta(R)=log2|G(R)|/|R|
--- EG-NODE [50] eta(R)>=(1/10)log2 n ?
--- EG-NODE [51] repetitive dominant rooted type and independent translates
--- EG-NODE [52] window plus remainder accounting bounds theta
--- EG-NODE [53] remaining non-curvature budget < K|R| ?
--- EG-NODE [54] entropy cap closes
--- EG-NODE [55] Residual C: large-budget branch; theta<=theta_win+o(1)
-noncomputable def selectedSpineToLargeBudget
-    {Result : Sort w} {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
-    {downstream : FactKey EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .selection) known]
-    [FactKeys.Has (K .surplusAtOrBelow) known]
-    [FactKeys.Has (K .route8Rate) known]
-    [FactKeys.Has (K .uncompressible) known]
-    [FactKeys.Has (K .replacementExclusion) known]
-    [FactKeys.Has (K .degreeProfileFibres) known]
-    [FactKeys.Has (K .targetCompleteContextUniversality) known]
-    [FactKeys.Has (K .maximalPacking) known]
-    [FactKeys.Has (K .hotColdPartition) known]
-    [FactKeys.Has (K .windowPackageSeparated) known]
-    [FactKeys.Has (K .skeletonDominates) known]
-    [FactKeys.Has downstream known]
-    (next : ∀ {known' : FactKeys EGInput.{u}},
-      ExactLedger EGInput.{u} selected known' →
-      [FactKeys.Has (K .largeBudgetResidual) known'] →
-      [FactKeys.Has (K .route8Rate) known'] →
-      [FactKeys.Has (K .surplusAtOrBelow) known'] →
-      [FactKeys.Has (K .stubSupply) known'] →
-      [FactKeys.Has (K .boundaryDemand) known'] →
-      [FactKeys.Has (K .maximalPacking) known'] →
-      [FactKeys.Has (K .hotColdPartition) known'] →
-      [FactKeys.Has (K .remainderNormalized) known'] →
-      [FactKeys.Has (K .remainderRelabelingEntropy) known'] →
-      [FactKeys.Has (K .selection) known'] →
-      [FactKeys.Has (K .uncompressible) known'] →
-      [FactKeys.Has (K .replacementExclusion) known'] →
-      [FactKeys.Has downstream known'] → Result)
-    (remainderFresh : K .remainderNormalized ∉ known := by simp [K_eq_iff])
-    (relabelingEntropyFresh : K .remainderRelabelingEntropy ∉ known := by simp [K_eq_iff])
-    (boundaryFresh : K .boundaryDemand ∉ known := by simp [K_eq_iff])
-    (stubFresh : K .stubSupply ∉ known := by simp [K_eq_iff])
-    (wedgeFresh : K .wedgeSupply ∉ known := by simp [K_eq_iff])
-    (profileFresh : K .exactResponseProfile ∉ known := by simp [K_eq_iff])
-    (admissibleFresh : K .admissibleRankQuotient ∉ known := by simp [K_eq_iff])
-    (rankFresh : K .curvatureTargetRank ∉ known := by simp [K_eq_iff])
-    (circuitFresh : K .targetRankCircuit ∉ known := by simp [K_eq_iff])
-    (dropFresh : K .curvatureRankDrop ∉ known := by simp [K_eq_iff])
-    (fullFresh : K .curvatureFullRank ∉ known := by simp [K_eq_iff])
-    (dependenceFresh : K .branchDependence ∉ known := by simp [K_eq_iff])
-    (separatedFresh : K .separatedTesters ∉ known := by simp [K_eq_iff])
-    (defectFresh : K .contextDefect ∉ known := by simp [K_eq_iff])
-    (universalFresh : K .contextUniversal ∉ known := by simp [K_eq_iff])
-    (compressionFresh : K .atomCompression ∉ known := by simp [K_eq_iff])
-    (delocalizedFresh : K .delocalizedSupport ∉ known := by simp [K_eq_iff])
-    (properFresh : K .properDelocalization ∉ known := by simp [K_eq_iff])
-    (globalFresh : K .globalDelocalization ∉ known := by simp [K_eq_iff])
-    (repairFresh : K .repairIdentity ∉ known := by simp [K_eq_iff])
-    (barrierFresh : K .globalBarrier ∉ known := by simp [K_eq_iff])
-    (closureFresh : closed ∉ known := by simp [K_eq_iff])
-    (entropyBoundFresh : K .entropyCapBound ∉ known := by simp [K_eq_iff])
-    (costFresh : K .forcedCurvatureCost ∉ known := by simp [K_eq_iff])
-    (highFresh : K .remainderEntropyHigh ∉ known := by simp [K_eq_iff])
-    (lowFresh : K .remainderEntropyLow ∉ known := by simp [K_eq_iff])
-    (packageFresh : K .entropyPackageDemand ∉ known := by simp [K_eq_iff])
-    (activeFresh : K .entropyCapActive ∉ known := by simp [K_eq_iff])
-    (repetitiveFresh : K .localTypeCoordinateRepetitive ∉ known := by simp [K_eq_iff])
-    (nonrepetitiveFresh : K .localTypeCoordinateNonrepetitive ∉ known := by simp [K_eq_iff])
-    (dominantFresh : K .dominantRootedType ∉ known := by simp [K_eq_iff])
-    (rootedWedgeFresh : K .dominantRootedWedgeType ∉ known := by simp [K_eq_iff])
-    (wedgeFreeFresh : K .dominantRootedTypeWedgeFree ∉ known := by simp [K_eq_iff])
-    (translateFresh : K .independentObstructionTranslates ∉ known := by simp [K_eq_iff])
-    (largeFresh : K .largeBudgetResidual ∉ known := by simp [K_eq_iff]) :
-    Result := by
-  let remainder :=
-    (remainderNormalizationRow (BranchState := BranchState)
-        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-        history (by simp [K_eq_iff, remainderFresh])
-  let relabelingEntropy :=
-    (remainderRelabelingEntropyRow (BranchState := BranchState)
-        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-        remainder (by simp [K_eq_iff, relabelingEntropyFresh])
-  let boundary :=
-    (boundaryDemandRow (BranchState := BranchState)
-        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-        relabelingEntropy (by simp [K_eq_iff, boundaryFresh])
-  let stubSupply :=
-    (stubSupplyRow (BranchState := BranchState)
-        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-        boundary (by simp [K_eq_iff, stubFresh])
-  let wedge :=
-    (wedgeSupplyRow (BranchState := BranchState)
-        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-        stubSupply (by simp [K_eq_iff, wedgeFresh])
-  -- `[31]`: the curvature target-rank of the remainder and `lem:target-rank-circuit`.
-  let rank :=
-    (curvatureTargetRankRow (BranchState := BranchState)
-        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-        wedge (by simp [K_eq_iff, profileFresh, admissibleFresh, rankFresh])
-  let circuit :=
-    (targetRankCircuitRow (BranchState := BranchState)
-        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-        rank (by simp [K_eq_iff, circuitFresh])
-  -- `[32]`: the exact finite rank split at the canonical maximal packing.
-  match curvatureRankDichotomy (data := spineData) circuit
-      (by simp [K_eq_iff, dropFresh]) (by simp [K_eq_iff, fullFresh]) with
-  | .left dropHistory =>
-      -- `[33]`--`[46]`: Branch D, closed.
-      let dependence :=
-        (branchDependenceRow (BranchState := BranchState)
-        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-        (presentation := erdosReceiverLoadProfile) spineData).run
-        dropHistory (by simp [K_eq_iff, dependenceFresh])
-      -- `[35]`: retain the Branch-D state and append only
-      -- `lem:separated-testers` to the same literal ledger.
-      let tested :=
-        (separatedTestersRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) spineData).run
-          dependence (by simp [K_eq_iff, separatedFresh])
-      exact (selectedRankDropCloses tested
-        (by simp [K_eq_iff, defectFresh]) (by simp [K_eq_iff, universalFresh])
-        (by simp [K_eq_iff, compressionFresh]) (by simp [K_eq_iff, delocalizedFresh])
-        (by simp [K_eq_iff, properFresh]) (by simp [K_eq_iff, globalFresh])
-        (by simp [K_eq_iff, repairFresh]) (by simp [K_eq_iff, barrierFresh])
-        (by simp [K_eq_iff, closureFresh])).elim
-  | .right fullRankHistory =>
-  -- `[34]`/`[47]`/`[48]`: full rank and `cor:forced-curvature-cost`.
-  let cost :=
-    (forcedCurvatureCostRow (BranchState := BranchState)
-        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-        fullRankHistory (by simp [K_eq_iff, costFresh])
-  match remainderEntropyDichotomy (data := spineData) cost
-      (by simp [K_eq_iff, highFresh]) (by simp [K_eq_iff, lowFresh]) with
-  | .left highHistory =>
-      -- `[52]`/`[53]`: the high arm performs only the manuscript's independent
-      -- window/remainder accounting and entropy-cap test.
-      let package :=
-        (entropyPackageRow (BranchState := BranchState)
-        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-        (presentation := erdosReceiverLoadProfile) spineData).run
-        highHistory (by simp [K_eq_iff, packageFresh])
-      match entropyCapDichotomy (data := spineData) package
-          (by simp [K_eq_iff, activeFresh]) (by simp [K_eq_iff, largeFresh]) with
-      | .left activeHistory =>
-          -- `[54]`: the sealed row derives the exact opposite budget bound on
-          -- both alternatives stored in `K .hotColdPartition`; Core closes the
-          -- resulting incompatible facts on this literal active ledger.
-          let closedHistory :=
-            (entropyCapBoundRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile) (data := spineData)).runAndCloseIncompatible
-                activeHistory
-                (K .entropyCapActive) (K .entropyCapBound)
-                (by simp [K_eq_iff, entropyBoundFresh])
-                (by simp [K_eq_iff, closureFresh])
-          exact (closedHistory.elimClosed (by infer_instance)).elim
-      | .right largeHistory =>
-          exact next largeHistory
-  | .right lowHistory =>
-      exact selectedLowTypeToLargeBudget lowHistory next
-        (by simp [K_eq_iff, repetitiveFresh])
-        (by simp [K_eq_iff, nonrepetitiveFresh])
-        (by simp [K_eq_iff, dominantFresh])
-        (by simp [K_eq_iff, rootedWedgeFresh])
-        (by simp [K_eq_iff, wedgeFreeFresh])
-        (by simp [K_eq_iff, translateFresh])
-        (by simp [K_eq_iff, largeFresh])
 
 /-- The near-cubic branch after node `[19]`: node `[21]`, the `[22]` split and
 live-hot cap, and — on the cap arm, exactly as `[24]` prescribes — the cold
@@ -7473,7 +7253,7 @@ abbrev SelectedNearCubicSurvivorBoundary (selected : EGInput.{u}) :=
         Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
           erdosReceiverLoadProfile spineData .coldBranchClosed selected.object
 
-set_option maxHeartbeats 4000000 in
+set_option maxHeartbeats 8000000 in
 noncomputable def selectedNearCubicSurvivorBranch
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
@@ -7539,17 +7319,157 @@ noncomputable def selectedNearCubicSurvivorBranch
                       (presentation := erdosReceiverLoadProfile)
                       (data := spineData)).run coldBelowHistory
                       (by simp [K_eq_iff])
-                  exact selectedSpineToLargeBudget
-                    (downstream := K .coldRoute8Below) coldBelowHistory
-                    (fun spineHistory =>
-                      let netCap :=
-                        (routeEightNetDeficiencyCapRow
-                          (BranchState := BranchState)
+                  let remainder :=
+                    (remainderNormalizationRow (BranchState := BranchState)
+                        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                        coldBelowHistory (by simp [K_eq_iff])
+                  let relabelingEntropy :=
+                    (remainderRelabelingEntropyRow (BranchState := BranchState)
+                        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                        remainder (by simp [K_eq_iff])
+                  let boundary :=
+                    (boundaryDemandRow (BranchState := BranchState)
+                        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                        relabelingEntropy (by simp [K_eq_iff])
+                  let stubSupply :=
+                    (stubSupplyRow (BranchState := BranchState)
+                        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                        boundary (by simp [K_eq_iff])
+                  let wedge :=
+                    (wedgeSupplyRow (BranchState := BranchState)
+                        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                        stubSupply (by simp [K_eq_iff])
+                  -- `[31]`: the curvature target-rank of the remainder and `lem:target-rank-circuit`.
+                  let rank :=
+                    (curvatureTargetRankRow (BranchState := BranchState)
+                        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                        wedge (by simp [K_eq_iff])
+                  let circuit :=
+                    (targetRankCircuitRow (BranchState := BranchState)
+                        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                        rank (by simp [K_eq_iff])
+                  -- `[32]`: the exact finite rank split at the canonical maximal packing.
+                  match curvatureRankDichotomy (data := spineData) circuit
+                      (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+                  | .left dropHistory =>
+                      -- `[33]`--`[46]`: Branch D, closed.
+                      let dependence :=
+                        (branchDependenceRow (BranchState := BranchState)
+                        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                        (presentation := erdosReceiverLoadProfile) spineData).run
+                        dropHistory (by simp [K_eq_iff])
+                      -- `[35]`: retain the Branch-D state and append only
+                      -- `lem:separated-testers` to the same literal ledger.
+                      let tested :=
+                        (separatedTestersRow (BranchState := BranchState)
                           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                          (presentation := erdosReceiverLoadProfile)
-                          (data := spineData)).run spineHistory
-                          (by simp [K_eq_iff])
-                      Or.inl (selectedNetChargeContinuation netCap))
+                          (presentation := erdosReceiverLoadProfile) spineData).run
+                          dependence (by simp [K_eq_iff])
+                      exact (selectedRankDropCloses tested
+                        (by simp [K_eq_iff]) (by simp [K_eq_iff])
+                        (by simp [K_eq_iff]) (by simp [K_eq_iff])
+                        (by simp [K_eq_iff]) (by simp [K_eq_iff])
+                        (by simp [K_eq_iff]) (by simp [K_eq_iff])
+                        (by simp [K_eq_iff])).elim
+                  | .right fullRankHistory =>
+                  -- `[34]`/`[47]`/`[48]`: full rank and `cor:forced-curvature-cost`.
+                  let cost :=
+                    (forcedCurvatureCostRow (BranchState := BranchState)
+                        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                        fullRankHistory (by simp [K_eq_iff])
+                  match remainderEntropyDichotomy (data := spineData) cost
+                      (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+                  | .left highHistory =>
+                      -- `[52]`/`[53]`: the high arm performs only the manuscript's independent
+                      -- window/remainder accounting and entropy-cap test.
+                      let package :=
+                        (entropyPackageRow (BranchState := BranchState)
+                        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                        (presentation := erdosReceiverLoadProfile) spineData).run
+                        highHistory (by simp [K_eq_iff])
+                      match entropyCapDichotomy (data := spineData) package
+                          (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+                      | .left activeHistory =>
+                          -- `[54]`: the sealed row derives the exact opposite budget bound on
+                          -- both alternatives stored in `K .hotColdPartition`; Core closes the
+                          -- resulting incompatible facts on this literal active ledger.
+                          let closedHistory :=
+                            (entropyCapBoundRow (BranchState := BranchState)
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile) (data := spineData)).runAndCloseIncompatible
+                                activeHistory
+                                (K .entropyCapActive) (K .entropyCapBound)
+                                (by simp [K_eq_iff])
+                                (by simp [K_eq_iff])
+                          exact (closedHistory.elimClosed (by infer_instance)).elim
+                      | .right largeHistory =>
+                          let netCap :=
+                            (routeEightNetDeficiencyCapRow (BranchState := BranchState)
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                              largeHistory (by simp [K_eq_iff])
+                          exact Or.inl (selectedNetChargeContinuation netCap)
+                  | .right lowHistory =>
+                    match localTypeCoordinateDichotomy (data := spineData) lowHistory
+                          (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+                    | .right nonrepetitiveHistory =>
+                        let large :=
+                          (lowEntropyLargeBudgetRow (BranchState := BranchState)
+                            (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                            (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                            nonrepetitiveHistory (by simp [K_eq_iff])
+                        let netCap :=
+                          (routeEightNetDeficiencyCapRow (BranchState := BranchState)
+                            (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                            (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                            large (by simp [K_eq_iff])
+                        exact Or.inl (selectedNetChargeContinuation netCap)
+                    | .left repetitiveHistory =>
+                        let dominant :=
+                          (dominantRootedTypeRow (BranchState := BranchState)
+                            (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                            (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                            repetitiveHistory (by simp [K_eq_iff])
+                        match dominantRootedTypeWedgeDichotomy (data := spineData) dominant
+                            (by simp [K_eq_iff])
+                            (by simp [K_eq_iff]) with
+                        | .right wedgeFreeHistory =>
+                            let large :=
+                              (lowEntropyLargeBudgetRow (BranchState := BranchState)
+                                (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                                (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                                wedgeFreeHistory (by simp [K_eq_iff])
+                            let netCap :=
+                              (routeEightNetDeficiencyCapRow (BranchState := BranchState)
+                                (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                                (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                                large (by simp [K_eq_iff])
+                            exact Or.inl (selectedNetChargeContinuation netCap)
+                        | .left wedgeHistory =>
+                            let translated :=
+                              (independentObstructionTranslatesRow (BranchState := BranchState)
+                                (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                                (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                                wedgeHistory (by simp [K_eq_iff])
+                            let large :=
+                              (lowEntropyLargeBudgetRow (BranchState := BranchState)
+                                (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                                (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                                translated (by simp [K_eq_iff])
+                            let netCap :=
+                              (routeEightNetDeficiencyCapRow (BranchState := BranchState)
+                                (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                                (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                                large (by simp [K_eq_iff])
+                            exact Or.inl (selectedNetChargeContinuation netCap)
               | .right coldAtOrAboveHistory =>
               match coldHotEntropyDichotomy (data := spineData)
                   coldAtOrAboveHistory (by simp [K_eq_iff])
@@ -7675,15 +7595,158 @@ noncomputable def selectedNearCubicSurvivorBranch
                   exact Or.inr (Or.inl
                     (density.get (K .route8RateFails)).down)
           | .left belowHistory =>
-          exact selectedSpineToLargeBudget
-            (downstream := K .denseDeficiencyBelow) belowHistory
-            (fun spineHistory =>
-              let netCap :=
-                (denseNetDeficiencyCapRow (BranchState := BranchState)
+          let remainder :=
+            (remainderNormalizationRow (BranchState := BranchState)
+                (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                belowHistory (by simp [K_eq_iff])
+          let relabelingEntropy :=
+            (remainderRelabelingEntropyRow (BranchState := BranchState)
+                (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                remainder (by simp [K_eq_iff])
+          let boundary :=
+            (boundaryDemandRow (BranchState := BranchState)
+                (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                relabelingEntropy (by simp [K_eq_iff])
+          let stubSupply :=
+            (stubSupplyRow (BranchState := BranchState)
+                (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                boundary (by simp [K_eq_iff])
+          let wedge :=
+            (wedgeSupplyRow (BranchState := BranchState)
+                (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                stubSupply (by simp [K_eq_iff])
+          -- `[31]`: the curvature target-rank of the remainder and `lem:target-rank-circuit`.
+          let rank :=
+            (curvatureTargetRankRow (BranchState := BranchState)
+                (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                wedge (by simp [K_eq_iff])
+          let circuit :=
+            (targetRankCircuitRow (BranchState := BranchState)
+                (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                rank (by simp [K_eq_iff])
+          -- `[32]`: the exact finite rank split at the canonical maximal packing.
+          match curvatureRankDichotomy (data := spineData) circuit
+              (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+          | .left dropHistory =>
+              -- `[33]`--`[46]`: Branch D, closed.
+              let dependence :=
+                (branchDependenceRow (BranchState := BranchState)
+                (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                (presentation := erdosReceiverLoadProfile) spineData).run
+                dropHistory (by simp [K_eq_iff])
+              -- `[35]`: retain the Branch-D state and append only
+              -- `lem:separated-testers` to the same literal ledger.
+              let tested :=
+                (separatedTestersRow (BranchState := BranchState)
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                  spineHistory (by simp [K_eq_iff])
-              Or.inl (selectedNetChargeContinuation netCap))
+                  (presentation := erdosReceiverLoadProfile) spineData).run
+                  dependence (by simp [K_eq_iff])
+              exact (selectedRankDropCloses tested
+                (by simp [K_eq_iff]) (by simp [K_eq_iff])
+                (by simp [K_eq_iff]) (by simp [K_eq_iff])
+                (by simp [K_eq_iff]) (by simp [K_eq_iff])
+                (by simp [K_eq_iff]) (by simp [K_eq_iff])
+                (by simp [K_eq_iff])).elim
+          | .right fullRankHistory =>
+          -- `[34]`/`[47]`/`[48]`: full rank and `cor:forced-curvature-cost`.
+          let cost :=
+            (forcedCurvatureCostRow (BranchState := BranchState)
+                (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                fullRankHistory (by simp [K_eq_iff])
+          match remainderEntropyDichotomy (data := spineData) cost
+              (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+          | .left highHistory =>
+              -- `[52]`/`[53]`: the high arm performs only the manuscript's independent
+              -- window/remainder accounting and entropy-cap test.
+              let package :=
+                (entropyPackageRow (BranchState := BranchState)
+                (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                (presentation := erdosReceiverLoadProfile) spineData).run
+                highHistory (by simp [K_eq_iff])
+              match entropyCapDichotomy (data := spineData) package
+                  (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+              | .left activeHistory =>
+                  -- `[54]`: the sealed row derives the exact opposite budget bound on
+                  -- both alternatives stored in `K .hotColdPartition`; Core closes the
+                  -- resulting incompatible facts on this literal active ledger.
+                  let closedHistory :=
+                    (entropyCapBoundRow (BranchState := BranchState)
+                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                      (presentation := erdosReceiverLoadProfile) (data := spineData)).runAndCloseIncompatible
+                        activeHistory
+                        (K .entropyCapActive) (K .entropyCapBound)
+                        (by simp [K_eq_iff])
+                        (by simp [K_eq_iff])
+                  exact (closedHistory.elimClosed (by infer_instance)).elim
+              | .right largeHistory =>
+                  let netCap :=
+                    (denseNetDeficiencyCapRow (BranchState := BranchState)
+                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                      largeHistory (by simp [K_eq_iff])
+                  exact Or.inl (selectedNetChargeContinuation netCap)
+          | .right lowHistory =>
+              match localTypeCoordinateDichotomy (data := spineData) lowHistory
+                  (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+              | .right nonrepetitiveHistory =>
+                  let large :=
+                    (lowEntropyLargeBudgetRow (BranchState := BranchState)
+                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                      nonrepetitiveHistory (by simp [K_eq_iff])
+                  let netCap :=
+                    (denseNetDeficiencyCapRow (BranchState := BranchState)
+                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                      large (by simp [K_eq_iff])
+                  exact Or.inl (selectedNetChargeContinuation netCap)
+              | .left repetitiveHistory =>
+                  let dominant :=
+                    (dominantRootedTypeRow (BranchState := BranchState)
+                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                      repetitiveHistory (by simp [K_eq_iff])
+                  match dominantRootedTypeWedgeDichotomy (data := spineData) dominant
+                      (by simp [K_eq_iff])
+                      (by simp [K_eq_iff]) with
+                  | .right wedgeFreeHistory =>
+                      let large :=
+                        (lowEntropyLargeBudgetRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                          wedgeFreeHistory (by simp [K_eq_iff])
+                      let netCap :=
+                        (denseNetDeficiencyCapRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                          large (by simp [K_eq_iff])
+                      exact Or.inl (selectedNetChargeContinuation netCap
+                        (unifiedTrueFresh := by simp [K_eq_iff]))
+                  | .left wedgeHistory =>
+                      let translated :=
+                        (independentObstructionTranslatesRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                          wedgeHistory (by simp [K_eq_iff])
+                      let large :=
+                        (lowEntropyLargeBudgetRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                          translated (by simp [K_eq_iff])
+                      let netCap :=
+                        (denseNetDeficiencyCapRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                          large (by simp [K_eq_iff])
+                      exact Or.inl (selectedNetChargeContinuation netCap)
       | .right denseHistory =>
           -- `τ(θ) ≥ 1/4`, the dense residual: `[22]`'s live-hot cap decision and the
           -- cold branch `[145]`--`[157]` on it.
@@ -7704,15 +7767,157 @@ noncomputable def selectedNearCubicSurvivorBranch
                   belowHistory (by simp [K_eq_iff])
               -- `[147]`: `τ(θ) < 3/13`, the spine's route-8 closure with that
               -- inequality as `[56]`'s input.
-              exact selectedSpineToLargeBudget
-                (downstream := K .coldRoute8Below) belowHistory
-                (fun spineHistory =>
-                  let netCap :=
-                    (routeEightNetDeficiencyCapRow (BranchState := BranchState)
+              let remainder :=
+                (remainderNormalizationRow (BranchState := BranchState)
+                    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                    belowHistory (by simp [K_eq_iff])
+              let relabelingEntropy :=
+                (remainderRelabelingEntropyRow (BranchState := BranchState)
+                    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                    remainder (by simp [K_eq_iff])
+              let boundary :=
+                (boundaryDemandRow (BranchState := BranchState)
+                    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                    relabelingEntropy (by simp [K_eq_iff])
+              let stubSupply :=
+                (stubSupplyRow (BranchState := BranchState)
+                    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                    boundary (by simp [K_eq_iff])
+              let wedge :=
+                (wedgeSupplyRow (BranchState := BranchState)
+                    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                    stubSupply (by simp [K_eq_iff])
+              -- `[31]`: the curvature target-rank of the remainder and `lem:target-rank-circuit`.
+              let rank :=
+                (curvatureTargetRankRow (BranchState := BranchState)
+                    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                    wedge (by simp [K_eq_iff])
+              let circuit :=
+                (targetRankCircuitRow (BranchState := BranchState)
+                    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                    rank (by simp [K_eq_iff])
+              -- `[32]`: the exact finite rank split at the canonical maximal packing.
+              match curvatureRankDichotomy (data := spineData) circuit
+                  (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+              | .left dropHistory =>
+                  -- `[33]`--`[46]`: Branch D, closed.
+                  let dependence :=
+                    (branchDependenceRow (BranchState := BranchState)
+                    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                    (presentation := erdosReceiverLoadProfile) spineData).run
+                    dropHistory (by simp [K_eq_iff])
+                  -- `[35]`: retain the Branch-D state and append only
+                  -- `lem:separated-testers` to the same literal ledger.
+                  let tested :=
+                    (separatedTestersRow (BranchState := BranchState)
                       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                      spineHistory (by simp [K_eq_iff])
-                  Or.inl (selectedNetChargeContinuation netCap))
+                      (presentation := erdosReceiverLoadProfile) spineData).run
+                      dependence (by simp [K_eq_iff])
+                  exact (selectedRankDropCloses tested
+                    (by simp [K_eq_iff]) (by simp [K_eq_iff])
+                    (by simp [K_eq_iff]) (by simp [K_eq_iff])
+                    (by simp [K_eq_iff]) (by simp [K_eq_iff])
+                    (by simp [K_eq_iff]) (by simp [K_eq_iff])
+                    (by simp [K_eq_iff])).elim
+              | .right fullRankHistory =>
+              -- `[34]`/`[47]`/`[48]`: full rank and `cor:forced-curvature-cost`.
+              let cost :=
+                (forcedCurvatureCostRow (BranchState := BranchState)
+                    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                    fullRankHistory (by simp [K_eq_iff])
+              match remainderEntropyDichotomy (data := spineData) cost
+                  (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+              | .left highHistory =>
+                  -- `[52]`/`[53]`: the high arm performs only the manuscript's independent
+                  -- window/remainder accounting and entropy-cap test.
+                  let package :=
+                    (entropyPackageRow (BranchState := BranchState)
+                    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                    (presentation := erdosReceiverLoadProfile) spineData).run
+                    highHistory (by simp [K_eq_iff])
+                  match entropyCapDichotomy (data := spineData) package
+                      (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+                  | .left activeHistory =>
+                      -- `[54]`: the sealed row derives the exact opposite budget bound on
+                      -- both alternatives stored in `K .hotColdPartition`; Core closes the
+                      -- resulting incompatible facts on this literal active ledger.
+                      let closedHistory :=
+                        (entropyCapBoundRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile) (data := spineData)).runAndCloseIncompatible
+                            activeHistory
+                            (K .entropyCapActive) (K .entropyCapBound)
+                            (by simp [K_eq_iff])
+                            (by simp [K_eq_iff])
+                      exact (closedHistory.elimClosed (by infer_instance)).elim
+                  | .right largeHistory =>
+                      let netCap :=
+                        (routeEightNetDeficiencyCapRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                          largeHistory (by simp [K_eq_iff])
+                      exact Or.inl (selectedNetChargeContinuation netCap)
+              | .right lowHistory =>
+                match localTypeCoordinateDichotomy (data := spineData) lowHistory
+                      (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+                | .right nonrepetitiveHistory =>
+                    let large :=
+                      (lowEntropyLargeBudgetRow (BranchState := BranchState)
+                        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                        nonrepetitiveHistory (by simp [K_eq_iff])
+                    let netCap :=
+                      (routeEightNetDeficiencyCapRow (BranchState := BranchState)
+                        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                        large (by simp [K_eq_iff])
+                    exact Or.inl (selectedNetChargeContinuation netCap)
+                | .left repetitiveHistory =>
+                    let dominant :=
+                      (dominantRootedTypeRow (BranchState := BranchState)
+                        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                        (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                        repetitiveHistory (by simp [K_eq_iff])
+                    match dominantRootedTypeWedgeDichotomy (data := spineData) dominant
+                        (by simp [K_eq_iff])
+                        (by simp [K_eq_iff]) with
+                    | .right wedgeFreeHistory =>
+                        let large :=
+                          (lowEntropyLargeBudgetRow (BranchState := BranchState)
+                            (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                            (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                            wedgeFreeHistory (by simp [K_eq_iff])
+                        let netCap :=
+                          (routeEightNetDeficiencyCapRow (BranchState := BranchState)
+                            (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                            (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                            large (by simp [K_eq_iff])
+                        exact Or.inl (selectedNetChargeContinuation netCap)
+                    | .left wedgeHistory =>
+                        let translated :=
+                          (independentObstructionTranslatesRow (BranchState := BranchState)
+                            (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                            (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                            wedgeHistory (by simp [K_eq_iff])
+                        let large :=
+                          (lowEntropyLargeBudgetRow (BranchState := BranchState)
+                            (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                            (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                            translated (by simp [K_eq_iff])
+                        let netCap :=
+                          (routeEightNetDeficiencyCapRow (BranchState := BranchState)
+                            (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                            (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                            large (by simp [K_eq_iff])
+                        exact Or.inl (selectedNetChargeContinuation netCap)
           | .right atOrAboveHistory =>
           match coldHotEntropyDichotomy (data := spineData) atOrAboveHistory
               (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
@@ -7856,15 +8061,157 @@ noncomputable def selectedNearCubicSurvivorBranch
                   exact Or.inr (Or.inl
                     (rateFails.get (K .route8RateFails)).down)
               | .left density =>
-              exact selectedSpineToLargeBudget
-                (downstream := K .densityCap) density
-                (fun spineHistory =>
-                  let netCap :=
-                    (netDeficiencyCapRow (BranchState := BranchState)
+              let remainder :=
+                (remainderNormalizationRow (BranchState := BranchState)
+                    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                    density (by simp [K_eq_iff])
+              let relabelingEntropy :=
+                (remainderRelabelingEntropyRow (BranchState := BranchState)
+                    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                    remainder (by simp [K_eq_iff])
+              let boundary :=
+                (boundaryDemandRow (BranchState := BranchState)
+                    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                    relabelingEntropy (by simp [K_eq_iff])
+              let stubSupply :=
+                (stubSupplyRow (BranchState := BranchState)
+                    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                    boundary (by simp [K_eq_iff])
+              let wedge :=
+                (wedgeSupplyRow (BranchState := BranchState)
+                    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                    stubSupply (by simp [K_eq_iff])
+              -- `[31]`: the curvature target-rank of the remainder and `lem:target-rank-circuit`.
+              let rank :=
+                (curvatureTargetRankRow (BranchState := BranchState)
+                    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                    wedge (by simp [K_eq_iff])
+              let circuit :=
+                (targetRankCircuitRow (BranchState := BranchState)
+                    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                    rank (by simp [K_eq_iff])
+              -- `[32]`: the exact finite rank split at the canonical maximal packing.
+              match curvatureRankDichotomy (data := spineData) circuit
+                  (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+              | .left dropHistory =>
+                  -- `[33]`--`[46]`: Branch D, closed.
+                  let dependence :=
+                    (branchDependenceRow (BranchState := BranchState)
+                    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                    (presentation := erdosReceiverLoadProfile) spineData).run
+                    dropHistory (by simp [K_eq_iff])
+                  -- `[35]`: retain the Branch-D state and append only
+                  -- `lem:separated-testers` to the same literal ledger.
+                  let tested :=
+                    (separatedTestersRow (BranchState := BranchState)
                       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                      spineHistory (by simp [K_eq_iff])
-                  Or.inl (selectedNetChargeContinuation netCap))
+                      (presentation := erdosReceiverLoadProfile) spineData).run
+                      dependence (by simp [K_eq_iff])
+                  exact (selectedRankDropCloses tested
+                    (by simp [K_eq_iff]) (by simp [K_eq_iff])
+                    (by simp [K_eq_iff]) (by simp [K_eq_iff])
+                    (by simp [K_eq_iff]) (by simp [K_eq_iff])
+                    (by simp [K_eq_iff]) (by simp [K_eq_iff])
+                    (by simp [K_eq_iff])).elim
+              | .right fullRankHistory =>
+              -- `[34]`/`[47]`/`[48]`: full rank and `cor:forced-curvature-cost`.
+              let cost :=
+                (forcedCurvatureCostRow (BranchState := BranchState)
+                    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                    fullRankHistory (by simp [K_eq_iff])
+              match remainderEntropyDichotomy (data := spineData) cost
+                  (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+              | .left highHistory =>
+                  -- `[52]`/`[53]`: the high arm performs only the manuscript's independent
+                  -- window/remainder accounting and entropy-cap test.
+                  let package :=
+                    (entropyPackageRow (BranchState := BranchState)
+                    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                    (presentation := erdosReceiverLoadProfile) spineData).run
+                    highHistory (by simp [K_eq_iff])
+                  match entropyCapDichotomy (data := spineData) package
+                      (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+                  | .left activeHistory =>
+                      -- `[54]`: the sealed row derives the exact opposite budget bound on
+                      -- both alternatives stored in `K .hotColdPartition`; Core closes the
+                      -- resulting incompatible facts on this literal active ledger.
+                      let closedHistory :=
+                        (entropyCapBoundRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile) (data := spineData)).runAndCloseIncompatible
+                            activeHistory
+                            (K .entropyCapActive) (K .entropyCapBound)
+                            (by simp [K_eq_iff])
+                            (by simp [K_eq_iff])
+                      exact (closedHistory.elimClosed (by infer_instance)).elim
+                  | .right largeHistory =>
+                      let netCap :=
+                        (netDeficiencyCapRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                          largeHistory (by simp [K_eq_iff])
+                      exact Or.inl (selectedNetChargeContinuation netCap)
+              | .right lowHistory =>
+                  match localTypeCoordinateDichotomy (data := spineData) lowHistory
+                      (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+                  | .right nonrepetitiveHistory =>
+                      let large :=
+                        (lowEntropyLargeBudgetRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                          nonrepetitiveHistory (by simp [K_eq_iff])
+                      let netCap :=
+                        (netDeficiencyCapRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                          large (by simp [K_eq_iff])
+                      exact Or.inl (selectedNetChargeContinuation netCap)
+                  | .left repetitiveHistory =>
+                      let dominant :=
+                        (dominantRootedTypeRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                          repetitiveHistory (by simp [K_eq_iff])
+                      match dominantRootedTypeWedgeDichotomy (data := spineData) dominant
+                          (by simp [K_eq_iff])
+                          (by simp [K_eq_iff]) with
+                      | .right wedgeFreeHistory =>
+                          let large :=
+                            (lowEntropyLargeBudgetRow (BranchState := BranchState)
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                              wedgeFreeHistory (by simp [K_eq_iff])
+                          let netCap :=
+                            (netDeficiencyCapRow (BranchState := BranchState)
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                              large (by simp [K_eq_iff])
+                          exact Or.inl (selectedNetChargeContinuation netCap)
+                      | .left wedgeHistory =>
+                          let translated :=
+                            (independentObstructionTranslatesRow (BranchState := BranchState)
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                              wedgeHistory (by simp [K_eq_iff])
+                          let large :=
+                            (lowEntropyLargeBudgetRow (BranchState := BranchState)
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                              translated (by simp [K_eq_iff])
+                          let netCap :=
+                            (netDeficiencyCapRow (BranchState := BranchState)
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                              large (by simp [K_eq_iff])
+                          exact Or.inl (selectedNetChargeContinuation netCap)
   | .left enumerated =>
   let partitioned :=
     (hotColdPartitionRow (BranchState := BranchState)
@@ -8001,15 +8348,77 @@ noncomputable def selectedNearCubicSurvivorBranch
           | .right lowHistory =>
               -- `[50]`--`[52]`: perform the manuscript's repetitive/nonrepetitive
               -- and root-wedge splits before writing Residual C.
-              exact selectedLowTypeToLargeBudget
-                (downstream := K .coldRoute8Below) lowHistory
-                (fun largeHistory =>
+              match localTypeCoordinateDichotomy (data := spineData) lowHistory
+                    (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+              | .right nonrepetitiveHistory =>
+                  let large :=
+                    (lowEntropyLargeBudgetRow (BranchState := BranchState)
+                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                      nonrepetitiveHistory (by simp [K_eq_iff])
                   let netCap :=
                     (routeEightNetDeficiencyCapRow (BranchState := BranchState)
                       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                      (presentation := erdosReceiverLoadProfile)
-                      (data := spineData)).run largeHistory (by simp [K_eq_iff])
-                  Or.inl (selectedNetChargeContinuation netCap))
+                      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                      large (by simp [K_eq_iff])
+                  exact Or.inl (selectedNetChargeContinuation netCap)
+              | .left repetitiveHistory =>
+                  let dominant :=
+                    (dominantRootedTypeRow (BranchState := BranchState)
+                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                      repetitiveHistory (by simp [K_eq_iff])
+                  match dominantRootedTypeWedgeDichotomy (data := spineData) dominant
+                      (by simp [K_eq_iff])
+                      (by simp [K_eq_iff]) with
+                  | .right wedgeFreeHistory =>
+                      let large :=
+                        (lowEntropyLargeBudgetRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                          wedgeFreeHistory (by simp [K_eq_iff])
+                      let netCap :=
+                        (routeEightNetDeficiencyCapRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                          large (by simp [K_eq_iff])
+                      exact Or.inl (selectedNetChargeContinuation netCap)
+                  | .left wedgeHistory =>
+                      let translated :=
+                        (independentObstructionTranslatesRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                          wedgeHistory (by simp [K_eq_iff])
+                      let large :=
+                        (lowEntropyLargeBudgetRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                          translated (by simp [K_eq_iff])
+                      let netCap :=
+                        (routeEightNetDeficiencyCapRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                          large (by simp [K_eq_iff])
+                      exact Or.inl (selectedNetChargeContinuation netCap
+                        (unifiedTrueFresh := by simp [K_eq_iff])
+                        (peelingFresh := by simp [K_eq_iff])
+                        (stageFailedFresh := by simp [K_eq_iff])
+                        (demandLedgerFresh := by simp [K_eq_iff])
+                        (demandAbsorptionFresh := by simp [K_eq_iff])
+                        (windowBlockersFresh := by simp [K_eq_iff])
+                        (demandResidualFresh := by simp [K_eq_iff])
+                        (unifiedTerminalFresh := by simp [K_eq_iff])
+                        (globalLocalBridgeFresh := by simp [K_eq_iff])
+                        (fanClosedFresh := by simp [K_eq_iff])
+                        (compatibleClosureFresh := by simp [K_eq_iff])
+                        (fanClosedRoutingFresh := by simp [K_eq_iff])
+                        (compatibleRoutingFresh := by simp [K_eq_iff])
+                        (triangularRoutingFresh := by simp [K_eq_iff])
+                        (shoulderCompletionFresh := by simp [K_eq_iff])
+                        (triangularPortReturnFresh := by simp [K_eq_iff])
+                        (firstLandingFresh := by simp [K_eq_iff])
+                        (crossShoulderFresh := by simp [K_eq_iff])
+                        (fanSafeFresh := by simp [K_eq_iff]))
       | .right atOrAboveHistory =>
           match coldHotEntropyDichotomy (data := spineData) atOrAboveHistory
               (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
@@ -8209,17 +8618,59 @@ noncomputable def selectedNearCubicSurvivorBranch
                   | .right lowHistory =>
                       -- `[50]`--`[52]`: retain the exact low-arm refinement and
                       -- invoke the translate row only on the root-wedge arm.
-                      exact selectedLowTypeToLargeBudget
-                        (downstream := K .densityCap) lowHistory
-                        (fun largeHistory =>
+                      match localTypeCoordinateDichotomy (data := spineData) lowHistory
+                          (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+                      | .right nonrepetitiveHistory =>
+                          let large :=
+                            (lowEntropyLargeBudgetRow (BranchState := BranchState)
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                              nonrepetitiveHistory (by simp [K_eq_iff])
                           let netCap :=
                             (netDeficiencyCapRow (BranchState := BranchState)
-                              (Presentation :=
-                                Graph.ReceiverLoad.LoadCapacityProfile)
-                              (presentation := erdosReceiverLoadProfile)
-                              (data := spineData)).run largeHistory
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                              large (by simp [K_eq_iff])
+                          exact Or.inl (selectedNetChargeContinuation netCap)
+                      | .left repetitiveHistory =>
+                          let dominant :=
+                            (dominantRootedTypeRow (BranchState := BranchState)
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                              repetitiveHistory (by simp [K_eq_iff])
+                          match dominantRootedTypeWedgeDichotomy (data := spineData) dominant
                               (by simp [K_eq_iff])
-                          Or.inl (selectedNetChargeContinuation netCap))
+                              (by simp [K_eq_iff]) with
+                          | .right wedgeFreeHistory =>
+                              let large :=
+                                (lowEntropyLargeBudgetRow (BranchState := BranchState)
+                                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                                  wedgeFreeHistory (by simp [K_eq_iff])
+                              let netCap :=
+                                (netDeficiencyCapRow (BranchState := BranchState)
+                                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                                  large (by simp [K_eq_iff])
+                              exact Or.inl (selectedNetChargeContinuation netCap)
+                          | .left wedgeHistory =>
+                              let translated :=
+                                (independentObstructionTranslatesRow (BranchState := BranchState)
+                                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                                  wedgeHistory (by simp [K_eq_iff])
+                              let large :=
+                                (lowEntropyLargeBudgetRow (BranchState := BranchState)
+                                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                                  translated (by simp [K_eq_iff])
+                              let netCap :=
+                                (netDeficiencyCapRow (BranchState := BranchState)
+                                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                                  large (by simp [K_eq_iff])
+                              exact Or.inl (selectedNetChargeContinuation netCap)
+
   | .right overflowHistory =>
       exact (selectedBarrierOverflowCloses overflowHistory
         (by simp [K_eq_iff]) (by simp [K_eq_iff])).elim

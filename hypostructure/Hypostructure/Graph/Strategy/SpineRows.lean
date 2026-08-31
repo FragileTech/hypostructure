@@ -11427,6 +11427,326 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
         ⟨failed.down, ledger.down, absorption.down, blockers.down⟩ .nil)
     0 0
 
+/-! ## Node 183: maximal-ledger exit-(4) reduction
+
+The first descendant of node 181 uses the first coordinate of the demand
+ledger's lexicographic maximality.  A one-entry augmentation proves that every
+entry in Xi2 union Xi-res is two-carrier.  The unified census then gives the
+exact dichotomy: a no-witness entry is the already closed node-124 input;
+otherwise every unpaid entry carries its canonical exit-(4) witness.  The
+right arm therefore removes both the high-private-carrier and true-route-8
+possibilities without deleting any entry or any inherited key. -/
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+noncomputable def route8UnpaidExitFourDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : @FactKeys (Input BranchState Presentation presentation data)
+      _ (factSystem BranchState Presentation presentation data)}
+    (previous :
+      @ExactLedger (Input BranchState Presentation presentation data)
+        _ (factSystem BranchState Presentation presentation data) current known)
+    [@Core.Residual.FactKeys.Has
+      (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data)
+      (K .route8PeeledDemandResidual) known]
+    [@Core.Residual.FactKeys.Has
+      (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data)
+      (K .route8UnifiedEntryCensus) known]
+    (survivorFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known)
+    (residualFresh : K .route8UnpaidExitFourResidual ∉ known) :
+    @Decision (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data) current known
+      (K .route8UnifiedTrueTwoCarrierEntry)
+      (K .route8UnpaidExitFourResidual) previous :=
+  @Decision.run (Input BranchState Presentation presentation data) _
+    (factSystem BranchState Presentation presentation data) current known
+    previous (K .route8UnifiedTrueTwoCarrierEntry)
+    (K .route8UnpaidExitFourResidual)
+    `Hypostructure.Graph.Strategy.Spine.route8UnpaidExitFourDichotomy
+    (by
+      classical
+      apply Classical.choice
+      letI : DecidableEq current.object.Vertex :=
+        current.object.vertices.decEq
+      let entries := route8UnifiedEntries data current.object
+      let core := Graph.Route8Census.core current.object data.threshold
+        data.LengthOK
+      let pinned := entries.filter fun index =>
+        Graph.Route8.TraceBasin.TargetCompleteMinimal current.object index.1
+            data.threshold data.LengthOK index.2.1 index.2.2
+            (Graph.Route8Census.basin current.object data.threshold index) ∧
+          data.threshold ≤
+            Graph.Route8.indexedPrivateCoreCount entries core index
+      have node181 :=
+        (@ExactLedger.get (Input BranchState Presentation presentation data) _
+          (factSystem BranchState Presentation presentation data)
+          current known previous (K .route8PeeledDemandResidual)).down
+      have census :=
+        (@ExactLedger.get (Input BranchState Presentation presentation data) _
+          (factSystem BranchState Presentation presentation data)
+          current known previous (K .route8UnifiedEntryCensus)).down
+      have demand : Route8DemandLedgerStatement data current.object :=
+        node181.2.1
+      change ∃ P : Graph.DemandPartition.Partition entries core,
+          Graph.DemandPartition.Partition.Pinned pinned
+              (Graph.Route8.indexedPrivateCoreCarriers entries core) P ∧
+            (∀ Q : Graph.DemandPartition.Partition entries core,
+              Graph.DemandPartition.Partition.Pinned pinned
+                  (Graph.Route8.indexedPrivateCoreCarriers entries core) Q →
+                Q.three.card ≤ P.three.card ∧
+                  (Q.three.card = P.three.card →
+                    Q.two.card ≤ P.two.card)) ∧
+            (3 * P.three.card + 2 * P.two.card ≤
+              current.object.boundaryIncidence
+                (current.object.remainderSupport
+                  (canonicalWindowPacking data current.object))) ∧
+            (3 * entries.card ≤
+              current.object.boundaryIncidence
+                (current.object.remainderSupport
+                  (canonicalWindowPacking data current.object)) +
+                P.externalDefect) ∧
+            ∀ index ∈ P.two ∪ P.residual,
+              Graph.Route8.TraceBasin.TraceLocalTargetDefect current.object
+                  index.1 data.threshold data.LengthOK index.2.1 index.2.2
+                  (Graph.Route8Census.basin current.object data.threshold
+                    index) →
+                Graph.Route8.TraceBasin.CanonicalDemandRecord current.object
+                  (Graph.Route8Census.basin current.object data.threshold
+                    index)
+                  data.LengthOK at demand
+      obtain ⟨P, pinnedP, maximalP, _raw, _defect, _records⟩ := demand
+      have twoCarrier : ∀ index ∈ P.two ∪ P.residual,
+          Graph.Route8.IndexedTwoCarrierCore entries core
+            (data.threshold - 1) index := by
+        intro index unpaid
+        have privateLe :
+            (Graph.Route8.indexedPrivateCoreCarriers entries core index).card ≤
+              2 := by
+          by_contra large
+          have threeLe : 3 ≤
+              (Graph.Route8.indexedPrivateCoreCarriers entries core index).card :=
+            by omega
+          obtain ⟨picked, pickedSubset, pickedCard⟩ :=
+            Finset.exists_subset_card_eq threeLe
+          have indexMem : index ∈ entries := by
+            rcases Finset.mem_union.mp unpaid with inTwo | inResidual
+            · exact P.two_subset_entries inTwo
+            · exact P.residual_subset_entries inResidual
+          have indexNotThree : index ∉ P.three := by
+            intro inThree
+            rcases Finset.mem_union.mp unpaid with inTwo | inResidual
+            · exact Finset.disjoint_left.mp P.three_disj_two inThree inTwo
+            · exact Finset.disjoint_left.mp P.three_disj_residual inThree
+                inResidual
+          let assigned' : Graph.Route8Census.Index current.object →
+              Finset (Sym2 current.object.Vertex) := fun other =>
+            if other = index then picked else P.assigned other
+          let Q : Graph.DemandPartition.Partition entries core :=
+            { three := insert index P.three
+              two := P.two.erase index
+              residual := P.residual.erase index
+              cover := by
+                ext other
+                by_cases same : other = index
+                · subst same
+                  simp [indexMem]
+                · constructor
+                  · intro member
+                    rcases Finset.mem_union.mp member with
+                      inThreeOrTwo | inResidual
+                    · rcases Finset.mem_union.mp inThreeOrTwo with
+                        inThree | inTwo
+                      · rcases Finset.mem_insert.mp inThree with equal | oldThree
+                        · exact absurd equal same
+                        · rw [← P.cover]
+                          exact Finset.mem_union_left _
+                            (Finset.mem_union_left _ oldThree)
+                      · rw [← P.cover]
+                        exact Finset.mem_union_left _
+                          (Finset.mem_union_right _
+                            (Finset.mem_erase.mp inTwo).2)
+                    · rw [← P.cover]
+                      exact Finset.mem_union_right _
+                        (Finset.mem_erase.mp inResidual).2
+                  · intro member
+                    have old : other ∈ (P.three ∪ P.two) ∪ P.residual := by
+                      rw [P.cover]
+                      exact member
+                    rcases Finset.mem_union.mp old with
+                      inThreeOrTwo | inResidual
+                    · rcases Finset.mem_union.mp inThreeOrTwo with
+                        inThree | inTwo
+                      · exact Finset.mem_union_left _
+                          (Finset.mem_union_left _
+                            (Finset.mem_insert_of_mem inThree))
+                      · exact Finset.mem_union_left _
+                          (Finset.mem_union_right _
+                            (Finset.mem_erase.mpr ⟨same, inTwo⟩))
+                    · exact Finset.mem_union_right _
+                        (Finset.mem_erase.mpr ⟨same, inResidual⟩)
+              three_disj_two := by
+                rw [Finset.disjoint_left]
+                intro other inThree inTwo
+                have inTwoOld : other ∈ P.two :=
+                  (Finset.mem_erase.mp inTwo).2
+                rcases Finset.mem_insert.mp inThree with rfl | inThreeOld
+                · exact (Finset.mem_erase.mp inTwo).1 rfl
+                · exact Finset.disjoint_left.mp P.three_disj_two inThreeOld
+                    inTwoOld
+              three_disj_residual := by
+                rw [Finset.disjoint_left]
+                intro other inThree inResidual
+                have inResidualOld : other ∈ P.residual :=
+                  (Finset.mem_erase.mp inResidual).2
+                rcases Finset.mem_insert.mp inThree with rfl | inThreeOld
+                · exact (Finset.mem_erase.mp inResidual).1 rfl
+                · exact Finset.disjoint_left.mp P.three_disj_residual
+                    inThreeOld inResidualOld
+              two_disj_residual :=
+                P.two_disj_residual.mono (Finset.erase_subset _ _)
+                  (Finset.erase_subset _ _)
+              assigned := assigned'
+              assigned_available := by
+                intro other member
+                by_cases same : other = index
+                · subst same
+                  exact (by
+                    simpa [assigned'] using pickedSubset.trans
+                      (Graph.Route8.indexedPrivateCoreCarriers_subset_core
+                        entries core index))
+                · have oldMember : other ∈ P.three ∪ P.two := by
+                    rcases Finset.mem_union.mp member with inThree | inTwo
+                    · rcases Finset.mem_insert.mp inThree with equal | old
+                      · exact absurd equal same
+                      · exact Finset.mem_union_left _ old
+                    · exact Finset.mem_union_right _
+                        (Finset.mem_erase.mp inTwo).2
+                  simpa [assigned', same] using
+                    P.assigned_available other oldMember
+              assigned_three := by
+                intro other member
+                rcases Finset.mem_insert.mp member with rfl | old
+                · simpa [assigned'] using pickedCard
+                · have different : other ≠ index := fun equal =>
+                    indexNotThree (equal ▸ old)
+                  simpa [assigned', different] using P.assigned_three other old
+              assigned_two := by
+                intro other member
+                have different : other ≠ index :=
+                  (Finset.mem_erase.mp member).1
+                simpa [assigned', different] using
+                  P.assigned_two other (Finset.mem_erase.mp member).2
+              assigned_disjoint := by
+                intro left leftMem right rightMem distinct
+                by_cases leftEq : left = index
+                · subst left
+                  have rightNe : right ≠ index := fun equal =>
+                    distinct equal.symm
+                  rw [Finset.disjoint_left]
+                  intro carrier inLeft inRight
+                  have inPrivate : carrier ∈
+                      Graph.Route8.indexedPrivateCoreCarriers entries core
+                        index := pickedSubset (by
+                    simpa [assigned'] using inLeft)
+                  have rightOld : right ∈ P.three ∪ P.two := by
+                    rcases Finset.mem_union.mp rightMem with inThree | inTwo
+                    · rcases Finset.mem_insert.mp inThree with equal | old
+                      · exact absurd equal rightNe
+                      · exact Finset.mem_union_left _ old
+                    · exact Finset.mem_union_right _
+                        (Finset.mem_erase.mp inTwo).2
+                  have rightEntry : right ∈ entries := by
+                    rcases Finset.mem_union.mp rightOld with inThree | inTwo
+                    · exact P.three_subset_entries inThree
+                    · exact P.two_subset_entries inTwo
+                  exact (Finset.mem_filter.mp inPrivate).2 right rightEntry
+                    rightNe (P.assigned_available right rightOld
+                      (by simpa [assigned', rightNe] using inRight))
+                · by_cases rightEq : right = index
+                  · subst right
+                    have leftOld : left ∈ P.three ∪ P.two := by
+                      rcases Finset.mem_union.mp leftMem with inThree | inTwo
+                      · rcases Finset.mem_insert.mp inThree with equal | old
+                        · exact absurd equal leftEq
+                        · exact Finset.mem_union_left _ old
+                      · exact Finset.mem_union_right _
+                          (Finset.mem_erase.mp inTwo).2
+                    have leftEntry : left ∈ entries := by
+                      rcases Finset.mem_union.mp leftOld with inThree | inTwo
+                      · exact P.three_subset_entries inThree
+                      · exact P.two_subset_entries inTwo
+                    rw [Finset.disjoint_right]
+                    intro carrier inRight inLeft
+                    have inPrivate : carrier ∈
+                        Graph.Route8.indexedPrivateCoreCarriers entries core
+                          index := pickedSubset (by
+                      simpa [assigned'] using inRight)
+                    exact (Finset.mem_filter.mp inPrivate).2 left leftEntry
+                      leftEq (P.assigned_available left leftOld
+                        (by simpa [assigned', leftEq] using inLeft))
+                  · have leftOld : left ∈ P.three ∪ P.two := by
+                      rcases Finset.mem_union.mp leftMem with inThree | inTwo
+                      · rcases Finset.mem_insert.mp inThree with equal | old
+                        · exact absurd equal leftEq
+                        · exact Finset.mem_union_left _ old
+                      · exact Finset.mem_union_right _
+                          (Finset.mem_erase.mp inTwo).2
+                    have rightOld : right ∈ P.three ∪ P.two := by
+                      rcases Finset.mem_union.mp rightMem with inThree | inTwo
+                      · rcases Finset.mem_insert.mp inThree with equal | old
+                        · exact absurd equal rightEq
+                        · exact Finset.mem_union_left _ old
+                      · exact Finset.mem_union_right _
+                          (Finset.mem_erase.mp inTwo).2
+                    simpa [assigned', leftEq, rightEq] using
+                      P.assigned_disjoint left leftOld right rightOld distinct }
+          have pinnedQ : Graph.DemandPartition.Partition.Pinned pinned
+              (Graph.Route8.indexedPrivateCoreCarriers entries core) Q := by
+            constructor
+            · exact pinnedP.1.trans (Finset.subset_insert index P.three)
+            · intro other otherPinned
+              have oldThree : other ∈ P.three := pinnedP.1 otherPinned
+              have different : other ≠ index := fun equal =>
+                indexNotThree (equal ▸ oldThree)
+              simpa [Q, assigned', different] using
+                pinnedP.2 other otherPinned
+          have maximal := (maximalP Q pinnedQ).1
+          have grew : Q.three.card = P.three.card + 1 := by
+            simp [Q, Finset.card_insert_of_notMem indexNotThree]
+          rw [grew] at maximal
+          omega
+        unfold Graph.Route8.IndexedTwoCarrierCore
+          Graph.Route8.indexedPrivateCoreCount
+        have twoLe : 2 ≤ data.threshold - 1 := by
+          omega
+        exact privateLe.trans twoLe
+      by_cases noWitness : ∃ index ∈ P.two ∪ P.residual,
+          ¬ ∃ witness : Graph.ExitFour.Witness
+              (Graph.HasCycleWithLength data.LengthOK) index.1 data.threshold
+              data.dischargeScale index.2.1 ∅,
+            witness.load = index.2.2
+      · obtain ⟨index, unpaid, noExitFour⟩ := noWitness
+        have indexMem : index ∈ entries := by
+          rcases Finset.mem_union.mp unpaid with inTwo | inResidual
+          · exact P.two_subset_entries inTwo
+          · exact P.residual_subset_entries inResidual
+        have facts := census index indexMem
+        have minimal :
+            Graph.Route8.TraceBasin.TargetCompleteMinimal current.object
+              index.1 data.threshold data.LengthOK index.2.1 index.2.2
+              (Graph.Route8Census.basin current.object data.threshold index) := by
+          rcases facts.2.2 with targetComplete | targetDefect
+          · exact targetComplete
+          · exact False.elim (noExitFour targetDefect.2.2.2.2)
+        exact ⟨.inl ⟨⟨index, indexMem, twoCarrier index unpaid, facts.1,
+          minimal, facts.2.1, noExitFour⟩⟩⟩
+      · refine ⟨.inr ⟨⟨P, pinnedP, maximalP, ?_⟩⟩⟩
+        intro index unpaid
+        refine ⟨twoCarrier index unpaid, ?_⟩
+        by_contra absent
+        exact noWitness ⟨index, unpaid, absent⟩)
+    survivorFresh residualFresh
+
 omit [FactSystem (Input BranchState Presentation presentation data)] in
 @[reducible] noncomputable def route8CarrierDeletionWitnessesRow
     : @AtomicStrategy (Input BranchState Presentation presentation data) _

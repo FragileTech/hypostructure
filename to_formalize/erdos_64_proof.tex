@@ -310,7 +310,7 @@ independent.
 
 \section{Introduction and overview of the proof}\label{sec:intro}
 
-The Erd\H{o}s--Gy\'arf\'as power-of-two cycle problem asks whether every finite simple graph of minimum degree at least three contains a cycle whose length is a power of two.  It belongs to the broader study of which cycle lengths a graph of bounded minimum degree must realize \cite{BondyVince,GaoMa}, and the spanning-tree and leaf structure of minimum-degree-three graphs invoked below is classical \cite{KleitmanWest}.  We prove the following.  The current proof ledger isolates node~[181] as its single pending local obligation; the theorem statement and the status of the paper are unchanged while that obligation is completed.
+The Erd\H{o}s--Gy\'arf\'as power-of-two cycle problem asks whether every finite simple graph of minimum degree at least three contains a cycle whose length is a power of two.  It belongs to the broader study of which cycle lengths a graph of bounded minimum degree must realize \cite{BondyVince,GaoMa}, and the spanning-tree and leaf structure of minimum-degree-three graphs invoked below is classical \cite{KleitmanWest}.  We prove the following.  The current proof ledger has two explicit pending endpoints: the independent pair-code residual at node~[182] and the route-8 residual at node~[183].  The latter is the strict descendant obtained by exhausting node~[181] below; the theorem statement and the status of the paper are unchanged while these obligations are completed.
 
 \begin{theorem}[Main closure]\label[theorem]{thm:main}
 Let $G$ be a finite simple graph with minimum degree at least three.  Suppose
@@ -356,9 +356,13 @@ terminal route-8 two-support entry is excluded by
 \cref{prop:typeA-route8-closure-from-nogo} and
 \cref{thm:typeA-two-carrier-nogo}.  The only remaining outcome is the exact
 peeled target-defect demand residual of
-\cref{def:typeA-peeled-demand-residual}, which is node~[181].  Excluding this
-residual is the single pending obligation in the proof of the stated closure
-theorem; no contradiction at node~[181] is asserted here.
+\cref{def:typeA-peeled-demand-residual}, which is node~[181].  The maximal-ledger
+augmentation of \cref{thm:typeA-unpaid-exit4-reduction} eliminates every
+unpaid entry with three private carriers and routes every witness-free unpaid
+entry to the closed node~[124].  Thus the only survivor of node~[181] is the
+strictly narrower exit-\textup{(4)}-witness residual at node~[183].  Excluding
+node~[183], together with the independent pair-code residual at node~[182],
+is pending; no contradiction at either open endpoint is asserted here.
 \end{proof}
 
 \begin{remark}[Status of the routed leaves]\label[remark]{rem:formal-status}
@@ -423,7 +427,9 @@ net charge by the global surplus budget.  The Type A target-defect/route-8
 ledger is reduced by \cref{thm:large-budget-route8-only}, which combines exact
 peeled accounting, the demand ledger, finite exit-\textup{(4)} descent, and the
 terminal two-support route-8 exclusion.  Its failed reduced-rate arm is the
-explicit peeled-demand residual at node~[181].  All other branches used in
+explicit peeled-demand residual at node~[181], and
+\cref{thm:typeA-unpaid-exit4-reduction} reduces that residual to node~[183] or
+the already closed node~[124].  All other branches used in
 \cref{thm:branch-kill} are closed inside the paper or are explicitly routed to
 one of the displayed residual ledgers.
 In particular, the nonrepetitive low-entropy case in \cref{prop:two-budget} is
@@ -438,10 +444,12 @@ lexicographically minimal by
 (|V(G)|,|E(G)|),
 \]
 and shows that any such graph is forced either into the route-8 terminal
-package, which is ruled out by \cref{thm:typeA-two-carrier-nogo}, or into the
-peeled target-defect demand residual at node~[181].  Node~[181] is the current
-local proof frontier for the closure stated in \cref{thm:main}; it does not
-change the statement or status of that theorem.  The main route uses the $P_{13}$-free theorem of
+package, which is ruled out by \cref{thm:typeA-two-carrier-nogo}, or through
+the peeled target-defect demand ledger at node~[181] into its strict
+exit-\textup{(4)}-witness descendant at node~[183].  Node~[183] is the current
+local frontier of that route-8 branch.  The separate sparse pair-code branch
+retains node~[182].  These explicit endpoints do not change the statement or
+status of \cref{thm:main}.  The main route uses the $P_{13}$-free theorem of
 Hegde, Sandeep, and Shashank (\cref{thm:p13free}) as a black box.  The
 dense-window and route-8 bounded-block bookkeeping is recorded in the appendix as
 auxiliary resilience data.
@@ -556,8 +564,10 @@ solid diagram node has a unique bracketed integer, and the integers are consecut
 along each expanded branch.  Continuation arrows refer to later nodes by number rather
 than redrawing the same solid node.  Round solid nodes are closed branches; a
 dashed round node is only a proxy naming a solid closure drawn in another part.
-Node~[181] is the sole live open rectangle: its dashed outgoing arrow marks the
-current proof frontier and is not a closure node or a proxy for one.
+Nodes~[182] and~[183] are the two live open endpoints.  Node~[181] is now an
+implemented reduction node: its no-witness arm routes to [124], and its only
+surviving arm reaches [183].  The dashed outgoing arrows at [182] and [183]
+mark proof frontiers and are neither closure nodes nor proxies for one.
 
 \clearpage
 \begin{figure}[p]
@@ -874,7 +884,7 @@ every node/.style={font=\scriptsize}
 \node[wide] (closedledger) at (-5.20,-4.25) {\textbf{[82]}~yes:\\certificate-closed or B2-paid; \(\No(X)\ge0\) outside route 8};
 \node[wide] (overlap) at (5.45,-4.25) {\textbf{[83]}~no:\\\(c\ge2\) and B2 fails; minimal Type B overlap obstruction};
 \node[wide] (fanmass) at (5.45,-6.95) {\textbf{[84]}~fan-mass route:\\certificate failures and B2 failures charged to assigned surplus};
-\node[wide] (closed) at (0.00,-9.25) {\textbf{[85]}~degree-\(4\) Type B cannot carry linear deficit outside route 8 once the fan-mass residual is sublinear};
+\node[term] (closed) at (0.00,-9.25) {\textbf{[85]}~degree-\(4\) Type B cannot carry linear deficit outside route 8 once the fan-mass residual is sublinear};
 \draw[arrow] (split)--node[right]{no}(profile);
 \draw[arrow] (profile)--(certq);
 \draw[arrow] (certq)--node[left]{yes}(ledgerq);
@@ -991,8 +1001,9 @@ every node/.style={font=\scriptsize}
 \node[term, below=of lower] (contrad) {\textbf{[122]}~contradiction:\\$\tau_{\rm win}\ge12(1/4-\tau_{\rm win})$,\\but $\tau_{\rm win}<3/13$};
 \node[dec, text width=2.45cm, right=1.05cm of residual] (pressure) {\textbf{[123]}~finite exact descent\\terminates in true route 8?};
 \node[term, right=0.90cm of pressure] (nogo) {\textbf{[124]}~local exclusion theorem:\\no two-support route-8 obstruction};
-\node[nobox,draw=red,very thick,text=red, below=1.05cm of pressure] (peeledres) {\textbf{[181]}~OPEN: peeled target-defect demand residual:\\exact stage accounting, absorption,\\and window blockers};
-\coordinate (open181) at ($(peeledres.south)+(0,-0.80)$);
+\node[dec, text width=3.05cm, below=1.15cm of pressure] (peeledres) {\textbf{[181]}~maximal-ledger augmentation:\\some unpaid entry lacks an exit-\textup{(4)} witness?};
+\node[nobox,draw=red,very thick,text=red, below=1.20cm of peeledres] (unpaidexit) {\textbf{[183]}~OPEN: every unpaid entry has at most two private carriers and a canonical exit-\textup{(4)} witness; full [181] ledger retained};
+\coordinate (open183) at ($(unpaidexit.south)+(0,-0.80)$);
 \draw[arrow] (route8)--(extract);
 \draw[arrow] (extract)--(burden);
 \draw[arrow] (burden)--(deficit);
@@ -1004,14 +1015,16 @@ every node/.style={font=\scriptsize}
 \draw[arrow] (residual)--(pressure);
 \draw[arrow] (pressure)--node[above]{yes}(nogo);
 \draw[arrow] (pressure)--node[right]{no: failed reduced rate}(peeledres);
-\draw[arrow,dashed] (peeledres.south)--node[right]{pending local closure of [181]}(open181);
+\draw[arrow] (peeledres.east)-|node[pos=0.22,below]{yes: [124]}(nogo.south);
+\draw[arrow] (peeledres)--node[right]{no}(unpaidexit);
+\draw[arrow,dashed] (unpaidexit.south)--node[right]{next strict local reduction}(open183);
 \draw[arrow] (twocarrier)--node[right]{no}(private);
 \draw[arrow] (private)--(upper);
 \draw[arrow] (upper)--(lower);
 \draw[arrow] (lower)--(contrad);
 \end{tikzpicture}%
 }
-\caption[Proof-dependency diagram, Part IX]{Proof-dependency diagram, Part IX.  Rectangles, diamonds, ellipses, bracketed node numbers, and edge labels use the convention of \cref{fig:proof-diagram-part-i}.  The figure expands exit (8) from \cref{fig:proof-diagram-part-viii} and records how it feeds the demand routing.  On the derived spine branch, the route-8 response-support reduction closes the no-two-support branch: the global squeeze extracts $\mathcal X_A$ carrying $D_A$, the route-8 burden gives \(N_{\rm basin}\ge4D_A\), zero/one-essential-core entries trigger exits (4)--(7), and absence of a two-support entry gives \(3N_{\rm basin}\le\tau_{\rm win}|R|+o(|R|)\), contradicting \(3N_{\rm basin}\ge12(1/4-\tau_{\rm win})|R|-o(|R|)\) and \(\tau_{\rm win}<3/13\).  A two-support entry enters the exhaustive decision at node [123].  Every target-defect peel decreases \(\Lambda_4\), and the exact identities \(\tilde\Xi=\tilde\Xi^{P_4}\mathbin{\dot\cup}\tilde P_4\) and \(4\tilde D_A=4\tilde D_A^{P_4}+p_4\) retain its contribution.  Termination in a true route-8 entry is sent to node [124], where the local exclusion theorem closes that branch.  The complementary failed reduced-rate outcome runs the full demand, absorption, and unique-window blocker ledgers and publishes the still-open peeled target-defect demand residual at node [181].  The dashed arrow below [181] denotes the pending continuation only; it does not assert closure.}
+\caption[Proof-dependency diagram, Part IX]{Proof-dependency diagram, Part IX.  Rectangles, diamonds, ellipses, bracketed node numbers, and edge labels use the convention of \cref{fig:proof-diagram-part-i}.  The figure expands exit (8) from \cref{fig:proof-diagram-part-viii} and records how it feeds the demand routing.  On the derived spine branch, the route-8 response-support reduction closes the no-two-support branch: the global squeeze extracts $\mathcal X_A$ carrying $D_A$, the route-8 burden gives \(N_{\rm basin}\ge4D_A\), zero/one-essential-core entries trigger exits (4)--(7), and absence of a two-support entry gives \(3N_{\rm basin}\le\tau_{\rm win}|R|+o(|R|)\), contradicting \(3N_{\rm basin}\ge12(1/4-\tau_{\rm win})|R|-o(|R|)\) and \(\tau_{\rm win}<3/13\).  A two-support entry enters the exhaustive decision at node [123].  Every target-defect peel decreases \(\Lambda_4\), and the exact identities \(\tilde\Xi=\tilde\Xi^{P_4}\mathbin{\dot\cup}\tilde P_4\) and \(4\tilde D_A=4\tilde D_A^{P_4}+p_4\) retain its contribution.  Termination in a true route-8 entry is sent to node [124], where the local exclusion theorem closes that branch.  The complementary failed reduced-rate outcome runs the full demand, absorption, and unique-window blocker ledgers and reaches node [181].  There a one-entry maximal-ledger augmentation proves that every unpaid entry has at most two private carriers.  An unpaid entry without an exit-\textup{(4)} witness is exactly the already excluded node-[124] input; hence the only survivor is node [183], where every unpaid entry has both the two-carrier bound and its canonical exit-\textup{(4)} witness.  The dashed arrow below [183] denotes the next strict local reduction only; it does not assert closure.}
 \label{fig:proof-diagram-part-ix}
 \end{figure}
 
@@ -1275,7 +1288,7 @@ The table records every named object in the proof-dependency diagram.  The \emph
 53 & [173]--[177] & Small-order repair & node [56]'s collision is decided exactly on the object at [173]; its failure forces linearly many cold windows on the bounded arm of [153] whose corridors were charged as the configuration-extraction loss; [175] restores that charge: subcubic supports are genuine (F5) configurations [176], supports through a high-degree vertex are decorated handoff fan data entering Type B at [65] [177] & no sufficient-order condition remains & \cref{lem:exact-collision-test}, \cref{lem:absorbed-germ-fan-data} \\
 54 & [169]--[172] & Trivial neutral configuration: compression or typed overlap residual & the residual left by [166] is exposed barrier by barrier; additive conditional fibres give the blocked-class compression [171], while failure at one scale retains the failing fibre and minimal connected overlap support for [172a]; uncrossing alternatives (i)--(iv) carry their destination witnesses, and the serial alternative enters [172b]'s exact compatible central-lift test; its no-arm enters [172c] with the full finite state and routes only after producing the cold-table, G2, actual G3-representative, or declared-trace entry data & [155], [156], [157], [65], or [109], with the corresponding typed witness & \cref{def:blocked-class}, \cref{def:barrier-overlap-system}, \cref{lem:barrier-failure-overlap}, \cref{def:serial-window-system}, \cref{lem:window-system-realizability}, \cref{lem:serial-system-sumset}, \cref{lem:system-increment-arithmetic}, \cref{lem:scale-additivity}, \cref{lem:blocked-graphs-compress} \\
 55 & [178]--[180], [182] & Pair-code unrealized residual & the entropy counts of [131] and of the free side of [137] are branch tests; on the covered arm their failure supplies a minimal connected pair overlap obstruction [178], an actual routed outcome or graph-realized serial demand system [179], and an actual routed periodic outcome or full-modulus arithmetic closure [180] & open only at [182], which retains the exact input and negation of the first uncovered implication & \cref{def:pair-overlap-system}, \cref{lem:pair-failure-overlap}, \cref{lem:pair-system-realizability}, \cref{lem:pair-system-increment-arithmetic}, \cref{lem:pair-count-or-arithmetic} \\
-56 & [181] & Peeled target-defect demand residual & the failed reduced-rate stage retains the disjoint reduced/peeled entry partition, the exact identity \(4\tilde D_A=4\tilde D_A^{P_4}+p_4\), both full and reduced burden inequalities, every recorded exit-(4) witness, the maximal demand ledger, maximal absorption, and the unique-window blocker partition & open: no sublinear open-demand or zero-signature excess bound is asserted & \cref{lem:typeA-peeling-stage-accounting}, \cref{def:typeA-peeled-demand-residual}, \cref{lem:typeA-pressure-ledger-no-overcount}, \cref{lem:typeA-pressure-absorber-no-overcount}, \cref{lem:typeA-open-window-blocker-count} \\
+56 & [181], [183] & Maximal-ledger exit-\textup{(4)} reduction & the failed reduced-rate stage retains the disjoint reduced/peeled entry partition, the exact identity \(4\tilde D_A=4\tilde D_A^{P_4}+p_4\), both burden inequalities, every recorded witness, the maximal demand and absorption ledgers, and the unique-window blocker partition; one-entry augmentation forces every unpaid entry to have at most two private carriers, while absence of an exit-\textup{(4)} witness routes to [124] & the only open child is [183], on which both obstruction counts in \textup{(168.3)} are zero; no entry or inherited fact is discarded & \cref{lem:typeA-peeling-stage-accounting}, \cref{def:typeA-peeled-demand-residual}, \cref{thm:typeA-unpaid-exit4-reduction} \\
 45 & [19], [20] & Non-near-cubic surplus branch & every survivor of the sparse surplus exits has the full active-demand family and, after an \(O(n)\)-deficit baseline demand is fixed, satisfies the exact capacity-token budget; the geometric same-token bottleneck lemma gives fixed homogeneous caps unless the load realizes a sparse surplus exit or ordinary Type B fan data, and the caps give \(\sigma(G)=O(\sqrt n)\) & derives the near-cubic spine before the normalized entropy budget is used, except for branches that are already routed to sparse exits or to the Type B fan ledger; blocker-free pair responses are charged by the exact cubic-baseline sandwich and the spine lower-bound deficits, while blocked pairs are assigned to capacity tokens; the exact token-fibre budget gives the load forced by any attempted violation, and \cref{lem:same-token-bottleneck-routing} turns a large homogeneous fibre into a geometric first-separator/fan route & \cref{lem:sparse-upper-envelope}, \cref{lem:sparse-slack-surplus}, \cref{def:named-surplus-exits}, \cref{def:active-surplus-demands}, \cref{lem:surviving-active-family}, \cref{def:surplus-blockers}, \cref{def:canonical-blocker-ledger}, \cref{lem:canonical-blocker-ledger-no-overcount}, \cref{def:primitive-sparse-blocker-carrier}, \cref{lem:primitive-carrier-supply}, \cref{def:capacity-token-ledger}, \cref{lem:capacity-token-supply}, \cref{lem:token-ledger-no-overcount}, \cref{def:same-token-patterns}, \cref{def:same-token-blocker-roles}, \cref{def:same-token-routing-germs}, \cref{lem:same-token-matching-star}, \cref{lem:same-token-homogeneous-extraction}, \cref{lem:same-token-bottleneck-routing}, \cref{thm:homogeneous-overload-geometric-closure}, \cref{cor:homogeneous-same-token-caps-close}, \cref{def:baseline-spine-demand}, \cref{lem:exact-cubic-baseline-budget}, \cref{lem:incremental-skeleton-room}, \cref{prop:sparse-entropy-sandwich}, \cref{prop:sparse-entropy-sandwich-with-blockers}, \cref{thm:tokenized-surplus-accounting-closure}, \cref{def:window-remainder-surplus-split}, \cref{lem:exact-window-join-identity}, \cref{cor:global-window-join-pressure}, \cref{prop:nonnear-cubic-sharp-overload-routing} \\
 46 & [125]--[129] & Sparse accounting setup & a sparse-load survivor yields the full active surplus family and an \(O(n)\)-deficit baseline demand & [129] fixes the common baseline used by the later sandwich & \cref{def:named-surplus-exits}, \cref{def:active-surplus-demands}, \cref{lem:surviving-active-family}, \cref{def:baseline-spine-demand} \\
 47 & [130]--[132] & Free/blocked pair split & pair-response coordinates split into blocker-free and blocked pairs; free pairs are charged by the entropy sandwich & blocked-pair debt is the only branch passed to the token ledger & \cref{def:sparse-pair-response}, \cref{lem:sparse-pair-dependence-exit}, \cref{prop:sparse-entropy-sandwich-with-blockers} \\
@@ -1488,7 +1501,8 @@ These manuscript results operate the obstruction invariants (25--29) without bei
 \cref{lem:typeA-peeling-stage-accounting} & Partitions the unified entry ledger exactly into reduced and recorded-peeled entries and retains the peeled term in both the original and reduced deficit inequalities & \cref{def:typeA-peeling-reduced-ledger}, \cref{lem:typeA-unified-burden}, \cref{lem:typeA-exit4-peeling-charge}, \cref{lem:typeA-exit4-discharge} \\
 \cref{def:typeA-peeled-demand-residual} & Names the failed reduced-rate output together with exact stage accounting, maximal demand absorption, and the unique-window blocker partition; asserts no smallness bound & \cref{lem:typeA-peeling-stage-accounting}, \cref{def:typeA-pressure-ledger}, \cref{def:typeA-pressure-absorbers}, \cref{lem:typeA-open-window-blocker-count} \\
 \cref{thm:large-budget-route8-only} & Reduces the remaining Type A target-defect/route-8 ledger: target-defect two-support entries are peeled by finite exit-\textup{(4)} descent, terminal route-8 entries are impossible, and failed reduced-rate stages route to node [181] & 20, 27, 28, 29, 35, 39, \cref{def:near-cubic-spine}, \cref{prop:typeB-bridge-sublinear}, \cref{def:typeA-peeling-reduced-ledger}, \cref{lem:typeA-peeling-stage-accounting}, \cref{lem:typeA-peeling-reduced-reduction}, \cref{lem:typeA-pressure-is-exit4-peel}, \cref{lem:typeA-exit4-finite-descent}, \cref{prop:typeA-route8-carrier-reduction} \\
-\cref{thm:main} & Main closure target through sparse-surplus routing, the near-cubic entropy spine, the terminal two-support route-8 exclusion, and the pending peeled-demand obligation [181] (using HSS) & all spine invariants: 1--8, 15, 20--24, 25--29, 35--41, 43--44; \cref{prop:nonnear-cubic-sharp-overload-routing}, \cref{def:near-cubic-spine} \\
+\cref{thm:typeA-unpaid-exit4-reduction} & Applies a one-entry augmentation to the incoming maximal demand ledger: unpaid three-private-carrier entries are impossible, a witness-free unpaid entry is the closed [124] input, and the sole survivor [183] has both obstruction counts equal to zero & \cref{def:typeA-peeled-demand-residual}, \cref{def:typeA-pressure-ledger}, \cref{lem:typeA-unified-carriers}, \cref{thm:typeA-two-carrier-nogo} \\
+\cref{thm:main} & Main closure target through sparse-surplus routing, the near-cubic entropy spine, the terminal two-support route-8 exclusion, and the pending residuals [182] and [183] (using HSS) & all spine invariants: 1--8, 15, 20--24, 25--29, 35--41, 43--44; \cref{prop:nonnear-cubic-sharp-overload-routing}, \cref{def:near-cubic-spine} \\
 \bottomrule
 \end{longtable}
 }
@@ -1737,9 +1751,10 @@ Ledger-invariant numbers and diagram-node numbers are separate namespaces.  The 
 \cref{lem:typeB-bridge-deficit-bound}, \cref{prop:typeB-bridge-sublinear} & EXC & [84] \texttt{(fanmass)} & inv 4, 14, 16, 24, 35; \cref{def:near-cubic-spine}; \cref{lem:typeB-hybrid-B1}, \cref{def:typeB-bridge-statements} & Charges residual centers and B2 failures to high-degree fan-center surplus and obtains \(M_B\le16\sigma(G)=o(|R|)\). & Prevents Type B bridge residuals from carrying the linear large-budget deficit on the derived spine branch. \\
 \cref{thm:branch-kill} & EXC & [76] \texttt{(branch)}, [85] \texttt{(typeB closed)}, [123] \texttt{(demand routing)} & inv 20, 27, 28, 29, 34, 35 & Closes the entropy-admissible branch outside explicit Type A target-defect/route-8 and Type B bridge residuals. & Combines the local exclusion theorems before the final demand descent. \\
 \cref{lem:typeA-peeling-stage-accounting} & EXC & [123] \texttt{(stage accounting)} & \cref{def:typeA-peeling-reduced-ledger}, \cref{lem:typeA-unified-burden}, \cref{lem:typeA-exit4-peeling-charge}, \cref{lem:typeA-exit4-discharge} & Proves the exact disjoint reduced/peeled partition, original deficit identity, reduced-deficit bound, and recorded-witness classification. & Prevents the peeled negative mass from being silently classified as nonnegative or Type B. \\
-\cref{thm:large-budget-route8-only} & EXC & [123] \texttt{(demand routing)}, [181] \texttt{(open)} & inv 20, 27, 28, 29, 34, 35; \cref{prop:typeB-bridge-sublinear}, \cref{def:typeA-peeling-reduced-ledger}, \cref{lem:typeA-peeling-stage-accounting}, \cref{lem:typeA-peeling-reduced-reduction}, \cref{lem:typeA-pressure-is-exit4-peel}, \cref{lem:typeA-exit4-finite-descent}, \cref{prop:typeA-route8-carrier-reduction} & Reduces the unified Type A target-defect/route-8 ledger by finite exit-\textup{(4)} descent and the terminal two-support route-8 exclusion. & Sends true route-8 survivors to node [124] and failed reduced-rate stages, with the full demand/absorption/window ledger, to node [181]. \\
-\cref{def:typeA-peeled-demand-residual} & EXC & [181] \texttt{(open)} & \cref{lem:typeA-peeling-stage-accounting}, \cref{def:typeA-pressure-ledger}, \cref{def:typeA-pressure-absorbers}, \cref{lem:typeA-open-window-blocker-count} & Records the exact peeled target-defect demand residual without a sublinear open-demand or zero-signature excess hypothesis. & This is the sole open output of node [123]. \\
-\cref{thm:main} & (root theorem) & [2] \texttt{(bad)} $\to$ [181] & \cref{thm:p13free} $+$ surplus-token routing $+$ all spine invariants & Every minimal counterexample either closes in an earlier branch or reaches the peeled target-defect demand residual [181]. & Main closure theorem; [181] is the single pending local proof obligation. \\
+\cref{thm:large-budget-route8-only} & EXC & [123] \texttt{(demand routing)}, [181] \texttt{(ledger)} & inv 20, 27, 28, 29, 34, 35; \cref{prop:typeB-bridge-sublinear}, \cref{def:typeA-peeling-reduced-ledger}, \cref{lem:typeA-peeling-stage-accounting}, \cref{lem:typeA-peeling-reduced-reduction}, \cref{lem:typeA-pressure-is-exit4-peel}, \cref{lem:typeA-exit4-finite-descent}, \cref{prop:typeA-route8-carrier-reduction} & Reduces the unified Type A target-defect/route-8 ledger by finite exit-\textup{(4)} descent and the terminal two-support route-8 exclusion. & Sends true route-8 survivors to node [124] and failed reduced-rate stages, with the full demand/absorption/window ledger, to node [181]. \\
+\cref{def:typeA-peeled-demand-residual} & EXC & [181] \texttt{(consumed)} & \cref{lem:typeA-peeling-stage-accounting}, \cref{def:typeA-pressure-ledger}, \cref{def:typeA-pressure-absorbers}, \cref{lem:typeA-open-window-blocker-count} & Records the exact peeled target-defect demand residual without a sublinear open-demand or zero-signature excess hypothesis. & Supplies the literal incoming ledger for the maximal-ledger reduction. \\
+\cref{thm:typeA-unpaid-exit4-reduction} & EXC & [181] \texttt{(reduction)}, [183] \texttt{(open)} & \cref{def:typeA-peeled-demand-residual}, \cref{def:typeA-pressure-ledger}, \cref{lem:typeA-unified-carriers}, \cref{thm:typeA-two-carrier-nogo} & One-entry augmentation makes the high-private unpaid count zero; the entry census routes a positive no-witness count to [124]. & Retains the complete [181] ledger and sends only the zero/zero obstruction profile to [183]. \\
+\cref{thm:main} & (root theorem) & [2] \texttt{(bad)} $\to$ [182] or [183] & \cref{thm:p13free} $+$ surplus-token routing $+$ all spine invariants & Every minimal counterexample either closes in an earlier branch or reaches one of the two explicit residuals [182] and [183]. & Main closure theorem; [182] and [183] are the pending local proof obligations. \\
 \bottomrule
 \end{longtable}
 }
@@ -16905,6 +16920,91 @@ entry is route~8 and is excluded by node~[124].  These are precisely the three
 outcomes in the statement.
 \end{proof}
 
+\begin{theorem}[Maximal-ledger exit-\textup{(4)} reduction]
+\label[theorem]{thm:typeA-unpaid-exit4-reduction}
+At node~\textup{[181]}, fix the maximal \(2/3\)-demand ledger \(P\) carried by
+\cref{def:typeA-peeled-demand-residual}, and put
+\[
+   \Xi_{\rm un}(P):=\Xi_2(P)\mathbin{\dot\cup}\Xi_{\rm res}(P).
+\]
+Then every \(\xi\in\Xi_{\rm un}(P)\) satisfies
+\[
+                     \pi_{\widetilde\Xi}(\xi)\le2.       \tag{168.1}
+\]
+Moreover exactly one of the following two outcomes occurs.
+\begin{enumerate}[label=(\roman*), leftmargin=2.2em]
+\item Some \(\xi\in\Xi_{\rm un}(P)\) has no exit-\textup{(4)} witness.  Then
+      \(\xi\) is the terminal true route-8 two-support entry and is routed to
+      the already closed node~\textup{[124]}.
+\item Every \(\xi\in\Xi_{\rm un}(P)\) has its canonical exit-\textup{(4)}
+      witness.  This is residual node~\textup{[183]}.
+\end{enumerate}
+Thus node~\textup{[183]} retains the complete node-\textup{[181]} ledger but
+has the additional proved interface
+\[
+ \forall\xi\in\Xi_{\rm un}(P),\qquad
+ \pi_{\widetilde\Xi}(\xi)\le2
+ \quad\text{and}\quad
+ \exists q\in\mathcal Q_4(w_\xi)\ 
+       [\,u_\xi\in\operatorname{supp}_{\rm load}(q)\,].       \tag{168.2}
+\]
+For quantitative accounting, define the two obstruction sets
+\[
+ H_{181}(P):=
+ \{\xi\in\Xi_{\rm un}(P):\pi_{\widetilde\Xi}(\xi)\ge3\},
+ \qquad
+ N_{181}(P):=
+ \{\xi\in\Xi_{\rm un}(P):
+       \text{\(\xi\) has no exit-\textup{(4)} witness}\}.
+\]
+The first set is empty on both outcomes; the second is nonempty only on the
+arm routed to node~\textup{[124]}.  Hence the only surviving child satisfies
+\[
+             \bigl(|H_{181}(P)|,|N_{181}(P)|\bigr)=(0,0). \tag{168.3}
+\]
+This is a strict reduction of the incoming residual: the high-private-carrier
+and witness-free true-route-8 possibilities allowed by its interface have
+both been exhausted, and both residual coordinates have reached their minimum,
+while every entry, demand unit, peel witness, absorber, and window blocker
+remains recorded.
+\end{theorem}
+
+\begin{proof}
+Fix \(\xi\in\Xi_2(P)\cup\Xi_{\rm res}(P)\).  Suppose first that
+\(\pi_{\widetilde\Xi}(\xi)\ge3\), and choose three private essential
+incidences \(D\subseteq\mathcal C_{\rm ess}(\xi)\).  Move \(\xi\) from its
+present class to \(\Xi_3\) and assign \(A(\xi):=D\), leaving every other class
+and assignment unchanged.  By the definition of private incidence, no member
+of \(D\) belongs to the essential core of any other indexed entry.  Since every
+old assignment is contained in its owner's essential core, \(D\) is disjoint
+from every old assignment.  The move therefore preserves clauses
+\textup{(L1)}--\textup{(L5)} of \cref{def:typeA-pressure-ledger}; in
+particular, all previously pinned route-8 entries retain their three private
+incidences.  It increases \(|\Xi_3|\) by one, contradicting the first
+maximality coordinate of \(P\).  This proves \textup{(168.1)}.  Notice that
+this is a one-entry augmentation of the incoming finite ledger, not a new
+Hall assumption and not a reconstruction of the ledger on another support.
+
+The unified entry census retained at node~\textup{[181]} gives
+\(\alpha_{\widetilde\Xi}(\xi)\ge2\) and its exhaustive alternative: the
+selected basin is target-complete-minimal, or it is target-defective and the
+canonical exit-\textup{(4)} witness for \(u_\xi\) is present.  If the witness
+is absent, the target-defect alternative is impossible.  Hence the basin is
+target-complete-minimal, and together with \textup{(168.1)},
+\(\alpha_{\widetilde\Xi}(\xi)\ge2\), and the absent witness this is exactly the
+terminal input of \cref{thm:typeA-two-carrier-nogo}; outcome~\textup{(i)}
+therefore routes to node~\textup{[124]} and closes.
+
+If outcome~\textup{(i)} does not occur, every unpaid entry has the witness,
+and \textup{(168.2)} follows together with \textup{(168.1)}.  These two
+exhaustive tests make both obstruction sets empty, proving
+\textup{(168.3)}.  No member of \(\widetilde\Xi\) is deleted: the survivor is
+the same exact ledger with both previously available structural alternatives
+proved impossible.  Thus the residual predicate has strictly fewer admissible
+structural profiles even though its underlying entries are retained.  This is
+outcome~\textup{(ii)} and defines the incoming residual at node~\textup{[183]}.
+\end{proof}
+
 \begin{corollary}[Large-budget closure with sublinear open demand]%
 \label[corollary]{cor:typeA-large-budget-closure-open-pressure}
 Assume \cref{def:near-cubic-spine}.  After the type \textup{(A2)}
@@ -17049,12 +17149,12 @@ every node/.style={font=\scriptsize}
 \draw[arr] (bridge.west)--node[above,fill=orange!3,inner sep=0.5pt,font=\tiny,align=center,text width=0.55cm] {extract\\cores} (route.east);
 \node[good,text width=3.10cm] (sub) at (5.55,-0.35) {fan-certificate centers\\and B2 failures are\\\(o(|R|)\)};
 \draw[arr] (bridge.south) to[out=-90,in=45] (sub.north east);
-\node[bad,text width=3.25cm] (final) at (5.55,-2.15) {true route 8 closes at [124];\\failed reduced rate retains\\peeled demand at [181]};
+\node[bad,text width=3.25cm] (final) at (5.55,-2.15) {true route 8 closes at [124];\\failed reduced rate reaches [181],\\then [124] or residual [183]};
 \draw[arr] (route.south) to[out=-90,in=150] (final.north west);
 \draw[arr] (sub)--(final);
 \end{tikzpicture}%
 }
-\caption[Visual proof of the branch-reduction mass ledger]{Visual proof of the branch-reduction mass ledger.  Panel I shows the large-budget cap localizing negative net charge to a connected admissible support \(X\) with \(\No(X)<0\).  Panel II shows the local branch drain used in \cref{thm:branch-kill}: Type A supports close through the non-route-8 exits or enter target-defect peeling, while Type B supports close through the B1 ledger together with B2, giving \(\No(X)\ge0\) outside the explicit residuals.  Panel III records the remaining global ledger.  Type B bridge and fan-mass residuals are charged to assigned surplus units and become \(o(|R|)\) after route-8 non-window cores are extracted into the Type A ledger.  The unified demand ledger counts both target-defect and route-8 Type A entries.  Target-defect two-support entries are canonical exit-\textup{(4)} peel data, and every peel remains charged by the exact stage accounting.  A true two-support route-8 terminal is excluded at node [124]; failure of the reduced-stage rate publishes the peeled-demand residual at node [181].}
+\caption[Visual proof of the branch-reduction mass ledger]{Visual proof of the branch-reduction mass ledger.  Panel I shows the large-budget cap localizing negative net charge to a connected admissible support \(X\) with \(\No(X)<0\).  Panel II shows the local branch drain used in \cref{thm:branch-kill}: Type A supports close through the non-route-8 exits or enter target-defect peeling, while Type B supports close through the B1 ledger together with B2, giving \(\No(X)\ge0\) outside the explicit residuals.  Panel III records the remaining global ledger.  Type B bridge and fan-mass residuals are charged to assigned surplus units and become \(o(|R|)\) after route-8 non-window cores are extracted into the Type A ledger.  The unified demand ledger counts both target-defect and route-8 Type A entries.  Target-defect two-support entries are canonical exit-\textup{(4)} peel data, and every peel remains charged by the exact stage accounting.  A true two-support route-8 terminal is excluded at node [124]; failure of the reduced-stage rate reaches the peeled-demand ledger at [181], whose maximal-ledger augmentation routes the witness-free arm to [124] and retains only the exit-\textup{(4)}-witness residual [183].}
 \label{fig:branch-closure-mass-ledger}
 \end{figure}
 
@@ -17605,7 +17705,8 @@ These do not degrade to nontrivial residual reductions: their negation is either
 {[76]}/{[85]} \texttt{branch} (local closures) & \cref{thm:branch-kill} & combines {[30]}$+${[60]}$+$entropy: outside explicit Type A target-defect/route-8 and Type B bridge residuals, the entropy-admissible branch has no survivor & inherits the available component slacks: about $4.1\times$ in the obstruction form and about $9.6\%$ in the net-charge form; Type B bridge mass is $o(|R|)$ after route-8 cores are extracted into the Type A ledger & \textbf{Local join.} It leaves only the explicit Type A demand/route-8 ledger for node {[123]}. & $G$ \emph{survives the branch squeeze} only if the negative local support contributes to the explicit Type A demand/route-8 ledger; Type B fan-certificate residual centers and B2 failures are too small in total to carry the required linear deficit. \\\\
 {[123]} \texttt{routed} (exact demand descent) & \cref{lem:typeA-peeling-stage-accounting,thm:large-budget-route8-only} & after the branch-kill reduction, the remaining large-budget Type A target-defect/route-8 ledger records every target-defect peel, retains the peeled term in the original deficit, and decides the reduced-stage rate & inherits the unified burden lower bound, exact reduced/full partition, demand no-overcount ledger, finite descent of \(\Lambda_4\), the route-8 burden lower bound, and the private-support upper bound; Type B bridge mass has already been removed at {[76]}/{[85]} & \textbf{Join node with two exact outputs.} A true two-support route-8 entry enters node {[124]}; a failed reduced-rate stage runs the full demand, absorption, and window-blocker ledgers and enters node {[181]}. & No terminal fact is proved at {[123]}; it reads its producers and routes only to the closed local obstruction {[124]} or the explicit residual {[181]}. \\\\
 {[124]} \texttt{nogo} (two-support route 8) & \cref{def:typeA-true-route8-residual,lem:typeA-deletion-witness-declared,lem:typeA-two-carrier-deletion-canonical,lem:typeA-carrier-deletion-exit,thm:typeA-two-carrier-nogo}, with \cref{def:typeA-terminal-two-carrier,prop:typeA-route8-closure-from-nogo} & no terminal two-support route-8 obstruction exists & inherits the route-8 lower bound, the private-incidence upper bound, cut parity, declared deletion witnesses, and all absent-exit constraints & \textbf{Terminal local exclusion.} In a two-support entry, declared essential deletion witnesses first give canonical exit-(4) quotients and then realize exit (4), which is absent in a true route-8 residual. & A false instance is exactly a terminal two-support route-8 obstruction: a true route-8 entry with at least two essential incidences, at most two private essential incidences, and declared incidence-deletion witnesses for every essential incidence. \\
-{[181]} \texttt{open} (peeled target-defect demand) & \cref{def:typeA-peeled-demand-residual} & failed reduced-stage rate together with the exact reduced/peeled accounting, maximal demand ledger, maximal absorption, and unique-window blocker partition & inherits every recorded exit-(4) witness and the full original large-budget deficit; asserts neither \(\mathsf P_{\rm open}=o(|R|)\) nor a same-window/zero-signature cap & \textbf{Explicit residual.} This is the only surviving output of node {[123]}; it is not consumed by node {[124]}. & A survivor is exactly the accounted peeled target-defect demand ledger whose remaining open demand has not yet been bounded below the sharp threshold. \\
+{[181]} \texttt{reduced} (peeled target-defect demand) & \cref{def:typeA-peeled-demand-residual,thm:typeA-unpaid-exit4-reduction} & failed reduced-stage rate together with the exact reduced/peeled accounting, maximal demand ledger, maximal absorption, and unique-window blocker partition & inherits every recorded exit-(4) witness and the full original large-budget deficit; one-entry augmentation forces the high-private unpaid count to zero & \textbf{Exhaustive local split.} A witness-free unpaid entry is the node-[124] obstruction; the complementary arm appends the universal two-carrier/exit-(4)-witness fact and reaches [183]. & No [181] survivor remains outside the already closed [124] arm and the strictly narrower [183] interface. \\
+{[183]} \texttt{open} (unpaid exit-\textup{(4)}-witness residual) & \cref{thm:typeA-unpaid-exit4-reduction} & every entry in \(\Xi_2(P)\mathbin{\dot\cup}\Xi_{\rm res}(P)\) has at most two private essential carriers and a canonical exit-\textup{(4)} witness & the two obstruction counts \(\lvert H_{181}(P)\rvert\) and \(\lvert N_{181}(P)\rvert\) are exactly zero; all entries and all inherited ledger facts remain available & \textbf{Strict descendant of [181].} High-private and witness-free unpaid profiles have been exhausted; the next move must act on the retained two-carrier witness structure. & A survivor is the exact maximal demand/absorption/window ledger in which every unpaid demand is already represented by a canonical exit-\textup{(4)} witness. \\
 \bottomrule
 \end{longtable}
 }
