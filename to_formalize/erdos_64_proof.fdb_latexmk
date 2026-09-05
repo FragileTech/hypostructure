@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1787998767.39137 "erdos_64_proof.tex" "erdos_64_proof.pdf" "erdos_64_proof" 1787998774.82931 0
+["pdflatex"] 1788438373.66155 "erdos_64_proof.tex" "erdos_64_proof.pdf" "erdos_64_proof" 1788438402.5858 0
   "/etc/texmf/web2c/texmf.cnf" 1775461942.93881 475 c0e671620eb5563b2130f56340a5fde8 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/jknappen/ec/ecrm1095.tfm" 1136768653 3584 929cdff2b7a8c11bd4d49fd68cb0ae70 ""
@@ -257,10 +257,10 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1741904018 41538 c016915c1d51223b6dbbfe27341748a8 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1775461957 5467255 9a64d1b40e0b893fc5588ecce9d8accf ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1775462000 3347157 e3d55367a58d5fdfabed5b8302e4b102 ""
-  "erdos_64_proof.aux" 1787998774.63192 103975 e9fcc1d7951ffd7a4d0c6ecc8bc2b109 "pdflatex"
-  "erdos_64_proof.out" 1787998774.63692 9443 b9b74ade7f66a1a582bc4755d4e040fd "pdflatex"
-  "erdos_64_proof.tex" 1787998646.32007 937970 6859af40df50a1b82573e4e3b5174c64 ""
-  "erdos_64_proof.toc" 1787998774.63792 8144 6420551842a2b0fdd04200d8cc50fd5f "pdflatex"
+  "erdos_64_proof.aux" 1788438401.82857 105090 40f2c59079823f70ae7b8548f210f392 "pdflatex"
+  "erdos_64_proof.out" 1788438401.84857 9444 35e08c0c037c624b730c8fdd02022d1a "pdflatex"
+  "erdos_64_proof.tex" 1788438363.53886 969370 b4221d2202bdf2b680f7fb14f0ec4803 ""
+  "erdos_64_proof.toc" 1788438401.84957 8157 c24503dfd375bfd8b86c1ee9afbf3719 "pdflatex"
   (generated)
   "erdos_64_proof.aux"
   "erdos_64_proof.log"

@@ -44,7 +44,7 @@ variable {object : FiniteObject.{u}} (support : Finset object.Vertex)
 /-- Vertices of a finite object have decidable equality: the object's own vertex
 schedule decides it.  Every carrier `Finset` below is taken at this instance, so
 no two of them disagree about what a carrier set is. -/
-def vertexDecEq (object : FiniteObject.{u}) : DecidableEq object.Vertex :=
+@[reducible] def vertexDecEq (object : FiniteObject.{u}) : DecidableEq object.Vertex :=
   object.vertices.decEq
 
 attribute [local instance] vertexDecEq

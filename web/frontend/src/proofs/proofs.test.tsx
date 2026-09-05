@@ -219,7 +219,7 @@ describe("the Erdos-Gyarfas neutral configuration at [163]", () => {
     // The manuscript now closes into three named residuals and no others.
     expect(
       ERDOS.nodes.filter((candidate) => candidate.open).map((candidate) => candidate.id).sort(),
-    ).toEqual(["172a", "181", "182"]);
+    ).toEqual(["172a", "182", "186"]);
 
     show(ERDOS, "163");
     expect(screen.getByText("Branch test")).toBeInTheDocument();
@@ -271,7 +271,7 @@ describe("referee mode", () => {
     // Its own result, what it builds on, and where it falls.
     expect(within(panel).getAllByText("cor:p13-exists").length).toBeGreaterThan(0);
     expect(within(panel).getByText("Rests on").parentElement).toHaveTextContent(/Hegde/);
-    expect(within(panel).getByText(/169 later steps/)).toBeInTheDocument();
+    expect(within(panel).getByText(/173 later steps/)).toBeInTheDocument();
     const where = locate(ERDOS, "erdos-gyarfas", "cor:p13-exists")!;
     expect(within(panel).getAllByText(`page ${where.page} of The paper`)[0]).toHaveAttribute(
       "href",

@@ -292,7 +292,7 @@ def test_navier_stokes_publishes_four_tables_per_paper() -> None:
 
 def test_erdos_review_sidecar_covers_all_nodes() -> None:
     review = ERDOS["review"]
-    assert len(review["nodes"]) == 184
+    assert len(review["nodes"]) == 188
     valid = {"verified", "partial", "absent"}
     for nid, entry in review["nodes"].items():
         assert entry["lean"] in valid, f"node {nid}: lean={entry['lean']}"
@@ -408,7 +408,7 @@ def test_every_node_records_a_producer_or_says_it_has_none() -> None:
     from lean_review import load_audit
 
     audit = load_audit(REPO_ROOT)["nodes"]
-    assert len(audit) == 185  # 184 drawn nodes plus aggregate audit row [172]
+    assert len(audit) == 189  # 188 drawn nodes plus aggregate audit row [172]
     for node in (entry["id"] for entry in ERDOS["nodes"]):
         entry = audit[node]
         assert entry["fidelity"], node
@@ -421,17 +421,50 @@ def test_every_node_records_a_producer_or_says_it_has_none() -> None:
             assert entry["fidelity_note"], node
 
 
-def test_erdos_has_all_184_nodes_across_twelve_panels() -> None:
-    assert len(ERDOS["nodes"]) == 184
+def test_erdos_has_all_188_nodes_across_twelve_panels() -> None:
+    assert len(ERDOS["nodes"]) == 188
     assert len(ERDOS["groups"]) == 12
     assert "chapters" not in ERDOS
     shapes = [node["shape"] for node in ERDOS["nodes"]]
-    assert shapes.count("assertion") == 103
-    assert shapes.count("decision") == 49
-    assert shapes.count("terminal") == 32
+    assert shapes.count("assertion") == 105
+    assert shapes.count("decision") == 50
+    assert shapes.count("terminal") == 33
     assert {node["id"] for node in ERDOS["nodes"] if node.get("open")} == {
-        "172a", "181", "182"
+        "172a", "182", "186"
     }
+
+
+def test_erdos_route8_reductions_reach_open_186() -> None:
+    by_id = {node["id"]: node for node in ERDOS["nodes"]}
+    for number in ("181", "183", "184", "185", "186"):
+        assert by_id[number]["group"] == "fig:proof-diagram-part-ix"
+    assert by_id["181"]["shape"] == "decision"
+    assert by_id["183"]["shape"] == by_id["184"]["shape"] == "assertion"
+    assert by_id["186"]["open"] is True
+    assert not by_id["181"].get("open")
+    assert not by_id["183"].get("open")
+    assert not by_id["184"].get("open")
+    assert not by_id["185"].get("open")
+
+    arrows = {(edge["source"], edge["target"]): edge for edge in ERDOS["edges"]}
+    assert arrows[("123", "181")]["branch"] == "no: failed reduced rate"
+    assert arrows[("181", "124")]["branch"] == "yes: [124]"
+    assert arrows[("181", "183")]["branch"] == "no"
+    assert arrows[("183", "184")]["branch"] == "silent coordinate $=0$"
+    assert arrows[("184", "185")]["branch"] == "non-overload coordinate $=0$"
+    assert arrows[("185", "186")]["branch"] == "simultaneous exact account"
+
+    assert "thm:typeA-unpaid-exit4-reduction" in by_id["181"]["itemRefs"]
+    assert by_id["183"]["itemRefs"] == [
+        "thm:typeA-unpaid-exit4-reduction",
+        "lem:typeA-unified-visible-ownership",
+    ]
+    assert by_id["184"]["itemRefs"] == [
+        "lem:typeA-unified-visible-ownership",
+        "lem:typeA-unified-visible-overload",
+    ]
+    assert "lem:typeA-unified-visible-overload" in by_id["185"]["itemRefs"]
+    assert "lem:typeA-unified-joint-balance" in by_id["186"]["itemRefs"]
 
 
 def test_erdos_dense_packing_residual_is_part_xii() -> None:

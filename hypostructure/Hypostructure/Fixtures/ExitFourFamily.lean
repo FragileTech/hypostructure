@@ -17,6 +17,14 @@ variable {receiver load : object.Vertex}
 example (datum : Q1TargetDefect Target support threshold scale receiver load) :
     (CanonicalMember.q1 datum).clause = ReceiverClause.visibleEntry := rfl
 
+-- A Q1 datum must compare the two response pieces of its own selected pair.
+-- An arbitrary target-defective graph replacement cannot occupy this field.
+example (datum : Q1TargetDefect Target support threshold scale receiver load) :
+    Response.TargetDefect Target
+      (visibleResponsePiece datum.pair.leftResponseCoordinate)
+      (visibleResponsePiece datum.pair.rightResponseCoordinate) :=
+  datum.targetDefect
+
 example (datum : Q5TargetDefect Target support threshold scale receiver load) :
     (CanonicalMember.q5 datum).clause = ReceiverClause.carrierDeletion := rfl
 

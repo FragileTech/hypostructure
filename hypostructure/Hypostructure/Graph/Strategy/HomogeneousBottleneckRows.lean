@@ -615,7 +615,7 @@ set_option maxHeartbeats 4000000 in
           have activeEq : patternActive = active := Subsingleton.elim _ _
           subst patternActive
           have activationFacts := active.activated
-          have cubic := (inputs.get (K .cubicBaseline)).down
+          have cubic := (inputs.get (K .cubicBaseline)).down.1
           have capacityLedger :=
             (inputs.get (K .capacityTokenLedger)).down
           have selection := (inputs.get (K .selection)).down

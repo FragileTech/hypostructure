@@ -121,6 +121,87 @@ theorem unpeeledPayableSet_subset
       simpa using silent
     exact silentMember.1
 
+/-- Peeling cannot create a new visible-first excess load.  More precisely,
+the excess at any peeled stage is contained in the original excess basin at
+the same support and receiver. -/
+theorem unpeeledExcess_subset_excessBasin
+    (support : Finset object.Vertex) (threshold scale : Nat)
+    (receiver : object.Vertex) (peeled : Finset object.Vertex) :
+    unpeeledExcess support threshold scale receiver peeled ⊆
+      VisibleEntry.excessBasin object support threshold scale receiver := by
+  classical
+  have visibleBlockEq :
+      object.orderedVertices.filter (fun vertex =>
+          decide (vertex ∈ unpeeledVisibleLoads support threshold receiver peeled)) =
+        (object.orderedVertices.filter fun vertex =>
+          decide (vertex ∈ VisibleEntry.visibleLoads object support threshold receiver)).filter
+            (fun vertex => decide (vertex ∉ peeled)) := by
+    rw [List.filter_filter]
+    apply List.filter_congr
+    intro vertex _member
+    by_cases visible : vertex ∈
+        VisibleEntry.visibleLoads object support threshold receiver
+    · have routed : vertex ∈ object.routedLoads support threshold receiver :=
+        VisibleEntry.visibleLoads_subset object support threshold receiver visible
+      by_cases fresh : vertex ∉ peeled <;>
+        simp [unpeeledVisibleLoads, unpeeledLoads, visible, routed, fresh]
+    · simp [unpeeledVisibleLoads, visible]
+  have silentBlockEq :
+      object.orderedVertices.filter (fun vertex =>
+          decide (vertex ∈ unpeeledLoads support threshold receiver peeled ∧
+            vertex ∉ VisibleEntry.visibleLoads object support threshold receiver)) =
+        (object.orderedVertices.filter fun vertex =>
+          decide (vertex ∈ object.routedLoads support threshold receiver ∧
+            vertex ∉ VisibleEntry.visibleLoads object support threshold receiver)).filter
+              (fun vertex => decide (vertex ∉ peeled)) := by
+    rw [List.filter_filter]
+    apply List.filter_congr
+    intro vertex _member
+    by_cases routed : vertex ∈ object.routedLoads support threshold receiver <;>
+      by_cases visible : vertex ∈
+        VisibleEntry.visibleLoads object support threshold receiver <;>
+      by_cases fresh : vertex ∉ peeled <;>
+      simp [unpeeledLoads, routed, visible, fresh]
+  have orderEq :
+      unpeeledVisibleFirstOrder support threshold receiver peeled =
+        VisibleEntry.visibleFirstOrderReduced object support threshold receiver peeled := by
+    unfold unpeeledVisibleFirstOrder VisibleEntry.visibleFirstOrderReduced
+      VisibleEntry.visibleFirstOrder
+    rw [List.filter_append, visibleBlockEq, silentBlockEq]
+  have payableEq :
+      unpeeledPayableSet support threshold scale receiver peeled =
+        VisibleEntry.payableSetReduced object support threshold scale receiver peeled := by
+    unfold unpeeledPayableSet VisibleEntry.payableSetReduced
+    rw [orderEq]
+  have excessEq :
+      unpeeledExcess support threshold scale receiver peeled =
+        VisibleEntry.excessBasinReduced object support threshold scale receiver peeled := by
+    unfold unpeeledExcess unpeeledLoads VisibleEntry.excessBasinReduced
+    rw [payableEq]
+  intro load member
+  have reducedMember : load ∈
+      VisibleEntry.excessBasinReduced object support threshold scale receiver peeled := by
+    rwa [← excessEq]
+  have originalAndFresh :=
+    VisibleEntry.excessBasinReduced_subset object support threshold scale
+      receiver peeled reducedMember
+  exact (Finset.mem_sdiff.mp originalAndFresh).1
+
+/-- If every load in the original excess basin is visible, no peeled stage can
+carry a nonempty silent excess. -/
+theorem not_silentUnpeeledExcessAt_of_excessBasin_subset_visibleLoads
+    (support : Finset object.Vertex) (threshold scale : Nat)
+    (receiver : object.Vertex) (peeled : Finset object.Vertex)
+    (allVisible : VisibleEntry.excessBasin object support threshold scale receiver ⊆
+      VisibleEntry.visibleLoads object support threshold receiver) :
+    ¬ SilentUnpeeledExcessAt support threshold scale receiver peeled := by
+  intro silent
+  obtain ⟨load, loadMem⟩ := silent.2.1
+  have silentMem := Finset.mem_sdiff.mp (silent.2.2 loadMem)
+  exact silentMem.2
+    (allVisible (unpeeledExcess_subset_excessBasin support threshold scale
+      receiver peeled loadMem))
+
 theorem unpeeledVisibleLoads_subset_payableSet
     (support : Finset object.Vertex) (threshold scale : Nat)
     (receiver : object.Vertex) (peeled : Finset object.Vertex)

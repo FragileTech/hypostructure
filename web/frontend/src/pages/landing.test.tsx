@@ -50,7 +50,7 @@ describe("the landing page", () => {
 
   it("walks the six stages of one iteration, in order", () => {
     show();
-    const section = document.getElementById("methodology")!;
+    const section = document.getElementById(partAnchor("iteration"))!;
     const stages = within(section)
       .getAllByRole("listitem")
       .map((item) => item.querySelector("strong")?.textContent)

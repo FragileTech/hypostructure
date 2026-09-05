@@ -169,6 +169,7 @@ noncomputable def spineData : Graph.Strategy.Spine.Data.{u} where
       object baseline free
   quadrilateralAccepted := Core.DyadicLength.powerOfTwoLength_four
   degenerateClosureRejected := by decide
+  dischargeScale_eq_four := by norm_num [erdosReceiverLoadProfile]
   fanCapSlack := by
     simpa [erdosReceiverLoadProfile] using WindowAlgebra.fanPackingCap_succ_le
   highCentreDeficitSlack := by norm_num [erdosReceiverLoadProfile]

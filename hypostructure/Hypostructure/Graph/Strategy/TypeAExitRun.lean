@@ -40,6 +40,62 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
+/-- The node-`[94]` silent-origin lane cannot reach node `[184]`: its selected
+silent excess load is a member of the unchanged unified entry family, whereas
+node `[184]` makes every member of that family visible. -/
+noncomputable instance typeASilentExitSevenFreeVisibleClosed :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K (data := data) .typeASilentExitSevenFree)
+      (K (data := data) .route8UnifiedVisibleResidual) where
+  contradiction := fun input silentOrigin visibleResidual => by
+    classical
+    letI : DecidableEq input.object.Vertex := input.object.vertices.decEq
+    obtain ⟨packing, canonical, _valid, _maximal, component, present, negative,
+      zero, receiver, isReceiver, _peeled, _peeledSubset, _saturated,
+      _noExitFour, _noExitFive, _noExitSix, origin, noHandoff⟩ :=
+      silentOrigin.down
+    subst packing
+    let packing := canonicalWindowPacking data input.object
+    let piece := input.object.pieceSupport
+      (input.object.remainderSupport packing) component
+    obtain ⟨_noVisibleFour, originalSaturated, silentAtOrigin, _count⟩ := origin
+    obtain ⟨_portBound, nonemptyExcess, silentSubset⟩ := silentAtOrigin
+    obtain ⟨load, loadExcess⟩ := nonemptyExcess
+    have componentUnified : component ∈
+        route8UnifiedComponents data input.object := by
+      unfold route8UnifiedComponents
+      dsimp only
+      exact Finset.mem_filter.mpr ⟨present, zero, negative, noHandoff⟩
+    have receiverUnified : receiver ∈
+        Graph.VisibleEntry.saturatedReceivers input.object piece data.threshold
+          data.dischargeScale := by
+      unfold Graph.VisibleEntry.saturatedReceivers
+      exact Finset.mem_filter.mpr ⟨input.object.mem_receivers.mpr isReceiver,
+        originalSaturated⟩
+    have loadBasin : load ∈
+        Graph.VisibleEntry.excessBasin input.object piece data.threshold
+          data.dischargeScale receiver :=
+      Graph.ExitFour.unpeeledExcess_subset_excessBasin piece data.threshold
+        data.dischargeScale receiver ∅ loadExcess
+    have entryMem : (piece, receiver, load) ∈
+        route8UnifiedEntries data input.object := by
+      unfold route8UnifiedEntries Graph.Route8Census.entriesOfComponents
+      apply Finset.mem_biUnion.mpr
+      refine ⟨component, componentUnified, ?_⟩
+      dsimp only
+      apply Finset.mem_biUnion.mpr
+      refine ⟨receiver, ?_, ?_⟩
+      · simpa [piece] using receiverUnified
+      · apply Finset.mem_image.mpr
+        exact ⟨load, by simpa [piece] using loadBasin, rfl⟩
+    have visible : load ∈
+        Graph.VisibleEntry.visibleLoads input.object piece data.threshold receiver :=
+      visibleResidual.down.1 (piece, receiver, load) entryMem
+    have notVisible : load ∉
+        Graph.VisibleEntry.visibleLoads input.object piece data.threshold receiver :=
+      (Finset.mem_sdiff.mp (silentSubset loadExcess)).2
+    exact notVisible visible
+
 /-! ## The row, at the spine's own keys
 
 The schema bridges are the identity on `PLift`: the spine's value at each
@@ -284,7 +340,7 @@ noncomputable instance typeAExitFiveClosed :
       (K (data := data) .uncompressible)
       (K (data := data) .typeAExitFive) where
   contradiction := fun _input uncompressible exit => by
-    obtain ⟨_packing, _valid, _maximal, _component, _present, _charge,
+    obtain ⟨_packing, _canonical, _valid, _maximal, _component, _present, _charge,
       _surplus, _receiver, _isReceiver, _peeled, _peeledSubset, _saturated,
       _load, _eligible, basin, _selected, compression⟩ := exit.down
     obtain ⟨retained, _retainedSubset, _changed, complete, connected, proper,

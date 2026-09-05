@@ -26,10 +26,12 @@ Nothing assumes it.
 The manuscript's second visibility clause fixes a channel by a lexicographic
 order without naming it.  The order used here is the framework's own
 `Graph.FinitePathSelection.pathSchedule` -- shortest first, then Mathlib's
-enumeration -- which is the same order `FiniteObject.tracePath?` selects `T_u`
-with, so `T_u` and the canonical channel are read off one schedule rather than
-two.  `canonicalChannel?` is that reading: the first scheduled path from `r` to
-`w` inside `X` whose last edge is the terminal edge of `T_u`.
+enumeration.  Since the trace schedule has endpoints `u,w` whereas a channel
+schedule has endpoints `r,w`, sharing the ambient order alone does not imply
+that the selected channel contains `T_u`.  The canonical ownership test must
+therefore retain that incidence explicitly.  `canonicalChannel?` is the first
+scheduled path from `r` to `w` inside `X` which carries the selected trace and
+whose last edge is the terminal edge of that trace.
 
 On top of the definition this module proves the counting the silent branch
 spends, `lem:typeA-silent-excess-count`:
@@ -509,14 +511,16 @@ receiver edge of `T_u`.  Both traces and channels end at `w`, so "subpath" is
 "the trace's vertex list is a final segment of the channel's", and the terminal
 receiver edge of `T_u` is the last edge of `T_u`. -/
 
-/-- **The lexicographically first channel assigned to an edge.**  The first path
-of the object's own schedule from `r` to `w` that stays inside the support and
-ends with the given edge.  This is the same schedule `tracePath?` selects `T_u`
-from, so the manuscript's "lexicographically first" is the framework's one
-order rather than a second one. -/
+/-- **The lexicographically first trace-owning channel assigned to an edge.**
+The first path of the object's own schedule from `r` to `w` that stays inside
+the support, carries the selected canonical trace as a final segment, and ends
+with the trace's terminal edge.  The trace parameter is essential: the channel
+and trace schedules have different source types, so a common ambient ordering
+cannot manufacture the ownership relation after selection. -/
 noncomputable def canonicalChannel? (object : FiniteObject.{u})
     (support : Finset object.Vertex) (entry receiver : object.Vertex)
-    (terminalEdge : Sym2 object.Vertex) :
+    (terminalEdge : Sym2 object.Vertex) {load : object.Vertex}
+    (trace : object.graph.Path load receiver) :
     Option (object.graph.Path entry receiver) := by
   letI : FinEnum object.Vertex := object.vertices
   letI : Fintype object.Vertex := FinEnum.instFintype
@@ -525,8 +529,27 @@ noncomputable def canonicalChannel? (object : FiniteObject.{u})
   exact (FinitePathSelection.pathSchedule object.graph entry receiver).find?
     fun path =>
       @decide (IsChannel object support path.1 ∧
+          trace.1.support.IsSuffix path.1.support ∧
           path.1.edges.getLast? = some terminalEdge)
         (Classical.propDecidable _)
+
+/-- Canonical channel ownership retains, rather than reconstructs, the fact
+that the selected channel carries its originating trace. -/
+theorem traceSuffix_of_canonicalChannel?_eq_some (object : FiniteObject.{u})
+    {support : Finset object.Vertex} {entry receiver load : object.Vertex}
+    {terminalEdge : Sym2 object.Vertex}
+    {trace : object.graph.Path load receiver}
+    {channel : object.graph.Path entry receiver}
+    (selected : canonicalChannel? object support entry receiver terminalEdge
+        trace = some channel) :
+    trace.1.support.IsSuffix channel.1.support := by
+  letI : FinEnum object.Vertex := object.vertices
+  letI : Fintype object.Vertex := FinEnum.instFintype
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  letI : DecidableRel object.graph.Adj := object.decideAdj
+  have accepted := List.find?_some selected
+  simp only [decide_eq_true_eq] at accepted
+  exact accepted.2.1
 
 /-- **`P` is visible for the routed load `u`.**  `u` is routed to `w`, and its
 canonical trace either sits inside the return's channel as a final segment, or
@@ -542,8 +565,26 @@ def VisibleFor (object : FiniteObject.{u}) (support : Finset object.Vertex)
         ∃ terminalEdge : Sym2 object.Vertex,
           trace.1.edges.getLast? = some terminalEdge ∧
             canonicalChannel? object support return'.entry receiver
-                terminalEdge =
+                terminalEdge trace =
               some ⟨return'.channel, return'.isChannel.1⟩)
+
+/-- Both clauses of `VisibleFor` now have the literal conclusion used by the
+visible-four routing proof: the selected return channel contains the selected
+canonical trace.  The second clause reaches it through the strengthened
+canonical-channel producer, not through an endpoint-ordering inference. -/
+theorem traceSuffix_of_visibleFor (object : FiniteObject.{u})
+    {support : Finset object.Vertex} {threshold : Nat}
+    {receiver outside load : object.Vertex}
+    {return' : ReceiverEntryReturn object support receiver outside}
+    (visible : VisibleFor object support threshold return' load) :
+    ∃ trace : object.graph.Path load receiver,
+      object.tracePath? support threshold load receiver = some trace ∧
+        trace.1.support.IsSuffix return'.channel.support := by
+  obtain ⟨trace, selected, carried | canonical⟩ := visible
+  · exact ⟨trace, selected, carried⟩
+  · obtain ⟨terminalEdge, _lastEdge, channelSelected⟩ := canonical
+    exact ⟨trace, selected,
+      traceSuffix_of_canonicalChannel?_eq_some object channelSelected⟩
 
 namespace ReceiverEntryReturn
 
@@ -582,7 +623,8 @@ theorem ownsBoundaryEntry_of_trace
       trace.1.support.IsSuffix return'.channel.support \/
         exists terminalEdge : Sym2 object.Vertex,
           trace.1.edges.getLast? = some terminalEdge /\
-            canonicalChannel? object support return'.entry receiver terminalEdge =
+            canonicalChannel? object support return'.entry receiver terminalEdge
+                trace =
               some ⟨return'.channel, return'.isChannel.1⟩) :
     OwnsBoundaryEntry (threshold := threshold) return' boundary load :=
   ⟨by

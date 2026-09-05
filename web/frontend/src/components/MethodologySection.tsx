@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Latex } from "../graph-explorer";
 import { findProof } from "../proofs/registry";
 import { GeneralStructuralSurvey } from "../structural-survey/GeneralStructuralSurvey";
+import { EXECUTION_RECIPE_PARTS } from "../methodology/ExecutionRecipe";
 
 /** The element the whole account is anchored at. */
 export const METHODOLOGY_ID = "methodology";
@@ -21,6 +22,8 @@ export const METHODOLOGY_PARTS = [
   { id: "artifacts", title: "The artifacts: diagrams and tables" },
   { id: "repair", title: "Red-teaming and repair" },
   { id: "iteration", title: "One iteration of the method" },
+  { id: "recipe", title: "Executing the methodology" },
+  ...EXECUTION_RECIPE_PARTS,
   { id: "proofs", title: "In the two proofs" },
   { id: "survey", title: "Techniques and structural invariants" },
 ] as const;
@@ -1801,7 +1804,8 @@ export function MethodologySection() {
               </li>
               <li>
                 <strong>Select</strong> an admitted move whose prerequisites are
-                either in the current state or can be synthesised from it.
+                proved in the current state. If a prerequisite needs a local
+                construction, execute and verify it before selecting the move.
               </li>
               <li>
                 <strong>Execute</strong>: prove, review, or compute the
@@ -1825,6 +1829,26 @@ export function MethodologySection() {
               is what the terminals, branch labels and “continue at” arrows in
               the diagrams are for.
             </p>
+          </Part>
+
+          <Part id="recipe">
+            <p>
+              Follow this recipe from the exact incoming branch to its terminal
+              certificates. Each stage names the inputs, the work to perform,
+              the evidence it must produce, and the continuation when an
+              obligation fails. A local construction that needs a proof is work
+              to execute; a smaller residual stays on the queue until its
+              descendants close.
+            </p>
+            <p>
+              Read the instructions in order, use the selection tables and
+              checklists while working, and consult the worked repairs for
+              concrete applications. The recipe adapts the repair-and-closure
+              manual, including the execution checks learned at node [185].
+            </p>
+            {EXECUTION_RECIPE_PARTS.map(({ id, Content }) => (
+              <Part id={id} key={id}><Content /></Part>
+            ))}
           </Part>
 
           <Part id="proofs">

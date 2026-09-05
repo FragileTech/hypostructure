@@ -1,7 +1,7 @@
 {
- "status": "source-level node audit; aggregate Assembly validation currently failing",
- "updated_at": "2026-08-30",
- "aggregate_validation": "A one-worker check elaborates the repaired [64], [144], [177], and [75]-[77] regions, then fails at the later generic cold-route callback, whose abstract ledger omits required freshness proofs. Per-node complete fields describe the named owner, not a successful aggregate build.",
+ "status": "source-level node audit; aggregate Assembly validation succeeds through the implemented [186] frontier",
+ "updated_at": "2026-09-02",
+ "aggregate_validation": "The complete HypostructureErdos64EG.Assembly target and changed graph modules kernel-check. Nodes [181], [183], [184], and [185] are exact routing reductions; [186] is the retained open route-8 frontier.",
  "nodes": {
   "1": {
    "producer": "`erdos_64_of_selectedLedgerClosure` (Assembly.lean:1249)",
@@ -1839,15 +1839,14 @@
    "blocked_by": "[172a]-[172b]"
   },
   "181": {
-   "producer": "route8PeeledDemandResidualRow",
+   "producer": "`route8PeeledDemandResidualRow`; `route8UnpaidExitFourDichotomy`; `selectedRouteEightUnpaidExitFourReduction`",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "Exact peeled target-defect demand residual is published; its final closure remains open.",
+   "fidelity_note": "The exact peeled-demand ledger is consumed in place. One-entry maximal-ledger augmentation makes the high-private unpaid count zero; a witness-free entry routes to the existing [124] closure, and only the zero/zero obstruction profile reaches [183].",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "Open by design: no sublinear open-demand conclusion is asserted.",
-   "on_probed_closed_arm": false,
-   "blocked_by": "no manuscript-prescribed consumer has been implemented on this exact residual"
+   "difference": "[181] is now a decision rather than an open terminal; it retains every demand, absorption, blocker, peel-witness, and ancestry key on both outputs.",
+   "on_probed_closed_arm": false
   },
   "182": {
    "producer": "pairUncoveredResidual and covered continuation decisions",
@@ -1859,6 +1858,46 @@
    "difference": "Open by construction: the manuscript does not prove the remaining implication.",
    "on_probed_closed_arm": false,
    "blocked_by": "the manuscript's uncovered [178]–[180] implication"
+  },
+  "183": {
+   "producer": "`route8UnpaidExitFourDichotomy`; `route8UnifiedVisibleResidualRow`; `selectedRouteEightVisibleResidual`",
+   "fidelity": "FAITHFUL",
+   "fidelity_note": "On the literal [183] survivor, every unpaid entry has at most two private carriers and its canonical exit-(4) witness. The shortest-trace boundary-support proof makes the filtered silent-entry family exactly empty.",
+   "complete": "YES",
+   "local": "YES",
+   "api": "OK",
+   "difference": "The unchanged unified entry family and complete inherited ledger continue to [184]; no profile context is actualized and no entry is removed.",
+   "on_probed_closed_arm": false
+  },
+  "184": {
+   "producer": "`route8UnifiedVisibleResidualRow`; `route8UnifiedVisibleOverloadRow`; `selectedRouteEightVisibleOverload`",
+   "fidelity": "FAITHFUL",
+   "fidelity_note": "Every unchanged unified entry is visible. Applying the completion-port cap and retained visible-first payable prefix to that same excess entry makes the filtered non-overloaded family exactly empty.",
+   "complete": "YES",
+   "local": "YES",
+   "api": "OK",
+   "difference": "The row appends only the canonical actual visible-four package fact and carries the full [184] ledger to [185].",
+   "on_probed_closed_arm": false
+  },
+  "185": {
+   "producer": "`route8UnifiedVisibleOverloadRow`; `selectedRouteEightVisibleOverload`; `SelectedRouteEightBoundary`",
+   "fidelity": "FAITHFUL",
+   "fidelity_note": "Every retained entry receiver has a canonical actual overloaded port, four distinct visible loads at that port, and the selected scheduled actual return for each; the non-overloaded count is exactly zero.",
+   "complete": "YES",
+   "local": "YES",
+   "api": "OK",
+   "difference": "The complete inherited ledger and actual visible-four packages pass unchanged into the simultaneous accounting row at [186].",
+   "on_probed_closed_arm": false
+  },
+  "186": {
+   "producer": "`route8JointBalanceRow`; `selectedRouteEightJointBalance`; `SelectedRouteEightBoundary`",
+   "fidelity": "FAITHFUL",
+   "fidelity_note": "On the literal [185] residual, the row derives universal saturated-load visibility and simultaneously records the exact peel, deficit, maximal demand, empty-dependence absorption, supply, bridge-allowance, open-unit, and failed-rate balances.",
+   "complete": "YES",
+   "local": "YES",
+   "api": "OK",
+   "difference": "Open strict descendant: the separate accounting projections have been replaced by one coupled subtraction-free balance on the unchanged selected object and ExactLedger.",
+   "on_probed_closed_arm": false
   }
  },
  "method": "Node -> manuscript label from the manuscript Detailed dependency table; label -> Spine.Key from the Holds branches; key -> producer from Produces manifests, rowManifest and Decision arms. Completeness is judged per producer, never per enclosing declaration.",

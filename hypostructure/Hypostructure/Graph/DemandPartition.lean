@@ -411,6 +411,184 @@ theorem exists_maximal_pinned (entries : Finset Index)
     rw [equal] at valueQLe
     exact Nat.le_of_add_le_add_left valueQLe
 
+/-- **One-entry augmentation at a maximal pinned ledger.**  If an unpaid
+entry had three private available carriers disjoint from every other entry's
+availability, moving that entry to `Ξ₃` and assigning three of those
+carriers would increase the first lexicographic coordinate.  Hence every
+unpaid entry has at most two such carriers. -/
+theorem privateAvailable_card_le_two_of_mem_unpaid_of_maximal
+    (P : Partition entries available)
+    {pinned : Finset Index} (privateAvailable : Index → Finset Carrier)
+    (pinnedP : Pinned pinned privateAvailable P)
+    (maximalP : ∀ Q : Partition entries available,
+      Pinned pinned privateAvailable Q →
+        Q.three.card ≤ P.three.card ∧
+          (Q.three.card = P.three.card → Q.two.card ≤ P.two.card))
+    {index : Index} (unpaid : index ∈ P.two ∪ P.residual)
+    (privateSubset : privateAvailable index ⊆ available index)
+    (privateDisjoint : ∀ other ∈ entries, other ≠ index →
+      Disjoint (privateAvailable index) (available other)) :
+    (privateAvailable index).card ≤ 2 := by
+  classical
+  by_contra large
+  have threeLe : 3 ≤ (privateAvailable index).card := by omega
+  obtain ⟨picked, pickedSubset, pickedCard⟩ :=
+    Finset.exists_subset_card_eq threeLe
+  have indexMem : index ∈ entries := by
+    rcases Finset.mem_union.mp unpaid with inTwo | inResidual
+    · exact P.two_subset_entries inTwo
+    · exact P.residual_subset_entries inResidual
+  have indexNotThree : index ∉ P.three := by
+    intro inThree
+    rcases Finset.mem_union.mp unpaid with inTwo | inResidual
+    · exact Finset.disjoint_left.mp P.three_disj_two inThree inTwo
+    · exact Finset.disjoint_left.mp P.three_disj_residual inThree inResidual
+  let assigned' : Index → Finset Carrier := fun other =>
+    if other = index then picked else P.assigned other
+  let Q : Partition entries available :=
+    { three := insert index P.three
+      two := P.two.erase index
+      residual := P.residual.erase index
+      cover := by
+        ext other
+        by_cases same : other = index
+        · subst same
+          simp [indexMem]
+        · constructor
+          · intro member
+            rcases Finset.mem_union.mp member with inThreeOrTwo | inResidual
+            · rcases Finset.mem_union.mp inThreeOrTwo with inThree | inTwo
+              · rcases Finset.mem_insert.mp inThree with equal | oldThree
+                · exact absurd equal same
+                · rw [← P.cover]
+                  exact Finset.mem_union_left _
+                    (Finset.mem_union_left _ oldThree)
+              · rw [← P.cover]
+                exact Finset.mem_union_left _
+                  (Finset.mem_union_right _ (Finset.mem_erase.mp inTwo).2)
+            · rw [← P.cover]
+              exact Finset.mem_union_right _ (Finset.mem_erase.mp inResidual).2
+          · intro member
+            have old : other ∈ (P.three ∪ P.two) ∪ P.residual := by
+              rw [P.cover]
+              exact member
+            rcases Finset.mem_union.mp old with inThreeOrTwo | inResidual
+            · rcases Finset.mem_union.mp inThreeOrTwo with inThree | inTwo
+              · exact Finset.mem_union_left _
+                  (Finset.mem_union_left _ (Finset.mem_insert_of_mem inThree))
+              · exact Finset.mem_union_left _
+                  (Finset.mem_union_right _
+                    (Finset.mem_erase.mpr ⟨same, inTwo⟩))
+            · exact Finset.mem_union_right _
+                (Finset.mem_erase.mpr ⟨same, inResidual⟩)
+      three_disj_two := by
+        rw [Finset.disjoint_left]
+        intro other inThree inTwo
+        have inTwoOld : other ∈ P.two := (Finset.mem_erase.mp inTwo).2
+        rcases Finset.mem_insert.mp inThree with rfl | inThreeOld
+        · exact (Finset.mem_erase.mp inTwo).1 rfl
+        · exact Finset.disjoint_left.mp P.three_disj_two inThreeOld inTwoOld
+      three_disj_residual := by
+        rw [Finset.disjoint_left]
+        intro other inThree inResidual
+        have inResidualOld : other ∈ P.residual :=
+          (Finset.mem_erase.mp inResidual).2
+        rcases Finset.mem_insert.mp inThree with rfl | inThreeOld
+        · exact (Finset.mem_erase.mp inResidual).1 rfl
+        · exact Finset.disjoint_left.mp P.three_disj_residual inThreeOld
+            inResidualOld
+      two_disj_residual :=
+        P.two_disj_residual.mono (Finset.erase_subset _ _)
+          (Finset.erase_subset _ _)
+      assigned := assigned'
+      assigned_available := by
+        intro other member
+        by_cases same : other = index
+        · subst same
+          simpa [assigned'] using pickedSubset.trans privateSubset
+        · have oldMember : other ∈ P.three ∪ P.two := by
+            rcases Finset.mem_union.mp member with inThree | inTwo
+            · rcases Finset.mem_insert.mp inThree with equal | old
+              · exact absurd equal same
+              · exact Finset.mem_union_left _ old
+            · exact Finset.mem_union_right _ (Finset.mem_erase.mp inTwo).2
+          simpa [assigned', same] using
+            P.assigned_available other oldMember
+      assigned_three := by
+        intro other member
+        rcases Finset.mem_insert.mp member with rfl | old
+        · simpa [assigned'] using pickedCard
+        · have different : other ≠ index := fun equal =>
+            indexNotThree (equal ▸ old)
+          simpa [assigned', different] using P.assigned_three other old
+      assigned_two := by
+        intro other member
+        have different : other ≠ index := (Finset.mem_erase.mp member).1
+        simpa [assigned', different] using
+          P.assigned_two other (Finset.mem_erase.mp member).2
+      assigned_disjoint := by
+        intro left leftMem right rightMem distinct
+        by_cases leftEq : left = index
+        · subst left
+          have rightNe : right ≠ index := fun equal => distinct equal.symm
+          have rightOld : right ∈ P.three ∪ P.two := by
+            rcases Finset.mem_union.mp rightMem with inThree | inTwo
+            · rcases Finset.mem_insert.mp inThree with equal | old
+              · exact absurd equal rightNe
+              · exact Finset.mem_union_left _ old
+            · exact Finset.mem_union_right _ (Finset.mem_erase.mp inTwo).2
+          have rightEntry : right ∈ entries := by
+            rcases Finset.mem_union.mp rightOld with inThree | inTwo
+            · exact P.three_subset_entries inThree
+            · exact P.two_subset_entries inTwo
+          simpa [assigned', rightNe] using
+            (privateDisjoint right rightEntry rightNe).mono pickedSubset
+              (P.assigned_available right rightOld)
+        · by_cases rightEq : right = index
+          · subst right
+            have leftOld : left ∈ P.three ∪ P.two := by
+              rcases Finset.mem_union.mp leftMem with inThree | inTwo
+              · rcases Finset.mem_insert.mp inThree with equal | old
+                · exact absurd equal leftEq
+                · exact Finset.mem_union_left _ old
+              · exact Finset.mem_union_right _ (Finset.mem_erase.mp inTwo).2
+            have leftEntry : left ∈ entries := by
+              rcases Finset.mem_union.mp leftOld with inThree | inTwo
+              · exact P.three_subset_entries inThree
+              · exact P.two_subset_entries inTwo
+            simpa [assigned', leftEq] using
+              ((privateDisjoint left leftEntry leftEq).mono pickedSubset
+                (P.assigned_available left leftOld)).symm
+          · have leftOld : left ∈ P.three ∪ P.two := by
+              rcases Finset.mem_union.mp leftMem with inThree | inTwo
+              · rcases Finset.mem_insert.mp inThree with equal | old
+                · exact absurd equal leftEq
+                · exact Finset.mem_union_left _ old
+              · exact Finset.mem_union_right _ (Finset.mem_erase.mp inTwo).2
+            have rightOld : right ∈ P.three ∪ P.two := by
+              rcases Finset.mem_union.mp rightMem with inThree | inTwo
+              · rcases Finset.mem_insert.mp inThree with equal | old
+                · exact absurd equal rightEq
+                · exact Finset.mem_union_left _ old
+              · exact Finset.mem_union_right _ (Finset.mem_erase.mp inTwo).2
+            simpa [assigned', leftEq, rightEq] using
+              P.assigned_disjoint left leftOld right rightOld distinct }
+  have pinnedQ : Pinned pinned privateAvailable Q := by
+    constructor
+    · exact pinnedP.1.trans (Finset.subset_insert index P.three)
+    · intro other otherPinned
+      have oldThree : other ∈ P.three := pinnedP.1 otherPinned
+      have different : other ≠ index := fun equal =>
+        indexNotThree (equal ▸ oldThree)
+      change assigned' other ⊆ privateAvailable other
+      simpa [assigned', different] using pinnedP.2 other otherPinned
+  have maximal := (maximalP Q pinnedQ).1
+  have grew : Q.three.card = P.three.card + 1 := by
+    change (insert index P.three).card = P.three.card + 1
+    exact Finset.card_insert_of_notMem indexNotThree
+  rw [grew] at maximal
+  omega
+
 /-! ### The weighted demand-defect split
 
 `def:typeA-actual-profile-pressure-defects` and
@@ -543,13 +721,16 @@ type-(A1) count, and the lexicographically-first tie-break is immaterial to
 every later count, exactly as in `exists_maximal_pinned`. -/
 theorem exists_maximal_absorption {P : Partition entries available}
     {Unit : Type*} (units : Finset Unit) (supply : Finset Carrier)
-    (dep : Finset Unit) (fallback : Unit → Carrier) :
+    (dep : Finset Unit) (fallback : Unit → Carrier)
+    (eligible : Unit → Carrier → Prop) :
     ∃ A : Absorption P Unit,
       A.absorbed ⊆ units ∧
         (∀ υ ∈ A.absorbed, A.absorber υ ∈ supply) ∧
+        (∀ υ ∈ A.absorbed, eligible υ (A.absorber υ)) ∧
         Disjoint A.absorbed dep ∧
         ∀ B : Absorption P Unit, B.absorbed ⊆ units →
           (∀ υ ∈ B.absorbed, B.absorber υ ∈ supply) →
+          (∀ υ ∈ B.absorbed, eligible υ (B.absorber υ)) →
           Disjoint B.absorbed dep →
           B.absorbed.card ≤ A.absorbed.card := by
   classical
@@ -560,8 +741,10 @@ theorem exists_maximal_absorption {P : Partition entries available}
       absorber_unused := fun υ mem => absurd mem (Finset.notMem_empty υ) }
   have baseAdmissible : base.absorbed ⊆ units ∧
       (∀ υ ∈ base.absorbed, base.absorber υ ∈ supply) ∧
+      (∀ υ ∈ base.absorbed, eligible υ (base.absorber υ)) ∧
       Disjoint base.absorbed dep :=
     ⟨Finset.empty_subset units,
+      fun υ mem => absurd mem (Finset.notMem_empty υ),
       fun υ mem => absurd mem (Finset.notMem_empty υ),
       Finset.disjoint_empty_left dep⟩
   have valueLe : ∀ B : Absorption P Unit, B.absorbed ⊆ units →
@@ -570,17 +753,21 @@ theorem exists_maximal_absorption {P : Partition entries available}
   have found := Nat.findGreatest_spec
     (P := fun value => ∃ A : Absorption P Unit,
       (A.absorbed ⊆ units ∧ (∀ υ ∈ A.absorbed, A.absorber υ ∈ supply) ∧
+        (∀ υ ∈ A.absorbed, eligible υ (A.absorber υ)) ∧
         Disjoint A.absorbed dep) ∧ A.absorbed.card = value)
     (valueLe base baseAdmissible.1) ⟨base, baseAdmissible, rfl⟩
-  obtain ⟨A, ⟨absorbedUnits, absorberSupplied, absorbedDisjoint⟩, valueA⟩ :=
-    found
-  refine ⟨A, absorbedUnits, absorberSupplied, absorbedDisjoint, ?_⟩
-  intro B unitsB suppliedB disjointB
+  obtain ⟨A, ⟨absorbedUnits, absorberSupplied, absorberEligible,
+    absorbedDisjoint⟩, valueA⟩ := found
+  refine ⟨A, absorbedUnits, absorberSupplied, absorberEligible,
+    absorbedDisjoint, ?_⟩
+  intro B unitsB suppliedB eligibleB disjointB
   have boundB := Nat.le_findGreatest
     (P := fun value => ∃ A : Absorption P Unit,
       (A.absorbed ⊆ units ∧ (∀ υ ∈ A.absorbed, A.absorber υ ∈ supply) ∧
+        (∀ υ ∈ A.absorbed, eligible υ (A.absorber υ)) ∧
         Disjoint A.absorbed dep) ∧ A.absorbed.card = value)
-    (valueLe B unitsB) ⟨B, ⟨unitsB, suppliedB, disjointB⟩, rfl⟩
+    (valueLe B unitsB)
+    ⟨B, ⟨unitsB, suppliedB, eligibleB, disjointB⟩, rfl⟩
   rw [← valueA] at boundB
   exact boundB
 

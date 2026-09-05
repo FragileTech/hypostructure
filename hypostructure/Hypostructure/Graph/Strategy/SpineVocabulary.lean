@@ -190,6 +190,11 @@ structure Data where
   comparison of the charge is made after multiplying through by `s`, so the
   reciprocal never appears and nothing rounds. -/
   dischargeScale : Nat
+  /-- The discharge denominator and visible-return overload threshold are the
+  paper's literal value four.  This is registered once by the presentation and
+  published on the exact ledger with the cubic baseline; local exit rows read
+  it from that owned fact rather than taking a caller premise. -/
+  dischargeScale_eq_four : dischargeScale = 4
   dischargeScale_pos : 0 < dischargeScale
   /-- **The marked-fan slack of `lem:typeB-multiclosed-budget`.**
 
@@ -1097,6 +1102,12 @@ inductive Key where
   `typeASaturatedReceiver`.  No exit-(4) fact is currently produced from this
   entry: the required coordinate-specific response realization is absent. -/
   | typeASaturatedExitEntry
+  /-- The terminal saturated no-exit-`(4)` state on the silent-origin lane. -/
+  | typeASilentExitFourFree
+  /-- The no-exit-`(5)` state on the same silent-origin support and receiver. -/
+  | typeASilentExitFiveFree
+  /-- The no-exit-`(6)` state on the same silent-origin support and receiver. -/
+  | typeASilentExitSixFree
   /-- Node `[108]`, on node `[107]`'s yes arm — exit `(7)` of
   `def:typeA-saturated-exits`: *"a high-degree decorated handoff fan envelope
   is produced"*, at the visible saturated port node `[93]` delivered.  This is
@@ -1127,6 +1138,9 @@ inductive Key where
   the saturated exit list continues at exit `(8)`, the route-8 residual of
   `def:typeA-silent-core-residual`. -/
   | typeAExitSevenFree
+  /-- Node `[109]` on the node-`[94]` lane, with the original silent support
+  and receiver still identified after exit `(7)` also fails. -/
+  | typeASilentExitSevenFree
   /-- The incoming support registry read by
   `def:cold-corridor-first-failure` (F4).  It records exactly the declared
   Type-B envelope cores and route-8 response supports of the current object;
@@ -1545,6 +1559,27 @@ inductive Key where
   survivor consists of two-carrier unpaid entries with canonical exit-(4)
   witnesses. -/
   | route8UnpaidExitFourResidual
+  /-- Node `[184]`, `lem:typeA-unified-visible-ownership`: on the exact
+  post-`[181]` unified entry family, every retained load is visibly owned by
+  an actual receiver-entry return.  Equivalently, the silent subfamily has
+  cardinality zero. -/
+  | route8UnifiedVisibleResidual
+  /-- Node `[185]`, `lem:typeA-unified-visible-overload`: every retained
+  visible excess entry lies at a receiver with an actually overloaded
+  completion port.  The canonical visible-four package is retained, and the
+  non-overloaded subfamily has cardinality zero. -/
+  | route8UnifiedVisibleOverload
+  /-- Node `[185]`, the graph-owned history behind the visible-overload
+  package.  For every retained entry and every selected origin pair, the
+  ledger keeps the two exact scheduled receiver-entry returns together with
+  the distinct loads for which those returns are visible. -/
+  | route8UnifiedVisibleHistory
+  /-- Node `[186]`, `lem:typeA-unified-joint-balance`: the failed peel rate,
+  unified deficit, committed maximal demand ledger, and maximal type-(A1)
+  absorption are read simultaneously.  Their exact cardinality identities
+  and the four resulting inequalities are retained on the visible-overload
+  residual. -/
+  | route8JointBalance
   /-- Node `[117]`, yes: some indexed route-8 entry of `𝒳_A` has at most `δ`
   private essential carriers (`prop:typeA-route8-carrier-reduction`). -/
   | route8TwoCarrierEntry
@@ -5284,6 +5319,87 @@ def ExitSixDelocalizes (data : Data.{u}) (object : Graph.FiniteObject.{u})
           Graph.Route8.TraceBasin.TraceDelocalization object piece
             data.threshold data.LengthOK receiver load basin)
 
+/-- The complete node-`[94]` certificate at its exact support and selected
+receiver.  This is deliberately support- and receiver-indexed: carrying only
+an unindexed existential through the shared visible/silent exit chain loses
+the identity needed when node `[184]` speaks about the unified entry family. -/
+def SilentExitOriginAt (data : Data.{u}) (object : Graph.FiniteObject.{u})
+    (piece : Finset object.Vertex) (receiver : object.Vertex) : Prop :=
+  (∀ otherReceiver : object.Vertex,
+      object.IsReceiver piece data.threshold otherReceiver →
+        object.Saturated piece data.threshold data.dischargeScale
+          otherReceiver →
+        ¬ Graph.ExitFour.VisibleFourUnpeeledAt piece data.threshold
+          data.dischargeScale otherReceiver ∅) ∧
+    object.Saturated piece data.threshold data.dischargeScale receiver ∧
+    Graph.ExitFour.SilentUnpeeledExcessAt piece data.threshold
+      data.dischargeScale receiver ∅ ∧
+    piece.card ≤
+      (∑ other ∈ object.receivers piece data.threshold,
+        (Graph.VisibleEntry.silentExcess object piece data.threshold
+          data.dischargeScale other).card) +
+        data.dischargeScale * object.positiveDeficiency piece data.threshold
+
+/-- The literal exit-`(4)`-free alternative at one selected receiver and
+peeling set.  On the visible arm, retain the Q1 semantic conclusion for the
+same selected package, as well as the original no-witness statement. -/
+def ExitFourFreeAt (data : Data.{u}) (object : Graph.FiniteObject.{u})
+    (piece : Finset object.Vertex) (receiver : object.Vertex)
+    (peeled : Finset object.Vertex) : Prop :=
+  (∃ package : Graph.ExitFour.VisibleFourUnpeeledPackage piece data.threshold
+      data.dischargeScale receiver peeled,
+    (¬ ∃ witness : Graph.ExitFour.Witness
+        (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+        data.dischargeScale receiver peeled,
+      ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
+          data.threshold data.dischargeScale receiver package.outside peeled,
+        witness.load = load) ∧
+    ∀ pair : package.Q1OriginPair,
+      Graph.Response.TargetComplete Graph.BoundaryPiece.boundaryDegreeProfile
+        (Graph.HasCycleWithLength data.LengthOK)
+        (Graph.ExitFour.visibleResponsePiece pair.leftResponseCoordinate)
+        (Graph.ExitFour.visibleResponsePiece pair.rightResponseCoordinate)) ∨
+  (Graph.ExitFour.SilentUnpeeledExcessAt piece data.threshold
+      data.dischargeScale receiver peeled ∧
+    ¬ ∃ witness : Graph.ExitFour.Witness
+        (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+        data.dischargeScale receiver peeled,
+      witness.load ∈ Graph.ExitFour.unpeeledExcess piece data.threshold
+        data.dischargeScale receiver peeled)
+
+/-- Exit `(5)` at one selected receiver and peeling set.  This abbreviation is
+used only by the provenance-preserving silent lane; it is definitionally the
+same local predicate used by the shared exit chain. -/
+def ExitFiveAt (data : Data.{u}) (object : Graph.FiniteObject.{u})
+    (piece : Finset object.Vertex) (receiver : object.Vertex)
+    (peeled : Finset object.Vertex) : Prop :=
+  ∃ load : object.Vertex,
+    (((∃ package : Graph.ExitFour.VisibleFourUnpeeledPackage piece
+          data.threshold data.dischargeScale receiver peeled,
+        (¬ ∃ witness : Graph.ExitFour.Witness
+            (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+            data.dischargeScale receiver peeled,
+          ∃ selected ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
+              data.threshold data.dischargeScale receiver package.outside
+              peeled,
+            witness.load = selected) ∧
+        load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece data.threshold
+          data.dischargeScale receiver package.outside peeled) ∨
+      (Graph.ExitFour.SilentUnpeeledExcessAt piece data.threshold
+          data.dischargeScale receiver peeled ∧
+        (¬ ∃ witness : Graph.ExitFour.Witness
+            (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+            data.dischargeScale receiver peeled,
+          witness.load ∈ Graph.ExitFour.unpeeledExcess piece data.threshold
+            data.dischargeScale receiver peeled) ∧
+        load ∈ Graph.ExitFour.unpeeledExcess piece data.threshold
+          data.dischargeScale receiver peeled)) ∧
+      ∃ basin : Finset object.Vertex,
+        Graph.Route8.TraceBasin.select? object piece data.threshold receiver
+            load = some basin ∧
+          Graph.Route8.TraceBasin.TraceTargetCompleteCompression object piece
+            data.threshold data.LengthOK receiver load basin)
+
 /-- The exact selected saturated Type A state after exits `(4)`, `(5)`, and
 `(6)` have failed, with one additional local clause on its selected packing and
 support.  This is a fact-schema abbreviation only: rows still read it from the
@@ -5292,38 +5408,10 @@ incoming `ExactLedger` and commit descendants through `Decision.run` or
 abbrev SelectedNoExitSixWith (data : Data.{u}) (object : Graph.FiniteObject.{u})
     (extra : (packing : Finset (Finset object.Vertex)) →
       Finset object.Vertex → Prop) : Prop :=
-  let exitFiveAt := fun (piece : Finset object.Vertex)
-      (receiver : object.Vertex) (peeled : Finset object.Vertex) =>
-    ∃ load : object.Vertex,
-      (((∃ package :
-            Graph.ExitFour.VisibleFourUnpeeledPackage piece data.threshold
-              data.dischargeScale receiver peeled,
-          (¬ ∃ witness : Graph.ExitFour.Witness
-              (Graph.HasCycleWithLength data.LengthOK) piece data.threshold data.dischargeScale
-              receiver peeled,
-            ∃ selected ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
-                data.threshold data.dischargeScale receiver package.outside
-                peeled,
-              witness.load = selected) ∧
-            load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
-              data.threshold data.dischargeScale receiver package.outside
-              peeled) ∨
-        (Graph.ExitFour.SilentUnpeeledExcessAt piece data.threshold
-            data.dischargeScale receiver peeled ∧
-          (¬ ∃ witness : Graph.ExitFour.Witness
-              (Graph.HasCycleWithLength data.LengthOK) piece data.threshold data.dischargeScale
-              receiver peeled,
-            witness.load ∈ Graph.ExitFour.unpeeledExcess piece data.threshold
-              data.dischargeScale receiver peeled) ∧
-          load ∈ Graph.ExitFour.unpeeledExcess piece data.threshold
-            data.dischargeScale receiver peeled)) ∧
-        ∃ basin : Finset object.Vertex,
-          Graph.Route8.TraceBasin.select? object piece data.threshold
-              receiver load = some basin ∧
-            Graph.Route8.TraceBasin.TraceTargetCompleteCompression object
-              piece data.threshold data.LengthOK receiver load basin)
+  let exitFiveAt := ExitFiveAt data object
   (∃ packing : Finset (Finset object.Vertex),
-    object.IsWindowPacking data.windowOrder packing ∧
+    packing = canonicalWindowPacking data object ∧
+      object.IsWindowPacking data.windowOrder packing ∧
       (∀ window : Finset object.Vertex,
         object.InducesWindow data.windowOrder window →
         ∃ member ∈ packing, ¬ Disjoint window member) ∧
@@ -5339,23 +5427,7 @@ abbrev SelectedNoExitSixWith (data : Data.{u}) (object : Graph.FiniteObject.{u})
                 peeled ⊆ object.routedLoads piece data.threshold receiver ∧
                   Graph.ExitFour.SaturatedAfter piece data.threshold
                     data.dischargeScale receiver peeled ∧
-                  ((∃ package :
-                      Graph.ExitFour.VisibleFourUnpeeledPackage piece
-                        data.threshold data.dischargeScale receiver peeled,
-                    ¬ ∃ witness : Graph.ExitFour.Witness
-                        (Graph.HasCycleWithLength data.LengthOK) piece
-                        data.threshold data.dischargeScale receiver peeled,
-                      ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
-                          piece data.threshold data.dischargeScale receiver
-                          package.outside peeled,
-                        witness.load = load) ∨
-                    (Graph.ExitFour.SilentUnpeeledExcessAt piece
-                        data.threshold data.dischargeScale receiver peeled ∧
-                      ¬ ∃ witness : Graph.ExitFour.Witness
-                          (Graph.HasCycleWithLength data.LengthOK) piece
-                          data.threshold data.dischargeScale receiver peeled,
-                        witness.load ∈ Graph.ExitFour.unpeeledExcess piece
-                          data.threshold data.dischargeScale receiver peeled)) ∧
+                  ExitFourFreeAt data object piece receiver peeled ∧
                   ¬ exitFiveAt piece receiver peeled ∧
                   ¬ ExitSixDelocalizes data object piece receiver peeled ∧
                   extra packing piece)
@@ -5369,38 +5441,10 @@ abbrev SelectedNoExitSixReceiverWith (data : Data.{u})
     (extra : (packing : Finset (Finset object.Vertex)) →
       (piece : Finset object.Vertex) → object.Vertex →
       Finset object.Vertex → Prop) : Prop :=
-  let exitFiveAt := fun (piece : Finset object.Vertex)
-      (receiver : object.Vertex) (peeled : Finset object.Vertex) =>
-    ∃ load : object.Vertex,
-      (((∃ package :
-            Graph.ExitFour.VisibleFourUnpeeledPackage piece data.threshold
-              data.dischargeScale receiver peeled,
-          (¬ ∃ witness : Graph.ExitFour.Witness
-              (Graph.HasCycleWithLength data.LengthOK) piece data.threshold data.dischargeScale
-              receiver peeled,
-            ∃ selected ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
-                data.threshold data.dischargeScale receiver package.outside
-                peeled,
-              witness.load = selected) ∧
-            load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
-              data.threshold data.dischargeScale receiver package.outside
-              peeled) ∨
-        (Graph.ExitFour.SilentUnpeeledExcessAt piece data.threshold
-            data.dischargeScale receiver peeled ∧
-          (¬ ∃ witness : Graph.ExitFour.Witness
-              (Graph.HasCycleWithLength data.LengthOK) piece data.threshold data.dischargeScale
-              receiver peeled,
-            witness.load ∈ Graph.ExitFour.unpeeledExcess piece data.threshold
-              data.dischargeScale receiver peeled) ∧
-          load ∈ Graph.ExitFour.unpeeledExcess piece data.threshold
-            data.dischargeScale receiver peeled)) ∧
-        ∃ basin : Finset object.Vertex,
-          Graph.Route8.TraceBasin.select? object piece data.threshold
-              receiver load = some basin ∧
-            Graph.Route8.TraceBasin.TraceTargetCompleteCompression object
-              piece data.threshold data.LengthOK receiver load basin)
+  let exitFiveAt := ExitFiveAt data object
   (∃ packing : Finset (Finset object.Vertex),
-    object.IsWindowPacking data.windowOrder packing ∧
+    packing = canonicalWindowPacking data object ∧
+      object.IsWindowPacking data.windowOrder packing ∧
       (∀ window : Finset object.Vertex,
         object.InducesWindow data.windowOrder window →
         ∃ member ∈ packing, ¬ Disjoint window member) ∧
@@ -5416,26 +5460,76 @@ abbrev SelectedNoExitSixReceiverWith (data : Data.{u})
                 peeled ⊆ object.routedLoads piece data.threshold receiver ∧
                   Graph.ExitFour.SaturatedAfter piece data.threshold
                     data.dischargeScale receiver peeled ∧
-                  ((∃ package :
-                      Graph.ExitFour.VisibleFourUnpeeledPackage piece
-                        data.threshold data.dischargeScale receiver peeled,
-                    ¬ ∃ witness : Graph.ExitFour.Witness
-                        (Graph.HasCycleWithLength data.LengthOK) piece
-                        data.threshold data.dischargeScale receiver peeled,
-                      ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
-                          piece data.threshold data.dischargeScale receiver
-                          package.outside peeled,
-                        witness.load = load) ∨
-                    (Graph.ExitFour.SilentUnpeeledExcessAt piece
-                        data.threshold data.dischargeScale receiver peeled ∧
-                      ¬ ∃ witness : Graph.ExitFour.Witness
-                          (Graph.HasCycleWithLength data.LengthOK) piece
-                          data.threshold data.dischargeScale receiver peeled,
-                        witness.load ∈ Graph.ExitFour.unpeeledExcess piece
-                          data.threshold data.dischargeScale receiver peeled)) ∧
+                  ExitFourFreeAt data object piece receiver peeled ∧
                   ¬ exitFiveAt piece receiver peeled ∧
                   ¬ ExitSixDelocalizes data object piece receiver peeled ∧
                   extra packing piece receiver peeled)
+
+/-- The terminal saturated outcome of the silent exit-`(4)` descent, retaining
+the node-`[94]` origin on the same support and receiver. -/
+abbrev SelectedSilentExitFourFree (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ packing : Finset (Finset object.Vertex),
+    packing = canonicalWindowPacking data object ∧
+      object.IsWindowPacking data.windowOrder packing ∧
+      (∀ window : Finset object.Vertex,
+        object.InducesWindow data.windowOrder window →
+        ∃ member ∈ packing, ¬ Disjoint window member) ∧
+      ∃ component ∈ object.canonicalPieces
+          (object.remainderSupport packing),
+        let piece := object.pieceSupport
+          (object.remainderSupport packing) component
+        object.NegativeNetCharge piece data.threshold data.dischargeScale ∧
+          object.ambientSurplus piece data.threshold = 0 ∧
+          ∃ receiver : object.Vertex,
+            object.IsReceiver piece data.threshold receiver ∧
+              SilentExitOriginAt data object piece receiver ∧
+              ∃ peeled : Finset object.Vertex,
+                peeled ⊆ object.routedLoads piece data.threshold receiver ∧
+                  Graph.ExitFour.SaturatedAfter piece data.threshold
+                    data.dischargeScale receiver peeled ∧
+                  ExitFourFreeAt data object piece receiver peeled
+
+/-- The silent-origin state after exits `(4)` and `(5)` have failed. -/
+abbrev SelectedSilentExitFiveFree (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ packing : Finset (Finset object.Vertex),
+    packing = canonicalWindowPacking data object ∧
+      object.IsWindowPacking data.windowOrder packing ∧
+      (∀ window : Finset object.Vertex,
+        object.InducesWindow data.windowOrder window →
+        ∃ member ∈ packing, ¬ Disjoint window member) ∧
+      ∃ component ∈ object.canonicalPieces
+          (object.remainderSupport packing),
+        let piece := object.pieceSupport
+          (object.remainderSupport packing) component
+        object.NegativeNetCharge piece data.threshold data.dischargeScale ∧
+          object.ambientSurplus piece data.threshold = 0 ∧
+          ∃ receiver : object.Vertex,
+            object.IsReceiver piece data.threshold receiver ∧
+              SilentExitOriginAt data object piece receiver ∧
+              ∃ peeled : Finset object.Vertex,
+                peeled ⊆ object.routedLoads piece data.threshold receiver ∧
+                  Graph.ExitFour.SaturatedAfter piece data.threshold
+                    data.dischargeScale receiver peeled ∧
+                  ExitFourFreeAt data object piece receiver peeled ∧
+                  ¬ ExitFiveAt data object piece receiver peeled
+
+/-- The silent-origin state after exits `(4)`--`(6)` have failed. -/
+abbrev SelectedSilentExitSixFree (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  SelectedNoExitSixReceiverWith data object
+    (fun _packing piece receiver _peeled =>
+      SilentExitOriginAt data object piece receiver)
+
+/-- The exact silent-origin route-`8` entry after exit `(7)` also fails.  The
+origin and no-handoff assertion are scoped to the same selected support. -/
+abbrev SelectedSilentExitSevenFree (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  SelectedNoExitSixReceiverWith data object
+    (fun packing piece receiver _peeled =>
+      SilentExitOriginAt data object piece receiver ∧
+        ¬ HandoffProduced data object packing piece)
 
 /-- The selected silent-core residual profile at exit `(8)`.  It exposes the
 same selected saturated residual state as `[109]`, with the selected receiver
@@ -5453,7 +5547,8 @@ ledger by key and transported by the framework. -/
 abbrev TypeAExitFourFiniteDescentFact (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∃ packing : Finset (Finset object.Vertex),
-    object.IsWindowPacking data.windowOrder packing ∧
+    packing = canonicalWindowPacking data object ∧
+      object.IsWindowPacking data.windowOrder packing ∧
       (∀ window : Finset object.Vertex,
         object.InducesWindow data.windowOrder window →
         ∃ member ∈ packing, ¬ Disjoint window member) ∧
@@ -5617,8 +5712,11 @@ noncomputable def route8UnifiedComponents (data : Data.{u})
       object.NegativeNetCharge piece data.threshold data.dischargeScale ∧
       ¬ HandoffProduced data object packing piece
 
-/-- The paper's unified indexed collection `\tilde\Xi`: saturated receivers
-and unpaid silent loads of the supports in `\tilde{\mathcal X}`. -/
+/-- The unified indexed collection `\tilde\Xi` used by the implemented burden
+identity: saturated receivers and their visible-first unpaid excess loads on
+the supports in `\tilde{\mathcal X}`.  The silent subfamily is a strict
+filter of this collection; keeping the two notions separate is essential at
+nodes `[184]`--`[185]`. -/
 noncomputable def route8UnifiedEntries (data : Data.{u})
     (object : Graph.FiniteObject.{u}) :
     Finset (Graph.Route8Census.Index object) :=
@@ -5682,7 +5780,6 @@ def Route8QuotientFreeStatement (data : Data.{u})
                   Graph.Route8.TraceBasin.TraceResponseQuotient object core
                     data.threshold data.LengthOK receiver load basin retained
 
-open scoped Classical in
 /-- **`def:typeA-pressure-ledger` with `lem:typeA-pressure-ledger-no-overcount`
 and `lem:typeA-pressure-records-canonical`**, on the unified collection: a
 2/3-demand ledger over `Ξ̃` pinning every minimal entry that holds at least
@@ -5692,39 +5789,93 @@ the dichotomy), chosen maximizing first `N₃`, then `N₂`; its assigned
 incidences satisfy the raw no-overcount `3N₃ + 2N₂ ≤ e(R, W)` and the defect
 form `3Ñ ≤ e(R, W) + 𝖯_ext`; and every target-defect entry left in
 `Ξ₂ ∪ Ξ_res` carries its canonical actual or profile demand record. -/
-noncomputable def Route8DemandLedgerStatement (data : Data.{u})
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  letI : DecidableEq object.Vertex := object.vertices.decEq
-  let entries := route8UnifiedEntries data object
-  let core := Graph.Route8Census.core object data.threshold data.LengthOK
-  let pinned := entries.filter fun index =>
-    Graph.Route8.TraceBasin.TargetCompleteMinimal object index.1 data.threshold
-        data.LengthOK index.2.1 index.2.2
-        (Graph.Route8Census.basin object data.threshold index) ∧
-      data.threshold ≤
-        Graph.Route8.indexedPrivateCoreCount entries core index
-  ∃ P : Graph.DemandPartition.Partition entries core,
-    Graph.DemandPartition.Partition.Pinned pinned
-        (Graph.Route8.indexedPrivateCoreCarriers entries core) P ∧
-      (∀ Q : Graph.DemandPartition.Partition entries core,
-        Graph.DemandPartition.Partition.Pinned pinned
-          (Graph.Route8.indexedPrivateCoreCarriers entries core) Q →
-        Q.three.card ≤ P.three.card ∧
-          (Q.three.card = P.three.card → Q.two.card ≤ P.two.card)) ∧
-      (3 * P.three.card + 2 * P.two.card ≤
+noncomputable def route8DemandCore (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) :
+    Graph.Route8Census.Index object → Finset (Sym2 object.Vertex) :=
+  Graph.Route8Census.core object data.threshold data.LengthOK
+
+/-- The literal clause-(L1) predicate on one member of the unified entry
+family.  Naming the predicate fixes the canonical carrier-count interface
+once; later rows read it rather than re-elaborating an extensionally equal
+filter under a different local decision procedure. -/
+abbrev Route8DemandPinnedAt (data : Data.{u})
+    (object : Graph.FiniteObject.{u})
+    (index : Graph.Route8Census.Index object) : Prop :=
+  letI : DecidableEq object.Vertex := Graph.Route8.vertexDecEq object
+  Graph.Route8.TraceBasin.TargetCompleteMinimal object index.1 data.threshold
+      data.LengthOK index.2.1 index.2.2
+      (Graph.Route8Census.basin object data.threshold index) ∧
+    data.threshold ≤ Graph.Route8.indexedPrivateCoreCount
+      (route8UnifiedEntries data object) (route8DemandCore data object) index
+
+noncomputable def route8DemandPinned (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) :
+    Finset (Graph.Route8Census.Index object) := by
+  classical
+  exact (route8UnifiedEntries data object).filter
+    (Route8DemandPinnedAt data object)
+
+/-- Membership in the named pinned family is exactly clause (L1), with no
+change of entry family or carrier core. -/
+theorem mem_route8DemandPinned (data : Data.{u})
+    (object : Graph.FiniteObject.{u})
+    (index : Graph.Route8Census.Index object) :
+    index ∈ route8DemandPinned data object ↔
+      index ∈ route8UnifiedEntries data object ∧
+        Route8DemandPinnedAt data object index := by
+  classical
+  simp only [route8DemandPinned, Finset.mem_filter]
+
+noncomputable section
+
+section Route8DemandLedgerRecord
+
+variable (data : Data.{u}) (object : Graph.FiniteObject.{u})
+
+attribute [local instance] Graph.Route8.vertexDecEq
+
+/-- The literal demand-ledger data.  Its fields are exactly clauses (L1)--(L5);
+packaging them prevents kernel reduction of the finite vertex schedule when a
+later row merely reads the already committed ledger. -/
+structure Route8DemandLedgerRecord where
+  partition : Graph.DemandPartition.Partition
+    (route8UnifiedEntries data object) (route8DemandCore data object)
+  pinned : Graph.DemandPartition.Partition.Pinned
+        (route8DemandPinned data object)
+        (Graph.Route8.indexedPrivateCoreCarriers
+          (route8UnifiedEntries data object) (route8DemandCore data object))
+        partition
+  maximal : ∀ Q : Graph.DemandPartition.Partition
+          (route8UnifiedEntries data object) (route8DemandCore data object),
+        Graph.DemandPartition.Partition.Pinned
+          (route8DemandPinned data object)
+          (Graph.Route8.indexedPrivateCoreCarriers
+            (route8UnifiedEntries data object) (route8DemandCore data object)) Q →
+        Q.three.card ≤ partition.three.card ∧
+          (Q.three.card = partition.three.card →
+            Q.two.card ≤ partition.two.card)
+  rawNoOvercount : 3 * partition.three.card + 2 * partition.two.card ≤
         object.boundaryIncidence
-          (object.remainderSupport (canonicalWindowPacking data object))) ∧
-      (3 * entries.card ≤
+          (object.remainderSupport (canonicalWindowPacking data object))
+  defectNoOvercount : 3 * (route8UnifiedEntries data object).card ≤
         object.boundaryIncidence
           (object.remainderSupport (canonicalWindowPacking data object)) +
-          P.externalDefect) ∧
-      ∀ index ∈ P.two ∪ P.residual,
+          partition.externalDefect
+  records : ∀ index ∈ partition.two ∪ partition.residual,
         Graph.Route8.TraceBasin.TraceLocalTargetDefect object index.1
             data.threshold data.LengthOK index.2.1 index.2.2
             (Graph.Route8Census.basin object data.threshold index) →
           Graph.Route8.TraceBasin.CanonicalDemandRecord object
             (Graph.Route8Census.basin object data.threshold index)
             data.LengthOK
+
+/-- The exact ledger fact is the existence of the record above. -/
+abbrev Route8DemandLedgerStatement : Prop :=
+  Nonempty (Route8DemandLedgerRecord data object)
+
+end Route8DemandLedgerRecord
+
+end
 
 /-- **`def:typeA-unified-negative`**, on the literal active remainder.
 
@@ -5797,8 +5948,8 @@ abbrev Route8UnifiedDeficitFact (data : Data.{u})
     Graph.TypeBEnvelopeCharge.route8Deficit object support data.threshold
         data.dischargeScale components +
       data.dischargeScale * (Graph.Route8Census.supply object packing).card +
-      2 * (data.bridgeMassFactor * data.dischargeScale *
-        data.surplusThreshold object.vertexCount)
+      data.bridgeMassFactor * data.dischargeScale *
+        data.surplusThreshold object.vertexCount
 
 /-- **`def:typeA-unified-entries` with `lem:typeA-unified-carriers` and
 `def:typeA-pressure-ledger`** (node `[123]`): the exact per-entry census. -/
@@ -5910,8 +6061,9 @@ open scoped Classical in
 `lem:typeA-pressure-absorber-no-overcount`**, on the committed maximal
 2/3-demand ledger: the demand units `𝒰_press` of the unpaid classes carry a
 type-(A1)/(A2) absorption — a single-use assignment of fresh boundary
-incidences of the cut of `R` to the absorbed units, disjoint from every
-ledger assignment, together with a disjoint type-(A2) dependence set; with
+incidences of the **same support as the owning entry** to the absorbed units,
+disjoint from every ledger assignment, together with a disjoint type-(A2)
+dependence set; with
 the type-(A2) set held, no fresh single-use assignment absorbs more units —
 whose open remainder `𝖯_open = |𝒰_press ∖ 𝒰_abs|` satisfies the
 subtraction-free display `3Ñ ≤ e(R, W) + B_dep + 𝖯_open`, the manuscript's
@@ -5946,17 +6098,22 @@ noncomputable def Route8DemandAbsorptionStatement (data : Data.{u})
             (Graph.Route8Census.Index object × Nat))
         (dep : Finset (Graph.Route8Census.Index object × Nat)),
         A.absorbed ⊆ P.demandUnits ∧
-          (∀ υ ∈ A.absorbed, A.absorber υ ∈
-            Graph.Route8Census.supply object
-              (canonicalWindowPacking data object)) ∧
+        (∀ υ ∈ A.absorbed, A.absorber υ ∈
+          Graph.Route8Census.supply object
+            (canonicalWindowPacking data object)) ∧
+          (∀ υ ∈ A.absorbed,
+            A.absorber υ ∈ Graph.Route8.cutEdges object υ.1.1) ∧
           dep ⊆ P.demandUnits ∧
           Disjoint A.absorbed dep ∧
+          dep = ∅ ∧
           (∀ B : Graph.DemandPartition.Absorption P
               (Graph.Route8Census.Index object × Nat),
             B.absorbed ⊆ P.demandUnits →
             (∀ υ ∈ B.absorbed, B.absorber υ ∈
               Graph.Route8Census.supply object
                 (canonicalWindowPacking data object)) →
+            (∀ υ ∈ B.absorbed,
+              B.absorber υ ∈ Graph.Route8.cutEdges object υ.1.1) →
             Disjoint B.absorbed dep →
             B.absorbed.card ≤ A.absorbed.card) ∧
           3 * entries.card ≤
@@ -5967,9 +6124,10 @@ noncomputable def Route8DemandAbsorptionStatement (data : Data.{u})
 open scoped Classical in
 /-- **`def:typeA-open-window-blocker` with
 `lem:typeA-open-window-blocker-count`**, on the committed ledger and
-absorption: every open demand unit is assigned a packed window — its entry's
-support is a component of the `P₁₃`-free remainder, so a boundary incidence
-of the entry leaves `R` into the packed-window support `W` — and the open
+absorption.  For every open demand unit this stores the complete blocker pair:
+an actual available carrier edge of its owner and the packed window containing
+the edge's endpoint outside the remainder.  Thus the carrier/window
+correlation is retained rather than projected to a window label.  The open
 demand is exactly the window-blocker load partition
 `𝖯_open = Σ_P B_open(P)`.  The concrete lexicographic blocker choice is a
 classical witness, as everywhere in this lane. -/
@@ -6008,14 +6166,23 @@ noncomputable def Route8WindowBlockersStatement (data : Data.{u})
             (canonicalWindowPacking data object)) →
         dep ⊆ P.demandUnits →
         Disjoint A.absorbed dep →
-        ∃ blocker : Graph.Route8Census.Index object × Nat →
-            Finset object.Vertex,
-          (∀ υ ∈ P.demandUnits \ (A.absorbed ∪ dep),
-            blocker υ ∈ canonicalWindowPacking data object) ∧
-          (P.demandUnits \ (A.absorbed ∪ dep)).card =
-            ∑ window ∈ canonicalWindowPacking data object,
-              ((P.demandUnits \ (A.absorbed ∪ dep)).filter
-                fun υ => blocker υ = window).card
+        ∃ carrier : Graph.Route8Census.Index object × Nat →
+            Sym2 object.Vertex,
+          ∃ blocker : Graph.Route8Census.Index object × Nat →
+              Finset object.Vertex,
+            (∀ υ ∈ P.demandUnits \ (A.absorbed ∪ dep),
+              carrier υ ∈ core υ.1 ∧
+                ∃ inside ∈ carrier υ, ∃ outside ∈ carrier υ,
+                  inside ∈ object.remainderSupport
+                      (canonicalWindowPacking data object) ∧
+                    outside ∉ object.remainderSupport
+                      (canonicalWindowPacking data object) ∧
+                    outside ∈ blocker υ ∧
+                    blocker υ ∈ canonicalWindowPacking data object) ∧
+            (P.demandUnits \ (A.absorbed ∪ dep)).card =
+              ∑ window ∈ canonicalWindowPacking data object,
+                ((P.demandUnits \ (A.absorbed ∪ dep)).filter
+                  fun υ => blocker υ = window).card
 
 /-- **Node `[181]`, the explicit peeled target-defect demand residual.**  The
 failed peeling stage keeps its exact accounting, and the full unified entries
@@ -6029,7 +6196,37 @@ noncomputable def Route8PeeledDemandResidualStatement (data : Data.{u})
     Route8DemandAbsorptionStatement data object ∧
     Route8WindowBlockersStatement data object
 
-open scoped Classical in
+noncomputable section
+
+section Route8UnpaidExitFourRecords
+
+variable (data : Data.{u}) (object : Graph.FiniteObject.{u})
+
+attribute [local instance] Graph.Route8.vertexDecEq
+
+/-- **The no-witness arm of the maximal-ledger reduction.**  This is the
+existing `route8UnifiedTrueTwoCarrierEntry` fact schema, named explicitly so
+the decision row can state its two arm types without normalizing the complete
+`Holds` registry. -/
+structure Route8UnifiedTrueTwoCarrierEntryRecord where
+  index : Graph.Route8Census.Index object
+  indexMem : index ∈ route8UnifiedEntries data object
+  twoCarrier : Graph.Route8.IndexedTwoCarrierCore
+        (route8UnifiedEntries data object) (route8DemandCore data object)
+        (data.threshold - 1) index
+  entryFacts : Route8UnifiedEntryFacts data object index
+  minimal : letI : DecidableEq object.Vertex := object.vertices.decEq
+    Graph.Route8.TraceBasin.TargetCompleteMinimal object index.1
+        data.threshold data.LengthOK index.2.1 index.2.2
+        (Graph.Route8Census.basin object data.threshold index)
+  noExitFour : ¬ ∃ witness : Graph.ExitFour.Witness
+          (Graph.HasCycleWithLength data.LengthOK) index.1 data.threshold
+          data.dischargeScale index.2.1 ∅,
+        witness.load = index.2.2
+
+abbrev Route8UnifiedTrueTwoCarrierEntryStatement : Prop :=
+  Nonempty (Route8UnifiedTrueTwoCarrierEntryRecord data object)
+
 /-- **The maximal-ledger exit-(4) reduction after the peeled residual.**
 
 The complete peeled-demand ledger remains in the enclosing exact ledger.
@@ -6039,32 +6236,211 @@ every unpaid entry has at most delta-minus-one private essential carriers and
 carries its canonical exit-(4) witness.  The complementary no-witness arm is
 exactly route8UnifiedTrueTwoCarrierEntry and routes to the already closed
 terminal node. -/
-noncomputable def Route8UnpaidExitFourResidualStatement (data : Data.{u})
+structure Route8UnpaidExitFourResidualRecord where
+  partition : Graph.DemandPartition.Partition
+    (route8UnifiedEntries data object) (route8DemandCore data object)
+  pinned : Graph.DemandPartition.Partition.Pinned
+        (route8DemandPinned data object)
+        (Graph.Route8.indexedPrivateCoreCarriers
+          (route8UnifiedEntries data object) (route8DemandCore data object))
+        partition
+  maximal : ∀ Q : Graph.DemandPartition.Partition
+          (route8UnifiedEntries data object) (route8DemandCore data object),
+        Graph.DemandPartition.Partition.Pinned
+          (route8DemandPinned data object)
+          (Graph.Route8.indexedPrivateCoreCarriers
+            (route8UnifiedEntries data object) (route8DemandCore data object)) Q →
+        Q.three.card ≤ partition.three.card ∧
+          (Q.three.card = partition.three.card →
+            Q.two.card ≤ partition.two.card)
+  unpaid : ∀ index ∈ partition.two ∪ partition.residual,
+        Graph.Route8.IndexedTwoCarrierCore
+            (route8UnifiedEntries data object) (route8DemandCore data object)
+            (data.threshold - 1) index ∧
+          ∀ peeled : Finset object.Vertex,
+            index.2.2 ∈ Graph.ExitFour.unpeeledLoads index.1 data.threshold
+                index.2.1 peeled →
+              ∃ witness : Graph.ExitFour.Witness
+                  (Graph.HasCycleWithLength data.LengthOK) index.1 data.threshold
+                  data.dischargeScale index.2.1 peeled,
+                witness.load = index.2.2
+
+abbrev Route8UnpaidExitFourResidualStatement : Prop :=
+  Nonempty (Route8UnpaidExitFourResidualRecord data object)
+
+end Route8UnpaidExitFourRecords
+
+end
+
+open scoped Classical in
+/-- **`lem:typeA-unified-visible-ownership`** (node `[184]`).
+
+This statement leaves the unified entry family unchanged.  It records the
+strict structural exhaustion of its silent ownership profile: every indexed
+load belongs to the actual visible-load family at its own support and
+receiver, and the filtered silent subfamily therefore has cardinality zero. -/
+noncomputable def Route8UnifiedVisibleResidualStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop :=
   letI : DecidableEq object.Vertex := object.vertices.decEq
   let entries := route8UnifiedEntries data object
-  let core := Graph.Route8Census.core object data.threshold data.LengthOK
-  let pinned := entries.filter fun index =>
-    Graph.Route8.TraceBasin.TargetCompleteMinimal object index.1 data.threshold
-        data.LengthOK index.2.1 index.2.2
-        (Graph.Route8Census.basin object data.threshold index) ∧
-      data.threshold ≤
-        Graph.Route8.indexedPrivateCoreCount entries core index
-  ∃ P : Graph.DemandPartition.Partition entries core,
-    Graph.DemandPartition.Partition.Pinned pinned
-        (Graph.Route8.indexedPrivateCoreCarriers entries core) P ∧
-      (∀ Q : Graph.DemandPartition.Partition entries core,
-        Graph.DemandPartition.Partition.Pinned pinned
-          (Graph.Route8.indexedPrivateCoreCarriers entries core) Q →
-        Q.three.card ≤ P.three.card ∧
-          (Q.three.card = P.three.card → Q.two.card ≤ P.two.card)) ∧
-      ∀ index ∈ P.two ∪ P.residual,
-        Graph.Route8.IndexedTwoCarrierCore entries core
-            (data.threshold - 1) index ∧
-          ∃ witness : Graph.ExitFour.Witness
-              (Graph.HasCycleWithLength data.LengthOK) index.1 data.threshold
-              data.dischargeScale index.2.1 ∅,
-            witness.load = index.2.2
+  (∀ index ∈ entries,
+      index.2.2 ∈ Graph.VisibleEntry.visibleLoads object index.1
+        data.threshold index.2.1) ∧
+    (entries.filter fun index =>
+      index.2.2 ∉ Graph.VisibleEntry.visibleLoads object index.1
+        data.threshold index.2.1).card = 0
+
+open scoped Classical in
+/-- **`lem:typeA-unified-visible-overload`** (node `[185]`).
+
+The entry family is still the literal unified visible-first excess family.
+For every entry, its receiver has a canonical visible-four package at the
+empty peeling.  Equivalently, the subfamily whose receiver has no overloaded
+completion port is empty. -/
+noncomputable def Route8UnifiedVisibleOverloadStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  let entries := route8UnifiedEntries data object
+  (∀ index ∈ entries,
+      Nonempty (Graph.ExitFour.VisibleFourUnpeeledPackage index.1
+        data.threshold data.dischargeScale index.2.1 ∅)) ∧
+    (entries.filter fun index =>
+      ¬ Graph.ExitFour.VisibleFourUnpeeledAt index.1 data.threshold
+        data.dischargeScale index.2.1 ∅).card = 0
+
+open scoped Classical in
+/-- The exact visible history retained at node `[185]`.
+
+The first conjunct keeps the literal node-`[123]` peel chain and its stage
+accounting.  The second exposes the selected node-`[93]` support, receiver and
+*current* peeling set from `typeAExitSevenFree`; node `[184]` removes its
+silent alternative, so the surviving package is at that same peeling set.
+For every Q1 origin pair, the two distinct loads, scheduled graph returns and
+`VisibleFor` certificates are the objects already owned by that package.  Its
+pairwise target-completeness is read from the original exit-`(4)`-free fact,
+not postulated for a different quotient. -/
+noncomputable def Route8UnifiedVisibleHistoryStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  Route8StageRateFailedFact data object ∧
+    SelectedNoExitSixReceiverWith data object
+      (fun packing piece receiver peeled =>
+        ¬ HandoffProduced data object packing piece ∧
+          ¬ Graph.ExitFour.SilentUnpeeledExcessAt piece data.threshold
+            data.dischargeScale receiver peeled ∧
+          ∃ package : Graph.ExitFour.VisibleFourUnpeeledPackage piece
+              data.threshold data.dischargeScale receiver peeled,
+            (¬ ∃ witness : Graph.ExitFour.Witness
+                (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+                data.dischargeScale receiver peeled,
+              ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
+                  data.threshold data.dischargeScale receiver package.outside
+                  peeled,
+                witness.load = load) ∧
+              ∀ pair : package.Q1OriginPair,
+                pair.leftReturn ∈
+                    (Graph.VisibleEntry.ReceiverEntryReturn.schedule object
+                      piece receiver package.outside).values ∧
+                  Graph.VisibleEntry.VisibleFor object piece data.threshold
+                    pair.leftReturn pair.left.1 ∧
+                  pair.rightReturn ∈
+                    (Graph.VisibleEntry.ReceiverEntryReturn.schedule object
+                      piece receiver package.outside).values ∧
+                  Graph.VisibleEntry.VisibleFor object piece data.threshold
+                    pair.rightReturn pair.right.1 ∧
+                  Graph.Response.TargetComplete
+                    Graph.BoundaryPiece.boundaryDegreeProfile
+                    (Graph.HasCycleWithLength data.LengthOK)
+                    (Graph.ExitFour.visibleResponsePiece pair.leftResponseCoordinate)
+                    (Graph.ExitFour.visibleResponsePiece pair.rightResponseCoordinate))
+
+open scoped Classical in
+/-- **`lem:typeA-unified-joint-balance`** (node `[186]`).
+
+This is the simultaneous, subtraction-free accounting of the literal
+visible-overload residual.  It does not choose a new graph, entry family, or
+support.  The witnesses are the peel chain and the committed maximal demand
+partition/absorption already supplied at node `[181]`; `unused` is exactly
+the slack between the unified deficit and the full entry count. -/
+noncomputable def Route8JointBalanceStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  let packing := canonicalWindowPacking data object
+  let support := object.remainderSupport packing
+  let entries := route8UnifiedEntries data object
+  let components := route8UnifiedComponents data object
+  let core := route8DemandCore data object
+  let supply := Graph.Route8Census.supply object packing
+  let bridgeAllowance := data.bridgeMassFactor * data.dischargeScale *
+    data.surplusThreshold object.vertexCount
+  Route8UnifiedVisibleOverloadStatement data object ∧
+    (∀ component ∈ components,
+      let piece := object.pieceSupport support component
+      ∀ receiver ∈ Graph.VisibleEntry.saturatedReceivers object piece
+          data.threshold data.dischargeScale,
+        object.routedLoads piece data.threshold receiver ⊆
+          Graph.VisibleEntry.visibleLoads object piece data.threshold receiver) ∧
+    (∀ component ∈ components,
+      let piece := object.pieceSupport support component
+      ∀ receiver ∈ Graph.VisibleEntry.saturatedReceivers object piece
+          data.threshold data.dischargeScale,
+        ∀ peeled : Finset object.Vertex,
+          ¬ Graph.ExitFour.SilentUnpeeledExcessAt piece data.threshold
+            data.dischargeScale receiver peeled) ∧
+    ∃ chain : List (Graph.Route8Census.Index object),
+      Graph.Route8Pressure.PeelChain object packing entries data.threshold
+          data.dischargeScale (2 * bridgeAllowance) data.LengthOK chain ∧
+        Graph.Route8Pressure.StageAccounting object packing entries components
+          data.threshold data.dischargeScale (2 * bridgeAllowance) chain ∧
+        ∃ P : Graph.DemandPartition.Partition entries core,
+          Graph.DemandPartition.Partition.Pinned
+              (route8DemandPinned data object)
+              (Graph.Route8.indexedPrivateCoreCarriers entries core) P ∧
+            (∀ Q : Graph.DemandPartition.Partition entries core,
+              Graph.DemandPartition.Partition.Pinned
+                  (route8DemandPinned data object)
+                  (Graph.Route8.indexedPrivateCoreCarriers entries core) Q →
+                Q.three.card ≤ P.three.card ∧
+                  (Q.three.card = P.three.card →
+                    Q.two.card ≤ P.two.card)) ∧
+            ∃ A : Graph.DemandPartition.Absorption P
+                (Graph.Route8Census.Index object × Nat),
+              A.absorbed ⊆ P.demandUnits ∧
+                (∀ unit ∈ A.absorbed, A.absorber unit ∈ supply) ∧
+                (∀ unit ∈ A.absorbed,
+                  A.absorber unit ∈ Graph.Route8.cutEdges object unit.1.1) ∧
+                (∀ B : Graph.DemandPartition.Absorption P
+                    (Graph.Route8Census.Index object × Nat),
+                  B.absorbed ⊆ P.demandUnits →
+                    (∀ unit ∈ B.absorbed, B.absorber unit ∈ supply) →
+                    (∀ unit ∈ B.absorbed,
+                      B.absorber unit ∈
+                        Graph.Route8.cutEdges object unit.1.1) →
+                    B.absorbed.card ≤ A.absorbed.card) ∧
+                ∃ unused : Nat,
+                  let peeled := chain.toFinset
+                  let deficit := Graph.TypeBEnvelopeCharge.route8Deficit object
+                    support data.threshold data.dischargeScale components
+                  let openUnits := P.demandUnits \ A.absorbed
+                  peeled.card ≤ deficit ∧
+                    deficit ≤ entries.card ∧
+                    entries.card = deficit + unused ∧
+                    support.card ≤ deficit +
+                      data.dischargeScale * supply.card + bridgeAllowance ∧
+                    3 * entries.card ≤ supply.card + openUnits.card ∧
+                    3 * support.card ≤
+                      (3 * data.dischargeScale + 1) * supply.card +
+                        3 * bridgeAllowance + openUnits.card ∧
+                    data.threshold * support.card ≤
+                      (data.threshold * data.dischargeScale + 1) * supply.card +
+                        data.threshold * (2 * bridgeAllowance) +
+                        data.threshold * peeled.card ∧
+                    3 * entries.card =
+                      (3 * P.three.card + 2 * P.two.card) +
+                        P.demandUnits.card ∧
+                    P.demandUnits.card =
+                      A.absorbed.card + openUnits.card ∧
+                    3 * P.three.card + 2 * P.two.card + A.absorbed.card ≤
+                      supply.card
 
 /-- Node `[111]`, `def:typeA-large-budget-deficit`: extract the canonical
 collection `𝒳_A` of Type A pieces all of whose saturated receivers survive in
@@ -7812,7 +8188,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
   | .selection, object =>
       (¬ Graph.HasCycleWithLength data.LengthOK object ∧
         SelectionMinimality BranchState Presentation presentation data object)
-  | .cubicBaseline, _object => data.threshold = 3
+  | .cubicBaseline, _object =>
+      data.threshold = 3 ∧ data.dischargeScale = 4
   | .gadgetClosure, object =>
       let avoids (piece : Graph.FiniteObject.{u}) :=
         ¬ Graph.HasCycleWithLength data.LengthOK piece
@@ -8986,7 +9363,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- this a test of the paper's fixed `R`, rather than a statement about all
       -- possible maximal packings.
       (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
+        packing = canonicalWindowPacking data object ∧
+          object.IsWindowPacking data.windowOrder packing ∧
           packing.card = object.windowPackingNumber data.windowOrder ∧
           (∀ window : Finset object.Vertex,
             object.InducesWindow data.windowOrder window →
@@ -8996,7 +9374,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
   | .netChargeNegative, object =>
       -- Node `[59]`, no: the same selected maximum packing and `N₀(R) < 0`.
       (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
+        packing = canonicalWindowPacking data object ∧
+          object.IsWindowPacking data.windowOrder packing ∧
           packing.card = object.windowPackingNumber data.windowOrder ∧
           (∀ window : Finset object.Vertex,
             object.InducesWindow data.windowOrder window →
@@ -9047,7 +9426,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- piece: `def:admissible`'s remaining inherited clauses are statements
       -- about the remainder of a *maximal* packing.
       (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
+        packing = canonicalWindowPacking data object ∧
+          object.IsWindowPacking data.windowOrder packing ∧
           (∀ window : Finset object.Vertex,
             object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
@@ -9063,7 +9443,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- A ladder spends -- window-freeness and the empty internal `δ`-core --
       -- are node `[27]`'s conclusions about the remainder of a maximal packing.
       (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
+        packing = canonicalWindowPacking data object ∧
+          object.IsWindowPacking data.windowOrder packing ∧
           (∀ window : Finset object.Vertex,
             object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
@@ -9214,7 +9595,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- Node `[89]`, yes: the selected canonical Type A component retains an
       -- actual saturated receiver.
       (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
+        packing = canonicalWindowPacking data object ∧
+          object.IsWindowPacking data.windowOrder packing ∧
           (∀ window : Finset object.Vertex,
             object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
@@ -9525,7 +9907,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- `lem:typeA-visible-entry`; its conclusion is the exit list the arm
       -- enters.
       (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
+        packing = canonicalWindowPacking data object ∧
+          object.IsWindowPacking data.windowOrder packing ∧
           (∀ window : Finset object.Vertex,
             object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
@@ -9549,7 +9932,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- `s·D_A(X) = |V(X)| − s·def⁺(X)` written without division or
       -- subtraction.
       (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
+        packing = canonicalWindowPacking data object ∧
+          object.IsWindowPacking data.windowOrder packing ∧
           (∀ window : Finset object.Vertex,
             object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
@@ -9560,6 +9944,12 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             object.NegativeNetCharge piece data.threshold
                 data.dischargeScale ∧
               object.ambientSurplus piece data.threshold = 0 ∧
+              (∀ otherReceiver : object.Vertex,
+                object.IsReceiver piece data.threshold otherReceiver →
+                  object.Saturated piece data.threshold data.dischargeScale
+                    otherReceiver →
+                  ¬ Graph.ExitFour.VisibleFourUnpeeledAt piece
+                    data.threshold data.dischargeScale otherReceiver ∅) ∧
               ∃ receiver : object.Vertex,
                 object.IsReceiver piece data.threshold receiver ∧
                   object.Saturated piece data.threshold data.dischargeScale
@@ -9594,7 +9984,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                       Graph.ShiftedCycleLength data.LengthOK return'.path.length)
   | .typeAExitOneFree, object =>
       (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
+        packing = canonicalWindowPacking data object ∧
+          object.IsWindowPacking data.windowOrder packing ∧
           (∀ window : Finset object.Vertex,
             object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
@@ -9633,7 +10024,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                       receiver package.outside)
   | .typeAExitTwoFree, object =>
       (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
+        packing = canonicalWindowPacking data object ∧
+          object.IsWindowPacking data.windowOrder packing ∧
           (∀ window : Finset object.Vertex,
             object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
@@ -9671,7 +10063,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                       data.windowOrder data.LengthOK packing)
   | .typeAExitThreeFree, object =>
       (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
+        packing = canonicalWindowPacking data object ∧
+          object.IsWindowPacking data.windowOrder packing ∧
           (∀ window : Finset object.Vertex,
             object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
@@ -9696,7 +10089,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- `L₄(w) ≥ s·q(w)` are the two clauses the routing lemma uses; the
       -- witnesses attached to the peeled loads are node `[102]`'s fact.
       (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
+        packing = canonicalWindowPacking data object ∧
+          object.IsWindowPacking data.windowOrder packing ∧
           (∀ window : Finset object.Vertex,
             object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
@@ -9716,6 +10110,12 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                       Graph.ExitFour.PeeledByWitnesses
                         (Graph.HasCycleWithLength data.LengthOK) piece
                         data.threshold data.dischargeScale receiver peeled)
+  | .typeASilentExitFourFree, object =>
+      SelectedSilentExitFourFree data object
+  | .typeASilentExitFiveFree, object =>
+      SelectedSilentExitFiveFree data object
+  | .typeASilentExitSixFree, object =>
+      SelectedSilentExitSixFree data object
   | .typeAExitSevenProduced, object =>
       -- Node `[107]`, yes: exit `(7)` is produced on the exact selected
       -- no-exit-`(6)` residual.
@@ -9735,6 +10135,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- handoff envelope and therefore enters the route-8 test.
       SelectedNoExitSixWith data object
         (fun packing piece => ¬ HandoffProduced data object packing piece)
+  | .typeASilentExitSevenFree, object =>
+      SelectedSilentExitSevenFree data object
   | .highCentreNormalForm, object =>
       -- Node `[67]`: `lem:heavy-neighbourhood-normal-form`, at every high
       -- centre of the object at once.  It is not about one support, so it is
@@ -10096,7 +10498,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- inserting that witness's routed load; it remains a subset of the routed
       -- loads and the residual load drops by exactly one.
       (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
+        packing = canonicalWindowPacking data object ∧
+          object.IsWindowPacking data.windowOrder packing ∧
           (∀ window : Finset object.Vertex,
             object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
@@ -10138,7 +10541,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- four visible loads; in the silent case it supports a load from the
       -- canonical residual excess set `E₄(w)`.
       (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
+        packing = canonicalWindowPacking data object ∧
+          object.IsWindowPacking data.windowOrder packing ∧
           (∀ window : Finset object.Vertex,
             object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
@@ -10178,7 +10582,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- The selected current saturated-handoff state has no exit-`(4)`
       -- witness of the corresponding visible or silent kind.
       (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
+        packing = canonicalWindowPacking data object ∧
+          object.IsWindowPacking data.windowOrder packing ∧
           (∀ window : Finset object.Vertex,
             object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
@@ -10194,23 +10599,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                     peeled ⊆ object.routedLoads piece data.threshold receiver ∧
                       Graph.ExitFour.SaturatedAfter piece data.threshold
                         data.dischargeScale receiver peeled ∧
-                      ((∃ package :
-                          Graph.ExitFour.VisibleFourUnpeeledPackage piece
-                            data.threshold data.dischargeScale receiver peeled,
-                        ¬ ∃ witness : Graph.ExitFour.Witness
-                            (Graph.HasCycleWithLength data.LengthOK) piece
-                            data.threshold data.dischargeScale receiver peeled,
-                          ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
-                              piece data.threshold data.dischargeScale receiver
-                              package.outside peeled,
-                            witness.load = load) ∨
-                        (Graph.ExitFour.SilentUnpeeledExcessAt piece
-                            data.threshold data.dischargeScale receiver peeled ∧
-                          ¬ ∃ witness : Graph.ExitFour.Witness
-                              (Graph.HasCycleWithLength data.LengthOK) piece
-                              data.threshold data.dischargeScale receiver peeled,
-                            witness.load ∈ Graph.ExitFour.unpeeledExcess piece
-                              data.threshold data.dischargeScale receiver peeled)))
+                      ExitFourFreeAt data object piece receiver peeled)
   | .typeAExitFourReceiverDischarged, object =>
       -- Node `[102]` → `[89]`, the retest after the exit-`(4)` descent
       -- (`lem:typeA-exit4-finite-descent`, `lem:typeA-exit4-peeling-charge`):
@@ -10220,7 +10609,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- cleared scale.  The peeled loads are the receiver's target-defect
       -- entries for the pressure ledger.
       (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
+        packing = canonicalWindowPacking data object ∧
+          object.IsWindowPacking data.windowOrder packing ∧
           (∀ window : Finset object.Vertex,
             object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
@@ -10248,38 +10638,10 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- residual has a selected trace basin whose declared `u`-supported
       -- response algebra admits alternative (b), including the paper's
       -- proper-realization / trace-response-only split.
-      let exitFiveAt := fun (piece : Finset object.Vertex)
-          (receiver : object.Vertex) (peeled : Finset object.Vertex) =>
-        ∃ load : object.Vertex,
-          (((∃ package :
-                Graph.ExitFour.VisibleFourUnpeeledPackage piece data.threshold
-                  data.dischargeScale receiver peeled,
-              (¬ ∃ witness : Graph.ExitFour.Witness
-                  (Graph.HasCycleWithLength data.LengthOK) piece data.threshold data.dischargeScale
-                  receiver peeled,
-                ∃ selected ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
-                    data.threshold data.dischargeScale receiver package.outside
-                    peeled,
-                  witness.load = selected) ∧
-                load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
-                  data.threshold data.dischargeScale receiver package.outside
-                  peeled) ∨
-            (Graph.ExitFour.SilentUnpeeledExcessAt piece data.threshold
-                data.dischargeScale receiver peeled ∧
-              (¬ ∃ witness : Graph.ExitFour.Witness
-                  (Graph.HasCycleWithLength data.LengthOK) piece data.threshold data.dischargeScale
-                  receiver peeled,
-                witness.load ∈ Graph.ExitFour.unpeeledExcess piece data.threshold
-                  data.dischargeScale receiver peeled) ∧
-              load ∈ Graph.ExitFour.unpeeledExcess piece data.threshold
-                data.dischargeScale receiver peeled)) ∧
-            ∃ basin : Finset object.Vertex,
-              Graph.Route8.TraceBasin.select? object piece data.threshold
-                  receiver load = some basin ∧
-                Graph.Route8.TraceBasin.TraceTargetCompleteCompression object
-                  piece data.threshold data.LengthOK receiver load basin)
+      let exitFiveAt := ExitFiveAt data object
       (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
+        packing = canonicalWindowPacking data object ∧
+          object.IsWindowPacking data.windowOrder packing ∧
           (∀ window : Finset object.Vertex,
             object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
@@ -10300,38 +10662,10 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- Node `[103]`, no: the same exact post-exit-`(4)` residual is retained,
       -- and none of its eligible loads has alternative (b) at its selected
       -- trace basin.
-      let exitFiveAt := fun (piece : Finset object.Vertex)
-          (receiver : object.Vertex) (peeled : Finset object.Vertex) =>
-        ∃ load : object.Vertex,
-          (((∃ package :
-                Graph.ExitFour.VisibleFourUnpeeledPackage piece data.threshold
-                  data.dischargeScale receiver peeled,
-              (¬ ∃ witness : Graph.ExitFour.Witness
-                  (Graph.HasCycleWithLength data.LengthOK) piece data.threshold data.dischargeScale
-                  receiver peeled,
-                ∃ selected ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
-                    data.threshold data.dischargeScale receiver package.outside
-                    peeled,
-                  witness.load = selected) ∧
-                load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
-                  data.threshold data.dischargeScale receiver package.outside
-                  peeled) ∨
-            (Graph.ExitFour.SilentUnpeeledExcessAt piece data.threshold
-                data.dischargeScale receiver peeled ∧
-              (¬ ∃ witness : Graph.ExitFour.Witness
-                  (Graph.HasCycleWithLength data.LengthOK) piece data.threshold data.dischargeScale
-                  receiver peeled,
-                witness.load ∈ Graph.ExitFour.unpeeledExcess piece data.threshold
-                  data.dischargeScale receiver peeled) ∧
-              load ∈ Graph.ExitFour.unpeeledExcess piece data.threshold
-                data.dischargeScale receiver peeled)) ∧
-            ∃ basin : Finset object.Vertex,
-              Graph.Route8.TraceBasin.select? object piece data.threshold
-                  receiver load = some basin ∧
-                Graph.Route8.TraceBasin.TraceTargetCompleteCompression object
-                  piece data.threshold data.LengthOK receiver load basin)
+      let exitFiveAt := ExitFiveAt data object
       (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
+        packing = canonicalWindowPacking data object ∧
+          object.IsWindowPacking data.windowOrder packing ∧
           (∀ window : Finset object.Vertex,
             object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
@@ -10347,23 +10681,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                     peeled ⊆ object.routedLoads piece data.threshold receiver ∧
                       Graph.ExitFour.SaturatedAfter piece data.threshold
                         data.dischargeScale receiver peeled ∧
-                      ((∃ package :
-                          Graph.ExitFour.VisibleFourUnpeeledPackage piece
-                            data.threshold data.dischargeScale receiver peeled,
-                        ¬ ∃ witness : Graph.ExitFour.Witness
-                            (Graph.HasCycleWithLength data.LengthOK) piece
-                            data.threshold data.dischargeScale receiver peeled,
-                          ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
-                              piece data.threshold data.dischargeScale receiver
-                              package.outside peeled,
-                            witness.load = load) ∨
-                        (Graph.ExitFour.SilentUnpeeledExcessAt piece
-                            data.threshold data.dischargeScale receiver peeled ∧
-                          ¬ ∃ witness : Graph.ExitFour.Witness
-                              (Graph.HasCycleWithLength data.LengthOK) piece
-                              data.threshold data.dischargeScale receiver peeled,
-                            witness.load ∈ Graph.ExitFour.unpeeledExcess piece
-                              data.threshold data.dischargeScale receiver peeled)) ∧
+                      ExitFourFreeAt data object piece receiver peeled ∧
                       ¬ exitFiveAt piece receiver peeled)
   | .typeAExitSix, object =>
       -- Node `[105]`, yes: the selected saturated handoff state, after exits
@@ -10371,38 +10689,10 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- coordinates that becomes target-complete only after adjoining a larger
       -- connected support.  The witness is tied to the incoming residual; it is
       -- not an arbitrary route-8 object.
-      let exitFiveAt := fun (piece : Finset object.Vertex)
-          (receiver : object.Vertex) (peeled : Finset object.Vertex) =>
-        ∃ load : object.Vertex,
-          (((∃ package :
-                Graph.ExitFour.VisibleFourUnpeeledPackage piece data.threshold
-                  data.dischargeScale receiver peeled,
-              (¬ ∃ witness : Graph.ExitFour.Witness
-                  (Graph.HasCycleWithLength data.LengthOK) piece data.threshold data.dischargeScale
-                  receiver peeled,
-                ∃ selected ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
-                    data.threshold data.dischargeScale receiver package.outside
-                    peeled,
-                  witness.load = selected) ∧
-                load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
-                  data.threshold data.dischargeScale receiver package.outside
-                  peeled) ∨
-            (Graph.ExitFour.SilentUnpeeledExcessAt piece data.threshold
-                data.dischargeScale receiver peeled ∧
-              (¬ ∃ witness : Graph.ExitFour.Witness
-                  (Graph.HasCycleWithLength data.LengthOK) piece data.threshold data.dischargeScale
-                  receiver peeled,
-                witness.load ∈ Graph.ExitFour.unpeeledExcess piece data.threshold
-                  data.dischargeScale receiver peeled) ∧
-              load ∈ Graph.ExitFour.unpeeledExcess piece data.threshold
-                data.dischargeScale receiver peeled)) ∧
-            ∃ basin : Finset object.Vertex,
-              Graph.Route8.TraceBasin.select? object piece data.threshold
-                  receiver load = some basin ∧
-                Graph.Route8.TraceBasin.TraceTargetCompleteCompression object
-                  piece data.threshold data.LengthOK receiver load basin)
+      let exitFiveAt := ExitFiveAt data object
       (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
+        packing = canonicalWindowPacking data object ∧
+          object.IsWindowPacking data.windowOrder packing ∧
           (∀ window : Finset object.Vertex,
             object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
@@ -10418,60 +10708,16 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                     peeled ⊆ object.routedLoads piece data.threshold receiver ∧
                       Graph.ExitFour.SaturatedAfter piece data.threshold
                         data.dischargeScale receiver peeled ∧
-                      ((∃ package :
-                          Graph.ExitFour.VisibleFourUnpeeledPackage piece
-                            data.threshold data.dischargeScale receiver peeled,
-                        ¬ ∃ witness : Graph.ExitFour.Witness
-                            (Graph.HasCycleWithLength data.LengthOK) piece
-                            data.threshold data.dischargeScale receiver peeled,
-                          ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
-                              piece data.threshold data.dischargeScale receiver
-                              package.outside peeled,
-                            witness.load = load) ∨
-                        (Graph.ExitFour.SilentUnpeeledExcessAt piece
-                            data.threshold data.dischargeScale receiver peeled ∧
-                          ¬ ∃ witness : Graph.ExitFour.Witness
-                              (Graph.HasCycleWithLength data.LengthOK) piece
-                              data.threshold data.dischargeScale receiver peeled,
-                            witness.load ∈ Graph.ExitFour.unpeeledExcess piece
-                              data.threshold data.dischargeScale receiver peeled)) ∧
+                      ExitFourFreeAt data object piece receiver peeled ∧
                       (¬ exitFiveAt piece receiver peeled ∧
                         ExitSixDelocalizes data object piece receiver peeled))
   | .typeAExitSixFree, object =>
       -- Node `[105]`, no: the same selected saturated handoff state has no
       -- exit-`(6)` delocalization witness.
-      let exitFiveAt := fun (piece : Finset object.Vertex)
-          (receiver : object.Vertex) (peeled : Finset object.Vertex) =>
-        ∃ load : object.Vertex,
-          (((∃ package :
-                Graph.ExitFour.VisibleFourUnpeeledPackage piece data.threshold
-                  data.dischargeScale receiver peeled,
-              (¬ ∃ witness : Graph.ExitFour.Witness
-                  (Graph.HasCycleWithLength data.LengthOK) piece data.threshold data.dischargeScale
-                  receiver peeled,
-                ∃ selected ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
-                    data.threshold data.dischargeScale receiver package.outside
-                    peeled,
-                  witness.load = selected) ∧
-                load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
-                  data.threshold data.dischargeScale receiver package.outside
-                  peeled) ∨
-            (Graph.ExitFour.SilentUnpeeledExcessAt piece data.threshold
-                data.dischargeScale receiver peeled ∧
-              (¬ ∃ witness : Graph.ExitFour.Witness
-                  (Graph.HasCycleWithLength data.LengthOK) piece data.threshold data.dischargeScale
-                  receiver peeled,
-                witness.load ∈ Graph.ExitFour.unpeeledExcess piece data.threshold
-                  data.dischargeScale receiver peeled) ∧
-              load ∈ Graph.ExitFour.unpeeledExcess piece data.threshold
-                data.dischargeScale receiver peeled)) ∧
-            ∃ basin : Finset object.Vertex,
-              Graph.Route8.TraceBasin.select? object piece data.threshold
-                  receiver load = some basin ∧
-                Graph.Route8.TraceBasin.TraceTargetCompleteCompression object
-                  piece data.threshold data.LengthOK receiver load basin)
+      let exitFiveAt := ExitFiveAt data object
       (∃ packing : Finset (Finset object.Vertex),
-        object.IsWindowPacking data.windowOrder packing ∧
+        packing = canonicalWindowPacking data object ∧
+          object.IsWindowPacking data.windowOrder packing ∧
           (∀ window : Finset object.Vertex,
             object.InducesWindow data.windowOrder window →
             ∃ member ∈ packing, ¬ Disjoint window member) ∧
@@ -10487,23 +10733,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
                     peeled ⊆ object.routedLoads piece data.threshold receiver ∧
                       Graph.ExitFour.SaturatedAfter piece data.threshold
                         data.dischargeScale receiver peeled ∧
-                      ((∃ package :
-                          Graph.ExitFour.VisibleFourUnpeeledPackage piece
-                            data.threshold data.dischargeScale receiver peeled,
-                        ¬ ∃ witness : Graph.ExitFour.Witness
-                            (Graph.HasCycleWithLength data.LengthOK) piece
-                            data.threshold data.dischargeScale receiver peeled,
-                          ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
-                              piece data.threshold data.dischargeScale receiver
-                              package.outside peeled,
-                            witness.load = load) ∨
-                        (Graph.ExitFour.SilentUnpeeledExcessAt piece
-                            data.threshold data.dischargeScale receiver peeled ∧
-                          ¬ ∃ witness : Graph.ExitFour.Witness
-                              (Graph.HasCycleWithLength data.LengthOK) piece
-                              data.threshold data.dischargeScale receiver peeled,
-                            witness.load ∈ Graph.ExitFour.unpeeledExcess piece
-                              data.threshold data.dischargeScale receiver peeled)) ∧
+                      ExitFourFreeAt data object piece receiver peeled ∧
                       (¬ exitFiveAt piece receiver peeled ∧
                         ¬ ExitSixDelocalizes data object piece receiver peeled))
   | .typeAExitSixProper, object =>
@@ -10696,6 +10926,14 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       Route8PeeledDemandResidualStatement data object
   | .route8UnpaidExitFourResidual, object =>
       Route8UnpaidExitFourResidualStatement data object
+  | .route8UnifiedVisibleResidual, object =>
+      Route8UnifiedVisibleResidualStatement data object
+  | .route8UnifiedVisibleOverload, object =>
+      Route8UnifiedVisibleOverloadStatement data object
+  | .route8UnifiedVisibleHistory, object =>
+      Route8UnifiedVisibleHistoryStatement data object
+  | .route8JointBalance, object =>
+      Route8JointBalanceStatement data object
   | .route8TwoCarrierEntry, object =>
       let packing := canonicalWindowPacking data object
       let support := object.remainderSupport packing
@@ -10826,23 +11064,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
           entries (route8UnifiedComponents data object) data.threshold
           data.dischargeScale bridgeSlack data.LengthOK final
   | .route8UnifiedTrueTwoCarrierEntry, object =>
-      letI : DecidableEq object.Vertex := object.vertices.decEq
-      let entries := route8UnifiedEntries data object
-      ∃ index ∈ entries,
-        Graph.Route8.IndexedTwoCarrierCore entries
-            (Graph.Route8Census.core object data.threshold data.LengthOK)
-            (data.threshold - 1) index ∧
-          let basin := Graph.Route8Census.basin object data.threshold index
-          Graph.Route8.TraceBasin.select? object index.1 data.threshold
-              index.2.1 index.2.2 = some basin ∧
-            Graph.Route8.TraceBasin.TargetCompleteMinimal object index.1
-              data.threshold data.LengthOK index.2.1 index.2.2 basin ∧
-            2 ≤ ((Graph.Route8Census.presented object data.threshold data.LengthOK
-              index).toEntry (Graph.HasCycleWithLength data.LengthOK)).alpha ∧
-          ¬ ∃ witness : Graph.ExitFour.Witness
-              (Graph.HasCycleWithLength data.LengthOK) index.1 data.threshold data.dischargeScale
-              index.2.1 ∅,
-            witness.load = index.2.2
+      Route8UnifiedTrueTwoCarrierEntryStatement data object
   | .sparseSlackSurplus, object =>
       -- `lem:sparse-slack-surplus`: `2m = δn + σ(G)`, the manuscript's
       -- `m = (3/2)n + (1/2)σ(G)` cleared of division.
@@ -11549,9 +11771,13 @@ def label : Key → String
   | .typeAExitThreeCollision => "typeAExitThreeCollision"
   | .typeAExitThreeFree => "typeAExitThreeFree"
   | .typeASaturatedExitEntry => "typeASaturatedExitEntry"
+  | .typeASilentExitFourFree => "typeASilentExitFourFree"
+  | .typeASilentExitFiveFree => "typeASilentExitFiveFree"
+  | .typeASilentExitSixFree => "typeASilentExitSixFree"
   | .typeAExitSevenHandoff => "typeAExitSevenHandoff"
   | .typeBDecoratedAssignedSupport => "typeBDecoratedAssignedSupport"
   | .typeAExitSevenFree => "typeAExitSevenFree"
+  | .typeASilentExitSevenFree => "typeASilentExitSevenFree"
   | .coldDeclaredHandoffLedger => "coldDeclaredHandoffLedger"
   | .coldFailureCycle => "coldFailureCycle"
   | .coldFailureDefect => "coldFailureDefect"
@@ -11665,6 +11891,10 @@ def label : Key → String
   | .route8WindowBlockers => "route8WindowBlockers"
   | .route8PeeledDemandResidual => "route8PeeledDemandResidual"
   | .route8UnpaidExitFourResidual => "route8UnpaidExitFourResidual"
+  | .route8UnifiedVisibleResidual => "route8UnifiedVisibleResidual"
+  | .route8UnifiedVisibleOverload => "route8UnifiedVisibleOverload"
+  | .route8UnifiedVisibleHistory => "route8UnifiedVisibleHistory"
+  | .route8JointBalance => "route8JointBalance"
   | .route8TwoCarrierEntry => "route8TwoCarrierEntry"
   | .route8NoTwoCarrierEntry => "route8NoTwoCarrierEntry"
   | .route8TrueTwoCarrierEntry => "route8TrueTwoCarrierEntry"
@@ -11866,6 +12096,7 @@ example : label .typeAExitTwoFree = "typeAExitTwoFree" := rfl
 example : label .typeAExitThreeCollision = "typeAExitThreeCollision" := rfl
 example : label .typeAExitThreeFree = "typeAExitThreeFree" := rfl
 example : label .typeASaturatedExitEntry = "typeASaturatedExitEntry" := rfl
+example : label .typeASilentExitSevenFree = "typeASilentExitSevenFree" := rfl
 example : label .typeAExitSevenHandoff = "typeAExitSevenHandoff" := rfl
 example : label .typeAExitSevenFree = "typeAExitSevenFree" := rfl
 example : label .coldFailureCycle = "coldFailureCycle" := rfl
@@ -11979,6 +12210,13 @@ example : label .route8PeeledDemandResidual =
     "route8PeeledDemandResidual" := rfl
 example : label .route8UnpaidExitFourResidual =
     "route8UnpaidExitFourResidual" := rfl
+example : label .route8UnifiedVisibleResidual =
+    "route8UnifiedVisibleResidual" := rfl
+example : label .route8UnifiedVisibleOverload =
+    "route8UnifiedVisibleOverload" := rfl
+example : label .route8UnifiedVisibleHistory =
+    "route8UnifiedVisibleHistory" := rfl
+example : label .route8JointBalance = "route8JointBalance" := rfl
 example : label .route8TwoCarrierEntry = "route8TwoCarrierEntry" := rfl
 example : label .route8NoTwoCarrierEntry = "route8NoTwoCarrierEntry" := rfl
 example : label .route8TrueTwoCarrierEntry = "route8TrueTwoCarrierEntry" := rfl
@@ -12291,6 +12529,14 @@ def idx : Key → Nat
   | .route8WindowBlockers => 352
   | .route8PeeledDemandResidual => 353
   | .route8UnpaidExitFourResidual => 503
+  | .route8UnifiedVisibleResidual => 504
+  | .route8UnifiedVisibleOverload => 505
+  | .route8UnifiedVisibleHistory => 512
+  | .route8JointBalance => 506
+  | .typeASilentExitFourFree => 508
+  | .typeASilentExitFiveFree => 509
+  | .typeASilentExitSixFree => 510
+  | .typeASilentExitSevenFree => 511
   | .route8TwoCarrierEntry => 261
   | .route8NoTwoCarrierEntry => 262
   | .route8TrueTwoCarrierEntry => 280
@@ -12584,6 +12830,14 @@ def ofIdx : Nat → Key
   | 352 => .route8WindowBlockers
   | 353 => .route8PeeledDemandResidual
   | 503 => .route8UnpaidExitFourResidual
+  | 504 => .route8UnifiedVisibleResidual
+  | 505 => .route8UnifiedVisibleOverload
+  | 512 => .route8UnifiedVisibleHistory
+  | 506 => .route8JointBalance
+  | 508 => .typeASilentExitFourFree
+  | 509 => .typeASilentExitFiveFree
+  | 510 => .typeASilentExitSixFree
+  | 511 => .typeASilentExitSevenFree
   | 261 => .route8TwoCarrierEntry
   | 262 => .route8NoTwoCarrierEntry
   | 280 => .route8TrueTwoCarrierEntry
@@ -12993,6 +13247,15 @@ def name : Key → Lean.Name
   | .typeASaturatedExitEntry =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "typeASaturatedExitEntry") 123
+  | .typeASilentExitFourFree =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "typeASilentExitFourFree") 508
+  | .typeASilentExitFiveFree =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "typeASilentExitFiveFree") 509
+  | .typeASilentExitSixFree =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "typeASilentExitSixFree") 510
   | .typeAExitSevenHandoff =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "typeAExitSevenHandoff") 124
@@ -13001,6 +13264,9 @@ def name : Key → Lean.Name
         "typeBDecoratedAssignedSupport") 220
   | .typeAExitSevenFree =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitSevenFree") 125
+  | .typeASilentExitSevenFree =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "typeASilentExitSevenFree") 511
   | .coldDeclaredHandoffLedger =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "coldDeclaredHandoffLedger") 407
@@ -13209,6 +13475,18 @@ def name : Key → Lean.Name
   | .route8UnpaidExitFourResidual =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "route8UnpaidExitFourResidual") 503
+  | .route8UnifiedVisibleResidual =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "route8UnifiedVisibleResidual") 504
+  | .route8UnifiedVisibleOverload =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "route8UnifiedVisibleOverload") 505
+  | .route8UnifiedVisibleHistory =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "route8UnifiedVisibleHistory") 512
+  | .route8JointBalance =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "route8JointBalance") 506
   | .route8TwoCarrierEntry =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8TwoCarrierEntry") 261
   | .route8NoTwoCarrierEntry =>

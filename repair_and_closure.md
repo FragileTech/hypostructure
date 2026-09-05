@@ -187,7 +187,7 @@ From a state and its queue:
 
 1. **Propose** an invariant, case split, budget, label, local test, exchange or candidate lemma.
 2. **Admit** it only if both outcomes are productive, the resources it needs are present, and every surviving case has a declared route. No new global result enters here.
-3. **Select** an admitted move whose prerequisites are in the current state or can be synthesised from it.
+3. **Select** an admitted move whose prerequisites are proved in the current state. If a prerequisite needs a local construction, execute and verify that construction first; “can be synthesised” is not evidence that it is present.
 4. **Execute**: prove, review, or compute the local obligations *before* the proof state changes.
 5. **Route**: close whatever closes; emit every surviving obstruction as a typed residual with a named consumer.
 6. **Record** the branch tree, the invariant and exclusion ledgers, the dependencies and the residual queue.
@@ -290,7 +290,7 @@ The procedure:
 3. **The first step failing any question gets the diamond**, by the ordered first-failure split of 4.3. Its negation is typed by Section 5.1 — it always is, because a failed construction step hands you the reason it failed (a determined coordinate, a branching connector, an overlapping earlier support, a bounded system).
 4. **Collapse shared obligations.** Several constructors of one open node usually reduce to the same one or two local lemmas (a "stays in the fibre" lemma, a cross-branch audit). Do the shared ones first.
 5. **The old node keeps its number and becomes a decision;** its retained data is the input the new diamonds read; new nodes are appended after the last existing one.
-6. **Stop when every no-arm has a consumer and every split passes §4.8.** Each diamond's arms must be properties of the residual's own object and must consume an inventory row; a diamond that only relocates the difficulty is removed, not kept. At that point the open node has been replaced by architecturally complete subgraph whose remaining content is a list of bounded local lemmas. Proving them is the Execute step; it may itself fail and recurse, but each recursion is on a smaller, typed object.
+6. **Stop when every no-arm has a consumer and every split passes §4.8.** Each diamond's arms must be properties of the residual's own object and must consume an inventory row; a diamond that only relocates the difficulty is removed, not kept. At that point the open node has been replaced by architecturally complete subgraph whose remaining content is a list of bounded local lemmas. Proving them is the Execute step; it may itself fail and recurse, but each recursion is on a smaller, typed object. This ends the architectural repair only. A request for full branch closure requires executing all those local lemmas and recursive cases under §4.10 before stopping.
 
 Section 7 performs this procedure on node [182] of the Erdős–Gyárfás proof, and Section 8 on node [181].
 
@@ -303,7 +303,7 @@ A residual is closed by finding structure the counterexample cannot afford, not 
 3. *Technique it enables* — from the register's `techniques` field for that property.
 4. *Certificate it would return* — from the register's `certificate` field: what the move gives if it succeeds, and what typed residual it leaves if it fails.
 
-The move to apply is the technique that evaluates the **largest amount of unaccounted structure**, measured by how many rows it touches and how much of the counterexample's freedom its certificate removes. Ties are broken toward the cheaper currency (constraint before compression before quantity).
+Among moves that pass the admission checks of §§4.8 and 4.10, apply the technique that evaluates the **largest amount of unaccounted structure**, measured by how many rows it touches and how much of the counterexample's freedom its certificate removes. Ties are broken toward the cheaper currency (constraint before compression before quantity). Touching many rows does not admit a move whose outcomes have no verified continuation.
 
 Three things are not moves and are never entered in the inventory:
 
@@ -367,7 +367,7 @@ Two tests decide admissibility before the split is made:
 - **Locality test.** The typed data of each arm must be a property of the *same* object the residual is about (the piece, the component, the support), readable from the branch state. An arm whose data is a constraint on the complement, the outside, the connectors, or "the rest of $G$" has moved the residual to a larger object; it has widened, not narrowed. Such a constraint may be *recorded* as a fact on the ledger, but it is not an arm.
 - **Consumption test.** The step must name the structural row of the inventory (§4.7) that it consumes, and after the step that row must be *accounted*: its content is either used up (the object no longer has it) or turned into a number on the ledger. A step after which the same row is still on the unaccounted list has consumed nothing.
 
-A split that fails both tests is the "splitting forever" failure: correct diamonds whose arms are all as hard as the parent. The record of it in this project: in the [181] descent, the doubling split (Step 9) and the parity split (Step 11) produced arms whose data — connector bands, connector distances, bipartiteness of $G-Z$ — lived in $G-Z$. They fail the locality test; neither decreased a measure of the piece; they were made anyway, and the residual grew. The gadget lemma (the gadget-closure lemma (removed)) later closed one of those arms, but it did so by a *minimality* move that was available before the splits and would have applied to the parent; the splits contributed nothing to it. 
+A split that fails either test is inadmissible. The "splitting forever" failure consists of correct diamonds whose arms are all as hard as the parent. The record of it in this project: in the [181] descent, the doubling split (Step 9) and the parity split (Step 11) produced arms whose data — connector bands, connector distances, bipartiteness of $G-Z$ — lived in $G-Z$. They fail the locality test; neither decreased a measure of the piece; they were made anyway, and the residual grew. The gadget lemma (the gadget-closure lemma (removed)) later closed one of those arms, but it did so by a *minimality* move that was available before the splits and would have applied to the parent; the splits contributed nothing to it.
 
 What to do when the selected move needs a fact you cannot prove (rule 13 of §5.4) is therefore not "split on the fact" unconditionally: split on it only if the negated arm passes the locality test and consumes a row. If it does not, the selected move was wrong for this residual — go back to the inventory and select a move whose output is on the object itself, typically a minimality move (deletion, contraction, replacement, gadget closure: their output is a property of the configuration), an extremal-choice refinement (the packing, the counterexample, the cut are all *chosen*; a secondary criterion in the choice is a new local fact about the chosen object), or a well-founded recursion on the object (peel a sub-configuration off and recurse on the smaller remainder).
 
@@ -386,6 +386,42 @@ This section is written from the record of one session on nodes [181]/[182] and 
 **What replaces all four.** At an obstacle, write the obstacle's object and its present rows (including every accounted fact as data), select the technique that consumes the most of them with its preconditions present, and execute it. Repeat. The record of the descent is a sequence of executed steps ending in leaves; it contains no diagnosis.
 
 **Instance, so that the rule is checkable.** At [181] after E3 the correct continuation was: object = the theta formed by the cycle $A=R_0+wh$ (length $2^k+1$) and the pocket cycle $C_0$ with shared segment $S\subseteq T_u$, $\lvert S\rvert=s$; present rows: $\lvert R_0\rvert=2^k$ (C01), $R_0=\Gamma_0\circ Q_0$ with $\Gamma_0$ outside $X$ (H07), $C_0$ inside $X$ with $\lvert C_0\rvert=2^{k'}+1+d_{12}\le\lvert X\rvert$ (I02), $S$ on the trace so $s\le\lvert T_u\rvert\le11$ (A07/I02), the third cycle $A\triangle C_0$ of length $2^k+2^{k'}+2+d_{12}-2s\notin\mathrm{Pow}$ (inv 31, as data); technique: T09 arithmetic on the three lengths with $s\le11$ and $d_{12}\le11$ — a finite arithmetic object — followed by the next inventory on whichever arm survives. That is what should have been written next, and was not.
+
+### 4.10 Execution checks from the node [185] attempt
+
+These checks apply before announcing a closing move, committing a transition, or reporting completion. They make §§4.7–4.9 operational; a new inventory document, a correct auxiliary lemma, or a successful script is not by itself a branch reduction.
+
+**1. Check the move history, including rejected attempts.** Read the existing inventory and attempt record once, then maintain it as work proceeds. Identify a candidate by the tuple *(technique, exact observable, retained object, hypotheses used)*. Compare that tuple with upstream moves and previous attempts, including withdrawn and unimplemented ones. Renaming a theta, changing its presentation, or repeating a fold does not create unaccounted structure. Before selecting a candidate, name the concrete property not evaluated by those attempts and the textbook move that evaluates it. Reuse established conclusions as premises; do not rerun the move that established them. A corrected attempt requires a specific newly proved premise or corrected construction, not renewed optimism.
+
+**2. Fix the exact objects before constructing a certificate.** Alongside the complete inherited ledger, record the selected support, receiver, peeling set, loads, actual returns, boundary, response pieces, and realization family, as applicable. Every use of a consumer must match these indices or prove the required transport. In the [185] attempt this means:
+
+- Target-completeness of the two registered Q1 response pieces does not assert target-completeness of the original support and an arbitrary folded support.
+- An empty-peeling package and a package at the selected history's current peeling set do not share no-exit facts without proof.
+- Internal edges exposed by a new separator are not original boundary supply; origins lying in the separator retain their demands and witnesses.
+- Properties of the actual graph do not restrict every member of a counting or realization family unless that restriction is proved for the family's declared domain.
+
+Construct the consumer's actual mathematical object and verify all its fields. A name such as “quotient”, “first separator”, or “compression” does not supply a graph realization, the required boundary degrees, preserved minimum degree, or strict descent.
+
+**3. Separate local proof work from an admitted transition.** For each candidate, fill in this execution record:
+
+| Required field | Evidence |
+|---|---|
+| Unaccounted structure | Property IDs, exact observable, and comparison with the move history |
+| Textbook move | Exact statement and the branch facts proving each hypothesis |
+| Construction | Actual witnesses and their preservation proofs on the retained objects |
+| Exhaustive outcomes | Every arm, including degeneracies, overlaps and failed identifications |
+| Consumer of each arm | A closed row with all hypotheses proved, or a smaller typed residual with invariant preservation and strict well-founded decrease |
+| Terminal table, if used | Complete generator, coverage proof, checked cases, and a closure certificate for every case |
+
+Proving a missing local implementation is the **Execute** obligation. Do that work; do not replace it with “this needs a lemma”, “would be useful”, a discussion of the method's completeness, or a request to continue. If the proposed construction fails, identify the first failed obligation and use the retained structure to repair it or select another admissible move. A named textbook theorem is not a substitute for its application proof.
+
+**4. Finish the complementary outcomes before claiming reduction.** A Menger linkage–separator dichotomy with no consumer on either outcome has evaluated an observable but has not reduced the branch. A finite theta table with surviving patterns is not a terminal certificate. For each survivor, execute its continuation; do not leave “analyse the overlaps next” as the result. A finite bound alone is not a decreasing measure, and fewer unaccounted inventory rows is not automatically a well-founded measure on residuals. Recursion must preserve the complete required state, strictly decrease a stated measure, and discharge its base cases.
+
+The locality and consumption tests are both required. Passing them does not replace the progress requirement: a valid local implication may still be inadmissible as a proof-DAG transition.
+
+**5. Keep intermediate status separate from the requested endpoint.** Distinguish *candidate*, *proved local implication*, *admitted reduction*, and *closed branch*. Only the corresponding evidence permits each status. Keep rejected candidates out of the active proof and record their rejection in one inventory sentence, rather than producing another failure report. When full branch closure is requested, a smaller residual is an intermediate obligation: put every child on the work queue and continue until the queue is empty. A plan, a list of local lemmas, or a promise to implement them is not completion.
+
+Before reporting closure, check that every reachable arm has a proved terminal or a proved identification with an already closed row, and that all required implementation and wiring checks pass. If a counterexample is the requested alternative, it must be an actual object with verified theorem hypotheses and failure of the target; a surviving local pattern or an unresolved proof obligation is not a counterexample. Do not claim either endpoint without its evidence. If work is interrupted, preserve the exact outstanding obligation as unfinished work; interruption does not certify closure or justify abandoning the queue.
 
 ## 5. Choosing the move that closes the new residual
 
@@ -1012,7 +1048,8 @@ The skill `.claude/skills/eg-proof-expansion/SKILL.md` is the Lean mirror of Sec
 
 ### 12.4 Declaring a node closed
 
-- [ ] The terminal has a certificate of a listed type (hit, defect, compression, capacity, rigidity, identification, enumeration, exact open residual).
+- [ ] Every reachable terminal has a proved closure certificate (hit, defect, compression, capacity, rigidity, identification with a closed row, or exhaustive terminal enumeration). An exact open residual records unfinished work; it is not a closure certificate.
+- [ ] The execution checks of §4.10 pass: no repeated exhausted move, no object or fibre substitution, no unconsumed outcome, and no remaining child obligation.
 - [ ] Diagram, dependency table (Failure route), constraint ledger, per-lemma requirements, resilience row, and audit table are updated and agree.
 - [ ] No forward reference: every Requires entry is introduced at an earlier-or-equal node.
 - [ ] (Lean) Gate A: elaborates with no tracer axiom. Gate B: the `Holds` proposition is the manuscript's statement. Gate C: canonical carrier only.
@@ -1031,7 +1068,7 @@ The skill `.claude/skills/eg-proof-expansion/SKILL.md` is the Lean mirror of Sec
 - [ ] The residual inventory (§4.7) is written: every present property, its upstream consumer or "not accounted", the technique it enables, the certificate.
 - [ ] Shared obligations across constructors are identified and ordered (cross-branch audit first, shared local lemma second).
 - [ ] The old node keeps its number and becomes the decision; new nodes are appended.
-- [ ] The remaining content is a list of bounded local lemmas, each with a closing move and a failure route.
+- [ ] Every remaining local lemma is on the execution queue with its exact inputs, closing move and failure route. For a full-closure request, these lemmas and all their children are proved before completion is reported.
 
 ### 12.6 Auditing an offered consumer
 
@@ -1045,7 +1082,7 @@ The skill `.claude/skills/eg-proof-expansion/SKILL.md` is the Lean mirror of Sec
 
 ## 13. Operating prompt for the executor
 
-Paste this verbatim at the start of any session that works on an open node. It is written in the second person because the failures it prevents were the executor's, recorded in §4.8, §4.9 and rules 14–18. It adds nothing to the method; it removes the executor's freedom to deviate from it.
+Paste this verbatim at the start of any session that works on an open node. It is written in the second person because the failures it prevents were the executor's, recorded in §4.8, §4.9 and rules 14–18. Use it together with the execution checks in §4.10; both govern move admission and completion claims.
 
 > **Operating prompt — structural exhaustion on an open node.**
 >
@@ -1059,17 +1096,17 @@ Paste this verbatim at the start of any session that works on an open node. It i
 >
 > 4. **Inventory before anything.** You list the register's properties (A01–I06) against the branch state: present or absent; if present, accounted by which upstream step or unaccounted; the techniques the register attaches; whether each technique's *precondition* rows are present (rule 17). Certificates of failure (tokens, witnesses, routing records) carry no positive structure (rule 15). Upstream quantitative facts (state counts, budgets, ranks, caps, packing cardinality) are rows, not background.
 >
-> 5. **Selection.** You select the technique that consumes the most unaccounted rows and whose precondition rows are present. If a move rests on a finite table, you compute the table first and select the move only if the table contradicts the supply on the residual's actual parameters (rule 18). You do not select a move because it looks like a known argument.
+> 5. **Selection.** You first compare the candidate with upstream, rejected and unimplemented attempts using §4.10. Among candidates whose prerequisites and outcome routes pass admission, select the technique that consumes the most unaccounted structure. A new name or sub-object does not make a repeated move new. If a move rests on a finite table, you compute the table first and select the move only if the table contradicts the supply on the residual's actual parameters (rule 18). You do not select a move because it looks like a known argument.
 >
-> 6. **Execution.** You execute the move on the whole branch state to its end: a `False` leaf, a smaller typed object with a named decreasing measure, or an identification with a closed row whose hypotheses you have checked clause by clause against the branch. An arm whose data lives on a different object than the residual's is not an arm (§4.8 locality test); an arm after which the same rows remain unaccounted consumed nothing (§4.8 consumption test). At an obstacle inside a move, you inventory the obstacle's object with every accounted fact as present data and continue; "accounted" is never a stop sign (§4.9 F2). You never leave a move at an obstacle with a note.
+> 6. **Execution.** You execute the move on the whole branch state to its end: a `False` leaf, a smaller typed object with a named decreasing measure, or an identification with a closed row whose hypotheses you have checked clause by clause against the branch. An arm whose data lives on a different object than the residual's is not an arm (§4.8 locality test); an arm after which the same rows remain unaccounted consumed nothing (§4.8 consumption test). At an obstacle inside a move, you inventory the obstacle's object with every accounted fact as present data and continue; "accounted" is never a stop sign (§4.9 F2). You never leave a move at an obstacle with a note. Proving the local implementation of the textbook move is part of this execution, not a reason to stop or substitute a feasibility discussion. For full branch closure, execute every smaller residual and its descendants too; a decreasing step is an intermediate result.
 >
 > 7. **Forbidden outputs.** You never write: why a route cannot work; that the residual is unclosable; a "limit" or "no-go" theorem; an assessment of whether the user's instruction is achievable; a proposal to search, enumerate, or brute-force; a proposal to repair an upstream node; a refinement of an upstream extremal choice; a re-derivation of an upstream fact; a re-application of an accounted row. If you have concluded privately that the task is impossible, that conclusion has no standing and is not written, not acted on, and not used to choose the next step (§4.9 F1). You do not invoke a fallback the user has named until every technique in the register has been executed to a leaf on the residual with the record attached (§4.9 F4).
 >
-> 8. **Claims.** You never call a step a reduction, a narrowing, or progress unless it has a closed arm or a named decreasing measure. If you discover that a step you recorded did neither, you delete it from the record and say so in one sentence; you do not leave it in and qualify it.
+> 8. **Claims.** Apply the status distinctions in §4.10. You never call a step a reduction, a narrowing, or progress unless every outcome has a verified route to closure or a typed residual with proved strict decrease. Counting evaluated properties, generating a table with survivors, or proving an auxiliary dichotomy does not satisfy this requirement. If you discover that a recorded step fails these requirements, you delete it from the active proof and record the rejection in one inventory sentence; you do not leave it in and qualify it.
 >
 > 9. **Reporting.** Each report states, in this order and nothing more: the object (verbatim typed data), the rows consumed by the step, the arms with their closed/typed status and measures, and the next selected move with its precondition check. No diagnosis, no explanation of difficulty, no assessment of your own performance, no promises.
 >
-> 10. **Instructions.** The user's instructions are ledger facts: they constrain the work and are not hypotheses to test, negotiate, or route around. When an instruction conflicts with what you would prefer to do, the instruction wins without comment. When you are told you deviated, you fix the record first and explain second, in one sentence.
+> 10. **Instructions.** The user's instructions constrain the work; they are not mathematical hypotheses or evidence of closure, and are not hypotheses to test, negotiate, or route around. When an instruction conflicts with what you would prefer to do, the instruction wins without comment. When you are told you deviated, you fix the record first and explain second, in one sentence.
 
 ## 14. Glossary and source map
 

@@ -1504,9 +1504,8 @@ noncomputable def selectedLargeBudgetPressureCensus
 The incoming ledger is retained verbatim.  Maximality of its demand partition
 rules out an unpaid entry with three private carriers by a one-entry
 augmentation.  If an unpaid two-carrier entry has no exit-`(4)` witness, the
-unified census identifies the already closed `[124]` input.  Consequently the
-only outgoing residual consists entirely of unpaid two-carrier entries carrying
-their canonical exit-`(4)` witnesses. -/
+unified census identifies the already closed `[124]` input.  On the other arm,
+every unpaid two-carrier entry retains its canonical exit-`(4)` witness. -/
 -- EG-NODE [181] maximal-ledger augmentation: high-private unpaid entries vanish
 -- EG-NODE [183] every unpaid two-carrier entry has a canonical exit-(4) witness
 noncomputable def selectedRouteEightUnpaidExitFourReduction
@@ -1514,6 +1513,8 @@ noncomputable def selectedRouteEightUnpaidExitFourReduction
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .route8PeeledDemandResidual) known]
     [FactKeys.Has (K .route8UnifiedEntryCensus) known]
+    [FactKeys.Has (K .route8ExtractedEntryCensus) known]
+    [FactKeys.Has (K .selection) known]
     (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known := by
       simp [K_eq_iff])
     (residualFresh : K .route8UnpaidExitFourResidual ∉ known := by
@@ -1537,6 +1538,76 @@ noncomputable def selectedRouteEightUnpaidExitFourReduction
       exact (closed.get (K .route8TerminalNoGo)).down.elim
   | .right residualHistory =>
       exact residualHistory
+
+/-- **Node `[184]`: shortest-trace boundary-support exhaustion.**
+
+The exact entry family and every inherited ledger key are retained.  On the
+literal `[183]` survivor, a silent entry would have a chordless shortest trace
+whose vertices all lie on the boundary of its own support.  The retained basin
+state would then be independent of its coordinate set, so the empty essential
+core would be admissible, contradicting the incoming census bound `alpha ≥ 2`.
+Thus the explicit silent-entry residual has cardinality zero. -/
+-- EG-NODE [184] the silent subfamily of the retained unified entries is empty
+noncomputable def selectedRouteEightVisibleResidual
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .route8UnpaidExitFourResidual) known]
+    [FactKeys.Has (K .route8UnifiedEntryCensus) known]
+    (visibleFresh : K .route8UnifiedVisibleResidual ∉ known := by
+      simp [K_eq_iff]) :
+    ExactLedger EGInput.{u} selected
+      (K .route8UnifiedVisibleResidual :: known) :=
+  (route8UnifiedVisibleResidualRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    history (by simp [K_eq_iff, visibleFresh])
+
+/-- **Node `[185]`: visible-first prefix exhaustion.**
+
+The literal unified entry family is retained.  Since `[184]` makes each of
+its excess loads visible, a receiver with no overloaded completion port would
+put that load back in the visible-first payable prefix.  This contradicts the
+entry's inherited excess-basin membership.  Thus every retained entry owns
+the canonical actual visible-four package and the non-overloaded subfamily has
+cardinality zero. -/
+-- EG-NODE [185] every retained unified entry has an actual visible-four overload package
+noncomputable def selectedRouteEightVisibleOverload
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .route8UnifiedVisibleResidual) known]
+    [FactKeys.Has (K .route8PeeledDemandResidual) known]
+    [FactKeys.Has (K .typeAExitSevenFree) known]
+    (overloadFresh : K .route8UnifiedVisibleOverload ∉ known := by
+      simp [K_eq_iff])
+    (historyFresh : K .route8UnifiedVisibleHistory ∉ known := by
+      simp [K_eq_iff]) :
+    ExactLedger EGInput.{u} selected
+      ([K .route8UnifiedVisibleOverload,
+        K .route8UnifiedVisibleHistory] ++ known) :=
+  (route8UnifiedVisibleOverloadRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    history (by simp [K_eq_iff, overloadFresh, historyFresh])
+
+/-- **Node `[186]`: simultaneous balance of the literal `[185]` residual.**
+
+This executes `route8JointBalanceRow` at the fresh canonical key, so the new
+fact is appended to the same `ExactLedger`; no bare proposition or detached
+reconstruction is returned. -/
+-- EG-NODE [186] exact joint peel, deficit, demand, absorption, and open-unit balance
+noncomputable def selectedRouteEightJointBalance
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .route8UnifiedVisibleOverload) known]
+    [FactKeys.Has (K .route8UnifiedVisibleResidual) known]
+    [FactKeys.Has (K .route8PeeledDemandResidual) known]
+    [FactKeys.Has (K .route8UnifiedDeficit) known]
+    (jointFresh : K .route8JointBalance ∉ known) :
+    ExactLedger EGInput.{u} selected (K .route8JointBalance :: known) :=
+  (route8JointBalanceRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    history (by simpa [K_eq_iff] using jointFresh)
 
 /-- **Nodes `[110]`--`[116]`: the route-8 residual of Part IX**, on the shared
   `[109]` residual reached by the no-edge of exit `(7)` (index-polymorphic).
@@ -1591,7 +1662,7 @@ abbrev SelectedRouteEightBoundary (selected : EGInput.{u}) :=
         erdosReceiverLoadProfile spineData .route8QuotientResidual
         selected.object ∨
       Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-        erdosReceiverLoadProfile spineData .route8UnpaidExitFourResidual
+        erdosReceiverLoadProfile spineData .route8JointBalance
         selected.object
 
 noncomputable def selectedRouteEightResidual
@@ -1642,6 +1713,15 @@ noncomputable def selectedRouteEightResidual
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known)
     (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known := by
       simp [K_eq_iff])
+    (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known := by
+      simp [K_eq_iff])
+    (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known := by
+      simp [K_eq_iff])
+    (jointBalanceFresh : K .route8JointBalance ∉ known := by
+      simp [K_eq_iff])
+    (silentClosure : Option
+      (FactKeys.Has (K .typeASilentExitSevenFree) known ×
+        (closed ∉ known)) := none)
     [FactKeys.Has (K .typeAReceiverRouting) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .selection) known]
@@ -1856,8 +1936,29 @@ noncomputable def selectedRouteEightResidual
                     simp [K_eq_iff, unpaidExitFourFresh])
                   (terminalFresh := by
                     simp [K_eq_iff, unifiedTerminalFresh])
-              exact Or.inr (Or.inr
-                (unpaidExitFour.get (K .route8UnpaidExitFourResidual)).down)
+              let visibleResidual :=
+                selectedRouteEightVisibleResidual unpaidExitFour
+                  (visibleFresh := by
+                    simp [K_eq_iff, unifiedVisibleFresh])
+              match silentClosure with
+              | some silentData =>
+                  letI : FactKeys.Has (K .typeASilentExitSevenFree) known :=
+                    silentData.1
+                  exact ((closeIncompatible visibleResidual
+                    (K .typeASilentExitSevenFree)
+                    (K .route8UnifiedVisibleResidual)
+                    (by simp [K_eq_iff, silentData.2])).elimClosed
+                      (by infer_instance)).elim
+              | none =>
+                  let visibleOverload :=
+                    selectedRouteEightVisibleOverload visibleResidual
+                      (overloadFresh := by
+                        simp [K_eq_iff, unifiedVisibleOverloadFresh])
+                  let jointBalance :=
+                    selectedRouteEightJointBalance visibleOverload
+                      (by simp [K_eq_iff, jointBalanceFresh])
+                  exact Or.inr (Or.inr
+                    (jointBalance.get (K .route8JointBalance)).down)
 
 /- The ordinary negative-support wrapper is retained separately from the
 absorbed `[177]` carrier.  Its existing enclosing branches already provide the
@@ -1906,6 +2007,12 @@ noncomputable def selectedTypeBRoute8Continuation
       simp [K_eq_iff])
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known := by simp [K_eq_iff])
     (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known := by
+      simp [K_eq_iff])
+    (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known := by
+      simp [K_eq_iff])
+    (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known := by
+      simp [K_eq_iff])
+    (jointBalanceFresh : K .route8JointBalance ∉ known := by
       simp [K_eq_iff]) :
     SelectedRouteEightBoundary selected := by
   let bridgeMass :=
@@ -1982,8 +2089,18 @@ noncomputable def selectedTypeBRoute8Continuation
               (unifiedTrueFresh := by simp [K_eq_iff, unifiedTrueFresh])
               (residualFresh := by simp [K_eq_iff, unpaidExitFourFresh])
               (terminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
+          let visibleResidual :=
+            selectedRouteEightVisibleResidual unpaidExitFour
+              (visibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+          let visibleOverload :=
+            selectedRouteEightVisibleOverload visibleResidual
+              (overloadFresh := by
+                simp [K_eq_iff, unifiedVisibleOverloadFresh])
+          let jointBalance :=
+            selectedRouteEightJointBalance visibleOverload
+              (by simp [K_eq_iff, jointBalanceFresh])
           exact Or.inr (Or.inr
-            (unpaidExitFour.get (K .route8UnpaidExitFourResidual)).down)
+            (jointBalance.get (K .route8JointBalance)).down)
 
 /- The four non-closing outputs of the common Type B certificate calculation.
 They are exactly the paper's two local-payment and two fan-mass boundaries:
@@ -3020,6 +3137,14 @@ noncomputable def selectedTypeBChargedRoute8Continuation
     (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known := by simp [K_eq_iff])
     (windowBlockersFresh : K .route8WindowBlockers ∉ known := by simp [K_eq_iff])
     (demandResidualFresh : K .route8PeeledDemandResidual ∉ known := by simp [K_eq_iff])
+    (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known := by
+      simp [K_eq_iff])
+    (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known := by
+      simp [K_eq_iff])
+    (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known := by
+      simp [K_eq_iff])
+    (jointBalanceFresh : K .route8JointBalance ∉ known := by
+      simp [K_eq_iff])
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known := by simp [K_eq_iff]) :
     SelectedRouteEightBoundary selected := by
   letI := cubicFresh
@@ -3051,6 +3176,11 @@ noncomputable def selectedTypeBChargedRoute8Continuation
     (demandAbsorptionFresh := by simp [K_eq_iff, demandAbsorptionFresh])
     (windowBlockersFresh := by simp [K_eq_iff, windowBlockersFresh])
     (demandResidualFresh := by simp [K_eq_iff, demandResidualFresh])
+    (unpaidExitFourFresh := by simp [K_eq_iff, unpaidExitFourFresh])
+    (unifiedVisibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+    (unifiedVisibleOverloadFresh := by
+      simp [K_eq_iff, unifiedVisibleOverloadFresh])
+    (jointBalanceFresh := by simp [K_eq_iff, jointBalanceFresh])
     (unifiedTerminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
 
 /-- The common charged tail of the absorbed case-(ii) family.  Its input is
@@ -3126,6 +3256,14 @@ private noncomputable def selectedAbsorbedFanChargeContinuation
     (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known := by simp [K_eq_iff])
     (windowBlockersFresh : K .route8WindowBlockers ∉ known := by simp [K_eq_iff])
     (demandResidualFresh : K .route8PeeledDemandResidual ∉ known := by simp [K_eq_iff])
+    (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known := by
+      simp [K_eq_iff])
+    (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known := by
+      simp [K_eq_iff])
+    (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known := by
+      simp [K_eq_iff])
+    (jointBalanceFresh : K .route8JointBalance ∉ known := by
+      simp [K_eq_iff])
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known := by simp [K_eq_iff]) :
     SelectedRouteEightBoundary selected := by
   letI := cubicFresh
@@ -3190,6 +3328,11 @@ private noncomputable def selectedAbsorbedFanChargeContinuation
         (demandAbsorptionFresh := by simp [K_eq_iff, demandAbsorptionFresh])
         (windowBlockersFresh := by simp [K_eq_iff, windowBlockersFresh])
         (demandResidualFresh := by simp [K_eq_iff, demandResidualFresh])
+        (unpaidExitFourFresh := by simp [K_eq_iff, unpaidExitFourFresh])
+        (unifiedVisibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+        (unifiedVisibleOverloadFresh := by
+          simp [K_eq_iff, unifiedVisibleOverloadFresh])
+        (jointBalanceFresh := by simp [K_eq_iff, jointBalanceFresh])
         (unifiedTerminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
     | exact selectedTypeBChargedRoute8Continuation paid
         (by simp [K_eq_iff, bridgeMassFresh])
@@ -3215,6 +3358,11 @@ private noncomputable def selectedAbsorbedFanChargeContinuation
         (demandAbsorptionFresh := by simp [K_eq_iff, demandAbsorptionFresh])
         (windowBlockersFresh := by simp [K_eq_iff, windowBlockersFresh])
         (demandResidualFresh := by simp [K_eq_iff, demandResidualFresh])
+        (unpaidExitFourFresh := by simp [K_eq_iff, unpaidExitFourFresh])
+        (unifiedVisibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+        (unifiedVisibleOverloadFresh := by
+          simp [K_eq_iff, unifiedVisibleOverloadFresh])
+        (jointBalanceFresh := by simp [K_eq_iff, jointBalanceFresh])
         (unifiedTerminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
 
 /-- The quantitative tail of `[76]`/`[85]` on the near-cubic inputs for which
@@ -3285,6 +3433,14 @@ noncomputable def selectedTypeBNearCubicCertificateAfterPortRouting
     (windowBlockersFresh : K .route8WindowBlockers ∉ known := by simp [K_eq_iff])
     (demandResidualFresh : K .route8PeeledDemandResidual ∉ known := by
       simp [K_eq_iff])
+    (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known := by
+      simp [K_eq_iff])
+    (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known := by
+      simp [K_eq_iff])
+    (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known := by
+      simp [K_eq_iff])
+    (jointBalanceFresh : K .route8JointBalance ∉ known := by
+      simp [K_eq_iff])
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known)
     (globalLocalBridgeFresh : K .typeBGlobalLocalBridge ∉ known := by
       simp [K_eq_iff]) :
@@ -3317,6 +3473,11 @@ noncomputable def selectedTypeBNearCubicCertificateAfterPortRouting
         (demandAbsorptionFresh := by simp [K_eq_iff, demandAbsorptionFresh])
         (windowBlockersFresh := by simp [K_eq_iff, windowBlockersFresh])
         (demandResidualFresh := by simp [K_eq_iff, demandResidualFresh])
+        (unpaidExitFourFresh := by simp [K_eq_iff, unpaidExitFourFresh])
+        (unifiedVisibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+        (unifiedVisibleOverloadFresh := by
+          simp [K_eq_iff, unifiedVisibleOverloadFresh])
+        (jointBalanceFresh := by simp [K_eq_iff, jointBalanceFresh])
         (unifiedTerminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
   | .inr (.inl paid) =>
       rcases (paid.get (K .typeBExcluded)).down with canonical | _handoff
@@ -3352,6 +3513,11 @@ noncomputable def selectedTypeBNearCubicCertificateAfterPortRouting
           (demandAbsorptionFresh := by simp [K_eq_iff, demandAbsorptionFresh])
           (windowBlockersFresh := by simp [K_eq_iff, windowBlockersFresh])
           (demandResidualFresh := by simp [K_eq_iff, demandResidualFresh])
+          (unpaidExitFourFresh := by simp [K_eq_iff, unpaidExitFourFresh])
+          (unifiedVisibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+          (unifiedVisibleOverloadFresh := by
+            simp [K_eq_iff, unifiedVisibleOverloadFresh])
+          (jointBalanceFresh := by simp [K_eq_iff, jointBalanceFresh])
           (unifiedTerminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
   | .inr (.inr (.inl mass)) =>
       exact selectedTypeBRoute8Continuation mass
@@ -3376,6 +3542,11 @@ noncomputable def selectedTypeBNearCubicCertificateAfterPortRouting
         (demandAbsorptionFresh := by simp [K_eq_iff, demandAbsorptionFresh])
         (windowBlockersFresh := by simp [K_eq_iff, windowBlockersFresh])
         (demandResidualFresh := by simp [K_eq_iff, demandResidualFresh])
+        (unpaidExitFourFresh := by simp [K_eq_iff, unpaidExitFourFresh])
+        (unifiedVisibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+        (unifiedVisibleOverloadFresh := by
+          simp [K_eq_iff, unifiedVisibleOverloadFresh])
+        (jointBalanceFresh := by simp [K_eq_iff, jointBalanceFresh])
         (unifiedTerminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
   | .inr (.inr (.inr mass)) =>
       exact selectedTypeBRoute8Continuation mass
@@ -3400,6 +3571,11 @@ noncomputable def selectedTypeBNearCubicCertificateAfterPortRouting
         (demandAbsorptionFresh := by simp [K_eq_iff, demandAbsorptionFresh])
         (windowBlockersFresh := by simp [K_eq_iff, windowBlockersFresh])
         (demandResidualFresh := by simp [K_eq_iff, demandResidualFresh])
+        (unpaidExitFourFresh := by simp [K_eq_iff, unpaidExitFourFresh])
+        (unifiedVisibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+        (unifiedVisibleOverloadFresh := by
+          simp [K_eq_iff, unifiedVisibleOverloadFresh])
+        (jointBalanceFresh := by simp [K_eq_iff, jointBalanceFresh])
         (unifiedTerminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
 
 /-- Compatibility name for callers that already carry the common `[72]`
@@ -3480,6 +3656,11 @@ noncomputable def selectedTypeBDecoratedContinuation
     (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known)
     (windowBlockersFresh : K .route8WindowBlockers ∉ known)
     (demandResidualFresh : K .route8PeeledDemandResidual ∉ known)
+    (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known)
+    (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known)
+    (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known)
+    (jointBalanceFresh : K .route8JointBalance ∉ known := by
+      simp [K_eq_iff])
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known)
     (decoratedExcludedFresh : K .typeBExcluded ∉ known)
     (decoratedExclusionResidualFresh : K .typeBExclusionResidual ∉ known)
@@ -3566,6 +3747,11 @@ noncomputable def selectedTypeBDecoratedContinuation
         (demandAbsorptionFresh := by simp [K_eq_iff, demandAbsorptionFresh])
         (windowBlockersFresh := by simp [K_eq_iff, windowBlockersFresh])
         (demandResidualFresh := by simp [K_eq_iff, demandResidualFresh])
+        (unpaidExitFourFresh := by simp [K_eq_iff, unpaidExitFourFresh])
+        (unifiedVisibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+        (unifiedVisibleOverloadFresh := by
+          simp [K_eq_iff, unifiedVisibleOverloadFresh])
+        (jointBalanceFresh := by simp [K_eq_iff, jointBalanceFresh])
         (unifiedTerminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
         (globalLocalBridgeFresh := by
           simp [K_eq_iff, decoratedGlobalLocalBridgeFresh])
@@ -3652,6 +3838,11 @@ noncomputable def selectedTypeBDecoratedContinuation
         (demandAbsorptionFresh := by simp [K_eq_iff, demandAbsorptionFresh])
         (windowBlockersFresh := by simp [K_eq_iff, windowBlockersFresh])
         (demandResidualFresh := by simp [K_eq_iff, demandResidualFresh])
+        (unpaidExitFourFresh := by simp [K_eq_iff, unpaidExitFourFresh])
+        (unifiedVisibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+        (unifiedVisibleOverloadFresh := by
+          simp [K_eq_iff, unifiedVisibleOverloadFresh])
+        (jointBalanceFresh := by simp [K_eq_iff, jointBalanceFresh])
         (unifiedTerminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
         (globalLocalBridgeFresh := by
           simp [K_eq_iff, decoratedGlobalLocalBridgeFresh])
@@ -3721,6 +3912,10 @@ noncomputable def selectedTypeADecoratedHandoff
     (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known)
     (windowBlockersFresh : K .route8WindowBlockers ∉ known)
     (demandResidualFresh : K .route8PeeledDemandResidual ∉ known)
+    (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known)
+    (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known)
+    (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known)
+    (jointBalanceFresh : K .route8JointBalance ∉ known)
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known)
     (decoratedExcludedFresh : K .typeBExcluded ∉ known)
     (decoratedExclusionResidualFresh : K .typeBExclusionResidual ∉ known)
@@ -3780,6 +3975,11 @@ noncomputable def selectedTypeADecoratedHandoff
     (demandAbsorptionFresh := by simp [K_eq_iff, demandAbsorptionFresh])
     (windowBlockersFresh := by simp [K_eq_iff, windowBlockersFresh])
     (demandResidualFresh := by simp [K_eq_iff, demandResidualFresh])
+    (unpaidExitFourFresh := by simp [K_eq_iff, unpaidExitFourFresh])
+    (unifiedVisibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+    (unifiedVisibleOverloadFresh := by
+      simp [K_eq_iff, unifiedVisibleOverloadFresh])
+    (jointBalanceFresh := by simp [K_eq_iff, jointBalanceFresh])
     (unifiedTerminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
     (decoratedExcludedFresh := by simp [K_eq_iff, decoratedExcludedFresh])
     (decoratedExclusionResidualFresh := by
@@ -3902,6 +4102,10 @@ noncomputable def selectedTypeAExitFiveToSeven
     (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known)
     (windowBlockersFresh : K .route8WindowBlockers ∉ known)
     (demandResidualFresh : K .route8PeeledDemandResidual ∉ known)
+    (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known)
+    (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known)
+    (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known)
+    (jointBalanceFresh : K .route8JointBalance ∉ known)
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known)
     (decoratedExcludedFresh : K .typeBExcluded ∉ known)
     (decoratedExclusionResidualFresh : K .typeBExclusionResidual ∉ known)
@@ -3974,6 +4178,11 @@ noncomputable def selectedTypeAExitFiveToSeven
                 (demandAbsorptionFresh := by simp [K_eq_iff, demandAbsorptionFresh])
                 (windowBlockersFresh := by simp [K_eq_iff, windowBlockersFresh])
                 (demandResidualFresh := by simp [K_eq_iff, demandResidualFresh])
+                (unpaidExitFourFresh := by simp [K_eq_iff, unpaidExitFourFresh])
+                (unifiedVisibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+                (unifiedVisibleOverloadFresh := by
+                  simp [K_eq_iff, unifiedVisibleOverloadFresh])
+                (jointBalanceFresh := by simp [K_eq_iff, jointBalanceFresh])
                 (unifiedTerminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
                 (decoratedExcludedFresh := by simp [K_eq_iff, decoratedExcludedFresh])
                 (decoratedExclusionResidualFresh := by simp [K_eq_iff, decoratedExclusionResidualFresh])
@@ -4042,6 +4251,11 @@ noncomputable def selectedTypeAExitFiveToSeven
                 (demandAbsorptionFresh := by simp [K_eq_iff, demandAbsorptionFresh])
                 (windowBlockersFresh := by simp [K_eq_iff, windowBlockersFresh])
                 (demandResidualFresh := by simp [K_eq_iff, demandResidualFresh])
+                (unpaidExitFourFresh := by simp [K_eq_iff, unpaidExitFourFresh])
+                (unifiedVisibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+                (unifiedVisibleOverloadFresh := by
+                  simp [K_eq_iff, unifiedVisibleOverloadFresh])
+                (jointBalanceFresh := by simp [K_eq_iff, jointBalanceFresh])
                 (unifiedTerminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
 
 /-- The silent-lane copy of `selectedTypeAExitFiveToSeven` (`[94]` →
@@ -4062,7 +4276,7 @@ noncomputable def selectedTypeAExitFiveToSevenSilent
     [FactKeys.Has (K .typeAReceiverRouting) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .tightEndpoint) known]
-    [FactKeys.Has (K .typeASaturatedHandoffExitFourFree) known]
+    [FactKeys.Has (K .typeASilentExitFourFree) known]
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
@@ -4146,6 +4360,10 @@ noncomputable def selectedTypeAExitFiveToSevenSilent
     (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known)
     (windowBlockersFresh : K .route8WindowBlockers ∉ known)
     (demandResidualFresh : K .route8PeeledDemandResidual ∉ known)
+    (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known)
+    (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known)
+    (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known)
+    (jointBalanceFresh : K .route8JointBalance ∉ known)
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known)
     (decoratedGlobalLocalBridgeFresh : K .typeBGlobalLocalBridge ∉ known)
     (fanClosedFresh : K .fanClosedPort ∉ known)
@@ -4157,17 +4375,25 @@ noncomputable def selectedTypeAExitFiveToSevenSilent
     (firstLandingFresh : K .triangularFirstLanding ∉ known)
     (crossShoulderFresh : K .triangularCrossShoulder ∉ known)
     (triangularRoutingFresh : K .triangularPortTypeBRouting ∉ known)
-    (closureFresh : closed ∉ known) : SelectedRouteEightBoundary selected := by
+    (closureFresh : closed ∉ known)
+    (silentFiveFreeFresh : K .typeASilentExitFiveFree ∉ known := by
+      simp [K_eq_iff])
+    (silentSixFreeFresh : K .typeASilentExitSixFree ∉ known := by
+      simp [K_eq_iff])
+    (silentSevenFreeFresh : K .typeASilentExitSevenFree ∉ known := by
+      simp [K_eq_iff]) : SelectedRouteEightBoundary selected := by
   -- `[103]`
-  match typeAExitFiveDichotomy (data := spineData) history fiveFresh fiveFreeFresh with
+  match typeASilentExitFiveDichotomy (data := spineData) history fiveFresh
+      silentFiveFreeFresh with
   | .left fiveHistory =>
       -- `[104]`
       exact ((closeIncompatible fiveHistory (K .uncompressible) (K .typeAExitFive)
         (by simp [K_eq_iff, closureFresh])).elimClosed (by infer_instance)).elim
   | .right fiveFree =>
       -- `[105]`
-      match typeAExitSixDichotomy (data := spineData) fiveFree
-          (by simp [K_eq_iff, sixFresh]) (by simp [K_eq_iff, sixFreeFresh]) with
+      match typeASilentExitSixDichotomy (data := spineData) fiveFree
+          (by simp [K_eq_iff, sixFresh])
+          (by simp [K_eq_iff, silentSixFreeFresh]) with
       | .left sixHistory =>
           -- `[106]`
           match typeAExitSixScopeDichotomy (data := spineData) sixHistory
@@ -4182,9 +4408,9 @@ noncomputable def selectedTypeAExitFiveToSevenSilent
                 (by infer_instance)).elim
       | .right sixFree =>
           -- `[107]`
-          match typeAExitSevenDichotomy (data := spineData) sixFree
+          match typeASilentExitSevenDichotomy (data := spineData) sixFree
               (by simp [K_eq_iff, sevenProducedFresh])
-              (by simp [K_eq_iff, sevenFreeFresh]) with
+              (by simp [K_eq_iff, silentSevenFreeFresh]) with
           | .left producedHistory =>
               -- `[108]`: record the produced Type B handoff envelope; `[65]`
               -- proves its admissibility — the next producer.
@@ -4214,6 +4440,11 @@ noncomputable def selectedTypeAExitFiveToSevenSilent
                 (demandAbsorptionFresh := by simp [K_eq_iff, demandAbsorptionFresh])
                 (windowBlockersFresh := by simp [K_eq_iff, windowBlockersFresh])
                 (demandResidualFresh := by simp [K_eq_iff, demandResidualFresh])
+                (unpaidExitFourFresh := by simp [K_eq_iff, unpaidExitFourFresh])
+                (unifiedVisibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+                (unifiedVisibleOverloadFresh := by
+                  simp [K_eq_iff, unifiedVisibleOverloadFresh])
+                (jointBalanceFresh := by simp [K_eq_iff, jointBalanceFresh])
                 (unifiedTerminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
                 (decoratedExcludedFresh := by simp [K_eq_iff, decoratedExcludedFresh])
                 (decoratedExclusionResidualFresh := by simp [K_eq_iff, decoratedExclusionResidualFresh])
@@ -4232,11 +4463,17 @@ noncomputable def selectedTypeAExitFiveToSevenSilent
           | .right route8History =>
               -- `[109]` → `[110]`: the route-8 residual of Part IX on the silent
               -- lane.
+              let sharedRoute8 :=
+                (typeASilentExitSevenRoute8Row (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run route8History
+                    (by simp [K_eq_iff, sevenFreeFresh])
               let normal :=
                 (highCentreNormalFormRow (BranchState := BranchState)
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile)
-                  (data := spineData)).run route8History
+                  (data := spineData)).run sharedRoute8
                     (by simp [K_eq_iff, normalFormFresh])
               exact selectedRouteEightResidual normal
                 (by simp [K_eq_iff, profileFresh]) (by simp [K_eq_iff, squeezeFresh])
@@ -4276,6 +4513,12 @@ noncomputable def selectedTypeAExitFiveToSevenSilent
                 (demandAbsorptionFresh := by simp [K_eq_iff, demandAbsorptionFresh])
                 (windowBlockersFresh := by simp [K_eq_iff, windowBlockersFresh])
                 (demandResidualFresh := by simp [K_eq_iff, demandResidualFresh])
+                (unpaidExitFourFresh := by simp [K_eq_iff, unpaidExitFourFresh])
+                (unifiedVisibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+                (unifiedVisibleOverloadFresh := by
+                  simp [K_eq_iff, unifiedVisibleOverloadFresh])
+                (jointBalanceFresh := by simp [K_eq_iff, jointBalanceFresh])
+                (silentClosure := some ⟨by infer_instance, closureFresh⟩)
                 (unifiedTerminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
 
 /-- **`[102]` → `[89]`, the retest of the peeled receiver.**  `K
@@ -4322,6 +4565,12 @@ noncomputable def selectedTypeAExitFourDischargedRetest
     (windowBlockersFresh : K .route8WindowBlockers ∉ known)
     (demandResidualFresh : K .route8PeeledDemandResidual ∉ known)
     (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known := by
+      simp [K_eq_iff])
+    (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known := by
+      simp [K_eq_iff])
+    (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known := by
+      simp [K_eq_iff])
+    (jointBalanceFresh : K .route8JointBalance ∉ known := by
       simp [K_eq_iff]) :
     SelectedRouteEightBoundary selected := by
   -- Read the discharged receiver fact from the accumulated ledger.
@@ -4401,8 +4650,18 @@ noncomputable def selectedTypeAExitFourDischargedRetest
               (unifiedTrueFresh := by simp [K_eq_iff, unifiedTrueFresh])
               (residualFresh := by simp [K_eq_iff, unpaidExitFourFresh])
               (terminalFresh := by simp [K_eq_iff, terminalFresh])
+          let visibleResidual :=
+            selectedRouteEightVisibleResidual unpaidExitFour
+              (visibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+          let visibleOverload :=
+            selectedRouteEightVisibleOverload visibleResidual
+              (overloadFresh := by
+                simp [K_eq_iff, unifiedVisibleOverloadFresh])
+          let jointBalance :=
+            selectedRouteEightJointBalance visibleOverload
+              (by simp [K_eq_iff, jointBalanceFresh])
           exact Or.inr (Or.inr
-            (unpaidExitFour.get (K .route8UnpaidExitFourResidual)).down)
+            (jointBalance.get (K .route8JointBalance)).down)
 
 /-- **Nodes `[101]`--`[102]` and their loop back to `[89]`**, on the shared
 saturated exit entry (index-polymorphic).  `lem:typeA-exit4-finite-descent` is
@@ -4504,6 +4763,10 @@ noncomputable def selectedTypeAExitFourChain
     (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known)
     (windowBlockersFresh : K .route8WindowBlockers ∉ known)
     (demandResidualFresh : K .route8PeeledDemandResidual ∉ known)
+    (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known)
+    (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known)
+    (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known)
+    (jointBalanceFresh : K .route8JointBalance ∉ known)
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known)
     (decoratedExcludedFresh : K .typeBExcluded ∉ known)
     (decoratedExclusionResidualFresh : K .typeBExclusionResidual ∉ known)
@@ -4584,6 +4847,11 @@ noncomputable def selectedTypeAExitFourChain
             (demandAbsorptionFresh := by simp [K_eq_iff, demandAbsorptionFresh])
             (windowBlockersFresh := by simp [K_eq_iff, windowBlockersFresh])
             (demandResidualFresh := by simp [K_eq_iff, demandResidualFresh])
+            (unpaidExitFourFresh := by simp [K_eq_iff, unpaidExitFourFresh])
+            (unifiedVisibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+            (unifiedVisibleOverloadFresh := by
+              simp [K_eq_iff, unifiedVisibleOverloadFresh])
+            (jointBalanceFresh := by simp [K_eq_iff, jointBalanceFresh])
             (unifiedTerminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
             (decoratedExcludedFresh := by simp [K_eq_iff, decoratedExcludedFresh])
             (decoratedExclusionResidualFresh := by simp [K_eq_iff, decoratedExclusionResidualFresh])
@@ -4626,6 +4894,11 @@ noncomputable def selectedTypeAExitFourChain
             (by simp [K_eq_iff, demandAbsorptionFresh])
             (by simp [K_eq_iff, windowBlockersFresh])
             (by simp [K_eq_iff, demandResidualFresh])
+            (unpaidExitFourFresh := by simp [K_eq_iff, unpaidExitFourFresh])
+            (unifiedVisibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+            (unifiedVisibleOverloadFresh := by
+              simp [K_eq_iff, unifiedVisibleOverloadFresh])
+            (jointBalanceFresh := by simp [K_eq_iff, jointBalanceFresh])
   | .right freeHistory =>
       exact selectedTypeAExitFiveToSeven freeHistory
         (by simp [K_eq_iff, profileFresh]) (by simp [K_eq_iff, squeezeFresh])
@@ -4665,6 +4938,11 @@ noncomputable def selectedTypeAExitFourChain
         (demandAbsorptionFresh := by simp [K_eq_iff, demandAbsorptionFresh])
         (windowBlockersFresh := by simp [K_eq_iff, windowBlockersFresh])
         (demandResidualFresh := by simp [K_eq_iff, demandResidualFresh])
+        (unpaidExitFourFresh := by simp [K_eq_iff, unpaidExitFourFresh])
+        (unifiedVisibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+        (unifiedVisibleOverloadFresh := by
+          simp [K_eq_iff, unifiedVisibleOverloadFresh])
+        (jointBalanceFresh := by simp [K_eq_iff, jointBalanceFresh])
         (unifiedTerminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
         (decoratedExcludedFresh := by simp [K_eq_iff, decoratedExcludedFresh])
         (decoratedExclusionResidualFresh := by simp [K_eq_iff, decoratedExclusionResidualFresh])
@@ -4779,6 +5057,10 @@ noncomputable def selectedTypeAExitFourChainSilent
     (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known)
     (windowBlockersFresh : K .route8WindowBlockers ∉ known)
     (demandResidualFresh : K .route8PeeledDemandResidual ∉ known)
+    (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known)
+    (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known)
+    (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known)
+    (jointBalanceFresh : K .route8JointBalance ∉ known)
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known)
     [FactKeys.Has (K .bridgeless) known]
     (decoratedGlobalLocalBridgeFresh : K .typeBGlobalLocalBridge ∉ known)
@@ -4792,110 +5074,42 @@ noncomputable def selectedTypeAExitFourChainSilent
     (crossShoulderFresh : K .triangularCrossShoulder ∉ known)
     (triangularRoutingFresh : K .triangularPortTypeBRouting ∉ known)
     [FactKeys.Has (K .negativeSupport) known]
-    (closureFresh : closed ∉ known) : SelectedRouteEightBoundary selected := by
+    (closureFresh : closed ∉ known)
+    (silentFourFreeFresh : K .typeASilentExitFourFree ∉ known := by
+      simp [K_eq_iff]) : SelectedRouteEightBoundary selected := by
   letI := cubicBaselineFresh
   let _cubicBaseline := (history.get (K .cubicBaseline)).down
-  let cubic := history
-  -- `lem:typeA-exit4-finite-descent` on the ledger (read again at `[123]`).
-  let descended :=
-    (typeAExitFourFiniteDescentRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      cubic (by simp [K_eq_iff, descentFresh])
-  -- `[101]`
-  match typeAExitFourDichotomy (data := spineData) descended
-      (by simp [K_eq_iff, exitFourFresh]) (by simp [K_eq_iff, exitFourFreeFresh]) with
-  | .left exitFourHistory =>
-      -- `[102]`
-      let peeled :=
-        (typeAExitFourPeelingStepRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          exitFourHistory (by simp [K_eq_iff, peeledFresh])
-      -- `[102]` → `[89]`: recompute `L₄` — the finite exit-`(4)` descent.
-      match typeAExitFourRetestDichotomy (data := spineData) peeled
-          (by simp [K_eq_iff, exitFourFreeFresh]) (by simp [K_eq_iff, dischargedFresh]) with
-      | .left terminalHistory =>
-          exact selectedTypeAExitFiveToSevenSilent terminalHistory
-            (by simp [K_eq_iff, fiveFresh]) (by simp [K_eq_iff, fiveFreeFresh])
-            (by simp [K_eq_iff, sixFresh]) (by simp [K_eq_iff, sixFreeFresh])
-            (by simp [K_eq_iff, sixProperFresh]) (by simp [K_eq_iff, sixGlobalFresh])
-            (by simp [K_eq_iff, sevenProducedFresh]) (by simp [K_eq_iff, sevenFreeFresh])
-            (by simp [K_eq_iff, sevenHandoffFresh])
-            (by simp [K_eq_iff, decoratedFresh])
-            (by simp [K_eq_iff, normalFormFresh]) (by simp [K_eq_iff, decoratedHeavyFresh]) (by simp [K_eq_iff, decoratedDegreeFourFresh]) (by simp [K_eq_iff, decoratedLocalFresh]) (by simp [K_eq_iff, decoratedCompatibilityFresh]) (by simp [K_eq_iff, decoratedProfileFresh]) (by simp [K_eq_iff, decoratedTriangularCoreFresh]) (by simp [K_eq_iff, fanCapFresh]) (by simp [K_eq_iff, decoratedMarkedFresh]) (by simp [K_eq_iff, decoratedResidualFresh]) (by simp [K_eq_iff, decoratedCertificateMassFresh]) (by simp [K_eq_iff, decoratedCycleFresh]) (by simp [K_eq_iff, decoratedFreeFresh]) (by simp [K_eq_iff, decoratedFanEntryFresh]) (by simp [K_eq_iff, decoratedB2ChoiceFresh]) (by simp [K_eq_iff, decoratedB2ObstructionFresh]) (by simp [K_eq_iff, decoratedHybridFresh]) (by simp [K_eq_iff, decoratedLedgerFresh]) (by simp [K_eq_iff, decoratedBridgeMassFresh]) (by simp [K_eq_iff, decoratedBridgeSublinearFresh]) (by simp [K_eq_iff, decoratedExcludedFresh]) (by simp [K_eq_iff, decoratedExclusionResidualFresh]) (by simp [K_eq_iff, decoratedExclusionMassFresh]) (by simp [K_eq_iff, decoratedObstructionMassFresh])
-            (by simp [K_eq_iff, profileFresh]) (by simp [K_eq_iff, squeezeFresh])
-            (by simp [K_eq_iff, burdenFresh]) (by simp [K_eq_iff, deficitFresh])
-            (by simp [K_eq_iff, deficitFailsFresh])
-            (by simp [K_eq_iff, coreFresh])
-                (by simp [K_eq_iff, trueResidualFresh])
-                (by simp [K_eq_iff, cutParityFresh])
-                (by simp [K_eq_iff, smallFresh])
-                (by simp [K_eq_iff, noSmallFresh])
-                (by simp [K_eq_iff, collapseFresh])
-                (by simp [K_eq_iff, censusFresh]) (by simp [K_eq_iff, twoFresh])
-                (by simp [K_eq_iff, noTwoFresh])
-                (by simp [K_eq_iff, trueEntryFresh])
-                (by simp [K_eq_iff, deletionWitnessesFresh])
-                (by simp [K_eq_iff, privateBudgetFresh])
-                (by simp [K_eq_iff, noTwoContradictionFresh])
-                (by simp [K_eq_iff, terminalNoGoFresh])
-                (by simp [K_eq_iff, unifiedNegativeFresh])
-                (typeAExclusionFresh := by simp [K_eq_iff, typeAExclusionFresh])
-                (typeBBridgeReductionFresh := by simp [K_eq_iff, typeBBridgeReductionFresh])
-                (piecesClassifiedFresh := by simp [K_eq_iff, piecesClassifiedFresh])
-                (sublinearLedgerFresh := by simp [K_eq_iff, sublinearLedgerFresh])
-                (sublinearResidualFresh := by simp [K_eq_iff, sublinearResidualFresh])
-                (unifiedDeficitFresh := by simp [K_eq_iff, unifiedDeficitFresh])
-                (quotientFreeFresh := by simp [K_eq_iff, quotientFreeFresh])
-                (quotientResidualFresh := by simp [K_eq_iff, quotientResidualFresh])
-                (unifiedCensusFresh := by simp [K_eq_iff, unifiedCensusFresh])
-                (extractedCensusFresh := by simp [K_eq_iff, extractedCensusFresh])
-                (unifiedTrueFresh := by simp [K_eq_iff, unifiedTrueFresh])
-                (peelingFresh := by simp [K_eq_iff, peelingFresh])
-                (stageFailedFresh := by simp [K_eq_iff, stageFailedFresh])
-                (demandLedgerFresh := by simp [K_eq_iff, demandLedgerFresh])
-                (demandAbsorptionFresh := by simp [K_eq_iff, demandAbsorptionFresh])
-                (windowBlockersFresh := by simp [K_eq_iff, windowBlockersFresh])
-                (demandResidualFresh := by simp [K_eq_iff, demandResidualFresh])
-                (unifiedTerminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
-                (decoratedGlobalLocalBridgeFresh := by simp [K_eq_iff, decoratedGlobalLocalBridgeFresh])
-                (fanClosedFresh := by simp [K_eq_iff, fanClosedFresh])
-                (compatibleClosureFresh := by simp [K_eq_iff, compatibleClosureFresh])
-                (fanClosedRoutingFresh := by simp [K_eq_iff, fanClosedRoutingFresh])
-                (compatibleRoutingFresh := by simp [K_eq_iff, compatibleRoutingFresh])
-                (shoulderCompletionFresh := by simp [K_eq_iff, shoulderCompletionFresh])
-                (portReturnFresh := by simp [K_eq_iff, portReturnFresh])
-                (firstLandingFresh := by simp [K_eq_iff, firstLandingFresh])
-                (crossShoulderFresh := by simp [K_eq_iff, crossShoulderFresh])
-                (triangularRoutingFresh := by simp [K_eq_iff, triangularRoutingFresh])
-            (by simp [K_eq_iff, closureFresh])
-      | .right dischargedHistory =>
-          -- `[89]` retest of the discharged receiver with its peeled
-          -- target-defect loads (Part IX pressure ledger `[123]`) — the next
-          -- producer.
-          exact selectedTypeAExitFourDischargedRetest dischargedHistory
-            (by simp [K_eq_iff, unifiedNegativeFresh])
-            (by simp [K_eq_iff, typeAExclusionFresh])
-            (by simp [K_eq_iff, typeBBridgeReductionFresh])
-            (by simp [K_eq_iff, piecesClassifiedFresh])
-            (by simp [K_eq_iff, decoratedBridgeMassFresh])
-            (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
-            (by simp [K_eq_iff, sublinearLedgerFresh])
-            (by simp [K_eq_iff, sublinearResidualFresh])
-            (by simp [K_eq_iff, unifiedDeficitFresh])
-            (by simp [K_eq_iff, quotientFreeFresh])
-            (by simp [K_eq_iff, quotientResidualFresh])
-            (by simp [K_eq_iff, unifiedCensusFresh])
-            (by simp [K_eq_iff, extractedCensusFresh])
-            (by simp [K_eq_iff, peelingFresh])
-            (by simp [K_eq_iff, unifiedTrueFresh])
-            (by simp [K_eq_iff, stageFailedFresh])
-            (by simp [K_eq_iff, unifiedTerminalFresh])
-            (by simp [K_eq_iff, demandLedgerFresh])
-            (by simp [K_eq_iff, demandAbsorptionFresh])
-            (by simp [K_eq_iff, windowBlockersFresh])
-            (by simp [K_eq_iff, demandResidualFresh])
+  match typeASilentExitFourTerminalDichotomy (data := spineData) history
+      silentFourFreeFresh dischargedFresh with
+  | .left dischargedHistory =>
+      -- The exact finite peel has discharged the selected receiver.
+      exact selectedTypeAExitFourDischargedRetest dischargedHistory
+        (by simp [K_eq_iff, unifiedNegativeFresh])
+        (by simp [K_eq_iff, typeAExclusionFresh])
+        (by simp [K_eq_iff, typeBBridgeReductionFresh])
+        (by simp [K_eq_iff, piecesClassifiedFresh])
+        (by simp [K_eq_iff, decoratedBridgeMassFresh])
+        (by simp [K_eq_iff, decoratedBridgeSublinearFresh])
+        (by simp [K_eq_iff, sublinearLedgerFresh])
+        (by simp [K_eq_iff, sublinearResidualFresh])
+        (by simp [K_eq_iff, unifiedDeficitFresh])
+        (by simp [K_eq_iff, quotientFreeFresh])
+        (by simp [K_eq_iff, quotientResidualFresh])
+        (by simp [K_eq_iff, unifiedCensusFresh])
+        (by simp [K_eq_iff, extractedCensusFresh])
+        (by simp [K_eq_iff, peelingFresh])
+        (by simp [K_eq_iff, unifiedTrueFresh])
+        (by simp [K_eq_iff, stageFailedFresh])
+        (by simp [K_eq_iff, unifiedTerminalFresh])
+        (by simp [K_eq_iff, demandLedgerFresh])
+        (by simp [K_eq_iff, demandAbsorptionFresh])
+        (by simp [K_eq_iff, windowBlockersFresh])
+        (by simp [K_eq_iff, demandResidualFresh])
+        (unpaidExitFourFresh := by simp [K_eq_iff, unpaidExitFourFresh])
+        (unifiedVisibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+        (unifiedVisibleOverloadFresh := by
+          simp [K_eq_iff, unifiedVisibleOverloadFresh])
+        (jointBalanceFresh := by simp [K_eq_iff, jointBalanceFresh])
   | .right freeHistory =>
       exact selectedTypeAExitFiveToSevenSilent freeHistory
         (by simp [K_eq_iff, fiveFresh]) (by simp [K_eq_iff, fiveFreeFresh])
@@ -4939,6 +5153,11 @@ noncomputable def selectedTypeAExitFourChainSilent
                 (demandAbsorptionFresh := by simp [K_eq_iff, demandAbsorptionFresh])
                 (windowBlockersFresh := by simp [K_eq_iff, windowBlockersFresh])
                 (demandResidualFresh := by simp [K_eq_iff, demandResidualFresh])
+                (unpaidExitFourFresh := by simp [K_eq_iff, unpaidExitFourFresh])
+                (unifiedVisibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+                (unifiedVisibleOverloadFresh := by
+                  simp [K_eq_iff, unifiedVisibleOverloadFresh])
+                (jointBalanceFresh := by simp [K_eq_iff, jointBalanceFresh])
                 (unifiedTerminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
                 (decoratedGlobalLocalBridgeFresh := by simp [K_eq_iff, decoratedGlobalLocalBridgeFresh])
                 (fanClosedFresh := by simp [K_eq_iff, fanClosedFresh])
@@ -5044,6 +5263,10 @@ noncomputable def selectedTypeAVisibleExitFour
     (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known)
     (windowBlockersFresh : K .route8WindowBlockers ∉ known)
     (demandResidualFresh : K .route8PeeledDemandResidual ∉ known)
+    (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known)
+    (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known)
+    (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known)
+    (jointBalanceFresh : K .route8JointBalance ∉ known)
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known)
     (decoratedExcludedFresh : K .typeBExcluded ∉ known)
     (decoratedExclusionResidualFresh : K .typeBExclusionResidual ∉ known)
@@ -5109,6 +5332,11 @@ noncomputable def selectedTypeAVisibleExitFour
     (demandAbsorptionFresh := by simp [K_eq_iff, demandAbsorptionFresh])
     (windowBlockersFresh := by simp [K_eq_iff, windowBlockersFresh])
     (demandResidualFresh := by simp [K_eq_iff, demandResidualFresh])
+    (unpaidExitFourFresh := by simp [K_eq_iff, unpaidExitFourFresh])
+    (unifiedVisibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+    (unifiedVisibleOverloadFresh := by
+      simp [K_eq_iff, unifiedVisibleOverloadFresh])
+    (jointBalanceFresh := by simp [K_eq_iff, jointBalanceFresh])
     (unifiedTerminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
     (decoratedExcludedFresh := by simp [K_eq_iff, decoratedExcludedFresh])
     (decoratedExclusionResidualFresh := by simp [K_eq_iff, decoratedExclusionResidualFresh])
@@ -5223,6 +5451,10 @@ noncomputable def selectedTypeASilentExitChain
     (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known)
     (windowBlockersFresh : K .route8WindowBlockers ∉ known)
     (demandResidualFresh : K .route8PeeledDemandResidual ∉ known)
+    (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known)
+    (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known)
+    (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known)
+    (jointBalanceFresh : K .route8JointBalance ∉ known)
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known)
     [FactKeys.Has (K .bridgeless) known]
     (decoratedGlobalLocalBridgeFresh : K .typeBGlobalLocalBridge ∉ known)
@@ -5288,6 +5520,11 @@ noncomputable def selectedTypeASilentExitChain
                 (demandAbsorptionFresh := by simp [K_eq_iff, demandAbsorptionFresh])
                 (windowBlockersFresh := by simp [K_eq_iff, windowBlockersFresh])
                 (demandResidualFresh := by simp [K_eq_iff, demandResidualFresh])
+                (unpaidExitFourFresh := by simp [K_eq_iff, unpaidExitFourFresh])
+                (unifiedVisibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+                (unifiedVisibleOverloadFresh := by
+                  simp [K_eq_iff, unifiedVisibleOverloadFresh])
+                (jointBalanceFresh := by simp [K_eq_iff, jointBalanceFresh])
                 (unifiedTerminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
     (decoratedGlobalLocalBridgeFresh := by simp [K_eq_iff, decoratedGlobalLocalBridgeFresh])
     (fanClosedFresh := by simp [K_eq_iff, fanClosedFresh])
@@ -5413,6 +5650,10 @@ noncomputable def selectedTypeAVisibleExitChain
     (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known)
     (windowBlockersFresh : K .route8WindowBlockers ∉ known)
     (demandResidualFresh : K .route8PeeledDemandResidual ∉ known)
+    (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known)
+    (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known)
+    (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known)
+    (jointBalanceFresh : K .route8JointBalance ∉ known)
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known)
     (decoratedExcludedFresh : K .typeBExcluded ∉ known)
     (decoratedExclusionResidualFresh : K .typeBExclusionResidual ∉ known)
@@ -5501,6 +5742,11 @@ noncomputable def selectedTypeAVisibleExitChain
                 (demandAbsorptionFresh := by simp [K_eq_iff, demandAbsorptionFresh])
                 (windowBlockersFresh := by simp [K_eq_iff, windowBlockersFresh])
                 (demandResidualFresh := by simp [K_eq_iff, demandResidualFresh])
+                (unpaidExitFourFresh := by simp [K_eq_iff, unpaidExitFourFresh])
+                (unifiedVisibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+                (unifiedVisibleOverloadFresh := by
+                  simp [K_eq_iff, unifiedVisibleOverloadFresh])
+                (jointBalanceFresh := by simp [K_eq_iff, jointBalanceFresh])
                 (unifiedTerminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
                 (decoratedExcludedFresh := by simp [K_eq_iff, decoratedExcludedFresh])
                 (decoratedExclusionResidualFresh := by simp [K_eq_iff, decoratedExclusionResidualFresh])
@@ -5669,6 +5915,14 @@ noncomputable def selectedTypeALowSurplusContinuation
     (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known := by simp [K_eq_iff])
     (windowBlockersFresh : K .route8WindowBlockers ∉ known := by simp [K_eq_iff])
     (demandResidualFresh : K .route8PeeledDemandResidual ∉ known := by simp [K_eq_iff])
+    (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known := by
+      simp [K_eq_iff])
+    (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known := by
+      simp [K_eq_iff])
+    (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known := by
+      simp [K_eq_iff])
+    (jointBalanceFresh : K .route8JointBalance ∉ known := by
+      simp [K_eq_iff])
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known := by simp [K_eq_iff])
     (decoratedGlobalLocalBridgeFresh : K .typeBGlobalLocalBridge ∉ known := by simp [K_eq_iff])
     (fanClosedFresh : K .fanClosedPort ∉ known := by simp [K_eq_iff])
@@ -5776,6 +6030,11 @@ noncomputable def selectedTypeALowSurplusContinuation
             (demandAbsorptionFresh := by simp [K_eq_iff, demandAbsorptionFresh])
             (windowBlockersFresh := by simp [K_eq_iff, windowBlockersFresh])
             (demandResidualFresh := by simp [K_eq_iff, demandResidualFresh])
+            (unpaidExitFourFresh := by simp [K_eq_iff, unpaidExitFourFresh])
+            (unifiedVisibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+            (unifiedVisibleOverloadFresh := by
+              simp [K_eq_iff, unifiedVisibleOverloadFresh])
+            (jointBalanceFresh := by simp [K_eq_iff, jointBalanceFresh])
             (unifiedTerminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
             (decoratedExcludedFresh := by simp [K_eq_iff, decoratedExcludedFresh])
             (decoratedExclusionResidualFresh := by simp [K_eq_iff, decoratedExclusionResidualFresh])
@@ -5839,6 +6098,11 @@ noncomputable def selectedTypeALowSurplusContinuation
                 (demandAbsorptionFresh := by simp [K_eq_iff, demandAbsorptionFresh])
                 (windowBlockersFresh := by simp [K_eq_iff, windowBlockersFresh])
                 (demandResidualFresh := by simp [K_eq_iff, demandResidualFresh])
+                (unpaidExitFourFresh := by simp [K_eq_iff, unpaidExitFourFresh])
+                (unifiedVisibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+                (unifiedVisibleOverloadFresh := by
+                  simp [K_eq_iff, unifiedVisibleOverloadFresh])
+                (jointBalanceFresh := by simp [K_eq_iff, jointBalanceFresh])
                 (unifiedTerminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
             (decoratedGlobalLocalBridgeFresh := by simp [K_eq_iff, decoratedGlobalLocalBridgeFresh])
             (fanClosedFresh := by simp [K_eq_iff, fanClosedFresh])
@@ -5931,6 +6195,14 @@ noncomputable def selectedTypeBHighSurplusContinuation
     (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known := by simp [K_eq_iff])
     (windowBlockersFresh : K .route8WindowBlockers ∉ known := by simp [K_eq_iff])
     (demandResidualFresh : K .route8PeeledDemandResidual ∉ known := by simp [K_eq_iff])
+    (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known := by
+      simp [K_eq_iff])
+    (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known := by
+      simp [K_eq_iff])
+    (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known := by
+      simp [K_eq_iff])
+    (jointBalanceFresh : K .route8JointBalance ∉ known := by
+      simp [K_eq_iff])
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known := by simp [K_eq_iff])
     (excludedFresh : K .typeBExcluded ∉ known := by simp [K_eq_iff])
     (exclusionResidualFresh : K .typeBExclusionResidual ∉ known := by simp [K_eq_iff])
@@ -6034,6 +6306,11 @@ noncomputable def selectedTypeBHighSurplusContinuation
         (demandAbsorptionFresh := by simp [K_eq_iff, demandAbsorptionFresh])
         (windowBlockersFresh := by simp [K_eq_iff, windowBlockersFresh])
         (demandResidualFresh := by simp [K_eq_iff, demandResidualFresh])
+        (unpaidExitFourFresh := by simp [K_eq_iff, unpaidExitFourFresh])
+        (unifiedVisibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+        (unifiedVisibleOverloadFresh := by
+          simp [K_eq_iff, unifiedVisibleOverloadFresh])
+        (jointBalanceFresh := by simp [K_eq_iff, jointBalanceFresh])
         (unifiedTerminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
         (globalLocalBridgeFresh := by simp [K_eq_iff, globalLocalBridgeFresh])
   | .right degreeFourHistory =>
@@ -6121,6 +6398,11 @@ noncomputable def selectedTypeBHighSurplusContinuation
         (demandAbsorptionFresh := by simp [K_eq_iff, demandAbsorptionFresh])
         (windowBlockersFresh := by simp [K_eq_iff, windowBlockersFresh])
         (demandResidualFresh := by simp [K_eq_iff, demandResidualFresh])
+        (unpaidExitFourFresh := by simp [K_eq_iff, unpaidExitFourFresh])
+        (unifiedVisibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+        (unifiedVisibleOverloadFresh := by
+          simp [K_eq_iff, unifiedVisibleOverloadFresh])
+        (jointBalanceFresh := by simp [K_eq_iff, jointBalanceFresh])
         (unifiedTerminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
         (globalLocalBridgeFresh := by simp [K_eq_iff, globalLocalBridgeFresh])
 
@@ -6451,6 +6733,14 @@ noncomputable def selectedAbsorbedGermResidual
     (absorbedDemandAbsorptionFresh : K .route8DemandAbsorption ∉ known := by simp [K_eq_iff])
     (absorbedWindowBlockersFresh : K .route8WindowBlockers ∉ known := by simp [K_eq_iff])
     (absorbedDemandResidualFresh : K .route8PeeledDemandResidual ∉ known := by simp [K_eq_iff])
+    (absorbedUnpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known := by
+      simp [K_eq_iff])
+    (absorbedUnifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known := by
+      simp [K_eq_iff])
+    (absorbedUnifiedVisibleOverloadFresh :
+        K .route8UnifiedVisibleOverload ∉ known := by simp [K_eq_iff])
+    (absorbedJointBalanceFresh : K .route8JointBalance ∉ known := by
+      simp [K_eq_iff])
     (absorbedUnifiedTerminalFresh : K .route8TerminalNoGo ∉ known := by simp [K_eq_iff]) :
     SelectedAbsorbedGermBoundary selected := by
   letI := absorbedCubicFresh
@@ -6574,6 +6864,11 @@ noncomputable def selectedAbsorbedGermResidual
             (demandAbsorptionFresh := by simp [K_eq_iff, absorbedDemandAbsorptionFresh])
             (windowBlockersFresh := by simp [K_eq_iff, absorbedWindowBlockersFresh])
             (demandResidualFresh := by simp [K_eq_iff, absorbedDemandResidualFresh])
+            (unpaidExitFourFresh := by simp [K_eq_iff, absorbedUnpaidExitFourFresh])
+            (unifiedVisibleFresh := by simp [K_eq_iff, absorbedUnifiedVisibleFresh])
+            (unifiedVisibleOverloadFresh := by
+              simp [K_eq_iff, absorbedUnifiedVisibleOverloadFresh])
+            (jointBalanceFresh := by simp [K_eq_iff, absorbedJointBalanceFresh])
             (unifiedTerminalFresh := by simp [K_eq_iff, absorbedUnifiedTerminalFresh]))
       | .right genuineHistory =>
           -- `[167]`--`[168]`: the graph-realized second strand either gives
@@ -6659,6 +6954,11 @@ noncomputable def selectedAbsorbedGermResidual
         (demandAbsorptionFresh := by simp [K_eq_iff, absorbedDemandAbsorptionFresh])
         (windowBlockersFresh := by simp [K_eq_iff, absorbedWindowBlockersFresh])
         (demandResidualFresh := by simp [K_eq_iff, absorbedDemandResidualFresh])
+        (unpaidExitFourFresh := by simp [K_eq_iff, absorbedUnpaidExitFourFresh])
+        (unifiedVisibleFresh := by simp [K_eq_iff, absorbedUnifiedVisibleFresh])
+        (unifiedVisibleOverloadFresh := by
+          simp [K_eq_iff, absorbedUnifiedVisibleOverloadFresh])
+        (jointBalanceFresh := by simp [K_eq_iff, absorbedJointBalanceFresh])
         (unifiedTerminalFresh := by simp [K_eq_iff, absorbedUnifiedTerminalFresh]))
 
 /-- The exact complement of the private-carrier rate is retained as its own
@@ -6910,6 +7210,14 @@ noncomputable def selectedNetChargeContinuation
     (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known := by simp [K_eq_iff])
     (windowBlockersFresh : K .route8WindowBlockers ∉ known := by simp [K_eq_iff])
     (demandResidualFresh : K .route8PeeledDemandResidual ∉ known := by simp [K_eq_iff])
+    (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known := by
+      simp [K_eq_iff])
+    (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known := by
+      simp [K_eq_iff])
+    (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known := by
+      simp [K_eq_iff])
+    (jointBalanceFresh : K .route8JointBalance ∉ known := by
+      simp [K_eq_iff])
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known := by simp [K_eq_iff])
     (globalLocalBridgeFresh : K .typeBGlobalLocalBridge ∉ known := by simp [K_eq_iff])
     (fanClosedFresh : K .fanClosedPort ∉ known := by simp [K_eq_iff])
@@ -7037,6 +7345,11 @@ noncomputable def selectedNetChargeContinuation
         (absorbedDemandAbsorptionFresh := by simp [K_eq_iff, demandAbsorptionFresh])
         (absorbedWindowBlockersFresh := by simp [K_eq_iff, windowBlockersFresh])
         (absorbedDemandResidualFresh := by simp [K_eq_iff, demandResidualFresh])
+        (absorbedUnpaidExitFourFresh := by simp [K_eq_iff, unpaidExitFourFresh])
+        (absorbedUnifiedVisibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+        (absorbedUnifiedVisibleOverloadFresh := by
+          simp [K_eq_iff, unifiedVisibleOverloadFresh])
+        (absorbedJointBalanceFresh := by simp [K_eq_iff, jointBalanceFresh])
         (absorbedUnifiedTerminalFresh := by simp [K_eq_iff, unifiedTerminalFresh]))
   | .left capped =>
       -- `[58]`: `lem:netcharge-superadd` localizes negative charge to a piece.
@@ -7052,7 +7365,7 @@ noncomputable def selectedNetChargeContinuation
           -- `[60]`: the net-cap contradiction on the same canonical maximal
           -- packing.  The cap gives `N₀(R) < 0`; the sibling gives `N₀(R) ≥ 0`.
           have impossible : False := by
-            obtain ⟨packing, valid, cardinality, _maximal, nonnegative⟩ :=
+            obtain ⟨packing, _canonical, valid, cardinality, _maximal, nonnegative⟩ :=
               (nonNegHistory.get (K .netChargeNonNegative)).down
             have negative :=
               (nonNegHistory.get (K .netChargeCap)).down packing valid cardinality
@@ -7126,7 +7439,12 @@ noncomputable def selectedNetChargeContinuation
                 (by simp [K_eq_iff, demandAbsorptionFresh])
                 (by simp [K_eq_iff, windowBlockersFresh])
                 (by simp [K_eq_iff, demandResidualFresh])
-                (by simp [K_eq_iff, unifiedTerminalFresh])
+                (unpaidExitFourFresh := by simp [K_eq_iff, unpaidExitFourFresh])
+                (unifiedVisibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+                (unifiedVisibleOverloadFresh := by
+                  simp [K_eq_iff, unifiedVisibleOverloadFresh])
+                (jointBalanceFresh := by simp [K_eq_iff, jointBalanceFresh])
+                (unifiedTerminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
                 (decoratedGlobalLocalBridgeFresh := by simp [K_eq_iff, globalLocalBridgeFresh])
                 (fanClosedFresh := by simp [K_eq_iff, fanClosedFresh])
                 (compatibleClosureFresh := by simp [K_eq_iff, compatibleClosureFresh])
@@ -7171,7 +7489,12 @@ noncomputable def selectedNetChargeContinuation
                 (by simp [K_eq_iff, demandAbsorptionFresh])
                 (by simp [K_eq_iff, windowBlockersFresh])
                 (by simp [K_eq_iff, demandResidualFresh])
-                (by simp [K_eq_iff, unifiedTerminalFresh])
+                (unpaidExitFourFresh := by simp [K_eq_iff, unpaidExitFourFresh])
+                (unifiedVisibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+                (unifiedVisibleOverloadFresh := by
+                  simp [K_eq_iff, unifiedVisibleOverloadFresh])
+                (jointBalanceFresh := by simp [K_eq_iff, jointBalanceFresh])
+                (unifiedTerminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
                 (by simp [K_eq_iff, excludedFresh]) (by simp [K_eq_iff, exclusionResidualFresh])
                 (by simp [K_eq_iff, exclusionMassFresh]) (by simp [K_eq_iff, obstructionMassFresh])
                 (by simp [K_eq_iff, certificateMassFresh])
@@ -8407,6 +8730,10 @@ noncomputable def selectedNearCubicSurvivorBranch
                         (demandAbsorptionFresh := by simp [K_eq_iff])
                         (windowBlockersFresh := by simp [K_eq_iff])
                         (demandResidualFresh := by simp [K_eq_iff])
+                        (unpaidExitFourFresh := by simp [K_eq_iff])
+                        (unifiedVisibleFresh := by simp [K_eq_iff])
+                        (unifiedVisibleOverloadFresh := by simp [K_eq_iff])
+                        (jointBalanceFresh := by simp [K_eq_iff])
                         (unifiedTerminalFresh := by simp [K_eq_iff])
                         (globalLocalBridgeFresh := by simp [K_eq_iff])
                         (fanClosedFresh := by simp [K_eq_iff])

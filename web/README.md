@@ -10,7 +10,7 @@ Two proofs are published:
 
 | Proof | Source | Size |
 | --- | --- | --- |
-| **Erdős–Gyárfás** — does every graph of minimum degree three contain a cycle of length a power of two? | `erdos_64_proof.tex` | 184 diagram nodes, 12 panels |
+| **Erdős–Gyárfás** — does every graph of minimum degree three contain a cycle of length a power of two? | `erdos_64_proof.tex` | 187 diagram nodes, 12 panels |
 | **Navier–Stokes** — can a finite-energy solution develop a local singularity? | `proof_setup.tex`, `type_I_residual_closure.tex`, `type_II_regularity.tex` | 333 steps, 23 panels, 3 papers |
 
 The Navier–Stokes argument is written across three manuscripts, each numbering
@@ -44,6 +44,55 @@ documentation under `frontend/src/docs/`, described below. The
 Navier–Stokes panel summaries are the manuscripts' own — they live in each
 paper's *Diagram map*, so improving them there improves both the paper and this
 site.
+
+## Executing the methodology
+
+The landing page’s methodology includes an eight-stage execution recipe after
+“One iteration of the method”. Its source is `repair_and_closure.md`; the web
+version reorganizes the instructions into operations, required evidence,
+failure continuations, worked examples, checklists and selectable templates.
+It is an editorial adaptation, not an automatic Markdown render or a live
+proof-status feed.
+
+`frontend/src/methodology/ExecutionRecipe.tsx` contains the stages and examples;
+`recipe-reference.ts` carries the source-derived selection table, eighteen
+rules, six checklists and artifact table. `MethodologySection.tsx` imports the
+stage metadata into its existing navigation and renders the content through
+the same section wrappers. Property and technique references use the existing
+structural-survey anchors; proof examples use the established explorer routes.
+
+| Markdown source | Web recipe destination |
+|---|---|
+| §§1–2: authorities, branch state, reading discipline | 1. Establish the branch; glossary |
+| §3: transitions, interfaces, fixed inputs, iteration | 1, 3, 4 and 6; existing iteration summary |
+| §§4.1–4.6: repair and ordered first failure | 4. Repair the first failed obligation |
+| §4.7: inventory and worked inventories | 2. Inventory unused structure; historical [181]/[182] examples |
+| §§4.8–4.9: admission and executor failure patterns | 3–6; executor prompt |
+| §4.10: all five [185] execution checks | 5. Execute the construction; rejected-attempt example |
+| §§5.1–5.3: residual data, currencies, fifteen selection cases | 3. Select an admissible move; worked repairs |
+| §5.4: all eighteen rules; §5.5: worked decision | 3. Select an admissible move; first-fibre example |
+| §6: eight worked-repair groups | 8. Worked repairs and templates |
+| §§7–8: [182]/[181] proposed continuations and repairs | 8; explicitly labelled historical/open, not closure certificates |
+| §9: failure modes and anti-patterns | 2–6; [185] example; executor prompt |
+| §§10–11: records and Lean discipline | 7. Verify and record closure; Lean implementation disclosure |
+| §12: all six checklist groups | 7. Verify and record closure |
+| §13: all ten executor instructions | 8. Reusable executor prompt, adapted to authorized project scope |
+| §14: glossary and sources | 8. Glossary and source guide; this maintenance map |
+
+When the source changes, update the mapped stages and reference data together.
+Preserve operational detail; consolidate repetition without dropping a check.
+The web adaptation makes prerequisite and progress requirements explicit where
+older examples use shorthand. In a consumer audit, equality of lower and upper
+bounds is checked for strictness rather than automatically called a
+contradiction. Project-specific edit restrictions are expressed as authorized
+scope, and historical Lean names are not offered as a current API reference.
+
+Review example status against the manuscript and live audit tables before
+claiming implementation or closure. In particular, [181]/[182] plans, missing
+serial-system realizations, and the rejected [185] moves are not presented as
+completed proofs. Existing landing tests check navigation order, destination
+validity and mathematical rendering. Validate the browser at wide and narrow
+viewports, including table overflow, keyboard disclosures and register jumps.
 
 ## The Hypostructure section
 

@@ -313,7 +313,10 @@ noncomputable def decomposition : OwnedDecomposition object where
         rcases left' with left' | left' <;>
           rcases right' with right' | right' <;> exact adjacent
 
-private noncomputable def pieceInducedIso :
+/-- The canonical atom-side piece is exactly the graph induced by its ambient
+support.  This is the producer-owned comparison used whenever a later local
+move must transport degree or connectedness through the cut interface. -/
+noncomputable def pieceInducedIso :
     (piece object support).graph ≃g (object.induce support).graph where
   toEquiv :=
     { toFun

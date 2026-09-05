@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.InterfaceReplacement
+import Hypostructure.Graph.WindowInternalMass
 
 namespace Hypostructure.Graph.BoundariedResponseWalkAssembly
 
@@ -33,6 +34,65 @@ noncomputable def pieceVertex
       vertex.1 ∈ SupportAtom.cutBoundary object support
   · simp [pieceVertex, boundaryMember, SupportAtom.pieceDecode]
   · simp [pieceVertex, boundaryMember, SupportAtom.pieceDecode]
+
+/-- The canonical atom-side encoding has no duplicate supported vertices. -/
+theorem pieceDecode_injective :
+    Function.Injective (SupportAtom.pieceDecode object support) := by
+  intro left right equality
+  rcases left with left | left <;> rcases right with right | right
+  · exact congrArg Sum.inl (Subtype.ext equality)
+  · exfalso
+    have valueEquality : left.1 = right.1 := equality
+    apply right.2.2
+    rw [← valueEquality]
+    exact left.2
+  · exfalso
+    have valueEquality : left.1 = right.1 := equality
+    apply left.2.2
+    rw [valueEquality]
+    exact right.2
+  · exact congrArg Sum.inr (Subtype.ext equality)
+
+/-- The canonical atom-side piece degree is the support's internal degree. -/
+theorem piece_degree_internal
+    (vertex : SupportAtom.PieceInternal object support) :
+    (SupportAtom.piece object support).pack.degree (.inr vertex) =
+      object.internalDegree support vertex.1 := by
+  classical
+  let iso : (SupportAtom.piece object support).pack.Iso
+      (object.induce support) :=
+    SupportAtom.pieceInducedIso object support
+  have degreeIso :=
+    FiniteObject.degree_eq_of_iso iso
+      (show (SupportAtom.piece object support).pack.Vertex from .inr vertex)
+  have imageEq : iso
+      (show (SupportAtom.piece object support).pack.Vertex from .inr vertex) =
+      (⟨vertex.1, vertex.2.1⟩ : (object.induce support).Vertex) := by
+    apply Subtype.ext
+    rfl
+  rw [imageEq] at degreeIso
+  have inducedDegree := object.internalDegree_eq_degree_induce support vertex.2.1
+  simpa [BoundaryPiece.pack, FiniteObject.degree] using
+    degreeIso.symm.trans inducedDegree.symm
+
+/-- An atom-side internal vertex has exactly its ambient degree: membership
+outside the support would make it a cut-boundary vertex. -/
+theorem piece_degree_internal_eq_ambient
+    (vertex : SupportAtom.PieceInternal object support) :
+    (SupportAtom.piece object support).pack.degree (.inr vertex) =
+      object.degree vertex.1 := by
+  classical
+  letI : FinEnum object.Vertex := object.vertices
+  letI : DecidableRel object.graph.Adj := object.decideAdj
+  rw [piece_degree_internal object support]
+  unfold FiniteObject.internalDegree FiniteObject.degree
+  congr 1
+  apply Finset.inter_eq_left.mpr
+  intro neighbour neighbourMember
+  by_contra outside
+  exact vertex.2.2 ((SupportAtom.mem_cutBoundary_iff object support vertex.1).2
+    ⟨vertex.2.1, neighbour,
+      (SimpleGraph.mem_neighborFinset _ _ _).mp neighbourMember, outside⟩)
 
 /-- Canonical inclusion of the induced support graph into its atom-side
 boundary piece. -/

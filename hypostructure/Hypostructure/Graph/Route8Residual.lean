@@ -144,8 +144,9 @@ structure CoordinateEvent (object : FiniteObject.{u}) where
 One indexed entry: the support it lives on, its declared coordinate family,
 each coordinate's value and finite declared support, the optional target event
 of event coordinates, and the boundaried reading that retains a given set of
-coordinates.  Carrier data is not stored -- it is read off the optional events
-below. -/
+coordinates.  Carrier data is not supplied by a caller: it is derived from the
+coordinate's declared support and, for an event coordinate, from the event's
+actual cut crossings. -/
 structure PresentedEntry (object : FiniteObject.{u}) where
   /-- `V(X)`: the support the entry's boundary incidences leave. -/
   support : Finset object.Vertex
@@ -176,12 +177,37 @@ variable (presented : PresentedEntry object)
 
 attribute [instance] PresentedEntry.coordinateDecEq
 
-/-- The carrier support a declared coordinate records: the cut edges of the
-entry's support that its event uses. -/
+/-- The boundary incidences explicitly met by a coordinate's declared support.
+
+This is the literal carrier source in `def:typeA-route8-carriers`: D1 boundary
+vertices, completion-port/first-entry vertices in D2, window-interface
+vertices in D3, wedge vertices in D4, and the terminal receiver of the trace
+coordinate all retain the cut incidences incident with those declared
+vertices.  In particular a coordinate with no target event need not have an
+empty carrier set. -/
+noncomputable def declaredCarriers (r : presented.Coordinate) :
+    Finset (Sym2 object.Vertex) := by
+  classical
+  exact (cutEdges object presented.support).filter fun edge =>
+    exists inside, inside ∈ edge /\ inside ∈ presented.support /\
+      inside ∈ presented.declaredSupport r
+
+/-- The full carrier support of a declared coordinate.  The first summand is
+the manuscript's declared-support carrier.  The second records the cut
+crossings of an actual event coordinate, which are themselves part of that
+coordinate's declared event support.  Keeping both sources is essential:
+target avoidance can remove the second summand but never the first. -/
 noncomputable def car (r : presented.Coordinate) : Finset (Sym2 object.Vertex) :=
-  match presented.event? r with
-  | none => ∅
-  | some event => crossingCarriers presented.support event.walk
+  presented.declaredCarriers r ∪
+    match presented.event? r with
+    | none => ∅
+    | some event => crossingCarriers presented.support event.walk
+
+theorem declaredCarriers_subset_cutEdges (r : presented.Coordinate) :
+    presented.declaredCarriers r ⊆ cutEdges object presented.support := by
+  classical
+  intro edge member
+  exact (Finset.mem_filter.mp member).1
 
 /-- A declared coordinate is *crossing* when its event both meets the entry's
 support and leaves it.  This is the manuscript's *mixed internal* event: it uses
@@ -210,9 +236,16 @@ theorem two_le_card_car {r : presented.Coordinate}
     2 ≤ (presented.car r).card := by
   obtain ⟨event, eventEq, ⟨inside, insideMember, insideSupport⟩,
     outside, outsideMember, outsideSupport⟩ := crossing
-  rw [car, eventEq]
-  exact two_le_card_crossingCarriers presented.support event.isCycle
-    insideMember insideSupport outsideMember outsideSupport
+  have eventTwo : 2 ≤
+      (crossingCarriers presented.support event.walk).card :=
+    two_le_card_crossingCarriers presented.support event.isCycle
+      insideMember insideSupport outsideMember outsideSupport
+  have eventSubset : crossingCarriers presented.support event.walk ⊆
+      presented.car r := by
+    intro edge member
+    rw [car, eventEq]
+    exact Finset.mem_union_right _ member
+  exact eventTwo.trans (Finset.card_le_card eventSubset)
 
 /-- Every crossing coordinate records at least two carriers. -/
 theorem two_le_card_car_of_mem {r : presented.Coordinate}
@@ -234,6 +267,7 @@ noncomputable def toEntry (Target : FiniteObject.{u} → Prop) :
     intro r _member
     rw [cutSchedule_toFinset]
     rw [car]
+    refine Finset.union_subset (presented.declaredCarriers_subset_cutEdges r) ?_
     split
     · exact Finset.empty_subset _
     · rename_i event _eventEq

@@ -102,10 +102,15 @@ PART_SUMMARIES = {
         "over is route 8."
     ),
     "fig:proof-diagram-part-ix": (
-        "Closes route 8, the last way out. The burden it carries forces many basins, while "
-        "the private response supports each entry needs force few; the two bounds are incompatible "
-        "unless some entry has only two supports. That case is exactly the one already "
-        "peeled away earlier, so it cannot occur here either."
+        "Reduces route 8 on its exact retained ledger. The burden first forces a two-support "
+        "entry or closes by the private-support count. At [181], maximal-ledger augmentation "
+        "routes a witness-free entry to the existing [124] closure and leaves [183] with both "
+        "obstruction counts zero. Shortest-trace boundary support then eliminates every silent "
+        "entry at [184], and visible-first prefix exhaustion eliminates every non-overloaded "
+        "receiver. At [185] every unchanged entry carries a canonical actual visible-four "
+        "package; the simultaneous peel, deficit, demand, absorption, open-unit, and visibility "
+        "account gives [186]. Universal saturated-load visibility then makes every silent "
+        "unpeeled terminal empty at [186], while retaining the separate visible-entry history."
     ),
     "fig:proof-diagram-part-x": (
         "Handles the graphs that are not near-cubic, before the entropy budget is spent. "

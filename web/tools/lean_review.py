@@ -35,7 +35,7 @@ from pathlib import Path
 
 AUDIT_REL = Path("web/data/eg_node_audit.json")
 
-NODE_COUNT = 182
+NODE_COUNT = 186
 EXTRA_NODE_IDS = ("172a", "172b", "172c")
 
 #: Gate B verdicts that mean the producer publishes the manuscript's statement.

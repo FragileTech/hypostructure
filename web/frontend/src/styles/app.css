@@ -3816,3 +3816,43 @@ body.has-rail-open {
   flex-wrap: wrap;
   gap: 4px;
 }
+
+/* Detailed execution recipe: keep the existing methodology reading column. */
+.recipe-contract {
+  margin: 16px 0 20px;
+  padding: 16px 20px;
+  border-left: 3px solid var(--accent);
+  background: var(--surface-sunken);
+  display: grid;
+  gap: 12px;
+}
+.recipe-contract > div { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 12px; }
+.recipe-contract dt { font-weight: 600; font-size: 13px; color: var(--ink); }
+.recipe-contract dd { margin: 0; font-size: 14px; line-height: 1.6; color: var(--ink-muted); }
+#methodology-recipe h5 { margin: 24px 0 12px; font-size: 15px; line-height: 1.5; font-weight: 600; }
+.recipe-actions, .recipe-rules { padding-left: 24px; margin: 12px 0 20px; }
+.recipe-actions > li, .recipe-rules > li { padding-left: 5px; margin: 0 0 14px; max-width: 76ch; font-size: 15px; line-height: 1.7; }
+.recipe-rules ul { margin: 10px 0; padding-left: 20px; }
+.recipe-rules ul li { margin-bottom: 8px; }
+.recipe-table-wrap { max-width: 100%; margin: 16px 0 24px; }
+.recipe-table { min-width: 650px; table-layout: auto; }
+.recipe-table caption { text-align: left; font-size: 14px; font-weight: 600; padding: 0 0 12px; color: var(--ink); }
+.recipe-table tbody th { width: 22%; padding: 12px 16px 12px 0; vertical-align: top; font-size: 14px; line-height: 1.55; font-weight: 500; text-transform: none; letter-spacing: normal; color: var(--ink); border-bottom: 1px solid var(--line); }
+.recipe-table td { overflow-wrap: anywhere; }
+.recipe-table td:first-child { width: auto; }
+.recipe-template { margin: 20px 0; min-width: 0; }
+.recipe-template pre { margin: 0; padding: 18px 20px; max-width: 100%; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; border: 1px solid var(--line); border-radius: 6px; background: var(--surface-sunken); font-size: 13px; line-height: 1.7; color: var(--ink); }
+.recipe-details { margin: 14px 0; padding: 0 0 14px; border-bottom: 1px solid var(--line); }
+.recipe-details > summary { padding: 12px 0; cursor: pointer; font-size: 15px; font-weight: 600; line-height: 1.5; color: var(--ink); }
+.recipe-details[open] > summary { margin-bottom: 10px; }
+.recipe-checklists { display: grid; gap: 16px; }
+.recipe-checklists section { border-top: 1px solid var(--line); }
+.recipe-checklists ul { margin: 0; padding-left: 20px; }
+.recipe-checklists li { margin-bottom: 10px; font-size: 14px; line-height: 1.65; max-width: 80ch; }
+.methodology-part .recipe-note, .methodology-part .recipe-example-status { padding: 12px 16px; background: var(--surface-sunken); font-size: 14px; border-left: 2px solid var(--line-strong); }
+.recipe-table-wrap:focus-visible, .recipe-template pre:focus-visible, .recipe-details > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+@media (max-width: 640px) {
+  .recipe-contract { padding: 14px; }
+  .recipe-contract > div { grid-template-columns: minmax(0, 1fr); gap: 3px; }
+  .recipe-template pre { padding: 14px; }
+}
