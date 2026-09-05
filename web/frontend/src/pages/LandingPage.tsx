@@ -12,13 +12,16 @@ import { PROOFS } from "../proofs/registry";
 export function LandingPage() {
   // The header offers the methodology from every page; arriving from there
   // lands here first and asks, through the navigation state, for the jump.
-  const { state, key } = useLocation();
+  const { state, key, search } = useLocation();
   useEffect(() => {
-    const target = (state as { scrollTo?: string } | null)?.scrollTo;
+    const target =
+      (state as { scrollTo?: string } | null)?.scrollTo ??
+      new URLSearchParams(search).get("methodology") ??
+      undefined;
     if (target?.startsWith(METHODOLOGY_ID)) {
       scrollToMethodology(target);
     }
-  }, [state, key]);
+  }, [state, key, search]);
 
   return (
     <div className="page page-landing">

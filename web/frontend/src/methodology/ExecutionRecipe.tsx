@@ -1,7 +1,5 @@
 import type { ReactNode } from "react";
-import { Link } from "react-router-dom";
 import { Latex } from "../graph-explorer";
-import { propertyAnchor, techniqueAnchor, type PropertyId, type TechniqueId } from "../structural-survey/data";
 import { ARTIFACT_ROWS, CLOSURE_CHECKLISTS, MOVE_RULES, SELECTION_ROWS } from "./recipe-reference";
 
 // Editorial adaptation of repair_and_closure.md. The source coverage map is in web/README.md.
@@ -42,12 +40,6 @@ function Template({ title, children }: { title: string; children: string }) {
   </section>;
 }
 
-function Coordinate({ id, kind }: { id: PropertyId | TechniqueId; kind: "property" | "technique" }) {
-  const target = kind === "property" ? propertyAnchor(id as PropertyId) : techniqueAnchor(id as TechniqueId);
-  return <button type="button" className={`survey-coordinate is-${kind}`} aria-label={`Recipe: go to ${kind} ${id}`}
-    onClick={() => document.getElementById(target)?.scrollIntoView({ behavior: "smooth", block: "center" })}>{id}</button>;
-}
-
 function Establish() {
   return <>
     <Contract input="The first unresolved node, its incoming path, and the requested endpoint."
@@ -62,7 +54,7 @@ function Establish() {
       ["Residual and vocabulary", "The actual support, marks, receiver, peeling set, traces, witnesses, boundary profiles, response coordinates and realization domain."],
       ["Queue and evidence", "The exact obligation, every outstanding child, the intended consumers, and evidence for the transitions already made."],
     ]} />
-    <p>For a PDE branch, retain normalization, gauge, topology, centres, scales and the observer witnesses as well as bounds. A rescaling may preserve an estimate while changing the representative to which the next statement applies. Prove the transport explicitly.</p>
+    <p>For an analytic branch, retain normalization, gauge, topology, centres, scales and observer witnesses as well as bounds. A transformation may preserve an estimate while changing the representative to which the next statement applies. Prove the transport explicitly.</p>
     <Template title="Branch record">{`Node and manuscript label:
 Requested endpoint:
 Exact incoming proposition and active branch condition:
@@ -81,13 +73,13 @@ function Inventory() {
     <Contract input="The complete branch record and its previous move history."
       output="An inventory identifying concrete, present structural properties that earlier moves have not evaluated."
       failure="Mark an unavailable prerequisite as absent. Retain accounted facts as usable premises and inspect another unaccounted observable." />
-    <p>Read the structural register row by row. Distinguish a property from its observable, a proof-state hypothesis, the technique that evaluates it, and the certificate returned. The graph register supplies A01–I06 and T01–T19; apply the corresponding domain vocabulary for other subjects.</p>
-    <p>An upstream estimate may have used a property globally while leaving a marked local incidence pattern unaccounted. Establish that difference precisely. “Same technique on a new name” is not novelty. Compare each candidate with withdrawn and unimplemented attempts as well as completed nodes.</p>
+    <p>Read the structural register row by row. Distinguish a property from its observable, a proof-state hypothesis, the technique that evaluates it, and the certificate returned. Use the problem’s registered property and technique vocabulary; the same inventory discipline applies across combinatorial, analytic and other structural arguments.</p>
+    <p>An earlier estimate may have used a property globally while leaving a marked local incidence pattern unaccounted. Establish that difference precisely. “Same technique on a new name” is not novelty. Compare each candidate with rejected and completed attempts.</p>
     <Table caption="Structural inventory template" heads={["Property / observable", "Present as", "Accounted upstream?", "Technique and certificate"]} rows={[
       ["Registered property and exact observable", "Concrete set, number, order, relation or family on this branch; name its indices", "Node or previous attempt and what it evaluated, or the precise aspect not accounted", "Textbook move, its prerequisites, and the witnesses or typed outcomes it returns"],
     ]} />
     <p>Include the upstream quantitative accounts in this table. Do not let an appealing local picture erase hot-state counts, packing maximality, rank, demand assignments or absorption capacities. A hypothetical distinguishing context is a certificate about an attempted quotient; its paths do not become actual paths in the original graph.</p>
-    <p>For example, vertex separation between four marked origins and the original receivers evaluates a different observable from matching entries to essential incidences. The graph linkage uses <Coordinate id="B04" kind="property" /> and <Coordinate id="T14" kind="technique" />. That distinction permits checking the candidate; it does not establish that either linkage or separator closes the branch.</p>
+    <p>For example, vertex separation between marked origins and receivers evaluates a different observable from matching entries to essential incidences. Keep those networks separate in the inventory. The distinction permits checking a candidate; it does not establish that either linkage or separator closes the branch.</p>
     <Template title="Move-history comparison">{`Technique:
 Exact observable and retained object:
 Hypotheses used:
@@ -121,7 +113,7 @@ function Selection() {
     <Latex className="methodology-display" value={String.raw`\[an-b\le cn+d,\quad a>c\quad\Longrightarrow\quad(a-c)n\le b+d.\]`} />
     <p>The larger arm closes only when the bounds contradict each other. The bounded arm remains an obligation until its finite configurations are covered. Surplus, deficiency, rank, entropy and boundary mass cannot pay each other without a proved conversion.</p>
     <Table caption="Residual shape → textbook move → application checks" heads={["Retained shape", "Candidate moves", "What must be proved"]} rows={SELECTION_ROWS} />
-    <p className="recipe-note">The table lists candidates, not automatic licences. Refined extremal choices belong at the node owning that choice and require an authorized repair; they are not a way to restart a downstream branch. A move already exhausted on the same observable remains exhausted.</p>
+    <p className="recipe-note">The table lists candidates, not automatic licences. Refined extremal choices belong at the step owning that choice and require an authorized repair; they are not a way to restart a later branch. A move already exhausted on the same observable remains exhausted.</p>
     <h5>The eighteen rules for choosing and executing a move</h5>
     <ol className="recipe-rules">{MOVE_RULES.map((rule, index) => {
       const [lead, ...items] = rule.split(/\n\s+- /);
@@ -147,7 +139,7 @@ function Repair() {
     ]} />
     <Latex className="methodology-display" value={String.raw`\[\llbracket B_i\rrbracket\subseteq\llbracket B\rrbracket,\qquad\llbracket B\rrbracket\subseteq\bigcup_i\llbracket B_i\rrbracket.\]`} />
     <p>A correct dichotomy alone is insufficient. Failure of either locality or consumption blocks admission, and passing both still requires progress. Splitting on “the desired lemma is false” can record an honest unfinished endpoint, but does not supply its closing construction.</p>
-    <p>Keep the original node number for the repaired decision and append new nodes. Preserve the statement consumed by existing descendants. Resolve shared preservation and cross-branch obligations once before duplicating work across constructors. Architectural repair ends when all routes are specified; a full-closure request additionally requires proving their local lemmas.</p>
+    <p>Keep the original step identity for the repaired decision and append new states. Preserve the statement consumed by existing descendants. Resolve shared preservation and cross-branch obligations once before duplicating work across constructors. Architectural repair ends when all routes are specified; a full-closure request additionally requires proving their local lemmas.</p>
     <Table caption="Recognize the repair being made" heads={["Defect", "Repair action"]} rows={[
       ["Estimate used without a hypothesis", "Insert the missing hypothesis test before first use; preserve the old argument on its valid arm."],
       ["Partial classification", "Prove the first-failure or repeat alternative exists, then cover every exceptional case."],
@@ -172,10 +164,10 @@ function Execute() {
       ["Consumers", "All hypotheses of a closed row, or invariant preservation and strict decrease for a smaller typed residual."],
       ["Finite certification", "A complete generator, a coverage proof, the actual parameter bounds, and a terminal certificate for every generated case."],
     ]} />
-    <h5>Five checks learned from the node [185] attempt</h5>
+    <h5>Five execution checks for any local construction</h5>
     <ol className="recipe-actions">
       <li><strong>Check history before retrying.</strong> Compare technique, observable, retained object and hypotheses. A corrected attempt needs a specific repaired construction or newly proved premise.</li>
-      <li><strong>Keep the exact objects.</strong> Q1 target-completeness compares its two registered response pieces. It does not compare the full support with an arbitrary fold. Empty-peeling and current-peeling packages do not share no-exit facts automatically. Separator edges are not original boundary supply, and marks on the separator keep their demands. Actual-graph properties do not constrain every realization-family member without proof.</li>
+      <li><strong>Keep the exact objects.</strong> A target-completeness claim about two registered response pieces does not compare a full support with an arbitrary replacement. Packages indexed by different conditions do not share exclusions automatically. Newly exposed boundary edges are not automatically part of the original supply, and marked origins retain their demands. Properties of one realized object do not constrain every member of a realization family without proof.</li>
       <li><strong>Prove the local application.</strong> Construct all fields and verify them before committing a transition. “This needs a lemma” names work to perform; it is not a completed result or a reason to switch to a feasibility discussion.</li>
       <li><strong>Consume every complementary outcome.</strong> A Menger linkage–separator split without consumers, or a theta table with survivors, has not reduced the branch. A smaller table or fewer unaccounted rows is not automatically a decreasing residual measure.</li>
       <li><strong>Keep status exact.</strong> Distinguish candidate, proved local implication, admitted reduction and closed branch. A smaller residual goes onto the queue. Full closure requires discharging that queue.</li>
@@ -230,20 +222,17 @@ function Verify() {
       <h5>{group.title}</h5>
       <ul>{group.items.map((item, index) => <li key={index}><Text>{item}</Text></li>)}</ul>
     </section>)}</div>
-    <details className="recipe-details"><summary>Implementing the recipe through the Lean ledger</summary>
-      <p>Read the active residual and established facts through the sealed ledger inputs. Construct the selected mathematical object locally in its owning executor, publish the exact proposition under its declared key, and retain the inherited facts. A side callback or detached certificate is not a substitute for the incoming ledger.</p>
+    <details className="recipe-details"><summary>Implementing the recipe in a typed proof system</summary>
+      <p>Read the active residual and established facts through the proof system’s canonical state. Construct the selected mathematical object locally in its owning step, publish the exact proposition under its declared key, and retain inherited facts. A side callback or detached certificate is not a substitute for the incoming state.</p>
       <p>An exhaustive decision extends the ledger separately on each arm. A returned non-False residual records unfinished work even if the term elaborates. Closure must consume an actual contradiction or an already established incompatibility. Check the mathematical statement, publication schema, wiring, ancestry and kernel result independently.</p>
-      <p>Respect the authorized edit scope. The project’s one-label implementation discipline determines the local unit of repair; a full-branch request still requires all authorized descendant obligations. Do not weaken valid mathematics to make transport compile. Consult the live API and audit tables before copying historical declaration names.</p>
-      <p><Link to="/lean/ledger">Read the ExactLedger documentation</Link>{" · "}<Link to="/lean/writing-facts">Writing facts</Link>{" · "}<Link to="/lean/closing">Closing a branch</Link>{" · "}<Link to="/lean/assembly">Assembling the proof</Link></p>
+      <p>Respect the authorized scope of the formal development. Do not weaken valid mathematics to make transport compile. The same separation between proposition, state carrier, execution and audit applies in any proof assistant.</p>
     </details>
   </>;
 }
 
-function Example({ title, status, steps = [], children }: { title: string; status: string; steps?: string[]; children: ReactNode }) {
+function Example({ title, children }: { title: string; children: ReactNode }) {
   return <details className="recipe-details"><summary>{title}</summary>
-    <p className="recipe-example-status"><strong>Reading status:</strong> {status}</p>
     {children}
-    {steps.length > 0 && <p className="methodology-steps">{steps.map(step => <Link className="chip chip-node" key={step} to={`/erdos-gyarfas/explore?step=${step}`} title={`Open step [${step}]`}>{step}</Link>)}</p>}
   </details>;
 }
 
@@ -269,9 +258,9 @@ const EXECUTOR_PROMPT = `Execute structural exhaustion on the selected open bran
 
 10. Persistence. Execute the authorized queue until every requested branch is closed. Do not stop at “a local lemma is needed”, a plan, or a promise. If interrupted, preserve the exact unfinished queue. Correct a deviation in the work record before continuing.`;
 
-function Practice() {
+function GenericPractice() {
   return <>
-    <p>The cases below are worked readings of the source document. Their purpose is to show the exact input, move and evidence required. Historical proof plans and incomplete formalizations are labelled as such; a construction proposed in a repair history is not thereby a closed branch.</p>
+    <p>These abstract exercises show how to apply the recipe without relying on a particular theorem, proof graph or implementation status. For each one, identify the retained object, the failed hypothesis, the structural certificate, and the exact consumer of every outcome.</p>
     <Template title="Seven-field repair report">{`What failed:
 The exact hypothesis exposed:
 The exhaustive dichotomy inserted:
@@ -279,61 +268,38 @@ What each residual carries:
 Closing moves and certificates for every arm:
 Inherited statements and accounts preserved:
 Where the proof, dependencies and status are recorded:`}</Template>
-    <Example title="Exactify an asymptotic collision — [173]–[177]" status="Manuscript repair example; the arrows below describe its stated routing, not a new kernel-check claim." steps={["173", "175", "176", "177"]}>
-      <p><strong>Input and failure.</strong> A net-charge collision used asymptotic allowances and appeared to require a sufficiently large graph. The branch already carried exact window counts and surplus values.</p>
-      <Latex className="methodology-display" value={String.raw`\[15p_{13}+\sigma_W-\sigma_R<\tfrac14(n-13p_{13}),\qquad p_{13}=|\mathcal P_{\rm hot}|+C.\]`} />
-      <p><strong>Split and negative data.</strong> Test this exact inequality. Its positive arm uses the existing collision. Its negative arm gives</p>
-      <Latex className="methodology-display" value={String.raw`\[C\ge\frac{n-73|\mathcal P_{\rm hot}|-4(\sigma_W-\sigma_R)}{73}.\]`} />
-      <p><strong>Consumers.</strong> On the branch where this forces cold mass, inspect the actual first-failure support. A subcubic support must supply the declared cold configuration. A high-degree centre must supply two distinct separated connector tails before the Type B ledger can accept it. Retain the old positive continuation and prove that each discarded incidence is charged only once.</p>
+    <Example title="Exactify an asymptotic estimate">
+      <p><strong>Input.</strong> A bound is written with an unspecified “sufficiently large” condition, although the branch carries exact integer quantities.</p>
+      <p><strong>Move.</strong> Rewrite the condition as an exact integer inequality. The positive arm preserves the original estimate; the negative arm gives a concrete amount of mass, deficit or obstruction that the next ledger can consume.</p>
+      <p><strong>Checks.</strong> Prove the rearrangement, retain the exact quantities, and route every size regime. The lower-bound residual is useful only when a later move has a certified capacity comparison.</p>
     </Example>
-    <Example title="Repair a realization claim — [158]–[168]" status="Manuscript repair example; every cap substitution and finite-table survivor still needs the stated application evidence." steps={["158", "160", "163", "167", "168"]}>
-      <p><strong>Input and split.</strong> Joint realization of window states in labelled near-cubic skeletons was an unsupported sentence. Test that realization on its declared family. Keep the original continuation on the positive arm and the precise failed-realization count on the negative arm.</p>
-      <p><strong>Move sequence.</strong> Test the deficiency cap and the separate private-carrier rate. Reuse a continuation only after checking that these are exactly the quantities it reads. Neutral equal-length configurations then require a canonical replacement or a symmetric strand pair. A refined order is justified at its owning choice by preserving every earlier strict size comparison.</p>
-      <p><strong>Finite and structural checks.</strong> The source’s two-strand table at parameters 13 and 40 has 96 hits among 533 configurations. That count is not closure. The stated survivor exclusion uses actual attachment incidences: the symmetric pair requires two external stubs, while the selected interior window vertices have only one. Prove the configurations are the selected ones before using this contradiction.</p>
+    <Example title="Repair an independence or realization claim">
+      <p><strong>Input.</strong> Several local states are individually realizable, but their joint product has not been proved.</p>
+      <p><strong>Move sequence.</strong> Test the joint fiber in exposure order. On success, prove the savings add in the declared class. On failure, retain the first failing fiber and its complete outside record, extract a minimal connected overlap obstruction, and construct the actual serial or replacement object before applying arithmetic.</p>
+      <p><strong>Checks.</strong> Do not infer joint realization from separate realizations. Charge overlap once, preserve the boundary interface, and give every arithmetic or periodic alternative an actual object-level consumer.</p>
     </Example>
-    <Example title="Retain the first failing fibre — [169]–[172]" status="Intended manuscript continuation with an explicit graph-realization obligation. Arithmetic alone does not certify the entire route." steps={["169", "170", "171", "172a", "172b", "172c"]}>
-      <p><strong>Input.</strong> Window completions may overlap, so separate state counts do not imply a joint product bound. Test conditional fibre bounds in their exposure order.</p>
-      <p><strong>Positive arm.</strong> Prove the savings add in the declared near-cubic class, then compare its code length with the skeleton budget. Verify that the same information was not already counted elsewhere.</p>
-      <p><strong>Negative arm.</strong> Retain the first failing scale, barrier, outside record, exposed prefix and fibre. Extract a cardinality-minimal connected overlap obstruction; prove connectivity by component concatenation. Construct the actual serial system before applying sumset arithmetic. Its paths, disjointness, increment bounds and realized cycles must all belong to the retained graph.</p>
-      <p><strong>Closing check.</strong> Use the full modulus and residue-specific range. Charge each overlap once to its minimal connected support. A theorem about abstract serial arithmetic does not fill a missing graph construction.</p>
+    <Example title="Peel while preserving the account">
+      <p><strong>Input.</strong> Some loads, coordinates or witnesses have been routed to a special branch but are still included in an ordinary charge.</p>
+      <p><strong>Move.</strong> Define the exact peel set, remove one eligible item, prove the ledger update, and decrease a nonnegative integer measure. Restore every graph, state, boundary and target invariant after the peel.</p>
+      <p><strong>Complementary arm.</strong> If the rate or capacity test fails, publish the exact demand and absorption ledgers. Termination of the peel is not payment; the residual remains on the queue until a consumer is proved.</p>
     </Example>
-    <Example title="Peel without losing the account — [101], [123], [181]" status="Descent and routing example. The failed-rate residual and its descendants remain separate closure obligations." steps={["101", "123", "181"]}>
-      <p><strong>Failure.</strong> A routed load used by a target-defective quotient was also counted as ordinary Type A charge. Introduce the exact peeling set before summing unpeeled loads.</p>
-      <p><strong>Execution.</strong> Remove one eligible load from the unpeeled account, retain its declared exit witness, prove the quarter-unit charge update, and decrease the nonnegative integer measure by one. Restore all graph, packing, response and target invariants after every peel.</p>
-      <p><strong>Complementary arm.</strong> If the reduced-rate test fails, publish the exact demand, absorption, blocker and stage ledgers. Do not assume the open burden is sublinear. A termination proof does not pay the receiving ledger; the failed-rate branch stays on the queue.</p>
+    <Example title="Identify an excluded alternative">
+      <p><strong>Input.</strong> The branch excludes a named alternative, and the retained data appear to contain its defining witness.</p>
+      <p><strong>Construction.</strong> Read the witness from the branch, verify every interface field and preservation condition, and prove the produced object satisfies the alternative’s definition.</p>
+      <p><strong>Terminal.</strong> Only the exact identification closes. A similar-looking object or a witness reconstructed from another family does not satisfy the consumer.</p>
     </Example>
-    <Example title="Identify an already excluded exit — [124]" status="Local identification pattern. It applies only to the exact witness and exit-free branch described here." steps={["124"]}>
-      <p><strong>Input.</strong> A true route-8 entry has the required essential carriers and a declared carrier-deletion witness, while its branch excludes exit (4).</p>
-      <p><strong>Construction.</strong> Select an essential carrier, read its declared deletion witness, and prove that the resulting quotient belongs to the canonical exit-(4) family for the same receiver.</p>
-      <p><strong>Terminal.</strong> The constructed witness realizes precisely the excluded exit. The contradiction uses both conjuncts of the retained entry. A similar-looking arbitrary deletion or a reconstructed witness from another family does not satisfy this consumer.</p>
+    <Example title="Prove that a first failure exists">
+      <p><strong>Input.</strong> A corridor or finite-state procedure is classified by its first boundary event, but existence of that event was only assumed.</p>
+      <p><strong>Move.</strong> Prove either that the boundary is reached within the stated bound or that two retained states repeat. Route the target hit, defect, compression, handoff and bounded exceptional configuration separately.</p>
+      <p><strong>Checks.</strong> Prove silent compression in every compatible context, handle equality cases with their own table, and consume table survivors structurally.</p>
     </Example>
-    <Example title="Prove first failure exists — [145]–[157]" status="Manuscript classification example; its bounded and equal-length cases require the stated tables." steps={["145", "150", "157"]}>
-      <p><strong>Input.</strong> Failure of the hot cap leaves cold mass and actual corridors. Prove that a corridor reaches the successor stub within the state bound or repeats a state; do not assume a first failure exists.</p>
-      <p><strong>Routing.</strong> The source distinguishes an actual target hit, a target defect, a proper target-complete compression, a declared handoff, and a bounded configuration. For silent compression prove all-context response preservation and strict size decrease. Equal-length exchanges need their separate same-interface table.</p>
-      <p><strong>Exception check.</strong> The interval of 13 offsets avoids 4, 8, 16 and 32 only at lengths 17, 18 and 19 within the stated bound. These survivors are explicit cases to consume, not an excuse to run a larger unrelated enumeration.</p>
-    </Example>
-    <Example title="Reopen exact negated implications — [178]–[182]" status="Open residual and historical repair plan. The proposed constructors are not presented as implemented closures." steps={["178", "179", "180", "182"]}>
-      <p><strong>Retained alternatives.</strong> The three failures concern conditional factorization of the graph skeleton model, exhaustive routing of the actual pair-return package, or arithmetic/periodic coverage of the graph-realized serial system. Keep the corresponding input with each negated implication.</p>
-      <p><strong>Proposed repair order.</strong> Expand factorization into the precise baseline family, joint realization and reconstruction obligations. For uncrossing, check the actual returns, overlap support, and graph realization of every claimed alternative. For arithmetic, check the exact increment spectrum and full-modulus hypotheses. At each first failure, admit a local split only after proving its negative consumer or strict descent.</p>
-      <p><strong>Boundary.</strong> The source’s constructor plans organize remaining work. Definitions of coordinates, a drawn repair graph or a successful typecheck do not prove those obligations. Preserve the exact open state until each construction and complementary case is discharged.</p>
-    </Example>
-    <Example title="Use the full pressure ledger — historical [181] plan" status="Historical proposal and plan repair, not a current closure certificate." steps={["181", "183", "184", "185"]}>
-      <p><strong>Input.</strong> Keep the entry family, receivers, essential cores, declared deletion witnesses, trace basins, peel chain, maximal demand and absorption assignments, blockers and failed reduced-rate test. The residual is not merely a subcubic component with high density.</p>
-      <p><strong>Consumer audit.</strong> Compare the exact burden forced by those ledgers with the offered consumer’s hypotheses. If incompatible, do not keep trying the same rate estimate. Inventory the structural information not yet used, including the incidence pattern of the actual marked family.</p>
-      <p><strong>Historical O7 proposal.</strong> The document proposed a two-support exclusion and later recorded repairs to that plan. Hypothetical deletion contexts do not supply actual distinct channels, and a Hall obstruction does not automatically satisfy a cold serial-system theorem. Verify each missing application on the retained branch before promoting any proposal to a transition.</p>
-    </Example>
-    <Example title="Reject activity that does not reduce the branch — [185]" status="Rejected closure attempts. These examples explain execution checks; they do not close [185]." steps={["185"]}>
-      <p><strong>Theta extraction.</strong> A correct local enumeration left surviving patterns and supplied no terminal consumer. It did not reduce the outstanding obligation. Check the table’s closing power before announcing a move.</p>
-      <p><strong>Vertex fold.</strong> A smaller folded support was compared with the original graph, while retained Q1 target-completeness concerned two different registered response pieces. The required identification was absent. Match the consumer’s exact objects before applying minimality.</p>
-      <p><strong>Menger.</strong> A linkage–separator lemma evaluated an unaccounted observable but left both kinds of output without closure continuations. Prove the consumers and preserve all marked loads, including those on the separator. A correct auxiliary lemma is not yet an admitted reduction.</p>
-    </Example>
-    <Example title="Preserve observers, budget regimes and analytic kernels" status="Examples from the methodology’s graph and PDE repair history; each illustrates a specific retained-state obligation." steps={["19", "125", "144"]}>
-      <p><strong>Observer compactness.</strong> A profile-only state cannot guarantee that observer witnesses stay in a compact cylinder. The Type I repair retains the observation data and separates density and event-balance outcomes, including the sparse branch, before reusing the successor argument.</p>
-      <p><strong>Budget regime.</strong> A graph-counting budget valid on the near-cubic spine needs that hypothesis before its first use. The surplus branch must actually produce the same spine estimate consumed by the main line; naming a surplus exception does not suffice.</p>
-      <p><strong>Stokes kernel.</strong> Smooth vorticity does not identify velocity: a divergence-free, curl-free field may remain. The local example <Latex value={String.raw`\(u=a(t)e_1,\ p=-a'(t)x_1\)`} /> shows why curl alone loses information. The finite-energy argument must eliminate the kernel separately, using the expanding-ball estimate, before recovering the pressure tail.</p>
+    <Example title="Preserve observers and representatives across transitions">
+      <p><strong>Input.</strong> A proof step keeps a numerical estimate but discards the observer, gauge, topology or representative needed by the next step.</p>
+      <p><strong>Move.</strong> Extend the branch state with the missing witness or normalize and recenter before applying the continuation. Split concentration, translation, scale, profile and gauge failures as separate typed outcomes.</p>
+      <p><strong>Checks.</strong> Prove the transport of every retained resource and close the lost-kernel or escape alternative independently. A successful estimate alone does not identify the object to which the next theorem applies.</p>
     </Example>
     <h5>Executor prompt</h5>
-    <p>This prompt adapts the repository instructions to the authorized scope of the current proof. Use it with the eight stages and their evidence checks, rather than as a substitute for them.</p>
+    <p>Use this prompt with the eight stages and their evidence checks. It is a reusable operating procedure, not a proof-specific status report.</p>
     <Template title="Reusable executor prompt">{EXECUTOR_PROMPT}</Template>
     <details className="recipe-details"><summary>Glossary and source guide</summary>
       <Table caption="Terms used by the recipe" heads={["Term", "Meaning"]} rows={[
@@ -345,9 +311,9 @@ Where the proof, dependencies and status are recorded:`}</Template>
         ["First failure", "The earliest failed construction obligation, retained with all earlier successful obligations."],
         ["Currency", "Constraint, compression or quantity, with proved conversions and no double charging."],
         ["Leaf totality", "Every output has a closure certificate or belongs to the domain of another registered step. An open queue still requires execution."],
-        ["Full closure", "Every reachable arm is proved closed and all required implementation and wiring checks pass."],
+        ["Full closure", "Every reachable arm is proved closed and all required implementation and wiring checks pass."]
       ]} />
-      <p>Source: <code>repair_and_closure.md</code>, especially §§4.7–4.10, 5, 10–13. The structural register below supplies the property and textbook-technique vocabulary. The worked examples draw on §§6–8; their historical proposals are not live implementation status. Mathematical statements belong to the manuscripts, implementation evidence to the actual declarations, and EG status to the live audit tables.</p>
+      <p>The recipe is adapted from the repair-and-closure manual. Its examples are intentionally abstract; the mathematical statement, implementation carrier and status record for a particular application belong to that application’s own sources.</p>
     </details>
   </>;
 }
@@ -360,5 +326,5 @@ export const EXECUTION_RECIPE_PARTS = [
   { id: "recipe-execute", title: "5. Execute the construction", parent: "recipe", Content: Execute },
   { id: "recipe-outcomes", title: "6. Discharge every outcome", parent: "recipe", Content: Outcomes },
   { id: "recipe-verify", title: "7. Verify and record closure", parent: "recipe", Content: Verify },
-  { id: "recipe-practice", title: "8. Worked repairs and templates", parent: "recipe", Content: Practice },
+  { id: "recipe-practice", title: "8. Worked repairs and templates", parent: "recipe", Content: GenericPractice },
 ] as const;

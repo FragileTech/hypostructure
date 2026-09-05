@@ -47,52 +47,47 @@ site.
 
 ## Executing the methodology
 
-The landing page’s methodology includes an eight-stage execution recipe after
-“One iteration of the method”. Its source is `repair_and_closure.md`; the web
-version reorganizes the instructions into operations, required evidence,
-failure continuations, worked examples, checklists and selectable templates.
-It is an editorial adaptation, not an automatic Markdown render or a live
-proof-status feed.
+The landing page renders a generic eight-stage execution recipe after “One
+iteration of the method”. Its source is `repair_and_closure.md`; the web
+version reorganizes the instructions into operations, evidence requirements,
+failure continuations, abstract worked patterns, checklists and selectable
+templates. It is an editorial adaptation rather than an automatic Markdown
+render.
 
-`frontend/src/methodology/ExecutionRecipe.tsx` contains the stages and examples;
-`recipe-reference.ts` carries the source-derived selection table, eighteen
-rules, six checklists and artifact table. `MethodologySection.tsx` imports the
-stage metadata into its existing navigation and renders the content through
-the same section wrappers. Property and technique references use the existing
-structural-survey anchors; proof examples use the established explorer routes.
+Every methodology part has a stable element id and a real link in the
+methodology rail. The canonical target is
+`/?methodology=methodology-<part-id>`; the hash router keeps the query inside
+the landing route, and `LandingPage` scrolls to the matching section. Keep the
+part metadata in `MethodologySection.tsx` as the single source for rail order,
+headings and destinations. The navigation test checks that every metadata row
+has a rendered heading and a matching link.
 
-| Markdown source | Web recipe destination |
+`frontend/src/methodology/ExecutionRecipe.tsx` contains the generic stages and
+abstract practice patterns. `recipe-reference.ts` carries the source-derived
+selection table, move rules, checklists and artifact table. `MethodologySection.tsx`
+imports the stage metadata and renders each stage through the same addressable
+section wrapper as the rest of the methodology.
+
+| Manual material | Web recipe destination |
 |---|---|
-| §§1–2: authorities, branch state, reading discipline | 1. Establish the branch; glossary |
-| §3: transitions, interfaces, fixed inputs, iteration | 1, 3, 4 and 6; existing iteration summary |
+| §§1–2: authority, branch state and reading discipline | 1. Establish the branch; glossary |
+| §3: transitions, interfaces, fixed inputs and iteration | Establish, select, repair and discharge |
 | §§4.1–4.6: repair and ordered first failure | 4. Repair the first failed obligation |
-| §4.7: inventory and worked inventories | 2. Inventory unused structure; historical [181]/[182] examples |
-| §§4.8–4.9: admission and executor failure patterns | 3–6; executor prompt |
-| §4.10: all five [185] execution checks | 5. Execute the construction; rejected-attempt example |
-| §§5.1–5.3: residual data, currencies, fifteen selection cases | 3. Select an admissible move; worked repairs |
-| §5.4: all eighteen rules; §5.5: worked decision | 3. Select an admissible move; first-fibre example |
-| §6: eight worked-repair groups | 8. Worked repairs and templates |
-| §§7–8: [182]/[181] proposed continuations and repairs | 8; explicitly labelled historical/open, not closure certificates |
-| §9: failure modes and anti-patterns | 2–6; [185] example; executor prompt |
-| §§10–11: records and Lean discipline | 7. Verify and record closure; Lean implementation disclosure |
-| §12: all six checklist groups | 7. Verify and record closure |
-| §13: all ten executor instructions | 8. Reusable executor prompt, adapted to authorized project scope |
-| §14: glossary and sources | 8. Glossary and source guide; this maintenance map |
+| §§4.7–4.10: inventory, admission and execution checks | 2. Inventory; 3. Select; 5. Execute |
+| §§5.1–5.5: residual data, proof currencies and move rules | 3. Select an admissible move |
+| §6: worked repair patterns | 8. Worked repairs and templates |
+| §§7–9: continuations, outcomes, failure modes and anti-patterns | 5. Execute; 6. Discharge; practice patterns |
+| §§10–11: records and typed proof-system discipline | 7. Verify and record closure |
+| §12: checklist groups | 7. Verify and record closure |
+| §13: executor instructions | 8. Reusable executor prompt |
+| §14: glossary and sources | 8. Glossary and source guide |
 
-When the source changes, update the mapped stages and reference data together.
-Preserve operational detail; consolidate repetition without dropping a check.
-The web adaptation makes prerequisite and progress requirements explicit where
-older examples use shorthand. In a consumer audit, equality of lower and upper
-bounds is checked for strictness rather than automatically called a
-contradiction. Project-specific edit restrictions are expressed as authorized
-scope, and historical Lean names are not offered as a current API reference.
-
-Review example status against the manuscript and live audit tables before
-claiming implementation or closure. In particular, [181]/[182] plans, missing
-serial-system realizations, and the rejected [185] moves are not presented as
-completed proofs. Existing landing tests check navigation order, destination
-validity and mathematical rendering. Validate the browser at wide and narrow
-viewports, including table overflow, keyboard disclosures and register jumps.
+When the manual changes, update the mapped stages and reference data together.
+Preserve every prerequisite, outcome and progress condition. A candidate move,
+a local implication, an admitted reduction and a closed branch are distinct
+statuses in every application; the recipe keeps those distinctions explicit.
+Run the landing tests after changing the metadata, and check the linked targets
+at wide and narrow viewports, including keyboard access to tables and templates.
 
 ## The Hypostructure section
 

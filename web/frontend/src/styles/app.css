@@ -2004,7 +2004,8 @@ body.has-rail-open {
   padding: 0;
 }
 
-.methodology-rail button {
+.methodology-rail button,
+.methodology-rail a {
   display: block;
   width: 100%;
   text-align: left;
@@ -2020,12 +2021,18 @@ body.has-rail-open {
   cursor: pointer;
 }
 
-.methodology-rail button:hover {
+.methodology-rail a {
+  text-decoration: none;
+}
+
+.methodology-rail button:hover,
+.methodology-rail a:hover {
   background: var(--surface-sunken);
   color: var(--ink);
 }
 
-.methodology-rail button.is-current {
+.methodology-rail button.is-current,
+.methodology-rail a.is-current {
   background: var(--accent-soft);
   color: var(--accent);
   font-weight: 600;
@@ -2055,7 +2062,8 @@ body.has-rail-open {
     gap: 6px;
   }
 
-  .methodology-rail button {
+  .methodology-rail button,
+  .methodology-rail a {
     width: auto;
     margin: 0;
     padding: 5px 12px;
@@ -2064,7 +2072,8 @@ body.has-rail-open {
     background: var(--surface);
   }
 
-  .methodology-rail button.is-current {
+  .methodology-rail button.is-current,
+  .methodology-rail a.is-current {
     border-color: var(--accent);
   }
 }

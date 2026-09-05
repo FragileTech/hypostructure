@@ -85,13 +85,17 @@ function useCurrentPart(): PartId {
 /**
  * The rail beside the account, hung in the page's left margin so the text keeps
  * its width; on a viewport too narrow for that margin it becomes a row of chips
- * above the text. Buttons replace `href="#…"` links because the site's
- * hash router would read the fragment as a route.
+ * above the text. The links use a query target because the site's hash router
+ * reserves URL fragments for route paths.
  */
-function RailButton({ id, title, current }: { id: PartId; title: string; current: PartId }) {
+export function methodologySectionPath(id: PartId): string {
+  return "/?methodology=" + encodeURIComponent(partAnchor(id));
+}
+
+function RailLink({ id, title, current }: { id: PartId; title: string; current: PartId }) {
   return (
-    <button
-      type="button"
+    <Link
+      to={methodologySectionPath(id)}
       className={id === current ? "is-current" : undefined}
       aria-current={id === current ? "true" : undefined}
       onClick={() =>
@@ -99,7 +103,7 @@ function RailButton({ id, title, current }: { id: PartId; title: string; current
       }
     >
       {title}
-    </button>
+    </Link>
   );
 }
 
@@ -112,12 +116,12 @@ function MethodologyRail() {
         <ul>
           {METHODOLOGY_PARTS.filter((part) => parentOf(part.id) === undefined).map((part) => (
             <li key={part.id}>
-              <RailButton id={part.id} title={part.title} current={current} />
+              <RailLink id={part.id} title={part.title} current={current} />
               {METHODOLOGY_PARTS.some((child) => parentOf(child.id) === part.id) ? (
                 <ul>
                   {METHODOLOGY_PARTS.filter((child) => parentOf(child.id) === part.id).map((child) => (
                     <li key={child.id}>
-                      <RailButton id={child.id} title={child.title} current={current} />
+                      <RailLink id={child.id} title={child.title} current={current} />
                     </li>
                   ))}
                 </ul>
@@ -1844,7 +1848,8 @@ export function MethodologySection() {
               Read the instructions in order, use the selection tables and
               checklists while working, and consult the worked repairs for
               concrete applications. The recipe adapts the repair-and-closure
-              manual, including the execution checks learned at node [185].
+              manual, including checks against repeated moves, mismatched
+              objects, unconsumed outcomes and premature closure claims.
             </p>
             {EXECUTION_RECIPE_PARTS.map(({ id, Content }) => (
               <Part id={id} key={id}><Content /></Part>

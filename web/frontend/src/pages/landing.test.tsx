@@ -6,19 +6,19 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
 import { MemoryRouter } from "react-router-dom";
 
-import { METHODOLOGY_PARTS, partAnchor } from "../components/MethodologySection";
+import { METHODOLOGY_PARTS, methodologySectionPath, partAnchor } from "../components/MethodologySection";
 import { PROOFS } from "../proofs/registry";
 import { ALL_STRUCTURAL_PROPERTIES, STRUCTURAL_TECHNIQUES } from "../structural-survey/data";
 import { LandingPage } from "./LandingPage";
 
-function show() {
+function show(initialEntry = "/") {
   return render(
-    <MemoryRouter>
+    <MemoryRouter initialEntries={[initialEntry]}>
       <LandingPage />
     </MemoryRouter>,
   );
@@ -251,7 +251,7 @@ describe("the landing page", () => {
     show();
     const rail = screen.getByRole("navigation", { name: "The methodology" });
     const names = within(rail)
-      .getAllByRole("button")
+      .getAllByRole("link")
       .map((button) => button.textContent);
     expect(names).toEqual(METHODOLOGY_PARTS.map((part) => part.title));
     // Every rail entry has a part to land on, headed by the same title.
@@ -260,8 +260,12 @@ describe("the landing page", () => {
       expect(target, part.id).not.toBeNull();
       const level = "parent" in part ? 4 : 3;
       const heading = target!.querySelector(`h${level}`);
-      expect(heading, `${part.id} heading`).not.toBeNull();
+      expect(heading, part.id + " heading").not.toBeNull();
       expect(heading).toHaveTextContent(part.title);
+      expect(within(rail).getByRole("link", { name: part.title })).toHaveAttribute(
+        "href",
+        methodologySectionPath(part.id),
+      );
       if ("parent" in part) {
         // A subsection sits inside its parent's article and after its heading.
         expect(document.getElementById(partAnchor(part.parent))!.contains(target)).toBe(true);
@@ -288,7 +292,7 @@ describe("the landing page", () => {
     ]);
     const rail = screen.getByRole("navigation", { name: "The methodology" });
     // Subsections are nested under their parent in the rail.
-    const nested = Array.from(rail.querySelectorAll("ul ul button")).map((b) => b.textContent);
+    const nested = Array.from(rail.querySelectorAll("ul ul a")).map((b) => b.textContent);
     expect(nested).toEqual(
       METHODOLOGY_PARTS.filter((part) => "parent" in part).map((part) => part.title),
     );
@@ -297,7 +301,7 @@ describe("the landing page", () => {
   it("scrolls to a part from its rail entry, and marks exactly one part current", () => {
     show();
     const rail = screen.getByRole("navigation", { name: "The methodology" });
-    const buttons = within(rail).getAllByRole("button");
+    const buttons = within(rail).getAllByRole("link");
     // jsdom lays nothing out, so which part is current is not meaningful here;
     // that there is always one is.
     const current = buttons.filter((button) => button.classList.contains("is-current"));
@@ -309,8 +313,23 @@ describe("the landing page", () => {
     target.scrollIntoView = () => {
       scrolled = true;
     };
-    within(rail).getByRole("button", { name: "Cost as quantity: structural accounting" }).click();
+    fireEvent.click(within(rail).getByRole("link", { name: "Cost as quantity: structural accounting" }));
     expect(scrolled).toBe(true);
+  });
+
+  it("opens a methodology section from its direct URL", () => {
+    let scrolled = false;
+    const originalScrollIntoView = Element.prototype.scrollIntoView;
+    Element.prototype.scrollIntoView = () => {
+      scrolled = true;
+    };
+    try {
+      show(methodologySectionPath("recipe-execute"));
+      expect(document.getElementById(partAnchor("recipe-execute"))).not.toBeNull();
+      expect(scrolled).toBe(true);
+    } finally {
+      Element.prototype.scrollIntoView = originalScrollIntoView;
+    }
   });
 
   it("can jump from the hero to the methodology", () => {
