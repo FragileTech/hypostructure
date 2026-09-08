@@ -15,9 +15,53 @@ def line_number(text: str, offset: int) -> int:
     return text.count("\n", 0, offset) + 1
 
 
+def check_selected_windows(text: str) -> list[str]:
+    """Catch terminal-window and selected-domain regressions in the chart layer."""
+    errors: list[str] = []
+    compact = re.sub(r"\\[,;!]", "", text)
+    compact = re.sub(r"\s+", "", compact)
+    if re.search(
+        r"\[[^\[\]]*,\\tau_0\+\\ell\]"
+        r"(?:\\subseteq|\\subset|\\Subset)I_\*",
+        compact,
+    ):
+        errors.append("selected interval extends beyond the terminal time of I_*")
+
+    # These results start with a gauge on a selected subinterval.  An ambient
+    # cylinder Q_R^* or an AC(I_*) conclusion would extend its domain without
+    # producing a selection there.  Include proofs and intervening corollaries.
+    restricted_blocks = (
+        ("thm:repaired-existence", "sec:repaired-gauge-pressure-decomposition"),
+        ("lem:pressure-eq", "sec:differentiated-gauge-modulation"),
+        ("thm:repaired-gauge-modulation-system", "sec:renormalized-suitable-structure"),
+        ("prop:repaired-gauge-subsequence-stability", "sec:multibubble-cascade-exclusion"),
+    )
+    for start_label, end_label in restricted_blocks:
+        start = text.find(r"\label{" + start_label + "}")
+        end = text.find(r"\label{" + end_label + "}", start + 1)
+        if start < 0 or end < 0:
+            errors.append(f"missing selected-window audit boundary: {start_label}")
+            continue
+        block = re.sub(r"\s+", "", text[start:end])
+        if re.search(
+            r"Q_(?:\{[^{}]+\}|[A-Za-z0-9]+)\^(?:\*|\{\*\})"
+            r"|AC\(I_\*\)"
+            r"|L\^[^;\n]*?\(I_\*(?:;|\))",
+            block,
+        ):
+            errors.append(f"selected-window result expands to I_* near {start_label}")
+    start = compact.find(r"\label{thm:compact-window-representation}")
+    end = compact.find(r"\end{theorem}", start)
+    if start >= 0 and re.search(
+        r"J(?:\\subseteq|\\subset|\\Subset)I_\*", compact[start:end]
+    ):
+        errors.append("compact-window theorem exceeds its selected interval J_0")
+    return errors
+
+
 def main() -> int:
     text = TEX.read_text(encoding="utf-8")
-    errors: list[str] = []
+    errors = check_selected_windows(text)
 
     # R13 fixes one sign and time convention.  Remove insignificant whitespace
     # and TeX spacing commands before checking so formatting cannot evade it.
@@ -69,13 +113,13 @@ def main() -> int:
     required_labels = {
         "def:canonical-chart-notation",
         "rem:r13-whole-space-norm-scope",
-        "paper6a:lem:canonical-final-change-identities",
-        "paper6a:thm:canonical-repaired-gauge-equation",
-        "paper6a:eq:canonical-repaired-gauge-equation",
-        "paper2:thm:pressure-decomp",
-        "paper6a:thm:canonical-local-caccioppoli",
-        "paper6a:eq:canonical-local-caccioppoli",
-        "paper6:def:remaining-named-exits",
+        "lem:canonical-final-change-identities",
+        "thm:canonical-repaired-gauge-equation",
+        "eq:canonical-repaired-gauge-equation",
+        "thm:pressure-decomp",
+        "thm:canonical-local-caccioppoli",
+        "eq:canonical-local-caccioppoli",
+        "def:remaining-named-exits",
     }
     for label in sorted(required_labels):
         if label not in labels:

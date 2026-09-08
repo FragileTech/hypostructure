@@ -2630,8 +2630,24 @@ For a fixed spatial center \(x_0\) we also use
 \[
 Q_R(t):=Q_R(x_0,t).
 \]
-Fix a compact window \(I_*:=[\tau_0-\ell,\tau_0+\ell]\), \(\ell>0\), and write
-\(I_{\rm ph}:=[t_\star-\Lambda_{\max}^2\ell,\; t_\star+\Lambda_{\max}^2\ell]\).
+Fix a one-sided window
+\(I_*=[\tau_0-\ell,\tau_0]\), with \(\ell>0\), and let
+\[
+ I_{\rm ph}=[t_\star-\Lambda_{\max}^2\ell,t_\star].
+\]
+The chart extends continuously to the displayed endpoints.  If the physical
+solution is defined only for \(t<t_\star\), all solution identities use
+\(I_*\setminus\{\tau_0\}\) and
+\(I_{\rm ph}\setminus\{t_\star\}\); no value of the solution at the
+terminal time is prescribed.  All test cylinders have a strict buffer in
+this physical domain.
+For a compact selected interval \(J=[\tau_-,\tau_+]\subset I_*\), we use
+\(\tau_0-\ell\le\tau_-<\tau_+\le\tau_0\) and
+\(Q_R^J:=B_R\times J\).  Distributional identities, local function spaces,
+and compactly supported tests on such cylinders refer to their interiors.
+Pointwise solution identities hold almost everywhere in time.  Restriction
+to a smaller interval preserves these assertions; extending the selected
+chart requires the same hypotheses on the larger interval.
 
 For a cylinder \(Q_R(x_0,t_0)=B_R(x_0)\times (t_0-R^2,t_0)\), set
 \[
@@ -2646,6 +2662,88 @@ D(p;Q_R(x_0,t_0))&:=R^{-2}\int_{t_0-R^2}^{t_0}\int_{B_R(x_0)}
 \]
 Here \(\langle p(s)\rangle_{B_R(x_0)}:=|B_R|^{-1}\int_{B_R(x_0)}p(x,s)\,dx\);
 pressure is always understood modulo time-dependent constants.
+
+\begin{definition}[Realized local branch data]
+\label{def:realized-local-branch-data}
+A local branch datum records an original solution sequence, a subsequence of
+its indices, and the explicit observer maps used on that subsequence.  For
+each fixed model cylinder it records its physical image and buffer, the
+transformed equation and local energy inequality, and a pressure atlas modulo
+functions of time.  It also records a detecting cylinder, the type and size
+of its positive diagnostic, and every threshold loss.  Components of a
+decomposition carry their interaction stresses and component pressures when
+these are available; only the full field is automatically a suitable solution.
+A transfer to another branch must supply these data on the target cylinders.
+Failure of an estimate is recorded with its witnessing subsequence and
+quantities; it becomes an input to a closure theorem only after that theorem's
+entire local contract has been verified.
+\end{definition}
+
+\begin{lemma}[Active packet selection in a fixed relative chart]
+\label{lem:fixed-chart-active-packet-selection}
+Let \(Q\) be a bounded outer cylinder and let \(v_n\) satisfy
+\(\int_Q|v_n|^3\le M\).  Fix \(0<a\le b<\infty\) and \(\eta>0\).
+Consider a nonempty family of backward cylinders \(Q_r(z)\Subset Q\), with
+\(a\le r\le b\), such that
+\[
+ r^{-2}\int_{Q_r(z)}|v_n|^3\ge\eta.
+\]
+There is a maximal disjoint subfamily of at most \(M/(\eta a^2)\)
+cylinders.  Every candidate intersects a selected cylinder and has scale
+ratio in \([a/b,b/a]\) relative to it.  The distance between their spatial
+centers is at most \(2b\), and the distance between their terminal times is
+at most \(b^2\).
+
+If the candidate parameters lie in a fixed compact set whose cylinders have
+a common buffer in \(Q\), then a subsequence makes the cardinality constant
+and all selected parameters convergent.  If also
+\(v_n\to v\) strongly in \(L^3(Q)\), each limiting selected cylinder
+retains the displayed activity lower bound.  The parabolic rescaling of
+each selected cylinder is an actual observer of the original sequence.
+\end{lemma}
+
+\begin{proof}
+Each disjoint selected cylinder consumes at least \(\eta a^2\) of
+\(\int_Q|v_n|^3\).  A greedy selection therefore stops after at most
+\(\lfloor M/(\eta a^2)\rfloor\) choices.  At termination every candidate
+intersects a chosen cylinder.  Intersection gives the stated center and
+time bounds; the scale bounds give the stated ratio bounds.  This proves
+the finite selection without a whole-space norm.
+
+On a subsequence the finite cardinality is constant.  Compactness of the
+parameter set then gives limits of all selected parameters, after any fixed
+enumeration.  The indicators of their cylinders converge almost everywhere,
+since cylinder boundaries have spacetime measure zero.  Strong \(L^3\)
+convergence gives \(|v_n|^3\to|v|^3\) in \(L^1(Q)\).  Splitting the
+integral difference into this \(L^1\) difference and the integral of
+\(|v|^3\) against the difference of indicators proves retention.
+For \(z_n=(x_n,t_n)\), the observing velocity is exactly
+\[
+ w_n(y,s)=r_n v_n(x_n+r_ny,t_n+r_n^2s),\qquad (y,s)\in Q_1.
+\]
+Its activity is \(\int_{Q_1}|w_n|^3=r_n^{-2}
+\int_{Q_{r_n}(z_n)}|v_n|^3\).  If the original pair is suitable, its
+pressure is transformed by \(r_n^2\), with the local mean subtracted on
+the same image ball.  Change of variables in the weak equation and local
+energy inequality preserves suitability on this buffered cylinder.
+\end{proof}
+
+\begin{remark}[Entry obligation after geometric selection]
+\label{rem:active-selector-entry-obligation}
+The selection lemma produces spacetime activity and finitely many observers
+inside a fixed relative chart.  It supplies neither an almost-every-time
+velocity floor, a weighted gauge bound, nor an absolutely continuous
+scale-center path.  Those are distinct inputs in
+\cref{def:single-core-hypotheses}.  A complete physical entry theorem must
+produce these inputs or a realized successor satisfying a separately proved
+closure contract.  Similarly, escaping parameter sequences specify geometric
+scale or exterior defects, but geometry alone does not supply their analytic
+closures.  This implication remains an entry obligation in the present
+repair.  An empty family of velocity candidates implies regularity only
+after pressure activity is excluded and the required CKN smallness holds
+on all sufficiently small detecting cylinders.  One compound active class
+is a single-core input, not a regularity conclusion.
+\end{remark}
 
 \begin{definition}[Single-core hypotheses]\label{def:single-core-hypotheses}
 Let \((R_*,r_*,M,\eta,\kappa,\Lambda_{\min},\Lambda_{\max})\) satisfy
@@ -2664,30 +2762,21 @@ if the following hold:
   \int_{B_{r_*}(0)}|\rho_{\rm c}(t)u(x_{\rm c}(t)+\rho_{\rm c}(t)y,t)|^3\dd y\ge \eta
   \quad \text{for a.e. }t\in I_{\rm ph}.
   \]
-\item[(\textup{SC3})] There exists \(0<r_{\rm sep}\le r_*/2\) such that for every
-  \(0<r\le r_{\rm sep}\), every competitor pair
-  \[
-  \mathcal C_{\rm core}(t):=\left\{(\bar x,\bar\rho):|\bar x-x_\bullet|\le \frac{R_*}{2},\
-  0<\bar\rho\le R_*\right\},
-  \]
-  \((\bar x,\bar\rho)\in \mathcal C_{\rm core}(t)\setminus\{(x_{\rm c}(t),\rho_{\rm c}(t))\}\)
-  with
-  \[
-  \rho_{\rm c}(t)^{-1}|\bar x-x_{\rm c}(t)|
-  +\left|\frac{\bar\rho}{\rho_{\rm c}(t)}-1\right|\ge r_{\rm sep}
-  \]
-  has separated local weighted mass in the same core-scale variables:
-  \[
-  \left|\int_{B_r}|\rho_{\rm c}(t)u(x_{\rm c}(t)+\rho_{\rm c}(t)y,t)|^3\,\dd y
-  - \int_{B_r}|\bar\rho\,u(\bar x+\bar\rho y,t)|^3\,\dd y\right|
-  \ge \eta.
-  \]
-  This quantitative non-competing core condition is imposed on the
-  selected physical core directly; it is not a consequence of the repaired-gauge
-  construction.
+\item[(\textup{SC3})] On each selected model window, active candidates
+  are measured by the scale-invariant spacetime quantity
+  \(r^{-2}\int_{Q_r(z)}|u|^3\), at one fixed positive activity level.
+  Candidates with compact relative scale-center parameters are grouped
+  before choosing the retained component.  The selected component is the
+  sole compound active class remaining on this window.  Its relative
+  parameters stay in a compact chart.  Every ungrouped candidate carries
+  its own detecting cylinder and activity lower bound.
+  This is a branch condition.  Its geometric selection is supplied by
+  \cref{lem:fixed-chart-active-packet-selection}; production of the full
+  time-dependent single-core package is the separate obligation in
+  \cref{rem:active-selector-entry-obligation}.
 \item[(\textup{SC4})] For the selected core,
   \[
-  \sup_{t\in I_{\rm ph}}\int_{B_{2R_*}}|y|^{-p}|\rho_{\rm c}(t)u(x_{\rm c}(t)+\rho_{\rm c}(t) y,t)|^3\,dy\le M,
+  \operatorname*{ess\,sup}_{t\in I_{\rm ph}}\int_{B_{2R_*}}|y|^{-p}|\rho_{\rm c}(t)u(x_{\rm c}(t)+\rho_{\rm c}(t) y,t)|^3\,dy\le M,
   \]
   for some \(0<p<3\).
 \item[(\textup{SC5})] The preliminary frame associated with the selected core is
@@ -2730,74 +2819,81 @@ and use the compatibility in \textup{(SC5)} to identify
 \(\Lambda_{\rm pre}(\tau)=\rho_{\rm c}(t_{\rm c}(\tau))\) and
 \(X_{\rm pre}(\tau)=x_{\rm c}(t_{\rm c}(\tau))\) a.e.
 
-\begin{proposition}[Preliminary frame map regularity]\label{prop:prelim-frame}
-Under \(\mathrm{SC}(R_*,r_*,M,\eta,\kappa)\), the map
+\begin{proposition}[Admissible one-sided preliminary frame]
+\label{prop:prelim-frame}
+Let \(I_*=[\tau_0-\ell,\tau_0]\), and let
+\(X_{\rm pre},\Lambda_{\rm pre}\in AC(I_*)\), with
 \[
-\Phi_{\rm pre}(\tau,Y):=(x,t)=(X_{\rm pre}(\tau)+\Lambda_{\rm pre}(\tau)Y,\ t_{\rm c}(\tau))
+ 0<\Lambda_{\min}\le\Lambda_{\rm pre}\le\Lambda_{\max},
+ \qquad |X_{\rm pre}-x_\bullet|\le d<R_{\rm phys}.
 \]
-is well-defined and absolutely continuous in \(\tau\).
-Moreover, \(1/\Lambda_{\rm pre}\), \(\Lambda_{\rm pre}\in L^\infty(I_*)\),
-\(X_{\rm pre}\in W^{1,1}_{\rm loc}(I_*;\RR^3)\), and for every \(R\le R_*\),
+Suppose the physical cylinder is
+\(B_{R_{\rm phys}}(x_\bullet)\times(t_\star-\delta,t_\star]\).
+Choose
 \[
-\Phi_{\rm pre}(Q_R^*)\subset B_{R_*/2+\Lambda_{\max}R}(x_\bullet)\times I_{\rm ph}.
+ 0<\ell<\delta/\Lambda_{\max}^2,
+ \qquad 0<R<(R_{\rm phys}-d)/\Lambda_{\max},
 \]
-Consequently, if \(B_{R_{\rm phys}}(x_\bullet)\times I_{\rm ph}\) is a
-declared physical working cylinder and
+and define
 \[
-  \frac{R_*}{2}+\Lambda_{\max}R<R_{\rm phys},
+ t_{\rm c}(\tau)=t_\star-
+ \int_\tau^{\tau_0}\Lambda_{\rm pre}(s)^2\,\dd s,
+ \qquad
+ \Phi_{\rm pre}(\tau,Y)=
+ (X_{\rm pre}(\tau)+\Lambda_{\rm pre}(\tau)Y,t_{\rm c}(\tau)).
 \]
-then \(\Phi_{\rm pre}(Q_R^*)\) has a positive spatial buffer inside that
-working cylinder.  The displayed geometric inclusion alone does not assert
-containment in a prescribed physical working cylinder when this inequality
-fails.
-For each fixed time \(\tau\), the spatial map
-\(Y\mapsto X_{\rm pre}(\tau)+\Lambda_{\rm pre}(\tau)Y\) is bi-Lipschitz on
-\(B_R\), with \(\det \nabla_Y\Phi_{\rm pre}=\Lambda_{\rm pre}^3\), hence
-Jacobian and inverse-Jacobian bounds depend only on \(\Lambda_{\min},\Lambda_{\max}\).
+Then \(\Phi_{\rm pre}\) maps \(B_R\times I_*\) into the physical
+cylinder with a positive spatial buffer, and is a homeomorphism onto its
+image.  It is absolutely continuous in time and bi-Lipschitz on each spatial
+slice.  Its spatial and spacetime Jacobians are respectively
+\(\Lambda_{\rm pre}^3\) and \(\Lambda_{\rm pre}^5\) almost everywhere.
+The inverse time map is Lipschitz with constant
+\(\Lambda_{\min}^{-2}\).  Full spacetime bi-Lipschitz regularity holds
+when both paths belong to \(W^{1,\infty}(I_*)\).
+If the terminal physical time is excluded, exclude \(\tau_0\) from the
+solution domain as well; the chart itself still extends to the endpoint.
 \end{proposition}
-\begin{proof}
-From \textup{(SC5)}, \(\Lambda_{\rm pre}\in AC(I_*)\),
-\(0<\Lambda_{\min}\le \Lambda_{\rm pre}\le\Lambda_{\max}<\infty\), and
-\(X_{\rm pre}\in AC(I_*;\mathbb R^3)\). The scalar ODE
-\[
-\frac{dt_{\rm c}}{d\tau}=\Lambda_{\rm pre}(\tau)^2,\qquad t_{\rm c}(\tau_0)=t_\star
-\]
-therefore has an absolutely continuous strictly increasing solution on \(I_*\), and
-\[
-\frac{dt_{\rm c}}{d\tau}=\Lambda_{\rm pre}(\tau)^2
-\quad\text{a.e. on }I_*.
-\]
-The compatibility condition \textup{(SC5)} identifies this absolutely continuous frame
-with the selected physical core a.e.; no differentiability of \(x_{\rm c}\) or
-\(\rho_{\rm c}\) beyond the frame regularity in \textup{(SC5)} is used.
-For fixed \(\tau\), \(\nabla_Y\Phi_{\rm pre}(\tau,\cdot)=\Lambda_{\rm pre}(\tau)I\), so
-\[
-\det\nabla_Y\Phi_{\rm pre}(\tau,\cdot)=\Lambda_{\rm pre}(\tau)^3,
-\qquad
-\Lambda_{\min}^3\le \det\nabla_Y\Phi_{\rm pre}\le \Lambda_{\max}^3.
-\]
-Hence, if \(Y_1,Y_2\in B_R\),
-\[
-\Lambda_{\min}|Y_1-Y_2|
-\le |\Phi_{\rm pre}(\tau,Y_1)-\Phi_{\rm pre}(\tau,Y_2)|
-\le \Lambda_{\max}|Y_1-Y_2|,
-\]
-and therefore \(\Phi_{\rm pre}(\tau,\cdot)\) is bi-Lipschitz on \(B_R\). Its inverse has
-Lipschitz constant \(\Lambda_{\min}^{-1}\), so Jacobian and inverse-Jacobian bounds
-are controlled by \(\Lambda_{\min},\Lambda_{\max}\).
 
-For image inclusions, if \(x=X_{\rm pre}(\tau)+\Lambda_{\rm pre}(\tau)Y\) with
-\(|Y|\le R\), then
+\begin{proof}
+Integration gives
 \[
-|x-X_{\rm pre}(\tau)|\le \Lambda_{\max}R,\qquad
-X_{\rm pre}(\tau)\in B_{R_*/2}(x_\bullet),
+ \Lambda_{\min}^2|\tau-\sigma|
+ \le |t_{\rm c}(\tau)-t_{\rm c}(\sigma)|
+ \le\Lambda_{\max}^2|\tau-\sigma|.
 \]
-so \(x\in B_{R_*/2+\Lambda_{\max}R}(x_\bullet)\). As \(\tau\in I_*\), we also have
-\(t=t_{\rm c}(\tau)\in I_{\rm ph}\). Therefore
+In particular \(t_{\rm c}\) is strictly increasing and has a Lipschitz
+inverse on its image.  The strict restriction on \(\ell\) places the
+left endpoint strictly above \(t_\star-\delta\).  Spatial inclusion
+follows from
+\(|X_{\rm pre}+\Lambda_{\rm pre}Y-x_\bullet|
+\le d+\Lambda_{\max}R<R_{\rm phys}\).
+The inverse is
 \[
-\Phi_{\rm pre}(Q_R^*)\subset B_{R_*/2+\Lambda_{\max}R}(x_\bullet)\times I_{\rm ph}.
+ \tau=t_{\rm c}^{-1}(t),\qquad
+ Y=\frac{x-X_{\rm pre}(\tau)}{\Lambda_{\rm pre}(\tau)}.
 \]
+It is continuous.  On each slice the two Lipschitz constants are bounded
+by \(\Lambda_{\max}\) and \(\Lambda_{\min}^{-1}\).
+At almost every time the derivative matrix is triangular by blocks, with
+spatial block \(\Lambda_{\rm pre}I\) and time derivative
+\(t_{\rm c}'=\Lambda_{\rm pre}^2\).  The stated determinants follow.
+The integral substitution formula follows directly by spatial affine
+substitution and then one-dimensional substitution in \(t_{\rm c}\),
+so it requires no spacetime Lipschitz assertion.  Finally, if the paths
+have bounded derivatives, the formulas for the map and inverse give
+spacetime Lipschitz bounds on \(B_R\times I_*\).
 \end{proof}
+
+\begin{remark}[Window choice and structural failures]
+\label{rem:preliminary-chart-failure-contract}
+A window exceeding either displayed radius or time bound is reduced before
+the chart is used.  A structural failure is instead a witnessed loss of
+spatial collar, compact scale bounds, or absolute continuity along the
+selected sequence.  Such a witness must accompany any proposed transfer
+to the domain, scale, or representation branch.  The elementary inclusion
+proved above does not close any of those branches.
+\end{remark}
+
 \begin{definition}[Preliminary profile]\label{def:prelim-profile}
 For \((x,t)=\Phi_{\rm pre}(\tau,Y)\), define
 \[
@@ -2931,7 +3027,8 @@ Let \(t=t(\tau)=t_{\rm c}(\tau)\) and, for \(R>0\), define
 \[
 J_\tau^{-}(R):=\bigl(t(\tau)-\Lambda_{\max}^{2}R^2,\ t(\tau)\bigr].
 \]
-Define renormalized local quantities on \(Q_R^*(\tau)\) by
+For \(Q_R^*(\tau):=B_R\times(\tau-R^2,\tau)\) contained in the
+selected chart domain, define renormalized local quantities by
 \[
 \begin{aligned}
 A_V(\tau,R)&:=\sup_{s\in(\tau-R^2,\tau)}\int_{B_R}|V(\cdot,s)|^2\,dY,\qquad
@@ -2966,7 +3063,10 @@ R_{\rm ph}(\tau,R):=\Lambda_{\max}R+\Delta_X(\tau,R).
 \begin{proposition}[Cylinder comparison on compact windows]\label{prop:local-transfer}
 Assume \(\Lambda_{\min}\le \Lambda\le \Lambda_{\max}\) and formulas of
 \Cref{lem:canonical-final-change-identities}.
-Then for every \(\tau\in I_*\), \(R>0\),
+Let \(J\subset I_*\) be the selected chart interval.  Then for every
+\(\tau\in J\) and \(R>0\) with \([\tau-R^2,\tau]\subset J\), provided the
+spatial cylinder and its physical comparison cylinder lie in the declared
+working domains,
 \[
 A_V(\tau,R)\le \Lambda_{\min}^{-1}A_u(J_\tau^{-}(R),R_{\rm ph}(\tau,R)),
 \]
@@ -3567,7 +3667,8 @@ implies \(\mathcal F(1,0;V(\tau))=0\) a.e.
 
 Since \(\Lambda=\Lambda_{\rm pre}\mu\) and \(X=X_{\rm pre}+\Lambda_{\rm pre}q\),
 and \(\Lambda_{\rm pre},X_{\rm pre}\) are AC by \textup{(SC5)}, the products and sums
-preserve AC, hence \((\Lambda,X)\in AC(I_*)\). Differentiating,
+preserve AC on the common interval \(J\), hence
+\((\Lambda,X)\in AC(J)\). Differentiating there,
 \[
 a=\frac{\Lambda'}{\Lambda}
 =\frac{\Lambda_{\rm pre}'}{\Lambda_{\rm pre}}+\frac{\mu'}{\mu}\in L^1_{\rm loc},\qquad
@@ -3589,14 +3690,15 @@ representation theorem.
 \subsection{Pressure transport and decomposition}\label{sec:repaired-gauge-pressure-decomposition}
 \begin{lemma}[Renormalized pressure equation]\label{lem:pressure-eq}
 If \(V,P\) satisfy the renormalized Navier--Stokes equation in
-\Cref{thm:canonical-repaired-gauge-equation}, then
+\Cref{thm:canonical-repaired-gauge-equation} on \(Q_{2R}^J\), where
+\(J\subset I_*\) is the selected chart interval, then
 \[
--\Delta P=\partial_i\partial_j(V_iV_j)\qquad\text{in }\mathcal D'(Q_{2R}^*).
+-\Delta P=\partial_i\partial_j(V_iV_j)\qquad\text{in }\mathcal D'(Q_{2R}^J).
 \]
 \end{lemma}
 \begin{proof}
-Take test \(\varphi\in C_c^\infty(Q_{2R}^*)\). Since \(V,P\in L^2_{\rm loc}\times
-L^{3/2}_{\rm loc}\) on \(Q_{2R}^*\), all pairings below are legitimate.
+Take test \(\varphi\in C_c^\infty(Q_{2R}^J)\). Since \(V,P\in L^2_{\rm loc}\times
+L^{3/2}_{\rm loc}\) on \(Q_{2R}^J\), all pairings below are legitimate.
 Expand
 \[
 \nn\cdot\bigl((V\cdot\nabla)V\bigr)
@@ -3613,25 +3715,26 @@ and \(\nn\cdot\Delta V=\Delta(\nn\cdot V)=0\), the following identity holds in \
 \[
 \Delta P+\partial_i\partial_j(V_iV_j)=0.
 \]
-Hence \(-\Delta P=\partial_i\partial_j(V_iV_j)\) on \(Q_{2R}^*\).
+Hence \(-\Delta P=\partial_i\partial_j(V_iV_j)\) on \(Q_{2R}^J\).
 \end{proof}
 
 \begin{theorem}[Canonical localized pressure decomposition]
 \label{thm:pressure-decomp}
-Let \(0<r<R\), let \(\zeta\in C_c^\infty(B_R)\) satisfy
+Let \(J\subset I_*\) be a compact selected interval, let \(0<r<R\), and
+let \(\zeta\in C_c^\infty(B_R)\) satisfy
 \(\zeta\equiv1\) on \(B_r\), and assume
 \[
-  V\in L^2_{\mathrm{loc}}(I_*;L^3(B_R)),\qquad
-  P\in L^1_{\mathrm{loc}}(I_*;L^{3/2}(B_R)).
+  V\in L^2_{\mathrm{loc}}(J;L^3(B_R)),\qquad
+  P\in L^1_{\mathrm{loc}}(J;L^{3/2}(B_R)).
 \]
 Assume also the canonical pressure identity
 \[
   -\Delta P=\partial_i\partial_j(V_iV_j)
-  \quad\text{in }\mathcal D'(B_R\times I_*),
+  \quad\text{in }\mathcal D'(B_R\times J),
 \]
 which follows from
 \cref{thm:canonical-repaired-gauge-equation,lem:pressure-eq}.
-For a.e. \(\tau\in I_*\) there exists
+For a.e. \(\tau\in J\) there exists
 \[
 P(\cdot,\tau)=P_{\rm loc}(\cdot,\tau)+H(\cdot,\tau)
 \]
@@ -3665,7 +3768,7 @@ P_{\rm loc}= \mathcal R_i\mathcal R_j(\zeta V_iV_j),\qquad
 H:=P-P_{\rm loc}.
 \]
 \(\zeta V_iV_j\in
-L^{1}_{\mathrm{loc}}(I_*;L^{3/2}(\mathbb R^3))\), so the Calderón--Zygmund
+L^{1}_{\mathrm{loc}}(J;L^{3/2}(\mathbb R^3))\), so the Calderón--Zygmund
 operator \(f\mapsto \mathcal R_i\mathcal R_j f\) gives
 \[
 P_{\rm loc}(\cdot,\tau)=\mathcal R_i\mathcal R_j(\zeta V_iV_j)(\cdot,\tau),
@@ -3676,7 +3779,7 @@ P_{\rm loc}(\cdot,\tau)=\mathcal R_i\mathcal R_j(\zeta V_iV_j)(\cdot,\tau),
 Because \(\mathcal R_i\mathcal R_j\) is linear bounded on \(L^{3/2}\),
 \[
 P_{\rm loc}\in
-L^{1}_{\mathrm{loc}}(I_*;L^{3/2}(\mathbb R^3)).
+L^{1}_{\mathrm{loc}}(J;L^{3/2}(\mathbb R^3)).
 \]
 Since \(-\Delta P_{\rm loc}=\partial_i\partial_j(\zeta V_iV_j)\) and
 \(\zeta\equiv1\) on \(B_r\),
@@ -3786,12 +3889,15 @@ derivatives already computed in \cref{prop:full-jacobian}.
 \end{proof}
 
 \begin{theorem}[Modulation system]\label{thm:repaired-gauge-modulation-system}
-Let \((V,P)\) be the repaired pair on the compact window under consideration,
-and assume the branch satisfies the modulation-differentiability row
-\cref{def:mod-diff-row}. Writing \(\theta:=(a,b)\), let
+Let \((V,P)\) be the repaired pair on the compact selected window
+\(J\subset I_*\), and assume the branch satisfies the
+modulation-differentiability row \cref{def:mod-diff-row} and the quantitative
+nondegeneracy hypotheses of
+\cref{thm:quantitative-gauge-jacobian-invertibility} on \(J\).
+Writing \(\theta:=(a,b)\), let
 \(\mathcal R_\alpha\) be the truncated-test limit functions from
 \cref{def:mod-diff-row}.
-Then for a.e. \(\tau\in I_*\),
+Then for a.e. \(\tau\in J\),
 \[
 \partial_\mu\mathcal F_\alpha(1,0;V)\,a(\tau)
 +\sum_{k=1}^3\partial_{q_k}\mathcal F_\alpha(1,0;V)\,b_k(\tau)
@@ -3803,7 +3909,7 @@ J(\tau)\theta(\tau)=\mathcal R(\tau).
 \]
 Hence
 \[
-\theta(\tau)=J(\tau)^{-1}\mathcal R(\tau)\in L^1_{\rm loc}(I_*)^4,
+\theta(\tau)=J(\tau)^{-1}\mathcal R(\tau)\in L^1_{\rm loc}(J)^4,
 \qquad |\theta(\tau)|\le K\,|\mathcal R(\tau)|.
 \]
 \end{theorem}
@@ -3819,24 +3925,25 @@ Set \(G_\alpha(\tau):=\mathcal F_\alpha(1,0;V(\tau))\). By Theorem~\ref{thm:repa
 =\mathcal R_\alpha(\tau),
 \]
 which is equivalent to \(J(\tau)\theta(\tau)=\mathcal R(\tau)\).
-The row gives \(\mathcal R\in L^1_{\rm loc}(I_*)^4\), and
+The row gives \(\mathcal R\in L^1(J)^4\), and
 Proposition~\ref{thm:quantitative-gauge-jacobian-invertibility} gives \(|J^{-1}(\tau)|\le K\) a.e.; hence
 \[
 \theta(\tau)=J^{-1}(\tau)\mathcal R(\tau),\quad
-\theta\in L^1_{\rm loc}(I_*),\quad |\theta|\le K|\mathcal R|\text{ a.e.}
+\theta\in L^1_{\rm loc}(J),\quad |\theta|\le K|\mathcal R|\text{ a.e. on }J.
 \]
 as claimed.
 \end{proof}
 
 \begin{corollary}[Regularity of \(a,b\)]
-For the repaired pair of Theorem~\ref{thm:repaired-gauge-modulation-system}, \(a,b\in L^1_{\rm loc}(I_*)\).
-If in addition \(\mathcal R\in L^\infty_{\rm loc}(I_*)\), then \(a,b\in
-L^\infty_{\rm loc}(I_*)\).
+For the repaired pair of Theorem~\ref{thm:repaired-gauge-modulation-system}
+on \(J\), \(a,b\in L^1_{\rm loc}(J)\).
+If in addition \(\mathcal R\in L^\infty_{\rm loc}(J)\), then \(a,b\in
+L^\infty_{\rm loc}(J)\).
 \end{corollary}
 
 \begin{proof}
 By Theorem~\ref{thm:repaired-gauge-modulation-system}, \(\theta=(a,b)=J^{-1}\mathcal R\) a.e., and
-\(J^{-1}\in L^\infty_{\rm loc}(I_*)\) by Theorem~\ref{thm:quantitative-gauge-jacobian-invertibility}. The first claim is therefore
+\(J^{-1}\in L^\infty_{\rm loc}(J)\) by Theorem~\ref{thm:quantitative-gauge-jacobian-invertibility}. The first claim is therefore
 immediate from \(\mathcal R\in L^1_{\rm loc}\), while the second follows if \(\mathcal R\in L^\infty_{\rm loc}\).
 \end{proof}
 
@@ -3982,10 +4089,11 @@ side and coefficients \(\tilde a,\tilde b\).
 Let \((u^{(n)},p^{(n)})\) satisfy \(\mathrm{SC}(R_*,r_*,M,\eta,\kappa)\) with the same
 data parameters and let \((\Lambda^{(n)},X^{(n)},V^{(n)},P^{(n)},a^{(n)},b^{(n)})\)
 be obtained from retained quantitatively nondegenerate repaired-gauge selections
-on the same \(I_*\) satisfying the modulation-differentiability row,
+on the same compact interval \(J_0\subset I_*\), satisfying the
+modulation-differentiability row on \(J_0\),
 with the constants in Proposition~\ref{thm:quantitative-gauge-jacobian-invertibility} uniform in \(n\). Assume also that
 \((a^{(n)},b^{(n)})\) is uniformly integrable on every compact time subinterval
-of \(I_*\) (in particular this holds under the \(L^\infty\) modulation bounds
+of \(J_0^\circ\) (in particular this holds under the \(L^\infty\) modulation bounds
 used in the scale-rigid applications). After extraction \(n_j\to\infty\), there exist
 subsequences and limits \((\Lambda,X,V,P,a,b)\) such that
 \[
@@ -3993,12 +4101,12 @@ subsequences and limits \((\Lambda,X,V,P,a,b)\) such that
 \quad\text{uniformly on compact time subintervals},
 \]
 \[
-V^{(n_j)}\to V\ \text{in }L^2_{\rm loc}(I_*;L^2_{\rm loc}),\quad
-V^{(n_j)}\rightharpoonup V\ \text{in }L^2_{\rm loc}(I_*;H^1_{\rm loc}),
+V^{(n_j)}\to V\ \text{in }L^2_{\rm loc}(J_0;L^2_{\rm loc}),\quad
+V^{(n_j)}\rightharpoonup V\ \text{in }L^2_{\rm loc}(J_0;H^1_{\rm loc}),
 \]
 \[
-P^{(n_j)}\rightharpoonup P\ \text{in }L^{3/2}_{\rm loc}(Q_R^*),\quad
-(a^{(n_j)},b^{(n_j)})\rightharpoonup(a,b)\ \text{in }L^1_{\rm loc}(I_*)^4.
+P^{(n_j)}\rightharpoonup P\ \text{in }L^{3/2}_{\rm loc}(Q_R^{J_0}),\quad
+(a^{(n_j)},b^{(n_j)})\rightharpoonup(a,b)\ \text{in }L^1_{\rm loc}(J_0)^4.
 \]
 Moreover the limit chart satisfies
 \[
@@ -4008,12 +4116,14 @@ in distributions, equivalently
 \[
 a=\frac{\Lambda'}{\Lambda},\qquad b=\frac{X'}{\Lambda}
 \]
-a.e.\ on \(I_*\), and the limit obeys all conclusions below.
+a.e.\ on \(J_0\), and the limit obeys the corresponding constraints and
+equations on this interval.
 \end{proposition}
 
 \begin{proof}
 From \(\mathrm{SC}\) and the retained repaired-gauge selections, \((V^{(n)},P^{(n)})\) are uniformly bounded in
-\(L^\infty_\tau L^2(B_{2R})\cap L^2_\tau H^1(B_{2R})\) and \(L^{3/2}_{\rm loc}(Q_R^*)\).
+\(L^\infty_\tau L^2(B_{2R})\cap L^2_\tau H^1(B_{2R})\) and
+\(L^{3/2}_{\rm loc}(Q_R^{J_0})\), locally in \(J_0^\circ\).
 Theorem~\ref{thm:quantitative-gauge-jacobian-invertibility} gives uniform invertibility bounds for \(J^{(n)}\), and
 Theorem~\ref{thm:repaired-gauge-modulation-system} gives \((a^{(n)},b^{(n)})\) uniformly in \(L^1_{\rm loc}\) (since
 \(\mathcal R^{(n)}\in L^1_{\rm loc}\)). Since on compact windows
@@ -4051,11 +4161,11 @@ L^1_\tau(H^{-1}_{\rm loc})+L^{4/3}_\tau(L^{12/11}_{\rm loc}),
 \]
 uniformly on compact windows. Aubin--Lions compactness on bounded balls gives
 \[
-V^{(n_j)}\to V\ \text{in }L^2_{\rm loc}(I_*;L^2_{\rm loc}),\quad
-V^{(n_j)}\rightharpoonup V\ \text{in }L^2_{\rm loc}(I_*;H^1_{\rm loc}).
+V^{(n_j)}\to V\ \text{in }L^2_{\rm loc}(J_0;L^2_{\rm loc}),\quad
+V^{(n_j)}\rightharpoonup V\ \text{in }L^2_{\rm loc}(J_0;H^1_{\rm loc}).
 \]
 By Calderón--Zygmund and Theorem~\ref{thm:pressure-decomp}, \(P^{(n_j)}\rightharpoonup P\) in
-\(L^{3/2}_{\rm loc}(Q_R^*)\), and with normalized pressure split \(P=P_{\rm loc}+H\),
+\(L^{3/2}_{\rm loc}(Q_R^{J_0})\), and with normalized pressure split \(P=P_{\rm loc}+H\),
 the same for \(P_{\rm loc}\) and \(H\). Passing to limits in
 \(\mathcal F(1,0;V^{(n)}(\tau))=0\),
 \cref{thm:canonical-repaired-gauge-equation}, and the linear modulation system
@@ -4068,7 +4178,14 @@ yields the corresponding limit constraints and equations.
 \begin{theorem}[Chart and repaired-gauge representation]\label{thm:chart-repaired-gauge-representation}
 Assume \(\mathrm{SC}(R_*,r_*,M,\eta,\kappa)\), and suppose the branch lies in the
 retained repaired-gauge regime with selection \((\mu,q)\) on
-\(J=[\tau_0-\ell,\tau_0+\ell]\subset I_*\). Then there are fields \((V,P)\) on \(Q_{2R}^J\), with
+\[
+ J=[\tau_-,\tau_+]\subset I_*,
+ \qquad \tau_0-\ell\le\tau_-<\tau_+\le\tau_0.
+\]
+Choose \(R>0\) so that the preliminary profile and its gauge-transformed
+arguments on \(B_{2R}\times J\) lie in the buffered physical chart domains
+of \cref{prop:prelim-frame,prop:compact-support-transport}.
+Then there are fields \((V,P)\) on \(Q_{2R}^J\), with
 \((\Lambda,X)\in AC(J)\),
 \[
 a=\frac{\Lambda'}{\Lambda},\qquad b=\frac{X'}{\Lambda},
@@ -4079,12 +4196,17 @@ such that
 u(x,t)=\Lambda(\tau)^{-1}V\!\left(\frac{x-X(\tau)}{\Lambda(\tau)},\tau\right),\quad
 \frac{dt}{d\tau}=\Lambda(\tau)^2,
 \]
-and \(\mathcal F(1,0;V(\tau))=0\) for \(\tau\in J\).
+and \(\mathcal F(1,0;V(\tau))=0\) for a.e. \(\tau\in J\).
+The choice \(\tau_+=\tau_0\) gives a one-sided terminal window; solution
+identities at an excluded terminal physical time are understood on
+\(J\setminus\{\tau_0\}\).
 \end{theorem}
 
 \begin{proof}
 From \textup{(SC5)} and Proposition~\ref{prop:prelim-frame}, \((\Lambda_{\rm pre},X_{\rm pre})\)
-are AC on \(I_*\), so \(V_{\rm pre}\) is defined on \(Q_{2R}^*\).
+are AC on \(I_*\).  Restrict them to \(J\).  The stated domain buffers
+place \(V_{\rm pre},P_{\rm pre}\) and all arguments used by the selected
+gauge in their physical domains on this interval.
 The retained repaired-gauge regime supplies
 \((\mu,q)\in AC(J;(0,\infty)\times\mathbb R^3)\) and
 \(\mathcal F(1,0;V_{\rm pre}^{\mu,q})=0\) a.e.
@@ -4109,14 +4231,15 @@ physical identity with \(\frac{dt}{d\tau}=\Lambda^2\) follows.
 \end{proof}
 
 \begin{theorem}[Pressure and modulation]\label{thm:pressure-modulation-representation}
-Assume, in addition to \autoref{thm:chart-repaired-gauge-representation}, that the retained repaired-gauge
-selection is quantitatively nondegenerate in the sense of
+Assume the hypotheses of \cref{thm:chart-repaired-gauge-representation}
+on its selected interval \(J\), and suppose the retained repaired-gauge
+selection on \(J\) is quantitatively nondegenerate in the sense of
 Proposition~\ref{thm:quantitative-gauge-jacobian-invertibility} and satisfies the
 modulation-differentiability row of \cref{def:mod-diff-row}.
 Then \((V,P)\) satisfies the renormalized Navier--Stokes
 equation with the logarithmic coefficient convention of
 \cref{thm:canonical-repaired-gauge-equation}; there is a
-decomposition \(P=P_{\rm loc}+H\) on \(Q_R^*\) as in
+decomposition \(P=P_{\rm loc}+H\) on \(Q_R^J\) as in
 Theorem~\ref{thm:pressure-decomp}; and \((a,b)\) is the unique solution of
 \[
 J(\tau)\binom{a(\tau)}{b(\tau)}=\mathcal R(\tau),\qquad
@@ -4129,8 +4252,10 @@ with bounds \(|(a,b)|\le K|\mathcal R|\), where \(K\) depends on
 \begin{proof}
 Equation and coefficient convention are inherited directly from
 \cref{thm:canonical-repaired-gauge-equation} applied to
-\((\Lambda,X)\) from Theorem~\ref{thm:chart-repaired-gauge-representation} and the definition of \(V\).
-By Theorem~\ref{thm:pressure-decomp} applied at each time slice, the decomposition on \(Q_R^J\)
+\((\Lambda,X)\) on \(J\) from Theorem~\ref{thm:chart-repaired-gauge-representation}
+and the definition of \(V\).
+By Theorem~\ref{thm:pressure-decomp} with outer radius \(2R\), inner
+radius \(R\), and the same time interval \(J\), the decomposition on \(Q_R^J\)
 is defined and unique once \(\fint_{B_R}H=0\) is imposed.
 The modulation identity is Theorem~\ref{thm:repaired-gauge-modulation-system}; uniqueness follows from invertibility of
 \(J\) (Theorem~\ref{thm:quantitative-gauge-jacobian-invertibility}) and the pointwise identity \((a,b)=J^{-1}\mathcal R\).
@@ -4139,15 +4264,18 @@ Uniform bounds on \((a,b)\) are obtained by the bound on \(J^{-1}\) there and th
 \end{proof}
 
 \begin{theorem}[Compact-window representation theorem]\label{thm:compact-window-representation}
-Under the assumptions of \cref{thm:chart-repaired-gauge-representation,thm:pressure-modulation-representation}, suppose the
-domain-buffer entry condition \eqref{eq:domain-buffer} holds on the
-selected physical working cylinder.  Then, for every compact window
-\(J\subset I_*\) and each fixed \(0<R\le R_{\rm adm}(J)\), setting
+Assume \cref{thm:chart-repaired-gauge-representation,thm:pressure-modulation-representation}
+on a selected interval \(J_0\subset I_*\).  Let \(J\Subset J_0^\circ\)
+be a compact interval, and suppose the domain-buffer entry condition
+\eqref{eq:domain-buffer} holds on its selected physical working cylinder.
+Then, for each fixed \(0<R\le R_{\rm adm}(J)\) within the spatial domain
+of the selected gauge, setting
 \(Q_R^J:=B_R\times J\),
 one has:
 \begin{enumerate}
 \item the exact renormalized equation on \(Q_{2R}^J\),
-\item the four repaired-gauge constraints \(\mathcal F(1,0;V(\tau))=0\),
+\item the four repaired-gauge constraints \(\mathcal F(1,0;V(\tau))=0\)
+  for a.e. \(\tau\in J\),
 \item bounds on \(a,b\in L^1_{\rm loc}(J)\) (and \(L^\infty_{\rm loc}\) under
   \(\mathcal R\in L^\infty_{\rm loc}\)),
 \item local pressure decomposition \(P=P_{\rm loc}+H\) with \(L^{3/2}\) local bounds and
@@ -4164,7 +4292,11 @@ the branch is assigned to the representation alternative as in
 \end{theorem}
 
 \begin{proof}
-From Theorem~\ref{thm:chart-repaired-gauge-representation} and the choice of \(J\subset I_*\), all quantities are defined on \(Q_{2R}^J\).
+Restrict the chart, fields, and gauge selection supplied by
+Theorem~\ref{thm:chart-repaired-gauge-representation} on \(J_0\) to \(J\).
+The domain-buffer hypothesis places all quantities on \(Q_{2R}^J\).
+The inclusion \(J\Subset J_0^\circ\) supplies a temporal buffer and keeps
+all tests below an excluded terminal time.
 Items (1) and (2) are
 \cref{thm:canonical-repaired-gauge-equation,thm:repaired-existence};
 item (3) is Theorem~\ref{thm:repaired-gauge-modulation-system} together with the inverse bound from
@@ -6884,7 +7016,8 @@ pressure on compact balls belongs to the local class used below.
 inequality of Caffarelli--Kohn--Nirenberg
 \cite{CaffarelliKohnNirenberg1982} into the renormalized variables
 \((y,\tau)\) and yields the inequality stated above with test function of the
-form \(\phi^2\), where \(\phi\in C_c^\infty(Q_R^*)\) is nonnegative.  Setting
+form \(\phi^2\), where \(\phi\in C_c^\infty(Q_{2R,J})\) is nonnegative
+and its physical image lies in the buffered chart domain.  Setting
 \(\Phi:=\phi^2\) and noting that every nonnegative
 \(\Phi\in C_c^\infty(Q_{2R,J})\) is the limit, in
 \(C_c^k(Q_{2R,J})\) for every \(k\), of squares of nonnegative smooth
