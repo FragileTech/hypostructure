@@ -381,9 +381,7 @@ theorem exists_record_of_traceLocalTargetDefect
 
 /-- **Target-complete-minimality from the branch's refutations**: the selected
 basin is trace-complete, and each of the four failure alternatives is refuted
-— (a), (b), and (d) by hypothesis (the quotient alternative is cased on the
-branch, exactly as the exit-`(5)` decision cases its realized datum; it is
-never refuted from the standing invariants), and (c) through
+— (a), (b), and (d) by hypothesis, and (c) through
 `not_traceDelocalization`. -/
 theorem targetCompleteMinimal_of_refutations {object : FiniteObject.{u}}
     {support : Finset object.Vertex} {threshold : Nat} {LengthOK : Nat → Prop}

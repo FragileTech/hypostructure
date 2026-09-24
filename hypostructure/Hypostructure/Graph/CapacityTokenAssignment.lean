@@ -466,9 +466,8 @@ theorem isSome_capacityCharge
 
 /-- **`Θ_cap` is undefined off `Π_blk`.**  A pair with no blocker has no
 canonical blocker, hence an empty declared support, so none of the four clauses
-fires: this is `def:capacity-token-ledger`'s *"a free pair has no canonical
-blocker and therefore no support"*, and it is what makes an empty-obstruction
-presentation charge no pair at all. -/
+fires.  This is what makes an empty-obstruction presentation charge no pair at
+all. -/
 theorem capacityCharge_eq_none_of_blockers_eq_empty
     {pair : Finset (object.Vertex × object.Vertex)}
     (empty : activation.blockers pair = ∅) :

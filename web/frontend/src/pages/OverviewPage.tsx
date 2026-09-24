@@ -1,6 +1,13 @@
 import { Link } from "react-router-dom";
 
-import { Latex, MathProvider, createReferenceResolver, indexDocument } from "../graph-explorer";
+import {
+  Latex,
+  MathProvider,
+  createReferenceResolver,
+  indexDocument,
+  openOutcomeName,
+  openOutcomeNodes,
+} from "../graph-explorer";
 import { useProof } from "../hooks/useProof";
 import { useProofDocument } from "../hooks/useProofDocument";
 import { ErrorPanel, LoadingPanel } from "../components/RequestPanels";
@@ -18,6 +25,7 @@ export function OverviewPage() {
   const { document } = request;
   const terminals = document.nodes.filter((node) => node.shape === "terminal").length;
   const decisions = document.nodes.filter((node) => node.shape === "decision").length;
+  const openOutcomes = openOutcomeNodes(document);
   const chapters = document.chapters ?? [];
   // Names the panels and results a caption points at, instead of printing keys.
   const references = createReferenceResolver(document, indexDocument(document));
@@ -38,6 +46,27 @@ export function OverviewPage() {
             </Link>
           </p>
         </header>
+
+        {openOutcomes.length ? (
+          <section className="panel" aria-labelledby="open-outcomes-title">
+            <h2 id="open-outcomes-title">The {openOutcomes.length} remaining outcomes</h2>
+            <p className="panel-lead">
+              {proof.slug === "erdos-gyarfas"
+                ? "Any counterexample yields a selected minimal counterexample in at least one of these outcomes. Excluding all six for selected minimal counterexamples would prove the conjecture."
+                : "These outcomes remain open in the source. Select one to inspect its route and retained facts."}
+            </p>
+            <ol className="outcome-grid">
+              {openOutcomes.map((node) => (
+                <li key={node.id}>
+                  <Link to={`/${proof.slug}/explore?step=${node.id}`}>
+                    <span>Node [{node.id}]</span>
+                    <strong>{openOutcomeName(node)}</strong>
+                  </Link>
+                </li>
+              ))}
+            </ol>
+          </section>
+        ) : null}
 
         <section className="panel">
           <h2>How the argument is shaped</h2>

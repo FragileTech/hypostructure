@@ -288,6 +288,8 @@ def compiled_catalog(root: Path) -> list[dict[str, object]]:
         name = str(declaration["name"])
         if module in CANONICAL_MODULES:
             category = CANONICAL_MODULES[module]
+        elif module.startswith("Hypostructure.Graph.Strategy.SpineRows."):
+            category = CANONICAL_MODULES["Hypostructure.Graph.Strategy.SpineRows"]
         elif module == "Hypostructure.Core.Strategy.Dag" and name.startswith(
             SEALED_TOPOLOGY_PREFIXES
         ):
@@ -354,8 +356,9 @@ def check_proof_boundary(root: Path) -> None:
                 line = source.count("\n", 0, match.start()) + 1
                 violations.append(f"{path.relative_to(root)}:{line}: {label}")
 
-    for relative in PROOF_BOUNDARY_FILES:
-        path = root / relative
+    boundary_paths = [root / relative for relative in PROOF_BOUNDARY_FILES]
+    boundary_paths.extend(sorted((root / PROOF_TREE / "HypostructureErdos64EG" / "Assembly").rglob("*.lean")))
+    for path in boundary_paths:
         source = path.read_text(encoding="utf-8")
         unfinished = FORBIDDEN_PROOF_SOURCE["unfinished proof"]
         for match in unfinished.finditer(source):

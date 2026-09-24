@@ -32,9 +32,8 @@ rather than at arithmetic.
 
 ## Scale
 
-Half-credits, so every comparison is carried at `2s` — the same scale
-`TypeBRefinedSupport.CandidateEntry.pays` uses, which is what lets a hybrid entry
-be *that* structure's `chosen` field.  No reciprocal appears and nothing rounds.
+Half-credits, so every comparison is carried at `2s`.  No reciprocal appears and
+nothing rounds.
 -/
 
 namespace Hypostructure.Graph.TypeBHybridIncidence

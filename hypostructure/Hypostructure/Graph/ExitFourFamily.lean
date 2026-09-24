@@ -155,7 +155,16 @@ structure Q2TargetDefect (Target : FiniteObject.{u} → Prop)
 /-! ## Q3: a trace-local quotient -/
 
 /-- The omitted trace coordinate is genuinely support-internal, exactly the
-nontriviality test in `def:typeA-trace-basin`. -/
+nontriviality test in `def:typeA-trace-basin`.
+
+The adjacent-pair clause asks both endpoints to be *interior* to the basin.
+`def:typeA-trace-basin`: a trace-local and support-internal response quotient
+"identifies or forgets entries of the fixed coordinate family, **preserves the
+full boundary degree profile**, and does not delete a boundary incidence" — so a
+pair of entries that an identification may merge never includes a labelled cut
+boundary vertex.  The manuscript's gloss "both endpoints in `V(B_u)`" separates an
+internal edge from a *cut* edge with an endpoint outside the basin; it is not a
+licence for an endpoint to be a boundary label. -/
 def TraceCoordinateInternal (object : FiniteObject.{u})
     (support basin : Finset object.Vertex) (threshold : Nat)
     (receiver load : object.Vertex)
@@ -173,7 +182,13 @@ def TraceCoordinateInternal (object : FiniteObject.{u})
         receiver load coordinate,
       ∃ right ∈ Route8.PresentedEntry.traceDeclaredSupport object support
           threshold receiver load coordinate,
-        left ∈ basin ∧ right ∈ basin ∧ object.graph.Adj left right
+        (left ∈ basin ∧
+            left ∉ Strategy.InterfaceReplacement.SupportAtom.cutBoundary object
+              basin) ∧
+          (right ∈ basin ∧
+              right ∉ Strategy.InterfaceReplacement.SupportAtom.cutBoundary object
+                basin) ∧
+            object.graph.Adj left right
 
 /-- Q3, represented by an actual retained subset of the selected load's
 declared trace-coordinate family. -/

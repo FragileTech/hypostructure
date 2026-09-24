@@ -644,7 +644,7 @@ theorem exists_canonicalPiece_negativeNetCharge (object : FiniteObject.{u})
 /-- **`prop:negative-net-charge`.**  A region of negative net charge has a
 connected piece of negative net charge.
 
-The manuscript's proof verbatim: if every piece were nonnegative their sum
+The manuscript's proof, paraphrased: if every piece were nonnegative their sum
 could not be negative.  What the statement returns is a *connected* subset of
 the region — `SupportComponents.Connected.ConnectedOn` is the walk-based
 connectivity of `def:admissible`'s "connected remainder piece", and the piece

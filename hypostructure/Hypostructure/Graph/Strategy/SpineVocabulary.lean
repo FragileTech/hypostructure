@@ -1,3 +1,4 @@
+import Hypostructure.Graph.WindowAttachmentShadow
 import Mathlib.Combinatorics.SimpleGraph.Metric
 import Hypostructure.Core.Strategy.FactOnlyStrategy
 import Hypostructure.Core.Strategy.MinimalCounterexampleScope
@@ -70,6 +71,7 @@ import Hypostructure.Graph.SparsePairLedger
 import Hypostructure.Graph.SameTokenBlockerRoles
 import Hypostructure.Graph.ObjectCapacityLedger
 import Hypostructure.Graph.NamedSurplusExits
+import Hypostructure.Graph.TargetDefectStructure
 import Hypostructure.Graph.SparseEntropySandwich
 import Hypostructure.Graph.BlockedClass
 import Hypostructure.Graph.CanonicalRealization
@@ -611,11 +613,12 @@ inductive Key where
   /-- The registered problem presentation identifies the spine threshold with
   the paper's cubic baseline. -/
   | cubicBaseline
-  /-- `lem:gadget-closure`: the two-terminal closure lemma and its three
-  manuscript specializations, with every piece condition bound internally. -/
+  /-- A two-terminal closure lemma with every piece condition bound internally.
+  The manuscript has no such lemma and no label for it. -/
   | gadgetClosure
-  /-- `lem:contraction-critical`: contracting an edge with no common cubic
-  neighbour exposes an exact dyadic return through that edge. -/
+  /-- Contracting an edge with no common cubic neighbour exposes a
+  power-of-two return through that edge.  The manuscript has no such lemma and
+  no label for it. -/
   | contractionCritical
   /-- Nodes `[5]`--`[7]`: the return-length set is disjoint from the shifted
   accepted set at every oriented edge.  This is the return-set form of target
@@ -1021,8 +1024,9 @@ inductive Key where
   anchored returns of a port, and without this fact "no return of the port has
   property `p`" would be satisfied by a port with no returns at all. -/
   | typeAPortReturn
-  /-- `cor:port-power-return`: every eligible completion port of the selected
-  Type A support carries an anchored return of exact dyadic length. -/
+  /-- Every eligible completion port of the selected Type A support carries an
+  anchored return of power-of-two length.  The manuscript has no such
+  corollary and no label for it. -/
   | portPowerReturn
   /-- Node `[93]`, yes arm — the entry of the saturated exit chain at node
   `[95]`: some completion port of a saturated receiver of the Type A support
@@ -1188,8 +1192,9 @@ inductive Key where
   has its cold return corridor. -/
   | coldReturnCorridors
   /-- Node `[21]`, `lem:p13-window-package` with `def:target-rank` and
-  `prop:p13-density`'s "since all target-complete window states are realized by
-  labelled near-cubic skeletons under `def:near-cubic-spine`": the canonical
+  the realization sentence used in `lem:p13-window-package` and `prop:p13-density`,
+  "all target-complete window states are realized by labelled near-cubic
+  skeletons": the canonical
   multi-scale package of the fixed maximal packing is a family of independently
   target-testable coordinates, i.e. its full package code is realized canonically
   by the labelled skeletons of the current object's class `𝒢_{n,m}`. -/
@@ -1259,7 +1264,7 @@ inductive Key where
   /-- Node `[166]`: refined minimality forces every neutral configuration's
   canonical replacement to be the corridor piece itself, `E = Q`. -/
   | coldCanonicalReplacementTrivial
-  /-- Node `[169]`, `def:blocked-class`: on the trivial neutral germ residual the
+  /-- Node `[169]`, `def:blocked-class`: on the trivial neutral-configuration residual the
   object's own labelled skeleton lies in the blocked class `𝓑(𝒫)` of the fixed
   maximal packing (near-cubic, windows present, no accepted cycle through a
   window), and `card 𝓑(𝒫) ≤ skeletonBudget`. -/
@@ -1544,12 +1549,24 @@ inductive Key where
   dependence set — with the subtraction-free display
   `3Ñ ≤ e(R, W) + B_dep + 𝖯_open`. -/
   | route8DemandAbsorption
+  /-- The (O2) maximal-absorption consequence on the same demand units. -/
+  | route8OpenBoundarySaturated
+  /-- The number of actual demand units equals the external demand defect. -/
+  | route8DemandUnitCount
   /-- Node `[123]`, `def:typeA-open-window-blocker` with
   `lem:typeA-open-window-blocker-count`: every open demand unit of the
   committed absorption is assigned a packed window through a boundary
   incidence of its component support, and the open demand is exactly the
   window-blocker load partition `𝖯_open = Σ_P B_open(P)`. -/
   | route8WindowBlockers
+  /-- The singleton forbidden-distance tail of the window attachment table. -/
+  | windowShadowSingletonTail
+  /-- Exact singleton-label safety interpretation of an attachment signature. -/
+  | windowShadowSignature
+  /-- The actual corridor/window cycle witnessing a recorded shadow hit. -/
+  | windowShadowHitCycle
+  /-- Selection excludes every recorded shadow hit on the same object. -/
+  | windowShadowHitExcluded
   /-- Node `[181]`: the explicit residual left by node `[123]` after exact
   peeling accounting, the maximal 2/3-demand ledger, demand absorption, and
   packed-window blocker accounting. -/
@@ -1647,6 +1664,9 @@ inductive Key where
   rank-reducing attempted quotient and identified realizations whose response
   is separated by an outside context. -/
   | sparseTargetDefectResidual
+  /-- Node `[20]`: the same identified target-defect pair with its bound
+  outside context and proved target-free negative constituents. -/
+  | sparseTargetDefectStructure
   /-- Node `[132]`, blocker arm of `lem:sparse-pair-dependence-exit` with
   `lem:mixed-sparse-spine-dependence` and
   `prop:sparse-pair-independence-dichotomy`: no sparse surplus exit settles the
@@ -1821,8 +1841,8 @@ inductive Key where
   it has `σ(G)` members, and every member carries its canonical return path. -/
   | activeSurplusDemands
   /-- Node `[22]`: the canonical hot/cold partition of the maximal packing.
-  The witnesses are derived from `LiveHotWindow` on the incoming residual;
-  they are not supplied as routing data. -/
+  The witnesses are derived on the incoming residual; they are not supplied as
+  routing data. -/
   | hotColdPartition
   /-- Exact finite orbit lower bound for every normalized remainder support. -/
   | remainderRelabelingEntropy
@@ -2166,8 +2186,9 @@ realized canonically by the labelled skeletons of the current object's own
 class `𝒢_{n,m}`: an assignment of target-complete states to skeletons whose
 range has at least the family's window package states (`lem:p13-window-package`,
 the live-hot comparison of nodes `[22]`--`[23]`) and at least the retained
-code.  This is `def:target-rank`'s "independently
-target-testable … arising canonically from graphs in the labelled class", the
+code.  This is `lem:independent-target-entropy`'s "independently
+target-testable family … arising canonically from graphs in a labelled graph
+class", the
 exact-code equality `def:curvature-target-rank` says is retained on the surviving
 hot residual, and precisely the premise `lem:independent-target-entropy`
 consumes; its failure is what makes a window cold. -/
@@ -3745,9 +3766,9 @@ abbrev handoffHighDegree (data : Data.{u}) (object : Graph.FiniteObject.{u}) :
   fun vertex => data.threshold < object.degree vertex
 
 /-- **`def:typeB-fan-safe` clauses (ii)--(v)**, at the registered data.
-`lem:typeA-high-degree-handoff` reads them off the exit list: *"failures of the
+`lem:typeA-high-degree-handoff` reads them off the exit list: *"Failures of the
 other four fan-safe conditions are exactly the label, target-defect,
-target-compression, and delocalization exits already removed before exit (7)"*.
+target-compression, and support-dependence exits already removed before exit (7)"*.
 The exit `(3)` label clause is the only local fan predicate.  The denials of
 exits `(4)`, `(5)`, and `(6)` are ledger facts in `SelectedNoExitSixWith`, not
 secondary route-8 objects smuggled through this predicate. -/
@@ -5726,10 +5747,8 @@ noncomputable def route8UnifiedEntries (data : Data.{u})
 
 /-- The `[113]`-tested quotient-freeness of the unified census
 (`def:typeA-trace-basin` (b) at every unified entry's selected basin): the
-plain trace-response quotient — the cased exit-`(5)` state of the ratified
-calibration — occurs at no entry.  Tested, never refuted from the invariants;
-the no arm retains its literal negation as the manuscript's profile-record
-residual lane. -/
+plain trace-response quotient occurs at no entry.  It is decided by a
+`Decision`; the no arm retains its literal negation. -/
 def Route8QuotientFreeStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
@@ -6120,6 +6139,67 @@ noncomputable def Route8DemandAbsorptionStatement (data : Data.{u})
             object.boundaryIncidence
               (object.remainderSupport (canonicalWindowPacking data object)) +
               dep.card + (P.demandUnits \ (A.absorbed ∪ dep)).card
+
+open scoped Classical in
+/-- Maximal same-support absorption rules out the unused-incidence
+certificate (O2) on every remaining open demand unit. -/
+noncomputable def Route8OpenBoundarySaturatedStatement (data : Data.{u})
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  let entries := route8UnifiedEntries data object
+  let core := Graph.Route8Census.core object data.threshold data.LengthOK
+  let pinned := entries.filter fun index =>
+    Graph.Route8.TraceBasin.TargetCompleteMinimal object index.1 data.threshold
+        data.LengthOK index.2.1 index.2.2
+        (Graph.Route8Census.basin object data.threshold index) ∧
+      data.threshold ≤
+        Graph.Route8.indexedPrivateCoreCount entries core index
+  ∀ P : Graph.DemandPartition.Partition entries core,
+    Graph.DemandPartition.Partition.Pinned pinned
+        (Graph.Route8.indexedPrivateCoreCarriers entries core) P →
+      (∀ Q : Graph.DemandPartition.Partition entries core,
+        Graph.DemandPartition.Partition.Pinned pinned
+          (Graph.Route8.indexedPrivateCoreCarriers entries core) Q →
+        Q.three.card ≤ P.three.card ∧
+          (Q.three.card = P.three.card → Q.two.card ≤ P.two.card)) →
+      3 * P.three.card + 2 * P.two.card ≤
+          object.boundaryIncidence
+            (object.remainderSupport (canonicalWindowPacking data object)) →
+      3 * entries.card ≤
+          object.boundaryIncidence
+            (object.remainderSupport (canonicalWindowPacking data object)) +
+            P.externalDefect →
+      ∃ (A : Graph.DemandPartition.Absorption P
+            (Graph.Route8Census.Index object × Nat))
+        (dep : Finset (Graph.Route8Census.Index object × Nat)),
+        A.absorbed ⊆ P.demandUnits ∧
+        (∀ υ ∈ A.absorbed, A.absorber υ ∈
+          Graph.Route8Census.supply object
+            (canonicalWindowPacking data object)) ∧
+          (∀ υ ∈ A.absorbed,
+            A.absorber υ ∈ Graph.Route8.cutEdges object υ.1.1) ∧
+          dep ⊆ P.demandUnits ∧
+          Disjoint A.absorbed dep ∧
+          dep = ∅ ∧
+          (∀ B : Graph.DemandPartition.Absorption P
+              (Graph.Route8Census.Index object × Nat),
+            B.absorbed ⊆ P.demandUnits →
+            (∀ υ ∈ B.absorbed, B.absorber υ ∈
+              Graph.Route8Census.supply object
+                (canonicalWindowPacking data object)) →
+            (∀ υ ∈ B.absorbed,
+              B.absorber υ ∈ Graph.Route8.cutEdges object υ.1.1) →
+            Disjoint B.absorbed dep →
+            B.absorbed.card ≤ A.absorbed.card) ∧
+          3 * entries.card ≤
+            object.boundaryIncidence
+              (object.remainderSupport (canonicalWindowPacking data object)) +
+              dep.card + (P.demandUnits \ (A.absorbed ∪ dep)).card ∧
+          ∀ unit ∈ P.demandUnits \ (A.absorbed ∪ dep),
+            ∀ carrier : Sym2 object.Vertex,
+              carrier ∈ Graph.Route8.cutEdges object unit.1.1 →
+              (∀ index ∈ P.three ∪ P.two, carrier ∉ P.assigned index) →
+              ∃ other ∈ A.absorbed, A.absorber other = carrier
 
 open scoped Classical in
 /-- **`def:typeA-open-window-blocker` with
@@ -10918,8 +10998,51 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       Route8UnifiedEntryCensusFact data object
   | .route8StageRateFailed, object =>
       Route8StageRateFailedFact data object
+  | .route8OpenBoundarySaturated, object =>
+      Route8OpenBoundarySaturatedStatement data object
+  | .route8DemandUnitCount, object =>
+      ∀ P : Graph.DemandPartition.Partition
+          (route8UnifiedEntries data object) (route8DemandCore data object),
+        P.demandUnits.card = P.externalDefect
   | .route8DemandAbsorption, object =>
       Route8DemandAbsorptionStatement data object
+  | .windowShadowHitCycle, object =>
+      ∀ (window : SimpleGraph.pathGraph data.windowOrder ↪g object.graph)
+        (x y : object.Vertex) (a b : Fin data.windowOrder)
+        (corridor : object.graph.Walk x y),
+        corridor.IsPath →
+        (∀ i : Fin data.windowOrder, window i ∉ corridor.support) →
+        object.graph.Adj (window a) x → object.graph.Adj y (window b) →
+        s(x, window a) ≠ s(y, window b) →
+        b.1 ∈ Graph.WindowAttachmentShadow.shadow data.LengthOK
+          data.windowOrder corridor.length a.1 →
+        ∃ cycle : object.graph.Walk (window a) (window a),
+          cycle.IsCycle ∧
+            cycle.length = corridor.length + 2 + Nat.dist a.1 b.1 ∧
+            data.LengthOK cycle.length
+  | .windowShadowHitExcluded, object =>
+      ∀ (window : SimpleGraph.pathGraph data.windowOrder ↪g object.graph)
+        (x y : object.Vertex) (a b : Fin data.windowOrder)
+        (corridor : object.graph.Walk x y),
+        corridor.IsPath →
+        (∀ i : Fin data.windowOrder, window i ∉ corridor.support) →
+        object.graph.Adj (window a) x → object.graph.Adj y (window b) →
+        s(x, window a) ≠ s(y, window b) →
+        b.1 ∉ Graph.WindowAttachmentShadow.shadow data.LengthOK
+          data.windowOrder corridor.length a.1
+  | .windowShadowSignature, object =>
+      ∀ support : Finset object.Vertex,
+        object.InducesWindow data.windowOrder support →
+        ∀ (s : Nat) (a b : Fin data.windowOrder),
+          b.1 ∈ Graph.WindowAttachmentShadow.shadow data.LengthOK
+              data.windowOrder s a.1 ↔
+            ¬ Graph.WindowCurvature.Safe s {a} {b}
+  | .windowShadowSingletonTail, object =>
+      ∀ support : Finset object.Vertex,
+        object.InducesWindow data.windowOrder support →
+        ∀ s : Nat, data.windowOrder + 5 ≤ s →
+          (Graph.WindowAttachmentShadow.forbiddenDistances
+            data.LengthOK data.windowOrder s).card ≤ 1
   | .route8WindowBlockers, object =>
       Route8WindowBlockersStatement data object
   | .route8PeeledDemandResidual, object =>
@@ -10986,8 +11109,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- a witness at the current peeling whose load is one of the port's
       -- visible unpeeled loads — or, per selected visible unpeeled load, the
       -- trace-basin outcome of `lem:typeA-reduced-silent-residual`: a route-8
-      -- entry, or the exit-`(5)` response quotient at the selected basin
-      -- (cased on the branch, never refuted from the invariants).
+      -- entry, or the exit-`(5)` response quotient at the selected basin.
       letI : DecidableEq object.Vertex := object.vertices.decEq
       (∀ component ∈ route8UnifiedComponents data object,
         ∀ receiver ∈ object.receivers
@@ -11162,6 +11284,16 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
           ∃ reduced full, attempt.Identifies reduced full ∧
             Graph.Response.TargetDefect
               (Graph.HasCycleWithLength data.LengthOK) reduced full
+  | .sparseTargetDefectStructure, object =>
+      ∃ (Coordinate : Type u) (family : Finset Coordinate)
+        (coordinateSupport : Coordinate → Finset object.Vertex)
+        (attempt : Graph.AttemptedQuotient
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object family
+          coordinateSupport),
+        ¬ Set.InjOn attempt.label ↑family ∧
+          ∃ reduced full, attempt.Identifies reduced full ∧
+            Graph.BoundTargetDefectGeometry object attempt.support data.LengthOK reduced full
   | .canonicalBlockerRoute, object =>
       ∃ active : Graph.ActiveSurplusDemands
           (Graph.MinimumDegreeAtLeast data.threshold)
@@ -11655,6 +11787,12 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
 /-- Audit labels.  They are diagnostics; every routing and lookup decision
 compares exact keys. -/
 def label : Key → String
+  | .route8DemandUnitCount => "route8DemandUnitCount"
+  | .route8OpenBoundarySaturated => "route8OpenBoundarySaturated"
+  | .windowShadowSignature => "windowShadowSignature"
+  | .windowShadowHitExcluded => "windowShadowHitExcluded"
+  | .windowShadowHitCycle => "windowShadowHitCycle"
+  | .windowShadowSingletonTail => "windowShadowSingletonTail"
   | .selection => "selection"
   | .cubicBaseline => "cubicBaseline"
   | .gadgetClosure => "gadgetClosure"
@@ -11908,6 +12046,7 @@ def label : Key → String
   | .canonicalPairLedger => "canonicalPairLedger"
   | .sparsePairExit => "sparsePairExit"
   | .sparseTargetDefectResidual => "sparseTargetDefectResidual"
+  | .sparseTargetDefectStructure => "sparseTargetDefectStructure"
   | .canonicalBlockerRoute => "canonicalBlockerRoute"
   | .sparseUpperEnvelope => "sparseUpperEnvelope"
   | .capacityTokenLedger => "capacityTokenLedger"
@@ -11969,6 +12108,12 @@ constant-time `rfl`, and together they rule out a mistyped or duplicated
 label. -/
 
 section LabelPins
+example : label .route8DemandUnitCount = "route8DemandUnitCount" := rfl
+example : label .route8OpenBoundarySaturated = "route8OpenBoundarySaturated" := rfl
+example : label .windowShadowSignature = "windowShadowSignature" := rfl
+example : label .windowShadowHitExcluded = "windowShadowHitExcluded" := rfl
+example : label .windowShadowHitCycle = "windowShadowHitCycle" := rfl
+example : label .windowShadowSingletonTail = "windowShadowSingletonTail" := rfl
 example : label .selection = "selection" := rfl
 example : label .contractionCritical = "contractionCritical" := rfl
 example : label .returnAvoidance = "returnAvoidance" := rfl
@@ -12233,6 +12378,8 @@ example : label .canonicalPairLedger = "canonicalPairLedger" := rfl
 example : label .sparsePairExit = "sparsePairExit" := rfl
 example : label .sparseTargetDefectResidual =
     "sparseTargetDefectResidual" := rfl
+example : label .sparseTargetDefectStructure =
+    "sparseTargetDefectStructure" := rfl
 example : label .canonicalBlockerRoute = "canonicalBlockerRoute" := rfl
 example : label .sparseUpperEnvelope = "sparseUpperEnvelope" := rfl
 example : label .capacityTokenLedger = "capacityTokenLedger" := rfl
@@ -12301,6 +12448,12 @@ def Value (BranchState : Graph.FiniteObject.{u} → Type v)
 `Key.ctorIdx` so that inserting or reordering a constructor cannot silently
 renumber the audit names an earlier run emitted. -/
 def idx : Key → Nat
+  | .route8DemandUnitCount => 518
+  | .route8OpenBoundarySaturated => 517
+  | .windowShadowSignature => 516
+  | .windowShadowHitExcluded => 515
+  | .windowShadowHitCycle => 514
+  | .windowShadowSingletonTail => 513
   | .selection => 0
   | .cubicBaseline => 221
   | .gadgetClosure => 500
@@ -12550,6 +12703,7 @@ def idx : Key → Nat
   | .canonicalPairLedger => 113
   | .sparsePairExit => 143
   | .sparseTargetDefectResidual => 400
+  | .sparseTargetDefectStructure => 600
   | .canonicalBlockerRoute => 144
   | .sparseUpperEnvelope => 129
   | .capacityTokenLedger => 114
@@ -12607,6 +12761,12 @@ def idx : Key → Nat
 /-- Left inverse of `idx`.  Writing it out is also what checks the numbering:
 two keys sharing an index would make `ofIdx_idx` unprovable. -/
 def ofIdx : Nat → Key
+  | 518 => .route8DemandUnitCount
+  | 517 => .route8OpenBoundarySaturated
+  | 516 => .windowShadowSignature
+  | 515 => .windowShadowHitExcluded
+  | 514 => .windowShadowHitCycle
+  | 513 => .windowShadowSingletonTail
   | 0 => .selection
   | 221 => .cubicBaseline
   | 500 => .gadgetClosure
@@ -12851,6 +13011,7 @@ def ofIdx : Nat → Key
   | 113 => .canonicalPairLedger
   | 143 => .sparsePairExit
   | 400 => .sparseTargetDefectResidual
+  | 600 => .sparseTargetDefectStructure
   | 144 => .canonicalBlockerRoute
   | 129 => .sparseUpperEnvelope
   | 114 => .capacityTokenLedger
@@ -12922,6 +13083,18 @@ compares exact keys.  The name carries the key's audit index as its final
 component, so distinctness is inherited from `idx_injective` instead of being
 re-derived by a pairwise comparison of the audit labels. -/
 def name : Key → Lean.Name
+  | .route8DemandUnitCount =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8DemandUnitCount") 518
+  | .route8OpenBoundarySaturated =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8OpenBoundarySaturated") 517
+  | .windowShadowSignature =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "windowShadowSignature") 516
+  | .windowShadowHitExcluded =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "windowShadowHitExcluded") 515
+  | .windowShadowHitCycle =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "windowShadowHitCycle") 514
+  | .windowShadowSingletonTail =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "windowShadowSingletonTail") 513
   | .selection => .num (.str `Hypostructure.Graph.Strategy.Spine "selection") 0
   | .cubicBaseline =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "cubicBaseline") 221
@@ -13516,6 +13689,9 @@ def name : Key → Lean.Name
   | .sparseTargetDefectResidual =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "sparseTargetDefectResidual") 400
+  | .sparseTargetDefectStructure =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "sparseTargetDefectStructure") 600
   | .canonicalBlockerRoute =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "canonicalBlockerRoute") 144
   | .sparseUpperEnvelope =>

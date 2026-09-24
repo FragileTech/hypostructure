@@ -85,7 +85,7 @@ def SeparatesAt (left right : List α) (separator : α) : Prop :=
 
 /-- **Two distinct lists issued from the same first entry, neither a prefix of
 the other, separate somewhere.**  This is the finiteness step of
-`lem:typeA-continuation-routing`: *"since `𝒦` is finite and each germ is
+`lem:typeA-continuation-routing`: *"Since `𝒦` is finite and each configuration is
 finite, there is a first such separator in the prefix order"*. -/
 theorem exists_separatesAt :
     ∀ {left right : List α} {first : α}, left.head? = some first →
@@ -437,7 +437,7 @@ theorem usedIncidences_subset : ∀ vertex ∈ separation.usedIncidences,
 
 *"If `z` is the initial outside vertex `h` of the completion port, the port edge
 `wh` is the root incidence at `z`; otherwise the last edge of the common prefix
-is the root incidence.  Since the two germs separate at `z`, they use two
+is the root incidence.  Since the two configurations separate at `z`, they use two
 distinct next incidences after `z`.  Hence `d_G(z) ≥ 3`."*
 
 The `3` is the count of incidences the configuration itself uses; it is not a
@@ -498,7 +498,7 @@ theorem usedIncidences_subset_switchSupport :
 /-- **`d_G(z) = 3` leaves `z` off the boundary of `S_z`.**
 
 *"Then the root incidence and the two next incidences used by the separated
-germs are all incidences of `z`.  Consequently the switch support `S_z` has no
+configurations are all incidences of `z`.  Consequently the switch support `S_z` has no
 unused ambient incidence at `z`."*  This is that sentence, computed on the
 framework's own `cutBoundary`: at `d_G(z) = 3` the separator's three incidences
 are exactly its neighbours, all three lie in `S_z`, so `z` has no neighbour
@@ -1251,9 +1251,9 @@ noncomputable def envelopeOfFirstSeparator
 
 /-- **The Type B fan-envelope data a decorated handoff carries.**
 
-`lem:decorated-fan-admissibility`: *"contextual dyadic-safety, a `P₁₃`-free
+`lem:decorated-fan-admissibility`: *"contextual target-safety, a `P₁₃`-free
 empty-`3`-core remainder core, hereditary target-uncompressibility of the
-decorated boundaried profile, and fan-return-safety at every decoration."*
+decorated boundaried profile, and fan-return-safety at every decoration `h ∈ H`."*
 
 This is the *handoff interface* of `rem:typeA-typeB-stratification`: every field
 is a hypothesis the Type B calculation consumes, and none is a conclusion of

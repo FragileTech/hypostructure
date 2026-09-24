@@ -334,7 +334,7 @@ positive-surplus vertex of the current object. -/
                   (inputs.current.object.degreeSurplus data.threshold) cubic.1⟩
             .nil)))
 
-/-! ## Node `[153]`: the exact finite form of "positive for sufficiently large n"
+/-! ## Node `[153]`: the exact finite form of "positive for all sufficiently large `n`"
 
 `lem:cold-germ-extraction`, with node `[168]`'s endpoint repair, bounds the
 selected interior germ family below by `9C/D_cold − o(n)`;
@@ -3050,9 +3050,9 @@ single-stub attachments. -/
               data.three_le_windowOrder induces cubic⟩⟩
         .nil)
 
-/-! ## Node `[169]`, `def:blocked-class`: the trivial neutral germ residual
+/-! ## Node `[169]`, `def:blocked-class`: the trivial neutral-configuration residual
 
-*"On the trivial neutral germ residual, `G ∈ 𝓑(𝒫)`, and every window of `G` is
+*"On the trivial neutral-configuration residual, `G ∈ 𝓑(𝒫)`, and every window of `G` is
 blocked at every scale."*  The row publishes exactly that: the object's own
 labelled skeleton has the baseline minimum degree, contains every packed window
 at its labelled position, and — the object having no accepted cycle at all
@@ -3646,8 +3646,8 @@ manuscript's Part XI leaves are drawn. -/
 
 /-! ## Node `[24]`: `prop:p13-density`, after the cold branch
 
-"cold branch begins; continued at `[145]`--`[157]`; after closure,
-`θ ≤ θ_win + o(1)`."  On the `[153]` bounded arm the cold mass is
+The manuscript's `[24]` reads "bounded cold-mass return from [153]:
+`θ ≤ θ_win + o(1)`; high entropy: `θ ≤ 0.01198542083…`".  On the `[153]` bounded arm the cold mass is
 `C ≤ (1 + (threshold+1)·B_cold)·σ(G)`; with
 `lem:hot-failure-cold-mass` (`K .coldMass`,
 `bitRate·|𝒫| ≤ bitRate·C + allowance`) and the near-cubic surplus bound

@@ -1,0 +1,105 @@
+# Declaration locations
+
+Inventory captured immediately before the assembly refactor. Existing public
+names remain in `HypostructureErdos64EG`; shared private helpers now have
+explicit `Assembly.Internal` names. Original line numbers describe that snapshot,
+not older audit snapshots.
+
+| Declaration | Original line | Current source |
+|---|---:|---|
+| `EGProblem` | 28 | [Basic.lean:19](Basic.lean#L19) |
+| `EGTarget` | 33 | [Basic.lean:24](Basic.lean#L24) |
+| `EGInput` | 41 | [Basic.lean:32](Basic.lean#L32) |
+| `EGSelectionKey` | 45 | [Basic.lean:36](Basic.lean#L36) |
+| `selectedEntryPrefix` | 65 | [Entry.lean:48](Entry.lean#L48) |
+| `selectedSurplusDichotomy` | 187 | [Entry.lean:170](Entry.lean#L170) |
+| `selectedSparseSurplusDichotomy` | 213 | [Entry.lean:196](Entry.lean#L196) |
+| `selectedSparseSurplusExitContinuation` | 231 | [Entry.lean:214](Entry.lean#L214) |
+| `selectedSparseSurplusSurvivorNode125` | 255 | [Entry.lean:238](Entry.lean#L238) |
+| `selectedSparseSurplusActivation` | 267 | [Surplus/Local.lean:29](Surplus/Local.lean#L29) |
+| `selectedBaselineSpineDemand` | 342 | [Surplus/Local.lean:104](Surplus/Local.lean#L104) |
+| `selectedPairResponseIndependenceDichotomy` | 374 | [Surplus/Local.lean:136](Surplus/Local.lean#L136) |
+| `selectedBlockedPairRoutingDichotomy` | 392 | [Surplus/Local.lean:154](Surplus/Local.lean#L154) |
+| `selectedSparsePairExitCloses` | 419 | [Surplus/Local.lean:182](Surplus/Local.lean#L182) |
+| `selectedCanonicalPairFacts` | 440 | [Surplus/Local.lean:203](Surplus/Local.lean#L203) |
+| `selectedExactWindowJoinPressure` | 476 | [Surplus/Local.lean:239](Surplus/Local.lean#L239) |
+| `selectedCapacityTokenFacts` | 508 | [Surplus/Local.lean:271](Surplus/Local.lean#L271) |
+| `selectedSpineSurplusEstimateCloses` | 546 | [Surplus/Local.lean:309](Surplus/Local.lean#L309) |
+| `selectedBottleneckDischarge` | 570 | [Surplus/Local.lean:333](Surplus/Local.lean#L333) |
+| `selectedBarrierDichotomy` | 632 | [Cold/Barrier.lean:29](Cold/Barrier.lean#L29) |
+| `selectedBarrierOverflowCloses` | 659 | [Cold/Barrier.lean:56](Cold/Barrier.lean#L56) |
+| `selectedDensityBudget` | 681 | [Cold/Barrier.lean:78](Cold/Barrier.lean#L78) |
+| `selectedColdRoute8Dichotomy` | 706 | [Cold/Entropy.lean:24](Cold/Entropy.lean#L24) |
+| `selectedColdHotEntropyDichotomy` | 720 | [Cold/Entropy.lean:38](Cold/Entropy.lean#L38) |
+| `selectedColdHotEntropyCloses` | 739 | [Cold/Entropy.lean:57](Cold/Entropy.lean#L57) |
+| `selectedColdMass` | 769 | [Cold/Germs.lean:23](Cold/Germs.lean#L23) |
+| `selectedColdAmbientCubic` | 783 | [Cold/Germs.lean:37](Cold/Germs.lean#L37) |
+| `selectedColdStubExcess` | 797 | [Cold/Germs.lean:51](Cold/Germs.lean#L51) |
+| `selectedColdMassDichotomy` | 814 | [Cold/Germs.lean:68](Cold/Germs.lean#L68) |
+| `selectedBridgeless` | 830 | [Cold/Germs.lean:84](Cold/Germs.lean#L84) |
+| `selectedColdReturnCorridors` | 856 | [Cold/Germs.lean:110](Cold/Germs.lean#L110) |
+| `selectedColdFirstFailureRouting` | 879 | [Cold/Germs.lean:133](Cold/Germs.lean#L133) |
+| `selectedColdGermExtraction` | 935 | [Cold/Germs.lean:189](Cold/Germs.lean#L189) |
+| `selectedColdGermCandidates` | 965 | [Cold/Germs.lean:219](Cold/Germs.lean#L219) |
+| `selectedColdGermFamilyPositive` | 994 | [Cold/Germs.lean:248](Cold/Germs.lean#L248) |
+| `selectedColdGermTrichotomy` | 1011 | [Cold/Germs.lean:265](Cold/Germs.lean#L265) |
+| `selectedColdSameInterfaceTable` | 1039 | [Cold/Germs.lean:293](Cold/Germs.lean#L293) |
+| `selectedColdBranchClosed` | 1068 | [Cold/Germs.lean:322](Cold/Germs.lean#L322) |
+| `openSelectedCounterexample` | 1095 | [Entry.lean:246](Entry.lean#L246) |
+| `selectedNearCubicNode21` | 1137 | [NearCubic/Local.lean:33](NearCubic/Local.lean#L33) |
+| `selectedWindowPackageRealizationDichotomy` | 1177 | [NearCubic/Local.lean:73](NearCubic/Local.lean#L73) |
+| `selectedCoupledExcessDichotomy` | 1208 | [NearCubic/Local.lean:104](NearCubic/Local.lean#L104) |
+| `selectedCanonicalSwapCloses` | 1253 | [NearCubic/Local.lean:149](NearCubic/Local.lean#L149) |
+| `selectedRankDropCloses` | 1304 | [NearCubic/Local.lean:200](NearCubic/Local.lean#L200) |
+| `selectedRouteEightCensus` | 1371 | [RouteEight/Local.lean:38](RouteEight/Local.lean#L38) |
+| `selectedLargeBudgetPressureCensus` | 1460 | [RouteEight/Local.lean:127](RouteEight/Local.lean#L127) |
+| `selectedRouteEightUnpaidExitFourReduction` | 1510 | [RouteEight/Local.lean:177](RouteEight/Local.lean#L177) |
+| `selectedRouteEightVisibleResidual` | 1550 | [RouteEight/Local.lean:217](RouteEight/Local.lean#L217) |
+| `selectedRouteEightVisibleOverload` | 1573 | [RouteEight/Local.lean:240](RouteEight/Local.lean#L240) |
+| `selectedRouteEightJointBalance` | 1593 | [RouteEight/Local.lean:260](RouteEight/Local.lean#L260) |
+| `SelectedRouteEightBoundary` | 1651 | [RouteEight/Boundary.lean:62](RouteEight/Boundary.lean#L62) |
+| `selectedRouteEightResidual` | 1662 | [RouteEight/Residual.lean:47](RouteEight/Residual.lean#L47) |
+| `selectedTypeBRoute8Continuation` | 1960 | [RouteEight/TypeBContinuation.lean:33](RouteEight/TypeBContinuation.lean#L33) |
+| `Assembly.Internal.TypeBCertificateBoundary` | 2105 | [TypeB/Internal/Certificate.lean:37](TypeB/Internal/Certificate.lean#L37) |
+| `Assembly.Internal.selectedTypeBPortRoutingPrefix` | 2130 | [TypeB/Internal/Certificate.lean:62](TypeB/Internal/Certificate.lean#L62) |
+| `Assembly.Internal.selectedTypeBCertificateBoundaryAfterPortRouting` | 2172 | [TypeB/Internal/Certificate.lean:104](TypeB/Internal/Certificate.lean#L104) |
+| `selectedTypeBCertificateBoundary` | 2299 | [TypeB/Certificate.lean:21](TypeB/Certificate.lean#L21) |
+| `TypeBContinuationBoundary` | 2360 | [TypeB/Continuation.lean:35](TypeB/Continuation.lean#L35) |
+| `TypeBAfterNormalFormBoundary` | 2386 | [TypeB/Continuation.lean:61](TypeB/Continuation.lean#L61) |
+| `selectedTypeBAfterNormalFormContinuation` | 2410 | [TypeB/Continuation.lean:85](TypeB/Continuation.lean#L85) |
+| `selectedTypeBContinuation` | 2576 | [TypeB/Continuation.lean:251](TypeB/Continuation.lean#L251) |
+| `StrictSurplusTypeBOutcome` | 2699 | [Surplus/Boundary.lean:23](Surplus/Boundary.lean#L23) |
+| `selectedStrictSurplusTypeBContinuation` | 2704 | [Surplus/TypeBContinuation.lean:19](Surplus/TypeBContinuation.lean#L19) |
+| `selectedStrictSurplusBranch` | 2752 | [Surplus/Strict.lean:17](Surplus/Strict.lean#L17) |
+| `selectedTypeBChargedRoute8Continuation` | 3216 | [TypeB/ChargedRoute.lean:23](TypeB/ChargedRoute.lean#L23) |
+| `Assembly.Internal.selectedAbsorbedFanChargeContinuation` | 3304 | [Absorbed/FanCharge.lean:24](Absorbed/FanCharge.lean#L24) |
+| `selectedTypeBNearCubicCertificateAfterPortRouting` | 3486 | [TypeB/NearCubicCertificate.lean:23](TypeB/NearCubicCertificate.lean#L23) |
+| `selectedTypeBNearCubicCertificate` | 3698 | [TypeB/NearCubicCertificate.lean:235](TypeB/NearCubicCertificate.lean#L235) |
+| `selectedTypeBDecoratedContinuation` | 3717 | [TypeB/DecoratedContinuation.lean:46](TypeB/DecoratedContinuation.lean#L46) |
+| `selectedTypeADecoratedHandoff` | 3972 | [TypeA/DecoratedHandoff.lean:27](TypeA/DecoratedHandoff.lean#L27) |
+| `selectedTypeAExitFiveToSeven` | 4134 | [TypeA/ExitFiveToSeven.lean:42](TypeA/ExitFiveToSeven.lean#L42) |
+| `selectedTypeAExitFiveToSevenSilent` | 4387 | [TypeA/ExitFiveToSevenSilent.lean:37](TypeA/ExitFiveToSevenSilent.lean#L37) |
+| `selectedTypeAExitFourDischargedRetest` | 4649 | [TypeA/ExitFourDischargedRetest.lean:38](TypeA/ExitFourDischargedRetest.lean#L38) |
+| `selectedTypeAExitFourChain` | 4797 | [TypeA/ExitFourChain.lean:36](TypeA/ExitFourChain.lean#L36) |
+| `selectedTypeAExitFourChainSilent` | 5086 | [TypeA/ExitFourChainSilent.lean:24](TypeA/ExitFourChainSilent.lean#L24) |
+| `selectedTypeAVisibleExitFour` | 5307 | [TypeA/VisibleExitFour.lean:23](TypeA/VisibleExitFour.lean#L23) |
+| `selectedTypeASilentExitChain` | 5491 | [TypeA/SilentExitChain.lean:23](TypeA/SilentExitChain.lean#L23) |
+| `selectedTypeAVisibleExitChain` | 5700 | [TypeA/VisibleExitChain.lean:37](TypeA/VisibleExitChain.lean#L37) |
+| `selectedTypeALowSurplusContinuation` | 5938 | [TypeA/LowSurplusContinuation.lean:53](TypeA/LowSurplusContinuation.lean#L53) |
+| `selectedTypeBHighSurplusContinuation` | 6298 | [TypeB/HighSurplusContinuation.lean:54](TypeB/HighSurplusContinuation.lean#L54) |
+| `selectedScaleAdditivityDichotomy` | 6605 | [NearCubic/Replacement.lean:59](NearCubic/Replacement.lean#L59) |
+| `selectedCanonicalReplacementContinuation` | 6617 | [NearCubic/Replacement.lean:71](NearCubic/Replacement.lean#L71) |
+| `AbsorbedPrerequisiteKnown` | 6685 | [Absorbed/Prerequisites.lean:45](Absorbed/Prerequisites.lean#L45) |
+| `selectedAbsorbedGermPrerequisites` | 6705 | [Absorbed/Prerequisites.lean:65](Absorbed/Prerequisites.lean#L65) |
+| `SelectedAbsorbedGermBoundary` | 6773 | [Absorbed/Boundary.lean:18](Absorbed/Boundary.lean#L18) |
+| `selectedAbsorbedGermResidual` | 6780 | [Absorbed/Residual.lean:20](Absorbed/Residual.lean#L20) |
+| `selectedRouteEightRateFailure` | 7125 | [RouteEight/RateFailure.lean:21](RouteEight/RateFailure.lean#L21) |
+| `SelectedNetChargeBoundary` | 7136 | [NetCharge/Boundary.lean:21](NetCharge/Boundary.lean#L21) |
+| `selectedNetChargeContinuation` | 7160 | [NetCharge/Continuation.lean:49](NetCharge/Continuation.lean#L49) |
+| `SelectedNearCubicSurvivorBoundary` | 7741 | [NearCubic/Boundary.lean:72](NearCubic/Boundary.lean#L72) |
+| `selectedNearCubicSurvivorBranch` | 7751 | [NearCubic/Survivor.lean:18](NearCubic/Survivor.lean#L18) |
+| `SelectedSparseTargetDefectBoundary` | 9179 | [NearCubic/Boundary.lean:84](NearCubic/Boundary.lean#L84) |
+| `SelectedNearCubicBoundary` | 9187 | [NearCubic/Boundary.lean:92](NearCubic/Boundary.lean#L92) |
+| `selectedNearCubicBranch` | 9195 | [Final.lean:23](Final.lean#L23) |
+| `SelectedLedgerBoundaryResult` | 9229 | [Final.lean:57](Final.lean#L57) |
+| `selectedLedgerBoundary` | 9237 | [Final.lean:65](Final.lean#L65) |

@@ -1256,7 +1256,7 @@ The smear interval `[length, length+smear]` avoids every accepted length. -/
 def SurvivesSmear (LengthOK : Nat → Prop) (smear length : Nat) : Prop :=
   ∀ tested, length ≤ tested → tested ≤ length + smear → ¬ LengthOK tested
 
-/-- **"All other short self-returns realize a dyadic cycle."**  A length that
+/-- **"All other short self-returns realize a power-of-two cycle."**  A length that
 does not survive the smear supplies the offset that closes an accepted
 cycle. -/
 theorem exists_accepted_of_not_survivesSmear {LengthOK : Nat → Prop}
@@ -1363,8 +1363,8 @@ share an interface, a boundary-degree profile, and -- this being the
 equal-length half of the table -- an internal size.
 
 `Handoff` is the already-closed ledger predicate the manuscript hands a row's
-charge to: "the corridor first enters a declared Type B handoff support or the
-route-8 support **already recorded in the incoming ledger**".  It is a
+charge to: "the corridor first enters a declared Type B handoff envelope or the
+route-8 response support **already recorded in the branch state**".  It is a
 parameter supplied by whoever owns that ledger, never a field the row may
 choose. -/
 
@@ -1381,9 +1381,9 @@ variable {object : FiniteObject.{u}}
 
 /-- **`def:cold-bounded-germ`**, at a proper support of one object.
 
-*"A cold bounded germ is a finite boundaried support with two boundary
+*"A cold bounded configuration is a finite boundaried support with two boundary
 interfaces `x, y` and two same-interface `x`-`y` representatives `Q[x,y]` and
-`E`. … The germ also carries the inherited boundary degree profile,
+`E`. … The configuration also carries the inherited boundary degree profile,
 `P₁₃`-window labels, and target-response profile."*
 
 The first three fields are the support, whose own boundary piece is `Q[x,y]`;
@@ -1422,7 +1422,7 @@ structure BoundedGerm (S : DeclaredSignature)
   the inherited boundary degree profile, `P₁₃`-window labels, and target-response
   profile".  Carried, and nothing more: `Record` is exactly that tuple, and
   `Fintype (Record S)` is what the definition uses it for -- *"there are only
-  finitely many germ types"*.
+  finitely many bounded configuration types"*.
 
   The definition states no invariant tying `record.truth` back to `Target`.  An
   earlier reading asserted one, in the form `∀ outside, record.truth = true ↔
@@ -1449,8 +1449,8 @@ variable (germ : BoundedGerm S Baseline Target object)
   germ.atom.piece
 
 /-- **G1, hit-realized**: the germ's own compatible completion realizes the
-target.  `lem:cold-bounded-germ-trichotomy`'s first case is that "some
-compatible live completion and window offset close a dyadic cycle", and the
+target.  `lem:cold-bounded-germ-trichotomy`'s first case is that "Some
+compatible live completion and window offset close a power-of-two cycle", and the
 corridor representative's own completion *is* `G`, up to the decomposition's
 reconstruction. -/
 def Realizing : Prop :=
@@ -1498,8 +1498,8 @@ theorem not_lengthChanging_iff :
   exact germ.increment_eq_zero_iff
 
 /-- **The three cases are exhaustive.**  `lem:cold-bounded-germ-trichotomy`'s
-own reading: the split is "by whether a compatible completion realizes a dyadic
-hit, distinguishes dyadic truth without realization in `G`, or never
+own reading: the split is "by whether a compatible completion realizes a power-of-two
+hit, distinguishes power-of-two truth without realization in `G`, or never
 distinguishes the two representatives", so G3 is the negation of the first two
 and nothing falls outside.  This is also what
 `lem:cold-increment-arithmetic` (c) appeals to when it routes a periodic
@@ -1568,7 +1568,7 @@ own proper support.**
 
 *"Then replacing the longer representative by the shorter one preserves the
 boundary degree profile and the target response against every context, creates
-no dyadic cycle, and strictly decreases the support.  This is a nontrivial
+no power-of-two cycle, and strictly decreases the support.  This is a nontrivial
 target-complete compression of a proper support."*
 
 Every clause of `CompressibleSupport` is present: the shared boundary-degree
@@ -1666,7 +1666,7 @@ end TableRow
 
 /-! ### The short self-return exceptions, as rows
 
-`def:cold-same-interface-table`'s rows are "equal-length cold bounded germs
+`def:cold-same-interface-table`'s rows are "equal-length cold bounded configurations
 **and the short self-return exceptions** of
 `lem:cold-short-self-return-filter`".  The germs are `TableRow` itself.  This
 section supplies the second family and proves that it *is* a family of
@@ -1674,8 +1674,9 @@ exceptions: a cold-window outside self-return whose smear interval meets an
 accepted length realizes it, so on a target-avoiding object only the surviving
 lengths reach the table.
 
-The datum is the smear itself.  "Smearing over the window offsets
-`{0,…,order−1}` tests the whole interval `[ℓ, ℓ+order−1]`" is the statement
+The datum is the smear itself.  "Sweeping over the window offsets
+`{0,1,…,12}` tests the whole interval `[ℓ, ℓ+12]`" (stated here for a general
+window order, `{0,…,order−1}` and `[ℓ, ℓ+order−1]`) is the statement
 that each tested length is realized as a completion through the corresponding
 offset; a `SelfReturn` carries exactly that family, and nothing else about the
 corridor is needed to run the filter. -/
@@ -1706,7 +1707,7 @@ variable {Baseline Target : FiniteObject.{u} → Prop}
 variable {Handoff : Finset object.Vertex → Prop}
 variable (self : SelfReturn S LengthOK Baseline Target object Handoff)
 
-/-- **"All other short self-returns realize a dyadic cycle."**
+/-- **"All other short self-returns realize a power-of-two cycle."**
 
 On an object that avoids the target, a self-return's length must survive the
 smear: a tested length that is accepted would be realized through its offset,
@@ -1734,9 +1735,9 @@ end SelfReturn
 /-- **`lem:cold-same-interface-table`.**
 
 *"Every row of the same-interface cold table is routed to one of the already
-closed outcomes: a dyadic cycle, a target-defective quotient, an existing Type
+closed outcomes: a power-of-two cycle, a target-defective quotient, an existing Type
 B or route-8 handoff, or a target-complete proper-support compression.  In
-particular, an equal-length cold bounded germ and a short exceptional
+particular, an equal-length cold bounded configuration and a short exceptional
 self-return cannot be a terminal cold residual."*
 
 The two hypotheses are the two facts the selected minimal counterexample
@@ -1764,7 +1765,7 @@ theorem row_closed {S : DeclaredSignature} {Baseline Target : FiniteObject.{u} �
 
 /-- **`lem:cold-same-interface-table`, at a short exceptional self-return.**
 
-"In particular, an equal-length cold bounded germ **and a short exceptional
+"In particular, an equal-length cold bounded configuration **and a short exceptional
 self-return** cannot be a terminal cold residual."
 
 The self-return half is the second conjunct of `def:cold-same-interface-table`'s

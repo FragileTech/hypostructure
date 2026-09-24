@@ -80,7 +80,7 @@ residues `L, L+1, …, L+12`, the branch is G1."*
 
 *"A congruence `2^k ≡ L + r (mod δ)` with `0 ≤ r ≤ 12` means that, after adding
 the appropriate number of homogeneous copies, one attainable length is `2^k`.
-This is exactly a hit-realized germ."* -/
+This is exactly a hit-realized configuration."* -/
 
 /-- **Case (b), the attainable block.**  A power of two congruent to a smear
 residue and at least as large as it is attained by the block of the

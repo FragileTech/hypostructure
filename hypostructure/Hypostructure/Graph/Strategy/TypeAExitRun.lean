@@ -1,4 +1,4 @@
-import Hypostructure.Graph.Strategy.SpineRows
+import Hypostructure.Graph.Strategy.SpineVocabulary
 
 /-!
 # The saturated exit chain: node `[95]`

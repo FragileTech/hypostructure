@@ -110,9 +110,9 @@ sentence the manuscript proves before it defines `Labels`.  Nothing here is
 listed in a definition; the numerals appear only in this conclusion.
 
 *Provenance.* Consumes `Core.DyadicLength.powerOfTwoLengthDecidable` at
-`Core/DyadicLength.lean:25` and `windowOrder`; the same two numerals appear as
+`Core/DyadicLength.lean` and `windowOrder`; the same two numerals appear as
 `Graph.TypeBMarkedFan.isDyadic_attachmentCycleLength_iff` at
-`Graph/TypeBMarkedFan.lean:127`, which this derives rather than repeats.
+`Graph/TypeBMarkedFan.lean`, which this derives rather than repeats.
 -/
 theorem forbiddenGaps_zero : forbiddenGaps windowOrder 0 = {2, 6} := by
   decide
@@ -120,7 +120,7 @@ theorem forbiddenGaps_zero : forbiddenGaps windowOrder 0 = {2, 6} := by
 /-- The forbidden differences at outside length one: `(j - i) + 3 ∈ {4, 8}`.
 
 *Provenance.* Consumes `Core.DyadicLength.powerOfTwoLengthDecidable` at
-`Core/DyadicLength.lean:25` and `windowOrder`.
+`Core/DyadicLength.lean` and `windowOrder`.
 -/
 theorem forbiddenGaps_one : forbiddenGaps windowOrder 1 = {1, 5} := by
   decide
@@ -129,9 +129,9 @@ theorem forbiddenGaps_one : forbiddenGaps windowOrder 1 = {1, 5} := by
 `{0, 4, 12}` of `Graph.TypeBMarkedFan.isDyadic_wedgeCycle_iff`.
 
 *Provenance.* Consumes `Core.DyadicLength.powerOfTwoLengthDecidable` at
-`Core/DyadicLength.lean:25`; the same three numerals appear as
+`Core/DyadicLength.lean`; the same three numerals appear as
 `Graph.TypeBMarkedFan.isDyadic_wedgeCycle_iff` at
-`Graph/TypeBMarkedFan.lean:185`.
+`Graph/TypeBMarkedFan.lean`.
 -/
 theorem forbiddenGaps_two : forbiddenGaps windowOrder 2 = {0, 4, 12} := by
   decide
@@ -140,7 +140,7 @@ theorem forbiddenGaps_two : forbiddenGaps windowOrder 2 = {0, 4, 12} := by
 
 *Provenance.* Consumes `forbiddenGaps_zero` above; follows
 `Graph.TypeBMarkedFan.isLegal_iff_attachment_not_dyadic` at
-`Graph/TypeBMarkedFan.lean:137`.
+`Graph/TypeBMarkedFan.lean`.
 -/
 theorem legal_iff_dist {label : Label windowOrder} :
     Legal label ↔ label.Nonempty ∧
@@ -163,7 +163,7 @@ set_option maxHeartbeats 8000000 in
 in one traversal of the powerset of the registered window order.
 
 *Provenance.* Follows `Graph.TypeBMarkedFan.packingCap_eq_eight` at
-`Graph/TypeBMarkedFan.lean:294`, the framework's precedent for a
+`Graph/TypeBMarkedFan.lean`, the framework's precedent for a
 kernel-`decide`d finite count on this algebra; consumes
 `WindowCurvature.Labels` and `windowOrder`.
 -/
@@ -206,7 +206,7 @@ through: every length whose closing cycle can still reach the first dyadic
 length strictly above the window, i.e. `0, …, order + 1`.
 
 *Provenance.* Follows `closingLength` at
-`Graph/WindowCurvatureAlgebra.lean:86` and `windowOrder`.
+`Graph/WindowCurvatureAlgebra.lean` and `windowOrder`.
 -/
 abbrev windowRelationLengths : Nat := windowOrder + 2
 
@@ -414,7 +414,7 @@ set_option maxHeartbeats 8000000 in
 responses agree at outside lengths `1`, `2` and `3` are the same index.
 
 *Provenance.* Follows `Graph.TypeBMarkedFan.packingCap_eq_eight` at
-`Graph/TypeBMarkedFan.lean:294`, a finite verdict on this algebra; evaluated
+`Graph/TypeBMarkedFan.lean`, a finite verdict on this algebra; evaluated
 over the presentation of this section. -/
 lemma windowResponse_separates : ∀ source target : Fin 399,
     (∀ shift ∈ [1, 2, 3], windowResponse shift source = windowResponse shift target) →
@@ -450,7 +450,7 @@ of length two.  The manuscript's `C₁(S,A) C₁(A,T) (1 - C₂(S,T))`, with eac
 factor a relation the audited table carries.
 
 *Provenance.* Follows `WindowCurvature.curvatureTwo` at
-`Graph/WindowCurvatureAlgebra.lean:218`.
+`Graph/WindowCurvatureAlgebra.lean`.
 -/
 def windowCurvatureTwo (source middle target : Fin 399) : Bool :=
   windowRelation 1 source middle && windowRelation 1 middle target &&
@@ -469,7 +469,7 @@ theorem windowCurvatureTwo_eq_curvatureTwo (source middle target : Fin 399) :
 /-- **`Ω₂ = 1` at the carrier.**
 
 *Provenance.* Consumes `curvatureTwo_eq_true_iff` at
-`Graph/WindowCurvatureAlgebra.lean:224`. -/
+`Graph/WindowCurvatureAlgebra.lean`. -/
 theorem windowCurvatureTwo_eq_true_iff (source middle target : Fin 399) :
     windowCurvatureTwo source middle target = true ↔
       Safe 1 (windowLabel source) (windowLabel middle) ∧

@@ -18,6 +18,7 @@ import { SHAPE_NAMES, nodeTypes } from "./ProofFlowNode";
 import { boundsOf, buildGraph, type ProofFlowNode } from "./buildGraph";
 import { createReferenceResolver } from "./references";
 import { indexDocument } from "./index-document";
+import { openOutcomeName, openOutcomeNodes } from "./outcomes";
 import { buildSearchIndex, matchNodes } from "./search";
 import { traceFrom } from "./trace";
 import { useDetailWidth } from "./useDetailWidth";
@@ -124,7 +125,7 @@ function DetailPanel({ mode, ...props }: NodeDetailPanelProps & { mode: Explorer
 
 export function GraphExplorer({ document, state, onChange }: GraphExplorerProps) {
   const index = useMemo(() => indexDocument(document), [document]);
-  const hasOpenNodes = useMemo(() => document.nodes.some((node) => node.open), [document]);
+  const openNodes = useMemo(() => openOutcomeNodes(document), [document]);
   const searchIndex = useMemo(
     () => buildSearchIndex(document, index),
     [document, index],
@@ -390,6 +391,34 @@ export function GraphExplorer({ document, state, onChange }: GraphExplorerProps)
           </div>
         </div>
 
+        {openNodes.length ? (
+          <section className="explorer-outcomes" aria-label="Remaining outcomes">
+            <div className="explorer-outcomes-intro">
+              <strong>{openNodes.length} remaining outcomes</strong>
+              <span>
+                {document.slug === "erdos-gyarfas"
+                  ? "Any counterexample reaches one of these outcomes on a selected minimal graph. Excluding all six would prove the conjecture."
+                  : "Select an open outcome to inspect its incoming route and retained facts."}
+              </span>
+            </div>
+            <div className="explorer-outcomes-list">
+              {openNodes.map((node) => (
+                <button
+                  key={node.id}
+                  type="button"
+                  className={state.selected === node.id ? "is-active" : ""}
+                  onClick={() => selectNode(node.id)}
+                  aria-label={`Open outcome ${node.id}: ${openOutcomeName(node)}`}
+                  title={openOutcomeName(node)}
+                >
+                  <span className="explorer-outcome-id">[{node.id}]</span>
+                  <span className="explorer-outcome-name">{openOutcomeName(node)}</span>
+                </button>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
         {state.group ? (
           <p className="explorer-caption">
             <strong>{index.groupById.get(state.group)?.title}</strong>
@@ -430,7 +459,7 @@ export function GraphExplorer({ document, state, onChange }: GraphExplorerProps)
                   {SHAPE_NAMES[shape]}
                 </li>
               ))}
-              {hasOpenNodes ? (
+              {openNodes.length ? (
                 <li>
                   <span className="shape-swatch shape-open" aria-hidden="true" />
                   Open outcome

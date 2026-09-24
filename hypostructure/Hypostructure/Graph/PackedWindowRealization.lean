@@ -17,25 +17,18 @@ This file carries the two facts `prop:p13-density` consumes and nothing else.
 Reading it backwards, the two things it needs are
 
 * **independence of the window coordinates** — "the window coordinates alone
-  contribute `p₁₃` independent packages", which rests on the packing's own
+  contribute `(118.108581006 − o(1)) p₁₃ log₂ n` bits in its finite package",
+  which rests on the packing's own
   disjointness, and
 * **realization** — "all target-complete window states are realized by labelled
-  skeletons", which is `lem:state-count-comparison`.
+  near-cubic skeletons", which is `lem:state-count-comparison`.
 
 Both are theorems about the *canonical* maximal packing, not data an adapter
 supplies:
 
-* the packing is the one the **ledger** already carries -- the CT1 node's
-  `Core.Strategy.ObstructionPackingClosure.Packing`, read as an induced-path
-  profile by `Graph.Strategy.ObstructionPackingClosure.inducedPathProfileOfPacking`,
-  whose `pairwiseDisjoint` field is that packing's own `pairwiseCompatible`
-  (the graph presentation's `conflict` *is* `¬ Disjoint (support …) (support …)`).
-  So `supports_pairwise_disjoint` and `packed` are derivations from the retained
-  ledger entry, and in particular the window count here is definitionally the
-  `packingCount` the density comparison was run on, read off the cap ledger by
-  `Graph.Strategy.FiniteDensityBudget.capLedger_ambientCapacity_read`.  Nothing in
-  this file re-selects a packing: every declaration is parametric in the profile
-  it is handed;
+* nothing in this file re-selects a packing: every declaration is parametric
+  in the `InducedPathMaximalPacking.Profile` it is handed, and
+  `supports_pairwise_disjoint` and `packed` are derived from that profile;
 * the state assignment of `lem:skeleton-dominates` is *canonical* ("all
   auxiliary objects ... are functions of the labelled adjacency matrix once a
   deterministic tie-breaking rule is fixed"), so it is a plain map
@@ -81,10 +74,7 @@ noncomputable instance instFintypePackedWindow
 
 The window index type lists each selected occurrence exactly once -- that is
 what `selected_nodup` buys -- so its cardinality is the length of the selected
-list.  For the profile read off the ledger's `ObstructionPackingClosure.Packing`
-that length is literally the `packingCount` the density comparison is run at,
-which is why the window package's multiplicative demand and the density node's
-`stateDemand` speak about the same `p₁₃`. -/
+list, `p₁₃`. -/
 theorem card_packedWindow
     (profile : InducedPathMaximalPacking.Profile object order) :
     Nat.card (PackedWindow profile) = profile.selected.length := by
@@ -437,10 +427,10 @@ packed-window package realized inside `𝒢_{n,m}` has demand at most
 `binom(binom(n,2), m)`, which is the labelled skeleton budget the finite
 density budget registers.
 
-This is `prop:p13-density`'s middle step verbatim: "since all target-complete
-window states are realized by labelled near-cubic skeletons under
-`def:near-cubic-spine`, `lem:independent-target-entropy, lem:skeleton-dominates`
-give ...".  Both `n` and `m` come from the realization's own class; nothing is
+This is the realization sentence used in `lem:p13-window-package` and
+`prop:p13-density`, "all target-complete window states are realized by labelled
+near-cubic skeletons", followed by `lem:independent-target-entropy` and
+`lem:skeleton-dominates`.  Both `n` and `m` come from the realization's own class; nothing is
 chosen here. -/
 theorem demand_le_skeletonBudget
     {profile : InducedPathMaximalPacking.Profile object order}
@@ -453,11 +443,8 @@ theorem demand_le_skeletonBudget
 
 /-- **`lem:independent-target-entropy` against the near-cubic class.**
 
-`2 ^ k ≤ |𝒢_{n,m}|`.  Composed with the exponent bookkeeping of
-`Graph.Strategy.FiniteDensityBudget`, this is the whole of `prop:p13-density`:
-whatever exponent the window package's own multiplicative demand certifies is
-paid out of the labelled skeleton budget, so the density cap is produced by a
-realization rather than observed. -/
+`2 ^ k ≤ |𝒢_{n,m}|`: whatever exponent the window package's own
+multiplicative demand certifies is paid out of the labelled skeleton budget. -/
 theorem two_pow_le_skeletonBudget
     {profile : InducedPathMaximalPacking.Profile object order}
     {State : PackedWindow profile → Type v} {n m exponent : Nat}

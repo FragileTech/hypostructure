@@ -22,9 +22,10 @@ simple path of length `s` avoiding a packed window `P = p₀p₁⋯`; `x` attach
 is a simple cycle, and its length is exactly the manuscript's closing length
 `s + 2 + |i − j|`.  When that length is accepted by the target, the object has
 an accepted cycle.  At `s = 0` -- one outside vertex, `x = y`, `Q` empty -- this
-is the legality derivation of `lem:labels` verbatim: "if `x` is adjacent to `vᵢ`
-and `vⱼ` with `i < j`, then the subpath `vᵢ⋯vⱼ` together with the two edges
-`x vᵢ` and `x vⱼ` forms a cycle of length `(j − i) + 2`".
+is the legality derivation of `lem:labels`: "if `x` is adjacent to `vᵢ` and `vⱼ`
+with `i < j`, then the subpath `vᵢvᵢ₊₁⋯vⱼ` of `P`, which has length `j − i`,
+together with the two edges `x vᵢ` and `x vⱼ` forms a cycle of length
+`(j − i) + 2`".
 
 ## What is stated here and what is retrieved
 
@@ -35,15 +36,15 @@ Retrieved, never restated:
 
 * the window presentation and its stretches --
   `Graph.TypeBDirectCycle.Presentation` and `Presentation.exists_stretch` at
-  `Graph/TypeBDirectCycle.lean:278,387`;
+  `Graph/TypeBDirectCycle.lean`;
 * the closing length `s + 2 + |i − j|` -- `Graph.WindowCurvature.closingLength`
-  at `Graph/WindowCurvatureAlgebra.lean:82`;
+  at `Graph/WindowCurvatureAlgebra.lean`;
 * the safety relation `C_s` itself -- `Graph.WindowCurvature.Safe` at
-  `Graph/WindowCurvatureAlgebra.lean:139`, identified with the collision below
+  `Graph/WindowCurvatureAlgebra.lean`, identified with the collision below
   by `labelCollision_iff_not_safe`, so the alternative this module states *is*
   failure of the manuscript's relation and not a second copy of it;
 * the accepted cycle carrier -- `Graph.CycleCertificate` and
-  `Graph.HasCycleWithLength` at `Graph/Target.lean:49,57`.
+  `Graph.HasCycleWithLength` at `Graph/Target.lean`.
 
 ## The one hypothesis
 

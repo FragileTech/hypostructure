@@ -479,8 +479,11 @@ end Presentation
 
 /-! ## The four direct configurations
 
-Each is the manuscript's display, with the arithmetic side condition read as
-"the length of the cycle this display builds is accepted".  Each is stated at a
+Each is a display of the proof of `lem:typeB-direct-fan-window-cycles`.  The
+manuscript's side conditions are concrete (`b_u − a_u ∈ {2,6}`,
+`|x − y| ∈ {0,4,12}`, ...); here they are replaced by "the length of the cycle
+this display builds satisfies `LengthOK`", which is this file's encoding, not
+the manuscript's wording.  Each is stated at a
 given fan centre and over the windows of a given packing; the Type B scoping of
 the centre -- assigned to a connected negative-charge support, high-degree,
 certificate-marked -- is the caller's, exactly as for every other fact of this

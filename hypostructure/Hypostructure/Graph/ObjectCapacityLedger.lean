@@ -176,7 +176,7 @@ noncomputable def role (data : CapacityPresentation object threshold order) :
 
 /-- **The remainder of `𝒫` is window-free.**
 
-*"every unchosen induced window overlaps a chosen one"* read on a region the
+*"Every unchosen induced window meets the packing."* read on a region the
 packing misses: any sub-support of it inducing a window would have to meet a
 packed window, and it cannot.  This is `def:window-remainder-surplus-split`'s
 own maximality spent, and it is where the `P₁₃`-free core the decorated Type B

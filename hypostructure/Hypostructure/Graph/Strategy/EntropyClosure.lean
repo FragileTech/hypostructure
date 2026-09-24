@@ -11,7 +11,7 @@ opposite cap fact, and the framework closes the resulting cap/overflow pair.
 `prop:entropy-high-theta`: on the arm where the remaining non-curvature budget
 is strictly smaller than the forced curvature cost (`K .entropyCapActive`,
 `eq:entropy-cap`), *"the window package of `lem:p13-window-package`, the
-remainder bits, and the forced-curvature bits together strictly exceed the
+remainder bits, and the forced obstruction bits together strictly exceed the
 near-cubic skeleton budget.  These bits form one independently target-testable
 coordinate family, so the number of realized target-complete states would
 exceed the number of labelled skeletons, contradicting

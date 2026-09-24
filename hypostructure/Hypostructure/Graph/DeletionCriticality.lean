@@ -8,16 +8,9 @@ with minimum degree at least `k` cannot contain an edge whose two endpoints
 both have one unit of degree slack.  The exact one-edge degree accounting and
 baseline preservation are owned by Graph.
 
-The two *conclusions* are not.  They are manuscript nodes `[9]`--`[10]`
-(`lem:deletion-critical`) and Core owns both:
-`Core.Strategy.CriticalModificationStructure.criticalityNode` derives universal
-atomic criticality from the inherited no-subobject certificate, and
-`slackIncompatibilityNode` derives carrier incompatibility from that appended
-entry.  This module supplies the graph semantics those two nodes consume
-(`DeletionCriticalityProfile.criticalModificationSemantics`) and reads the two
-appended entries back as a `DeletionCriticalityCertificate`.  The certificate
-has exactly one constructor and it is that ledger read; nothing here re-proves
-either node.
+The two *conclusions* are manuscript nodes `[9]`--`[10]`
+(`lem:deletion-critical`).  `DeletionCriticalityCertificate` states them; its
+constructor is private and no declaration in this module constructs it.
 
 The abstract profile supports baselines with additional graph properties.  Its
 concrete minimum-degree specialization requires only the threshold `k`; a
@@ -287,8 +280,8 @@ theorem noncritical_of_related (profile : DeletionCriticalityProfile Baseline)
 
 end DeletionCriticalityProfile
 
-/-- Graph-coordinate projection of the criticality and slack-incompatibility
-entries appended by Core. -/
+/-- The two conclusions of `lem:deletion-critical`: every dart has an endpoint
+at the threshold, and vertices above the threshold are pairwise nonadjacent. -/
 structure DeletionCriticalityCertificate
     {Baseline : FiniteObject.{u} → Prop}
     {BranchState : FiniteObject.{u} → Type v}

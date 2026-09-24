@@ -8,9 +8,7 @@ Manuscript node `[74]` (`fanthm`) of `erdos_64_proof.tex` is a
 framework step, and a framework step scans a *schedule*.  The assigned Type B
 fan-window profile `𝔉_h` of `def:typeB-window-incidence-profile` is
 `TypeBFanClosedPorts.Profile`, which is pure data and therefore carries no
-enumeration of its own.  This file supplies the missing enumerable carrier, in
-exactly the shape `TypeBDegreeFour.degreeFourCores` supplies it for
-`def:triangular-fan-core` at node `[79]`:
+enumeration of its own.  This file supplies an enumerable carrier:
 
 * a canonical profile at a centre, built only from the object's own schedules
   (`canonicalProfile`);
@@ -48,8 +46,7 @@ particular:
   true by the construction* rather than hypothesised.
 
 * the degree window `4 ≤ d_G(h) ≤ 8` is not a hypothesis either: it is the
-  filter defining the schedule `fanCentres`, exactly as `d_G(h) = 4` is the
-  filter defining `degreeFourCenters`.  It excludes nothing, because it is
+  filter defining the schedule `fanCentres`.  It excludes nothing, because it is
   precisely `Marked.degree_mem_window`; `mem_fanCentres_of_marked` proves that
   the centre of *every* certificate-marked Type B fan over the object is
   enumerated, and `exists_mem_profileCandidatesWith` proves that the centre of
@@ -214,9 +211,10 @@ theorem mem_canonicalEnvelope_iff (center vertex : object.Vertex) :
     · exact Or.inr (Or.inl isNeighbour)
     · exact Or.inr (Or.inr ⟨neighbour, centerAdj, notCentre, incidence⟩)
 
-/-- The clause "the two non-`h` incidences of a fan neighbour are carried by the
-assigned support" of `def:marked-typeB-fan` holds for the canonical envelope by
-construction.  This is the step that would otherwise have to be assumed. -/
+/-- For the canonical envelope, the two non-`h` incidences of every fan
+neighbour lie in the envelope by construction.  (`def:marked-typeB-fan` calls a
+neighbour cubic-closed when "after assigning the fan support, the two non-`h`
+incidences of `u` are also assigned to that support".)  This is the step that would otherwise have to be assumed. -/
 theorem shoulder_mem_canonicalEnvelope {center neighbour vertex : object.Vertex}
     (centerAdj : object.graph.Adj center neighbour)
     (incidence : object.graph.Adj neighbour vertex) (notCentre : vertex ≠ center) :
@@ -227,8 +225,7 @@ theorem shoulder_mem_canonicalEnvelope {center neighbour vertex : object.Vertex}
 /-! ## The canonical assigned profile -/
 
 /-- **The canonical assigned Type B fan-window profile at a centre**, over a
-given packed-window union `W`.  Every field is fixed by the object's own data,
-exactly as `TypeBDegreeFour.canonicalCore` fixes its generating port family:
+given packed-window union `W`.  Every field is fixed by the object's own data:
 the certificate-marked fan is `canonicalMarked`, the envelope is
 `canonicalEnvelope`, and the recorded window is the ambient `W`. -/
 noncomputable def canonicalProfile (object : FiniteObject.{u})
@@ -257,11 +254,12 @@ noncomputable def canonicalProfile (object : FiniteObject.{u})
 
 /-! ## What the canonical profile records
 
-`c(𝔉)` of `def:typeB-multiclosed-residual` counts the cubic-closed fan
-neighbours recorded on the remainder side.  For the canonical profile the
-"carried by the assigned envelope" clause is discharged by the envelope itself,
-so `c(𝔉)` becomes a decidable local observable: the number of cubic neighbours
-of the centre lying off the packed-window union. -/
+`c(𝔉)` of `def:typeB-multiclosed-residual` counts the cubic-closed neighbours
+of `h`; `def:marked-typeB-fan` calls `u ∈ N(h)` cubic-closed when its two
+non-`h` incidences are also assigned to the fan support.  The observable below
+is different: the number of degree-three neighbours of the centre lying off the
+packed-window union.  Identifying it with `c(𝔉)` is a choice made in this file,
+not a statement of the manuscript. -/
 
 /-- The remainder-side cubic fan neighbours at a centre: `N(h) ∩ R` restricted
 to the vertices of degree three.  Decidable, and read off the object's own
@@ -312,9 +310,8 @@ theorem closedCount_canonicalProfile (object : FiniteObject.{u})
 
 /-! ## The enumerable carrier
 
-`degreeFourCenters` filters the object's own vertex scan by the local
-observable `d_G(h) = 4`.  Here the filter is the certificate-marked fan degree
-window `4 ≤ d_G(h) ≤ 8` of `Marked.degree_mem_window`, again a local
+The schedule filters the object's own vertex scan by the certificate-marked
+fan degree window `4 ≤ d_G(h) ≤ 8` of `Marked.degree_mem_window`, again a local
 observable.  The filter excludes no centre that could carry a marked fan:
 `mem_fanCentres_of_marked`. -/
 
@@ -514,11 +511,9 @@ profile recording at least two cubic-closed remainder-side fan neighbours:
 No structural input and no hypothesis beyond the scan predicate: the degree
 window `4 ≤ k ≤ 8` is carried by the certificate-marked fan itself
 (`Marked.highDegree`, `Marked.degree_le_eight`), and the two facts about the
-chosen rate are the recorded design constraints
-`ReceiverLoad.LoadCapacityProfile.dischargeRate_gt` (`5α > 1`, which is the
-strict positivity, read off at this very instance `c = 2`, `k = 4`) and
-`dischargeRate_le` (`9α ≤ 3`, which is the fan credit `3 - (k+1)α` being
-nonnegative and so is what makes the reserve available). -/
+chosen rate are `5α > 1` (the strict positivity at `c = 2`, `k = 4`) and
+`9α ≤ 3` (the fan credit `3 - (k+1)α` being nonnegative, which makes the
+reserve available).  `LoadCapacityProfile` records neither as a field. -/
 theorem hybridEntry_of_isHybridEligible (profile : Profile object)
     (ledger : LoadCapacityProfile)
     (scale : ledger.loadMultiplier = 4)
@@ -616,12 +611,12 @@ theorem profileCandidates_scan (object : FiniteObject.{u})
 
 /-! ## What is deliberately absent
 
-`lem:typeB-hybrid-B1` has a fourth clause: the `2c(𝔉)` local incidence carriers
-are pairwise distinct, in the strong form that the family is determined by its
-outside endpoint (`Profile.incidences_endpoint_injective`).  That clause — and
-only that clause — rests on the four-cycle exclusion `u - h - v - z - u`, i.e.
-on `NormalForm.noCommonNeighbourOutside`, which is an ambient structural input
-read off the incoming residual and cannot be derived from the object's
+`lem:typeB-hybrid-incidence-budget` also states that the `2c(𝔉)` local
+incidence carriers are pairwise disjoint; the Lean proves it in the strong form
+that the family is determined by its outside endpoint
+(`Profile.incidences_endpoint_injective`).  That step rests on the four-cycle
+exclusion `u - h - v - z - u`, i.e. on `NormalForm.noCommonNeighbourOutside`,
+which is read off the incoming residual rather than off the object's
 schedules.  It is therefore *not* restated here: reproducing it would require
 carrying `NormalForm object h` as a hypothesis, and this file has none.  A
 consumer that needs it applies `Profile.typeBHybridB1` directly, with the

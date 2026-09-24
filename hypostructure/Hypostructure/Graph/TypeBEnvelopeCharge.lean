@@ -847,8 +847,8 @@ theorem bridgeResidualMass_le {threshold dischargeScale massFactor : Nat}
 
 /-! **The unpaid part of the fan envelope at a centre, at the discharge scale.**
 
-Only the centre and the `c` cubic-closed neighbours carry negative charge, by
-`scaledCharge_openNeighbour_nonneg`; the centre contributes `s(k − δ) + 1` and
+Only the centre and the `c` cubic-closed neighbours carry negative charge; the
+centre contributes `s(k − δ) + 1` and
 each cubic-closed neighbour `1`.  This is the manuscript's
 `(k − 3 + 1/4) + c/4`, multiplied through by `s`. -/
 /-- **`lem:typeB-bridge-deficit-bound`, display (1).**

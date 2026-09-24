@@ -24,23 +24,23 @@ Nothing is redefined.  The profile, the two incidence kinds
 ports, the closed-neighbour count `c(𝔉)` and the deficit `D_B(𝔉)` are all
 `Hypostructure.Graph.TypeBFanClosedPorts`; the certificate-marked fan and its
 degree cap `d_G(h) ≤ 8` are `Hypostructure.Graph.TypeBMarkedFan`; the ports,
-their shoulder schedules and `NormalForm` are
-`Hypostructure.Graph.TypeBOpenPorts`.
+their shoulder schedules and `NormalForm` are `HighCentrePorts.lean` and
+`HighCentreNormalForm.lean`.
 
 ## What the structural input is, and what it is not
 
 The only structural input is `NormalForm object h`
-(`lem:heavy-neighbourhood-normal-form`), passed as an explicit argument exactly
-as in `TypeBOpenPorts.heavyCenterTriangularAlternative` and
-`TypeBFanClosedPorts.fanClosedPortTypeBRouting`.  It is obtained downstream from
-the residual by `TypeBOpenPorts.LocalHypotheses.normalForm`, which reads the
-four-cycle avoidance off `ctx.avoids`.  **No hypothesis anywhere in this file
+(`lem:heavy-neighbourhood-normal-form`), passed as an explicit argument.  On
+the EG spine it is the fact published by `highCentreNormalFormRow` (node
+`[67]`).  **No hypothesis anywhere in this file
 asserts the absence of a structure**: there is no `¬ HasCycleWithLength`, no
-"direct fan-window cycle does not occur", no "target-defect / compression /
-delocalization alternative is excluded".  The manuscript's proof of
-`lem:typeB-hybrid-incidence-budget` uses only dyadic safety at the four-cycle
-`u - h - v - z - u`, which is precisely
-`NormalForm.noCommonNeighbourOutside`.
+hypothesis that a direct fan-window cycle does not occur, no hypothesis that a
+target-defect, compression or support-dependence alternative is excluded.
+`lem:typeB-hybrid-incidence-budget` does state the hypothesis "none of the
+direct-cycle conclusions of `lem:typeB-direct-fan-window-cycles`,
+`lem:typeB-two-window-cycles` occurs"; its proof uses target-safety at the
+four-cycle `u - h - v - z - u` and the simplicity of `G`, and the four-cycle
+step is `NormalForm.noCommonNeighbourOutside`.
 
 There are no hypotheses.  `def:typeB-window-incidence-profile` says a profile
 *records the assigned fan neighbours that lie in the remainder side*, so
@@ -53,8 +53,9 @@ A window incidence of the manuscript is the *triple* `(u, P, i)`, so it carries
 its owner `u`.  Accordingly `Profile.incidences` is a finite set of pairs
 `(u, z)` with `u` a cubic-closed fan neighbour and `z` one of its two non-`h`
 endpoints.  This is what makes the manuscript's count `I_W + I_N = 2c` correct.
-The manuscript's disjointness assertion ("two different closed neighbours cannot
-use the same non-`h` vertex") is proved in the strong form
+The manuscript's disjointness step (no non-`h` neighbour `z` is incident with
+two distinct cubic-closed neighbours `u`, `v`, since `u-h-v-z-u` would be a
+`4`-cycle) is proved in the strong form
 `incidences_endpoint_injective`: the whole family of `2c` incidences is
 determined by its outside endpoint.
 
@@ -384,7 +385,7 @@ private theorem disjoint_of_fst {α : Type v} [DecidableEq α] {u v : α}
   exact distinct ((leftOwner e leftMember).symm.trans (rightOwner e rightMember))
 
 /-- The fan uses exactly `2c(𝔉)` local incidence carriers.  Only simplicity of
-`G` enters: "one closed neighbour cannot use the same non-`h` endpoint twice". -/
+`G` enters: "One cubic-closed neighbour cannot use the same non-`h` endpoint twice". -/
 theorem card_incidences (profile : Profile object) :
     profile.incidences.card = 2 * profile.closedCount := by
   letI : DecidableEq object.Vertex := object.vertices.decEq
@@ -593,9 +594,8 @@ certificate; it is not assumed.  The four-cycle exclusion behind the
 disjointness is `NormalForm`, not a hypothesis of this statement.
 
 The slack clause is generic: it reduces to `(k+1)α ≤ 9α`, i.e. to the degree
-cap alone.  The final clause is the one that reads the recorded fan-credit
-constraint `ReceiverLoad.LoadCapacityProfile.dischargeRate_le` (`9α ≤ 3`): its
-live branch is `D_B(𝔉) ≤ c(𝔉)`, that is, the fan credit `3 - (k+1)α` is
+cap alone.  The final clause is where the fan-credit condition `9α ≤ 3`
+enters (`LoadCapacityProfile` does not record it as a field): its live branch is `D_B(𝔉) ≤ c(𝔉)`, that is, the fan credit `3 - (k+1)α` is
 nonnegative, and `k = 8` is exactly where that is sharpest.  At `α = 1/4` the
 slack is the manuscript's `(11-k)/4 ≥ 3/4`. -/
 theorem typeBHybridIncidenceBudget (profile : Profile object)

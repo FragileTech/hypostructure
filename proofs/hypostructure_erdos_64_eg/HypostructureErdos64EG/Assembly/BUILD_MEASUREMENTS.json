@@ -1,0 +1,230 @@
+{
+  "date": "2026-09-22",
+  "toolchain": "leanprover/lean4:v4.31.0",
+  "baseline_seconds": {
+    "assembly": 1068,
+    "spine_rows": 703
+  },
+  "assembly_module_count": 90,
+  "spine_row_module_count": 153,
+  "spine_row_edits": [
+    {
+      "module": "ReturnAvoidance",
+      "seconds": 9.89,
+      "returncode": 0
+    },
+    {
+      "module": "Route8WindowBlockers",
+      "seconds": 17.28,
+      "returncode": 0
+    },
+    {
+      "module": "Route8UnifiedTerminalNoGo",
+      "seconds": 50.01,
+      "returncode": 0
+    }
+  ],
+  "assembly_edits": {
+    "no_change": {
+      "seconds": 6.123,
+      "returncode": 0,
+      "built": []
+    },
+    "type_a": {
+      "targeted": {
+        "seconds": 15.887,
+        "returncode": 0,
+        "built": [
+          "HypostructureErdos64EG.Assembly.TypeA.ExitFourChain"
+        ]
+      },
+      "downstream": {
+        "seconds": 325.728,
+        "returncode": 0,
+        "built": [
+          "HypostructureErdos64EG.Assembly.TypeA.VisibleExitFour",
+          "HypostructureErdos64EG.Assembly.TypeA.VisibleExitChain",
+          "HypostructureErdos64EG.Assembly.TypeA.LowSurplusContinuation",
+          "HypostructureErdos64EG.Assembly.NetCharge.Continuation",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.DenseBelow.Nonrepetitive",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.BelowRateFailure.Nonrepetitive",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.BelowRate.WedgeFree",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.BelowRate.Nonrepetitive",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.BelowRateFailure.HighEntropy",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.BelowRate.HighEntropy",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.BelowRateFailure.WedgeFree",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.BelowRate.Wedge",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.DenseBelow.Wedge",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.DenseBelow.HighEntropy",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.DenseBelow.WedgeFree",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedAtOrAbove.Nonrepetitive",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedAtOrAbove.WedgeFree",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.DenseAtOrAbove.WedgeFree",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.BelowRateFailure.Wedge",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.DenseAtOrAbove.Wedge",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.DenseAtOrAbove.Nonrepetitive",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedAtOrAbove.HighEntropy",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.BelowRate.FullRank",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedAtOrAbove.Wedge",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.DenseBelow.FullRank",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.DenseAtOrAbove.HighEntropy",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.BelowRateFailure.FullRank",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedAtOrAbove.FullRank",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.DenseAtOrAbove.FullRank",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.BelowRate",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.DenseBelow",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedAtOrAbove.Bounded",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.BelowRateFailure",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.DenseAtOrAbove.Bounded",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedBelow.WedgeFree",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.UnrealizedBelow",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedBelow.Wedge",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedAtOrAbove",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedBelow.HighEntropy",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.DenseAtOrAbove",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedBelow.Nonrepetitive",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.UnrealizedDense",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedBelow.FullRank",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.Unrealized",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedBelow",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.Realized",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor",
+          "HypostructureErdos64EG.Assembly.Final",
+          "HypostructureErdos64EG.Assembly",
+          "HypostructureErdos64EG"
+        ]
+      }
+    },
+    "cache_restored_no_change": {
+      "seconds": 7.253,
+      "returncode": 0,
+      "built": []
+    },
+    "type_b": {
+      "targeted": {
+        "seconds": 19.854,
+        "returncode": 0,
+        "built": [
+          "HypostructureErdos64EG.Assembly.TypeB.HighSurplusContinuation"
+        ]
+      },
+      "downstream": {
+        "seconds": 220.037,
+        "returncode": 0,
+        "built": [
+          "HypostructureErdos64EG.Assembly.NetCharge.Continuation",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.DenseBelow.Nonrepetitive",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.BelowRate.Nonrepetitive",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.BelowRateFailure.Nonrepetitive",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.DenseBelow.HighEntropy",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.DenseBelow.WedgeFree",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.BelowRate.WedgeFree",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.DenseBelow.Wedge",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.BelowRate.HighEntropy",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.BelowRate.Wedge",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.BelowRateFailure.HighEntropy",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.BelowRateFailure.Wedge",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.DenseAtOrAbove.Nonrepetitive",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.BelowRateFailure.WedgeFree",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedAtOrAbove.WedgeFree",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedAtOrAbove.HighEntropy",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.DenseAtOrAbove.Wedge",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedAtOrAbove.Nonrepetitive",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedAtOrAbove.Wedge",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.DenseAtOrAbove.HighEntropy",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.BelowRate.FullRank",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.DenseBelow.FullRank",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.DenseAtOrAbove.WedgeFree",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.BelowRateFailure.FullRank",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedAtOrAbove.FullRank",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.DenseAtOrAbove.FullRank",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.BelowRate",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.DenseBelow",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedAtOrAbove.Bounded",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.BelowRateFailure",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.DenseAtOrAbove.Bounded",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedBelow.Nonrepetitive",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedBelow.Wedge",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedBelow.HighEntropy",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.UnrealizedBelow",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedAtOrAbove",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.DenseAtOrAbove",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedBelow.WedgeFree",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.UnrealizedDense",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedBelow.FullRank",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.Unrealized",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedBelow",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.Realized",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor",
+          "HypostructureErdos64EG.Assembly.Final",
+          "HypostructureErdos64EG.Assembly",
+          "HypostructureErdos64EG"
+        ]
+      },
+      "restore_check": {
+        "seconds": 4.416,
+        "returncode": 0,
+        "built": []
+      }
+    },
+    "cold": {
+      "targeted": {
+        "seconds": 10.543,
+        "returncode": 0,
+        "built": [
+          "HypostructureErdos64EG.Assembly.Cold.Germs"
+        ]
+      },
+      "downstream": {
+        "seconds": 10.098,
+        "returncode": 0,
+        "built": [
+          "HypostructureErdos64EG.Assembly",
+          "HypostructureErdos64EG"
+        ]
+      },
+      "restore_check": {
+        "seconds": 5.277,
+        "returncode": 0,
+        "built": []
+      }
+    },
+    "survivor": {
+      "targeted": {
+        "seconds": 19.885,
+        "returncode": 0,
+        "built": [
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedBelow.Wedge"
+        ]
+      },
+      "downstream": {
+        "seconds": 27.033,
+        "returncode": 0,
+        "built": [
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedBelow.FullRank",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedBelow",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor.Realized",
+          "HypostructureErdos64EG.Assembly.NearCubic.Survivor",
+          "HypostructureErdos64EG.Assembly.Final",
+          "HypostructureErdos64EG.Assembly",
+          "HypostructureErdos64EG"
+        ]
+      },
+      "restore_check": {
+        "seconds": 4.359,
+        "returncode": 0,
+        "built": []
+      }
+    }
+  },
+  "validation": {
+    "existing_public_types_and_axiom_sets_unchanged": 244,
+    "original_node_annotations_preserved": 230,
+    "assembly_axiom_audit_declarations": 144,
+    "frontier_stubs": 0,
+    "unreported": 0,
+    "regression_checks": 8,
+    "rebuilt_modules_within_dependency_closure": true
+  },
+  "caveat": "Baseline and some validation overlapped other development checks; all measurements used the same machine and warm external dependency caches. These are observed wall-clock measurements, not isolated hardware benchmarks."
+}

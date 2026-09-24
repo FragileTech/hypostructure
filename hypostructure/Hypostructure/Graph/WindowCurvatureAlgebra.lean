@@ -34,11 +34,9 @@ Everything below is that text and nothing else.  In particular:
 
 ## Relation to what is already in the framework
 
-The `13`-fixed Type B copy of this algebra already exists as
-`Graph.TypeBMarkedFan.gap`, `IsLegal`, `SafeAtDistance` and `WedgeSafe`.  It is
-*not* redefined here: `safe_iff_safeAtDistance`, `legal_iff_isLegal` and
-`safe_two_iff_wedgeSafe` identify the two, so the order-generic algebra of this
-file and the Type B algebra are one object seen at two orders.
+A `13`-fixed Type B copy of this algebra exists as
+`Graph.TypeBMarkedFan.gap`, `IsLegal`, `SafeAtDistance` and `WedgeSafe`.  No
+theorem in this file identifies the two.
 
 ## What is stated here and what is retrieved
 
@@ -48,11 +46,11 @@ Stated (the manuscript's own mathematics, and only it): `Label`, `Safe` (`C_s`),
 Retrieved, never restated:
 
 * the accepted cycle lengths -- `Core.DyadicLength.PowerOfTwoLength` at
-  `Core/DyadicLength.lean:21` and `powerOfTwoLength_iff` at
-  `Core/DyadicLength.lean:40`;
+  `Core/DyadicLength.lean` and `powerOfTwoLength_iff` at
+  `Core/DyadicLength.lean`;
 * the order-`13`-fixed copy of this very algebra --
   `Graph.TypeBMarkedFan.gap`, `IsLegal`, `SafeAtDistance`, `WedgeSafe` at
-  `Graph/TypeBMarkedFan.lean:72,122,175,180`, identified with this one below.
+  `Graph/TypeBMarkedFan.lean`, identified with this one below.
 
 Every declaration below carries its own `*Provenance.*` line.
 -/
@@ -65,7 +63,7 @@ open Hypostructure.Core.DyadicLength
 `S(x) ⊆ {0, …, order-1}`.
 
 *Provenance.* Follows `Graph.TypeBMarkedFan.Label` at
-`Graph/TypeBMarkedFan.lean:155`, the order-`13`-fixed copy of this carrier.
+`Graph/TypeBMarkedFan.lean`, the order-`13`-fixed copy of this carrier.
 -/
 abbrev Label (order : Nat) : Type := Finset (Fin order)
 
@@ -77,7 +75,7 @@ the subpath, the `shift` outside edges, and the two attachment edges.  This is
 the manuscript's `s + 2 + |i - j|`.
 
 *Provenance.* Follows `Graph.TypeBMarkedFan.outsideCycleLength` at
-`Graph/TypeBMarkedFan.lean:117`.
+`Graph/TypeBMarkedFan.lean`.
 -/
 def closingLength (shift difference : Nat) : Nat := shift + 2 + difference
 
@@ -86,13 +84,13 @@ is accepted by the registered dyadic target.  This is the only place a
 forbidden difference is ever named, and it names none: it asks the target.
 
 *Provenance.* Consumes `Core.DyadicLength.PowerOfTwoLength` at
-`Core/DyadicLength.lean:21`.
+`Core/DyadicLength.lean`.
 -/
 def ForbiddenGap (shift difference : Nat) : Prop :=
   PowerOfTwoLength (closingLength shift difference)
 
 /-- *Provenance.* Consumes `Core.DyadicLength.powerOfTwoLengthDecidable` at
-`Core/DyadicLength.lean:25`. -/
+`Core/DyadicLength.lean`. -/
 instance forbiddenGapDecidable (shift difference : Nat) :
     Decidable (ForbiddenGap shift difference) :=
   inferInstanceAs (Decidable (PowerOfTwoLength _))
@@ -101,14 +99,14 @@ instance forbiddenGapDecidable (shift difference : Nat) :
 finite set, derived from the target, never listed.
 
 *Provenance.* Follows `Graph.TypeBMarkedFan.compatibleParts` at
-`Graph/TypeBMarkedFan.lean:338`, a `Finset.filter` of a derived arithmetic
+`Graph/TypeBMarkedFan.lean`, a `Finset.filter` of a derived arithmetic
 condition.
 -/
 def forbiddenGaps (order shift : Nat) : Finset Nat :=
   (Finset.range order).filter (ForbiddenGap shift)
 
 /-- *Provenance.* Follows `Graph.TypeBMarkedFan.wedgeSafe_iff` at
-`Graph/TypeBMarkedFan.lean:196`. -/
+`Graph/TypeBMarkedFan.lean`. -/
 theorem mem_forbiddenGaps {order shift difference : Nat} :
     difference ∈ forbiddenGaps order shift ↔
       difference < order ∧ ForbiddenGap shift difference := by
@@ -117,7 +115,7 @@ theorem mem_forbiddenGaps {order shift difference : Nat} :
 /-- Two coordinates of a path of the given order are closer than its order.
 
 *Provenance.* Follows `Graph.TypeBMarkedFan.gap_le_twelve` at
-`Graph/TypeBMarkedFan.lean:80`.
+`Graph/TypeBMarkedFan.lean`.
 -/
 theorem dist_lt_order {order : Nat} (i j : Fin order) :
     Nat.dist i.1 j.1 < order := by
@@ -134,7 +132,7 @@ path of length `shift` between vertices carrying these labels is safe through
 the induced path exactly when this holds.
 
 *Provenance.* Follows `Graph.TypeBMarkedFan.SafeAtDistance` at
-`Graph/TypeBMarkedFan.lean:175`.
+`Graph/TypeBMarkedFan.lean`.
 -/
 def Safe {order : Nat} (shift : Nat) (source target : Label order) : Prop :=
   ∀ i ∈ source, ∀ j ∈ target, ¬ ForbiddenGap shift (Nat.dist i.1 j.1)
@@ -144,7 +142,7 @@ the decision procedure uses: the target is asked once per admissible
 difference rather than once per pair of coordinates.
 
 *Provenance.* Follows `Graph.TypeBMarkedFan.wedgeSafe_iff` at
-`Graph/TypeBMarkedFan.lean:196`.
+`Graph/TypeBMarkedFan.lean`.
 -/
 theorem safe_iff_notMem_forbiddenGaps {order : Nat} (shift : Nat)
     (source target : Label order) :
@@ -159,13 +157,13 @@ theorem safe_iff_notMem_forbiddenGaps {order : Nat} (shift : Nat)
       (mem_forbiddenGaps.mpr ⟨dist_lt_order i j, forbidden⟩)
 
 /-- *Provenance.* Follows `Core.DyadicLength.powerOfTwoLengthDecidable` at
-`Core/DyadicLength.lean:25`; consumes `safe_iff_notMem_forbiddenGaps` above. -/
+`Core/DyadicLength.lean`; consumes `safe_iff_notMem_forbiddenGaps` above. -/
 instance safeDecidable {order : Nat} (shift : Nat) (source target : Label order) :
     Decidable (Safe shift source target) :=
   decidable_of_iff _ (safe_iff_notMem_forbiddenGaps shift source target).symm
 
 /-- *Provenance.* Follows `Graph.TypeBMarkedFan.wedgeSafe_comm` at
-`Graph/TypeBMarkedFan.lean:222`. -/
+`Graph/TypeBMarkedFan.lean`. -/
 theorem safe_comm {order : Nat} {shift : Nat} {source target : Label order}
     (safe : Safe shift source target) : Safe shift target source := by
   intro i memI j memJ forbidden
@@ -178,13 +176,13 @@ closes no accepted cycle through the path: the manuscript's legality is the
 safety relation at outside length zero, applied to the label against itself.
 
 *Provenance.* Follows `Graph.TypeBMarkedFan.IsLegal` at
-`Graph/TypeBMarkedFan.lean:122`.
+`Graph/TypeBMarkedFan.lean`.
 -/
 def Legal {order : Nat} (label : Label order) : Prop :=
   label.Nonempty ∧ Safe 0 label label
 
 /-- *Provenance.* Follows `Core.DyadicLength.powerOfTwoLengthDecidable` at
-`Core/DyadicLength.lean:25`. -/
+`Core/DyadicLength.lean`. -/
 instance legalDecidable {order : Nat} (label : Label order) :
     Decidable (Legal label) :=
   inferInstanceAs (Decidable (_ ∧ _))
@@ -192,13 +190,13 @@ instance legalDecidable {order : Nat} (label : Label order) :
 /-- `Labels`: the legal nonempty labels of a path of the given order.
 
 *Provenance.* Follows `Graph.TypeBMarkedFan.compatibleParts` at
-`Graph/TypeBMarkedFan.lean:338`.
+`Graph/TypeBMarkedFan.lean`.
 -/
 def Labels (order : Nat) : Finset (Label order) :=
   Finset.univ.filter Legal
 
 /-- *Provenance.* Follows `Graph.TypeBMarkedFan.wedgeSafe_iff` at
-`Graph/TypeBMarkedFan.lean:196`. -/
+`Graph/TypeBMarkedFan.lean`. -/
 theorem mem_Labels {order : Nat} {label : Label order} :
     label ∈ Labels order ↔ Legal label := by
   simp [Labels, Finset.mem_filter]
@@ -209,14 +207,14 @@ theorem mem_Labels {order : Nat} {label : Label order} :
 outside edges composing into an unsafe outside path of length two.
 
 *Provenance.* Follows `Graph.TypeBMarkedFan.WedgeSafe` at
-`Graph/TypeBMarkedFan.lean:180`, which is its third factor.
+`Graph/TypeBMarkedFan.lean`, which is its third factor.
 -/
 def curvatureTwo {order : Nat} (source middle target : Label order) : Bool :=
   decide (Safe 1 source middle) && decide (Safe 1 middle target) &&
     !decide (Safe 2 source target)
 
 /-- *Provenance.* Follows `Graph.TypeBMarkedFan.wedgeSafe_iff` at
-`Graph/TypeBMarkedFan.lean:196`. -/
+`Graph/TypeBMarkedFan.lean`. -/
 theorem curvatureTwo_eq_true_iff {order : Nat}
     (source middle target : Label order) :
     curvatureTwo source middle target = true ↔

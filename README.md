@@ -18,7 +18,7 @@
 ## The framework 
 Hypostructure is an ongoing effort to make long *structural-exhaustion* proofs —
 arguments organized as a finite tree of case splits, local reductions, and quantitative
-estimates, each branch closing by contradiction — readable, auditable, and eventually
+estimates, with each branch closing or reaching a stated residual — readable, auditable, and eventually
 machine-checked. The repository contains three things:
 
 1. **The manuscripts** ([`to_formalize/`](to_formalize/)): the methodology papers and the
@@ -34,19 +34,22 @@ machine-checked. The repository contains three things:
    problem still open and the facts established so far — is part of the type of every
    step. Steps declare what they read and what they establish, compose only where the
    branch actually supplies their hypotheses, and carry their constraints forward to the
-   point of use; the elaborator checks all of it, so a completed assembly is a machine
-   verification that the case analysis is exhaustive and every branch closes.
+   point of use; the elaborator checks all of it. The Erdős–Gyárfás root
+   assembly checks an exhaustive reduction: every counterexample leads to a
+   selected minimal counterexample in one of six stated outcomes. Excluding
+   all six outcomes for such graphs would prove the conjecture.
 
-The mathematics lives in the manuscripts and the ongoing lean formalization. The tooling adds is a mechanical record
-of *how each result is used*: which branch it closes and which facts were on hand when it did, and is meant to provide
-a more comfortable interface for understanding and auditing the proofs and their formalization in Lean
+The mathematics lives in the manuscripts and the ongoing Lean formalization.
+The tooling records *how each result is used*: which branch it closes or
+reduces, and which facts were available when it did.
 
 ## The method
 
 *Structural Exhaustion* (`to_formalize/structural_exhaustion.tex`, with the reference
 manual `branch_closure_methodology_extended.tex`) writes a proof as a diagram of numbered
 steps. Every step is a case split, a local reduction, an estimate, or a closure; every
-branch either continues on a refined residual problem or ends in contradiction; every
+branch either continues on a refined residual problem or ends at a stated
+residual or contradiction; every
 constraint the argument relies on is tracked in a ledger from where it is established
 to where it is read. The landing page of the explorer gives a condensed account and a
 table of the proof moves.
@@ -58,7 +61,7 @@ There is no backend. Two proofs are published:
 
 | Proof | Manuscripts | Size                           |
 | --- | --- |--------------------------------|
-| Erdős–Gyárfás | `erdos_64_proof.tex` | 184 diagram nodes, 12 panels  |
+| Erdős–Gyárfás | `erdos_64_proof.tex` | 189 diagram nodes, 12 panels  |
 | Navier–Stokes | `proof_setup.tex`, `type_I_residual_closure.tex`, `type_II_regularity.tex` | 333 steps, 23 panels, 3 papers |
 
 For each proof the site offers:
@@ -119,22 +122,24 @@ with Mathlib pinned to the matching tag.
 make mathlib-cache     # fetch prebuilt Mathlib artifacts
 make framework-build   # build the Hypostructure package
 make erdos-build       # build the Erdős–Gyárfás application
-make erdos             # check the final theorem's type and axioms
+(cd proofs/hypostructure_erdos_64_eg && lake build HypostructureErdos64EG.Assembly.Final) # six-outcome reduction
+make erdos             # attempt the fully closed conjecture theorem (not yet available)
 make lint              # total-execution, quarantine, and API-catalog gates
 make web-test          # extractor assertions, typecheck, frontend suite
 ```
 
 ## Implementation status
 
-This is work in progress. Everything below was checked against the live source,
-the synchronized audit tables, and bounded single-worker checks on 2026-08-31.
+This is work in progress. The Erdős–Gyárfás reduction status below reflects
+the full Lean root build and transitive axiom check on 2026-09-24. Other
+component summaries should be checked against the live source and audit tables.
 
 | Component | Status                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | --- |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Manuscripts | Erdős–Gyárfás and the three Navier–Stokes papers are complete drafts with chapter-1 diagrams, ledgers and audit tables; the methodology papers are the reference.                                                                                                                                                                                                                                                                                                                   |
 | Proof explorer | Both proofs published, all features above live. Referee mode's Lean and review dimensions are supplied for the Erdős–Gyárfás proof from the checked-in node audit (`web/data/eg_node_audit.json`, folded into the site data by `web/tools/lean_review.py`); the Navier–Stokes document carries no such side-car yet.                                                                                                                     |
 | Framework core | Builds (`lake build Hypostructure`). `ExactLedger`, `AtomicCT`, problem registration and the fixtures are live and are the only API; ongoing deprecation of stale code — the quarantine lint gate (`make lint`) currently fails, flagging several previously-quarantined modules back in the build plus a handful of parallel ledger-shaped APIs still to retire. Implementing the high level API of problem-independent proof moves is pending.                                                                                                                                                                                                                                                           |
-| Erdős–Gyárfás in Lean | Advanced, not closed. The live code implements the low-entropy route `[49]`–`[52]`, the exact Type-B local chain `[79]`–`[85]`, node `[123]` with its full incoming ledger and exact `[124]`/`[181]` outcomes, routing-only `[125]`, `[153]`, `[157]`, `[168]`, `[170]`–`[171]`, and the covered arms of `[173]`–`[180]`. ExactLedger ancestry is repaired at `[64]`, `[144]`, and `[177]`: `[64]` and `[177]` consume `[75]`–`[77]` through branch-kill and Part IX, while strict-surplus `[144]` returns the manuscript's exact Type-B handoff rather than importing the incompatible low-surplus estimate. The paper-prescribed `[25]`–`[55]` spine now runs directly on the literal `[24]` and double-rate `[161]` ledgers, retaining every incoming key into the net-charge continuation, and the complete `HypostructureErdos64EG.Assembly` target kernel-checks with one Lean worker. `[172a]` has no graph-derived overlap producer, `[181]` and `[182]` remain explicit open residuals, and the final `StrategyDag.lean` topology endpoint is absent. See [`Assembly_node_audit.md`](Assembly_node_audit.md), [`EG_LEAN_COMPLIANCE_REMAINING.md`](EG_LEAN_COMPLIANCE_REMAINING.md), and [`EG_incomplete_nodes_repair_plan.md`](EG_incomplete_nodes_repair_plan.md). |
+| Erdős–Gyárfás in Lean | The full `HypostructureErdos64EG.Assembly.Final` root built successfully (9022 jobs). Its theorem proves that any counterexample to the finite-graph statement yields a selected minimal counterexample in one of six outcomes: [20a], [144a], [172a], [182], [186], or the explicit other-outcomes disjunction [187]. These are the only returned cases in the formal reduction. Excluding all six for selected minimal counterexamples would prove the conjecture; their exclusion is open. The theorem uses the project’s existing Hegde–Sandeep–Shashank external axiom and generated `native_decide` axioms. See [`Assembly_node_audit.md`](Assembly_node_audit.md) and the [exact boundary certification](audits/erdos-64-red-team/reduction-certification/exact-current-boundary.md). |
 | Navier–Stokes in Lean | Not started; queued after the Erdős–Gyárfás application, in manuscript dependency order.                                                                                                                                                                                                                                                                                                                                                                                            |
 
 The authoritative per-fact and per-node record is

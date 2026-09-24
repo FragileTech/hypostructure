@@ -1,3 +1,4 @@
+import Hypostructure.Fixtures.Route8OpenBoundarySaturated
 import Hypostructure.Core.Prelude
 import Hypostructure.Core.Problem
 import Hypostructure.Core.Progress
@@ -65,6 +66,9 @@ import Hypostructure.Fixtures.TypeAExitThree
 import Hypostructure.Fixtures.TypeBFanWindowNode
 import Hypostructure.Fixtures.SurplusRun
 import Hypostructure.Fixtures.ExitFourFamily
+import Hypostructure.Fixtures.ExitFourWitnessInhabited
+import Hypostructure.Fixtures.Route8RateDensityCapGap
+import Hypostructure.Fixtures.WindowShadowRows
 import Hypostructure.Core.Strategy.FactManifest
 import Hypostructure.Fixtures.ExactLedger
 import Hypostructure.Fixtures.ExactExecution

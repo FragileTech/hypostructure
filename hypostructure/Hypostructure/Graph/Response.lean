@@ -22,14 +22,54 @@ universe u uContext uCoordinate uValue uMeasure uProfile
 
 /-! ## Literal all-context target completeness -/
 
+/-- **An interface-aware target.**  A response test that may read the
+boundaried decomposition it is applied to, not only the glued object.
+
+`def:typeA-trace-basin`:
+*"Response-support quotients below are tested only against this declared
+`u`-supported target algebra."*  A declared algebra is indexed by the declared
+coordinates of a support, so deciding it at a glued object requires knowing
+which piece and which outside context produced that object -- data a bare
+`FiniteObject -> Prop` has forgotten.  `InterfaceTarget` carries it.
+
+Every ambient target is one of these: `ofObject` embeds
+`Target : FiniteObject -> Prop` as `fun piece outside => Target (glue piece
+outside)`, and the bare-object API below is literally that specialization, so
+nothing that already tests against an ambient target changes. -/
+abbrev InterfaceTarget (boundary : Boundary.{u}) : Type _ :=
+  BoundaryPiece boundary -> OutsideContext boundary -> Prop
+
+/-- An ambient target read as an interface-aware one. -/
+def InterfaceTarget.ofObject {boundary : Boundary.{u}}
+    (Target : FiniteObject.{u} -> Prop) : InterfaceTarget boundary :=
+  fun piece outside => Target (glue piece outside)
+
+/-- Two pieces with the same labelled boundary have identical response against
+every literal outside context, tested by an interface-aware target. -/
+def ContextEquivalentOn {boundary : Boundary.{u}}
+    (Target : InterfaceTarget boundary)
+    (left right : BoundaryPiece boundary) : Prop :=
+  forall outside : OutsideContext boundary,
+    Target left outside <-> Target right outside
+
 /-- Two pieces with the same labelled boundary have identical target response
 against every literal outside context.  This is symbolic universal coverage;
-no context family is enumerated. -/
+no context family is enumerated.
+
+This is the specialization of `ContextEquivalentOn` at
+`InterfaceTarget.ofObject`; it is definitionally the old statement, so every
+existing caller is unaffected. -/
 def ContextEquivalent {boundary : Boundary.{u}}
     (Target : FiniteObject.{u} -> Prop)
     (left right : BoundaryPiece boundary) : Prop :=
-  forall outside : OutsideContext boundary,
-    Target (glue left outside) <-> Target (glue right outside)
+  ContextEquivalentOn (InterfaceTarget.ofObject Target) left right
+
+theorem contextEquivalent_iff {boundary : Boundary.{u}}
+    {Target : FiniteObject.{u} -> Prop} {left right : BoundaryPiece boundary} :
+    ContextEquivalent Target left right ↔
+      forall outside : OutsideContext boundary,
+        Target (glue left outside) <-> Target (glue right outside) :=
+  Iff.rfl
 
 /-- Exact graph target-completeness combines equality in a caller-selected
 immutable profile fibre with universal target response.  Context equivalence
@@ -40,6 +80,23 @@ structure TargetComplete {boundary : Boundary.{u}}
     (left right : BoundaryPiece boundary) : Prop where
   profile_eq : profile left = profile right
   contextEquivalent : ContextEquivalent Target left right
+
+/-- Target completeness against an interface-aware target.  `TargetComplete` is
+its specialization at `InterfaceTarget.ofObject`. -/
+structure TargetCompleteOn {boundary : Boundary.{u}}
+    {Profile : Type uProfile} (profile : BoundaryPiece boundary -> Profile)
+    (Target : InterfaceTarget boundary)
+    (left right : BoundaryPiece boundary) : Prop where
+  profile_eq : profile left = profile right
+  contextEquivalent : ContextEquivalentOn Target left right
+
+/-- One literal outside context witnessing failure of interface-aware target
+equivalence. -/
+def TargetDefectOn {boundary : Boundary.{u}}
+    (Target : InterfaceTarget boundary)
+    (left right : BoundaryPiece boundary) : Prop :=
+  exists outside : OutsideContext boundary,
+    Not (Target left outside <-> Target right outside)
 
 /-- One literal outside context witnessing failure of target equivalence. -/
 def TargetDefect {boundary : Boundary.{u}}
@@ -78,16 +135,17 @@ theorem targetDefect_of_not_contextEquivalent
     {left right : BoundaryPiece boundary}
     (failure : Not (ContextEquivalent Target left right)) :
     TargetDefect Target left right := by
-  simp only [ContextEquivalent, not_forall] at failure
+  simp only [ContextEquivalent, ContextEquivalentOn, InterfaceTarget.ofObject,
+    not_forall] at failure
   obtain ⟨outside, distinguishes⟩ := failure
   exact ⟨outside, distinguishes⟩
 
 /-- **`lem:typeA-internal-quotient-mixed`, the framework mechanism.**
 
 *"Failure of target-completeness gives a compatible outside context and two
-realizations ... with the same image in the quotient, but with different target
-predicates after gluing.  ...  The two realizations have the same image in the
-quotient, so a distinguishing event must use at least one coordinate forgotten
+realizations of `ρ_u(B_u)|_𝒞` with the same image in `ρ°_𝒞`, but with different
+target predicates after gluing.  ...  The two realizations have the same image
+in `ρ°_𝒞`, so a distinguishing event must use at least one coordinate forgotten
 by it."*
 
 When the smaller reading can only realize *fewer* targets -- which is what an
@@ -268,7 +326,9 @@ theorem targetDefect_of_responseDefect
   refine targetDefect_of_not_contextEquivalent ?_
   intro equivalent
   apply mismatch
-  have iffAt := equivalent (outside context)
+  have iffAt : Target (glue representatives.source (outside context)) ↔
+      Target (glue representatives.replacement (outside context)) :=
+    equivalent (outside context)
   change @decide (Target (glue representatives.source (outside context)))
       (decideTarget _) =
     @decide (Target (glue representatives.replacement (outside context)))

@@ -15,7 +15,7 @@ Every clause is the manuscript's, at the framework object the manuscript names.
   the coordinates under discussion, and its realizations are the boundaried
   graphs that can occupy `Z`'s place — `BoundaryPiece` at the support's own cut
   interface, which is what `def:curvature-target-dependence` means by "a
-  realization is a `T`-boundaried support whose exact response profile maps to
+  realization means a `T`-boundaried support whose exact response profile maps to
   the same quotient data `Q` under `q`".
 * `def:target-complete-quotient`: every identification the quotient makes
   preserves (a) the boundary degree profile and (b) the target predicate after
@@ -35,7 +35,7 @@ Every clause is the manuscript's, at the framework object the manuscript names.
   finite, simple, meeting the baseline, with
   `profile_∅(H) ⊆ profile_∅(G)`.  With an empty boundary the only context is
   the empty one, so that inclusion is `Target H → Target G`, which is the
-  manuscript's own reading of it ("a dyadic cycle in `H` would add the
+  manuscript's own reading of it ("A power-of-two cycle in `H` would add the
   corresponding empty-context target event to `profile_∅(H)`, impossible
   because `profile_∅(G)` contains no such event").
 

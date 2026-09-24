@@ -4,7 +4,7 @@ import Hypostructure.Graph.WedgeLowerBound
 # The raw internal curvature tests of a region
 
 `def:curvature-target-rank` computes a rank over `𝒲₂(C)`, "the set of raw
-internal length-two curvature tests in `C`".  `Graph.WedgeLowerBound` already
+internal length-two obstruction tests in `C`".  `Graph.WedgeLowerBound` already
 counts them — `internalWedgeCount` is `Σ_{v∈X} C(d_X(v), 2)` — but a rank is
 taken over the *family*, not over its size: a subfamily has to be nameable
 before it can survive a quotient.

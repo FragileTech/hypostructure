@@ -37,8 +37,8 @@ AUDIT = PKG / "AxiomAudit.lean"
 TRACER = "frontierGap"
 
 _DECL_RE = re.compile(
-    r"^(?:noncomputable\s+)?(?:private\s+)?(?:def|theorem|lemma|abbrev)\s+"
-    r"([A-Za-z0-9_']+)",
+    r"^(?:@\[[^\n]*?\]\s*)?(?:(?:noncomputable|private|protected)\s+)*(?:def|theorem|lemma|abbrev)\s+"
+    r"([A-Za-z0-9_'.]+)",
 )
 _UNKNOWN_RE = re.compile(r"Unknown identifier `([A-Za-z0-9_']+)`")
 _AXIOMS_RE = re.compile(r"^'([^']+)' depends on axioms:", re.MULTILINE)
@@ -50,17 +50,45 @@ def _lake(*args: str) -> subprocess.CompletedProcess[str]:
     )
 
 
-def declarations() -> list[str]:
-    """Every top-level declaration name in Assembly.lean, in source order."""
+def assembly_sources() -> list[Path]:
+    """Include the compatibility module and every split assembly module."""
+    return [ASSEMBLY, *sorted((PKG / "Assembly").rglob("*.lean"))]
+
+
+def source_declarations() -> list[tuple[Path, str]]:
     return [
-        m.group(1)
-        for line in ASSEMBLY.read_text(encoding="utf-8").splitlines()
+        (path, m.group(1))
+        for path in assembly_sources()
+        for line in path.read_text(encoding="utf-8").splitlines()
         if (m := _DECL_RE.match(line))
     ]
 
 
+def declarations() -> list[str]:
+    """Source names, including explicitly qualified internal declarations."""
+    return [name for _, name in source_declarations()]
+
+
+def compiled_declarations() -> list[str]:
+    """Resolve private names through Lean's index rather than inventing manglings."""
+    result = []
+    for path, name in source_declarations():
+        index = (PROOF_DIR / ".lake/build/lib/lean" / path.relative_to(PROOF_DIR)).with_suffix(".ilean")
+        decls = json.loads(index.read_text(encoding="utf-8"))["decls"]
+        qualified = "HypostructureErdos64EG." + name
+        matches = [n for n in decls if n == qualified or n.endswith("." + qualified)]
+        if len(matches) != 1:
+            raise RuntimeError(f"Cannot resolve {name} in {index}: {matches}")
+        result.append(matches[0])
+    return result
+
+
+def assembly_text() -> str:
+    return "\n".join(path.read_text(encoding="utf-8") for path in assembly_sources())
+
+
 def missing_producers() -> list[str]:
-    """Identifiers Assembly.lean references but nothing defines."""
+    """Identifiers the assembly modules reference but nothing defines."""
     build = _lake("build")
     return sorted(set(_UNKNOWN_RE.findall(build.stdout + build.stderr)))
 
@@ -78,7 +106,7 @@ def arity_of(name: str, text: str) -> int:
 
 def write_stubs(names: list[str]) -> None:
     """Tracer stubs. ``def`` (never ``axiom``) so the tracer propagates."""
-    text = ASSEMBLY.read_text(encoding="utf-8")
+    text = assembly_text()
     lines = [
         "import HypostructureErdos64EG.Problem",
         "",
@@ -100,9 +128,19 @@ def write_stubs(names: list[str]) -> None:
 
 
 def write_audit(names: list[str]) -> None:
-    body = ["import HypostructureErdos64EG", "", "namespace HypostructureErdos64EG", ""]
-    body += [f"#print axioms {n}" for n in names]
-    body += ["", "end HypostructureErdos64EG", ""]
+    # Private names contain numeric Name components, which cannot be written
+    # directly as source identifiers in a `#print axioms` command.
+    body = ["import HypostructureErdos64EG", "import Lean", "", "open Lean in", "run_cmd do",
+            "  let env ← getEnv", "  let names : List String := " + json.dumps(names),
+            "  for text in names do",
+            '    let name := (text.splitOn ".").foldl (fun n part =>',
+            "      match part.toNat? with",
+            "      | some i => Name.num n i",
+            "      | none => Name.str n part) Name.anonymous",
+            '    unless env.contains name do throwError "missing audit declaration {name}"',
+            "    let axioms ← collectAxioms name",
+            '    let listed := String.intercalate ", " (axioms.toList.map Name.toString)',
+            '    IO.println s!"\'{text}\' depends on axioms: [{listed}]"', ""]
     AUDIT.write_text("\n".join(body), encoding="utf-8")
 
 
@@ -115,51 +153,63 @@ def split_axiom_report(text: str) -> tuple[list[str], list[str]]:
         m = _AXIOMS_RE.match(block.strip())
         if not m:
             continue
-        short = m.group(1).rsplit(".", 1)[-1]
+        short = m.group(1).rsplit("HypostructureErdos64EG.", 1)[-1]
         (tainted if TRACER in block else clean).append(short)
     return sorted(set(clean)), sorted(set(tainted))
 
 
-def restore(import_added: bool) -> None:
-    STUBS.unlink(missing_ok=True)
-    AUDIT.unlink(missing_ok=True)
-    if import_added:
-        lines = ASSEMBLY.read_text(encoding="utf-8").splitlines(keepends=True)
-        if lines and lines[0].startswith("import HypostructureErdos64EG.FrontierStubs"):
-            ASSEMBLY.write_text("".join(lines[1:]), encoding="utf-8")
+def restore(originals: dict[Path, bytes | None]) -> None:
+    for path, original in originals.items():
+        if original is None:
+            path.unlink(missing_ok=True)
+        else:
+            path.write_bytes(original)
+
+
+def insert_stub_imports(names: list[str], originals: dict[Path, bytes | None]) -> None:
+    """Stubs must be visible where missing names are used, not just at the root."""
+    if not names:
+        return
+    pattern = re.compile(r"\b(?:" + "|".join(re.escape(n) for n in names) + r")\b")
+    for path in assembly_sources():
+        text = path.read_text(encoding="utf-8")
+        if pattern.search(text) and "import HypostructureErdos64EG.FrontierStubs\n" not in text:
+            originals.setdefault(path, path.read_bytes())
+            path.write_text("import HypostructureErdos64EG.FrontierStubs\n" + text,
+                            encoding="utf-8")
 
 
 def run() -> dict:
     names = declarations()
-    stubs = missing_producers()
-    import_added = False
+    stubs: list[str] = []
+    originals = {p: p.read_bytes() if p.exists() else None for p in (STUBS, AUDIT)}
     try:
-        if stubs:
+        # An upstream failure can hide missing names in a downstream module.
+        # Discover successive frontiers until the full dependency graph builds.
+        while True:
+            build = _lake("build")
+            if build.returncode == 0:
+                break
+            output = build.stdout + build.stderr
+            new_stubs = sorted(set(_UNKNOWN_RE.findall(output)) - set(stubs))
+            if not new_stubs:
+                errors = [line for line in output.splitlines() if line.startswith("error:")]
+                raise RuntimeError("lake build failed with stubs in place:\n" +
+                                   "\n".join(errors[:20]))
+            stubs = sorted(set(stubs) | set(new_stubs))
             write_stubs(stubs)
-            head = ASSEMBLY.read_text(encoding="utf-8")
-            ASSEMBLY.write_text(
-                "import HypostructureErdos64EG.FrontierStubs\n" + head, encoding="utf-8"
-            )
-            import_added = True
+            insert_stub_imports(stubs, originals)
 
-        build = _lake("build")
-        if build.returncode != 0:
-            errors = [
-                l for l in (build.stdout + build.stderr).splitlines()
-                if l.startswith("error:")
-            ]
-            raise SystemExit(
-                "lake build failed with stubs in place:\n" + "\n".join(errors[:20])
-            )
-
-        write_audit(names)
+        write_audit(compiled_declarations())
         proc = subprocess.run(
             ["lake", "env", "lean", str(AUDIT.relative_to(PROOF_DIR))],
             cwd=PROOF_DIR, capture_output=True, text=True,
         )
+        if proc.returncode != 0:
+            raise RuntimeError("Axiom inspection failed:\n" + proc.stdout + proc.stderr)
         clean, tainted = split_axiom_report(proc.stdout + proc.stderr)
     finally:
-        restore(import_added)
+        restore(originals)
 
     missing = sorted(set(names) - set(clean) - set(tainted))
     return {

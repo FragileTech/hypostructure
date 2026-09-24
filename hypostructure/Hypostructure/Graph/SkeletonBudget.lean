@@ -100,16 +100,11 @@ theorem factorial_mul_skeletonBudget_le_pow (object : Graph.FiniteObject.{v}) :
 exponent the density comparison certifies against the skeleton budget is
 certified against `C(n,2) ^ m` with the `m !` retained.
 
-Composed with
-`Core.Strategy.FiniteDensityBudget.Profile.CapResidual.two_pow_rate_mul_packingCount_le_ambientCapacity`
-at `exponent := rate * packingCount`, this is `prop:p13-density`'s comparison
-in exact `Nat` form:
+At `exponent := rate · p₁₃` this is the exact `Nat` comparison
 
-  `2 ^ (c_hot · log₂ n · p₁₃) · m ! ≤ C(n,2) ^ m`,
+  `2 ^ (rate · p₁₃) · m ! ≤ C(n,2) ^ m`,
 
-with `c_hot · log₂ n` read from the barrier `Summary` and the object's dyadic
-scale count, and `n`, `m` read off the object.  No numeral appears on either
-side. -/
+with `n`, `m` read off the object.  No numeral appears on either side. -/
 theorem two_pow_mul_factorial_le_pow
     (object : Graph.FiniteObject.{v}) (exponent : Nat)
     (demand : 2 ^ exponent ≤ skeletonBudget object) :
@@ -125,13 +120,10 @@ theorem two_pow_mul_factorial_le_pow
 
 /-- **The near-cubic edge count, read rather than assumed.**
 
-`def:near-cubic-spine` is a branch state, not a global hypothesis, and the
-branch that records it is node `[19]`'s `scaleThresholdDichotomy`.  Its
-at-or-below arm publishes exactly `σ(G) ≤ T(n)`, where `σ` is
-`FiniteObject.degreeSurplus baselineDegree` and `T` is whatever threshold table
-the presentation registered — read off the residual by
-`Graph.NearCubicSpine.nearCubicSpine_of_atOrBelow`, whose conclusion is
-literally this theorem's hypothesis.
+`def:near-cubic-spine` is a branch state, not a global hypothesis.  The
+hypothesis of this theorem is `σ(G) ≤ T(n)`, where `σ` is
+`FiniteObject.degreeSurplus baselineDegree` and `T` is the threshold table the
+presentation registered.
 
 The handshake `Σ_v deg v = 2m` then converts that surplus bound into an edge
 bound.  `degreeSurplus` is *defined* as `2m - baselineDegree · n`
@@ -318,7 +310,9 @@ cubic one this reads
 
   `2 ^ (c₁₃ · log₂ n · p₁₃) ≤ (n-1) ^ m`,
 
-which is `prop:p13-density` verbatim and exactly, with no rounding term. -/
+an exact finite comparison.  `prop:p13-density` itself is stated as
+`θ ≤ θ_win + o(1)`; this inequality is a finite form used on the way to it, not
+the proposition's statement. -/
 theorem two_pow_le_pow_pred_vertexCount
     (object : Graph.FiniteObject.{v})
     (exponent baselineDegree : Nat)
@@ -403,19 +397,16 @@ theorem exponent_le_dyadicScaleCount_succ_mul_edgeCount
     (le_trans (Nat.sub_le _ _)
       (le_of_lt (lt_two_pow_succ_dyadicScaleCount object)))
 
-/-- **`prop:p13-density`, fully composed: the packing is linear in the order.**
+/-- **The packing is linear in the order.**
 
 The surviving density cap, the skeleton budget's `m !`, the minimum-degree
 handshake and the node-`[19]` at-or-below branch fact combine into
 
   `2 · exponent ≤ (log₂ n + 1) · (δ n + T(n))`,
 
-with `exponent = rate · p₁₃` on the left.  Every symbol is read: `rate` from the
-registered barrier `Summary` (through
-`Core.Strategy.FiniteBarrierEnumeration.two_pow_rate_mul_scaleCount_mul_flatProduct_le_safeProduct`
-its value is the scale-free rate times `dyadicScaleCount`), `δ` is the
-presentation's registered minimum-degree baseline, and `T` is the node-`[19]`
-threshold table at the object's own order.
+with `exponent = rate · p₁₃` on the left, `δ` the presentation's registered
+minimum-degree baseline, and `T` the threshold table at the object's own
+order.
 
 Dividing through, this is `θ = p₁₃/n ≤ (δ/2)(1 + 1/log₂ n)/rate₀ + O(T/n)`: a
 bound on the packing density by the *reciprocal of the registered barrier

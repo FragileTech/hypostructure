@@ -216,10 +216,10 @@ describe("the Erdos-Gyarfas neutral configuration at [163]", () => {
     expect(node.open).toBeUndefined();
     expect(node.shape).toBe("decision");
     expect(node.group).toBe("fig:proof-diagram-part-xii");
-    // The manuscript now closes into three named residuals and no others.
+    // The five named residuals and the grouped other-outcomes endpoint.
     expect(
       ERDOS.nodes.filter((candidate) => candidate.open).map((candidate) => candidate.id).sort(),
-    ).toEqual(["172a", "182", "186"]);
+    ).toEqual(["144a", "172a", "182", "186", "187", "20a"]);
 
     show(ERDOS, "163");
     expect(screen.getByText("Branch test")).toBeInTheDocument();
@@ -271,7 +271,7 @@ describe("referee mode", () => {
     // Its own result, what it builds on, and where it falls.
     expect(within(panel).getAllByText("cor:p13-exists").length).toBeGreaterThan(0);
     expect(within(panel).getByText("Rests on").parentElement).toHaveTextContent(/Hegde/);
-    expect(within(panel).getByText(/173 later steps/)).toBeInTheDocument();
+    expect(within(panel).getByText(/174 later steps/)).toBeInTheDocument();
     const where = locate(ERDOS, "erdos-gyarfas", "cor:p13-exists")!;
     expect(within(panel).getAllByText(`page ${where.page} of The paper`)[0]).toHaveAttribute(
       "href",
@@ -409,7 +409,7 @@ describe("referee mode", () => {
     // Kernel-verified steps carry a check; steps still resting on an unfinished
     // producer do not.  [7] counts as proved even though it is a terminal the
     // proof only ever refutes -- discharging the branch is the proof of it.
-    // [172a] is one of the three residuals the manuscript still leaves open, so
+    // [172a] is one of the six boundary outcomes the manuscript leaves open, so
     // no Lean stands behind it and it carries no check.
     const badge = (id: string) =>
       view.container
@@ -638,6 +638,46 @@ describe("every piece of mathematics the site shows", () => {
     expect(total).toBeGreaterThan(1000);
     // Joined, so a failure names the expression instead of showing a diff.
     expect(failures.slice(0, 4).join("\n")).toBe("");
+  });
+});
+
+describe("the Erdős–Gyárfás counterexample boundary", () => {
+  it("lists all six outcomes and reveals a node in another panel", async () => {
+    const user = userEvent.setup();
+    const changes: Record<string, unknown>[] = [];
+    render(
+      <MemoryRouter>
+        <GraphExplorer
+          document={ERDOS}
+          state={{
+            selected: "144a",
+            chapter: null,
+            group: "fig:proof-diagram-part-x",
+            trace: "none",
+            query: "",
+            item: null,
+            mode: "reader",
+            constraint: null,
+          }}
+          onChange={(patch) => changes.push(patch)}
+        />
+      </MemoryRouter>,
+    );
+
+    const boundary = screen.getByLabelText("Remaining outcomes");
+    expect(
+      within(boundary)
+        .getAllByRole("button")
+        .map((button) => button.querySelector(".explorer-outcome-id")?.textContent),
+    ).toEqual(["[20a]", "[144a]", "[172a]", "[182]", "[186]", "[187]"]);
+
+    await user.click(within(boundary).getByRole("button", { name: /Open outcome 20a:/ }));
+    expect(changes).toContainEqual({
+      selected: "20a",
+      item: null,
+      chapter: null,
+      group: "fig:proof-diagram-part-i",
+    });
   });
 });
 

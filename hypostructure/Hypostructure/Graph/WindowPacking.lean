@@ -106,8 +106,8 @@ theorem exists_windowPacking_card_eq (object : FiniteObject.{u})
 unchosen window disjoint from all of its members could be added, and the
 enlarged family would be a valid packing of strictly greater cardinality.
 
-This is the manuscript's "every unchosen induced window overlaps a chosen
-one", derived rather than assumed. -/
+This is the manuscript's "Every unchosen induced window meets the
+packing", derived rather than assumed. -/
 theorem exists_mem_not_disjoint_of_card_eq (object : FiniteObject.{u})
     {order : Nat} (positive : 0 < order)
     {packing : Finset (Finset object.Vertex)}

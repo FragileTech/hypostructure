@@ -28,9 +28,9 @@ local instance (priority := low) {α : Type w} : DecidableEq α :=
 
 /-! ## Heredity along an induced restriction
 
-The manuscript's first sentence -- "the remaining non-window core is an induced
+The manuscript's first sentence -- "The remaining non-window core is an induced
 subgraph of the original remainder core after deleting a declared family of
-ledger carriers" -- is `FiniteObject.induce` on a smaller support.  The two
+ledger items" -- is `FiniteObject.induce` on a smaller support.  The two
 hereditary clauses below are *proved* from that induced-subgraph structure. -/
 
 /-- The canonical induced embedding of a smaller support into a larger one.

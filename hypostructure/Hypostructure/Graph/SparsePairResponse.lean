@@ -28,8 +28,8 @@ Every clause is built here from an object the framework already owns.
   `DemandActivation.declaredSupport`, which is the same data clause (a) of
   `def:surplus-blockers` intersects — so `X_π` and the blocker list read one
   support, not two.
-* "The lexicographically first connected subgraph with the minimum possible
-  number of vertices containing …" is `CanonicalSupport.select?`, the
+* "the lexicographically first connected subgraph of `G` with the minimum
+  possible number of vertices that contains …" is `CanonicalSupport.select?`, the
   framework's single implementation of that phrase.
 * `∂X_π` is `SupportAtom.cutBoundary`, the literal cut boundary of a retained
   support, which is also the boundary an admissible quotient's realizations are

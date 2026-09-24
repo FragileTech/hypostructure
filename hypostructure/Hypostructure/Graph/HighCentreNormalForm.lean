@@ -72,10 +72,9 @@ def IsHighCentre (object : FiniteObject.{u}) (threshold : Nat)
 
 /-- **`lem:heavy-neighbourhood-normal-form` at one high centre.**
 
-The three fields are the manuscript's (a), (b) and (c) verbatim.  (b) is stated
-as "no neighbour of `h` has two distinct neighbours inside `N_G(h)`", which is
-what "`G[N_G(h)]` is a matching" says about a graph whose every vertex has
-degree at most one there. -/
+The manuscript's (b) reads "The graph induced by `N_G(h)` is a matching"; its
+proof excludes two adjacent edges `xy`, `yz` inside `N_G(h)`, and the field
+`inducedMatching` states exactly that exclusion. -/
 structure NormalForm (object : FiniteObject.{u}) (threshold : Nat)
     (centre : object.Vertex) : Prop where
   /-- (a) Every vertex of `N_G(h)` sits exactly at the baseline. -/

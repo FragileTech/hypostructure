@@ -25,7 +25,7 @@ import Hypostructure.Graph.BoundaryDemand
 and `lem:cold-corridor-first-failure` proves that one of them always happens and
 routes each:
 
-> (i) case (F1) is a dyadic cycle in `G`;
+> (i) case (F1) is a power-of-two cycle in `G`;
 > (ii) case (F2) is a target-defective quotient, hence belongs to the sparse
 >      exit or to the exit-(4) ledger;
 > (iii) case (F3) is a target-complete compression of a proper support;
@@ -300,8 +300,8 @@ structure FirstFailureCompression {S : DeclaredSignature}
   /-- The replacement meets the standing baseline. -/
   baseline :
     Baseline (glue replacement (rowAtom object (support stage) connected proper).outside)
-  /-- "Strictly smaller in the lexicographic order used for the minimal
-  counterexample." -/
+  /-- "Strictly smaller": "`X'` is smaller than `X` in the lexicographic order
+  used for the minimal counterexample" (`def:proper-quotient-representative`). -/
   smaller :
     (glue replacement
       (rowAtom object (support stage) connected proper).outside).LexicographicallySmaller
@@ -368,11 +368,11 @@ end FirstFailureCompression
 
 /-! ## (F4): the corridor enters a declared handoff support
 
-Clause (F4) is *"the corridor first enters a declared Type B handoff support or
-the route-8 support already recorded in the incoming ledger"*, and
+Clause (F4) is *"the corridor first enters a declared Type B handoff envelope or
+the route-8 response support already recorded in the branch state"*, and
 `lem:cold-corridor-first-failure` (iv) routes it: *"the corridor has reached
 precisely one of the declared interfaces of `def:decorated-fan-envelope` or the
-route-8 support, so the charge is transferred to the already existing
+route-8 response support, so the charge is transferred to the already existing
 Type B or route-8 ledger."*
 
 The ledger interface is a predicate -- it is *"already recorded"* upstream, so
@@ -991,16 +991,16 @@ theorem selectedBranchExcess_length {Stub : Type} (stubs : List Stub) :
 
 /-! **The unrestricted external-stub count.**
 
-*"`P` has exactly `39 − 24 = 15` external stubs.  In the skeleton, a
-degree-two corridor through `p` can absorb at most two of these stubs without
-branching.  Hence `b(P) = 15 − 2 = 13` for every ambient-cubic cold window."*
+*"`P` has exactly `39 − 24 = 15` external stubs."*  The manuscript then
+restricts to the eleven interior stubs: `s_int(P) = 11` and
+`b_int(P) = 11 − 2 = 9`.
 
 Both numbers are read rather than written: `s(P) = δ·order − 2(order − 1)` is
 the window's own stub count at the registered baseline and order -- the same
 expression node `[28]` compares -- and `b(P)` is `branchExcessOf` of it.  There
 is no lemma here, because at that stub count `branchExcessOf` *is* the count by
-definition; `Fixtures.ColdCorridorLedger` evaluates both to the manuscript's
-`15` and `13`.  This unrestricted 13-set is not the selected cold family used
+definition; `Fixtures.ColdCorridorLedger` evaluates them to `15` and `13`; `15` is the
+manuscript's stub count, while `13` is not a manuscript quantity.  This unrestricted 13-set is not the selected cold family used
 by nodes `[152]`--`[168]`: that family first restricts to the 11 one-stub
 interior incidences and then drops two, giving 9. -/
 
@@ -1008,8 +1008,9 @@ interior incidences and then drops two, giving 9. -/
 the non-ambient-cubic loss.  The repaired cold application instantiates
 `perWindow` with the selected interior count `9`.
 
-*"By `def:surviving-cold-branch`, `|𝒫_cold \ 𝒫_cold^cub| = o(n)`. … Summing
-over the remaining windows gives the claim."*  Stated subtraction-free: the
+*"By `def:surviving-cold-branch`, only `o(n)` cold windows are not
+ambient-cubic.  Summing this selected interior count over the remaining windows
+gives the claim."*  Stated subtraction-free: the
 branch excess of the ambient-cubic cold windows, plus the per-window excess
 spent on the `o(n)` windows that are not ambient-cubic, is at least the
 per-window excess times `C`. -/

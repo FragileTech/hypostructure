@@ -77,7 +77,7 @@
 
 \lstset{basicstyle=\ttfamily\small,breaklines=true,columns=fullflexible,frame=single,backgroundcolor=\color{black!3},upquote=true}
 
-\title{A Structural Exhaustion Proof of the Erd\H{o}s--Gy\'arf\'as Conjecture on Power-of-Two Cycles}
+\title{A Structural Exhaustion Reduction of the Erd\H{o}s--Gy\'arf\'as Power-of-Two Cycle Problem}
 \author{Guillem Duran-Ballester\\\texttt{guillem@fragile.tech}}
 \date{\today}
 
@@ -85,17 +85,23 @@
 \maketitle
 
 \begin{abstract}
-We prove the Erd\H{o}s--Gy\'arf\'as conjecture that every finite simple graph
-of minimum degree at least three contains a cycle whose length is a power of
-two.  Assuming a minimal counterexample, we reformulate the forbidden-cycle
-condition in terms of edge-rooted Mersenne returns and combine a boundaried
-replacement principle with the $P_{13}$-free theorem of Hegde, Sandeep, and
-Shashank.  A maximal packing of induced $P_{13}$ windows reduces the problem
-to a structured remainder, which is exhausted through two-step obstruction, compression,
-and surplus-routing alternatives.  The remaining configurations are ruled out
-by explicit deficiency and entropy estimates together with a finite local
-analysis.  All constants are stated explicitly, and the finite enumerations
-used in the proof are reproduced with code in the appendix.
+We develop a structural reduction of the Erd\H{o}s--Gy\'arf\'as conjecture
+that every finite simple graph of minimum degree at least three contains a
+cycle whose length is a power of two.  Assuming a minimal counterexample, we
+combine edge-rooted Mersenne returns, boundaried replacement, and the
+$P_{13}$-free theorem of Hegde, Sandeep, and Shashank with deficiency and
+entropy estimates.  The exact current boundary has five individually named
+residuals: the strict-surplus target defect [20a], the same-token Type B
+handoff [144a], the failed conditional graph count [172a], the uncovered
+pair-code implications [182], and the visible-entry route-8 residual [186].
+Node [187] collects the remaining returned outcomes as an explicit
+disjunction.  Thus any counterexample yields a selected minimal
+counterexample in at least one of these six outcomes.  Excluding all six
+outcomes for selected minimal counterexamples would prove the conjecture;
+their exclusion remains open.
+The dependency diagrams and status statements match the accompanying proof
+explorer.  Constants and finite enumerations for the covered arguments are
+recorded in the appendices.
 \end{abstract}
 
 \tableofcontents
@@ -103,29 +109,25 @@ used in the proof are reproduced with code in the appendix.
 \setcounter{section}{-1}
 \section{Architecture of the proof}\label{sec:architecture}
 
-This section gives a proof-level overview before the local constructions are
-introduced.  We describe the argument in standard graph-theoretic terms and
+This section gives an overview of the reduction before the local
+constructions are introduced.  We describe the argument in standard graph-theoretic terms and
 refer to the formal definitions whenever the manuscript uses specialized
 terminology.  Fix throughout a lexicographically minimal counterexample $G$.
-The main reductions are
+The established branch structure has the following form:
 \[
 \begin{aligned}
 &\text{minimal counterexample}\\
 &\Rightarrow \text{no edge-rooted return path has Mersenne length}\\
 &\Rightarrow \text{no proper boundaried subgraph has a smaller equivalent replacement}\\
 &\Rightarrow \text{a maximal packing of induced }P_{13}\text{'s and a }P_{13}\text{-free remainder }R\\
-&\Rightarrow \text{a near-cubic graph, or a forbidden cycle or high-degree local configuration}\\
-&\Rightarrow \text{independent local cycle tests, or a dependence excluded by replacement}\\
-&\Rightarrow \text{an entropy bound, or a remainder with small normalized degree deficit}\\
-&\Rightarrow \text{a connected piece of negative charge}\\
-&\Rightarrow \text{a subcubic boundary configuration or a high-degree fan}\\
-&\Rightarrow \text{a terminal boundary-incidence configuration}\\
-&\Rightarrow \text{a contradiction.}
+&\Rightarrow \text{sparse-surplus, window-counting, and local charge alternatives}\\
+&\Rightarrow \text{a closed branch, one of [20a], [144a], [172a], [182], [186], or [187].}
 \end{aligned}
 \]
-The four phases below identify the results proving these implications.  The
-proof-dependency diagrams in \cref{sec:intro} give the corresponding
-node-by-node expansion.
+The four phases below describe the covered continuations and their open
+endpoints.  The proof-dependency diagrams in \cref{sec:intro} give the
+node-by-node expansion; each continuation uses the hypotheses established
+on its own incoming branch.
 
 \paragraph{Phase 1: edge-rooted return lengths and minimal replacement.}
 The first step expresses the desired cycle through the length of a path
@@ -181,35 +183,38 @@ total degree surplus
 \cref{prop:nonnear-cubic-sharp-overload-routing} gives either a power-of-two
 cycle, a smaller boundary-equivalent replacement or support dependence, a
 high-degree fan passed to the local analysis, or
-\(\sigma(G)=O(\!\sqrt n)\).  The last condition is called the
+\(\sigma(G)=O(\!\sqrt n)\), on the covered sparse branches.  Failure of
+one of the pair-code implications at nodes [178]--[180] is retained at the
+separate open endpoint [182].  The near-cubic condition is called the
 \emph{near-cubic spine} in \cref{def:near-cubic-spine}; it implies
 \[
 B_{\mathrm{skel}}=\frac32 n\log_2 n+o(n\log n),
 \]
 for the number of labelled graphs under consideration.
 
-No independence between distinct windows is assumed.  At a fixed scale,
-either their conditional restrictions multiply, or their failure to do so
-produces a minimal connected overlap
-(\cref{lem:barrier-failure-overlap}).  The overlap can be uncrossed into a
-serial chain of alternative corridor paths
-(\cref{lem:window-system-realizability}).  Sums of their length increments
-then contain long arithmetic progressions
-(\cref{lem:serial-system-sumset}); the arithmetic alternative in
-\cref{lem:system-increment-arithmetic} first tests the exact full-modulus lift
-and its residue-specific central range.  A successful test yields an actual
-power-of-two cycle.  Its literal complement retains the full cut state and
-routes a repeated state, with its witnesses, to contextual distinction,
-proper replacement, the finite cold table, or the declared trace interface.
-Thus the restrictions
-are additive exactly in the case where they are counted independently; see
-\cref{lem:scale-additivity,lem:blocked-graphs-compress}.  This proves the cap
+The window-counting argument requires a comparison of graph multiplicities,
+as well as the finite table of local states.  At node [170],
+\cref{lem:scale-additivity} tests the conditional graph-count inequalities.
+The positive decision records these inequalities as branch facts;
+\cref{lem:blocked-graphs-compress} then proves the product estimate and
+closes that branch at [171], using the dense overflow already retained
+from [159].  This closure has no outstanding hypothesis.
+The first failure of a graph-count inequality retains
+the outside record, earlier prefix, graph multiplicities, and incoming
+selected residual at the open leaf [172a].  The connected overlap proposed in
+\cref{lem:barrier-failure-overlap} has not been constructed from this failure.
+The proposed uncrossing and serial arithmetic therefore supply no further
+established continuation from [172a].
+
+On branches carrying the window-package comparison, the density calculation
+in \cref{prop:p13-density} gives
 \[
 \theta=\frac{p_{13}}{n}\le \theta_{\rm win}+o(1)
 =0.01270017798\ldots+o(1),
 \]
 and the sharper high-entropy cap $0.01198542083\ldots$ in
-\cref{prop:p13-density}.  In particular, $R$ contains a fixed positive
+\cref{prop:p13-density}, when its joint entropy comparison is available.
+On those branches, $R$ contains a fixed positive
 proportion of the vertices, while the displayed incidence identity bounds the
 positive degree deficiency that the packed paths can supply to it.
 
@@ -289,51 +294,125 @@ overlapping fan configurations is at most a constant times $\sigma(G)$ by
 \cref{prop:typeB-bridge-sublinear}, and hence is $O(\!\sqrt n)$.  It cannot
 account for the linear negative charge required in the surviving case.
 
-After these exclusions, the only remaining object is a minimal set of at most
+On the true route-8 terminal arm, the remaining object is a minimal set of at most
 two private boundary incidences that preserves the power-of-two-cycle response
 under every compatible outside graph.  We call it here the \emph{terminal
 boundary-incidence obstruction}; its formal manuscript name and precise
 minimality conditions are given in \cref{def:typeA-terminal-two-carrier}.  The
 local theorem \cref{thm:typeA-two-carrier-nogo} proves that it cannot occur.
+The complementary target-defect demand arm retains its peel and absorption
+accounts through nodes [181], [183], [184], and [185].  Their joint balance
+and silent-terminal exclusion leave the visible-entry residual at [186] open.
 
-\paragraph{How the alternatives close.}
+\paragraph{Covered alternatives and open endpoints.}
 The counting, rank, and degree arguments are separate checks on the same
 minimal counterexample.  The packing count bounds how many induced paths can
 occur; the rank argument prevents dependent local cycle tests from being
 counted as independent information; and the charge argument localizes any
-remaining degree deficit.  Every exceptional case is passed to a stated
-structural lemma, and the finite enumerations used there are recorded in the
-appendices.  Thus the overview above is an exhaustive sequence of alternatives,
-not an assumption that the local restrictions are probabilistically
-independent.
+remaining degree deficit.  The finite enumerations used by the covered local
+arguments are recorded in the appendices.  The reduction retains five named
+residuals and the explicit additional outcomes collected at [187].  Its
+current conclusion is the reduction theorem below.
 
 
 \section{Introduction and overview of the proof}\label{sec:intro}
 
-The Erd\H{o}s--Gy\'arf\'as power-of-two cycle problem asks whether every finite simple graph of minimum degree at least three contains a cycle whose length is a power of two.  It belongs to the broader study of which cycle lengths a graph of bounded minimum degree must realize \cite{BondyVince,GaoMa}, and the spanning-tree and leaf structure of minimum-degree-three graphs invoked below is classical \cite{KleitmanWest}.  We prove the following.  The current proof ledger has three explicit pending endpoints: the dense-packing residual at node~[172a], the independent pair-code residual at node~[182], and the visible-entry route-8 history retained at node~[186].  The last is obtained by the strict reductions through nodes~[181], [183], [184], [185], and~[186], whose joint-balance row also excludes the silent terminal profile; the theorem statement and the status of the paper are unchanged while these obligations are completed.
+The Erd\H{o}s--Gy\'arf\'as power-of-two cycle problem asks whether every
+finite simple graph of minimum degree at least three contains a cycle whose
+length is a power of two.  It belongs to the broader study of cycle lengths
+in graphs of bounded minimum degree \cite{BondyVince,GaoMa}; the spanning-tree
+and leaf structure invoked below is classical \cite{KleitmanWest}.
+The present result records the exact current boundary.  Nodes [20a], [144a],
+[172a], [182], and [186] are named individually; [187] displays the other
+returned outcomes without declaring each a separate mathematical gap.  The
+reduction proves that every counterexample leads to a selected minimal
+counterexample in at least one of these six outcomes.
 
-\begin{theorem}[Main closure]\label[theorem]{thm:main}
-Let $G$ be a finite simple graph with minimum degree at least three.  Suppose
-that $G$ contains no cycle whose length is a power of two, and choose a
-lexicographically minimal such $G$.  Then no such \(G\) exists.
+\begin{theorem}[Reduction to the exact current boundary]\label[theorem]{thm:main}
+Suppose that a finite simple graph of minimum degree at least three exists
+with no cycle whose length is a power of two.  Choose a minimal such graph
+$G$ in the order specified below, with the retained refinements used by the
+local replacement arguments.  Then the branch analysis reaches at least one
+of the following residuals, carrying every hypothesis and constructed object
+from its respective incoming branch:
+\begin{enumerate}[label=(\roman*), leftmargin=2.2em]
+\item \textbf{Node [20a]: strict-surplus target defect.}
+On the strict arm of [19], the [20] decision records a named sparse exit.
+Its surviving ledger has \(\sigma(G)>C_{\rm sp}\lceil\sqrt n\rceil\)
+and an attempted response quotient on a finite coordinate family whose label
+map is not injective.  Two identified boundaried realizations, \(A\) and
+\(B\), have different target responses in a compatible context.  The
+registered target-defect structure of this same witness is retained.  No
+actual power-of-two cycle in \(G\) follows from this fact alone.
+\item \textbf{Node [144a]: same-token Type B handoff.}
+On the strict-surplus survivor, [144] retains the overloaded token and role
+fibre, the active-demand and capacity presentations, its selected
+homogeneous matching or star, and the resulting maximal packing, core, and
+decorated Type B envelope.  The common Type B fan-entry fact is appended on
+the same ledger.  Neither a homogeneous cap nor a near-cubic estimate has
+been derived on this handoff arm.
+\item \textbf{Node [172a]: conditional graph-count failure.}
+The dense-packing branch has a first failed conditional graph-count
+inequality from \cref{lem:scale-additivity}, with its outside record and
+earlier prefix.  The overlap support required by
+\cref{lem:barrier-failure-overlap} remains to be constructed.
+\item \textbf{Node [182]: uncovered pair-code implication.}
+One of the coverage implications at nodes [178], [179], and [180] fails.
+The residual retains the exact input and the negation of the first such
+implication, as specified in
+\cref{lem:pair-failure-overlap,lem:pair-system-realizability,lem:pair-system-increment-arithmetic,lem:pair-count-or-arithmetic}.
+\item \textbf{Node [186]: visible-entry route-8 residual.}
+The surviving entries carry the reductions through nodes [181], [183],
+[184], and [185], together with the joint balances and silent-terminal
+exclusion of \cref{lem:typeA-unified-joint-balance}.  Exclusion of the
+remaining visible-entry history is open.
+\item \textbf{Node [187]: other returned outcomes.}
+This is the explicit disjunction of: failure of the Type B sublinear
+hypothesis package; failure of route-8 quotient freeness; failure of the
+exact private-carrier rate; the local cold-terminal exclusion fact without a
+global terminal contradiction; the sparse target-defect exit on the
+at-or-below-surplus arm; or a Type B entry produced by the [179] or [180]
+pair-system outcome.  The first five alternatives retain
+\(\sigma(G)\le C_{\rm sp}\lceil\sqrt n\rceil\); the pair-system Type B entry
+retains its strict-surplus and sparse-survivor ancestry and its [179] or
+[180] source fact.  None is relabelled as [20a] or [144a].
+\end{enumerate}
+These six outcomes exhaust the returned cases for a selected minimal
+counterexample.  In particular, if none can occur for such a graph, then
+every finite simple graph of minimum degree at least three contains a
+power-of-two cycle.
 \end{theorem}
 
 \begin{proof}
-Assume, for contradiction, that such a lexicographically minimal counterexample
+Assume that such a minimal counterexample
 \(G\) exists.  By \cref{lem:return-equivalence}, a Mersenne edge-rooted return
 is equivalent to a power-of-two cycle, so no such return occurs in \(G\).
 Since \(G\) has no power-of-two cycle, the Hegde--Sandeep--Shashank theorem
 \cref{thm:p13free} and \cref{cor:p13-exists} place \(G\) on the
 \(P_{13}\)-packing spine.
 
-Before the normalized near-cubic budget is used, the sparse surplus-token
-branch is exhausted by \cref{prop:nonnear-cubic-sharp-overload-routing}.  If a sparse
-surplus exit occurs, that sparse exit closes in the sparse branch.  If a
-role-homogeneous same-token bottleneck produces decorated Type B fan data, that
-data is routed to the Type B fan ledger and is not a terminal non-near-cubic
-leaf.  The remaining possibility is that \(G\) satisfies the near-cubic spine
-estimate of \cref{def:near-cubic-spine}.  Thus every surviving minimal
-counterexample reaches the derived near-cubic entropy/net-charge spine.
+At [19], first distinguish strict surplus from the at-or-below arm.  On the
+strict arm, [20] either supplies the named sparse exit or retains its
+survivor.  The first case runs the exact exit classification and retains the
+target-defective attempted quotient at [20a], case~\textup{(i)}.  On the
+survivor, the pair-code decisions retain any first uncovered implication at
+[182], case~\textup{(iv)}.  Their covered Type B outcomes have their own
+[179] or [180] source facts and enter [187].  The homogeneous bottleneck
+decision of \cref{thm:homogeneous-overload-geometric-closure} retains its
+actual same-token handoff at [144a], case~\textup{(ii)}.  The capped arm of
+that decision closes against the strict surplus test; the handoff arm is not
+used to infer the cap.
+
+On the at-or-below arm, the sparse-exit decision similarly retains any
+target defect, but with the opposite surplus fact; that output enters [187].
+Only its surviving continuation uses the normalized near-cubic spine.
+
+The window-package realization test separates its covered comparison from
+the dense-packing residual.  The latter follows the exact rate and hot/cold
+tests in Part XII of the dependency diagram.  At [170], the additive arm
+closes by \cref{lem:blocked-graphs-compress}; its complementary graph-count
+failure is precisely [172a], giving case~\textup{(iii)}.  Continue on each
+remaining branch with the density or rate hypotheses that it has established.
 
 The rank branch is exhausted by \cref{lem:curvature-dependence-routing},
 \cref{lem:proper-smearing,lem:no-silent-global-smearing}, and
@@ -345,11 +424,10 @@ remaining case to the large-budget net-charge analysis.  At that point every
 survivor has the near-cubic estimate, so the rank/full-budget analysis sends it
 to the residual families treated by \cref{thm:branch-kill}.
 
-\Cref{thm:branch-kill} excludes all large-budget residuals except the Type A
-target-defect/route-8 ledger and the Type B bridge residual.  The Type B bridge
-residual has sublinear total negative mass by
-\cref{prop:typeB-bridge-sublinear}, so it cannot carry the linear large-budget
-deficit.  The remaining Type A ledger is reduced by
+\Cref{thm:branch-kill} routes the large-budget residuals to the Type A
+target-defect/route-8 ledger or the Type B bridge ledger.  Failure of the
+stated Type B sublinear hypothesis package is retained at [187].  On the
+positive arm, the remaining Type A ledger is reduced by
 \cref{thm:large-budget-route8-only}: target-defect entries are canonical
 exit-\textup{(4)} peel data and finite descent records them, while every
 terminal route-8 two-support entry is excluded by
@@ -372,23 +450,32 @@ The simultaneous accounting of
 \cref{lem:typeA-unified-joint-balance} then retains the literal family and
 derives the exact peel, deficit, demand, absorption, open-unit, and saturated
 visibility balances at node~[186].
-Excluding the visible-entry history retained at node~[186], together with the dense-packing residual at node~[172a]
-and the independent pair-code residual at node~[182],
-is pending; no contradiction at any open endpoint is asserted here.
+The silent terminal profile is excluded by the same joint-balance analysis;
+the remaining visible-entry history is case~\textup{(v)}.  At each preceding
+quotient, rate, or cold-terminal decision, its unconsumed outcome is recorded
+in case~\textup{(vi)}.  These are precisely the alternatives of the selected
+root boundary, so no returned case has been discarded.
 \end{proof}
 
 \begin{remark}[Status of the routed leaves]\label[remark]{rem:formal-status}
-The normalized entropy and fan-mass arguments are invoked only after the
-sparse surplus-token branch has been discharged.  \Cref{def:near-cubic-spine}
-names the estimate available on the surviving branch, and
-\cref{lem:near-cubic-budget} computes the labelled skeleton budget once that
-estimate is available.  The estimate is obtained, or the branch is already
-discharged, before the near-cubic budget is invoked:
-\cref{prop:nonnear-cubic-sharp-overload-routing} proves that every survivor of
-the sparse surplus exits uses the full active-demand family, an
-\(O(n)\)-deficit baseline demand, and the capacity-token ledger, and then has
-only three possible outcomes: the near-cubic spine estimate, a sparse surplus
-exit, or decorated Type B fan data routed to the Type B fan ledger.
+\Cref{thm:main} is a boundary theorem.  Excluding its five named residuals
+and every case listed at [187] would establish the Erd\H{o}s--Gy\'arf\'as
+conjecture, since any counterexample supplies a selected minimal graph in one
+of those outcomes.  No such exclusion is asserted here.  Some cases at [187] may be
+consumed by further routing without creating independent mathematical gaps.
+
+The normalized entropy and fan-mass arguments are invoked on branches
+that have established the near-cubic estimate.
+\Cref{def:near-cubic-spine} names that estimate, and
+\cref{lem:near-cubic-budget} computes the labelled skeleton budget once it
+is available.  The other branches retain their separate outcomes:
+\cref{prop:nonnear-cubic-sharp-overload-routing} uses the full active-demand
+family, an \(O(n)\)-deficit baseline demand, and the capacity-token ledger
+on its covered input.  The strict-surplus root first retains a named sparse
+exit at [20a] or continues with the sparse survivor.  An uncovered pair-code
+implication on that survivor remains [182].  On the geometric bottleneck
+route, the same-token Type B handoff remains [144a]; only the capped arm
+supplies the near-cubic estimate.
 The free/blocked pair split of
 \cref{def:canonical-blocker-ledger} and the no-overcounting identity
 \cref{lem:canonical-blocker-ledger-no-overcount}, together with the token
@@ -419,8 +506,9 @@ and gives the lower bound
 for the largest role-homogeneous pattern in the overloaded subtype.  The exact
 same-token bottleneck routing of
 \cref{def:same-token-routing-germs,lem:same-token-bottleneck-routing,thm:homogeneous-overload-geometric-closure}
-then discharges that pattern: it gives a sparse surplus exit, ordinary Type B
-fan data, or fixed homogeneous caps and hence the near-cubic estimate.  The exact
+then routes that pattern to a sparse surplus exit, ordinary Type B
+fan data, or fixed homogeneous caps.  Only the capped arm yields the
+near-cubic estimate; the strict-surplus Type B handoff remains [144a].  The exact
 window-join load of \cref{cor:global-window-join-pressure} records the
 global budget available for window-incidence load: without a negative
 admissible support, the graph must put a linear surplus excess on packed
@@ -469,8 +557,11 @@ all-visible descendant at node~[184] and its actual-overload descendant at
 node~[185], followed by the joint-balance descendant at node~[186].
 Node~[186] is the current
 local frontier of that route-8 branch after its silent terminal has been eliminated.  The separate sparse pair-code branch
-retains node~[182].  These explicit endpoints do not change the statement or
-status of \cref{thm:main}.  The main route uses the $P_{13}$-free theorem of
+retains node~[182], and the dense conditional graph-count failure retains
+node~[172a].  The strict sparse-exit target defect [20a], same-token
+Type B handoff [144a], and explicit other outcomes [187] complete
+\cref{thm:main}.
+The main route uses the $P_{13}$-free theorem of
 Hegde, Sandeep, and Shashank (\cref{thm:p13free}) as a black box.  The
 dense-window and route-8 bounded-block bookkeeping is recorded in the appendix as
 auxiliary resilience data.
@@ -516,7 +607,10 @@ $\Theta(n)$ & finite-$n$ threshold & packing threshold closing the entropy cap &
 \end{center}
 The proof is organized as a case analysis.  Raw obstruction tests are not charged directly as independent entropy.  Instead, the rank-forcing argument first proves that any surviving residual has full obstruction rank.  This forced obstruction cost is then used only in the range where the remaining non-obstruction budget is strictly smaller than that cost.  If the remaining budget is not small, the analysis reduces to an explicitly described large-budget residual and then to a local net-charge obstruction.
 
-The proof proceeds in the following steps.
+The covered continuations proceed in the following steps.  A failed
+pair-code implication is retained at [182], and a failed conditional
+graph-count inequality is retained at [172a], before any consequence of
+the corresponding comparison is used.
 \begin{enumerate}[label=(\arabic*)]
 \item Absence of power-of-two cycles is equivalent to absence of edge-rooted Mersenne returns.
 \item Minimality gives no proper internal $3$-core and forbids target-complete replacements of proper boundaried pieces.
@@ -533,8 +627,9 @@ and
 skeleton budget is used: it either closes a sparse surplus exit, routes
 decorated Type B fan data to the Type B ledger, or supplies the near-cubic
 spine estimate.
-\item On the surviving spine branch, the independent-$P_{13}$ window
-accounting gives a first upper bound on the packing density $\theta=p_{13}/n$.
+\item On the spine branches carrying the window-package comparison, the
+independent-$P_{13}$ window accounting gives an upper bound on the packing
+density $\theta=p_{13}/n$.
 \item Removing a maximal disjoint induced-$P_{13}$ packing leaves a large componentwise $P_{13}$-free remainder $R$.
 \item The rank-forcing argument proves that any rank drop among raw piece-obstruction tests gives target defect, replacement, target-complete proper-support compression, or whole-graph dependence.  Therefore a surviving residual has full obstruction rank,
 \[
@@ -562,8 +657,10 @@ high-degree fan-safe surplus obstruction.  The local exclusions close Type A
 outside route 8 and Type B outside the bridge residual.  The final large-budget
 squeeze then extracts all route-8 Type A deficit, charges the remaining Type B
 bridge mass to the global surplus budget, applies the boundary-incidence ledger to reduce
-the surviving route-8 branch to a two-support entry, and invokes
-\cref{thm:typeA-two-carrier-nogo}.
+the true route-8 branch to a two-support entry, and invokes
+\cref{thm:typeA-two-carrier-nogo}.  The complementary target-defect demand
+branch continues through [181] and [183]--[185] to the open visible-entry
+residual [186].
 \end{enumerate}
 
 
@@ -572,9 +669,9 @@ The proof-dependency diagram below records the branch structure in full detail. 
 \text{rank drop}\Rightarrow\text{target defect/compression/support dependence},
 \]
 while the complementary branch forces full obstruction rank.  The final spine is
-the large-budget net-charge branch up to the terminal two-support route-8
-exclusion; Type B fan-certificate residual centers and B2 failures are controlled
-there by the fan-mass estimate.
+the large-budget net-charge branch with its terminal two-support route-8
+exclusion and its separate open demand residual [186]; Type B fan-certificate
+residual centers and B2 failures are controlled there by the fan-mass estimate.
 
 
 
@@ -585,7 +682,9 @@ solid diagram node has a unique bracketed integer, and the integers are consecut
 along each expanded branch.  Continuation arrows refer to later nodes by number rather
 than redrawing the same solid node.  Round solid nodes are closed branches; a
 dashed round node is only a proxy naming a solid closure drawn in another part.
-Nodes~[172a], [182], and~[186] are the three live open endpoints.  Node~[181] is an
+Nodes~[20a], [144a], [172a], [182], and~[186] are the five individually
+named open residuals.  Node~[187] aggregates the other returned outcomes
+without asserting that each is an independent gap.  Node~[181] is an
 implemented reduction node: its no-witness arm routes to [124], and its only
 surviving arm reaches [183].  Node~[183] is also an implemented reduction: its
 silent-entry coordinate is proved to be zero and its survivor reaches [184].
@@ -601,7 +700,8 @@ mark proof frontiers and are neither closure nodes nor proxies for one.
 \clearpage
 \begin{figure}[p]
 \centering
-\resizebox{!}{0.81\textheight}{%
+\captionsetup{font=small}
+\resizebox{!}{0.79\textheight}{%
 \begin{tikzpicture}[
 node distance=0.52cm and 0.90cm,
 box/.style={rectangle,rounded corners,draw,align=center,inner sep=2pt,minimum width=4.35cm,minimum height=0.55cm},
@@ -629,7 +729,8 @@ every node/.style={font=\scriptsize}
 \node[box, below=of p13free] (pack) {\textbf{[17]}~maximal disjoint induced-$P_{13}$ packing $\mathcal P$};
 \node[box, below=of pack] (p13alg) {\textbf{[18]}~$P_{13}$ label algebra: $399$ labels; relations $C_s$; obstruction tensor $\Omega_2$};
 \node[dec, below=of p13alg] (surplusq) {\textbf{[19]}~non-near-cubic surplus?\\$\sigma(G)>C_{\rm sp}\sqrt n$};
-\node[box, right=of surplusq] (surplusclose) {\textbf{[20]}~surplus-pair\\accounting branch};
+\node[dec, right=of surplusq] (surplusclose) {\textbf{[20]}~strict-surplus sparse exit?};
+\node[term, right=of surplusclose, draw=red, very thick, text=red] (open20a) {\textbf{[20a]}~OPEN: strict sparse\\target-defect quotient};
 \node[box, below=of surplusq] (enum) {\textbf{[21]}~finite enumeration: $c_\Omega$, $c_{13}$};
 \node[dec, below=of enum] (realized) {\textbf{[158]}~joint window package realized\\in the labelled class?};
 \node[dec, below=of realized] (many) {\textbf{[22]}~hot/cold split
@@ -656,7 +757,12 @@ $\mathcal P=\mathcal P_{\rm hot}\sqcup\mathcal P_{\rm cold}$:\\live-hot entropy 
 \draw[arrow] (pack)--(p13alg);
 \draw[arrow] (p13alg)--(surplusq);
 \draw[arrow] (surplusq)--node[above]{yes}(surplusclose);
-\draw[arrow] (surplusq)--node[right]{no}(enum);
+\draw[arrow] (surplusclose)--node[above]{exit}(open20a);
+\coordinate (surpluscontinuation) at ($(surplusclose.south)+(0,-0.85)$);
+\draw[arrow] (surplusclose.south)--node[right]{survivor: to [125]}(surpluscontinuation);
+\draw[arrow] (surplusq)--node[right]{no, sparse survivor}(enum);
+\coordinate (nearCubicSparseOther) at ($(surplusq.west)+(-1.45,-0.72)$);
+\draw[arrow,dashed] (surplusq.west)--node[above left,align=right]{no, sparse exit:\\to [187]}(nearCubicSparseOther);
 \draw[arrow] (enum)--(realized);
 \draw[arrow] (realized)--node[right]{yes}(many);
 \coordinate (densecontinuation) at ($(realized.east)+(2.30,0)$);
@@ -669,7 +775,7 @@ $\mathcal P=\mathcal P_{\rm hot}\sqcup\mathcal P_{\rm cold}$:\\live-hot entropy 
 \draw[arrow] (theta)--(R);
 \end{tikzpicture}%
 }
-\caption[Proof-dependency diagram, Part I]{Proof-dependency diagram, Part I.  Rectangles are assertions or residual states, diamonds are exhaustive branch tests, ellipses are terminal outcomes, and edge labels state which branch is followed.  The bracketed numbers are unique diagram-node numbers used by the dependency table.  Nodes [19] and [20] record the non-near-cubic surplus accounting branch used before the normalized spine budget; node [20] is the continuation expanded in \cref{fig:proof-diagram-part-x}.  Node [158] is the exact finite form of the realization sentence of \cref{lem:p13-window-package,prop:p13-density}: it asks whether the joint window package of the fixed maximal packing is realized by the labelled skeleton class; its no-branch is the dense-packing residual expanded in \cref{fig:proof-diagram-part-xii}.  Node [22] creates the hot/cold dichotomy by splitting $\mathcal P$ into $\mathcal P_{\rm hot}$ and $\mathcal P_{\rm cold}$.  Its no-branch continues at [145] in \cref{fig:proof-diagram-part-xi}.  The bounded arm of [153] returns to [24] with the density cap, and only that live residual continues to [25] and \cref{fig:proof-diagram-part-ii}.}
+\caption[Proof-dependency diagram, Part I]{Proof-dependency diagram, Part I.  Rectangles are assertions or residual states, diamonds are exhaustive branch tests, ellipses are terminal outcomes, and edge labels state which branch is followed.  The bracketed numbers are unique diagram-node numbers used by the dependency table.  Nodes [19] and [20] record the non-near-cubic surplus accounting branch used before the normalized spine budget; the strict sparse exit reaches open residual [20a], while only the strict-surplus survivor continues at [125] in \cref{fig:proof-diagram-part-x}.  On the at-or-below arm, a sparse target defect continues to [187], while the sparse survivor enters [21].  Node [158] is the exact finite form of the realization sentence of \cref{lem:p13-window-package,prop:p13-density}: it asks whether the joint window package of the fixed maximal packing is realized by the labelled skeleton class; its no-branch is the dense-packing residual expanded in \cref{fig:proof-diagram-part-xii}.  Node [22] creates the hot/cold dichotomy by splitting $\mathcal P$ into $\mathcal P_{\rm hot}$ and $\mathcal P_{\rm cold}$.  Its no-branch continues at [145] in \cref{fig:proof-diagram-part-xi}.  The bounded arm of [153] returns to [24] with the density cap, and only that live residual continues to [25] and \cref{fig:proof-diagram-part-ii}.}
 \label{fig:proof-diagram-part-i}
 \end{figure}
 
@@ -813,7 +919,7 @@ every node/.style={font=\scriptsize}
 \node[box] (Ndef) at (0.00,4.95) {\textbf{[58]}~net charge\\\(\No\)};
 \node[dec] (globalnet) at (0.00,3.35) {\textbf{[59]}~\(\No(R)\ge0\)?};
 \node[term] (contrad) at (-5.35,3.35) {\textbf{[60]}~net-cap\\contradiction};
-\node[box] (minX) at (0.00,1.35) {\textbf{[61]}~choose connected\\\(\No(X)<0\)};
+\node[box] (minX) at (0.00,1.35) {\textbf{[61]}~choose connected\\$\No(X)<0$};
 \node[dec] (surplus) at (0.00,-0.65) {\textbf{[62]}~high-degree surplus?};
 \node[box] (typeA) at (-4.85,-2.95) {\textbf{[63]}~Type A\\continued in Part VIII};
 \node[wide] (typeB) at (4.85,-2.95) {\textbf{[64]}~Type B\\continued in Part VI};
@@ -1004,6 +1110,7 @@ every node/.style={font=\scriptsize}
 
 \begin{figure}[p]
 \centering
+\captionsetup{font=small}
 \resizebox{0.82\textwidth}{!}{%
 \begin{tikzpicture}[
 node distance=0.55cm and 0.95cm,
@@ -1068,7 +1175,7 @@ every node/.style={font=\scriptsize}
 
 \begin{figure}[p]
 \centering
-\resizebox{0.90\textwidth}{!}{%
+\resizebox{1.05\textwidth}{!}{%
 \begin{tikzpicture}[
 box/.style={rectangle,rounded corners,draw,align=center,inner sep=2.8pt,text width=3.95cm,minimum height=0.72cm},
 wide/.style={rectangle,rounded corners,draw,align=center,inner sep=2.8pt,text width=4.95cm,minimum height=0.78cm},
@@ -1099,11 +1206,13 @@ every node/.style={font=\scriptsize}
 \node[dec] (rclass) at (5.70,-15.15) {\textbf{[141]}~token in\\\(\mathfrak T_R\)?};
 \node[box] (rres) at (11.90,-15.15) {\textbf{[142]}~remainder-surplus\\geometric audit:\\homogeneous matching/star};
 \node[box] (pres) at (5.70,-17.95) {\textbf{[143]}~primitive blocker-support\\geometric audit:\\homogeneous matching/star};
-\node[term] (capcontra) at (11.90,-17.95) {\textbf{[144]}~bottleneck discharge:\\sparse exit, Type B, or near-cubic spine};
+\node[dec] (capcontra) at (11.90,-17.95) {\textbf{[144]}~same-token bottleneck:\\Type B handoff or capped route?};
+\node[open] (open144a) at (17.90,-17.95) {\textbf{[144a]}~OPEN: same-token Type B handoff with packing, core, envelope, and pattern};
 \node[wide] (pairunreal) at (-13.30,-3.05) {\textbf{[178]}~pair-code unrealized residual: conditional factorization gives a minimal connected pair overlap obstruction};
 \node[wide] (pairserial) at (-13.30,-6.35) {\textbf{[179]}~covered uncrossing: target/sparse-exit/Type B, or a graph-realized serial demand system};
 \node[wide] (pairclose) at (-13.30,-9.35) {\textbf{[180]}~covered increment split: periodic sparse-exit/Type B, or full-modulus arithmetic gives an actual power-of-two cycle};
 \node[open] (pairgap) at (-13.30,-12.35) {\textbf{[182]}~OPEN: the exact [178], [179], or [180] implication not supplied by the manuscript};
+\node[open] (other187) at (-13.30,-17.95) {\textbf{[187]}~OPEN aggregate: four root keys, near-cubic target defect, and [179]/[180] Type B entries};
 \draw[arrow] (resid)--(slack);
 \draw[arrow] (slack)--(extract);
 \draw[arrow] (extract)--(activate);
@@ -1125,6 +1234,8 @@ every node/.style={font=\scriptsize}
 \draw[arrow] (pairunreal.west)--++(-1.05,0)|-node[left,pos=0.20]{no factorization}(pairgap.west);
 \draw[arrow] (pairserial.west)--++(-0.70,0)|-node[left,pos=0.25]{no exhaustive uncrossing}(pairgap.west);
 \draw[arrow] (pairclose)--node[right]{uncovered increment response}(pairgap);
+\draw[arrow] (pairserial.west)--++(-2.1,0)|-node[left,pos=0.55]{Type B at [179]}(other187.west);
+\draw[arrow] (pairclose.west)--++(-1.2,0)|-node[left,pos=0.55]{Type B at [180]}(other187.west);
 \draw[arrow] (highload.east)--node[above]{no}(nearclose.west);
 \draw[arrow] (highload)--node[right]{yes}(wclass);
 \draw[arrow] (wclass.east)--node[above]{yes}(wres.west);
@@ -1136,9 +1247,12 @@ every node/.style={font=\scriptsize}
 \draw[arrow] (wres.east)--node[above,pos=0.25]{bottleneck}++(0.95,0)|-(wto144)--(capcontra.70);
 \draw[arrow] (rres.south)--node[right,pos=0.40]{bottleneck}(rto144)--(capcontra.110);
 \draw[arrow] (pres.east)--node[above]{bottleneck}(capcontra.west);
+\draw[arrow] (capcontra)--node[above]{handoff}(open144a);
+\coordinate (cappedroute) at ($(capcontra.south)+(0,-1.45)$);
+\draw[arrow] (capcontra.south)--node[right]{caps: to [138]}(cappedroute);
 \end{tikzpicture}%
 }
-\caption[Proof-dependency diagram, Part X]{Proof-dependency diagram, Part X.  This panel expands the sparse non-near-cubic branch [20].  Nodes [126]--[129] build the full active surplus family.  Node [130] splits canonical pairs.  Free pairs are charged by the entropy sandwich [131], while blocked pairs pass through the blocker route [132]--[136]; the role fibres in [136] partition \(\Pi_{\rm blk}\), so this ledger has no double counting.  Node [137] is the coupled single-graph test of \cref{cor:coupled-single-graph-overload-budget,cor:numerical-single-graph-budget,prop:single-graph-sparse-pressure-routing}: all three token classes use the same \(n,p_{13},\sigma_W,\sigma_R\).  If \(D_{\rm all}=0\), the explicit quadratic bound routes to [138].  If \(D_{\rm all}>0\), the role-fibre excess enters the window-incidence, remainder-surplus, or primitive blocker-support geometric audit [140], [142], [143].  Node [144] applies \cref{thm:homogeneous-overload-geometric-closure}: the bottleneck realizes a sparse surplus exit, produces Type B fan data, or is bounded by fixed homogeneous caps and routes to [138].  The entropy counts of [131] and of the free side of [137] are branch tests.  On the covered pair-code arm, [178] retains the exact conditional factorization and minimal connected overlap obstruction, [179] retains either an already routed outcome or the graph-realized serial system, and [180] retains either an already routed periodic outcome or the exact full-modulus arithmetic data from which an actual power-of-two cycle is constructed.  The manuscript does not prove that these three classifications are exhaustive on the retained residual.  Their literal failures therefore meet only at the explicit open node [182]; none is renamed as a blocker, quotient, exit, or Type B witness.}
+\caption[Proof-dependency diagram, Part X]{Proof-dependency diagram, Part X.  This panel expands the sparse non-near-cubic branch [20].  Nodes [126]--[129] build the full active surplus family.  Node [130] splits canonical pairs.  Free pairs are charged by the entropy sandwich [131], while blocked pairs pass through the blocker route [132]--[136]; the role fibres in [136] partition \(\Pi_{\rm blk}\), so this ledger has no double counting.  Node [137] is the coupled single-graph test of \cref{cor:coupled-single-graph-overload-budget,cor:numerical-single-graph-budget,prop:single-graph-sparse-pressure-routing}: all three token classes use the same \(n,p_{13},\sigma_W,\sigma_R\).  If \(D_{\rm all}=0\), the explicit quadratic bound routes to [138].  If \(D_{\rm all}>0\), the role-fibre excess enters the window-incidence, remainder-surplus, or primitive blocker-support geometric audit [140], [142], [143].  Node [144] applies \cref{thm:homogeneous-overload-geometric-closure}: its actual same-token Type B handoff reaches open [144a], while only its capped arm routes to [138].  Node [187] collects typeBSublinearResidual, route8QuotientResidual, route8RateFails, coldBranchClosed, the near-cubic target defect with surplusAtOrBelow, and Type B entries from [179] and [180] with their distinct source facts.  The cold fact is a local exclusion, and [187] does not assert closure of any survivor.  The entropy counts of [131] and of the free side of [137] are branch tests.  On the covered pair-code arm, [178] retains the exact conditional factorization and minimal connected overlap obstruction, [179] retains either an already routed outcome or the graph-realized serial system, and [180] retains either an already routed periodic outcome or the exact full-modulus arithmetic data from which an actual power-of-two cycle is constructed.  The manuscript does not prove that these three classifications are exhaustive on the retained residual.  Their literal failures therefore meet only at the explicit open node [182]; none is renamed as a blocker, quotient, exit, or Type B witness.}
 \label{fig:proof-diagram-part-x}
 \end{figure}
 
@@ -1146,6 +1260,7 @@ every node/.style={font=\scriptsize}
 
 \begin{figure}[p]
 \centering
+\captionsetup{font=small}
 \resizebox{0.96\textwidth}{!}{%
 \begin{tikzpicture}[
 box/.style={rectangle,rounded corners,draw,align=center,inner sep=2.6pt,text width=4.15cm,minimum height=0.72cm},
@@ -1204,7 +1319,7 @@ open/.style={ellipse,draw=red,very thick,text=red,align=center,inner sep=2.6pt,t
 arrow/.style={-{Latex[length=2mm]},thick},
 every node/.style={font=\scriptsize}
 ]
-\node[wide] (dense) at (0.00,7.60) {\textbf{[159]}~dense-packing residual: the no-edge of [158];\\\(2^{c_{13}p_{13}\log_2 n}\) exceeds the labelled skeleton class, i.e.\ \(\theta>\theta_{\rm win}\)};
+\node[wide] (dense) at (0.00,7.60) {\textbf{[159]}~dense-packing residual: the no-edge of [158];\\exact package size \(2^{b_{\mathcal P}}\) exceeds the labelled skeleton count};
 \coordinate (in159) at ($(dense.north)+(0,0.72)$);
 \draw[arrow] (in159)--node[right]{from [158]}(dense.north);
 \node[dec] (tau) at (0.00,5.10) {\textbf{[160]}~exact rate split:\\first \(\tau(\theta)<1/4\)?; on yes,\\private-carrier rate \(\tau(\theta)<3/13\)?};
@@ -1218,21 +1333,9 @@ every node/.style={font=\scriptsize}
 \node[route] (twoclosed) at (-1.60,-6.90) {closed at \textbf{[155]}:\\power-of-two cycle};
 \node[term] (twosurvivor) at (4.60,-6.90) {\textbf{[168]}~surviving pair attaches only at endpoints: not a selected interior half-edge};
 \node[wide] (trivial) at (-8.40,-9.35) {\textbf{[169]}~trivial neutral-configuration residual: dense packing, every corridor terminal and neutral, \(Q=E\); every window is blocked at every dyadic scale};
-\node[dec] (additive) at (-8.40,-11.95) {\textbf{[170]}~conditional savings additive at every fixed scale?};
+\node[dec] (additive) at (-8.40,-11.95) {\textbf{[170]}~all conditional graph-count bounds hold?};
 \node[term] (compress) at (-11.55,-14.55) {\textbf{[171]}~compression closure:\(|\mathcal B(\mathcal P)|<1\)};
-\node[dec,draw=red,very thick,text=red] (arithmetic) at (-5.25,-14.55) {\textbf{[172a]}~OPEN: minimal fixed-scale overlap:\\uncrossing alternative?};
-\node[dec] (exactlift) at (-5.25,-17.65) {\textbf{[172b]}~exact compatible central lift\\
-\(2^k=L+r+tg\), \(C_{\rm sys}\le t\le T_r-C_{\rm sys}\)?};
-\node[dec] (fullphase) at (-5.25,-21.15) {\textbf{[172c]}~no exact lift:\\full retained state repeats?};
-\node[dec] (uncrossedroutes) at (1.85,-17.65) {uncrossing cases\\(i)--(iv)};
-\node[route] (serialhit) at (-11.20,-17.65) {closed at \textbf{[155]}:\\actual power-of-two cycle};
-\node[route] (serialdefect) at (-11.20,-21.15) {closed at \textbf{[156]}:\\context-distinguished supports};
-\node[route] (serialcompress) at (-7.55,-24.65) {closed at \textbf{[157]}:\\proper deletion or finite cold row};
-\node[box] (serialtrace) at (-2.55,-24.65) {declared trace incidences:\\continue at [109]};
-\node[route] (uncrosshit) at (7.25,-15.40) {case (i): closed at \textbf{[155]}};
-\node[route] (uncrossdefect) at (7.25,-17.70) {case (ii): closed at \textbf{[156]}};
-\node[route] (uncrosscompress) at (7.25,-20.00) {case (iii): closed at \textbf{[157]}};
-\node[box] (uncrosshandoff) at (7.25,-22.30) {case (iv): continue at [65]\\or [109] with declared data};
+\node[open] (arithmetic) at (-5.25,-14.55) {\textbf{[172a]}~OPEN: failed conditional graph count;\\overlap support not constructed};
 \draw[arrow] (dense)--(tau);
 \draw[arrow] (tau.east)--node[above]{yes / yes}(netcharge.west);
 \draw[arrow] (tau)--node[right]{either no}(coldpass);
@@ -1245,22 +1348,11 @@ every node/.style={font=\scriptsize}
 \draw[arrow] (trivial)--(additive);
 \draw[arrow] (additive.south west)--node[sloped,above,pos=0.45]{yes}(compress.north);
 \draw[arrow] (additive.south east)--node[sloped,above,pos=0.45]{no}(arithmetic.north);
-\draw[arrow] (arithmetic)--node[right]{case (v): serial system}(exactlift);
-\draw[arrow] (arithmetic.east)--node[above]{cases (i)--(iv)}(uncrossedroutes.west);
-\draw[arrow] (uncrossedroutes.north east)--(uncrosshit.west);
-\draw[arrow] (uncrossedroutes.east)--(uncrossdefect.west);
-\draw[arrow] (uncrossedroutes.south east)--(uncrosscompress.west);
-\draw[arrow] (uncrossedroutes.south east)--(uncrosshandoff.west);
-\draw[arrow] (exactlift.west)--node[above]{yes}(serialhit.east);
-\draw[arrow] (exactlift)--node[right]{no}(fullphase);
-\draw[arrow] (fullphase.west)--node[above]{context distinguishes}(serialdefect.east);
-\draw[arrow] (fullphase.south west)--node[sloped,above,pos=0.48]{proper deletion / bounded}(serialcompress.north);
-\draw[arrow] (fullphase.south east)--node[sloped,above,pos=0.48]{declared trace}(serialtrace.north);
 \draw[arrow] (twostrand.south west)--node[sloped,above,pos=0.5]{closed}(twoclosed.north);
 \draw[arrow] (twostrand.south east)--node[sloped,above,pos=0.5]{survives}(twosurvivor.north);
 \end{tikzpicture}%
 }
-\caption[Proof-dependency diagram, Part XII]{Proof-dependency diagram, Part XII.  The dense residual [159] passes through the two exact rate tests at [160].  Only the arm satisfying both the net-deficiency rate \(\tau(\theta)<1/4\) and the route-8 private-carrier rate \(\tau(\theta)<3/13\) enters [161].  Failure of either comparison enters the dense hot/cold pass [162] on its literal residual.  The all-cold arm closes at [164]; the neutral arm [163] splits into the replacement route [165]--[166] and the two-strand route [167], [155], [168].  The dashed ellipses are closure proxies for the solid terminals [155]--[157] in \cref{fig:proof-diagram-part-xi}, not additional proof nodes.  The continuation of [166] is included here: the trivial neutral residual [169] reaches compression [171] through the yes-arm of [170].  Its no-arm retains the failing fibre and minimal connected overlap support and enters the typed node-[172] subdiamond.  Node [172a] uncrosses the overlap; alternatives (i)--(iv) carry their actual G1/G2/G3 or declared-handoff witnesses to the existing destinations, while alternative (v) supplies the serial system and its residue-specific ranges to [172b].  The yes-arm of [172b] is an exact compatible central lift and hence an actual power-of-two cycle [155].  Its literal complement enters [172c] with the full residue modulo \(g\), cold cut state, boundary-degree profile, truncated end distances, fixed rare choices, and declared trace incidences.  A context-distinguished repeat closes at [156], an exhibited target-complete proper deletion or a genuinely bounded no-repeat row closes at [157], and a repeated declared trace support continues with its indexed carrier data at [109].}
+\caption[Proof-dependency diagram, Part XII]{Proof-dependency diagram, Part XII.  The dense residual [159] passes through the two exact rate tests at [160].  Only the arm satisfying both the net-deficiency rate \(\tau(\theta)<1/4\) and the route-8 private-carrier rate \(\tau(\theta)<3/13\) enters [161].  Failure of either comparison enters the dense hot/cold pass [162] on its literal residual.  The all-cold arm closes at [164]; the neutral arm [163] splits into the replacement route [165]--[166] and the two-strand route [167], [155], [168].  The dashed ellipse names the already drawn closure [155].  The trivial neutral residual [169] reaches the proved closure [171] through the positive decision at [170], carrying both the graph-count inequalities and the exact overflow from [159].  The negative arm retains the first failed conditional graph-count inequality, its outside record and prefix, and every inherited fact, and stops at the open leaf [172a].  No overlap support or serial system has been constructed from that failure.  The proposed exact-lift and full-state arguments formerly numbered [172b] and [172c] are not live continuations.}
 \label{fig:proof-diagram-part-xii}
 \end{figure}
 
@@ -1322,26 +1414,29 @@ The table records every named object in the proof-dependency diagram.  The \emph
 44 & --- & Enumeration appendix & reproduces all finite constants including $c_{13}$ & constants are checkable & \cref{app:curv-code} \\
 52 & [158]--[168] & Dense-packing residual & the realization sentence of \cref{lem:p13-window-package} is decided at [158]; on its no-branch [159], [160] decides both the exact \(\tau(\theta)<1/4\) deficiency comparison and, on that yes-arm, the exact \(\tau(\theta)<3/13\) private-carrier comparison; only the double-yes arm enters [161], while either complement runs the hot/cold pass [162]; the neutral equal-length terminal configuration [163] is a symmetry, split into the canonical-replacement case closed by refined minimality [165]--[166] and the symmetric strand pair closed by the two-strand finite check [167]; the surviving symmetric pairs attach only at window endpoints and are never selected interior half-edges [168]; the all-cold comparison [164] closes by the remainder glue injection & closed only after every [162] continuation is discharged & \cref{def:window-realization-test}, \cref{lem:dense-deficiency-routing}, \cref{lem:dense-cold-pass}, \cref{def:neutral-equal-length-germ}, \cref{lem:neutral-germ-symmetry}, \cref{lem:refined-minimality-swap}, \cref{lem:two-strand-check}, \cref{lem:symmetric-pair-endpoint}, \cref{def:all-cold-comparison}, \cref{lem:remainder-glue-injection} \\
 53 & [173]--[177] & Small-order repair & node [56]'s collision is decided exactly on the object at [173]; its failure forces linearly many cold windows on the bounded arm of [153] whose corridors were charged as the configuration-extraction loss; [175] restores that charge: subcubic supports are genuine (F5) configurations [176], supports through a high-degree vertex are decorated handoff fan data entering Type B at [65] [177] & no sufficient-order condition remains & \cref{lem:exact-collision-test}, \cref{lem:absorbed-germ-fan-data} \\
-54 & [169]--[172] & Trivial neutral configuration: compression or typed overlap residual & the residual left by [166] is exposed barrier by barrier; additive conditional fibres give the blocked-class compression [171], while failure at one scale retains the failing fibre and minimal connected overlap support for [172a]; uncrossing alternatives (i)--(iv) carry their destination witnesses, and the serial alternative enters [172b]'s exact compatible central-lift test; its no-arm enters [172c] with the full finite state and routes only after producing the cold-table, G2, actual G3-representative, or declared-trace entry data & [155], [156], [157], [65], or [109], with the corresponding typed witness & \cref{def:blocked-class}, \cref{def:barrier-overlap-system}, \cref{lem:barrier-failure-overlap}, \cref{def:serial-window-system}, \cref{lem:window-system-realizability}, \cref{lem:serial-system-sumset}, \cref{lem:system-increment-arithmetic}, \cref{lem:scale-additivity}, \cref{lem:blocked-graphs-compress} \\
+54 & [169]--[172] & Trivial neutral configuration: proved additive closure or open counting residual & the residual left by [166] is exposed barrier by barrier; the uniform conditional graph-count inequalities give [171]; their first failure retains the outside record, earlier prefix, graph multiplicities, and inherited selected residual at the open leaf [172a]; no connected overlap support or serial system is yet produced & [171] closes its additive arm; [172a] has no proved outgoing transition & \cref{def:blocked-class}, \cref{def:barrier-overlap-system}, \cref{lem:barrier-failure-overlap}, \cref{def:serial-window-system}, \cref{lem:window-system-realizability}, \cref{lem:serial-system-sumset}, \cref{lem:system-increment-arithmetic}, \cref{lem:scale-additivity}, \cref{lem:blocked-graphs-compress} \\
 55 & [178]--[180], [182] & Pair-code unrealized residual & the entropy counts of [131] and of the free side of [137] are branch tests; on the covered arm their failure supplies a minimal connected pair overlap obstruction [178], an actual routed outcome or graph-realized serial demand system [179], and an actual routed periodic outcome or full-modulus arithmetic closure [180] & open only at [182], which retains the exact input and negation of the first uncovered implication & \cref{def:pair-overlap-system}, \cref{lem:pair-failure-overlap}, \cref{lem:pair-system-realizability}, \cref{lem:pair-system-increment-arithmetic}, \cref{lem:pair-count-or-arithmetic} \\
 56 & [181], [183] & Maximal-ledger exit-\textup{(4)} reduction & the failed reduced-rate stage retains the disjoint reduced/peeled entry partition, the exact identity \(4\tilde D_A=4\tilde D_A^{P_4}+p_4\), both burden inequalities, every recorded witness, the maximal demand and absorption ledgers, and the unique-window blocker partition; one-entry augmentation forces every unpaid entry to have at most two private carriers, while absence of an exit-\textup{(4)} witness routes to [124] & the sole surviving child is [183], on which both obstruction counts in \textup{(168.3)} are zero; no entry or inherited fact is discarded & \cref{lem:typeA-peeling-stage-accounting}, \cref{def:typeA-peeled-demand-residual}, \cref{thm:typeA-unpaid-exit4-reduction} \\
 57 & [183], [184] & Shortest-trace boundary-support reduction & on the literal retained unified entry, silence eliminates every actual-return ownership reading; the length-first canonical trace is induced and boundary-only, so its trace-complete basin has coordinate-independent response state and empty essential core & the incoming census contradiction \(0=\alpha(\xi)\ge2\) makes the exact silent-entry count zero; the unchanged family and full ledger reach [184] & \cref{lem:typeA-unified-visible-ownership} \\
 58 & [184], [185] & Visible-first prefix exhaustion & on the unchanged all-visible entry, absence of an overloaded port gives at most three visible loads per completion port, so the full visible block fits inside the retained payable prefix & the entry's visible ownership then contradicts its literal excess-basin membership; the non-overloaded count is zero and every entry receiver has a canonical actual visible-four package at [185] & \cref{lem:typeA-unified-visible-overload} \\
 59 & [185], [186] & Simultaneous residual accounting & reads the literal peel, deficit, demand, empty-dependence absorption, open-unit, and all-visible ledgers on one unchanged entry family & proves universal saturated-load visibility and the exact relations \textup{(168.15)}--\textup{(168.20)}, including the coupled open-pressure and peel bounds, and appends them at [186] & \cref{lem:typeA-unified-joint-balance} \\
-45 & [19], [20] & Non-near-cubic surplus branch & every survivor of the sparse surplus exits has the full active-demand family and, after an \(O(n)\)-deficit baseline demand is fixed, satisfies the exact capacity-token budget; the geometric same-token bottleneck lemma gives fixed homogeneous caps unless the load realizes a sparse surplus exit or ordinary Type B fan data, and the caps give \(\sigma(G)=O(\sqrt n)\) & derives the near-cubic spine before the normalized entropy budget is used, except for branches that are already routed to sparse exits or to the Type B fan ledger; blocker-free pair responses are charged by the exact cubic-baseline sandwich and the spine lower-bound deficits, while blocked pairs are assigned to capacity tokens; the exact token-fibre budget gives the load forced by any attempted violation, and \cref{lem:same-token-bottleneck-routing} turns a large homogeneous fibre into a geometric first-separator/fan route & \cref{lem:sparse-upper-envelope}, \cref{lem:sparse-slack-surplus}, \cref{def:named-surplus-exits}, \cref{def:active-surplus-demands}, \cref{lem:surviving-active-family}, \cref{def:surplus-blockers}, \cref{def:canonical-blocker-ledger}, \cref{lem:canonical-blocker-ledger-no-overcount}, \cref{def:primitive-sparse-blocker-carrier}, \cref{lem:primitive-carrier-supply}, \cref{def:capacity-token-ledger}, \cref{lem:capacity-token-supply}, \cref{lem:token-ledger-no-overcount}, \cref{def:same-token-patterns}, \cref{def:same-token-blocker-roles}, \cref{def:same-token-routing-germs}, \cref{lem:same-token-matching-star}, \cref{lem:same-token-homogeneous-extraction}, \cref{lem:same-token-bottleneck-routing}, \cref{thm:homogeneous-overload-geometric-closure}, \cref{cor:homogeneous-same-token-caps-close}, \cref{def:baseline-spine-demand}, \cref{lem:exact-cubic-baseline-budget}, \cref{lem:incremental-skeleton-room}, \cref{prop:sparse-entropy-sandwich}, \cref{prop:sparse-entropy-sandwich-with-blockers}, \cref{thm:tokenized-surplus-accounting-closure}, \cref{def:window-remainder-surplus-split}, \cref{lem:exact-window-join-identity}, \cref{cor:global-window-join-pressure}, \cref{prop:nonnear-cubic-sharp-overload-routing} \\
+45 & [19], [20] & Non-near-cubic surplus branch & the covered survivor of the sparse surplus exits has the full active-demand family and exact capacity-token budget; uncovered pair-code implications stop at [182], while a geometric same-token bottleneck gives the open Type B handoff [144a] or fixed caps and the near-cubic estimate & passes only the capped arm to the near-cubic spine before the normalized entropy budget is used, while [20a], [144a], and [182] retain their distinct source facts; blocker-free pair responses are charged by the exact cubic-baseline sandwich and the spine lower-bound deficits, while blocked pairs are assigned to capacity tokens; the exact token-fibre budget gives the load forced by any attempted violation, and \cref{lem:same-token-bottleneck-routing} turns a large homogeneous fibre into a geometric first-separator/fan route & \cref{lem:sparse-upper-envelope}, \cref{lem:sparse-slack-surplus}, \cref{def:named-surplus-exits}, \cref{def:active-surplus-demands}, \cref{lem:surviving-active-family}, \cref{def:surplus-blockers}, \cref{def:canonical-blocker-ledger}, \cref{lem:canonical-blocker-ledger-no-overcount}, \cref{def:primitive-sparse-blocker-carrier}, \cref{lem:primitive-carrier-supply}, \cref{def:capacity-token-ledger}, \cref{lem:capacity-token-supply}, \cref{lem:token-ledger-no-overcount}, \cref{def:same-token-patterns}, \cref{def:same-token-blocker-roles}, \cref{def:same-token-routing-germs}, \cref{lem:same-token-matching-star}, \cref{lem:same-token-homogeneous-extraction}, \cref{lem:same-token-bottleneck-routing}, \cref{thm:homogeneous-overload-geometric-closure}, \cref{cor:homogeneous-same-token-caps-close}, \cref{def:baseline-spine-demand}, \cref{lem:exact-cubic-baseline-budget}, \cref{lem:incremental-skeleton-room}, \cref{prop:sparse-entropy-sandwich}, \cref{prop:sparse-entropy-sandwich-with-blockers}, \cref{thm:tokenized-surplus-accounting-closure}, \cref{def:window-remainder-surplus-split}, \cref{lem:exact-window-join-identity}, \cref{cor:global-window-join-pressure}, \cref{prop:nonnear-cubic-sharp-overload-routing} \\
 46 & [125]--[129] & Sparse accounting setup & a sparse-load survivor yields the full active surplus family and an \(O(n)\)-deficit baseline demand & [129] fixes the common baseline used by the later sandwich & \cref{def:named-surplus-exits}, \cref{def:active-surplus-demands}, \cref{lem:surviving-active-family}, \cref{def:baseline-spine-demand} \\
 47 & [130]--[132] & Free/blocked pair split & pair-response coordinates split into blocker-free and blocked pairs; free pairs are charged by the entropy sandwich & blocked-pair debt is the only branch passed to the token ledger & \cref{def:sparse-pair-response}, \cref{lem:sparse-pair-dependence-exit}, \cref{prop:sparse-entropy-sandwich-with-blockers} \\
 48 & [132]--[136] & Blocker and token ledger & canonical blockers, primitive blocker supports, and capacity tokens count blocked pairs exactly once & [136] is the exact token-fibre partition and no-overcounting closure & \cref{def:surplus-blockers}, \cref{def:canonical-sparse-blocker-order}, \cref{def:canonical-blocker-ledger}, \cref{lem:canonical-blocker-ledger-no-overcount}, \cref{def:primitive-sparse-blocker-carrier}, \cref{lem:primitive-carrier-supply}, \cref{def:capacity-token-ledger}, \cref{lem:capacity-token-supply}, \cref{lem:token-ledger-no-overcount} \\
 49 & [135], [136] & Window-join load & the exact packed-window join identity supplies \(15p_{13}+\sigma_W\) and the surplus-aware window-stub load & supplies the window/remainder capacity side of the token ledger & \cref{def:window-remainder-surplus-split}, \cref{lem:exact-window-join-identity}, \cref{cor:global-window-join-pressure}, \cref{rem:surplus-pair-sharp-frontier} \\
 50 & [137]--[143] & Coupled high-load split & the single-graph high-load test splits the forced homogeneous pattern into window-incidence, remainder-surplus, and primitive-blocker-support token classes & [139]--[143] are the three token-class audits & \cref{def:same-token-patterns}, \cref{def:same-token-blocker-roles}, \cref{def:homogeneous-token-charge}, \cref{lem:exact-surplus-pair-charge-partition}, \cref{lem:same-token-matching-star}, \cref{thm:sharp-classwise-homogeneous-token-budget}, \cref{thm:tokenized-surplus-accounting-closure} \\
-51 & [140], [142]--[144] & Geometric bottleneck discharge & a large same-token fibre gives a homogeneous matching or star, then realizes a sparse exit, Type B fan data, or fixed homogeneous caps & [144] sends the branch to a sparse exit, Type B, or [138] & \cref{def:same-token-routing-germs}, \cref{lem:same-token-bottleneck-routing}, \cref{thm:homogeneous-overload-geometric-closure}, \cref{cor:homogeneous-same-token-caps-close} \\
+51 & [140], [142]--[144] & Geometric bottleneck discharge & a large same-token fibre gives a homogeneous matching or star, then realizes a sparse exit, Type B fan data, or fixed homogeneous caps & [144] sends the strict same-token handoff to [144a], its capped arm to [138], and other producer histories to [187] & \cref{def:same-token-routing-germs}, \cref{lem:same-token-bottleneck-routing}, \cref{thm:homogeneous-overload-geometric-closure}, \cref{cor:homogeneous-same-token-caps-close} \\
+60 & [20a] & Strict-surplus sparse target defect & the [20] exit retains surplusAbove, sparsePairExit, an attempted quotient with noninjective labels, identified reduced/full realizations differing on the target, and the structured witness & no target cycle in the selected graph is inferred; the exit is a named open residual & \cref{def:named-surplus-exits,thm:main} \\
+61 & [144a] & Same-token Type B handoff & the [144] handoff retains its overload pattern and capacity presentation, actual packing, core, decorated envelope, source pattern, strict-surplus ancestry, and typeBFanEntry & no homogeneous cap or near-cubic estimate follows on this arm & \cref{thm:homogeneous-overload-geometric-closure,thm:main} \\
+62 & [187] & Other returned outcomes & the four root keys typeBSublinearResidual, route8QuotientResidual, route8RateFails, and coldBranchClosed; the near-cubic sparse target defect with surplusAtOrBelow, and Type B entries with the [179] or [180] source key & one explicit aggregate disjunction; coldBranchClosed is a local exclusion and no case is asserted closed & \cref{thm:main} \\
 \bottomrule
 \end{longtable}
 }
 
 \subsection*{The constraint ledger}
 
-The reduction tracks a fixed list of \emph{invariants}: numbered structural constraints that a minimal counterexample $G$ must satisfy, together with the entropy or deficiency \emph{budget} each one spends and the labeled results that introduce or consume it.  Throughout, $G$ is the lexicographically minimal counterexample, so $\delta(G)\ge3$ and $R_e(G)\cap\Mers=\varnothing$ for every oriented edge.  Budgets quoted in the skeleton normalization $B_{\mathrm{skel}}=\tfrac32 n\log_2 n+o(n\log n)$ are used only after \cref{prop:nonnear-cubic-sharp-overload-routing} has either routed the non-near-cubic sparse-surplus branch to a closed ledger or supplied the near-cubic spine estimate of \cref{def:near-cubic-spine}.  We write $\theta=p_{13}/n$, with densities taken per $|R|$ or per $n$ as noted.  We recall the recurring parameters $\beta=m-n+1$ (cycle rank), $\lambda=2n-3-m$ (sparsity rank), $\sigma=2m-3n$ (surplus above cubic), and, for a boundaried piece $C$, its deficiency $d(C)=\sum_{v}(3-d_C(v))$.  The ledger is organized into blocks; the reverse (result~$\to$~invariant) view is given in the next subsection.
+The reduction tracks a fixed list of \emph{invariants}: numbered structural constraints that a minimal counterexample $G$ must satisfy, together with the entropy or deficiency \emph{budget} each one spends and the labeled results that introduce or consume it.  Throughout, $G$ is the lexicographically minimal counterexample, so $\delta(G)\ge3$ and $R_e(G)\cap\Mers=\varnothing$ for every oriented edge.  Budgets quoted in the skeleton normalization $B_{\mathrm{skel}}=\tfrac32 n\log_2 n+o(n\log n)$ are used only after \cref{prop:nonnear-cubic-sharp-overload-routing} has retained its named open exits or supplied the near-cubic spine estimate of \cref{def:near-cubic-spine}.  We write $\theta=p_{13}/n$, with densities taken per $|R|$ or per $n$ as noted.  We recall the recurring parameters $\beta=m-n+1$ (cycle rank), $\lambda=2n-3-m$ (sparsity rank), $\sigma=2m-3n$ (surplus above cubic), and, for a boundaried piece $C$, its deficiency $d(C)=\sum_{v}(3-d_C(v))$.  The ledger is organized into blocks; the reverse (result~$\to$~invariant) view is given in the next subsection.
 
 \paragraph{External inputs (black boxes).}
 The argument imports four external results; only the first enters the final
@@ -1544,7 +1639,7 @@ These manuscript results operate the obstruction invariants (25--29) without bei
 \cref{lem:typeA-unified-visible-ownership} & On the unchanged node-[183] entries, combines length-first shortest-path selection, chord elimination, exact ambient cubicity, and the trace-coordinate ownership dichotomy to prove that the silent subfamily has cardinality zero & \cref{thm:typeA-unpaid-exit4-reduction}, \cref{lem:typeA-unified-carriers}, \cref{def:typeA-trace-basin}, \cref{def:typeA-visible-load} \\
 \cref{lem:typeA-unified-visible-overload} & On the unchanged node-[184] entries, applies the completion-port capacity bound and the retained visible-first prefix to prove that the non-overloaded subfamily has cardinality zero and canonically selects an actual visible-four package at every entry receiver & \cref{lem:typeA-unified-visible-ownership}, \cref{def:typeA-visible-load}, \cref{lem:typeA-entry-budget}, \cref{def:typeA-excess-basin} \\
 \cref{lem:typeA-unified-joint-balance} & On the unchanged node-[185] residual, proves every saturated routed load visible and combines the exact peel, deficit, maximal demand, empty-dependence absorption, and open-unit ledgers into \textup{(168.15)}--\textup{(168.20)} & \cref{lem:typeA-unified-visible-ownership}, \cref{lem:typeA-unified-visible-overload}, \cref{lem:typeA-peeling-stage-accounting}, \cref{def:typeA-pressure-ledger}, \cref{def:typeA-pressure-absorbers}, \cref{lem:typeA-unified-deficit} \\
-\cref{thm:main} & Main closure target through sparse-surplus routing, the near-cubic entropy spine, the terminal two-support route-8 exclusion, and the pending residuals [182] and [186] (using HSS) & all spine invariants: 1--8, 15, 20--24, 25--29, 35--41, 43--44; \cref{prop:nonnear-cubic-sharp-overload-routing}, \cref{def:near-cubic-spine} \\
+\cref{thm:main} & Reduction through the strict sparse exit [20a], same-token Type B handoff [144a], [172a], [182], [186], and the explicit other-outcome disjunction [187] (using HSS) & all spine invariants: 1--8, 15, 20--24, 25--29, 35--41, 43--44; \cref{prop:nonnear-cubic-sharp-overload-routing}, \cref{def:near-cubic-spine} \\
 \bottomrule
 \end{longtable}
 }
@@ -1665,8 +1760,8 @@ Ledger-invariant numbers and diagram-node numbers are separate namespaces.  The 
 \cref{def:pair-overlap-system}, \cref{lem:pair-failure-overlap} & ENT\slash SURP & [178] \texttt{(pairunreal)}, [182] \texttt{(pairgap)} & \cref{prop:sparse-entropy-sandwich-with-blockers} & Conditional factorization of the actual skeleton model gives a minimal connected pair overlap obstruction; its exact failure is retained. & Starts the covered continuation or routes to [182]. \\
 \cref{lem:pair-system-realizability} & EXC\slash SURP & [179] \texttt{(pairserial)}, [182] \texttt{(pairgap)} & the exact [178] obstruction and canonical return package & A concrete target/sparse-exit/Type-B outcome, or a graph-realized serial demand system with bounded increments; failure of exhaustiveness is retained. & Routes the early outcome, passes the serial object to [180], or routes to [182]. \\
 \cref{lem:pair-system-increment-arithmetic}, \cref{lem:pair-count-or-arithmetic} & ENT\slash EXC & [180] \texttt{(pairclose)}, [182] \texttt{(pairgap)} & the exact graph-realized [179] serial system; \cref{lem:serial-system-sumset}, \cref{lem:cold-increment-arithmetic} & A concrete periodic sparse-exit/Type-B outcome, or full-modulus central-range arithmetic producing an actual power-of-two cycle; failure of exhaustiveness is retained. & Closes the covered arm or routes to [182]. \\
-\cref{def:blocked-class}, \cref{lem:blocked-graphs-compress} & ENT & [169] \texttt{(trivial)}, [171] \texttt{(compress)} & \cref{lem:p13-window-package}, \cref{lem:near-cubic-budget}, \cref{lem:scale-additivity} & The blocked class compresses by \((c_{13}-o(1))p\log_2 n\) bits, hence is empty for \(\theta>\theta_{\rm win}\). & The exact entropy step. \\
-\cref{def:barrier-overlap-system,lem:barrier-failure-overlap,def:serial-window-system,lem:window-system-realizability,lem:serial-system-sumset,lem:system-increment-arithmetic,lem:scale-additivity} & ENT\slash EXC & [170] \texttt{(additive)}, [172a]--[172c] \texttt{(overlap/exact lift/full state)} & \cref{app:curv-code}, \cref{lem:p13-window-package}, \cref{lem:cold-corridor-first-failure}, \cref{lem:cold-increment-arithmetic}; G2/G3 and declared Type A/Type B interfaces & The no-arm retains the failing fibre and connected minimal overlap support.  Uncrossing either produces a typed existing exit or a serial sumset.  The latter realizes a target only after \(2^a\mid L+r\), the normalized congruence modulo \(u\), and the \(r\)-specific central-range test; otherwise its full finite state is retained until a bounded row, context defect, actual proper deletion, or declared trace carrier is produced. & Routes every nonadditive fixed-scale residual with its destination-entry witness. \\
+\cref{def:blocked-class}, \cref{lem:blocked-graphs-compress} & ENT & [169] \texttt{(trivial)}, [171] \texttt{(compress)} & \cref{lem:p13-window-package}, \cref{def:window-realization-test}, \cref{lem:scale-additivity} (positive arm); blocked membership at [169] & The inherited graph-count bounds give \(|\mathcal B(\mathcal P)|2^{b_{\mathcal P}}\le|\mathcal G_{n,m}|\), contradicting the retained exact overflow from [159] and membership from [169]. & Proved terminal closure at [171]; no open hypothesis is consumed. \\
+\cref{def:barrier-overlap-system,lem:barrier-failure-overlap,def:serial-window-system,lem:window-system-realizability,lem:serial-system-sumset,lem:system-increment-arithmetic,lem:scale-additivity} & ENT\slash EXC & [170] \texttt{(additive)}, [172a] \texttt{(open counting residual)} & \cref{app:curv-code}, \cref{lem:p13-window-package}, \cref{lem:cold-corridor-first-failure}, \cref{lem:cold-increment-arithmetic}; G2/G3 and declared Type A/Type B interfaces & The negative arm retains a failed graph-count ratio, not a connected overlap support.  Absent completions, unequal graph multiplicities, and transfer from a comparison graph to the selected graph remain to be treated before uncrossing or serial arithmetic can be used. & Open at [172a]; there is no established input to the proposed [172b]--[172c] continuation. \\
 \cref{lem:p13-window-package} & ENT & [21] \texttt{(enum)} $\to$ [22] \texttt{(many)} & inv 1, 25; \cref{def:near-cubic-spine}; \cref{app:curv-code} & Converts the finite \(91\)-barrier computation into \((c_{13}-o(1))p_{13}\log_2 n\) independent window coordinates. & Names the load-bearing window package used by the density cap. \\
 \cref{def:cold-window-ledger,def:surviving-cold-branch,lem:hot-failure-cold-mass,def:cold-skeleton-excess,lem:cold-window-stub-excess,lem:cold-short-self-return-filter,def:cold-bounded-germ,def:cold-corridor-first-failure,lem:cold-corridor-first-failure,lem:cold-germ-extraction,lem:cold-bounded-germ-trichotomy,def:cold-same-interface-table,lem:cold-same-interface-table,lem:cold-increment-arithmetic,thm:cold-branch-quantitative-closure} & ENT\slash EXC & [145]--[157] \texttt{(cold)} & inv 1, 8, 14, 15, 35, 38; \cref{def:near-cubic-spine}; \cref{lem:p13-window-package}; \cref{prop:typeA-route8-carrier-reduction,thm:typeA-two-carrier-nogo,def:typeA-peeled-demand-residual} & Quantifies the hot/cold branch conditional on absence of node [181]: \(\theta<1/78\) closes the true route-8 terminal; hot failure gives \(C\ge(\theta-\theta_{\rm win})n-o(n)\), \(b_{\rm int}\ge9C-o(n)\), and \(N_{\rm conf}\ge9C/D_{\rm cold}-o(n)\); bounded configurations route by hit, defect, same-interface table, handoff, or compression. & Records the terminal cold-window closure used by the downstream large-budget route outside the explicit peeled-demand residual. \\
 \cref{prop:p13-density} & ENT & [24] \texttt{(theta)} & \cref{def:near-cubic-spine}; \cref{lem:p13-window-package}; \cref{lem:independent-target-entropy} & Independent induced-$P_{13}$ density $\theta\le\theta_{\rm win}$ after the surplus-token branch supplies the spine estimate, with sharper high-entropy cap $\theta\le0.011985$. & Kills the high-$P_{13}$ branch on the derived spine branch; forces a large remainder. \\
@@ -1799,7 +1894,7 @@ Ledger-invariant numbers and diagram-node numbers are separate namespaces.  The 
 \cref{lem:typeA-unified-visible-ownership} & EXC & [183] \texttt{(reduction)}, [184] \texttt{(consumed)} & \cref{thm:typeA-unpaid-exit4-reduction}, \cref{lem:typeA-unified-carriers}, \cref{def:typeA-trace-basin}, \cref{def:typeA-visible-load} & A silent entry forces its shortest canonical trace basin to be boundary-only and hence to admit the empty complete carrier, contradicting the retained \(\alpha\ge2\) census. & Retains the complete [183] ledger and appends the exact zero-cardinality silent residual at [184]. \\
 \cref{lem:typeA-unified-visible-overload} & EXC & [184] \texttt{(reduction)}, [185] \texttt{(consumed)} & \cref{lem:typeA-unified-visible-ownership}, \cref{def:typeA-visible-load}, \cref{lem:typeA-entry-budget}, \cref{def:typeA-excess-basin} & If an all-visible excess entry had no overloaded port, the port-cap count would put every visible load inside the retained visible-first payable prefix, contradicting that entry's excess membership. & Retains the complete [184] ledger, appends the zero non-overload count, and selects the canonical actual visible-four package at [185]. \\
 \cref{lem:typeA-unified-joint-balance} & EXC & [185] \texttt{(reduction)}, [186] \texttt{(open)} & \cref{lem:typeA-unified-visible-ownership}, \cref{lem:typeA-unified-visible-overload}, \cref{lem:typeA-peeling-stage-accounting}, \cref{def:typeA-pressure-ledger}, \cref{def:typeA-pressure-absorbers}, \cref{lem:typeA-unified-deficit} & Uses the exact visible-first order to upgrade [184] to all saturated routed loads, then eliminates the shared deficit and demand variables without subtraction. & Retains the complete [185] ledger and appends the exact joint balance at [186]. \\
-\cref{thm:main} & (root theorem) & [2] \texttt{(bad)} $\to$ [172a], [182], or [186] & \cref{thm:p13free} $+$ surplus-token routing $+$ all spine invariants & Every minimal counterexample either closes in an earlier branch or reaches one of the three explicit residuals [172a], [182], and [186]. & Main closure theorem; [172a], [182], and [186] are the pending local proof obligations. \\
+\cref{thm:main} & (root theorem) & [2] \texttt{(bad)} $\to$ [20a], [144a], [172a], [182], [186], or [187] & \cref{thm:p13free} $+$ surplus-token routing $+$ all spine invariants & Every minimal counterexample reaches [20a], [144a], [172a], [182], [186], or an explicit [187] case. & Reduction theorem; each endpoint retains its source facts and none is asserted closed. \\
 \bottomrule
 \end{longtable}
 }
@@ -7437,7 +7532,7 @@ for \(k\ge a\) the congruence reduces to the odd modulus \(u\).
 \textbf{Case} & \textbf{Trigger} & \textbf{Quantitative constraint} & \textbf{Charged resource} & \textbf{Outcome} \\
 \midrule
 \endhead
-0 & Sparse non-spine branch & \(\sigma(G)\) routes to sparse exit, Type B, or \(o(n)\) & sparse capacity-token ledger & closed or spine supplied \\
+0 & Sparse non-spine branch & \(\sigma(G)\) routes to sparse exit, Type B, or \(o(n)\) & sparse capacity-token ledger & named residual [20a], [144a], [187], or spine supplied \\
 1 & \(\theta<1/78\) & \(\tau(\theta)<3/13\) & route-8 support collision & closed \\
 2 & \(1/78\le\theta<1/73\) & delicate density interval & hot/cold branch & routed through rows 4--16 \\
 3 & \(\theta\ge1/73\) & \(\tau(\theta)\ge1/4\) & hot/cold branch & routed through rows 4--16 \\
@@ -7523,18 +7618,31 @@ records that test and the branch it opens.
 
 \begin{definition}[Window-package realization test]\label[definition]{def:window-realization-test}
 Let \(\mathcal P\) be the fixed maximal packing and let \(\mathcal G_{n,m}\)
-be the labelled skeleton class of \cref{lem:skeleton-dominates}.  The joint
+be the labelled skeleton class of \cref{lem:skeleton-dominates}.  For the
+\(L\) retained scales, put \(W_*:=\prod_{a,b}W_{a,b}\) and
+\(F_*:=\prod_{a,b}F_{a,b}\).  The exact integer length of the multi-scale
+window package in \cref{lem:p13-window-package} is
+\[
+ q_L:=\left\lfloor\frac{W_*^L-1}{F_*^L}\right\rfloor,
+ \qquad
+ b_{\mathcal P}:=p_{13}\left\lfloor\log_2\max\{1,q_L\}\right\rfloor.
+\]
+Thus \(2^{b_{\mathcal P}}\le(W_*/F_*)^{Lp_{13}}\), including
+\(L=0\).  Its asymptotic form is
+\(b_{\mathcal P}=(c_{13}-o(1))p_{13}\log_2 n\).
+The joint
 window package of \(\mathcal P\) is \emph{realized} if there is an
 assignment of target-complete states to labelled skeletons whose range has at
-least \(2^{c_{13}p_{13}\log_2 n}\) elements, i.e.\ if the full package
+least \(2^{b_{\mathcal P}}\) elements, i.e.\ if the full package
 code of \(\mathcal P\) is realized canonically by \(\mathcal G_{n,m}\).
 Node [158] decides this.  Its yes-branch is the hot/cold split [22] as
 written; its no-branch is the \emph{dense-packing residual} [159], on which
 \[
-2^{c_{13}p_{13}\log_2 n}>|\mathcal G_{n,m}|,
-\qquad\text{equivalently}\qquad
-\theta>\theta_{\rm win}+o(1).
+2^{b_{\mathcal P}}>|\mathcal G_{n,m}|.
 \]
+This exact strict inequality is retained through [169] and [170].  The
+notation \(\theta>\theta_{\rm win}+o(1)\) describes its asymptotic density
+form; the terminal comparison at [171] uses the exact inequality.
 \end{definition}
 
 \begin{lemma}[Dense deficiency routing]\label[lemma]{lem:dense-deficiency-routing}
@@ -7850,22 +7958,20 @@ what the linear arm extracts and closes.
 \end{proof}
 
 \begin{remark}[No sufficient-order condition]\label[remark]{rem:no-sufficient-order}
-With nodes [173]--[177] the collision of node [56] is decided exactly on
-every residual and the absorbed configurations are charged to the ledger that closes
-them.  Consequently the sufficient-order reading of node [57] (\(n\ge N_0\))
-is never used: every asymptotic allowance of the near-cubic spine has been
-replaced by the corresponding exact quantity of the residual, and the theorem
-is proved for all orders.
+Nodes [173]--[177] test the collision of node [56] using exact quantities
+and retain the accounts for absorbed configurations on their respective
+continuations.  Thus this reduction does not impose the sufficient-order
+condition \(n\ge N_0\) at node [57].  Its complementary residuals remain
+subject to the exact six-alternative boundary of \cref{thm:main}.
 \end{remark}
 
 \subsection{The trivial neutral configuration: compression closure, nodes [169]--[172]}
 
 After nodes [165]--[168] the dense residual is left with the case \(Q=E\):
 every selected corridor is terminal, neutral, and its own canonical
-representative.  No bounded local test sees anything wrong with such a graph:
-this residual is exactly the one on which the manuscript's entropy sentence
-does its work.  We make that sentence exact as a compression statement, and we
-isolate the one step that carries it.
+representative.  The compression argument on this residual requires the
+conditional graph-count inequalities tested at [170].  We prove the estimate
+on their positive arm and retain their first failure at [172a].
 
 \begin{definition}[Blocked class]\label[definition]{def:blocked-class}
 Fix the vertex set \(V(G)\), the edge count \(m\), and the fixed maximal packing
@@ -7908,29 +8014,50 @@ union of its completion supports and the intervening window segments; a
 disconnected union is treated componentwise.
 \end{definition}
 
-\begin{lemma}[Failure of additivity produces a local overlap obstruction]
+\begin{lemma}[Proposed overlap implication; open at node 172a]
 \label[lemma]{lem:barrier-failure-overlap}
 If the conditional saving \(\gamma_{a,b}\) fails to add across the windows at
 the fixed scale \(2^j\), then the current conditional fibre contains a minimal
 barrier overlap obstruction.  Its overlap support is connected.
 \end{lemma}
 
-\begin{proof}
-For a family whose canonical completion supports are pairwise disjoint outside
-their root windows, changing the state at one root changes no label, outside
-edge, or completion path occurring in another root state.  The finite
-calculation of \cref{app:curv-code} therefore applies after conditioning on all
-the other root states and leaves at most \(F_{a,b}\) of the \(W_{a,b}\) local
-states.  Exposing such coordinates in any order gives the product bound.
+\noindent\emph{Status and first missing construction.}
+The displayed implication is an open obligation, not a proved lemma.  Write
+\(A_{d,q,c}\) for the a-priori \emph{graph} fibre with outside record \(d\)
+and earlier prefix \(q\), and \(S_{d,q,c}\subseteq A_{d,q,c}\) for the graphs
+surviving the test at coordinate \(c=(P,j,a,b)\).  The literal failure retained
+at [172a] is
+\[
+ F_{a,b}|A_{d,q,c}|<W_{a,b}|S_{d,q,c}|.
+\]
+It also retains the earlier successful inequalities and the full selected
+residual.  This inequality does not by itself produce completion supports.
+If every graph in the fibre has no completion, the absent-completion state
+survives and \(S_{d,q,c}=A_{d,q,c}\).  Whenever \(F_{a,b}<W_{a,b}\), every
+nonempty such fibre fails the ratio without supplying an overlap.
+Even when completions are present, a bound on the number of surviving state
+values is not a bound on their graph multiplicities: two of three graphs may
+have the single surviving value among two realized values.
 
-Consequently, failure of the product bound is witnessed by a finite family for
-which no exposure order works.  Choose one minimal by cardinality.  If its
-overlap support were disconnected, expose the connected components one at a
-time.  States in distinct components have disjoint declared supports, while
-minimality supplies an admissible order inside each proper component.
-Concatenating these orders would give an admissible order for the whole family,
-a contradiction.
-\end{proof}
+The former proposed proof applied the finite label table after conditioning
+and inferred a product bound from disjoint supports.  The first unresolved
+step is a graph-count comparison establishing that inference, with absent
+completions and multiplicities accounted for.  Only after such a comparison
+could cardinality-minimality and connectedness of an actual overlap be used.
+Moreover, the graph selecting \((d,q)\) is an arbitrary member of
+\(\mathcal B(\mathcal P)\); the selected graph's minimality and neutral-piece
+facts cannot be transferred to it without a proof.
+No transition to a serial system, an exact lift, or a full-state routing step
+is asserted here.  The former diagram nodes [172b] and [172c] describe proposed
+downstream arguments whose graph input has not been constructed; they are
+therefore absent from the live proof graph.
+
+\paragraph{Status of the proposed geometric continuation.}
+The definitions and arguments through \cref{lem:system-increment-arithmetic}
+below record the proposed continuation after constructing an overlap support.
+They are retained for further work and are not invoked to close [172a] in
+\cref{thm:main}.  The proved counting decision and positive-branch
+closure resume at \cref{lem:scale-additivity}.
 
 \begin{definition}[Serial window system and system increments]
 \label[definition]{def:serial-window-system}
@@ -8202,90 +8329,109 @@ restores the full modulus, and the explicit coefficient check determines
 whether alternative~\textup{(a)} holds.
 \end{proof}
 
-\begin{lemma}[Scale additivity or arithmetic closure; node [170]]\label[lemma]{lem:scale-additivity}
-Let \(2^{j_1}<2^{j_2}<\dots<2^{j_L}\), \(L=\lfloor\log_2 n\rfloor-O(1)\), be
-the separated dyadic scales of \cref{lem:p13-window-package}.  For a graph
-\(H\in\mathcal B(\mathcal P)\), a scale \(2^{j}\) and a barrier \((a,b)\), the
-\((a,b)\)-barrier state of a window \(P\) at scale \(2^j\) is the triple
-\((S,A,T)\) of labels of \(P\) and of the two windows reached from it by
-outside paths of lengths \(a\) and \(b\), read together with the edge-rooted
-Mersenne completion of \(P\) at that scale.  The lemma asserts: conditional on
-the edges of \(H\) outside the window interiors, on all barrier states at the
-scales \(2^{j_1},\dots,2^{j-1}\), and on the barrier states of the other windows
-at scale \(2^j\), the \((a,b)\)-barrier state of \(P\) at scale \(2^j\) lies in a
-set of relative size at most \(F_{a,b}/W_{a,b}\) of its a-priori range.  Exactly
-one of the following occurs:
+\begin{lemma}[Exhaustive graph-count decision; node 170]\label[lemma]{lem:scale-additivity}
+Fix the separated dyadic scales and the canonical scale/window/barrier
+exposure order.  For each outside record \(d\) and prefix \(q\) reached by a
+member of \(\mathcal B(\mathcal P)\), let \(A_{d,q,c}\) be the a-priori
+near-cubic graph fibre before the test at coordinate \(c=(P,j,a,b)\), and let
+\(S_{d,q,c}\) be its surviving subfamily.  An absent completion is retained as
+an absent state, not counted as a present safe triple.  Exactly one of the
+following occurs:
 \begin{enumerate}[label=(\alph*), leftmargin=2.2em]
-\item every such conditional fibre satisfies this bound, so the savings
-\(\gamma_{a,b}=\log_2(W_{a,b}/F_{a,b})\) add over the barriers, the \(L\)
-scales, and the \(p\) windows;
-\item at the first failing coordinate, retain the fixed scale, barrier,
-outside record, previously exposed prefix, and failing conditional fibre.
-\Cref{lem:barrier-failure-overlap} then supplies its cardinality-minimal
-connected overlap support, which enters the node-[172] subdiamond of
-\cref{lem:window-system-realizability,lem:system-increment-arithmetic}.
+\item At every reached outside record and prefix,
+\[
+ W_{a,b}|S_{d,q,c}|\le F_{a,b}|A_{d,q,c}|.
+\]
+These inequalities are retained as established facts on the positive
+branch.  Together with its inherited dense overflow and blocked membership,
+they give the closure at [171] in \cref{lem:blocked-graphs-compress}.
+\item There is a first coordinate where this inequality fails.  Retain its
+scale, barrier, outside record, earlier prefix, the blocked member selecting
+that record and prefix, and the strict reverse inequality, together with all
+earlier successful bounds and the complete incoming selected residual.
+This alternative ends at the open leaf [172a].
 \end{enumerate}
+The finite table alone does not establish alternative~\textup{(a)}.
 \end{lemma}
 
 \begin{proof}
-This is the exact form of the two sentences of \cref{lem:p13-window-package}
-``the multi-scale package uses \(\lfloor\log_2 n\rfloor-O(1)\) separated dyadic
-scales for these finite barriers'' and ``the product of the target-complete
-states on the distinct windows is therefore again target-complete''.  Within one
-window and one scale the relative-size bound is the finite computation of
-\cref{app:curv-code}: among the locally safe triples \((S,A,T)\) exactly the
-fraction \(F_{a,b}/W_{a,b}\) survives the composed test, and blockedness at
-scale \(2^j\) is that test.  Across scales the separation of the scales makes
-the completions at scale \(2^{j}\) disjoint from those at the smaller scales.
-
-At one scale, expose the window states in the canonical order.  If every
-conditional fibre has relative size at most \(F_{a,b}/W_{a,b}\),
-multiplication of the conditional fibre sizes gives the claimed saving.
-Otherwise retain the first failing coordinate and its complete conditional
-data.  \Cref{lem:barrier-failure-overlap} supplies the cardinality-minimal
-connected overlap obstruction required by alternative~\textup{(b)}.
-\Cref{lem:window-system-realizability} routes its alternatives
-\textup{(i)}--\textup{(iv)} with their witnesses and supplies the
-scale-spanning serial window system in alternative~\textup{(v)}.
-\Cref{lem:system-increment-arithmetic} applies the exact-lift/full-state split
-to that system.  Thus no untyped negation of the additive conclusion is used
-as the input to node~[172].  On alternative~\textup{(a)}, multiplying over the
-separated scales and the finite barrier list proves the asserted saving.
+Test the finitely many conditional graph-count inequalities in exposure order.
+If they all hold, alternative~\textup{(a)} holds.  Otherwise choose the first
+failing coordinate and retain a reached outside record and prefix witnessing
+its failure.  This is alternative~\textup{(b)}.  Constructing a connected
+overlap support from that graph-count failure is the open obligation
+\cref{lem:barrier-failure-overlap}; it is not a conclusion of this decision.
 \end{proof}
 
-\begin{lemma}[Blocked graphs compress; node [171]]\label[lemma]{lem:blocked-graphs-compress}
-Assume \cref{lem:scale-additivity}.  Then
+\begin{lemma}[Compression closure on the additive branch; node 171]\label[lemma]{lem:blocked-graphs-compress}
+The complete positive branch of \cref{lem:scale-additivity}, reached from
+the residual at [169], is empty.  Its uniform graph-count bounds are
+established by the positive decision at [170]; its blocked membership and
+exact dense overflow are retained from [169] and [159], respectively.
+The graph-count bounds give
+\[
+ |\mathcal B(\mathcal P)|\,2^{b_{\mathcal P}}
+ \le |\mathcal G_{n,m}|,
+\]
+whose asymptotic form is
 \[
 |\mathcal B(\mathcal P)|\;\le\;|\mathcal G_{n,m}|\cdot
 2^{-(c_{13}-o(1))\,p_{13}\log_2 n},
 \qquad c_{13}=\sum_{a,b}\gamma_{a,b}.
 \]
-In particular, if \(\theta=p_{13}/n>\theta_{\rm win}+o(1)\), then
-\(|\mathcal B(\mathcal P)|<1\), so \(\mathcal B(\mathcal P)=\varnothing\) and the
-trivial neutral-configuration residual is empty.
+The inherited strict inequality
+\(2^{b_{\mathcal P}}>|\mathcal G_{n,m}|\) gives
+\(|\mathcal B(\mathcal P)|<1\), contradicting the retained membership
+\(G\in\mathcal B(\mathcal P)\).
 \end{lemma}
 
 \begin{proof}
-Encode \(H\in\mathcal B(\mathcal P)\) as follows.  First record the edges of
-\(H\) outside the window interiors and the window positions; the number of
-choices is at most \(|\mathcal G_{n,m}|\) times the number of ways to place the
-fixed windows, which is absorbed in the \(o(1)\).  Then, scale by scale from
-\(2^{j_1}\) to \(2^{j_L}\) and window by window, record the barrier states of
-\(H\).  By \cref{lem:scale-additivity} the state of window \(P\) at scale
-\(2^j\) for the barrier \((a,b)\), given everything already recorded, ranges
-over at most a fraction \(F_{a,b}/W_{a,b}\) of its a-priori range, so it costs
-\(\log_2 W_{a,b}-\gamma_{a,b}\) bits instead of \(\log_2 W_{a,b}\).  The map
-\(H\mapsto\) (outside edges, window positions, all barrier states) is injective,
-because the barrier states of all windows at all scales together with the
-outside edges determine the window interiors and their incidences.  Summing the
-savings gives \(\sum_{a,b}\gamma_{a,b}\cdot L\cdot p_{13}=(c_{13}-o(1))p_{13}\log_2 n\)
-bits below \(\log_2|\mathcal G_{n,m}|+o(n\log n)\).  Since
-\(\log_2|\mathcal G_{n,m}|=\tfrac32 n\log_2 n+o(n\log n)\) by
-\cref{lem:near-cubic-budget}, the bound is \(<0\) exactly when
-\(c_{13}\,\theta>\tfrac32\), i.e.\ \(\theta>\theta_{\rm win}\), and a class with
-fewer than one element is empty; \(G\in\mathcal B(\mathcal P)\) is then
-impossible.
+Write the exposure coordinates as \(c_1,\ldots,c_N\), with table counts
+\(W_i,F_i>0\).  Let \(A_k\) consist of the a-priori near-cubic graphs whose
+outside record and first \(k\) states agree with those of some blocked
+member.  Then
+\[
+ |A_0|\le|\mathcal G^{\delta\ge3}_{n,m}|\le|\mathcal G_{n,m}|,
+ \qquad |\mathcal B(\mathcal P)|\le|A_N|.
+\]
+Partition \(A_{k-1}\) by its outside record and realized prefix.  Every
+member of \(A_k\) survives test \(c_k\), since its state agrees with a blocked
+member's state.  Applying the graph-count bound retained from [170] in each part and
+summing over the disjoint parts gives
+\[
+ W_k|A_k|\le F_k|A_{k-1}|.
+\]
+Multiplication and cancellation of the positive table counts yield
+\[
+ |\mathcal B(\mathcal P)|\prod_{i=1}^N W_i
+ \le |\mathcal G_{n,m}|\prod_{i=1}^N F_i.
+\]
+There is one coordinate per barrier, separated scale, and packed window, so
+\[
+ \log_2\prod_{i=1}^N\frac{W_i}{F_i}
+ =Lp_{13}\sum_{a,b}\gamma_{a,b}
+ =(c_{13}-o(1))p_{13}\log_2 n.
+\]
+Before asymptotic notation, the certified table product bounds the exact
+package by
+\(2^{b_{\mathcal P}}\le\prod_{i=1}^N W_i/F_i\).  The product inequality
+therefore proves the stated exact compression bound.  The strict reverse
+budget comparison is already present from [159], by
+\cref{def:window-realization-test}.  Hence
+\[
+ 1\le|\mathcal B(\mathcal P)|
+ \le\frac{|\mathcal G_{n,m}|}{2^{b_{\mathcal P}}}<1,
+\]
+which closes [171].  No conclusion from [172a] or its proposed descendants
+is used.
 \end{proof}
+
+\noindent\emph{Branch status.}
+Node [170] is a proved exhaustive decision and [171] is a proved terminal
+closure on its full incoming branch.  The word ``conditional'' in a
+conditional graph fibre refers to fixing its outside record and earlier
+prefix.  It does not mark [171] as an unresolved theorem.  The entire
+unresolved negative arm is retained at the open leaf [172a].
 
 \begin{remark}[Two checks on the blocked class]\label[remark]{rem:blocked-class-checks}
 \emph{(a) The class must be near-cubic.}  If \(\mathcal B(\mathcal P)\) were
@@ -8299,32 +8445,41 @@ in the class of labelled graphs with minimum degree at least three, where the
 fifteen external stubs of every ambient-cubic window are forced; this is the
 structure not charged by \(\binom{\binom n2}{m}\), and it is why
 \cref{def:blocked-class} carries the minimum-degree clause.
-\emph{(b) A consistency check of the constant.}  In the near-cubic class one
-can build blocked graphs by making the incidence structure between windows and
-the components of \(G-\bigcup V(P)\) a forest (then no cycle passes through a
-window); the degree constraints force components with \(s\) stubs to have
-at least \(1,4,5\) vertices for \(s=3,2,1\), and the count shows such graphs
-exist only for \(\theta\le1/81\).  Since \(1/81<\theta_{\rm win}=1/78.7\ldots\),
-this family does not contradict \cref{lem:blocked-graphs-compress}; it shows
-that the threshold cannot be lowered below \(1/81\) by this route.  Above that
-threshold a nonforest window-incidence system can survive only through
-overlapping long completions.  The fixed-scale overlap and system-increment
-lemmas charge precisely that case, without assigning the same completion
-saving independently to every window that it traverses.
+\emph{(b) Minimum degree does not supply the missing graph-count bounds.}
+The explicit construction supplied by edo in the note
+\emph{A counterexample to the blocked-class bound as stated}
+(20 September 2026) gives cubic graphs with
+\(n=66p\), \(m=99p\), and a maximum induced-\(P_{13}\) packing of size \(p\).
+Each block is a chain of seven triangles with nine pendant subdivided-edge
+\(K_4\) gadgets.  Every cycle meeting its specified window is a triangle;
+the gadgets contain four-cycles away from the window.  These graphs belong
+to \(\mathcal B(\mathcal P)\), at density \(1/66>\theta_{\rm win}\).
+Consequently the displayed compression estimate cannot hold on the whole
+defined class without its additional conditional graph-count hypothesis.
+The former incidence discussion and its \(1/81\) threshold did not justify
+such an estimate or the claimed existence of overlapping completions.
+Indeed, in this construction every component outside the window has at most
+two vertices adjacent to it, whereas the positive two-arm completion support
+requires three distinct such vertices in one component.  Supports are absent
+at every scale.  This obstruction concerns the defined counting class; it
+is not a graph satisfying the full selected residual or a counterexample to
+the Erd\H{o}s--Gy\'arf\'as conjecture.
 \end{remark}
 
 \begin{remark}[Where the entropy sentence lives]\label[remark]{rem:entropy-lives-here}
-Nodes [169]--[172] are the exact location of the manuscript's final
-window-system step.  Disjoint conditional fibres close by the compression of
-\cref{lem:blocked-graphs-compress}.  A failure of disjointness is charged once
-to its minimal connected completion support and closes by
-\cref{lem:window-system-realizability,lem:system-increment-arithmetic}; no
-global completion is charged separately at each window that sees it.
+Nodes [169]--[172a] locate the proved additive-branch closure and its open
+complement.  The graph-count inequalities of the additive arm imply
+\cref{lem:blocked-graphs-compress}.  Their failure is retained at the open
+leaf [172a]; it is not itself a completion-support overlap.
+\Cref{lem:window-system-realizability,lem:system-increment-arithmetic}
+describe the proposed geometric continuation, whose input has not been
+constructed on this residual.
 \end{remark}
 
-\begin{proposition}[Near-cubic $P_{13}$ window density bounds]\label[proposition]{prop:p13-density}
-Under \cref{def:near-cubic-spine}, every maximal independent induced-$P_{13}$
-packing satisfies the window-only bound
+\begin{proposition}[Conditional near-cubic $P_{13}$ window density bounds]\label[proposition]{prop:p13-density}
+Assume \cref{def:near-cubic-spine}, and let a fixed maximal independent
+induced-$P_{13}$ packing satisfy the positive window-package realization
+test of \cref{def:window-realization-test}.  Then it satisfies the window-only bound
 \[
 \theta\le
 \theta_{\rm win}+o(1),
@@ -8332,12 +8487,13 @@ packing satisfies the window-only bound
 \theta_{\rm win}:=\frac{1.5}{118.108581006}
 =0.01270017798\ldots .
 \]
-In the high-entropy branch of \cref{prop:two-budget}, where the remainder also
-contributes $\frac1{10}\log_2 n$ bits per remainder vertex, the sharper bound is
+When the joint comparison in the high-entropy branch of \cref{prop:two-budget}
+also holds, with $\frac1{10}\log_2 n$ additional independently counted bits per
+remainder vertex, the sharper bound is
 \[
 \theta\le 0.01198542083\ldots+o(1).
 \]
-Consequently, under \cref{def:near-cubic-spine},
+Consequently, under the window-only hypotheses above,
 \[
 |R|\ge(1-13\theta_{\rm win})n-o(n)
 =0.83489768623\ldots n-o(n),
@@ -8359,9 +8515,9 @@ By \cref{lem:p13-window-package}, the window coordinates alone contribute
 \[
 \bigl(118.108581006-o(1)\bigr)\,p_{13}\log_2 n
 \]
-bits.  Since all target-complete window states are realized by labelled
-near-cubic skeletons under \cref{def:near-cubic-spine},
-\cref{lem:independent-target-entropy,lem:skeleton-dominates} give
+bits in its finite package.  The assumed positive realization test and
+\cref{lem:skeleton-dominates} compare that package with the labelled
+near-cubic skeleton budget, giving
 \[
 \bigl(118.108581006-o(1)\bigr)\,p_{13}\log_2 n
 \le \frac32 n\log_2 n+o(n\log n).
@@ -8374,8 +8530,8 @@ remainder contributes at least
 \[
 \frac{n-13p_{13}}{10}\log_2 n
 \]
-additional independently target-testable bits.  Adding this contribution to
-the window package and comparing with the same skeleton budget gives
+additional independently target-testable bits.  The assumed joint comparison
+with the window package and the same skeleton budget gives
 \[
 \frac{n-13p_{13}}{10}\log_2 n
 {}+
@@ -8400,13 +8556,15 @@ monotonicity of this expression on $0\le\theta<1/13$.
 \end{proof}
 
 \paragraph{Framework branch table.}
-The \(P_{13}\)-window entropy and hot/cold closure uses the following branch
-table.
+The \(P_{13}\)-window entropy and hot/cold analysis uses the following branch
+table.  The package comparison is tested before use.  Its dense failure
+enters Part XII.  Node [171] closes the positive branch of [170] using its
+retained facts; the first failed graph-count bound reaches [172a].
 \begin{longtable}{L{0.13\textwidth} L{0.19\textwidth} L{0.14\textwidth} L{0.14\textwidth} L{0.17\textwidth} L{0.17\textwidth}}
 \FrameworkBranchTableHeader
 Window package
 &
-Packed windows are active after the sparse surplus exits.
+Packed windows satisfy the positive package comparison after the sparse surplus exits.
 &
 Independent window coordinates.
 &
@@ -18283,6 +18441,10 @@ to 180 nodes as gaps were found and new branches were added to close them by
 the same general strategy.  The node-by-node translation is ongoing: each node
 is being formalized separately in order to force the models to account for its
 hypotheses, dependencies, and conclusion within a modular proof state.
+The current explorer has 189 live nodes: five individually named open
+residuals [20a], [144a], [172a], [182], and [186], together with [187],
+which aggregates the other returned outcomes.  This version of the manuscript states the corresponding
+reduction and its unresolved obligations explicitly.
 
 The author's role throughout was to select the problem and research direction,
 propose and revise ideas, request explanations and counterexamples, design the

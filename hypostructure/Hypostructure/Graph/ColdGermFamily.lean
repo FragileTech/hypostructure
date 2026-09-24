@@ -657,8 +657,8 @@ end Corridor
 /-! ## The selected branch-excess half-edges and their germs
 
 `def:cold-skeleton-excess`: *"keep one incident half-edge for every edge of `G`
-leaving `P` … the first two stubs of `P` are called the transit stubs; the
-remaining `s(P)−2` stubs are the selected branch-excess half-edges of `P`."*
+leaving `P`"*, with `s_int(P)` the number of external stubs whose endpoint in
+`P` is an interior vertex of the path and `b_int(P) := max{0, s_int(P) − 2}`.
 Node `[168]` applies the manuscript's endpoint repair by selecting from the
 eleven interior single-stub incidences and absorbing two corridor ends. -/
 

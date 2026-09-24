@@ -112,7 +112,7 @@ noncomputable def boundaryIncidence (object : FiniteObject.{u})
 /-- **`lem:surplus-aware-window-stub`, first inequality.**
 `def⁺(R) ≤ e(R, W)`.
 
-The manuscript's argument verbatim: on the standing baseline every vertex of
+The manuscript's argument, paraphrased: on the standing baseline every vertex of
 the remainder already has ambient degree at least `δ`, so it is deficient
 *inside* the remainder only because some of its incidences leave.  Writing
 `d_G(v) = d_R(v) + e_v` gives `max{0, δ − d_R(v)} ≤ e_v` pointwise, and summing

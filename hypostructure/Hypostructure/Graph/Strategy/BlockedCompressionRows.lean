@@ -3,7 +3,7 @@ import Hypostructure.Graph.Strategy.SpineVocabulary
 /-!
 # Node `[170]`: `lem:scale-additivity`
 
-`lem:scale-additivity` decides, on the trivial neutral germ residual of node
+`lem:scale-additivity` decides, on the trivial neutral-configuration residual of node
 `[169]` (`K .blockedClassMember`, `def:blocked-class`), whether the conditional
 savings of the barrier states add at every fixed scale.  The barrier states
 themselves, their completion supports and their conditional fibres are

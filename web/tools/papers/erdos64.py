@@ -23,7 +23,8 @@ PART_TITLES = {
 # it, and the joins are stated in the figure captions rather than drawn.
 # Source: the captions of Parts I-XII (Part V also joins [177] to Type B [65]).
 CONTINUATIONS = (
-    ("20", "125", "surplus-pair accounting branch, expanded in Part X"),
+    ("20", "125", "strict sparse-exit survivor, expanded in Part X"),
+    ("19", "187", "no: near-cubic sparse target-defect exit with surplusAtOrBelow"),
     ("158", "159", "no: dense-packing residual, expanded in Part XII"),
     ("161", "25", "deficiency cap in place of [24]: enters Residual A in Part II"),
     ("22", "145", "no: cold branch, expanded in Part XI"),
@@ -52,7 +53,8 @@ PART_SUMMARIES = {
         "a Mersenne return. Minimality then forces the graph to be edge-critical with its "
         "high-degree vertices independent, and an external theorem forces it to contain "
         "induced thirteen-vertex paths. Packing those paths splits the graph into windows "
-        "and a remainder, and everything after this is an accounting contest between the two."
+        "and a remainder. The strict-surplus sparse exit retains the target-defect "
+        "quotient at the open endpoint [20a]; its survivor continues at [125]."
     ),
     "fig:proof-diagram-part-ii": (
         "Measures the remainder. It is large, contains no cubic core of its own, and its "
@@ -116,11 +118,10 @@ PART_SUMMARIES = {
         "Handles the graphs that are not near-cubic, before the entropy budget is spent. "
         "The excess surplus is extracted as ports and charged through a ledger of blockers "
         "and capacity tokens that counts each blocked pair exactly once. Overloading any "
-        "token class forces a geometric structure that either exits or caps the surplus, "
-        "which is what puts the graph on the near-cubic spine. The two entropy counts are "
-        "branch tests: when either fails, the pair-code unrealized residual is closed by "
-        "structural accounting, a minimal overlap obstruction uncrossed into a serial demand "
-        "system whose increment arithmetic yields a power-of-two hit or a periodic response class."
+        "token class forces a same-token pattern. The actual Type B handoff remains "
+        "open at [144a]; only the capped arm reaches the near-cubic spine. The two entropy "
+        "counts are branch tests. An uncovered pair-code implication reaches [182], while "
+        "Type B entries from [179] and [180] retain their own source facts in [187]."
     ),
     "fig:proof-diagram-part-xi": (
         "Handles the cold windows set aside at the hot/cold split. If the packing is sparse "
@@ -138,9 +139,10 @@ PART_SUMMARIES = {
         "of that pass fires as before. The all-cold arm closes by the remainder glue. The "
         "neutral equal-length configuration splits on whether its second strand is genuine: if not, "
         "swapping the canonical replacement in gives a same-size counterexample, so refined "
-        "minimality forces the trivial neutral residual, which closes by compression when "
-        "the conditional savings are additive and by the serial-system increment arithmetic "
-        "otherwise; if so, a finite two-strand check either finds a power-of-two cycle or leaves a "
+        "minimality forces the trivial neutral residual. Compression closes only when the "
+        "conditional graph-count bounds hold; their failure ends at the open leaf [172a], "
+        "without a constructed overlap or serial system. If the second strand is genuine, "
+        "a finite two-strand check either finds a power-of-two cycle or leaves a "
         "pair attached only at endpoints, which is not a selected interior half-edge."
     ),
 }
@@ -163,8 +165,8 @@ CHAPTER = ChapterSpec(
     prefix="",
     source="to_formalize/erdos_64_proof.tex",
     title="Powers of two in graphs of minimum degree three",
-    short_title="The proof",
-    description="A single manuscript, drawn as twelve dependency panels.",
+    short_title="The reduction",
+    description="Any counterexample reaches a selected minimal counterexample in one of five named residuals or the explicit [187] other-outcomes disjunction, drawn as twelve dependency panels.",
     diagrams=(
         "\\subsection*{Proof-dependency diagram}",
         "\\subsection*{Detailed dependency table}",
@@ -256,7 +258,7 @@ CHAPTER = ChapterSpec(
 SPEC = ProofSpec(
     id="erdos-gyarfas-64",
     slug="erdos-gyarfas",
-    title="Every graph with minimum degree three has a cycle of length a power of two",
-    subtitle="An interactive walk through the proof-dependency diagram of the original paper",
+    title="The Erdős–Gyárfás power-of-two cycle conjecture",
+    subtitle="A conditional reduction to five named residuals and the explicit [187] other-outcomes disjunction",
     chapters=(CHAPTER,),
 )

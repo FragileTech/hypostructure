@@ -641,19 +641,39 @@ theorem degree_identifyInternal_of_common (piece : BoundaryPiece boundary)
   rw [sourceCard]
   exact drop
 
-/-- Folding two cubic vertices with at most one common neighbour leaves the
-surviving folded vertex with degree at least three. -/
-theorem three_le_degree_identifyInternal_foldedKeep
+/-- **Folding two origins with no common neighbour keeps the surviving folded
+vertex above the threshold.**  The image of its neighbourhood is the disjoint
+union of the two source neighbourhoods minus the two identified endpoints, so
+it has at least `(threshold - 1) + (threshold - 1)` members, and
+`2 * threshold - 2 >= threshold` exactly when `2 <= threshold`. -/
+theorem degree_identifyInternal_foldedKeep_eq (piece : BoundaryPiece boundary)
+    (keep remove : piece.Internal) (different : keep ≠ remove) :
+    (piece.identifyInternal keep remove different).pack.degree
+        (piece.foldedKeep keep remove different) =
+      ((piece.graph.neighborSet (.inr keep) \ {.inr remove}) ∪
+        (piece.graph.neighborSet (.inr remove) \ {.inr keep})).ncard := by
+  classical
+  letI : Fintype (boundary.Vertex ⊕ piece.Internal) :=
+    @FinEnum.instFintype _ piece.pack.vertices
+  rw [FiniteObject.degree_eq_ncard_neighborSet]
+  calc
+    _ = (piece.foldDecode remove ''
+        ((piece.identifyInternal keep remove different).graph.neighborSet
+          (piece.foldedKeep keep remove different))).ncard :=
+      (Set.ncard_image_of_injective _ (piece.foldDecode_injective remove)).symm
+    _ = _ := by rw [piece.image_neighborSet_foldedKeep keep remove different]
+
+theorem le_degree_identifyInternal_foldedKeep
     (piece : BoundaryPiece boundary)
     (keep remove : piece.Internal) (different : keep ≠ remove)
-    (keepCubic : piece.pack.degree (.inr keep) = 3)
-    (removeCubic : piece.pack.degree (.inr remove) = 3)
-    (commonUnique : ∀ x y,
-      (piece.graph.Adj (.inr keep) x ∧ piece.graph.Adj (.inr remove) x) →
-      (piece.graph.Adj (.inr keep) y ∧ piece.graph.Adj (.inr remove) y) →
-      x = y) :
-    3 ≤ (piece.identifyInternal keep remove different).pack.degree
+    (threshold : Nat) (two : 2 ≤ threshold)
+    (keepDegree : threshold ≤ piece.pack.degree (.inr keep))
+    (removeDegree : threshold ≤ piece.pack.degree (.inr remove))
+    (noCommon : ∀ x, ¬ (piece.graph.Adj (.inr keep) x ∧
+      piece.graph.Adj (.inr remove) x)) :
+    threshold ≤ (piece.identifyInternal keep remove different).pack.degree
       (piece.foldedKeep keep remove different) := by
+  classical
   letI : Fintype (boundary.Vertex ⊕ piece.Internal) :=
     @FinEnum.instFintype _ piece.pack.vertices
   let leftSet := piece.graph.neighborSet (.inr keep) \ {.inr remove}
@@ -661,72 +681,308 @@ theorem three_le_degree_identifyInternal_foldedKeep
   have imageCard :
       (piece.identifyInternal keep remove different).pack.degree
           (piece.foldedKeep keep remove different) =
-        (leftSet ∪ rightSet).ncard := by
-    rw [FiniteObject.degree_eq_ncard_neighborSet]
-    calc
-      _ = (piece.foldDecode remove ''
-          ((piece.identifyInternal keep remove different).graph.neighborSet
-            (piece.foldedKeep keep remove different))).ncard := by
-        exact (Set.ncard_image_of_injective _
-          (piece.foldDecode_injective remove)).symm
-      _ = _ := by rw [piece.image_neighborSet_foldedKeep keep remove different]
-  have leftCard : 2 ≤ leftSet.ncard := by
-    have keepCard : (piece.graph.neighborSet (.inr keep)).ncard = 3 := by
-      calc
-        _ = piece.pack.degree (.inr keep) := by
-          symm
-          simpa [BoundaryPiece.pack] using
-            piece.pack.degree_eq_ncard_neighborSet (.inr keep)
-        _ = 3 := keepCubic
+        (leftSet ∪ rightSet).ncard :=
+    piece.degree_identifyInternal_foldedKeep_eq keep remove different
+  have leftCard : threshold - 1 ≤ leftSet.ncard := by
+    have keepCard : threshold ≤ (piece.graph.neighborSet (.inr keep)).ncard := by
+      refine le_trans keepDegree (le_of_eq ?_)
+      simpa [BoundaryPiece.pack] using
+        piece.pack.degree_eq_ncard_neighborSet (.inr keep)
     by_cases adjacent : piece.graph.Adj (.inr keep) (.inr remove)
     · have drop := Set.ncard_sdiff_singleton_add_one adjacent
         (Set.toFinite (piece.graph.neighborSet (.inr keep)))
       change leftSet.ncard + 1 =
         (piece.graph.neighborSet (.inr keep)).ncard at drop
-      rw [keepCard] at drop
       omega
     · have missing : (.inr remove : boundary.Vertex ⊕ piece.Internal) ∉
           piece.graph.neighborSet (.inr keep) := fun member => adjacent member
       have same : leftSet = piece.graph.neighborSet (.inr keep) :=
         Set.sdiff_singleton_eq_self missing
-      rw [same, keepCard]
+      rw [same]
       omega
-  have rightCard : 2 ≤ rightSet.ncard := by
-    have removeCard : (piece.graph.neighborSet (.inr remove)).ncard = 3 := by
-      calc
-        _ = piece.pack.degree (.inr remove) := by
-          symm
-          simpa [BoundaryPiece.pack] using
-            piece.pack.degree_eq_ncard_neighborSet (.inr remove)
-        _ = 3 := removeCubic
+  have rightCard : threshold - 1 ≤ rightSet.ncard := by
+    have removeCard : threshold ≤
+        (piece.graph.neighborSet (.inr remove)).ncard := by
+      refine le_trans removeDegree (le_of_eq ?_)
+      simpa [BoundaryPiece.pack] using
+        piece.pack.degree_eq_ncard_neighborSet (.inr remove)
     by_cases adjacent : piece.graph.Adj (.inr remove) (.inr keep)
     · have drop := Set.ncard_sdiff_singleton_add_one adjacent
         (Set.toFinite (piece.graph.neighborSet (.inr remove)))
       change rightSet.ncard + 1 =
         (piece.graph.neighborSet (.inr remove)).ncard at drop
-      rw [removeCard] at drop
       omega
     · have missing : (.inr keep : boundary.Vertex ⊕ piece.Internal) ∉
           piece.graph.neighborSet (.inr remove) := fun member => adjacent member
       have same : rightSet = piece.graph.neighborSet (.inr remove) :=
         Set.sdiff_singleton_eq_self missing
-      rw [same, removeCard]
+      rw [same]
       omega
-  have intersectionCard : (leftSet ∩ rightSet).ncard ≤ 1 := by
-    by_cases empty : leftSet ∩ rightSet = ∅
-    · simp [empty]
-    · obtain ⟨witness, witnessMem⟩ := Set.nonempty_iff_ne_empty.mpr empty
-      have subset : leftSet ∩ rightSet ⊆ {witness} := by
-        intro other otherMem
-        have equality := commonUnique other witness
-          ⟨otherMem.1.1, otherMem.2.1⟩
-          ⟨witnessMem.1.1, witnessMem.2.1⟩
-        simpa [equality]
-      exact le_trans (Set.ncard_le_ncard subset (Set.toFinite _)) (by simp)
+  have disjoint : leftSet ∩ rightSet = ∅ := by
+    refine Set.eq_empty_iff_forall_notMem.mpr ?_
+    rintro other ⟨⟨keepAdj, _⟩, ⟨removeAdj, _⟩⟩
+    exact noCommon other ⟨keepAdj, removeAdj⟩
+  have intersectionCard : (leftSet ∩ rightSet).ncard = 0 := by
+    rw [disjoint]
+    simp
   have unionEquation := Set.ncard_union_add_ncard_inter leftSet rightSet
     (Set.toFinite leftSet) (Set.toFinite rightSet)
   rw [imageCard]
   omega
+
+/-- **Cubic triangle contraction: the doubly folded vertex keeps the
+baseline.**
+
+`keep`, `remove`, `x` are three mutually adjacent internal vertices, each at
+least at the baseline, and each pair's common neighbour is the third (which is
+what `FiniteObject.commonNeighbor_unique` gives from `K .selection` and
+`LengthOK 4`).  Folding `keep` with `remove` and then folding `x` into the
+merged vertex leaves it with the three *outside* neighbourhoods
+`N(keep) \ {remove, x}`, `N(remove) \ {keep, x}` and `N(x) \ {keep, remove}`,
+which are pairwise disjoint and each of size at least `threshold - 2`.  For
+`3 ≤ threshold` that is at least `threshold`, so the intermediate degree-two
+vertex never has to be repaired. -/
+theorem le_degree_triangleContraction (piece : BoundaryPiece boundary)
+    (keep remove x : piece.Internal)
+    (keepRemove : keep ≠ remove) (xRemove : x ≠ remove)
+    (second :
+      (⟨keep, keepRemove⟩ :
+        (piece.identifyInternal keep remove keepRemove).Internal) ≠
+        ⟨x, xRemove⟩)
+    (edgeKX : piece.graph.Adj (.inr keep) (.inr x))
+    (edgeRX : piece.graph.Adj (.inr remove) (.inr x))
+    (edgeKR : piece.graph.Adj (.inr keep) (.inr remove))
+    (threshold : Nat) (three : 3 ≤ threshold)
+    (keepDegree : threshold ≤ piece.pack.degree (.inr keep))
+    (removeDegree : threshold ≤ piece.pack.degree (.inr remove))
+    (xDegree : threshold ≤ piece.pack.degree (.inr x))
+    (uniqueKR : ∀ y, piece.graph.Adj (.inr keep) y →
+      piece.graph.Adj (.inr remove) y → y = .inr x)
+    (uniqueKX : ∀ y, piece.graph.Adj (.inr keep) y →
+      piece.graph.Adj (.inr x) y → y = .inr remove)
+    (uniqueRX : ∀ y, piece.graph.Adj (.inr remove) y →
+      piece.graph.Adj (.inr x) y → y = .inr keep) :
+    threshold ≤
+      ((piece.identifyInternal keep remove keepRemove).identifyInternal
+          ⟨keep, keepRemove⟩ ⟨x, xRemove⟩ second).pack.degree
+        ((piece.identifyInternal keep remove keepRemove).foldedKeep
+          ⟨keep, keepRemove⟩ ⟨x, xRemove⟩ second) := by
+  classical
+  letI : Fintype (boundary.Vertex ⊕ piece.Internal) :=
+    @FinEnum.instFintype _ piece.pack.vertices
+  have xKeep : x ≠ keep := by
+    intro equal
+    exact second (Subtype.ext (by simpa using equal.symm))
+  set P1 := piece.identifyInternal keep remove keepRemove with P1def
+  -- the exact count at the second fold, inside `P1`
+  rw [P1.degree_identifyInternal_foldedKeep_eq ⟨keep, keepRemove⟩ ⟨x, xRemove⟩
+    second]
+  -- transport the two neighbourhoods down to `piece`
+  have inj := piece.foldDecode_injective remove
+  have notKeepX :
+      (Sum.inr ⟨x, xRemove⟩ : boundary.Vertex ⊕ P1.Internal) ≠
+        piece.foldedKeep keep remove keepRemove := by
+    intro equal
+    exact xKeep (congrArg Subtype.val (Sum.inr.inj equal))
+  have fromRemoveX :
+      piece.graph.Adj (.inr remove)
+        (piece.foldDecode remove (Sum.inr ⟨x, xRemove⟩)) := edgeRX
+  have foldedEq :
+      (Sum.inr ⟨keep, keepRemove⟩ : boundary.Vertex ⊕ P1.Internal) =
+        piece.foldedKeep keep remove keepRemove := rfl
+  -- the final neighbourhood, read in `piece`
+  set A := piece.graph.neighborSet (.inr keep) \ {.inr remove, .inr x} with Adef
+  set B := piece.graph.neighborSet (.inr remove) \ {.inr keep, .inr x} with Bdef
+  set C := piece.graph.neighborSet (.inr x) \ {.inr keep, .inr remove} with Cdef
+  have imageEq :
+      piece.foldDecode remove ''
+        ((P1.graph.neighborSet (Sum.inr ⟨keep, keepRemove⟩) \
+            {Sum.inr ⟨x, xRemove⟩}) ∪
+          (P1.graph.neighborSet (Sum.inr ⟨x, xRemove⟩) \
+            {Sum.inr ⟨keep, keepRemove⟩})) = A ∪ B ∪ C := by
+    rw [Set.image_union, Set.image_sdiff inj, Set.image_sdiff inj,
+      Set.image_singleton, Set.image_singleton, foldedEq,
+      piece.image_neighborSet_foldedKeep keep remove keepRemove,
+      piece.image_neighborSet_of_adj_remove keep remove keepRemove
+        (Sum.inr ⟨x, xRemove⟩) notKeepX fromRemoveX]
+    have decodeX : piece.foldDecode remove
+        (Sum.inr ⟨x, xRemove⟩ : boundary.Vertex ⊕ P1.Internal) =
+        (.inr x : boundary.Vertex ⊕ piece.Internal) := rfl
+    have decodeKeep : piece.foldDecode remove
+        (piece.foldedKeep keep remove keepRemove) =
+        (.inr keep : boundary.Vertex ⊕ piece.Internal) := rfl
+    rw [decodeX, decodeKeep]
+    ext y
+    simp only [Set.mem_union, Set.mem_sdiff, Set.mem_singleton_iff,
+      Set.mem_insert_iff, SimpleGraph.mem_neighborSet, Adef, Bdef, Cdef]
+    constructor
+    · rintro (⟨inU, yNeX⟩ | ⟨yIn, yNeKeep⟩)
+      · rcases inU with ⟨keepAdj, yNeRemove⟩ | ⟨removeAdj, yNeKeep⟩
+        · exact Or.inl (Or.inl ⟨keepAdj, by simp [yNeRemove, yNeX]⟩)
+        · exact Or.inl (Or.inr ⟨removeAdj, by simp [yNeKeep, yNeX]⟩)
+      · rcases yIn with rfl | ⟨xAdj, yNeRemove⟩
+        · exact absurd rfl yNeKeep
+        · exact Or.inr ⟨xAdj, by simp [yNeKeep, yNeRemove]⟩
+    · rintro ((⟨keepAdj, yOut⟩ | ⟨removeAdj, yOut⟩) | ⟨xAdj, yOut⟩)
+      · simp only [not_or] at yOut
+        exact Or.inl ⟨Or.inl ⟨keepAdj, yOut.1⟩, yOut.2⟩
+      · simp only [not_or] at yOut
+        exact Or.inl ⟨Or.inr ⟨removeAdj, yOut.1⟩, yOut.2⟩
+      · simp only [not_or] at yOut
+        exact Or.inr ⟨Or.inr ⟨xAdj, yOut.2⟩, yOut.1⟩
+  have countEq :
+      ((P1.graph.neighborSet (Sum.inr ⟨keep, keepRemove⟩) \
+            {Sum.inr ⟨x, xRemove⟩}) ∪
+          (P1.graph.neighborSet (Sum.inr ⟨x, xRemove⟩) \
+            {Sum.inr ⟨keep, keepRemove⟩})).ncard = (A ∪ B ∪ C).ncard := by
+    rw [← imageEq, Set.ncard_image_of_injective _ inj]
+  rw [countEq]
+  -- the three outside neighbourhoods are pairwise disjoint
+  have disjointAB : A ∩ B = ∅ := by
+    refine Set.eq_empty_iff_forall_notMem.mpr ?_
+    rintro y ⟨⟨keepAdj, yOutA⟩, ⟨removeAdj, _⟩⟩
+    simp only [Set.mem_insert_iff, Set.mem_singleton_iff, not_or] at yOutA
+    exact yOutA.2 (uniqueKR y keepAdj removeAdj)
+  have disjointAC : A ∩ C = ∅ := by
+    refine Set.eq_empty_iff_forall_notMem.mpr ?_
+    rintro y ⟨⟨keepAdj, yOutA⟩, ⟨xAdj, _⟩⟩
+    simp only [Set.mem_insert_iff, Set.mem_singleton_iff, not_or] at yOutA
+    exact yOutA.1 (uniqueKX y keepAdj xAdj)
+  have disjointBC : B ∩ C = ∅ := by
+    refine Set.eq_empty_iff_forall_notMem.mpr ?_
+    rintro y ⟨⟨removeAdj, _⟩, ⟨xAdj, yOutC⟩⟩
+    simp only [Set.mem_insert_iff, Set.mem_singleton_iff, not_or] at yOutC
+    exact yOutC.1 (uniqueRX y removeAdj xAdj)
+  have disjointABC : (A ∪ B) ∩ C = ∅ := by
+    rw [Set.union_inter_distrib_right, disjointAC, disjointBC, Set.union_self]
+  -- each outside neighbourhood loses exactly the two triangle partners
+  have cardA : A.ncard + 2 = piece.pack.degree (.inr keep) := by
+    have degEq : piece.pack.degree (.inr keep) =
+        (piece.graph.neighborSet (.inr keep)).ncard := by
+      simpa [BoundaryPiece.pack] using
+        piece.pack.degree_eq_ncard_neighborSet (.inr keep)
+    have removeMem : (.inr remove : boundary.Vertex ⊕ piece.Internal) ∈
+        piece.graph.neighborSet (.inr keep) := edgeKR
+    have dropRemove := Set.ncard_sdiff_singleton_add_one removeMem
+      (Set.toFinite (piece.graph.neighborSet (.inr keep)))
+    have xMem : (.inr x : boundary.Vertex ⊕ piece.Internal) ∈
+        piece.graph.neighborSet (.inr keep) \ {.inr remove} :=
+      ⟨edgeKX, by simpa using xRemove⟩
+    have dropX := Set.ncard_sdiff_singleton_add_one xMem
+      (Set.toFinite (piece.graph.neighborSet (.inr keep) \ {.inr remove}))
+    have sdiffEq : A = (piece.graph.neighborSet (.inr keep) \ {.inr remove}) \
+        {.inr x} := by
+      rw [Adef]; ext y; simp [and_assoc]
+    rw [degEq, sdiffEq]
+    omega
+  have cardB : B.ncard + 2 = piece.pack.degree (.inr remove) := by
+    have degEq : piece.pack.degree (.inr remove) =
+        (piece.graph.neighborSet (.inr remove)).ncard := by
+      simpa [BoundaryPiece.pack] using
+        piece.pack.degree_eq_ncard_neighborSet (.inr remove)
+    have keepMem : (.inr keep : boundary.Vertex ⊕ piece.Internal) ∈
+        piece.graph.neighborSet (.inr remove) := edgeKR.symm
+    have dropKeep := Set.ncard_sdiff_singleton_add_one keepMem
+      (Set.toFinite (piece.graph.neighborSet (.inr remove)))
+    have xMem : (.inr x : boundary.Vertex ⊕ piece.Internal) ∈
+        piece.graph.neighborSet (.inr remove) \ {.inr keep} :=
+      ⟨edgeRX, by simpa using xKeep⟩
+    have dropX := Set.ncard_sdiff_singleton_add_one xMem
+      (Set.toFinite (piece.graph.neighborSet (.inr remove) \ {.inr keep}))
+    have sdiffEq : B = (piece.graph.neighborSet (.inr remove) \ {.inr keep}) \
+        {.inr x} := by
+      rw [Bdef]; ext y; simp [and_assoc]
+    rw [degEq, sdiffEq]
+    omega
+  have cardC : C.ncard + 2 = piece.pack.degree (.inr x) := by
+    have degEq : piece.pack.degree (.inr x) =
+        (piece.graph.neighborSet (.inr x)).ncard := by
+      simpa [BoundaryPiece.pack] using
+        piece.pack.degree_eq_ncard_neighborSet (.inr x)
+    have keepMem : (.inr keep : boundary.Vertex ⊕ piece.Internal) ∈
+        piece.graph.neighborSet (.inr x) := edgeKX.symm
+    have dropKeep := Set.ncard_sdiff_singleton_add_one keepMem
+      (Set.toFinite (piece.graph.neighborSet (.inr x)))
+    have removeMem : (.inr remove : boundary.Vertex ⊕ piece.Internal) ∈
+        piece.graph.neighborSet (.inr x) \ {.inr keep} :=
+      ⟨edgeRX.symm, by simpa using Ne.symm keepRemove⟩
+    have dropRemove := Set.ncard_sdiff_singleton_add_one removeMem
+      (Set.toFinite (piece.graph.neighborSet (.inr x) \ {.inr keep}))
+    have sdiffEq : C = (piece.graph.neighborSet (.inr x) \ {.inr keep}) \
+        {.inr remove} := by
+      rw [Cdef]; ext y; simp [and_assoc]
+    rw [degEq, sdiffEq]
+    omega
+  -- add the three disjoint counts
+  have unionAB := Set.ncard_union_add_ncard_inter A B
+    (Set.toFinite A) (Set.toFinite B)
+  have unionABC := Set.ncard_union_add_ncard_inter (A ∪ B) C
+    (Set.toFinite (A ∪ B)) (Set.toFinite C)
+  rw [disjointAB] at unionAB
+  rw [disjointABC] at unionABC
+  simp only [Set.ncard_empty] at unionAB unionABC
+  omega
+
+/-- **The second fold of a contracted triangle has no common neighbour at
+all.**  A common neighbour of the merged vertex and of `x` would be a second
+common neighbour of one of the three triangle pairs, which
+`FiniteObject.commonNeighbor_unique` forbids. -/
+theorem noCommon_second_of_triangle (piece : BoundaryPiece boundary)
+    (keep remove x : piece.Internal)
+    (keepRemove : keep ≠ remove) (xRemove : x ≠ remove) (xKeep : x ≠ keep)
+    (edgeRX : piece.graph.Adj (.inr remove) (.inr x))
+    (uniqueKX : ∀ y, piece.graph.Adj (.inr keep) y →
+      piece.graph.Adj (.inr x) y → y = .inr remove)
+    (uniqueRX : ∀ y, piece.graph.Adj (.inr remove) y →
+      piece.graph.Adj (.inr x) y → y = .inr keep) :
+    ∀ y, ¬ ((piece.identifyInternal keep remove keepRemove).graph.Adj
+          (.inr ⟨keep, keepRemove⟩) y ∧
+        (piece.identifyInternal keep remove keepRemove).graph.Adj
+          (.inr ⟨x, xRemove⟩) y) := by
+  classical
+  have notKeepX :
+      (Sum.inr ⟨x, xRemove⟩ : boundary.Vertex ⊕
+        (piece.identifyInternal keep remove keepRemove).Internal) ≠
+        piece.foldedKeep keep remove keepRemove := by
+    intro equal
+    exact xKeep (congrArg Subtype.val (Sum.inr.inj equal))
+  have fromRemoveX :
+      piece.graph.Adj (.inr remove)
+        (piece.foldDecode remove
+          (Sum.inr ⟨x, xRemove⟩ : boundary.Vertex ⊕
+            (piece.identifyInternal keep remove keepRemove).Internal)) := edgeRX
+  rintro w ⟨mergedAdj, xAdj⟩
+  -- the decoded neighbour lies in both images
+  have inMerged : piece.foldDecode remove w ∈
+      (piece.graph.neighborSet (.inr keep) \ {.inr remove}) ∪
+        (piece.graph.neighborSet (.inr remove) \ {.inr keep}) := by
+    rw [← piece.image_neighborSet_foldedKeep keep remove keepRemove]
+    exact ⟨w, mergedAdj, rfl⟩
+  have inX : piece.foldDecode remove w ∈
+      insert (.inr keep)
+        (piece.graph.neighborSet
+          (piece.foldDecode remove (Sum.inr ⟨x, xRemove⟩)) \ {.inr remove}) := by
+    rw [← piece.image_neighborSet_of_adj_remove keep remove keepRemove
+      (Sum.inr ⟨x, xRemove⟩) notKeepX fromRemoveX]
+    exact ⟨w, xAdj, rfl⟩
+  have decodeX : piece.foldDecode remove
+      (Sum.inr ⟨x, xRemove⟩ : boundary.Vertex ⊕
+        (piece.identifyInternal keep remove keepRemove).Internal) =
+      (.inr x : boundary.Vertex ⊕ piece.Internal) := rfl
+  rw [decodeX] at inX
+  -- the merged image never contains `keep` itself
+  have notKeepImage : piece.foldDecode remove w ≠
+      (.inr keep : boundary.Vertex ⊕ piece.Internal) := by
+    intro equal
+    rw [equal] at inMerged
+    rcases inMerged with ⟨selfAdj, _⟩ | ⟨_, notKeep⟩
+    · exact (piece.graph.irrefl selfAdj)
+    · exact notKeep rfl
+  rcases inX with equalKeep | ⟨xAdjDecoded, notRemove⟩
+  · exact notKeepImage equalKeep
+  rcases inMerged with ⟨keepAdj, _⟩ | ⟨removeAdj, notKeep⟩
+  · exact notRemove (uniqueKX _ keepAdj xAdjDecoded)
+  · exact notKeep (uniqueRX _ removeAdj xAdjDecoded)
 
 /-- Identification of internal vertices never changes a boundary--boundary
 edge. -/
@@ -875,6 +1131,364 @@ theorem addEdge_identifyInternal_locallySmaller
     keep remove different
   omega
 
+/-! ## The fold as a boundaried replacement: profile, overlap, descent, baseline
+
+`def:typeA-trace-basin` asks a response quotient to be realized by "a boundaried
+response state with the same boundary degree profile".  The identification does
+that, and -- unlike an edge deletion -- it spends a *vertex* rather than an
+edge, so the descent and the minimum-degree baseline stop competing. -/
+
+/-- **The identification preserves the boundary degree profile** exactly when no
+boundary *label* is a common neighbour of the two origins.
+
+`def:typeA-trace-basin`: a trace-local and support-internal response quotient
+"identifies or forgets entries of the fixed coordinate family, preserves the
+full boundary degree profile, and does not delete a boundary incidence".  The
+identification spends exactly one incidence, at a common neighbour of the two
+origins, so the profile survives precisely when that common neighbour is not
+labelled.  A common neighbour interior to the piece costs the profile nothing;
+only the internal degrees see it. -/
+theorem boundaryDegreeProfile_identifyInternal_of_noCommonLabel
+    (piece : BoundaryPiece boundary) (keep remove : piece.Internal)
+    (different : keep ≠ remove)
+    (noCommonLabel : ∀ label : boundary.Vertex,
+      ¬ (piece.graph.Adj (.inr keep) (.inl label) ∧
+        piece.graph.Adj (.inr remove) (.inl label))) :
+    (piece.identifyInternal keep remove different).boundaryDegreeProfile =
+      piece.boundaryDegreeProfile := by
+  funext label
+  show (piece.identifyInternal keep remove different).pack.degree (.inl label) =
+    piece.pack.degree (.inl label)
+  have notKeep : (Sum.inl label :
+      boundary.Vertex ⊕ (piece.identifyInternal keep remove different).Internal) ≠
+      piece.foldedKeep keep remove different := by
+    simp [BoundaryPiece.foldedKeep]
+  simpa [BoundaryPiece.foldDecode] using
+    piece.degree_identifyInternal_of_not_common keep remove different
+      (.inl label) notKeep (noCommonLabel label)
+
+/-- **The repaired identification preserves the boundary degree profile.**
+
+`FiniteObject.FoldPlan`'s second arm: the two origins have a common neighbour
+`common`, which the identification costs exactly one incidence
+(`degree_identifyInternal_of_common`), and the missing incidence is restored by
+joining `common` to a surviving vertex `repair`.  The profile survives exactly
+when the repair endpoint is *interior*: a labelled repair endpoint would gain a
+boundary degree the source piece never had, and no other label moves because
+`common` is the only common neighbour among the labels.  This is
+`def:typeA-trace-basin`'s "preserves the full boundary degree profile" read at
+the repaired fold. -/
+theorem boundaryDegreeProfile_addEdge_identifyInternal_of_common
+    (piece : BoundaryPiece boundary) (keep remove : piece.Internal)
+    (different : keep ≠ remove)
+    (common : boundary.Vertex ⊕
+      (piece.identifyInternal keep remove different).Internal)
+    (repair : (piece.identifyInternal keep remove different).Internal)
+    (commonNotKeep : common ≠ piece.foldedKeep keep remove different)
+    (isCommon : piece.graph.Adj (.inr keep) (piece.foldDecode remove common) ∧
+      piece.graph.Adj (.inr remove) (piece.foldDecode remove common))
+    (uniqueCommonLabel : ∀ label : boundary.Vertex,
+      (Sum.inl label : boundary.Vertex ⊕
+        (piece.identifyInternal keep remove different).Internal) ≠ common →
+      ¬ (piece.graph.Adj (.inr keep) (.inl label) ∧
+        piece.graph.Adj (.inr remove) (.inl label)))
+    (repairNe : common ≠ .inr repair)
+    (repairMissing : ¬ (piece.identifyInternal keep remove different).graph.Adj
+      common (.inr repair)) :
+    ((piece.identifyInternal keep remove different).addEdge common
+        (.inr repair)).boundaryDegreeProfile = piece.boundaryDegreeProfile := by
+  funext label
+  show ((piece.identifyInternal keep remove different).addEdge common
+      (.inr repair)).pack.degree (.inl label) = piece.pack.degree (.inl label)
+  by_cases atCommon : (Sum.inl label : boundary.Vertex ⊕
+      (piece.identifyInternal keep remove different).Internal) = common
+  · subst atCommon
+    rw [(piece.identifyInternal keep remove different).degree_addEdge_left
+      (.inl label) (.inr repair) repairNe repairMissing]
+    simpa [BoundaryPiece.foldDecode] using
+      piece.degree_identifyInternal_of_common keep remove different (.inl label)
+        commonNotKeep isCommon
+  · rw [(piece.identifyInternal keep remove different).degree_addEdge_of_ne
+      common (.inr repair) (.inl label) atCommon (by simp)]
+    have notKeep : (Sum.inl label : boundary.Vertex ⊕
+        (piece.identifyInternal keep remove different).Internal) ≠
+        piece.foldedKeep keep remove different := by
+      simp [BoundaryPiece.foldedKeep]
+    simpa [BoundaryPiece.foldDecode] using
+      piece.degree_identifyInternal_of_not_common keep remove different
+        (.inl label) notKeep (uniqueCommonLabel label atCommon)
+
 end BoundaryPiece
+
+/-- Identification never changes which boundary--boundary edges the piece owns,
+so its overlap-degree profile against any context is unchanged. -/
+theorem boundaryOverlapDegreeProfile_identifyInternal
+    (piece : BoundaryPiece boundary) (keep remove : piece.Internal)
+    (different : keep ≠ remove) (outside : OutsideContext boundary) :
+    boundaryOverlapDegreeProfile (piece.identifyInternal keep remove different)
+        outside =
+      boundaryOverlapDegreeProfile piece outside := by
+  have graphEq :
+      boundaryOverlapGraph (piece.identifyInternal keep remove different)
+          outside =
+        boundaryOverlapGraph piece outside := by
+    unfold boundaryOverlapGraph
+    rw [piece.boundaryGraph_identifyInternal keep remove different]
+  funext vertex
+  show boundaryOverlapDegree (piece.identifyInternal keep remove different)
+      outside vertex = boundaryOverlapDegree piece outside vertex
+  rw [boundaryOverlapDegree_eq_ncard, boundaryOverlapDegree_eq_ncard, graphEq]
+
+/-- The overlap edge count is unchanged too, for the same reason. -/
+theorem boundaryOverlapEdgeCount_identifyInternal
+    (piece : BoundaryPiece boundary) (keep remove : piece.Internal)
+    (different : keep ≠ remove) (outside : OutsideContext boundary) :
+    boundaryOverlapEdgeCount (piece.identifyInternal keep remove different)
+        outside =
+      boundaryOverlapEdgeCount piece outside := by
+  have graphEq :
+      boundaryOverlapGraph (piece.identifyInternal keep remove different)
+          outside =
+        boundaryOverlapGraph piece outside := by
+    unfold boundaryOverlapGraph
+    rw [piece.boundaryGraph_identifyInternal keep remove different]
+  show (boundaryOverlapObject (piece.identifyInternal keep remove different)
+      outside).edgeCount = (boundaryOverlapObject piece outside).edgeCount
+  rw [FiniteObject.edgeCount_eq_ncard_edgeSet,
+    FiniteObject.edgeCount_eq_ncard_edgeSet]
+  congr 2
+
+/-- **Descent.**  The fold spends one internal vertex and leaves the overlap
+alone, so the gluing is strictly lexicographically smaller -- by VERTEX count,
+with no edge-count argument at all. -/
+theorem lexicographicallySmaller_glue_identifyInternal
+    (piece : BoundaryPiece boundary) (keep remove : piece.Internal)
+    (different : keep ≠ remove) (outside : OutsideContext boundary) :
+    (glue (piece.identifyInternal keep remove different)
+      outside).LexicographicallySmaller (glue piece outside) :=
+  glue_lexicographicallySmaller_of_local_of_overlapCount_eq outside
+    (piece.identifyInternal_locallySmaller keep remove different)
+    (boundaryOverlapEdgeCount_identifyInternal piece keep remove different
+      outside)
+
+/-- **Descent, twice.**  Two successive identifications spend two internal
+vertices and still leave the boundary--boundary edges alone, so the gluing is
+strictly lexicographically smaller — again by vertex count only.  Nothing here
+is special to a contracted triangle. -/
+theorem lexicographicallySmaller_glue_identifyInternal_twice
+    (piece : BoundaryPiece boundary) (keep remove : piece.Internal)
+    (different : keep ≠ remove)
+    (keep' remove' : (piece.identifyInternal keep remove different).Internal)
+    (different' : keep' ≠ remove') (outside : OutsideContext boundary) :
+    (glue ((piece.identifyInternal keep remove different).identifyInternal
+      keep' remove' different') outside).LexicographicallySmaller
+      (glue piece outside) := by
+  refine glue_lexicographicallySmaller_of_local_of_overlapCount_eq outside ?_ ?_
+  · rw [BoundaryPiece.locallySmaller_iff]
+    left
+    have first := piece.internalVertexCount_identifyInternal_add_one keep remove
+      different
+    have secondCount := (piece.identifyInternal keep remove
+      different).internalVertexCount_identifyInternal_add_one keep' remove'
+      different'
+    omega
+  · rw [boundaryOverlapEdgeCount_identifyInternal,
+      boundaryOverlapEdgeCount_identifyInternal]
+
+/-- **Baseline.**  Every glued vertex other than the surviving folded vertex
+keeps literally the degree it had: a boundary label because the profile and the
+overlap are both unchanged, a context-internal vertex because the piece
+contributes nothing to it, and a surviving internal vertex by
+`degree_identifyInternal_of_not_common`.  The folded vertex is
+`le_degree_identifyInternal_foldedKeep`.  Nothing is deleted, so nothing
+fights `lexicographicallySmaller_glue_identifyInternal`. -/
+theorem le_minDegree_glue_identifyInternal
+    (piece : BoundaryPiece boundary) (keep remove : piece.Internal)
+    (different : keep ≠ remove) (outside : OutsideContext boundary)
+    (threshold : Nat) (two : 2 ≤ threshold)
+    (nonempty : Nonempty
+      (glue (piece.identifyInternal keep remove different) outside).Vertex)
+    (sourceBaseline : threshold ≤ (glue piece outside).minDegree)
+    (keepDegree : threshold ≤ piece.pack.degree (.inr keep))
+    (removeDegree : threshold ≤ piece.pack.degree (.inr remove))
+    (noCommon : ∀ x, ¬ (piece.graph.Adj (.inr keep) x ∧
+      piece.graph.Adj (.inr remove) x)) :
+    threshold ≤
+      (glue (piece.identifyInternal keep remove different) outside).minDegree := by
+  classical
+  apply FiniteObject.le_minDegree_of_forall_le_degree
+  intro vertex
+  cases vertex with
+  | inl label =>
+      rw [glue_boundaryDegree_eq_of_local_eq_of_overlap_eq outside
+        (piece.boundaryDegreeProfile_identifyInternal_of_noCommonLabel keep remove
+          different (fun label => noCommon (.inl label)))
+        (boundaryOverlapDegreeProfile_identifyInternal piece keep remove
+          different outside) label]
+      exact sourceBaseline.trans
+        ((glue piece outside).minDegree_le_degree (.inl label))
+  | inr internal =>
+      cases internal with
+      | inl pieceInternal =>
+          rw [glue_degree_pieceInternal]
+          by_cases folded : pieceInternal = ⟨keep, different⟩
+          · subst folded
+            exact piece.le_degree_identifyInternal_foldedKeep keep remove
+              different threshold two keepDegree removeDegree noCommon
+          · have notKeep : (Sum.inr pieceInternal :
+                boundary.Vertex ⊕
+                  (piece.identifyInternal keep remove different).Internal) ≠
+                piece.foldedKeep keep remove different := by
+              simp [BoundaryPiece.foldedKeep, folded]
+            rw [show (piece.identifyInternal keep remove different).pack.degree
+                  (.inr pieceInternal) =
+                (piece.identifyInternal keep remove different).pack.degree
+                  (Sum.inr pieceInternal) from rfl,
+              piece.degree_identifyInternal_of_not_common keep remove different
+                (.inr pieceInternal) notKeep (noCommon _)]
+            have transferred := sourceBaseline.trans
+              ((glue piece outside).minDegree_le_degree
+                (.inr (.inl pieceInternal.1)))
+            rw [glue_degree_pieceInternal] at transferred
+            simpa [BoundaryPiece.foldDecode] using transferred
+      | inr contextInternal =>
+          rw [glue_degree_contextInternal]
+          have transferred := sourceBaseline.trans
+            ((glue piece outside).minDegree_le_degree
+              (.inr (.inr contextInternal)))
+          rwa [glue_degree_contextInternal] at transferred
+
+/-- **The glued baseline survives a cubic triangle contraction.**
+
+Every glued vertex of the doubly folded piece keeps at least the threshold: a
+boundary label because both folds preserve the profile and the overlap (the
+common neighbours are interior, so no label moves), a surviving internal vertex
+because it is a common neighbour in neither fold, the merged vertex by
+`le_degree_triangleContraction`, and a context vertex because the piece
+contributes nothing to it.  The intermediate degree-two vertex is never
+consulted: it is exactly the vertex the second fold removes. -/
+theorem le_minDegree_glue_triangleContraction (piece : BoundaryPiece boundary)
+    (keep remove x : piece.Internal)
+    (keepRemove : keep ≠ remove) (xRemove : x ≠ remove)
+    (second :
+      (⟨keep, keepRemove⟩ :
+        (piece.identifyInternal keep remove keepRemove).Internal) ≠
+        ⟨x, xRemove⟩)
+    (edgeKX : piece.graph.Adj (.inr keep) (.inr x))
+    (edgeRX : piece.graph.Adj (.inr remove) (.inr x))
+    (edgeKR : piece.graph.Adj (.inr keep) (.inr remove))
+    (outside : OutsideContext boundary)
+    (threshold : Nat) (three : 3 ≤ threshold)
+    (sourceBaseline : threshold ≤ (glue piece outside).minDegree)
+    (uniqueKR : ∀ y, piece.graph.Adj (.inr keep) y →
+      piece.graph.Adj (.inr remove) y → y = .inr x)
+    (uniqueKX : ∀ y, piece.graph.Adj (.inr keep) y →
+      piece.graph.Adj (.inr x) y → y = .inr remove)
+    (uniqueRX : ∀ y, piece.graph.Adj (.inr remove) y →
+      piece.graph.Adj (.inr x) y → y = .inr keep) :
+    threshold ≤
+      (glue ((piece.identifyInternal keep remove keepRemove).identifyInternal
+        ⟨keep, keepRemove⟩ ⟨x, xRemove⟩ second) outside).minDegree := by
+  classical
+  have xKeep : x ≠ keep := by
+    intro equal
+    exact second (Subtype.ext (by simpa using equal.symm))
+  set P1 := piece.identifyInternal keep remove keepRemove with P1def
+  set m : P1.Internal := ⟨keep, keepRemove⟩ with mdef
+  set x' : P1.Internal := ⟨x, xRemove⟩ with x'def
+  set P2 := P1.identifyInternal m x' second with P2def
+  -- the two fold clauses
+  have noCommonFirst : ∀ y, ¬ (piece.graph.Adj (.inr keep) y ∧
+      piece.graph.Adj (.inr remove) y) ∨ y = (.inr x : _) := by
+    intro y
+    by_cases common : piece.graph.Adj (.inr keep) y ∧ piece.graph.Adj (.inr remove) y
+    · exact Or.inr (uniqueKR y common.1 common.2)
+    · exact Or.inl common
+  have noCommonLabelFirst : ∀ label : boundary.Vertex,
+      ¬ (piece.graph.Adj (.inr keep) (.inl label) ∧
+        piece.graph.Adj (.inr remove) (.inl label)) := by
+    intro label common
+    exact Sum.inl_ne_inr (uniqueKR _ common.1 common.2)
+  have noCommonSecond := piece.noCommon_second_of_triangle keep remove x
+    keepRemove xRemove xKeep edgeRX uniqueKX uniqueRX
+  have noCommonLabelSecond : ∀ label : boundary.Vertex,
+      ¬ (P1.graph.Adj (.inr m) (.inl label) ∧
+        P1.graph.Adj (.inr x') (.inl label)) :=
+    fun label => noCommonSecond (.inl label)
+  -- profile and overlap survive both folds
+  have profileTwo : P2.boundaryDegreeProfile = piece.boundaryDegreeProfile :=
+    (P1.boundaryDegreeProfile_identifyInternal_of_noCommonLabel m x' second
+      noCommonLabelSecond).trans
+      (piece.boundaryDegreeProfile_identifyInternal_of_noCommonLabel keep remove
+        keepRemove noCommonLabelFirst)
+  have overlapTwo : boundaryOverlapDegreeProfile P2 outside =
+      boundaryOverlapDegreeProfile piece outside :=
+    (boundaryOverlapDegreeProfile_identifyInternal P1 m x' second outside).trans
+      (boundaryOverlapDegreeProfile_identifyInternal piece keep remove keepRemove
+        outside)
+  letI : Nonempty (glue P2 outside).Vertex := ⟨.inr (.inl ⟨m, second⟩)⟩
+  apply FiniteObject.le_minDegree_of_forall_le_degree
+  intro vertex
+  cases vertex with
+  | inl label =>
+      rw [glue_boundaryDegree_eq_of_local_eq_of_overlap_eq outside profileTwo
+        overlapTwo label]
+      exact sourceBaseline.trans
+        ((glue piece outside).minDegree_le_degree (.inl label))
+  | inr internal =>
+      cases internal with
+      | inl pieceInternal =>
+          rw [glue_degree_pieceInternal]
+          by_cases folded : pieceInternal = ⟨m, second⟩
+          · subst folded
+            refine le_trans ?_ (le_of_eq rfl)
+            exact piece.le_degree_triangleContraction keep remove x keepRemove
+              xRemove second edgeKX edgeRX edgeKR threshold three
+              (by
+                have transferred := sourceBaseline.trans
+                  ((glue piece outside).minDegree_le_degree (.inr (.inl keep)))
+                rwa [glue_degree_pieceInternal] at transferred)
+              (by
+                have transferred := sourceBaseline.trans
+                  ((glue piece outside).minDegree_le_degree (.inr (.inl remove)))
+                rwa [glue_degree_pieceInternal] at transferred)
+              (by
+                have transferred := sourceBaseline.trans
+                  ((glue piece outside).minDegree_le_degree (.inr (.inl x)))
+                rwa [glue_degree_pieceInternal] at transferred)
+              uniqueKR uniqueKX uniqueRX
+          · have notFoldedTwo : (Sum.inr pieceInternal :
+                boundary.Vertex ⊕ P2.Internal) ≠ P1.foldedKeep m x' second := by
+              simp [BoundaryPiece.foldedKeep, folded]
+            have valNeX : pieceInternal.1.1 ≠ x := by
+              intro equal
+              exact pieceInternal.2 (Subtype.ext equal)
+            have notFoldedOne : (Sum.inr pieceInternal.1 :
+                boundary.Vertex ⊕ P1.Internal) ≠
+                piece.foldedKeep keep remove keepRemove := by
+              intro equal
+              exact folded (Subtype.ext (Sum.inr.inj equal))
+            have notCommonOne : ¬ (piece.graph.Adj (.inr keep)
+                  (piece.foldDecode remove (Sum.inr pieceInternal.1)) ∧
+                piece.graph.Adj (.inr remove)
+                  (piece.foldDecode remove (Sum.inr pieceInternal.1))) := by
+              rintro ⟨keepAdj, removeAdj⟩
+              exact valNeX (Sum.inr.inj (uniqueKR _ keepAdj removeAdj))
+            have step := piece.degree_identifyInternal_of_not_common keep remove
+              keepRemove (Sum.inr pieceInternal.1) notFoldedOne notCommonOne
+            have chain : P2.pack.degree (Sum.inr pieceInternal) =
+                piece.pack.degree (Sum.inr pieceInternal.1.1) :=
+              Eq.trans (P1.degree_identifyInternal_of_not_common m x' second
+                (.inr pieceInternal) notFoldedTwo (noCommonSecond _)) step
+            have transferred := sourceBaseline.trans
+              ((glue piece outside).minDegree_le_degree
+                (.inr (.inl pieceInternal.1.1)))
+            rw [glue_degree_pieceInternal] at transferred
+            exact le_of_le_of_eq transferred chain.symm
+      | inr contextInternal =>
+          rw [glue_degree_contextInternal]
+          have transferred := sourceBaseline.trans
+            ((glue piece outside).minDegree_le_degree (.inr (.inr contextInternal)))
+          rwa [glue_degree_contextInternal] at transferred
 
 end Hypostructure.Graph

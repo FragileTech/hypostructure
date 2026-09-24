@@ -55,6 +55,16 @@ describe("the proof overview", () => {
       .getByRole("heading", { level: 2, name: "Structural survey of the Erdős–Gyárfás proof" })
       .closest("section")!;
     const footer = container.querySelector(".page-footer")!;
+    const outcomes = screen
+      .getByRole("heading", { level: 2, name: "The 6 remaining outcomes" })
+      .closest("section")!;
+    const outcomeLinks = within(outcomes).getAllByRole("link");
+    expect(outcomeLinks.map((link) => link.getAttribute("href"))).toEqual(
+      ["20a", "144a", "172a", "182", "186", "187"].map(
+        (id) => `/erdos-gyarfas/explore?step=${id}`,
+      ),
+    );
+    expect(within(outcomes).getByText(/Excluding all six/)).toBeInTheDocument();
     expect(panels.compareDocumentPosition(survey) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(survey.compareDocumentPosition(footer) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(within(survey).getAllByRole("row").slice(1)).toHaveLength(38);

@@ -264,15 +264,11 @@ theorem card_pi_eq_prod_card {Window : Type*} [Fintype Window]
 
 /-! ## Multiplicative rate-floor pigeonhole
 
-The certificate `lem:p13-window-package` actually needs downstream is not a
-`Real.logb`-valued estimate at all: the framework's own already-proven
-`p13BarrierRateCertificate` (`examples/erdos_64_eg/Erdos64EG/Node21`) states
-the exact same content as one Nat inequality, `2 ^ 118 * flat < safe`,
-avoiding logarithms entirely. That certificate is *per window*; the paper's
-"distinct packed windows are independent, so the window packages combine"
-step is the fact that a per-window rate floor compounds multiplicatively
-over any number of disjoint windows -- pure Nat/real arithmetic, nothing
-about curvature, P13-paths, or graphs in it. -/
+A per-window rate floor can be stated as one Nat inequality,
+`2 ^ rate * flat < safe`, avoiding logarithms.  Combining the packages of
+distinct (vertex-disjoint) packed windows is the fact that a per-window rate
+floor compounds multiplicatively over any number of disjoint windows -- pure
+Nat/real arithmetic, nothing about curvature, P13-paths, or graphs in it. -/
 
 /-- A rate floor compounds multiplicatively across `windowCount` disjoint
 copies: `lem:p13-window-package`'s independence-across-windows step, stated
@@ -318,8 +314,7 @@ pigeonhole, bounds `2 ^ (k * windowCount)` by the ambient class size. The
 `realizes` hypothesis is exactly the domain-specific content any problem
 must supply -- for EG, that its `windowCount`-fold combination of
 `injective_pi_of_forall_injective`-composed per-window classifications
-realizes at least `safe ^ windowCount / flat ^ windowCount` combined states,
-built from its own already-proven per-window `p13BarrierRateCertificate` --
+realizes at least `safe ^ windowCount / flat ^ windowCount` combined states --
 not something this bridge invents. -/
 theorem two_pow_mul_le_card_ambient_of_rateFloor {Ambient State : Type*}
     [Finite Ambient] (stateOf : Ambient -> State)

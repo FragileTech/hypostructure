@@ -1,7 +1,8 @@
 """Per-node review status for the Erdos-Gyarfas proof.
 
 Read from ``web/data/eg_node_audit.json``, the current numeric-node audit plus
-the manuscript's alphanumeric [172a]--[172c] subnodes.
+the manuscript's live alphanumeric [20a], [144a], and [172a] leaves. Proposed continuations
+[172b]--[172c] remain in the audit but are not nodes of the live proof graph.
 Nothing here parses ``-- EG-NODE`` comments or infers coverage from prose:
 those annotations are unreliable in both directions (declarations that
 implement a node carry none, and one umbrella claims 44 nodes it merely
@@ -35,8 +36,8 @@ from pathlib import Path
 
 AUDIT_REL = Path("web/data/eg_node_audit.json")
 
-NODE_COUNT = 186
-EXTRA_NODE_IDS = ("172a", "172b", "172c")
+NODE_COUNT = 187
+EXTRA_NODE_IDS = ("20a", "144a", "172a")
 
 #: Gate B verdicts that mean the producer publishes the manuscript's statement.
 _FAITHFUL = {"FAITHFUL", "FAITHFUL-TRIVIAL", "STRONGER"}
@@ -63,10 +64,15 @@ def build_review(repo_root: Path) -> dict | None:
     entries = audit["nodes"]
 
     nodes: dict[str, dict[str, str]] = {}
-    node_ids = (
+    def _node_sort_key(node_id: str) -> tuple[int, str]:
+        digits = "".join(ch for ch in node_id if ch.isdigit())
+        return (int(digits), node_id)
+
+    node_ids = sorted(
         [str(number) for number in range(1, 172)]
-        + list(EXTRA_NODE_IDS)
         + [str(number) for number in range(173, NODE_COUNT + 1)]
+        + list(EXTRA_NODE_IDS),
+        key=_node_sort_key,
     )
     for number in node_ids:
         entry = entries.get(number)

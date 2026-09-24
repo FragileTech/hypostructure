@@ -882,12 +882,14 @@ theorem visibleLoads_subset_payableSet (object : FiniteObject.{u})
 
 /-- **`lem:typeA-silent-excess-count` at one receiver.**
 
-*"If `L(w) ≤ c(w)`, then `w` contributes no unpaid routed vertex.  If
-`L(w) > c(w)`, then `w` is saturated; since `w` has exactly `q(w)` completion
-ports and no port carries `s` visible receiver-entry returns, `L_vis(w) ≤
-(s−1)q(w) ≤ c(w)`, so the visible-first order pays every visible routed load
-before the payable set is exhausted, and every unpaid routed vertex at `w` is
-silent."*
+The manuscript's proof, with `c(w) = 4q(w) − 1`: *"If `L(w) ≤ c(w)`, then `w`
+contributes no unpaid routed vertex.  If `L(w) > c(w)`, then `w` is saturated.
+By hypothesis no completion port of `w` carries four visible receiver-entry
+returns.  Since `w` has exactly `q(w)` completion ports, each port carries at
+most three visible loads, so `L_vis(w) ≤ 3q(w)`. … The visible-first order
+therefore pays every visible routed load before the payable set is exhausted.
+Hence every unpaid routed vertex at `w` is silent"*.  This file states it for a
+general `s` in place of `4`.
 
 Written without subtraction, that is `1 + L(w) ≤ |𝒰(w)| + s·q(w)`.  The port
 hypothesis is needed only at a saturated receiver, exactly as the manuscript
@@ -980,16 +982,16 @@ theorem sum_missingPorts_eq_positiveDeficiency (object : FiniteObject.{u})
 
 /-- **`lem:typeA-silent-excess-count`.**
 
-*"Suppose that no saturated receiver of `X` has a completion port carrying `s`
-visible receiver-entry returns, and form the visible-first excess basins.  Then
-`S_sil^exc(X) ≥ n_δ − Σ_w c(w) = s·D_A(X)`."*
+*"Suppose that no saturated receiver of `X` has a completion port carrying four
+visible receiver-entry returns, and form the visible-first excess basins"*; the
+manuscript concludes `S_sil^exc(X) ≥ n₃ − 3n₂ − 7n₁ − 11n₀ = 4D_A(X)`.  This file
+states it for a general `s` in place of `4`.
 
 Cleared of the division and the subtraction, `s·D_A(X) = |V(X)| − s·def⁺(X)`,
 so the statement is `|V(X)| ≤ S_sil^exc(X) + s·def⁺(X)`.  The three hypotheses
-are the manuscript's own: the support is capped at the baseline and its vertices
-sit exactly there (no ambient surplus), the routing is total (`node [88]`), and
-no saturated receiver has a port carrying `s` visible returns (the branch this
-count lives on). -/
+are: the support is capped at the baseline and its vertices sit exactly there
+(no ambient surplus), the routing is total, and no saturated receiver has a port
+carrying `s` visible returns. -/
 theorem card_le_sum_silentExcess_add_positiveDeficiency
     (object : FiniteObject.{u}) (support : Finset object.Vertex)
     (threshold scale : Nat) (scalePos : 1 ≤ scale)

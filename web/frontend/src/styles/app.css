@@ -667,6 +667,45 @@ body.has-rail-open {
   align-items: stretch;
 }
 
+.outcome-grid {
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
+  gap: 10px;
+}
+
+.outcome-grid a {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  height: 100%;
+  padding: 13px 15px;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--open);
+  border-radius: 7px;
+  background: var(--surface-sunken);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.outcome-grid a:hover,
+.outcome-grid a:focus-visible {
+  border-color: var(--open);
+}
+
+.outcome-grid span {
+  color: var(--open);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+
+.outcome-grid strong {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
 .page-footer {
   color: var(--ink-faint);
   font-size: 13px;
@@ -818,6 +857,86 @@ body.has-rail-open {
   margin-left: auto;
   font-size: 13px;
   color: var(--ink-muted);
+}
+
+.explorer-outcomes {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+  padding: 9px clamp(16px, 3vw, 28px);
+  border-bottom: 1px solid var(--line);
+  background: var(--surface-sunken);
+}
+
+.explorer-outcomes-intro {
+  flex: 0 0 min(340px, 32%);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--ink-muted);
+}
+
+.explorer-outcomes-intro strong {
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.explorer-outcomes-list {
+  display: flex;
+  flex: 1;
+  gap: 7px;
+  min-width: 0;
+  overflow-x: auto;
+  padding: 2px;
+}
+
+.explorer-outcomes-list button {
+  display: flex;
+  flex: 0 0 195px;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  padding: 7px 9px;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  text-align: left;
+}
+
+.explorer-outcomes-list button:hover,
+.explorer-outcomes-list button:focus-visible,
+.explorer-outcomes-list button.is-active {
+  border-color: var(--open);
+}
+
+.explorer-outcome-id {
+  color: var(--open);
+  font-family: var(--mono);
+  font-weight: 700;
+}
+
+.explorer-outcome-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .explorer-outcomes {
+    display: block;
+  }
+
+  .explorer-outcomes-intro {
+    margin-bottom: 8px;
+  }
 }
 
 .explorer-caption {

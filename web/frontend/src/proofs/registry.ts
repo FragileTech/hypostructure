@@ -56,13 +56,13 @@ export const PROOFS: ProofEntry[] = [
     question:
       "Does every graph with minimum degree three contain a cycle whose length is a power of two?",
     tagline:
-      "Erdős and Gyárfás asked this in 1995. The manuscript now exposes 188 diagram nodes; only [172a], [182], and [186] remain open.",
+      "The checked reduction has 189 diagram nodes. Any counterexample leads to a selected minimal counterexample in [20a], [144a], [172a], [182], [186], or the grouped outcome [187].",
     papers: [{ file: "erdos_64_proof.pdf", title: "The paper", chapter: "erdos-gyarfas" }],
     overview: [
-      "Erdős and Gyárfás asked this in 1995. The paper this site accompanies answers yes, and it does so by contradiction: assume a counterexample exists, take the smallest one, and squeeze it until nothing is left. The argument is long, and it branches. This is a way to walk it.",
+      "Erdős and Gyárfás asked this in 1995. The paper and Lean root theorem prove a conditional reduction: any counterexample yields a selected minimal counterexample in one of six outcomes. Five are named individually—[20a], [144a], [172a], [182], and [186]—and [187] explicitly groups the other returned cases. These outcomes exhaust the current routing. Excluding all six for selected minimal counterexamples would prove the conjecture; their exclusion remains open.",
       "A cycle of length $2^k$ exists exactly when some edge has a return path of length $2^k-1$ — a Mersenne number. That turns a question about geometry into one about arithmetic, and it is the target the whole proof aims at. If a minimal counterexample $G$ exists, then no edge of it has such a return, and every later step is a consequence of that single prohibition.",
       "From there the proof forces structure. Minimality makes $G$ edge-critical and its high-degree vertices independent. An external theorem says a $P_{13}$-free graph of minimum degree three already has a power-of-two cycle, so $G$ must contain induced paths on thirteen vertices. Packing those paths splits the graph into windows and a remainder, and the rest of the argument is an accounting contest between the two: how much two-step obstruction the remainder must supply against how much the windows can pay for. Wherever the books fail to balance, a branch closes.",
-      "The implemented branches are now tracked against the manuscript's exact local contracts. The dense-packing continuation closes its covered arms through [173]–[180]. On route 8, [181] now routes exhaustively to the existing [124] closure or through the strict reductions [183]–[185] to the exact simultaneous balance at [186]. The remaining boundaries are shown explicitly in red at [172a], [182], and [186]; they are honest residual obligations, not claimed closures.",
+      "The strict sparse exit retains its attempted target-defective quotient at [20a]. The same-token Type B handoff retains its source pattern and decorated envelope at [144a]. The dense graph-count failure remains [172a], the uncovered pair-code implication remains [182], and the visible-entry route-8 history remains [186]. Node [187] collects the other literal returned cases, including the near-cubic sparse exit and Type B entries from [179] and [180].",
     ],
   },
   {

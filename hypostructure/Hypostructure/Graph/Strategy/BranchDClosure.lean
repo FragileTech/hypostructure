@@ -1,4 +1,4 @@
-import Hypostructure.Graph.Strategy.SpineRows
+import Hypostructure.Graph.Strategy.SpineVocabulary
 
 /-!
 # Branch D terminals: nodes `[37]`, `[39]`, `[42]`, `[46]`

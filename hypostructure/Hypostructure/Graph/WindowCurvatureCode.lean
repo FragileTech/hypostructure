@@ -40,13 +40,9 @@ against `forbiddenGaps`, which asks the registered dyadic target.
 
 ## What is retrieved
 
-* the packed-row reading -- `Core.FiniteBitRelationBarrier.semanticRow_getLsb`
-  at `Core/FiniteBitRelationBarrier.lean:83` and `Profile.flatCount` at `:34`;
-* the certificate shape whose open half this closes --
-  `Core.Strategy.ExactFiniteLocalAlgebra.ofBitRelationTable` at
-  `Core/Strategy/ExactFiniteLocalAlgebraBitTable.lean:27` and
-  `Core.FiniteBitRelationBarrier.SemanticCertificate.row_semantic` at
-  `Core/FiniteBitRelationBarrier.lean:93`;
+* the packed-row reading -- `Core.FiniteBitRelationBarrier.semanticRow_getLsb` and `Profile.flatCount`;
+* the certificate shape --
+  `Core.FiniteBitRelationBarrier.SemanticCertificate.row_semantic`;
 * `Safe`, `Legal`, `Labels` and `labels_card` from this namespace.
 -/
 
@@ -59,22 +55,19 @@ open Hypostructure.Core.DyadicLength
 /-- The label a packed bit code names: coordinate `i` belongs to it exactly
 when bit `i` is set.
 
-*Provenance.* Follows `Core.FiniteBitRelationBarrier.semanticRow_getLsb` at
-`Core/FiniteBitRelationBarrier.lean:83`, which is how the framework already
+*Provenance.* Follows `Core.FiniteBitRelationBarrier.semanticRow_getLsb`, which is how the framework already
 reads a relation off a packed `BitVec` row.
 -/
 def labelOfCode {order : Nat} (code : BitVec order) : Label order :=
   Finset.univ.filter fun index => code.getLsbD index.1 = true
 
-/-- *Provenance.* Follows `Core.FiniteBitRelationBarrier.semanticRow_getLsb` at
-`Core/FiniteBitRelationBarrier.lean:83`. -/
+/-- *Provenance.* Follows `Core.FiniteBitRelationBarrier.semanticRow_getLsb`. -/
 @[simp] theorem mem_labelOfCode {order : Nat} {code : BitVec order}
     {index : Fin order} :
     index ∈ labelOfCode code ↔ code.getLsbD index.1 = true := by
   simp [labelOfCode]
 
-/-- *Provenance.* Follows `Core.FiniteBitRelationBarrier.semanticRow_getLsb`
-at `Core/FiniteBitRelationBarrier.lean:83`. -/
+/-- *Provenance.* Follows `Core.FiniteBitRelationBarrier.semanticRow_getLsb`. -/
 theorem labelOfCode_injective {order : Nat} :
     Function.Injective (labelOfCode (order := order)) := by
   intro source target equal
@@ -86,27 +79,18 @@ theorem labelOfCode_injective {order : Nat} :
       simp [sourceBit, targetBit] at pointwise ⊢
 
 /-- The ascending enumeration of all packed codes of the order.
-
-*Provenance.* Follows the `(List.range _).map` enumeration at
-`Graph/Strategy/Official/Features/PackedResponseOverload.lean:230`.
 -/
 def codeList (order : Nat) : List (BitVec order) :=
   (List.range (2 ^ order)).map (BitVec.ofNat order)
 
-/-- *Provenance.* Follows the `(List.range _).map` enumeration at
-`Graph/Strategy/Official/Features/PackedResponseOverload.lean:230`. -/
 theorem codeList_length (order : Nat) : (codeList order).length = 2 ^ order := by
   simp [codeList]
 
-/-- *Provenance.* Follows the `(List.range _).map` enumeration at
-`Graph/Strategy/Official/Features/PackedResponseOverload.lean:230`. -/
 theorem mem_codeList {order : Nat} (code : BitVec order) :
     code ∈ codeList order := by
   refine List.mem_map.mpr ⟨code.toNat, List.mem_range.mpr code.isLt, ?_⟩
   simp
 
-/-- *Provenance.* Follows the `(List.range _).map` enumeration at
-`Graph/Strategy/Official/Features/PackedResponseOverload.lean:230`. -/
 theorem codeList_nodup (order : Nat) : (codeList order).Nodup := by
   refine List.Nodup.map_on ?_ (List.nodup_range)
   intro left memLeft right memRight equal
@@ -135,8 +119,7 @@ theorem labelOfCode_surjective {order : Nat} :
   obtain ⟨code, _, equal⟩ := member
   exact ⟨code, equal⟩
 
-/-- *Provenance.* Follows `Core.FiniteBitRelationBarrier.semanticRow_getLsb`
-at `Core/FiniteBitRelationBarrier.lean:83`. -/
+/-- *Provenance.* Follows `Core.FiniteBitRelationBarrier.semanticRow_getLsb`. -/
 theorem nonempty_labelOfCode_iff {order : Nat} (code : BitVec order) :
     (labelOfCode code).Nonempty ↔ code ≠ 0#order := by
   constructor
@@ -159,8 +142,7 @@ coordinate of `target` may sit at a difference whose closing cycle the target
 accepts.  The differences tested are `forbiddenGaps`, i.e. they are derived, not
 scheduled.
 
-*Provenance.* Follows `Core.FiniteBitRelationBarrier.Profile.flatCount` at
-`Core/FiniteBitRelationBarrier.lean:34`, the framework's own bitwise `&&&`
+*Provenance.* Follows `Core.FiniteBitRelationBarrier.Profile.flatCount`, the framework's own bitwise `&&&`
 composition test on packed rows.
 -/
 def codeCompatible (order shift : Nat) (source target : BitVec order) : Bool :=
@@ -168,8 +150,7 @@ def codeCompatible (order shift : Nat) (source target : BitVec order) : Bool :=
     source &&& (target >>> gap) = 0#order ∧
       target &&& (source >>> gap) = 0#order)
 
-/-- *Provenance.* Follows `Core.FiniteBitRelationBarrier.semanticRow_getLsb`
-at `Core/FiniteBitRelationBarrier.lean:83`. -/
+/-- *Provenance.* Follows `Core.FiniteBitRelationBarrier.semanticRow_getLsb`. -/
 theorem getLsbD_lt {order : Nat} {code : BitVec order} {index : Nat}
     (bit : code.getLsbD index = true) : index < order := by
   by_contra notBelow
@@ -238,8 +219,7 @@ theorem codeCompatible_eq_true_iff (order shift : Nat)
 /-- The bitwise form of the manuscript's legality: a nonzero code no two of
 whose set bits sit at a forbidden difference.
 
-*Provenance.* Follows `Core.FiniteBitRelationBarrier.Profile.flatCount` at
-`Core/FiniteBitRelationBarrier.lean:34`.
+*Provenance.* Follows `Core.FiniteBitRelationBarrier.Profile.flatCount`.
 -/
 def codeLegal (order : Nat) (code : BitVec order) : Bool :=
   !(code == 0#order) && codeCompatible order 0 code code
@@ -305,9 +285,6 @@ theorem legalCodeList_length (order : Nat) :
 
 /-- The label a certificate row index names.
 
-*Provenance.* Follows the `Fin size` label carrier of
-`Core.Strategy.ExactFiniteLocalAlgebra.ofBitRelationTable` at
-`Core/Strategy/ExactFiniteLocalAlgebraBitTable.lean:35`.
 -/
 def labelAtIndex (order : Nat) (index : Fin (legalCodeList order).length) :
     Label order :=
@@ -344,8 +321,7 @@ theorem labelAtIndex_surjective (order : Nat) {label : Label order}
 /-- The code-indexed safety relation of a certificate row.
 
 *Provenance.* Follows
-`Core.FiniteBitRelationBarrier.SemanticCertificate.row_semantic` at
-`Core/FiniteBitRelationBarrier.lean:93`, the code-indexed relation a generated
+`Core.FiniteBitRelationBarrier.SemanticCertificate.row_semantic`, the code-indexed relation a generated
 table is audited against.
 -/
 def codeRelation (order shift : Nat)
@@ -357,9 +333,7 @@ def codeRelation (order shift : Nat)
 relation a generated bit table is audited against *is* the manuscript's `C_s`
 on the labels its indices name.
 
-*Provenance.* Consumes `codeCompatible_eq_true_iff` above; this is the half of
-the dictionary that `Core.Strategy.ExactFiniteLocalAlgebra.ofBitRelationTable`
-at `Core/Strategy/ExactFiniteLocalAlgebraBitTable.lean:27` leaves open.
+*Provenance.* Consumes `codeCompatible_eq_true_iff` above.
 -/
 theorem codeRelation_eq_safe (order shift : Nat)
     (source target : Fin (legalCodeList order).length) :
@@ -391,13 +365,13 @@ derived condition as `forbiddenGaps`, in the form an executable test folds
 over.
 
 *Provenance.* Follows `WindowCurvature.forbiddenGaps` at
-`Graph/WindowCurvatureAlgebra.lean:111`.
+`Graph/WindowCurvatureAlgebra.lean`.
 -/
 def gapSchedule (order shift : Nat) : List Nat :=
   (List.range order).filter fun difference => decide (ForbiddenGap shift difference)
 
 /-- *Provenance.* Consumes `WindowCurvature.mem_forbiddenGaps` at
-`Graph/WindowCurvatureAlgebra.lean:116`. -/
+`Graph/WindowCurvatureAlgebra.lean`. -/
 theorem mem_gapSchedule {order shift difference : Nat} :
     difference ∈ gapSchedule order shift ↔ difference ∈ forbiddenGaps order shift := by
   simp [gapSchedule, mem_forbiddenGaps, List.mem_filter, List.mem_range]

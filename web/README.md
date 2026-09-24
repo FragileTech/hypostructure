@@ -10,8 +10,15 @@ Two proofs are published:
 
 | Proof | Source | Size |
 | --- | --- | --- |
-| **Erdős–Gyárfás** — does every graph of minimum degree three contain a cycle of length a power of two? | `erdos_64_proof.tex` | 187 diagram nodes, 12 panels |
+| **Erdős–Gyárfás** — does every graph of minimum degree three contain a cycle of length a power of two? | `erdos_64_proof.tex` | 189 diagram nodes, 12 panels |
 | **Navier–Stokes** — can a finite-energy solution develop a local singularity? | `proof_setup.tex`, `type_I_residual_closure.tex`, `type_II_regularity.tex` | 333 steps, 23 panels, 3 papers |
+
+The Erdős–Gyárfás paper and Lean root theorem give a conditional reduction.
+Every counterexample leads to a selected minimal counterexample in one of five
+named residuals, [20a], [144a], [172a], [182], and [186], or in [187], the
+explicit disjunction of the other returned outcomes. These six alternatives
+exhaust the current formal routing. Excluding all six for selected minimal
+counterexamples would prove the conjecture; their exclusion remains open.
 
 The Navier–Stokes argument is written across three manuscripts, each numbering
 its own diagram from `[1]`. They are shown as one connected graph whose steps
@@ -62,30 +69,18 @@ part metadata in `MethodologySection.tsx` as the single source for rail order,
 headings and destinations. The navigation test checks that every metadata row
 has a rendered heading and a matching link.
 
-`frontend/src/methodology/ExecutionRecipe.tsx` contains the generic stages and
-abstract practice patterns. `recipe-reference.ts` carries the source-derived
-selection table, move rules, checklists and artifact table. `MethodologySection.tsx`
-imports the stage metadata and renders each stage through the same addressable
-section wrapper as the rest of the methodology.
+The execution recipe reads the same versioned `tools/methodology_gate/policy/workflow.json`
+and structural register as the external controller. `ExecutionRecipe.tsx` explains
+each stage and provides its operating templates; `recipe-reference.ts` supplies
+candidate examples and the artifact table. The stage order is accounting, unused
+structure, structural conflict, technique catalogue, authorization, construction,
+outcomes, verification. The first five stages precede all construction.
 
-| Manual material | Web recipe destination |
-|---|---|
-| §§1–2: authority, branch state and reading discipline | 1. Establish the branch; glossary |
-| §3: transitions, interfaces, fixed inputs and iteration | Establish, select, repair and discharge |
-| §§4.1–4.6: repair and ordered first failure | 4. Repair the first failed obligation |
-| §§4.7–4.10: inventory, admission and execution checks | 2. Inventory; 3. Select; 5. Execute |
-| §§5.1–5.5: residual data, proof currencies and move rules | 3. Select an admissible move |
-| §6: worked repair patterns | 8. Worked repairs and templates |
-| §§7–9: continuations, outcomes, failure modes and anti-patterns | 5. Execute; 6. Discharge; practice patterns |
-| §§10–11: records and typed proof-system discipline | 7. Verify and record closure |
-| §12: checklist groups | 7. Verify and record closure |
-| §13: executor instructions | 8. Reusable executor prompt |
-| §14: glossary and sources | 8. Glossary and source guide |
+Run `python3 tools/methodology_gate/sync_policy.py` after changing the guide or
+shared policy, and `--check` to verify bundled worker references and source hashes.
+Closure or significant structural exclusion is the only productive technique
+outcome. Intermediate lemmas remain work inside an authorized construction.
 
-When the manual changes, update the mapped stages and reference data together.
-Preserve every prerequisite, outcome and progress condition. A candidate move,
-a local implication, an admitted reduction and a closed branch are distinct
-statuses in every application; the recipe keeps those distinctions explicit.
 Run the landing tests after changing the metadata, and check the linked targets
 at wide and narrow viewports, including keyboard access to tables and templates.
 

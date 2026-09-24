@@ -9,9 +9,9 @@ set_option maxHeartbeats 8000000
 
 /-!
 Generated fixed certificate for all fifteen P13 compatibility relations.
-Rows follow the verified CT10 legal-code order.  Separate audit modules
-recheck every bit against `P13CodeCompatibleSparse` and every accepted count
-against `Hypostructure.Core.FiniteBitRelationBarrier` before downstream use.
+Separate audit modules recheck every bit against `semanticRelation`
+(`Semantic.lean`) and every accepted count against the
+`Hypostructure.Core.FiniteBitRelationBarrier` profile.
 -/
 
 def rows : Array (Array (BitVec 399)) := #[

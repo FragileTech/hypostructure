@@ -292,7 +292,7 @@ def test_navier_stokes_publishes_four_tables_per_paper() -> None:
 
 def test_erdos_review_sidecar_covers_all_nodes() -> None:
     review = ERDOS["review"]
-    assert len(review["nodes"]) == 188
+    assert set(review["nodes"]) == {node["id"] for node in ERDOS["nodes"]}
     valid = {"verified", "partial", "absent"}
     for nid, entry in review["nodes"].items():
         assert entry["lean"] in valid, f"node {nid}: lean={entry['lean']}"
@@ -374,17 +374,20 @@ def test_surrogate_triviality_is_reported_as_a_defect() -> None:
         assert states[str(node)]["fidelity"] == "partial", node
 
 
-def test_blocked_axiom_audit_makes_no_stale_classifications() -> None:
-    """A blocked current run must publish no classifications from an older tree."""
+def test_axiom_audit_classifications_match_current_status() -> None:
+    """A completed audit accounts for its declarations; a blocked audit publishes none."""
     report = json.loads((REPO_ROOT / "web/data/eg_axiom_audit.json").read_text())
-    assert report["status"].startswith("current validation blocked")
     assert report["current_validation"]
-    assert report["tracer"] is None
-    assert not report["frontier_stubs"]
-    assert not report["clean"]
-    assert not report["tainted"]
-    assert not report["unreported"]
-    assert len(report["clean"]) + len(report["tainted"]) == report["declarations"]
+    if report["status"].startswith("current validation blocked"):
+        assert report["tracer"] is None
+        assert not report["clean"]
+        assert not report["tainted"]
+        assert not report["unreported"]
+    else:
+        assert report["status"] == "validated"
+        assert report["tracer"] == "frontierGap"
+        assert (len(report["clean"]) + len(report["tainted"]) +
+                len(report["unreported"])) == report["declarations"]
 
 
 def test_node_coverage_is_not_derived_from_comments() -> None:
@@ -408,7 +411,7 @@ def test_every_node_records_a_producer_or_says_it_has_none() -> None:
     from lean_review import load_audit
 
     audit = load_audit(REPO_ROOT)["nodes"]
-    assert len(audit) == 189  # 188 drawn nodes plus aggregate audit row [172]
+    assert len(audit) == 192  # 189 live nodes, aggregate [172], proposed [172b]-[172c]
     for node in (entry["id"] for entry in ERDOS["nodes"]):
         entry = audit[node]
         assert entry["fidelity"], node
@@ -421,17 +424,39 @@ def test_every_node_records_a_producer_or_says_it_has_none() -> None:
             assert entry["fidelity_note"], node
 
 
-def test_erdos_has_all_188_nodes_across_twelve_panels() -> None:
-    assert len(ERDOS["nodes"]) == 188
+def test_erdos_has_189_live_nodes_across_twelve_panels() -> None:
+    assert len(ERDOS["nodes"]) == 189
     assert len(ERDOS["groups"]) == 12
     assert "chapters" not in ERDOS
+    assert {node["id"] for node in ERDOS["nodes"]} == (
+        {str(number) for number in range(1, 188) if number != 172}
+        | {"20a", "144a", "172a"}
+    )
     shapes = [node["shape"] for node in ERDOS["nodes"]]
-    assert shapes.count("assertion") == 105
-    assert shapes.count("decision") == 50
-    assert shapes.count("terminal") == 33
+    assert shapes.count("assertion") == 104
+    assert shapes.count("decision") == 49
+    assert shapes.count("terminal") == 36
     assert {node["id"] for node in ERDOS["nodes"] if node.get("open")} == {
-        "172a", "182", "186"
+        "20a", "144a", "172a", "182", "186", "187"
     }
+
+
+def test_every_open_erdos_node_is_a_leaf() -> None:
+    """A missing construction cannot supply an input to a downstream step."""
+    open_nodes = {node["id"] for node in ERDOS["nodes"] if node.get("open")}
+    assert not [edge for edge in ERDOS["edges"] if edge["source"] in open_nodes]
+    assert {"172b", "172c"}.isdisjoint(node["id"] for node in ERDOS["nodes"])
+
+
+def test_new_boundary_nodes_follow_their_literal_producers() -> None:
+    arrows = {(edge["source"], edge["target"]) for edge in ERDOS["edges"]}
+    assert ("20", "20a") in arrows
+    assert ("19", "187") in arrows
+    assert ("144", "144a") in arrows
+    assert ("179", "187") in arrows
+    assert ("180", "187") in arrows
+    assert ("20", "144a") not in arrows
+    assert ("144", "20a") not in arrows
 
 
 def test_erdos_route8_reductions_reach_open_186() -> None:
@@ -474,9 +499,9 @@ def test_erdos_dense_packing_residual_is_part_xii() -> None:
     assert by_id["158"]["shape"] == "decision"
     for number in range(159, 172):
         assert by_id[str(number)]["group"] == "fig:proof-diagram-part-xii", number
-    for number in ("172a", "172b", "172c"):
-        assert by_id[number]["group"] == "fig:proof-diagram-part-xii", number
-    for number in ("160", "163", "170", "172a", "172b", "172c"):
+    assert by_id["172a"]["group"] == "fig:proof-diagram-part-xii"
+    assert by_id["172a"]["shape"] == "terminal"
+    for number in ("160", "163", "170"):
         assert by_id[number]["shape"] == "decision", number
     for number in ("164", "168", "171"):
         assert by_id[number]["shape"] == "terminal", number
@@ -523,13 +548,13 @@ def test_erdos_dense_packing_residual_is_part_xii() -> None:
         "lem:scale-additivity",
         "lem:blocked-graphs-compress",
         "lem:system-increment-arithmetic",
-        "lem:barrier-failure-overlap",
         "lem:window-system-realizability",
         "lem:serial-system-sumset",
         "lem:remainder-glue-injection",
         "lem:neutral-germ-symmetry",
     ):
         assert items[key]["kind"] == "lemma" and items[key]["proofLatex"], key
+    assert not items["lem:barrier-failure-overlap"].get("proofLatex")
     assert items["def:serial-window-system"]["kind"] == "definition"
 
 

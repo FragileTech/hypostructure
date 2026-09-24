@@ -2,37 +2,19 @@ import Hypostructure.Graph.BoundaryDemand
 import Hypostructure.Graph.MinimumDegreeCycleTarget
 
 /-!
-# The global Type-A / Type-B alternative on the ledger's own carriers
+# The global Type-A / Type-B alternative
 
 These declarations state the global structural alternative of
 `def:admissible`, `def:net-charge`, the Type-A node and the Type-B node of a
 discharging argument that splits a normalized support on its published
 assigned surplus.
 
-**Every carrier is the one the executed spine produces.**  The support is a
-parameter, never a quantity recomputed from `object`: the branch supplies
-CT9's normalized support
-(`Graph.Strategy.NormalizationRank.exactInducedPathComplementSupport`), and the
-numeric coordinates are the aggregates the local-supply Strategy publishes
-(`Core.Strategy.LocalSupplyLowerBound.Summary`).  The per-vertex observations
-below are the *registered* CT14 observations of that same Strategy
-(`NormalizationRank.supportIncidence`, `NormalizationRank.boundaryIncidence`,
-`FiniteObject.degree`), and the baseline is always the registered
-`Presentation.baselineDegree`.
+The support is a parameter, never a quantity recomputed from `object`, and the
+baseline is always the registered `Presentation.baselineDegree`.
 
-No numeral survives.  The discharging rate `α = 1/loadMultiplier` of
-`Graph.ReceiverLoad.LoadCapacityProfile.dischargeRate` enters
-`NegativeNetCharge` through the presentation field `dischargeScale`, which the
-application fills from the registered profile's own `loadMultiplier`, exactly
-as `baselineDegree` and `inducedPathOrder` are filled.
-
-An earlier application-side version of this module built its own remainder
-from `Graph.InducedPathMaximalPacking.maximalWindowSet object 13`.  That is a
-*second*, application-side maximal packing: `ObstructionPackingClosure.Packing`
-selects only *some* maximal conflict-free family, two maximal packings have
-different complements, and nothing in the framework identifies them.  Every
-statement indexed by that recomputed remainder was therefore unprovable in
-principle, not merely unproved.
+No numeral survives.  The discharging rate `α` enters `NegativeNetCharge`
+through the presentation field `dischargeScale = 1/α`, filled by the
+application exactly as `baselineDegree` and `inducedPathOrder` are filled.
 -/
 
 namespace Hypostructure.Graph.TypeAB
@@ -51,11 +33,8 @@ structure Presentation where
   baselineDegree : Nat
   /-- The registered induced-path order. -/
   inducedPathOrder : Nat
-  /-- The registered discharge scale `1/α`, i.e. the problem's own
-  `Graph.ReceiverLoad.LoadCapacityProfile.loadMultiplier`.  The discharging
-  rate of `lem:typeA-unsaturated-discharge` is its reciprocal, which is exactly
-  `LoadCapacityProfile.dischargeRate`; `NegativeNetCharge` reads it from here
-  rather than writing it out. -/
+  /-- The registered discharge scale `1/α`; `NegativeNetCharge` reads it from
+  here rather than writing it out. -/
   dischargeScale : Nat
   /-- The registered ambient target. -/
   Target : FiniteObject.{u} → Prop
@@ -68,20 +47,14 @@ variable (presentation : Presentation.{u})
 abbrev Baseline (object : FiniteObject.{u}) : Prop :=
   MinimumDegreeAtLeast presentation.baselineDegree object
 
-/-- `def:admissible`'s positive deficiency `def⁺(X)`, written with the
-*registered* CT14 required-mass observation
-(`NormalizationRank.localSupply.requiredMass = baseline - supportIncidence`).
-Nothing is recomputed: this is the same per-vertex number the local-supply
-Strategy aggregates into `Summary.requiredMass`. -/
+/-- `def:admissible`'s positive deficiency `def⁺(X)` at the registered baseline. -/
 noncomputable def positiveDeficiency
     (object : FiniteObject.{u}) (support : Finset object.Vertex) : Nat :=
   object.positiveDeficiency support presentation.baselineDegree
 
-/-- `def:canonical-decomp`'s assigned surplus `σ(X)`, written with the
-*registered* CT14 surplus observation
-(`NormalizationRank.localSupply.surplus = degree - baseline`).  It is summed
-over the support itself, exactly as the ledger aggregates it: members at or
-below the baseline contribute zero, so no separate centre family is carried. -/
+/-- The assigned surplus `σ(X)`: the excess `degree − baseline` summed over the
+support itself.  Members at or below the baseline contribute zero, so no
+separate centre family is carried. -/
 noncomputable def assignedSurplus
     (object : FiniteObject.{u}) (support : Finset object.Vertex) : Nat :=
   object.ambientSurplus support presentation.baselineDegree
@@ -95,9 +68,8 @@ noncomputable def assignedCenters
     Finset object.Vertex :=
   support.filter fun vertex => presentation.baselineDegree < object.degree vertex
 
-/-- A positive assigned surplus is carried by an actual member.  This is the
-support-level twin of `LocalSupplyLowerBound.Summary.assignedSurplusNonAtom`,
-so a Type-B certificate does not have to assert a nonempty centre family. -/
+/-- A positive assigned surplus is carried by an actual member, so a Type-B
+certificate does not have to assert a nonempty centre family. -/
 theorem assignedCenters_nonempty_of_assignedSurplus_pos
     {presentation : Presentation.{u}}
     {object : FiniteObject.{u}} {support : Finset object.Vertex}
@@ -119,20 +91,15 @@ theorem assignedCenters_nonempty_of_assignedSurplus_pos
     omega
   · exact nonempty
 
-/-- `def:internal-3-core`, read at the registered baseline through the
-framework predicate the normalization node itself publishes.  Its negation is
-exactly the fact CT6 produces on the active-ledger terminal
-(`NormalizationRank.exactInducedPathComponent_emptyInternalCore`), and for an
-arbitrary sub-support of CT9's complement it is
-`NormalizationRank.exactInducedPathSubset_minDegree_lt`. -/
+/-- `def:internal-3-core`, read at the registered baseline: no nonempty
+sub-support induces a subgraph of minimum degree at least the baseline. -/
 def EmptyInternalThreeCore
     (object : FiniteObject.{u}) (support : Finset object.Vertex) : Prop :=
   ¬ ∃ smaller : Finset object.Vertex,
       smaller ⊆ support ∧ smaller.Nonempty ∧
         Baseline presentation (object.induce smaller)
 
-/-- `lem:stub-positive`'s pointwise half in the registered CT14 observations:
-every baseline deficiency inside the support is paid by a literal incidence
+/-- `lem:stub-positive`'s pointwise half: every baseline deficiency inside the support is paid by a literal incidence
 leaving it. -/
 def BoundarySupplied
     (object : FiniteObject.{u}) (support : Finset object.Vertex) : Prop :=
@@ -153,9 +120,8 @@ def HereditarilyTargetUncompressible
 /-- **Uncompressibility is already carried by the empty internal core.**
 
 `Baseline (object.induce smaller)` is `baselineDegree ≤ (object.induce
-smaller).minDegree`, which on a nonempty `smaller ⊆ support` is literally a
-witness of `NormalizationRank.HasInternalCore object baselineDegree support`.
-So the empty-internal-core fact the normalization ledger publishes refutes the
+smaller).minDegree`, which on a nonempty `smaller ⊆ support` contradicts
+`EmptyInternalThreeCore`.  So the empty-internal-core fact refutes the
 hypothesis and the implication holds with no further input.
 
 This settles, by proof rather than by argument, that `uncompressible` adds no
@@ -170,52 +136,19 @@ theorem hereditarilyTargetUncompressible_of_emptyInternalThreeCore
     ⟨smaller, (Finset.ssubset_iff_subset_ne.mp proper).1, nonempty, baseline⟩
     empty
 
-/-- `def:dyadic-safe` in the contextual sense: the arm that reaches the A/B
-split is the target-avoiding arm, and this is the same datum
-`globalLocalReflection` clause (a) reads. -/
+/-- `def:target-safe` in the contextual sense: the arm that reaches the A/B
+split is the target-avoiding arm. -/
 def ContextuallyDyadicSafe (object : FiniteObject.{u}) : Prop :=
   ¬ presentation.Target object
 
-/-- **`def:net-charge` at the registered discharging rate `α`, written on the
-ledger's published coordinates.**
+/-- **`def:net-charge` at the registered discharging rate `α`.**
 
-`summary.requiredMass` is `def⁺(R)`, `summary.assignedSurplus` is `σ_R`, and
-`summary.netDeficiency.remainder` is `|R|`; integer subtraction is intentional,
-since no truncated natural subtraction can turn an overpaid support into a
-negative one.
-
-**This is the one coordinate no registered node supplies, and the reason is
-now a single named missing inequality rather than a mismatch of columns.**
-
-The local-supply Strategy publishes `netDeficiency` at the rate
-`coefficient / scale = observedSupply / |R|` with `surplus := assignedSurplus`,
-so `NetDeficiencyAccounting.not_rate_reached` at any `rate` strictly above that
-ratio yields exactly `rate·|R| + σ_R > def⁺(R)`, i.e. this proposition at that
-`rate`.  Instantiating `rate` at the presentation's own discharging rate
-`α = 1/loadMultiplier` (`Graph.ReceiverLoad.LoadCapacityProfile.dischargeRate`)
-therefore produces `NegativeNetCharge` verbatim -- **provided** the consumer can
-discharge the applicability condition
-
-  `observedSupply / |R| < α`,
-
-which is the manuscript's own `Δ_net(R) ≤ τ_win < α` at node `[56]`.  That is
-the single fact still missing: it needs `lem:surplus-aware-window-stub`'s
-`e(R, W) ≤ 15 p₁₃ + σ_W` together with `prop:p13-density`'s `θ < 1/73`, and
-`.obstructionPacking` is not among the local-supply Strategy's requirements.
-`Core.Strategy.LocalSupplyLowerBound.Profile.summaryOfResidual`'s docstring
-records exactly which structure would have to carry it.
-
-The field is kept at the manuscript's statement rather than lowered to the
-published cap, because lowering it would make the Type-A/Type-B disjunction
-vacuous: the two alternatives are exhaustive in `assignedSurplus`, so without a
-quarter bound they assert only that a normalized support exists.
-
-The multiplier below is `presentation.dischargeScale`, the registered
-`loadMultiplier` of the problem's own
-`Graph.ReceiverLoad.LoadCapacityProfile`; clearing the denominator of
-`def:net-charge`'s `α = 1/loadMultiplier` is what turns `def⁺(R) - σ_R < α|R|`
-into the integer comparison stated here.  At the registered profile
-`loadMultiplier = 4` this is the manuscript's quarter bound verbatim. -/
+`No(X) = def⁺(X) − σ(X) − α|V(X)|` is negative exactly when
+`def⁺(X) − σ(X) < α|V(X)|`.  The multiplier below is
+`presentation.dischargeScale = 1/α`; clearing the denominator gives the integer
+comparison stated here, and integer subtraction is used so that no truncated
+natural subtraction can turn an overpaid support into a negative one.  At
+`dischargeScale = 4` this is `def:net-charge`'s `α = 1/4`. -/
 def NegativeNetCharge (object : FiniteObject.{u})
     (support : Finset object.Vertex) : Prop :=
   (presentation.dischargeScale : Int) *
@@ -223,30 +156,18 @@ def NegativeNetCharge (object : FiniteObject.{u})
         (assignedSurplus presentation object support : Int)) <
     (support.card : Int)
 
-/-- **The common global certificate assembled before the A/B split, on the
-ledger's own carriers.**
-
-`support` is CT9's normalized support and `summary` is the local-supply ledger
-entry published for exactly that support.  The three equations tie the two
-together; they are the whole reason the certificate is not vacuous, and they
-are the producer's only numeric obligation.  Every other field is a fact the
-normalization and avoidance ledgers already publish about that support.
-
-There is no `component` field.  CT6's component schedule
-(`NormalizationRank.exactInducedPathComponents`) is produced, but the
-continuation reads `LocalSupplyLowerBound.Summary` aggregated over the *whole*
-complement, so the split is taken on `σ(R)` and the support this certificate
-can carry is `R`. -/
+/-- **The common global certificate assembled before the A/B split**: an
+admissible support (`def:admissible`) of negative net charge. -/
 structure AdmissibleNegativeSupport (object : FiniteObject.{u}) where
-  /-- CT9's normalized support, supplied by the residual. -/
+  /-- The support, supplied by the residual. -/
   support : Finset object.Vertex
-  /-- `NormalizationRank.exactInducedPathSubset_free`. -/
+  /-- `def:admissible`: the support is `P₁₃`-free. -/
   p13Free : InducedPathFree (object.induce support)
     presentation.inducedPathOrder
-  /-- `NormalizationRank.exactInducedPathSubset_minDegree_lt`. -/
+  /-- `def:admissible`: empty internal `3`-core. -/
   emptyThreeCore : EmptyInternalThreeCore presentation object support
-  /-- `NormalizationRank.supportIncidence_deficiency_le_boundaryIncidence` at
-  the residual's own `Baseline`. -/
+  /-- Every baseline deficiency inside the support is paid by an incidence
+  leaving it. -/
   boundarySupplied : BoundarySupplied presentation object support
   /-- Discharged by `hereditarilyTargetUncompressible_of_emptyInternalThreeCore`
   from the field above; retained because `def:admissible` names it. -/
@@ -316,11 +237,8 @@ inductive TypeBDecoration (object : FiniteObject.{u})
   | handoff (data : DecoratedHandoffData presentation object support centers)
 
 /-- Paper Type A: a negative admissible support with no assigned surplus,
-hence ambient-cubic.  `ambientCubic` is the ledger's own reading of
-`assignedSurplus = 0`
-(`NormalizationRank.localSupply_degree_le_baselineDegree_of_surplus_eq_zero`
-together with the residual's `Baseline`, i.e.
-`NegativeSupport.Support.ambientDegree_eq_of_noHigh`). -/
+hence ambient-cubic.  `ambientCubic` records that every vertex of the
+support sits exactly at the baseline. -/
 structure TypeACertificate (object : FiniteObject.{u}) where
   common : AdmissibleNegativeSupport presentation object
   noSurplus : assignedSurplus presentation object common.support = 0

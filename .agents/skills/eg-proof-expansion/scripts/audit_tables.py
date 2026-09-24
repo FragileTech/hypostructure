@@ -121,18 +121,20 @@ def manuscript_all_labels(tex: str) -> set[str]:
     return set(re.findall(r"\\label(?:\[[^\]]+\])?\{([^}]+)\}", tex))
 
 
-def node_numbers(cell: str, max_node: int) -> set[int]:
-    result: set[int] = set()
+def node_numbers(cell: str, max_node: int) -> set[str]:
+    result: set[str] = set()
     normalized = cell.replace("–", "-")
     for first, last in re.findall(r"\[(\d+)\](?:-\[(\d+)\])?", normalized):
         start = int(first)
         stop = int(last) if last else start
         if stop < start:
             raise AuditError(f"descending node range in {cell!r}")
-        result.update(range(start, stop + 1))
+        result.update(str(number) for number in range(start, stop + 1))
+    result.update(re.findall(r"\[(\d+[a-z])\]", normalized))
     if not result:
         raise AuditError(f"fact row has no diagram node in {cell!r}")
-    invalid = sorted(number for number in result if not 1 <= number <= max_node)
+    invalid = sorted(number for number in result
+                     if not 1 <= int(re.match(r"\d+", number).group()) <= max_node)
     if invalid:
         raise AuditError(f"out-of-range diagram nodes {invalid} in {cell!r}")
     return result
@@ -186,17 +188,18 @@ def validate(repo_root: Path) -> None:
     if len(actual_labels) != len(set(actual_labels)):
         raise AuditError("paper-fact table contains duplicate labels")
 
-    node_rows: dict[int, tuple[str, ...]] = {}
+    node_rows: dict[str, tuple[str, ...]] = {}
     for row in nodes.rows:
-        match = re.fullmatch(r"\[(\d+)\]", row[0])
+        match = re.fullmatch(r"\[(\d+[a-z]?)\]", row[0])
         if match is None:
             raise AuditError(f"invalid node identifier {row[0]!r}")
-        number = int(match.group(1))
+        number = match.group(1)
         if number in node_rows:
             raise AuditError(f"duplicate node row [{number}]")
         node_rows[number] = row
     max_node = max(int(number) for number in re.findall(r"\\textbf\{\[(\d+)\]\}", tex))
-    expected_nodes = set(range(1, max_node + 1))
+    expected_nodes = {str(number) for number in range(1, max_node + 1)}
+    expected_nodes.update(re.findall(r"\\textbf\{\[(\d+[a-z])\]\}", tex))
     if set(node_rows) != expected_nodes:
         raise AuditError(
             f"node table must contain exactly [1]-[{max_node}]; "

@@ -162,6 +162,74 @@ noncomputable def alpha : Nat :=
 theorem essentialCore_complete : entry.Complete entry.essentialCore :=
   entry.carrierProfile.core_complete
 
+/-- **`lem:typeA-carrier-cut-parity`, last step**:
+*"Each such crossing is recorded in the declared support of the corresponding
+`u`-supported coordinate ... Since the event survives in the restricted state
+`\rho_u(B_u)|_{\mathcal C_{\rm ess}(\xi)}`, every boundary incidence in its
+declared support lies in `\mathcal C_{\rm ess}(\xi)`.  The two distinct cut
+crossings therefore give two distinct boundary incidences from
+`\mathcal C_{\rm ess}(\xi)`."*
+
+A coordinate the core retains has its whole carrier set inside the core, so a
+coordinate with two distinct carriers forces `\alpha(\xi) \ge 2`.  This is the
+hinge of `lem:typeA-one-terminal-collapse`: it is what
+contradicts `|\mathcal C| \le 1`, and it is the step that makes the claim
+independent of how strong target-completeness is taken to be. -/
+theorem two_le_alpha_of_two_le_card_car {r : entry.Coordinate}
+    (member : r ∈ entry.retained entry.essentialCore)
+    (two : 2 ≤ (entry.car r).card) : 2 ≤ entry.alpha :=
+  two.trans (Finset.card_le_card (entry.mem_retained.mp member).2)
+
+/-- The same hinge read through the core's own carriers: two distinct carriers
+of a retained coordinate are two distinct essential carriers. -/
+theorem two_le_alpha_of_two_carriers {r : entry.Coordinate}
+    (member : r ∈ entry.retained entry.essentialCore)
+    {left right : Carrier} (distinct : left ≠ right)
+    (leftCarrier : left ∈ entry.car r) (rightCarrier : right ∈ entry.car r) :
+    2 ≤ entry.alpha := by
+  classical
+  refine entry.two_le_alpha_of_two_le_card_car member ?_
+  have subset : ({left, right} : Finset Carrier) ⊆ entry.car r := by
+    intro carrier carrierMem
+    rcases Finset.mem_insert.mp carrierMem with rfl | tail
+    · exact leftCarrier
+    · rw [Finset.mem_singleton.mp tail]
+      exact rightCarrier
+  have card : ({left, right} : Finset Carrier).card = 2 := by
+    rw [Finset.card_insert_of_notMem (by simpa using distinct),
+      Finset.card_singleton]
+  exact card ▸ Finset.card_le_card subset
+
+/-- **Two recorded incidences are two essential carriers, even when they are
+recorded by different coordinates.**
+
+`lem:typeA-carrier-cut-parity`: *"Each
+such crossing is recorded in the declared support of **the corresponding**
+`u`-supported coordinate"* -- one coordinate per crossing, not one coordinate
+for both.  All that `\alpha(\xi)\ge2` needs is two distinct carriers inside the
+core, and a core-retained coordinate carries its whole carrier set there. -/
+theorem two_le_alpha_of_two_core_carriers {left right : Carrier}
+    (distinct : left ≠ right) {r s : entry.Coordinate}
+    (rCore : r ∈ entry.retained entry.essentialCore)
+    (sCore : s ∈ entry.retained entry.essentialCore)
+    (leftMem : left ∈ entry.car r) (rightMem : right ∈ entry.car s) :
+    2 ≤ entry.alpha := by
+  classical
+  have leftCore : left ∈ entry.essentialCore :=
+    (entry.mem_retained.mp rCore).2 leftMem
+  have rightCore : right ∈ entry.essentialCore :=
+    (entry.mem_retained.mp sCore).2 rightMem
+  have subset : ({left, right} : Finset Carrier) ⊆ entry.essentialCore := by
+    intro carrier carrierMem
+    rcases Finset.mem_insert.mp carrierMem with rfl | tail
+    · exact leftCore
+    · rw [Finset.mem_singleton.mp tail]
+      exact rightCore
+  have card : ({left, right} : Finset Carrier).card = 2 := by
+    rw [Finset.card_insert_of_notMem (by simpa using distinct),
+      Finset.card_singleton]
+  exact card ▸ Finset.card_le_card subset
+
 /-- **Every essential carrier is essential.**  Deleting one from the core
 destroys completeness; this is Core's `erase_not_complete` read here. -/
 theorem essentialCore_erase_not_complete {carrier : Carrier}

@@ -183,16 +183,24 @@ The safety condition on the whole graph: every outcome a step returns lies eithe
 
 ### 3.7 One iteration of the method
 
-From a state and its queue:
+The operational sequence is shared with `tools/methodology_gate/policy/workflow.json`.
+Each stage is independently reviewed before the next begins. A technique must close
+the branch or significantly restrict what the remaining counterexample can be.
 
-1. **Propose** an invariant, case split, budget, label, local test, exchange or candidate lemma.
-2. **Admit** it only if both outcomes are productive, the resources it needs are present, and every surviving case has a declared route. No new global result enters here.
-3. **Select** an admitted move whose prerequisites are proved in the current state. If a prerequisite needs a local construction, execute and verify that construction first; “can be synthesised” is not evidence that it is present.
-4. **Execute**: prove, review, or compute the local obligations *before* the proof state changes.
-5. **Route**: close whatever closes; emit every surviving obstruction as a typed residual with a named consumer.
-6. **Record** the branch tree, the invariant and exclusion ledgers, the dependencies and the residual queue.
+1. **Account for exploited structure.** A source-grounded ledger of every exploited structural aspect, its exact constraint or quantitative contribution, and the unchanged endpoint.
+2. **Identify unused structure.** A coordinate-by-coordinate inventory of present, absent, unresolved and inapplicable structure, with concrete unused aspects and interactions. No techniques.
+3. **Select the strongest structural conflict.** A ranked structural comparison and selected aspect, naming its opposing restrictions, prospective contradiction or excluded configurations. No technique.
+4. **Catalogue relevant techniques.** The applicable textbook techniques, exact hypotheses and proposed outputs, prior-attempt comparisons, exclusions and missing prerequisites. No execution.
+5. **Authorize a productive technique.** One exact construction authorization, bound to the residual and earlier artifacts, with a proved conditional payoff for every outcome: closure or significant residual reduction.
+6. **Execute the authorized construction.** Actual witnesses, preserved interfaces, and a proved closure or significant residual reduction on every outcome. Partial lemmas remain intermediate work.
+7. **Consume all outcomes.** Every terminal and descendant discharged, with exact account updates and no hidden remaining obligation.
+8. **Verify completion.** Verified statements, implementation, consumers, dependencies and synchronized proof artifacts, with controller-run checks passed.
 
-A repair is one iteration of this loop, entered at step 1 with a very specific proposal: the predicate the failed step silently used.
+A correct auxiliary lemma, paid interface field, new encoding, or arbitrary split
+is insufficient. Preflight proves the conditional payoff; execution constructs
+the output and proves the actual advancement. A failed technique never accounts
+for its property. Repair returns to the earliest defective decision and preserves
+unaffected accepted work.
 
 ---
 
@@ -277,41 +285,46 @@ Prefer the least invasive kind that actually matches the defect. A numerical rep
 
 ### 4.6 Repairing an open node
 
-An open node is a leaf that retains, as its residual, the exact negation of a lemma's *conclusion* on the lemma's retained input — "$\neg(\text{the five-way outcome exists})$," "$\neg\text{ConditionalFactorization}$." Retaining it is correct: it is honest, it keeps leaf totality, and it gives the precise weaker theorem of Step 7. But it is a temporary endpoint, and the both-sides test says why: its no-arm has no consumer. A diamond whose negative side is "the lemma does not hold" sits too high in the proof. The repair of an open node is therefore not "find a new idea"; it is to push the diamond down to the first *hypothesis* the lemma's proof consumes.
+Retain the full incoming conjunction and original goal. Locate the exact unpaid
+obligation and successful prefix without selecting a construction prematurely.
+Follow the eight stages in §3.7. A prerequisite requiring new mathematical work
+needs structural justification and a proved conditional payoff to its waiting
+consumer; it cannot be executed during accounting, inventory or selection.
 
-The procedure:
+At a construction failure, retain the attempted technique and first failed field.
+The reviewers identify the earliest defective decision. Invalidate dependent
+approvals, retain unaffected facts and children, and obtain a fresh authorization
+before another attempt. Never infer a mathematical negation from failed search.
 
-0. **Fix the object first (Rule 0, §4.8).** The residual is the data its producer typed — for [181], `def:typeA-peeled-demand-residual` (R1)–(R3); for [182], the three constructors of `PairUncoveredResidual`. Write it down verbatim before anything else, and work on it and nothing "equivalent" to it. Then **audit the consumer.** If the open node comes with an offered consumer ("closes if quantity $Z$ is small"), compute what the incoming ledger already forces about $Z$ before doing anything else. $Z$ is usually not free: ledgers define unpaid demand as demand minus paid, and no-overcount identities bound it from below. If the forced bound contradicts the needed bound, the consumer is vacuous, and the residual was produced by a diamond on the wrong hypothesis; relocate the work to that hypothesis (Section 8 does this for [181]).
-1. **Write the intended proof as steps.** The manuscript usually says what the proof is meant to be ("identical to `lem:…` with $X$ in place of $Y$"; "by the same argument as node [k]"). Expand it into $X_1\wedge\cdots\wedge X_m$: each construction, each preservation claim, each cited lemma.
-2. **Ask three questions of every step.**
-   - *Ledger:* does it consume a fact that is on the branch where the original proof lived but not on *this* branch? (Cross-branch imports are the most common silent failure when a proof is transferred.)
-   - *Object:* does it use a property of the original object that the transferred object lacks (paths versus connected subgraphs; 13 fixed offsets versus $s+1$ return offsets)?
-   - *Fibre:* is it a construction whose output must stay in a class or conditional fibre (same $n$, $m$, profile, exposed coordinates)? That preservation is a separate obligation.
-3. **The first step failing any question gets the diamond**, by the ordered first-failure split of 4.3. Its negation is typed by Section 5.1 — it always is, because a failed construction step hands you the reason it failed (a determined coordinate, a branching connector, an overlapping earlier support, a bounded system).
-4. **Collapse shared obligations.** Several constructors of one open node usually reduce to the same one or two local lemmas (a "stays in the fibre" lemma, a cross-branch audit). Do the shared ones first.
-5. **The old node keeps its number and becomes a decision;** its retained data is the input the new diamonds read; new nodes are appended after the last existing one.
-6. **Stop when every no-arm has a consumer and every split passes §4.8.** Each diamond's arms must be properties of the residual's own object and must consume an inventory row; a diamond that only relocates the difficulty is removed, not kept. At that point the open node has been replaced by architecturally complete subgraph whose remaining content is a list of bounded local lemmas. Proving them is the Execute step; it may itself fail and recurse, but each recursion is on a smaller, typed object. This ends the architectural repair only. A request for full branch closure requires executing all those local lemmas and recursive cases under §4.10 before stopping.
+### 4.7 Structural accounting, inventory and conflict selection
 
-Section 7 performs this procedure on node [182] of the Erdős–Gyárfás proof, and Section 8 on node [181].
+The shared register (`tools/methodology_gate/policy/structural-register.json`)
+contains 88 graph-structural coordinates and 19 textbook technique families.
+It is a graph core with EG coverage, not an exhaustive catalogue of all mathematics.
 
-### 4.7 The residual structural inventory (mandatory before choosing a move)
+**Stage 1 accounts for what has already been exploited.** For every structural
+aspect, name its exact object, prior consumer, proof, and resulting qualitative
+restriction or quantitative contribution. Preserve exclusions, minimality,
+constants, multiplicities and independent strict slack.
 
-A residual is closed by finding structure the counterexample cannot afford, not by re-running the moves that produced the residual. Before any move is chosen, the residual is inventoried against the methodology's property register (`web/frontend/src/structural-survey/data.ts`: properties A01–I06, techniques T01–T19, and the bindings that record which properties each closed EG node consumed). The inventory is a table with one row per property that is **present** in the residual object, and four columns:
+**Stage 2 inventories what remains unused.** Inspect every coordinate and relevant
+interaction, including higher-order interactions. Record present, absent,
+unresolved or inapplicable structure; distinguish fully accounted, partially
+accounted and unaccounted aspects. Unknown properties are not premises. An
+observable's existence does not establish a particular restriction on its value.
+No candidate techniques belong in this stage.
 
-1. *Present as* — the concrete observable in the residual (a number, set, order, family).
-2. *Accounted upstream?* — the node or lemma that consumed it, or **not accounted**. A property is not accounted when the upstream node used it only globally (on $R$ or $G$) while the residual is local, or used only its existence and not its structure (an order, a family, a spectrum).
-3. *Technique it enables* — from the register's `techniques` field for that property.
-4. *Certificate it would return* — from the register's `certificate` field: what the move gives if it succeeds, and what typed residual it leaves if it fails.
+**Stage 3 selects the strongest structural conflict.** Compare every unused aspect
+with accumulated restrictions and independently challenge the strongest rival.
+State the prospective contradiction or excluded configurations. Unsupported
+aspects may honestly have no supported gain; the chosen aspect must have a
+supported prospect of closure or significant restriction. Do not choose a technique.
 
-Among moves that pass the admission checks of §§4.8 and 4.10, apply the technique that evaluates the **largest amount of unaccounted structure**, measured by how many rows it touches and how much of the counterexample's freedom its certificate removes. Ties are broken toward the cheaper currency (constraint before compression before quantity). Touching many rows does not admit a move whose outcomes have no verified continuation.
-
-Three things are not moves and are never entered in the inventory:
-
-- **Re-application of an upstream move to the same property.** If a property row says "accounted at node [k]", the same technique on the same observable is finished; only a technique from the row's list that was *not* used, or the same technique on a property that was not accounted, counts.
-- **Import of a closure theorem.** T18 evaluates I06 only for the imports fixed at the outset (`thm:p13free`, textbook facts). A theorem whose conclusion is the target is not an import.
-- **Enumeration of the residual as a whole.** T17 evaluates I01/I03/I04/D10 only on a bounded configuration whose state is fully encoded and whose generator is part of the theorem. "Search all graphs up to the diameter bound" is not a bounded configuration.
-
-The inventory is redone after every split: a split adds rows (the new typed data) and closes rows (the property is now the branch condition).
+Only Stage 4 catalogues techniques, and only Stage 5 authorizes a productive one.
+The following earlier application records are historical illustrations of
+structural content, not current authorizations. Their combined property/technique
+columns must be separated into the new stages before reuse. Their mathematical
+claims need inspection against current sources.
 
 #### Worked inventory: the [181] residual, on the object it actually is
 
@@ -353,7 +366,7 @@ Residual object: the counterexample's own skeleton, a free pair $\pi$ with suppo
 
 ### 4.8 Split admissibility: the residual must shrink
 
-**Rule 0 — never restate the residual; the residual is the whole accumulation.** The residual at a node is the *conjunction of every fact established on the path from the root to that node*: the standing hypotheses of the branch (the near-cubic spine, the hot arm of [158], the large-budget arm, the density and entropy inequalities with their constants), every diamond taken (each exit tested and its outcome), every ledger identity, every object constructed on the way (windows, labels, receivers, traces, loads, tokens, absorbers, blockers), and the local graph facts. A sub-object of it — a pocket, a piece, a component, "a two-stub pocket with more than twelve vertices per stub" — is not the residual; it is a projection that has dropped most of the facts, and any statement about the projection ("it satisfies every local move", "no move reads it") is a statement about a different, easier-to-refute object. *Prohibitions:* (i) no step is stated about a sub-object; every step is a statement about the branch state, and the sub-object appears only as the part the move acts on; (ii) a move may use any fact on the accumulation, and the inventory must list the upstream quantitative facts (state counts, budgets, ranks, caps) as present rows, not only the local ones; (iii) declaring a projection unclosable, or writing a theorem about the projection and reporting that it cannot be proved, is forbidden — it is the escape hatch of §4.9 F1 in its most common form. Failure record: the [181] descent was reported as "a two-stub pocket with Mersenne data $k\ne m$ satisfies every local fact" — a claim about a pocket in isolation, made while the branch state carried the hot-branch state count, the density cap, the label algebra, the obstruction rank and the exit outcomes, none of which the pocket-in-isolation carries. The object you work on is the residual *as typed by its producer*: the entry, the support, the witness, the fibre, with every ledger fact attached. It is never "equivalent to" an inequality, a rate, a density, or a class of graphs with a few listed properties. Any such restatement is a weakening — it keeps a projection of the data and discards the rest — and a proof on the weakened object is a proof of something else. The failure record of this project: [181] arrives as a two-support entry $\xi$ with receiver, essential incidence core, declared deletion witness, trace basin, the exit-(4) peel just performed, and the reduced-rate test just failed, together with $\mathsf P_{\rm open}$, $\mathsf P^{+}_{\rm zero}$, silent loads and pockets; §8 of this guide records that object and the plan O7 on it; `closure_proofs.md` §3.1 nevertheless restated it as "a component with $\lvert X\rvert>7\defp(X)$" (Theorem 3.4, "equivalently") and everything after that was done on a generic subcubic $P_{13}$-free graph, which no local move can close (§4.8 last paragraph) *because the structure that closes it had been discarded*. Currency checks (§5.2) and rate computations are diagnostics to be run *after* the inventory, never a replacement for the residual; and "audit the consumer" (§4.6 step 0) means checking whether the consumer's hypothesis holds on the incoming residual, not re-deriving the consumer's quantity on a different object.
+**Rule 0 — never restate the residual; the residual is the whole accumulation.** The residual at a node is the *conjunction of every fact established on the path from the root to that node*: the standing hypotheses of the branch (the near-cubic spine, the hot arm of [158], the large-budget arm, the density and entropy inequalities with their constants), every diamond taken (each exit tested and its outcome), every ledger identity, every object constructed on the way (windows, labels, receivers, traces, loads, tokens, absorbers, blockers), and the local graph facts. A sub-object of it — a pocket, a piece, a component, "a two-stub pocket with more than twelve vertices per stub" — is not the residual; it is a projection that has dropped most of the facts, and any statement about the projection ("it satisfies every local move", "no move reads it") is a statement about a different, easier-to-refute object. *Prohibitions:* (i) no step is stated about a sub-object; every step is a statement about the branch state, and the sub-object appears only as the part the move acts on; (ii) a move may use any fact on the accumulation, and the inventory must list the upstream quantitative facts (state counts, budgets, ranks, caps) as present rows, not only the local ones; (iii) declaring a projection unclosable, or writing a theorem about the projection and reporting that it cannot be proved, is forbidden — it is the escape hatch of §4.9 F1 in its most common form. Failure record: the [181] descent was reported as "a two-stub pocket with Mersenne data $k\ne m$ satisfies every local fact" — a claim about a pocket in isolation, made while the branch state carried the hot-branch state count, the density cap, the label algebra, the obstruction rank and the exit outcomes, none of which the pocket-in-isolation carries. The object you work on is the residual *as typed by its producer*: the entry, the support, the witness, the fibre, with every ledger fact attached. It is never "equivalent to" an inequality, a rate, a density, or a class of graphs with a few listed properties. Any such restatement is a weakening — it keeps a projection of the data and discards the rest — and a proof on the weakened object is a proof of something else. The failure record of this project: [181] arrives as a two-support entry $\xi$ with receiver, essential incidence core, declared deletion witness, trace basin, the exit-(4) peel just performed, and the reduced-rate test just failed, together with $\mathsf P_{\rm open}$, $\mathsf P^{+}_{\rm zero}$, silent loads and pockets; §8 of this guide records that object and the plan O7 on it; `closure_proofs.md` §3.1 nevertheless restated it as "a component with $\lvert X\rvert>7\defp(X)$" (Theorem 3.4, "equivalently") and everything after that was done on a generic subcubic $P_{13}$-free graph, which no local move can close (§4.8 last paragraph) *because the structure that closes it had been discarded*. Currency checks (§5.2) and rate computations are diagnostics to be run *after* the inventory, never a replacement for the residual; and "audit the consumer" (§3.7 Stage 1) means checking whether the consumer's hypothesis holds on the incoming residual, not re-deriving the consumer's quantity on a different object.
 
 
 A dichotomy is not progress by itself. The progress invariant (§3.7) requires every transition to do one of three things, and a split that does none of them is inadmissible even if both arms are correct:
@@ -498,29 +511,24 @@ Read the row that matches the residual's shape; try the candidate moves in the o
 
 ### 5.4 Rules that constrain the choice
 
-1. **Only branch-state facts, fixed inputs, and textbook material.** A move that needs a global result not among the inputs is not a closure; it is a defect. Refine the case structure instead.
-2. **Prefer moves that make progress in a well-founded sense.** Every step outputs a closed branch or a *strictly smaller named residual* — smaller in size, in live exits, or in an explicitly monitored parameter. A lemma whose residual is not smaller, finite, charged or routed relocates the difficulty and counts as no progress.
-3. **Prefer the cheapest currency first.** Direct hit and contextual distinction cost nothing; compression needs context-universality; charging needs a full scheme; entropy needs the right class. The manuscript's trichotomies are ordered this way (hit, defect, compression) for a reason.
-4. **Separate currencies.** Deficiency, surplus, entropy, rank, boundary mass and concentration are distinct unless a proved interface converts one into another; an obstruction is paid once. Check the moves × budgets monotonicity table after any deletion, replacement, peel, charge transfer or hand-off.
-5. **Keep both squeezes alive.** Outside the explicit residuals the contradiction is reached in two arithmetically independent forms: obstruction ($W_2\ge2.543|R|$ against $\le0.611|R|$, slack $4.1\times$) and net charge ($0.25|R|$ against $\tau_{\rm win}=0.2282|R|$, slack $\approx9.6\%$). Any repair to an estimate must keep demand $>$ supply in the form it feeds.
-6. **Do not launder.** If a move's exhaustiveness is not proved on the retained fibre, the residual is retained under its exact negation, not renamed as a blocker, quotient, exit, or Type B witness. Node [182] is the model.
-7. **Check forward references.** A required invariant introduced at a strictly later node is a forward-reference gap. For any result that produces the contradiction, confirm the chain inv 8 ← `cor:uncompressible` ← `lem:replacement` is intact and not circular with the result invoking it.
-8. **Check the interface, not the prose.** The consumer of the closure must accept exactly the typed witness the move produces (a decorated handoff at [65] needs a heavy centre with separated connector tails; an exit-(4) peel needs a declared deletion witness).
-9. **Never split on whether a lemma holds; split on the first hypothesis its proof consumes.** A diamond whose no-arm is "$\neg$(conclusion)" has no consumer. It is admissible only as a temporary honest endpoint — an open node — and Section 4.6 is the procedure for pushing it down to admissible diamonds.
-10. **Enumerate the minimality moves before enumerating tools.** A minimal counterexample supports deletion, contraction, and replacement; check which of them the branch has already consumed before looking for a new tool. No lemma is added to the record for a move unless it is executed on the incoming residual.
-11. **Inventory before moving.** No move is chosen for a residual until its structural inventory (§4.7) is written against the register. The move is the technique that evaluates the most unaccounted structure. Re-applying an upstream move to an accounted property, importing a closure theorem, or enumerating the whole residual are not moves.
-12. **Relocation is not progress.** A step that removes a unit from one ledger and records it in another ledger with no payer (a peel, a deferral, a "routing record") has not closed, charged, or shrunk anything. It is admissible only if the receiving ledger has a consumer with capacity; otherwise it is the re-encoding failure of Section 9, and the residual it produces will be tautologically linear (Section 8.2).
-13. **An unproved intermediate fact is a diamond, not a stop.** When the move you selected needs a fact $F$ about the residual that you cannot prove from the ledger (e.g. "the terminal spectrum of the piece is doubling"), $F$ becomes the hypothesis of the next split: the $F$ arm continues with the selected move, and the $\neg F$ arm is a new typed residual whose data is $\neg F$ itself — and $\neg F$ is usually the more structured side (a non-doubling spectrum is periodic; an unbounded object has a repeat; a non-Menger vertex has a small cut). Run the inventory of §4.7 on the $\neg F$ arm and select again — but only if the split passes the two admissibility tests of §4.8; if the $\neg F$ arm's data is not a property of the residual's own object, the selected move was wrong and the split must not be made. Stopping at "$F$ is needed" or looking for $F$ as an external theorem is the extrapolation failure of Section 9; the residual is closed only when every leaf is `False`, and the branch record shows which $F$ were split on (the [181] record, since removed).
-14. **The recorded plan is binding.** When this guide (or the branch record) has fixed, for an open node, the typed object and the selected move with its step table (as §7 and §8 do), the work on that node is the execution of that plan. Any deviation — a different object, a different move, a reformulation "equivalent to" the node — is itself a repair of the plan and must be recorded as such, with the first failing step of the plan and the reason, *before* any work is done on the new object. Work that silently changes the object is off-protocol whatever it proves. (Failure record: `closure_proofs.md` left the O7 plan of §8.5 after Corollary 3.3 without recording a failing step.)
-15. **A certificate of non-closure is not structure.** Typed residual data often includes records of what *failed*: an exit-(4) demand token $(q,S_0,S_1,Y,E)$ records that a quotient is target-defective by exhibiting an alternative realization $S_1$ and a hypothetical context $Y$; a routing record, a deferral, an "open unit" record the same kind of thing. Only the actual realization ($S_0$, the load $u$, its trace, its pocket) is a property of $G$. In the inventory, a certificate contributes *no* row of positive structure; it contributes only the fact that one method is closed off. Counting certificates (tokens per incidence) therefore counts nothing about $G$ beyond the count of the actual objects they are attached to. Failure record: the §4.7 inventory of [181] listed "nine tokens per boundary edge ⇒ nine channels with distinct forgotten lengths"; the channels are hypothetical, and Y3 of the O7 plan (§8.5) is unsound for the same reason.
-16. **Never re-prove the residual; never re-apply an upstream move.** Once a node's residual is typed, the facts on its ledger are settled: the extremal choices already made (the packing, the counterexample, the ledger orderings), the upstream diamonds already taken, and the reasons upstream consumers failed are *inputs*, not work. The following are forbidden at an open node, each because it spends effort on the parent instead of the residual:
-    - re-deriving, re-auditing or re-defining an upstream object (reading how the packing was chosen, re-checking a consumer's vacuity a second time, re-computing a rate) once its ledger fact is on the record;
-    - refining an upstream extremal choice as the move for a downstream node (a secondary criterion on the packing is a repair of the node where the packing was chosen, not a closing move here);
-    - re-applying an upstream move to an accounted row (Menger where the cut is already typed, contraction where I7 is already on the ledger, a count where the count is the residual);
-    - writing "why this route cannot close" records as work products — one sentence in the inventory's *accounted* column is the whole record, and a limit theorem is written only when it is the terminal certificate the node will carry.
-    The only admissible work at an open node is: inventory (§4.7), selection of a move that lands on a closed row or a smaller typed object (§4.8), and execution of that move. Failure record: at [181] this guide's author re-read the packing definition, re-audited the demand consumer, and wrote three no-go records after the residual had been typed, and closed nothing.
-17. **Check the move's preconditions against the inventory before selecting it.** Every closing move has *target rows* (what it evaluates) and *precondition rows* (what must already be present for it to apply: internally disjoint returns for exit (2), a shared window for exit (3), a smaller representative with the same profile for exit (5), bounded size for a table). A move is admissible only if its precondition rows appear in the residual's inventory as *present*. Selecting a move by its target rows alone produces a diamond whose no-arm is "the precondition fails", which is typically an accounted row (a theta instead of two disjoint returns; a second window instead of a shared one) and therefore neither closes nor shrinks. Failure record: exit (2) was selected at [181] for its target rows (C01, D05/D06) while the residual did not carry disjointness; its no-arm was the theta closure of invariant 31, already accounted, and nothing moved.
-18. **A move sold on a finite table must have its table computed before it is selected.** When the closing power of a move rests on "a linear supply against a fixed finite table" (overlap arithmetic, label relations, offset tables), the table is computed *at selection time*, and the move is admissible only if the table is restrictive enough to contradict the supply on the residual's actual parameters. Announcing the move first and computing the table afterwards is the F1 pattern in a new form. Failure record: a fundamental-cycle overlap move was selected at [181] as "linear supply versus fixed table" and announced as a reduction; computed, its table forbade $184$ of $1597$ patterns and contradicted nothing, and worse, its rows (cycles of the pocket avoid $\mathrm{Pow}$) were already accounted by I4, so it was a re-application of an accounted row (rule 16). It was deleted from the record.
+1. Use only usable branch-state facts, fixed inputs and textbook material. Retain the full object and its realization domain.
+2. Require proof advancement. Every outcome closes or significantly restricts counterexample structure; routing or a useful lemma alone is insufficient.
+3. Prefer supported closure, otherwise the strongest justified reduction. Constraint, compression and quantity break ties only between comparably productive choices.
+4. Keep currencies separate; prove every conversion on the same object, class, scale and multiplicity.
+5. Preserve every independent squeeze, constant and strict quantitative slack.
+6. Retain every outcome. An uncovered implication remains an obligation, not a named exit.
+7. Check dependencies forward; a desired conclusion or missing prerequisite cannot be a premise.
+8. Check the exact consumer interface, not its label or structural resemblance.
+9. Locate the first unsupported construction while preserving the successful prefix. A split on the conclusion is not a productive reduction.
+10. Catalogue all relevant textbook alternatives for the selected property, including distinct minimality moves and their actual prerequisites.
+11. Complete accounting, unused-structure inventory and structural-conflict selection before discussing candidate techniques.
+12. Relocation is not advancement. Peeling, deferral, routing and new bookkeeping need actual closure or substantial structural exclusion.
+13. A new mathematical prerequisite is work inside an authorized productive construction or needs a fresh structural authorization; it cannot be explored during admission.
+14. The accepted authorization is binding. A changed object, technique, output, consumer or outcome contract requires new review before execution.
+15. Failure certificates are not positive geometry. A hypothetical context does not create paths or cycles in the retained graph.
+16. Reuse settled inputs at their actual statements. Keep property accounting separate from technique failure. A new technique may exploit still-unused structure, but cosmetic retries of the same argument are rejected.
+17. Prove exact prerequisites and the conditional payoff before authorization. Then construct the output and prove actual advancement during execution.
+18. Finite certification must have a complete generator and productive coverage contract before construction. Computing its actual table belongs to authorized execution. Surviving cases without the approved significant reduction fail the construction; table size or a new encoding is not progress.
 
 ### 5.5 A worked decision
 
@@ -834,7 +842,7 @@ which is the negation of the corollary's hypothesis. Consequences, each a one-li
 3. The same-window two-blocker cap (`def:typeA-same-window-open-blocker-cap`) is false on the branch, not merely unproved.
 4. No bound on $\mathsf P_{\rm open}$ in any window-side currency can close [181]. The payer for the open units — boundary incidences, $\defp(R)\le15p_{13}+\sigma_W$ — is the same stub supply the demand side has already exhausted; a window's fifteen stubs *are* the incidences of the supports attached to it.
 
-In the vocabulary of Section 9 (anti-patterns): the window-blocker accounting is a re-encoding. It relocated the unpaid demand into a new named quantity without changing the payer, and then asked for that quantity to be small. The methodology catches this with a one-line check: **before attacking an open node, compute what the incoming ledger already forces about the quantity its consumer needs; if the forced bound contradicts the needed bound, the consumer is vacuous, and the residual was produced by a diamond on the wrong hypothesis.** (Section 4.6, step 0.)
+In the vocabulary of Section 9 (anti-patterns): the window-blocker accounting is a re-encoding. It relocated the unpaid demand into a new named quantity without changing the payer, and then asked for that quantity to be small. The methodology catches this with a one-line check: **before attacking an open node, compute what the incoming ledger already forces about the quantity its consumer needs; if the forced bound contradicts the needed bound, the consumer is vacuous, and the residual was produced by a diamond on the wrong hypothesis.** (Section 3.7, Stage 1.)
 
 This is not a claim that the manuscript's ledger lemmas are wrong; every one of them is correct. It is the observation that the peeling loop plus the demand ledger cannot be completed into a proof by any bound on $\mathsf P_{\rm open}$, so the work must be relocated.
 
@@ -1058,14 +1066,14 @@ The skill `.claude/skills/eg-proof-expansion/SKILL.md` is the Lean mirror of Sec
 ### 12.5 Reopening an open node
 
 - [ ] The residual is written as its producer typed it (Rule 0, §4.8), with every ledger fact attached; no "equivalent" reformulation is used as the object.
-- [ ] The plan already recorded for the node (§7, §8) is the one being executed; any deviation is recorded as a repair of the plan with its first failing step (rule 14).
+- [ ] Historical plans (§7, §8) are retained as evidence. The executed plan has fresh Stage 1–5 approvals for the exact residual; an old plan is not construction authorization.
 - [ ] The open node's residual is written as $\neg C$ for a named lemma's conclusion $C$ on a named retained input.
 - [ ] The intended proof of $C$ is expanded into steps $X_1\wedge\cdots\wedge X_m$ (constructions, preservation claims, cited lemmas).
 - [ ] For each step: ledger question (fact present on *this* branch?), object question (property of the transferred object?), fibre question (output stays in the class?).
 - [ ] The first failing step is the new diamond; its negation is typed and has a consumer from the selection table.
-- [ ] No upstream object was re-derived, no upstream extremal choice refined, no upstream move re-applied, no no-go record written (rule 16); all effort went to inventory, selection, execution.
+- [ ] Settled facts are reused at their exact statements. A failed technique is not retried cosmetically; any corrected attempt has a substantive evidenced change and fresh authorization. The underlying property remains available.
 - [ ] Every diamond passes the locality test and the consumption test of §4.8 and names the measure it decreases, the closed branch it routes to, or the finite table it leaves.
-- [ ] The residual inventory (§4.7) is written: every present property, its upstream consumer or "not accounted", the technique it enables, the certificate.
+- [ ] Stage 1 records prior structural uses; Stage 2 covers unused aspects and interactions without techniques; Stage 3 selects the strongest structural conflict. Only Stage 4 catalogues techniques, and Stage 5 authorizes a productive choice.
 - [ ] Shared obligations across constructors are identified and ordered (cross-branch audit first, shared local lemma second).
 - [ ] The old node keeps its number and becomes the decision; new nodes are appended.
 - [ ] Every remaining local lemma is on the execution queue with its exact inputs, closing move and failure route. For a full-closure request, these lemmas and all their children are proved before completion is reported.
@@ -1076,37 +1084,20 @@ The skill `.claude/skills/eg-proof-expansion/SKILL.md` is the Lean mirror of Sec
 - [ ] $Z$'s definition is traced back to the ledger (demand, paid, unpaid); the no-overcount identity is written out.
 - [ ] The lower bound the ledger forces on $Z$ is computed from the burden and deficit lemmas already on the branch.
 - [ ] If forced lower bound $\ge$ needed upper bound: the consumer is vacuous; stop working on it; find the hypothesis $H$ whose failure produced the residual.
-- [ ] Only after the inventory (§4.7): the currency table (Section 5.2) is filled in as a diagnostic; every exhausted currency is marked. The closing move is chosen from the inventory's selection, never from the currency table alone.
+- [ ] Only after the inventory (§4.7): the currency table (Section 5.2) is filled in as a diagnostic; every exhausted currency is marked. The structural conflict is selected in Stage 3 and the productive technique in Stage 5, comparing the strongest alternatives and the weakest outcome.
 
 ---
 
 ## 13. Operating prompt for the executor
 
-Paste this verbatim at the start of any session that works on an open node. It is written in the second person because the failures it prevents were the executor's, recorded in §4.8, §4.9 and rules 14–18. Use it together with the execution checks in §4.10; both govern move admission and completion claims.
-
-> **Operating prompt — structural exhaustion on an open node.**
->
-> You are executing the structural-exhaustion method on one open node of a proof that is already fixed. You are not here to be creative, to find a better route, to assess feasibility, or to decide what the residual "really" is. You obey the following, in order, and nothing else.
->
-> 1. **Files.** You edit only the markdown documents named by the user (`repair_and_closure.md`, `closure_proofs.md`, `node_181_structure.md`, or whichever the user names). You never edit `to_formalize/erdos_64_proof.tex`. You never edit Lean files unless the user names a definition that is a bug and tells you to fix it. Anything you would change in the manuscript you write as a numbered item in `closure_proofs.md` §6.
->
-> 2. **The object.** The residual is the node's data exactly as its producer typed it, together with every fact accumulated on the path from the root (Rule 0, §4.8). You copy that typed data from the manuscript's definition into the document before doing anything. You never replace it by an "equivalent" inequality, a class of graphs, a sub-object (a component, a pocket, a piece, a ball), or a projection of any kind. Every sentence you write about the residual is a sentence about the whole branch state. If you catch yourself writing "the residual is a graph with properties P, Q, R", stop and delete it.
->
-> 3. **No added hypotheses.** You never introduce an assumption that is not on the ledger, not even inside a lemma, not even flagged. If a proof you are writing needs a fact that is not on the ledger, the proof is not written; you record the missing fact in the inventory as "not present" and move on. "Suppose additionally", "under the hypothesis that", "assume for now" do not appear in your output.
->
-> 4. **Inventory before anything.** You list the register's properties (A01–I06) against the branch state: present or absent; if present, accounted by which upstream step or unaccounted; the techniques the register attaches; whether each technique's *precondition* rows are present (rule 17). Certificates of failure (tokens, witnesses, routing records) carry no positive structure (rule 15). Upstream quantitative facts (state counts, budgets, ranks, caps, packing cardinality) are rows, not background.
->
-> 5. **Selection.** You first compare the candidate with upstream, rejected and unimplemented attempts using §4.10. Among candidates whose prerequisites and outcome routes pass admission, select the technique that consumes the most unaccounted structure. A new name or sub-object does not make a repeated move new. If a move rests on a finite table, you compute the table first and select the move only if the table contradicts the supply on the residual's actual parameters (rule 18). You do not select a move because it looks like a known argument.
->
-> 6. **Execution.** You execute the move on the whole branch state to its end: a `False` leaf, a smaller typed object with a named decreasing measure, or an identification with a closed row whose hypotheses you have checked clause by clause against the branch. An arm whose data lives on a different object than the residual's is not an arm (§4.8 locality test); an arm after which the same rows remain unaccounted consumed nothing (§4.8 consumption test). At an obstacle inside a move, you inventory the obstacle's object with every accounted fact as present data and continue; "accounted" is never a stop sign (§4.9 F2). You never leave a move at an obstacle with a note. Proving the local implementation of the textbook move is part of this execution, not a reason to stop or substitute a feasibility discussion. For full branch closure, execute every smaller residual and its descendants too; a decreasing step is an intermediate result.
->
-> 7. **Forbidden outputs.** You never write: why a route cannot work; that the residual is unclosable; a "limit" or "no-go" theorem; an assessment of whether the user's instruction is achievable; a proposal to search, enumerate, or brute-force; a proposal to repair an upstream node; a refinement of an upstream extremal choice; a re-derivation of an upstream fact; a re-application of an accounted row. If you have concluded privately that the task is impossible, that conclusion has no standing and is not written, not acted on, and not used to choose the next step (§4.9 F1). You do not invoke a fallback the user has named until every technique in the register has been executed to a leaf on the residual with the record attached (§4.9 F4).
->
-> 8. **Claims.** Apply the status distinctions in §4.10. You never call a step a reduction, a narrowing, or progress unless every outcome has a verified route to closure or a typed residual with proved strict decrease. Counting evaluated properties, generating a table with survivors, or proving an auxiliary dichotomy does not satisfy this requirement. If you discover that a recorded step fails these requirements, you delete it from the active proof and record the rejection in one inventory sentence; you do not leave it in and qualify it.
->
-> 9. **Reporting.** Each report states, in this order and nothing more: the object (verbatim typed data), the rows consumed by the step, the arms with their closed/typed status and measures, and the next selected move with its precondition check. No diagnosis, no explanation of difficulty, no assessment of your own performance, no promises.
->
-> 10. **Instructions.** The user's instructions constrain the work; they are not mathematical hypotheses or evidence of closure, and are not hypotheses to test, negotiate, or route around. When an instruction conflicts with what you would prefer to do, the instruction wins without comment. When you are told you deviated, you fix the record first and explain second, in one sentence.
+Use the maintained controller prompt at
+`tools/methodology_gate/policy/executor-prompt.md`, the shared `workflow.json`,
+and `references/record-format.md`. They implement the eight stages in §3.7.
+The reviewer prompt is independently maintained beside them and checks the exact
+conditional payoff, strongest alternatives and actual advancement. Do not restore
+older prompts that propose techniques during inventory or accept auxiliary-only
+progress. Every stage receives its own deliverable and review; no failed-stage
+label waives construction authorization.
 
 ## 14. Glossary and source map
 

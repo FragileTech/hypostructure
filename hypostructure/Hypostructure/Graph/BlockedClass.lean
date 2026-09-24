@@ -19,8 +19,8 @@ This module builds exactly that: the near-cubic skeleton class
 (`NearCubicSkeleton`), the blocked class as a subtype of it, the counting
 bound `card 𝓑(𝒫) ≤ card 𝒢^{δ≥3}_{n,m} ≤ skeletonBudget` (`lem:skeleton-dominates`),
 and the membership of the current object's own labelled skeleton in `𝓑(𝒫)`
-(the last sentence of `def:blocked-class`: "on the trivial neutral germ
-residual, `G ∈ 𝓑(𝒫)`").  The barrier states of a skeleton at a scale — the
+(the last sentence of `def:blocked-class`: "On the trivial
+neutral-configuration residual, `G ∈ 𝓑(𝒫)`").  The barrier states of a skeleton at a scale — the
 input of the encoding of `lem:blocked-graphs-compress` and of the overlap
 systems of `def:barrier-overlap-system` — are *not* defined here; the module
 supplies the class those statements quantify over.

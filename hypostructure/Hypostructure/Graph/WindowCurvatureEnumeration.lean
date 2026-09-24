@@ -26,7 +26,7 @@ set_option maxHeartbeats 0
 /-- The legal labels of a given size.
 
 *Provenance.* Follows `Graph.TypeBMarkedFan.compatibleParts` at
-`Graph/TypeBMarkedFan.lean:338`.
+`Graph/TypeBMarkedFan.lean`.
 -/
 def labelsOfSize (order size : Nat) : Finset (Label order) :=
   (Labels order).filter fun label => label.card = size
@@ -34,9 +34,6 @@ def labelsOfSize (order size : Nat) : Finset (Label order) :=
 /-- The size distribution of the legal labels, indexed by size `1, 2, …`.  The
 list is as long as the order, which is a complete range of possible sizes: a
 label is a set of coordinates, so it has at most `order` of them.
-
-*Provenance.* Follows the `(List.range _).map` enumeration at
-`Graph/Strategy/Official/Features/PackedResponseOverload.lean:230`.
 -/
 def sizeDistribution (order : Nat) : List Nat :=
   (List.range order).map fun index => (labelsOfSize order (index + 1)).card

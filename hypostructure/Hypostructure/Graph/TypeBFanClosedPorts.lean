@@ -16,7 +16,7 @@ This file is the graph-mathematics content of manuscript node `[72]`
 
 Nothing here is redefined: the ports, their shoulder schedules, the
 open/triangular dichotomy, fan-compatibility and the high-neighbourhood normal
-form are `Hypostructure.Graph.TypeBOpenPorts`; the certificate-marked fan and
+form are `HighCentrePorts.lean` and `HighCentreNormalForm.lean`; the certificate-marked fan and
 its cubic-closed neighbours are `Hypostructure.Graph.TypeBMarkedFan`.
 
 The assigned Type B fan-window profile `𝔉_h` is `Profile`: a certificate-marked
@@ -26,11 +26,9 @@ fields; the remainder side `R = G - W` of
 `def:typeB-window-incidence-profile` is *derived* as `rim \ W`, not assumed.
 
 `NormalForm` -- the only ambient structural input -- is an explicit argument of
-every theorem that needs it, exactly as in
-`TypeBOpenPorts.heavyCenterTriangularAlternative`.  No hypothesis anywhere in
-this file asserts the absence of a structure; the four-cycle absence behind
-`NormalForm` is read off the incoming residual by
-`TypeBOpenPorts.LocalHypotheses.normalForm` (`ctx.avoids`).
+every theorem that needs it.  No hypothesis anywhere in this file asserts the
+absence of a structure; on the EG spine `NormalForm` is the fact published by
+`highCentreNormalFormRow` (node `[67]`).
 
 The closed-neighbour deficit `D_B(𝔉) = c(𝔉) - (3 - (k+1)α)` of
 `def:typeB-multiclosed-residual` is rational, and is formalised over `ℚ`.  Its
@@ -264,8 +262,8 @@ assigns the four incidences `x a_p`, `x b_p`, `y a_q`, `y b_q` to the fan
 envelope, `p` and `q` are two distinct fan-closed ports, and those four
 incidences are pairwise distinct as local incidence carriers.
 
-The distinctness of the carriers is `FanCompatible.carriers_nodup`, which uses
-all three clauses of `def:fan-compatible-open-ports`.  The global B2 clause of
+The distinctness of the carriers uses all three clauses of
+`def:fan-compatible-open-ports`.  The global B2 clause of
 the manuscript statement is outside this file (see the module note). -/
 theorem compatiblePairFanClosure (profile : Profile object)
     {left right : object.Vertex}
@@ -306,11 +304,9 @@ At a certificate-marked fan centre `h` of degree `k` carrying a family of
 * `D_B(𝔉_h) ≥ r - (3 - (k+1)α) ≥ (k+1)α - 1 > 0`.
 
 `k ≥ 4` is `Marked.highDegree`, already part of the certificate-marked fan, so
-no degree hypothesis is added here.  The strict positivity is the sharp instance
-of the recorded design constraint
-`ReceiverLoad.LoadCapacityProfile.dischargeRate_gt` (`5α > 1`): at `c = 2` and
-`k = 4` the deficit is exactly `5α - 1`, so this is the place the constraint was
-read off, and no hypothesis is added here either.  At `α = 1/4` the three
+no degree hypothesis is added here.  At `c = 2` and `k = 4` the
+deficit is exactly `5α - 1`, so strict positivity is the condition `5α > 1`;
+`LoadCapacityProfile` does not record it as a field.  At `α = 1/4` the three
 displayed quantities are the manuscript's `r - (11-k)/4`, `(k-3)/4` and
 `1/4 > 0`. -/
 theorem fanClosedPortTypeBRouting (profile : Profile object)
