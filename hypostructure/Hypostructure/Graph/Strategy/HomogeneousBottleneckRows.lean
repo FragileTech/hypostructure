@@ -589,7 +589,7 @@ through the framework's target-defect/compression/delocalization alternatives.
 The row publishes only the paper's literal sparse-exit-or-Type-B conclusion.
 No selector, callback, route record, or side carrier is postulated. -/
 
-set_option maxHeartbeats 4000000 in
+set_option maxHeartbeats 4200000 in
 @[reducible] noncomputable def sameTokenBottleneckRoutingRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.sameTokenBottleneckRouting
@@ -607,7 +607,13 @@ set_option maxHeartbeats 4000000 in
     (fun inputs =>
       let patternFact :=
         (inputs.get (K .homogeneousBottleneckPattern)).down
-      let routing : (K .bottleneckRouting).At inputs.current := ⟨by
+      have routedBoth :
+          Holds BranchState Presentation presentation data .bottleneckRouting
+              inputs.current.object ∧
+            (Graph.SparseSurplusExit (Graph.MinimumDegreeAtLeast data.threshold)
+                (Graph.HasCycleWithLength data.LengthOK) data.LengthOK
+                inputs.current.object ∨
+              SameTokenTypeBHandoffStatement data inputs.current.object) := by
           classical
           obtain ⟨patternActive, capacity, activationEq, concretePattern⟩ :=
             patternFact
@@ -635,7 +641,15 @@ set_option maxHeartbeats 4000000 in
           obtain ⟨_ledgerActive, _ledgerCapacity, _ledgerActivationEq,
               _primitiveCarrierCard, _primitiveCarrierBound,
               _concreteCapacityLedger, objectConnected⟩ := capacityLedger
-          refine ⟨active, capacity, activationEq, concretePattern, ?_⟩
+          refine (fun (outcome :
+              Graph.SparseSurplusExit (Graph.MinimumDegreeAtLeast data.threshold)
+                  (Graph.HasCycleWithLength data.LengthOK) data.LengthOK
+                  inputs.current.object ∨
+                (SameTokenTypeBHandoffEnvelopeStatement data inputs.current.object ∧
+                  SameTokenTypeBHandoffStatement data inputs.current.object)) =>
+            ⟨⟨active, capacity, activationEq, concretePattern,
+                Or.imp_right And.left outcome⟩,
+              Or.imp_right And.right outcome⟩) ?_
           let object := inputs.current.object
           let activation := capacity.activation
           letI : FinEnum object.Vertex := object.vertices
@@ -1245,6 +1259,77 @@ set_option maxHeartbeats 4000000 in
               (boundaryProfile first, boundaryProfile second),
               windowLabel pair, chordFlag pair)
 
+          -- The published routing label of `def:same-token-routing-germs`
+          -- (`sameTokenActualRoutingLabel`) is this owner's `ρ_t(π)` on every
+          -- pair of the certified source pattern.
+          have actualRoutingLabel_eq
+              (pattern : Finset (Finset (object.Vertex × object.Vertex)))
+              (patternSubset : pattern ⊆ ledger.presented.roleFibre token role)
+              (pair : Finset (object.Vertex × object.Vertex)) (pairMem : pair ∈ pattern)
+              (pairCard : pair.card = 2)
+              (demand : object.Vertex × object.Vertex) (demandMem : demand ∈ pair) :
+              sameTokenActualRoutingLabel data object active cubic capacity certified
+                  token role pattern patternSubset pair pairMem demand demandMem =
+                routingLabel pair pairCard demand := by
+            have fibreMem := patternSubset pairMem
+            have scheduleMem : pair ∈ object.portPairSchedule data.threshold :=
+              (Finset.mem_filter.mp (Finset.mem_filter.mp fibreMem).1).1
+            have pairFacts : pair ⊆ object.excessPorts data.threshold ∧ pair.card = 2 :=
+              Finset.mem_powersetCard.mp scheduleMem
+            unfold sameTokenActualRoutingLabel
+            dsimp only
+            refine Prod.ext rfl (Prod.ext rfl (Prod.ext rfl (Prod.ext rfl
+              (Prod.ext (Prod.ext ?_ ?_) (Prod.ext rfl ?_)))))
+            rotate_left 2
+            · simp only [routingLabel, chordFlag, activation]
+              generalize Graph.FiniteObject.canonicalBlocker capacity.activation
+                pair = blocker
+              rcases blocker with _ | blocker
+              · rfl
+              · cases blocker <;> rfl
+            all_goals
+              funext index
+              simp only [routingLabel, boundaryProfile, selectedSupport]
+              split_ifs with hu bound
+              · apply Fin.ext
+                dsimp only
+                have degreeCongr : ∀ (S T : Finset object.Vertex), S = T → ∀ (i : Nat)
+                    (b₁ : i < (List.filter (fun vertex => decide (vertex ∈ S))
+                      object.orderedVertices).length)
+                    (b₂ : i < (List.filter (fun vertex => decide (vertex ∈ T))
+                      object.orderedVertices).length)
+                    (p₁ : (List.filter (fun vertex => decide (vertex ∈ S))
+                      object.orderedVertices).get ⟨i, b₁⟩ ∈ S)
+                    (p₂ : (List.filter (fun vertex => decide (vertex ∈ T))
+                      object.orderedVertices).get ⟨i, b₂⟩ ∈ T),
+                    (object.induce S).degree ⟨_, p₁⟩ = (object.induce T).degree ⟨_, p₂⟩ := by
+                  intro S T equal
+                  subst equal
+                  intros
+                  rfl
+                refine degreeCongr _ _ ?_ _ _ _ _ _
+                split_ifs
+                rfl
+              · exfalso
+                apply bound
+                refine lt_of_lt_of_eq index.2 (Eq.symm ?_)
+                have nodup : (List.filter (fun vertex => decide
+                    (vertex ∈ (Graph.FiniteObject.surplusPortOfMem hu).support))
+                    object.orderedVertices).Nodup :=
+                  List.Nodup.filter _ FinEnum.nodup_toList
+                rw [← List.toFinset_card_of_nodup nodup]
+                have card := selectedSupport_card _ hu
+                simp only [selectedSupport, dif_pos hu] at card
+                have orderedSet : (List.filter (fun vertex => decide
+                    (vertex ∈ (Graph.FiniteObject.surplusPortOfMem hu).support))
+                    object.orderedVertices).toFinset =
+                      (Graph.FiniteObject.surplusPortOfMem hu).support := by
+                  ext vertex
+                  simp [Graph.FiniteObject.orderedVertices, FinEnum.mem_toList]
+                rw [orderedSet]
+                exact card
+              · exact absurd (pairFacts.1 (Finset.mem_toList.mp (List.get_mem _ _))) hu
+
           -- Route one actual declared identification by the framework theorem
           -- implementing `def:admissible-rank-quotient`.  The first arm is
           -- excluded by the registered common boundary-degree fibre; the
@@ -1754,7 +1839,8 @@ set_option maxHeartbeats 4000000 in
                     (Graph.MinimumDegreeAtLeast data.threshold)
                     (Graph.HasCycleWithLength data.LengthOK) data.LengthOK
                     object ∨
-                SameTokenTypeBHandoffEnvelopeStatement data object := by
+                (SameTokenTypeBHandoffEnvelopeStatement data object ∧
+                  SameTokenTypeBHandoffStatement data object) := by
             rcases structured with
                 ⟨pattern, patternSubset, patternShape, large, configurations⟩ |
                 ⟨centre, pattern, patternSubset, patternShape, large,
@@ -2822,8 +2908,51 @@ set_option maxHeartbeats 4000000 in
                   have decorated : envelope.decorations.Nonempty := by
                     simp [envelope,
                       Graph.DecoratedHandoff.envelopeOfFirstSeparator]
-                  exact Or.inr
-                    (handoff_of_envelope core envelope envelopeCore decorated)
+                  exact Or.inr ⟨handoff_of_envelope core envelope envelopeCore
+                      decorated, by
+                    obtain ⟨neighbour, adjacent, outside, notCentre, _location⟩ :=
+                      outsideSkeletonLocation
+                    have labelEq :=
+                      (actualRoutingLabel_eq pattern patternSubset first.1
+                        firstPattern (pairs first.1 firstPattern) left
+                        leftMem).trans
+                      (routingLabelsEqual.trans
+                        (actualRoutingLabel_eq pattern patternSubset second.1
+                          secondPattern (pairs second.1 secondPattern) right
+                          rightMem).symm)
+                    unfold SameTokenTypeBHandoffStatement
+                    intro armEdges coreEdges firstEntry
+                    refine ⟨active, capacity, activationEq, cubic, certified, ?_⟩
+                    intro sourceLedger
+                    refine ⟨token, role, tokenMem, _positiveCoupledExcess,
+                      _multiplicityBound, _quantitativePattern, _sourceClass,
+                      _sourceClassEq, root, rootEq, ?_⟩
+                    intro configuration valid routed sourceEnvelope
+                    exact Or.inl ⟨pattern, patternSubset, patternShape,
+                      ⟨large, configurations⟩,
+                      first.1, firstPattern, second.1, secondPattern,
+                      fun edgeEqual => different (Subtype.ext edgeEqual),
+                      left, leftMem, right, rightMem, labelEq,
+                      firstConfiguration, secondConfiguration,
+                      ⟨firstRoot, firstTerminalEndpoint⟩,
+                      ⟨secondRoot, secondTerminalEndpoint⟩, maximalPrefix,
+                      separator, nextLeft, nextRight, common, tailLeft,
+                      tailRight, leftDecomposition, rightDecomposition,
+                      nextDifferent, armLeft, armRight,
+                      ⟨armLeftPrefix, armLeftHead, firstTerminal,
+                        firstTerminalInside, armLeftLast, armLeftFirstEntry⟩,
+                      ⟨armRightPrefix, armRightHead, secondTerminal,
+                        secondTerminalInside, armRightLast,
+                        armRightFirstEntry⟩,
+                      separatorNextLeftAdj, separatorNextRightAdj,
+                      armLeftIssued, armRightIssued, armLeftChain,
+                      armRightChain, armLeftNodup, armRightNodup,
+                      ⟨firstTerminal, armLeftLast, firstTerminalInside⟩,
+                      ⟨secondTerminal, armRightLast, secondTerminalInside⟩,
+                      armLeftInterior, armRightInterior, separatorHigh, avoids,
+                      denied _ _ _, denied _ _ _, envelope, rfl,
+                      nextLeft, by simp, neighbour, adjacent, notCentre,
+                      outside⟩⟩
             · have pairs : ∀ edge ∈ pattern, edge.card = 2 := by
                 intro edge edgeMem
                 exact ledger.presented.pairs_roleFibre token role edge
@@ -3899,16 +4028,58 @@ set_option maxHeartbeats 4000000 in
                   have decorated : envelope.decorations.Nonempty := by
                     simp [envelope,
                       Graph.DecoratedHandoff.envelopeOfFirstSeparator]
-                  exact Or.inr
-                    (handoff_of_envelope core envelope envelopeCore decorated)
+                  exact Or.inr ⟨handoff_of_envelope core envelope envelopeCore
+                      decorated, by
+                    obtain ⟨neighbour, adjacent, outside, notCentre, _location⟩ :=
+                      outsideSkeletonLocation
+                    have labelEq :=
+                      (actualRoutingLabel_eq pattern patternSubset first.1
+                        firstPattern (pairs first.1 firstPattern) left
+                        leftMem).trans
+                      (routingLabelsEqual.trans
+                        (actualRoutingLabel_eq pattern patternSubset second.1
+                          secondPattern (pairs second.1 secondPattern) right
+                          rightMem).symm)
+                    unfold SameTokenTypeBHandoffStatement
+                    intro armEdges coreEdges firstEntry
+                    refine ⟨active, capacity, activationEq, cubic, certified, ?_⟩
+                    intro sourceLedger
+                    refine ⟨token, role, tokenMem, _positiveCoupledExcess,
+                      _multiplicityBound, _quantitativePattern, _sourceClass,
+                      _sourceClassEq, root, rootEq, ?_⟩
+                    intro configuration valid routed sourceEnvelope
+                    exact Or.inr ⟨centre, pattern, patternSubset, patternShape,
+                      ⟨large, configurations⟩,
+                      first.1, firstPattern, second.1, secondPattern,
+                      fun edgeEqual => different (Subtype.ext edgeEqual),
+                      left, leftMem, right, rightMem, labelEq,
+                      firstConfiguration, secondConfiguration,
+                      ⟨firstRoot, firstTerminalEndpoint⟩,
+                      ⟨secondRoot, secondTerminalEndpoint⟩, maximalPrefix,
+                      separator, nextLeft, nextRight, common, tailLeft,
+                      tailRight, leftDecomposition, rightDecomposition,
+                      nextDifferent, armLeft, armRight,
+                      ⟨armLeftPrefix, armLeftHead, firstTerminal,
+                        firstTerminalInside, armLeftLast, armLeftFirstEntry⟩,
+                      ⟨armRightPrefix, armRightHead, secondTerminal,
+                        secondTerminalInside, armRightLast,
+                        armRightFirstEntry⟩,
+                      separatorNextLeftAdj, separatorNextRightAdj,
+                      armLeftIssued, armRightIssued, armLeftChain,
+                      armRightChain, armLeftNodup, armRightNodup,
+                      ⟨firstTerminal, armLeftLast, firstTerminalInside⟩,
+                      ⟨secondTerminal, armRightLast, secondTerminalInside⟩,
+                      armLeftInterior, armRightInterior, separatorHigh, avoids,
+                      denied _ _ _, denied _ _ _, envelope, rfl,
+                      nextLeft, by simp, neighbour, adjacent, notCentre,
+                      outside⟩⟩
           exact routedOutcome
-          ⟩
+      let routing : (K .bottleneckRouting).At inputs.current := ⟨routedBoth.1⟩
       let handoff : (K .typeBHandoff).At inputs.current := ⟨by
-          obtain ⟨active, capacity, activationEq, pattern, outcome⟩ := routing.down
-          rcases outcome with sparseExit | typeBHandoff
+          rcases routedBoth.2 with sparseExit | typeBHandoff
           · exact False.elim
-              (active.survives sparseExit)
-          · exact ⟨active, capacity, activationEq, pattern, typeBHandoff⟩⟩
+              ((inputs.get (K .activeSurplusDemands)).down.survives sparseExit)
+          · exact typeBHandoff⟩
       .cons (key := K .bottleneckRouting)
         routing
         (.cons (key := K .typeBHandoff) handoff .nil))
@@ -3931,10 +4102,34 @@ carrier. -/
       let handoff := (inputs.get (K .typeBHandoff)).down
       .cons (key := K .typeBFanEntry)
         ⟨by
-          obtain ⟨_active, _capacity, _activationEq, _pattern, envelope⟩ := handoff
+          obtain ⟨_active, capacity, _activationEq, _cubic, _certified, _token,
+              _role, _tokenMem, _positive, _excess, _forced, _sourceClass,
+              _classified, _root, _rootEq, routed⟩ := handoff
+          have envelopeOf :
+              ∀ envelope : Graph.DecoratedHandoff.Envelope
+                  inputs.current.object data.LengthOK
+                  (handoffHighDegree data inputs.current.object)
+                  (handoffAbsorbing data inputs.current.object capacity.packing),
+                envelope.decorations.Nonempty →
+                  SameTokenTypeBHandoffEnvelopeStatement data
+                    inputs.current.object :=
+            fun envelope decorated =>
+              ⟨capacity.packing, capacity.packingValid, capacity.packingMaximal,
+                envelope.core, envelope, rfl, decorated⟩
           apply Or.inr
           apply Or.inr
-          exact envelope⟩
+          rcases routed with ⟨_pattern, _subset, _shape, _routed, source⟩ |
+              ⟨_centre, _pattern, _subset, _shape, _routed, source⟩ <;>
+          · obtain ⟨_p, _hp, _q, _hq, _pq, _dp, _hdp, _dq, _hdq, _label, _rp,
+                _rq, _validP, _validQ, _maximal, _h, _a, _b, _common, _tailP,
+                _tailQ, _decompP, _decompQ, _different, _armP, _armQ, _entryP,
+                _entryQ, _adjP, _adjQ, _issuedP, _issuedQ, _chainP, _chainQ,
+                _nodupP, _nodupQ, _landsP, _landsQ, _interiorP, _interiorQ,
+                _high, _avoids, _denied, _deniedSwap, envelope, envelopeEq,
+                _escape⟩ := source
+            exact envelopeOf envelope (by
+              rw [envelopeEq]
+              simp [Graph.DecoratedHandoff.envelopeOfFirstSeparator])⟩
         .nil)
 
 /-- Node `[144]`, `cor:homogeneous-same-token-caps-close`: on the literal

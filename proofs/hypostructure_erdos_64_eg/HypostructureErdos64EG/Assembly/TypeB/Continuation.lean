@@ -58,7 +58,7 @@ ledger.  This is the literal situation at `[144]`: the bottleneck audit needs
 the object-wide normal form before it constructs the same-token handoff, so
 the common Type B continuation must resume at `[68]` without appending a
 duplicate key. -/
-private abbrev TypeBAfterNormalFormBoundary
+abbrev TypeBAfterNormalFormBoundary
     (selected : EGInput.{u}) (known : FactKeys EGInput.{u}) :=
   Sum
     (Assembly.Internal.TypeBCertificateBoundary selected
@@ -82,7 +82,7 @@ private abbrev TypeBAfterNormalFormBoundary
 /-- The common Type B continuation after `[67]` has already been published on
 the same exact ledger.  No fact is reconstructed: `[68]` and every subsequent
 owner read their inputs from `history`. -/
-private noncomputable def selectedTypeBAfterNormalFormContinuation
+noncomputable def selectedTypeBAfterNormalFormContinuation
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .typeBFanEntry) known]

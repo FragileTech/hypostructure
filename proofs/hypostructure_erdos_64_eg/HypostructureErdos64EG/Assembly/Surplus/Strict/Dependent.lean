@@ -283,7 +283,8 @@ noncomputable def Assembly.Internal.strictSurplusDependent
                         (routed.get (K .sparsePressureOverload)).down,
                         (routed.get (K .capacityTokenLedger)).down,
                     (routed.get (K .surplusAbove)).down,
-                    (routed.get (K .sparseSurplusSurvivor)).down⟩⟩
+                    (routed.get (K .sparseSurplusSurvivor)).down,
+                    selectedSameTokenTypeBFanLedger routed⟩⟩
               | .right windowAbsent =>
                   match remainderOverloadClassDichotomy (data := spineData)
                       windowAbsent (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
@@ -306,7 +307,8 @@ noncomputable def Assembly.Internal.strictSurplusDependent
                         (routed.get (K .sparsePressureOverload)).down,
                         (routed.get (K .capacityTokenLedger)).down,
                         (routed.get (K .surplusAbove)).down,
-                        (routed.get (K .sparseSurplusSurvivor)).down⟩⟩
+                        (routed.get (K .sparseSurplusSurvivor)).down,
+                        selectedSameTokenTypeBFanLedger routed⟩⟩
                   | .right remainderAbsent =>
                       let audited :=
                         (primitiveCarrierAuditRow (BranchState := BranchState)
@@ -326,6 +328,7 @@ noncomputable def Assembly.Internal.strictSurplusDependent
                         (routed.get (K .sparsePressureOverload)).down,
                         (routed.get (K .capacityTokenLedger)).down,
                         (routed.get (K .surplusAbove)).down,
-                        (routed.get (K .sparseSurplusSurvivor)).down⟩⟩
+                        (routed.get (K .sparseSurplusSurvivor)).down,
+                        selectedSameTokenTypeBFanLedger routed⟩⟩
 
 end HypostructureErdos64EG

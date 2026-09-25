@@ -4071,6 +4071,9 @@ equality is the retained baseline used by the actual routing label. -/
 noncomputable def SameTokenTypeBHandoffStatement (data : Data.{u})
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
+  letI : FinEnum object.Vertex := object.vertices
+  letI : DecidableRel object.graph.Adj := object.decideAdj
+  letI : DecidableEq object.Vertex := object.vertices.decEq
   let armEdges (path : List object.Vertex) : Finset (Sym2 object.Vertex) :=
     (path.zip path.tail).toFinset.image (fun pair => s(pair.1, pair.2))
   let coreEdges (support : Finset object.Vertex) : Finset (Sym2 object.Vertex) :=
