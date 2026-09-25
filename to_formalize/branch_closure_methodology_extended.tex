@@ -129,8 +129,8 @@ bclabel/.style={font=\scriptsize,inner sep=1.4pt,fill=white}
 \newcommand{\ctpar}[1]{\paragraph{#1.}}
 
 \title{Structural Exhaustion\\[0.4em]
-\large A Reference Manual for AI-Assisted Theorem Proving via Structural
-Bookkeeping and Textbook Combinatorial Methods}
+\large A Benchmark Manual for Structural Reasoning
+and Textbook Combinatorial Mathematics}
 \author{Guillem Duran-Ballester}
 \date{July 7, 2026}
 
@@ -139,6 +139,14 @@ Bookkeeping and Textbook Combinatorial Methods}
 \maketitle
 
 \begin{abstract}
+Structural exhaustion provides a controlled benchmark of mathematical
+reasoning: identifying structure, applying established textbook results, and
+implementing their consequences in an unfamiliar setting. Each task specifies
+its retained hypotheses, mathematical objects, requested output, and acceptance
+checks. The model executes that local task; review checks the inference at its
+actual hypotheses and domains. Routine deductions receive concise justification,
+and accepted prerequisites remain available at their stated strength.
+
 Long AI-assisted proofs are difficult to inspect when case choices, residual
 obligations, and uses of quantitative slack remain implicit. This document
 specifies \emph{structural exhaustion}, a reference manual for human-supervised,
@@ -183,32 +191,13 @@ replace a compact global argument by an explicit family of local
 obligations. The present manual studies a related proof-engineering
 trade-off in AI-assisted combinatorial theorem proving.
 
-The cost profile of proof engineering has changed with contemporary
-language-model tools. This manual adopts a conservative operating
-assumption: model output is not treated as an autonomous source of global
-mathematical conclusions. Within a constrained interface, a model can
-instead maintain structured state, expand local cases, enforce fixed
-formats, and draft repetitive derivations for human review. Structural
-exhaustion formalizes that interface as a transition system over branch
-states, typed residuals, local certificates, finite labels, ledgers,
-budgets, and dependency records.
-
-The architecture is designed against a declared threat model for
-LLM-assisted proof development. A generated draft may omit the step that
-carries the difficulty, use a global estimate with an unrecorded
-independence assumption or double count, restate the original problem as
-an auxiliary lemma, supply unsupported proof-shaped prose, or accept an
-incorrect proposed step. These are design risks that the protocol is
-intended to expose, not empirical claims that every model or proof task
-exhibits them uniformly. The manual therefore requires local obligations,
-typed residuals, and checkable certificates at the proof interface.
-
-Stronger models, formal verification, formal-first development,
-interactive theorem proving, retrieval, and human review can all improve
-reliability. Structural exhaustion addresses the complementary question
-of how a proof is developed before final verification: it decomposes
-proof search into constrained local obligations whose outputs are typed,
-routed, and audited.
+Structural exhaustion provides a controlled benchmark of mathematical
+reasoning: identifying structure, applying established textbook results, and
+implementing their consequences in an unfamiliar setting. Each task specifies
+its retained hypotheses, mathematical objects, requested output, and acceptance
+checks. The model executes that local task; review checks the inference at its
+actual hypotheses and domains. Routine deductions receive concise justification,
+and accepted prerequisites remain available at their stated strength.
 
 The framework is based on the following organizing principle. A putative
 counterexample can avoid the target only by spending some scarce
@@ -477,104 +466,46 @@ closure step.
 \subsection{Design rationale: AI-assisted theorem
 proving}\label{design-rationale-scaffolding-for-llm-assisted-proof-development}
 
-Beyond its mathematical content, structural exhaustion is engineered as
-a framework for AI-assisted theorem proving. It assigns language models
-structured tasks such as maintaining state, proposing case splits,
-filling ledgers, generating local tests, and drafting named obligations
-inside a fixed audit format. It shares with
-autoformalization, proof-sketch-guided proving, and retrieval-augmented
-formal proving the premise that long arguments become tractable when
-decomposed into explicit local obligations with visible dependencies
-\citep{wu-etal-2022-autoformalization, jiang-etal-2022-draft-sketch-prove, yang-etal-2023-leandojo}.
-The following seven items are operational risks observed while developing
-[EG] and are treated here as design assumptions. They are not claims
-about the frequency of these behaviours across all models or proof
-tasks. The method turns each risk into a structural check.
+The benchmark evaluates structural deduction, hypothesis matching,
+quantitative accounting, construction, and composition under explicit local
+contracts. These capabilities use standard textbook mechanisms such as
+minimal-counterexample replacement, bounded-multiplicity charging,
+pigeonhole arguments, finite-state repetition, matching and star extraction,
+exchange, and finite enumeration. Explicit dependencies also support
+formalization \citep{wu-etal-2022-autoformalization,
+jiang-etal-2022-draft-sketch-prove,yang-etal-2023-leandojo}.
 
-\textbf{Failure mode 1: omitted difficult steps.} A generated draft may
-read like a proof while omitting the step that carries the difficulty.
-The countermeasure is the closure discipline of
+\textbf{Check 1: complete outcomes.} Verify the terminal certificate or retained
+residual on every arm under
 \secref{closure-criteria-and-the-branch-table} and
-\secref{structural-invariants-of-the-method}. A branch closes when every leaf
-terminates in one of a fixed, finite list of certificate types, and
-every residual has a name. Phrases such as ``this structure should be
-impossible'' or ``this cannot happen generically'' are classified as
-\emph{prompts for further stratification}. The enumerated terminal
-states expose an omitted step syntactically, before any mathematical
-judgment is required.
+\secref{structural-invariants-of-the-method}.
 
-\textbf{Failure mode 2: unsupported global estimates.} An unconstrained
-draft may gravitate toward a single global inequality --- a
-counting argument, an entropy bound, a spectral estimate --- that
-appears to resolve everything at once. Such estimates concentrate the
-common errors: an unjustified independence assumption, a double count,
-or a boundary term absorbed without justification.
+\textbf{Check 2: exact accounting.} Derive each inequality from the actual
+demands, assignments, multiplicities and capacities. The unweighted form is
+\(|\mathcal D|\le C\,|\mathcal P|\), using a canonical charging scheme and
+bounded multiplicity (\secref{charging-schemes}); weighted accounts use
+\secref{data-ledgers}.
 
-In the simplest unweighted case, the template admits a statement of the
-form \(|\mathcal D|\le C\,|\mathcal P|\), obtained from a canonical
-charging scheme and a bounded-multiplicity lemma
-(\secref{charging-schemes}). The weighted and payer-specific form is the
-ledger inequality of \secref{data-ledgers}. Each ingredient is a named
-local claim, and the global conclusion is the output of that bookkeeping.
+\textbf{Check 3: productive composition.} Verify the specified payoff on the
+original residual, with its complete surviving outcomes. Intermediate lemmas
+remain available as accepted local results.
 
-\textbf{Failure mode 3: re-encoding the difficulty.} A model that stalls
-on a step may request ``one more lemma'' whose statement restates
-the original problem at another level. The progress invariant of \secref{closure-criteria-and-the-branch-table} detects this relocation: every step outputs either a closed branch or
-a \emph{strictly smaller} named residual --- smaller in size, in the
-number of live exits, or in an explicitly monitored complexity
-parameter.
+\textbf{Check 4: textbook hypotheses.} Bind each imported result and local
+mechanism to the exact objects and available premises. Give the direct
+application and record a missing hypothesis precisely when one occurs.
 
-A proposed lemma qualifies as progress when its residual is smaller,
-finite, charged, or routed. \secref{bookkeeping-versus-new-theorems} supplies the complementary
-diagnostic: a bookkeeping step factors through overload, monochromatic
-extraction, and the exchange trichotomy; an unconditional statement
-about all large objects with some property is a new global theorem
-requiring further branch refinement.
+\textbf{Check 5: retained state.} Carry each outcome's objects, facts and
+quantitative accounts to its next consumer. Apply the local repair procedure
+of \secref{the-repair-protocol} to a concrete mismatch.
 
-\textbf{Failure mode 4: extrapolation beyond standard material.}
-The protocol assumes that model-generated steps require closer scrutiny
-when an argument leaves well-represented material. The base library
-therefore organizes a small vocabulary of standard mechanisms:
-minimal-counterexample replacement, charging
-arguments with bounded multiplicity, pigeonhole and finite-state
-repetition, matching and star extraction, exchange arguments, and
-exhaustive finite enumeration. Instance-specific lemmas, imported
-results, and proof-language extensions remain separate audited
-obligations; membership in the library does not make their proofs
-automatic.
+\textbf{Check 6: independent review.} Check the declared inputs, schema
+obligation and output using \secref{data-lemma-schemas}. Each review supplies
+its own evidence for the assigned deliverable.
 
-\textbf{Failure mode 5: untyped residuals.} A model may declare that
-the adversarial object has none of the structures required by the
-available tools and then treat the remaining case as a reason to stop.
-The countermeasure is the branch-state ledger. The absence of a feature
-is recorded as a positive fact and routed: it feeds a budget, strengthens
-an exclusion, creates a repetition payload, or triggers a level-4
-language extension under \secref{the-repair-protocol}. An untyped residual is an invalid
-worksheet row, not an open mathematical case.
-
-\textbf{Failure mode 6: deferential agreement with erroneous steps.} A
-model in an assistant role may accept a user-supplied step whose
-hypotheses, quantifiers, branch state, or output type do not match the
-current proof obligation. The failure is not mathematical creativity; it
-is loss of interface discipline. The countermeasure is that agreement
-has no formal status. A proposed step enters the system only as a
-worksheet row with declared inputs, quantitative data, schema
-obligations, and a typed output. The schema alphabet is defined in
-\secref{data-lemma-schemas}; the row is accepted only after the relevant
-S-Def, S-Dich, S-Comp, S-Rout, S-Trig, or S-Meas obligation is
-discharged. When the row fails, the required response is a typed reject,
-a named residual, or an alternative routed payload, not conversational
-assent.
-
-\textbf{Failure mode 7: status-cue audit drift.} A model may replace a
-local audit by an appeal to a problem's published status. Status is
-useful context but is neither a certificate nor a defect. Positive steps
-and red-team objections use the same interface: each objection must name
-a failed schema, missing import, stale branch state, unconsumed payload,
-unregistered global theorem, or candidate scope issue. Inventing a new
-terminal such as ``open problem'' or ``untyped residual'' is return-alphabet
-drift. Certification remains a property of the documented mathematical,
-computational, and review artifacts.
+\textbf{Check 7: proportionate reasoning.} Judge the local inference from its
+supplied hypotheses. Routine deductions receive concise justification. An
+objection identifies a missing hypothesis, invalid inference, domain mismatch
+or unmet contract and the smallest local repair.
 
 \subsection{The formalization
 bridge}\label{the-formalization-bridge}
@@ -5143,7 +5074,7 @@ organizing principle is the same for both:
 already pay for, and which hypothesis would let me pay for it?''
 \end{quote}
 
-Forward design invites the failure modes of \secref{design-rationale-scaffolding-for-llm-assisted-proof-development}: guessing the
+Forward design must satisfy the local assessment checks of \secref{design-rationale-scaffolding-for-llm-assisted-proof-development}: guessing the
 counterexample's shape invites an unsupported global estimate, and
 inventing predicates ad hoc invites re-encoded difficulty. Backward
 design attaches a spending route to every invariant and every budget
@@ -7559,7 +7490,7 @@ in the sense of \secref{the-core-pattern}. \\
 Operationalized by {[}EG{]} §1's referee-facing artifacts (see \secref{proof-engineering-artifacts}
 row below): fixed certificate lists, named residuals, per-lemma
 requirement rows, and the reverse index are the mechanical detectors for
-failure modes 1--3. \\
+assessment checks 1--3. \\
 \secref{target-predicate-and-local-tests} Target predicate and local tests & Local test family equivalent to
 the target & {[}EG{]} §2 (Target cycles as Mersenne returns): the
 power-of-two-cycle predicate is replaced by edge-rooted Mersenne

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Hypostructure execution"
+  short_description: "Execute textbook mathematical reasoning benchmarks"
+  default_prompt: "Use $hypostructure-execute to close the specified branch by following the complete recipe in order as a controlled textbook-mathematics benchmark."

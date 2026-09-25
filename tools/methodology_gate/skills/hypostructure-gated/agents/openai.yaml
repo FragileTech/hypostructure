@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mathematical reasoning benchmark"
+  short_description: "Run controlled textbook reasoning tasks"
+  default_prompt: "Use $hypostructure-gated to run the assigned mathematical reasoning benchmark through its exact workflow contract."

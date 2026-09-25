@@ -1,7 +1,7 @@
 """Residual-first task scheduler. Metadata here never substitutes for proof evidence.
 
-The stage runner remains available for existing runs. This scheduler gives new
-research runs atomic assignments, evidence review, integration priority, and
+The benchmark scheduler provides atomic assignments, evidence review,
+integration priority, and
 separate task/move/branch completion states. Mathematical truth is established
 by the cited proof artifacts and reviewers, not by this module.
 """
@@ -69,6 +69,23 @@ def archived_evidence_valid(ref: dict, root: Path) -> bool:
     return archive.is_file() and hashlib.sha256(archive.read_bytes()).hexdigest() == ref["sha256"]
 
 
+def benchmark_fingerprint() -> str:
+    """Bind each run to the exact shared policy and dispatch instructions."""
+    base = Path(__file__).parent
+    paths = [p for p in (base / "policy").rglob("*")
+             if p.is_file() and "__pycache__" not in p.parts and p.suffix != ".pyc"]
+    paths += [base / "taskflow.py", base / "atomic_runner.py"]
+    manifest = {str(p.relative_to(base)): hashlib.sha256(p.read_bytes()).hexdigest()
+                for p in sorted(paths)}
+    return hashlib.sha256(json.dumps(manifest, sort_keys=True).encode()).hexdigest()
+
+
+def require_current_benchmark(state: dict) -> None:
+    require(state.get("schema") == 2 and
+            state.get("benchmark_policy_sha256") == benchmark_fingerprint(),
+            "Run does not match the current benchmark policy")
+
+
 def fresh(branch: dict) -> dict:
     required = {"id", "revision", "source_revision", "endpoint", "incoming",
                 "objects", "minimality", "imports", "accounts", "open_outcomes"}
@@ -82,13 +99,14 @@ def fresh(branch: dict) -> dict:
             all(nonempty(x) for x in branch["open_outcomes"]),
             "Open branch needs distinct tagged outcomes")
     require(isinstance(branch["minimality"], str), "State exact minimality or an empty string")
-    return {"schema": 1, "branch": branch, "initial_outcomes": list(branch["open_outcomes"]),
+    return {"schema": 2, "benchmark_policy_sha256": benchmark_fingerprint(), "branch": branch, "initial_outcomes": list(branch["open_outcomes"]),
             "tasks": {}, "moves": {},
             "structural_uses": [], "interactions": [], "side_observations": [],
             "branch_status": "open", "branch_certificate": None}
 
 
 def add_task(state: dict, contract: dict) -> None:
+    require_current_benchmark(state)
     require(state["branch_status"] == "open", "Closed branch cannot receive new tasks")
     require(set(contract) == TASK_FIELDS, "Task must have the exact policy fields")
     task_id = contract["id"]
@@ -122,6 +140,7 @@ def add_task(state: dict, contract: dict) -> None:
 
 
 def retry(state: dict, task_id: str, root: Path) -> None:
+    require_current_benchmark(state)
     require(task_id in state["tasks"], "Unknown task")
     item = state["tasks"][task_id]
     require(item["status"] == "rejected" or task_id in stale_tasks(state, root),
@@ -160,6 +179,7 @@ def retry(state: dict, task_id: str, root: Path) -> None:
 
 
 def supersede(state: dict, task_id: str, repair: dict) -> None:
+    require_current_benchmark(state)
     """Retain a rejected attempt while allowing its accepted earlier-stage repair."""
     require(task_id in state["tasks"], "Unknown task")
     item = state["tasks"][task_id]
@@ -241,6 +261,7 @@ def depends_on(state: dict, task_id: str, ancestor: str) -> bool:
 
 
 def next_task(state: dict, root: Path | None = None) -> dict:
+    require_current_benchmark(state)
     if root is not None:
         stale = stale_tasks(state, root)
         if stale:
@@ -308,6 +329,7 @@ def next_task(state: dict, root: Path | None = None) -> dict:
 
 
 def submit(state: dict, task_id: str, result: dict, root: Path, *, assignment_checked: bool = False) -> None:
+    require_current_benchmark(state)
     require(task_id in ready(state), "Task is not ready")
     if not assignment_checked and str(state["tasks"][task_id]["contract"]["phase"]) in {"2", "3", "4"}:
         selected = next_task(state, root)
@@ -351,6 +373,7 @@ def submit(state: dict, task_id: str, result: dict, root: Path, *, assignment_ch
 
 
 def review(state: dict, task_id: str, verdict: dict, root: Path) -> None:
+    require_current_benchmark(state)
     require(task_id in state["tasks"], "Unknown task")
     item = state["tasks"][task_id]
     require(item["status"] == "submitted", "Only a submitted task can be reviewed")
@@ -384,6 +407,7 @@ def review(state: dict, task_id: str, verdict: dict, root: Path) -> None:
 
 
 def certify_move(state: dict, move: dict, root: Path | None = None) -> None:
+    require_current_benchmark(state)
     require(set(move) == set(POLICY["move_fields"]), "Incomplete move record")
     require(nonempty(move["id"]) and move["id"] not in state["moves"], "Duplicate move")
     require(move["branch_revision"] == state["branch"]["revision"], "Stale move")
@@ -446,6 +470,7 @@ def certify_move(state: dict, move: dict, root: Path | None = None) -> None:
 
 
 def close_branch(state: dict, certificate: dict, root: Path | None = None) -> None:
+    require_current_benchmark(state)
     require(set(certificate) == {"task", "endpoint", "composition_tasks", "direct_closure_tasks"},
             "Branch closure needs exact endpoint and composition")
     require(certificate["endpoint"] == state["branch"]["endpoint"], "Wrong endpoint")
@@ -472,6 +497,7 @@ def close_branch(state: dict, certificate: dict, root: Path | None = None) -> No
 
 
 def summary(state: dict, root: Path | None = None) -> dict:
+    require_current_benchmark(state)
     return {"branch": state["branch"]["id"], "branch_status": state["branch_status"],
             "atomic_tasks": {status: sum(t["status"] == status for t in state["tasks"].values())
                              for status in ("pending", "submitted", "accepted", "rejected",
@@ -512,6 +538,7 @@ def execute_command(args) -> None:
         state = fresh(json.loads(args.input.read_text()))
     else:
         state = json.loads(args.record.read_text())
+        require_current_benchmark(state)
         if args.command == "run-task":
             from .atomic_runner import run_one
             attempts = args.attempts or args.record.parent / (args.record.stem + "-attempts")

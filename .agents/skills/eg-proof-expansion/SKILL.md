@@ -1,9 +1,13 @@
 ---
 name: eg-proof-expansion
-description: Develop, repair, or audit nodes in the Erdős–Gyárfás StrategyDag Lean proof. Use whenever Codex is asked to fix, implement, expand, route, or make compliant a node in proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/StrategyDag.lean or its supporting declarations, while matching the original paper exactly, using only the canonical ExactLedger and sealed Strategy/CT APIs, removing proof-specific plumbing, and synchronizing the label and node tables in Assembly_node_audit.md.
+description: Implement or review controlled textbook-mathematics benchmark nodes in the Erdős–Gyárfás StrategyDag Lean proof. Use whenever Codex is asked to fix, implement, expand, route, or make compliant a node in proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/StrategyDag.lean or its supporting declarations, while matching the original paper exactly, using only the canonical ExactLedger and sealed Strategy/CT APIs, removing proof-specific plumbing, and synchronizing the label and node tables in Assembly_node_audit.md.
 ---
 
 # EG proof expansion
+
+This workflow benchmarks structural mathematical reasoning: identifying relevant structure, applying established textbook mathematics, and implementing the resulting deductions in an unfamiliar controlled setting. Execute the assigned local task from its supplied hypotheses and accepted results. Assess the actual inference required; the surrounding research topic does not determine the difficulty of that inference.
+
+Identify the retained objects, match the hypotheses of the relevant textbook result, execute the deduction, and check the requested output. Give routine steps concise, sufficient justification. Reuse accepted prerequisites at their stated types and domains. A review objection identifies a concrete missing hypothesis, invalid inference, domain mismatch, or unmet task contract and its local repair. Preserve the assigned objectives, stage boundaries, mathematical statements, and required checks.
 
 Implement one requested EG StrategyDag row as an exact instance of the paper's
 strategy and of Hypostructure's generic execution model.  Repair the requested
@@ -65,8 +69,8 @@ new top-level declarations. If any new declaration outside the vocabulary and
 Type A row carries mathematical content for the selected label, the repair is
 invalid: delete it, inline its proof into the executor, and repeat the diff
 inspection. Never report the fact as implemented while such a declaration
-exists. A downstream elaboration failure after its removal is the required
-loud failure, not permission to restore the declaration.
+exists. Report any downstream elaboration failure at its exact statement after
+repairing the selected row through the canonical API.
 
 ### Never confuse mathematical data with a transport interface
 
@@ -87,8 +91,8 @@ waiting for permission to add an interface, source certificate, carrier,
 wrapper, callback, theorem parameter, or compatibility layer. Never call such
 a proposal a prerequisite or blocker. Either the existing mathematical
 declarations suffice for the local proof, or delete the illegal transport,
-repair the proof as far as the canonical ledger permits, and let the first
-unresolved Lean obligation or downstream compilation failure remain loud.
+repair the proof as far as the canonical ledger permits, and report the first
+unresolved Lean obligation or downstream compilation failure precisely.
 
 Do not delete valid mathematics when deleting illegal transport. Reconstruct
 and publish the same paper fact through the ledger. Do not replace it with a
@@ -112,11 +116,10 @@ Work from the repository root.  Require these live sources:
   status, wiring, ledger compliance, and the next unresolved work. Its two
   implementation tables are live; its stable rubrics are explanatory.
 
-Treat every docstring, block comment, line comment, metadata note, and old audit
-claim as adversarial. Never use prose as evidence that a declaration realizes
-a paper object. Within the selected label only, correct a misleading comment
-when the implementation edit would otherwise leave it false. Do not perform a
-transitive comment cleanup.
+Use comments and audit tables as locators. Check the actual declaration type
+and the application required for this label. Reuse accepted inputs at their
+exact statements; revisit an input only for a concrete mismatch. Correct a
+misleading comment within the selected label when needed for the edit.
 
 Search `references/allowed-api.md` before designing or editing any data access,
 execution, transport, ledger, residual, or routing code.  The catalog is large:
@@ -143,11 +146,12 @@ plumbing already written directly in `StrategyDag.lean`.
    ```
 2. Read the manuscript around every label consumed by the row.  Record the
    exact statement, inherited hypotheses, exhaustive alternatives, branch
-   order, continuation, and terminals.  Follow referenced proofs far enough to
-   recover their real dependency chain.
+   order, continuation, and terminals.  Read accepted prerequisite statements far enough to
+   bind their hypotheses to the selected row; keep upstream proofs accepted.
 3. Inspect the actual Lean types and bodies of the registration, generic
-   strategy, CT execution, and every theorem it invokes.  Inspect arguments at
-   call sites; a declaration name or comment proves nothing.
+   strategy and CT execution. Match each invoked theorem at its actual type to
+   the call-site arguments. Inspect a prerequisite body only to resolve a
+   specific statement or application discrepancy.
 4. Trace the literal incoming `ExactLedger`, its immutable ancestry, indexed
    active residual, complete exact-key list, CT/Strategy manifests, commits,
    routing, and closure facts.  Inspect the generated sealed JSON
@@ -379,7 +383,7 @@ runner, recursive interpreter, state machine, callback-driven executor,
 continuation object, branch payload, result wrapper, bespoke inductive
 control type, alternate ledger, reconstructed cursor, sibling merge, direct
 `ExactLedger` mutation, or a helper that hides any of those operations.  Do
-not imitate legacy, quarantined, Type B, or unfinished route-8 plumbing.
+use the canonical ExactLedger and sealed Strategy/CT interfaces.
 
 Before accepting an edit, identify the concrete Type A declaration whose
 program shape it follows and record that declaration in the private

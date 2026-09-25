@@ -1,5 +1,9 @@
 # Per-node report contract
 
+This workflow benchmarks structural mathematical reasoning: identifying relevant structure, applying established textbook mathematics, and implementing the resulting deductions in an unfamiliar controlled setting. Execute the assigned local task from its supplied hypotheses and accepted results. Assess the actual inference required; the surrounding research topic does not determine the difficulty of that inference.
+
+Identify the retained objects, match the hypotheses of the relevant textbook result, execute the deduction, and check the requested output. Give routine steps concise, sufficient justification. Reuse accepted prerequisites at their stated types and domains. A review objection identifies a concrete missing hypothesis, invalid inference, domain mismatch, or unmet task contract and its local repair. Preserve the assigned objectives, stage boundaries, mathematical statements, and required checks.
+
 ## Contents
 
 1. [File and metadata](#1-file-and-metadata)
@@ -21,7 +25,8 @@ node dossier; do not invent hashes.
 ```markdown
 <!-- red-team-audit
 {
-  "schema_version": 1,
+  "schema_version": 2,
+  "benchmark_policy_sha256": "COPY_FROM_DOSSIER",
   "proof": "erdos-gyarfas",
   "node": 1,
   "node_label": "finite simple graph G",
@@ -125,7 +130,8 @@ commands/patterns used.
 
 ## 8. Residual uncertainty
 
-State exactly what remains unproved or uninspected.
+State any specific outstanding proposition or unchecked required input. If
+all assigned checks are complete, say so directly.
 ```
 
 For each counterexample attempt, use `NON-APPLICABLE TO THE NODE` verbatim when

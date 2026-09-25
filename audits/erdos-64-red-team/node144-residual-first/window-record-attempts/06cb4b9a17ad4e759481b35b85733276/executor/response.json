@@ -1,1 +1,0 @@
-{"summary":"SUBMITTED_RESULT. First diagnostic: candidate line 689:18, `simpa` exhausts 20,000 heartbeats at `whnf`. This is resource exhaustion, not a missing mathematical premise. Reproduction and evidence saved in the authorized artifact and /output/result.json. Sources unchanged."}

@@ -18,14 +18,14 @@
 \setcounter{tocdepth}{2}
 
 \hypersetup{
-  pdftitle={Structural Exhaustion: An Auditable Method for Long-Form LLM-Assisted Proof Development},
+  pdftitle={Structural Exhaustion: A Controlled Benchmark of Textbook Mathematical Reasoning},
   pdfauthor={Guillem Duran-Ballester},
-  pdfsubject={LLM-assisted theorem proving and long-form proof development},
+  pdfsubject={Textbook mathematics and structural reasoning benchmarks},
   pdfkeywords={artificial intelligence, theorem proving, large language models, proof planning, structural exhaustion}
 }
 
 \title{Structural Exhaustion:\\
-An Auditable Method for Long-Form LLM-Assisted Proof Development}
+A Controlled Benchmark of Textbook Mathematical Reasoning}
 \author{Guillem Duran-Ballester}
 \date{August 16, 2026}
 
@@ -33,13 +33,15 @@ An Auditable Method for Long-Form LLM-Assisted Proof Development}
 \maketitle
 
 \begin{abstract}
-Long mathematical proofs are vulnerable to errors that arise far from their
-visible consequences. A missing hypothesis, an unjustified independence
-assumption, or an exhausted quantitative resource may invalidate the intended
-route only after substantial work has accumulated. We introduce
-\emph{Structural Exhaustion}, a methodology for developing resilient,
-LLM-assisted proofs whose logical state remains explicit throughout the
-argument. The proof is organized as an evolving system of cases, hypotheses,
+Structural exhaustion provides a controlled benchmark of mathematical
+reasoning: identifying structure, applying established textbook results, and
+implementing their consequences in an unfamiliar setting. Each task specifies
+its retained hypotheses, mathematical objects, requested output, and acceptance
+checks. The model executes that local task; review checks the inference at its
+actual hypotheses and domains. Routine deductions receive concise justification,
+and accepted prerequisites remain available at their stated strength.
+
+The proof is organized as an evolving system of cases, hypotheses,
 quantitative resources, and closure obligations. Each intermediate claim
 records its assumptions, its contribution, and the subsequent arguments that
 consume it.
@@ -48,11 +50,7 @@ The central fault-recovery mechanism is branch refinement. When an
 intermediate argument requires an assumption that has not been established,
 that assumption becomes a new case distinction. The existing argument is
 retained on the branch where the assumption holds, while its failure defines a
-complementary branch requiring an independent analysis. In the motivating
-hot/cold example, the discovery that an entropy argument required independently
-realizable configurations preserved the completed hot-branch analysis and
-exposed a cold branch, which was then developed and closed through separate
-structural and quantitative arguments.
+complementary branch requiring an independent analysis.
 
 Structural Exhaustion combines minimal-counterexample reasoning, backward
 invariant design, explicit resource accounting, first-failure analysis, finite
@@ -70,10 +68,14 @@ structural reasoning; counterexample analysis; auditable proof development.
 
 \section{Introduction}
 \subsection{From local competence to long-form proof construction}
-Modern LLMs can often produce valid individual mathematical moves, while a research proof may require hundreds of mutually dependent moves before the target is reached.
-Long-form development requires every local result to remain compatible with all earlier exclusions, hypotheses, definitions, and quantitative accounts. These obligations require explicit compositional discipline.
-Free-form proof development is particularly fragile because an argument can appear globally convincing while leaving a difficult case, boundary correction, or unstated assumption unresolved.
-Structural Exhaustion arose from attempting to continue proof construction beyond the scale at which ordinary conversational proof development remained dependable.
+Structural exhaustion provides a controlled benchmark of mathematical
+reasoning: identifying structure, applying established textbook results, and
+implementing their consequences in an unfamiliar setting. Each task specifies
+its retained hypotheses, mathematical objects, requested output, and acceptance
+checks. The model executes that local task; review checks the inference at its
+actual hypotheses and domains. Routine deductions receive concise justification,
+and accepted prerequisites remain available at their stated strength.
+
 \subsection{Method and contributions}
 The method treats a hypothetical counterexample as an adversarial object that must continually pay for avoiding the target.
 Every admitted dichotomy assigns the positive side to a quantitative or structural argument and the negative side to a new obstruction that can itself be analyzed.
@@ -107,7 +109,7 @@ Branch tables expose missing cases, dependency tables expose unsupported conclus
 The diagrammatic representation is consequently part of the reasoning process. It records branch coverage and dependencies in a form that can be checked directly.
 \subsection{Standard techniques and counterexample analysis}
 LLMs have broad familiarity with standard mathematical moves such as minimal-counterexample arguments, pigeonhole principles, charging, switching, first failure, compactness, replacement, and finite enumeration.
-Structural Exhaustion builds large arguments by composing these familiar mechanisms. Novel work is concentrated in the instance-specific interfaces, invariants, and closure lemmas.
+Structural Exhaustion builds large arguments by composing these familiar mechanisms. The benchmark tests hypothesis matching, structural composition, and implementation in the supplied instance.
 Complexity is moved from the primitive moves into their composition: a long proof can be assembled from individually recognizable local arguments.
 The CT1–CT17 library is a vocabulary for recurring combinations of standard mechanisms. Each application carries explicit instance-specific hypotheses.
 LLMs can assist in attacking a proposed claim and finding a configuration in which it fails.
@@ -118,7 +120,7 @@ Thus each proposed claim is evaluated through two questions: “Can we prove thi
 The model generates, expands, criticizes, classifies, and reorganizes local mathematics within declared interfaces. Global conclusions require the verified composition of those local outputs.
 Within the workflow, LLMs maintain state, propose case splits, fill ledgers, generate local tests, and draft named obligations.
 Human review and mathematical verification determine the validity of the proposed local lemmas, routing contracts, computations, and closures.
-Structural Exhaustion therefore attempts to exploit what LLMs do well while placing their characteristic long-form failure modes inside an explicit mathematical discipline.
+Structural Exhaustion evaluates these capabilities through exact local outputs and their checked composition.
 \section{Extracting structure from the counterexample}
 Consider a class \(\mathcal X\) of mathematical objects, a baseline predicate
 \(H\), and a target predicate \(T\). The intended theorem has the form
@@ -307,26 +309,24 @@ is leaf totality. Every returned outcome belongs either to a declared closure
 class or to the domain of another registered step. Consequently, the
 architecture detects every branch lacking a consumer before a reader assesses
 the harder local mathematics.
-\section{Reliability controls for LLM-assisted development}
-The architecture addresses recurrent long-form failure modes through explicit
-admission and audit requirements.
+\section{Local benchmark assessment}
+Review checks the assigned deduction against its retained state and output
+contract. The same checks apply throughout the workflow.
 \begin{description}[style=nextline,itemsep=0.35em]
-\item[Branch omission.] Every leaf is either closed or retained as a typed
-residual, exposing any unhandled case.
-\item[Unsupported global estimates.] Every candidate inequality is decomposed
-into named demands, assignments, multiplicity bounds, and budget comparisons
-before admission.
-\item[Equivalent restatement.] An auxiliary lemma must shrink, charge,
-route, or otherwise structure the original difficulty.
-\item[Untyped remainders.] Failure of the current tools is converted into a
-named residual carrying the data needed by its consumer.
-\item[Double counting.] Canonical assignments, separated currencies, and
-slack records control independent uses of a common resource.
-\item[Unverified acceptance.] A proposed statement enters the proof state only
-after its argument or certificate has discharged the declared obligations.
-\item[Uncontrolled extrapolation.] New global results are isolated as explicit
-theorem or research obligations; routine branches use established local
-mechanisms.
+\item[Coverage.] Every outcome is closed or retained with its exact hypotheses
+and next local obligation.
+\item[Quantitative accounting.] Estimates use declared demands, assignments,
+multiplicity bounds, capacities, and boundary terms.
+\item[Productive composition.] A move has the required structural payoff on
+every outcome; an accepted intermediate lemma retains its own task status.
+\item[State retention.] Each surviving residual carries the objects and facts
+required by its consumer.
+\item[Resource use.] Canonical assignments and balance records justify each
+charge and repeated use of a finite resource.
+\item[Evidence.] The submitted argument or certificate establishes the exact
+requested output, including formal checks where required.
+\item[Textbook application.] The theorem hypotheses are matched to the bound
+objects. A missing premise is named as a local obligation.
 \end{description}
 \section{Defects, counterexamples, and repair}
 When a proposed lemma fails, its failure conditions are preserved as

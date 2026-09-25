@@ -76,25 +76,17 @@ describe("the landing page", () => {
     for (const row of rows) expect(within(row).getAllByRole("cell")).toHaveLength(2);
   });
 
-  it("explains each failure mode and the discipline that prevents it", () => {
+  it("presents local assessment checks with actionable criteria", () => {
     show();
     const part = document.getElementById(partAnchor("controls"))!;
-    const controls = Array.from(part.querySelectorAll("dt")).map((dt) => dt.textContent);
-    expect(controls).toEqual([
-      "Lost forward tracking",
-      "Extrapolation beyond standard material",
-      "Omitted difficult steps",
-      "Unsupported global estimates",
-      "Re-encoding the difficulty",
-      "Untyped residuals",
-      "Deferential agreement with erroneous steps",
-      "Status-cue audit drift",
-    ]);
-    // Each entry says what the failure is, then how it is avoided.
-    for (const entry of part.querySelectorAll("dd")) {
-      const labels = Array.from(entry.querySelectorAll("em")).map((em) => em.textContent);
-      expect(labels).toEqual(["The failure.", "The discipline."]);
+    const checks = Array.from(part.querySelectorAll("dt"));
+    expect(checks).toHaveLength(8);
+    for (const check of checks) {
+      expect(check.nextElementSibling?.tagName).toBe("DD");
+      expect(check.nextElementSibling?.textContent?.trim().length).toBeGreaterThan(30);
     }
+    expect(part.textContent).toContain("Accepted prerequisites");
+    expect(part.textContent).toContain("missing hypothesis");
   });
 
   it("describes the chapter-1 artifacts, each with what it records and why it helps", () => {
@@ -184,28 +176,16 @@ describe("the landing page", () => {
     }
   });
 
-  it("shows how a failed step is repaired, with three worked repairs", () => {
+  it("shows the local repair procedure alongside the branch repair diagram", () => {
     show();
     const part = document.getElementById(partAnchor("repair"))!;
     const figure = part.querySelector("svg[role='img']")!;
     expect(figure).not.toBeNull();
     expect(figure.querySelector("title")?.textContent).toMatch(/repaired/);
-    const kinds = Array.from(part.querySelectorAll("dt")).map((dt) => dt.textContent);
-    expect(kinds).toEqual([
-      "A compactness claim on too small a state",
-      "An estimate missing a hypothesis",
-      "A budget used outside its regime",
-    ]);
-    for (const entry of part.querySelectorAll("dd")) {
-      const labels = Array.from(entry.querySelectorAll("p > em:first-child")).map((em) => em.textContent);
-      expect(labels).toEqual([
-        "What red-teaming found.",
-        "The hypothesis it exposed.",
-        "The repair.",
-        "What was left untouched.",
-      ]);
-      expect(entry.querySelectorAll("a.chip-node").length).toBeGreaterThan(3);
-    }
+    expect(part.querySelectorAll("ol > li")).toHaveLength(5);
+    expect(part.textContent).toContain("conditional payoff of every outcome");
+    expect(part.textContent).toContain("direct consumer");
+    expect(part.querySelector(".methodology-repairs")).toBeNull();
   });
 
   it("does not use the retired tactic name", () => {

@@ -54,7 +54,12 @@ constraint the argument relies on is tracked in a ledger from where it is establ
 to where it is read. The landing page of the explorer gives a condensed account and a
 table of the proof moves.
 
-To run the residual-first proof workflow on an open branch, start with the
+The workflow benchmarks structural mathematical reasoning through the application
+of established textbook mathematics in unfamiliar controlled settings. Each local
+task is assessed from its supplied hypotheses and accepted results, with concise
+justification for routine deductions and concrete diagnosis of missing premises.
+
+To run this residual-first benchmark on an open branch, start with the
 [task controller guide](tools/methodology_gate/README.md). It pins the complete
 branch, launches every single inference or construction in a fresh isolated
 context with two independent fresh reviews, records reviewed
@@ -169,7 +174,7 @@ hypostructure/                     Lean 4 framework
 proofs/hypostructure_erdos_64_eg/  the Erdős–Gyárfás application
 Assembly_node_audit.md             implementation status, per fact and per node
 audits/erdos-64-red-team/          live red-team reports, summary, and coverage ledger
-tools/methodology_gate/           residual-first task queue and reviewed legacy stage runner
+tools/methodology_gate/           controlled mathematical reasoning benchmark
 ```
 
 ## Citing

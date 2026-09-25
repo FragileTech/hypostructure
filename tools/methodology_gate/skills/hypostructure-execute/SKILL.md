@@ -1,14 +1,18 @@
 ---
 name: hypostructure-execute
-description: Run residual-first structural exhaustion on an exact open branch, one reviewed mathematical task at a time.
+description: Execute controlled textbook-mathematics and structural-reasoning benchmark tasks on an exact retained branch.
 ---
 
 # Residual-first structural execution
 
+This workflow benchmarks structural mathematical reasoning: identifying relevant structure, applying established textbook mathematics, and implementing the resulting deductions in an unfamiliar controlled setting. Execute the assigned local task from its supplied hypotheses and accepted results. Assess the actual inference required; the surrounding research topic does not determine the difficulty of that inference.
+
+Identify the retained objects, match the hypotheses of the relevant textbook result, execute the deduction, and check the requested output. Give routine steps concise, sufficient justification. Reuse accepted prerequisites at their stated types and domains. A review objection identifies a concrete missing hypothesis, invalid inference, domain mismatch, or unmet task contract and its local repair. Preserve the assigned objectives, stage boundaries, mathematical statements, and required checks.
+
 Read `tools/methodology_gate/README.md`, `policy/workflow.json`, and the generated
 `policy/references/task-prompt.md`. Use `tools/methodology_gate/taskflow.py` for
-new runs. Existing stage-runner records may continue through their locked
-reviewed prefix; do not silently translate accepted stages into new proof facts.
+new runs. Stage assignments use the same current benchmark policy and retain their
+accepted prefix.
 
 Start with Phase 0: pin source revision, exact endpoint, tagged incoming arm,
 actual objects and domains, all inherited premises, minimality, imports, and
@@ -20,7 +24,7 @@ Create one task contract per inference, construction, comparison, or check.
 Use the phase/task kinds and required fields in `policy/workflow.json`. Each
 worker receives the pinned branch and accepted inputs, proves its one requested
 output, and exposes the first missing inference as smaller obligations. Side
-observations go into the research record without changing the active task.
+observations go into the benchmark record without changing the active task.
 Only cited evidence accepted by two distinct reviewers completes a task.
 A proposed statement, a reviewed mathematical statement, and a kernel-checked
 implementation have different evidence status.

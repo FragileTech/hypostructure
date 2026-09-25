@@ -11,7 +11,7 @@ class ReuseQueueTests(unittest.TestCase):
             self.chain['facts'][key] = dict(statement='True', owner='node144',
                 path='Proof.lean', declaration='Proof.'+key, dependencies=deps, status='pending')
 
-    def test_legacy_pending_is_not_a_proof_queue(self):
+    def test_unclassified_pending_requires_evidence_reconciliation(self):
         work = implementation_work(self.chain)
         self.assertEqual(work['repair'], [])
         self.assertEqual([x['fact'] for x in work['reconcile']], ['input', 'routing', 'handoff', 'entry'])

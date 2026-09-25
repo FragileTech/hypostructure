@@ -8,7 +8,7 @@ def implementation_work(chain):
     """Pending certification is not evidence that a theorem needs reproving.
 
     Classifications are reviewed evidence, never a shortcut to checked status.
-    Unclassified legacy records get batched reconciliation, not proof tasks.
+    Missing classifications require evidence reconciliation before task selection.
     """
     queues = {k: [] for k in ('repair', 'reconcile', 'adapters', 'reuse')}
     seen = set()

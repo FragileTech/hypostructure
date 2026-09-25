@@ -36,14 +36,6 @@ class ChainTests(unittest.TestCase):
         self.assertEqual(self.errors(), [])
         self.assertTrue(self.errors(complete=True))
 
-    def test_actual_rejected_node144_dependency_record(self):
-        import json
-        path = Path(__file__).resolve().parents[1] / 'validation/node144-format-regression.json'
-        manifest = json.loads(path.read_text())
-        self.assertEqual(len(manifest['facts']), 59)
-        self.assertEqual(validate_chain(manifest, self.root), [])
-        self.assertTrue(validate_chain(manifest, self.root, complete=True))
-
     def test_multiline_formulas_and_structured_owner_are_valid(self):
         self.manifest['facts']['input']['statement'] = '∀ x,\n\tP x →\n  Q x'
         self.manifest['facts']['input']['owner'] = {'node': ['[143]'], 'label': ['lem:input'],

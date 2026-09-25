@@ -546,7 +546,7 @@ on outside edges made the predicate depend on the reference's own edges among
 the connector vertices of a support: a reference with a power-of-two cycle
 there has one response on its whole fibre, so the ∀-reference branching
 condition was false for every model with two connector vertices in some
-support (`closure_proofs.md`, Theorem 9(a)).  The `[178]` entropy count
+support.  The `[178]` entropy count
 (`HomogeneousBottleneckRows`) doubles the number of realized
 `(baseline word, prefix)` signatures, which is exactly this set. -/
 def conditionalValues

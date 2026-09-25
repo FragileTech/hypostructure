@@ -17,9 +17,9 @@ SOURCES = ('web/frontend/src/methodology/ExecutionRecipe.tsx',
 def generated():
     spec = json.loads((POLICY / 'workflow.json').read_text())
     taskflow = spec['taskflow']
-    text = '# Residual-first structural reasoning protocol\n\n' + spec['rule'] + '\n\n'
-    text += ('The task controller uses the contracts below for new runs. The older stage runner remains '
-             'available for existing EG runs. Neither metadata path carries mathematical proof facts.\n\n')
+    text = '# Structural mathematical reasoning benchmark protocol\n\n' + spec['rule'] + '\n\n'
+    text += ('The task and stage controllers use the shared benchmark contracts below. '
+             'Mathematical proof facts are supplied by their accepted evidence.\n\n')
     isolation = '\n\n'.join(taskflow['context_policy'].values())
     text += '## Fresh context for every atomic task\n\n' + isolation + '\n\n'
     text += '## Phase 0. ' + taskflow['phase_zero']['title'] + '\n\n'
@@ -30,7 +30,7 @@ def generated():
                  f"Atomic tasks: {', '.join(taskflow['phase_tasks'][number])}.\n\n")
     text += ('## Three completion units\n\n' + '\n\n'.join(
         f"**{name}:** {description}" for name, description in taskflow['units'].items()) + '\n\n')
-    text += ('## Existing stage runner contracts\n\n' + spec['accepted_stage_rule'] + '\n\n')
+    text += ('## Stage assignment contracts\n\n' + spec['accepted_stage_rule'] + '\n\n')
     text += ('Preflight proves the conditional payoff; execution constructs the output and proves actual advancement. '
              'No useful auxiliary lemma or paid interface field alone completes a productive step.\n\n')
     for stage in spec['stages']:
@@ -48,7 +48,7 @@ def generated():
              'check concerns the new result at this node and its direct consumer, not already-proved ancestors. Read '
              'executor-prompt.md, reviewer-prompt.md and record-format.md for the exact artifact fields. A failed '
              'technique does not exhaust a property.\n')
-    prompt = ('# Execute one residual-first task\n\nRequired fields: ' +
+    prompt = ('# Execute one textbook-reasoning benchmark task\n\nRequired fields: ' +
               ', '.join(taskflow['task_fields']) + '.\n\n' +
               taskflow['worker_instruction'] + '\n\n' + isolation + '\n\nReturn one of: ' +
               ', '.join(taskflow['worker_results']) + '.\n\nResult fields: ' +

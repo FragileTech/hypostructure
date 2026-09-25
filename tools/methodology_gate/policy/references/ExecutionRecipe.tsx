@@ -43,7 +43,7 @@ function Phase({ number }: { number: keyof typeof taskflow.phase_descriptions })
     {number === "2" && <p>Record the mathematical link between facts on the actual object. The presence of an observable does not establish a matching, bound, or witness with a desired property. Techniques belong in Phase 4.</p>}
     {number === "3" && <p>Compare the best supported structural tensions before choosing a textbook move. The prospect is a question and proposed consequence, not yet an accepted implication.</p>}
     {number === "4" && <Table caption="Residual shapes and possible textbook moves" heads={["Retained shape", "Candidates to check", "Application obligations"]} rows={SELECTION_ROWS} />}
-    {number === "5" && <p>For every output condition O, prove the conditional payoff from the complete branch and O. An intermediate lemma can be retained without counting it as a productive move. A surviving arm needs an exact next local analysis, even when no terminal theorem is known yet.</p>}
+    {number === "5" && <p>For every output condition O, prove the conditional payoff from the complete branch and O. An intermediate lemma can be retained without counting it as a productive move. A surviving arm needs an exact next local analysis, with the terminal obligation recorded explicitly.</p>}
     {number === "6" && <p>Each task defines or proves one narrow result on the authorized objects. A new inference becomes its own obligation. EG formalization keeps the canonical ExactLedger and owner-local proof policy; discovery records do not carry proof facts.</p>}
     {number === "7" && <p>First combine new information with retained restrictions and revisit newly enabled local moves. Test constraint, compression, and quantity separately. Keep every surviving outcome on the full inherited branch; closing one sibling leaves the parent open.</p>}
     {number === "8" && <><Table caption="Proof artifacts to synchronize" heads={["Artifact", "Required verification"]} rows={ARTIFACT_ROWS} />
@@ -65,6 +65,8 @@ export const EXECUTION_RECIPE_PARTS = [
 
 export function TaskContract() {
   return <>
+    <p>{workflow.rule}</p>
+    <p>Identify the objects, match textbook hypotheses, carry out the deduction, and verify its output. Routine steps need concise justification. Review objections identify a concrete local defect; accepted prerequisites remain available at their stated domains.</p>
     <p><strong>Task, move, and branch have separate completion states.</strong> {taskflow.units.task} {taskflow.units.move} {taskflow.units.branch}</p>
     <p>The next assignment displays the exact residual, selected interaction, requested output, permitted inputs, and acceptance condition. It is selected from ready tasks in dependency order, with repair and integration ahead of unrelated exploration. An empty queue calls for a missing-dependency diagnosis.</p>
     <p>{taskflow.context_policy.inputs} {taskflow.context_policy.stop}</p>

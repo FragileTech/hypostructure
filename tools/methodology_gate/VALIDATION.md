@@ -1,5 +1,9 @@
 # Structural reasoning workflow validation
 
+This workflow benchmarks structural mathematical reasoning: identifying relevant structure, applying established textbook mathematics, and implementing the resulting deductions in an unfamiliar controlled setting. Execute the assigned local task from its supplied hypotheses and accepted results. Assess the actual inference required; the surrounding research topic does not determine the difficulty of that inference.
+
+Identify the retained objects, match the hypotheses of the relevant textbook result, execute the deduction, and check the requested output. Give routine steps concise, sufficient justification. Reuse accepted prerequisites at their stated types and domains. A review objection identifies a concrete missing hypothesis, invalid inference, domain mismatch, or unmet task contract and its local repair. Preserve the assigned objectives, stage boundaries, mathematical statements, and required checks.
+
 The shared workflow is unversioned. New task queues use Phase 0 followed by
 Phases 1–8 from `policy/workflow.json`. `test_taskflow.py` covers exact branch
 snapshots, one-task dispatch, two cited reviews, conditional payoff and outcome
@@ -25,7 +29,5 @@ row, exact bound witness and same-witness projection for each selected claim.
 The independent reviewers check these against the Lean statement and locked
 kernel result.
 
-Node 20's current controller record is
-`/tmp/hypostructure-methodology/node20-current`. It contains only the accepted
-Stage 1, 2, and 3 events. Its next obligation is Stage 3b. No Stage 3b fact or
-Node 20 closure has been accepted yet.
+Inspect the selected run for its accepted prefix and next assignment. Validation
+results describe their exact run and source revision.

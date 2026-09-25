@@ -1,9 +1,10 @@
 # Node [185]: inventory before move selection
 
-This follows `repair_and_closure.md` §§4.7–4.8. The inventory concerns the
+This is a controlled textbook-mathematics benchmark inventory under
+`repair_and_closure.md`. The inventory concerns the
 complete live node-[185] state, including its implemented continuation to
 [186]. It does not replace that state by a graph class or a density inequality.
-The earlier theta experiment is excluded from move selection.
+Use the exact current assignment and its accepted mathematical inputs.
 
 ## Fixed object
 
@@ -40,8 +41,9 @@ its canonical trace as a suffix. Each vertex of (X) has ambient degree three.
 
 ## What earlier moves actually accounted for
 
-The full A–I ledger is listed in `node_181_structure.md` §2. The rows below
-distinguish an accounted *observable* from other structure in the same object.
+Read the retained A–I facts from the incoming `ExactLedger` and their live
+`Holds` declarations. The rows below distinguish an accounted *observable*
+from other structure in the same object.
 An accounted fact remains available as a premise.
 
 | Property | Present as | Accounted upstream? | Enabled technique and output |
@@ -64,12 +66,8 @@ An accounted fact remains available as a premise.
 | I01–I05 | Existing finite tables, canonical orders and registered constants | Accounted for their declared inputs | No enumeration of all supports and no table of unlabelled shapes substituted for the complete state. |
 | I06 | Fixed external inputs | The induced-path/3-core consequence is already retained; two-terminal textbook inputs need their literal degree hypotheses | A small separator must first produce the required actual terminal configuration. |
 
-The former Menger attempt is specifically at `node_181_structure.md` §8 and
-its correction at §12.3: it tried to obtain a single separating vertex from
-failure of a path avoiding an existing common segment. That inference fails.
-The observable selected here instead uses all four visible origins against
-the original receiver set. Its separator is allowed to have size two or
-three. Neither one-vertex separation nor silence is assumed.
+For a Menger application, identify its bound graph, terminals, and the
+consumer of each alternative on the current residual.
 
 ## Selection from the unaccounted rows
 

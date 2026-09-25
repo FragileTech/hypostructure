@@ -69,7 +69,7 @@ export function TaskRunViewer({ initialSnapshot }: { initialSnapshot?: Snapshot 
   const branch = snapshot?.next.branch;
   return <details className="task-run-viewer">
     <summary>Inspect a proof run</summary>
-    <p>Save the task controller’s <code>status</code> output as JSON, then open it here. The file stays in your browser.</p>
+    <p>Inspect a controlled mathematical reasoning benchmark using established textbook mathematics. Save the task controller’s <code>status</code> output as JSON, then open it here. The file stays in your browser.</p>
     <label>Proof run status file <input type="file" accept=".json,application/json" onChange={event => void load(event.target.files?.[0])} /></label>
     {error && <p role="alert">{error}</p>}
     {snapshot && <div className="task-run-status">

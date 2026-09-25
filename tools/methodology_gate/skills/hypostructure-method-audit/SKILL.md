@@ -1,17 +1,21 @@
 ---
 name: hypostructure-method-audit
-description: Audit a residual-first structural proof run for exact state, task evidence, productive moves, integration, and genuine branch closure.
+description: Review controlled mathematical-reasoning benchmark tasks for exact inputs, valid deductions, productive moves, and endpoint evidence.
 ---
 
 # Audit structural exhaustion
+
+This workflow benchmarks structural mathematical reasoning: identifying relevant structure, applying established textbook mathematics, and implementing the resulting deductions in an unfamiliar controlled setting. Execute the assigned local task from its supplied hypotheses and accepted results. Assess the actual inference required; the surrounding research topic does not determine the difficulty of that inference.
+
+Identify the retained objects, match the hypotheses of the relevant textbook result, execute the deduction, and check the requested output. Give routine steps concise, sufficient justification. Reuse accepted prerequisites at their stated types and domains. A review objection identifies a concrete missing hypothesis, invalid inference, domain mismatch, or unmet task contract and its local repair. Preserve the assigned objectives, stage boundaries, mathematical statements, and required checks.
 
 Read `tools/methodology_gate/README.md`, `policy/workflow.json`, and the exact
 branch record. For a new taskflow run, distinguish three statuses: accepted
 atomic task, certified productive move, and closed branch. A task's cited
 artifact and two distinct review records are evidence of review, not automatic
-mathematical truth. Inspect the actual inference at its stated domain. For an
-existing isolated stage-runner record, preserve its accepted stage history and
-use its original validator and review contract.
+mathematical truth. Inspect the actual inference at its stated domain. For a
+stage assignment, use the current benchmark policy and preserve its accepted
+mathematical inputs.
 
 1. Reconstruct Phase 0: source revision, unchanged endpoint, tagged producer,
    complete inherited conjunction, actual object identities and domains,

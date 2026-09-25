@@ -16,12 +16,12 @@ export const METHODOLOGY_PARTS = [
   { id: "constraint", title: "Cost as constraint: the invariant ladder", parent: "philosophy" },
   { id: "quantity", title: "Cost as quantity: structural accounting", parent: "philosophy" },
   { id: "compression", title: "Cost as compression: repetition and exact types", parent: "philosophy" },
-  { id: "llm", title: "Designed to leverage language models" },
-  { id: "mechanisms", title: "Leveraging what language models do best", parent: "llm" },
-  { id: "controls", title: "Mitigating the usual failure modes", parent: "llm" },
+  { id: "llm", title: "Benchmarking mathematical reasoning" },
+  { id: "mechanisms", title: "Capabilities evaluated", parent: "llm" },
+  { id: "controls", title: "Local assessment checks", parent: "llm" },
   { id: "moves", title: "The proof moves" },
   { id: "artifacts", title: "The artifacts: diagrams and tables" },
-  { id: "repair", title: "Red-teaming and repair" },
+  { id: "repair", title: "Local review and repair" },
   { id: "iteration", title: "One iteration of the method" },
   { id: "recipe", title: "Executing the methodology" },
   ...EXECUTION_RECIPE_PARTS,
@@ -657,11 +657,12 @@ export function MethodologySection() {
         <p className="hero-eyebrow">The methodology</p>
         <h2 id="methodology-title">Structural Exhaustion</h2>
         <p className="methodology-lead">
-          Both proofs on this site use the same working method. Each is kept as
-          an explicit system of cases with recorded hypotheses, quantitative
-          budgets and closure obligations. The method treats every way a
-          counterexample avoids the conclusion as a cost and follows those
-          costs until no counterexample remains.
+          Structural Exhaustion is a controlled benchmark of mathematical
+          reasoning: understanding and applying established textbook mathematics
+          in unfamiliar settings. Each task uses explicit hypotheses, retained
+          results and a defined output. The proof cases on this site supply
+          structural reasoning tasks with quantitative budgets and closure
+          obligations.
         </p>
       </header>
 
@@ -876,23 +877,22 @@ export function MethodologySection() {
 
           <Part id="llm">
             <p>
-              Structural Exhaustion was designed for proof development assisted
-              by language models. Its working practices use tasks that models
-              handle well: deriving structural consequences from an assumption,
-              maintaining explicit quantities, applying standard techniques,
-              and testing proposed claims. Checks built into the proof state
-              address the failure modes that appear in long arguments.
+              The benchmark evaluates how well a language model understands and
+              executes textbook mathematics: deriving structural consequences,
+              maintaining explicit quantities, matching theorem hypotheses,
+              and implementing and checking deductions. Each local task is
+              assessed from its supplied premises and requested output. The
+              surrounding research topic does not determine its difficulty.
             </p>
 
             <Part id="mechanisms">
               <p>
-                A research proof built along these lines requires hundreds of
-                mutually dependent local moves, each of which must remain
-                compatible with every earlier exclusion, hypothesis and
-                account. Free-form proof writing becomes unreliable at this
-                scale. Language models can still be useful when the proof state
-                is explicit. The table pairs each working practice with the
-                model capability it uses.
+                A benchmark run can contain many dependent local moves. Each
+                applies established mathematics to explicit objects while
+                retaining earlier hypotheses, exclusions and accounts. Routine
+                deductions receive concise justification; a missing premise
+                becomes a specific local repair. The table pairs each working
+                practice with the model capability it evaluates.
               </p>
               <div className="methodology-table-wrap">
                 <table className="methodology-map">
@@ -1056,235 +1056,17 @@ export function MethodologySection() {
             </Part>
 
             <Part id="controls">
-              <p>
-                Long proofs fail in recurring ways, whether written by people
-                or models. Explicit checks control eight common failure modes.
-                Loss of forward tracking often underlies the others.
-              </p>
+              <p>Each benchmark task is evaluated against these concrete checks. Accepted prerequisites remain available at their stated domains; review concerns the assigned local output.</p>
               <dl className="methodology-controls methodology-controls-wide">
-                <div>
-                  <dt>Lost forward tracking</dt>
-                  <dd>
-                    <p>
-                      <em>The failure.</em> An estimate, an error term or a
-                      residual is carried forward through many subsequent
-                      steps, and somewhere along the way it is quietly loosened,
-                      dropped, or applied under hypotheses that no longer hold.
-                      This is the characteristic long-range failure of a
-                      language model: each local step is plausible on its own,
-                      but the quantity being tracked has changed meaning by the
-                      time it is used.
-                    </p>
-                    <p>
-                      <em>The discipline.</em> The model does not carry a
-                      remainder forward informally. Whenever a tool
-                      cannot absorb the whole of what it is applied to, the
-                      part it cannot absorb becomes a branch of its own. The
-                      proof then asks why the current tool could not account for
-                      that part. The answer names the property the remainder
-                      has and the tool lacked, and the remainder is then
-                      attacked locally, with a tool suited to that property.
-                      Nothing is carried; whatever survives a step is restated
-                      as a typed residual carrying the data its next consumer
-                      needs.
-                    </p>
-                  </dd>
-                </div>
-                <div>
-                  <dt>Extrapolation beyond standard material</dt>
-                  <dd>
-                    <p>
-                      <em>The failure.</em> Generated steps deserve closer
-                      scrutiny the moment an argument leaves well-represented
-                      material. A branch may then come to rely on a global
-                      result that was never among the proof's inputs: a
-                      theorem recalled from memory, a strengthening of a cited
-                      one, or a result the literature does not contain. It may
-                      be presented as an established mechanism or left standing
-                      as “to be proved”.
-                    </p>
-                    <p>
-                      <em>The discipline.</em> The set of imported global
-                      theorems is fixed before the first step and never grows:
-                      each is stated exactly, cited, and recorded in the
-                      dependency table as “imported”. Everything after that is
-                      a local step, “proved here”, drawn from a small vocabulary
-                      of standard mechanisms, including minimal-counterexample
-                      replacement, charging with bounded multiplicity,
-                      pigeonhole and finite-state repetition, matching and star
-                      extraction, exchange, and exhaustive finite enumeration.
-                      A branch may close only through the branch state, the
-                      fixed inputs, and textbook facts cited at the point of
-                      use. Instance-specific lemmas and any extension of the
-                      proof language remain separate, audited obligations. A
-                      branch that would need a new global theorem to close is
-                      not closed; it is a defect, and is repaired by refining
-                      the case structure until it closes locally.
-                    </p>
-                  </dd>
-                </div>
-                <div>
-                  <dt>Omitted difficult steps</dt>
-                  <dd>
-                    <p>
-                      <em>The failure.</em> A generated draft reads like a proof
-                      while omitting the step that carries the difficulty,
-                      often hidden behind a phrase such as “this
-                      structure should be impossible” or “this cannot happen
-                      generically”.
-                    </p>
-                    <p>
-                      <em>The discipline.</em> A branch closes only when every
-                      leaf terminates in one of a fixed, finite list of
-                      certificate types, and every residual has a name. Phrases
-                      of the kind just quoted are classified as prompts for
-                      further stratification, never as closures. Because the
-                      terminal states are enumerated, an omitted step shows up
-                      syntactically as a leaf without a certificate, before
-                      any mathematical judgement is required.
-                    </p>
-                  </dd>
-                </div>
-                <div>
-                  <dt>Unsupported global estimates</dt>
-                  <dd>
-                    <p>
-                      <em>The failure.</em> An unconstrained draft gravitates
-                      towards a single global inequality, such as a counting
-                      argument, entropy bound, or spectral estimate, that appears to
-                      resolve everything at once. Such estimates concentrate the
-                      common errors: an unjustified independence assumption, a
-                      double count, a boundary term absorbed without comment.
-                    </p>
-                    <p>
-                      <em>The discipline.</em> An inequality is admitted only in
-                      the form the bookkeeping produces: in the simplest case{" "}
-                      <Latex value="\(|\mathcal D|\le C\,|\mathcal P|\)" /> from
-                      a canonical charging scheme together with a
-                      bounded-multiplicity lemma, and in general the weighted,
-                      payer-specific ledger inequality. Every ingredient (the
-                      demands, the assignment, the multiplicity bound, each
-                      capacity) is a named local claim. The bookkeeping produces
-                      the global conclusion.
-                    </p>
-                  </dd>
-                </div>
-                <div>
-                  <dt>Re-encoding the difficulty</dt>
-                  <dd>
-                    <p>
-                      <em>The failure.</em> A model that stalls on a step asks
-                      for “one more lemma” whose statement turns out to restate
-                      the original problem at another level. The new statement
-                      simply relocates the difficulty.
-                    </p>
-                    <p>
-                      <em>The discipline.</em> A progress invariant: every step
-                      outputs either a closed branch or a{" "}
-                      <strong>strictly smaller</strong> named residual, measured
-                      by size, the number of live exits, or an explicitly
-                      monitored complexity parameter. A proposed lemma counts as
-                      progress only when its residual is smaller, finite,
-                      charged or routed. A bookkeeping step factors through
-                      overload, monochromatic extraction and the exchange
-                      trichotomy; an unconditional statement about all large
-                      objects with some property is treated as a new global
-                      theorem and requires further branch refinement.
-                    </p>
-                  </dd>
-                </div>
-                <div>
-                  <dt>Untyped residuals</dt>
-                  <dd>
-                    <p>
-                      <em>The failure.</em> The model declares that the
-                      adversarial object has none of the structures the
-                      available tools require, and treats the remaining case as
-                      a reason to stop.
-                    </p>
-                    <p>
-                      <em>The discipline.</em> The branch-state ledger records
-                      the absence of a feature as a positive fact and routes it:
-                      it feeds a budget, strengthens an exclusion, creates a
-                      repetition payload, or triggers a language extension
-                      under the repair protocol. An untyped residual is an
-                      invalid worksheet row, not an open mathematical case.
-                    </p>
-                  </dd>
-                </div>
-                <div>
-                  <dt>Deferential agreement with erroneous steps</dt>
-                  <dd>
-                    <p>
-                      <em>The failure.</em> A model in an assistant role accepts
-                      a user-supplied step whose hypotheses, quantifiers,
-                      branch state or output type do not match the current
-                      obligation. This is an interface error.
-                    </p>
-                    <p>
-                      <em>The discipline.</em> Agreement has no formal status. A
-                      proposed step enters the system only as a worksheet row
-                      with declared inputs, quantitative data, schema
-                      obligations and a typed output, and it is accepted only
-                      once the relevant schema obligation has been discharged.
-                      When the row fails, the required response is a typed
-                      reject, a named residual, or an alternative routed
-                      payload. Conversational assent is not an accepted output.
-                    </p>
-                  </dd>
-                </div>
-                <div>
-                  <dt>Status-cue audit drift</dt>
-                  <dd>
-                    <p>
-                      <em>The failure.</em> A local audit is replaced by an
-                      appeal to the published status of the problem: “this is
-                      a famous open problem, so the step must be wrong”, or,
-                      just as unhelpfully, “so it must be right”.
-                    </p>
-                    <p>
-                      <em>The discipline.</em> Status is context; it is neither
-                      a certificate nor a defect. Positive steps and red-team
-                      objections use the same interface: an objection must name
-                      a failed schema, a missing import, a stale branch state,
-                      an unconsumed payload, an unregistered global theorem, or
-                      a candidate scope issue. Inventing a new terminal such as
-                      “open problem” is drift in the return alphabet.
-                      Certification remains a property of the documented
-                      mathematical, computational and review artifacts, and of
-                      nothing else.
-                    </p>
-                  </dd>
-                </div>
+                <div><dt>Retained state</dt><dd><p>Carry each estimate, object, remainder and quantitative account at its exact domain. Restate every surviving outcome with the data required by its next consumer.</p></dd></div>
+                <div><dt>Textbook hypotheses</dt><dd><p>Use the fixed imported results and applicable textbook facts at their actual statements. Match every hypothesis to the retained objects; prove instance-specific deductions locally.</p></dd></div>
+                <div><dt>Complete outcomes</dt><dd><p>Check every outcome and terminal certificate required by the task. Record any missing inference as an explicit local obligation.</p></dd></div>
+                <div><dt>Quantitative accounting</dt><dd><p>Derive estimates from the declared demands, assignments, multiplicities and capacities. Include boundary terms and prove that each charge is counted correctly.</p></dd></div>
+                <div><dt>Productive moves</dt><dd><p>Distinguish accepted atomic tasks from productive moves and closed branches. Move credit requires the existing reviewed payoff on every outcome; branch closure requires complete composition.</p></dd></div>
+                <div><dt>Exact residuals</dt><dd><p>Retain every surviving case with its actual witnesses, hypotheses and next local obligation. Establish a negative case mathematically before using it.</p></dd></div>
+                <div><dt>Independent review</dt><dd><p>Check the stated inputs, quantifiers, output and evidence against the current task contract. Each reviewer gives an independent verdict on the submitted result.</p></dd></div>
+                <div><dt>Proportionate reasoning</dt><dd><p>Give routine deductions concise justification. Identify a concrete missing hypothesis, invalid inference, domain mismatch or unmet contract when rejecting a step. Assess the local mathematics from its supplied inputs.</p></dd></div>
               </dl>
-              <p>
-                When a proposed lemma fails, its counterexample is retained as
-                data. It may reveal a missing term, a boundary case, an
-                incorrect interface, an insufficient label, or a new residual
-                pattern. The repair is chosen to match the defect:{" "}
-                <strong>numerical</strong> (recompute constants,
-                enumerations or slack), <strong>structural</strong> (correct a
-                hypothesis, invariant, route, type or account within the
-                existing vocabulary), <strong>pattern-level</strong> (promote a
-                residual that keeps surviving into a reusable mechanism with a
-                declared interface), or a <strong>language extension</strong>{" "}
-                (new descriptors and transitions for an obstruction the
-                vocabulary cannot yet express). Explicit residuals also degrade
-                gracefully: withdrawing a single closure leaves a precise weaker
-                theorem, naming the counterexample class that remains.
-              </p>
-              <p>
-                Architectural completeness means that the branch graph is
-                exhaustive and every leaf has a consumer; the structure itself
-                checks this property. Mathematical validity concerns the
-                correctness of every edge lemma and requires review and, where available,
-                formalization. The method makes the second question explicit
-                and local; it does not answer it. This is also why the
-                architecture sits comfortably alongside proof assistants: a
-                typed residual is a theorem statement, a tactic contract is an
-                interface, and a finite certificate can be checked by a small
-                program.
-              </p>
             </Part>
           </Part>
 
@@ -1523,14 +1305,10 @@ export function MethodologySection() {
 
           <Part id="repair">
             <p>
-              Every proposed claim is tested before it is admitted. The review
-              asks whether the lemma can be proved and what its failure would
-              imply structurally. The model or reviewer tries to find a
-              configuration in which the claim fails. Such a configuration is
-              a <em>defect</em>, and it becomes part of the proof data. Its
-              counterexample names the hypothesis <Latex value="\(H\)" /> the
-              argument had silently relied on: an independence assumption, a
-              boundary case, or a compactness property absent from the state.
+              Review the assigned inference against its actual hypotheses and
+              requested output. A concrete defect identifies the missing
+              hypothesis or invalid application and determines the local repair.
+              Give a routine deduction the proof detail its contract requires.
             </p>
             <p>
               The repair rule is always the same. <Latex value="\(H\)" />{" "}
@@ -1560,155 +1338,13 @@ export function MethodologySection() {
                 a fact and is closed on its own.
               </figcaption>
             </figure>
-            <p>
-              The following repairs show how the protocol handles a state that
-              is too small, a missing hypothesis, and a budget used outside its
-              valid regime. The chips open the relevant explorer steps.
-            </p>
-            <dl className="methodology-controls methodology-controls-wide methodology-repairs">
-              <div>
-                <dt>A compactness claim on too small a state</dt>
-                <dd>
-                  <p>
-                    <em>What red-teaming found.</em> Navier–Stokes, Type I. A
-                    lemma asserted that the successor relation between retained
-                    concentration profiles was closed, and a chain of
-                    downstream results, including recurrence on the path space,
-                    a compact retained core, and the exclusion of infinite descendant
-                    chains, rested on it. The diagonal argument in its proof
-                    did not go through: a witness for one pair could be centred
-                    at a point escaping to infinity, outside every cylinder on
-                    which the convergence was known.
-                  </p>
-                  <p>
-                    <em>The hypothesis it exposed.</em> Closedness requires the
-                    observer witnesses (the observer, its pressure chart, and
-                    its realization from the original sequence) to stay in a fixed
-                    compact cylinder. A state consisting of profiles alone was
-                    too small to carry that. The defect is recorded as “no
-                    profile-only closedness”, a standing prohibition in the
-                    provenance table.
-                  </p>
-                  <p>
-                    <em>The repair.</em> The step that used the claim became a
-                    three-way test on covariant density and event balance.
-                    Positive density and a balanced event law close where the
-                    old argument closed. A zero-density chain sustained by a
-                    persistent root current forms the new
-                    sparse branch, carrying precisely the failure of the old
-                    lemma as its defining fact; it is reduced through
-                    critical-shell accounting to an interscale-flux class,
-                    which is then shown to be empty.
-                  </p>
-                  <p>
-                    <em>What was left untouched.</em> Steps [141]–[146] were
-                    re-typed within their existing numbers, not renumbered. The
-                    interface theorem “no infinite retained concentration
-                    chain” kept its statement, so the finite-family branch and
-                    every later closure cite it unchanged. The state gained new
-                    vocabulary, and the rest of the ledger was reused.
-                  </p>
-                  <StepLinks steps={["I141", "I142", "I143", "I144", "I145", "I146", "I152"]} />
-                </dd>
-              </div>
-              <div>
-                <dt>An estimate missing a hypothesis</dt>
-                <dd>
-                  <p>
-                    <em>What red-teaming found.</em> Erdős–Gyárfás. The entropy
-                    cap on the packed <Latex value="\(P_{13}\)" /> windows was
-                    stated flatly: too many windows spend more entropy than the
-                    skeleton budget can supply. Attacking it showed that a
-                    window pays its full entropy price only when the canonical
-                    package of independent coordinates behind it is actually
-                    live in the comparison being run.
-                  </p>
-                  <p>
-                    <em>The hypothesis it exposed.</em> The independent-target
-                    entropy lemma requires independently realizable
-                    coordinates. Windows carrying a live package, called hot
-                    windows, pay. Cold windows do not,
-                    and the cap has nothing to say about them.
-                  </p>
-                  <p>
-                    <em>The repair.</em> The step became the hot/cold split:
-                    “does the live-hot entropy cap close?”. Yes is the old
-                    overflow terminal, unchanged. No opens the cold branch,
-                    which inherits the spine estimate and every earlier
-                    invariant and adds “the hot cap failed” as a fact. This
-                    forces a linear amount of cold mass, then a stub excess,
-                    then a first-failure extraction along cold corridors, and
-                    finally the bounded-configuration trichotomy of hit, defect or
-                    compression, with a finite same-interface table for the
-                    ties. The cold branch has no terminal residual.
-                  </p>
-                  <p>
-                    <em>What was left untouched.</em> The hot-side terminal and
-                    every step from [25] onward. The cold branch was appended
-                    as [145]–[157] and hangs from a decision numbered [22]:
-                    the numbering itself records that it came later.
-                  </p>
-                  <StepLinks steps={["22", "23", "24", "145", "150", "153", "154", "155", "156", "157"]} />
-                </dd>
-              </div>
-              <div>
-                <dt>A budget used outside its regime</dt>
-                <dd>
-                  <p>
-                    <em>What red-teaming found.</em> Erdős–Gyárfás. The skeleton
-                    budget{" "}
-                    <Latex value="\(B_{\mathrm{skel}}=\tfrac32 n\log_2 n+o(n\log n)\)" />{" "}
-                    that the entropy arguments spend is valid only on a
-                    near-cubic spine, meaning a graph whose surplus above cubic
-                    is small. The main line had used it without recording that
-                    hypothesis.
-                  </p>
-                  <p>
-                    <em>The hypothesis it exposed.</em> The surplus{" "}
-                    <Latex value="\(\sigma(G)=2m-3n\)" /> must be{" "}
-                    <Latex value="\(O(\sqrt n)\)" />. A counterexample with
-                    large surplus lies outside the regime of the budget and
-                    needs its own accounting.
-                  </p>
-                  <p>
-                    <em>The repair.</em> A test on the surplus was placed before
-                    the budget is first used. Its no-side is the old main line.
-                    Its yes-side is the surplus-pair accounting branch: excess
-                    ports become an active family, pairs are split into
-                    blocker-free and blocked, blocked pairs are charged through
-                    a canonical blocker ledger and capacity tokens, and any
-                    overload is exhausted by homogeneous matching-or-star
-                    extraction. Its output is exactly the near-cubic spine
-                    estimate that the main line consumes.
-                  </p>
-                  <p>
-                    <em>What was left untouched.</em> Every step of the main
-                    line, which now receives the spine estimate as an
-                    established hypothesis instead of assuming it. The branch
-                    was appended as [125]–[144] and hangs from a decision
-                    numbered [19].
-                  </p>
-                  <StepLinks steps={["19", "20", "125", "130", "134", "137", "144"]} />
-                </dd>
-              </div>
-            </dl>
-            <p>
-              The two Erdős–Gyárfás repairs are structural: a hypothesis was made
-              explicit and a case split was added within the existing
-              vocabulary. The Navier–Stokes repair is a language extension: the
-              branch state had to grow to carry witnesses, and a new class of
-              residual, the sparse branch, entered the vocabulary with a
-              closure of its own. None of these repairs reopened a closed
-              branch. Their numbering records the history: [22]→[145],
-              [19]→[125], and the re-typed [143]→[146] were added after the
-              main line had been numbered. Contiguous
-              continuations such as [64]→[65] and [109]→[110] belong to the
-              original design. The resilience audit lists the residual class
-              left by the failure of each closing lemma: a counterexample satisfying every
-              standing invariant up to that step together with the negation of
-              the lemma's conclusion. In its own words, no leaf
-              degrades to nothing.
-            </p>
+            <ol>
+              <li>Identify the exact missing hypothesis or invalid inference in the assigned task.</li>
+              <li>Retain the accepted inputs and repair the affected decision under its existing contract.</li>
+              <li>For an authorized case split, prove coverage and the conditional payoff of every outcome.</li>
+              <li>Execute the local repair, integrate its result, and retain each surviving obligation.</li>
+              <li>Verify the required output and direct consumer before reporting completion.</li>
+            </ol>
           </Part>
 
           <Part id="iteration">

@@ -14,7 +14,9 @@ if str(SCRIPT_DIR) not in sys.path:
 
 from check_modular_hit import audit_spec
 from red_team_node import (
+    AuditError,
     VERDICTS,
+    SCHEMA_VERSION,
     GraphContext,
     campaign_status,
     discover_repo_root,
@@ -30,9 +32,10 @@ def fixture_report(context: GraphContext, node_id: str = "1") -> str:
     node = dossier["node"]
     sources = dossier["source_fingerprints"]
     metadata = {
-        "schema_version": 1,
+        "schema_version": SCHEMA_VERSION,
+        "benchmark_policy_sha256": sources["benchmark_policy_sha256"],
         "proof": "erdos-gyarfas",
-        "node": int(node_id),
+        "node": node_id,
         "node_label": node["label"],
         "panel": node["group"],
         "contract_sha256": dossier["contract_sha256"],
@@ -62,7 +65,7 @@ def fixture_report(context: GraphContext, node_id: str = "1") -> str:
     return f"""<!-- red-team-audit
 {json.dumps(metadata, ensure_ascii=False, indent=2)}
 -->
-# Red-team audit: node [{int(node_id)}]
+# Red-team audit: node [{node_id}]
 
 ## 1. Executive verdict
 
@@ -140,10 +143,13 @@ class GraphTests(unittest.TestCase):
         cls.context = GraphContext(cls.root)
 
     def test_live_graph_shape(self) -> None:
-        self.assertEqual(len(self.context.nodes), 180)
         self.assertEqual(len(self.context.incoming["1"]), 0)
-        self.assertEqual(len(self.context.outgoing["180"]), 0)
-        self.assertEqual(self.context.nodes["180"]["shape"], "terminal")
+        for node_id, node in self.context.nodes.items():
+            if node.get("shape") == "terminal":
+                self.assertFalse(self.context.outgoing[node_id])
+        self.assertEqual(self.context.dossier("172a")["node"]["id"], "172a")
+        with self.assertRaises(AuditError):
+            self.context.dossier("invalid")
         self.assertIn("graph_drift", self.context.source_fingerprints)
 
     def test_merge_routes_are_tagged_separately(self) -> None:
@@ -175,7 +181,7 @@ class GraphTests(unittest.TestCase):
             self.assertIn(metadata["verdict"], VERDICTS)
             record_report(self.context, campaign, report)
             status = campaign_status(self.context, campaign)
-            self.assertEqual(status["counts"], {"audited": 1, "pending": 179})
+            self.assertEqual(status["counts"], {"audited": 1, "pending": len(self.context.nodes) - 1})
             self.assertEqual(status["verdicts"], {"NO ISSUE FOUND": 1})
 
     def test_stale_contract_is_rejected(self) -> None:
@@ -187,6 +193,21 @@ class GraphTests(unittest.TestCase):
             report.write_text(text, encoding="utf-8")
             with self.assertRaisesRegex(Exception, "stale or incorrect contract_sha256"):
                 validate_report(report, self.context)
+
+    def test_policy_mismatch_rejects_campaign_and_report(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="eg-red-team-test-") as temp:
+            campaign = Path(temp)
+            ledger_path = init_campaign(self.context, campaign)
+            report = campaign / "reports/node-001.md"
+            report.write_text(fixture_report(self.context).replace(
+                self.context.source_fingerprints["benchmark_policy_sha256"], "0" * 64))
+            with self.assertRaisesRegex(Exception, "benchmark_policy_sha256"):
+                validate_report(report, self.context)
+            ledger = json.loads(ledger_path.read_text())
+            ledger.pop("benchmark_policy_sha256")
+            ledger_path.write_text(json.dumps(ledger))
+            with self.assertRaisesRegex(Exception, "benchmark policy"):
+                campaign_status(self.context, campaign)
 
     def test_campaign_marks_recorded_contract_drift_stale(self) -> None:
         with tempfile.TemporaryDirectory(prefix="eg-red-team-test-") as temp:

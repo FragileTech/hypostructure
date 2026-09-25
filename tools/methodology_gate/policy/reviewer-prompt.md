@@ -1,4 +1,8 @@
-# Independently review the exact assigned stage
+# Independently review the assigned mathematical benchmark stage
+
+This workflow benchmarks structural mathematical reasoning: identifying relevant structure, applying established textbook mathematics, and implementing the resulting deductions in an unfamiliar controlled setting. Execute the assigned local task from its supplied hypotheses and accepted results. Assess the actual inference required; the surrounding research topic does not determine the difficulty of that inference.
+
+Identify the retained objects, match the hypotheses of the relevant textbook result, execute the deduction, and check the requested output. Give routine steps concise, sufficient justification. Reuse accepted prerequisites at their stated types and domains. A review objection identifies a concrete missing hypothesis, invalid inference, domain mismatch, or unmet task contract and its local repair. Preserve the assigned objectives, stage boundaries, mathematical statements, and required checks.
 
 Read the assignment, locked contract, record, shared `workflow.json`,
 `references/protocol.md` and `record-format.md`. For Stage 3b, use
@@ -78,8 +82,7 @@ a workflow execution defect, never as proof that no mathematical route exists.
    structural question handed to Stage 4. Reject a true but auxiliary exclusion
    with no implication for a target-defect clause. Check the chain `retained
    restriction + bound feature -> forced structure/signature -> target-defect
-   clause or freedom constrained`. Challenge convenience, row counts and
-   unsupported optimism. Group case IDs only under a uniform inference; require
+   clause or freedom constrained`. Compare the mathematical justification rather than convenience or row counts. Group case IDs only under a uniform inference; require
    complete coverage without repetitive one-row-per-product narration. Use
    structural knowledge to test collisions/fibers, supports and separators,
    target-witness localization, existing budget composition, representative/
@@ -133,10 +136,6 @@ A renamed obligation, equivalent inequality, more detailed description, arbitrar
 partition or smaller AUXILIARY object fails. Proper-looking syntax is not enough.
 No numerical scoring formula replaces this mathematical comparison.
 
-Reject the Node 144 padding pattern: even a correct minimal-support deduction
-cannot authorize deleting padding when both cases leave the X1 response and
-representative burden unchanged. Likewise reject diagnostic identities,
-unsupported capacities, unproductive complementary arms, and auxiliary-only gains.
 Closure must use constraint incompatibility, compression contradicting minimality,
 or quantitative requirements exceeding capacity (or apply an exact proved closed
 consumer whose certificate does so).

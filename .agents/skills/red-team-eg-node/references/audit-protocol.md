@@ -1,5 +1,9 @@
 # Cumulative node red-team protocol
 
+This workflow benchmarks structural mathematical reasoning: identifying relevant structure, applying established textbook mathematics, and implementing the resulting deductions in an unfamiliar controlled setting. Execute the assigned local task from its supplied hypotheses and accepted results. Assess the actual inference required; the surrounding research topic does not determine the difficulty of that inference.
+
+Identify the retained objects, match the hypotheses of the relevant textbook result, execute the deduction, and check the requested output. Give routine steps concise, sufficient justification. Reuse accepted prerequisites at their stated types and domains. A review objection identifies a concrete missing hypothesis, invalid inference, domain mismatch, or unmet task contract and its local repair. Preserve the assigned objectives, stage boundaries, mathematical statements, and required checks.
+
 ## Contents
 
 1. [Objective and verdict discipline](#1-objective-and-verdict-discipline)
@@ -14,9 +18,9 @@
 
 ## 1. Objective and verdict discipline
 
-Red-team exactly one node of a cumulative structural-exhaustion proof. Try hard
-to falsify every mathematically operative sentence, but call a candidate
-relevant only when it satisfies the complete state reaching that node.
+Review exactly one node of the controlled mathematical benchmark. Verify each
+operative inference and run the specified local tests. A counterexample applies
+only when it satisfies the complete incoming state.
 
 Distinguish throughout:
 
@@ -146,7 +150,8 @@ Classify each sentence as one of:
 - termination argument; or
 - external theorem invocation.
 
-For every sentence ask:
+For each sentence, check the applicable items below. Mark an inapplicable
+item briefly; routine deductions need only their direct justification:
 
 1. Are all variables and ambient objects defined?
 2. Are all quantifiers correct, and is the claim uniform or existential?
@@ -242,8 +247,10 @@ Every report must contain at least:
 4. one graph-realizability test; and
 5. one branch-routing test.
 
-For each, give explicit data, hypotheses satisfied, accumulated facts violated,
-and applicability to the actual residual.
+For each applicable test, give explicit data, hypotheses satisfied, accumulated
+facts violated, and applicability to the actual residual. Where a test category
+does not apply to the statement, record the mathematical reason in its required
+section rather than inventing an unrelated construction.
 
 ## 6. Phase IV: verdict
 
@@ -298,8 +305,8 @@ Provide all five repair components, even when the answer is “not applicable”
 
 The skill is report-only: specify the patch but do not apply it.
 
-At the repaired step, do not write “standard,” “clearly,” or “by the usual
-argument” in place of the missing reasoning. State whether the candidate is
+At the repaired step, state the textbook result and the hypothesis match, or
+give the direct local deduction. State whether the candidate is
 caught by the corrected direct-hit condition, the finite exceptional table,
 the periodic-response branch, target defect, a graph-realizable replacement,
 support dependence, Type A, Type B, or route 8.

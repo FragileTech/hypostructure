@@ -200,6 +200,7 @@ def run_one(state: dict, root: Path, attempts: Path, auth: Path, timeout: int,
     for index in range(2):
         review_packet = copy.deepcopy(packet)
         review_packet['worker_instruction'] = (
+            t.SPEC['rule'] + '\n\n' + t.POLICY['context_policy']['review'] + '\n\n' +
             'Fresh independent review of exactly one mathematical obligation. '
             'Read /input/assignment.json and /input/submission.json; evidence is in /input/sources. '
             'For an edited existing artifact, its input version is preserved under /input/original '

@@ -153,7 +153,7 @@ def validate_artifact(before, after, node, stage):
 
     need(not dispatch_errors(before, node, stage), '; '.join(dispatch_errors(before, node, stage)))
     allowed = {'node', 'stage', 'result', 'evidence', 'artifact', 'inputs', 'reason', 'failure'}
-    need(set(event) <= allowed, 'Unexpected event fields; legacy construction/progress fields cannot bypass stage contracts')
+    need(set(event) <= allowed, 'Unexpected event fields; use the exact stage contract')
     need(event.get('inputs') == bindings(before, node, stage), 'Stage inputs must bind every exact accepted predecessor artifact')
     if not need(isinstance(artifact, dict), 'Each stage requires its own artifact object'):
         return errors

@@ -20,8 +20,20 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+def benchmark_policy_sha256() -> str:
+    """Fingerprint the canonical benchmark policy and this review contract."""
+    repo = Path(__file__).resolve().parents[4]
+    skill = Path(__file__).resolve().parents[1]
+    paths = list((repo / "tools/methodology_gate/policy").rglob("*.md"))
+    paths += list((repo / "tools/methodology_gate/policy").rglob("*.json"))
+    paths += list(skill.rglob("*.md"))
+    manifest = {str(p.relative_to(repo)): hashlib.sha256(p.read_bytes()).hexdigest()
+                for p in sorted(paths)}
+    return hashlib.sha256(json.dumps(manifest, sort_keys=True).encode()).hexdigest()
+
+
 PROOF_ID = "erdos-gyarfas"
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 MANUSCRIPT_REL = Path("to_formalize/erdos_64_proof.tex")
 CHECKED_GRAPH_REL = Path("web/frontend/public/data/erdos-gyarfas.json")
 LEAN_AUDIT_REL = Path("web/data/eg_node_audit.json")
@@ -122,8 +134,16 @@ def _hash_file(path: Path) -> str:
     return digest.hexdigest()
 
 
+def _node_id(value: int | str) -> str:
+    node_id = str(value)
+    if not re.fullmatch(r"[1-9]\d*[a-z]*", node_id):
+        raise AuditError("node must be a positive number with an optional lowercase suffix")
+    return node_id
+
+
 def _node_key(node_id: str) -> tuple[int, str]:
-    return (int(node_id), node_id) if node_id.isdigit() else (10**9, node_id)
+    match = re.fullmatch(r"([1-9]\d*)([a-z]*)", _node_id(node_id))
+    return (int(match[1]), match[2])
 
 
 def _edge_key(edge: dict[str, Any]) -> tuple[tuple[int, str], tuple[int, str], str]:
@@ -221,6 +241,7 @@ class GraphContext:
             _hash_json(checked_graph_basis) if checked_document else "absent"
         )
         self.source_fingerprints = {
+            "benchmark_policy_sha256": benchmark_policy_sha256(),
             "manuscript_sha256": _hash_file(self.root / MANUSCRIPT_REL),
             "graph_sha256": live_graph_sha,
             "checked_graph_sha256": _hash_file(self.root / CHECKED_GRAPH_REL),
@@ -246,13 +267,8 @@ class GraphContext:
     def _validate_graph(self) -> None:
         if not self.nodes:
             raise AuditError("the live proof graph contains no nodes")
-        if any(not node_id.isdigit() for node_id in self.nodes):
-            raise AuditError("the EG graph contains a nonnumeric node identifier")
-        numbers = sorted(int(node_id) for node_id in self.nodes)
-        if numbers != list(range(numbers[0], numbers[-1] + 1)):
-            raise AuditError("the live EG node numbers are not contiguous")
-        if numbers[0] != 1:
-            raise AuditError("the live EG graph does not start at node [1]")
+        for node_id in self.nodes:
+            _node_id(node_id)
         roots = [node_id for node_id in self.nodes if not self.incoming[node_id]]
         if roots != ["1"]:
             raise AuditError(f"expected the unique graph root [1], found {roots}")
@@ -564,7 +580,7 @@ class GraphContext:
         return self._contract_sha_cache[node_id]
 
     def dossier(self, node_number: int | str) -> dict[str, Any]:
-        node_id = str(int(node_number))
+        node_id = _node_id(node_number)
         if node_id not in self.nodes:
             raise AuditError(f"node [{node_id}] does not exist in the live graph")
         node = self.nodes[node_id]
@@ -839,6 +855,7 @@ def validate_report(report: Path, context: GraphContext) -> dict[str, Any]:
 
     metadata = parse_report_metadata(text)
     required_metadata = {
+        "benchmark_policy_sha256",
         "schema_version",
         "proof",
         "node",
@@ -859,9 +876,9 @@ def validate_report(report: Path, context: GraphContext) -> dict[str, Any]:
     if metadata["proof"] != PROOF_ID:
         raise AuditError(f"report proof must be {PROOF_ID!r}")
     try:
-        node_id = str(int(metadata["node"]))
+        node_id = _node_id(metadata["node"])
     except (TypeError, ValueError) as exc:
-        raise AuditError("report node must be one integer") from exc
+        raise AuditError("report node must be a valid graph identifier") from exc
     if node_id not in context.nodes:
         raise AuditError(f"report names nonexistent node [{node_id}]")
     if metadata["verdict"] not in VERDICTS:
@@ -871,6 +888,7 @@ def validate_report(report: Path, context: GraphContext) -> dict[str, Any]:
 
     current = context.dossier(node_id)
     expected_values = {
+        "benchmark_policy_sha256": benchmark_policy_sha256(),
         "node_label": current["node"].get("label", ""),
         "panel": current["node"].get("group", ""),
         "contract_sha256": current["contract_sha256"],
@@ -884,7 +902,7 @@ def validate_report(report: Path, context: GraphContext) -> dict[str, Any]:
                 f"stale or incorrect {field}: report has {metadata[field]!r}, current value is {expected!r}"
             )
 
-    title = f"# Red-team audit: node [{int(node_id)}]"
+    title = f"# Red-team audit: node [{node_id}]"
     if not re.search(rf"(?m)^{re.escape(title)}\s*$", text):
         raise AuditError(f"report title must be exactly {title!r}")
     for heading in (*REQUIRED_HEADINGS, *CONTRACT_HEADINGS, *CANDIDATE_HEADINGS, *REPAIR_HEADINGS):
@@ -934,7 +952,8 @@ def _campaign_root(root: Path, value: Path | None) -> Path:
 
 
 def _report_rel(node_id: str) -> str:
-    return f"reports/node-{int(node_id):03}.md"
+    number, suffix = _node_key(node_id)
+    return f"reports/node-{number:03}{suffix}.md"
 
 
 def _new_ledger(context: GraphContext) -> dict[str, Any]:
@@ -958,8 +977,8 @@ def _new_ledger(context: GraphContext) -> dict[str, Any]:
         "node_count": len(entries),
         "updated_at": _utc_now(),
         "source_snapshot": context.source_fingerprints,
+        "benchmark_policy_sha256": benchmark_policy_sha256(),
         "nodes": entries,
-        "retired_nodes": {},
     }
 
 
@@ -984,6 +1003,8 @@ def _load_ledger(path: Path) -> dict[str, Any]:
         raise AuditError("coverage ledger has the wrong schema or proof id")
     if not isinstance(ledger.get("nodes"), dict):
         raise AuditError("coverage ledger has no node map")
+    if ledger.get("benchmark_policy_sha256") != benchmark_policy_sha256():
+        raise AuditError("coverage ledger does not match the current benchmark policy")
     return ledger
 
 
@@ -1000,11 +1021,9 @@ def sync_campaign(context: GraphContext, campaign_root: Path) -> dict[str, Any]:
     ledger_path = campaign_root / "coverage.json"
     ledger = _load_ledger(ledger_path)
     old_nodes = ledger["nodes"]
-    retired = ledger.setdefault("retired_nodes", {})
     for node_id in list(old_nodes):
         if node_id not in context.nodes:
-            retired[node_id] = old_nodes.pop(node_id)
-            retired[node_id]["status"] = "retired"
+            del old_nodes[node_id]
 
     for node_id in sorted(context.nodes, key=_node_key):
         node = context.nodes[node_id]
@@ -1089,13 +1108,12 @@ def campaign_status(context: GraphContext, campaign_root: Path) -> dict[str, Any
         "counts": {key: len(value) for key, value in sorted(states.items())},
         "nodes": {key: value for key, value in sorted(states.items())},
         "verdicts": dict(sorted(verdicts.items())),
-        "retired_count": len(ledger.get("retired_nodes", {})),
     }
 
 
 def record_report(context: GraphContext, campaign_root: Path, report: Path) -> dict[str, Any]:
     metadata = validate_report(report, context)
-    node_id = str(int(metadata["node"]))
+    node_id = _node_id(metadata["node"])
     expected = (campaign_root / _report_rel(node_id)).resolve()
     if report.resolve() != expected:
         raise AuditError(f"report for node [{node_id}] must be stored at {expected}")
@@ -1146,7 +1164,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     dossier = subparsers.add_parser("dossier", help="build a fresh one-node source dossier")
     add_repo(dossier)
-    dossier.add_argument("--node", type=int, required=True)
+    dossier.add_argument("--node", type=_node_id, required=True)
     dossier.add_argument("--format", choices=("json", "markdown"), default="json")
     dossier.add_argument("--output", type=Path)
 
@@ -1197,7 +1215,7 @@ def main(argv: list[str] | None = None) -> int:
         elif args.command == "validate":
             metadata = validate_report(args.report, context)
             print(
-                f"valid report for node [{int(metadata['node'])}]: {metadata['verdict']}"
+                f"valid report for node [{metadata['node']}]: {metadata['verdict']}"
             )
         elif args.command == "record":
             entry = record_report(

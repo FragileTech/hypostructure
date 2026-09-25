@@ -62,6 +62,24 @@ class TaskflowTests(unittest.TestCase):
         for name in ("payoff", "coverage", "arm"):
             self.accept(name)
 
+    def test_dispatch_and_acceptance_require_current_benchmark(self):
+        for stamp in (None, "0" * 64):
+            state = copy.deepcopy(self.state)
+            if stamp is None:
+                state.pop("benchmark_policy_sha256")
+            else:
+                state["benchmark_policy_sha256"] = stamp
+            with self.assertRaisesRegex(t.TaskError, "current benchmark policy"):
+                t.next_task(state, self.root)
+            with self.assertRaisesRegex(t.TaskError, "current benchmark policy"):
+                t.submit(state, next(iter(state["tasks"])), self.result(), self.root)
+
+    def test_policy_content_change_invalidates_dispatch(self):
+        from unittest.mock import patch
+        with patch.object(t, "benchmark_fingerprint", return_value="1" * 64):
+            with self.assertRaisesRegex(t.TaskError, "current benchmark policy"):
+                t.next_task(self.state, self.root)
+
     def test_phase_zero_requires_exact_snapshot_and_task_is_narrow(self):
         with self.assertRaises(t.TaskError):
             t.fresh({"id": "B"})

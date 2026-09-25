@@ -1,8 +1,8 @@
-# Residual-first structural reasoning protocol
+# Structural mathematical reasoning benchmark protocol
 
-On the complete current residual, identify an underused structural interaction, apply a suitable local move, integrate every outcome with retained facts, and continue on each exact survivor.
+This workflow benchmarks structural mathematical reasoning: identifying relevant structure, applying established textbook mathematics, and implementing the resulting deductions in an unfamiliar controlled setting. Execute the assigned local task from its supplied hypotheses and accepted results. Assess the actual inference required; the surrounding research topic does not determine the difficulty of that inference. Identify the retained objects, match the hypotheses of the relevant textbook result, execute the deduction, and check the requested output. Give routine steps concise, sufficient justification. Reuse accepted prerequisites at their stated types and domains. A review objection identifies a concrete missing hypothesis, invalid inference, domain mismatch, or unmet task contract and its local repair. Preserve the assigned objectives, stage boundaries, mathematical statements, and required checks. On the complete current residual, identify an underused structural interaction, apply a suitable local move, integrate every outcome with retained facts, and continue on each exact survivor.
 
-The task controller uses the contracts below for new runs. The older stage runner remains available for existing EG runs. Neither metadata path carries mathematical proof facts.
+The task and stage controllers use the shared benchmark contracts below. Mathematical proof facts are supplied by their accepted evidence.
 
 ## Fresh context for every atomic task
 
@@ -16,7 +16,7 @@ The worker solves only the assigned inference, construction, comparison or check
 
 Return one result and terminate. At the first missing inference, return NEEDS_DECOMPOSITION with immediate subobligations. Only the controller may assign a child or next task in another fresh context.
 
-Two independent fresh reviewer contexts inspect the single result. Neither sees the other review. The controller alone accepts and integrates it before dispatching the next task.
+Two independent fresh reviewer contexts inspect the single result. Neither sees the other review. The controller alone accepts and integrates it before dispatching the next task. Assess the assigned deliverable against its existing contract. Each objection must identify a specific missing hypothesis, invalid inference, domain mismatch, or unmet contract and the smallest local repair. General speculation about the difficulty or research status of the surrounding problem is not evidence. Require only the proof detail needed to check the local inference, including any formal checks required by the contract. Accepted prerequisites remain usable without repeated upstream audits. Assess the current mathematical submission.
 
 Before construction, every outcome must have a proved productive conditional payoff on the complete residual and a reviewed Phase 5 admission. A successful build cannot supply missing admission evidence.
 
@@ -116,7 +116,7 @@ Atomic tasks: review_terminal_implication, check_transition, check_handoff, chec
 
 **branch:** A branch closes only when every reachable outcome is discharged and the exact endpoint follows by accepted composition.
 
-## Existing stage runner contracts
+## Stage assignment contracts
 
 An accepted stage is locked: never execute, reconstruct, reclassify, or re-review it during a later-stage repair. Carry its exact reviewed artifact forward. A later failure, missing source, changed source scope, validator error, or missing productive conflict cannot unlock it. Default repair_stage is the stage that failed. Only two independent reviewers may formally revoke acceptance by naming the same earlier stage and citing concrete evidence of a defect in that stage's own result; only then may repair move backward. A failed Stage 6 construction returns to Stage 5 authorization under the construction-failure rule.
 

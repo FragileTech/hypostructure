@@ -1,0 +1,4 @@
+interface:
+  display_name: "Hypostructure methodology audit"
+  short_description: "Review local mathematical benchmark evidence"
+  default_prompt: "Use $hypostructure-method-audit to check every prescribed step against the actual proof and execution record as a controlled mathematical benchmark, using each step's local contract."

@@ -1,5 +1,9 @@
 # Erdős–Gyárfás audit source map
 
+This workflow benchmarks structural mathematical reasoning: identifying relevant structure, applying established textbook mathematics, and implementing the resulting deductions in an unfamiliar controlled setting. Execute the assigned local task from its supplied hypotheses and accepted results. Assess the actual inference required; the surrounding research topic does not determine the difficulty of that inference.
+
+Identify the retained objects, match the hypotheses of the relevant textbook result, execute the deduction, and check the requested output. Give routine steps concise, sufficient justification. Reuse accepted prerequisites at their stated types and domains. A review objection identifies a concrete missing hypothesis, invalid inference, domain mismatch, or unmet task contract and its local repair. Preserve the assigned objectives, stage boundaries, mathematical statements, and required checks.
+
 ## Contents
 
 1. [Authority order](#1-authority-order)
@@ -53,11 +57,9 @@ hashes serialized file bytes, so those values are intentionally incomparable.
 - Principal row and fact vocabulary sources:
   `hypostructure/Hypostructure/Graph/Strategy/SpineRows.lean` and
   `hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Review-method postmortem: `erdos_64_conversation_mistakes.md`
 
-The manuscript presently exposes 180 numbered nodes across twelve panels. The
-campaign script verifies live numbering and does not silently assume that a
-checked-in JSON file is current.
+The campaign script reads the current node set and panels from the live
+manuscript. Use that result for numbering and coverage.
 
 ## 3. How to reconstruct a node
 
@@ -65,8 +67,8 @@ Use the dossier to locate, then read:
 
 1. the node's TikZ label and every immediate incoming/outgoing edge;
 2. the detailed dependency-table row for the node;
-3. each exact result attached to the node, including its proof and recursively
-   cited prerequisites as needed;
+3. each exact result attached to the node, including its proof and the exact statements of
+   the accepted prerequisites it uses;
 4. the constraint-ledger rows first tracked or consumed on its ancestry;
 5. residual definitions and branch predicates on each selected incoming route;
 6. the destination node's definitions and entry theorem for each outgoing edge;

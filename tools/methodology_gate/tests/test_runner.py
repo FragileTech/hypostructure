@@ -104,6 +104,16 @@ class RunnerTests(unittest.TestCase):
             runner.initialize(duplicate,self.repo,self.source,self.contract)
         self.assertFalse(duplicate.exists())
 
+    def test_continuation_requires_current_benchmark_policy(self):
+        self.assertEqual(self.tick(), 'accepted')
+        changed_policy = self.base / 'changed-policy'
+        shutil.copytree(runner.POLICY, changed_policy)
+        (changed_policy / 'executor-prompt.md').write_text('Different instructions')
+        with patch.object(runner, 'POLICY', changed_policy):
+            with self.assertRaisesRegex(core.Rejected, 'current benchmark policy'):
+                runner.continue_run(self.base / 'continuation', self.run, self.repo, self.contract)
+        self.assertFalse((self.base / 'continuation').exists())
+
     def test_later_source_repair_carries_accepted_stage_without_rerunning_it(self):
         self.assertEqual(self.tick(),'accepted')
         reviewed=copy.deepcopy(self.state()['events'][0])

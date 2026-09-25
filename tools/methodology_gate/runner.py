@@ -430,6 +430,8 @@ def continue_run(run, old_run, repo, contract_file):
     require(digest(old_contract) == (old_run / 'contract.sha256').read_text(), 'Old contract changed')
     require(files(snapshot / 'sources') == old_contract['source_manifest'], 'Old sources changed')
     require(files(snapshot / 'policy') == old_contract['policy_manifest'], 'Old policy snapshot changed')
+    require(files(POLICY) == old_contract['policy_manifest'],
+            'Run does not match the current benchmark policy')
     state = read(snapshot / 'record/state.json')
     node = next_node(state)
     require(node is not None, 'Cannot continue a completed node')

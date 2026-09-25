@@ -29,7 +29,7 @@
   linkcolor=branchblue,
   citecolor=branchblue,
   urlcolor=branchblue,
-  pdftitle={Structural Exhaustion: Auditable Local-to-Global Estimates for Human--AI PDE Proofs},
+  pdftitle={Structural Exhaustion: A Benchmark of Textbook PDE Reasoning},
   pdfauthor={Guillem Duran Ballester},
   pdfsubject={A structural-exhaustion methodology for AI-assisted PDE proof development},
   pdfkeywords={artificial intelligence, mathematical reasoning, partial differential equations, structural exhaustion, local-to-global estimates, loss of compactness}
@@ -104,8 +104,8 @@
   routeflow/.style={->,thick,dashed,branchblue}
 }
 
-\title[Structural Exhaustion for Human--AI PDE Proofs]
-{Structural Exhaustion: Auditable Local-to-Global Estimates for Human--AI PDE Proofs}
+\title[Structural Reasoning Benchmarks for PDE]
+{Structural Exhaustion: A Benchmark of Textbook PDE Reasoning}
 \author{Guillem Duran Ballester}
 \address{Fragile Technologies}
 \email{guillem@fragile.tech}
@@ -117,8 +117,16 @@
 \raggedbottom
 
 \begin{abstract}
-We introduce \emph{structural exhaustion}, a human--AI methodology for deriving
-global analytic conclusions from exhaustive systems of local branches.  A
+Structural exhaustion provides a controlled benchmark of mathematical
+reasoning: identifying structure, applying established textbook results, and
+implementing their consequences in an unfamiliar setting. Each task specifies
+its retained hypotheses, mathematical objects, requested output, and acceptance
+checks. The model executes that local task; review checks the inference at its
+actual hypotheses and domains. Routine deductions receive concise justification,
+and accepted prerequisites remain available at their stated strength.
+
+The analytic task system derives global conclusions from exhaustive systems
+of local branches.  A
 branch records its space--time window, quantitative hypotheses, gauge and
 compactness choices, active defect, target estimate, monotone resources, and
 supporting evidence.  A transition either proves a local estimate or converts
@@ -153,13 +161,17 @@ methodology and do not assert a Navier--Stokes regularity theorem.
 \section{Introduction}
 \label{sec:introduction}
 
-Long proofs in nonlinear PDE are difficult to develop with language models for
-a reason that is only partly linguistic.  Their conclusions depend on choices
-that remain implicit in ordinary prose: the cylinder on which an estimate is
-valid, the scale and frame, the pressure gauge, the quotient representative,
-the topology used at a compactness limit, and the alternative left after an
-estimate fails.  A locally plausible paragraph can silently change one of
-these choices and thereby change the theorem.
+Structural exhaustion provides a controlled benchmark of mathematical
+reasoning: identifying structure, applying established textbook results, and
+implementing their consequences in an unfamiliar setting. Each task specifies
+its retained hypotheses, mathematical objects, requested output, and acceptance
+checks. The model executes that local task; review checks the inference at its
+actual hypotheses and domains. Routine deductions receive concise justification,
+and accepted prerequisites remain available at their stated strength.
+
+For PDE tasks, the supplied state fixes the cylinder, scale, frame, pressure
+gauge, quotient representative, topology and quantitative accounts. The local
+application preserves these choices through each deduction.
 
 Current AI systems for mathematical reasoning emphasize formal proof search,
 autoformalization, retrieval, and repair of rejected proof scripts

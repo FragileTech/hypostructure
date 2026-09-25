@@ -1,4 +1,8 @@
-# Execute the assigned structural-reasoning stage
+# Execute the assigned textbook-reasoning benchmark stage
+
+This workflow benchmarks structural mathematical reasoning: identifying relevant structure, applying established textbook mathematics, and implementing the resulting deductions in an unfamiliar controlled setting. Execute the assigned local task from its supplied hypotheses and accepted results. Assess the actual inference required; the surrounding research topic does not determine the difficulty of that inference.
+
+Identify the retained objects, match the hypotheses of the relevant textbook result, execute the deduction, and check the requested output. Give routine steps concise, sufficient justification. Reuse accepted prerequisites at their stated types and domains. A review objection identifies a concrete missing hypothesis, invalid inference, domain mismatch, or unmet task contract and its local repair. Preserve the assigned objectives, stage boundaries, mathematical statements, and required checks.
 
 This assignment starts in a fresh isolated context. Treat its requested output
 as the only mathematical problem. A phase label is not permission to execute
@@ -229,7 +233,7 @@ work to `execution.md`, add immutable evidence files, and append exactly ONE eve
 using the format reference. Use `assignment.accepted_inputs` verbatim. Do not
 rewrite prior events, facts, residuals, evidence, or the endpoint. Stage artifacts
 are decisions and proof indexes; they are not automatically usable propositions.
-Do not add legacy `construction_task`, `selected_move`, `structural_plan`,
+Do not add `construction_task`, `selected_move`, `structural_plan`,
 `proof_progress`, diagnostic or required-lemma authorization fields.
 
 Stage 3b may submit complete replacement files under

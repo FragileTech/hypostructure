@@ -70,9 +70,9 @@ FORBIDDEN_TYPE_PATTERNS = (
 )
 
 FORBIDDEN_PROOF_SOURCE = {
-    "legacy residual ledger": re.compile(r"\bCore\.Residual\.Ledger\b"),
-    "legacy residual query": re.compile(r"\bCore\.Residual\.Query\b"),
-    "legacy residual instance": re.compile(r"\bHasResidual\b"),
+    "noncanonical residual ledger": re.compile(r"\bCore\.Residual\.Ledger\b"),
+    "noncanonical residual query": re.compile(r"\bCore\.Residual\.Query\b"),
+    "noncanonical residual instance": re.compile(r"\bHasResidual\b"),
     "parallel capability store": re.compile(r"\bCapabilityStore\b"),
     "parallel capability flow": re.compile(r"\bCapabilityFlow\b"),
     "noncanonical ledger type": NONCANONICAL_LEDGER,
@@ -411,7 +411,7 @@ def check_canonical_sources(root: Path) -> None:
             if token in source:
                 violations.append(f"{path.relative_to(root)}: contains {token}")
     if violations:
-        fail("canonical API depends on legacy transport:\n" + "\n".join(violations))
+        fail("canonical API depends on noncanonical transport:\n" + "\n".join(violations))
 
     obsolete_paths = (
         root / "hypostructure/Hypostructure/Core/Residual/ExactLedger.lean",

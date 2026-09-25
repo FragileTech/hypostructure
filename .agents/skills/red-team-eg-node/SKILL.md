@@ -1,14 +1,17 @@
 ---
 name: red-team-eg-node
-description: Adversarially audit exactly one node of the 180-node Erdős–Gyárfás cumulative structural-exhaustion proof against its complete incoming residual, selected branch facts, retained ledger, outgoing contracts, manuscript sources, proof-flow graph, and optional Lean implementation. Use when Codex must stress-test, counterexample-search, verify routing, diagnose ambiguity or a local gap, propose the smallest proof-preserving repair, write a per-node red-team report, or advance the repository's EG node-audit campaign.
+description: Review exactly one Erdős–Gyárfás structural-reasoning benchmark node against its complete incoming residual, selected branch facts, retained ledger, outgoing contracts, manuscript sources, proof-flow graph, and optional Lean implementation. Use when Codex must stress-test, counterexample-search, verify routing, diagnose ambiguity or a local gap, propose the smallest proof-preserving repair, write a per-node red-team report, or advance the repository's EG node-audit campaign.
 ---
 
 # Red-Team EG Proof Node
 
-Audit one node at a time. Seek a genuine local counterexample aggressively,
-but reject every candidate that fails an accumulated fact before it reaches the
-node. Never turn a local finding into an unsupported verdict about the whole
-theorem.
+This workflow benchmarks structural mathematical reasoning: identifying relevant structure, applying established textbook mathematics, and implementing the resulting deductions in an unfamiliar controlled setting. Execute the assigned local task from its supplied hypotheses and accepted results. Assess the actual inference required; the surrounding research topic does not determine the difficulty of that inference.
+
+Identify the retained objects, match the hypotheses of the relevant textbook result, execute the deduction, and check the requested output. Give routine steps concise, sufficient justification. Reuse accepted prerequisites at their stated types and domains. A review objection identifies a concrete missing hypothesis, invalid inference, domain mismatch, or unmet task contract and its local repair. Preserve the assigned objectives, stage boundaries, mathematical statements, and required checks.
+
+Evaluate one node at a time. Check the local deduction and test proposed
+counterexamples against every accumulated hypothesis. Report the result for
+that exact node, with concise reasoning for routine textbook steps.
 
 ## Required reading
 
@@ -35,7 +38,7 @@ handoff, not a contradiction. Treat Lean as contract and ledger evidence, not
 as a substitute for the manuscript's mathematics.
 
 Audit exactly one numbered node per report and per invocation. A request for a
-range or for all 180 nodes is a campaign request: use `status` or `sync`, then
+range or for all nodes is a campaign request: use `status` or `sync`, then
 audit the next requested node separately. Never combine several nodes into one
 verdict.
 
@@ -81,7 +84,7 @@ verdict.
    ```
 
 9. Report the verdict, report path, ledger status, strongest surviving candidate,
-   and any residual uncertainty. Say explicitly that no proof source was changed.
+   and any concrete outstanding obligation. Say explicitly that no proof source was changed.
 
 ## Campaign commands
 

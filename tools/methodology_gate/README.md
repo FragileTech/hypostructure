@@ -1,8 +1,13 @@
-# Structural reasoning workflow
+# Structural mathematical reasoning benchmark
 
-`policy/workflow.json` is the shared phase and task specification. New research
-runs use `taskflow.py` for one narrow obligation at a time. The existing stage
-runner below remains available for already started EG runs. Workflow records
+This workflow benchmarks structural mathematical reasoning: identifying relevant structure, applying established textbook mathematics, and implementing the resulting deductions in an unfamiliar controlled setting. Execute the assigned local task from its supplied hypotheses and accepted results. Assess the actual inference required; the surrounding research topic does not determine the difficulty of that inference.
+
+Identify the objects, match the hypotheses of the applicable textbook result, perform the deduction, and verify the requested output. Give routine deductions concise, sufficient justification. Use accepted prerequisites at their stated types and domains without repeating upstream proofs. Keep reasoning within the assigned task and its existing stage contract. If a premise or inference is missing, name it precisely and use the existing repair or decomposition procedure.
+
+Assess the assigned deliverable against its existing contract. Each objection must identify a specific missing hypothesis, invalid inference, domain mismatch, or unmet contract and the smallest local repair. General speculation about the difficulty or research status of the surrounding problem is not evidence. Require only the proof detail needed to check the local inference, including any formal checks required by the contract. Accepted prerequisites remain usable without repeated upstream audits.
+
+`policy/workflow.json` is the single phase and task specification. Use `taskflow.py` for one narrow benchmark obligation at a time. The stage
+controller enforces the same shared specification for stage assignments. Workflow records
 index proof evidence; they do not replace the manuscript, Lean ledger, or
 independent mathematical review.
 
@@ -69,9 +74,9 @@ requires the local Codex CLI and login (`--auth` can select its existing auth
 file). It stops if OS isolation is unavailable. The task worker receives no
 host plugins, configuration or external Lean runtime; a required unavailable
 tool is reported as a missing prerequisite, never as a completed kernel check.
-The old manual `submit` and `review` commands now refuse execution; their
-internal functions are used only by the supervisor and regression fixtures.
-Historical accepted records remain readable without retroactive isolation claims.
+Submissions and reviews are dispatched by the supervisor through isolated
+contexts. Internal submission functions support the supervisor and tests.
+Each run is bound to the current benchmark policy fingerprint.
 Before any Phase 6 launch, a reviewed Phase 5 `review_admission` task for the
 same move must be an explicit dependency, covering every outcome's proved
 productive conditional payoff.
@@ -122,13 +127,12 @@ the archived bytes against their original hashes and requires the **current**
 source bytes to be cited by an accepted, kernel-checked Phase 6 task and both
 of its reviewers. A snapshot by itself does not clear a stale-evidence warning;
 an unreviewed later edit makes the file stale again. New submissions and
-reviews always cite the live file. This preserves the accepted historical
+reviews always cite the live file. This preserves the accepted
 reviews without rerunning earlier proof stages after an authorized edit.
 
-## Existing stage runner
+## Stage assignments
 
-These stage contracts describe the older isolated worker runner and its
-existing records. New task queues use the phase and task contracts above.
+These contracts specify stage assignments within the shared benchmark workflow.
 
 ## Stages
 
@@ -248,3 +252,9 @@ python3 tools/methodology_gate/sync_policy.py
 python3 -m unittest discover -s tools/methodology_gate/tests -p 'test_*.py' -q
 cd web/frontend && npm run typecheck && npx vitest run src/pages/landing.test.tsx src/methodology/TaskRunViewer.test.tsx
 ```
+
+## Benchmark binding
+
+Task queues, stage assignments and node-review reports must match the current
+benchmark policy fingerprint. The controller checks that binding before dispatch
+or acceptance. Installed entry points reference the maintained repository files.

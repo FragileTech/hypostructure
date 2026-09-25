@@ -46,13 +46,18 @@ condensed reading of `to_formalize/structural_exhaustion.tex` — the account of
 Structural Exhaustion, the method both proofs were built with — together with
 a table of the proof moves, drawn from the tactic library of
 `branch_closure_methodology_extended.tex` and each proof's chapter 1, and an
-account of red-teaming and repair built from the live proof review; and the *Hypostructure*
+account of local review and repair for controlled mathematical benchmark tasks; and the *Hypostructure*
 documentation under `frontend/src/docs/`, described below. The
 Navier–Stokes panel summaries are the manuscripts' own — they live in each
 paper's *Diagram map*, so improving them there improves both the paper and this
 site.
 
 ## Executing the methodology
+
+The workflow is a controlled benchmark of structural mathematical reasoning:
+understanding and executing established textbook mathematics in unfamiliar
+settings. Review concerns the assigned local inference, with concise evidence
+for routine steps and specific repairs for missing hypotheses or invalid deductions.
 
 The landing page renders Phase 0 and the eight residual-first phases after
 “One iteration of the method”. Phase titles, task kinds, gates, and worker
