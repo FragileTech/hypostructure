@@ -1,0 +1,52 @@
+{
+  "reviewer": "phase2_return_length_review_b",
+  "decision": "accept",
+  "reason": "The two profiles enumerate finite, nonempty elementary returns relative to the connected full pair-demand route union R. For a chord e outside E(R), any simple R path between its endpoints plus e is a simple cycle of length |Q|+1. For two distinct G−T boundary edges at one component C, a simple internal C path and simple R landing path are vertex-disjoint; when the T landings coincide, simplicity forces distinct C endpoints, and when the C endpoints coincide, it forces distinct T landings. In both degenerate cases the trivial path at the repeated endpoint still yields a simple cycle of length |P_C|+2+|Q|. Connected G and bridgelessness provide at least two boundary edges per exterior component. The fan-edge B and per-source-pair a_Z markers preserve physical and pair-indexed use; chord, boundary, and C-internal edges are outside the chosen route union. The avoidance of LengthOK values follows from the existing selection key, and the submission expressly leaves multi-component cycles, repeated route use, and payoff unresolved. All cited hashes match current files.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-route-return-length-profile-contract.json",
+      "sha256": "ab7c7a6eaddd681085729af563300f94d8f18b96a71c203ad955721778f6cc31",
+      "locator": "P2-window-13 acceptance: all simple path lengths, same/different landings, inherited exclusion, and source/fan markers"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-route-return-length-profile-result.json",
+      "sha256": "e4cbc98c3252e8cddf5437c4ca38a28567a1941db197da3cbe83f1993a476573",
+      "locator": "output, evidence hashes, first missing inference, and metadata.interaction"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-route-return-length-profile.md",
+      "sha256": "06b9b0ed82ba76b6f4b3f1c54c7f1335d59708173bdb02ef8f9661855ea131b7",
+      "locator": "lines 3–18 chord spectrum; 20–41 component-return degeneracies and lengths; 43–52 markers; 54–74 inherited exclusion and scope"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-source-incidence.md",
+      "sha256": "8e8033bd5bc30ce2e80e6a23775f31adf2101fc04f3e7b08b715f9b985f12f8e",
+      "locator": "lines 10–31 pair-demand routes and U_p; 78–81 connected full pair-indexed route union"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-fan-route-rank-cross-tab.md",
+      "sha256": "91e70d064eaf60ffb87db1639aa81c3244f643557c603003a8639bfc25ad987c",
+      "locator": "lines 12–29 route union R, J chords, and genuine G−T component boundaries; 49–61 source relation M"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+      "sha256": "113226b2f99eabccb9f3b1f00e1c4ce6eeb474eadf90fdd10099c2003476badd",
+      "locator": "lines 14–26 same selected object and selection; 38–54 complete window retained ledger including bridgeless/connectivity"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "lines 8265–8270 selection retains ¬HasCycleWithLength; 9101–9105 bridgeless; 11426–11450 selected graph connectivity"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Target.lean",
+      "sha256": "c4e5ff79a399fab024214a237eb874d85d53a7ef1eefe54388356e38511c3a78",
+      "locator": "lines 48–59 HasCycleWithLength means a simple cycle certificate of an accepted length"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "revision node144-window-32d32f9d19e7 and literal post-[144] keys"
+    }
+  ]
+}

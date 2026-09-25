@@ -1,0 +1,17 @@
+{
+  "id": "P7-window-49-physical-escape-integration",
+  "mode": "DISCOVER",
+  "phase": "7",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-extremal-two-tail-uncrossing",
+  "kind": "review_integration",
+  "goal": "Integrate the checked outside-skeleton incident edge with the original envelope and select an exact, exhaustive attachment-location measurement before assigning any cost or productive-move credit.",
+  "objects": ["G=selected.object and full [144a] window history", "actual matching/star envelope, core, two arms, centre and literal edge skeleton", "checked adjacent endpoint x of an outside-skeleton edge at a=nextLeft"],
+  "reads": ["branch:node144-window-32d32f9d19e7", "P7-window-48-physical-escape", "P6-window-47-crossing-exclusion"],
+  "interaction": "The witness edge is a real graph adjacency excluded from the constructed skeleton. Its endpoint must be classified against the actual core, own arm, opposite arm, centre and remaining vertices before one can distinguish internal chord cost from boundary attachment cost.",
+  "parent_payoff": "Name a disjoint exhaustive endpoint-location profile and the source-bound export required for the [144a] residual; defer cycle-rank and boundary charges until their graph-theoretic prerequisites are proved.",
+  "depends_on": ["P7-window-48-physical-escape"],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase7-physical-escape-integration.md",
+  "acceptance": "Give ordered disjoint endpoint cases on the original selected graph and exact envelope vertex region; explain overlap handling, centre-edge exclusion, and distinct internal-versus-boundary accounting. Test constraint/compression/quantity closure separately. State the next one local Lean classification and subsequent source-bound export without claiming the exported residual is already narrowed or [144a] closed.",
+  "on_failure": "If the location split omits an overlap or assumes edge absence from the vertex region, repair the split before assigning a cost or successor."
+}

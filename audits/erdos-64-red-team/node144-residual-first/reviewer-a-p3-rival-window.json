@@ -1,0 +1,37 @@
+{
+  "reviewer": "phase3_rival_review_a",
+  "decision": "accept",
+  "reason": "On the tagged window [144a] residual, candidate A addresses original blocked-pair load but the public handoff supplies one envelope without a total source-pair incidence map, a multiplicity bound, or constants calibrated against the retained strict-surplus threshold. Candidate B uses actual centres, assigned neighbours and simple arms, but FanSafe is a negative condition (no accepted shifted return length and no absorbing relation), so no target cycle or minimality-valid replacement follows from it alone. typeBFanEntry only places the envelope in an entry disjunction; it does not imply the all-packing and all-relevant-component TypeBSublinearHypotheses. The older near-cubic audit is explicitly treated as an attempt fingerprint, not an accepted premise. Neither a mechanism nor a proved prospective payoff or branch closure is claimed. All five submitted hashes match current files.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase3-rival-comparison.md",
+      "sha256": "eecc5487a982acecf17a492998611bc20eaec28745915b3547552a0738a3b101",
+      "locator": "Candidate A; Serious rival; Comparison and next obligation"
+    },
+    {
+      "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Strict/Dependent.lean",
+      "sha256": "5ffb28da8eb6034712de72078b2dde4474de5ebc616731a1933abaeab2d7ca5d",
+      "locator": "window [144] tagged producer and returned handoff, lines 267-286"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "335b2996340ad3b65645cc97afeb627731ecb2209bf4031286aff0e6346da7e2",
+      "locator": "two selected same-label edges and decorated envelope construction, lines 1374-1406, 2205-2251, 3061-3112"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/DecoratedHandoffEnvelope.lean",
+      "sha256": "833664e35fcf0db62862bb28ed398f0836922f4ced97fa57f5414a089020872c",
+      "locator": "FanSafe negative clauses, lines 865-875; envelope centres, assigned neighbours, arms and fanSafe fields, lines 902-940"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "handoff and fan entry schemas, lines 3944-3995; TypeBSublinearHypotheses quantifies over packings and components, lines 5655-5710; distinct ledger/residual keys, lines 9917-9920; strict surplus predicate, lines 8387-8392"
+    },
+    {
+      "path": "audits/erdos-64-red-team/near-cubic-repair/execution.md",
+      "sha256": "c90d539cbd8b0d6170ca7a70bc704211ad19f9b158dbbf44220f4a0a5eae609c",
+      "locator": "event-count/payment gaps, lines 219-250; Hall graph-consumer gap, lines 282-295; fold/smoothing gaps and non-closure status, lines 297-376"
+    }
+  ]
+}

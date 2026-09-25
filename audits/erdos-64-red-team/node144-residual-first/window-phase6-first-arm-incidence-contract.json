@@ -1,0 +1,17 @@
+{
+  "id": "P6-window-37-first-arm-incidence",
+  "mode": "FORMALIZE",
+  "phase": "6",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-extremal-two-tail-uncrossing",
+  "kind": "prove_property",
+  "goal": "Prove that a simple arm's physical edge incident to its starting vertex is its unique first edge.",
+  "objects": ["G=selected.object and current [144a] window history", "the exact local armEdgeSet in the [144] owner", "an arbitrary nodup arm path whose head is a"],
+  "reads": ["branch:node144-window-32d32f9d19e7", "P7-window-36-arm-edge-endpoints-integration", "P6-window-35-arm-edge-endpoints"],
+  "interaction": "The selected cubic a needs two non-centre physical incidences, but its own simple first-entry arm can pay at most its single initial incidence.",
+  "parent_payoff": "Establish the own-arm side of the exact all-in-F incidence bound needed to force a onto the opposite arm.",
+  "depends_on": ["P7-window-36-arm-edge-endpoints-integration"],
+  "allowed_write": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+  "acceptance": "Inside the existing [144] owner, prove one anonymous local lemma: if path.head?=some a, path.Nodup and s(a,v)∈armEdgeSet path, then path=a::next::rest and v=next for some next,rest. Use the already defined armEdgeSet and endpoint lemma; handle singleton arms as impossible for edge membership. No top-level theorem/key/cap/escape. Kernel-check owner and direct EG caller, then name the remaining core-incidence obligation.",
+  "on_failure": "Report the first exact list/Sym2 proof obligation; do not assume the core bound or crossing."
+}

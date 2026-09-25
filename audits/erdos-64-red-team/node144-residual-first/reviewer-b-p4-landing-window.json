@@ -1,0 +1,37 @@
+{
+  "reviewer": "phase4_landing_review_b",
+  "decision": "accept",
+  "reason": "In each matching and star branch the owner extracts both source configurations from the same selected pattern capacity. Their RoutingConfiguration types use capacity.activation.localBuffer left and right, and lands supplies terminal membership in those respective buffers. The owner defines commonSelectedSupport as exactly their union and inserts the two terminals on its left and right sides before invoking the dichotomy. The submission establishes only these landing premises; it selects no routing outcome and makes no cross-key capacity identification. All three submitted evidence hashes match the live immutable files.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "objects and imports preserve one handoff witness without cross-key equality; open_outcomes"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-common-landing-contract.json",
+      "sha256": "1c01a3d30248b035c567c931f14e6bb089757cd53dd89a7b67fa2dc06a005903",
+      "locator": "goal, objects, acceptance and on_failure"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-common-landing-result.json",
+      "sha256": "96e9a7e7050ee2b547a6cdeb985db039cdc2857ddd575843b614238d9098339a",
+      "locator": "output and cited evidence"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-common-landing.md",
+      "sha256": "acdddf9c661ffd97357d18e146ce9efc344a487b240a0593afe694e25e6092c2",
+      "locator": "common-landing prerequisite and stated limits"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean",
+      "sha256": "cca0d7a8a6d32968b3bd01a9ea3b0a6fb0fa119a7f1380d98610c29815087e31",
+      "locator": "RoutingConfiguration.lands 229\u2013246; parallel_or_firstSeparator_of_same_root landing premises 500\u2013513"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "335b2996340ad3b65645cc97afeb627731ecb2209bf4031286aff0e6346da7e2",
+      "locator": "one pattern capacity 593\u2013642; matching configuration types 1495\u20131525, union 1650\u20131658, terminal membership 1713\u20131733; star configurations 2365\u20132395, union 2520\u20132528, terminal membership 2583\u20132603"
+    }
+  ]
+}

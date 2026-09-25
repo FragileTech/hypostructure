@@ -1,0 +1,36 @@
+{
+  "decision": "accept",
+  "reason": "The submitted window-arm ledger names one genuine prior use on G = selected.object: sameTokenBottleneckRoutingRow reads homogeneousBottleneckPattern from FactInputs, publishes bottleneckRouting as sparse exit or one decorated envelope, and eliminates the sparse exit with active.survives to publish typeBHandoff. The owner then appends typeBFanEntry and returns those three keys on the same tagged history. The retained handoff proposition has one existential envelope and no assignment or bounded multiplicity from every original blocked pair to an envelope or centre; separate key witnesses are not equated. No cap, near-cubic estimate, or pair-payment conclusion is claimed. The two submitted evidence hashes match live bytes.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase1-prior-use.md",
+      "sha256": "57321d2b1737d83c6f628dfe479b6e555cdc1d0224742054d8b9321b6e065bb9",
+      "locator": "Aspect previously used; Use and established conclusion; Unexploited aspect"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "335b2996340ad3b65645cc97afeb627731ecb2209bf4031286aff0e6346da7e2",
+      "locator": "593–633: exact row manifest and pattern read; 3080–3112: exit elimination and fan-entry projection"
+    },
+    {
+      "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Strict/Dependent.lean",
+      "sha256": "5ffb28da8eb6034712de72078b2dde4474de5ebc616731a1933abaeab2d7ca5d",
+      "locator": "267–286: window audit, [144] call, and returned fact projections"
+    },
+    {
+      "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Local.lean",
+      "sha256": "aca012ed647aaa3e5582e1e727e67d586b97998b6ebad808b055cc58193b3e4d",
+      "locator": "325–385: selectedBottleneckDischarge returned ledger and no-closure boundary"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "3944–3979: one existential envelope and handoff source pattern; 11702–11728: routing/handoff Holds"
+    },
+    {
+      "path": "to_formalize/erdos_64_proof.tex",
+      "sha256": "7153339b7a032b2e5fbb432999acf0306d4a4f18bdbfd0f86c709ae3a4e58cb1",
+      "locator": "347–353: [144a] retains handoff without homogeneous cap or near-cubic estimate"
+    }
+  ]
+}

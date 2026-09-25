@@ -1,0 +1,17 @@
+{
+  "id": "P4-window-61-marked-edge-splice",
+  "mode": "DISCOVER",
+  "phase": "4",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-extremal-two-tail-uncrossing",
+  "kind": "state_textbook_move",
+  "goal": "State the precise marked-edge path-splice candidate using e followed by the reverse of a segment of its G-e return, with all same-pair RoutingConfiguration prerequisites and explicit exception arms.",
+  "objects": ["fixed source routes r_p,r_q sharing prefix to h and diverging h-a versus h-b", "forced e={a,x} outside F and simple P_e from a to x in G-e", "q-specific support Z_q, fixed root and terminal buffer"],
+  "reads": ["branch:node144-window-32d32f9d19e7", "P2-window-59-marked-return-interaction", "P3-window-60-marked-return-rival", "P4-window-45-right-shortcut"],
+  "interaction": "A q-reroute beginning with the p-side edge h-a and then the newly forced non-F edge a-x may reach q's old suffix by reversing a terminal segment of P_e; if valid, it beats the fixed maximal common prefix.",
+  "parent_payoff": "An exact candidate whose successful arm attacks the previously unaccounted physical edge, while every failed prerequisite remains an open structural outcome rather than a claimed cost.",
+  "depends_on": ["P3-window-60-marked-return-rival"],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase4-marked-edge-splice.md",
+  "acceptance": "Specify the q-route decomposition and return-path index, the candidate list, graph-chain/nodup/source/support/buffer premises, strict common-prefix gain, and the exact complementary failure cases including no suffix encounter, prefix collision, wrong q support, and retained-suffix repetition. Show use of e is essential and distinguish the earlier right-shortcut proof. Do not claim the complement pays a cost, select a negative arm, or admit a move.",
+  "on_failure": "If a purported splice repeats a vertex or uses q's support without proof, record the first missing prerequisite and split that exception; do not invoke maximality."
+}

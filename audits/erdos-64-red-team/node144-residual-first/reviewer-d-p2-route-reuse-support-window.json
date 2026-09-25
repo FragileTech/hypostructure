@@ -1,0 +1,37 @@
+{
+  "reviewer": "phase2_route_reuse_support_review_d",
+  "decision": "reject",
+  "reason": "The note and main result correctly index a selected route by each pair-demand incidence, partition ordered paths by terminal and path equality, and derive V(q) inside the intersection of pair-specific routing supports while only the common terminal lies in the intersection of localBuffer(d). They do not infer route coherence or a fibre upper bound. However the submitted result metadata states that the repeated physical route is common to each declared support and local endpoint buffer. The literal RoutingConfiguration fields give `inside` for the full path only in the pair-specific sameTokenRoutingSupport and `lands` for its terminal only in localBuffer(d); they do not put the whole path in each endpoint buffer. Since this metadata records the interaction's claimed relation, it overstates the retained field. Repair that sentence to distinguish whole-route support intersection from terminal-buffer intersection; the note's displayed formulas already have the right distinction.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-route-reuse-support-profile-contract.json",
+      "sha256": "ce8bb524a7ad991e297d68ed9316ed22ae75b5130be551f73939a0213e00494a",
+      "locator": "acceptance requires exact route equality and support-intersection condition"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-route-reuse-support-profile-result.json",
+      "sha256": "a5ffb2205f8b09cecf8b748ed9be98ca68ac88944d1b34c00168cad4860562c5",
+      "locator": "metadata.interaction.relation overstates route membership in local endpoint buffers; output states the narrower correct condition"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-route-reuse-support-profile.md",
+      "sha256": "70de5f9b06984ad1ed4bcda55a225f378ae8b16b14bb92f828cfe095458380aa",
+      "locator": "lines 14-43: valid route-equality partition; lines 45-60: correct distinct formulas for path-support and terminal-buffer intersections"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+      "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+      "locator": "lines 144-161 and 651-678: pair-specific routing support and separately quantified pair-demand configurations"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean",
+      "sha256": "cca0d7a8a6d32968b3bd01a9ea3b0a6fb0fa119a7f1380d98610c29815087e31",
+      "locator": "lines 229-246: `inside` concerns routing support, while `lands` concerns endpoint buffer"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+      "sha256": "113226b2f99eabccb9f3b1f00e1c4ce6eeb474eadf90fdd10099c2003476badd",
+      "locator": "lines 13-26: pinned same-witness [144a] handoff"
+    }
+  ]
+}

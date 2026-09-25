@@ -1,0 +1,28 @@
+{
+  "id": "P2-remainder-02-routing-coordinate",
+  "mode": "AUDIT",
+  "phase": "2",
+  "branch_revision": "node144-remainder-32d32f9d19e7",
+  "move_id": "",
+  "kind": "inspect_coordinate",
+  "goal": "Locate precisely how the remainder pattern size and two selected same-label edges enter the [144] routing proof, and which indices are lost in the published handoff.",
+  "objects": [
+    "G = selected.object on the tagged remainder-surplus class arm",
+    "one source pattern in the certified handoff ledger, with selected matching/star edges and same-root configurations",
+    "one decorated envelope obtained from a separator of two selected configurations"
+  ],
+  "reads": [
+    "branch:node144-remainder-32d32f9d19e7",
+    "P2-remainder-01-pair-envelope-interaction",
+    "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+    "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean"
+  ],
+  "interaction": "Two selected same-label source edges versus the full retained homogeneous pattern and the single returned decorated envelope",
+  "parent_payoff": "",
+  "depends_on": [
+    "P2-remainder-01-pair-envelope-interaction"
+  ],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/remainder-phase2-coordinate.md",
+  "acceptance": "Cite the two-edge selection in both pattern-shape cases and the exact published handoff fields; state the first missing source-indexed relation without asserting an unproved cap, impossibility, or technique.",
+  "on_failure": "Report the first selected-edge/envelope identification not retained by the public proposition; keep all other pattern pairs in the residual."
+}

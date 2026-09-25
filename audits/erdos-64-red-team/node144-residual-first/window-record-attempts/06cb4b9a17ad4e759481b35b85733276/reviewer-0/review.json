@@ -1,0 +1,22 @@
+{
+  "reviewer": "independent-reviewer",
+  "decision": "accept",
+  "reason": "The diagnostic obligation is complete at its declared narrow scope. The recorded bounded invocation replaces the source-local 4,000,000-heartbeat limit with 20,000, retains the changed owner and consumer with exact source numbering, and returns its first emitted diagnostic at candidate 689:18: simp fails through heartbeat exhaustion at whnf. The artifact supplies the source target, complete diagnostics, exit status and reproducible extraction. Independently verified all pinned and submitted evidence hashes, the reconstructed disposable-source hash, the failing source location, and the accepted compiled vocabulary hash. No additional compilation was needed. The result correctly distinguishes reduced-budget resource exhaustion from a missing premise or failure under the original budget, preserves the candidate and accepted vocabulary, and claims neither a successful owner check nor mathematical or branch closure.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-owner-elaboration-location.md",
+      "sha256": "778d705078273fea66e18cba483bc891d29bdad37a6b892c507da4961482c104",
+      "locator": "Exact correspondence and goal context; Package and bounded invocation; complete stdout; Scope and preservation"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-record-attempts/eb2e67d5b2a44c81821a4470261c058d/executor/artifact/hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "bea3d412d7cc0db2232180b50999d3d75eddcb477053e0ab4c6dc75a5833753b",
+      "locator": "Lines 592\u2013610, 667\u2013700 (first diagnostic 689:18), and 4136\u20134169"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-kernel-label-identity-integration.md",
+      "sha256": "e854181f6486dc2b1a31ff54c609dc4d3ba7203b99c2a5f82275b07c7e3ddfcd",
+      "locator": "Line 41: accepted current-vocabulary source and compiled .olean hashes"
+    }
+  ]
+}

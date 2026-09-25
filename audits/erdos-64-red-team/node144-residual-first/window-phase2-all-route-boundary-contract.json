@@ -1,0 +1,32 @@
+{
+  "id": "P2-window-09-all-route-boundary-interaction",
+  "mode": "DISCOVER",
+  "phase": "2",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "",
+  "kind": "register_interaction",
+  "goal": "Trace the genuine graph boundary and relative cycle-rank account of the connected union of one declared route for every source demand in the same handoff pattern, without treating route multiplicity as physical cost.",
+  "objects": [
+    "G = selected.object and the complete window-history post-[144] ExactLedger",
+    "one typeBHandoff source pattern P with all its existing declared configurations on G",
+    "a simultaneous finite choice of one common-root route per source demand, its route-union graph R and vertex set T"
+  ],
+  "reads": [
+    "branch:node144-window-32d32f9d19e7",
+    "P2-window-04-all-route-overlap-interaction",
+    "P2-window-07-exterior-cut-interaction",
+    "P2-window-08-relative-cycle-rank-interaction",
+    "audits/erdos-64-red-team/node144-residual-first/window-phase5-terminal-significance.md",
+    "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md"
+  ],
+  "interaction": "Every original source demand has a route in one connected physical support R; extra internal edges and complement components of G-T are genuine graph attachments whose rank costs can be compared with route-index multiplicities.",
+  "parent_payoff": "",
+  "depends_on": [
+    "P2-window-04-all-route-overlap-interaction",
+    "P2-window-07-exterior-cut-interaction",
+    "P2-window-08-relative-cycle-rank-interaction"
+  ],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase2-all-route-boundary.md",
+  "acceptance": "Use only the actual same-witness source routes to define connected R. On G and T=V(R), establish that every component of G-T has at least two boundary edges and give the exact relative cycle-rank decomposition with any extra internal edges counted once. Contrast this actual G-cut with the prior invalid route-union H-cut. Preserve the possibility of T=V(G) and repeated routes or terminals; do not infer a bound or closure from the number of source indices.",
+  "on_failure": "If the source statement does not provide a simultaneous route choice or common root, record the precise missing witness and do not replace it by routes from another existential."
+}

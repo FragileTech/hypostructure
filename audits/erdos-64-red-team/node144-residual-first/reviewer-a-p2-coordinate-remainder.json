@@ -1,0 +1,27 @@
+{
+  "reviewer": "phase2_coordinate_review_a",
+  "decision": "accept",
+  "reason": "On the tagged remainder history (windowClassAbsent and remainderClassOverload via remainderSurplusAudit), the routing proof treats both source shapes. In the matching case and again in the star case, the geometric-size bound feeds exists_same_routingLabel, giving distinct first and second pattern edges with one label. The proof chooses a demand and configuration from each and, on the decorated branch, constructs one envelope from their separated paths. The published typeBHandoff retains the source pattern proposition and a decorated envelope on the same object, but not the chosen edge indices, their common label, or an assignment of remaining source edges to the envelope. The submission states that missing relation without asserting a cap, impossibility, payment, or chosen repair method. All three submitted evidence hashes match current files.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/remainder-phase2-coordinate.md",
+      "sha256": "ca7d4aaa9ec141b6f9eb7d0e15c2ceaaa9526638a543a220c45e2a2d8fc40512",
+      "locator": "Both pattern cases; published payload; first missing inference"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "335b2996340ad3b65645cc97afeb627731ecb2209bf4031286aff0e6346da7e2",
+      "locator": "matching edge selection via exists_same_routingLabel, lines 1374-1406; matching decorated envelope, lines 2191-2221; star edge selection, lines 2222-2251; star decorated envelope, lines 3047-3077; handoff publication, lines 3080-3112"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "SameTokenTypeBHandoffEnvelopeStatement and SameTokenTypeBHandoffStatement public fields, lines 3944-3979"
+    },
+    {
+      "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Strict/Dependent.lean",
+      "sha256": "5ffb28da8eb6034712de72078b2dde4474de5ebc616731a1933abaeab2d7ca5d",
+      "locator": "remainder tagged class path and selectedBottleneckDischarge call, lines 287-309"
+    }
+  ]
+}

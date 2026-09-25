@@ -1,0 +1,27 @@
+{
+  "id": "P4-window-06-edge-menger-statement",
+  "mode": "DISCOVER",
+  "phase": "4",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-full-route-menger-candidate",
+  "kind": "state_textbook_move",
+  "goal": "State one exact finite edge-linkage/separator dichotomy applicable to the graph of all declared source routes, including its two outcomes and the distinction between a route-union cut and a cut in the selected graph G.",
+  "objects": [
+    "G = selected.object with one typeBHandoff source pattern and all selected declared routes",
+    "H = the finite subgraph of G whose edges are the union of those actual route paths",
+    "rho = common source token root and T = set of actual route terminal vertices in H"
+  ],
+  "reads": [
+    "branch:node144-window-32d32f9d19e7",
+    "P3-window-06-select-full-route-overlap",
+    "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+    "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean",
+    "repair_and_closure.md"
+  ],
+  "interaction": "edge-disjoint linkage versus edge-separator structure in the actual route-union graph",
+  "parent_payoff": "Candidate only: a graph-level obstruction or bounded physical congestion would be needed on every Menger outcome before a move can be admitted.",
+  "depends_on": ["P3-window-06-select-full-route-overlap"],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase4-edge-menger.md",
+  "acceptance": "Give the exact finite edge Menger dichotomy for rho and T in H, all hypotheses and both outcomes, and clearly distinguish paths/cuts in H from their meaning in G and from source-indexed original pairs. Do not claim either outcome is productive, construct an auxiliary proof carrier, or execute the move.",
+  "on_failure": "Correct the theorem's hypotheses or reject this candidate; preserve the full [144a] residual without selecting a negative outcome from failed proof."
+}

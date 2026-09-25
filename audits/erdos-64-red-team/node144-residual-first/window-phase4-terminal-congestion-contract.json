@@ -1,0 +1,30 @@
+{
+  "id": "P4-window-08-terminal-congestion-mechanism",
+  "mode": "DISCOVER",
+  "phase": "4",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-terminal-congestion-candidate",
+  "kind": "state_textbook_move",
+  "goal": "State the finite neighbour-counting mechanism on the actual handoff source pattern: bound the number of distinct selected source demands with any one route terminal, then identify what it would say about source edges and the all-root exception.",
+  "objects": [
+    "G = selected.object and the one pattern P in the retained typeBHandoff witness",
+    "D = union of the actual two-demand source edges e in P, with terminal projection d to d.2",
+    "one root rho and the route-union terminal set T from the same handoff witness"
+  ],
+  "reads": [
+    "branch:node144-window-32d32f9d19e7",
+    "P3-window-06-select-full-route-overlap",
+    "P4-window-07-terminal-index-prerequisite",
+    "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+    "hypostructure/Hypostructure/Graph/CapacityTokenLedger.lean",
+    "hypostructure/Hypostructure/Graph/SparsePairLedger.lean",
+    "hypostructure/Hypostructure/Graph/ExcessPortFamily.lean",
+    "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean"
+  ],
+  "interaction": "each source demand is a high-centre excess port, while the retained high-centre normal form makes its terminal a degree-three neighbour",
+  "parent_payoff": "A proved at-most-three terminal fibre could charge source edges to physical terminals with bounded multiplicity and exclude all-root routes; no closure or Menger outcome payoff is assumed.",
+  "depends_on": ["P3-window-06-select-full-route-overlap", "P4-window-07-terminal-index-prerequisite"],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase4-terminal-congestion.md",
+  "acceptance": "Give the exact source-demand fibre inequality on G and all Lean facts proving its hypotheses from the same handoff witness; distinguish matching and star edge selection; include the minimum label-count premise for excluding the all-root case. Compare the observable with the earlier one-envelope route and event-count attempt. Treat this as a candidate mechanism only, without declaring a productive move, new cap, near-cubic estimate, or graph counterexample.",
+  "on_failure": "Identify the first failed membership, degree, counting, or same-witness step and keep the handoff residual unchanged."
+}

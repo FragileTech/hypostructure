@@ -1,0 +1,52 @@
+{
+  "reviewer": "phase2_incidence_ledger_review_d",
+  "decision": "accept",
+  "reason": "The assignment-indexed incidence account is exact on the one [144a] handoff envelope. Assigned adjacency and the retained high-centre normal form make every assigned first neighbour cubic, so excluding its own centre edge leaves exactly two physical edges per (h,a), even if the same a belongs to several K_h. Because every such a lies in S, the skeleton, extra-internal, and G−S boundary classes partition D and the displayed multiplicity sums follow. For an internal edge uv, at most two contributing assigned centres can occur at either cubic endpoint other than the opposite endpoint, giving μ(e)≤4; a boundary edge has only one S endpoint, giving μ(e)≤2. Each boundary edge enters exactly one exterior component, so the q_C sum and 0≤q_C≤2k_C are correct, while connected/bridgeless G gives k_C≥2. The note retains the all-skeleton and zero-exterior cases, distinguishes this all-assignment physical count from the prior cubic-closed Type B profile, and makes no original-pair assignment, rank lower bound, cap, or closure claim.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-incidence-ledger-contract.json",
+      "sha256": "b6669bef7d3f3b9f81d1ee5bab4ebb3556ec933ccd775b78fa5fb5f0bb0cd53a",
+      "locator": "goal, acceptance and on_failure"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-incidence-ledger-result.json",
+      "sha256": "4f9adaa7395acdd371004b5af3f0cde5eb6f1005b70c2800f79c9e3d233a615f",
+      "locator": "output, first_missing_inference and metadata.interaction"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-incidence-ledger.md",
+      "sha256": "e1c9b8ec5b090bf9aefd098e4658d5a711269f0ac840f79f1d8ee4297fe34e1c",
+      "locator": "lines 3-31: assignment-indexed partition; lines 33-57: multiplicity and component sums; lines 59-74: zero cases and original-pair limits"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/DecoratedHandoffEnvelope.lean",
+      "sha256": "833664e35fcf0db62862bb28ed398f0836922f4ced97fa57f5414a089020872c",
+      "locator": "lines 902-940: assigned adjacency, nonempty sets and arms, with no disjointness of K_h"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/HighCentreNormalForm.lean",
+      "sha256": "f540ba64800f40ae96490a227c725f1fa6629259e0c69ffffe042b872e9a01ee",
+      "locator": "lines 69-84: neighbourTight at every high centre"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "lines 3944-3979: same-witness handoff envelope; lines 11430-11450: G connectivity in capacityTokenLedger"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "pinned post-[144] keys including handoff, normal form, capacityTokenLedger and bridgeless"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-fan-attachments.md",
+      "sha256": "69597aaf34b780ed093e1541b76ede7ad237234674d91e2e46d86cc15470460d",
+      "locator": "lines 19-46: zero-outside and [a,h] exceptions; prior Type B count limited to cubic-closed neighbours"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-exterior-cut.md",
+      "sha256": "303f51999aac263a0d2ab371d3fe0b5970e4f3d1b996bb7735654a2c4d49f068",
+      "locator": "lines 10-19: genuine-G-cut proof of k_C≥2"
+    }
+  ]
+}

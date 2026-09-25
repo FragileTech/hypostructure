@@ -1,0 +1,66 @@
+{
+  "status": "SUBMITTED_RESULT",
+  "output": "For the full pair-indexed route union R on T, every simple cycle lies uniquely wholly in R, wholly in G[T] using at least one J chord, wholly in one component of G-T, or mixed. Every mixed cycle decomposes into alternating maximal component excursions and G[T] segments, with exact length Σ_i(|P_i|+2)+Σ_i|Q_i|, including trivial T segments and repeated visits to one component. Fan markers and per-source-pair edge uses remain exact. The prior chord and elementary return spectra are precisely subfamilies of this complete trace. Selection excludes LengthOK in all categories, but the trace derives no target cycle, multiplicity bound, rank charge, or closure.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-all-cycle-trace.md",
+      "sha256": "20db3b40feddb6c7818bf4d83842d1f50038d7704a250023aa31535d01c45cb5",
+      "locator": "disjoint complete simple-cycle categories, mixed excursion decomposition, exact length and markers"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-fan-route-rank-cross-tab.md",
+      "sha256": "91e70d064eaf60ffb87db1639aa81c3244f643557c603003a8639bfc25ad987c",
+      "locator": "G-T edge categories and physical fan markers"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-route-return-length-profile.md",
+      "sha256": "06b9b0ed82ba76b6f4b3f1c54c7f1335d59708173bdb02ef8f9661855ea131b7",
+      "locator": "elementary chord and one-component return subfamilies"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-route-reuse-support-profile.md",
+      "sha256": "70de5f9b06984ad1ed4bcda55a225f378ae8b16b14bb92f828cfe095458380aa",
+      "locator": "full pair-indexed source route family and reuse"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-source-incidence.md",
+      "sha256": "8e8033bd5bc30ce2e80e6a23775f31adf2101fc04f3e7b08b715f9b985f12f8e",
+      "locator": "original pair route-edge sets U_p"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+      "sha256": "113226b2f99eabccb9f3b1f00e1c4ce6eeb474eadf90fdd10099c2003476badd",
+      "locator": "complete tagged window ledger and target-free selection"
+    }
+  ],
+  "implementation_status": "none",
+  "first_missing_inference": "No retained condition forces a target length or controlled source-pair multiplicity for the whole-route, multi-chord, wholly exterior, or multi-excursion cycle categories.",
+  "immediate_subobligations": [
+    "Use the complete source/edge/cycle profile to select one supported structural tension, comparing route reuse against direct chord/exterior cost.",
+    "For any chosen mechanism, prove a noncosmetic conditional payoff on every outcome before construction."
+  ],
+  "metadata": {
+    "structural_use": null,
+    "interaction": {
+      "object": "selected.object G with one typeBHandoff witness and its full pair-demand route union R",
+      "ingredients": [
+        "all simple cycles of G",
+        "connected route network R and chord set J",
+        "actual G-T component excursions",
+        "physical fan markers B",
+        "source pair route-edge sets U_p",
+        "target-free selection"
+      ],
+      "relation": "A disjoint category and alternating excursion trace accounts for every actual simple cycle relative to R; lengths and original-source/fan markers are exact.",
+      "known": "All cycles have one trace category and fail LengthOK by retained selection.",
+      "unresolved": "Whether any retained geometric constraint makes one profile target-forcing or yields a bounded source-to-cost relation.",
+      "domains": "one selected graph and one handoff witness; G-T cut distinct from G-S",
+      "previous_use": "Elementary spectra omitted cycles within R or components and those with multiple chords or excursions; this task places them explicitly without claiming payoff."
+    },
+    "changed_objects": [],
+    "changed_accounts": [],
+    "side_observations": [
+      "An actual mixed cycle can traverse the same exterior component in several disjoint runs; each run needs its own pair of boundary edges."
+    ]
+  }
+}

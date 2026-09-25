@@ -1,0 +1,52 @@
+{
+  "reviewer": "phase2_route_overlap_review_b",
+  "decision": "accept",
+  "reason": "One typeBHandoff pattern witness supplies a finite matching-or-star P, a shared token root, and an actual simple route for every demand of every edge of P, so pairwise physical path overlap is a defined finite observable on G. The object-wide highCentreNormalForm applies conditionally when two selected routes leave the same high centre h through distinct neighbours x,y: neighbourTight gives degree(x)=degree(y)=threshold, and if x,y are nonadjacent, noCommonNeighbourOutside excludes any z\u2260h adjacent to both. The submission does not assert that such departures occur, bound their multiplicity, force a cycle, or count this reused fact as progress. It distinguishes the owner\u2019s two-route envelope from the older extraction-event attempt, which left repeated physical incidence unpaid. All five submitted hashes match current files.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-route-overlap-contract.json",
+      "sha256": "8114c59b8a0c0464b3a6a74769d058cfb4ce9e88b08f32e8512e4974b54815f6",
+      "locator": "one Phase 2 interaction, same-witness objects, acceptance and on_failure"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-route-overlap-result.json",
+      "sha256": "e1baa5fae8a964cccd345986b3fcfc8d01aac20479ba699fb9f6afeb67497bd2",
+      "locator": "output, interaction metadata, and submitted evidence"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-route-overlap.md",
+      "sha256": "44505e9ca2158f68ae7ad9f7ea668a1e46a679cb562a39807b3195b48a490522",
+      "locator": "full route-family observable, conditional normal-form implication, prior-use distinction and limits"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+      "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+      "locator": "HomogeneousBottleneckPatternStatement: one token/root and per-demand configurations 623\u2013682"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean",
+      "sha256": "cca0d7a8a6d32968b3bd01a9ea3b0a6fb0fa119a7f1380d98610c29815087e31",
+      "locator": "RoutingConfiguration path, chain, nodup and inside fields 216\u2013249"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/HighCentreNormalForm.lean",
+      "sha256": "f540ba64800f40ae96490a227c725f1fa6629259e0c69ffffe042b872e9a01ee",
+      "locator": "IsHighCentre and NormalForm.neighbourTight/noCommonNeighbourOutside 69\u201399"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "typeBHandoff same-capacity pattern field 3944\u20133995; returnAvoidance 8324\u20138328; object-wide highCentreNormalForm 10220\u201310229"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "335b2996340ad3b65645cc97afeb627731ecb2209bf4031286aff0e6346da7e2",
+      "locator": "owner selects two same-label edges in matching/star and publishes one envelope 1378\u20131406, 2205\u20132251, 3061\u20133112"
+    },
+    {
+      "path": "audits/erdos-64-red-team/near-cubic-repair/execution.md",
+      "sha256": "c90d539cbd8b0d6170ca7a70bc704211ad19f9b158dbbf44220f4a0a5eae609c",
+      "locator": "source-indexed extraction events and repeated physical incidence gap 200\u2013310"
+    }
+  ]
+}

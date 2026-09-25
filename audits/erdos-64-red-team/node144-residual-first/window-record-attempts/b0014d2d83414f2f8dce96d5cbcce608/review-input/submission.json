@@ -1,0 +1,65 @@
+{
+  "status": "BLOCKED_WITH_REASON",
+  "output": "Saved candidate preserved and narrow check attempted. Lean exited 1 before elaboration because the mandated first LEAN_PATH root shadows cached Hypostructure dependencies. Current-vocabulary manifest and all eight source hashes match. No dependency rebuilt; no kernel validation claimed. See audits/erdos-64-red-team/node144-residual-first/window-kernel-routing-label-identity.md.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-kernel-routing-label-identity.md",
+      "sha256": "944444b4d9928a041292f98712ae8d6ecc6805afa6af16fddc7e127abd5abf0e",
+      "locator": "Exact unresolved identity and domain; Narrow check diagnostics; Preserved saved candidate \u2014 UNVALIDATED"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+      "sha256": "113226b2f99eabccb9f3b1f00e1c4ce6eeb474eadf90fdd10099c2003476badd",
+      "locator": "Verified full-file source hash; retained source/candidate evidence"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-record-attempts/afb5524193eb41bba0a9636c3328e313/executor/artifact/audits/erdos-64-red-team/node144-residual-first/window-kernel-routing-label-identity.md",
+      "sha256": "76e6c764f4ace5dec204fe6ddd15fbe74535c8bb253dc0627cf9eb02b90e61aa",
+      "locator": "Verified full-file source hash; retained source/candidate evidence"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-routing-label-source.txt",
+      "sha256": "8570d28a60a84a9bbb02026e37b39af5fe9b92c59b7e7fb92c2267324b9efe70",
+      "locator": "Verified full-file source hash; retained source/candidate evidence"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-routing-label-transport.md",
+      "sha256": "c8c1a24820955fb645b7a1c83191d5d9d6ec250dc1dcb944e8d7b19ed030cfb0",
+      "locator": "Verified full-file source hash; retained source/candidate evidence"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+      "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+      "locator": "Verified full-file source hash; retained source/candidate evidence"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean",
+      "sha256": "cca0d7a8a6d32968b3bd01a9ea3b0a6fb0fa119a7f1380d98610c29815087e31",
+      "locator": "Verified full-file source hash; retained source/candidate evidence"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "46b2cfd88ca9bd71826111c46b392e9a60d86d14fee505fe64a4714546439052",
+      "locator": "Verified full-file source hash; retained source/candidate evidence"
+    },
+    {
+      "path": "tools/methodology_gate/evidence_snapshots/36ab8555e398179dd5c73fd4218acbe7dd6dde052dc2b41bb7a97ee71f06e635",
+      "sha256": "36ab8555e398179dd5c73fd4218acbe7dd6dde052dc2b41bb7a97ee71f06e635",
+      "locator": "Verified full-file source hash; retained source/candidate evidence"
+    }
+  ],
+  "implementation_status": "none",
+  "first_missing_inference": "Kernel validation of the exact same-witness owner-local routing-label identity remains unavailable: import resolution fails before candidate elaboration under the required LEAN_PATH.",
+  "immediate_subobligations": [
+    "Provide an import-complete current-vocabulary runtime root compatible with the mandated first LEAN_PATH entry, retaining the pinned compiled SpineVocabulary, then kernel-check the saved candidate for sameTokenActualRoutingLabel data object active cubic capacity certified token role pattern patternSubset pair pairMem demand _demandMem = routingLabel pair pairCard demand."
+  ],
+  "metadata": {
+    "structural_use": null,
+    "interaction": null,
+    "changed_objects": [],
+    "changed_accounts": [],
+    "side_observations": [
+      "Lean 4.31 resolves imports by package root, so the incomplete first current-vocabulary root prevents fallback to existing build-cache dependencies."
+    ]
+  }
+}

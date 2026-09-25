@@ -1,0 +1,16 @@
+{
+  "instances": 2198,
+  "scope": "all simple pair-fibre graphs on 1..5 labels, pattern sizes 2 and 3",
+  "checked": [
+    "strict decrease",
+    "pair partition",
+    "bounded remainder",
+    "exact event count"
+  ],
+  "not_checked": [
+    "EG graph hypotheses",
+    "Type B envelope construction",
+    "payer capacity",
+    "branch closure"
+  ]
+}

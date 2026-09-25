@@ -1,0 +1,17 @@
+{
+  "id": "P7-window-57-forced-return-integration",
+  "mode": "DISCOVER",
+  "phase": "7",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-extremal-two-tail-uncrossing",
+  "kind": "review_integration",
+  "goal": "Integrate the kernel-checked same-edge return and repaired caller with the reviewed exact component and cycle-rank account on the actual [144] envelope, without counting one edge for multiple source pairs.",
+  "objects": ["selected G and literal fifty-key [144a] predecessor", "one actual matching/star extremal source pair and envelope skeleton F", "forced edge e outside F and its G-e return path"],
+  "reads": ["branch:node144-window-32d32f9d19e7", "P6-window-55-forced-edge-return", "P6-window-56-bridgeless-readiness", "P7-window-52-component-dichotomy", "P7-window-53-bridgeless-rank-payment", "P7-window-54-rank-reconciliation"],
+  "interaction": "The actual e outside F is non-bridge in the selected G; its return cycle supplies one relative cycle-space coordinate while the component correction and surplus identity constrain how that unit is counted.",
+  "parent_payoff": "Record one selected-envelope rank payment and the exact missing source-bound Holds export and multiplicity consumer, while leaving the [144a] survivor open.",
+  "depends_on": ["P6-window-55-forced-edge-return", "P6-window-56-bridgeless-readiness", "P7-window-53-bridgeless-rank-payment", "P7-window-54-rank-reconciliation"],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase7-forced-return-integration.md",
+  "acceptance": "Check all three modes separately: a new local restriction, compression/transport, and quantitative closure. Identify precisely which witness is kernel checked and which rank statement is mathematical only. Use c(F)=1 or 2 and the net correction, never charge an edge per source pair. Specify the next single source-bound export task on the same producer witness and its later marked-return geometry obligation. Do not claim productive-move credit, cap or [144a] closure.",
+  "on_failure": "If the chosen return path is not tied to the chosen edge or the rank count loses the component correction, repair that exact interaction before recording a payoff."
+}

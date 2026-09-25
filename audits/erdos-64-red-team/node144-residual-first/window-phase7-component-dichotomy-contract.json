@@ -1,0 +1,17 @@
+{
+  "id": "P7-window-52-component-dichotomy",
+  "mode": "DISCOVER",
+  "phase": "7",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-extremal-two-tail-uncrossing",
+  "kind": "prove_integrated_consequence",
+  "goal": "Prove the exact one-or-two-component structure of the actual two-arm skeleton F on S, including the unique isolated-core exception.",
+  "objects": ["G=selected.object on full [144a] window history", "actual separator h, first-entry arm lists A,B and two-point core Y={left.2,right.2}", "T={h}∪V(A)∪V(B), S=T∪Y and literal F=E(A)∪E(B)∪{ha,hb}∪E(G[Y])"],
+  "reads": ["branch:node144-window-32d32f9d19e7", "P7-window-50-endpoint-location", "P7-window-51-two-arm-connectivity rejection and first failure", "P6-window-33-exact-envelope-skeleton", "P2-window-attachment-account-audit"],
+  "interaction": "The two arms connect T through h and each lands in Y; the only possible vertex of S outside T is the other core endpoint, which is joined exactly when its induced core edge exists.",
+  "parent_payoff": "Retain the exact component-merger correction and reduce every possible disconnected producer skeleton to one isolated core vertex, so the forced unused edge can be tested for a genuine cycle-rank contribution.",
+  "depends_on": ["P7-window-50-endpoint-location"],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase7-component-dichotomy.md",
+  "acceptance": "On the actual matching and star producer geometry, prove F⊆E(G[S]), connectedness of F on T, |Y∖T|≤1, and that c(F)=2 exactly when the unique unentered core vertex has no induced core edge to T; otherwise c(F)=1. Handle coincident core endpoints, singleton arms, arm overlap, and both arms landing at one vertex. Do not claim c(F)=1 unconditionally, a rank charge, or branch closure. State how this repairs P7-window-51 rather than restating the generic Phase 2 rank formula.",
+  "on_failure": "Expose the first missing physical-edge, chain, core-coverage or induced-edge inference and preserve the disconnected case."
+}

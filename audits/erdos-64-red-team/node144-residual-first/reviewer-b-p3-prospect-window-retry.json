@@ -1,0 +1,42 @@
+{
+  "reviewer": "phase3_prospect_review_b_retry",
+  "decision": "accept",
+  "reason": "The immutable window branch snapshot preserves the full tagged [144a] residual, including the same-object handoff, fan entry, overload and strict surplus, without equating separate existential ledgers. In both matching and star cases, the route owner selects distinct same-label original pattern edges and constructs a high first-separator envelope from their paths; the public handoff retains its certified source and an envelope but omits the chosen edge indices and separator relation. The note proposes retaining that relation for later comparison and explicitly does not claim a proved restriction, pair charge, cap, target cycle or closure. Direct Type B is a serious but weaker rival here because FanSafe excludes accepted returns and the near-cubic tail needs surplusAtOrBelow, absent on this arm. The submitted source hashes match current bytes; all verdict evidence is pinned to the immutable branch snapshot, note, code and policy.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "incoming, objects, imports, accounts, and open_outcomes of node144-window-strict-handoff"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase3-prospect.md",
+      "sha256": "0ae05785e3798886d918b2108874810b9fe5e83223f28b9d041371f1955f9ae4",
+      "locator": "selected tension, prospective consequence, rival comparison, and explicit no-payoff boundary"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "335b2996340ad3b65645cc97afeb627731ecb2209bf4031286aff0e6346da7e2",
+      "locator": "matching source edges and label 1378\u20131455; matching envelope 2191\u20132221; star edges 2222\u20132255; star envelope and surviving handoff 3047\u20133088; Type B entry 3090\u20133112"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "SameTokenTypeBHandoffEnvelopeStatement and SameTokenTypeBHandoffStatement 3944\u20133979"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/DecoratedHandoffEnvelope.lean",
+      "sha256": "833664e35fcf0db62862bb28ed398f0836922f4ced97fa57f5414a089020872c",
+      "locator": "FanSafe clauses 865\u2013875 and Envelope fields 902\u2013940"
+    },
+    {
+      "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Boundary.lean",
+      "sha256": "37d0c5760813325a5058683667fbf1c40c9bf6d3057d336ead0e3e1761788ff9",
+      "locator": "StrictSurplusTypeBOutcome and Node144aOutcome 15\u201343"
+    },
+    {
+      "path": "tools/methodology_gate/policy/workflow.json",
+      "sha256": "9b3ae2690229ca606e7bf75828fbe51e9171dea043a34b32394bd8db40aead0a",
+      "locator": "phase_descriptions 3 and 5; phase_tasks 3"
+    }
+  ]
+}

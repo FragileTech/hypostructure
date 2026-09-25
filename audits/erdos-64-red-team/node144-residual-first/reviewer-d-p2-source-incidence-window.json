@@ -1,0 +1,47 @@
+{
+  "reviewer": "phase2_source_incidence_review_d",
+  "decision": "accept",
+  "reason": "The submitted relation uses the original pattern and the envelope from one typeBHandoff witness. The pattern statement gives a simple common-root route for each distinct source demand, so finite simultaneous choice is legitimate; U_p records the full physical edge set used by either demand of p, while M restricts that use to physical edges represented by assignment-indexed D. The |M| and component-visit identities are exact finite double counts, preserving repeated star-route use across different pairs and uncovered P_0 indices. At the demand level, a simple route counts each cut edge once, so summing crossings over demands equals summing λ_D over δ_G(C), and crossing parity is determined by whether its root and terminal lie in C. The note keeps component visits separate from assigned fan incidences, does not infer coverage or a source-pair multiplicity bound from the distinct μ≤4 assignment bound, and makes no rank payoff, cap, or closure claim.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-source-incidence-contract.json",
+      "sha256": "3967f4b64e21688ff44371e76f90174fa8590d7503609bf51f6d19a1505c8362",
+      "locator": "goal, acceptance and on_failure"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-source-incidence-result.json",
+      "sha256": "14728d13f0a752d5e463ffff9d0137be433d691ebce1d46881357c08ee3d3b0a",
+      "locator": "output, missing inference and metadata.interaction"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-source-incidence.md",
+      "sha256": "fe5100abe4a6ef00656d102bdd18ebb189fd644392ca7808d0cc0493c9a304dc",
+      "locator": "lines 3-37: same-witness route-edge relation and uncovered indices; lines 39-68: component visits and crossing parity; lines 70-77: multiplicity and payoff limits"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+      "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+      "locator": "lines 623-682: source matching/star, common root, and per-demand route configurations"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean",
+      "sha256": "cca0d7a8a6d32968b3bd01a9ea3b0a6fb0fa119a7f1380d98610c29815087e31",
+      "locator": "lines 216-249: route path is an actual simple graph chain"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "lines 3944-3979: original source pattern and envelope retained in one handoff witness"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-incidence-ledger.md",
+      "sha256": "e1c9b8ec5b090bf9aefd098e4658d5a711269f0ac840f79f1d8ee4297fe34e1c",
+      "locator": "lines 13-57: physical assignment-incidence set D and its distinct μ multiplicity"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "pinned post-[144] history and distinct class-audit/handoff witnesses"
+    }
+  ]
+}

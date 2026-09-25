@@ -1,0 +1,47 @@
+{
+  "reviewer": "phase6_selected_cubic_neighbours_review_b",
+  "decision": "accept",
+  "reason": "The existing [144] row adds highCentreNormalForm to Requires and reads it through FactInputs.get. In each matching and star first-separator branch it first proves the selected separator high, then applies the retained forall-centre normal form to that same separator and neighbourTight to the already proved actual separator-nextLeft and separator-nextRight adjacencies. The conclusions are exactly degree(nextLeft)=degree(nextRight)=data.threshold; the retained cubic baseline specializes the threshold to three. The routes, constructed envelope, produced keys and weak handoff remain unchanged, and no escape is claimed. The cited owner hash matches. I independently rebuilt the direct EG caller; it completed successfully with 8777 jobs and warnings only.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-cubic-neighbours-contract.json",
+      "sha256": "e6a282c55d970a582a46052feea0cc863a13b942187a7a03a2d134539862d128",
+      "locator": "goal, acceptance and on_failure fields"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-cubic-neighbours-result.json",
+      "sha256": "96f76103c15d8131af0c126a069db48be05b01d3c77cc5a404d709651bf67fdc",
+      "locator": "output, cited source hash, implementation_status and first_missing_inference"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-cubic-neighbours.md",
+      "sha256": "dec6802283dd3c7321ceef8de12e1b11d62e8c3f058f6ee9e938a2070c2f5089",
+      "locator": "lines 3-17 specialization to actual selected neighbours; lines 19-33 checks and explicit limits"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "96e9346473b2b4ab110eb4461407c826acb7b25e72cfefe8128475cef63b0a90",
+      "locator": "lines 595-624 Requires and FactInputs read; 2281-2297 matching high separator and neighbour degrees; 3180-3196 star counterparts"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "lines 10220-10226 retained highCentreNormalForm Holds on every high centre"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/HighCentreNormalForm.lean",
+      "sha256": "f540ba64800f40ae96490a227c725f1fa6629259e0c69ffffe042b872e9a01ee",
+      "locator": "lines 65-107 IsHighCentre and NormalForm.neighbourTight"
+    },
+    {
+      "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Local.lean",
+      "sha256": "aca012ed647aaa3e5582e1e727e67d586b97998b6ebad808b055cc58193b3e4d",
+      "locator": "lines 333-385 direct [144] caller, retained highCentreNormalForm instance and row run"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "revision, exact window endpoint and retained highCentreNormalForm/cubicBaseline keys"
+    }
+  ]
+}

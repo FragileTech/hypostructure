@@ -1,0 +1,76 @@
+{
+  "status": "SUBMITTED_RESULT",
+  "output": "On the full window [144a] residual plus D_boundary=D_I=∅, every assigned cubic neighbour a has all three incident G edges in the declared skeleton F, so d_F(a)=3. This is the selected all-in-F profile, not a new pair payment or target obstruction. The literal handoff lacks a certificate-marked fan-window profile, full-neighbour closed count, k≤8, and positive deficit needed for the paper B1 charge. It supplies no target cycle or admissible smaller replacement. Thus this proposed component-return move has no significant Phase 5 payoff on its all-in-F outcome and must be rejected; B∧O_F stays open.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase5-all-in-F-payoff.md",
+      "sha256": "27ba49c8be88cf72f119dc499404e79275896154f96ea660e4fa3961cd2b1674",
+      "locator": "conditional all-in-F consequence, B1 interface audit, three closure currency checks and candidate rejection"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-component-return-catalogue.md",
+      "sha256": "167f5a48d53a4d8ff9cc6b023cf670218ad5934df187138cb8a9c3badfa789f5",
+      "locator": "ordered component-return outcomes and candidate effect limits"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-incidence-ledger.md",
+      "sha256": "e1c9b8ec5b090bf9aefd098e4658d5a711269f0ac840f79f1d8ee4297fe34e1c",
+      "locator": "D_F/D_I/D_boundary incidence partition and cubic assigned neighbours"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-relative-cycle-rank.md",
+      "sha256": "055b4359224b6a18f6e1b8274b9df0b93d6f4cedc8bf2f7fad152a12612929b7",
+      "locator": "disconnected F and no automatic charge"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+      "sha256": "113226b2f99eabccb9f3b1f00e1c4ce6eeb474eadf90fdd10099c2003476badd",
+      "locator": "complete tagged window residual"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/DecoratedHandoffEnvelope.lean",
+      "sha256": "833664e35fcf0db62862bb28ed398f0836922f4ced97fa57f5414a089020872c",
+      "locator": "literal envelope fields without marked fan certificate"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "literal same-token handoff and Type B entry fields"
+    },
+    {
+      "path": "to_formalize/erdos_64_proof.tex",
+      "sha256": "7153339b7a032b2e5fbb432999acf0306d4a4f18bdbfd0f86c709ae3a4e58cb1",
+      "locator": "marked Type B fan, positive deficit, window incidence and B1 charge prerequisites"
+    }
+  ],
+  "implementation_status": "none",
+  "first_missing_inference": "To use B1, prove a certificate-marked fan-window profile tied to this exact handoff envelope, including full-neighbour closed count, degree bound, incidence classes, and positive deficit; the current d_F(a)=3 statement does not provide it.",
+  "immediate_subobligations": [
+    "Reject candidate M-window-attachment-return as productive, since its all-in-F outcome has no new payoff.",
+    "Retain complete B∧(D_boundary=D_I=∅) as an open case; do not project a homogeneous cap or near-cubic estimate.",
+    "Reselect a tension that either establishes the missing marked-fan interface or obtains a different real payoff on the fully internal case."
+  ],
+  "metadata": {
+    "structural_use": null,
+    "interaction": {
+      "object": "selected G and one exact typeBHandoff envelope under the all-in-F outcome",
+      "ingredients": [
+        "all assigned-neighbour non-centre incidences represented in F",
+        "cubic assigned first neighbours",
+        "literal envelope FanSafe and nonempty K_h",
+        "paper B1 marked fan/window profile and positive deficit prerequisites",
+        "selection and minimality"
+      ],
+      "relation": "All-in-F gives d_F(a)=3 for assigned a but does not establish the distinct marked-fan certificate/deficit contract or a target/replacement payoff.",
+      "known": "The conditional degree-in-skeleton fact is exact and the required B1 fields are absent from the retained handoff proposition.",
+      "unresolved": "Whether a new proof can derive a certificate-marked fan profile or another closure/restriction from the full residual.",
+      "domains": "one selected G, one handoff witness; all inherited ledger keys retained; separate overload witness not identified",
+      "previous_use": "Phase 4 component-return candidate handled exterior paths but did not pay the no-exterior all-in-F outcome."
+    },
+    "changed_objects": [],
+    "changed_accounts": [],
+    "side_observations": [
+      "Rejecting this candidate does not imply that all possible arguments on all-in-F fail."
+    ]
+  }
+}

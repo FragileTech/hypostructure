@@ -1,0 +1,17 @@
+{
+  "id": "P6-window-56-bridgeless-readiness",
+  "mode": "FORMALIZE",
+  "phase": "6",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-extremal-two-tail-uncrossing",
+  "kind": "preserve_condition",
+  "goal": "Make the existing K.bridgeless fact available through the generic selectedBottleneckDischarge [144] ExactLedger caller to the revised owner row.",
+  "objects": ["same selected graph and known key list of selectedBottleneckDischarge", "existing K.bridgeless key in the full window-history predecessor", "sameTokenBottleneckRoutingRow manifest Requires"],
+  "reads": ["branch:node144-window-32d32f9d19e7", "P6-window-55-forced-edge-return rejected readiness gate", "P7-window-50-endpoint-location", "P7-window-54-rank-reconciliation"],
+  "interaction": "The owner now legitimately requires the inherited bridgeless fact for the forced physical edge, but the generic [144] caller did not declare Has(K.bridgeless) known even though its actual input ledger contains that key.",
+  "parent_payoff": "Restore canonical readiness of the same [144] row without recreating or assuming bridgelessness, allowing direct-caller verification of the new edge return.",
+  "depends_on": ["P7-window-54-rank-reconciliation"],
+  "allowed_write": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Local.lean",
+  "acceptance": "Add exactly the FactKeys.Has (K .bridgeless) known instance to selectedBottleneckDischarge's existing generic incoming context and no alternate interface, witness or theorem. Verify that this key belongs to the actual [144] predecessor; build the direct EG Local owner and the immediate strict dependent caller, reporting the first later failure if one appears. Do not modify any other node or claim [144a] closure.",
+  "on_failure": "Name the first caller where this exact inherited Has instance is unavailable; retain the owner proof and repair only the missing canonical readiness premise."
+}

@@ -1,0 +1,17 @@
+{
+  "id": "P7-window-48-physical-escape",
+  "mode": "FORMALIZE",
+  "phase": "7",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-extremal-two-tail-uncrossing",
+  "kind": "prove_integrated_consequence",
+  "goal": "Combine the checked incidence-saturation implication with the checked maximal-route crossing exclusion to locate a physical graph edge outside the actual [144] handoff skeleton.",
+  "objects": ["G=selected.object and full [144a] window history", "matching/star actual tight a=nextLeft, two-arm envelope and literal skeleton F", "actual finite incidence set at a and accepted crossingExcluded"],
+  "reads": ["branch:node144-window-32d32f9d19e7", "P6-window-47-crossing-exclusion", "P6-window-43-one-sided-incidence"],
+  "interaction": "If all physical edges at a were in F, the accepted count would force a onto the right arm, while the source-fixed maximal-route shortcut forbids that crossing. The incompatible condition supplies a typed outside-F incident edge.",
+  "parent_payoff": "Establish an actual located attachment obstruction on each returned envelope, instead of only a conditional count or an untyped negation.",
+  "depends_on": ["P6-window-47-crossing-exclusion"],
+  "allowed_write": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+  "acceptance": "Inside both actual [144] producer arms prove ∃ edge∈object.graph.incidenceFinset nextLeft, edge∉skeleton, and expose its other endpoint as ∃ neighbour, object.graph.Adj nextLeft neighbour ∧ s(nextLeft,neighbour)∉skeleton. Use only saturatedLeftForcesCrossing and crossingExcluded on the same actual envelope. Do not infer a cycle, homogeneous cap, closure, or exported handoff restriction yet. Kernel-check owner and direct EG caller; name the source-bound export obligation.",
+  "on_failure": "Report the first mismatch between physical incidence and the literal skeleton, or between the two producer histories; do not replace the selected graph or envelope."
+}

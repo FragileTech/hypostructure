@@ -1,0 +1,27 @@
+{
+  "id": "P6-window-27-source-bound-schema",
+  "mode": "DISCOVER",
+  "phase": "6",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-extremal-two-tail-uncrossing",
+  "kind": "define_object",
+  "goal": "Specify the one exact stronger typeBHandoff Holds proposition needed to retain the selected source pair, maximal routes, same produced envelope, and physical escape, while exposing the old Type B envelope as a projection.",
+  "objects": [
+    "G = selected.object and full literal [144] input/output ledger",
+    "one active family/capacity/certified token-role source pattern with fixed two selected edges/demands/root",
+    "two actual RoutingConfigurations and one envelope produced from their first separator"
+  ],
+  "reads": [
+    "branch:node144-window-32d32f9d19e7",
+    "P5-window-26-uncrossing-admission",
+    "P5-window-25-escape-payoff"
+  ],
+  "interaction": "The current existential handoff erases source-to-envelope identity; the stronger mathematical predicate must bind all selected data in one witness and carry an escape on that same envelope.",
+  "parent_payoff": "Enable owner-local publication of the reviewed physical escape without witness substitution or an alternate ledger channel.",
+  "depends_on": [
+    "P5-window-26-uncrossing-admission"
+  ],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase6-source-bound-schema.md",
+  "acceptance": "Give an explicit nested-existential formula over the actual certified pattern, source edges/demands, pair-specific route configurations, maximal-prefix property, packing/core/envelope, and one outside-skeleton physical edge. Specify exact equality tying the envelope to those routes and a projection to the old Type B entry on the same envelope. Keep all original active/capacity/pattern facts and the entire ledger. No code or proof claimed in this task.",
+  "on_failure": "If the schema permits an unrelated envelope or second source pattern, correct the binding before any Lean edit; do not use a side carrier or witness replacement."
+}

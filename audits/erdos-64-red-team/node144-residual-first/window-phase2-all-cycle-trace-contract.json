@@ -1,0 +1,30 @@
+{
+  "id": "P2-window-15-all-cycle-trace-profile",
+  "mode": "DISCOVER",
+  "phase": "2",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "",
+  "kind": "name_observable",
+  "goal": "Give an exhaustive disjoint trace classification of every simple cycle of the selected graph relative to the full pair-indexed route union, including multi-component excursions and extra chords omitted by the elementary return spectra.",
+  "objects": [
+    "G = selected.object with literal window-history post-[144] ExactLedger",
+    "one typeBHandoff source-and-envelope witness and full pair-demand route union R on T",
+    "J=E(G[T])\\E(R), actual components of G-T, source pair route sets U_p, physical fan set B"
+  ],
+  "reads": [
+    "branch:node144-window-32d32f9d19e7",
+    "P2-window-12-fan-edge-route-rank-cross-tab",
+    "P2-window-13-route-return-length-profile",
+    "P2-window-14-route-reuse-support-profile"
+  ],
+  "interaction": "All target-relevant graph cycles versus the measured route/fan attachment partition, including cycles not represented by one chord or one exterior return.",
+  "parent_payoff": "",
+  "depends_on": [
+    "P2-window-12-fan-edge-route-rank-cross-tab",
+    "P2-window-13-route-return-length-profile",
+    "P2-window-14-route-reuse-support-profile"
+  ],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase2-all-cycle-trace.md",
+  "acceptance": "Partition every simple cycle into cycles wholly in R, wholly in G[T] but using J, wholly in one actual G-T component, or mixed. For mixed cycles, trace every maximal exterior excursion through one component and every T segment, including trivial T segments; give exact length sum and mark R/J/fan/source-pair edges without claiming arbitrary concatenations are simple. State precisely how elementary spectra sit inside this complete trace, target avoidance inherited from selection, and the unresolved multi-excursion profiles. No new target cycle, rank charge, or closure.",
+  "on_failure": "Repair any overlapping category or omitted degenerate excursion; preserve actual G-T components and do not identify them with G-S or assume the handoff core connected."
+}

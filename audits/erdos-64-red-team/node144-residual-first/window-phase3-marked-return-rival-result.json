@@ -1,0 +1,30 @@
+{
+  "status": "SUBMITTED_RESULT",
+  "output": "The next supported tension is the marked G-e return path against the same extremal source pair's route-validity conditions. The rival one-envelope rank payment is already measured and has no per-pair multiplicity consumer. No new move is admitted.",
+  "evidence": [
+    {"path": "audits/erdos-64-red-team/node144-residual-first/window-phase3-marked-return-rival.md", "sha256": "662188e77c20c87f3a1bd9adae8b68424cf7a2470e0c080f4b9fe69d16ec210d", "locator": "candidate interaction, serious rank rival, exceptions and first missing inference"},
+    {"path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-marked-return-interaction.md", "sha256": "a8526a2b64f07eb6ba5c432cb7b17edbebf556f3199fc366e9e7bb7e86e0236f", "locator": "same-e return path membership, first encounters and support words"},
+    {"path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-rank-reconciliation.md", "sha256": "035c96a563fb5d1f74a4a804e805edcf7f383cfe8376001068ec4f2e4599021a", "locator": "at least one relative rank unit, c(F) correction and missing multiplicity"}
+  ],
+  "implementation_status": "none",
+  "first_missing_inference": "",
+  "immediate_subobligations": [
+    "Catalogue exact return-path reroute mechanisms with all RoutingConfiguration prerequisites and no-reentry/wrong-support exceptions.",
+    "Prove a conditional payoff for every resulting arm before admitting any new move; preserve the separate source-bound Holds export obligation."
+  ],
+  "metadata": {
+    "structural_use": null,
+    "interaction": {
+      "object": "specific forced return path against specific maximal source routes",
+      "ingredients": ["owner-local e and HasReturn", "fixed source-pair common-prefix maximality", "pair-specific support and buffer conditions"],
+      "relation": "A useful return segment might permit a longer valid same-pair route; any failed validity condition instead constrains the marked return's geometry or support membership.",
+      "known": "The tension is newly exposed; neither shortcut validity nor exception-arm payoff is proved.",
+      "unresolved": "Exact admissible reroute implication and productive analysis of every failure arm.",
+      "domains": "one actual matching/star producer on the full selected graph and its fixed pair-specific route domains",
+      "previous_use": "The earlier all-in-F splice did not use a marked G-e return path, and the generic all-cycle trace did not tie one to this extremal pair."
+    },
+    "changed_objects": [],
+    "changed_accounts": [],
+    "side_observations": ["The rival rank account cannot be reapplied per source pair without bounded multiplicity; F may have two components."]
+  }
+}

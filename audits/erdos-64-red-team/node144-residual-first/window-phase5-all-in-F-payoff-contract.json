@@ -1,0 +1,28 @@
+{
+  "id": "P5-window-19-all-in-F-payoff-check",
+  "mode": "DISCOVER",
+  "phase": "5",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-attachment-return",
+  "kind": "reject_cosmetic_payoff",
+  "goal": "On the complete [144a] residual plus the all-in-F outcome D_∂=D_I=∅, test whether the proposed component-return move has a new branch-conditioned payoff through a certificate-marked B1 fan charge, an excluded pattern, a target cycle, or valid compression.",
+  "objects": [
+    "selected G and full literal window-history ExactLedger",
+    "one same-witness typeBHandoff envelope with skeleton F, support S, assignments A,D and D=D_F",
+    "published B1 local marked-fan profile prerequisites and current typeBFanEntry payload"
+  ],
+  "reads": [
+    "branch:node144-window-32d32f9d19e7",
+    "P4-window-18-component-return-catalogue",
+    "P2-window-16-attachment-account-audit",
+    "to_formalize/erdos_64_proof.tex"
+  ],
+  "interaction": "All non-centre incidences at assigned cubic neighbours lie in F, but the handoff has no exterior edge to trace and may lack the certificate-marked fan interface required for a local charge.",
+  "parent_payoff": "A genuinely new bound, excluded attachment, admissible replacement, or closure must follow from B∧(D=D_F); merely naming cubic closure is not enough.",
+  "depends_on": [
+    "P4-window-18-component-return-catalogue"
+  ],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase5-all-in-F-payoff.md",
+  "acceptance": "State the exact all-in-F conditional consequence and compare it with B1 prerequisites and the literal handoff fields; either prove a new significant payoff with its consumer or identify the first missing premise and reject the proposed payoff. Keep the full ledger and same witness, and do not infer a cap or near-cubic estimate from cubic incidence alone.",
+  "on_failure": "Record the first missing inference and reject this candidate move if the all-in-F outcome only repackages an already known incidence profile; retain the exact survivor and return to structural selection."
+}

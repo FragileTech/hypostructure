@@ -1,0 +1,32 @@
+{
+  "reviewer": "phase7_physical_escape_review_b",
+  "decision": "accept",
+  "reason": "In each actual matching and star producer, outsideSkeletonIncidence negates saturation of the same graph incidenceFinset and literal selected-envelope skeleton; saturatedLeftForcesCrossing would imply membership in armRight, contradicting crossingExcluded. The subsequent proof converts that exact incidence edge through incidenceSet and Sym2 membership into a genuine adjacent neighbour with s(nextLeft,neighbour) outside the skeleton. The note and result correctly distinguish an outside-skeleton edge from a neighbour outside the envelope vertex region. Both facts remain owner-local; no source-bound export, cap, cycle, productive move, or [144a] closure is claimed. The direct Assembly.Surplus.Local caller built successfully (8777 jobs), and submitted hashes match.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-physical-escape-contract.json",
+      "sha256": "7da23e574b823ecc4b2dd7df829988a1e29e91ee28baefc642c502168a5fda15",
+      "locator": "P7-window-48 goal, acceptance, and on_failure"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-physical-escape-result.json",
+      "sha256": "e4596592ace9f64d82375abcbfc2bb038ff95a77528dd0a70664e17c7992b0ed",
+      "locator": "output, first missing inference, evidence, and implementation status"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-physical-escape.md",
+      "sha256": "bb5a02341afba224584d4d848de8fe54c0852475c21781f806c08ab07ac92ba6",
+      "locator": "paragraphs 1–3: same-edge witness, endpoint-region caveat, and export obligation"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "pinned [144a] window branch and exported handoff scope"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "964ad47ccd35b30db1201d5350fa067a106961b3b61b0329762e1c570a2a88b8",
+      "locator": "lines 2641–2667 and 2713–2777 (matching skeleton, crossing, edge and neighbour); 3671–3697 and 3743–3807 (star counterparts)"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "reviewer": "phase2_fan_attachments_review_d",
+  "decision": "accept",
+  "reason": "The revised Phase 2 inventory now respects the literal handoff envelope. Each assigned neighbour of a high decoration is cubic, so its edge to the centre leaves exactly two other incidences to classify against the finite core/decoration/arm support and components of its complement. The note conditions use of one of those incidences by a positive arm on its first edge being distinct from ha; it explicitly admits the [a,h] arm with h in core, for which positive length gives no such use. It also permits length-zero arms, shared arm suffixes, nonempty but potentially singleton assigned sets, and an empty exterior-incidence set. The prior Type B window count is correctly restricted to cubic-closed neighbours. The source pattern remains on the same handoff witness without any invented pair-to-arm map, return, cycle, charge, or payoff.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-fan-attachments-contract.json",
+      "sha256": "477dd7ea3e3b8c34f1f9a7ef5189d0eae9d879c35c6099adf2a6c1ec48c1d456",
+      "locator": "goal and acceptance"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-fan-attachments-result.json",
+      "sha256": "ceff45a5445a04923a7add064dca82a1371d7444efed5e5ed89282c9b9e285c0",
+      "locator": "output, first_missing_inference, immediate_subobligations, metadata.interaction"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-fan-attachments.md",
+      "sha256": "69597aaf34b780ed093e1541b76ede7ad237234674d91e2e46d86cc15470460d",
+      "locator": "lines 11-28: incidences and positive-arm exception; lines 31-47: cubic-closed prior use, unresolved attachment relation, and limits"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "pinned window post-[144] branch and retained handoff and high-centre keys"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+      "sha256": "113226b2f99eabccb9f3b1f00e1c4ce6eeb474eadf90fdd10099c2003476badd",
+      "locator": "lines 13-26: same handoff witness, no per-pair envelope map"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/DecoratedHandoffEnvelope.lean",
+      "sha256": "833664e35fcf0db62862bb28ed398f0836922f4ced97fa57f5414a089020872c",
+      "locator": "lines 902-940: nonempty assigned set, adjacency, simple core-landing arms, and no centre/core disjointness"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "lines 3944-3979: retained handoff proposition and absence of pair-to-arm indexing"
+    },
+    {
+      "path": "to_formalize/erdos_64_proof.tex",
+      "sha256": "7153339b7a032b2e5fbb432999acf0306d4a4f18bdbfd0f86c709ae3a4e58cb1",
+      "locator": "lines 10880-10946: cubic-closed distinction and decorated arms; lines 13129-13145: prior local window-incidence count"
+    }
+  ]
+}

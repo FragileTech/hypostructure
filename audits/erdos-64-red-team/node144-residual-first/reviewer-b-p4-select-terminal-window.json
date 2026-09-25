@@ -1,0 +1,62 @@
+{
+  "reviewer": "phase4_terminal_selection_review_b",
+  "decision": "accept",
+  "reason": "The note selects exactly one Phase 5 candidate: finite counting of original demand terminals on the same [144a] typeBHandoff source pattern. The preceding mechanism and effect support a degree-three demand-terminal fibre bound, a source-edge-to-terminal map with fibres at most three, and an all-root exclusion. At the minimum three-edge pattern, a star has four distinct demands and a matching has six, so neither can have every terminal at the root. The rival comparison is accurate: edge Menger on the route union does not index linked paths by original source edges and a route-union cut need not cut G; the owner's two-edge same-label route already produces one envelope. The note leaves non-root Menger outcomes and centre-arm, envelope, route-edge, cap, and near-cubic consumers unresolved. It asks Phase 5 to judge effective payoff on the complete ledger and neither authorizes construction nor declares the branch reduced. Submitted hashes match live files.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-select-terminal-contract.json",
+      "sha256": "a9a074746d557cd4c8b631da0103977df996412200acd4919afb1bfa0aba16ed",
+      "locator": "single-candidate Phase 4 selection gate and acceptance"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-select-terminal-result.json",
+      "sha256": "eaaf9ffb92557d0f11c29dc34f63477fb9bf77b96c492434816498a57ed6edc4",
+      "locator": "submitted selection, scope, and evidence hashes"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-select-terminal.md",
+      "sha256": "7d4f45a10426645152ead1f918cd5d5935f4197a6043f0e7c575f4c4a4ec9578",
+      "locator": "lines 3-27: selected candidate, weakest star/matching, rival comparison, and Phase 5 limits"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "revision node144-window-32d32f9d19e7 and exact window-arm handoff/normal-form ledger"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-terminal-congestion.md",
+      "sha256": "7d5606d9e64ca167b023f9d21cd3c66288a12a1e3537a0be18a90038506773c8",
+      "locator": "lines 3-42: same-witness terminal fibre count and full-demand all-root argument"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-terminal-effect.md",
+      "sha256": "f2f868bd854abba25f6e806cfc61db7a888e4edefb787c3adbe77c3974dce5f0",
+      "locator": "lines 3-35: O_term, |P| <= 3|T|, minimum pattern, and unresolved capacities"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-terminal-fingerprint.md",
+      "sha256": "c0afe2966a89c17ceebfd8a7569c10dde1fdb6b37e61f14030293d7d8c5abc87",
+      "locator": "five-field novelty comparison with prior two-edge owner and event attempt"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-edge-menger.md",
+      "sha256": "a4ff760459ad133d1be00a0b2a29e5d18ae2af453a03974761b677e95d437c66",
+      "locator": "lines 3-35: all-root exception, route-union linkage/cut alternatives, and source-index limitations"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-terminal-index.md",
+      "sha256": "90ba9307a102f9370b6e3b1b82c36cbeba036c4f5404f2747f65e5c43c7ea677",
+      "locator": "matching/star terminal projection and lack of distinct source-to-non-root indexing"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+      "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+      "locator": "lines 623-678: same handoff source pattern, size bound, and demand route endpoints"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "335b2996340ad3b65645cc97afeb627731ecb2209bf4031286aff0e6346da7e2",
+      "locator": "lines 1373-1409, 2580-2625, 3061-3088: two-edge owner and one envelope"
+    }
+  ]
+}

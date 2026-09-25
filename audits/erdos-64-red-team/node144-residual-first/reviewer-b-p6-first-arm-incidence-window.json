@@ -1,0 +1,37 @@
+{
+  "reviewer": "phase6_first_arm_incidence_review_b",
+  "decision": "accept",
+  "reason": "The anonymous owner-local lemma proves the contracted statement for the existing zip/tail armEdgeSet. Empty and singleton paths cannot satisfy the head/edge premises. For a longer nodup path, membership splits into the first Sym2 edge or a later arm edge; the later case contradicts start's absence from the tail via the accepted endpoint lemma. Sym2 equality in the first case yields other=next, while the swapped orientation would force start=next and violate nodup. The lemma is generic for any nodup arm and is available to both matching and star first-entry lists, but no crossing, core incidence bound or escape is claimed. The cited owner hash matches, and my direct EG caller rebuild completed successfully with 8777 jobs.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-first-arm-incidence-contract.json",
+      "sha256": "fd3270e9fe03df74deb0ed55c77d552a23722fb1cbca33042ec7c31f7671fa85",
+      "locator": "goal, acceptance and on_failure fields"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-first-arm-incidence-result.json",
+      "sha256": "85a78820916c3112ef0ee9549a19432a06f3325491fb7e4f1ce253c79d91e457",
+      "locator": "output, cited source hashes, implementation_status and first_missing_inference"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-first-arm-incidence.md",
+      "sha256": "c971b6b5fcc1751d026251962daa18d7a8a558fe4b2184ed2959febb39ab4f09",
+      "locator": "lines 3-16 exact first-edge statement and proof cases; lines 18-31 application scope, build record and missing core bound"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "f8bb9e9931048a7ea2bf376ffca6907422ed798018610465728a590875dd8ff3",
+      "locator": "lines 645-699 existing armEdgeSet, endpoint lemma and new anonymous armEdgeSet_first_incidence proof"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-arm-edge-endpoints.md",
+      "sha256": "924e2e94c49c59d84c5875cd8ce79eae595af4aab2dd3124b70e48681f289bf6",
+      "locator": "lines 3-21 accepted endpoint property and its limited role"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "revision, selected graph and exact window endpoint"
+    }
+  ]
+}

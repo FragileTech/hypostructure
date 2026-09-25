@@ -1,0 +1,38 @@
+{
+  "status": "SUBMITTED_RESULT",
+  "output": "The exact pattern-size threshold Q+1 forces one pair of distinct same-label edges. It does not force two independent collisions: at size Q+1, abstract label assignments can repeat only one class once. This is not a graph-residual counterexample. The existing high-separator envelope therefore controls only its selected two routes until a separate source-wide geometric relation is proved; the Phase 2 full-route observable alone gives no such relation.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase3-weakest-label.md",
+      "sha256": "5d4e91763386d20d1f5f627262a0a748e21a2a99dbeb8e62cd61f67edd1c2fdb",
+      "locator": "one-collision arithmetic, abstract weakest assignment, and missing source-wide incidence"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean",
+      "sha256": "cca0d7a8a6d32968b3bd01a9ea3b0a6fb0fa119a7f1380d98610c29815087e31",
+      "locator": "labelBound and patternBound definitions lines 106-115"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+      "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+      "locator": "retained pattern's geometric lower bound and all-route declarations lines 623-682"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "335b2996340ad3b65645cc97afeb627731ecb2209bf4031286aff0e6346da7e2",
+      "locator": "existing two-edge selection and one-envelope construction in matching/star arms"
+    }
+  ],
+  "implementation_status": "none",
+  "first_missing_inference": "",
+  "immediate_subobligations": [],
+  "metadata": {
+    "structural_use": null,
+    "interaction": null,
+    "changed_objects": [],
+    "changed_accounts": [],
+    "side_observations": [
+      "The abstract one-repeat labeling tests only cardinality strength and is not a model of the full node-[144a] residual."
+    ]
+  }
+}

@@ -1,0 +1,232 @@
+{
+  "task": {
+    "id": "P6-window-101-kernel-routing-label-identity",
+    "mode": "FORMALIZE",
+    "phase": "6",
+    "branch_revision": "node144-window-32d32f9d19e7",
+    "move_id": "M-window-extremal-two-tail-uncrossing",
+    "kind": "prove_identification",
+    "goal": "Kernel-check exactly the accepted routing-label identity on the retained source domain: sameTokenActualRoutingLabel equals the original owner-local routingLabel, with the SAME active, cubic equality, capacity, certified token/role, routed pattern, member pair and selected demand. Supply an explicit Lean proof term suitable for insertion as an owner-local have. Reuse the accepted seven-coordinate transport argument; do not rebuild the owner, select pairs, or prove the escape. Reproduce the original local label definitions literally from window-routing-label-source.txt for a narrowly scoped temporary Lean check. Avoid full unfolding of all local lets: the previous producer attempt expanded a label goal to 57 MB and timed out before validating this identity.",
+    "objects": [
+      "selected : EGInput; G = selected.object : finite graph with the registered baseline",
+      "handoff witnesses active_h, capacity_h, certified_h, token_h, role_h, pattern_h on G within one K.typeBHandoff proposition",
+      "handoff witnesses packing_h, core_h, envelope_h on G within one SameTokenTypeBHandoffEnvelopeStatement",
+      "class-audit witnesses active_a, capacity_a and selected windowIncidence token/role on G; equality with handoff witnesses is not asserted",
+      "capacity-token ledger witnesses active_t, capacity_t on G; equality with handoff witnesses is not asserted"
+    ],
+    "reads": [
+      "branch:node144-window-32d32f9d19e7",
+      "P1-window-97-routing-label-transport",
+      "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+      "audits/erdos-64-red-team/node144-residual-first/window-routing-label-source.txt",
+      "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+      "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean"
+    ],
+    "interaction": "The new named descriptor and the original local label must describe the same selected pair and its true degree profiles",
+    "parent_payoff": "Preserve the exact source pair and fixed supports used by extremal common-prefix uncrossing: parallel closes by the retained sparse-exit exclusion, all-in-skeleton contradicts maximality using the cubic neighbours, and the survivor retains the forced non-skeleton edge on that identical handoff. The named label is only a prerequisite for this exact reduction.",
+    "depends_on": [
+      "P5-window-26-uncrossing-admission",
+      "P1-window-97-routing-label-transport"
+    ],
+    "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-kernel-routing-label-identity.md",
+    "acceptance": "Provide the exact typed owner-local identity and complete Lean proof term, with the narrow kernel check exit status and source hashes. Compile the CURRENT vocabulary in a temporary overlay once and verify against it. All seven coordinates, original fallback profile semantics, actual ordered support and degree, and same capacity/token must match. No arbitrary label callback, source weakening, changed domain, sorry, axiom or admitted proof. The artifact is evidence for a local proof term; do not introduce an imported production theorem or alter the owner in this task.",
+    "on_failure": "Return the first unsupported equality/inference and its immediate subobligation, with concise diagnostics. Keep experimental code and builds in /tmp; the allowed Markdown artifact must include any completed proof term and exact unresolved goal before the execution deadline. Use python3. Use bounded narrow checks, not the full owner or root. Source current vocabulary overrides the older compiled cache."
+  },
+  "branch": {
+    "id": "node144-window-strict-handoff",
+    "revision": "node144-window-32d32f9d19e7",
+    "source_revision": "21dd8504afebb071418a92f2e1decf5d7fbda871 + source-manifest sha256 32d32f9d19e741def5b63002dff60fe79265281ad4f9d6161574df9ed949f2eb",
+    "endpoint": "For every selected EGInput, the literal post-[144] ExactLedger with keys ['typeBFanEntry', 'bottleneckRouting', 'typeBHandoff', 'windowIncidenceAudit', 'homogeneousBottleneckPattern', 'windowClassOverload', 'remainderRelabelingEntropy', 'remainderNormalized', 'exactResponseProfile', 'admissibleRankQuotient', 'curvatureTargetRank', 'highCentreNormalForm', 'bridgeless', 'sparsePressureOverload', 'fibrePressure', 'roleFibrePartition', 'blockedPairEntropySandwich', 'blockedPairEntropySetup', 'capacityTokenLedger', 'sparseUpperEnvelope', 'canonicalPairLedger', 'canonicalBlockerRoute', 'dependentPairFamily', 'baselineSpineDemand', 'activeSurplusDemands', 'sparsePortActivation', 'activeSurplusFamily', 'sparseSlackSurplus', 'suppressedFamilyCriticalCycle', 'singleOpenPortSuppressionWitness', 'openPortSuppressionSafe', 'openPortSuppression', 'sparseSurplusSurvivor', 'surplusAbove', 'localAlgebra', 'maximalPacking', 'uncompressible', 'replacementExclusion', 'targetCompleteContextUniversality', 'degreeProfileFibres', 'cycleRankConstraint', 'tightEndpoint', 'slackIndependent', 'noProperBaseline', 'returnAvoidance', 'contractionCritical', 'gadgetClosure', 'relabelingDensityCap', 'cubicBaseline', 'selection'] returned from the window audited predecessor derives False on selected.object, without additional premises.",
+    "incoming": "[139] yes \u2192 [140] windowIncidenceAuditRow \u2192 [144]; class key [['windowClassOverload'], ['windowIncidenceAudit', 'homogeneousBottleneckPattern']]; exact pre-[144] index in phase0-evidence.md; [144] appends typeBHandoff, bottleneckRouting and [65] appends typeBFanEntry; no sibling arm.",
+    "objects": [
+      "selected : EGInput; G = selected.object : finite graph with the registered baseline",
+      "handoff witnesses active_h, capacity_h, certified_h, token_h, role_h, pattern_h on G within one K.typeBHandoff proposition",
+      "handoff witnesses packing_h, core_h, envelope_h on G within one SameTokenTypeBHandoffEnvelopeStatement",
+      "class-audit witnesses active_a, capacity_a and selected windowIncidence token/role on G; equality with handoff witnesses is not asserted",
+      "capacity-token ledger witnesses active_t, capacity_t on G; equality with handoff witnesses is not asserted"
+    ],
+    "minimality": "K.selection on G: no HasCycleWithLength spineData.LengthOK; SelectionMinimality.sizeMinimal and SelectionMinimality.refinedMinimal under the registered progress orders.",
+    "imports": [
+      "K .typeBFanEntry",
+      "K .bottleneckRouting",
+      "K .typeBHandoff",
+      "K .windowIncidenceAudit",
+      "K .homogeneousBottleneckPattern",
+      "K .windowClassOverload",
+      "K .remainderRelabelingEntropy",
+      "K .remainderNormalized",
+      "K .exactResponseProfile",
+      "K .admissibleRankQuotient",
+      "K .curvatureTargetRank",
+      "K .highCentreNormalForm",
+      "K .bridgeless",
+      "K .sparsePressureOverload",
+      "K .fibrePressure",
+      "K .roleFibrePartition",
+      "K .blockedPairEntropySandwich",
+      "K .blockedPairEntropySetup",
+      "K .capacityTokenLedger",
+      "K .sparseUpperEnvelope",
+      "K .canonicalPairLedger",
+      "K .canonicalBlockerRoute",
+      "K .dependentPairFamily",
+      "K .baselineSpineDemand",
+      "K .activeSurplusDemands",
+      "K .sparsePortActivation",
+      "K .activeSurplusFamily",
+      "K .sparseSlackSurplus",
+      "K .suppressedFamilyCriticalCycle",
+      "K .singleOpenPortSuppressionWitness",
+      "K .openPortSuppressionSafe",
+      "K .openPortSuppression",
+      "K .sparseSurplusSurvivor",
+      "K .surplusAbove",
+      "K .localAlgebra",
+      "K .maximalPacking",
+      "K .uncompressible",
+      "K .replacementExclusion",
+      "K .targetCompleteContextUniversality",
+      "K .degreeProfileFibres",
+      "K .cycleRankConstraint",
+      "K .tightEndpoint",
+      "K .slackIndependent",
+      "K .noProperBaseline",
+      "K .returnAvoidance",
+      "K .contractionCritical",
+      "K .gadgetClosure",
+      "K .relabelingDensityCap",
+      "K .cubicBaseline",
+      "K .selection"
+    ],
+    "accounts": [
+      "K.surplusAbove: spineData.surplusThreshold n < s; no surplusAtOrBelow",
+      "K.sparseSlackSurplus and K.cubicBaseline: 2m = 3n + s",
+      "K.capacityTokenLedger: exact activation, pair/token ledger, primitive-carrier supply and connectivity",
+      "K.roleFibrePartition: disjoint pair assignment by token and role",
+      "K.sparsePressureOverload: positive coupled excess in the certified ledger",
+      "K.homogeneousBottleneckPattern: same-token matching or star at the geometric pattern bound",
+      "No certified bound yet on pair demands per decorated handoff envelope"
+    ],
+    "open_outcomes": [
+      "window:[144a]-same-token-handoff"
+    ]
+  },
+  "accepted_inputs": {
+    "P1-window-97-routing-label-transport": {
+      "output": "Proved coordinate-for-coordinate equality on the identical retained handoff pattern pair and selected demand. Schedule membership and the cubic shoulder supports make both old profile fallback cases unreachable; every ordered profile entry remains the same actual induced degree. No original objects, profile values, or accounts change. See audits/erdos-64-red-team/node144-residual-first/window-routing-label-transport.md. This audit supplies a mathematical proof, with source hashes verified; no new Lean implementation or kernel check was performed.",
+      "evidence": [
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+          "sha256": "113226b2f99eabccb9f3b1f00e1c4ce6eeb474eadf90fdd10099c2003476badd",
+          "locator": "Common object and endpoint; Retained quantitative accounts; Window incoming arm"
+        },
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-routing-label-source.txt",
+          "sha256": "8570d28a60a84a9bbb02026e37b39af5fe9b92c59b7e7fb92c2267324b9efe70",
+          "locator": "Owner source lines 639\u2013643, 889\u2013961, 967\u2013990, 1230\u20131246"
+        },
+        {
+          "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+          "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+          "locator": "presented (295\u2013301); HomogeneousBottleneckPatternStatement (622 onward)"
+        },
+        {
+          "path": "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean",
+          "sha256": "cca0d7a8a6d32968b3bd01a9ea3b0a6fb0fa119a7f1380d98610c29815087e31",
+          "locator": "RoutingLabel (85\u201387)"
+        },
+        {
+          "path": "tools/methodology_gate/evidence_snapshots/36ab8555e398179dd5c73fd4218acbe7dd6dde052dc2b41bb7a97ee71f06e635",
+          "sha256": "36ab8555e398179dd5c73fd4218acbe7dd6dde052dc2b41bb7a97ee71f06e635",
+          "locator": "Data.BoundaryProfile; sameTokenActualRoutingLabel (3944 onward); SameTokenTypeBHandoffStatement"
+        },
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-routing-label-transport.md",
+          "sha256": "c8c1a24820955fb645b7a1c83191d5d9d6ec250dc1dcb944e8d7b19ed030cfb0",
+          "locator": "Entire transport proof"
+        }
+      ],
+      "implementation_status": "none"
+    },
+    "P5-window-26-uncrossing-admission": {
+      "output": "Authorize owner-local construction of the finite max-prefix two-tail uncrossing move. Parallel and all-in-F have accepted conditional contradictions; the exact remaining outcome is a source-bound two-arm handoff with D_I or D_boundary nonempty. The first task is an exact source-to-envelope Holds predicate, followed by max-route choice, crossed-tail/splice proof, publication in sameTokenBottleneckRoutingRow, and kernel/integration checks. No move or branch closure is certified yet.",
+      "evidence": [],
+      "implementation_status": "none"
+    }
+  },
+  "source_manifest": {
+    "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md": "113226b2f99eabccb9f3b1f00e1c4ce6eeb474eadf90fdd10099c2003476badd",
+    "audits/erdos-64-red-team/node144-residual-first/window-routing-label-source.txt": "8570d28a60a84a9bbb02026e37b39af5fe9b92c59b7e7fb92c2267324b9efe70",
+    "audits/erdos-64-red-team/node144-residual-first/window-routing-label-transport.md": "c8c1a24820955fb645b7a1c83191d5d9d6ec250dc1dcb944e8d7b19ed030cfb0",
+    "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+    "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean": "cca0d7a8a6d32968b3bd01a9ea3b0a6fb0fa119a7f1380d98610c29815087e31",
+    "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean": "46b2cfd88ca9bd71826111c46b392e9a60d86d14fee505fe64a4714546439052",
+    "tools/methodology_gate/evidence_snapshots/36ab8555e398179dd5c73fd4218acbe7dd6dde052dc2b41bb7a97ee71f06e635": "36ab8555e398179dd5c73fd4218acbe7dd6dde052dc2b41bb7a97ee71f06e635"
+  },
+  "historical_sources": [
+    {
+      "original_path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "36ab8555e398179dd5c73fd4218acbe7dd6dde052dc2b41bb7a97ee71f06e635",
+      "mounted_path": "tools/methodology_gate/evidence_snapshots/36ab8555e398179dd5c73fd4218acbe7dd6dde052dc2b41bb7a97ee71f06e635"
+    }
+  ],
+  "result_contract": {
+    "result_fields": [
+      "status",
+      "output",
+      "evidence",
+      "implementation_status",
+      "first_missing_inference",
+      "immediate_subobligations",
+      "metadata"
+    ],
+    "metadata_fields": [
+      "structural_use",
+      "interaction",
+      "changed_objects",
+      "changed_accounts",
+      "side_observations"
+    ],
+    "structural_use_fields": [
+      "aspect",
+      "object",
+      "previous_use",
+      "established",
+      "unexploited"
+    ],
+    "interaction_fields": [
+      "object",
+      "ingredients",
+      "relation",
+      "known",
+      "unresolved",
+      "domains",
+      "previous_use"
+    ],
+    "worker_results": [
+      "SUBMITTED_RESULT",
+      "NEEDS_DECOMPOSITION",
+      "BLOCKED_WITH_REASON",
+      "COUNTEREXAMPLE_CANDIDATE"
+    ]
+  },
+  "repair_reasons": [],
+  "context_policy": {
+    "unit": "One atomic mathematical problem per fresh context, in every phase including Phase 0, reviews and retries.",
+    "launch": "The controller launches a new ephemeral isolated worker for each assignment. Never resume, fork with conversation history, or reuse an earlier worker context.",
+    "inputs": "Supply the complete pinned residual and applicable retained hypotheses, exact object identities, accepted evidence declared for this task, one goal, one output artifact, acceptance criteria and a first-failure rule. Carry proof state through these artifacts only.",
+    "scope": "The worker solves only the assigned inference, construction, comparison or check. A phase containing several obligations uses several fresh contexts. The branch endpoint and parent payoff are context, not additional worker goals.",
+    "stop": "Return one result and terminate. At the first missing inference, return NEEDS_DECOMPOSITION with immediate subobligations. Only the controller may assign a child or next task in another fresh context.",
+    "review": "Two independent fresh reviewer contexts inspect the single result. Neither sees the other review. The controller alone accepts and integrates it before dispatching the next task.",
+    "admission": "Before construction, every outcome must have a proved productive conditional payoff on the complete residual and a reviewed Phase 5 admission. A successful build cannot supply missing admission evidence.",
+    "failure": "If fresh context or OS isolation is unavailable, stop the launch and report the execution failure. Never perform the proof in the controller conversation as a fallback."
+  },
+  "worker_instruction": "You are a fresh worker assigned exactly one isolated mathematical problem. Execute only this task on the pinned complete residual. Use applicable retained facts and the supplied evidence. Preserve object identities, domains, exclusions, minimality and accounts. Prove the requested inference on the conjunction. Expose the first missing inference as immediate subobligations. Record side observations without following them. Do not select a negative arm from failed search, change strategy without authorization, or mark a move or branch closed yourself. The task goal is your only objective; the phase, branch endpoint and parent payoff supply context only. Do not execute adjacent tasks, repeat accepted work, start implementation to discover a payoff, or choose the next task. If the goal contains multiple unresolved inferences, return NEEDS_DECOMPOSITION with their immediate statements. Return one result artifact and terminate. The controller handles reviews, integration and the next fresh context.",
+  "runtime_targets": [
+    "/runtime/build-cache",
+    "/runtime/eg-build-cache",
+    "/runtime/lean",
+    "/runtime/packages"
+  ]
+}

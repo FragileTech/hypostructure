@@ -1,0 +1,42 @@
+{
+  "reviewer": "phase4_edge_menger_review_b_retry",
+  "decision": "accept",
+  "reason": "The retry handles the root-terminal exception exhaustively by T_plus = T\\{rho}. If T_plus is empty, every selected route starts and ends at rho; its nonempty Nodup path is necessarily [rho], so H has no route edge and every source index remains an open degenerate outcome. If T_plus is nonempty, rho\u2209T_plus and finite edge Menger gives exactly k edge-disjoint rho-to-T_plus paths or an H-edge cut of size <k; terminal endpoints may repeat. Root-ending routes remain retained without charge. The note correctly transports linked H paths to G while refusing to transport an H cut to a G cut or identify Menger paths with distinct source pairs. It claims no productive payoff or move. All four resubmitted hashes match current files.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-edge-menger-contract.json",
+      "sha256": "4d614dded7dee053ff314999593c967bdc467835e1f6b9d02d84f1d010d93db3",
+      "locator": "goal, H/rho/T objects, and acceptance"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-edge-menger-result.json",
+      "sha256": "9d57c2eec2555ac4142968a4b3428337abb1b0e6228db305fcfb6693d8ba3d91",
+      "locator": "retried complete split and four submitted hashes"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-edge-menger.md",
+      "sha256": "a4ff760459ad133d1be00a0b2a29e5d18ae2af453a03974761b677e95d437c66",
+      "locator": "T_plus exhaustive split, singleton-root degeneracy, edge-Menger statement, H/G and source-index caveats"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase3-full-route-selection.md",
+      "sha256": "475d2a55f39250b77b79d3a7e5dd01c8a04efed94fd5063f841589610b7a30f1",
+      "locator": "same-witness full-route family selected in Phase 3"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+      "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+      "locator": "finite pattern, shared root and per-demand terminal configurations 623\u2013682"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean",
+      "sha256": "cca0d7a8a6d32968b3bd01a9ea3b0a6fb0fa119a7f1380d98610c29815087e31",
+      "locator": "RoutingConfiguration path, nodup, chain, issued and lands fields 227\u2013246"
+    },
+    {
+      "path": "repair_and_closure.md",
+      "sha256": "acd2eebe8a315723f4d5c6c7ee12b614d8c93d2260d96e303c088d7164ddfef6",
+      "locator": "Menger without consumers is not a reduction, line 431"
+    }
+  ]
+}

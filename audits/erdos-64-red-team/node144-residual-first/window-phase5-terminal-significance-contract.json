@@ -1,0 +1,28 @@
+{
+  "id": "P5-window-03-check-terminal-significance",
+  "mode": "AUDIT",
+  "phase": "5",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-terminal-congestion-candidate",
+  "kind": "reject_cosmetic_payoff",
+  "goal": "Judge whether the reviewed terminal-count conditional is a productive restriction of the actual [144a] overload residual, rather than merely an auxiliary count with no consumer.",
+  "objects": [
+    "complete post-[144] window ExactLedger B with the actual source pattern P and terminal set T",
+    "the original blocked-pair/token/role account and the produced Type B envelope",
+    "the route-union linkage/cut alternatives catalogued for all source routes"
+  ],
+  "reads": [
+    "branch:node144-window-32d32f9d19e7",
+    "P5-window-01-define-terminal-payoff",
+    "P5-window-02-prove-terminal-count-inference",
+    "P4-window-06-edge-menger-statement",
+    "audits/erdos-64-red-team/near-cubic-repair/execution.md",
+    "repair_and_closure.md"
+  ],
+  "interaction": "new local terminal multiplicity bound versus the actual original-pair-to-envelope charge and the two unconsumed route-union outcomes",
+  "parent_payoff": "Admit only if the terminal fact has an exact productive consumer on [144a]; otherwise retain it as an intermediate lemma and reject move credit.",
+  "depends_on": ["P5-window-01-define-terminal-payoff", "P5-window-02-prove-terminal-count-inference"],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase5-terminal-significance.md",
+  "acceptance": "State the exact before/after facts, test the proposed terminal bound against the original blocked-pair account, the handoff envelope and both Menger arms, and decide admission. A negative decision must identify the first missing consumer without claiming impossibility, closure, or a counterexample; a positive decision must exhibit a specific effective bound or excluded pattern on the original residual.",
+  "on_failure": "Keep the full [144a] residual open, preserve the correct conditional lemma as intermediate evidence, and return to a supported structural tension."
+}

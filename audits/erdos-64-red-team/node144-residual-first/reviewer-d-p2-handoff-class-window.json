@@ -1,0 +1,42 @@
+{
+  "reviewer": "phase2_handoff_source_class_review_d",
+  "decision": "accept",
+  "reason": "The four submitted evidence hashes match. The windowClassOverload clause fixes the class of its own overload token to windowIncidence, and the [140] producer extracts that witness and constructs a pattern with sourceClass windowIncidence. The retained HomogeneousBottleneckPatternStatement and SameTokenTypeBHandoffStatement, however, existentially bind their own certified ledger and token; the former only equates tokenClass token to an existential sourceClass, and the latter supplies no equation to the separately retained windowClassOverload or windowIncidenceAudit witnesses. The handoff token's class is therefore an observable whose window membership is not directly furnished by these literal proposition fields. The submission describes that identification as unresolved, not false, and distinguishes this interface question from the producer's actual window-class choice. It supplies no countermodel or formal non-entailment claim, no cross-key witness equality, and no technique, restriction, or progress claim.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "revision, incoming, objects, accounts, open_outcomes"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-handoff-class-contract.json",
+      "sha256": "26dbb0eacdc30483223776b13aecbd5d97ca9ba7aa81acd8a61c366a6336a0d8",
+      "locator": "goal, interaction, acceptance"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-handoff-class-result.json",
+      "sha256": "8bce1a3f47aa409fabee0d46a2a5282d14405791bf5c5017f61af53305d3733b",
+      "locator": "output, evidence, implementation_status"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-handoff-class.md",
+      "sha256": "6adcd8389d225d60c07e65388ccb4f715f35d2331643b9cf44bc0e040b8cdff1",
+      "locator": "coordinate, two existential witness domains, unresolved identification"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+      "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+      "locator": "514-565, 623-682"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "3944-3995, 11548-11639"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "335b2996340ad3b65645cc97afeb627731ecb2209bf4031286aff0e6346da7e2",
+      "locator": "156-285, 3080-3112"
+    }
+  ]
+}

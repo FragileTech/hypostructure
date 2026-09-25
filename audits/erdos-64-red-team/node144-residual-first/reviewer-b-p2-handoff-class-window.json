@@ -1,0 +1,42 @@
+{
+  "reviewer": "phase2_handoff_class_review_b",
+  "decision": "accept",
+  "reason": "The class of token_h is a well-defined coordinate inside the handoff pattern witness. windowClassOverload separately requires a token with tokenClass = .windowIncidence, and [140] constructs a window-source pattern from that selected overload in producer history. The public HomogeneousBottleneckPatternStatement inside typeBHandoff instead binds sourceClass existentially to its own token and does not fix it to .windowIncidence; the retained Holds fields do not record an equality between the handoff and window-overload token witnesses. The submission therefore treats window membership of token_h as unresolved in the literal public residual, not as absent or logically impossible, and makes no technique or progress claim. All four submitted source hashes match current bytes.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "incoming window tag, distinct handoff/class-audit witness domains, imports and open_outcomes"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-handoff-class-contract.json",
+      "sha256": "26dbb0eacdc30483223776b13aecbd5d97ca9ba7aa81acd8a61c366a6336a0d8",
+      "locator": "exact coordinate, acceptance and on_failure"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-handoff-class-result.json",
+      "sha256": "8bce1a3f47aa409fabee0d46a2a5282d14405791bf5c5017f61af53305d3733b",
+      "locator": "submitted output and four source hashes"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-handoff-class.md",
+      "sha256": "6adcd8389d225d60c07e65388ccb4f715f35d2331643b9cf44bc0e040b8cdff1",
+      "locator": "coordinate definition, producer history, unresolved public witness identification"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+      "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+      "locator": "OverloadAtClass and SparsePressureOverloadInClass 514\u2013565; unrestricted sourceClass in HomogeneousBottleneckPatternStatement 623\u2013682"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "SameTokenTypeBHandoffStatement 3944\u20133995; windowClassOverload and windowIncidenceAudit Holds clauses 11548\u201311639"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "335b2996340ad3b65645cc97afeb627731ecb2209bf4031286aff0e6346da7e2",
+      "locator": "[140] takes window overload and sets sourceClass .windowIncidence 156\u2013285; [144] publishes typeBHandoff from routing 3080\u20133112"
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "reviewer": "phase6_first_entry_singleton_review_b",
+  "decision": "accept",
+  "reason": "The owner-local nodup_head_last_singleton proof is valid: an empty path contradicts the head premise, a one-element path is immediate, and a longer nodup path cannot have its first vertex as its last. Both matching and star applications use their own actual armLeftIssued to put nextLeft on armLeft, armLeftFirstEntry plus the conditional nextLeft∈core to identify the first-entry terminal, armLeftLast for the final vertex, and armLeftNodup for the singleton conclusion. Core membership is only an implication premise; no arm, core, envelope or returned Holds value is changed. The combined cubic crossing and escape remain unproved. The cited owner hash matches, and my direct EG caller rebuild succeeded with 8777 jobs.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-first-entry-singleton-contract.json",
+      "sha256": "8aa484907c8cd75315ef414b65e437469fc669c973f6f274ee946c5f7a2c3568",
+      "locator": "goal, acceptance and on_failure fields"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-first-entry-singleton-result.json",
+      "sha256": "2fbd2dc84dea8d44c66e8b29b6380a4e2e11ea2baa3cc0c877c639766852717e",
+      "locator": "output, cited source hashes, implementation_status and first_missing_inference"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-first-entry-singleton.md",
+      "sha256": "0c777c61d6cecb97bdc326e024267ec79a006232a2e6aa0875c671f22fe8aacb",
+      "locator": "lines 3-17 exact conditional singleton implication; lines 19-31 source-description limit, build record and missing crossing"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "415dfce1483e1e90b44b097aa4ab06c6e8b0630f7f23e2476d8af70ce1a9fa21",
+      "locator": "lines 735-754 anonymous nodup_head_last_singleton; 2107-2139 matching actual first-entry and armLeftSingletonOfStartCore; 3037-3069 star counterpart"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-two-vertex-core-edge.md",
+      "sha256": "94b7b3a2b18406aaa85cad653c3032f3abd831ed052eac5505d24e5e52cc342e",
+      "locator": "lines 3-22 checked complementary two-vertex core-edge bound"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "revision, selected graph and exact window endpoint"
+    }
+  ]
+}

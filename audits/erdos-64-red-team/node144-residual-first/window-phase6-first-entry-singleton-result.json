@@ -1,0 +1,30 @@
+{
+  "status": "SUBMITTED_RESULT",
+  "output": "Both actual [144] matching/star producer arms now kernel-prove nextLeft∈core → armLeft=[nextLeft] from their own first-entry, issued, last and nodup facts. The direct EG caller builds. The combined one-sided degree contradiction and escape remain unproved.",
+  "evidence": [
+    {"path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-first-entry-singleton.md", "sha256": "0c777c61d6cecb97bdc326e024267ec79a006232a2e6aa0875c671f22fe8aacb", "locator": "same-arm first-entry singleton implication and verification"},
+    {"path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean", "sha256": "415dfce1483e1e90b44b097aa4ab06c6e8b0630f7f23e2476d8af70ce1a9fa21", "locator": "local nodup_head_last_singleton and both armLeftSingletonOfStartCore proofs"}
+  ],
+  "implementation_status": "kernel_checked",
+  "first_missing_inference": "The conditional one-sided all-in-F incidence count at selected cubic a has not yet been proved to force a∈armRight, despite the now checked own-arm/core complementarity.",
+  "immediate_subobligations": [
+    "Use the actual graph incidenceFinset at a and its degree-three cardinality to encode all physical incident edges.",
+    "Under all-in-F at a and a∉armRight, use endpoint, unique own-arm, core-edge and singleton facts to bound that incidence set by two edges.",
+    "Derive a∈armRight, then construct the same-right-support splice and publish the outside-F physical edge."
+  ],
+  "metadata": {
+    "structural_use": null,
+    "interaction": {
+      "object": "actual first-entry left arm and two-vertex core in each [144] producer history",
+      "ingredients": ["issued head at a", "first-entry terminal property", "last vertex", "nodup", "sole possible core edge"],
+      "relation": "If a lies in the core, its own arm is singleton and contributes no edge, so core and own-arm incident sources are complementary.",
+      "known": "The local conditional singleton implication and direct caller kernel-check.",
+      "unresolved": "Combine with degree three and the one-sided all-in-F premise to prove a∈P_b.",
+      "domains": "same selected graph, matching/star owner envelopes and fixed source pair",
+      "previous_use": "The first-entry property had not been combined with the core-edge and own-arm incidence budgets."
+    },
+    "changed_objects": [],
+    "changed_accounts": [],
+    "side_observations": ["No productive-move credit or branch closure is recorded for this intermediate implication."]
+  }
+}

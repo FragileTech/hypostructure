@@ -1,0 +1,32 @@
+{
+  "reviewer": "phase7_physical_escape_integration_review_d",
+  "decision": "accept",
+  "reason": "For S=core\u222avertices(armLeft)\u222avertices(armRight)\u222a{separator}, the checked outside-F edge has a=nextLeft in S and an adjacent endpoint x. Its centre edge is already in F, so x\u2260separator; simple-graph adjacency gives x\u2260a. The ordered tests x\u2208core, otherwise x\u2208armLeft, otherwise x\u2208armRight, otherwise x\u2209S are exhaustive and disjoint even when core and arm lists overlap. A right-arm overlap with the own arm remains flagged in case 2 rather than double-counted. Cases 1\u20133 are internal edges of G[S] outside F; case 4 is a physical cut edge, so outside F is not conflated with outside S. The note makes the cycle-rank contribution conditional on F being a connected spanning subgraph of G[S] and defers the required identity; it treats an exterior edge only as boundary multiplicity and allows a single bridge. It assumes no core connectivity, target cycle, payment, source-bound export, productive move or closure. Its evidence hashes match the current files.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-physical-escape-integration-contract.json",
+      "sha256": "ed3ac438d88388d59e3600e28e8128055660a6391aefe36bcac7d4d6a60a097d",
+      "locator": "P7-window-49 exact endpoint-location and no-credit acceptance"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-physical-escape-integration-result.json",
+      "sha256": "340b503a5fdb782f22034b96b8765cd2e08cdad9a5dfaad0da5d63f9e97ca9c2",
+      "locator": "submitted four-case profile and pending export/cost obligations"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-physical-escape-integration.md",
+      "sha256": "e476e40f1192b511bee8b5a9b327b305213ee069ab780604f513801787d8b6db",
+      "locator": "ordered cases, overlap handling and conditional rank/boundary statements"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-physical-escape.md",
+      "sha256": "bb5a02341afba224584d4d848de8fe54c0852475c21781f806c08ab07ac92ba6",
+      "locator": "actual same-envelope outside-F adjacent endpoint and region caveat"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "964ad47ccd35b30db1201d5350fa067a106961b3b61b0329762e1c570a2a88b8",
+      "locator": "lines 2742-2773 and 3772-3803 actual outsideSkeletonNeighbour; matching/star arm/core/centre constructor data"
+    }
+  ]
+}

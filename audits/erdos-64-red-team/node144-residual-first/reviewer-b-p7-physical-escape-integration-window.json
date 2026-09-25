@@ -1,0 +1,37 @@
+{
+  "reviewer": "phase7_physical_escape_integration_review_b",
+  "decision": "accept",
+  "reason": "The proposed region S uses the actual core, both first-entry arms, and separator on the same selected graph. Because nextLeft is the left-arm head, the witnessed edge starts in S; its other endpoint cannot be the separator since that centre edge belongs to F, and graph adjacency excludes a loop. The ordered membership tests—core; left arm outside core with right-arm overlap flagged; right arm outside core and left arm; outside S—are exhaustive and disjoint. The first three are internal unused edges, while the fourth is a cut edge. The cycle-rank and boundary statements are expressly conditional on their missing connectivity and component identities, and a single boundary edge is not charged as a cycle. The note separately tests constraint, compression, and quantity closure and leaves endpoint classification, source-bound export, move credit, and [144a] closure open. All submitted hashes match current files.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-physical-escape-integration-contract.json",
+      "sha256": "ed3ac438d88388d59e3600e28e8128055660a6391aefe36bcac7d4d6a60a097d",
+      "locator": "P7-window-49 acceptance and on_failure"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-physical-escape-integration-result.json",
+      "sha256": "340b503a5fdb782f22034b96b8765cd2e08cdad9a5dfaad0da5d63f9e97ca9c2",
+      "locator": "output, missing inference, immediate subobligations, and metadata"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-physical-escape-integration.md",
+      "sha256": "e476e40f1192b511bee8b5a9b327b305213ee069ab780604f513801787d8b6db",
+      "locator": "definition of S, ordered cases 1–4, conditional accounts, export obligation, and closure scan"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-physical-escape.md",
+      "sha256": "bb5a02341afba224584d4d848de8fe54c0852475c21781f806c08ab07ac92ba6",
+      "locator": "accepted physical edge witness and endpoint-region caveat"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "pinned [144a] residual and existing handoff scope"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "964ad47ccd35b30db1201d5350fa067a106961b3b61b0329762e1c570a2a88b8",
+      "locator": "lines 2330–2332 and 3368–3370 (actual arm heads); 2641–2663 and 3671–3693 (literal envelopes and skeletons); 2742–2777 and 3772–3807 (neighbour witnesses and unchanged handoff returns)"
+    }
+  ]
+}

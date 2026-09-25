@@ -1,0 +1,17 @@
+{
+  "id": "P3-window-60-marked-return-rival",
+  "mode": "DISCOVER",
+  "phase": "3",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-extremal-two-tail-uncrossing",
+  "kind": "compare_rival",
+  "goal": "Compare the new marked-return first-encounter/support tension with the serious rival of charging the already reviewed relative-rank unit, to select an interaction that can attack the previously unaccounted structure.",
+  "objects": ["same actual extremal source pair and e-return path", "pair-specific support/buffer words and first-route encounters", "one-envelope cycle-rank and component-corrected attachment account"],
+  "reads": ["branch:node144-window-32d32f9d19e7", "P2-window-59-marked-return-interaction", "P7-window-57-forced-return-integration", "P7-window-54-rank-reconciliation"],
+  "interaction": "The forced non-skeleton edge has a return, but the return's relation to the two maximal source routes and their distinct supports is unmeasured; the rival rank payment is already measured only once for the entire envelope.",
+  "parent_payoff": "Choose a supported structural tension for a later Phase 4 mechanism, retaining no-reentry and support-failure exceptions and not claiming a productive move yet.",
+  "depends_on": ["P2-window-59-marked-return-interaction"],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase3-marked-return-rival.md",
+  "acceptance": "State both tensions on the exact [144a] conjunction, explain why one uses information absent from prior nodes, and compare what each can pay without inventing a per-pair injection. Select only a structural tension, not a technique, and expose at least the no-reentry, wrong-support, repeated-edge, and two-component exceptions as future obligations.",
+  "on_failure": "If neither tension promises a supported payoff on every retained arm, record that defect and identify the smaller missing interaction instead of selecting a technique."
+}

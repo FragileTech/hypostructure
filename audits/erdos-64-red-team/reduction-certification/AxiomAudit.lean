@@ -1,0 +1,5 @@
+import HypostructureErdos64EG
+#print axioms HypostructureErdos64EG.selectedLedgerBoundary
+#print axioms HypostructureErdos64EG.openSelectedCounterexample
+#check HypostructureErdos64EG.selectedLedgerBoundary
+#check HypostructureErdos64EG.openSelectedCounterexample

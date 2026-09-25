@@ -1,0 +1,21 @@
+{
+  "id": "P7-window-34-skeleton-integration",
+  "mode": "DISCOVER",
+  "phase": "7",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-extremal-two-tail-uncrossing",
+  "kind": "review_integration",
+  "goal": "Integrate the kernel-checked exact producer-envelope skeleton with selected cubic neighbour budgets and fixed-source route maximality; specify the next incidence proof.",
+  "objects": [
+    "G=selected.object and full 50-key [144a] window history",
+    "same actual matching/star envelope, its core/arms, h and cubic a,b",
+    "owner-local maximal pair on fixed source indices"
+  ],
+  "reads": ["branch:node144-window-32d32f9d19e7", "P6-window-33-exact-envelope-skeleton", "P7-window-32-cubic-neighbours-integration"],
+  "interaction": "The exact F now identifies where the two non-centre edges at each selected cubic neighbour could be paid; saturating F would force crossed arms and permit a competing route.",
+  "parent_payoff": "Fix one first inference: from all incident physical edges at a,b belonging to this exact F, prove a lies on the opposite arm, including zero-arm/core cases.",
+  "depends_on": ["P6-window-33-exact-envelope-skeleton"],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase7-skeleton-integration.md",
+  "acceptance": "Relate F to the previously unaccounted attachment profile and retained cubic/maximal facts on the same graph/envelope; separate constraint, compression, quantity tests; specify a single next conditional crossing inference with exact hypotheses and no assumed saturation, escape or move credit.",
+  "on_failure": "Repair any mismatch of F to the actual handoff before scheduling the crossing task."
+}

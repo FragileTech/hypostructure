@@ -1,0 +1,12 @@
+{
+  "reviewer": "independent-reviewer",
+  "decision": "reject",
+  "reason": "The submission is BLOCKED_WITH_REASON and does not complete the assigned kernel-check obligation. The current SpineVocabulary compilation timed out without producing an object file, and the narrow identity check was not run. The owner-local identity and candidate proof are explicitly unvalidated; the accepted mathematical transport does not replace the required kernel validation against the current vocabulary. The immediate outstanding obligation is kernel validation of the stated same-witness routing-label equality with the literal original local definitions. The timeout is not evidence that the mathematical identity is false.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-kernel-routing-label-identity.md",
+      "sha256": "76e6c764f4ace5dec204fe6ddd15fbe74535c8bb253dc0627cf9eb02b90e61aa",
+      "locator": "Status and first unvalidated inference; Check record; Unvalidated candidate, not a completed proof; final paragraph"
+    }
+  ]
+}

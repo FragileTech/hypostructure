@@ -1,0 +1,54 @@
+noncomputable def selectedBottleneckDischarge
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .homogeneousBottleneckPattern) known]
+    [FactKeys.Has (K .sparsePressureOverload) known]
+    [FactKeys.Has (K .blockedPairEntropySandwich) known]
+    [FactKeys.Has (K .roleFibrePartition) known]
+    [FactKeys.Has (K .fibrePressure) known]
+    [FactKeys.Has (K .baselineSpineDemand) known]
+    [FactKeys.Has (K .sparseSlackSurplus) known]
+    [FactKeys.Has (K .surplusAbove) known]
+    [FactKeys.Has (K .activeSurplusDemands) known]
+    [FactKeys.Has (K .sparsePortActivation) known]
+    [FactKeys.Has (K .activeSurplusFamily) known]
+    [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .capacityTokenLedger) known]
+    [FactKeys.Has (K .canonicalPairLedger) known]
+    [FactKeys.Has (K .canonicalBlockerRoute) known]
+    [FactKeys.Has (K .dependentPairFamily) known]
+    [FactKeys.Has (K .sparseUpperEnvelope) known]
+    [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .returnAvoidance) known]
+    [FactKeys.Has (K .tightEndpoint) known]
+    [FactKeys.Has (K .slackIndependent) known]
+    [FactKeys.Has (K .highCentreNormalForm) known]
+    [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .replacementExclusion) known]
+    [FactKeys.Has (K .exactResponseProfile) known]
+    [FactKeys.Has (K .admissibleRankQuotient) known]
+    [FactKeys.Has (K .uncompressible) known]
+    [FactKeys.Has (K .noProperBaseline) known]
+    [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
+    [FactKeys.Has (K .highCentreNormalForm) known]
+    [FactKeys.Has (K .sparseSurplusSurvivor) known]
+    (routingFresh : K .bottleneckRouting ∉ known)
+    (handoffFresh : K .typeBHandoff ∉ known)
+    (fanEntryFresh : K .typeBFanEntry ∉ known) :
+    ExactLedger EGInput.{u} selected
+      ([K .typeBFanEntry, K .bottleneckRouting, K .typeBHandoff] ++ known) := by
+  let routed :=
+    (sameTokenBottleneckRoutingRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      history (by simp [routingFresh, handoffFresh])
+  exact
+    (sameTokenTypeBFanEntryRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      routed (by simp [K_eq_iff, fanEntryFresh])
+

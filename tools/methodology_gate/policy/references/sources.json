@@ -1,0 +1,7 @@
+{
+  "web/frontend/src/methodology/ExecutionRecipe.tsx": "3bfc688d1ef4ba407fa45780ac777cb2f038ca37dc523e9ee2cc8caea8054cf6",
+  "web/frontend/src/methodology/recipe-reference.ts": "fe359ab606b11d09197ef4cc9fcf2f14aff602726d8a4a89918a8436ddd9b545",
+  "web/frontend/src/methodology/TaskRunViewer.tsx": "b29cc237e1e1046e9cb6c472a561873ef339f5fb931fbe0c5f131dda7cab2dbf",
+  "tools/methodology_gate/policy/workflow.json": "c5a45123dfd5c1e625ff5977c9d8b27be727e8296f66c4bd58e1b49160908e56",
+  "tools/methodology_gate/policy/structural-register.json": "e8f6c04487396c505565721539d40fc1d7cfed5d98143addc9704284906a9337"
+}

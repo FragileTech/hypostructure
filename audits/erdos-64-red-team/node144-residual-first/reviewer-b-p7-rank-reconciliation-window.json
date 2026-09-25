@@ -1,0 +1,52 @@
+{
+  "reviewer": "phase7_rank_reconciliation_review_b",
+  "decision": "accept",
+  "reason": "All equations refer to the same selected graph G and one actual producer skeleton F. Connectedness gives β(G)=m−n+1; the retained 2m=3n+s gives 2(m−n)=n+s, so n+s is even and β(G)=(n+s)/2+1 exactly. Combining the reviewed β(G)≥β(F)+1 yields β(F)≤(n+s)/2. The Phase 2 identity remains β(G)−β(F)=raw−(c(F)−1), where raw is the internal-edge count plus exterior component terms; hence raw≥c(F), requiring at least two raw units when c(F)=2 while preserving the one-unit merger correction. The submission treats this as one envelope account, does not multiply it by source pairs, and claims no cap, target cycle, export, or [144a] closure without a bounded-multiplicity or upper-bound consumer. Submitted hashes match current sources.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-rank-reconciliation-contract.json",
+      "sha256": "4184d6bba04c16ca9c3fd9fcc32d71f327c1acc50efc1dacaf8893f1b0fffe8a",
+      "locator": "P7-window-54 acceptance and on_failure"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-rank-reconciliation-result.json",
+      "sha256": "9d1c270645f8fc506b7e428b32b59177b5b2d50e693e011ab38462e2761114ce",
+      "locator": "output, missing bounded-multiplicity consumer, and implementation status"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-rank-reconciliation.md",
+      "sha256": "035c96a563fb5d1f74a4a804e805edcf7f383cfe8376001068ec4f2e4599021a",
+      "locator": "global rank and parity, exact c(F)-corrected raw balance, and no-duplication limits"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-bridgeless-rank.md",
+      "sha256": "c1df8c1bce5643e26ee18180e122639712cb2578ec5e17c5790e02d3d34cfc2f",
+      "locator": "one-unit β(G)≥β(F)+1 for one chosen producer envelope"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-component-dichotomy.md",
+      "sha256": "6e75dfa5dc65bf1d6ee52b6a1bbcbff87cb46a14767c8f2bcdc4aea1f5c930d0",
+      "locator": "actual c(F)∈{1,2} and isolated-core exception"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-relative-cycle-rank.md",
+      "sha256": "055b4359224b6a18f6e1b8274b9df0b93d6f4cedc8bf2f7fad152a12612929b7",
+      "locator": "exact disconnected-F identity and same-G surplus reading"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "same selected G, retained connectivity and 2m=3n+s account"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "lines 11190–11195: exact sparseSlackSurplus 2m=threshold·n+degreeSurplus"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "fca60d5a643cb6cdff51d0dde556538b66aa5b67963872fd2a42c3accace6b28",
+      "locator": "lines 633–635: selected object's capacity-ledger connectivity"
+    }
+  ]
+}

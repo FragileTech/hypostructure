@@ -1,0 +1,81 @@
+{
+  "task_id": "P1-window-97-routing-label-transport",
+  "sessions": [
+    "c2fa13905a974504815c94c4ae5989c8",
+    "c2406360b8be4a02972df8ac1bb5729e",
+    "6ceff4eee3c04df0a9ba4797fae8d113"
+  ],
+  "input_hash": "11c6e1cdb3698b243ee1dba83e1f304ee43d2361867848966db1daa2c39e7c78",
+  "submission_hash": "d4ac6e26e5c4b64a193a7bcb4e9d18aa5f039ec144732918a3321c729650afa3",
+  "reviews": [
+    {
+      "reviewer": "c2406360b8be4a02972df8ac1bb5729e",
+      "decision": "accept",
+      "reason": "The submitted mathematical proof establishes the requested equality on the identical retained handoff witnesses, pattern pair and selected demand. Schedule membership places both ordered ports in excessPorts; the retained active shoulder witnesses and cubic baseline give support size equal to the threshold. The fixed filtered enumeration therefore has exactly that length, making both old profile fallback cases unreachable. Proof irrelevance, Fin extensionality and function extensionality identify every actual induced-degree entry. The remaining coordinates, including window positions and the blocker flag, unfold to identical expressions on the same capacity and token. No separate ledger witnesses or envelope packing are identified. No original objects, profile values or accounts change. The source hashes match the pinned inputs; this is a complete transport audit, not a new construction or a claim of branch closure.",
+      "evidence": [
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-routing-label-transport.md",
+          "sha256": "c8c1a24820955fb645b7a1c83191d5d9d6ec250dc1dcb944e8d7b19ed030cfb0",
+          "locator": "Displayed equality; Pair, order, and supports; The seven coordinates; Preservation and verification"
+        },
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-routing-label-source.txt",
+          "sha256": "8570d28a60a84a9bbb02026e37b39af5fe9b92c59b7e7fb92c2267324b9efe70",
+          "locator": "Owner lines 639\u2013643, 889\u2013961, 967\u2013990, 1230\u20131246"
+        },
+        {
+          "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+          "sha256": "36ab8555e398179dd5c73fd4218acbe7dd6dde052dc2b41bb7a97ee71f06e635",
+          "locator": "Data.BoundaryProfile; sameTokenActualRoutingLabel; SameTokenTypeBHandoffStatement; Holds cubicBaseline"
+        },
+        {
+          "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+          "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+          "locator": "ObjectCapacityLedger.presented; HomogeneousBottleneckPatternStatement"
+        },
+        {
+          "path": "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean",
+          "sha256": "cca0d7a8a6d32968b3bd01a9ea3b0a6fb0fa119a7f1380d98610c29815087e31",
+          "locator": "RoutingLabel, lines 85\u201387"
+        },
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+          "sha256": "113226b2f99eabccb9f3b1f00e1c4ce6eeb474eadf90fdd10099c2003476badd",
+          "locator": "Common object and endpoint; Retained quantitative accounts; Window incoming arm"
+        }
+      ]
+    },
+    {
+      "reviewer": "6ceff4eee3c04df0a9ba4797fae8d113",
+      "decision": "accept",
+      "reason": "The submitted mathematical proof establishes the requested equality on the identical retained handoff witnesses, pattern pair and selected demand. Schedule membership supplies two excess ports; the cubic shoulder supports and fixed vertex enumeration make both old profile fallbacks unreachable. Proof irrelevance and extensionality identify the ordered actual induced-degree profiles. The remaining coordinates, including window positions and the blocker flag, unfold to the same expressions. No distinct capacity, token or envelope witnesses are identified. No original object, profile value or account changes. The proof stays within the transport obligation and does not claim the parent reduction or a new kernel check. All pinned source hashes match.",
+      "evidence": [
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-routing-label-transport.md",
+          "sha256": "c8c1a24820955fb645b7a1c83191d5d9d6ec250dc1dcb944e8d7b19ed030cfb0",
+          "locator": "Displayed equality; Pair, order, and supports; The seven coordinates; Preservation and verification"
+        },
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-routing-label-source.txt",
+          "sha256": "8570d28a60a84a9bbb02026e37b39af5fe9b92c59b7e7fb92c2267324b9efe70",
+          "locator": "Owner lines 639\u2013643, 889\u2013961, 967\u2013990, 1230\u20131246"
+        },
+        {
+          "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+          "sha256": "36ab8555e398179dd5c73fd4218acbe7dd6dde052dc2b41bb7a97ee71f06e635",
+          "locator": "Data.BoundaryProfile; sameTokenActualRoutingLabel; SameTokenTypeBHandoffStatement"
+        },
+        {
+          "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+          "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+          "locator": "ObjectCapacityLedger.presented; HomogeneousBottleneckPatternStatement"
+        },
+        {
+          "path": "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean",
+          "sha256": "cca0d7a8a6d32968b3bd01a9ea3b0a6fb0fa119a7f1380d98610c29815087e31",
+          "locator": "RoutingLabel, lines 85\u201387"
+        }
+      ]
+    }
+  ]
+}

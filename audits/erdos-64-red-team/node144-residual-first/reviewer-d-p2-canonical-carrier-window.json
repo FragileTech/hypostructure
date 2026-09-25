@@ -1,0 +1,72 @@
+{
+  "reviewer": "phase2_canonical_carrier_review_d",
+  "decision": "reject",
+  "reason": "The same-witness step from the handoff pattern's roleFibre membership to its fixed canonical charge t and role r is sound, and the boundaryWindow, crossWindow, remainder, and primitive token clauses are broadly described correctly. The submitted novel physical-support case is vacuous, however. If a pair has a sharedLocalBuffer blocker at vertex v, then v lies in both demands' localBuffer sets. Each localBuffer is a subset of its declaredSupport, so the blocker family also contains sharedDeclaredSupport (vertex v). canonicalBlocker scans all sharedDeclaredSupport candidates before any sharedLocalBuffer candidate; consequently no charged pair can have canonical blocker kind sharedLocalBuffer, and a nonempty same-role handoff pattern cannot realize the proposed primitiveVertex/sharedLocalBuffer branch. The note treats that branch as a live unresolved interaction with both actual T(p), so it fails the Phase 2 requirement for a supported new relation. In addition, the result's phrase 'fixed canonical blocker carrier' overstates the first three token clauses: their fixed edge or vertex is selected from the blocker's declared support, while only the primitive clause is defined by the blocker's carrier. A repair could retain the valid charge inventory and examine a live sharedDeclaredSupport case, whose guaranteed membership is in both declared supports T(p) union Gamma(p), without asserting membership in both local buffers. No separate window-class witness equality is used.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-canonical-carrier-contract.json",
+      "sha256": "0cb9751990395ae4ea34a4234c6065321c787d428063ae5dc8a2b6aa95f50968",
+      "locator": "P2-window-05 acceptance requires a supported new same-witness carrier relation"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-canonical-carrier-result.json",
+      "sha256": "ab347e508d311d4f439b2adbaca7ed706de825e3707317481336246a845c2b5e",
+      "locator": "submitted primitiveVertex/sharedLocalBuffer emphasis and four-case carrier claim"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-canonical-carrier.md",
+      "sha256": "8dd9a812f304de32fc2c85b7db7c55c184fb672e34a45a2e5ab4380a687f3803",
+      "locator": "lines 3-41: valid same-witness inventory but live-case treatment of sharedLocalBuffer at lines 22-38"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/SurplusBlockers.lean",
+      "sha256": "fdd50f51119bd7e7c091bbf861a8054a1c6dc295b2db3077f469cb284883a183",
+      "locator": "lines 149-190: localBuffer subset declaredSupport; lines 204-213 and 301-313: shared vertex yields declared-support blocker; lines 390-430: shared local blocker membership; lines 647-663: canonical blocker order"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/SameTokenBlockerRoles.lean",
+      "sha256": "4d5086dc05683c29020614c6318b3b728998ca77286e0a349e9432cf595baaaf",
+      "locator": "lines 50-78: sharedDeclaredSupport precedes sharedLocalBuffer in canonical kind order"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/CapacityTokenAssignment.lean",
+      "sha256": "3a1c23e7fe251d4eeb911d4f561887221b303ce84959f3d2afa36d7f8ea78aa4",
+      "locator": "lines 102-154: blocker support versus primitive carrier; lines 264-352: four charge clauses; lines 504-536 and 658-673: canonical charge and role"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/CapacityTokenLedger.lean",
+      "sha256": "68f8562a7dae3a3270a969ca0fc9ea1187a6e903ff72ec7c78c03b9a98abb626",
+      "locator": "lines 112-141: roleFibre filters the canonical charge fibre"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+      "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+      "locator": "lines 54-75 and 623-682: concrete capacity presentation and same-witness handoff pattern"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/SparseEntropySandwich.lean",
+      "sha256": "1b07be9eebe6b78b8d2ebd272adec4cafa83e9e4743d233bdafb5da9daac36db",
+      "locator": "lines 146-213, 247-256, and 741-763: actual localBuffer and recorded activation preserves it"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/SparsePortActivation.lean",
+      "sha256": "19c7074181b7de19369a1af133df724fe4e2b8e7bcae4717008943ca898463f6",
+      "locator": "lines 50-69: T(p) is the selected port support"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "lines 3961-3979: typeBHandoff binds one active/capacity/source witness without equating window-class witnesses"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-route-overlap.md",
+      "sha256": "713beec8f6e9414b565f1c7b3a545874507288772dae617d300dc631dcd12b19",
+      "locator": "lines 3-42: prior all-route observable concerns paths, not canonical blocker carriers"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-terminal-effect.md",
+      "sha256": "f2f868bd854abba25f6e806cfc61db7a888e4edefb787c3adbe77c3974dce5f0",
+      "locator": "lines 3-36: prior terminal projection concerns demand endpoints, not canonical blocker carriers"
+    }
+  ]
+}

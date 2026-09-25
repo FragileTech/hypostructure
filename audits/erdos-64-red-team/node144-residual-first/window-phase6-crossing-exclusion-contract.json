@@ -1,0 +1,17 @@
+{
+  "id": "P6-window-47-crossing-exclusion",
+  "mode": "FORMALIZE",
+  "phase": "6",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-extremal-two-tail-uncrossing",
+  "kind": "prove_property",
+  "goal": "Exclude the actual cross-arm membership nextLeft∈armRight by comparing the accepted source-preserving shortcut with the fixed maximal route pair.",
+  "objects": ["G=selected.object and complete [144a] window history", "matching/star exact left and right separator decompositions with nextLeft≠nextRight", "checked same-typed right shortcut and original firstValid/secondValid/maximalPrefix"],
+  "reads": ["branch:node144-window-32d32f9d19e7", "P7-window-46-right-shortcut-integration", "P6-window-45-right-shortcut"],
+  "interaction": "The old pair agrees through the separator and diverges at its two distinct assigned neighbours. The legal shortcut agrees with the fixed left route at nextLeft, one vertex farther, contradicting the maximum chosen for the same source-specific route types.",
+  "parent_payoff": "Rule out the crossing demanded by a saturated envelope; the resulting outside-skeleton physical edge is the subsequent separate extraction.",
+  "depends_on": ["P7-window-46-right-shortcut-integration"],
+  "allowed_write": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+  "acceptance": "Prove locally in both actual [144] producer arms nextLeft∈armRight→False. Use their accepted shortcut, show its exact head=root and last=right.2 (issued/lands alone are insufficient), establish old commonPrefixLength=common.length+1 and shortcut length≥common.length+2, and apply the retained maximalPrefix with firstConfiguration and the same-typed shortcut. Do not change source, support, terminal, selected pair or graph; do not infer the physical outside-F edge yet, a cap, or closure. Kernel-check owner and direct EG caller; state the next exact edge extraction.",
+  "on_failure": "Report the first missing path comparison or validB field and decompose it; do not assume the shortcut is maximality-admissible merely from its RoutingConfiguration type."
+}

@@ -1,0 +1,62 @@
+{
+  "name": "Node 172a \u2014 close exact retained graph-count-failure residual",
+  "input_paths": [
+    "hypostructure/Hypostructure",
+    "hypostructure/Hypostructure.lean",
+    "hypostructure/lakefile.toml",
+    "hypostructure/lake-manifest.json",
+    "hypostructure/lean-toolchain",
+    "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG",
+    "to_formalize/erdos_64_proof.tex",
+    "Assembly_node_audit.md",
+    ".agents/skills/eg-proof-expansion",
+    "web/frontend/src/methodology/ExecutionRecipe.tsx",
+    "web/frontend/src/methodology/recipe-reference.ts",
+    "proofs/hypostructure_erdos_64_eg/lakefile.toml",
+    "proofs/hypostructure_erdos_64_eg/lake-manifest.json",
+    "proofs/hypostructure_erdos_64_eg/lean-toolchain",
+    "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG.lean",
+    "audits/erdos-64-red-team/172a-methodology-execution.md",
+    "audits/erdos-64-red-team/172a-construction.md",
+    "audits/erdos-64-red-team/blocked-fibre-obstruction.md",
+    "audits/erdos-64-red-team/checks",
+    "audits/erdos-64-red-team/reduction-certification",
+    "audits/erdos-64-red-team/node172a-gated/check_node172a.py"
+  ],
+  "allowed_changes": [
+    "hypostructure/Hypostructure/Graph/Strategy/BlockedOverlapRows.lean",
+    "hypostructure/Hypostructure/Graph/Strategy/BlockedCompressionRows.lean",
+    "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+    "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly.lean",
+    "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/StrategyDag.lean",
+    "to_formalize/erdos_64_proof.tex",
+    "Assembly_node_audit.md"
+  ],
+  "runtime_paths": [
+    {
+      "source": "/home/guillem/.elan/toolchains/leanprover--lean4---v4.31.0",
+      "target": "/runtime/lean"
+    },
+    {
+      "source": "/home/guillem/hypostructure/hypostructure/.lake/packages",
+      "target": "/runtime/packages"
+    },
+    {
+      "source": "/home/guillem/hypostructure/hypostructure/.lake/build",
+      "target": "/runtime/build-cache"
+    },
+    {
+      "source": "/home/guillem/hypostructure/proofs/hypostructure_erdos_64_eg/.lake/build",
+      "target": "/runtime/eg-build-cache"
+    }
+  ],
+  "checks": [
+    {
+      "name": "Canonical enforcement, owner, EG composition and strict closure checks",
+      "argv": [
+        "/usr/bin/python3",
+        "/input/sources/audits/erdos-64-red-team/node172a-gated/check_node172a.py"
+      ]
+    }
+  ]
+}

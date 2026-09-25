@@ -1,0 +1,26 @@
+{
+  "id": "P5-window-02-prove-terminal-count-inference",
+  "mode": "DISCOVER",
+  "phase": "5",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-terminal-congestion-candidate",
+  "kind": "prove_conditional_inference",
+  "goal": "Prove the finite-set implication from the exact handoff source pattern and candidate terminal-fibre output to the proposed lower bound and non-root route terminal.",
+  "objects": [
+    "the same P, D, T and rho extracted from the retained typeBHandoff witness on G",
+    "the matching-or-star source form and registered Q_geom at L_geom=Q_geom+1"
+  ],
+  "reads": [
+    "branch:node144-window-32d32f9d19e7",
+    "P5-window-01-define-terminal-payoff",
+    "hypostructure/Hypostructure/Graph/MatchingStar.lean",
+    "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+    "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean"
+  ],
+  "interaction": "finite matching/star demand count composed with the actual at-most-three terminal fibres",
+  "parent_payoff": "B and O imply |D|≥Q_geom+2, 3|T|≥|D|, and T without rho nonempty.",
+  "depends_on": ["P5-window-01-define-terminal-payoff"],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase5-terminal-inference.md",
+  "acceptance": "Give a rigorous proof of B and O implies G_term for both matching and star, including nonempty pattern, two-element edges, disjoint terminal-fibre partition, Q≥2 and root deletion. Use only the same handoff source, with no Lean implementation, homogeneous cap, near-cubic estimate, or admitted move claim.",
+  "on_failure": "State the first exact finite-set or source-witness inference that fails and retain the branch open."
+}

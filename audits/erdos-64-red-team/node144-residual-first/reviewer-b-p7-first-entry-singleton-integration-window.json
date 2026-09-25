@@ -1,0 +1,52 @@
+{
+  "reviewer": "phase7_first_entry_singleton_integration_review_b",
+  "decision": "accept",
+  "reason": "The note combines the checked own-arm first-edge, two-vertex core-edge, and branch-specific first-entry singleton facts on the same owner-produced matching/star envelope. Under the explicitly conditional one-sided all-in-F premise and a absent from armRight, the endpoint lemma removes right-arm edges; the centre contributes only ha; a outside core allows at most one own-arm edge, while a inside core makes armLeft singleton and allows at most one core edge. The proposed next proof is exactly to apply the underlying graph's incidenceFinset/cardinality to contradict the checked degree(a)=3 and derive a∈armRight. It clearly labels that cardinality implication, splice and escape as unproved; constraint, compression and quantity tests remain negative, with no move credit or closure.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-first-entry-singleton-contract.json",
+      "sha256": "7258ee6290e54ce2f5af6527b2c808791a834e6c2b4b703c43da4a3f8b105c72",
+      "locator": "goal, acceptance and on_failure fields"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-first-entry-singleton-integration-result.json",
+      "sha256": "3f08030d71738f74f049334f1f06f53224b712910e8aa5fb57ea6402ca0c21c4",
+      "locator": "output, evidence hashes, implementation_status and first_missing_inference"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-first-entry-singleton-integration.md",
+      "sha256": "cc2226fc46c87248adee1900eb3f634038beaef966886df884cefeb18751c7fb",
+      "locator": "lines 3-20 checked same-envelope source restrictions and two conditional incidence cases; lines 22-35 next incidenceFinset proof and negative tests"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-first-entry-singleton.md",
+      "sha256": "0c777c61d6cecb97bdc326e024267ec79a006232a2e6aa0875c671f22fe8aacb",
+      "locator": "lines 3-24 checked matching/star conditional singleton implication"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-first-arm-incidence.md",
+      "sha256": "c971b6b5fcc1751d026251962daa18d7a8a558fe4b2184ed2959febb39ab4f09",
+      "locator": "lines 3-24 checked own-arm first-incidence restriction"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-two-vertex-core-edge.md",
+      "sha256": "94b7b3a2b18406aaa85cad653c3032f3abd831ed052eac5505d24e5e52cc342e",
+      "locator": "lines 3-22 checked sole-possible induced core edge"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-arm-edge-endpoints.md",
+      "sha256": "924e2e94c49c59d84c5875cd8ce79eae595af4aab2dd3124b70e48681f289bf6",
+      "locator": "lines 3-21 checked right-arm endpoint elimination rule"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "415dfce1483e1e90b44b097aa4ab06c6e8b0630f7f23e2476d8af70ce1a9fa21",
+      "locator": "lines 645-754 local arm/core lemmas; 2129-2139 and 3059-3069 matching/star singleton specializations; later envelope skeleton and cubic degrees"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "revision, same selected graph and exact 50-key window endpoint"
+    }
+  ]
+}

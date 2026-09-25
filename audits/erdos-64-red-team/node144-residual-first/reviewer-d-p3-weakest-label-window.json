@@ -1,0 +1,42 @@
+{
+  "reviewer": "phase3_weakest_label_review_d",
+  "decision": "accept",
+  "reason": "All four submitted evidence hashes match. SameTokenRoutingGerms defines labelBound Label = Fintype.card Label = Q and patternBound Label = Q + 1; either route-bearing matching or star in HomogeneousBottleneckPatternStatement has at least that many edges. The cited pigeonhole theorem and both owner applications therefore force one distinct equal-label pair. At the weakest allowed size Q + 1, an abstract labeling with one edge in each of Q classes and one extra edge in one class has exactly one repeated class, so cardinality alone does not force a second independent collision. The submission expressly treats this as a numerical limitation rather than a graph model or non-entailment proof for the full [144a] residual. The owner constructs one surviving separator envelope from its selected two routes, while the retained all-route declarations and published handoff do not themselves supply a source-wide incidence relation to that separator for the remaining pattern edges. The artifact leaves that geometric relation unresolved and claims no technique, productive restriction, or closure.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "revision, objects, accounts, open_outcomes"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase3-weakest-label-contract.json",
+      "sha256": "dbb8cd86a633d226ca593661cb49295050bf61fae186d12128613dd5f9c37d20",
+      "locator": "goal, acceptance"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase3-weakest-label-result.json",
+      "sha256": "9a73c88f1dc0f3bb6c2464ba8613d5315619dce8e7deed001b75828361fabaf2",
+      "locator": "output, evidence, side_observations"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase3-weakest-label.md",
+      "sha256": "5d4e91763386d20d1f5f627262a0a748e21a2a99dbeb8e62cd61f67edd1c2fdb",
+      "locator": "weakest collision case, abstract assignment, unresolved incidence"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean",
+      "sha256": "cca0d7a8a6d32968b3bd01a9ea3b0a6fb0fa119a7f1380d98610c29815087e31",
+      "locator": "102-115, 143-161"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+      "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+      "locator": "623-678"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "335b2996340ad3b65645cc97afeb627731ecb2209bf4031286aff0e6346da7e2",
+      "locator": "1378-1406, 2195-2245, 3047-3112"
+    }
+  ]
+}

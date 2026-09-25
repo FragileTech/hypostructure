@@ -1,0 +1,18 @@
+{
+  "branch": "node144-remainder-strict-handoff",
+  "branch_status": "open",
+  "atomic_tasks": {
+    "pending": 0,
+    "submitted": 0,
+    "accepted": 12,
+    "rejected": 0
+  },
+  "productive_moves": 0,
+  "open_outcomes": [
+    "remainder:[144a]-same-token-handoff"
+  ],
+  "next": {
+    "task": null,
+    "diagnostic": "No ready task; inspect missing dependencies or open outcomes"
+  }
+}

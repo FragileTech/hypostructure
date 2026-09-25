@@ -1,0 +1,47 @@
+{
+  "reviewer": "phase7_forced_return_integration_review_b_retry",
+  "decision": "accept",
+  "reason": "The corrected result now claims at least one certified relative rank unit, matching the note's β(G)≥β(F)+1 rather than asserting equality. The owner-local existential uses the same non-skeleton edge e and HasReturn in both producer arms, while the rank inequality remains mathematical, not kernel-checked. The exact Phase 2 account retains −(c(F)−1) with c(F)∈{1,2}, yielding raw≥c(F); a possible component merger is paid before counting the net cycle unit. The note charges one chosen envelope, not each source pair, repeated use of e, or repeated exterior component. It separately tests the local constraint, compression/transport, and quantity/closure modes and identifies the missing nested source-bound typeBHandoff export, including combining location and return on one x, followed by marked-return geometry. No exported restriction, cap, productive move, or [144a] closure is claimed. All submitted evidence hashes match current repository files.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-forced-return-integration-contract.json",
+      "sha256": "1d27e50ad5c7099648e7a65f2c8e4448ff25c37d346dfd7f4367a3cd7248ae9a",
+      "locator": "P7-window-57 acceptance: same-edge scope, c(F) correction, three payoff tests, and export"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-forced-return-integration-result.json",
+      "sha256": "39391cd3b02572395cb56fe2987423568bf55e7d36cfd288ac00e7241390f804",
+      "locator": "corrected output says at least one rank unit; evidence, subobligations, and implementation status"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-forced-return-integration.md",
+      "sha256": "1ab505407ed29794269999bb20d4aede2dedfec589d698d52dfe2dd1d0efd6ce",
+      "locator": "same-edge return, β inequality, corrected raw balance, three payoff tests, and same-x export"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-rank-reconciliation.md",
+      "sha256": "035c96a563fb5d1f74a4a804e805edcf7f383cfe8376001068ec4f2e4599021a",
+      "locator": "one-unit lower bound, c(F) correction, and no source-pair duplication"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-component-dichotomy.md",
+      "sha256": "6e75dfa5dc65bf1d6ee52b6a1bbcbff87cb46a14767c8f2bcdc4aea1f5c930d0",
+      "locator": "actual F has one or two components"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-forced-return.md",
+      "sha256": "e352c8c737530792d70e31111dbd38f63ab6cff39772b62e9309d1e496d95e3f",
+      "locator": "kernel-checked same-edge HasReturn with repaired caller"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "pinned selected graph, ledger, and still-open [144a] endpoint"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "ccd8fafd232d49630edebed9c9c45341ab9f40a17c48ef8e81fad86c8979c5c0",
+      "locator": "lines 2811–2826 and 3888–3903: same-edge return is local and handoff projection omits it"
+    }
+  ]
+}

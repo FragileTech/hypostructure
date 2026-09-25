@@ -1,0 +1,17 @@
+{
+  "id": "P6-window-55-forced-edge-return",
+  "mode": "FORMALIZE",
+  "phase": "6",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-extremal-two-tail-uncrossing",
+  "kind": "prove_property",
+  "goal": "Kernel-prove a return path after deleting the same forced non-skeleton physical edge on each actual [144] producer, using the retained K.bridgeless fact.",
+  "objects": ["G=inputs.current.object and literal fifty-key window predecessor", "actual matching/star nextLeft, same outsideSkeletonNeighbour edge e=s(nextLeft,x), literal F", "Graph.EdgeContraction nextLeft x with its actual adjacency proof"],
+  "reads": ["branch:node144-window-32d32f9d19e7", "P7-window-50-endpoint-location", "P7-window-53-bridgeless-rank-payment", "P7-window-54-rank-reconciliation"],
+  "interaction": "The newly forced e∈E(G)∖F is an actual ordered edge of the same selected G to which the inherited K.bridgeless HasReturn proposition applies.",
+  "parent_payoff": "Tie the mathematical return-cycle/rank implication to the actual producer edge in Lean; preserve source identity for later export and marked return-length analysis.",
+  "depends_on": ["P7-window-50-endpoint-location", "P7-window-54-rank-reconciliation"],
+  "allowed_write": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+  "acceptance": "Add K.bridgeless to the same [144] atomic row's Requires list, read it only through inputs.get, and in both matching/star producer arms return the SAME outsideSkeletonNeighbour x, adjacency and e∉F together with HasReturn of the actual EdgeContraction nextLeft x. Do not replace the witness, graph, source pattern or envelope; do not infer a target cycle, rank inequality, cap or closure. Build owner and direct EG caller, inspect diff for forbidden standalone declarations, and name source-bound export as still missing.",
+  "on_failure": "Report the first ExactLedger readiness or EdgeContraction typing defect; do not import bridgeless as an ambient axiom or construct another graph."
+}

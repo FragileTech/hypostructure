@@ -1,0 +1,27 @@
+{
+  "id": "P6-window-29-fixed-source-max-route-choice",
+  "mode": "DISCOVER",
+  "phase": "6",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-extremal-two-tail-uncrossing",
+  "kind": "prove_property",
+  "goal": "Inside the existing [144] owner, select a pair of actual RoutingConfigurations maximizing common-prefix length for each fixed matching/star source pair and its unchanged demands/root/supports.",
+  "objects": [
+    "the existing selected graph G, certified token t, source pattern P, fixed p,q,d_p,d_q and root rho",
+    "the original nonempty pair-specific configuration families in homogeneousBottleneckPattern",
+    "the local firstConfiguration and secondConfiguration used by both owner arms"
+  ],
+  "reads": [
+    "branch:node144-window-32d32f9d19e7",
+    "P5-window-26-uncrossing-admission",
+    "P7-window-28-schema-integration"
+  ],
+  "interaction": "The unaccounted two-tail overlap becomes restrictive only after route choice is maximal for the same source pair; this construction retains all source constraints.",
+  "parent_payoff": "Supply the extremal route pair used by the reviewed all-in-skeleton splice contradiction without changing the equal-label source pair or graph.",
+  "depends_on": [
+    "P7-window-28-schema-integration"
+  ],
+  "allowed_write": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+  "acceptance": "A local anonymous proof in sameTokenBottleneckRoutingRow obtains both route configurations, their original heads/terminals, and a universal maximum common-prefix inequality over all valid configurations with exactly fixed token, pairs, demands, supports, buffers and root. Use finiteness of simple routes on G and the existing nonempty witnesses. Install it in both matching and star arms and kernel-check the owner. Do not introduce a top-level helper, new key, axiom, or claim of escape.",
+  "on_failure": "Expose the first exact Lean obligation in a task result; do not weaken maximality or select a new source pair."
+}

@@ -1,0 +1,42 @@
+{
+  "reviewer": "phase4_fingerprint_review_d",
+  "decision": "accept",
+  "reason": "All four submitted evidence hashes match. The owner already selects two same-label original edges in each matching/star branch, runs their parallel/first-separator routing, excludes sparse and cubic alternatives under the retained survivor facts, and constructs one decorated envelope. The published handoff keeps the source pattern and an existential envelope but omits the two-edge-to-separator provenance; retaining that provenance is genuine intermediate data, yet the proposed projection gives no relation for the other original blocked pairs or bound on their repeated physical centre/arm incidence. The prior execution record already describes source-tagged pattern extraction events and a conditional pair-count formula, while explicitly leaving event-to-centre capacity, repeated arm incidence, and a graph-level consumer for deficient event families unproved; it also says the extraction's Lean implementation fidelity is not established. Thus rejecting this one-envelope projection as the selected productive move is justified on the current full residual. The result leaves the residual open and does not claim the structural aspect or a stronger source-wide move is impossible.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "revision, objects, accounts, open_outcomes"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-fingerprint-contract.json",
+      "sha256": "7a73028b45c99dd4feba36eacbfd0c9f47b32f1ba20d191b2f62572f310fde28",
+      "locator": "goal, interaction, acceptance"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-fingerprint-result.json",
+      "sha256": "b27e4e7ccbcead05082d86f075ac929bb6355ca1a2b2dfd3ae11aaebad572693",
+      "locator": "output, evidence, side_observations"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-fingerprint.md",
+      "sha256": "fbea444893f6d25e663768253a61665db0ab21eea771f7879e785835f7974aac",
+      "locator": "technique and object; proposed change; prior attempt; decision"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "335b2996340ad3b65645cc97afeb627731ecb2209bf4031286aff0e6346da7e2",
+      "locator": "1374-1409, 1705-1755, 2191-2245, 2575-2625, 3047-3112"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "3940-3979"
+    },
+    {
+      "path": "audits/erdos-64-red-team/near-cubic-repair/execution.md",
+      "sha256": "c90d539cbd8b0d6170ca7a70bc704211ad19f9b158dbbf44220f4a0a5eae609c",
+      "locator": "103-175, 198-295"
+    }
+  ]
+}

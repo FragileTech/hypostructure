@@ -1,0 +1,27 @@
+{
+  "reviewer": "phase6_arm_edge_endpoints_review_d",
+  "decision": "accept",
+  "reason": "The anonymous owner-local lemma proves exactly that any vertex incident to an edge in armEdgeSet path belongs to path. Finset.mem_image exposes an actual pair from zip path path.tail; List.of_mem_zip puts its first component in path and second in path.tail, List.mem_of_mem_tail places the latter in path, and Sym2.mem_iff exhausts both undirected endpoint orientations. This handles singleton/empty paths vacuously and overlapping arm edge sets without extra assumptions. The same armEdgeSet is used in both actual matching/star skeletons. The note uses only the future contrapositive that a vertex absent from an arm cannot receive an edge from it; it neither assumes all-in-F nor proves crossing, an outside edge, a new returned Holds, or closure. Submitted note and owner hashes match the current files; the result reports passing owner and direct caller checks.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-arm-edge-endpoints-contract.json",
+      "sha256": "4ba9f19bb851a2fdef577f407d8bbe00e445e4988ad2cefa90bb991727c7482a",
+      "locator": "P6-window-35 exact local endpoint property and scope"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-arm-edge-endpoints-result.json",
+      "sha256": "2794996687c516a9e5e7ef0323b83165c01edb657511dab14d60d70c2bc71e9f",
+      "locator": "submitted status, missing first-crossing inference and evidence"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-arm-edge-endpoints.md",
+      "sha256": "924e2e94c49c59d84c5875cd8ce79eae595af4aab2dd3124b70e48681f289bf6",
+      "locator": "endpoint statement, future conditional use and no-escape limits"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "d08464f5a716475697efe1c3abb5fbdd02f65ef4798d6cf7a0f8eff35867451d",
+      "locator": "lines 645-669: zip/tail armEdgeSet and armEdgeSet_endpoint_mem proof; matching/star skeletons at 2345 and 3256"
+    }
+  ]
+}

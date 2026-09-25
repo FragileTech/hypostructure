@@ -1,0 +1,72 @@
+{
+  "status": "SUBMITTED_RESULT",
+  "output": "From the full window source history, the equal-label pair and finite max-prefix valid route choice are available. Parallel yields the old excluded sparse exit. A first-separator all-in-F envelope contradicts P5-window-24. The only surviving extremal source-bound envelope has one of its four non-centre fan-neighbour incidences in I=E(G[S])\\E(F) or delta_G(S). This excludes the previously allowed all-in-F pattern for the selected envelope and leaves exact I and exterior continuation tasks, without a global pair payment or node closure.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase5-escape-payoff.md",
+      "sha256": "28f6cb263edac1f82d56551589cb5b91f9bf728fd6b880b0b51dad4dc2224937",
+      "locator": "full three-outcome coverage, typed escape and exact continuation"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase5-all-in-F-extremal-payoff.md",
+      "sha256": "f13b60ed6799b2ff572dfd330f1f2923317395ffdd92963b48c81404a034deb0",
+      "locator": "reviewed all-in-F conditional contradiction"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-incidence-ledger.md",
+      "sha256": "e1c9b8ec5b090bf9aefd098e4658d5a711269f0ac840f79f1d8ee4297fe34e1c",
+      "locator": "four-indexed incidence partition"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-extremal-uncrossing.md",
+      "sha256": "c9c22609200c08df468cb971ba57bb2a0a8dc15e6f5b765a979c55873424a8d5",
+      "locator": "max-prefix fixed-source catalogue"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+      "sha256": "113226b2f99eabccb9f3b1f00e1c4ce6eeb474eadf90fdd10099c2003476badd",
+      "locator": "complete original 50-key branch state"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "335b2996340ad3b65645cc97afeb627731ecb2209bf4031286aff0e6346da7e2",
+      "locator": "equal-label selection and parallel/sparse-exit derivation"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "currently weaker handoff Holds requiring owner-local publication"
+    }
+  ],
+  "implementation_status": "none",
+  "first_missing_inference": "The present post-[144] Holds proposition does not carry the extremal source-envelope identity or escape; Phase 6 must publish it in the owner-local canonical ExactLedger and kernel check the result.",
+  "immediate_subobligations": [
+    "Decompose finite extremal choice, source-binding and physical escape publication into owner-local construction tasks.",
+    "For the I survivor, distinguish a component join from a relative-rank chord and test source-pair cost.",
+    "For the boundary survivor, classify the reached actual exterior component and second landing, then test a distinct cost or new exclusion.",
+    "Preserve all fifty incoming keys and refrain from claiming B1 charge, cap, near-cubic estimate or [144a] closure."
+  ],
+  "metadata": {
+    "structural_use": null,
+    "interaction": {
+      "object": "selected G, one original typeBHandoff source pattern and an extremally chosen envelope constructed from its fixed equal-label pair",
+      "ingredients": [
+        "fixed-source same-label pigeonhole",
+        "nonempty finite valid route family",
+        "retained sparse-exit survival",
+        "all-in-F extremal contradiction",
+        "four-indexed physical F/I/boundary partition"
+      ],
+      "relation": "Parallel and all-in-F alternatives are excluded, forcing a physical non-skeleton fan-neighbour incidence at the same extremally produced handoff.",
+      "known": "At least one actual I or boundary incidence must occur; the source pattern, source pair and chosen envelope are retained together.",
+      "unresolved": "Which escape arm pays a source demand or forces target/compression restriction; Lean owner publication remains unimplemented.",
+      "domains": "one G and exact window ancestry, one fixed pair of source demands, same envelope; no witness substitution",
+      "previous_use": "Earlier component-return catalogue permitted D_I=D_boundary=empty and therefore had no every-outcome payoff."
+    },
+    "changed_objects": [],
+    "changed_accounts": [],
+    "side_observations": [
+      "This is a constraint restriction of a selected handoff witness, not an upper bound on the number of counterexample graphs."
+    ]
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "reviewer": "independent-reviewer-1",
+  "decision": "accept",
+  "reason": "The definition implements the accepted source-bound schema on the declared retained residual. Both routed alternatives preserve the certified source, quantitative clauses, actual equal-label pair and fixed demands; maximality ranges over all configurations with those same supports and endpoints. First-entry arms and all existing constructor arguments bind one envelope, and escape is measured against that identical envelope\u2019s skeleton. The retained cubic equality supplies the accepted label input. Only the authorized proposition, local definitional expressions and docstring changed; the preserved input matches its accepted hash. Independent Lean compilation succeeded. Acceptance is solely for this definition, with no owner construction or branch payoff asserted.",
+  "evidence": [
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "46b2cfd88ca9bd71826111c46b392e9a60d86d14fee505fe64a4714546439052",
+      "locator": "SameTokenTypeBHandoffStatement, lines 4067\u20134198; Holds binding at line 11946. Diff against preserved input changes only this declaration and its docstring. Independent full-file Lean compilation with mounted compiled dependencies exited 0; only unchanged-code warnings."
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-source-bound-schema.md",
+      "sha256": "7227c51d13fb8652428a8d89bac115bb5e89b4f8de9452bd6c5781bd91f7dbe6",
+      "locator": "Scoped proposition: Routed, Max, SourceEnvelope, FirstEntryPrefix, constructor equality, and same-envelope physical escape."
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-routing-label-integration.md",
+      "sha256": "8859915217d22afb56fbc8ea8a8dfcb594b0e3790f4af60f54f454fa69d68a9e",
+      "locator": "Scope and exact substitution; Exact input for the pending definition, including retained cubic equality and dependent actual-label inputs."
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/DecoratedHandoffEnvelope.lean",
+      "sha256": "833664e35fcf0db62862bb28ed398f0836922f4ced97fa57f5414a089020872c",
+      "locator": "envelopeOfFirstSeparator, lines 1115\u20131253: constructor proof arguments and definitions of core, decorations, assigned neighbours and arms."
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+      "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+      "locator": "CapacityPresentation.packingValid and packingMaximal, lines 75\u201381; HomogeneousBottleneckPatternStatement, lines 623\u2013677."
+    }
+  ]
+}

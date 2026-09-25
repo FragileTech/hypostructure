@@ -1,0 +1,37 @@
+{
+  "reviewer": "phase1_typeb_prior_use_review_d",
+  "decision": "accept",
+  "reason": "The submitted evidence hashes match the pinned markdown and Lean sources. The generic selectedTypeBAfterNormalFormContinuation takes an ExactLedger on selected.object with the nine substantive keys listed in the artifact, plus fresh-key side conditions, and returns TypeBAfterNormalFormBoundary with heavy-centre or degree-four certificate-prefix branches. The artifact identifies that generic implementation as prior mathematics only when invoked. The strict-surplus boundary instead defines StrictSurplusTypeBOutcome solely by typeBFanEntry; Node144aOutcome retains typeBHandoff, the positive homogeneous pattern, sparsePressureOverload, capacityTokenLedger, and surplusAbove. Its source explicitly says no Type B continuation runs on this arm because the quantitative tail requires surplusAtOrBelow. The artifact correctly records the unevaluated interaction between any generic certificate output and the retained source-pattern/surplus facts. It claims no current [144a] certificate result, homogeneous cap, near-cubic estimate, productive move, or closure. This satisfies the Phase 1 prior-use distinction without treating an available generic function as an executed branch transition.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "revision, endpoint keys, accounts, open_outcomes"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase1-typeb-prior-use-contract.json",
+      "sha256": "fa04da8a51c7c2b61732e838ec6722b89147eebeff7a8ff6afd2f77106a170b0",
+      "locator": "goal, acceptance"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase1-typeb-prior-use-result.json",
+      "sha256": "0ae24c1410596cb30d7fe5a435830b8ea2280f2266dad528e951e0b4e58fefea",
+      "locator": "output, evidence, structural_use"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase1-typeb-prior-use.md",
+      "sha256": "8c159d44c7159cd432eb5b95ef3d9c033010712b39bf6b5dad7ea1be0dbd84ae",
+      "locator": "previously proved use, exact boundary, still unevaluated"
+    },
+    {
+      "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Continuation.lean",
+      "sha256": "3dade84ade6bf377f053e03c4e43fa2060921883d7ad223267937e2a655d7fec",
+      "locator": "49-242: after-normal-form boundary, input keys, fresh-key conditions, and heavy/degree-four routing"
+    },
+    {
+      "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Boundary.lean",
+      "sha256": "37d0c5760813325a5058683667fbf1c40c9bf6d3057d336ead0e3e1761788ff9",
+      "locator": "15-43: strict-surplus stop and Node144aOutcome retained facts"
+    }
+  ]
+}

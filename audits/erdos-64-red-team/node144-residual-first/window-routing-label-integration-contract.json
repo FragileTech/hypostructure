@@ -1,0 +1,33 @@
+{
+  "id": "P7-window-98-integrate-actual-routing-label",
+  "mode": "AUDIT",
+  "phase": "7",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-extremal-two-tail-uncrossing",
+  "kind": "review_integration",
+  "goal": "Integrate the accepted exact routing-label identity into the accepted source-bound handoff schema: verify that replacing its owner-local routingLabel by sameTokenActualRoutingLabel leaves the selected equal-label pair, fixed supports, and extremal configurations unchanged, and specify the resulting exact input for the pending source-bound predicate definition. Use the accepted transport proof; do not reprove it, rebuild the handoff, or choose a new move.",
+  "objects": [
+    "selected : EGInput; G = selected.object : finite graph with the registered baseline",
+    "handoff witnesses active_h, capacity_h, certified_h, token_h, role_h, pattern_h on G within one K.typeBHandoff proposition",
+    "handoff witnesses packing_h, core_h, envelope_h on G within one SameTokenTypeBHandoffEnvelopeStatement",
+    "class-audit witnesses active_a, capacity_a and selected windowIncidence token/role on G; equality with handoff witnesses is not asserted",
+    "capacity-token ledger witnesses active_t, capacity_t on G; equality with handoff witnesses is not asserted"
+  ],
+  "reads": [
+    "branch:node144-window-32d32f9d19e7",
+    "P1-window-97-routing-label-transport",
+    "P6-window-27-source-bound-schema",
+    "P7-window-28-schema-integration",
+    "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+    "audits/erdos-64-red-team/node144-residual-first/window-reduction-acceptance.json",
+    "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean"
+  ],
+  "interaction": "The new named descriptor and the original local label must describe the same selected pair and its true degree profiles",
+  "parent_payoff": "Preserve the exact source pair and fixed supports used by extremal common-prefix uncrossing: parallel closes by the retained sparse-exit exclusion, all-in-skeleton contradicts maximality using the cubic neighbours, and the survivor retains the forced non-skeleton edge on that identical handoff. The named label is only a prerequisite for this exact reduction.",
+  "depends_on": [
+    "P1-window-97-routing-label-transport"
+  ],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-routing-label-integration.md",
+  "acceptance": "One precise schema substitution on identical witnesses, with the retained extremal-route payoff preserved. Check constraint, compression and quantity only for this substitution; no new graph restriction or move credit arises from naming a descriptor. Identify the single next construction obligation without solving it.",
+  "on_failure": "Return the first unsupported schema substitution as NEEDS_DECOMPOSITION and stop. No source changes or new proof exploration."
+}

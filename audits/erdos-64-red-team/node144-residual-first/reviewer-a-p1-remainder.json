@@ -1,0 +1,31 @@
+{
+  "decision": "accept",
+  "reason": "The remainder route is specifically windowClassAbsent followed by remainderClassOverload; remainderSurplusAuditRow publishes the homogeneous pattern on that selected.object. The actual [144] owner passes this audited ledger to sameTokenBottleneckRoutingRow, which reads the pattern, publishes the sparse-exit-or-envelope routing alternative, rules out the sparse exit with active.survives, and publishes typeBHandoff. The following row appends typeBFanEntry, yielding exactly the three stated new keys. The submission leaves original-pair-to-envelope incidence and multiplicity unproved, and claims no cap, excess-pair payment, or equality between distinct existential capacity witnesses. Its two submitted evidence hashes match current files.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/remainder-phase1-prior-use.md",
+      "sha256": "c8ec484530cc8288ba48907675799bdc1a3b5b9964739efde8358787dee3cf0c",
+      "locator": "Object; Aspect previously used; Use and established conclusion; Unexploited aspect"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "335b2996340ad3b65645cc97afeb627731ecb2209bf4031286aff0e6346da7e2",
+      "locator": "remainderSurplusAuditRow requires/publishes keys, lines 296-313 and 424-432; routing pattern read and outputs, lines 593-633 and 3080-3088; fan entry, lines 3096-3112; remainder class decision, lines 4821-4846"
+    },
+    {
+      "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Strict/Dependent.lean",
+      "sha256": "5ffb28da8eb6034712de72078b2dde4474de5ebc616731a1933abaeab2d7ca5d",
+      "locator": "remainder branch and [144] owner call, lines 287-309"
+    },
+    {
+      "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Local.lean",
+      "sha256": "aca012ed647aaa3e5582e1e727e67d586b97998b6ebad808b055cc58193b3e4d",
+      "locator": "selectedBottleneckDischarge exact output index and two row calls, lines 333-385"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "handoff source pattern plus envelope proposition, lines 3944-3979; bottleneckRouting alternative and typeBHandoff Holds, lines 11702-11728"
+    }
+  ]
+}

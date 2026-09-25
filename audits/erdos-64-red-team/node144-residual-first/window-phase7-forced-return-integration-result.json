@@ -1,0 +1,31 @@
+{
+  "status": "SUBMITTED_RESULT",
+  "output": "The selected producer envelope has a kernel-checked non-skeleton edge with a return path; mathematically it certifies at least one relative rank unit, with the two-component correction retained. The source-bound handoff export and multiplicity consumer remain open.",
+  "evidence": [
+    {"path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-forced-return-integration.md", "sha256": "1ab505407ed29794269999bb20d4aede2dedfec589d698d52dfe2dd1d0efd6ce", "locator": "same-edge integration, account, three payoff tests, next task"},
+    {"path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean", "sha256": "ccd8fafd232d49630edebed9c9c45341ab9f40a17c48ef8e81fad86c8979c5c0", "locator": "matching/star outsideSkeletonReturn and owner-local handoff projection"},
+    {"path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-rank-reconciliation.md", "sha256": "035c96a563fb5d1f74a4a804e805edcf7f383cfe8376001068ec4f2e4599021a", "locator": "one relative rank unit and c(F) correction"},
+    {"path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-component-dichotomy.md", "sha256": "6e75dfa5dc65bf1d6ee52b6a1bbcbff87cb46a14767c8f2bcdc4aea1f5c930d0", "locator": "actual F can have one or two components"}
+  ],
+  "implementation_status": "none",
+  "first_missing_inference": "",
+  "immediate_subobligations": [
+    "Strengthen existing typeBHandoff Holds with one source-bound witness carrying this exact chosen envelope and edge.",
+    "After export, classify the marked return path against target avoidance and determine a bounded-multiplicity or cycle payoff."
+  ],
+  "metadata": {
+    "structural_use": null,
+    "interaction": {
+      "object": "actual [144] producer skeleton F and marked edge e of selected G",
+      "ingredients": ["kernel-checked e outside F with HasReturn", "reviewed c(F) dichotomy", "retained exact attachment account"],
+      "relation": "The e-containing return cycle adds one relative rank coordinate; the component correction prevents charging a mere merger as a cycle.",
+      "known": "One selected-envelope rank payment and strict-surplus reconciliation; no per-source-pair injection.",
+      "unresolved": "Source-bound typeBHandoff export and marked-return path geometry with a valid consumer.",
+      "domains": "one fixed matching or star source pair on selected G and its actual envelope",
+      "previous_use": "Earlier attachment accounting partitioned costs generically but had not forced a marked non-skeleton edge for the selected [144] producer."
+    },
+    "changed_objects": [],
+    "changed_accounts": [],
+    "side_observations": ["The mathematical rank inequality is reviewed but not kernel-checked; the open [144a] Holds proposition remains unchanged."]
+  }
+}

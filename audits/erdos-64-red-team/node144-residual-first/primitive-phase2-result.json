@@ -1,0 +1,53 @@
+{
+  "status": "SUBMITTED_RESULT",
+  "output": "On the full primitive handoff residual, the source pattern and decorated envelope coexist on selected.object; a per-original-pair incidence/charge to envelope arms and a bound on its multiplicity are not present. This is the unresolved interaction, with the exact blocked-pair account retained and no cap inferred.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/primitive-phase2-interaction.md",
+      "sha256": "48d2251fbf54ed6fa5b70c72930e6fc847c82e69f84f079e381632a12fc369be",
+      "locator": "Actual observables on that one handoff witness; Unresolved interaction"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+      "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+      "locator": "HomogeneousBottleneckPatternStatement lines 623\u2013682"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/DecoratedHandoffEnvelope.lean",
+      "sha256": "833664e35fcf0db62862bb28ed398f0836922f4ced97fa57f5414a089020872c",
+      "locator": "Envelope fields lines 902\u2013960"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "SameTokenTypeBHandoffStatement lines 3944\u20133979"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "335b2996340ad3b65645cc97afeb627731ecb2209bf4031286aff0e6346da7e2",
+      "locator": "sameTokenBottleneckRoutingRow lines 593\u2013665, 808\u2013842, 3060\u20133112"
+    }
+  ],
+  "implementation_status": "none",
+  "first_missing_inference": "",
+  "immediate_subobligations": [],
+  "metadata": {
+    "structural_use": null,
+    "interaction": {
+      "object": "G = selected.object, primitive tagged [144a] arm, with one existential typeBHandoff tuple",
+      "ingredients": [
+        "same-token selected role-fibre pattern and per-pair same-root routing configurations",
+        "blocked/free account on the certified ledger nested in that handoff",
+        "decorated envelope centres, assigned neighbours, simple arms, and fanSafe relation"
+      ],
+      "relation": "The source pattern, its certified ledger, and one decorated envelope coexist in the same handoff proposition on G; no quantified map from all selected original pairs to envelope incidences is exposed.",
+      "known": "Selected matching/star size reaches the geometric bound; every selected pair has declared configurations; the envelope has nonempty decorations and assigned arms; the certified ledger has an exact blocked/free split.",
+      "unresolved": "Whether the route/envelope geometry forces a bounded-multiplicity incidence or another restriction sufficient to eliminate the positive role-fibre pattern on this full arm.",
+      "domains": "Original unordered pairs of active demands in one certified ledger versus vertices, assigned neighbours, and arms in one decorated envelope on G.",
+      "previous_use": "The routing row spent the positive pattern to obtain one sparse-exit-or-envelope alternative; active.survives excludes the sparse exit and the fan-entry row retains the envelope, without pair-indexed charging."
+    },
+    "changed_objects": [],
+    "changed_accounts": [],
+    "side_observations": []
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "reviewer": "phase2_fan_attachment_review_b",
+  "decision": "reject",
+  "reason": "The first defect is the unqualified prior-use claim in the note at lines 28–30: it says the existing Type B local account counts the two non-h incidences of a cubic fan neighbour by window/non-window destination. The manuscript's B1 profile defines those incidences and support types for cubic-closed neighbours, whose two non-h incidences have been assigned to the fan envelope; IsCubicClosed in Lean likewise requires both other neighbours in the envelope. The [144a] handoff plus high-centre normal form makes each assigned first neighbour cubic, but does not make each cubic-closed. Thus the earlier count cannot be claimed for every first neighbour under review. The note's new finite internal/external incidence inventory and explicit zero-outside case are otherwise consistent with the cited handoff, but the source comparison needs the cubic-closed qualifier before acceptance.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-fan-attachments-contract.json",
+      "sha256": "477dd7ea3e3b8c34f1f9a7ef5189d0eae9d879c35c6099adf2a6c1ec48c1d456",
+      "locator": "P2-window-06 acceptance: distinguish simultaneous attachment observable from prior local Type B incidence count"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-fan-attachments-result.json",
+      "sha256": "bfdfd9269c346e0ecba417e0b640d47cfb36f618b6dea30b01fbeed5b0e4263e",
+      "locator": "output and metadata.interaction.previous_use"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-fan-attachments.md",
+      "sha256": "a1a87f02086bc8008539f2a2d0862df7b499feb30f287826135917cbeab3904d",
+      "locator": "lines 11–17 (all assigned cubic neighbours), 19–26 (zero-outside case), 28–36 (unqualified prior-use comparison)"
+    },
+    {
+      "path": "to_formalize/erdos_64_proof.tex",
+      "sha256": "7153339b7a032b2e5fbb432999acf0306d4a4f18bdbfd0f86c709ae3a4e58cb1",
+      "locator": "def:marked-typeB-fan around lines 10876–10893; def:decorated-fan-envelope around lines 10898–10930; def:typeB-window-incidence-profile around lines 13124–13155 explicitly restricts B1 incidence classes to cubic-closed neighbours"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/TypeBFanIncidence.lean",
+      "sha256": "420f1b70ffb6ca40b7c9c2e0cc35300105132781f4e39956fe0ae8be30452c87",
+      "locator": "lines 45–53, IsCubicClosed requires every non-centre neighbour to lie in the assigned envelope"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/DecoratedHandoffEnvelope.lean",
+      "sha256": "833664e35fcf0db62862bb28ed398f0836922f4ced97fa57f5414a089020872c",
+      "locator": "Envelope fields lines 902–940 record assigned neighbours and arms but impose no cubic-closed condition"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/HighCentreNormalForm.lean",
+      "sha256": "f540ba64800f40ae96490a227c725f1fa6629259e0c69ffffe042b872e9a01ee",
+      "locator": "lines 69–82, neighbourTight gives degree equal to threshold, not envelope closure"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "lines 3944–3979, same-token handoff retains source pattern and one envelope"
+    }
+  ]
+}

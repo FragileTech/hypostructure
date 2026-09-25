@@ -1,0 +1,47 @@
+{
+  "reviewer": "phase2_fan_attachments_review_d",
+  "decision": "accept",
+  "reason": "The retry fixes the prior-use error. The manuscript's Type B window/non-window incidence count is defined for cubic-closed fan neighbours, whose two non-centre incidences have already been assigned to that support. The [144a] handoff and high-centre normal form make each assigned first neighbour cubic, but do not make each cubic-closed; the revised note now states this distinction. Its separate finite inventory of the two non-centre edges at each assigned neighbour, classified inside the one envelope support or by a component of its complement, is valid on the same selected graph and witness. It correctly permits zero exterior incidences, length-zero arms, shared arm suffixes, and a merely nonempty assigned set. It does not identify the remaining source pairs with arms or components, and claims no outside return, cycle, charge, payoff, or closure.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-fan-attachments-contract.json",
+      "sha256": "477dd7ea3e3b8c34f1f9a7ef5189d0eae9d879c35c6099adf2a6c1ec48c1d456",
+      "locator": "acceptance and on_failure"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-fan-attachments-result.json",
+      "sha256": "18ec8bfabc5623fb9c339c058549cf92a9ea9dbb9158a9605769dc90ec706b67",
+      "locator": "output, first_missing_inference, metadata.interaction.previous_use"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-fan-attachments.md",
+      "sha256": "950f8aace0184f0c4bfb243b7fd90cabf49e148f41385c4582abbaaf2e0fd176",
+      "locator": "lines 11-43: two-edge inventory, zero-outside case, corrected cubic-closed comparison, and limits"
+    },
+    {
+      "path": "to_formalize/erdos_64_proof.tex",
+      "sha256": "7153339b7a032b2e5fbb432999acf0306d4a4f18bdbfd0f86c709ae3a4e58cb1",
+      "locator": "lines 10880-10946: cubic-closed condition and envelope arm cases; lines 13129-13145: window/non-window incidence count for cubic-closed neighbours"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+      "sha256": "113226b2f99eabccb9f3b1f00e1c4ce6eeb474eadf90fdd10099c2003476badd",
+      "locator": "lines 13-26: pinned [144a] witness and no per-source-pair envelope index"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/DecoratedHandoffEnvelope.lean",
+      "sha256": "833664e35fcf0db62862bb28ed398f0836922f4ced97fa57f5414a089020872c",
+      "locator": "lines 894-945: assigned adjacency, nonemptiness, and simple arms; lines 1115-1171: first-separator constructor"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/HighCentreNormalForm.lean",
+      "sha256": "f540ba64800f40ae96490a227c725f1fa6629259e0c69ffffe042b872e9a01ee",
+      "locator": "lines 69-84: high-centre neighbourTight"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "lines 3944-3979: same-token handoff retains source pattern and envelope without a map between all source pairs and arms"
+    }
+  ]
+}

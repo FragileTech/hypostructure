@@ -1,0 +1,17 @@
+{
+  "id": "P6-window-45-right-shortcut",
+  "mode": "FORMALIZE",
+  "phase": "6",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-extremal-two-tail-uncrossing",
+  "kind": "define_object",
+  "goal": "Construct, from an actual crossing at [144], a legal right routing configuration that follows the common prefix, the existing separator-left-neighbour edge, and the original right suffix.",
+  "objects": ["G=selected.object and full [144a] window history", "actual matching/star first-separator decompositions and selected right RoutingConfiguration", "original right pair-specific support, source and selected terminal"],
+  "reads": ["branch:node144-window-32d32f9d19e7", "P7-window-44-one-sided-incidence-integration", "P6-window-43-one-sided-incidence"],
+  "interaction": "The crossing vertex lies in the prefix of the actual right tail, while the left route supplies the genuine separator-to-crossing graph edge. Deleting the right detour before that vertex creates a candidate on the same right support.",
+  "parent_payoff": "Provide the legal same-source right comparator needed to apply the already selected maximalPrefix inequality; strict prefix improvement remains a separate obligation.",
+  "depends_on": ["P7-window-44-one-sided-incidence-integration"],
+  "allowed_write": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+  "acceptance": "Inside the existing [144] owner, prove in each actual matching/star first-separator arm that nextLeft∈armRight produces a right RoutingConfiguration with the same type as secondConfiguration and path common ++ separator :: nextLeft :: after for a decomposition tailRight=before ++ nextLeft :: after. Kernel-prove chain, nodup, issued source, inside the original right support, and selected terminal from the original right configuration and actual graph edge. Do not choose a new demand/source/support, assume a crossing, claim strict common-prefix gain, escape, productive move, or closure. Kernel-check owner and direct EG caller; name the next exact prefix comparison.",
+  "on_failure": "Report the first unsatisfied RoutingConfiguration field on the actual right path and decompose it; do not weaken the source-specific type or invent a path selector."
+}

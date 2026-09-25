@@ -1,0 +1,66 @@
+{
+  "status": "SUBMITTED_RESULT",
+  "output": "For one handoff witness, every assigned non-centre physical edge has exactly one envelope location F/I/δ(S) and exactly one full pair-indexed route location E(R), J, δ_G(C) for one G-T component, or E(G[C]) for one G-T component. Their cross-cells partition B and D, giving 2|A|=Σ_cell|D_cell|=Σ_cellΣ_(e in cell)μ(e). The edge support of the original-pair incidence relation M is exactly B∩E(R). Only B∩J has direct one-edge relative rank cost; route edges are already in R and exterior edges enter collective component terms. The two cuts G-S and G-T are not identified. No source-pair-to-rank charge follows.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-fan-route-rank-cross-tab.md",
+      "sha256": "91e70d064eaf60ffb87db1639aa81c3244f643557c603003a8639bfc25ad987c",
+      "locator": "complete envelope-row by route-column edge partition and exact incidence/rank account"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-incidence-ledger.md",
+      "sha256": "e1c9b8ec5b090bf9aefd098e4658d5a711269f0ac840f79f1d8ee4297fe34e1c",
+      "locator": "D physical-edge multiplicity and F/I/boundary S partition"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-source-incidence.md",
+      "sha256": "8e8033bd5bc30ce2e80e6a23775f31adf2101fc04f3e7b08b715f9b985f12f8e",
+      "locator": "pair-demand route family, M support and source multiplicities"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-all-route-boundary.md",
+      "sha256": "c325522ec6290c900180078e9f4c6a98cd0c798fcbbe066b29e3498a8ca5f7a8",
+      "locator": "connected route union and relative cycle-rank identity"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+      "sha256": "113226b2f99eabccb9f3b1f00e1c4ce6eeb474eadf90fdd10099c2003476badd",
+      "locator": "complete tagged window ledger and distinct witnesses"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+      "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+      "locator": "pair-dependent route support and pair-demand quantified configurations"
+    }
+  ],
+  "implementation_status": "none",
+  "first_missing_inference": "The retained handoff gives no lower bound on assignments or source pairs in the J or exterior rank columns, and no bounded source-pair multiplicity or return-length obstruction for the route column.",
+  "immediate_subobligations": [
+    "Measure actual attachment return lengths and internal chord return lengths relative to R before using target exclusion.",
+    "Test whether the retained high-centre normal form and same-token route supports bound source multiplicity in the B∩E(R) cells.",
+    "Analyze the uncovered P_0 source pairs on the full retained residual."
+  ],
+  "metadata": {
+    "structural_use": null,
+    "interaction": {
+      "object": "selected.object G with one source-and-envelope typeBHandoff witness",
+      "ingredients": [
+        "assignment-indexed D and physical fan edge set B",
+        "envelope skeleton F and support S",
+        "full pair-demand route union R with support T",
+        "original source-pair relation M",
+        "relative cycle-rank identity"
+      ],
+      "relation": "Every represented fan edge is placed in one envelope cell and one route-rank cell; the original-pair relation M supports exactly the route-edge column.",
+      "known": "The cross-cells are disjoint and exhaustive; exact incidence and rank identities hold.",
+      "unresolved": "Actual cell values, source multiplicities, attachment return lengths, and whether any cell forces a target obstruction or a charge.",
+      "domains": "one selected G and one handoff witness; G-S and G-T cuts kept distinct",
+      "previous_use": "Earlier notes counted D by envelope location and counted source route uses, but did not cross-classify those indices against actual relative rank."
+    },
+    "changed_objects": [],
+    "changed_accounts": [],
+    "side_observations": [
+      "A physical fan edge on a selected source route has no automatic marginal rank cost, regardless of how many source pairs or fan assignments use it."
+    ]
+  }
+}

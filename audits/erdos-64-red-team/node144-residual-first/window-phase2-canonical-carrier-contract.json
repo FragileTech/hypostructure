@@ -1,0 +1,32 @@
+{
+  "id": "P2-window-05-canonical-carrier-interaction",
+  "mode": "DISCOVER",
+  "phase": "2",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "",
+  "kind": "register_interaction",
+  "goal": "Inventory the same-token canonical charge and blocker-kind interaction for every original edge of the handoff source pattern, retaining the actual handoff witness and the full window-history residual.",
+  "objects": [
+    "G = selected.object on the window strict-surplus post-[144] ExactLedger",
+    "one capacity_h/certified_h/token_h/role_h/source pattern tuple inside typeBHandoff",
+    "the canonical blocker and fixed capacity token for each original source pair"
+  ],
+  "reads": [
+    "branch:node144-window-32d32f9d19e7",
+    "P1-window-02-pair-account",
+    "P2-window-03-handoff-source-class-coordinate",
+    "P2-window-04-all-route-overlap-interaction",
+    "hypostructure/Hypostructure/Graph/CapacityTokenAssignment.lean",
+    "hypostructure/Hypostructure/Graph/CapacityTokenLedger.lean",
+    "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+    "hypostructure/Hypostructure/Graph/SurplusBlockers.lean",
+    "hypostructure/Hypostructure/Graph/SparseEntropySandwich.lean",
+    "hypostructure/Hypostructure/Graph/SparsePortActivation.lean"
+  ],
+  "interaction": "one fixed canonical charge and blocker kind on every original handoff source pair versus the physical supports of its two port demands",
+  "parent_payoff": "",
+  "depends_on": ["P1-window-02-pair-account", "P2-window-03-handoff-source-class-coordinate", "P2-window-04-all-route-overlap-interaction"],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase2-canonical-carrier.md",
+  "acceptance": "Give the exact same-witness inference from roleFibre membership to canonical charge and blocker kind, and distinguish all token constructors. Identify a conditional original-pair carrier relation not already obtained by the two-route envelope or terminal projection. Do not equate the handoff token to the separate window-class witness, select a technique, infer a cap, or claim closure.",
+  "on_failure": "Identify the first false same-witness or charge inference and retain the full pattern and token-class uncertainty."
+}

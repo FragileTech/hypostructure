@@ -1,0 +1,33 @@
+{
+  "id": "P8-window-104-locate-owner-elaboration",
+  "mode": "AUDIT",
+  "phase": "8",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-extremal-two-tail-uncrossing",
+  "kind": "check_formal_implementation",
+  "goal": "Locate exactly the first elaboration obstruction in the saved source-bound [144] producer candidate, yielding a reproducible source location and Lean goal or a completed check. This is one diagnostic task, not a new mathematical construction. First run a disposable narrow copy of the changed owner and consumer with substantially smaller heartbeat limits (replace source-local high limits in the disposable copy) so a slow tactic returns its exact location instead of consuming another wall-clock timeout. If needed use persistent /tmp progress markers rather than buffered stderr to locate the first step. Use the verified current compiled package. Do not reprove label transport, change the residual, or run another undifferentiated ten-minute check.",
+  "objects": [
+    "selected : EGInput; G = selected.object : finite graph with the registered baseline",
+    "handoff witnesses active_h, capacity_h, certified_h, token_h, role_h, pattern_h on G within one K.typeBHandoff proposition",
+    "handoff witnesses packing_h, core_h, envelope_h on G within one SameTokenTypeBHandoffEnvelopeStatement",
+    "class-audit witnesses active_a, capacity_a and selected windowIncidence token/role on G; equality with handoff witnesses is not asserted",
+    "capacity-token ledger witnesses active_t, capacity_t on G; equality with handoff witnesses is not asserted"
+  ],
+  "reads": [
+    "branch:node144-window-32d32f9d19e7",
+    "P7-window-103-kernel-integrate-label-identity",
+    "P7-window-99-integrate-source-bound-predicate",
+    "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+    "audits/erdos-64-red-team/node144-residual-first/window-record-attempts/eb2e67d5b2a44c81821a4470261c058d/executor/artifact/hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+    "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+    "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean"
+  ],
+  "interaction": "The admitted extremal escape and its exact same-source handoff witness must be one Holds proposition",
+  "parent_payoff": "The admitted move excludes all-in-skeleton occupancy for the same extremally selected handoff; the current owner-local fact has not yet been exported. This definition is one authorized prerequisite, not productive-move credit.",
+  "depends_on": [
+    "P7-window-103-kernel-integrate-label-identity"
+  ],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-owner-elaboration-location.md",
+  "acceptance": "Report the first exact source location and elaboration goal/diagnostic with a reproducible bounded invocation and correspondence to the saved candidate; distinguish heartbeat exhaustion from a missing mathematical premise. Preserve candidate bytes and the accepted vocabulary. A successful narrow check may be reported at its actual scope. Do not infer branch closure or mathematical impossibility from elapsed time.",
+  "on_failure": "Keep diagnostics precise and bounded. Test heartbeat reduction in the disposable source because source-local set_option can override command-line flags. Save all evidence in the allowed artifact. Do not stop at a silent wall-clock timeout without testing the low-heartbeat narrow declaration. Use python3; temporary diagnostics belong in /tmp. Imports and current package have already passed checks; do not rebuild them or repeat those checks. User instruction: avoid unnecessary compilations. Perform only the minimal targeted diagnostic needed to expose the first elaboration location, and no full-owner, vocabulary, import, or root recompilation. Reviewers should review the diagnostic evidence at that scope; a full build is outside this task."
+}

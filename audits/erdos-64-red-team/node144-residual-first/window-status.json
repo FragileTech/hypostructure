@@ -1,0 +1,18 @@
+{
+  "branch": "node144-window-strict-handoff",
+  "branch_status": "open",
+  "atomic_tasks": {
+    "pending": 0,
+    "submitted": 0,
+    "accepted": 13,
+    "rejected": 0
+  },
+  "productive_moves": 0,
+  "open_outcomes": [
+    "window:[144a]-same-token-handoff"
+  ],
+  "next": {
+    "task": null,
+    "diagnostic": "Repair stale evidence for P3-window-03-select-source-separator"
+  }
+}

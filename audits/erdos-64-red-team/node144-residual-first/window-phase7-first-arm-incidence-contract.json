@@ -1,0 +1,17 @@
+{
+  "id": "P7-window-38-first-arm-incidence-integration",
+  "mode": "DISCOVER",
+  "phase": "7",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-extremal-two-tail-uncrossing",
+  "kind": "review_integration",
+  "goal": "Integrate the first-own-arm edge rule with the selected cubic degree and exact core, and sharpen the crossing obligation to the one-sided condition sufficient for the splice.",
+  "objects": ["G=selected.object and full [144a] incoming ledger", "actual a=nextLeft, high h, P_a/P_b and Y={left.2,right.2}", "fixed-source maximal route pair and exact F"],
+  "reads": ["branch:node144-window-32d32f9d19e7", "P6-window-37-first-arm-incidence", "P7-window-36-arm-edge-endpoints-integration"],
+  "interaction": "Under all-in-F at a and a absent from P_b, the own-arm edge rule leaves at most one edge from P_a; first-entry and the two-vertex core must make its core contribution complementary.",
+  "parent_payoff": "Identify the exact core-edge and singleton obligations; if discharged, one-sided saturation at a can force a∈P_b and suffice for the same-right-support splice.",
+  "depends_on": ["P6-window-37-first-arm-incidence"],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase7-first-arm-incidence-integration.md",
+  "acceptance": "State the same-envelope incidence sources, both a∈Y and a∉Y cases, and why the symmetric b crossing need not be required for the proposed right-route splice. Mark the one-sided payoff as mathematical prospect until Lean checks; test constraint/compression/quantity and leave move/branch open.",
+  "on_failure": "If one-sided crossing cannot preserve the fixed right support, retain the symmetric route obligation and report the first defect."
+}

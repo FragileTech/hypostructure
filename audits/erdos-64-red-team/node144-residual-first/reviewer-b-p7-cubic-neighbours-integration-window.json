@@ -1,0 +1,47 @@
+{
+  "reviewer": "phase7_cubic_neighbours_integration_review_b",
+  "decision": "accept",
+  "reason": "The integration uses the two degree-three facts proved for the actual next neighbours of each owner-selected high separator and identifies the corresponding maximal routes, first-entry arms and two-terminal core in both matching and star constructors. Its exact skeleton has the two arm edge sets, centre edges and induced core edges. Under the explicitly conditional all-in-skeleton premise, a zero arm leaves the opposite start with at most one non-centre skeleton edge, contradicting its cubic budget; with both arms positive, their starts lie outside the core, so the missing second non-centre edge forces each start into the opposite arm's interior. This is correctly attributed to reviewed conditional mathematics, not a new Lean theorem. It selects the first crossing inference as the next construction and separately denies current constraint, compression, quantity, escape and move credit.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-cubic-neighbours-integration-contract.json",
+      "sha256": "89f06277b3b5837eb2c237a18b955c5cbe146960a357be4aec44d8828619e38c",
+      "locator": "goal, acceptance and on_failure fields"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-cubic-neighbours-integration-result.json",
+      "sha256": "b30a77f6d21b980a4fb9284794f68485c36b659dfac781d7bdd364aba70df671",
+      "locator": "output, evidence hashes, implementation_status and first_missing_inference"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-cubic-neighbours-integration.md",
+      "sha256": "b82cc34209a6d454f379519a861362b8a3c938097a307a7b0ea85000d45d27eb",
+      "locator": "lines 3-29 selected degrees, exact skeleton, zero-arm and crossing reasoning; lines 31-44 next task and separate tests"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-cubic-neighbours.md",
+      "sha256": "dec6802283dd3c7321ceef8de12e1b11d62e8c3f058f6ee9e938a2070c2f5089",
+      "locator": "lines 3-17 checked degree specialization for both actual next neighbours"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-two-tail-topology.md",
+      "sha256": "9e2b2a737408ffa9e693add912ad734d4761415968b97657d32391e3476babd7",
+      "locator": "lines 3-19 exact producer skeleton, zero-arm exclusion and conditional crossed-tail proof"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "96e9346473b2b4ab110eb4461407c826acb7b25e72cfefe8128475cef63b0a90",
+      "locator": "lines 1938-2024 and 2849-2931 matching/star adjacencies, core and first-entry arms; 2281-2307 and 3180-3206 cubic neighbours and constructor envelope"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/DecoratedHandoffEnvelope.lean",
+      "sha256": "833664e35fcf0db62862bb28ed398f0836922f4ced97fa57f5414a089020872c",
+      "locator": "lines 1115-1154 envelopeOfFirstSeparator takes the same two arms and core"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "revision, exact window endpoint and inherited 50-key scope"
+    }
+  ]
+}

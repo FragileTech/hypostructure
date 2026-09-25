@@ -1,0 +1,86 @@
+{
+  "task_id": "P7-window-98-integrate-actual-routing-label",
+  "sessions": [
+    "7762a2ac328547f9875899b6da1ac341",
+    "b9448b7af6c441d6b630fa638551258d",
+    "613832c931654b91b80e910a52e8fbe7"
+  ],
+  "input_hash": "f6cc9dad8ee7ef94a24a085e8242d026f25fc0daa1b509d11b71e36fa08b3746",
+  "submission_hash": "7e1aca39dd63e6dfc108704c36dec08d973fa2da101a0b3c7c89b16ebb6bba47",
+  "reviews": [
+    {
+      "reviewer": "b9448b7af6c441d6b630fa638551258d",
+      "decision": "accept",
+      "reason": "The submission completes the assigned schema substitution. The accepted transport identities give both directions of the equal-label equivalence on the identical pattern members and selected demands. Every remaining binder, fixed support, actual profile, maximality domain, separator, constructed envelope and escape clause is retained, so the conditional extremal-route payoff and same-witness projection are preserved. Separate existential witnesses are not identified. The exact dependent input for the pending predicate definition is specified; no handoff construction, new graph restriction, quantitative credit or branch closure is claimed. The complete retained residual is preserved and all manifest and cited evidence hashes match.",
+      "evidence": [
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-routing-label-transport.md",
+          "sha256": "c8c1a24820955fb645b7a1c83191d5d9d6ec250dc1dcb944e8d7b19ed030cfb0",
+          "locator": "Displayed exact identity; seven coordinates; preservation and verification"
+        },
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-source-bound-schema.md",
+          "sha256": "7227c51d13fb8652428a8d89bac115bb5e89b4f8de9452bd6c5781bd91f7dbe6",
+          "locator": "Scoped proposition: Routed, Max, SourceEnvelope; same-envelope projection"
+        },
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-schema-integration.md",
+          "sha256": "24bf0e5640f90ee6fd57c0db0ac64c82864c7ad1071bbca514d3882f077140db",
+          "locator": "One-way forgetful projection; constraint/compression/quantity tests"
+        },
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-reduction-acceptance.json",
+          "sha256": "7f885ab01eaab9bd0b59af960fad2d9f0be59eb5eb610379d20a5281a6d62d8a",
+          "locator": "required_structure; required_outcomes; acceptance"
+        },
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+          "sha256": "113226b2f99eabccb9f3b1f00e1c4ce6eeb474eadf90fdd10099c2003476badd",
+          "locator": "Common object and endpoint; retained quantitative accounts; window incoming arm"
+        },
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-routing-label-integration.md",
+          "sha256": "8859915217d22afb56fbc8ea8a8dfcb594b0e3790f4af60f54f454fa69d68a9e",
+          "locator": "Entire substitution audit"
+        }
+      ]
+    },
+    {
+      "reviewer": "613832c931654b91b80e910a52e8fbe7",
+      "decision": "accept",
+      "reason": "The submission completes the assigned schema substitution. It applies the accepted transport identity separately to the same selected pairs and demands, proves both directions of the equal-label clause, and retains every other dependent binder and witness. Fixed supports, actual profiles, maximality domain and objective, constructor envelope, and physical escape clause therefore remain identical. The conditional extremal-route payoff and same-witness forgetful projection are preserved without asserting construction from the weak handoff or identifying separate ledger witnesses. Constraint, compression, and quantity checks add no graph fact, account change, or move credit. The exact dependent input for the pending predicate definition and the single next definition obligation are specified without executing them. All pinned source hashes and the submitted artifact hash match; this acceptance is for the mathematical integration only, not handoff construction or branch closure.",
+      "evidence": [
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-routing-label-integration.md",
+          "sha256": "8859915217d22afb56fbc8ea8a8dfcb594b0e3790f4af60f54f454fa69d68a9e",
+          "locator": "Scope and exact substitution; Supports, profiles and extremality; Retained payoff and accounts; Exact input for the pending definition"
+        },
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-routing-label-transport.md",
+          "sha256": "c8c1a24820955fb645b7a1c83191d5d9d6ec250dc1dcb944e8d7b19ed030cfb0",
+          "locator": "Displayed identity on the retained pattern/member domain; Preservation and verification"
+        },
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-source-bound-schema.md",
+          "sha256": "7227c51d13fb8652428a8d89bac115bb5e89b4f8de9452bd6c5781bd91f7dbe6",
+          "locator": "Scoped proposition: Routed, Max, nested SourceEnvelope formula and same-envelope projection"
+        },
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-schema-integration.md",
+          "sha256": "24bf0e5640f90ee6fd57c0db0ac64c82864c7ad1071bbca514d3882f077140db",
+          "locator": "Same-witness one-way projection; constraint, compression and quantity tests"
+        },
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-reduction-acceptance.json",
+          "sha256": "7f885ab01eaab9bd0b59af960fad2d9f0be59eb5eb610379d20a5281a6d62d8a",
+          "locator": "required_structure; required_outcomes; acceptance"
+        },
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+          "sha256": "113226b2f99eabccb9f3b1f00e1c4ce6eeb474eadf90fdd10099c2003476badd",
+          "locator": "Common object and endpoint; Retained quantitative accounts; Window incoming arm"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "reviewer": "phase4_marked_edge_splice_review_d",
+  "decision": "accept",
+  "reason": "For a hit v_j in the old q suffix, the candidate follows the common prefix, h-a, the forced a-x edge, the return path backward from x to v_j, then the suffix after that occurrence of v_j. The j=t convention gives h-a-x followed by the old suffix without duplicating x. Reverse return edges and old route edges give chain; explicit whole-list nodup, new-vertex membership in q\u2019s own support, unchanged root and retained terminal/buffer supply exactly the RoutingConfiguration fields. With a\u2260b, the candidate shares one additional prefix vertex with p, so the stated conditional would contradict fixed-pair maximality. No suffix hit, prefix collision, wrong q support, retained-suffix repetition and any remaining validity failure cover the complement; none is claimed to pay off. The proposal uses e outside F and is distinct from the earlier right shortcut. It is clearly a proposed conditional, not a proved theorem or admitted move. Submitted hashes match.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-marked-edge-splice-contract.json",
+      "sha256": "524f01a41fa4df4d8ee85513c6119e7802715e7aee2fdca4944a6ee624a70bb2",
+      "locator": "exact candidate and complement obligations"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-marked-edge-splice-result.json",
+      "sha256": "44938ff690f312ff913d783515c9e0644283ead12c1ea1adb6ffa2dd0c71a0c8",
+      "locator": "submitted conditional and status"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-marked-edge-splice.md",
+      "sha256": "c408b1ddff3412aef7f32fa654e4a63102db3beb68a3b6bf292ad7b6039e95a0",
+      "locator": "list formula, j=t convention, validity and failure arms"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase3-marked-return-rival.md",
+      "sha256": "662188e77c20c87f3a1bd9adae8b68424cf7a2470e0c080f4b9fe69d16ec210d",
+      "locator": "selected structural tension"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean",
+      "sha256": "cca0d7a8a6d32968b3bd01a9ea3b0a6fb0fa119a7f1380d98610c29815087e31",
+      "locator": "RoutingConfiguration fields 229-245 and commonPrefixLength 380-400"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "ccd8fafd232d49630edebed9c9c45341ab9f40a17c48ef8e81fad86c8979c5c0",
+      "locator": "fixed-source maximalPrefix 1889-1935 and 2980-3026; right shortcut and marked e return"
+    }
+  ]
+}

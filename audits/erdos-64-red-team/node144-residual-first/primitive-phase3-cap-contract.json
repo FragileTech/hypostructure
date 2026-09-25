@@ -1,0 +1,30 @@
+{
+  "id": "P3-primitive-01-cap-incompatibility",
+  "mode": "AUDIT",
+  "phase": "3",
+  "branch_revision": "node144-primitive-32d32f9d19e7",
+  "move_id": "",
+  "kind": "relate_restrictions",
+  "goal": "Prove on the tagged primitive handoff arm that the retained positive source pattern contradicts any independently established fixed homogeneous caps on the same graph.",
+  "objects": [
+    "G = selected.object on the tagged primitive blocker-support class arm",
+    "one typeBHandoff witness with its certified source pattern on G",
+    "HomogeneousCapsHold on this same G at the exact routing label"
+  ],
+  "reads": [
+    "branch:node144-primitive-32d32f9d19e7",
+    "P2-primitive-01-pair-envelope-interaction",
+    "P2-primitive-02-routing-coordinate",
+    "audits/erdos-64-red-team/node144-residual-first/CapCheck.lean",
+    "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean"
+  ],
+  "interaction": "Positive selected homogeneous pattern versus the universal fixed-cap proposition on the same graph and label",
+  "parent_payoff": "",
+  "depends_on": [
+    "P2-primitive-01-pair-envelope-interaction",
+    "P2-primitive-02-routing-coordinate"
+  ],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/primitive-phase3-cap-incompatibility.md",
+  "acceptance": "Give a kernel-checked implication from the exact handoff statement to negation of caps; separate incompatibility from a derivation of caps or closure.",
+  "on_failure": "Identify any mismatch in graph, label, bound or certified ledger; do not import a cap from the near-cubic sibling."
+}

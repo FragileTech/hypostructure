@@ -1,0 +1,37 @@
+{
+  "reviewer": "phase2_marked_return_review_b",
+  "decision": "accept",
+  "reason": "The note fixes the actual matching or star producer, its two original pair-specific route types, one edge e={a,x} outside that producer's skeleton, and the HasReturn path in G-e for that same edge. Since the endpoints are distinct and the deleted edge cannot occur on the simple return path, e plus that path is a simple cycle of length t+1 with t>=2; the retained target avoidance excludes LengthOK(t+1). The Boolean vertex words preserve overlaps, the priority endpoint labels and F/internal/boundary/exterior edge classes are exhaustive, and first route encounters include immediate, later and absent cases. It keeps the original supports and local buffers separate and makes no splice validity or multiplicity inference. Unlike the earlier all-cycle account, this path is marked by the particular edge forced by the extremal pair. The submission leaves source-bound export and any payoff open. All submitted evidence hashes match current files.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-marked-return-interaction-contract.json",
+      "sha256": "6a7578a87f8e625cdecf38c6713ddae1ee30f49a08d17f4560c8107aea3892df",
+      "locator": "P2-window-59 goal, acceptance, and on_failure"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-marked-return-interaction-result.json",
+      "sha256": "74933e13c45f9e9a7d466502e16bdd274d93854bba8d8abdf8f2c50035106413",
+      "locator": "submitted output, interaction metadata, and evidence list"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-marked-return-interaction.md",
+      "sha256": "a8526a2b64f07eb6ba5c432cb7b17edbebf556f3199fc366e9e7bb7e86e0236f",
+      "locator": "paragraphs 1-8: same-edge return, length exclusion, vertex and edge words, first encounters, support caveats, novelty and limits"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-attachment-account-audit.md",
+      "sha256": "d858b62637f25ee50ac9818621e937f7d478d862bd98a779e065ee716a73c91e",
+      "locator": "Full cycle trace row and following cycle-rank discussion"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Contraction.lean",
+      "sha256": "df6ec5784d38a0fb3cad6ddd628f29b4b62c3a5ba43672c5b6b3cc17f692b8eb",
+      "locator": "lines 181-197: severed graph, HasReturn, and severed_adj"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "ccd8fafd232d49630edebed9c9c45341ab9f40a17c48ef8e81fad86c8979c5c0",
+      "locator": "lines 869-871 target avoidance; 1887-1952 fixed pair-specific route types and maximal choice; 2654-2663 and 3731-3740 skeletons; 2754-2826 and 3831-3903 outside-skeleton edge and same-edge HasReturn in matching/star arms"
+    }
+  ]
+}

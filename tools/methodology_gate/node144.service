@@ -1,0 +1,13 @@
+[Unit]
+Description=Hypostructure Node 144 gated proof workflow
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 -I %h/.local/share/hypostructure-methodology-node144/controller.py run --run %h/.local/state/hypostructure-methodology/node144
+Restart=on-failure
+RestartSec=15
+KillMode=control-group
+TimeoutStopSec=20
+UMask=0077
+StandardOutput=append:%h/.local/state/hypostructure-methodology/node144/service.log
+StandardError=append:%h/.local/state/hypostructure-methodology/node144/service.log

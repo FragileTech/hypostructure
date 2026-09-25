@@ -352,6 +352,7 @@ noncomputable def selectedBottleneckDischarge
     [FactKeys.Has (K .sparseUpperEnvelope) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .tightEndpoint) known]
     [FactKeys.Has (K .slackIndependent) known]

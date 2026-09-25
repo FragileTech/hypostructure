@@ -1,0 +1,37 @@
+{
+  "reviewer": "phase7_one_sided_incidence_integration_review_d",
+  "decision": "accept",
+  "reason": "The note correctly derives the candidate location conditionally: armRight is a prefix of nextRight::tailRight, so a=nextLeft in armRight and nextLeft\u2260nextRight imply a occurs in the original right tail after the separator, including when a is the first-entry or final terminal. Splitting that tail at a and replacing only the detour from separator to a with the existing graph edge separator\u2013a gives common++separator::a::after. Every candidate vertex already occurs on the original right route, and RoutingConfiguration.inside is a vertex-support condition; the unchanged prefix preserves the source root and the unchanged suffix preserves the selected right terminal. The note explicitly leaves graph chain, Nodup, issued/inside/lands construction and strict common-prefix comparison to the next Lean task. The checked crossing remains conditional on all incident edges lying in the same envelope skeleton; no legal splice, outside-F edge, productive move, cap, compression, quantity payment or [144a] closure is claimed.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-one-sided-incidence-contract.json",
+      "sha256": "fc337e24650d3c3b7ca56e84dd3453b7a7f2c210683c7d1e56cfc65f305c7f97",
+      "locator": "P7-window-44 source-fixed shortcut acceptance and limits"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-one-sided-incidence-integration-result.json",
+      "sha256": "0118c7afd6f42441f3191a7aa449d763044cf530435db346054ede64b4686975",
+      "locator": "submitted candidate and unproved route/escape obligations"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-one-sided-incidence-integration.md",
+      "sha256": "6973ca4964bb6c760821387a951a31fe4cb2e3cd28f048dac2810813c39614be",
+      "locator": "candidate path, support/terminal preservation and closure scan"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-one-sided-incidence.md",
+      "sha256": "d162be17f8fbd733103dd054ce87ea5f5296749d4f14bc9a1ecba78cd96c2bd6",
+      "locator": "kernel-checked conditional saturation-to-crossing implication"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "a18379083437a07b4a59edace9f5b24be890ffd2016d325b1536b31fa000787d",
+      "locator": "source-fixed maximalPrefix and matching/star decompositions, first-entry arm prefixes, conditional crossing"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean",
+      "sha256": "cca0d7a8a6d32968b3bd01a9ea3b0a6fb0fa119a7f1380d98610c29815087e31",
+      "locator": "lines 229-246: RoutingConfiguration chain, nodup, issued, inside vertex support and lands fields"
+    }
+  ]
+}

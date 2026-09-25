@@ -1,0 +1,31 @@
+{
+  "status": "SUBMITTED_RESULT",
+  "output": "In both actual [144] matching and star producer proofs, the forced non-skeleton edge on the selected graph has HasReturn by the existing K.bridgeless fact. The owner and its direct EG caller kernel-check after the separate inherited-readiness repair.",
+  "evidence": [
+    {"path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-forced-return.md", "sha256": "e352c8c737530792d70e31111dbd38f63ab6cff39772b62e9309d1e496d95e3f", "locator": "same-edge return, interaction and remaining export"},
+    {"path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean", "sha256": "ccd8fafd232d49630edebed9c9c45341ab9f40a17c48ef8e81fad86c8979c5c0", "locator": "K.bridgeless Requires/get and both outsideSkeletonReturn proofs"},
+    {"path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Local.lean", "sha256": "dfb7eae78abce57a433c0d22d7c470e7385bcc619cf267294d8b8c59ab632e66", "locator": "selectedBottleneckDischarge passes inherited K.bridgeless"},
+    {"path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-bridgeless-readiness.md", "sha256": "e9217da4a38351d96a3ac2eccd575a140f27e66c5c47009d9e2bbdd3228882f1", "locator": "two successful EG assembly kernel checks"}
+  ],
+  "implementation_status": "kernel_checked",
+  "first_missing_inference": "",
+  "immediate_subobligations": [
+    "Integrate this same-edge return with the reviewed component and cycle-rank account without double charging.",
+    "Export the source-bound same edge and envelope through the existing typeBHandoff Holds proposition before treating it as the [144a] residual."
+  ],
+  "metadata": {
+    "structural_use": null,
+    "interaction": {
+      "object": "forced non-F physical edge at nextLeft of each actual [144] producer",
+      "ingredients": ["accepted outsideSkeletonNeighbour", "retained K.bridgeless Holds", "actual Graph.EdgeContraction on selected G"],
+      "relation": "The same adjacency witness instantiates K.bridgeless and gives a simple return path in G with precisely that edge deleted.",
+      "known": "Owner, direct EG caller and immediate strict dependent caller kernel-check in both matching and star histories.",
+      "unresolved": "Source-bound Holds export, formal cycle-rank consequence and marked-return geometry.",
+      "domains": "full selected graph, fixed same-token matching/star producer, actual envelope skeleton F",
+      "previous_use": "Bridgelessness was retained generally, but no physical non-F edge had been forced for this extremal source envelope before P7-window-48."
+    },
+    "changed_objects": [],
+    "changed_accounts": [],
+    "side_observations": ["The rank consequence is reviewed mathematically, not claimed kernel checked; [144a] remains open."]
+  }
+}

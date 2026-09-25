@@ -1,0 +1,42 @@
+{
+  "reviewer": "phase4_marked_edge_splice_review_b",
+  "decision": "accept",
+  "reason": "The candidate is the exact list C++h::a::x::v_(t-1)::...::v_j::T_j, with j the largest return-path index lying in the old q suffix. It uses the forced edge a-x in every case and valid reverse G-e path edges; the largest-index choice prevents a later reverse vertex from occurring in that suffix. The note explicitly conditions route validity on full nodup across prefix, detour and retained suffix, q-specific support for every new vertex, graph chain, and preservation of the fixed source, root, terminal and buffer. Under those conditions the old common prefix C++[h] becomes at least C++[h,a], so maximality excludes only the valid arm. No suffix hit, prefix collision, wrong q support, retained-suffix repetition and other field failures remain open; none is charged or closed. This uses e outside F, unlike the prior right shortcut through an existing q tail. All submitted evidence hashes match current files.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-marked-edge-splice-contract.json",
+      "sha256": "524f01a41fa4df4d8ee85513c6119e7802715e7aee2fdca4944a6ee624a70bb2",
+      "locator": "P4-window-61 goal, acceptance, and on_failure"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-marked-edge-splice-result.json",
+      "sha256": "44938ff690f312ff913d783515c9e0644283ead12c1ea1adb6ffa2dd0c71a0c8",
+      "locator": "submitted conditional output, evidence and open subobligations"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-marked-edge-splice.md",
+      "sha256": "c408b1ddff3412aef7f32fa654e4a63102db3beb68a3b6bf292ad7b6039e95a0",
+      "locator": "route decomposition, reverse-index choice, candidate list, four numbered premises, complementary failure arms, and attempt fingerprint"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase3-marked-return-rival.md",
+      "sha256": "662188e77c20c87f3a1bd9adae8b68424cf7a2470e0c080f4b9fe69d16ec210d",
+      "locator": "selected marked-return tension and unresolved conditional reroute"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean",
+      "sha256": "cca0d7a8a6d32968b3bd01a9ea3b0a6fb0fa119a7f1380d98610c29815087e31",
+      "locator": "lines 229-246: RoutingConfiguration chain, nodup, issued, inside and lands fields"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "ccd8fafd232d49630edebed9c9c45341ab9f40a17c48ef8e81fad86c8979c5c0",
+      "locator": "lines 1590-1683 maximal-prefix choice and prefix arithmetic; 1669-1745 old right shortcut; 1887-1949 pair-specific route types; 2811-2826 and 3888-3903 forced edge return"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Contraction.lean",
+      "sha256": "df6ec5784d38a0fb3cad6ddd628f29b4b62c3a5ba43672c5b6b3cc17f692b8eb",
+      "locator": "lines 181-197: HasReturn path in the edge-deleted graph"
+    }
+  ]
+}

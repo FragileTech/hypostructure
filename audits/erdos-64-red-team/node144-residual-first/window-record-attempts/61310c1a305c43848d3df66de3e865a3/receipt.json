@@ -1,0 +1,86 @@
+{
+  "task_id": "P0-window-94-verify-document-relocation",
+  "sessions": [
+    "01a0d746-340e-7263-b70c-8453149e84d2",
+    "23fed97806eb4a4bb1c959c801c0a653",
+    "a46dce78d169420cb4a68ea702379b22"
+  ],
+  "input_hash": "088a81d926fb4cb35d3d6dbe2bb8d263f6f469752081f9dc271ccfcadca94e3c",
+  "submission_hash": "8465c7803f01cd2d527735b034e1493c572942bc60e2ccbd0cbbefdc0c9142e0",
+  "reviews": [
+    {
+      "reviewer": "23fed97806eb4a4bb1c959c801c0a653",
+      "decision": "accept",
+      "reason": "Both archived SHA256 identities match the original cited commitments in all ten relocation entries. Independently recomputed hashes and exhaustive diffs match the submission: workflow changes consist only of the expanded worker instruction, added context policy and formatting; the manual differs only by the four-line isolation insertion. Existing mathematical statements and historical verdicts remain preserved, with no witness identification, proof repetition, new move or closure claim. The audit identifies the older repair/continuation instructions incompatible with a single worker assignment and correctly states the requirement for reviewed Phase 5 admission and productive conditional payoffs for every outcome on the complete residual before construction. The assigned document comparison is complete.",
+      "evidence": [
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-document-relocation-input.json",
+          "sha256": "7eb9b228642d6e718c595d19add9f866ad640c232e9aa43e66222bdb83a5bd75",
+          "locator": "reason; relocations[0:10] (all ten entries); backup"
+        },
+        {
+          "path": "repair_and_closure.md",
+          "sha256": "437e624d8a873808d02b470220ede27fb903da98750b998da1fae77defc52aab",
+          "locator": "entire byte stream; lines 202\u2013205 and 422\u2013439, especially 433, 435 and 439"
+        },
+        {
+          "path": "tools/methodology_gate/evidence_snapshots/9b3ae2690229ca606e7bf75828fbe51e9171dea043a34b32394bd8db40aead0a",
+          "sha256": "9b3ae2690229ca606e7bf75828fbe51e9171dea043a34b32394bd8db40aead0a",
+          "locator": "entire byte stream; taskflow.units.move; taskflow.phase_tasks.3; taskflow.phase_descriptions.3 and .5; taskflow.worker_instruction"
+        },
+        {
+          "path": "tools/methodology_gate/evidence_snapshots/acd2eebe8a315723f4d5c6c7ee12b614d8c93d2260d96e303c088d7164ddfef6",
+          "sha256": "acd2eebe8a315723f4d5c6c7ee12b614d8c93d2260d96e303c088d7164ddfef6",
+          "locator": "entire byte stream; insertion boundary after line 201; lines 418\u2013435, especially 429 and 431"
+        },
+        {
+          "path": "tools/methodology_gate/policy/workflow.json",
+          "sha256": "c5a45123dfd5c1e625ff5977c9d8b27be727e8296f66c4bd58e1b49160908e56",
+          "locator": "entire byte stream; taskflow.worker_instruction; taskflow.context_policy; rule; accepted_stage_rule"
+        },
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-document-relocation-audit.md",
+          "sha256": "05261457d3ce92cf76ac03b40eeb1231eeb9b097b95dfbdb8026554918eef124",
+          "locator": "designated task artifact"
+        }
+      ]
+    },
+    {
+      "reviewer": "a46dce78d169420cb4a68ea702379b22",
+      "decision": "accept",
+      "reason": "Both archived SHA256 identities match the original cited commitments in all ten relocation entries; all supplied source and submission evidence hashes match. Independently regenerated complete textual diffs exactly match the submitted diffs. The workflow changes only its worker instruction and adds the assignment context policy; removing manual lines 202\u2013205 reproduces the archived bytes exactly. These context-isolation changes preserve mathematical statements, historical verdicts, retained hypotheses and witness distinctions. The audit identifies the older repair/selection and survivor-continuation instructions incompatible with a single isolated worker assignment, and correctly states that construction requires reviewed Phase 5 admission with a proved productive conditional payoff for every outcome on the complete residual. It completes only the assigned comparison, without proof repetition, a new move, construction or closure claims.",
+      "evidence": [
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-document-relocation-input.json",
+          "sha256": "7eb9b228642d6e718c595d19add9f866ad640c232e9aa43e66222bdb83a5bd75",
+          "locator": "reason; relocations[0:10] (all ten entries); backup"
+        },
+        {
+          "path": "repair_and_closure.md",
+          "sha256": "437e624d8a873808d02b470220ede27fb903da98750b998da1fae77defc52aab",
+          "locator": "entire byte stream; lines 202\u2013205 and 422\u2013439, especially 433, 435 and 439"
+        },
+        {
+          "path": "tools/methodology_gate/evidence_snapshots/9b3ae2690229ca606e7bf75828fbe51e9171dea043a34b32394bd8db40aead0a",
+          "sha256": "9b3ae2690229ca606e7bf75828fbe51e9171dea043a34b32394bd8db40aead0a",
+          "locator": "entire byte stream; taskflow.units.move; taskflow.phase_tasks.3; taskflow.phase_descriptions.3 and .5; taskflow.worker_instruction"
+        },
+        {
+          "path": "tools/methodology_gate/evidence_snapshots/acd2eebe8a315723f4d5c6c7ee12b614d8c93d2260d96e303c088d7164ddfef6",
+          "sha256": "acd2eebe8a315723f4d5c6c7ee12b614d8c93d2260d96e303c088d7164ddfef6",
+          "locator": "entire byte stream; insertion boundary after line 201; lines 418\u2013435, especially 429 and 431"
+        },
+        {
+          "path": "tools/methodology_gate/policy/workflow.json",
+          "sha256": "c5a45123dfd5c1e625ff5977c9d8b27be727e8296f66c4bd58e1b49160908e56",
+          "locator": "entire byte stream; taskflow.worker_instruction; taskflow.context_policy; rule; accepted_stage_rule"
+        },
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-document-relocation-audit.md",
+          "sha256": "05261457d3ce92cf76ac03b40eeb1231eeb9b097b95dfbdb8026554918eef124",
+          "locator": "designated task artifact"
+        }
+      ]
+    }
+  ]
+}

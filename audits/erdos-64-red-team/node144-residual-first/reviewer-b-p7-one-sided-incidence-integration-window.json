@@ -1,0 +1,42 @@
+{
+  "reviewer": "phase7_one_sided_incidence_integration_review_b",
+  "decision": "accept",
+  "reason": "The integration keeps the checked incidence result conditional on saturation of the selected envelope. In both producer histories, armRight is a prefix of the original right tail beginning at nextRight, and nextLeft differs from nextRight; hence a crossing puts nextLeft on that original right route. The proposed shortcut uses the retained separator–nextLeft edge and the original suffix, with the same fixed right support, source, buffer, and terminal as the maximalPrefix comparison. The note explicitly leaves every RoutingConfiguration field and strict prefix improvement to a later kernel proof. Its constraint, compression, and quantity tests remain negative, and it claims neither a shortcut nor an outside-skeleton edge, move, or closure. All submitted evidence hashes match current files.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-one-sided-incidence-contract.json",
+      "sha256": "fc337e24650d3c3b7ca56e84dd3453b7a7f2c210683c7d1e56cfc65f305c7f97",
+      "locator": "goal, acceptance, and on_failure for P7-window-44"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-one-sided-incidence-integration-result.json",
+      "sha256": "0118c7afd6f42441f3191a7aa449d763044cf530435db346054ede64b4686975",
+      "locator": "output, first_missing_inference, immediate_subobligations, and metadata"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-one-sided-incidence-integration.md",
+      "sha256": "6973ca4964bb6c760821387a951a31fe4cb2e3cd28f048dac2810813c39614be",
+      "locator": "paragraphs 1–4: conditional crossing, fixed-source shortcut prospect, and separate closure scan"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-one-sided-incidence.md",
+      "sha256": "d162be17f8fbd733103dd054ce87ea5f5296749d4f14bc9a1ecba78cd96c2bd6",
+      "locator": "accepted conditional incidence theorem and next splice obligation"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "exact [144a] residual and one-handoff witness scope"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "a18379083437a07b4a59edace9f5b24be890ffd2016d325b1536b31fa000787d",
+      "locator": "lines 1773–1810 and 2732–2770 (fixed-source route choices); 2149–2163, 2213–2221, 2552–2574 (matching decomposition, right-arm prefix, conditional crossing); 3106–3120, 3166–3174, 3497–3519 (star counterparts)"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean",
+      "sha256": "cca0d7a8a6d32968b3bd01a9ea3b0a6fb0fa119a7f1380d98610c29815087e31",
+      "locator": "lines 229–243: RoutingConfiguration fields left for the proposed shortcut"
+    }
+  ]
+}

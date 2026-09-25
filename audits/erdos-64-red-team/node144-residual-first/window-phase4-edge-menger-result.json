@@ -1,0 +1,36 @@
+{
+  "status": "SUBMITTED_RESULT",
+  "output": "Catalogued the complete route-union split. For T_plus = T without rho empty, every selected simple route is the singleton root path and its source index remains open. For T_plus nonempty, finite edge Menger gives, for each k>=1, either k edge-disjoint rho-to-T_plus paths in H or an edge cut of size <k separating rho from T_plus in H. None of these outcomes is yet tied to distinct source pairs, global separation in G, or a productive payoff.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-edge-menger.md",
+      "sha256": "a4ff760459ad133d1be00a0b2a29e5d18ae2af453a03974761b677e95d437c66",
+      "locator": "derived H and T; all-root terminal case; exact finite edge dichotomy for T_plus; transport caveats"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+      "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+      "locator": "same-witness finite pattern and all declared routes lines 623-682"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean",
+      "sha256": "cca0d7a8a6d32968b3bd01a9ea3b0a6fb0fa119a7f1380d98610c29815087e31",
+      "locator": "RoutingConfiguration path and chain fields lines 216-249"
+    },
+    {
+      "path": "repair_and_closure.md",
+      "sha256": "acd2eebe8a315723f4d5c6c7ee12b614d8c93d2260d96e303c088d7164ddfef6",
+      "locator": "Menger linkage-separator dichotomy with no consumer is not a reduction, line 431"
+    }
+  ],
+  "implementation_status": "none",
+  "first_missing_inference": "",
+  "immediate_subobligations": [],
+  "metadata": {
+    "structural_use": null,
+    "interaction": null,
+    "changed_objects": [],
+    "changed_accounts": [],
+    "side_observations": []
+  }
+}

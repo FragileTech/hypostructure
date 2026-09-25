@@ -1,0 +1,32 @@
+{
+  "reviewer": "phase6_crossing_exclusion_review_d",
+  "decision": "accept",
+  "reason": "The local prefixGainOfShortcut computes commonPrefixLength of the two actual separator forms as common.length+1 when nextLeft\u2260nextRight and bounds the fixed-left/shortcut value below by common.length+2. The strengthened shortcut returns exact head and last equalities to the original right route. In both matching and star crossingExcluded proofs, secondRoot and secondTerminalEndpoint convert those equalities into the exact validB predicate; firstRoot and firstTerminalEndpoint supply validA. maximalPrefix is then applied to the unchanged firstConfiguration and the same-typed right shortcut, with original pair-specific support, token source and selected right buffer, and omega contradicts the two prefix bounds. The hypothetical crossing is obtained only from each actual armRight and original tail decomposition. Current source hash matches the submission and the result reports a successful direct caller check. The proof establishes nextLeft\u2209armRight locally in both producer arms but does not yet derive or export an outside-skeleton physical edge, modify sources or graph, claim a cap, productive move or branch closure.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-crossing-exclusion-contract.json",
+      "sha256": "385483de04482a8daff907cd8d87609b5ef29818da10a4d0b5ed9bc33689ab04",
+      "locator": "P6-window-47 exact maximality and no-escape contract"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-crossing-exclusion-result.json",
+      "sha256": "b0c1eac9bd038c5da4a841c50acd855078a62b20954bde35b1b6731038ff20ad",
+      "locator": "submitted source hash and next outside-edge extraction"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-crossing-exclusion.md",
+      "sha256": "53e58adb7e57800c9833582e0b6d3e1105c6dcdac5adc08f38f73a99c9d45f93",
+      "locator": "old/new prefix calculation, fixed-source comparator and limits"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "9865da1fb22ae4bb2ebb38d476acf11848c4787ff73eb1652734ca4e2c97ddbe",
+      "locator": "lines 1638-1668 prefixGainOfShortcut; 1669-1749 strengthened same-type shortcut; 2690-2740 matching and 3690-3740 star crossingExcluded"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean",
+      "sha256": "cca0d7a8a6d32968b3bd01a9ea3b0a6fb0fa119a7f1380d98610c29815087e31",
+      "locator": "lines 229-246 RoutingConfiguration fields and 377-390 commonPrefixLength definition"
+    }
+  ]
+}

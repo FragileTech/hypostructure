@@ -1,0 +1,4 @@
+{
+  "repair_task": "P7-window-52-component-dichotomy",
+  "reason": "The original unconditional connectivity claim omitted the possible isolated unentered core vertex. The accepted repair proves the exact one-or-two-component dichotomy and preserves the existing component-merger correction."
+}

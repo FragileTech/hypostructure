@@ -1,0 +1,37 @@
+{
+  "reviewer": "phase7_endpoint_location_review_d",
+  "decision": "accept",
+  "reason": "In both matching and star producer proofs, outsideSkeletonLocation destructs the already proved outsideSkeletonNeighbour and returns that same neighbour with its selected-graph adjacency and edge-outside-the-literal-skeleton fact. The centre edge s(separator,nextLeft) lies in skeleton, so Sym2 symmetry excludes neighbour=separator. The region is defined from that branch\u2019s actual core and two first-entry arm lists plus separator. The nested membership tests establish the ordered core, left-arm-outside-core, right-arm-outside-both, or outside-region disjunction; negations and the region definition make these four cases exhaustive and disjoint even with core/arm and arm/arm overlaps. The source hash matches the result, which reports owner and direct caller builds. This applies the previously audited generic F/internal/cut partition to a newly forced non-skeleton edge; it does not create a second independent charge. The proof remains owner-local and asserts no cycle-rank, boundary cost, cap, move credit or closure. The note correctly leaves F connectivity for later, though the prior Phase 2 account explicitly permits c(F)>1, so any later quantity step must either prove connectivity for this selected F or retain the component-merger correction in the general rank formula.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-endpoint-location-contract.json",
+      "sha256": "bf44f2b5451f76b531b9dd149f1020eca3e414b0f9b6e5f1e8cdc0c32efbc728",
+      "locator": "P7-window-50 exact same-witness ordered classification gate"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-endpoint-location-result.json",
+      "sha256": "2e097f3f4f283c62dddab6328509642be4f8172ee9dcf6af6fe1d80713b0f577",
+      "locator": "submitted source hash, build report and remaining export/accounting obligations"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-endpoint-location.md",
+      "sha256": "a6bdd645a65c5f4bb43ad26f2570c7d3d741dda8125b3a290e568df9dc04c26e",
+      "locator": "four ordered cases, prior-use distinction and no-quantity limits"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-physical-escape.md",
+      "sha256": "bb5a02341afba224584d4d848de8fe54c0852475c21781f806c08ab07ac92ba6",
+      "locator": "previous same-envelope physical edge witness"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-attachment-account-audit.md",
+      "sha256": "d858b62637f25ee50ac9818621e937f7d478d862bd98a779e065ee716a73c91e",
+      "locator": "lines 20-24 and 42-55 prior generic partition and disconnected-skeleton rank correction"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "fca60d5a643cb6cdff51d0dde556538b66aa5b67963872fd2a42c3accace6b28",
+      "locator": "lines 2752-2812 matching and 3819-3879 star: same outsideSkeletonNeighbour, actual envelopeRegion and outsideSkeletonLocation"
+    }
+  ]
+}

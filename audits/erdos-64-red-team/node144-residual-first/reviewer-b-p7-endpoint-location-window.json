@@ -1,0 +1,32 @@
+{
+  "reviewer": "phase7_endpoint_location_review_b",
+  "decision": "accept",
+  "reason": "Both actual producer proofs destruct the existing outsideSkeletonNeighbour witness, retain its adjacency and s(nextLeft,neighbour)∉the same literal skeleton, and define S from their own core, arms, and separator. Each excludes neighbour=separator because the centre edge belongs to that skeleton, then proves the ordered core / left-arm-outside-core / right-arm-outside-both / outside-S disjunction. The predicates are disjoint by their explicit negative guards; a left/right overlap stays in the left-arm case. The submission acknowledges that the generic partition was already known and only locates the newly forced edge, assigns no rank or boundary cost, and leaves source-bound export and closure open. The owner log contains no Lean error, the direct caller log reports a successful 8777-job build, and all submitted evidence hashes match.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-endpoint-location-contract.json",
+      "sha256": "bf44f2b5451f76b531b9dd149f1020eca3e414b0f9b6e5f1e8cdc0c32efbc728",
+      "locator": "P7-window-50 acceptance and on_failure"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-endpoint-location-result.json",
+      "sha256": "2e097f3f4f283c62dddab6328509642be4f8172ee9dcf6af6fe1d80713b0f577",
+      "locator": "output, evidence, missing export and accounting obligations"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-endpoint-location.md",
+      "sha256": "a6bdd645a65c5f4bb43ad26f2570c7d3d741dda8125b3a290e568df9dc04c26e",
+      "locator": "ordered four-case classification, overlap rule, prior partition distinction, and local scope"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "pinned [144a] window branch"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "fca60d5a643cb6cdff51d0dde556538b66aa5b67963872fd2a42c3accace6b28",
+      "locator": "lines 2641–2663, 2752–2814 (matching same witness and location); 3708–3730, 3819–3881 (star same witness and location)"
+    }
+  ]
+}

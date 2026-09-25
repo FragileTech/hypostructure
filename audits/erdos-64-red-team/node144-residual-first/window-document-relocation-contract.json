@@ -1,0 +1,30 @@
+{
+  "id": "P0-window-94-verify-document-relocation",
+  "mode": "AUDIT",
+  "phase": "0",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "",
+  "kind": "pin_source_revision",
+  "goal": "Verify only that the archived workflow/manual references preserve the exact original cited bytes and that their changes concern context isolation without changing the accepted mathematical statements; identify any incompatible instruction affecting the next task. Do not repeat any proof or select a new move.",
+  "objects": [
+    "selected : EGInput; G = selected.object : finite graph with the registered baseline",
+    "handoff witnesses active_h, capacity_h, certified_h, token_h, role_h, pattern_h on G within one K.typeBHandoff proposition",
+    "handoff witnesses packing_h, core_h, envelope_h on G within one SameTokenTypeBHandoffEnvelopeStatement",
+    "class-audit witnesses active_a, capacity_a and selected windowIncidence token/role on G; equality with handoff witnesses is not asserted",
+    "capacity-token ledger witnesses active_t, capacity_t on G; equality with handoff witnesses is not asserted"
+  ],
+  "reads": [
+    "branch:node144-window-32d32f9d19e7",
+    "audits/erdos-64-red-team/node144-residual-first/window-document-relocation-input.json",
+    "tools/methodology_gate/policy/workflow.json",
+    "repair_and_closure.md",
+    "tools/methodology_gate/evidence_snapshots/9b3ae2690229ca606e7bf75828fbe51e9171dea043a34b32394bd8db40aead0a",
+    "tools/methodology_gate/evidence_snapshots/acd2eebe8a315723f4d5c6c7ee12b614d8c93d2260d96e303c088d7164ddfef6"
+  ],
+  "interaction": "Historical accepted evidence versus new isolated-context execution rules",
+  "parent_payoff": "Preserve the accepted proof state while resuming in fresh restricted contexts",
+  "depends_on": [],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-document-relocation-audit.md",
+  "acceptance": "Verify both SHA256 identities and exact document differences; preserve historical proof verdicts and state the construction admission rule; do not claim mathematical progress or closure.",
+  "on_failure": "Name the first mismatched byte identity or altered mathematical rule; return only the exact repair obligation."
+}

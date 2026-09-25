@@ -3,84 +3,85 @@
 \contentsline {paragraph}{Phase 2: packing induced $P_{13}$ paths and bounding their density.}{3}{section*.3}%
 \contentsline {paragraph}{Phase 3: independent local cycle tests and the entropy alternative.}{4}{section*.4}%
 \contentsline {paragraph}{Phase 4: localizing the degree deficit and excluding connected pieces.}{4}{section*.5}%
-\contentsline {paragraph}{How the alternatives close.}{5}{section*.6}%
+\contentsline {paragraph}{Covered alternatives and open endpoints.}{5}{section*.6}%
 \contentsline {section}{\numberline {1}Introduction and overview of the proof}{5}{section.1}%
-\contentsline {paragraph}{Conventions.}{7}{section*.7}%
-\contentsline {paragraph}{External inputs (black boxes).}{30}{section*.24}%
-\contentsline {paragraph}{Block I: minimality and target algebra (invariants 1--8).}{31}{section*.25}%
-\contentsline {paragraph}{Block II: degree, rank, sparsity (invariants 9--19).}{31}{section*.26}%
-\contentsline {paragraph}{Block III: induced $P_{13}$ packing and forced remainder (invariants 20--24).}{32}{section*.27}%
-\contentsline {paragraph}{Block IV: obstruction constraints (invariants 25--29).}{33}{section*.28}%
-\contentsline {paragraph}{Block V: odd-divisor / cycle-space constraints (invariants 30--38).}{33}{section*.29}%
-\contentsline {paragraph}{Block VI: obstruction-rank routing and two-budget machinery.}{34}{section*.30}%
-\contentsline {paragraph}{Block VII: large-budget residual and local exclusion (the spine's terminus).}{34}{section*.31}%
-\contentsline {paragraph}{Spine dependency summary (the load path through route 8).}{38}{section*.32}%
-\contentsline {paragraph}{Stage legend.}{39}{section*.34}%
-\contentsline {paragraph}{Setup and target algebra.}{39}{section*.35}%
-\contentsline {paragraph}{Minimality and replacement.}{39}{section*.36}%
-\contentsline {paragraph}{Entropy / skeleton budget.}{40}{section*.37}%
-\contentsline {paragraph}{$P_{13}$ packing and forced remainder.}{43}{section*.38}%
-\contentsline {paragraph}{Obstruction supply, rank, two-budget.}{43}{section*.39}%
-\contentsline {paragraph}{Large-budget residual and local exclusion (terminus).}{44}{section*.40}%
-\contentsline {paragraph}{Invariant $\to $ lemmas reverse index (impact analysis).}{49}{section*.41}%
-\contentsline {paragraph}{Fast gap-check usage.}{52}{section*.42}%
-\contentsline {section}{\numberline {2}Target cycles as Mersenne returns}{52}{section.2}%
-\contentsline {paragraph}{Framework branch table.}{53}{section*.44}%
-\contentsline {section}{\numberline {3}Minimality and replacement}{54}{section.3}%
-\contentsline {subsubsection}{\numberline {3.0.1}The pair-code unrealized residual: nodes [178]--[180] and open node [182]}{91}{subsubsection.3.0.1}%
+\contentsline {paragraph}{Conventions.}{9}{section*.7}%
+\contentsline {paragraph}{External inputs (black boxes).}{31}{section*.24}%
+\contentsline {paragraph}{Block I: minimality and target algebra (invariants 1--8).}{32}{section*.25}%
+\contentsline {paragraph}{Block II: degree, rank, sparsity (invariants 9--19).}{32}{section*.26}%
+\contentsline {paragraph}{Block III: induced $P_{13}$ packing and forced remainder (invariants 20--24).}{33}{section*.27}%
+\contentsline {paragraph}{Block IV: obstruction constraints (invariants 25--29).}{34}{section*.28}%
+\contentsline {paragraph}{Block V: odd-divisor / cycle-space constraints (invariants 30--38).}{34}{section*.29}%
+\contentsline {paragraph}{Block VI: obstruction-rank routing and two-budget machinery.}{35}{section*.30}%
+\contentsline {paragraph}{Block VII: large-budget residual and local exclusion (the spine's terminus).}{35}{section*.31}%
+\contentsline {paragraph}{Spine dependency summary (the load path through route 8).}{39}{section*.32}%
+\contentsline {paragraph}{Stage legend.}{40}{section*.34}%
+\contentsline {paragraph}{Setup and target algebra.}{40}{section*.35}%
+\contentsline {paragraph}{Minimality and replacement.}{40}{section*.36}%
+\contentsline {paragraph}{Entropy / skeleton budget.}{41}{section*.37}%
+\contentsline {paragraph}{$P_{13}$ packing and forced remainder.}{44}{section*.38}%
+\contentsline {paragraph}{Obstruction supply, rank, two-budget.}{44}{section*.39}%
+\contentsline {paragraph}{Large-budget residual and local exclusion (terminus).}{45}{section*.40}%
+\contentsline {paragraph}{Invariant $\to $ lemmas reverse index (impact analysis).}{50}{section*.41}%
+\contentsline {paragraph}{Fast gap-check usage.}{53}{section*.42}%
+\contentsline {section}{\numberline {2}Target cycles as Mersenne returns}{53}{section.2}%
+\contentsline {paragraph}{Framework branch table.}{54}{section*.44}%
+\contentsline {section}{\numberline {3}Minimality and replacement}{55}{section.3}%
+\contentsline {subsubsection}{\numberline {3.0.1}The pair-code unrealized residual: nodes [178]--[180] and open node [182]}{92}{subsubsection.3.0.1}%
 \contentsline {subsection}{\numberline {3.1}Boundaried pieces, target-complete quotients, and replacement}{101}{subsection.3.1}%
-\contentsline {paragraph}{Framework branch table.}{107}{section*.48}%
-\contentsline {section}{\numberline {4}Sparse rank parameters}{108}{section.4}%
+\contentsline {paragraph}{Framework branch table.}{108}{section*.48}%
+\contentsline {section}{\numberline {4}Sparse rank parameters}{109}{section.4}%
 \contentsline {paragraph}{Framework branch table.}{111}{section*.49}%
-\contentsline {section}{\numberline {5}Induced $P_{13}$ windows}{111}{section.5}%
+\contentsline {section}{\numberline {5}Induced $P_{13}$ windows}{112}{section.5}%
 \contentsline {paragraph}{Framework branch table.}{112}{section*.50}%
-\contentsline {section}{\numberline {6}The $P_{13}$ obstruction algebra}{112}{section.6}%
-\contentsline {paragraph}{Framework branch table.}{114}{section*.52}%
+\contentsline {section}{\numberline {6}The $P_{13}$ obstruction algebra}{113}{section.6}%
+\contentsline {paragraph}{Framework branch table.}{115}{section*.52}%
 \contentsline {section}{\numberline {7}Entropy bound on independent $P_{13}$ windows}{115}{section.7}%
 \contentsline {subsection}{\numberline {7.1}The dense-packing residual: nodes [158]--[164]}{126}{subsection.7.1}%
-\contentsline {subsection}{\numberline {7.2}The small-order repair: nodes [173]--[177]}{129}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.2}The small-order repair: nodes [173]--[177]}{130}{subsection.7.2}%
 \contentsline {subsection}{\numberline {7.3}The trivial neutral configuration: compression closure, nodes [169]--[172]}{131}{subsection.7.3}%
-\contentsline {paragraph}{Framework branch table.}{138}{section*.53}%
-\contentsline {section}{\numberline {8}The $P_{13}$-free remainder and positive deficiency}{138}{section.8}%
-\contentsline {paragraph}{Framework branch table.}{142}{section*.55}%
-\contentsline {section}{\numberline {9}Obstruction supply in the piece remainder}{142}{section.9}%
+\contentsline {paragraph}{Status of the proposed geometric continuation.}{132}{section*.53}%
+\contentsline {paragraph}{Framework branch table.}{139}{section*.54}%
+\contentsline {section}{\numberline {8}The $P_{13}$-free remainder and positive deficiency}{140}{section.8}%
 \contentsline {paragraph}{Framework branch table.}{143}{section*.56}%
-\contentsline {section}{\numberline {10}Obstruction rank and rank forcing}{144}{section.10}%
-\contentsline {paragraph}{Framework branch table.}{149}{section*.59}%
-\contentsline {section}{\numberline {11}Per-vertex remainder entropy and two-budget routing}{150}{section.11}%
-\contentsline {paragraph}{Framework branch table.}{153}{section*.61}%
-\contentsline {section}{\numberline {12}The admissible entropy cap}{154}{section.12}%
-\contentsline {paragraph}{Framework branch table.}{155}{section*.62}%
-\contentsline {section}{\numberline {13}The large-budget residual}{156}{section.13}%
-\contentsline {paragraph}{Framework branch table.}{160}{section*.64}%
-\contentsline {section}{\numberline {14}Local analysis of a negative-net-charge support}{160}{section.14}%
-\contentsline {subsection}{\numberline {14.1}Type A: low-deficiency $P_{13}$-free piece}{160}{subsection.14.1}%
-\contentsline {paragraph}{Handoff interface.}{167}{section*.66}%
-\contentsline {paragraph}{Framework branch table.}{191}{section*.71}%
-\contentsline {subsection}{\numberline {14.2}Type B: high-degree fan-safe surplus obstruction}{192}{subsection.14.2}%
-\contentsline {paragraph}{Degree-four Type B ledger.}{212}{section*.76}%
-\contentsline {paragraph}{Framework branch table.}{218}{section*.79}%
-\contentsline {section}{\numberline {15}The branch-closure theorem}{219}{section.15}%
+\contentsline {section}{\numberline {9}Obstruction supply in the piece remainder}{144}{section.9}%
+\contentsline {paragraph}{Framework branch table.}{145}{section*.57}%
+\contentsline {section}{\numberline {10}Obstruction rank and rank forcing}{145}{section.10}%
+\contentsline {paragraph}{Framework branch table.}{150}{section*.60}%
+\contentsline {section}{\numberline {11}Per-vertex remainder entropy and two-budget routing}{151}{section.11}%
+\contentsline {paragraph}{Framework branch table.}{154}{section*.62}%
+\contentsline {section}{\numberline {12}The admissible entropy cap}{155}{section.12}%
+\contentsline {paragraph}{Framework branch table.}{157}{section*.63}%
+\contentsline {section}{\numberline {13}The large-budget residual}{157}{section.13}%
+\contentsline {paragraph}{Framework branch table.}{161}{section*.65}%
+\contentsline {section}{\numberline {14}Local analysis of a negative-net-charge support}{161}{section.14}%
+\contentsline {subsection}{\numberline {14.1}Type A: low-deficiency $P_{13}$-free piece}{162}{subsection.14.1}%
+\contentsline {paragraph}{Handoff interface.}{169}{section*.67}%
+\contentsline {paragraph}{Framework branch table.}{193}{section*.72}%
+\contentsline {subsection}{\numberline {14.2}Type B: high-degree fan-safe surplus obstruction}{194}{subsection.14.2}%
+\contentsline {paragraph}{Degree-four Type B ledger.}{214}{section*.77}%
 \contentsline {paragraph}{Framework branch table.}{220}{section*.80}%
-\contentsline {subsection}{\numberline {15.1}External demand accounting for the target-defect residual}{221}{subsection.15.1}%
-\contentsline {subsubsection}{\numberline {15.1.1}The unified negative Type~A collection}{221}{subsubsection.15.1.1}%
-\contentsline {subsubsection}{\numberline {15.1.2}Every unit of deficit is a silent-excess entry with a nonempty response-support core}{222}{subsubsection.15.1.2}%
-\contentsline {subsubsection}{\numberline {15.1.3}Unified response-support reduction}{223}{subsubsection.15.1.3}%
-\contentsline {subsubsection}{\numberline {15.1.4}External demand accounting for target-defect entries}{223}{subsubsection.15.1.4}%
-\contentsline {subsubsection}{\numberline {15.1.5}Demand-defect absorption ledger}{226}{subsubsection.15.1.5}%
-\contentsline {subsubsection}{\numberline {15.1.6}Window-blocker accounting for the open demand}{229}{subsubsection.15.1.6}%
-\contentsline {subsubsection}{\numberline {15.1.7}Large-budget reduction by demand accounting and finite descent}{241}{subsubsection.15.1.7}%
-\contentsline {paragraph}{Framework branch table.}{248}{section*.106}%
-\contentsline {section}{\numberline {A}Finite obstruction enumeration code}{248}{appendix.A}%
-\contentsline {paragraph}{Framework branch table.}{253}{section*.107}%
-\contentsline {section}{\numberline {B}Proof resilience: residual counterexamples under lemma failure}{256}{appendix.B}%
-\contentsline {paragraph}{Framework branch table.}{256}{section*.108}%
-\contentsline {paragraph}{How to read a row.}{256}{section*.109}%
-\contentsline {paragraph}{A. Trivial / external-input leaves.}{257}{section*.110}%
-\contentsline {paragraph}{B. Density / supply leaves (close by counting; degrade to ``dense-window'' reductions).}{257}{section*.111}%
-\contentsline {paragraph}{C. Obstruction / rank leaves (close by supply-vs-demand; degrade to ``flat-remainder'' reductions).}{257}{section*.112}%
-\contentsline {paragraph}{D. Net-charge terminus leaves (close by discharging; degrade to ``charged-piece'' reductions).}{258}{section*.113}%
-\contentsline {paragraph}{External-input closures for partial degradation cells.}{264}{section*.114}%
-\contentsline {paragraph}{Summary: the degradation ladder.}{265}{section*.115}%
-\contentsline {paragraph}{Cross-check against the demand $>$ supply collision.}{267}{section*.116}%
-\contentsline {section}{A note on human--AI collaboration}{267}{section*.117}%
+\contentsline {section}{\numberline {15}The branch-closure theorem}{221}{section.15}%
+\contentsline {paragraph}{Framework branch table.}{222}{section*.81}%
+\contentsline {subsection}{\numberline {15.1}External demand accounting for the target-defect residual}{223}{subsection.15.1}%
+\contentsline {subsubsection}{\numberline {15.1.1}The unified negative Type~A collection}{223}{subsubsection.15.1.1}%
+\contentsline {subsubsection}{\numberline {15.1.2}Every unit of deficit is a silent-excess entry with a nonempty response-support core}{224}{subsubsection.15.1.2}%
+\contentsline {subsubsection}{\numberline {15.1.3}Unified response-support reduction}{225}{subsubsection.15.1.3}%
+\contentsline {subsubsection}{\numberline {15.1.4}External demand accounting for target-defect entries}{225}{subsubsection.15.1.4}%
+\contentsline {subsubsection}{\numberline {15.1.5}Demand-defect absorption ledger}{228}{subsubsection.15.1.5}%
+\contentsline {subsubsection}{\numberline {15.1.6}Window-blocker accounting for the open demand}{231}{subsubsection.15.1.6}%
+\contentsline {subsubsection}{\numberline {15.1.7}Large-budget reduction by demand accounting and finite descent}{243}{subsubsection.15.1.7}%
+\contentsline {paragraph}{Framework branch table.}{250}{section*.107}%
+\contentsline {section}{\numberline {A}Finite obstruction enumeration code}{250}{appendix.A}%
+\contentsline {paragraph}{Framework branch table.}{255}{section*.108}%
+\contentsline {section}{\numberline {B}Proof resilience: residual counterexamples under lemma failure}{258}{appendix.B}%
+\contentsline {paragraph}{Framework branch table.}{258}{section*.109}%
+\contentsline {paragraph}{How to read a row.}{258}{section*.110}%
+\contentsline {paragraph}{A. Trivial / external-input leaves.}{259}{section*.111}%
+\contentsline {paragraph}{B. Density / supply leaves (close by counting; degrade to ``dense-window'' reductions).}{259}{section*.112}%
+\contentsline {paragraph}{C. Obstruction / rank leaves (close by supply-vs-demand; degrade to ``flat-remainder'' reductions).}{259}{section*.113}%
+\contentsline {paragraph}{D. Net-charge terminus leaves (close by discharging; degrade to ``charged-piece'' reductions).}{260}{section*.114}%
+\contentsline {paragraph}{External-input closures for partial degradation cells.}{266}{section*.115}%
+\contentsline {paragraph}{Summary: the degradation ladder.}{267}{section*.116}%
+\contentsline {paragraph}{Cross-check against the demand $>$ supply collision.}{269}{section*.117}%
+\contentsline {section}{A note on human--AI collaboration}{269}{section*.118}%

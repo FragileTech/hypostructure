@@ -1,0 +1,67 @@
+{
+  "reviewer": "phase4_terminal_effect_review_b",
+  "decision": "accept",
+  "reason": "O_term is scoped to one post-[144a] window handoff witness and defines T as the second-coordinate image of that witness's full source-demand union. Each demand has a declared route ending at its terminal. The same-witness excess-port and retained normal-form facts yield |D_v| <= 3. A matching permits disjoint demand choices and a two-demand star has a unique noncentral demand per edge, so the selected edge-to-terminal map has fibres at most three; finite counting gives |P| <= 3|T| and |T| >= ceil((Q_geom+1)/3). The registered routing alphabet has at least two members, hence |P| >= 3. If T = {rho}, the full demand union has 2|P| >= 6 elements in a matching or |P|+1 >= 4 in a star, contradicting |D_rho| <= 3. The note limits this to terminal multiplicity and does not claim route-edge or envelope capacity, a homogeneous cap, a near-cubic estimate, or branch closure. The submitted evidence hashes match the live files.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-terminal-effect-contract.json",
+      "sha256": "b9d78c78a8aa2e1d32b2c495f427cfc8ea564f06a2a2bc88f405d6ac094e4b9c",
+      "locator": "goal, acceptance, and candidate-effect scope"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-terminal-effect-result.json",
+      "sha256": "803066daf11482afab3113b9b69b771dcb3afdc975b14787d748c9ab52e93e88",
+      "locator": "submitted output and cited hashes"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-terminal-effect.md",
+      "sha256": "f2f868bd854abba25f6e806cfc61db7a888e4edefb787c3adbe77c3974dce5f0",
+      "locator": "lines 3-35: O_term, finite-fibre count, Q_geom threshold, all-root contradiction, and limits"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-terminal-congestion.md",
+      "sha256": "7d5606d9e64ca167b023f9d21cd3c66288a12a1e3537a0be18a90038506773c8",
+      "locator": "lines 3-42: same-witness excess-port-to-terminal degree argument and matching/star choices"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "incoming [144a] handoff and retained highCentreNormalForm keys"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+      "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+      "locator": "lines 623-678: one source pattern, patternBound, common root, and a route ending at each demand's second coordinate"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/CapacityTokenLedger.lean",
+      "sha256": "68f8562a7dae3a3270a969ca0fc9ea1187a6e903ff72ec7c78c03b9a98abb626",
+      "locator": "lines 123-141: role-fibre pairs have cardinality two and lie in the schedule"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/MatchingStar.lean",
+      "sha256": "33fcaa54df0c7b45b517149a2c2db25c384474361d803686ddb9335155424240",
+      "locator": "lines 54-60: matching disjointness and shared star centre"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/HighCentreNormalForm.lean",
+      "sha256": "f540ba64800f40ae96490a227c725f1fa6629259e0c69ffffe042b872e9a01ee",
+      "locator": "lines 69-82: high-centre definition and neighbourTight degree equality"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "lines 10220-10226: retained normal form for every high centre"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean",
+      "sha256": "cca0d7a8a6d32968b3bd01a9ea3b0a6fb0fa119a7f1380d98610c29815087e31",
+      "locator": "lines 67-70 and 85-112: routing-label factors, Fin 2, and patternBound = labelBound + 1"
+    },
+    {
+      "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Problem.lean",
+      "sha256": "23d234f4435e7e22b11d6c240f0034f1fd38cbd1efa03db5411e79c9e8dd8edc",
+      "locator": "lines 153-159 and 177-191: baseline three and registered positive product count for routing labels"
+    }
+  ]
+}

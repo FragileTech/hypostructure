@@ -1,0 +1,34 @@
+{
+  "id": "P6-window-101-kernel-routing-label-identity",
+  "mode": "FORMALIZE",
+  "phase": "6",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-extremal-two-tail-uncrossing",
+  "kind": "prove_identification",
+  "goal": "Kernel-check exactly the accepted routing-label identity on the retained source domain: sameTokenActualRoutingLabel equals the original owner-local routingLabel, with the SAME active, cubic equality, capacity, certified token/role, routed pattern, member pair and selected demand. Supply an explicit Lean proof term suitable for insertion as an owner-local have. Reuse the accepted seven-coordinate transport argument; do not rebuild the owner, select pairs, or prove the escape. Reproduce the original local label definitions literally from window-routing-label-source.txt for a narrowly scoped temporary Lean check. Avoid full unfolding of all local lets: the previous producer attempt expanded a label goal to 57 MB and timed out before validating this identity.",
+  "objects": [
+    "selected : EGInput; G = selected.object : finite graph with the registered baseline",
+    "handoff witnesses active_h, capacity_h, certified_h, token_h, role_h, pattern_h on G within one K.typeBHandoff proposition",
+    "handoff witnesses packing_h, core_h, envelope_h on G within one SameTokenTypeBHandoffEnvelopeStatement",
+    "class-audit witnesses active_a, capacity_a and selected windowIncidence token/role on G; equality with handoff witnesses is not asserted",
+    "capacity-token ledger witnesses active_t, capacity_t on G; equality with handoff witnesses is not asserted"
+  ],
+  "reads": [
+    "branch:node144-window-32d32f9d19e7",
+    "P1-window-97-routing-label-transport",
+    "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+    "audits/erdos-64-red-team/node144-residual-first/window-routing-label-source.txt",
+    "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+    "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+    "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean"
+  ],
+  "interaction": "The new named descriptor and the original local label must describe the same selected pair and its true degree profiles",
+  "parent_payoff": "Preserve the exact source pair and fixed supports used by extremal common-prefix uncrossing: parallel closes by the retained sparse-exit exclusion, all-in-skeleton contradicts maximality using the cubic neighbours, and the survivor retains the forced non-skeleton edge on that identical handoff. The named label is only a prerequisite for this exact reduction.",
+  "depends_on": [
+    "P5-window-26-uncrossing-admission",
+    "P1-window-97-routing-label-transport"
+  ],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-kernel-routing-label-identity.md",
+  "acceptance": "Provide the exact typed owner-local identity and complete Lean proof term, with the narrow kernel check exit status and source hashes. Compile the CURRENT vocabulary in a temporary overlay once and verify against it. All seven coordinates, original fallback profile semantics, actual ordered support and degree, and same capacity/token must match. No arbitrary label callback, source weakening, changed domain, sorry, axiom or admitted proof. The artifact is evidence for a local proof term; do not introduce an imported production theorem or alter the owner in this task.",
+  "on_failure": "Return the first unsupported equality/inference and its immediate subobligation, with concise diagnostics. Keep experimental code and builds in /tmp; the allowed Markdown artifact must include any completed proof term and exact unresolved goal before the execution deadline. Use python3. Use bounded narrow checks, not the full owner or root. Source current vocabulary overrides the older compiled cache."
+}

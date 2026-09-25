@@ -1,0 +1,17 @@
+{
+  "id": "P8-window-58-forced-return-view",
+  "mode": "AUDIT",
+  "phase": "8",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-extremal-two-tail-uncrossing",
+  "kind": "synchronize_views",
+  "goal": "Synchronize the [144] node and paper-fact audit rows with the inherited K.bridgeless read and owner-local forced-edge return while marking the source-bound Holds export as still open.",
+  "objects": ["sameTokenBottleneckRoutingRow", "selectedBottleneckDischarge", "Assembly_node_audit rows for lem:same-token-bottleneck-routing and [144]"],
+  "reads": ["branch:node144-window-32d32f9d19e7", "P6-window-55-forced-edge-return", "P6-window-56-bridgeless-readiness", "P7-window-57-forced-return-integration"],
+  "interaction": "The audit currently describes the prior handoff but not the new inherited bridgeless read, same-edge return, and distinction between owner-local facts and the unchanged typeBHandoff value.",
+  "parent_payoff": "Keep the proof view faithful to the checked owner and direct caller, and avoid portraying an unexported local witness as an [144a] residual restriction.",
+  "depends_on": ["P7-window-57-forced-return-integration"],
+  "allowed_write": "Assembly_node_audit.md",
+  "acceptance": "Edit exactly the two affected audit rows, state the checked same-edge return and missing source-bound export, preserve all existing route and boundary claims at current strength, run table and API checks, and report no branch closure.",
+  "on_failure": "If a row implies source-bound export or a cap from the local return, correct that claim before accepting the view."
+}

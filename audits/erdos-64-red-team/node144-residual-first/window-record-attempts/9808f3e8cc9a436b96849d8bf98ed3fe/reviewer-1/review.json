@@ -1,0 +1,27 @@
+{
+  "reviewer": "independent-reviewer-1",
+  "decision": "accept",
+  "reason": "The sole added definition takes the same data, graph, active, capacity, certified ledger, token, role, pattern and membership witnesses, together with the retained cubic threshold equality, and returns RoutingLabel (Fin data.threshold \u2192 Fin data.threshold) (WindowCurvature.Label data.windowOrder). The actual certified schedule proves pair.card = 2 and selected-demand membership. The same active shoulder witnesses and cubic baseline give support.card = threshold; the induced simple graph degree bound then types every actual degree. The ordered support has exactly threshold entries, so no truncation or arbitrary fallback occurs. All seven coordinates agree with the owner excerpt. The independent vocabulary kernel check passed. No handoff proposition or other existing source bytes changed, no witnesses from separate ledgers were identified, and no construction or closure beyond this admitted prerequisite is claimed.",
+  "evidence": [
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "36ab8555e398179dd5c73fd4218acbe7dd6dde052dc2b41bb7a97ee71f06e635",
+      "locator": "3940\u20134051: sameTokenActualRoutingLabel; pairFacts/pairCard, supportCard, degreeBound, orderedLength and seven-coordinate tuple. Independent single-file Lean check against mounted compiled imports exited 0, producing /tmp/ReviewedSpineVocabulary.olean; only warnings in unchanged declarations. Removing this insertion restores the original SHA256 c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2 byte-for-byte."
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-routing-label-source.txt",
+      "sha256": "8570d28a60a84a9bbb02026e37b39af5fe9b92c59b7e7fb92c2267324b9efe70",
+      "locator": "Owner lines 889\u2013961, 975\u2013990 and 1230\u20131246: actual selected supports, ordered degrees, window positions, blocker flag and coordinate order."
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+      "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+      "locator": "295\u2013303 and 623\u2013678: presented ledger uses the actual port-pair schedule and capacity role; routed patterns lie in this same certified role fibre."
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+      "sha256": "113226b2f99eabccb9f3b1f00e1c4ce6eeb474eadf90fdd10099c2003476badd",
+      "locator": "Common object and endpoint; retained quantitative accounts: same graph and retained cubic baseline."
+    }
+  ]
+}

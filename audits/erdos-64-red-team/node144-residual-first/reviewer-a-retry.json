@@ -1,0 +1,80 @@
+{
+  "P0-window-06-record_minimality_or_import": {
+    "decision": "accept",
+    "reason": "The revised submission explicitly identifies target avoidance, both size and refined minimality fields, and the strict K.surplusAbove inequality on the same selected.object. The window producer path retains selection and surplusAbove in its literal ledger, while surplusAtOrBelow is absent. Both submitted evidence hashes match current files; the task goal and acceptance are met.",
+    "evidence": [
+      {
+        "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+        "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+        "locator": "SelectionMinimality.sizeMinimal/refinedMinimal, lines 580-592; Holds .selection, lines 8268-8270; .surplusAbove and .surplusAtOrBelow, lines 8387-8392"
+      },
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Local.lean",
+        "sha256": "aca012ed647aaa3e5582e1e727e67d586b97998b6ebad808b055cc58193b3e4d",
+        "locator": "selectedCapacityTokenFacts output index, lines 284-296; selectedBottleneckDischarge requires and output, lines 333-385"
+      },
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Strict/Dependent.lean",
+        "sha256": "5ffb28da8eb6034712de72078b2dde4474de5ebc616731a1933abaeab2d7ca5d",
+        "locator": "strictSurplusDependent window path and retained surplusAbove projection, lines 267-286"
+      },
+      {
+        "path": "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+        "sha256": "113226b2f99eabccb9f3b1f00e1c4ce6eeb474eadf90fdd10099c2003476badd",
+        "locator": "Retained quantitative accounts; Window incoming arm"
+      }
+    ]
+  },
+  "P0-remainder-06-record_minimality_or_import": {
+    "decision": "accept",
+    "reason": "The revised submission explicitly identifies target avoidance, both size and refined minimality fields, and the strict K.surplusAbove inequality on the same selected.object. The remainder producer path retains selection and surplusAbove in its literal ledger, while surplusAtOrBelow is absent. Both submitted evidence hashes match current files; the task goal and acceptance are met.",
+    "evidence": [
+      {
+        "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+        "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+        "locator": "SelectionMinimality.sizeMinimal/refinedMinimal, lines 580-592; Holds .selection, lines 8268-8270; .surplusAbove and .surplusAtOrBelow, lines 8387-8392"
+      },
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Local.lean",
+        "sha256": "aca012ed647aaa3e5582e1e727e67d586b97998b6ebad808b055cc58193b3e4d",
+        "locator": "selectedCapacityTokenFacts output index, lines 284-296; selectedBottleneckDischarge requires and output, lines 333-385"
+      },
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Strict/Dependent.lean",
+        "sha256": "5ffb28da8eb6034712de72078b2dde4474de5ebc616731a1933abaeab2d7ca5d",
+        "locator": "strictSurplusDependent remainder path and retained surplusAbove projection, lines 287-309"
+      },
+      {
+        "path": "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+        "sha256": "113226b2f99eabccb9f3b1f00e1c4ce6eeb474eadf90fdd10099c2003476badd",
+        "locator": "Retained quantitative accounts; Remainder incoming arm"
+      }
+    ]
+  },
+  "P0-primitive-06-record_minimality_or_import": {
+    "decision": "accept",
+    "reason": "The revised submission explicitly identifies target avoidance, both size and refined minimality fields, and the strict K.surplusAbove inequality on the same selected.object. The primitive producer path retains selection and surplusAbove in its literal ledger, while surplusAtOrBelow is absent. Both submitted evidence hashes match current files; the task goal and acceptance are met.",
+    "evidence": [
+      {
+        "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+        "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+        "locator": "SelectionMinimality.sizeMinimal/refinedMinimal, lines 580-592; Holds .selection, lines 8268-8270; .surplusAbove and .surplusAtOrBelow, lines 8387-8392"
+      },
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Local.lean",
+        "sha256": "aca012ed647aaa3e5582e1e727e67d586b97998b6ebad808b055cc58193b3e4d",
+        "locator": "selectedCapacityTokenFacts output index, lines 284-296; selectedBottleneckDischarge requires and output, lines 333-385"
+      },
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Strict/Dependent.lean",
+        "sha256": "5ffb28da8eb6034712de72078b2dde4474de5ebc616731a1933abaeab2d7ca5d",
+        "locator": "strictSurplusDependent primitive path and retained surplusAbove projection, lines 310-329"
+      },
+      {
+        "path": "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+        "sha256": "113226b2f99eabccb9f3b1f00e1c4ce6eeb474eadf90fdd10099c2003476badd",
+        "locator": "Retained quantitative accounts; Primitive incoming arm"
+      }
+    ]
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "status": "SUBMITTED_RESULT",
+  "output": "Select the source-bound two-arm saturation interaction. After owner-local publication, the all-in-F case would force two distinct cubic neighbours internally closed in the physical skeleton, giving c_F\u22652 and diagnostic c_F-(11-k)/4\u2265(k-3)/4>0 for k\u22654. The other F/I/boundary outcomes have exactly four indexed spare incidences but no proved payment. This is grounded more directly than source-wide pair-to-fan multiplicity or full-neighbour certificate extension. It is a Phase 3 selection, not a B1 charge or a productive move.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase3-two-arm-tension.md",
+      "sha256": "d42195e9880da99ca5a3310f4cfb3220f7234e5229b311be3d65e7ad05014c9d",
+      "locator": "selected two-arm tension, all-in-F diagnostic and rival comparison"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-two-arm-erasure.md",
+      "sha256": "a37c93ee53f14fabb8df5a9217752ef68f6005c0de89e47106629be8aae8fe0e",
+      "locator": "both actual owner constructors and published-erasure finding"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-incidence-ledger.md",
+      "sha256": "e1c9b8ec5b090bf9aefd098e4658d5a711269f0ac840f79f1d8ee4297fe34e1c",
+      "locator": "assignment-indexed D partition and definition of F"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase5-all-in-F-payoff.md",
+      "sha256": "27ba49c8be88cf72f119dc499404e79275896154f96ea660e4fa3961cd2b1674",
+      "locator": "old all-in-F one-neighbour limit and B1 prerequisites"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/DecoratedHandoffEnvelope.lean",
+      "sha256": "833664e35fcf0db62862bb28ed398f0836922f4ced97fa57f5414a089020872c",
+      "locator": "envelopeOfFirstSeparator two distinct assigned first neighbours"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "current weaker literal handoff statement"
+    },
+    {
+      "path": "to_formalize/erdos_64_proof.tex",
+      "sha256": "7153339b7a032b2e5fbb432999acf0306d4a4f18bdbfd0f86c709ae3a4e58cb1",
+      "locator": "marked fan, deficit and B1 support requirements"
+    }
+  ],
+  "implementation_status": "none",
+  "first_missing_inference": "Publish the two-arm fact on the exact constructed envelope in the owner-local ledger, then prove an outcome-by-outcome consumer; the current Holds proposition is too weak.",
+  "immediate_subobligations": [
+    "Catalogue an exact producer-preserving owner-local publication mechanism and its prerequisite fields.",
+    "Catalogue all physical incidence outcomes, including all-in-F, without charging repeated edges/components.",
+    "Prove a significant conditional payoff for every proposed outcome before construction; in particular bridge c_F to assigned marked B1 data if claiming that charge."
+  ],
+  "metadata": {
+    "structural_use": null,
+    "interaction": {
+      "object": "selected G and the same constructed [144] handoff envelope",
+      "ingredients": [
+        "two distinct assigned cubic neighbours from matching/star producer",
+        "four indexed non-centre incidences",
+        "physical F/I/boundary partition",
+        "retained high-centre normal form and B1 marked fan prerequisites"
+      ],
+      "relation": "Two-arm publication would make all-in-F imply at least two distinct internally cubic-closed neighbours, which is stronger than the current published one-neighbour profile.",
+      "known": "Both owner paths construct K_h with two distinct members; high-centre normal form makes both cubic and the all-in-F condition puts their spare edges in F.",
+      "unresolved": "Producer-to-ledger publication, Type B support/marking transport, and useful payoffs on exterior/chord cases.",
+      "domains": "one G, one selected source pattern and its constructor envelope, complete literal incoming ledger",
+      "previous_use": "The previous component-return candidate handled a possible exterior edge but failed on all-in-F, in part because the published handoff retains only K_h nonempty."
+    },
+    "changed_objects": [],
+    "changed_accounts": [],
+    "side_observations": [
+      "The two-arm fact gives no source-pair-to-physical-edge injection for the rest of the large pattern."
+    ]
+  }
+}

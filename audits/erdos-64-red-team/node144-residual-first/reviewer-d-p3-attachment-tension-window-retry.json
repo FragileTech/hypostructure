@@ -1,0 +1,42 @@
+{
+  "reviewer": "phase3_attachment_tension_review_d",
+  "decision": "accept",
+  "reason": "The repaired selection is a supported Phase 3 investigation prospect on the exact [144a] handoff, with no payoff credited. The two non-centre incidences at every assigned cubic first neighbour have the exhaustive physical F/I/δ_G(S) partition, so the proposed compatibility test addresses actual envelope structure on the selected G even when source pairs do not meet that envelope. The actual FanSafe field is now described precisely: on distinct assigned neighbours it excludes accepted shifted returns and denies the instantiated WindowLabelCollision.LabelCollision predicate; exits (4)–(6) require separate ledger facts. The weakest all-in-F case gives only locally contained/cubic-closed assigned incidences, with no retained certificate-marked B1 charge; the note makes it a required test rather than a paid outcome. Likewise a reused exterior component has a genuine second G-boundary edge but no guaranteed distinct landing or net rank cost, and remains unresolved. These live cases make any eventual per-outcome mechanism demanding, but do not invalidate selection of their common physical attachment tension for Phase 4 catalogue. The rival terminal/Menger and direct pair-to-rank accounts lack the needed envelope consumer, and the submission claims no technique, construction, cap, or closure.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase3-attachment-tension-contract.json",
+      "sha256": "6b6231ad8d4fb93055250f5ad66644e4aedc06eba0c4d1167db123b81b36cc00",
+      "locator": "Phase 3 acceptance: exact compatibility question, weakest cases, rival comparison and no technique"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase3-attachment-tension-result.json",
+      "sha256": "bda0dcd7597371734591643578ab14ec75443e26af487499f280fbb5162734f4",
+      "locator": "corrected output, missing inference, metadata.interaction and limitations"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase3-attachment-tension.md",
+      "sha256": "33178f554eac33e4d510a5dc1cba639702c202d4f9d9259c1a5099f54a9e094b",
+      "locator": "lines 3-24: same-witness physical question; lines 26-55: exact FanSafe scope and unpaid all-in-F/reused-component cases; lines 57-75: rival and selection limits"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/DecoratedHandoffEnvelope.lean",
+      "sha256": "833664e35fcf0db62862bb28ed398f0836922f4ced97fa57f5414a089020872c",
+      "locator": "lines 869-888 and 902-940: FanSafe's geometric and `¬Absorbing` clauses on distinct assigned neighbours"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "lines 3769-3783: actual handoffAbsorbing is the window label-collision predicate, with exits (4)-(6) separate"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-attachment-account-audit.md",
+      "sha256": "d858b62637f25ee50ac9818621e937f7d478d862bd98a779e065ee716a73c91e",
+      "locator": "lines 15-25 and 42-76: complete attachment partition, unknown source-to-cost transfers and open [144a] outcome"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase5-terminal-significance.md",
+      "sha256": "41f44cffe22efd9cd3b31db131ea3490f3f1638675562c1c64efd6c2a63f5b0e",
+      "locator": "prior full-route terminal/Menger candidate lacked an envelope consumer"
+    }
+  ]
+}

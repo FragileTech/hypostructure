@@ -1,0 +1,52 @@
+{
+  "reviewer": "phase2_fan_attachment_review_b_retry2",
+  "decision": "accept",
+  "reason": "The revised same-witness inventory is faithful to the literal [144a] handoff. An assigned neighbour a is adjacent to a high decoration h and has degree three by the retained normal form, so its two non-h incidences can be partitioned by whether their other endpoints lie in the envelope vertex support S or a component of G-S. The note now correctly conditions use of a non-h incidence by a positive arm on its first edge differing from ha. Envelope.arm_interior permits h as a terminal when h lies in the core, and the public handoff has no first-step exclusion, so the stated [a,h] exception is real at the contract level. Zero outside incidences remain possible. The prior B1 count is limited to cubic-closed neighbours, and the note claims no source-pair map, return, count, cap, or payoff. Every cited result hash matches the current source.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-fan-attachments-contract.json",
+      "sha256": "477dd7ea3e3b8c34f1f9a7ef5189d0eae9d879c35c6099adf2a6c1ec48c1d456",
+      "locator": "P2-window-06 goal and acceptance"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-fan-attachments-result.json",
+      "sha256": "ceff45a5445a04923a7add064dca82a1371d7444efed5e5ed89282c9b9e285c0",
+      "locator": "output, evidence hashes, immediate subobligations, and metadata.interaction"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-fan-attachments.md",
+      "sha256": "69597aaf34b780ed093e1541b76ede7ad237234674d91e2e46d86cc15470460d",
+      "locator": "lines 3–17 same-witness incidence partition; 19–29 positive-arm first-edge condition and empty-outside case; 31–47 cubic-closed prior use and limits"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "revision node144-window-32d32f9d19e7 and exact post-[144] handoff ledger"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/DecoratedHandoffEnvelope.lean",
+      "sha256": "833664e35fcf0db62862bb28ed398f0836922f4ced97fa57f5414a089020872c",
+      "locator": "Envelope fields lines 902–940, especially arm_lands and arm_interior at 929–936; no first-step-not-centre field"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "lines 3944–3979 literal same-token handoff and existential envelope; lines 10220–10226 retained high-centre normal form"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/HighCentreNormalForm.lean",
+      "sha256": "f540ba64800f40ae96490a227c725f1fa6629259e0c69ffffe042b872e9a01ee",
+      "locator": "lines 69–82, high-centre predicate and neighbourTight"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/TypeBFanIncidence.lean",
+      "sha256": "420f1b70ffb6ca40b7c9c2e0cc35300105132781f4e39956fe0ae8be30452c87",
+      "locator": "lines 45–67, cubic-closed requires both non-centre neighbours in assigned envelope"
+    },
+    {
+      "path": "to_formalize/erdos_64_proof.tex",
+      "sha256": "7153339b7a032b2e5fbb432999acf0306d4a4f18bdbfd0f86c709ae3a4e58cb1",
+      "locator": "def:marked-typeB-fan lines 10876–10893; def:decorated-fan-envelope lines 10898–10930; def:typeB-window-incidence-profile lines 13124–13155"
+    }
+  ]
+}

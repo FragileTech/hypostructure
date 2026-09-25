@@ -1,0 +1,210 @@
+Source: hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean
+SHA256: ccd8fafd232d49630edebed9c9c45341ab9f40a17c48ef8e81fad86c8979c5c0
+Exact excerpts for the single routing-label definition task.
+
+Lines 595-660:
+595:   factOnly `Hypostructure.Graph.Strategy.Spine.sameTokenBottleneckRouting
+596:     { Requires := [K .homogeneousBottleneckPattern,
+597:         K .activeSurplusDemands,
+598:         K .cubicBaseline, K .capacityTokenLedger, K .selection,
+599:         K .bridgeless,
+600:         K .highCentreNormalForm,
+601:         K .degreeProfileFibres, K .targetCompleteContextUniversality,
+602:         K .replacementExclusion, K .uncompressible]
+603:       Produces := [K .bottleneckRouting, K .typeBHandoff]
+604:       requiresUnique := by simp [K_eq_iff]
+605:       producesUnique := by simp [K_eq_iff]
+606:       producesNonempty := by simp }
+607:     (fun inputs =>
+608:       let patternFact :=
+609:         (inputs.get (K .homogeneousBottleneckPattern)).down
+610:       let routing : (K .bottleneckRouting).At inputs.current := ⟨by
+611:           classical
+612:           obtain ⟨patternActive, capacity, activationEq, concretePattern⟩ :=
+613:             patternFact
+614:           -- Read every paper hypothesis through the sealed ledger.  These are
+615:           -- intentionally not repackaged into a route or callback record.
+616:           have active := (inputs.get (K .activeSurplusDemands)).down
+617:           have activeEq : patternActive = active := Subsingleton.elim _ _
+618:           subst patternActive
+619:           have activationFacts := active.activated
+620:           have cubic := (inputs.get (K .cubicBaseline)).down.1
+621:           have capacityLedger :=
+622:             (inputs.get (K .capacityTokenLedger)).down
+623:           have selection := (inputs.get (K .selection)).down
+624:           have bridgeless := (inputs.get (K .bridgeless)).down
+625:           have highCentreNormalForm :=
+626:             (inputs.get (K .highCentreNormalForm)).down
+627:           have degreeProfileFibres :=
+628:             (inputs.get (K .degreeProfileFibres)).down
+629:           have contextUniversality :=
+630:             (inputs.get (K .targetCompleteContextUniversality)).down
+631:           have replacementExclusion :=
+632:             (inputs.get (K .replacementExclusion)).down
+633:           have uncompressible := (inputs.get (K .uncompressible)).down
+634:           have survivor := active.survives
+635:           obtain ⟨_ledgerActive, _ledgerCapacity, _ledgerActivationEq,
+636:               _primitiveCarrierCard, _primitiveCarrierBound,
+637:               _concreteCapacityLedger, objectConnected⟩ := capacityLedger
+638:           refine ⟨active, capacity, activationEq, concretePattern, ?_⟩
+639:           let object := inputs.current.object
+640:           let activation := capacity.activation
+641:           letI : FinEnum object.Vertex := object.vertices
+642:           letI : DecidableRel object.graph.Adj := object.decideAdj
+643:           letI : DecidableEq object.Vertex := object.vertices.decEq
+644:           -- Edge sets for the physical two-arm attachment skeleton.  These
+645:           -- remain local to this owner and are instantiated only on the
+646:           -- envelope actually constructed below.
+647:           let armEdgeSet (path : List object.Vertex) :
+648:               Finset (Sym2 object.Vertex) :=
+649:             ((path.zip path.tail).toFinset).image
+650:               (fun pair => s(pair.1, pair.2))
+651:           have armEdgeSet_endpoint_mem :
+652:               ∀ (path : List object.Vertex) (edge : Sym2 object.Vertex),
+653:                 edge ∈ armEdgeSet path →
+654:                   ∀ vertex, vertex ∈ edge → vertex ∈ path := by
+655:             intro path edge edgeMem vertex vertexMem
+656:             change edge ∈ ((path.zip path.tail).toFinset).image
+657:               (fun pair => s(pair.1, pair.2)) at edgeMem
+658:             obtain ⟨pair, pairMem, pairEdge⟩ := Finset.mem_image.mp edgeMem
+659:             have pairListMem : pair ∈ path.zip path.tail :=
+660:               List.mem_toFinset.mp pairMem
+
+Lines 887-991:
+887:           -- edge of the homogeneous pattern is proved below to consist of
+888:           -- scheduled active demands.
+889:           let selectedSupport (demand : object.Vertex × object.Vertex) :
+890:               Finset object.Vertex :=
+891:             if member : demand ∈ object.excessPorts data.threshold then
+892:               (object.surplusPortOfMem member).support
+893:             else ∅
+894: 
+895:           -- The local open/triangular coordinate of the paper's routing
+896:           -- label, obtained from the actual shoulder graph.
+897:           let portStatus (demand : object.Vertex × object.Vertex) :
+898:               Graph.SameTokenRoutingGerms.PortStatus :=
+899:             if _ : ∃ member : demand ∈ object.excessPorts data.threshold,
+900:                 ∃ left ∈ (object.surplusPortOfMem member).shoulders,
+901:                   ∃ right ∈ (object.surplusPortOfMem member).shoulders,
+902:                     left ≠ right ∧ object.graph.Adj left right then
+903:               .triangular
+904:             else
+905:               .openPort
+906: 
+907:           have selectedSupport_card (demand : object.Vertex × object.Vertex)
+908:               (member : demand ∈ object.excessPorts data.threshold) :
+909:               (selectedSupport demand).card = data.threshold := by
+910:             let port := object.surplusPortOfMem member
+911:             have endpointNotShoulder : port.endpoint ∉ port.shoulders := by
+912:               intro endpointShoulder
+913:               exact object.graph.loopless.irrefl _
+914:                 ((port.mem_shoulders_iff port.endpoint).1 endpointShoulder).2
+915:             obtain ⟨left, right, shoulderPair, shouldersDifferent⟩ :=
+916:               active.shoulderPair demand member
+917:             have shouldersEq : port.shoulders = {left, right} := by
+918:               ext vertex
+919:               rw [shoulderPair vertex]
+920:               simp
+921:             have shoulderCard :
+922:                 port.shoulders.card = data.threshold - 1 := by
+923:               rw [shouldersEq, Finset.card_pair shouldersDifferent, cubic]
+924:             simp only [selectedSupport, dif_pos member]
+925:             unfold Graph.FiniteObject.SurplusPort.support
+926:             rw [Finset.card_insert_of_notMem endpointNotShoulder, shoulderCard,
+927:               cubic]
+928: 
+929:           -- The boundary-degree profile of `T(p)`: enumerate its vertices in
+930:           -- the object's fixed order and record their actual degrees in the
+931:           -- induced active support.  The `Fin` bound is proved from
+932:           -- `|T(p)| = threshold`, itself derived from the ledger's active-port
+933:           -- shoulder pair and cubic-baseline facts.
+934:           let boundaryProfile (demand : object.Vertex × object.Vertex) :
+935:               data.BoundaryProfile := fun index => by
+936:             if member : demand ∈ object.excessPorts data.threshold then
+937:               let support := selectedSupport demand
+938:               let ordered := object.orderedVertices.filter fun vertex =>
+939:                 vertex ∈ support
+940:               if bound : index.1 < ordered.length then
+941:                 let vertex := ordered.get ⟨index.1, bound⟩
+942:                 have vertexMem : vertex ∈ support := by
+943:                   have inside : vertex ∈ ordered :=
+944:                     ordered.get_mem ⟨index.1, bound⟩
+945:                   simp only [ordered, List.mem_filter, decide_eq_true_eq] at inside
+946:                   exact inside.2
+947:                 have degreeBound :
+948:                     (object.induce support).degree ⟨vertex, vertexMem⟩ <
+949:                       data.threshold := by
+950:                   have finiteBound :=
+951:                     (object.induce support).degree_lt_vertexCount
+952:                       ⟨vertex, vertexMem⟩
+953:                   rw [Graph.FiniteObject.vertexCount_induce,
+954:                     selectedSupport_card demand member] at finiteBound
+955:                   exact finiteBound
+956:                 exact ⟨(object.induce support).degree ⟨vertex, vertexMem⟩,
+957:                   degreeBound⟩
+958:               else
+959:                 exact index
+960:             else
+961:               exact index
+962: 
+963:           -- The full bounded part of `Z(π;t,r)`: the token carrier, the
+964:           -- canonical blocker support, `T(p),T(q)`, `R_p,R_q`, and the two
+965:           -- response supports (the latter already occur in
+966:           -- `activation.declaredSupport = T ∪ Γ`).
+967:           let boundedSupport
+968:               (pair : Finset (object.Vertex × object.Vertex)) :
+969:               Finset object.Vertex :=
+970:             capacity.sameTokenRoutingSupport token pair
+971: 
+972:           -- The `P₁₃` coordinate consists of exactly the window positions
+973:           -- met by the bounded routing support, read from presentations of the
+974:           -- members of the actual maximal packing.
+975:           let windowLabel
+976:               (pair : Finset (object.Vertex × object.Vertex)) :
+977:               Graph.WindowCurvature.Label data.windowOrder := by
+978:             classical
+979:             exact Finset.univ.filter fun index =>
+980:               ∃ window ∈ capacity.packing,
+981:                 ∃ presentation :
+982:                     Graph.TypeBDirectCycle.Presentation object data.windowOrder,
+983:                   presentation.support = window ∧
+984:                     presentation.coordinate index.1 ∈ boundedSupport pair
+985: 
+986:           let chordFlag
+987:               (pair : Finset (object.Vertex × object.Vertex)) : Bool :=
+988:             match Graph.FiniteObject.canonicalBlocker activation pair with
+989:             | some (.arithmeticChordSet _) => true
+990:             | _ => false
+991: 
+
+Lines 1225-1253:
+1225:           -- `ρ_t(π)`, in the seven coordinates and order fixed by
+1226:           -- `def:same-token-routing-germs`.  The cardinality proof is part of
+1227:           -- the local call, so there is no off-pattern fallback label.  The
+1228:           -- endpoint coordinate is computed from the selected endpoint's
+1229:           -- actual position in the object's ordered two-element pair.
+1230:           let routingLabel
+1231:               (pair : Finset (object.Vertex × object.Vertex))
+1232:               (pairCard : pair.card = 2)
+1233:               (demand : object.Vertex × object.Vertex) :
+1234:               Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+1235:                 (Graph.WindowCurvature.Label data.windowOrder) := by
+1236:             let first := pair.toList.get
+1237:               ⟨0, by simpa [pairCard] using (show 0 < pair.card by omega)⟩
+1238:             let second := pair.toList.get
+1239:               ⟨1, by simpa [pairCard] using (show 1 < pair.card by omega)⟩
+1240:             let endpoint : Fin 2 := if demand = first then 0 else 1
+1241:             exact (capacity.role pair,
+1242:               Graph.FiniteObject.CapacityToken.subtype token,
+1243:               endpoint,
+1244:               (portStatus first, portStatus second),
+1245:               (boundaryProfile first, boundaryProfile second),
+1246:               windowLabel pair, chordFlag pair)
+1247: 
+1248:           -- Route one actual declared identification by the framework theorem
+1249:           -- implementing `def:admissible-rank-quotient`.  The first arm is
+1250:           -- excluded by the registered common boundary-degree fibre; the
+1251:           -- remaining three arms are exactly sparse exits (b)--(d).  No case
+1252:           -- of `AttemptedQuotient.route` is reproved here.
+1253:           have routeAttemptedIdentification
+

@@ -1,0 +1,42 @@
+{
+  "reviewer": "phase3_typeb_review_b",
+  "decision": "accept",
+  "reason": "The immutable [144a] snapshot contains every required after-normal-form prefix input on selected.object: typeBFanEntry, highCentreNormalForm, selection, bridgeless, replacementExclusion, tightEndpoint, uncompressible, remainderNormalized and remainderRelabelingEntropy; its new-output keys are absent. The owner boundary splits into heavy-centre and degree-four arms, then returns one of four nonclosing certificate ledgers per arm, while the direct-cycle cases close locally against selection. Each returned ExactLedger appends to known, retaining surplusAbove and the positive homogeneous pattern. The quantitative bridge tail needs surplusAtOrBelow and is outside this proposed prefix. The note compares the earlier one-envelope pair-index prospect with concrete Type B graph-level outputs, but claims only a Phase 3 prospect and reserves payoff checks for every survivor. All four submitted hashes match the immutable note and cited Lean files.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "literal post-[144] keys, incoming tag, accounts and open_outcomes"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase3-typeb-prefix-contract.json",
+      "sha256": "39c074056fb0afe918a5cbf981189feedd6dace4ab9ffc31202c85dfd38359c5",
+      "locator": "Phase 3 goal, exact objects, acceptance and on_failure"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase3-typeb-prefix-result.json",
+      "sha256": "9e5caf19f431eaab6e545eef981516c8e64094bf5db5fb36a7e4a25dfd10610b",
+      "locator": "submitted output and evidence"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase3-typeb-prefix.md",
+      "sha256": "e9407f2dd09b3b07353f0085aeaa0bbd45ac93b3de136db3b1a3c23d0db0d0e7",
+      "locator": "selected question, prospective outcomes, near-cubic exclusion and rival comparison"
+    },
+    {
+      "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Continuation.lean",
+      "sha256": "3dade84ade6bf377f053e03c4e43fa2060921883d7ad223267937e2a655d7fec",
+      "locator": "TypeBAfterNormalFormBoundary 49\u201366; exact input/freshness signature 69\u2013128; heavy/degree-four owner branches 129\u2013242"
+    },
+    {
+      "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Internal/Certificate.lean",
+      "sha256": "570971a01eadf09871d5e9cefc731efff000e8aef4518241ae5c602c070773e4",
+      "locator": "four nonclosing TypeBCertificateBoundary ledgers 28\u201354; direct-cycle local closure and further splits 86\u2013190"
+    },
+    {
+      "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Boundary.lean",
+      "sha256": "37d0c5760813325a5058683667fbf1c40c9bf6d3057d336ead0e3e1761788ff9",
+      "locator": "strict-surplus Type B boundary and Node144aOutcome 15\u201343"
+    }
+  ]
+}

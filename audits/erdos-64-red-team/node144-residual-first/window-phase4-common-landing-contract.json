@@ -1,0 +1,29 @@
+{
+  "id": "P4-window-04-common-landing-prerequisite",
+  "mode": "AUDIT",
+  "phase": "4",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "candidate-source-indexed-handoff",
+  "kind": "match_prerequisite",
+  "goal": "Verify the common-selected-support landing prerequisite for the two actual window-arm source configurations, on the selected graph and one capacity presentation.",
+  "objects": [
+    "G = selected.object on the tagged window strict-surplus arm",
+    "first/second original pattern demands and their configurations from one certified handoff witness",
+    "commonSelectedSupport = localBuffer left \u222a localBuffer right in the same capacity presentation"
+  ],
+  "reads": [
+    "branch:node144-window-32d32f9d19e7",
+    "P4-window-02-first-separator-statement",
+    "P4-window-03-same-root-prerequisite",
+    "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean",
+    "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean"
+  ],
+  "interaction": "two connector endpoints in the union of their selected demand buffers",
+  "parent_payoff": "Discharge the second explicit prerequisite of the source-linked parallel/first-separator alternative",
+  "depends_on": [
+    "P4-window-03-same-root-prerequisite"
+  ],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase4-common-landing.md",
+  "acceptance": "Cite RoutingConfiguration.lands and both owner constructions of the common union and terminal membership; retain same capacity witness; claim no routing outcome.",
+  "on_failure": "Name the first terminal/buffer membership not present; do not enlarge or replace the selected support without transport."
+}

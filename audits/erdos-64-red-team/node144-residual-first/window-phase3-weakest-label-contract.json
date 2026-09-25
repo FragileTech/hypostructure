@@ -1,0 +1,28 @@
+{
+  "id": "P3-window-05-weakest-label-case",
+  "mode": "DISCOVER",
+  "phase": "3",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "",
+  "kind": "relate_restrictions",
+  "goal": "Check one weakest case for the full-route overlap prospect: what repeated routing labels are forced by the retained pattern-size threshold alone, and whether that numerical input links every source route to the known two-route separator.",
+  "objects": [
+    "G = selected.object with one typeBHandoff source pattern P and all declared routes",
+    "Q = finite cardinal of the routing-label alphabet and L_geom = Q + 1",
+    "the existing two-route first-separator construction on one same-label pair"
+  ],
+  "reads": [
+    "branch:node144-window-32d32f9d19e7",
+    "P2-window-04-all-route-overlap-interaction",
+    "P4-window-05-attempt-fingerprint",
+    "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean",
+    "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+    "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean"
+  ],
+  "interaction": "full source-route family versus the only same-label collision forced by the geometric threshold",
+  "parent_payoff": "Check whether the newly inventoried route-overlap relation supports a source-wide prospective restriction, without assuming extra pattern size.",
+  "depends_on": ["P2-window-04-all-route-overlap-interaction", "P4-window-05-attempt-fingerprint"],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase3-weakest-label.md",
+  "acceptance": "Derive the exact one-collision lower guarantee from |P| >= Q+1 and Q labels, give an abstract labeling showing a second collision is not forced by cardinality alone, and state precisely which full-family separator incidence remains unproved. Do not treat the abstract labeling as a graph counterexample, assume extra pattern size, select a technique, or claim a productive restriction.",
+  "on_failure": "Leave the numerical collision guarantee at its proved strength and return to Phase 2/3 without repeating the two-edge routing as a new move."
+}

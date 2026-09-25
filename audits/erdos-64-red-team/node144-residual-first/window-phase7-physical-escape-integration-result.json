@@ -1,0 +1,31 @@
+{
+  "status": "SUBMITTED_RESULT",
+  "output": "Integrated the checked outside-skeleton neighbour with the actual envelope vertex region and selected an ordered disjoint four-case location profile: core, own arm outside core, opposite arm outside both, or outside the region. Internal unused edges and external boundary edges require different cycle-rank accounts. The witness remains owner-local; neither export nor closure is claimed.",
+  "evidence": [
+    {"path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-physical-escape-integration.md", "sha256": "e476e40f1192b511bee8b5a9b327b305213ee069ab780604f513801787d8b6db", "locator": "disjoint location cases, overlap rules, internal/boundary account and closure tests"},
+    {"path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-physical-escape.md", "sha256": "bb5a02341afba224584d4d848de8fe54c0852475c21781f806c08ab07ac92ba6", "locator": "accepted physical graph-edge witness and unclassified endpoint"},
+    {"path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean", "sha256": "964ad47ccd35b30db1201d5350fa067a106961b3b61b0329762e1c570a2a88b8", "locator": "both actual outsideSkeletonNeighbour proofs on source envelopes"}
+  ],
+  "implementation_status": "none",
+  "first_missing_inference": "The endpoint x of the checked physical edge has not yet been placed in an exhaustive, disjoint actual-envelope location case, and no corresponding internal-chord or boundary account has been proved or exported.",
+  "immediate_subobligations": [
+    "Prove x≠separator and the ordered disjoint split into core, own arm outside core, right arm outside both, or outside S for both actual producer histories.",
+    "Prove the relevant connected spanning skeleton and induced-edge/cut identities before charging internal chords or external components.",
+    "Retain the source-bound witness and exact location profile in the canonical [144a] handoff proposition without changing the graph, packing or producer history."
+  ],
+  "metadata": {
+    "structural_use": null,
+    "interaction": {
+      "object": "checked outside-F neighbour at the selected tight attachment of each [144] envelope",
+      "ingredients": ["literal skeleton F", "core", "left and right first-entry arms", "separator centre", "physical adjacency in selected graph"],
+      "relation": "An ordered membership test classifies the endpoint as an internal core/arm chord or a cut edge leaving the envelope vertex region, without double counting overlaps.",
+      "known": "The source-bound adjacent endpoint outside F exists locally in both producer proofs.",
+      "unresolved": "Kernel-check the four-way location classification, derive justified cycle-rank/boundary accounts, and export the resulting profile through the original handoff.",
+      "domains": "same selected graph, actual matching/star core, arms, centre and envelope",
+      "previous_use": "The branch did not measure physical edges unused by the handoff skeleton or distinguish internal chords from external attachments."
+    },
+    "changed_objects": [],
+    "changed_accounts": [],
+    "side_observations": ["A single external attachment can be a bridge, so it cannot be charged as a cycle without further component data."]
+  }
+}

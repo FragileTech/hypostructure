@@ -1,0 +1,37 @@
+{
+  "reviewer": "phase2_source_attachment_review_b",
+  "decision": "reject",
+  "reason": "The first source-fidelity defect is the route index. HomogeneousBottleneckPatternStatement provides a declared RoutingConfiguration for each pair p in the routed pattern and each demand d in p, with support sameTokenRoutingSupport token p. That support depends on p. The note instead chooses one route r_d per distinct demand and reuses it in every pair containing d, especially the repeated centre demand of a star. The retained proposition does not equate those pair-specific configurations or assert that one chosen r_d is declared within each pair's routing support. Thus U_p, M, V, P_0, and the asserted star reuse are not guaranteed to describe each original pair's declared routes as the task contract requires. The finite double counts and crossing parity are algebraically correct for a freely chosen global route family, and the note properly avoids coverage and multiplicity claims, but they do not repair this missing pair-demand incidence selection. Cited hashes match current files.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-source-incidence-contract.json",
+      "sha256": "3967f4b64e21688ff44371e76f90174fa8590d7503609bf51f6d19a1505c8362",
+      "locator": "P2-window-11 acceptance demands each original pattern edge's declared demand routes and star repeated-demand distinction"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-source-incidence-result.json",
+      "sha256": "14728d13f0a752d5e463ffff9d0137be433d691ebce1d46881357c08ee3d3b0a",
+      "locator": "output selects one r_d per distinct demand; metadata.interaction.known and side_observations claim one shared star route"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-source-incidence.md",
+      "sha256": "fe5100abe4a6ef00656d102bdd18ebb189fd644392ca7808d0cc0493c9a304dc",
+      "locator": "lines 3–12 global r_d selection/reuse; 18–37 M and P_0; 39–68 V and distinct-demand parity; 70–77 limits"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+      "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+      "locator": "lines 144–161 sameTokenRoutingSupport explicitly depends on pair; 651–678 routed pattern quantifies pair first, then demand, with RoutingConfiguration at that pair's support"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "lines 3944–3979 same-token handoff embeds one routed pattern and envelope but no cross-pair route coherence field"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-all-route-boundary.md",
+      "sha256": "c325522ec6290c900180078e9f4c6a98cd0c798fcbbe066b29e3498a8ca5f7a8",
+      "locator": "lines 3–11 earlier all-route note chooses a route for each incidence d∈e∈P, before the new distinct-demand quotient"
+    }
+  ]
+}

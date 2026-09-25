@@ -1,0 +1,37 @@
+{
+  "reviewer": "phase4_terminal_index_review_d",
+  "decision": "accept",
+  "reason": "The submission faithfully projects each declared demand route to terminal d.2 on one [144a] handoff source pattern. IsMatching separates demand elements of different pattern edges, but does not separate their second coordinates; its abstract repeated-coordinate example is expressly limited to testing that definition. IsStar makes the central demand, and therefore its terminal, recur, while leaving any choice of distinct noncentral terminals uncertified. Neither form nor the routing fields establishes that all terminals differ from the common root. The result correctly classifies distinct non-root source-edge terminal indexing as missing, retains the all-root case and original indices, and does not infer a Menger linkage count, capacity charge, or closure.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-terminal-index-contract.json",
+      "sha256": "a2cf85f027889bda9ae51e0857d343d84b50ef68d4b563fb1e6e0ac2472bdff5",
+      "locator": "P4-window-07 goal and narrow prerequisite acceptance"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-terminal-index-result.json",
+      "sha256": "ae7463d2a8ade2cb74761645d782d4f10043c8be48944dd2392777e4454fb836",
+      "locator": "submitted result, missing inference, and evidence hashes"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-terminal-index.md",
+      "sha256": "90ba9307a102f9370b6e3b1b82c36cbeba036c4f5404f2747f65e5c43c7ea677",
+      "locator": "lines 3-27: terminal projection, matching/star analysis, non-root caveat, and limits"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/MatchingStar.lean",
+      "sha256": "33fcaa54df0c7b45b517149a2c2db25c384474361d803686ddb9335155424240",
+      "locator": "lines 54-62: IsMatching separates demand vertices and IsStar repeats one centre demand"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+      "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+      "locator": "lines 623-682: source matching/star, routes from common root, terminal demand.2"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean",
+      "sha256": "cca0d7a8a6d32968b3bd01a9ea3b0a6fb0fa119a7f1380d98610c29815087e31",
+      "locator": "lines 226-242: simple route fields contain no endpoint injectivity or root-terminal inequality"
+    }
+  ]
+}

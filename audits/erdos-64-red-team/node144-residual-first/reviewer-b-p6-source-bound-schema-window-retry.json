@@ -1,0 +1,52 @@
+{
+  "reviewer": "phase6_source_bound_schema_review_b_retry",
+  "decision": "accept",
+  "reason": "The retry supplies the required nested mathematical formula. It preserves the certified ledger, token, role, excess inequality and separate coarse threshold-pattern disjunction, then selects P only in the routed matching/star disjunction. SourceEnvelope(P) binds distinct source pairs and demands, pair-specific RoutingConfigurations, a fixed-pair maximal-prefix condition, the first-entry arms, the same envelope by equality to envelopeOfFirstSeparator, and an outside-skeleton physical edge. The old Type B entry is explicitly projected from that same packing/core/envelope, while the pinned ledger and other witness keys remain separate. The result accurately claims a schema only; construction and kernel proof are still pending.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-source-bound-schema-contract.json",
+      "sha256": "be8b6c9c0cd5753953215c58a6c6c8e92c9001aed6b20ed19cf7220a9f7874a3",
+      "locator": "lines 8-26, goal, acceptance and on_failure"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-source-bound-schema-result.json",
+      "sha256": "a9d9a70f05e413d987815cbdb2c0e786fef519c67138c1c66466c9f8883aa684",
+      "locator": "output, evidence hash, implementation_status and first_missing_inference"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-source-bound-schema.md",
+      "sha256": "7227c51d13fb8652428a8d89bac115bb5e89b4f8de9452bd6c5781bd91f7dbe6",
+      "locator": "lines 5-89, scoped formula and exact constructor identity; lines 91-114, retained history, escape classification and same-envelope [65] projection"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "revision, endpoint, objects and imports for the pinned window branch"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase5-uncrossing-admission.md",
+      "sha256": "6f680c54f4bc907522b4ab0b9369d85ce22c305cd0bb0996e8eebf52bf32dc4e",
+      "locator": "lines 9-15, accepted one-witness construction sequence and same-envelope projection"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+      "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+      "locator": "lines 623-678, coarse threshold-pattern and separate routed-pattern disjunctions"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "335b2996340ad3b65645cc97afeb627731ecb2209bf4031286aff0e6346da7e2",
+      "locator": "lines 654-657, 1374-1410, 3061-3088 and 3096-3111, certified routed pattern, selected pair, constructor envelope and current owner/consumer"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "lines 3944-3994, old handoff envelope and Type B entry projection targets"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/DecoratedHandoffEnvelope.lean",
+      "sha256": "833664e35fcf0db62862bb28ed398f0836922f4ced97fa57f5414a089020872c",
+      "locator": "lines 1115-1154, envelopeOfFirstSeparator arguments and constructed envelope fields"
+    }
+  ]
+}

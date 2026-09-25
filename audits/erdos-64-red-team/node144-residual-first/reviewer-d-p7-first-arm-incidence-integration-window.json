@@ -1,0 +1,37 @@
+{
+  "reviewer": "phase7_first_arm_incidence_integration_review_d",
+  "decision": "accept",
+  "reason": "The note correctly narrows the proposed contradiction to one-sided all-in-F saturation at the selected cubic a. If a is absent from P_b, the endpoint lemma removes opposite-arm edges. For a outside the two-vertex core, the core contributes none and the simple own arm can contribute only its first edge; for a in the core, first-entry at the start makes the own arm singleton and the induced core has at most one edge at a. Either case would leave ha plus at most one other edge, contradicting degree three once the pending core/first-entry facts are proved. The note explicitly leaves those Lean facts and the combined contradiction open. It also correctly identifies that a\u2208P_b alone would put a after h on the original right route, even if a is its first-entry or final terminal, so a same-right-support splice can preserve root, terminal and vertex support while improving the common prefix; construction and proof of that route remain open. Degree(b), symmetric crossing, escape publication, move credit, cap and closure are not asserted. Constraint/compression/quantity tests are separate and appropriately negative.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-first-arm-incidence-contract.json",
+      "sha256": "49d8c5c7a23772a7459114d513c60b0a70f59314f0c84c8b76e695545ed90d3a",
+      "locator": "P7-window-38 one-sided integration and exact limits"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-first-arm-incidence-integration-result.json",
+      "sha256": "465e188704b2e3100a5a2350d59da9554d08aca3080f0d08b3034e7c1f71d618",
+      "locator": "submitted missing core/crossing/route obligations"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-first-arm-incidence-integration.md",
+      "sha256": "864164ba67707a22ae7e28a99304c9a495fbf029df2c5333179a037d014cbbe3",
+      "locator": "two first-entry cases, one-sided splice prospect and closure tests"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-first-arm-incidence.md",
+      "sha256": "c971b6b5fcc1751d026251962daa18d7a8a558fe4b2184ed2959febb39ab4f09",
+      "locator": "kernel-checked own-arm first-edge rule"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-arm-edge-endpoints.md",
+      "sha256": "924e2e94c49c59d84c5875cd8ce79eae595af4aab2dd3124b70e48681f289bf6",
+      "locator": "kernel-checked absent opposite-arm edge elimination"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "f8bb9e9931048a7ea2bf376ffca6907422ed798018610465728a590875dd8ff3",
+      "locator": "lines 645-704 local edge lemmas; matching/star actual first-entry skeleton and cubic neighbour facts"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "reviewer": "phase4_separator_review_b",
+  "decision": "accept",
+  "reason": "The finite-path theorem assumes both paths start at one root and each ends in the common selected support; it returns Parallel (= EnteredTogether) or a firstSeparator with \u00ac EnteredTogether. The matching and star owner branches separately establish the canonical token root and both common-support landings, apply that theorem, and convert its divergent arm to SeparatesAt using the non-prefix lemma. The submission keeps Parallel as an outcome and makes no claim that this step eliminates it, upgrades separator degree, builds an envelope, or proves a cap. Its four submitted evidence hashes match the immutable note and cited Lean sources.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "incoming, objects, imports, accounts and open_outcomes"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-first-separator-contract.json",
+      "sha256": "028a14fb2b9928597e040d21c880b730c895ab30d153e904e34b664ac45b7b44",
+      "locator": "goal, objects, interaction, acceptance"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-first-separator-result.json",
+      "sha256": "6dd3153bf7b1f8010728bb2f7f59e025ad69233e8ead916b92e8d97ffce9f135",
+      "locator": "output, evidence and implementation_status"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-first-separator.md",
+      "sha256": "edaf5a011ee9b0e5645e30d22e545eb8e973a1319d81e0adf1972d3f4661ba11",
+      "locator": "Exact finite-path statement; Exact local application; limitation paragraph"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean",
+      "sha256": "cca0d7a8a6d32968b3bd01a9ea3b0a6fb0fa119a7f1380d98610c29815087e31",
+      "locator": "Diverges, firstSeparator, EnteredTogether and Parallel 385\u2013415; same-root and two-landings theorem 496\u2013555"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/DecoratedHandoffEnvelope.lean",
+      "sha256": "833664e35fcf0db62862bb28ed398f0836922f4ced97fa57f5414a089020872c",
+      "locator": "exists_separatesAt with same head and non-prefix hypotheses 90\u2013125"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "335b2996340ad3b65645cc97afeb627731ecb2209bf4031286aff0e6346da7e2",
+      "locator": "matching root/landing facts 1521\u20131569 and dichotomy 1710\u20131756; star root/landing facts 2391\u20132439 and dichotomy 2580\u20132627"
+    }
+  ]
+}

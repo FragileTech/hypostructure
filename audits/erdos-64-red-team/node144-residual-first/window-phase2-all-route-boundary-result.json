@@ -1,0 +1,65 @@
+{
+  "status": "SUBMITTED_RESULT",
+  "output": "Choose one declared common-root route for every demand in the handoff’s finite source pattern on the same selected graph G. Their physical union R with vertex set T is connected. Every component C_i of G-T attaches to T and has k_i=|δ_G(C_i)|≥2 by connectedness and bridgelessness of G. With J=E(G[T])\\E(R), the exact full-graph account is β(G)=β(R)+|J|+Σ_i(β(G[C_i])+k_i−1). T=V(G), route reuse, shared exterior components, and no bound from source-index count to rank cost remain possible; no cap or closure is claimed.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-all-route-boundary.md",
+      "sha256": "c325522ec6290c900180078e9f4c6a98cd0c798fcbbe066b29e3498a8ca5f7a8",
+      "locator": "same-witness full route union, actual G-T cut, rank identity and unresolved multiplicity"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-route-overlap.md",
+      "sha256": "713beec8f6e9414b565f1c7b3a545874507288772dae617d300dc631dcd12b19",
+      "locator": "accepted finite source-route family and common-root physical overlap"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-exterior-cut.md",
+      "sha256": "303f51999aac263a0d2ab371d3fe0b5970e4f3d1b996bb7735654a2c4d49f068",
+      "locator": "accepted genuine component boundary argument"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-relative-cycle-rank.md",
+      "sha256": "055b4359224b6a18f6e1b8274b9df0b93d6f4cedc8bf2f7fad152a12612929b7",
+      "locator": "accepted full-graph counting algebra and envelope comparison"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase5-terminal-significance.md",
+      "sha256": "41f44cffe22efd9cd3b31db131ea3490f3f1638675562c1c64efd6c2a63f5b0e",
+      "locator": "prior terminal count and failed auxiliary H-cut consumer"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+      "sha256": "113226b2f99eabccb9f3b1f00e1c4ce6eeb474eadf90fdd10099c2003476badd",
+      "locator": "connected G, bridgelessness and complete tagged window ledger"
+    }
+  ],
+  "implementation_status": "none",
+  "first_missing_inference": "The source demand count does not establish a bounded assignment to distinct route branches, extra internal edges, or exterior components. Distinct terminals may lie along overlapping paths, and the handoff provides no multiplicity control.",
+  "immediate_subobligations": [
+    "Test on the exact same-token family whether repeated selected routes can be compressed or excluded by retained normal form or response constraints.",
+    "Before charging cycle rank, prove a bounded source-index multiplicity at a physical branch, edge, or component.",
+    "Keep the T=V(G) and complete physical-overlap cases live."
+  ],
+  "metadata": {
+    "structural_use": null,
+    "interaction": {
+      "object": "selected.object G and the entire declared route family in one typeBHandoff witness",
+      "ingredients": [
+        "every original source demand indexed by P",
+        "one simultaneous finite choice of its declared common-root route",
+        "actual G-T complement components and extra edges",
+        "bridgelessness, connectivity and global cycle rank of G"
+      ],
+      "relation": "The source routes form one connected physical support R; its genuine exterior components and extra internal edges account exactly for the remaining cycle rank of G, with physical reuse counted once.",
+      "known": "The routes share root ρ, G is connected and bridgeless, and every actual G-T component has at least two boundary edges.",
+      "unresolved": "Whether the number of distinct original source pairs forces any lower bound on physical branch, extra-edge or component costs.",
+      "domains": "one selected graph G, one handoff witness and its full source pattern; no fresh graph or identified class-audit witness",
+      "previous_use": "Earlier route-union Menger analysis counted terminals but its H-cut was not a G-cut; the envelope-relative rank account covered only the two-edge handoff support."
+    },
+    "changed_objects": [],
+    "changed_accounts": [],
+    "side_observations": [
+      "The connected full-route support avoids the envelope skeleton’s unknown component-merger correction, but no rank term is yet charged per original pair."
+    ]
+  }
+}

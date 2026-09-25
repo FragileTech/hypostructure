@@ -1,0 +1,42 @@
+{
+  "reviewer": "phase3_typeb_review_d",
+  "decision": "accept",
+  "reason": "All four submitted evidence hashes match. The exact [144a] ledger lists typeBFanEntry, highCentreNormalForm, selection, bridgeless, replacementExclusion, tightEndpoint, uncompressible, remainderNormalized, and remainderRelabelingEntropy, which are the input keys of selectedTypeBAfterNormalFormContinuation. Its boundary preserves the incoming known ledger and tags the heavy-centre versus degree-four prefixes, each followed by TypeBCertificateBoundary's four returned nonclosing ledgers: certificate residual mass, B2 exclusion/paid ledger, exclusion residual mass, and overlap obstruction mass. The certificate owner eliminates the direct-cycle case against selection; the same-token B2 excluded ledger is returned rather than closed there. Thus surplusAbove and the homogeneous source pattern remain in every returned ledger. The strict-surplus boundary currently stops at typeBFanEntry, and its quantitative bridge tail requires surplusAtOrBelow, absent on this arm. The submitted comparison gives a concrete reason to investigate the existing graph-level Type B certificate and mass outputs after the rejected one-envelope pair-index candidate, while explicitly reserving every open outcome's payoff for Phase 5. This is a supported Phase 3 prospect, not a claim that the prefix has already discharged [144a].",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "revision, endpoint key list, accounts, open_outcomes"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase3-typeb-prefix-contract.json",
+      "sha256": "39c074056fb0afe918a5cbf981189feedd6dace4ab9ffc31202c85dfd38359c5",
+      "locator": "goal, objects, interaction, acceptance"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase3-typeb-prefix-result.json",
+      "sha256": "9e5caf19f431eaab6e545eef981516c8e64094bf5db5fb36a7e4a25dfd10610b",
+      "locator": "output, evidence, implementation_status"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase3-typeb-prefix.md",
+      "sha256": "e9407f2dd09b3b07353f0085aeaa0bbd45ac93b3de136db3b1a3c23d0db0d0e7",
+      "locator": "selected structural question; prospective outcomes; rival comparison"
+    },
+    {
+      "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Continuation.lean",
+      "sha256": "3dade84ade6bf377f053e03c4e43fa2060921883d7ad223267937e2a655d7fec",
+      "locator": "56-80, 82-137, 138-242"
+    },
+    {
+      "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Internal/Certificate.lean",
+      "sha256": "570971a01eadf09871d5e9cefc731efff000e8aef4518241ae5c602c070773e4",
+      "locator": "32-57, 93-99, 104-226"
+    },
+    {
+      "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Boundary.lean",
+      "sha256": "37d0c5760813325a5058683667fbf1c40c9bf6d3057d336ead0e3e1761788ff9",
+      "locator": "18-44"
+    }
+  ]
+}

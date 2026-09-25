@@ -1,0 +1,39 @@
+{
+  "id": "P6-window-100-produce-source-bound-handoff",
+  "mode": "FORMALIZE",
+  "phase": "6",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-extremal-two-tail-uncrossing",
+  "kind": "prove_property",
+  "goal": "Prove that the existing sameTokenBottleneckRoutingRow produces the installed source-bound SameTokenTypeBHandoffStatement. Package its actual retained certified pattern, selected equal-label pair and demands, maximal fixed-support routes, first separator, constructed envelope and already proved escaping edge in the SAME witness in each matching/star route. Reuse existing owner-local extremal/escape proofs and accepted label transport; do not repeat them or invent a new move. Preserve the old bottleneckRouting output by projection and adapt the direct [65] consumer only by the accepted same-envelope projection so this owner elaborates against the stronger Holds. At the first genuinely missing inference return its exact immediate obligation; do not silently weaken the installed predicate.",
+  "objects": [
+    "selected : EGInput; G = selected.object : finite graph with the registered baseline",
+    "handoff witnesses active_h, capacity_h, certified_h, token_h, role_h, pattern_h on G within one K.typeBHandoff proposition",
+    "handoff witnesses packing_h, core_h, envelope_h on G within one SameTokenTypeBHandoffEnvelopeStatement",
+    "class-audit witnesses active_a, capacity_a and selected windowIncidence token/role on G; equality with handoff witnesses is not asserted",
+    "capacity-token ledger witnesses active_t, capacity_t on G; equality with handoff witnesses is not asserted"
+  ],
+  "reads": [
+    "branch:node144-window-32d32f9d19e7",
+    "P5-window-26-uncrossing-admission",
+    "P1-window-97-routing-label-transport",
+    "P7-window-99-integrate-source-bound-predicate",
+    "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+    "audits/erdos-64-red-team/node144-residual-first/window-reduction-acceptance.json",
+    ".agents/skills/eg-proof-expansion/SKILL.md",
+    "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+    "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+    "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+    "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean",
+    "hypostructure/Hypostructure/Graph/DecoratedHandoffEnvelope.lean"
+  ],
+  "interaction": "The admitted extremal escape and its exact same-source handoff witness must be one Holds proposition",
+  "parent_payoff": "The admitted move excludes all-in-skeleton occupancy for the same extremally selected handoff; the current owner-local fact has not yet been exported. This definition is one authorized prerequisite, not productive-move credit.",
+  "depends_on": [
+    "P5-window-26-uncrossing-admission",
+    "P7-window-99-integrate-source-bound-predicate"
+  ],
+  "allowed_write": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+  "acceptance": "The literal canonical row produces the strengthened typeBHandoff on both matching and star cases, with the identical source-bound envelope and edge. The established sparse-exit contradiction handles that arm. Existing FactInputs, FactManifest and ExactLedger interfaces remain canonical; no detached proof, callback, alternate carrier, new axiom/sorry, cap, or closure assumption. Kernel check the changed owner against the CURRENT changed vocabulary (compile that dependency into a temporary overlay first). Report source hashes, exact outputs and transitive axioms for the changed declarations. Do not compile the final root in this task.",
+  "on_failure": "Stop at the first missing mathematical inference with NEEDS_DECOMPOSITION and state immediate smaller obligations on the exact witnesses. Preserve original source bytes if the assigned row cannot be completed; do not return a partial owner. Use python3; temporary Lean overlays and check artifacts go in /tmp. The source vocabulary is authoritative over the older mounted compiled cache."
+}

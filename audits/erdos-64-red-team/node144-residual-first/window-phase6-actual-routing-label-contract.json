@@ -1,0 +1,35 @@
+{
+  "id": "P6-window-96-define-actual-routing-label",
+  "mode": "FORMALIZE",
+  "phase": "6",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-extremal-two-tail-uncrossing",
+  "kind": "define_object",
+  "goal": "For the same G, data, active, capacity, certified, token t, role and routed pattern P of the accepted schema, define the actual routing label on each e ∈ P and d ∈ e, with codomain SameTokenRoutingGerms.RoutingLabel (Fin data.threshold → Fin data.threshold) (WindowCurvature.Label data.windowOrder). Its coordinates must be the actual capacity.role e, subtype t, ordered endpoint of d in the two-element pair e, the two actual selected-port statuses, their ordered internal-degree profiles, the window positions met by capacity.sameTokenRoutingSupport t e in capacity.packing, and the canonical-blocker arithmetic-chord flag. Supply the typing justifications from these same witnesses: e.card = 2 and, for each selected demand u and vertex v in T(u) = (G.surplusPortOfMem hu).support, (G.induce T(u)).degree ⟨v,hv⟩ < data.threshold. In particular the ordered profile must record that actual degree, not a truncated or arbitrary value. This is the missing mathematical definition needed to state label equality; do not assume a free label map or prove the handoff construction. Define only this canonical mathematical label in the vocabulary. Keep the existing handoff proposition unchanged until this prerequisite is accepted. Do not reprove the extremal escape or try a new move. The graph/active/capacity/token and pattern hypotheses are the same as the original admitted move. If a genuinely new inference is required beyond translating the already checked owner-local label construction, return that first inference rather than inventing a label callback or a different profile.",
+  "objects": [
+    "selected : EGInput; G = selected.object : finite graph with the registered baseline",
+    "handoff witnesses active_h, capacity_h, certified_h, token_h, role_h, pattern_h on G within one K.typeBHandoff proposition",
+    "handoff witnesses packing_h, core_h, envelope_h on G within one SameTokenTypeBHandoffEnvelopeStatement",
+    "class-audit witnesses active_a, capacity_a and selected windowIncidence token/role on G; equality with handoff witnesses is not asserted",
+    "capacity-token ledger witnesses active_t, capacity_t on G; equality with handoff witnesses is not asserted"
+  ],
+  "reads": [
+    "branch:node144-window-32d32f9d19e7",
+    "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+    "audits/erdos-64-red-team/node144-residual-first/window-phase5-uncrossing-admission.md",
+    "audits/erdos-64-red-team/node144-residual-first/window-phase6-source-bound-schema.md",
+    "audits/erdos-64-red-team/node144-residual-first/window-routing-label-source.txt",
+    "audits/erdos-64-red-team/node144-residual-first/window-source-label-decomposition.json",
+    "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+    "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+    "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean"
+  ],
+  "interaction": "The actual seven-coordinate source label must retain each selected port’s true internal degrees under the existing strict degree bound",
+  "parent_payoff": "Explicit prerequisite returned by the isolated P6-window-95 task for the already admitted same-source escape refinement; this definition alone receives no productive-move credit.",
+  "depends_on": [
+    "P5-window-26-uncrossing-admission"
+  ],
+  "allowed_write": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+  "acceptance": "The one vocabulary definition elaborates using the mounted compiled dependencies and agrees coordinate-for-coordinate with the supplied owner excerpt. Any proof arguments must describe the actual retained graph and demands, not provide a desired output or arbitrary label function. No modification of the handoff, owner proof, ledger API, axioms, caps or proof of closure. Evidence must name exact input/output types and the narrow kernel check. The scope here is only this definition; do not run a whole-node audit, ancestor proof or root build.",
+  "on_failure": "Return the first unexpressed mathematical definition/inference as NEEDS_DECOMPOSITION; preserve original source bytes and do not attempt its child. Use python3 if scripting. The mounted Lean binary is /runtime/lean/bin/lean; compiled imports are /runtime/build-cache/lib/lean and /runtime/packages/*/.lake/build/lib/lean. Temporary check outputs belong in /tmp. Return concise evidence, not copied source dumps."
+}

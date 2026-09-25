@@ -1,0 +1,31 @@
+{
+  "status": "SUBMITTED_RESULT",
+  "output": "The candidate q-splice uses the forced edge a-x and a reversed terminal segment of its G-e return, then rejoins the original q suffix. Exact chain, nodup, q-support, root and buffer prerequisites imply a longer common prefix; every failed prerequisite remains an explicit open arm.",
+  "evidence": [
+    {"path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-marked-edge-splice.md", "sha256": "c408b1ddff3412aef7f32fa654e4a63102db3beb68a3b6bf292ad7b6039e95a0", "locator": "candidate list, reverse-index choice, validity premises, complement and fingerprint"},
+    {"path": "audits/erdos-64-red-team/node144-residual-first/window-phase3-marked-return-rival.md", "sha256": "662188e77c20c87f3a1bd9adae8b68424cf7a2470e0c080f4b9fe69d16ec210d", "locator": "selected new marked-route tension and serious rank rival"},
+    {"path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean", "sha256": "ccd8fafd232d49630edebed9c9c45341ab9f40a17c48ef8e81fad86c8979c5c0", "locator": "owner's fixed maximal source routes, old right shortcut, and forced e return"}
+  ],
+  "implementation_status": "none",
+  "first_missing_inference": "",
+  "immediate_subobligations": [
+    "Prove the conditional same-q RoutingConfiguration splice and strict prefix gain from all listed prerequisites.",
+    "Test no-reentry, wrong-support, prefix-collision and suffix-repetition arms for a genuine local restriction or separate cost; do not admit the move without all-arm payoff.",
+    "Export the selected source pair and this exact edge/return through typeBHandoff Holds before changing the [144a] boundary."
+  ],
+  "metadata": {
+    "structural_use": null,
+    "interaction": {
+      "object": "marked edge and reverse return segment of the extremal source pair",
+      "ingredients": ["same-e HasReturn", "fixed q route suffix", "q-specific routing support", "maximal common-prefix choice"],
+      "relation": "If the e-led detour rejoins q's suffix without overlap and stays in q's support, it yields a valid q route sharing one more initial edge with p.",
+      "known": "This is an exact conditional candidate and prerequisite catalogue, not a proved all-arm move.",
+      "unresolved": "Positive conditional proof and productive payoff or refined restriction for each failure arm.",
+      "domains": "same selected graph, same q pair and demand, same source token and local buffer",
+      "previous_use": "The prior all-in-F splice and right-shortcut did not use the forced edge e outside F."
+    },
+    "changed_objects": [],
+    "changed_accounts": [],
+    "side_observations": ["Even a return path wholly in G does not automatically lie in q's pair-specific support."]
+  }
+}

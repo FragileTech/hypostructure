@@ -1,0 +1,28 @@
+{
+  "id": "P5-window-26-uncrossing-admission",
+  "mode": "DISCOVER",
+  "phase": "5",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-extremal-two-tail-uncrossing",
+  "kind": "review_admission",
+  "goal": "Check that every outcome of the proposed extremal two-tail move has an accepted conditional payoff on the complete [144a] window ancestry and authorize only the owner-local construction obligations needed to publish the selected-envelope escape.",
+  "objects": [
+    "the complete literal 50-key [144a] window residual on selected G",
+    "one fixed source matching/star and two selected equal-label demands",
+    "max-prefix route pair, produced two-arm envelope, and D_F/D_I/D_boundary"
+  ],
+  "reads": [
+    "branch:node144-window-32d32f9d19e7",
+    "P5-window-24-all-in-F-extremal-payoff",
+    "P5-window-25-escape-payoff"
+  ],
+  "interaction": "Parallel closes by the retained sparse-exit survivor; all-in-F closes by the new extremal splice; the only open selected-envelope outcome has a typed non-skeleton physical incidence.",
+  "parent_payoff": "Publish a source-bound extremally selected handoff with one actual I or boundary incidence, excluding the all-in-F handoff pattern without asserting [144a] closure.",
+  "depends_on": [
+    "P5-window-24-all-in-F-extremal-payoff",
+    "P5-window-25-escape-payoff"
+  ],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase5-uncrossing-admission.md",
+  "acceptance": "Verify accepted payoffs and exact three-case coverage, name the selected textbook move, all mathematical prerequisites, no assumptions/caps, and atomic Phase 6 tasks bound to the existing [144] owner row and same source pattern/envelope. Require source/arm identity and escape in the produced Holds schema, not in a side carrier. State that move certification, branch closure, paper update, and kernel status remain pending.",
+  "on_failure": "Withhold authorization if any outcome merely repeats an old fact or the source-to-envelope identity is lost; repair the first Phase 5 defect."
+}

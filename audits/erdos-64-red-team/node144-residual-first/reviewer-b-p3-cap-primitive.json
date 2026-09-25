@@ -1,0 +1,37 @@
+{
+  "reviewer": "phase3_cap_review_b",
+  "decision": "accept",
+  "reason": "On the tagged primitive handoff, the second anonymous example proves SameTokenTypeBHandoffStatement data object → ¬ HomogeneousCapsHold object data.threshold data.windowOrder at exactly the RoutingLabel type used in the handoff. It projects the certified ledger, token, role and detailed matching/star from that same witness and applies the universal cap at that presentation; no graph, label, or bound is changed. CapCheck.log records exit code 0, and a fresh Lean check also exited 0. The submission only states that independently deriving caps on the full branch would contradict the retained pattern; it does not assert caps, branch closure, or a near-cubic sibling premise. All four submitted evidence hashes match live bytes.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/primitive-phase3-cap-incompatibility.md",
+      "sha256": "04e7db48364a163b9f43f45ff1ad78d2bffb8a82c718cb17bc9600deae70d254",
+      "locator": "Exact implication; closure condition"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/CapCheck.lean",
+      "sha256": "2de0d5210843f740b241774ae2a4649b622cec4bd177c4bd393d74d6bed295eb",
+      "locator": "39–55: second anonymous example, exact handoff-to-negated-cap implication and both shape cases"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/CapCheck.log",
+      "sha256": "11adad9939aca6279773d0b1cc130b7768f9d64bd5acd70f2014b5229918c9a6",
+      "locator": "1–2: Lean command and exit code 0"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "3944–3979: handoff source and routing label; 11677–11682: fixed-cap Holds label"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+      "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+      "locator": "601–612: universal caps; 623–678: certified matching/star source at the same label"
+    },
+    {
+      "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Strict/Dependent.lean",
+      "sha256": "5ffb28da8eb6034712de72078b2dde4474de5ebc616731a1933abaeab2d7ca5d",
+      "locator": "310–329: tagged branch returns typeBHandoff on selected.object"
+    }
+  ]
+}

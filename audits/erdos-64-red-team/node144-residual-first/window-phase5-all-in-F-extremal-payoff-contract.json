@@ -1,0 +1,27 @@
+{
+  "id": "P5-window-24-all-in-F-extremal-payoff",
+  "mode": "DISCOVER",
+  "phase": "5",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-extremal-two-tail-uncrossing",
+  "kind": "prove_conditional_inference",
+  "goal": "Prove the all-in-F conditional contradiction for an extremal pair of valid routes on the fixed two source demands, including every RoutingConfiguration field of the spliced route and strict prefix growth.",
+  "objects": [
+    "G = selected.object with complete literal window-history [144a] ancestry",
+    "one fixed pair of distinct same-label source edges and their chosen demands, supports, root and terminals",
+    "a maximum-common-prefix valid route pair, its actual first separator h and two-arm envelope"
+  ],
+  "reads": [
+    "branch:node144-window-32d32f9d19e7",
+    "P4-window-23-extremal-uncrossing-catalogue",
+    "P2-window-22-two-tail-topology"
+  ],
+  "interaction": "All-in-F cubic saturation forces the right tail through the left first neighbour, making an admissible right-route splice that conflicts with maximal common prefix.",
+  "parent_payoff": "Eliminate the all-in-F outcome for a source-bound extremal handoff, forcing at least one physical non-skeleton fan-neighbour incidence in the surviving envelope.",
+  "depends_on": [
+    "P4-window-23-extremal-uncrossing-catalogue"
+  ],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase5-all-in-F-extremal-payoff.md",
+  "acceptance": "Prove the implication from the full branch plus a fixed-source maximal valid configuration pair and D_I=D_boundary=empty to contradiction. Name the right route's common prefix and suffix after a, verify chain/nodup/issued/inside/lands with fixed endpoint and right support, and show commonPrefixLength increases strictly. Keep the construction conditional and do not yet assert the new Holds fact or node closure.",
+  "on_failure": "If any route field or strict-prefix claim fails, give that exact countercase as the first missing inference and return to the Phase 4 catalogue."
+}

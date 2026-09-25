@@ -1,0 +1,96 @@
+{
+  "task_id": "P7-window-99-integrate-source-bound-predicate",
+  "sessions": [
+    "1d7362d919f2469db367304bff17dc72",
+    "f475eb3305864d4e9471177ae528c376",
+    "3d7a36fbadcc44ce901780c5fb87ff81"
+  ],
+  "input_hash": "f075fdf3546e99c14771fc97d65e6e58961a9c039f41abf6e79af2d866b62dd5",
+  "submission_hash": "5fe20055de63b7791c1a5485296c505df72faa009ce89ad8b197b594d72ffc88",
+  "reviews": [
+    {
+      "reviewer": "f475eb3305864d4e9471177ae528c376",
+      "decision": "accept",
+      "reason": "The audit completes the assigned conditional integration. Its four coarse/routed matching-star reconstructions match the installed Lean binders and preserve activation, quantitative bounds, route domains, and the certified witnesses. Constructor equality supplies the core and nonempty decorations for the identical envelope, with capacity.packing and its stored validity/maximality, yielding the historical handoff and [65] third alternative. The producer and consumer changes are identified precisely, accepted transport and extremal payoffs are cited without reconstruction, and the Phase 7 checks claim no additional global payoff. Pending production is explicitly distinguished from this completed projection audit; no construction, cross-key witness identification, or closure is claimed. All pinned and submitted evidence hashes match.",
+      "evidence": [
+        {
+          "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+          "sha256": "46b2cfd88ca9bd71826111c46b392e9a60d86d14fee505fe64a4714546439052",
+          "locator": "Lines 4054\u20134212: envelope, installed source-bound predicate, and TypeBFanEntryStatement; lines 11920\u201311946: routing and handoff Holds"
+        },
+        {
+          "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+          "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+          "locator": "Lines 75\u201381: packing validity and maximality; lines 623\u2013677: homogeneous pattern binders"
+        },
+        {
+          "path": "hypostructure/Hypostructure/Graph/DecoratedHandoffEnvelope.lean",
+          "sha256": "833664e35fcf0db62862bb28ed398f0836922f4ced97fa57f5414a089020872c",
+          "locator": "envelopeOfFirstSeparator, lines 1115 onward: dependent constructor arguments, core := support and decorations := {separator}"
+        },
+        {
+          "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+          "sha256": "ccd8fafd232d49630edebed9c9c45341ab9f40a17c48ef8e81fad86c8979c5c0",
+          "locator": "sameTokenBottleneckRoutingRow: lines 593\u2013640, 873\u2013875, 1758 onward, 3908\u20133913; sameTokenTypeBFanEntryRow: lines 3922\u20133941"
+        },
+        {
+          "path": "tools/methodology_gate/evidence_snapshots/36ab8555e398179dd5c73fd4218acbe7dd6dde052dc2b41bb7a97ee71f06e635",
+          "sha256": "36ab8555e398179dd5c73fd4218acbe7dd6dde052dc2b41bb7a97ee71f06e635",
+          "locator": "Historical SameTokenTypeBHandoffStatement and TypeBFanEntryStatement, lines 4067\u20134107"
+        },
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-source-bound-predicate-integration.md",
+          "sha256": "3d04dfb0cb209980f8e724da4703a5473bdda47717df7df9e7c49f5f37250848",
+          "locator": "Literal projection in every pattern alternative; Exact publication changes, not executed; Retained transport, payoff, and Phase 7 tests"
+        }
+      ]
+    },
+    {
+      "reviewer": "3d7a36fbadcc44ce901780c5fb87ff81",
+      "decision": "accept",
+      "reason": "The submission completes the assigned conditional integration audit. In all four independent coarse/routed matching-star cases, its reconstructed homogeneous witness matches the literal binders and preserves activation, token membership, quantitative inequalities, both pattern bounds, and route supports. Constructor equality gives the identical envelope core and nonempty decorations; capacity.packing and its stored validity/maximality proofs supply the historical handoff and [65] third alternative without identifying separate ledger witnesses. The specified producer and consumer changes match the existing interfaces and retain the strong witness before projection. Accepted label transport and extremal payoffs are cited without new construction. The Phase 7 tests remain scoped to the installed predicate, and the single pending producer obligation is clearly distinguished from this completed projection audit. No unsupported payoff, admission-dependent construction, or closure is claimed. All cited submission hashes match.",
+      "evidence": [
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-source-bound-predicate-integration.md",
+          "sha256": "3d04dfb0cb209980f8e724da4703a5473bdda47717df7df9e7c49f5f37250848",
+          "locator": "Literal projection in every pattern alternative; Exact publication changes, not executed; Retained transport, payoff, and Phase 7 tests"
+        },
+        {
+          "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+          "sha256": "46b2cfd88ca9bd71826111c46b392e9a60d86d14fee505fe64a4714546439052",
+          "locator": "Lines 4054\u20134198: envelope and installed source-bound binders; 4206\u20134212: third entry alternative; 11920\u201311946: routing and handoff interpretations"
+        },
+        {
+          "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+          "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+          "locator": "Lines 75\u201381: packing validity/maximality; 623\u2013677: homogeneous pattern binder order and route types"
+        },
+        {
+          "path": "hypostructure/Hypostructure/Graph/DecoratedHandoffEnvelope.lean",
+          "sha256": "833664e35fcf0db62862bb28ed398f0836922f4ced97fa57f5414a089020872c",
+          "locator": "Lines 1115\u20131159: envelopeOfFirstSeparator arguments, core := support, decorations := {separator}"
+        },
+        {
+          "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+          "sha256": "ccd8fafd232d49630edebed9c9c45341ab9f40a17c48ef8e81fad86c8979c5c0",
+          "locator": "Lines 593\u2013640, 873\u2013875, 1758 onward, 3908\u20133941: producer and consumer interfaces requiring the stated changes"
+        },
+        {
+          "path": "tools/methodology_gate/evidence_snapshots/36ab8555e398179dd5c73fd4218acbe7dd6dde052dc2b41bb7a97ee71f06e635",
+          "sha256": "36ab8555e398179dd5c73fd4218acbe7dd6dde052dc2b41bb7a97ee71f06e635",
+          "locator": "Historical SameTokenTypeBHandoffStatement following line 4065"
+        },
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-schema-integration.md",
+          "sha256": "24bf0e5640f90ee6fd57c0db0ac64c82864c7ad1071bbca514d3882f077140db",
+          "locator": "Accepted same-witness projection and three tests"
+        },
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-routing-label-integration.md",
+          "sha256": "8859915217d22afb56fbc8ea8a8dfcb594b0e3790f4af60f54f454fa69d68a9e",
+          "locator": "Accepted exact substitution, fixed-support extremality, and retained conditional payoff"
+        }
+      ]
+    }
+  ]
+}

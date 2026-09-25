@@ -1,0 +1,12 @@
+{
+  "reviewer": "independent-reviewer",
+  "decision": "reject",
+  "reason": "The submission is BLOCKED_WITH_REASON and does not complete the required kernel check. The recorded narrow Lean invocation exited 1 during import resolution, before elaborating the saved candidate, because WindowAttachmentShadow.olean was unavailable under the first runtime root. The owner-local label_identity remains explicitly unvalidated. The first outstanding obligation is successful kernel validation of the exact same-witness retained-domain routing-label equality, using the literal original local definitions and pinned current vocabulary. The accepted mathematical transport remains a premise; this import failure is not evidence that the identity is false.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-kernel-routing-label-identity.md",
+      "sha256": "944444b4d9928a041292f98712ae8d6ecc6805afa6af16fddc7e127abd5abf0e",
+      "locator": "Lines 3\u201317 (blocked status and exact unresolved identity); lines 19\u201344 (narrow check exit 1 before elaboration); lines 188\u2013292 (unvalidated owner-local candidate)."
+    }
+  ]
+}

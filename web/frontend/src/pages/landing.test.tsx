@@ -48,14 +48,14 @@ describe("the landing page", () => {
     ).toBeInTheDocument();
   });
 
-  it("walks the six stages of one iteration, in order", () => {
+  it("shows Phase 0 and the eight residual-first phases", () => {
     show();
     const section = document.getElementById(partAnchor("iteration"))!;
     const stages = within(section)
       .getAllByRole("listitem")
       .map((item) => item.querySelector("strong")?.textContent)
       .filter((name): name is string => Boolean(name));
-    expect(stages).toEqual(["Propose", "Admit", "Select", "Execute", "Route", "Record"]);
+    expect(stages).toEqual(["Restore the exact residual", "Account for used structure", "Inventory unused structure", "Select a structural tension", "Catalogue textbook moves", "Prove local payoffs and authorize", "Execute one construction task", "Integrate and continue survivors", "Verify and synchronize"]);
   });
 
   it("opens with the three ways a counterexample pays", () => {
@@ -324,8 +324,8 @@ describe("the landing page", () => {
       scrolled = true;
     };
     try {
-      show(methodologySectionPath("recipe-execute"));
-      expect(document.getElementById(partAnchor("recipe-execute"))).not.toBeNull();
+      show(methodologySectionPath("recipe-construct"));
+      expect(document.getElementById(partAnchor("recipe-construct"))).not.toBeNull();
       expect(scrolled).toBe(true);
     } finally {
       Element.prototype.scrollIntoView = originalScrollIntoView;

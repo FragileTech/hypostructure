@@ -1,0 +1,17 @@
+{
+  "id": "P7-window-40-two-vertex-core-edge-integration",
+  "mode": "DISCOVER",
+  "phase": "7",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-extremal-two-tail-uncrossing",
+  "kind": "review_integration",
+  "goal": "Integrate the sole possible core edge with the unique own-arm start edge and select the first-entry singleton proof that makes their payments complementary.",
+  "objects": ["G=selected.object, exact [144a] window history", "actual Y={left.2,right.2} and P_a starting at selected cubic a", "same exact F and maximal fixed-source routes"],
+  "reads": ["branch:node144-window-32d32f9d19e7", "P6-window-39-two-vertex-core-edge", "P7-window-38-first-arm-incidence-integration"],
+  "interaction": "The core may pay only uv; if a lies in it, first entry must make its own arm edge set empty, preventing double payment from core and own arm.",
+  "parent_payoff": "Choose the exact first-entry singleton relation on each actual producer arm before the conditional cubic contradiction.",
+  "depends_on": ["P6-window-39-two-vertex-core-edge"],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase7-two-vertex-core-edge-integration.md",
+  "acceptance": "State both a∈Y and a∉Y incidence cases and the precise first-entry/nodup/last proof needed next; test constraint/compression/quantity; no assumed a∈Y, no crossing or escape claim.",
+  "on_failure": "If the core set or edge set differs from the actual owner envelope, repair that identity before using its bound."
+}

@@ -1,0 +1,52 @@
+{
+  "reviewer": "phase4_terminal_effect_review_d",
+  "decision": "accept",
+  "reason": "O_term is stated on the same selected [144a] graph and one typeBHandoff source witness, using its actual pattern P, demand union D, and terminal projection T. The reviewed fixed-terminal count proves each demand fibre has size at most three, and distinct-demand selection for matching or star edges gives a map P to T with fibres at most three. Finite fibre counting yields |P|<=3|T|; the same witness has |P|>=Q_geom+1, so |T|>=ceil((Q_geom+1)/3). The concrete registered label alphabet has Q_geom>=2. If T={rho}, all demands lie in D_rho, but a matching of at least three two-demand edges has |D|>=6 and a star has |D|>=4, contradicting |D_rho|<=3. The effect is confined to original demand terminals: it does not bound route-edge or envelope multiplicity and claims no cap, Menger payoff, admitted move, or closure.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-terminal-effect-contract.json",
+      "sha256": "b9d78c78a8aa2e1d32b2c495f427cfc8ea564f06a2a2bc88f405d6ac094e4b9c",
+      "locator": "P4-window-09 same-witness quantitative-effect contract and limits"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-terminal-effect-result.json",
+      "sha256": "803066daf11482afab3113b9b69b771dcb3afdc975b14787d748c9ab52e93e88",
+      "locator": "submitted output and evidence hashes"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-terminal-effect.md",
+      "sha256": "f2f868bd854abba25f6e806cfc61db7a888e4edefb787c3adbe77c3974dce5f0",
+      "locator": "lines 3-36: O_term, finite counting, ceil bound, all-root contradiction, and capacity limits"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-terminal-congestion.md",
+      "sha256": "7d5606d9e64ca167b023f9d21cd3c66288a12a1e3537a0be18a90038506773c8",
+      "locator": "lines 3-42: same-witness excess-port argument and matching/star demand selection"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "revision node144-window-32d32f9d19e7; exact [144a] handoff and highCentreNormalForm keys"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+      "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+      "locator": "lines 623-682: one handoff source pattern of at least patternBound with route endpoints d.2"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "lines 3944-3979: typeBHandoff retains the exact source witness; lines 256-270: registered alphabet"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean",
+      "sha256": "cca0d7a8a6d32968b3bd01a9ea3b0a6fb0fa119a7f1380d98610c29815087e31",
+      "locator": "lines 81-112: routing-label product and patternBound = labelBound+1"
+    },
+    {
+      "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Problem.lean",
+      "sha256": "23d234f4435e7e22b11d6c240f0034f1fd38cbd1efa03db5411e79c9e8dd8edc",
+      "locator": "lines 153-159 and 177-190: concrete threshold three and positive registered routing-label product"
+    }
+  ]
+}

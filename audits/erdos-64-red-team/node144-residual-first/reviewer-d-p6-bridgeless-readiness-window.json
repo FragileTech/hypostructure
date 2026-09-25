@@ -1,0 +1,42 @@
+{
+  "reviewer": "phase6_bridgeless_readiness_review_d",
+  "decision": "accept",
+  "reason": "The literal [144] predecessor lists K.bridgeless in each of the three strict branches. The revised owner manifest requires exactly that retained key and reads its existing value. The Local.lean diff adds one generic [FactKeys.Has (K .bridgeless) known] instance to selectedBottleneckDischarge; it does not create a graph, return witness, alternative ledger, or theorem. Strict.Dependent first runs bridgelessRow and then calls selectedBottleneckDischarge on each of the three resulting histories, so the new instance is available through the same known ExactLedger. The submitted result reports successful builds of both Assembly.Surplus.Local and the immediate Assembly.Surplus.Strict.Dependent caller; no separate build log artifact was submitted for an independent replay, but source and evidence hashes match. This is caller readiness only and does not export the owner-local edge return or claim a cap, productive move or [144a] closure.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-bridgeless-readiness-contract.json",
+      "sha256": "db06833f214d5a09233227c09dd7e5ce0171044ebb179b3772352ef9ad1cfe75",
+      "locator": "P6-window-56 exact one-instance readiness repair acceptance"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-bridgeless-readiness-result.json",
+      "sha256": "da2bd0b304ba12f10905ff634945e4e95cf5ab5e146dd65e8e95023158ffc5f5",
+      "locator": "submitted build report and current cited source hashes"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-bridgeless-readiness.md",
+      "sha256": "e9217da4a38351d96a3ac2eccd575a140f27e66c5c47009d9e2bbdd3228882f1",
+      "locator": "literal predecessor key, one-instance change and no-closure scope"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+      "sha256": "113226b2f99eabccb9f3b1f00e1c4ce6eeb474eadf90fdd10099c2003476badd",
+      "locator": "lines 45-90 K.bridgeless present in all three actual [144] predecessor ledgers"
+    },
+    {
+      "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Local.lean",
+      "sha256": "dfb7eae78abce57a433c0d22d7c470e7385bcc619cf267294d8b8c59ab632e66",
+      "locator": "lines 333-388 selectedBottleneckDischarge generic known context, one Has(K.bridgeless) instance and unchanged row calls"
+    },
+    {
+      "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Strict/Dependent.lean",
+      "sha256": "5ffb28da8eb6034712de72078b2dde4474de5ebc616731a1933abaeab2d7ca5d",
+      "locator": "lines 226-320 bridgelessRow predecessor and three selectedBottleneckDischarge calls"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "ccd8fafd232d49630edebed9c9c45341ab9f40a17c48ef8e81fad86c8979c5c0",
+      "locator": "lines 595-632 owner manifest Requires and inputs.get K.bridgeless"
+    }
+  ]
+}

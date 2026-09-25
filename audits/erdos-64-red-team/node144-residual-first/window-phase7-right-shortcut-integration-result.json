@@ -1,0 +1,31 @@
+{
+  "status": "SUBMITTED_RESULT",
+  "output": "Integrated the checked same-typed right shortcut with the retained fixed-source maximalPrefix. The exact next theorem computes the old prefix as common.length+1, bounds the shortcut prefix below by common.length+2, and excludes crossing; only then can physical incidence produce an outside-skeleton edge. None of those conclusions is yet claimed.",
+  "evidence": [
+    {"path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-right-shortcut-integration.md", "sha256": "d8b5cf35f98a2ed64120300f7ee4a5ea548d2e1e2b4d2d6ecf3f0d925f8f4c36", "locator": "same-type maximality interaction, exact old/new prefix bounds, closure scan"},
+    {"path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-right-shortcut.md", "sha256": "279039689a4c98ed11b7bae5b14d5f6beae00608695e36ade4fbd2b415ce0244", "locator": "accepted actual same-source shortcut construction"},
+    {"path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean", "sha256": "458b16358276ff38f66b3ff8cc593cbd94b537e1f43e81163ff0d2c934a33143", "locator": "maximalPrefix selected pair and both crossingSuppliesRightShortcut results"}
+  ],
+  "implementation_status": "none",
+  "first_missing_inference": "The commonPrefixLength comparison for the fixed left route, original right route and checked right shortcut has not yet been kernel-proved.",
+  "immediate_subobligations": [
+    "Prove the old commonPrefixLength is common.length+1 from the two exact decompositions and nextLeft≠nextRight.",
+    "Prove the shortcut commonPrefixLength is at least common.length+2 from its path equality.",
+    "Apply maximalPrefix to the same fixed left route and the shortcut to exclude crossing, then extract an incident edge outside the exact skeleton."
+  ],
+  "metadata": {
+    "structural_use": null,
+    "interaction": {
+      "object": "the selected fixed-source route pair and checked right shortcut in both [144] producer histories",
+      "ingredients": ["exact separator decompositions", "nextLeft≠nextRight", "same-typed right shortcut", "selected maximalPrefix"],
+      "relation": "The old pair agrees through the separator but diverges next; the new right route agrees with the fixed left route for one more vertex, so the retained maximality would exclude a crossing once the list count is proved.",
+      "known": "The source-preserving shortcut is kernel checked and eligible as maximalPrefix's right comparator.",
+      "unresolved": "Formal old/new prefix inequality, maximality contradiction, and physical outside-F edge extraction.",
+      "domains": "same selected graph, original matching/star source pair, original pair-specific right support and selected terminal",
+      "previous_use": "The earlier maximal route choice lacked a legal comparator built from the newly counted cross-arm incidence."
+    },
+    "changed_objects": [],
+    "changed_accounts": [],
+    "side_observations": ["Constraint closure is not yet certified; compression and quantity currently have no applicable new certificate."]
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "id": "P2-window-59-marked-return-interaction",
+  "mode": "DISCOVER",
+  "phase": "2",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-extremal-two-tail-uncrossing",
+  "kind": "register_interaction",
+  "goal": "Inventory the newly forced return path for the marked non-skeleton edge against the same extremal source pair and its two pair-specific routing supports, without repeating the generic all-cycle ledger.",
+  "objects": ["selected G, fixed matching/star pair p,q and demands d_p,d_q", "maximal common-prefix source routes and their first separator h", "actual envelope skeleton F, forced edge e={a,x}, and a simple return path P_e in G-e"],
+  "reads": ["branch:node144-window-32d32f9d19e7", "P7-window-57-forced-return-integration", "P2-window-02-routing-coordinate", "P2-window-20-two-arm-erasure", "P2-window-01-pair-envelope-interaction"],
+  "interaction": "The previously generic cycle trace did not condition a cycle on the particular edge forced outside the extremal two-route envelope; its return path may enter the first-separator prefix, both arms, core, or exterior, and may or may not stay within either original pair-specific routing support.",
+  "parent_payoff": "Expose exact marked-return observables and exception arms needed to choose a later move that actually spends the newly forced attachment, with no automatic target or cap inference.",
+  "depends_on": ["P7-window-57-forced-return-integration", "P8-window-58-forced-return-view"],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase2-marked-return-interaction.md",
+  "acceptance": "Use the same e,x and the actual HasReturn path; partition its first encounters with the old route union and envelope region, include support/buffer membership and all overlap or equal-landing exceptions, and record the exact cycle-length exclusion inherited from selection. Compare with the previous generic all-cycle account to identify a genuinely new interaction. Inventory only; do not choose a splice, infer route validity, multiply one edge by source pairs, or claim closure.",
+  "on_failure": "If the return path can meet a region in more than one way or the endpoint lies in an overlap, refine the partition and keep the resulting arm explicit."
+}

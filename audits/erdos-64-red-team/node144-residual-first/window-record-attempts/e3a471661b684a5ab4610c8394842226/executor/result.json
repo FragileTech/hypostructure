@@ -1,0 +1,38 @@
+{
+  "status": "SUBMITTED_RESULT",
+  "output": "Installed the single source-bound SameTokenTypeBHandoffStatement in SpineVocabulary.lean. It opens the certified token/role and both coarse and routed pattern alternatives, retaining the exact bounds and activation equality. Within each routed pattern it binds distinct equal-actual-label pairs, selected demands, fixed-support routes, universal common-prefix maximality, first-separator decompositions, first-entry arms, all existing constructor proof arguments, one envelope equal to envelopeOfFirstSeparator, and a physical edge outside that identical envelope skeleton. The retained cubic equality is existentially bound for sameTokenActualRoutingLabel; capacity.packing carries the existing validity and maximality proofs. Only the proposition, its local definitional expressions and docstring change. All manifest hashes were verified. The full changed vocabulary compiled with the supplied Lean runtime and compiled imports (exit 0; only unchanged-code warnings). No owner construction, projection theorem, root build, move credit or branch closure is claimed.",
+  "evidence": [
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "46b2cfd88ca9bd71826111c46b392e9a60d86d14fee505fe64a4714546439052",
+      "locator": "SameTokenTypeBHandoffStatement, lines 4067\u20134198. Only this declaration and its docstring change. Full vocabulary kernel check: /runtime/lean/bin/lean -o /tmp/SpineVocabulary.olean /output/artifact/hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean; LEAN_PATH uses /runtime/build-cache/lib/lean and /runtime/packages/*/.lake/build/lib/lean; exit 0, only warnings in unchanged declarations."
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-source-bound-schema.md",
+      "sha256": "7227c51d13fb8652428a8d89bac115bb5e89b4f8de9452bd6c5781bd91f7dbe6",
+      "locator": "Scoped proposition: certified/coarse/routed binders, Routed, Max, SourceEnvelope, FirstEntryPrefix, constructor equality and same-envelope escape."
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-routing-label-integration.md",
+      "sha256": "8859915217d22afb56fbc8ea8a8dfcb594b0e3790f4af60f54f454fa69d68a9e",
+      "locator": "Exact input for the pending definition: actual routing-label equality with dependent membership arguments and retained cubic baseline."
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-schema-integration.md",
+      "sha256": "24bf0e5640f90ee6fd57c0db0ac64c82864c7ad1071bbca514d3882f077140db",
+      "locator": "Same-witness projection using capacity.packing, packingValid and packingMaximal; no owner construction claimed."
+    }
+  ],
+  "implementation_status": "kernel_checked",
+  "first_missing_inference": "",
+  "immediate_subobligations": [],
+  "metadata": {
+    "structural_use": null,
+    "interaction": null,
+    "changed_objects": [],
+    "changed_accounts": [],
+    "side_observations": [
+      "Owner construction and direct-consumer adaptation were not modified or checked; this submission defines the prescribed proposition only."
+    ]
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "reviewer": "phase4_edge_menger_review_d",
+  "decision": "reject",
+  "reason": "The finite undirected edge-Menger dichotomy is correctly stated under rho outside T, with repeated terminal endpoints allowed. The H-to-G and source-indexing limits are also correct, and no payoff is claimed. The application to the actual route union is incomplete: the cited routing fields do not establish that a terminal differs from the common root, yet the submission handles rho in T only by saying that the zero-length case must be removed or analyzed separately. It gives neither an outcome for that case nor the exact reduced terminal set and its possible empty-set subcase. Consequently it has not catalogued all hypotheses and outcomes for this H as the Phase 4 contract requires.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-edge-menger-contract.json",
+      "sha256": "4d614dded7dee053ff314999593c967bdc467835e1f6b9d02d84f1d010d93db3",
+      "locator": "acceptance: exact dichotomy with all hypotheses and both outcomes on the route-union H"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-edge-menger-result.json",
+      "sha256": "9b782f831b5e39ac14be01210af333ce241c496752a620f6e76b57bffb26ddc1",
+      "locator": "submitted claim applies only after resolving rho in T"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase4-edge-menger.md",
+      "sha256": "2bb99ade63d7e00a7832ec528d7e6ea40812a5e5175528c184348ade6c2f2823",
+      "locator": "lines 3-9 defer rho in T; lines 11-25 state valid conditional theorem and transport limits"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+      "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+      "locator": "lines 651-679 give common root and route terminal but no root-terminal inequality"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean",
+      "sha256": "cca0d7a8a6d32968b3bd01a9ea3b0a6fb0fa119a7f1380d98610c29815087e31",
+      "locator": "lines 226-242 permit a simple singleton route when source and terminal overlap"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase3-full-route-selection.md",
+      "sha256": "475d2a55f39250b77b79d3a7e5dd01c8a04efed94fd5063f841589610b7a30f1",
+      "locator": "lines 3-19 select all declared source routes on one handoff witness"
+    },
+    {
+      "path": "repair_and_closure.md",
+      "sha256": "acd2eebe8a315723f4d5c6c7ee12b614d8c93d2260d96e303c088d7164ddfef6",
+      "locator": "section 4: a linkage-separator dichotomy without outcome consumers is not a reduction"
+    }
+  ]
+}

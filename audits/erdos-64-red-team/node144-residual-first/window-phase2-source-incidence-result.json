@@ -1,0 +1,70 @@
+{
+  "status": "SUBMITTED_RESULT",
+  "output": "For each source-pair/demand incidence (p,d) in one handoff pattern, choose its own declared simple route r_(p,d) in sameTokenRoutingSupport token p. The exact relation W={(p,e):e lies on at least one of p's routes} satisfies |W|=Σ_p w_p=Σ_e n_P(e). Its restriction M to physical assigned fan edges B satisfies |M|=Σ_p z_p=Σ_(e∈B) m_P(e), retaining uncovered P_0={p:z_p=0}. Pair-indexed component visits V satisfy |V|=Σ_p v_p=Σ_C m_C(C). The pair-demand boundary crossing identity and endpoint parity hold for every (p,d,C). Shared star demands may have different routes in different pairs. No source coverage, source multiplicity cap, or rank charge follows.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-source-incidence.md",
+      "sha256": "8e8033bd5bc30ce2e80e6a23775f31adf2101fc04f3e7b08b715f9b985f12f8e",
+      "locator": "pair-demand indexed route family, W and M source-to-physical-edge relations, component visits V, exact double counts and crossing parity"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-route-overlap.md",
+      "sha256": "713beec8f6e9414b565f1c7b3a545874507288772dae617d300dc631dcd12b19",
+      "locator": "same-witness common-root route inventory; pair-specific support retained in current task"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-all-route-boundary.md",
+      "sha256": "c325522ec6290c900180078e9f4c6a98cd0c798fcbbe066b29e3498a8ca5f7a8",
+      "locator": "connected route support and actual G cut identity, valid also for full pair-indexed route union"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-incidence-ledger.md",
+      "sha256": "e1c9b8ec5b090bf9aefd098e4658d5a711269f0ac840f79f1d8ee4297fe34e1c",
+      "locator": "physical assigned-fan edge set B and distinct μ versus m_P"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase1-pair-account.md",
+      "sha256": "13809e9fbf99d83a97a2866465b3f56e25080d5e72956b5f54c608d74067f21e",
+      "locator": "original source blocked-pair units and same-witness certified ledger"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+      "sha256": "113226b2f99eabccb9f3b1f00e1c4ce6eeb474eadf90fdd10099c2003476badd",
+      "locator": "complete tagged window [144a] ledger and distinct existential witnesses"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+      "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+      "locator": "lines 144–161 pair-dependent support; 651–678 route for each pair-demand incidence"
+    }
+  ],
+  "implementation_status": "none",
+  "first_missing_inference": "The published handoff does not assert every original pair meets the assigned fan-edge set, bound how many pairs use one physical edge or component, or charge such reuse to distinct rank cost.",
+  "immediate_subobligations": [
+    "Analyze the uncovered P_0 case on the full retained ledger, without treating failed search as its negation.",
+    "For covered pairs, determine whether retained same-token labels, normal form, or target-response facts bound physical source-pair multiplicity.",
+    "Measure return lengths of actual internal chords and component attachments before claiming a forbidden target cycle or compression."
+  ],
+  "metadata": {
+    "structural_use": null,
+    "interaction": {
+      "object": "selected.object G and one typeBHandoff witness containing the full original source pattern P and one envelope",
+      "ingredients": [
+        "original source-pair/demand incidences (p,d) and their pair-specific declared routes",
+        "physical assigned-fan non-centre edge set B",
+        "actual G-S exterior components and route boundary crossings",
+        "distinct fan-assignment multiplicity μ versus source-pair multiplicities m_P and m_C"
+      ],
+      "relation": "Exact finite matrices record every original pair’s own declared route uses of physical graph edges and one envelope’s assigned edges/components, including uncovered pairs and repeated physical use; incidence-indexed crossings satisfy parity.",
+      "known": "Every pair-demand incidence has a declared common-root route inside its pair-specific support; a shared star demand can have different routes for different pairs. Assignment-edge multiplicity μ is distinct from source-pair use.",
+      "unresolved": "Whether source pairs are covered by B or components and, if covered, whether physical reuse is bounded or target-incompatible.",
+      "domains": "one selected G and one handoff witness; each route is chosen from that witness for its own (pair,demand) incidence",
+      "previous_use": "Earlier physical attachment and cycle-rank accounts counted edges/components but did not index them by each original source pair; the prior distinct-demand route union was weaker than the full pair-indexed family."
+    },
+    "changed_objects": [],
+    "changed_accounts": [],
+    "side_observations": [
+      "In a star, repeated centre-demand incidences may use different paths because routing support depends on the source pair."
+    ]
+  }
+}

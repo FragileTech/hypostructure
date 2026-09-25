@@ -1,0 +1,12 @@
+{
+  "reviewer": "independent-reviewer",
+  "decision": "reject",
+  "reason": "The submission is NEEDS_DECOMPOSITION and does not complete the required kernel-checked owner-local identity. Its recorded narrow Lean check resolved imports but exited 1: Candidate.lean:233:6 fails at rfl in the pointwise profile comparison, leaving the original dependent selected-support conditional unreduced. Thus actualProfile u hu index = boundaryProfile u index remains unvalidated on the same retained witnesses, and the downstream seven-coordinate label identity has no completed proof term. The immediate outstanding obligation is that exact profile equality with the original ordered support, induced degree and fallback semantics preserved. The accepted mathematical transport remains a premise; this formalization failure is not evidence that the identity is false.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-kernel-routing-label-identity.md",
+      "sha256": "406daee611c368068a0dab747d43f3c08e5c6ce8e78e83a625c6255a4302f111",
+      "locator": "First missing inference and immediate subobligation; Narrow check record; Saved attempted proof (profiles and label_identity); Exact check diagnostic and unresolved goal (Candidate.lean:233:6)"
+    }
+  ]
+}

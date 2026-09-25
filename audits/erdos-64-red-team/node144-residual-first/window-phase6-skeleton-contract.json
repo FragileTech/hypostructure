@@ -1,0 +1,25 @@
+{
+  "id": "P6-window-33-exact-envelope-skeleton",
+  "mode": "FORMALIZE",
+  "phase": "6",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-extremal-two-tail-uncrossing",
+  "kind": "define_object",
+  "goal": "Define the physical edge skeleton of the exact owner-produced [144] first-separator envelope in both matching and star arms.",
+  "objects": [
+    "G=selected.object and full 50-key window-history ledger",
+    "matching/star envelope returned by the existing envelopeOfFirstSeparator construction",
+    "its actual h=separator, a=nextLeft, b=nextRight, first-entry arms, and two-vertex core"
+  ],
+  "reads": [
+    "branch:node144-window-32d32f9d19e7",
+    "P7-window-32-cubic-neighbours-integration",
+    "P6-window-31-selected-cubic-neighbours"
+  ],
+  "interaction": "The unaccounted attachment profile is the position of physical ambient edges incident to a,b relative to the two actual arms, two centre edges and core-induced edges.",
+  "parent_payoff": "Give the next crossing inference an exact finite edge set F on the same constructed envelope; no escape or graph restriction follows from a definition alone.",
+  "depends_on": ["P7-window-32-cubic-neighbours-integration"],
+  "allowed_write": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+  "acceptance": "Inside the existing [144] atomic owner, define local arm-edge and core-induced-edge sets and F=E(P_a)∪E(P_b)∪{ha,hb}∪E(G[Y]) from the actual envelope in both matching/star arms. Prove direct definitional identifications to its constructor arms/core where needed. No top-level declaration, new ledger key, side carrier, assumed all-in-F premise, cap, or escape. Kernel-check owner and direct EG caller; identify first remaining crossing inference.",
+  "on_failure": "Expose the first exact edge-set or envelope-identification obligation; do not substitute a fresh envelope or broaden the skeleton."
+}

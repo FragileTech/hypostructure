@@ -1,0 +1,47 @@
+{
+  "reviewer": "phase5_marked_splice_failure_review_b",
+  "decision": "accept",
+  "reason": "The audit does not promote the negated splice prerequisites to a payoff. In the no-q-suffix arm it leaves contacts with p, the prefix, or neither unresolved. In the narrower no-later-full-route-encounter subcase, the simple G-e return has t>=2, so v1 and x=vt are distinct vertices in one component of G-U; the distinct edges a-v1 and a-x form two boundary attachments at a and give k_C>=2 and beta(G[C])+k_C-1>=1. This is a physical ear, not a new per-source-pair rank payment. Wrong-q-support is only a boundary observation, and the old right-shortcut helper for a later a is explicitly not claimed as installed on the full suffix. The note retains the c(F)-1 subtraction when F has two components, leaves the source-bound export open, and withholds productive-move and closure credit. All submitted evidence hashes match current files.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase5-marked-splice-failure-payoff-contract.json",
+      "sha256": "08436a298bef41b8f64d481bba310bd00917b1a79a96147de645762226b2e822",
+      "locator": "P5-window-63 goal, acceptance, and on_failure"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase5-marked-splice-failure-payoff-result.json",
+      "sha256": "deb466049f65a49094e2232c94be6a6d35c348119ded91e603fc173f10bb6740",
+      "locator": "submitted negative admission decision, first missing inference, and evidence"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase5-marked-splice-failure-payoff.md",
+      "sha256": "89f67a5a9fe2d2528f86891c5147437ad0b9e9a96499b10ccf13c992b0e2910e",
+      "locator": "five-row failure payoff table; no-encounter ear; c(F) correction; move-admission decision"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase5-marked-splice-positive.md",
+      "sha256": "34f1fb51739197a7efa7ee41903272eb8364424535c74c06b2814212c1706b4a",
+      "locator": "conditional positive splice and explicit failed-prerequisite complement"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-attachment-account-audit.md",
+      "sha256": "d858b62637f25ee50ac9818621e937f7d478d862bd98a779e065ee716a73c91e",
+      "locator": "route-exterior component account and original pair multiplicity limits"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-rank-reconciliation.md",
+      "sha256": "035c96a563fb5d1f74a4a804e805edcf7f383cfe8376001068ec4f2e4599021a",
+      "locator": "beta(G)>=beta(F)+1 and exact c(F)-1 attachment correction"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "ccd8fafd232d49630edebed9c9c45341ab9f40a17c48ef8e81fad86c8979c5c0",
+      "locator": "lines 1669-1745 sourcePreservingRightShortcut; 2811-2826 and 3888-3903 owner-local same-edge return"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Contraction.lean",
+      "sha256": "df6ec5784d38a0fb3cad6ddd628f29b4b62c3a5ba43672c5b6b3cc17f692b8eb",
+      "locator": "lines 181-197: simple return path in the edge-deleted graph"
+    }
+  ]
+}

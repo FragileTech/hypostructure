@@ -1,0 +1,71 @@
+{
+  "status": "SUBMITTED_RESULT",
+  "output": "For every actual edge ax from an assigned cubic first neighbour a into a component C of G-S, the genuine cut δ_G(C) has a second distinct edge to the same envelope support S by bridgelessness. Its S endpoint differs from a if the recorded arm at a has positive length and its first edge differs from ha, since those are two distinct incidences already used at a. Positive length alone does not imply this: the literal handoff permits an arm [a,h] when h lies in Y. A zero-length arm also permits same-a landing. The zero-outside case is retained, and no attachment is assigned to another source pair.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-exterior-cut.md",
+      "sha256": "303f51999aac263a0d2ab371d3fe0b5970e4f3d1b996bb7735654a2c4d49f068",
+      "locator": "actual G-cut, second attachment, positive/zero-length landing cases"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-fan-attachments.md",
+      "sha256": "69597aaf34b780ed093e1541b76ede7ad237234674d91e2e46d86cc15470460d",
+      "locator": "accepted same-witness incidence inventory and zero-outside case"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+      "sha256": "113226b2f99eabccb9f3b1f00e1c4ce6eeb474eadf90fdd10099c2003476badd",
+      "locator": "complete tagged post-[144] window ledger with bridgeless and handoff"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase5-terminal-significance.md",
+      "sha256": "41f44cffe22efd9cd3b31db131ea3490f3f1638675562c1c64efd6c2a63f5b0e",
+      "locator": "prior auxiliary route-union cut is not a G-cut"
+    },
+    {
+      "path": "to_formalize/erdos_64_proof.tex",
+      "sha256": "7153339b7a032b2e5fbb432999acf0306d4a4f18bdbfd0f86c709ae3a4e58cb1",
+      "locator": "definitions def:decorated-fan-envelope and def:typeB-window-incidence-profile"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/DecoratedHandoffEnvelope.lean",
+      "sha256": "833664e35fcf0db62862bb28ed398f0836922f4ced97fa57f5414a089020872c",
+      "locator": "lines 902–940, literal arm fields permit positive [a,h] if h is terminal in core"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "lines 3944–3979, retained handoff does not export separator avoidance"
+    }
+  ],
+  "implementation_status": "none",
+  "first_missing_inference": "The handoff does not assert that a positive arm first leaves a by an edge distinct from ha; even if the second boundary attachment lands elsewhere in S, there is no controlled landing at another assigned neighbour or indexed source-pair support.",
+  "immediate_subobligations": [
+    "For a selected exterior component, distinguish nonbacktracking first arm edges from the literal positive [a,h] exception before using degree three.",
+    "Classify the second landing against retained exclusions without presuming it reaches K_h.",
+    "Test the zero-outside-incidence case separately; no cut return exists there.",
+    "Before any claimed payoff, prove a source-pair or capacity consumer for the actual landing relation."
+  ],
+  "metadata": {
+    "structural_use": null,
+    "interaction": {
+      "object": "selected.object G and one actual source-and-envelope typeBHandoff witness",
+      "ingredients": [
+        "cubic assigned first-neighbour incidences",
+        "actual components of G minus the one envelope vertex support S",
+        "bridgelessness of G",
+        "retained original same-token source pattern"
+      ],
+      "relation": "Each actual outside incidence enters a component whose genuine G-boundary has at least two edges; if a positive arm first uses an edge distinct from ha, the second support landing is away from its first neighbour. The literal handoff permits a positive arm that first uses ha.",
+      "known": "All assigned first neighbours are cubic, recorded arms may have length zero, and G is bridgeless. Positive length does not ensure a first edge different from ha in the retained envelope.",
+      "unresolved": "Whether any outside incidence exists, whether its arm first edge differs from ha, and whether its second landing has a source-pattern consumer.",
+      "domains": "one selected graph G, one handoff witness, actual complement components; no replacement graph or identified class-audit witness",
+      "previous_use": "The Type B window count covers cubic-closed neighbours only. The previous auxiliary route-union cut was not a G-cut and did not control the handoff envelope boundary."
+    },
+    "changed_objects": [],
+    "changed_accounts": [],
+    "side_observations": [
+      "A length-zero first neighbour or a positive arm [a,h] can use both non-centre incidences to enter the same exterior component, so two boundary edges need not have two distinct S endpoints."
+    ]
+  }
+}

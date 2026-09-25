@@ -1,0 +1,31 @@
+{
+  "decision": "accept",
+  "reason": "The account fixes L to the presented certified ledger existentially carried inside the remainder typeBHandoff witness on selected.object. The original port-pair schedule has choose(s,2) members and splits exactly into blocked and free pairs; blocked pairs sum once by token load and then by role fibre. The token-supply inequality bounds token count in token units, while the sandwich bounds free-pair count; neither is used as a second payment for blocked pairs. The handoff envelope is co-present but no assignment from all original blocked pairs or envelope multiplicity is asserted. No witness equality across distinct Holds keys is assumed. All three submitted evidence hashes match current files.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/remainder-phase1-pair-account.md",
+      "sha256": "387baa9a3eea4347e4319da24fab2ec332a82150a640198e5a42004fe1df7639",
+      "locator": "one-ledger witness choice; pair/token equations; uncharged envelope, paragraphs 1-5"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/CapacityTokenLedger.lean",
+      "sha256": "68f8562a7dae3a3270a969ca0fc9ea1187a6e903ff72ec7c78c03b9a98abb626",
+      "locator": "schedule and sandwich, lines 59-88; blocked/free/load/roleFibre definitions, lines 99-124; exact split and token/role sums, lines 143-166"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+      "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+      "locator": "scheduleCard, sandwich, token supply, lines 268-286; presented and tokens_card_le, lines 293-314; certified ledger and source pattern witness, lines 344-353 and 623-647"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "SameTokenTypeBHandoffEnvelopeStatement and SameTokenTypeBHandoffStatement, lines 3944-3979"
+    },
+    {
+      "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Strict/Dependent.lean",
+      "sha256": "5ffb28da8eb6034712de72078b2dde4474de5ebc616731a1933abaeab2d7ca5d",
+      "locator": "remainder audited history routed to selectedBottleneckDischarge, lines 287-309"
+    }
+  ]
+}

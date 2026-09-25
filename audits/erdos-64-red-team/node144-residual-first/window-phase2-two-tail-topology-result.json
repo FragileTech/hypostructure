@@ -1,0 +1,60 @@
+{
+  "status": "SUBMITTED_RESULT",
+  "output": "On both concrete [144] producer paths, Y consists of at most two selected terminal vertices, h is outside Y, and F is exactly the union of two trimmed first-entry arms, the two centre edges, and at most one core edge. Conditional on all four indexed non-centre incidences lying in F, cubicity forces both arms positive and forces a to be internal in P_b and b internal in P_a. Therefore the all-in-F survivor has crossed tails and an h-cycle of an unspecified non-target length. This is source-local mathematical evidence, not yet a published Holds fact or a productive move.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-two-tail-topology.md",
+      "sha256": "9e2b2a737408ffa9e693add912ad734d4761415968b97657d32391e3476babd7",
+      "locator": "tiny core, exact F topology and conditional crossed-tail proof"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-incidence-ledger.md",
+      "sha256": "e1c9b8ec5b090bf9aefd098e4658d5a711269f0ac840f79f1d8ee4297fe34e1c",
+      "locator": "F construction and D partition"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-two-arm-erasure.md",
+      "sha256": "a37c93ee53f14fabb8df5a9217752ef68f6005c0de89e47106629be8aae8fe0e",
+      "locator": "source-local two-arm constructor versus weak published Holds"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "335b2996340ad3b65645cc97afeb627731ecb2209bf4031286aff0e6346da7e2",
+      "locator": "both owner paths set Y to selected endpoints and trim first-entry arms"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/DecoratedHandoffEnvelope.lean",
+      "sha256": "833664e35fcf0db62862bb28ed398f0836922f4ced97fa57f5414a089020872c",
+      "locator": "constructor has singleton centre and assigned pair"
+    }
+  ],
+  "implementation_status": "none",
+  "first_missing_inference": "To use the crossed-tail consequence downstream, publish the exact two-terminal/two-arm source binding from the owner and establish a productive implication of crossing under the retained routing supports and target/replacement restrictions.",
+  "immediate_subobligations": [
+    "Review the crossed-tail implication under equal-terminal, adjacent-terminal, zero-arm and shared-edge cases.",
+    "Catalogue an uncrossing or support-boundary move on these actual two arms, retaining pair-specific routing supports.",
+    "Prove conditional payoffs for both successful within-support switching and failed-support switching, plus all non-all-in-F cases, before construction."
+  ],
+  "metadata": {
+    "structural_use": null,
+    "interaction": {
+      "object": "selected G and the actual same-token first-separator envelope",
+      "ingredients": [
+        "two distinct assigned neighbours a,b",
+        "two simple first-entry route tails with a core of at most two vertices",
+        "all-in-F cubic saturation",
+        "pair-specific routing supports and FanSafe"
+      ],
+      "relation": "The small source-bound skeleton makes simultaneous saturation force each routed tail through the other tail\u2019s start.",
+      "known": "If D_I=D_boundary=empty on the constructed envelope, neither tail has length zero and a lies internally on P_b while b lies internally on P_a.",
+      "unresolved": "Whether uncrossing these actual tails stays in their declared supports or exposes a payable support-boundary/target-response obstruction.",
+      "domains": "one G, one selected matching/star source pair and its same-token constructor; no identification with separate overload witness",
+      "previous_use": "Earlier attachment accounting treated F as an arbitrary envelope skeleton and did not exploit that its core has at most two vertices and only two arms."
+    },
+    "changed_objects": [],
+    "changed_accounts": [],
+    "side_observations": [
+      "A simple h-cycle exists in the crossed-tail case, but inherited target avoidance already says its length is not accepted."
+    ]
+  }
+}

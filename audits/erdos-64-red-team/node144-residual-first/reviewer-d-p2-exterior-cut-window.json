@@ -1,0 +1,47 @@
+{
+  "reviewer": "phase2_exterior_cut_review_d",
+  "decision": "reject",
+  "reason": "The conditional genuine-G-cut argument is correct: for an actual edge ax into a component C of G-S, every edge leaving C reaches S, and a singleton boundary would make ax a bridge, contrary to the retained bridgeless key. The zero-outside case and the lack of source-pair, cycle, or cap consequences are also stated correctly. But the submitted positive-arm conclusion s≠a is not supported by the literal retained handoff envelope. Its fields require a simple arm starting at a and landing in core, but do not require h∉core or h∉arm. They permit a positive arm [a,h] with h as its terminal in core (and a singleton assigned set, so fanSafe is vacuous). Then the arm's first edge is ha, not one of a's two non-h edges, and both non-h edges may leave S into the same component; bridgelessness can supply a second cut edge with the same S endpoint a. The concrete routing owner proves separator avoidance for the arms it constructs, but this invariant is not carried by SameTokenTypeBHandoffEnvelopeStatement. The result must either retain and cite that stronger invariant on the chosen witness, or weaken the positive-arm landing claim to the case where the first arm edge is proved distinct from ha.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-exterior-cut-contract.json",
+      "sha256": "6c457a6a9206ef762d361744d3f115dcb75bdc4e559bab8d37597a44f6ccbdbf",
+      "locator": "acceptance requires the positive/zero arm landing distinction"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-exterior-cut-result.json",
+      "sha256": "7e5cd9a75ee7766a2544e3de685b9823154c8d07e6365234c6b5d17dc27b5251",
+      "locator": "output and metadata.interaction.relation claim s≠a for every positive-length arm"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-exterior-cut.md",
+      "sha256": "7ce0009a0aecb97e192f5fa3d55e9dc38a5ccbadb693360b0d451fcc3b838c20",
+      "locator": "lines 10-18 valid cut proof; lines 21-30 unsupported positive-arm edge count; lines 32-47 correct limitations"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "pinned literal post-[144] keys including typeBHandoff, bridgeless, and highCentreNormalForm"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/DecoratedHandoffEnvelope.lean",
+      "sha256": "833664e35fcf0db62862bb28ed398f0836922f4ced97fa57f5414a089020872c",
+      "locator": "lines 894-945: Envelope has no centre/core disjointness or arm-avoids-centre field; lines 1115-1171: constructor records only those fields"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "lines 3944-3979: exact handoff retains the abstract Envelope without separator-avoidance witness"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "335b2996340ad3b65645cc97afeb627731ecb2209bf4031286aff0e6346da7e2",
+      "locator": "lines 1925-1957: concrete owner proves separatorNotMemRawLeft/Right, but passes only arm_interior to the published envelope; lines 2206-2223: construction and handoff export"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+      "sha256": "113226b2f99eabccb9f3b1f00e1c4ce6eeb474eadf90fdd10099c2003476badd",
+      "locator": "lines 13-26: pinned handoff and full retained ledger"
+    }
+  ]
+}

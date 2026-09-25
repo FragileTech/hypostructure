@@ -1,0 +1,42 @@
+{
+  "reviewer": "phase3_prospect_review_a",
+  "decision": "accept",
+  "reason": "The submission keeps the full tagged window [144a] residual on selected.object. The routing owner actually selects two distinct same-label source edges in each matching/star case, routes their configurations to a first separator, and on the surviving decorated branch makes a high separator and envelope from its arms. The proposed source-indexed relation is a concrete next restriction, expressly prospective: the public handoff omits the source-to-envelope linkage, and no cap, pair payment, cycle, or closure is asserted. Direct Type B fan discharging is a serious rival, but FanSafe is an exclusion condition and the strict-surplus lane has no surplusAtOrBelow tail premise. The Phase 3/5 workflow distinction is stated correctly. All submitted source hashes match live files.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-record.json",
+      "sha256": "616fe11f53c28b06b01074f57fcb9a5d5c45134cbaa9a5718307237cf2bc3e4c",
+      "locator": "branch endpoint/incoming/imports and task P3-window-03-select-source-separator contract/submission"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase3-prospect.md",
+      "sha256": "0ae05785e3798886d918b2108874810b9fe5e83223f28b9d041371f1955f9ae4",
+      "locator": "paragraphs 2-4: selected interaction, prospective restriction, direct Type B rival"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "335b2996340ad3b65645cc97afeb627731ecb2209bf4031286aff0e6346da7e2",
+      "locator": "1374-1406 and 2222-2251 select distinct same-label matching/star edges; 1705-1740 and 2575-2610 route first separator; 2191-2221 and 3047-3077 construct high separator and envelope; 3080-3088 eliminates sparse exit"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "3944-3979: public handoff keeps same certified pattern and an existential envelope, without source-edge/configuration/separator linkage"
+    },
+    {
+      "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Boundary.lean",
+      "sha256": "37d0c5760813325a5058683667fbf1c40c9bf6d3057d336ead0e3e1761788ff9",
+      "locator": "15-43: strict-surplus Type B outcome and full Node144aOutcome"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/DecoratedHandoffEnvelope.lean",
+      "sha256": "833664e35fcf0db62862bb28ed398f0836922f4ced97fa57f5414a089020872c",
+      "locator": "869-874: FanSafe excludes accepted target returns and Absorbing"
+    },
+    {
+      "path": "tools/methodology_gate/policy/workflow.json",
+      "sha256": "9b3ae2690229ca606e7bf75828fbe51e9171dea043a34b32394bd8db40aead0a",
+      "locator": "taskflow.phase_descriptions[3] and [5], taskflow.phase_tasks[3]"
+    }
+  ]
+}

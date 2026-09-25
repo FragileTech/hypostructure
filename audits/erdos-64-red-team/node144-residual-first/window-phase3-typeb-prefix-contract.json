@@ -1,0 +1,29 @@
+{
+  "id": "P3-window-04-select-typeb-prefix",
+  "mode": "DISCOVER",
+  "phase": "3",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "",
+  "kind": "select_tension",
+  "goal": "After the failed one-envelope fingerprint, select a supported new structural interaction on the full window [144a] residual: the retained handoff entry against the existing Type B certificate prefix, without importing the near-cubic tail.",
+  "objects": [
+    "G = selected.object on the tagged window strict-surplus [144a] branch",
+    "the actual ExactLedger with typeBFanEntry, highCentreNormalForm and all inherited window pattern/surplus keys",
+    "the common Type B certificate-prefix outcomes on this same exact ledger"
+  ],
+  "reads": [
+    "branch:node144-window-32d32f9d19e7",
+    "P4-window-05-attempt-fingerprint",
+    "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Continuation.lean",
+    "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Internal/Certificate.lean",
+    "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Boundary.lean"
+  ],
+  "interaction": "same-token handoff fan envelope versus local Type B certificate, direct-cycle and fan-mass restrictions while strict surplus remains inherited",
+  "parent_payoff": "Potential graph-level certificate/mass refinements, each to be checked on the full exact ledger at Phase 5",
+  "depends_on": [
+    "P4-window-05-attempt-fingerprint"
+  ],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase3-typeb-prefix.md",
+  "acceptance": "Name exact existing prefix inputs and tagged outcomes, preserve surplusAbove/pattern, compare rejected pair-index rival, and distinguish prospect from established per-outcome payoff; exclude the surplusAtOrBelow tail.",
+  "on_failure": "Name the first missing input key or false output claim; return to Phase 2/3 without importing a near-cubic premise."
+}

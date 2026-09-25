@@ -1,0 +1,31 @@
+{
+  "id": "P2-window-12-fan-edge-route-rank-cross-tab",
+  "mode": "DISCOVER",
+  "phase": "2",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "",
+  "kind": "register_interaction",
+  "goal": "Cross-classify every physical assigned-fan non-centre edge between the envelope skeleton partition and the connected full pair-indexed route-union partition, with exact incidence counts and the correct cycle-rank role of each cell.",
+  "objects": [
+    "G = selected.object and full window-history post-[144] ExactLedger",
+    "one typeBHandoff source pattern P and envelope support S, with assignment set D and physical edge set B",
+    "full pair-demand selected route union R_all on the same witness, T=V(R_all), J=E(G[T])\\E(R_all), and components of G-T"
+  ],
+  "reads": [
+    "branch:node144-window-32d32f9d19e7",
+    "P2-window-09-all-route-boundary-interaction",
+    "P2-window-10-physical-incidence-ledger",
+    "P2-window-11-source-attachment-relation",
+    "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md"
+  ],
+  "interaction": "Envelope non-centre assignments versus actual physical route reuse and relative cycle-rank cost, including the difference between G-S and G-T cuts.",
+  "parent_payoff": "",
+  "depends_on": [
+    "P2-window-09-all-route-boundary-interaction",
+    "P2-window-10-physical-incidence-ledger",
+    "P2-window-11-source-attachment-relation"
+  ],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase2-fan-route-rank-cross-tab.md",
+  "acceptance": "Prove an exhaustive disjoint cross-tab for every e represented in D: rows F, I, δ(S); columns E(R_all), J, δ(T) by actual G-T component, and internal edges of actual G-T components. State exact D multiplicity row/column sums, locate source relation M only in the E(R_all) column, and distinguish marginal rank from already used physical edges. Do not identify G-S and G-T components, assign source pairs to rank units, or claim a positive cost from assignment counts.",
+  "on_failure": "If a retained route or envelope identity is insufficient for one cell, keep that cell unresolved and identify the first missing field; do not collapse the two cuts or count an existing route edge as new rank."
+}

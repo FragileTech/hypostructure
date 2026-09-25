@@ -1,0 +1,17 @@
+{
+  "id": "P7-window-46-right-shortcut-integration",
+  "mode": "DISCOVER",
+  "phase": "7",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-extremal-two-tail-uncrossing",
+  "kind": "review_integration",
+  "goal": "Integrate the checked same-source right shortcut with the retained maximalPrefix inequality and select the exact strict-prefix calculation.",
+  "objects": ["G=selected.object and complete [144a] window history", "actual matching/star left and right route decompositions and checked right shortcut", "selected fixed-source maximalPrefix comparison"],
+  "reads": ["branch:node144-window-32d32f9d19e7", "P6-window-45-right-shortcut", "P7-window-44-one-sided-incidence-integration"],
+  "interaction": "The shortcut has the exact right RoutingConfiguration type quantified by maximalPrefix. Its path agrees with the left route at nextLeft after the common separator, while the selected original right path has distinct nextRight there.",
+  "parent_payoff": "Isolate the numerical prefix inequality as the sole missing crossing-exclusion inference, then combine it with the accepted incidence theorem to force an actual outside-skeleton edge.",
+  "depends_on": ["P6-window-45-right-shortcut"],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase7-right-shortcut-integration.md",
+  "acceptance": "State the exact old and new commonPrefixLength bounds, the type-correct maximalPrefix application, and how their contradiction would exclude crossing. Test constraint/compression/quantity separately; preserve conditional scope and do not claim the inequality, escape or productive move before Lean proves it.",
+  "on_failure": "If the shortcut is not in maximalPrefix's quantified right type, record the exact mismatch and repair the construction rather than using another route choice."
+}

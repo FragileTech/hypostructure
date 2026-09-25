@@ -1,0 +1,67 @@
+{
+  "status": "SUBMITTED_RESULT",
+  "output": "Authorize owner-local construction of the finite max-prefix two-tail uncrossing move. Parallel and all-in-F have accepted conditional contradictions; the exact remaining outcome is a source-bound two-arm handoff with D_I or D_boundary nonempty. The first task is an exact source-to-envelope Holds predicate, followed by max-route choice, crossed-tail/splice proof, publication in sameTokenBottleneckRoutingRow, and kernel/integration checks. No move or branch closure is certified yet.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase5-uncrossing-admission.md",
+      "sha256": "6f680c54f4bc907522b4ab0b9369d85ce22c305cd0bb0996e8eebf52bf32dc4e",
+      "locator": "admitted move, per-outcome payoffs and atomic owner-local construction sequence"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase5-all-in-F-extremal-payoff.md",
+      "sha256": "f13b60ed6799b2ff572dfd330f1f2923317395ffdd92963b48c81404a034deb0",
+      "locator": "all-in-F same-support max-prefix contradiction"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase5-escape-payoff.md",
+      "sha256": "28f6cb263edac1f82d56551589cb5b91f9bf728fd6b880b0b51dad4dc2224937",
+      "locator": "parallel/all-in-F/escape coverage and exact survivor"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+      "sha256": "113226b2f99eabccb9f3b1f00e1c4ce6eeb474eadf90fdd10099c2003476badd",
+      "locator": "complete selected graph and 50-key ledger history"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "335b2996340ad3b65645cc97afeb627731ecb2209bf4031286aff0e6346da7e2",
+      "locator": "single [144] owner row and direct Type B entry projection"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "current handoff and fan-entry Holds propositions"
+    }
+  ],
+  "implementation_status": "none",
+  "first_missing_inference": "Owner-local formalization must bind the selected source pair to the same envelope and prove its escape; current SameTokenTypeBHandoffStatement omits that relation.",
+  "immediate_subobligations": [
+    "Specify the strengthened same-source handoff Holds predicate without a side carrier.",
+    "Prove maximum-prefix route selection for the fixed pair inside the existing owner.",
+    "Prove owner-local two-tail crossing and splice on both matching and star arms.",
+    "Publish the escape while preserving exact ledger outputs and old Type B projection.",
+    "Build and check axioms, then integrate distinct I and exterior survivors."
+  ],
+  "metadata": {
+    "structural_use": null,
+    "interaction": {
+      "object": "complete [144a] window ancestry and the single [144] owner-produced handoff",
+      "ingredients": [
+        "reviewed parallel sparse-exit exclusion",
+        "reviewed all-in-F extremal splice contradiction",
+        "exhaustive D location partition",
+        "canonical ExactLedger handoff producer and Type B consumer"
+      ],
+      "relation": "Each proposed outcome has a specified payoff, and construction can safely target the source-bound physical-escape survivor.",
+      "known": "The mathematical conditional payoffs are independently reviewed; no implementation proof exists yet.",
+      "unresolved": "Formal source-bound Holds, kernel check and integration with strict surplus/source pair account.",
+      "domains": "same selected graph and exact 50-key history, no alternate proof-history carrier",
+      "previous_use": "The previous component-return move lacked a payoff on all-in-F; this move excludes that case using retained source routes and a newly identified two-tail topology."
+    },
+    "changed_objects": [],
+    "changed_accounts": [],
+    "side_observations": [
+      "The Type B fan mark and B1 charge remain separate obligations."
+    ]
+  }
+}

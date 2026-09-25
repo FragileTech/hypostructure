@@ -1,0 +1,37 @@
+{
+  "reviewer": "phase7_first_entry_singleton_integration_review_d",
+  "decision": "accept",
+  "reason": "The note states a conditional one-sided saturation at the selected cubic a and separately assumes a\u2209armRight for contradiction. Endpoint membership then removes right-arm edges. If a\u2209core, no induced-core edge touches a and its simple own arm pays at most the first edge; if a\u2208core, the checked first-entry singleton implication makes its own arm edge set empty and the checked two-vertex core lemma permits at most one core edge. Distinct assigned neighbours and loop-free adjacency leave only ha from the two centre edges at a, so either case permits at most two incident physical edges. The proposed Lean route uses the selected graph incidenceFinset and its actual card_incidenceFinset_eq_degree theorem to compare this two-edge bound with degree(a)=3; those APIs exist, but the membership case split, cardinality contradiction and a\u2208armRight have not been implemented. It leaves splice, outside-F escape, cap, move credit and closure open, and tests constraint, compression and quantity separately.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-first-entry-singleton-contract.json",
+      "sha256": "7258ee6290e54ce2f5af6527b2c808791a834e6c2b4b703c43da4a3f8b105c72",
+      "locator": "P7-window-42 exact one-sided integration acceptance"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-first-entry-singleton-integration-result.json",
+      "sha256": "3f08030d71738f74f049334f1f06f53224b712910e8aa5fb57ea6402ca0c21c4",
+      "locator": "submitted next incidence proof and limits"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-first-entry-singleton-integration.md",
+      "sha256": "cc2226fc46c87248adee1900eb3f634038beaef966886df884cefeb18751c7fb",
+      "locator": "conditional a-in/out-of-core counts and proposed incidenceFinset argument"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-first-entry-singleton.md",
+      "sha256": "0c777c61d6cecb97bdc326e024267ec79a006232a2e6aa0875c671f22fe8aacb",
+      "locator": "checked same-arm conditional singleton fact"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "415dfce1483e1e90b44b097aa4ab06c6e8b0630f7f23e2476d8af70ce1a9fa21",
+      "locator": "lines 645-754 local arm/core/first-entry prerequisites; matching/star constructor and selected cubic a"
+    },
+    {
+      "path": "hypostructure/.lake/packages/mathlib/Mathlib/Combinatorics/SimpleGraph/Finite.lean",
+      "sha256": "a26b9436ebd7fcdf54d586f0d05763dbe7ee38810e2df3f90a0d417a51bd59d8",
+      "locator": "lines 260-279: actual incidenceFinset, card_incidenceFinset_eq_degree and membership"
+    }
+  ]
+}

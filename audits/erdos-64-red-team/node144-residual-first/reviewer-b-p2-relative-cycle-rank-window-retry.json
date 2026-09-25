@@ -1,0 +1,37 @@
+{
+  "reviewer": "phase2_relative_cycle_rank_review_b_retry",
+  "decision": "reject",
+  "reason": "The revised note's graph identity is correct: with β(X)=|E(X)|−|V(X)|+c(X), counting internal extra edges and attached components yields the stated subtraction c(F)−c(G_*), and k_i≥2 follows from the genuine G cut. It also correctly withholds per-incidence and source-pair charges. However, the submitted result still asserts an unsupported ingredient, 'connected core and actual recorded arms', in metadata.interaction.ingredients[0], although its own output/known fields and note say the literal handoff does not retain core or F connectivity. Its first evidence locator likewise calls the note a 'definition of connected F', contrary to the note's lines 8–12. The public Envelope has no connected-core field. These stale submitted claims must be corrected before this exact result can be accepted.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-relative-cycle-rank-contract.json",
+      "sha256": "5dde44f90b44e6d0ae147fed5088c4b9d9a7c8d34335426bee21c4255df7673c",
+      "locator": "P2-window-08 acceptance and on_failure require exact connectivity status and account"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-relative-cycle-rank-result.json",
+      "sha256": "ac88276464ef7019aa83bea77c30ddfaf3840c4862b3129adfb7005b30703518",
+      "locator": "output and metadata.interaction.known deny retained connectivity; metadata.interaction.ingredients[0] and evidence[0].locator still assert connected core/F"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-relative-cycle-rank.md",
+      "sha256": "9543176e55a8926d1d04b321e8b736dc5c2004b3414ed546da13729dd60511a8",
+      "locator": "lines 3–12 connectedness unknown; 14–37 corrected component-count identity; 39–55 no independent net/source-pair charge"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/DecoratedHandoffEnvelope.lean",
+      "sha256": "833664e35fcf0db62862bb28ed398f0836922f4ced97fa57f5414a089020872c",
+      "locator": "Envelope fields lines 902–940 contain core and arms but no connected-core field"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "lines 3944–3953 existential handoff retains core equality and nonempty decorations only"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-exterior-cut.md",
+      "sha256": "303f51999aac263a0d2ab371d3fe0b5970e4f3d1b996bb7735654a2c4d49f068",
+      "locator": "lines 10–19 G-S component boundary gives k_i≥2"
+    }
+  ]
+}

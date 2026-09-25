@@ -1,0 +1,37 @@
+{
+  "reviewer": "phase7_right_shortcut_integration_review_d",
+  "decision": "accept",
+  "reason": "For the exact left/common++separator::nextLeft::tailLeft and old right/common++separator::nextRight::tailRight decompositions, nextLeft\u2260nextRight makes commonPrefixLength exactly common.length+1. The checked shortcut path common++separator::nextLeft::after shares that full prefix with the fixed left route, so its length is at least common.length+2. The shortcut has the original right RoutingConfiguration type, permitting use as maximalPrefix's right comparator on the same pair-specific support/source/buffer. A precise Lean application must additionally prove the shortcut's validB predicate (head=root and last=right.2), since the type's issued/lands fields alone are weaker; the source construction preserves exact head/last of secondConfiguration and secondValid supplies those equalities, so no witness substitution is needed. The note treats the list calculation, comparator validity, maximality contradiction and outside-F extraction as future work, and claims no current physical escape, move credit, cap or branch closure.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-right-shortcut-contract.json",
+      "sha256": "08c3bde873dd3db4183af67cf3579f453aed9dd520327cdba5bf3cdfdaabfc2d",
+      "locator": "P7-window-46 exact prefix and maximality integration gate"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-right-shortcut-integration-result.json",
+      "sha256": "51c3e20eca9f710885f0201b25de9c25f0da47e44fc377a5f93cc74bba94aa88",
+      "locator": "submitted pending list calculation and outside-edge extraction"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-right-shortcut-integration.md",
+      "sha256": "d8b5cf35f98a2ed64120300f7ee4a5ea548d2e1e2b4d2d6ecf3f0d925f8f4c36",
+      "locator": "old/new prefix bounds, typed comparator and closure limits"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-right-shortcut.md",
+      "sha256": "279039689a4c98ed11b7bae5b14d5f6beae00608695e36ade4fbd2b415ce0244",
+      "locator": "checked same-source right shortcut construction"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "458b16358276ff38f66b3ff8cc593cbd94b537e1f43e81163ff0d2c934a33143",
+      "locator": "lines 1870-1910 chooseMaximalRoutes validity predicates and maximalPrefix; 1640-1717 shortcut construction; matching/star first-separator decompositions"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean",
+      "sha256": "cca0d7a8a6d32968b3bd01a9ea3b0a6fb0fa119a7f1380d98610c29815087e31",
+      "locator": "lines 229-246 RoutingConfiguration fields and 377-390 commonPrefixLength definition"
+    }
+  ]
+}

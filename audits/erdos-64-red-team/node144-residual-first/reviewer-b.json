@@ -1,0 +1,365 @@
+{
+  "P0-window-01-pin_source_revision": {
+    "decision": "accept",
+    "reason": "This task only pins the window source snapshot. HEAD and manifest digest equal the live checkout; all ten manifest file hashes and both submitted evidence hashes match current bytes.",
+    "evidence": [
+      {
+        "path": "audits/erdos-64-red-team/node144-residual-first/source-manifest.json",
+        "sha256": "32d32f9d19e741def5b63002dff60fe79265281ad4f9d6161574df9ed949f2eb",
+        "locator": "git_head and files map"
+      },
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Local.lean",
+        "sha256": "aca012ed647aaa3e5582e1e727e67d586b97998b6ebad808b055cc58193b3e4d",
+        "locator": "333–385: [144] source boundary"
+      }
+    ]
+  },
+  "P0-window-02-state_endpoint": {
+    "decision": "accept",
+    "reason": "The output requests False from this window post-[144] ledger on selected.object; it does not claim False is already proved or add a homogeneous cap. The owner returns the handoff ledger, and the manuscript leaves [144a] open.",
+    "evidence": [
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Local.lean",
+        "sha256": "aca012ed647aaa3e5582e1e727e67d586b97998b6ebad808b055cc58193b3e4d",
+        "locator": "325–385: selectedBottleneckDischarge output and no-closure comment"
+      },
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Boundary.lean",
+        "sha256": "37d0c5760813325a5058683667fbf1c40c9bf6d3057d336ead0e3e1761788ff9",
+        "locator": "27–44: Node144aOutcome"
+      },
+      {
+        "path": "to_formalize/erdos_64_proof.tex",
+        "sha256": "7153339b7a032b2e5fbb432999acf0306d4a4f18bdbfd0f86c709ae3a4e58cb1",
+        "locator": "347–353: [144a] open handoff"
+      }
+    ]
+  },
+  "P0-window-03-identify_incoming_alternative": {
+    "decision": "accept",
+    "reason": "The tagged [139] yes, then [140] window incidence audit is the owner call path. Its audit row prepends the named audit and homogeneous-pattern keys; [144]/[65] prepend three handoff keys. No sibling class premise appears.",
+    "evidence": [
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Strict/Dependent.lean",
+        "sha256": "5ffb28da8eb6034712de72078b2dde4474de5ebc616731a1933abaeab2d7ca5d",
+        "locator": "267–286: tagged selectedBottleneckDischarge call"
+      },
+      {
+        "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+        "sha256": "335b2996340ad3b65645cc97afeb627731ecb2209bf4031286aff0e6346da7e2",
+        "locator": "152–163, 280–292: selected audit row and Produced keys"
+      },
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Local.lean",
+        "sha256": "aca012ed647aaa3e5582e1e727e67d586b97998b6ebad808b055cc58193b3e4d",
+        "locator": "333–385: three appended handoff keys"
+      }
+    ]
+  },
+  "P0-window-04-register_retained_object": {
+    "decision": "accept",
+    "reason": "The task registers one ambient G = selected.object. The Holds keys are indexed by that object. Handoff, class-audit, and capacity-token declarations quantify their own witnesses; the submission does not equate capacities, tokens, or patterns across keys.",
+    "evidence": [
+      {
+        "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+        "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+        "locator": "3961–3979: handoff existential; 11426–11449: capacity-token existential; 11617–11635: class-audit existential"
+      },
+      {
+        "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+        "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+        "locator": "623–650: certified token/role inside pattern"
+      },
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Strict/Dependent.lean",
+        "sha256": "5ffb28da8eb6034712de72078b2dde4474de5ebc616731a1933abaeab2d7ca5d",
+        "locator": "267–286: owner uses one selected object"
+      }
+    ]
+  },
+  "P0-window-05-check_inherited_premise": {
+    "decision": "accept",
+    "reason": "The submitted newest-first index has exactly 50 distinct keys. Its head is windowIncidenceAudit, homogeneousBottleneckPattern, windowClassOverload after the three [144]/[65] keys, and its tail is the retained selectedCapacityTokenFacts history. It agrees with the tagged producer chain and contains no sibling class key.",
+    "evidence": [
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Strict/Dependent.lean",
+        "sha256": "5ffb28da8eb6034712de72078b2dde4474de5ebc616731a1933abaeab2d7ca5d",
+        "locator": "267–286: actual tagged history and [144] call"
+      },
+      {
+        "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+        "sha256": "335b2996340ad3b65645cc97afeb627731ecb2209bf4031286aff0e6346da7e2",
+        "locator": "152–163, 280–292: class audit row key order"
+      },
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Local.lean",
+        "sha256": "aca012ed647aaa3e5582e1e727e67d586b97998b6ebad808b055cc58193b3e4d",
+        "locator": "271–300: inherited capacity-token tail; 333–385: [144]/[65] prefix"
+      }
+    ]
+  },
+  "P0-window-06-record_minimality_or_import": {
+    "decision": "reject",
+    "reason": "The submitted output states target avoidance and both SelectionMinimality fields, but omits K.surplusAbove and its strict inequality. The task goal asks to identify accounts and its acceptance condition explicitly requires retaining the strict-surplus account. Its presence in the branch snapshot cannot fill this atomic result output.",
+    "evidence": [
+      {
+        "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+        "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+        "locator": "577–592: SelectionMinimality fields; 8268–8270: selection; 8387–8389: strict surplus"
+      },
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Strict/Dependent.lean",
+        "sha256": "5ffb28da8eb6034712de72078b2dde4474de5ebc616731a1933abaeab2d7ca5d",
+        "locator": "267–286: routed history projects K.surplusAbove"
+      },
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Boundary.lean",
+        "sha256": "37d0c5760813325a5058683667fbf1c40c9bf6d3057d336ead0e3e1761788ff9",
+        "locator": "27–44: [144a] keeps surplusAbove"
+      }
+    ]
+  },
+  "P0-remainder-01-pin_source_revision": {
+    "decision": "accept",
+    "reason": "This task only pins the remainder source snapshot. HEAD and manifest digest equal the live checkout; all ten manifest file hashes and both submitted evidence hashes match current bytes.",
+    "evidence": [
+      {
+        "path": "audits/erdos-64-red-team/node144-residual-first/source-manifest.json",
+        "sha256": "32d32f9d19e741def5b63002dff60fe79265281ad4f9d6161574df9ed949f2eb",
+        "locator": "git_head and files map"
+      },
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Local.lean",
+        "sha256": "aca012ed647aaa3e5582e1e727e67d586b97998b6ebad808b055cc58193b3e4d",
+        "locator": "333–385: [144] source boundary"
+      }
+    ]
+  },
+  "P0-remainder-02-state_endpoint": {
+    "decision": "accept",
+    "reason": "The output requests False from this remainder post-[144] ledger on selected.object; it does not claim False is already proved or add a homogeneous cap. The owner returns the handoff ledger, and the manuscript leaves [144a] open.",
+    "evidence": [
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Local.lean",
+        "sha256": "aca012ed647aaa3e5582e1e727e67d586b97998b6ebad808b055cc58193b3e4d",
+        "locator": "325–385: selectedBottleneckDischarge output and no-closure comment"
+      },
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Boundary.lean",
+        "sha256": "37d0c5760813325a5058683667fbf1c40c9bf6d3057d336ead0e3e1761788ff9",
+        "locator": "27–44: Node144aOutcome"
+      },
+      {
+        "path": "to_formalize/erdos_64_proof.tex",
+        "sha256": "7153339b7a032b2e5fbb432999acf0306d4a4f18bdbfd0f86c709ae3a4e58cb1",
+        "locator": "347–353: [144a] open handoff"
+      }
+    ]
+  },
+  "P0-remainder-03-identify_incoming_alternative": {
+    "decision": "accept",
+    "reason": "The tagged [139] no, [141] yes, then [142] remainder audit is the owner call path. Its audit row prepends the named audit and homogeneous-pattern keys; [144]/[65] prepend three handoff keys. No sibling class premise appears.",
+    "evidence": [
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Strict/Dependent.lean",
+        "sha256": "5ffb28da8eb6034712de72078b2dde4474de5ebc616731a1933abaeab2d7ca5d",
+        "locator": "287–309: tagged selectedBottleneckDischarge call"
+      },
+      {
+        "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+        "sha256": "335b2996340ad3b65645cc97afeb627731ecb2209bf4031286aff0e6346da7e2",
+        "locator": "294–303, 420–432: selected audit row and Produced keys"
+      },
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Local.lean",
+        "sha256": "aca012ed647aaa3e5582e1e727e67d586b97998b6ebad808b055cc58193b3e4d",
+        "locator": "333–385: three appended handoff keys"
+      }
+    ]
+  },
+  "P0-remainder-04-register_retained_object": {
+    "decision": "accept",
+    "reason": "The task registers one ambient G = selected.object. The Holds keys are indexed by that object. Handoff, class-audit, and capacity-token declarations quantify their own witnesses; the submission does not equate capacities, tokens, or patterns across keys.",
+    "evidence": [
+      {
+        "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+        "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+        "locator": "3961–3979: handoff existential; 11426–11449: capacity-token existential; 11636–11654: class-audit existential"
+      },
+      {
+        "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+        "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+        "locator": "623–650: certified token/role inside pattern"
+      },
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Strict/Dependent.lean",
+        "sha256": "5ffb28da8eb6034712de72078b2dde4474de5ebc616731a1933abaeab2d7ca5d",
+        "locator": "287–309: owner uses one selected object"
+      }
+    ]
+  },
+  "P0-remainder-05-check_inherited_premise": {
+    "decision": "accept",
+    "reason": "The submitted newest-first index has exactly 51 distinct keys. Its head is remainderSurplusAudit, homogeneousBottleneckPattern, remainderClassOverload, windowClassAbsent after the three [144]/[65] keys, and its tail is the retained selectedCapacityTokenFacts history. It agrees with the tagged producer chain and contains no sibling class key.",
+    "evidence": [
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Strict/Dependent.lean",
+        "sha256": "5ffb28da8eb6034712de72078b2dde4474de5ebc616731a1933abaeab2d7ca5d",
+        "locator": "287–309: actual tagged history and [144] call"
+      },
+      {
+        "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+        "sha256": "335b2996340ad3b65645cc97afeb627731ecb2209bf4031286aff0e6346da7e2",
+        "locator": "294–303, 420–432: class audit row key order"
+      },
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Local.lean",
+        "sha256": "aca012ed647aaa3e5582e1e727e67d586b97998b6ebad808b055cc58193b3e4d",
+        "locator": "271–300: inherited capacity-token tail; 333–385: [144]/[65] prefix"
+      }
+    ]
+  },
+  "P0-remainder-06-record_minimality_or_import": {
+    "decision": "reject",
+    "reason": "The submitted output states target avoidance and both SelectionMinimality fields, but omits K.surplusAbove and its strict inequality. The task goal asks to identify accounts and its acceptance condition explicitly requires retaining the strict-surplus account. Its presence in the branch snapshot cannot fill this atomic result output.",
+    "evidence": [
+      {
+        "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+        "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+        "locator": "577–592: SelectionMinimality fields; 8268–8270: selection; 8387–8389: strict surplus"
+      },
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Strict/Dependent.lean",
+        "sha256": "5ffb28da8eb6034712de72078b2dde4474de5ebc616731a1933abaeab2d7ca5d",
+        "locator": "287–309: routed history projects K.surplusAbove"
+      },
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Boundary.lean",
+        "sha256": "37d0c5760813325a5058683667fbf1c40c9bf6d3057d336ead0e3e1761788ff9",
+        "locator": "27–44: [144a] keeps surplusAbove"
+      }
+    ]
+  },
+  "P0-primitive-01-pin_source_revision": {
+    "decision": "accept",
+    "reason": "This task only pins the primitive source snapshot. HEAD and manifest digest equal the live checkout; all ten manifest file hashes and both submitted evidence hashes match current bytes.",
+    "evidence": [
+      {
+        "path": "audits/erdos-64-red-team/node144-residual-first/source-manifest.json",
+        "sha256": "32d32f9d19e741def5b63002dff60fe79265281ad4f9d6161574df9ed949f2eb",
+        "locator": "git_head and files map"
+      },
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Local.lean",
+        "sha256": "aca012ed647aaa3e5582e1e727e67d586b97998b6ebad808b055cc58193b3e4d",
+        "locator": "333–385: [144] source boundary"
+      }
+    ]
+  },
+  "P0-primitive-02-state_endpoint": {
+    "decision": "accept",
+    "reason": "The output requests False from this primitive post-[144] ledger on selected.object; it does not claim False is already proved or add a homogeneous cap. The owner returns the handoff ledger, and the manuscript leaves [144a] open.",
+    "evidence": [
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Local.lean",
+        "sha256": "aca012ed647aaa3e5582e1e727e67d586b97998b6ebad808b055cc58193b3e4d",
+        "locator": "325–385: selectedBottleneckDischarge output and no-closure comment"
+      },
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Boundary.lean",
+        "sha256": "37d0c5760813325a5058683667fbf1c40c9bf6d3057d336ead0e3e1761788ff9",
+        "locator": "27–44: Node144aOutcome"
+      },
+      {
+        "path": "to_formalize/erdos_64_proof.tex",
+        "sha256": "7153339b7a032b2e5fbb432999acf0306d4a4f18bdbfd0f86c709ae3a4e58cb1",
+        "locator": "347–353: [144a] open handoff"
+      }
+    ]
+  },
+  "P0-primitive-03-identify_incoming_alternative": {
+    "decision": "accept",
+    "reason": "The tagged [139] no, [141] no, then [143] primitive audit is the owner call path. Its audit row prepends the named audit and homogeneous-pattern keys; [144]/[65] prepend three handoff keys. No sibling class premise appears.",
+    "evidence": [
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Strict/Dependent.lean",
+        "sha256": "5ffb28da8eb6034712de72078b2dde4474de5ebc616731a1933abaeab2d7ca5d",
+        "locator": "287–329: tagged selectedBottleneckDischarge call"
+      },
+      {
+        "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+        "sha256": "335b2996340ad3b65645cc97afeb627731ecb2209bf4031286aff0e6346da7e2",
+        "locator": "434–443, 560–572: selected audit row and Produced keys"
+      },
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Local.lean",
+        "sha256": "aca012ed647aaa3e5582e1e727e67d586b97998b6ebad808b055cc58193b3e4d",
+        "locator": "333–385: three appended handoff keys"
+      }
+    ]
+  },
+  "P0-primitive-04-register_retained_object": {
+    "decision": "accept",
+    "reason": "The task registers one ambient G = selected.object. The Holds keys are indexed by that object. Handoff, class-audit, and capacity-token declarations quantify their own witnesses; the submission does not equate capacities, tokens, or patterns across keys.",
+    "evidence": [
+      {
+        "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+        "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+        "locator": "3961–3979: handoff existential; 11426–11449: capacity-token existential; 11655–11673: class-audit existential"
+      },
+      {
+        "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+        "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+        "locator": "623–650: certified token/role inside pattern"
+      },
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Strict/Dependent.lean",
+        "sha256": "5ffb28da8eb6034712de72078b2dde4474de5ebc616731a1933abaeab2d7ca5d",
+        "locator": "287–329: owner uses one selected object"
+      }
+    ]
+  },
+  "P0-primitive-05-check_inherited_premise": {
+    "decision": "accept",
+    "reason": "The submitted newest-first index has exactly 51 distinct keys. Its head is primitiveCarrierAudit, homogeneousBottleneckPattern, remainderClassAbsent, windowClassAbsent after the three [144]/[65] keys, and its tail is the retained selectedCapacityTokenFacts history. It agrees with the tagged producer chain and contains no sibling class key.",
+    "evidence": [
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Strict/Dependent.lean",
+        "sha256": "5ffb28da8eb6034712de72078b2dde4474de5ebc616731a1933abaeab2d7ca5d",
+        "locator": "287–329: actual tagged history and [144] call"
+      },
+      {
+        "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+        "sha256": "335b2996340ad3b65645cc97afeb627731ecb2209bf4031286aff0e6346da7e2",
+        "locator": "434–443, 560–572: class audit row key order"
+      },
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Local.lean",
+        "sha256": "aca012ed647aaa3e5582e1e727e67d586b97998b6ebad808b055cc58193b3e4d",
+        "locator": "271–300: inherited capacity-token tail; 333–385: [144]/[65] prefix"
+      }
+    ]
+  },
+  "P0-primitive-06-record_minimality_or_import": {
+    "decision": "reject",
+    "reason": "The submitted output states target avoidance and both SelectionMinimality fields, but omits K.surplusAbove and its strict inequality. The task goal asks to identify accounts and its acceptance condition explicitly requires retaining the strict-surplus account. Its presence in the branch snapshot cannot fill this atomic result output.",
+    "evidence": [
+      {
+        "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+        "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+        "locator": "577–592: SelectionMinimality fields; 8268–8270: selection; 8387–8389: strict surplus"
+      },
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Strict/Dependent.lean",
+        "sha256": "5ffb28da8eb6034712de72078b2dde4474de5ebc616731a1933abaeab2d7ca5d",
+        "locator": "287–329: routed history projects K.surplusAbove"
+      },
+      {
+        "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Boundary.lean",
+        "sha256": "37d0c5760813325a5058683667fbf1c40c9bf6d3057d336ead0e3e1761788ff9",
+        "locator": "27–44: [144a] keeps surplusAbove"
+      }
+    ]
+  }
+}

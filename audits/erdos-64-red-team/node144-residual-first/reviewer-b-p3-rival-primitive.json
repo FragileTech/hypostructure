@@ -1,0 +1,37 @@
+{
+  "reviewer": "phase3_rival_review_b",
+  "decision": "accept",
+  "reason": "On the tagged primitive [144a] residual, candidate A addresses original blocked-pair load but correctly leaves the total source-pair→envelope incidence, bounded multiplicity, and strict-surplus constant calibration unproved. The serious rival uses actual decorated centres, assigned neighbours and arms. FanSafe is negative: no accepted return length and no absorbing relation for the assigned pair; it supplies neither a target-cycle witness nor a valid replacement. typeBFanEntry only includes the existential handoff envelope, while TypeBSublinearHypotheses quantifies over every qualifying packing and canonical component with further grouped charge data, so it is not inherited from this one envelope. The older audit is explicitly an attempt fingerprint, not a branch premise. Neither candidate is selected as a move and no conditional payoff or closure is claimed. All five submitted evidence hashes match current bytes.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/primitive-phase3-rival-comparison.md",
+      "sha256": "9a2fd5f075b3df3a216ab29b43083a3362253804bf31ce685ef0fba148fe7c67",
+      "locator": "Candidate A; Serious rival; Comparison and next obligation"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "335b2996340ad3b65645cc97afeb627731ecb2209bf4031286aff0e6346da7e2",
+      "locator": "1374–1406, 2222–2251: two-edge source selection; 2205–2221 and 3061–3112: one envelope and fan entry"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/DecoratedHandoffEnvelope.lean",
+      "sha256": "833664e35fcf0db62862bb28ed398f0836922f4ced97fa57f5414a089020872c",
+      "locator": "865–874: FanSafe negative clauses; 902–940: actual envelope fields"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "3944–3995: handoff and fan entry; 5655–5719: global TypeBSublinearHypotheses; 9917–9920: separate ledger/residual keys"
+    },
+    {
+      "path": "audits/erdos-64-red-team/near-cubic-repair/execution.md",
+      "sha256": "c90d539cbd8b0d6170ca7a70bc704211ad19f9b158dbbf44220f4a0a5eae609c",
+      "locator": "218–249: event-count multiplicity gap; 307–338 and 342–376: fold/smoothing transport and target-cycle gaps"
+    },
+    {
+      "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Strict/Dependent.lean",
+      "sha256": "5ffb28da8eb6034712de72078b2dde4474de5ebc616731a1933abaeab2d7ca5d",
+      "locator": "310–329: tagged [144] route returns handoff"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "id": "P4-window-03-same-root-prerequisite",
+  "mode": "AUDIT",
+  "phase": "4",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "candidate-source-indexed-handoff",
+  "kind": "match_prerequisite",
+  "goal": "Verify the same-canonical-root prerequisite of the first-separator theorem for the two actual window-arm source configurations, without identifying distinct ledger-key witnesses.",
+  "objects": [
+    "G = selected.object on the tagged window strict-surplus arm",
+    "the one certified handoff pattern witness and its token, role and canonical root",
+    "two selected original pattern edges and their configurations from that witness"
+  ],
+  "reads": [
+    "branch:node144-window-32d32f9d19e7",
+    "P4-window-01-pigeonhole-statement",
+    "P4-window-02-first-separator-statement",
+    "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+    "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+    "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean"
+  ],
+  "interaction": "two source configurations sharing the canonical root of one selected token",
+  "parent_payoff": "Discharge one explicit prerequisite for a source-linked first-separator alternative",
+  "depends_on": [
+    "P4-window-02-first-separator-statement"
+  ],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase4-same-root.md",
+  "acceptance": "Cite the exact pattern field and both owner derivations of path heads at the same root; retain distinct existential witnesses in other keys and leave common landing separate.",
+  "on_failure": "Name the first missing token/root identification on the selected handoff witness; do not substitute a new configuration."
+}

@@ -54,12 +54,17 @@ site.
 
 ## Executing the methodology
 
-The landing page renders a generic eight-stage execution recipe after “One
-iteration of the method”. Its source is `repair_and_closure.md`; the web
-version reorganizes the instructions into operations, evidence requirements,
-failure continuations, abstract worked patterns, checklists and selectable
-templates. It is an editorial adaptation rather than an automatic Markdown
-render.
+The landing page renders Phase 0 and the eight residual-first phases after
+“One iteration of the method”. Phase titles, task kinds, gates, and worker
+instructions come from `tools/methodology_gate/policy/workflow.json`; the
+mathematical explanation is in `repair_and_closure.md`. The page also has an
+“Inspect a proof run” panel: load a saved `taskflow.py status` JSON file to
+see the exact next task, retained residual, allowed inputs, acceptance
+condition, and separate counts for tasks, productive moves, and branch closure.
+The file is read locally in the browser. Every phase assigns one mathematical
+problem per fresh isolated context. Several tasks in a phase use separate
+contexts, including retries and independent reviews; retained hypotheses travel
+through the exact branch and accepted artifacts.
 
 Every methodology part has a stable element id and a real link in the
 methodology rail. The canonical target is
@@ -69,12 +74,12 @@ part metadata in `MethodologySection.tsx` as the single source for rail order,
 headings and destinations. The navigation test checks that every metadata row
 has a rendered heading and a matching link.
 
-The execution recipe reads the same versioned `tools/methodology_gate/policy/workflow.json`
-and structural register as the external controller. `ExecutionRecipe.tsx` explains
-each stage and provides its operating templates; `recipe-reference.ts` supplies
-candidate examples and the artifact table. The stage order is accounting, unused
-structure, structural conflict, technique catalogue, authorization, construction,
-outcomes, verification. The first five stages precede all construction.
+The execution recipe reads the same unversioned policy as the task controller.
+`ExecutionRecipe.tsx` renders its phase contracts; `TaskRunViewer.tsx` displays
+a saved live queue; `recipe-reference.ts` supplies candidate examples and the
+artifact table. The sequence is branch restoration, accounting, unused
+structure, structural tension, textbook catalogue, conditional payoff,
+atomic construction, integration and survivor formation, then verification.
 
 Run `python3 tools/methodology_gate/sync_policy.py` after changing the guide or
 shared policy, and `--check` to verify bundled worker references and source hashes.

@@ -1,10 +1,11 @@
+import workflow from "../../../../tools/methodology_gate/policy/workflow.json";
 import { useEffect, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 
 import { Latex } from "../graph-explorer";
 import { findProof } from "../proofs/registry";
 import { GeneralStructuralSurvey } from "../structural-survey/GeneralStructuralSurvey";
-import { EXECUTION_RECIPE_PARTS } from "../methodology/ExecutionRecipe";
+import { EXECUTION_RECIPE_PARTS, TaskContract } from "../methodology/ExecutionRecipe";
 
 /** The element the whole account is anchored at. */
 export const METHODOLOGY_ID = "methodology";
@@ -1794,35 +1795,10 @@ export function MethodologySection() {
               queue, one iteration of the method runs as follows:
             </p>
             <ol className="methodology-cycle">
-              <li>
-                <strong>Propose</strong> an invariant, case split, budget, label,
-                local test, exchange or candidate lemma that might advance the
-                branch.
-              </li>
-              <li>
-                <strong>Admit</strong> it only if both outcomes are productive,
-                the resources it needs are present, and every surviving case
-                has a declared route. No new global result may enter at this
-                point: a move draws only on the branch state, the inputs fixed
-                at the outset, and facts of a textbook character.
-              </li>
-              <li>
-                <strong>Select</strong> an admitted move whose prerequisites are
-                proved in the current state. If a prerequisite needs a local
-                construction, execute and verify it before selecting the move.
-              </li>
-              <li>
-                <strong>Execute</strong>: prove, review, or compute the
-                local obligations before the proof state is allowed to change.
-              </li>
-              <li>
-                <strong>Route</strong>: close whatever closes, and emit every
-                surviving obstruction as a typed residual with a named consumer.
-              </li>
-              <li>
-                <strong>Record</strong> the branch tree, the invariant and
-                exclusion ledgers, the dependencies and the residual queue.
-              </li>
+              <li><strong>{workflow.taskflow.phase_zero.title}</strong>: {workflow.taskflow.phase_zero.gate}</li>
+              {Object.entries(workflow.taskflow.phase_descriptions).map(([number, phase]) => <li key={number}>
+                <strong>{phase.title}</strong>: {phase.output}
+              </li>)}
             </ol>
             <p>
               The safety condition is what we call <em>leaf totality</em>:
@@ -1837,20 +1813,17 @@ export function MethodologySection() {
 
           <Part id="recipe">
             <p>
-              Follow this recipe from the exact incoming branch to its terminal
-              certificates. Each stage names the inputs, the work to perform,
-              the evidence it must produce, and the continuation when an
-              obligation fails. A local construction that needs a proof is work
-              to execute; a smaller residual stays on the queue until its
-              descendants close.
+              Start from the exact incoming branch. Execute one narrow task on
+              its retained objects, review its evidence, then combine its result
+              with the facts already held. Every surviving outcome remains an
+              explicit obligation until its own continuation is discharged.
             </p>
             <p>
-              Read the instructions in order, use the selection tables and
-              checklists while working, and consult the worked repairs for
-              concrete applications. The recipe adapts the repair-and-closure
-              manual, including checks against repeated moves, mismatched
-              objects, unconsumed outcomes and premature closure claims.
+              The phase descriptions and task kinds below come from the same
+              policy used by the repository task controller. A reviewed local
+              result may be valuable before it completes a structural move.
             </p>
+            <TaskContract />
             {EXECUTION_RECIPE_PARTS.map(({ id, Content }) => (
               <Part id={id} key={id}><Content /></Part>
             ))}

@@ -1,0 +1,36 @@
+{
+  "decision": "accept",
+  "reason": "The remainder-specific path is [139] window-absent, [141] remainder-overload, then [142] remainderSurplusAuditRow; it preserves windowClassAbsent and does not borrow the primitive or window sibling. The one prior use at [144] reads homogeneousBottleneckPattern on selected.object, records bottleneckRouting as sparse exit or decorated envelope, removes the exit using active.survives, and appends typeBHandoff; the [65] row then appends typeBFanEntry. The handoff proposition retains a source pattern and one envelope but supplies no incidence assignment or bounded multiplicity for every original pair. The submission asserts no homogeneous cap, pair-payment, or equality of existential capacities in different keys. Both cited submission hashes match current bytes.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/remainder-phase1-prior-use.md",
+      "sha256": "c8ec484530cc8288ba48907675799bdc1a3b5b9964739efde8358787dee3cf0c",
+      "locator": "Object; Aspect previously used; Use and established conclusion; Unexploited aspect"
+    },
+    {
+      "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Strict/Dependent.lean",
+      "sha256": "5ffb28da8eb6034712de72078b2dde4474de5ebc616731a1933abaeab2d7ca5d",
+      "locator": "287–309: window-absent and remainder-overload arm with [142] audit and [144] call"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "335b2996340ad3b65645cc97afeb627731ecb2209bf4031286aff0e6346da7e2",
+      "locator": "296–320, 424–432: remainder audit producer; 593–633: pattern read; 3080–3112: exit elimination and fan entry; 4821–4845: class decision"
+    },
+    {
+      "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Local.lean",
+      "sha256": "aca012ed647aaa3e5582e1e727e67d586b97998b6ebad808b055cc58193b3e4d",
+      "locator": "325–385: [144] returns [typeBFanEntry, bottleneckRouting, typeBHandoff] ++ known"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "3944–3979: existential handoff source/envelope; 11702–11728: routing and handoff propositions"
+    },
+    {
+      "path": "to_formalize/erdos_64_proof.tex",
+      "sha256": "7153339b7a032b2e5fbb432999acf0306d4a4f18bdbfd0f86c709ae3a4e58cb1",
+      "locator": "347–353: [144a] handoff without cap or near-cubic estimate"
+    }
+  ]
+}

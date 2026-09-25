@@ -1,0 +1,42 @@
+{
+  "reviewer": "phase3_marked_return_rival_review_b",
+  "decision": "accept",
+  "reason": "The selected tension is specific to the newly forced non-skeleton edge, its same-edge G-e return, and the two fixed maximal source routes with their original pair supports and buffers. It asks for a conditional valid reroute and treats failed validity as a future case analysis, without asserting a splice or payoff. The rival is serious: the reviewed one-envelope rank account gives beta(G)>=beta(F)+1 and the exact raw attachment bound at least c(F), with c(F) in {1,2}; its unit cannot be replicated per source pair without a multiplicity theorem. The note explicitly retains no-reentry, wrong-support or buffer, repeated-edge/component use, and two-component merger exceptions, and claims neither a productive move nor closure. All submitted evidence hashes match current files.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase3-marked-return-rival-contract.json",
+      "sha256": "e97f0b28ea2502dff391c6e33fefaed2baafa891231daa7c45ebf79b4d6a27c7",
+      "locator": "P3-window-60 goal, acceptance, and on_failure"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase3-marked-return-rival-result.json",
+      "sha256": "71ac042dd84049f19ceb22883afad6fec2ba74d5604e6bb4945d359dde30a386",
+      "locator": "submitted selection, missing inferences, and interaction metadata"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase3-marked-return-rival.md",
+      "sha256": "662188e77c20c87f3a1bd9adae8b68424cf7a2470e0c080f4b9fe69d16ec210d",
+      "locator": "candidate tension, serious rank rival, four exception families, and first missing inference"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-marked-return-interaction.md",
+      "sha256": "a8526a2b64f07eb6ba5c432cb7b17edbebf556f3199fc366e9e7bb7e86e0236f",
+      "locator": "same-edge return words, first encounters, pair-specific supports, and no-splice limit"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-rank-reconciliation.md",
+      "sha256": "035c96a563fb5d1f74a4a804e805edcf7f383cfe8376001068ec4f2e4599021a",
+      "locator": "beta(G)>=beta(F)+1, component correction, c(F) in {1,2}, and missing per-pair consumer"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-attachment-account-audit.md",
+      "sha256": "d858b62637f25ee50ac9818621e937f7d478d862bd98a779e065ee716a73c91e",
+      "locator": "Full cycle trace row: previous generic cycle profile without the forced-edge marking"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "ccd8fafd232d49630edebed9c9c45341ab9f40a17c48ef8e81fad86c8979c5c0",
+      "locator": "lines 1887-1949 fixed pair-specific maximal route selection; 2811-2826 and 3888-3903 owner-local outsideSkeletonReturn"
+    }
+  ]
+}

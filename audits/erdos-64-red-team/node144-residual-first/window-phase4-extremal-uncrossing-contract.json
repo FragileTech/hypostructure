@@ -1,0 +1,30 @@
+{
+  "id": "P4-window-23-extremal-uncrossing-catalogue",
+  "mode": "DISCOVER",
+  "phase": "4",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-extremal-two-tail-uncrossing",
+  "kind": "select_candidate",
+  "goal": "Catalogue the exact finite extremal common-prefix and path-splice mechanism for the two source-bound routes, with route-contract prerequisites and all outcomes, before authorization or construction.",
+  "objects": [
+    "G = selected.object with full window-history post-[144] ExactLedger",
+    "fixed two distinct source edges of one matching/star with equal routing label and their fixed demand endpoints",
+    "all admissible simple same-root RoutingConfiguration pairs inside their own pair-specific supports",
+    "the producer-local two-terminal two-arm envelope and physical F/I/boundary incidence partition"
+  ],
+  "reads": [
+    "branch:node144-window-32d32f9d19e7",
+    "P3-window-21-select-two-arm-saturation",
+    "P2-window-22-two-tail-topology",
+    "P2-window-16-attachment-account-audit"
+  ],
+  "interaction": "Crossing of the two first-entry tails in the all-in-F case may permit a same-endpoint, same-support route splice that strictly extends the chosen pair's common prefix.",
+  "parent_payoff": "Eliminate the all-in-F outcome for an extremally selected actual handoff and retain a same-source two-arm envelope with at least one physical chord or exterior fan-neighbour incidence.",
+  "depends_on": [
+    "P3-window-21-select-two-arm-saturation",
+    "P2-window-22-two-tail-topology"
+  ],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase4-extremal-uncrossing.md",
+  "acceptance": "State the finite longest-common-prefix choice over all same-root route configurations for the fixed source pair, not a choice of new source demands. For the all-in-F crossed-tail case construct the exact alternate right route and verify adjacency, simplicity, same root, right endpoint/local buffer, and membership in the right pair's vertex support; show the prefix strictly increases. Catalogue the parallel/sparse-exit case and the remaining I-or-boundary outcome, including disconnected core, equal terminals, route overlap, and no charge claim. Compare against prior component-return and route-Menger attempts. No Lean construction or move credit yet.",
+  "on_failure": "If the alternate route fails any RoutingConfiguration field, retain that exact failure as an outcome; do not infer a support-boundary cost or erase the original handoff."
+}

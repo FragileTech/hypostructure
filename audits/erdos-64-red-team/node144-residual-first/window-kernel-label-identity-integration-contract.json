@@ -1,0 +1,36 @@
+{
+  "id": "P7-window-103-kernel-integrate-label-identity",
+  "mode": "FORMALIZE",
+  "phase": "7",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-extremal-two-tail-uncrossing",
+  "kind": "review_integration",
+  "goal": "Integrate the accepted pointwise profile equality into the saved whole routing-label proof. Prove and kernel-check the single owner-local identity sameTokenActualRoutingLabel = original routingLabel on the identical retained certified pattern/pair/demand context. Insert the accepted profile proof without rederiving it, then compare the unchanged remaining tuple coordinates. Record how this identity preserves the same equal-label source pair and fixed supports for the pending producer. Do not implement the owner or choose another move.",
+  "objects": [
+    "selected : EGInput; G = selected.object : finite graph with the registered baseline",
+    "handoff witnesses active_h, capacity_h, certified_h, token_h, role_h, pattern_h on G within one K.typeBHandoff proposition",
+    "handoff witnesses packing_h, core_h, envelope_h on G within one SameTokenTypeBHandoffEnvelopeStatement",
+    "class-audit witnesses active_a, capacity_a and selected windowIncidence token/role on G; equality with handoff witnesses is not asserted",
+    "capacity-token ledger witnesses active_t, capacity_t on G; equality with handoff witnesses is not asserted"
+  ],
+  "reads": [
+    "branch:node144-window-32d32f9d19e7",
+    "P6-window-102-kernel-pointwise-profile",
+    "P1-window-97-routing-label-transport",
+    "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+    "audits/erdos-64-red-team/node144-residual-first/window-routing-label-source.txt",
+    "audits/erdos-64-red-team/node144-residual-first/window-reduction-acceptance.json",
+    "audits/erdos-64-red-team/node144-residual-first/window-record-attempts/ebd3bd6b381746ee9967532895ac82c3/executor/artifact/audits/erdos-64-red-team/node144-residual-first/window-kernel-routing-label-identity.md",
+    "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+    "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+    "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean"
+  ],
+  "interaction": "The new named descriptor and the original local label must describe the same selected pair and its true degree profiles",
+  "parent_payoff": "Preserve the exact source pair and fixed supports used by extremal common-prefix uncrossing: parallel closes by the retained sparse-exit exclusion, all-in-skeleton contradicts maximality using the cubic neighbours, and the survivor retains the forced non-skeleton edge on that identical handoff. The named label is only a prerequisite for this exact reduction.",
+  "depends_on": [
+    "P6-window-102-kernel-pointwise-profile"
+  ],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-kernel-label-identity-integration.md",
+  "acceptance": "One complete, kernel-checked typed local label-identity proof suitable for insertion in sameTokenBottleneckRoutingRow. Preserve literal source definitions, all seven coordinates and fallback semantics on the same domain. The pointwise result is reused; remaining tuple integration is checked. Include source hashes, exact proof/context and successful check. Phase7 records that no object/account changes or additional structural payoff arise from this equality; the source-bound producer remains the next obligation.",
+  "on_failure": "Repair routine tactic/typing/elaboration issues within this single identity. Stop only at a genuinely missing mathematical inference and give its exact immediate subobligation. Use the hash-verified complete /runtime/current-vocabulary package first in LEAN_PATH; do not rebuild it. Use python3; save candidate proof and diagnostics in the allowed artifact before returning. Omit unsupported pp.maxDepth."
+}

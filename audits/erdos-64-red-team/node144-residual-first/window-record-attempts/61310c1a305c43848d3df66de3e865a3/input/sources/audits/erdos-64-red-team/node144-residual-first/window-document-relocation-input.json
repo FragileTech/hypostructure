@@ -1,0 +1,76 @@
+{
+  "reason": "Exact-byte archival relocation after workflow-context-only edit; no proof output or verdict changed",
+  "relocations": [
+    {
+      "task_id": "P3-window-03-select-source-separator",
+      "old_path": "tools/methodology_gate/policy/workflow.json",
+      "archive_path": "tools/methodology_gate/evidence_snapshots/9b3ae2690229ca606e7bf75828fbe51e9171dea043a34b32394bd8db40aead0a",
+      "sha256": "9b3ae2690229ca606e7bf75828fbe51e9171dea043a34b32394bd8db40aead0a",
+      "locator": "phase_descriptions 3 and 5; phase_tasks 3"
+    },
+    {
+      "task_id": "P3-window-03-select-source-separator",
+      "old_path": "tools/methodology_gate/policy/workflow.json",
+      "archive_path": "tools/methodology_gate/evidence_snapshots/9b3ae2690229ca606e7bf75828fbe51e9171dea043a34b32394bd8db40aead0a",
+      "sha256": "9b3ae2690229ca606e7bf75828fbe51e9171dea043a34b32394bd8db40aead0a",
+      "locator": "phase_descriptions 3 and 5; phase_tasks 3"
+    },
+    {
+      "task_id": "P3-window-03-select-source-separator",
+      "old_path": "tools/methodology_gate/policy/workflow.json",
+      "archive_path": "tools/methodology_gate/evidence_snapshots/9b3ae2690229ca606e7bf75828fbe51e9171dea043a34b32394bd8db40aead0a",
+      "sha256": "9b3ae2690229ca606e7bf75828fbe51e9171dea043a34b32394bd8db40aead0a",
+      "locator": "taskflow.phase_tasks.3; taskflow.phase_descriptions.3 and .5"
+    },
+    {
+      "task_id": "P4-window-06-edge-menger-statement",
+      "old_path": "repair_and_closure.md",
+      "archive_path": "tools/methodology_gate/evidence_snapshots/acd2eebe8a315723f4d5c6c7ee12b614d8c93d2260d96e303c088d7164ddfef6",
+      "sha256": "acd2eebe8a315723f4d5c6c7ee12b614d8c93d2260d96e303c088d7164ddfef6",
+      "locator": "Menger linkage-separator dichotomy with no consumer is not a reduction, line 431"
+    },
+    {
+      "task_id": "P4-window-06-edge-menger-statement",
+      "old_path": "repair_and_closure.md",
+      "archive_path": "tools/methodology_gate/evidence_snapshots/acd2eebe8a315723f4d5c6c7ee12b614d8c93d2260d96e303c088d7164ddfef6",
+      "sha256": "acd2eebe8a315723f4d5c6c7ee12b614d8c93d2260d96e303c088d7164ddfef6",
+      "locator": "Menger without consumers is not a reduction, line 431"
+    },
+    {
+      "task_id": "P4-window-06-edge-menger-statement",
+      "old_path": "repair_and_closure.md",
+      "archive_path": "tools/methodology_gate/evidence_snapshots/acd2eebe8a315723f4d5c6c7ee12b614d8c93d2260d96e303c088d7164ddfef6",
+      "sha256": "acd2eebe8a315723f4d5c6c7ee12b614d8c93d2260d96e303c088d7164ddfef6",
+      "locator": "section 4: Menger alternatives without consumers do not reduce the residual"
+    },
+    {
+      "task_id": "P5-window-03-check-terminal-significance",
+      "old_path": "repair_and_closure.md",
+      "archive_path": "tools/methodology_gate/evidence_snapshots/acd2eebe8a315723f4d5c6c7ee12b614d8c93d2260d96e303c088d7164ddfef6",
+      "sha256": "acd2eebe8a315723f4d5c6c7ee12b614d8c93d2260d96e303c088d7164ddfef6",
+      "locator": "a Menger dichotomy without consumers is not a reduction, around line 431"
+    },
+    {
+      "task_id": "P5-window-03-check-terminal-significance",
+      "old_path": "repair_and_closure.md",
+      "archive_path": "tools/methodology_gate/evidence_snapshots/acd2eebe8a315723f4d5c6c7ee12b614d8c93d2260d96e303c088d7164ddfef6",
+      "sha256": "acd2eebe8a315723f4d5c6c7ee12b614d8c93d2260d96e303c088d7164ddfef6",
+      "locator": "lines 418-435: every outcome needs a consumer; Menger without consumers is not branch reduction"
+    },
+    {
+      "task_id": "P5-window-03-check-terminal-significance",
+      "old_path": "tools/methodology_gate/policy/workflow.json",
+      "archive_path": "tools/methodology_gate/evidence_snapshots/9b3ae2690229ca606e7bf75828fbe51e9171dea043a34b32394bd8db40aead0a",
+      "sha256": "9b3ae2690229ca606e7bf75828fbe51e9171dea043a34b32394bd8db40aead0a",
+      "locator": "taskflow.units.move and phase_descriptions.5: reviewed productive payoff on the exact residual is required"
+    },
+    {
+      "task_id": "P5-window-03-check-terminal-significance",
+      "old_path": "repair_and_closure.md",
+      "archive_path": "tools/methodology_gate/evidence_snapshots/acd2eebe8a315723f4d5c6c7ee12b614d8c93d2260d96e303c088d7164ddfef6",
+      "sha256": "acd2eebe8a315723f4d5c6c7ee12b614d8c93d2260d96e303c088d7164ddfef6",
+      "locator": "section 4: Menger alternatives without consumers are not a reduction"
+    }
+  ],
+  "backup": "audits/erdos-64-red-team/node144-residual-first/window-record-before-context-isolation.json"
+}

@@ -1,0 +1,76 @@
+{
+  "task_id": "P6-window-95-install-source-bound-predicate",
+  "sessions": [
+    "77d571dacd5f4b14a62d7dfe88bf47e5",
+    "e08d74a0ac7d4c099e99104487a47367",
+    "abdcea8d544b44c8ba65b8715c5b7af4"
+  ],
+  "input_hash": "0e23e65fdb1c0846214198a1c18651505d943fd6bc5a67a4f5572b03c428872e",
+  "submission_hash": "cf5b5736598ff058e6637ad82980cd99a1980db1f78031709150a0f5515c9dd8",
+  "reviews": [
+    {
+      "reviewer": "e08d74a0ac7d4c099e99104487a47367",
+      "decision": "accept",
+      "reason": "The single changed proposition realizes the accepted source-bound schema in both routed matching and star alternatives: it preserves the certified activation, token, role and quantitative clauses, binds distinct equal-actual-label pairs and fixed demands, universally maximizes the same-support routes with fixed endpoints, retains the first separator and first-entry arms, and equates its sole envelope to the existing constructor before requiring an escape outside that envelope\u2019s skeleton. All constructor proof arguments are retained. The cubic equality is available from the retained baseline as prescribed by the accepted label integration. The same capacity packing supplies validity and maximality for the forgetful envelope projection; separate audit witnesses are not identified. The original accepted routing-label definition is unchanged, and no axiom, sorry, callback, owner construction or payoff claim was added. Independent full-file Lean elaboration succeeded against the supplied compiled dependencies. Acceptance is limited to this definition-only obligation.",
+      "evidence": [
+        {
+          "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+          "sha256": "46b2cfd88ca9bd71826111c46b392e9a60d86d14fee505fe64a4714546439052",
+          "locator": "SameTokenTypeBHandoffStatement, lines 4067\u20134198; Holds typeBHandoff, line 11946. Diff against preserved input is confined to this definition and its docstring. Independently compiled with /runtime/lean/bin/lean and mounted compiled imports: exit 0, only unchanged-code warnings."
+        },
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-source-bound-schema.md",
+          "sha256": "7227c51d13fb8652428a8d89bac115bb5e89b4f8de9452bd6c5781bd91f7dbe6",
+          "locator": "Scoped proposition: Routed, Max, SourceEnvelope, FirstEntryPrefix, constructor equality and physical skeleton escape."
+        },
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-routing-label-integration.md",
+          "sha256": "8859915217d22afb56fbc8ea8a8dfcb594b0e3790f4af60f54f454fa69d68a9e",
+          "locator": "Scope and exact substitution; Exact input for the pending definition, including retained cubic baseline and dependent membership arguments."
+        },
+        {
+          "path": "hypostructure/Hypostructure/Graph/DecoratedHandoffEnvelope.lean",
+          "sha256": "833664e35fcf0db62862bb28ed398f0836922f4ced97fa57f5414a089020872c",
+          "locator": "envelopeOfFirstSeparator, lines 1115 onward: exact constructor arguments and core, decorations, assigned neighbours and arms."
+        },
+        {
+          "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+          "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+          "locator": "CapacityPresentation packingValid/packingMaximal, lines 75\u201381; HomogeneousBottleneckPatternStatement, lines 623\u2013677."
+        }
+      ]
+    },
+    {
+      "reviewer": "abdcea8d544b44c8ba65b8715c5b7af4",
+      "decision": "accept",
+      "reason": "The definition implements the accepted source-bound schema on the declared retained residual. Both routed alternatives preserve the certified source, quantitative clauses, actual equal-label pair and fixed demands; maximality ranges over all configurations with those same supports and endpoints. First-entry arms and all existing constructor arguments bind one envelope, and escape is measured against that identical envelope\u2019s skeleton. The retained cubic equality supplies the accepted label input. Only the authorized proposition, local definitional expressions and docstring changed; the preserved input matches its accepted hash. Independent Lean compilation succeeded. Acceptance is solely for this definition, with no owner construction or branch payoff asserted.",
+      "evidence": [
+        {
+          "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+          "sha256": "46b2cfd88ca9bd71826111c46b392e9a60d86d14fee505fe64a4714546439052",
+          "locator": "SameTokenTypeBHandoffStatement, lines 4067\u20134198; Holds binding at line 11946. Diff against preserved input changes only this declaration and its docstring. Independent full-file Lean compilation with mounted compiled dependencies exited 0; only unchanged-code warnings."
+        },
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-source-bound-schema.md",
+          "sha256": "7227c51d13fb8652428a8d89bac115bb5e89b4f8de9452bd6c5781bd91f7dbe6",
+          "locator": "Scoped proposition: Routed, Max, SourceEnvelope, FirstEntryPrefix, constructor equality, and same-envelope physical escape."
+        },
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-routing-label-integration.md",
+          "sha256": "8859915217d22afb56fbc8ea8a8dfcb594b0e3790f4af60f54f454fa69d68a9e",
+          "locator": "Scope and exact substitution; Exact input for the pending definition, including retained cubic equality and dependent actual-label inputs."
+        },
+        {
+          "path": "hypostructure/Hypostructure/Graph/DecoratedHandoffEnvelope.lean",
+          "sha256": "833664e35fcf0db62862bb28ed398f0836922f4ced97fa57f5414a089020872c",
+          "locator": "envelopeOfFirstSeparator, lines 1115\u20131253: constructor proof arguments and definitions of core, decorations, assigned neighbours and arms."
+        },
+        {
+          "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+          "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+          "locator": "CapacityPresentation.packingValid and packingMaximal, lines 75\u201381; HomogeneousBottleneckPatternStatement, lines 623\u2013677."
+        }
+      ]
+    }
+  ]
+}

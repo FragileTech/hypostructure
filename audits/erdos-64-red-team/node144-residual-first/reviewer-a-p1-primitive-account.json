@@ -1,0 +1,31 @@
+{
+  "decision": "accept",
+  "reason": "The primitive submission fixes L to the presented certified ledger existentially carried in one typeBHandoff witness on selected.object. The port-pair schedule has choose(s,2) members and splits exactly into blocked and free pairs. Blocked pairs sum once by token load and then by role fibre. The token supply bounds tokens in token units, and the sandwich bounds free pairs; neither is reused to pay blocked pairs or the handoff envelope. The submission explicitly leaves the original-pair-to-envelope assignment and multiplicity unknown and does not equate witnesses in other Holds keys. The three submitted evidence hashes match current files.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/primitive-phase1-pair-account.md",
+      "sha256": "e24b218e04b24e23b262fbc272789db615c5616f3795a92316a78a31b815adc8",
+      "locator": "one-ledger witness choice; exact pair and token equations; uncharged envelope, paragraphs 1-5"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/CapacityTokenLedger.lean",
+      "sha256": "68f8562a7dae3a3270a969ca0fc9ea1187a6e903ff72ec7c78c03b9a98abb626",
+      "locator": "schedule and sandwich, lines 59-88; blocked/free/load/roleFibre definitions, lines 99-124; blocked_card_eq_sum_load, free_card_le_entropyBudget, blocked_card_add_free_card, load_eq_sum_roleFibre, lines 143-166"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+      "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+      "locator": "scheduleCard, sandwich, token supply, lines 268-286; presented and tokens_card_le, lines 293-314; certified ledger and source pattern witness, lines 344-353 and 623-647"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "SameTokenTypeBHandoffEnvelopeStatement and SameTokenTypeBHandoffStatement, lines 3944-3979"
+    },
+    {
+      "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Strict/Dependent.lean",
+      "sha256": "5ffb28da8eb6034712de72078b2dde4474de5ebc616731a1933abaeab2d7ca5d",
+      "locator": "primitive audited history routed to selectedBottleneckDischarge, lines 310-329"
+    }
+  ]
+}

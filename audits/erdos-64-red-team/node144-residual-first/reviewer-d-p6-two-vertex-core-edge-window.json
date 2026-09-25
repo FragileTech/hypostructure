@@ -1,0 +1,27 @@
+{
+  "reviewer": "phase6_two_vertex_core_edge_review_d",
+  "decision": "accept",
+  "reason": "The local coreEdgeSet enumerates exactly undirected selected-graph edges whose two endpoints lie in its support: its filter requires object.graph.Adj first second. The proof expands an arbitrary member of coreEdgeSet {left,right}, splits each endpoint into the two named vertices, rejects both equal-endpoint cases using simple-graph irreflexivity, and identifies the two cross cases with the same Sym2 edge s(left,right), using the swap equality for the reverse order. If the named endpoints coincide or are nonadjacent, no actual edge enters the set; connectedness is never assumed. Both producer arms use core={left.2,right.2} in the same actual envelope skeleton. The owner hash matches the submission and the result reports passing owner and caller checks. First-entry singleton, crossing, physical escape, cap, move credit and closure remain unproved.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-two-vertex-core-edge-contract.json",
+      "sha256": "f7d30f39215037fedc9a9f0b6f17af7ee8c92a3197a50c7fb5efe25f787567a5",
+      "locator": "P6-window-39 exact two-vertex core-edge property and limits"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-two-vertex-core-edge-result.json",
+      "sha256": "5a19ff4754804d4d11f6c5fc5a82168351c4e2a38c109e7476ac3fc46ab78c23",
+      "locator": "submitted status, source hash and remaining first-entry obligation"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-two-vertex-core-edge.md",
+      "sha256": "94b7b3a2b18406aaa85cad653c3032f3abd831ed052eac5505d24e5e52cc342e",
+      "locator": "degenerate/nonadjacent cases and no-escape claims"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "9c58f7093f09f42376997e319537c45155eb53a30cb091fc0b45956e80ee7a11",
+      "locator": "lines 700-735 induced coreEdgeSet and coreEdgeSet_two_vertex; actual envelope uses at 2412-2418 and 3323-3329"
+    }
+  ]
+}

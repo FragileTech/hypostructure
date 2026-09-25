@@ -1,0 +1,27 @@
+{
+  "id": "P4-window-07-terminal-index-prerequisite",
+  "mode": "AUDIT",
+  "phase": "4",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-full-route-menger-candidate",
+  "kind": "match_prerequisite",
+  "goal": "Check one prerequisite for turning edge-Menger linkage in H into source-wide progress: whether distinct edges of the actual matching-or-star pattern have certified distinct non-root route terminal vertices.",
+  "objects": [
+    "one source pattern P and all demand configurations inside the same typeBHandoff witness on selected.object G",
+    "terminal map d to d.2 and T_plus = {d.2 from source routes} without common root rho",
+    "the route-union subgraph H used in the catalogued edge-Menger dichotomy"
+  ],
+  "reads": [
+    "branch:node144-window-32d32f9d19e7",
+    "P4-window-06-edge-menger-statement",
+    "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+    "hypostructure/Hypostructure/Graph/MatchingStar.lean",
+    "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean"
+  ],
+  "interaction": "matching-or-star distinctness of unordered demand pairs versus terminal vertices of their declared routes",
+  "parent_payoff": "Distinct non-root terminal indexing would be needed before a linkage count could charge original source pairs; it is not assumed.",
+  "depends_on": ["P4-window-06-edge-menger-statement"],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase4-terminal-index.md",
+  "acceptance": "State the exact source pattern distinctness and terminal projection; classify source-edge-to-terminal injectivity and non-root status as established, missing, or contradicted in both matching and star forms. An abstract combinatorial example may test logical strength but must not be called a full graph counterexample. Do not add an endpoint injection, choose k, or claim a Menger payoff.",
+  "on_failure": "Keep the first missing source-index-to-terminal implication explicit and retain all original pairs and the root-terminal exception."
+}

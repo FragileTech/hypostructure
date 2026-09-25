@@ -1,0 +1,49 @@
+{
+  "status": "SUBMITTED_RESULT",
+  "output": "audits/erdos-64-red-team/node144-residual-first/window-document-relocation-audit.md",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-document-relocation-input.json",
+      "sha256": "7eb9b228642d6e718c595d19add9f866ad640c232e9aa43e66222bdb83a5bd75",
+      "locator": "reason; relocations[0:10] (all ten entries); backup"
+    },
+    {
+      "path": "repair_and_closure.md",
+      "sha256": "437e624d8a873808d02b470220ede27fb903da98750b998da1fae77defc52aab",
+      "locator": "entire byte stream; lines 202\u2013205 and 422\u2013439, especially 433, 435 and 439"
+    },
+    {
+      "path": "tools/methodology_gate/evidence_snapshots/9b3ae2690229ca606e7bf75828fbe51e9171dea043a34b32394bd8db40aead0a",
+      "sha256": "9b3ae2690229ca606e7bf75828fbe51e9171dea043a34b32394bd8db40aead0a",
+      "locator": "entire byte stream; taskflow.units.move; taskflow.phase_tasks.3; taskflow.phase_descriptions.3 and .5; taskflow.worker_instruction"
+    },
+    {
+      "path": "tools/methodology_gate/evidence_snapshots/acd2eebe8a315723f4d5c6c7ee12b614d8c93d2260d96e303c088d7164ddfef6",
+      "sha256": "acd2eebe8a315723f4d5c6c7ee12b614d8c93d2260d96e303c088d7164ddfef6",
+      "locator": "entire byte stream; insertion boundary after line 201; lines 418\u2013435, especially 429 and 431"
+    },
+    {
+      "path": "tools/methodology_gate/policy/workflow.json",
+      "sha256": "c5a45123dfd5c1e625ff5977c9d8b27be727e8296f66c4bd58e1b49160908e56",
+      "locator": "entire byte stream; taskflow.worker_instruction; taskflow.context_policy; rule; accepted_stage_rule"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-document-relocation-audit.md",
+      "sha256": "05261457d3ce92cf76ac03b40eeb1231eeb9b097b95dfbdb8026554918eef124",
+      "locator": "designated task artifact"
+    }
+  ],
+  "implementation_status": "none",
+  "first_missing_inference": "",
+  "immediate_subobligations": [],
+  "metadata": {
+    "structural_use": null,
+    "interaction": null,
+    "changed_objects": [],
+    "changed_accounts": [],
+    "side_observations": [
+      "The ten relocation entries contain repeated references to two byte-identical archives.",
+      "The relocation input names a backup outside the declared reads; it was not inspected."
+    ]
+  }
+}

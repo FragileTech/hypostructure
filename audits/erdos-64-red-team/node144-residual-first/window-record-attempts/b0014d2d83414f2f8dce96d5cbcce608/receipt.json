@@ -1,0 +1,36 @@
+{
+  "task_id": "P6-window-101-kernel-routing-label-identity",
+  "sessions": [
+    "8da42b4d13b34329853064c2ea30c9ea",
+    "bc6cbc2604cf49b086c26207221f7445",
+    "33b71d8ca6544400b93d54a9b3c40bf1"
+  ],
+  "input_hash": "b359e779b9f5dc04a99df1e8c58a6ca2f62759c4be88345a754317de8df997e2",
+  "submission_hash": "609f9b3bcec3dd5835e718eccd3d76f28b2bba277a291bed2a32f9c95de74467",
+  "reviews": [
+    {
+      "reviewer": "bc6cbc2604cf49b086c26207221f7445",
+      "decision": "reject",
+      "reason": "The submission is BLOCKED_WITH_REASON and does not complete the required kernel check. The recorded narrow Lean invocation exited 1 during import resolution, before elaborating the saved candidate, because WindowAttachmentShadow.olean was unavailable under the first runtime root. The owner-local label_identity remains explicitly unvalidated. The first outstanding obligation is successful kernel validation of the exact same-witness retained-domain routing-label equality, using the literal original local definitions and pinned current vocabulary. The accepted mathematical transport remains a premise; this import failure is not evidence that the identity is false.",
+      "evidence": [
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-kernel-routing-label-identity.md",
+          "sha256": "944444b4d9928a041292f98712ae8d6ecc6805afa6af16fddc7e127abd5abf0e",
+          "locator": "Lines 3\u201317 (blocked status and exact unresolved identity); lines 19\u201344 (narrow check exit 1 before elaboration); lines 188\u2013292 (unvalidated owner-local candidate)."
+        }
+      ]
+    },
+    {
+      "reviewer": "33b71d8ca6544400b93d54a9b3c40bf1",
+      "decision": "reject",
+      "reason": "The submission is BLOCKED_WITH_REASON and does not complete the required kernel check. Its recorded Lean invocation exited 1 during import resolution because WindowAttachmentShadow.olean was missing from the first runtime root; the candidate was never elaborated and no candidate object file was produced. The exact same-witness owner-local routing-label identity therefore remains unvalidated against the pinned current vocabulary and literal original definitions. The preserved candidate and accepted seven-coordinate mathematical transport do not supply the required kernel validation. This import failure is not evidence that the identity is false.",
+      "evidence": [
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-kernel-routing-label-identity.md",
+          "sha256": "944444b4d9928a041292f98712ae8d6ecc6805afa6af16fddc7e127abd5abf0e",
+          "locator": "Status; Exact unresolved identity and domain; Narrow check diagnostics (exit status 1 before elaboration); Preserved saved candidate \u2014 UNVALIDATED"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "id": "P7-window-54-rank-reconciliation",
+  "mode": "AUDIT",
+  "phase": "7",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-extremal-two-tail-uncrossing",
+  "kind": "reconcile_account",
+  "goal": "Reconcile the reviewed one-unit β(G)−β(F) lower bound with the exact global surplus and disconnected-envelope accounts on the same selected graph.",
+  "objects": ["same selected G with n vertices, m edges and surplus s satisfying 2m=3n+s", "one actual matching/star producer skeleton F and β(F)", "full Phase 2 internal/cut/component ledger with c(F)-1 correction"],
+  "reads": ["branch:node144-window-32d32f9d19e7", "P7-window-53-bridgeless-rank-payment", "P7-window-52-component-dichotomy", "P2-window-relative-cycle-rank", "P2-window-attachment-account-audit"],
+  "interaction": "The same β(G) is both m−n+1=(n+s)/2+1 and β(F) plus physical internal/exterior terms minus c(F)-1; the newly proved rank unit must occupy exactly one net part of this existing total.",
+  "parent_payoff": "Record the legitimate account balance and show exactly what is and is not available to spend against the strict source pattern count.",
+  "depends_on": ["P7-window-53-bridgeless-rank-payment"],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase7-rank-reconciliation.md",
+  "acceptance": "Verify β(G)=(n+s)/2+1 from retained connectedness and 2m=3n+s, reconcile β(G)≥β(F)+1 to β(F)≤(n+s)/2, and keep the exact Phase 2 decomposition including c(F)-1. Explain why a rank unit for one chosen envelope cannot be counted once per source pair or used as a homogeneous cap, and identify the actual missing bounded-multiplicity/upper-bound consumer. No new closure or unproved graph count.",
+  "on_failure": "Name a mismatched graph, unit, parity, component correction or duplicate charge and return to the first defective rank step."
+}

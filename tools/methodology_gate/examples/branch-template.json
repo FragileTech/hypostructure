@@ -1,0 +1,12 @@
+{
+  "id": "replace-with-open-branch-id",
+  "revision": "replace-with-semantic-branch-revision",
+  "source_revision": "replace-with-source-commit-or-snapshot-id",
+  "endpoint": "replace-with-exact-unchanged-proposition",
+  "incoming": "replace-with-one-tagged-producer-and-path-condition",
+  "objects": ["replace-with-actual-object-identity-and-domain"],
+  "minimality": "replace-with-exact-order-or-empty-string",
+  "imports": [],
+  "accounts": [],
+  "open_outcomes": ["replace-with-current-outcome-id"]
+}

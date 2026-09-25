@@ -1,0 +1,32 @@
+{
+  "reviewer": "phase6_skeleton_review_d",
+  "decision": "accept",
+  "reason": "The local armEdgeSet is the undirected edge set of consecutive list vertices and is empty on a zero arm; coreEdgeSet contains exactly the selected graph edges with both endpoints in the given core, including equal or nonadjacent terminals. In each matching and star first-separator branch, skeleton is defined from the actual constructed envelope. Its kernel-checked skeletonEq reduces that envelope to the existing first-entry armLeft/armRight and core, using nextLeft \u2260 nextRight for the right arm projection. Finset union correctly handles overlapping arms and repeated physical edges. The owner hash matches the submission; the result records successful owner and direct caller checks. The code adds only local definitions and identities and makes no all-in-skeleton, outside-edge, cap, move, or closure assertion. The first conditional crossing inference remains open.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-skeleton-contract.json",
+      "sha256": "b60631eaa436ca168d21ce385f4970cd8b644ddfb01445241b8933f3bdc78638",
+      "locator": "P6-window-33 acceptance and exact scope"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-skeleton-result.json",
+      "sha256": "7c3fe4098a2a9d9d3e4f29fbba51e156df487400bc97c8b608b854cdbc2796d8",
+      "locator": "submission evidence and missing crossing inference"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-skeleton.md",
+      "sha256": "8e9d3a184b04cef9e20cac78b26716206872036eafd22c1952448dba06f40af3",
+      "locator": "edge definitions, matching/star identities and no escape claim"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "64f7829b59c5587c6bddff58b80ba12f233ee26a8e295c4e255c7c828d68bb75",
+      "locator": "lines 642-654 armEdgeSet/coreEdgeSet; 2316-2342 and 3227-3253 actual envelope, skeleton and skeletonEq"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/DecoratedHandoffEnvelope.lean",
+      "sha256": "833664e35fcf0db62862bb28ed398f0836922f4ced97fa57f5414a089020872c",
+      "locator": "lines 1115-1165 constructor core and arm projections"
+    }
+  ]
+}

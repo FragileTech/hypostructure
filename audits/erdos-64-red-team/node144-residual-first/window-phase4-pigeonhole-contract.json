@@ -1,0 +1,28 @@
+{
+  "id": "P4-window-01-pigeonhole-statement",
+  "mode": "AUDIT",
+  "phase": "4",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "candidate-source-indexed-handoff",
+  "kind": "state_textbook_move",
+  "goal": "State the exact finite-label pigeonhole mechanism used to select two original same-label source edges on the window [144a] pattern, with its hypotheses and conclusion.",
+  "objects": [
+    "G = selected.object on the window strict-surplus handoff",
+    "the actual certified selected matching/star P inside one token/role fibre",
+    "the routing label map on edges of P and finite alphabet Label"
+  ],
+  "reads": [
+    "branch:node144-window-32d32f9d19e7",
+    "P3-window-03-select-source-separator",
+    "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean",
+    "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean"
+  ],
+  "interaction": "large source pattern versus finite routing-label alphabet",
+  "parent_payoff": "Retain two named original edges as inputs to a source-indexed separator and envelope restriction",
+  "depends_on": [
+    "P3-window-03-select-source-separator"
+  ],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase4-pigeonhole.md",
+  "acceptance": "Give the exact source theorem and threshold, identify its actual instantiation on both pattern shapes, and state that no separator, cap or closure follows from this step alone.",
+  "on_failure": "Correct any label-bound or pattern-witness mismatch; retain the original matching/star and window branch."
+}

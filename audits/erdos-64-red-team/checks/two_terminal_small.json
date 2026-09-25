@@ -1,0 +1,86 @@
+[
+  {
+    "order": 4,
+    "c4_free": 0,
+    "connected_c4_free": 0,
+    "target_free": 0,
+    "first_survivor": null,
+    "templates": []
+  },
+  {
+    "order": 6,
+    "c4_free": 0,
+    "connected_c4_free": 0,
+    "target_free": 0,
+    "first_survivor": null,
+    "templates": []
+  },
+  {
+    "order": 8,
+    "c4_free": 360,
+    "connected_c4_free": 360,
+    "target_free": 0,
+    "first_survivor": null,
+    "templates": [
+      {
+        "edges": [
+          [
+            0,
+            2
+          ],
+          [
+            0,
+            3
+          ],
+          [
+            1,
+            4
+          ],
+          [
+            1,
+            5
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            2,
+            6
+          ],
+          [
+            3,
+            5
+          ],
+          [
+            3,
+            7
+          ],
+          [
+            4,
+            6
+          ],
+          [
+            5,
+            7
+          ],
+          [
+            6,
+            7
+          ]
+        ],
+        "labelled_orbit_size": 360,
+        "cycle": [
+          0,
+          2,
+          6,
+          4,
+          1,
+          5,
+          7,
+          3
+        ]
+      }
+    ]
+  }
+]

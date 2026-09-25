@@ -1,0 +1,30 @@
+{
+  "status": "SUBMITTED_RESULT",
+  "output": "Both actual matching and star [144] producer arms now kernel-prove nextLeft∉armRight. A local list theorem gives the old selected prefix common.length+1 and the legal same-source shortcut prefix at least common.length+2; exact head/root and last/right-terminal preservation make the shortcut valid for maximalPrefix. Owner and direct EG caller build. A physical edge outside the skeleton is the next separate inference.",
+  "evidence": [
+    {"path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-crossing-exclusion.md", "sha256": "53e58adb7e57800c9833582e0b6d3e1105c6dcdac5adc08f38f73a99c9d45f93", "locator": "exact prefix comparison, same-source maximality and scope"},
+    {"path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean", "sha256": "9865da1fb22ae4bb2ebb38d476acf11848c4787ff73eb1652734ca4e2c97ddbe", "locator": "prefixGainOfShortcut, strengthened shortcut fields, and both crossingExcluded proofs"}
+  ],
+  "implementation_status": "kernel_checked",
+  "first_missing_inference": "The checked crossing exclusion has not yet been combined with saturatedLeftForcesCrossing to extract a physical incident edge outside the literal skeleton and expose it on the returned handoff.",
+  "immediate_subobligations": [
+    "Derive ∃ edge∈object.graph.incidenceFinset nextLeft, edge∉skeleton in both producer arms from crossingExcluded and saturatedLeftForcesCrossing.",
+    "State the endpoint and source facts of that edge on the actual envelope without replacing the graph or adding a homogeneous cap.",
+    "Determine how the verified attachment restriction is retained in the [144a] ExactLedger handoff; an owner-local fact alone does not narrow the exported residual."
+  ],
+  "metadata": {
+    "structural_use": null,
+    "interaction": {
+      "object": "selected maximal source-specific route pair and actual [144] matching/star armRight",
+      "ingredients": ["nextLeft≠nextRight", "exact first-separator decompositions", "same-typed right shortcut with original root/terminal", "maximalPrefix"],
+      "relation": "A crossing yields an admissible right comparator that improves the selected common-prefix length by at least one, contradicting maximality.",
+      "known": "The unconditional exclusion nextLeft∉armRight kernel-checks in both actual producer arms and direct caller builds.",
+      "unresolved": "Extract and export the physical incident edge outside the exact envelope skeleton.",
+      "domains": "same selected graph, fixed matching/star source pair, original right routing support and terminal, actual core and envelope",
+      "previous_use": "The fixed-source maximal choice had not been applied to a verified legal shortcut induced by the previously uncounted cross-arm attachment profile."
+    },
+    "changed_objects": [],
+    "changed_accounts": [],
+    "side_observations": ["The owner-local crossing exclusion is genuine, but does not alone narrow the exported handoff or close [144a]."]
+  }
+}

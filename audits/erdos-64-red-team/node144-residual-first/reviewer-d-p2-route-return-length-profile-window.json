@@ -1,0 +1,47 @@
+{
+  "reviewer": "phase2_route_return_length_profile_review_d",
+  "decision": "accept",
+  "reason": "The two elementary spectra are well defined on the full pair-indexed route union from one [144a] handoff witness. The finite nonempty common-root route union R supplies a simple R path between each chord's endpoints, and a chord outside E(R) closes that path to a simple cycle of length |Q|+1. For each actual G−T component, connectedness and bridgelessness of G supply at least two distinct boundary edges; internal C and R paths exist and are finite. The note handles equal T landings and equal C endpoints correctly: distinct edges in a simple graph force the opposite endpoints to differ, so the resulting concatenation is still a simple cycle with length |P_C|+2+|Q|. Fan-edge and per-original-pair route-use markers are retained without claiming that a chord or exterior edge lies on a chosen route. Selection already excludes LengthOK for every measured cycle. The submission leaves cycles with multiple components or chords, source reuse, and any payoff unresolved; if there is no exterior component, no return profile is asserted.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-route-return-length-profile-contract.json",
+      "sha256": "ab7c7a6eaddd681085729af563300f94d8f18b96a71c203ad955721778f6cc31",
+      "locator": "acceptance and on_failure for full spectra, degenerate endpoints and limited cycle scope"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-route-return-length-profile-result.json",
+      "sha256": "e4cbc98c3252e8cddf5437c4ca38a28567a1941db197da3cbe83f1993a476573",
+      "locator": "output, missing inference and metadata.interaction"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-route-return-length-profile.md",
+      "sha256": "06b9b0ed82ba76b6f4b3f1c54c7f1335d59708173bdb02ef8f9661855ea131b7",
+      "locator": "lines 3-18: chord spectrum; lines 20-41: one-component returns and equal-landing cases; lines 43-74: markers, inherited target exclusion and limits"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-source-incidence.md",
+      "sha256": "8e8033bd5bc30ce2e80e6a23775f31adf2101fc04f3e7b08b715f9b985f12f8e",
+      "locator": "lines 3-31 and 78-81: same-witness pair-indexed routes and connected union"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-fan-route-rank-cross-tab.md",
+      "sha256": "91e70d064eaf60ffb87db1639aa81c3244f643557c603003a8639bfc25ad987c",
+      "locator": "lines 19-29 and 49-75: fan-edge marker and route/exterior edge distinction"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-all-route-boundary.md",
+      "sha256": "c325522ec6290c900180078e9f4c6a98cd0c798fcbbe066b29e3498a8ca5f7a8",
+      "locator": "lines 3-20: connected route support and genuine G-cut boundary size at least two"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+      "sha256": "113226b2f99eabccb9f3b1f00e1c4ce6eeb474eadf90fdd10099c2003476badd",
+      "locator": "lines 13-26: retained selected graph, bridgelessness and selection"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "selection and HasCycleWithLength/LengthOK target semantics; capacityTokenLedger connectivity"
+    }
+  ]
+}

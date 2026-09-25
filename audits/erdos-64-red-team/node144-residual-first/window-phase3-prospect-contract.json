@@ -1,0 +1,35 @@
+{
+  "id": "P3-window-03-select-source-separator",
+  "mode": "DISCOVER",
+  "phase": "3",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "",
+  "kind": "select_tension",
+  "goal": "Select one supported structural tension on the full window [144a] residual, with a prospective local restriction and serious rival comparison, without treating the prospect as proved payoff.",
+  "objects": [
+    "G = selected.object on the tagged window-incidence strict-surplus arm",
+    "the certified selected matching/star and its source edges, token, role and configurations inside one handoff witness",
+    "the actual high first separator and decorated envelope constructed from two selected source edges in the routing owner"
+  ],
+  "reads": [
+    "branch:node144-window-32d32f9d19e7",
+    "P2-window-01-pair-envelope-interaction",
+    "P2-window-02-routing-coordinate",
+    "P3-window-01-cap-incompatibility",
+    "P3-window-02-rival-comparison",
+    "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+    "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+    "tools/methodology_gate/policy/workflow.json"
+  ],
+  "interaction": "Two original same-label source edges and their declared routes versus the physical first separator and envelope produced on G",
+  "parent_payoff": "A source-indexed high-separator restriction with named original blocked pairs and graph arms, to support later comparison with the remaining pattern configurations",
+  "depends_on": [
+    "P2-window-01-pair-envelope-interaction",
+    "P2-window-02-routing-coordinate",
+    "P3-window-01-cap-incompatibility",
+    "P3-window-02-rival-comparison"
+  ],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase3-prospect.md",
+  "acceptance": "State an exact actual interaction, a plausible local structural consequence, why the route code supports it, and why the direct Type B rival is weaker here; distinguish Phase 3 prospect from Phase 5 proved payoff and preserve the full window residual.",
+  "on_failure": "Return to Phase 2 with the first unsupported source-edge/separator relation; do not infer caps or target cycles from one envelope."
+}

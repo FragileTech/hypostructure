@@ -1,0 +1,47 @@
+{
+  "reviewer": "phase7_skeleton_integration_review_b",
+  "decision": "accept",
+  "reason": "The note keeps the edge set F on the same owner-constructed matching/star envelope and correctly combines its two first-entry arms and induced two-vertex core with the selected cubic neighbours and fixed-source maximal routes. The displayed pair of forall-adjacency clauses is exactly the conditional all-in-F case: centre edges already belong to F, so it tests both non-centre incidences at each selected neighbour. It does not add that condition to Holds. It selects only the first opposite-arm crossing a∈P_b, with zero-arm and core-membership cases, as the next task; the symmetric crossing, splice, escape and same-envelope publication remain pending. Constraint, compression and quantity are evaluated separately, with no payoff or closure claimed.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-skeleton-integration-contract.json",
+      "sha256": "96de9fb9e324beb13875f265dca55fdfffba5c093dd924ee5078dfda8d0d4b30",
+      "locator": "goal, acceptance and on_failure fields"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-skeleton-integration-result.json",
+      "sha256": "a8fcbb706e9be75a1ddb8c7bfc87a551df4c02350e099d705bc56b6d57272d55",
+      "locator": "output, evidence hashes, implementation_status and first_missing_inference"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase7-skeleton-integration.md",
+      "sha256": "b002e78f3557353e97bfe52e78b6843d390249fbf4196e4e468c5fed4150bb97",
+      "locator": "lines 3-19 same-envelope F, selected cubic/maximal data and exact conditional incidence; lines 21-34 single next crossing and separate tests"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-skeleton.md",
+      "sha256": "8e9d3a184b04cef9e20cac78b26716206872036eafd22c1952448dba06f40af3",
+      "locator": "lines 3-24 checked exact arm/core skeleton on the actual envelope"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-cubic-neighbours.md",
+      "sha256": "dec6802283dd3c7321ceef8de12e1b11d62e8c3f058f6ee9e938a2070c2f5089",
+      "locator": "lines 3-17 checked cubic budgets for actual next neighbours"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-max-route-choice.md",
+      "sha256": "5f2da5dc572cf72880ac9b6612b890d46bb4fd9df92da9c8d341b9c08ebdada9",
+      "locator": "lines 3-23 checked fixed-source maximal route choice in both owner arms"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "64f7829b59c5587c6bddff58b80ba12f233ee26a8e295c4e255c7c828d68bb75",
+      "locator": "lines 2316-2344 and 3227-3255 matching/star constructed envelopes, skeletonEq and handoff projection"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "revision, exact window endpoint and retained 50-key scope"
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "reviewer": "phase2_source_attachment_review_b_retry",
+  "decision": "accept",
+  "reason": "The repair uses the source statement's actual quantifier order: one configuration r_(p,d) is chosen for every pair-demand incidence (p,d), inside sameTokenRoutingSupport token p. It does not identify repeated star-demand routes across different pairs or the separate windowClassOverload witness. For each pair, U_p is the set of physical edges in its selected routes; W and its restriction M to the envelope's physical assigned-edge set B have the stated finite row/column double counts, and P_0 retains uncovered pairs. V analogously double-counts pair/component visits. The crossing equality counts each incidence and each used boundary edge once on both sides; parity follows by toggling component membership along each root-to-d.2 path. The full pair-indexed union remains connected through the common root. The note distinguishes fan-assignment multiplicity μ from source-pair multiplicities, allows zero coverage and repeated use, and claims no rank or cap payoff. All cited hashes match current files and the complete window residual supports the same-witness scope.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-source-incidence-contract.json",
+      "sha256": "3967f4b64e21688ff44371e76f90174fa8590d7503609bf51f6d19a1505c8362",
+      "locator": "P2-window-11 acceptance: exact pair-indexed physical-edge/component relations, double counts, uncovered and repeated-use cases"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-source-incidence-result.json",
+      "sha256": "9787ab8061edcd4b58f5d8a000c45fc58c1595ac5c2165f005f1616207fc49d1",
+      "locator": "output, evidence hashes, first missing inference, and metadata.interaction pair-demand indexing"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-source-incidence.md",
+      "sha256": "8e8033bd5bc30ce2e80e6a23775f31adf2101fc04f3e7b08b715f9b985f12f8e",
+      "locator": "lines 3–31 incidence-indexed route choice and W; 33–49 M and P_0; 51–76 V, crossing/parity counts; 78–87 connected union and limits"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+      "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+      "locator": "lines 144–161 pair-dependent routing support; 623–678 routed matching/star with a common root and configuration for every pair-demand incidence"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/CapacityTokenLedger.lean",
+      "sha256": "68f8562a7dae3a3270a969ca0fc9ea1187a6e903ff72ec7c78c03b9a98abb626",
+      "locator": "lines 123–141 role-fibre pairs have cardinality two"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "revision node144-window-32d32f9d19e7, exact post-[144] keys and separate witness identities"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/phase0-evidence.md",
+      "sha256": "113226b2f99eabccb9f3b1f00e1c4ce6eeb474eadf90fdd10099c2003476badd",
+      "locator": "lines 14–26 one handoff witness and distinct class-audit witness; 38–54 window ancestry and complete key index"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-incidence-ledger.md",
+      "sha256": "e1c9b8ec5b090bf9aefd098e4658d5a711269f0ac840f79f1d8ee4297fe34e1c",
+      "locator": "lines 13–47 assignment-indexed D, physical edge set B, and μ bounds distinct from source-pair use"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-all-route-boundary.md",
+      "sha256": "c325522ec6290c900180078e9f4c6a98cd0c798fcbbe066b29e3498a8ca5f7a8",
+      "locator": "lines 3–36 common-root route union, genuine G cut, and relative rank identity; pair-indexed union is likewise connected"
+    }
+  ]
+}

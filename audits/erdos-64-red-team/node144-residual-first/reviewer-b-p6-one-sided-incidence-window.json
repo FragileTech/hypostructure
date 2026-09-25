@@ -1,0 +1,32 @@
+{
+  "reviewer": "phase6_one_sided_incidence_review_b",
+  "decision": "accept",
+  "reason": "The owner proves the conditional one-sided incidence lemma on the actual incidenceFinset: if every edge incident to nextLeft belongs to the selected envelope skeleton, absence from the opposite arm leaves at most the centre edge plus one own-arm or core edge, contradicting the retained degree bound of at least three. The matching and star instantiations use their own selected envelope, first-entry singleton, distinct core endpoints, cubic degree, and exact skeleton equality. Saturation is a premise, not an established [144a] fact; the submission claims no cap, escape, or closure. The direct Assembly.Surplus.Local caller built successfully (8777 jobs).",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-one-sided-incidence-contract.json",
+      "sha256": "aecee731aaebf1ef0ca6765d5a9f820bac9616dcba56f7d37903464b41092b06",
+      "locator": "P6-window-43 acceptance and on_failure"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-one-sided-incidence-result.json",
+      "sha256": "2d5b309897fa82a5b14a56c211ad7d07616c2a777caa55e5ef8c07431e0b97ae",
+      "locator": "task output, metadata, and submitted evidence"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase6-one-sided-incidence.md",
+      "sha256": "d162be17f8fbd733103dd054ce87ea5f5296749d4f14bc9a1ecba78cd96c2bd6",
+      "locator": "lines 3–32: incidence count and conditional scope"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "pinned [144a] window residual"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean",
+      "sha256": "a18379083437a07b4a59edace9f5b24be890ffd2016d325b1536b31fa000787d",
+      "locator": "lines 759–855 (oneSidedSaturationForcesCrossing), 2552–2574 (matching saturatedLeftForcesCrossing), 3497–3519 (star saturatedLeftForcesCrossing)"
+    }
+  ]
+}

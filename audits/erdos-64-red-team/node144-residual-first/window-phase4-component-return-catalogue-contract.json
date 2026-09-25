@@ -1,0 +1,28 @@
+{
+  "id": "P4-window-18-component-return-catalogue",
+  "mode": "DISCOVER",
+  "phase": "4",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-attachment-return",
+  "kind": "state_textbook_move",
+  "goal": "Catalogue the exact actual-graph component-return mechanism for an exterior fan-neighbour edge, its prerequisites, exhaustive landing and no-exterior outcomes, and its novelty relative to the prior route-union Menger attempt.",
+  "objects": [
+    "selected G and one typeBHandoff envelope with S,F,A,D and assigned cubic a",
+    "actual components of G-S and their G-boundary edges",
+    "retained bridgelessness, FanSafe on distinct assigned neighbours, high-centre normal form, target avoidance, and minimality"
+  ],
+  "reads": [
+    "branch:node144-window-32d32f9d19e7",
+    "P3-window-17-select-attachment-tension",
+    "P2-window-07-exterior-cut-interaction",
+    "P2-window-16-attachment-account-audit"
+  ],
+  "interaction": "Trace each genuine assigned-neighbour exterior edge through its actual G-S component to a second attachment, then test where that attachment lands relative to the same fan and envelope.",
+  "parent_payoff": "A payoff is required on every landing/no-exterior outcome before any construction; it must newly exclude an attachment, support a valid compression, or yield effective physical cost.",
+  "depends_on": [
+    "P3-window-17-select-attachment-tension"
+  ],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase4-component-return-catalogue.md",
+  "acceptance": "State the exact bridge-cut and internal-path lemma, its already-proved part versus new return/landing use, the prerequisites in the literal ledger, ordered exhaustive outcomes including no exterior with I/non-I, same-a landing, distinct K_h landing, other S landing, degenerate arms and repeated components. Compare fingerprints with old auxiliary Menger and B1 discharging. Select only for Phase 5 payoff verification, not construction; record missing prerequisites and no automatic FanSafe/target payoff.",
+  "on_failure": "If the mechanism only reproduces the already reviewed second-boundary fact or lacks a plausible noncosmetic consequence on any required outcome, reject it and return to Phase 3 rather than rename it."
+}

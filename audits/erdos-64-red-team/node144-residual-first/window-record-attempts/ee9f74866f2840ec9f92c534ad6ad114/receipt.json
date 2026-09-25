@@ -1,0 +1,66 @@
+{
+  "task_id": "P6-window-102-kernel-pointwise-profile",
+  "sessions": [
+    "44bc1f7ff4014f489267db56eb8e943c",
+    "20c8284a8c224ed1a883c2b27cefc0eb",
+    "7973e66e24ad431bb9bb6b09d9108eab"
+  ],
+  "input_hash": "c5d937e1fb643a5b4bbf74326d007dcdf4c8dbe19d8f5d03be0db5e1544aab1a",
+  "submission_hash": "db6698e5005ca118c7ad9d8d2c4604f7ff2e54f1752546ddbf1a7c4f73b883e3",
+  "reviews": [
+    {
+      "reviewer": "20c8284a8c224ed1a883c2b27cefc0eb",
+      "decision": "accept",
+      "reason": "The exact universally quantified pointwise equality is proved on the retained object, active and cubic witnesses, with hu and index in the original domains. Independent extraction and Lean 4.31.0 checking succeeded with exit status 0, using /runtime/current-vocabulary first in LEAN_PATH; all evidence hashes match and the runtime manifest matches the pinned vocabulary. The literal owner selectedSupport and boundaryProfile and the supplied actualProfile are preserved, including fixed ordered selection, induced degrees and both profile fallbacks. The retained membership proof eliminates the dependent support conditional, and the retained length bound eliminates the inner conditional. Only standard logical axioms are reported; no desired-equality premise, callback or missing inference is introduced. The result is confined to this equality and makes no whole-label, move or branch-closure claim.",
+      "evidence": [
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-kernel-pointwise-profile.md",
+          "sha256": "be6b00be0a68559c55ef5d717e46190ac33a0b190e987c405a6f446347170b16",
+          "locator": "Insertion-ready local proof; Complete checked context and proof term; Kernel-check record"
+        },
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-record-attempts/ebd3bd6b381746ee9967532895ac82c3/executor/artifact/audits/erdos-64-red-team/node144-residual-first/window-kernel-routing-label-identity.md",
+          "sha256": "406daee611c368068a0dab747d43f3c08e5c6ce8e78e83a625c6255a4302f111",
+          "locator": "Saved attempted proof: actualProfile, supportCard, degreeBound and profiles; Exact check diagnostic and unresolved goal"
+        },
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-routing-label-source.txt",
+          "sha256": "8570d28a60a84a9bbb02026e37b39af5fe9b92c59b7e7fb92c2267324b9efe70",
+          "locator": "Owner source lines 889\u2013893, 907\u2013927 and 934\u2013961"
+        },
+        {
+          "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+          "sha256": "46b2cfd88ca9bd71826111c46b392e9a60d86d14fee505fe64a4714546439052",
+          "locator": "Data.BoundaryProfile at lines 399\u2013400; sameTokenActualRoutingLabel at line 3944 onward"
+        }
+      ]
+    },
+    {
+      "reviewer": "7973e66e24ad431bb9bb6b09d9108eab",
+      "decision": "accept",
+      "reason": "The submitted theorem proves exactly the pointwise equality for the same object, active and cubic witnesses, retained excess-port membership, and Fin index. Literal comparison confirms preservation of actualProfile, original boundaryProfile, selectedSupport and both profile fallbacks. The proof eliminates the dependent support conditional with hu, transports the induced-degree expression through support equality, and discharges the ordered-list bound. Independent replay of the unchanged complete Lean block with Lean 4.31.0 and /runtime/current-vocabulary first in LEAN_PATH exited 0; its only axioms are propext, Classical.choice and Quot.sound. All supplied source hashes match. No desired-equality assumption, additional callback, witness identification, missing inference, or claim of whole-label or branch completion is introduced.",
+      "evidence": [
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-kernel-pointwise-profile.md",
+          "sha256": "be6b00be0a68559c55ef5d717e46190ac33a0b190e987c405a6f446347170b16",
+          "locator": "Insertion-ready local proof; Complete checked context and proof term; Kernel-check record"
+        },
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-record-attempts/ebd3bd6b381746ee9967532895ac82c3/executor/artifact/audits/erdos-64-red-team/node144-residual-first/window-kernel-routing-label-identity.md",
+          "sha256": "406daee611c368068a0dab747d43f3c08e5c6ce8e78e83a625c6255a4302f111",
+          "locator": "Exact target and retained domain; Saved attempted proof: actualProfile and profiles"
+        },
+        {
+          "path": "audits/erdos-64-red-team/node144-residual-first/window-routing-label-source.txt",
+          "sha256": "8570d28a60a84a9bbb02026e37b39af5fe9b92c59b7e7fb92c2267324b9efe70",
+          "locator": "Owner source lines 889\u2013893, 907\u2013927, 934\u2013961"
+        },
+        {
+          "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+          "sha256": "46b2cfd88ca9bd71826111c46b392e9a60d86d14fee505fe64a4714546439052",
+          "locator": "Current vocabulary imported by checkedPointwiseProfile; full-file hash matches runtime manifest"
+        }
+      ]
+    }
+  ]
+}

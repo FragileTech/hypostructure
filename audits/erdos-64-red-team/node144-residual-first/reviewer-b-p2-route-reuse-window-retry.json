@@ -1,0 +1,37 @@
+{
+  "reviewer": "phase2_route_reuse_review_b_retry",
+  "decision": "accept",
+  "reason": "The repaired result now matches the retained RoutingConfiguration fields: every vertex of a selected route lies in its pair-specific sameTokenRoutingSupport, while only its endpoint v is required to lie in localBuffer(d). The note partitions all pair-demand incidences by terminal and equality of ordered simple paths, giving the exact |I_P| and |I_v| sums and the separate source-pair count σ_v(q)≤ν_v(q). It preserves repeated star-demand incidences and distinct demands with the same terminal without identifying their routes or buffers. It states both one-route and multiple-route cases as observables, and infers no reuse bound, cycle-rank charge, target cycle, or closure. The corrected metadata and all cited hashes match current files.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-route-reuse-support-profile-contract.json",
+      "sha256": "ce8bb524a7ad991e297d68ed9316ed22ae75b5130be551f73939a0213e00494a",
+      "locator": "P2-window-14 acceptance: terminal route classes, multiplicity sums, pair-support intersections, star distinction"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-route-reuse-support-profile-result.json",
+      "sha256": "74500b1df30f87d0271a020e6ea212a337f077772c3c270732a87bb4e09fd68d",
+      "locator": "output and corrected metadata.interaction.relation: whole route in routing supports, terminal in local buffers"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase2-route-reuse-support-profile.md",
+      "sha256": "70de5f9b06984ad1ed4bcda55a225f378ae8b16b14bb92f828cfe095458380aa",
+      "locator": "lines 13–43 ordered-route classes and sums; 45–60 exact support/buffer inclusions; 62–83 star, diversity, and payoff limits"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+      "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+      "locator": "lines 144–161 pair-dependent routing support; 651–678 route configuration for each pair-demand incidence"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean",
+      "sha256": "cca0d7a8a6d32968b3bd01a9ea3b0a6fb0fa119a7f1380d98610c29815087e31",
+      "locator": "RoutingConfiguration lines 229–243: inside includes all route vertices, lands includes only terminal"
+    },
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-branch.json",
+      "sha256": "e2441cac9d3520ea671016d5f9296d42aeb5c3b8a0f202b305adb5d5ad7e9f26",
+      "locator": "revision node144-window-32d32f9d19e7, one handoff witness and separate class-audit witnesses"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "status": "SUBMITTED_RESULT",
+  "output": "Proved the finite-set conditional B and O imply G_term. Matching disjoint two-demand edges give |D|=2|P|; star edges around a common demand give |D|=|P|+1. Both yield |D|≥Q_geom+2. The disjoint terminal fibres partition D and each has at most three elements by O, so 3|T|≥|D|. Since Q_geom≥2, |T|≥2 and at least one terminal differs from the common root. This is a mathematical conditional proof only; it neither constructs O in Lean nor authorizes a move.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/window-phase5-terminal-inference.md",
+      "sha256": "512fab6c0752a0a81964411bccfd4d654232ec286d257f9ba8ed54de4ed510f1",
+      "locator": "matching and star cardinality proofs, terminal partition, Q bound, root deletion"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/MatchingStar.lean",
+      "sha256": "33fcaa54df0c7b45b517149a2c2db25c384474361d803686ddb9335155424240",
+      "locator": "matching and star predicates, lines 54-62"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+      "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+      "locator": "pattern size and routes on the same handoff witness, lines 623-682"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/SameTokenRoutingGerms.lean",
+      "sha256": "cca0d7a8a6d32968b3bd01a9ea3b0a6fb0fa119a7f1380d98610c29815087e31",
+      "locator": "routing alphabet Fin 2 coordinate and Q+1 pattern bound, lines 81-112"
+    }
+  ],
+  "implementation_status": "none",
+  "first_missing_inference": "",
+  "immediate_subobligations": [],
+  "metadata": {
+    "structural_use": null,
+    "interaction": null,
+    "changed_objects": [],
+    "changed_accounts": [],
+    "side_observations": []
+  }
+}

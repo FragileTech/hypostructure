@@ -1,0 +1,31 @@
+{
+  "decision": "accept",
+  "reason": "The account fixes L = certified_h.ledger.presented within one primitive-arm typeBHandoff witness on G, and does not identify capacity_h with separate class-audit or capacityTokenLedger existential witnesses. On this same original unordered pair schedule, blocked+free=choose(s,2), blocked=Σ_t load(t)=Σ_{t,r}|roleFibre(t,r)|, free≤entropyBudget, and tokens≤capacityTokenSupply+s follow from the source fields and lemmas. Pair counts, token counts, and the free-side budget are kept in their own units; no token bound is spent a second time as an envelope load or pair payment. The envelope has no proved assignment/multiplicity for all original pairs, which the submission leaves unknown. All three submitted evidence hashes match current bytes.",
+  "evidence": [
+    {
+      "path": "audits/erdos-64-red-team/node144-residual-first/primitive-phase1-pair-account.md",
+      "sha256": "e24b218e04b24e23b262fbc272789db615c5616f3795a92316a78a31b815adc8",
+      "locator": "Single certified handoff ledger; blocked/free split; uncharged envelope paragraphs"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/CapacityTokenLedger.lean",
+      "sha256": "68f8562a7dae3a3270a969ca0fc9ea1187a6e903ff72ec7c78c03b9a98abb626",
+      "locator": "59–87: pair schedule and entropy budget; 102–165: exact blocked/free and token/role equations; 312–318: object port-pair schedule"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/ObjectCapacityLedger.lean",
+      "sha256": "4345cd3ee152618b8ad726d24cd47d23684f80391fb297d1eb2de08800ecc03e",
+      "locator": "268–286: scheduleCard, sandwich and supply; 295–314: presented ledger and token bound; 344–353: certified ledger; 623–650: pattern certified witness"
+    },
+    {
+      "path": "hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean",
+      "sha256": "c0e5ad0a1eb7fb5a9c75bb98117786ac324fa6e609eee3eafb13f6a604cd07a2",
+      "locator": "3944–3979: handoff certified pattern and existential envelope; 11426–11449: separate capacityTokenLedger existential"
+    },
+    {
+      "path": "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Strict/Dependent.lean",
+      "sha256": "5ffb28da8eb6034712de72078b2dde4474de5ebc616731a1933abaeab2d7ca5d",
+      "locator": "310–329: primitive audited history and returned handoff on selected.object"
+    }
+  ]
+}

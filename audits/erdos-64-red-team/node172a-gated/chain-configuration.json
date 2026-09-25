@@ -1,0 +1,19 @@
+{
+  "extra_input_paths": [
+    "audits/erdos-64-red-team/node172a-gated/current-user-direction.md"
+  ],
+  "repair_roots": [
+    "hypostructure/Hypostructure/Graph",
+    "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG"
+  ],
+  "lean_projects": [
+    {
+      "root": "hypostructure",
+      "cache": "/runtime/build-cache"
+    },
+    {
+      "root": "proofs/hypostructure_erdos_64_eg",
+      "framework_dependency": "hypostructure"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "id": "P7-window-42-first-entry-singleton-integration",
+  "mode": "DISCOVER",
+  "phase": "7",
+  "branch_revision": "node144-window-32d32f9d19e7",
+  "move_id": "M-window-extremal-two-tail-uncrossing",
+  "kind": "review_integration",
+  "goal": "Integrate the checked first-entry singleton relation with exact arm/core edge sources and select the one-sided conditional cubic crossing proof.",
+  "objects": ["G=selected.object and full 50-key [144a] history", "actual a=nextLeft, P_a=armLeft, P_b=armRight, Y=core and F", "degree(a)=3 and maximal fixed-source right route"],
+  "reads": ["branch:node144-window-32d32f9d19e7", "P6-window-41-first-entry-singleton", "P7-window-40-two-vertex-core-edge-integration"],
+  "interaction": "The own-arm and core incident sources at a are now proved complementary; under one-sided all-in-F and a absent from P_b, only ha and at most one other edge remain, contradicting degree three.",
+  "parent_payoff": "Choose the conditional implication all-in-F at a → a∈P_b on the exact producer envelope; this would be the first material crossed-arm restriction needed for the splice.",
+  "depends_on": ["P6-window-41-first-entry-singleton"],
+  "allowed_write": "audits/erdos-64-red-team/node144-residual-first/window-phase7-first-entry-singleton-integration.md",
+  "acceptance": "State the two incidence cases and how the exact graph incidenceFinset/cardinality can finish the contradiction; keep one-sided saturation conditional and all owner objects fixed. Test constraint/compression/quantity separately, name one next local theorem without counting it as proved.",
+  "on_failure": "If incident edge accounting misses a skeleton component, repair that component before claiming a crossing."
+}

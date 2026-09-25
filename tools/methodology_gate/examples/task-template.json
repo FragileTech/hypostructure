@@ -1,0 +1,17 @@
+{
+  "id": "T0-pin-source",
+  "mode": "DISCOVER",
+  "phase": "0",
+  "branch_revision": "replace-with-semantic-branch-revision",
+  "move_id": "",
+  "kind": "pin_source_revision",
+  "goal": "Record the exact source revision for the selected open branch",
+  "objects": ["replace-with-actual-object-identity-and-domain"],
+  "reads": ["branch:replace-with-semantic-branch-revision"],
+  "interaction": "",
+  "parent_payoff": "",
+  "depends_on": [],
+  "allowed_write": "replace-with-one-designated-evidence-file",
+  "acceptance": "The revision and branch source are cited and independently checked",
+  "on_failure": "Name the missing source or first unverified identification"
+}
