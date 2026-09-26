@@ -26,8 +26,15 @@ noncomputable def selectedStrictSurplusBranch
   -- The enclosing `[20]` decision has already selected the survivor arm;
   -- its literal ledger is node `[125]`, which enters `[126]`--`[128]`.
   let activated := selectedSparseSurplusActivation history
-  let baseline := selectedBaselineSpineDemand activated
-  match selectedPairResponseIndependenceDichotomy baseline with
+  -- EG-NODE [129] full active family and baseline: \(\mathcal A_0=\mathcal P_{\rm exc}\), \(E_{\rm spine}\le C_E n\)
+  let baseline :=
+    (baselineSpineDemandRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      activated (by key_fresh)
+  -- EG-NODE [130] canonical pair split: blocker-free?
+  match pairResponseIndependenceDichotomy (data := spineData) baseline
+      (by key_fresh) (by key_fresh) with
   | .left independentHistory =>
       exact Assembly.Internal.strictSurplusIndependent independentHistory
   | .right dependentHistory =>

@@ -76,21 +76,6 @@ abbrev NearCubicTargetDefectOutcome (selected : EGInput.{u}) :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .surplusAtOrBelow selected.object
 
-/-- The two sparse target-defect exits have incompatible surplus ancestry. -/
-theorem node20a_nearCubicTargetDefect_disjoint
-    {selected : EGInput.{u}}
-    (strict : Node20aOutcome selected)
-    (near : NearCubicTargetDefectOutcome selected) : False := by
-  have above :
-      spineData.{u}.surplusThreshold selected.object.vertexCount <
-        selected.object.degreeSurplus spineData.{u}.threshold :=
-    strict.2.2.2
-  have atOrBelow :
-      selected.object.degreeSurplus spineData.{u}.threshold ≤
-        spineData.{u}.surplusThreshold selected.object.vertexCount :=
-    near.2.2
-  exact Nat.not_lt_of_ge atOrBelow above
-
 /-- Node `[187]` collects only the other literal selected-root outcomes.
 The pair-system entry retains its own source key and is not `[144a]`. -/
 abbrev OtherReturnedOutcome (selected : EGInput.{u}) :=
@@ -133,15 +118,27 @@ noncomputable def selectedLedgerBoundary
     SelectedLedgerBoundaryResult selected := by
   match selectedSurplusDichotomy history with
   | .left strictHistory =>
-      match selectedSparseSurplusDichotomy strictHistory with
+      -- EG-NODE [20] surplus-pair accounting branch
+      -- The enclosing `[20]` routing tests `def:named-surplus-exits` before
+      -- node `[125]`: the exit arm retains only the attempted-quotient target
+      -- defect and its structure at `[20a]`; the survivor arm is `[125]`.
+      match sparseSurplusSurvivorDichotomy
+          (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData) strictHistory
+          (by key_fresh) (by key_fresh) with
       | .left exitHistory =>
-          -- The enclosing `[20]` classification routes the literal exit forms
-          -- and retains only the exact attempted-quotient target-defect
-          -- payload for its later peeling handoff.  It never enters `[125]`.
           let targetDefectHistory :=
-            selectedSparseSurplusExitContinuation exitHistory
+            (sparseSurplusExitRoutingRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile)
+              (data := spineData)).run exitHistory (by key_fresh)
           let structuredHistory :=
-            selectedSparseTargetDefectStructureContinuation targetDefectHistory
+            (sparseTargetDefectStructureRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile)
+              (data := spineData)).run targetDefectHistory (by key_fresh)
           exact Or.inl ⟨
             (structuredHistory.get (K .sparseTargetDefectResidual)).down,
             (structuredHistory.get (K .sparseTargetDefectStructure)).down,
@@ -149,12 +146,12 @@ noncomputable def selectedLedgerBoundary
             (structuredHistory.get (K .surplusAbove)).down⟩
       | .right survivorHistory =>
           match selectedStrictSurplusBranch survivorHistory with
-          | .inl handoff => exact Or.inr (Or.inl handoff.down)
+          | .inl handoff => exact Or.inr (Or.inl handoff)
           | .inr (.inl pairEntry) =>
               exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
-                (Or.inr (Or.inl pairEntry.down))))))
+                (Or.inr (Or.inl pairEntry))))))
           | .inr (.inr pair) =>
-              exact Or.inr (Or.inr (Or.inr (Or.inl pair.down)))
+              exact Or.inr (Or.inr (Or.inr (Or.inl pair)))
   | .right nearCubicHistory =>
       match selectedNearCubicBranch nearCubicHistory with
       | .inl targetDefect =>

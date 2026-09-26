@@ -3,6 +3,8 @@ import Hypostructure.Graph.NamedSurplusExits
 import Hypostructure.Graph.SparsePressureLedger
 import Hypostructure.Graph.GluedCrossingCycle
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.Basic
+import Hypostructure.Graph.Contracts.SurplusPair.PairCode
+import Hypostructure.Graph.Contracts.SurplusPair.PairOverlap
 
 namespace Hypostructure.Graph.Strategy.Spine
 
@@ -32,65 +34,90 @@ returns and graph-derived `ℓ_ret` bound on the same monotone ledger. -/
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .pairDemandReturns)
-        (show Value BranchState Presentation presentation data
-            .pairDemandReturns inputs.current from
-          ⟨⟨PairDemandReturns.of
-            (Classical.choice
-              (inputs.get (K .pairFailureOverlap)).down)⟩⟩)
+        ⟨Graph.Contracts.SurplusPair.pairDemandReturns_of_failureOverlap (inputs.get (K .pairFailureOverlap)).down⟩
         .nil)
 
-/-- Node `[179]` / open node `[182]`: test the five alternatives of
-`lem:pair-system-realizability` on the one exact overlap obstruction already
-stored in the ledger. -/
+/-- Node `[179]`: test `lem:pair-system-realizability`'s coverage by exact case
+analysis on its predicate.  The negative arm is its literal negation. -/
 noncomputable def pairSystemRealizabilityDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger (Input BranchState Presentation presentation data)
       current known)
-    [FactKeys.Has (K .pairDemandReturns) known]
     (coveredFresh : K .pairSystemRealizability ∉ known)
-    (residualFresh : K .pairConditionalFactorizationResidual ∉ known) :
-    Decision (K .pairSystemRealizability)
-      (K .pairConditionalFactorizationResidual) previous := by
+    (failsFresh : K .pairRealizabilityFails ∉ known) :
+    Decision (K .pairSystemRealizability) (K .pairRealizabilityFails)
+      previous := by
   classical
-  let returns := Classical.choice
-    (previous.get (K .pairDemandReturns)).down
   exact Decision.run previous (K .pairSystemRealizability)
-    (K .pairConditionalFactorizationResidual)
+    (K .pairRealizabilityFails)
     `Hypostructure.Graph.Strategy.Spine.pairSystemRealizabilityDichotomy
-    (if covered : Nonempty (PairSystemRealizabilityOutcome returns) then
-      .inl ⟨⟨returns, covered⟩⟩
+    (if covered : Holds BranchState Presentation presentation data
+        .pairSystemRealizability current.object then
+      .inl ⟨covered⟩
     else
-      .inr ⟨⟨.systemRealizability returns covered⟩⟩)
-    coveredFresh residualFresh
+      .inr ⟨covered⟩)
+    coveredFresh failsFresh
 
-/-- Node `[179]`: split the already-published five-way theorem into its
-closed/routed alternatives (i)--(iv) and its serial alternative (v). -/
+/-- Node `[182]` from `[179]`: the failed coverage test retains the literal
+canonical demand returns as the uncovered pair-code residual. -/
+@[reducible] noncomputable def pairRealizabilityResidualRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.pairRealizabilityResidual
+    { Requires := [K .pairRealizabilityFails, K .pairDemandReturns]
+      Produces := [K .pairConditionalFactorizationResidual]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .pairConditionalFactorizationResidual)
+        ⟨Graph.Contracts.SurplusPair.pairUncovered_of_realizabilityFails
+          (inputs.get (K .pairDemandReturns)).down
+          (inputs.get (K .pairRealizabilityFails)).down⟩
+        .nil)
+
+/-- Node `[179]`: do alternatives (i)--(iv) hold?  Exact case analysis on
+their predicate; the negative arm is its literal negation. -/
 noncomputable def pairSystemOutcomeDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger (Input BranchState Presentation presentation data)
       current known)
-    [FactKeys.Has (K .pairSystemRealizability) known]
     (earlyFresh : K .pairSystemEarlyOutcome ∉ known)
-    (serialFresh : K .pairSerialDemandSystem ∉ known) :
-    Decision (K .pairSystemEarlyOutcome) (K .pairSerialDemandSystem)
+    (noEarlyFresh : K .pairSystemNoEarlyOutcome ∉ known) :
+    Decision (K .pairSystemEarlyOutcome) (K .pairSystemNoEarlyOutcome)
       previous := by
   classical
-  let package := Classical.choice
-    (previous.get (K .pairSystemRealizability)).down
-  let outcome := Classical.choice package.2
   exact Decision.run previous (K .pairSystemEarlyOutcome)
-    (K .pairSerialDemandSystem)
+    (K .pairSystemNoEarlyOutcome)
     `Hypostructure.Graph.Strategy.Spine.pairSystemOutcomeDichotomy
-    (match outcome with
-    | .early early => .inl ⟨⟨early⟩⟩
-    | .serial serial _same => .inr ⟨⟨serial⟩⟩)
-    earlyFresh serialFresh
+    (if early : Holds BranchState Presentation presentation data
+        .pairSystemEarlyOutcome current.object then
+      .inl ⟨early⟩
+    else
+      .inr ⟨early⟩)
+    earlyFresh noEarlyFresh
 
-/-- Alternatives (i)--(iv) of node `[179]` are either already contradictory
-to the selected/survivor facts or are the literal common Type B entry.  This
-row publishes that entry only after reading all three facts from ExactLedger. -/
+/-- Node `[179]`, serial arm: with coverage and none of (i)--(iv),
+alternative (v) supplies the graph-realized serial demand system. -/
+@[reducible] noncomputable def pairSerialDemandSystemRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.pairSerialDemandSystem
+    { Requires := [K .pairSystemRealizability, K .pairSystemNoEarlyOutcome]
+      Produces := [K .pairSerialDemandSystem]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .pairSerialDemandSystem)
+        ⟨Graph.Contracts.SurplusPair.pairSerialDemandSystem_of_noEarlyOutcome
+          (inputs.get (K .pairSystemRealizability)).down
+          (inputs.get (K .pairSystemNoEarlyOutcome)).down⟩
+        .nil)
+
+/-- Alternatives (i)--(iv) of node `[179]`: the target cycle and the sparse
+exit are excluded by the selection and survivor facts, so the literal common
+Type B entry remains. -/
 @[reducible] noncomputable def pairSystemEarlyTypeBEntryRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.pairSystemEarlyTypeBEntry
@@ -102,70 +129,92 @@ row publishes that entry only after reading all three facts from ExactLedger. -/
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .typeBFanEntry)
-        (show Value BranchState Presentation presentation data
-            .typeBFanEntry inputs.current from ⟨by
-          let outcome := Classical.choice
-            (inputs.get (K .pairSystemEarlyOutcome)).down
-          match outcome with
-          | .targetCycle cycle =>
-              exact False.elim ((inputs.get (K .selection)).down.1 cycle)
-          | .sparseExit exit =>
-              exact False.elim
-                ((inputs.get (K .sparseSurplusSurvivor)).down exit)
-          | .typeB entry => exact entry⟩)
+        ⟨Graph.Contracts.SurplusPair.typeBFanEntry_of_pairSystemEarlyOutcome
+          (inputs.get (K .pairSystemEarlyOutcome)).down
+          (inputs.get (K .selection)).down.1
+          (inputs.get (K .sparseSurplusSurvivor)).down⟩
         .nil)
 
-/-- Node `[180]` / open node `[182]`: test the exact serial system against the
-corrected full-modulus arithmetic and the two periodic-response routes claimed
-by `lem:pair-system-increment-arithmetic`. -/
+/-- Node `[180]`: test `lem:pair-system-increment-arithmetic`'s coverage by
+exact case analysis on its predicate.  The negative arm is its literal
+negation. -/
 noncomputable def pairIncrementCoveredDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger (Input BranchState Presentation presentation data)
       current known)
-    [FactKeys.Has (K .pairSerialDemandSystem) known]
     (coveredFresh : K .pairIncrementCovered ∉ known)
-    (residualFresh : K .pairConditionalFactorizationResidual ∉ known) :
-    Decision (K .pairIncrementCovered)
-      (K .pairConditionalFactorizationResidual) previous := by
+    (failsFresh : K .pairIncrementFails ∉ known) :
+    Decision (K .pairIncrementCovered) (K .pairIncrementFails) previous := by
   classical
-  let serial := Classical.choice
-    (previous.get (K .pairSerialDemandSystem)).down
   exact Decision.run previous (K .pairIncrementCovered)
-    (K .pairConditionalFactorizationResidual)
+    (K .pairIncrementFails)
     `Hypostructure.Graph.Strategy.Spine.pairIncrementCoveredDichotomy
-    (if covered : Nonempty (PairIncrementOutcome serial) then
-      .inl ⟨⟨serial, covered⟩⟩
+    (if covered : Holds BranchState Presentation presentation data
+        .pairIncrementCovered current.object then
+      .inl ⟨covered⟩
     else
-      .inr ⟨⟨.incrementArithmetic serial covered⟩⟩)
-    coveredFresh residualFresh
+      .inr ⟨covered⟩)
+    coveredFresh failsFresh
 
-/-- Node `[180]`: split its published exhaustive alternative into the periodic
-route and the corrected direct arithmetic input. -/
+/-- Node `[182]` from `[180]`: the failed coverage test retains the literal
+serial demand system as the uncovered pair-code residual. -/
+@[reducible] noncomputable def pairIncrementResidualRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.pairIncrementResidual
+    { Requires := [K .pairIncrementFails, K .pairSerialDemandSystem]
+      Produces := [K .pairConditionalFactorizationResidual]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .pairConditionalFactorizationResidual)
+        ⟨Graph.Contracts.SurplusPair.pairUncovered_of_incrementFails
+          (inputs.get (K .pairSerialDemandSystem)).down
+          (inputs.get (K .pairIncrementFails)).down⟩
+        .nil)
+
+/-- Node `[180]`: does a periodic routed alternative hold?  Exact case
+analysis on its predicate; the negative arm is its literal negation. -/
 noncomputable def pairIncrementOutcomeDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger (Input BranchState Presentation presentation data)
       current known)
-    [FactKeys.Has (K .pairIncrementCovered) known]
     (earlyFresh : K .pairIncrementEarlyOutcome ∉ known)
-    (arithmeticFresh : K .pairSerialArithmetic ∉ known) :
-    Decision (K .pairIncrementEarlyOutcome) (K .pairSerialArithmetic)
+    (noEarlyFresh : K .pairIncrementNoEarlyOutcome ∉ known) :
+    Decision (K .pairIncrementEarlyOutcome) (K .pairIncrementNoEarlyOutcome)
       previous := by
   classical
-  let package := Classical.choice
-    (previous.get (K .pairIncrementCovered)).down
-  let outcome := Classical.choice package.2
   exact Decision.run previous (K .pairIncrementEarlyOutcome)
-    (K .pairSerialArithmetic)
+    (K .pairIncrementNoEarlyOutcome)
     `Hypostructure.Graph.Strategy.Spine.pairIncrementOutcomeDichotomy
-    (match outcome with
-    | .early early => .inl ⟨⟨early⟩⟩
-    | .arithmetic arithmetic => .inr ⟨⟨package.1, ⟨arithmetic⟩⟩⟩)
-    earlyFresh arithmeticFresh
+    (if early : Holds BranchState Presentation presentation data
+        .pairIncrementEarlyOutcome current.object then
+      .inl ⟨early⟩
+    else
+      .inr ⟨early⟩)
+    earlyFresh noEarlyFresh
 
-/-- The periodic sparse-exit/Type-B alternative of node `[180]`, normalized
-to the common Type B entry after eliminating the survivor-incompatible exit. -/
+/-- Node `[180]`, arithmetic arm: with coverage and no periodic route, the
+corrected full-modulus arithmetic input exists. -/
+@[reducible] noncomputable def pairSerialArithmeticRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.pairSerialArithmetic
+    { Requires := [K .pairIncrementCovered, K .pairIncrementNoEarlyOutcome]
+      Produces := [K .pairSerialArithmetic]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .pairSerialArithmetic)
+        ⟨Graph.Contracts.SurplusPair.pairSerialArithmetic_of_noEarlyOutcome
+          (inputs.get (K .pairIncrementCovered)).down
+          (inputs.get (K .pairIncrementNoEarlyOutcome)).down⟩
+        .nil)
+
+/-- The periodic alternatives of node `[180]`: the sparse exit is excluded by
+the survivor fact, so the literal common Type B entry remains. -/
 @[reducible] noncomputable def pairIncrementEarlyTypeBEntryRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.pairIncrementEarlyTypeBEntry
@@ -176,15 +225,9 @@ to the common Type B entry after eliminating the survivor-incompatible exit. -/
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .typeBFanEntry)
-        (show Value BranchState Presentation presentation data
-            .typeBFanEntry inputs.current from ⟨by
-          let outcome := Classical.choice
-            (inputs.get (K .pairIncrementEarlyOutcome)).down
-          match outcome with
-          | .sparseExit exit =>
-              exact False.elim
-                ((inputs.get (K .sparseSurplusSurvivor)).down exit)
-          | .typeB entry => exact entry⟩)
+        ⟨Graph.Contracts.SurplusPair.typeBFanEntry_of_pairIncrementEarlyOutcome
+          (inputs.get (K .pairIncrementEarlyOutcome)).down
+          (inputs.get (K .sparseSurplusSurvivor)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

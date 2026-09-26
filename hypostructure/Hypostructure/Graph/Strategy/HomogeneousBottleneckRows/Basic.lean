@@ -23,6 +23,13 @@ noncomputable instance instIncompatibleSelectionPairPowerOfTwoCycle :
   contradiction := fun _current selection cycle =>
     selection.down.1 cycle.down
 
+/-- Node `[133]`: a named sparse surplus exit is incompatible with node
+`[125]`'s survivor fact, which is exactly the absence of every such exit. -/
+noncomputable instance instIncompatibleSparseSurplusSurvivorSparsePairExit :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K .sparseSurplusSurvivor) (K .sparsePairExit) where
+  contradiction := fun _current survivor exit => survivor.down exit.down
+
 /-- Node `[19]`'s strict lower bound `σ(G) > C_sp ⌈√n⌉` is incompatible with a
 spine surplus estimate `σ(G) ≤ C_sp ⌈√n⌉` on the same object. -/
 noncomputable instance instIncompatibleSurplusAboveSpineSurplusEstimate :
