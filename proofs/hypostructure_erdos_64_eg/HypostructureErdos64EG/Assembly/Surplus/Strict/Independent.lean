@@ -1,7 +1,7 @@
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.FreePairCoupledExcess
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.FreePairEntropy
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.PairOverlapFirstFailure
-import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.PressureSpineSurplusEstimate
+import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.FibrePressure
 import HypostructureErdos64EG.Assembly.Surplus.Local
 
 /-! A strict-surplus branch, with the complete original ledger. -/
@@ -59,11 +59,11 @@ noncomputable def Assembly.Internal.strictSurplusIndependent
       -- `[131]` count holds → `[137]`: coupled excess `D_all > 0?`.  Both
       -- arms reach node `[138]`'s `σ(G) ≤ C_sp ⌈√n⌉`, which closes against
       -- node `[19]`.
-      match freePairCoupledExcessDichotomy (data := spineData) sandwichHistory
+      match coupledExcessDichotomy (data := spineData) sandwichHistory
           (by key_fresh) (by key_fresh) with
       | .left nearCubicHistory =>
           let closedHistory :=
-            (pressureSpineSurplusEstimateRow (BranchState := BranchState)
+            (freePairSurplusEstimateRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
               (data := spineData)).runAndCloseIncompatible
@@ -79,17 +79,18 @@ noncomputable def Assembly.Internal.strictSurplusIndependent
                 overloadHistory (K .surplusAbove) (K .spineSurplusEstimate)
                 (by key_fresh) (by key_fresh)
           exact (closedHistory.elimClosed (by infer_instance)).elim
-  | .right unrealizedHistory =>
+  | .right failsHistory =>
       -- `[131]` count fails: its first failed pair extension enters `[178]`.
+      let unrealizedHistory :=
+        (freePairCodeUnrealizedRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          failsHistory (by key_fresh)
       let firstFailure :=
         (freePairOverlapFirstFailureRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           unrealizedHistory (by key_fresh)
       exact selectedPairCodeChain firstFailure
-        (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh)
-        (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh)
-        (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh)
-        (by key_fresh) (by key_fresh)
 
 end HypostructureErdos64EG

@@ -1604,6 +1604,30 @@ inductive Key where
   skeleton budget, and every canonical state map realizes at most that many
   states. -/
   | skeletonDominates
+  -- F4 keys
+  /-- Node `[131]`, count fails: the exact negation of `freePairEntropySandwich`. -/
+  | freePairCountFails
+  /-- Node `[137]`, free-side count fails: the exact negation of
+  `blockedPairEntropySandwich`. -/
+  | blockedPairCountFails
+  /-- Node `[132]`, blocker arm: the exact negation of `sparsePairExit`. -/
+  | blockedPairNoExit
+  /-- Node `[143]` entry: the overloading token is primitive. -/
+  | primitiveClassOverload
+  /-- Node `[178]`, no factorization: the exact negation of
+  `pairConditionalFactorization`. -/
+  | pairFactorizationFails
+  /-- Node `[179]`, no exhaustive uncrossing: the exact negation of
+  `pairSystemRealizability`. -/
+  | pairRealizabilityFails
+  /-- Node `[179]`, serial arm: the exact negation of `pairSystemEarlyOutcome`. -/
+  | pairSystemNoEarlyOutcome
+  /-- Node `[180]`, uncovered increment: the exact negation of
+  `pairIncrementCovered`. -/
+  | pairIncrementFails
+  /-- Node `[180]`, arithmetic arm: the exact negation of
+  `pairIncrementEarlyOutcome`. -/
+  | pairIncrementNoEarlyOutcome
   deriving DecidableEq
 
 /-- The value schema of each spine fact, stated of the *object* alone.
@@ -2359,6 +2383,25 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       RemainderRelabelingEntropyStatement data.toParameters object
   | .relabelingDensityCap, object =>
       RelabelingDensityCapStatement data.toParameters object
+  -- F4 keys
+  | .freePairCountFails, object =>
+      FreePairCountFailsStatement data.toParameters object
+  | .blockedPairCountFails, object =>
+      BlockedPairCountFailsStatement data.toParameters object
+  | .blockedPairNoExit, object =>
+      BlockedPairNoExitStatement data.toParameters object
+  | .primitiveClassOverload, object =>
+      PrimitiveClassOverloadStatement data.toParameters object
+  | .pairFactorizationFails, object =>
+      PairFactorizationFailsStatement data.toParameters object
+  | .pairRealizabilityFails, object =>
+      PairRealizabilityFailsStatement data.toParameters object
+  | .pairSystemNoEarlyOutcome, object =>
+      PairSystemNoEarlyOutcomeStatement data.toParameters object
+  | .pairIncrementFails, object =>
+      PairIncrementFailsStatement data.toParameters object
+  | .pairIncrementNoEarlyOutcome, object =>
+      PairIncrementNoEarlyOutcomeStatement data.toParameters object
 
 /-- Audit labels.  They are diagnostics; every routing and lookup decision
 compares exact keys. -/
@@ -2679,6 +2722,16 @@ def label : Key → String
   | .exactCubicBaselineBudget => "exactCubicBaselineBudget"
   | .incrementalSkeletonRoom => "incrementalSkeletonRoom"
   | .skeletonDominates => "skeletonDominates"
+  -- F4 keys
+  | .freePairCountFails => "freePairCountFails"
+  | .blockedPairCountFails => "blockedPairCountFails"
+  | .blockedPairNoExit => "blockedPairNoExit"
+  | .primitiveClassOverload => "primitiveClassOverload"
+  | .pairFactorizationFails => "pairFactorizationFails"
+  | .pairRealizabilityFails => "pairRealizabilityFails"
+  | .pairSystemNoEarlyOutcome => "pairSystemNoEarlyOutcome"
+  | .pairIncrementFails => "pairIncrementFails"
+  | .pairIncrementNoEarlyOutcome => "pairIncrementNoEarlyOutcome"
 
 /-! ### Label pins
 
@@ -3019,6 +3072,16 @@ example : label .skeletonDominates = "skeletonDominates" := rfl
 example : label .exactResponseProfile = "exactResponseProfile" := rfl
 example : label .admissibleRankQuotient = "admissibleRankQuotient" := rfl
 example : label .barrierEnumeration = "barrierEnumeration" := rfl
+-- F4 keys
+example : label .freePairCountFails = "freePairCountFails" := rfl
+example : label .blockedPairCountFails = "blockedPairCountFails" := rfl
+example : label .blockedPairNoExit = "blockedPairNoExit" := rfl
+example : label .primitiveClassOverload = "primitiveClassOverload" := rfl
+example : label .pairFactorizationFails = "pairFactorizationFails" := rfl
+example : label .pairRealizabilityFails = "pairRealizabilityFails" := rfl
+example : label .pairSystemNoEarlyOutcome = "pairSystemNoEarlyOutcome" := rfl
+example : label .pairIncrementFails = "pairIncrementFails" := rfl
+example : label .pairIncrementNoEarlyOutcome = "pairIncrementNoEarlyOutcome" := rfl
 end LabelPins
 
 /-- The value schema at a residual: the object-level statement, read at the
@@ -3348,6 +3411,16 @@ def idx : Key → Nat
   | .targetRankCircuit => 210
   | .remainderRelabelingEntropy => 501
   | .relabelingDensityCap => 502
+  -- F4 keys
+  | .freePairCountFails => 1600
+  | .blockedPairCountFails => 1601
+  | .blockedPairNoExit => 1602
+  | .primitiveClassOverload => 1603
+  | .pairFactorizationFails => 1604
+  | .pairRealizabilityFails => 1605
+  | .pairSystemNoEarlyOutcome => 1606
+  | .pairIncrementFails => 1607
+  | .pairIncrementNoEarlyOutcome => 1608
 
 /-- Left inverse of `idx`.  Writing it out is also what checks the numbering:
 two keys sharing an index would make `ofIdx_idx` unprovable. -/
@@ -3666,6 +3739,16 @@ def ofIdx : Nat → Key
   | 208 => .admissibleRankQuotient
   | 210 => .targetRankCircuit
   | 211 => .barrierEnumeration
+  -- F4 keys
+  | 1600 => .freePairCountFails
+  | 1601 => .blockedPairCountFails
+  | 1602 => .blockedPairNoExit
+  | 1603 => .primitiveClassOverload
+  | 1604 => .pairFactorizationFails
+  | 1605 => .pairRealizabilityFails
+  | 1606 => .pairSystemNoEarlyOutcome
+  | 1607 => .pairIncrementFails
+  | 1608 => .pairIncrementNoEarlyOutcome
   | _ => .selection
 
 theorem ofIdx_idx (k : Key) : ofIdx (idx k) = k := by
@@ -4433,6 +4516,25 @@ def name : Key → Lean.Name
         "remainderRelabelingEntropy") 501
   | .relabelingDensityCap =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "relabelingDensityCap") 502
+  -- F4 keys
+  | .freePairCountFails =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "freePairCountFails") 1600
+  | .blockedPairCountFails =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "blockedPairCountFails") 1601
+  | .blockedPairNoExit =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "blockedPairNoExit") 1602
+  | .primitiveClassOverload =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "primitiveClassOverload") 1603
+  | .pairFactorizationFails =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairFactorizationFails") 1604
+  | .pairRealizabilityFails =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairRealizabilityFails") 1605
+  | .pairSystemNoEarlyOutcome =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairSystemNoEarlyOutcome") 1606
+  | .pairIncrementFails =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairIncrementFails") 1607
+  | .pairIncrementNoEarlyOutcome =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairIncrementNoEarlyOutcome") 1608
 
 /-- The written-out names agree with `label` and `idx`.  `name` is spelled out
 so that reducing it in a downstream audit proof costs one unfolding rather

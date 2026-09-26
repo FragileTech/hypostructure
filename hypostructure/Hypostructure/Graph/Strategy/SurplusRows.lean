@@ -8,6 +8,7 @@ import Hypostructure.Graph.CapacityTokenAssignment
 import Hypostructure.Graph.SparseUpperEnvelope
 import Hypostructure.Graph.ObjectCapacityLedger
 import Hypostructure.Graph.Induced
+import Hypostructure.Graph.Contracts.SurplusPair.BlockerRoute
 
 /-!
 # The sparse surplus branch: the activation rows
@@ -413,31 +414,24 @@ deficit is bounded linearly using the registered coefficient inequality. -/
 
 /-! ## Node `[132]`: route the dependent pair family -/
 
-/-- Node `[130]`: construct the full response family from the active-family
-fact on the literal `[129]` ledger, then retain exactly the paper's independent
-or dependent arm. -/
+/-- Node `[130]`, canonical pair split "blocker-free?": exact case analysis on
+the dependent predicate.  The independent arm is its literal negation. -/
 noncomputable def pairResponseIndependenceDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger (Input BranchState Presentation presentation data)
       current known)
-    [FactKeys.Has (K .activeSurplusDemands) known]
     (independentFresh : K .independentPairFamily ∉ known)
     (dependentFresh : K .dependentPairFamily ∉ known) :
-    Decision (K .independentPairFamily) (K .dependentPairFamily) previous :=
-  Decision.run previous (K .independentPairFamily) (K .dependentPairFamily)
+    Decision (K .independentPairFamily) (K .dependentPairFamily) previous := by
+  classical
+  exact Decision.run previous (K .independentPairFamily) (K .dependentPairFamily)
     `Hypostructure.Graph.Strategy.Spine.pairResponseIndependenceDichotomy
-    (Classical.choice (show Nonempty
-        ((K .independentPairFamily).At current ⊕
-          (K .dependentPairFamily).At current) from by
-      let active := (previous.get (K .activeSurplusDemands)).down
-      let activation := Graph.pairResponseActivation active
-      let pairs := current.object.portPairSchedule data.threshold
-      by_cases blocked : Graph.HasSparsePairDEBlocker
-          (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-          (LengthOK := data.LengthOK) activation pairs
-      · exact ⟨.inr ⟨active, blocked⟩⟩
-      · exact ⟨.inl ⟨active, blocked⟩⟩))
+    (if blocked : Holds BranchState Presentation presentation data
+        .dependentPairFamily current.object then
+      .inr ⟨blocked⟩
+    else
+      .inl ⟨blocked⟩)
     independentFresh dependentFresh
 
 /-! ## Node `[131]`: mixed sparse-spine dependence -/
@@ -715,48 +709,44 @@ proved inside this executor and published on the same exact ledger. -/
             exact realized.trans_eq count⟩)
         .nil)
 
-/-- Node `[132]`, blocked-pair routing: exit or canonical blocker?  On the
-literal blocked residual of `[130]`, the paper's split is whether a sparse
-surplus exit of `def:named-surplus-exits` occurs.  The yes arm publishes that
-exit (closed at `[133]`); the no arm publishes its exact negation together with
-the blocked pair read from `[130]` and its canonical blocker
-`Φ_can(π) = min_≺ Blk(π)` of `def:canonical-blocker-ledger`.  The decision is a
-case analysis on the exit predicate itself; `Decision.run` preserves the
-complete incoming ancestry on either arm. -/
+/-- Node `[132]`, blocked-pair routing "exit or canonical blocker?": exact case
+analysis on the sparse-exit predicate of `def:named-surplus-exits`.  The exit
+arm closes at `[133]`; the blocker arm is its literal negation. -/
 noncomputable def blockedPairRoutingDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger (Input BranchState Presentation presentation data)
       current known)
-    [FactKeys.Has (K .dependentPairFamily) known]
     (exitFresh : K .sparsePairExit ∉ known)
-    (blockerFresh : K .canonicalBlockerRoute ∉ known) :
-    Decision (K .sparsePairExit) (K .canonicalBlockerRoute) previous :=
-  Decision.run previous (K .sparsePairExit) (K .canonicalBlockerRoute)
+    (noExitFresh : K .blockedPairNoExit ∉ known) :
+    Decision (K .sparsePairExit) (K .blockedPairNoExit) previous := by
+  classical
+  exact Decision.run previous (K .sparsePairExit) (K .blockedPairNoExit)
     `Hypostructure.Graph.Strategy.Spine.blockedPairRoutingDichotomy
-    (Classical.choice (show Nonempty
-        ((K .sparsePairExit).At current ⊕
-          (K .canonicalBlockerRoute).At current) from by
-      classical
-      by_cases exit : Graph.SparseSurplusExit
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK current.object
-      · exact ⟨.inl ⟨exit⟩⟩
-      · obtain ⟨active, certificate⟩ :=
-          (previous.get (K .dependentPairFamily)).down
-        let pairs := current.object.portPairSchedule data.threshold
-        let recorded := Graph.recordSparsePairDEBlockers
-          (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-          (LengthOK := data.LengthOK) (Graph.pairResponseActivation active)
-          pairs
-        obtain ⟨pair, pairMem, blocked⟩ :=
-          Graph.recordedSparsePairDEBlocker_nonempty
-            (Graph.pairResponseActivation active) pairs certificate
-        obtain ⟨blocker, canonical⟩ := Option.isSome_iff_exists.mp
-          (Graph.FiniteObject.isSome_canonicalBlocker recorded blocked)
-        exact ⟨.inr ⟨exit, active, certificate, pair, pairMem, blocked,
-          blocker, canonical⟩⟩))
-    exitFresh blockerFresh
+    (if exit : Holds BranchState Presentation presentation data
+        .sparsePairExit current.object then
+      .inl ⟨exit⟩
+    else
+      .inr ⟨exit⟩)
+    exitFresh noExitFresh
+
+/-- Node `[132]`, blocker arm (`lem:sparse-pair-dependence-exit`): with no
+sparse exit, the blocked pair of `[130]` carries its canonical blocker
+`Φ_can(π) = min_≺ Blk(π)`. -/
+@[reducible] noncomputable def canonicalBlockerRouteRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.canonicalBlockerRoute
+    { Requires := [K .blockedPairNoExit, K .dependentPairFamily]
+      Produces := [K .canonicalBlockerRoute]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .canonicalBlockerRoute)
+        ⟨Graph.Contracts.SurplusPair.canonicalBlockerRoute_of_noExit
+          (inputs.get (K .blockedPairNoExit)).down
+          (inputs.get (K .dependentPairFamily)).down⟩
+        .nil)
 
 /-! ## Node `[134]`: canonical blocker ledger -/
 

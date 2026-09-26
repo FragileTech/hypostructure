@@ -1624,23 +1624,16 @@ noncomputable abbrev DependentPairFamilyStatement
       (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
       (LengthOK := data.LengthOK) activation pairs
 
-/-- Node `[130]`, independent arm for the same concrete full response family. -/
+/-- Node `[130]`, independent arm: the exact negation of the dependent arm on
+the same object -- no active family's full pair schedule carries a clause-(d)/(e)
+obstruction.  The active family is a proposition, so this is the paper's
+"blocker-free" for the one concrete full response family. -/
 noncomputable abbrev IndependentPairFamilyStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- Node `[130]`, yes: the full pair schedule is blocker-free, including
-  -- the support-dependence events explicitly listed in clause (e).  This
-  -- is the literal complement of the no-arm above, on this same ledger.
-  ∃ active : Graph.ActiveSurplusDemands
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
-      data.threshold,
-    let activation := Graph.pairResponseActivation active
-    let pairs := object.portPairSchedule data.threshold
-    ¬ Graph.HasSparsePairDEBlocker
-      (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-      (LengthOK := data.LengthOK) activation pairs
+  -- Node `[130]`, yes: the literal complement of the no-arm above.
+  ¬ DependentPairFamilyStatement data object
 
 /-- Node `[131]`, `lem:mixed-sparse-spine-dependence` on the concrete
 baseline spine family and full pair-response schedule. -/
@@ -1881,17 +1874,6 @@ noncomputable abbrev SpineSurplusEstimateStatement
   object.degreeSurplus data.threshold ≤
     data.spineScale * Core.ceilSqrt object.vertexCount
 
-/-- Node `[137]`, near-cubic arm of
-`prop:single-graph-sparse-pressure-routing` (a): every capacity-token ledger
-of the object respects the geometric caps, so `σ(G) ≤ R_L(n)`.  Routes to
-`[138]`. -/
-noncomputable abbrev SparsePressureNearCubicStatement
-    (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  object.degreeSurplus data.threshold ≤
-    data.spineScale * Core.ceilSqrt object.vertexCount
-
 /-- Node `[137]`, overload arm of
 `prop:single-graph-sparse-pressure-routing` (b) with
 `cor:coupled-single-graph-overload-budget` and
@@ -1919,6 +1901,16 @@ noncomputable abbrev SparsePressureOverloadSchema
             (object.portPairSchedule data.threshold)) ∧
         Graph.SparsePressureOverloadStatement object data.threshold
           data.windowOrder data.surplusScale data.routingLabelBound capacity
+
+/-- Node `[137]`, no arm of the coupled test `D_all > 0?`
+(`prop:single-graph-sparse-pressure-routing` (a)): the exact negation of the
+overload arm on the same object -- no capacity-token ledger of the object has
+positive coupled excess.  Node `[138]` derives `σ(G) ≤ C_sp ⌈√n⌉` from it. -/
+noncomputable abbrev SparsePressureNearCubicStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop :=
+  ¬ SparsePressureOverloadSchema data object
 
 /-- Node `[179]`: the two literal demands of the failed pair, their
 canonical port returns, the connected `X_π ∪ R_p ∪ R_q` connector, and the
@@ -1952,28 +1944,14 @@ noncomputable abbrev WindowClassOverloadStatement
           data.windowOrder data.surplusScale data.routingLabelBound capacity
             .windowIncidence
 
-/-- Node `[139]`, no arm: the selected overloading token does not lie in
-`𝔗_W`, so that same witness falls through to node `[141]`. -/
+/-- Node `[139]`, no arm: the exact negation of the yes arm on the same object
+-- no overload witness of the object has its token in `𝔗_W`. -/
 noncomputable abbrev WindowClassAbsentStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
   -- Node `[139]`, no.
-  ∃ active : Graph.ActiveSurplusDemands
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
-      data.threshold,
-    ∃ capacity : Graph.CapacityPresentation object data.threshold
-        data.windowOrder,
-      capacity.activation =
-          (Graph.recordSparsePairDEBlockers
-            (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-            (LengthOK := data.LengthOK)
-            (Graph.pairResponseActivation active)
-            (object.portPairSchedule data.threshold)) ∧
-        Graph.SparsePressureOverloadOutsideClass object data.threshold
-          data.windowOrder data.surplusScale data.routingLabelBound capacity
-            .windowIncidence
+  ¬ WindowClassOverloadStatement data object
 
 /-- Node `[141]`, yes arm: the overloading token lies in `𝔗_R`, so the branch
 enters the remainder-surplus audit `[142]`. -/
@@ -1998,14 +1976,21 @@ noncomputable abbrev RemainderClassOverloadStatement
           data.windowOrder data.surplusScale data.routingLabelBound capacity
             .remainderSurplus
 
-/-- Node `[141]`, no arm: the selected overloading token lies in
-`𝔗_prim`, so that same witness enters `[143]`. -/
+/-- Node `[141]`, no arm: the exact negation of the yes arm on the same object
+-- no overload witness of the object has its token in `𝔗_R`. -/
 noncomputable abbrev RemainderClassAbsentStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- Node `[141]`, no: after the inherited non-window residual, the same
-  -- selected overload token is necessarily primitive.
+  -- Node `[141]`, no.
+  ¬ RemainderClassOverloadStatement data object
+
+/-- Node `[143]`'s entry: on the no arms of `[139]` and `[141]` the overloading
+token lies in the primitive class `𝔗_prim`. -/
+noncomputable abbrev PrimitiveClassOverloadStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop :=
   ∃ active : Graph.ActiveSurplusDemands
       (Graph.MinimumDegreeAtLeast data.threshold)
       (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
@@ -2145,5 +2130,69 @@ noncomputable abbrev ActiveSurplusDemandsStatement
   Graph.ActiveSurplusDemands (Graph.MinimumDegreeAtLeast data.threshold)
     (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
     data.threshold
+
+/-! ### Exact negations of the family's branch tests
+
+Each no-arm of a paper test is the literal negation of its yes-arm on the same
+object.  What the paper derives on that arm is published by a separate row. -/
+
+/-- Node `[131]`, count fails: the negation of the free-pair entropy count. -/
+noncomputable abbrev FreePairCountFailsStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop :=
+  ¬ FreePairEntropySandwichStatement data object
+
+/-- Node `[137]`, count fails on the free side of the capacity charge. -/
+noncomputable abbrev BlockedPairCountFailsStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop :=
+  ¬ BlockedPairEntropySandwichStatement data object
+
+/-- Node `[132]`, blocker arm: no sparse surplus exit settles the dependence. -/
+noncomputable abbrev BlockedPairNoExitStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop :=
+  ¬ SparsePairExitStatement data object
+
+/-- Node `[178]`, no factorization: the negation of the conditional
+factorization test. -/
+noncomputable abbrev PairFactorizationFailsStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop :=
+  ¬ PairConditionalFactorizationStatement data object
+
+/-- Node `[179]`, no exhaustive uncrossing: the negation of the
+`lem:pair-system-realizability` coverage test. -/
+noncomputable abbrev PairRealizabilityFailsStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop :=
+  ¬ PairSystemRealizabilityStatement data object
+
+/-- Node `[179]`, serial arm: none of the routed alternatives (i)--(iv) holds. -/
+noncomputable abbrev PairSystemNoEarlyOutcomeStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop :=
+  ¬ PairSystemEarlyOutcomeStatement data object
+
+/-- Node `[180]`, uncovered increment response: the negation of the
+`lem:pair-system-increment-arithmetic` coverage test. -/
+noncomputable abbrev PairIncrementFailsStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop :=
+  ¬ PairIncrementCoveredStatement data object
+
+/-- Node `[180]`, arithmetic arm: neither periodic routed alternative holds. -/
+noncomputable abbrev PairIncrementNoEarlyOutcomeStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop :=
+  ¬ PairIncrementEarlyOutcomeStatement data object
 
 end Hypostructure.Graph.Strategy.Spine

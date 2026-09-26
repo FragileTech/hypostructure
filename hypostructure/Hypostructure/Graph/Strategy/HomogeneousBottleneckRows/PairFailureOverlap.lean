@@ -3,6 +3,7 @@ import Hypostructure.Graph.NamedSurplusExits
 import Hypostructure.Graph.SparsePressureLedger
 import Hypostructure.Graph.GluedCrossingCycle
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.Basic
+import Hypostructure.Graph.Contracts.SurplusPair.PairCode
 
 namespace Hypostructure.Graph.Strategy.Spine
 
@@ -16,32 +17,46 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
-/-- Node `[178]` / open node `[182]`: decide the manuscript's conditional
-factorization assertion on the one exact pair-response system already stored
-in the ledger.  The positive arm is the sole input of
-`lem:pair-failure-overlap`; the negative arm retains that same system as the
-uncovered residual and asserts no blocker, exit, quotient, or contradiction. -/
+/-- Node `[178]`: the manuscript's conditional-factorization test, decided by
+exact case analysis on its predicate.  The positive arm is the sole input of
+`lem:pair-failure-overlap`; the negative arm is its literal negation, from
+which `pairFactorizationResidualRow` publishes the open node-`[182]` residual. -/
 noncomputable def pairConditionalFactorizationDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger (Input BranchState Presentation presentation data)
       current known)
-    [FactKeys.Has (K .pairOverlapSystem) known]
     (factorizationFresh : K .pairConditionalFactorization ∉ known)
-    (residualFresh : K .pairConditionalFactorizationResidual ∉ known) :
+    (failsFresh : K .pairFactorizationFails ∉ known) :
     Decision (K .pairConditionalFactorization)
-      (K .pairConditionalFactorizationResidual) previous := by
+      (K .pairFactorizationFails) previous := by
   classical
-  let system := Classical.choice
-    (previous.get (K .pairOverlapSystem)).down
   exact Decision.run previous (K .pairConditionalFactorization)
-    (K .pairConditionalFactorizationResidual)
+    (K .pairFactorizationFails)
     `Hypostructure.Graph.Strategy.Spine.pairConditionalFactorizationDichotomy
-    (if factorization : system.ConditionalFactorization then
-      .inl ⟨⟨system, factorization⟩⟩
+    (if factorization : Holds BranchState Presentation presentation data
+        .pairConditionalFactorization current.object then
+      .inl ⟨factorization⟩
     else
-      .inr ⟨⟨.factorization system factorization⟩⟩)
-    factorizationFresh residualFresh
+      .inr ⟨factorization⟩)
+    factorizationFresh failsFresh
+
+/-- Node `[182]` from `[178]`: the failed factorization test retains the
+literal pair overlap system as the uncovered pair-code residual. -/
+@[reducible] noncomputable def pairFactorizationResidualRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.pairFactorizationResidual
+    { Requires := [K .pairFactorizationFails, K .pairOverlapSystem]
+      Produces := [K .pairConditionalFactorizationResidual]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .pairConditionalFactorizationResidual)
+        ⟨Graph.Contracts.SurplusPair.pairUncovered_of_factorizationFails
+          (inputs.get (K .pairOverlapSystem)).down
+          (inputs.get (K .pairFactorizationFails)).down⟩
+        .nil)
 
 /-- **`lem:pair-failure-overlap` at node `[178]`.**
 
