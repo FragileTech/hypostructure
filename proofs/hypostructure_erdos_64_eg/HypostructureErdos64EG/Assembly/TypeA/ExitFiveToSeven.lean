@@ -82,12 +82,10 @@ noncomputable abbrev typeAExitFiveToEightKeys : FactKeys EGInput.{u} :=
     K .windowShadowSingletonTail,
     K .windowShadowHitCycle,
     K .windowShadowHitExcluded,
-    K .route8PeeledDemandResidual,
     K .route8UnpaidExitFourResidual,
     K .route8UnifiedVisibleResidual,
     K .route8UnifiedVisibleOverload,
     K .route8JointBalance,
-    K .route8TerminalNoGo,
     K .typeBExcluded,
     K .typeBExclusionResidual,
     K .typeBExclusionResidualMass,
@@ -119,7 +117,11 @@ noncomputable abbrev typeAExitFiveToEightKeys : FactKeys EGInput.{u} :=
     K .route8TrueTwoCarrierEntry,
     K .route8CarrierDeletionWitnesses,
     K .route8PrivateCarrierBudget,
-    K .route8NoTwoCarrierContradiction]
+    K .route8TwoCarrierExit,
+    K .route8UnifiedTwoCarrierExit,
+    K .route8StageRate,
+    K .route8UnpaidTwoCarrier,
+    K .route8UnpaidWitnessFree]
 
 /-- **Nodes `[103]`--`[109]`: exits `(5)`--`(7)` and the route-`8` residual**, on
 a saturated exit-`(4)`-free state of the exit segment (index-polymorphic).
@@ -213,58 +215,7 @@ noncomputable def selectedTypeAExitFiveToEight
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                       silentHistory (by key_fresh)
-                  exact selectedRouteEightResidual normal
-                    (profileFresh := by key_fresh)
-                    (squeezeFresh := by key_fresh)
-                    (burdenFresh := by key_fresh)
-                    (deficitFresh := by key_fresh)
-                    (deficitFailsFresh := by key_fresh)
-                    (coreFresh := by key_fresh)
-                    (trueResidualFresh := by key_fresh)
-                    (cutParityFresh := by key_fresh)
-                    (smallFresh := by key_fresh)
-                    (noSmallFresh := by key_fresh)
-                    (collapseFresh := by key_fresh)
-                    (bridgeMassFresh := by key_fresh)
-                    (bridgeSublinearFresh := by key_fresh)
-                    (censusFresh := by key_fresh)
-                    (twoFresh := by key_fresh)
-                    (noTwoFresh := by key_fresh)
-                    (trueEntryFresh := by key_fresh)
-                    (deletionWitnessesFresh := by key_fresh)
-                    (privateBudgetFresh := by key_fresh)
-                    (noTwoContradictionFresh := by key_fresh)
-                    (terminalNoGoFresh := by key_fresh)
-                    (unifiedNegativeFresh := by key_fresh)
-                    (typeAExclusionFresh := by key_fresh)
-                    (typeBBridgeReductionFresh := by key_fresh)
-                    (piecesClassifiedFresh := by key_fresh)
-                    (sublinearLedgerFresh := by key_fresh)
-                    (sublinearResidualFresh := by key_fresh)
-                    (unifiedDeficitFresh := by key_fresh)
-                    (quotientFreeFresh := by key_fresh)
-                    (quotientResidualFresh := by key_fresh)
-                    (unifiedCensusFresh := by key_fresh)
-                    (extractedCensusFresh := by key_fresh)
-                    (unifiedTrueFresh := by key_fresh)
-                    (peelingFresh := by key_fresh)
-                    (stageFailedFresh := by key_fresh)
-                    (demandLedgerFresh := by key_fresh)
-                    (demandAbsorptionFresh := by key_fresh)
-                    (openBoundarySaturatedFresh := by key_fresh)
-                    (demandUnitCountFresh := by key_fresh)
-                    (windowBlockersFresh := by key_fresh)
-                    (windowShadowSignatureFresh := by key_fresh)
-                    (windowShadowTailFresh := by key_fresh)
-                    (windowShadowCycleFresh := by key_fresh)
-                    (windowShadowExcludedFresh := by key_fresh)
-                    (demandResidualFresh := by key_fresh)
-                    (unifiedTerminalFresh := by key_fresh)
-                    (unpaidExitFourFresh := by key_fresh)
-                    (unifiedVisibleFresh := by key_fresh)
-                    (unifiedVisibleOverloadFresh := by key_fresh)
-                    (jointBalanceFresh := by key_fresh)
-                    (silentClosure := some ⟨by infer_instance, by key_fresh⟩)
+                  exact selectedRouteEightResidualSilent normal
               | .right visibleHistory =>
                   let normal :=
                     (highCentreNormalFormRow (BranchState := BranchState)
@@ -272,55 +223,5 @@ noncomputable def selectedTypeAExitFiveToEight
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                       visibleHistory (by key_fresh)
                   exact selectedRouteEightResidual normal
-                    (profileFresh := by key_fresh)
-                    (squeezeFresh := by key_fresh)
-                    (burdenFresh := by key_fresh)
-                    (deficitFresh := by key_fresh)
-                    (deficitFailsFresh := by key_fresh)
-                    (coreFresh := by key_fresh)
-                    (trueResidualFresh := by key_fresh)
-                    (cutParityFresh := by key_fresh)
-                    (smallFresh := by key_fresh)
-                    (noSmallFresh := by key_fresh)
-                    (collapseFresh := by key_fresh)
-                    (bridgeMassFresh := by key_fresh)
-                    (bridgeSublinearFresh := by key_fresh)
-                    (censusFresh := by key_fresh)
-                    (twoFresh := by key_fresh)
-                    (noTwoFresh := by key_fresh)
-                    (trueEntryFresh := by key_fresh)
-                    (deletionWitnessesFresh := by key_fresh)
-                    (privateBudgetFresh := by key_fresh)
-                    (noTwoContradictionFresh := by key_fresh)
-                    (terminalNoGoFresh := by key_fresh)
-                    (unifiedNegativeFresh := by key_fresh)
-                    (typeAExclusionFresh := by key_fresh)
-                    (typeBBridgeReductionFresh := by key_fresh)
-                    (piecesClassifiedFresh := by key_fresh)
-                    (sublinearLedgerFresh := by key_fresh)
-                    (sublinearResidualFresh := by key_fresh)
-                    (unifiedDeficitFresh := by key_fresh)
-                    (quotientFreeFresh := by key_fresh)
-                    (quotientResidualFresh := by key_fresh)
-                    (unifiedCensusFresh := by key_fresh)
-                    (extractedCensusFresh := by key_fresh)
-                    (unifiedTrueFresh := by key_fresh)
-                    (peelingFresh := by key_fresh)
-                    (stageFailedFresh := by key_fresh)
-                    (demandLedgerFresh := by key_fresh)
-                    (demandAbsorptionFresh := by key_fresh)
-                    (openBoundarySaturatedFresh := by key_fresh)
-                    (demandUnitCountFresh := by key_fresh)
-                    (windowBlockersFresh := by key_fresh)
-                    (windowShadowSignatureFresh := by key_fresh)
-                    (windowShadowTailFresh := by key_fresh)
-                    (windowShadowCycleFresh := by key_fresh)
-                    (windowShadowExcludedFresh := by key_fresh)
-                    (demandResidualFresh := by key_fresh)
-                    (unifiedTerminalFresh := by key_fresh)
-                    (unpaidExitFourFresh := by key_fresh)
-                    (unifiedVisibleFresh := by key_fresh)
-                    (unifiedVisibleOverloadFresh := by key_fresh)
-                    (jointBalanceFresh := by key_fresh)
 
 end HypostructureErdos64EG

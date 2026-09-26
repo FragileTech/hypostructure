@@ -93,12 +93,10 @@ noncomputable abbrev typeAVisibleExitKeys : FactKeys EGInput.{u} :=
     K .windowShadowSingletonTail,
     K .windowShadowHitCycle,
     K .windowShadowHitExcluded,
-    K .route8PeeledDemandResidual,
     K .route8UnpaidExitFourResidual,
     K .route8UnifiedVisibleResidual,
     K .route8UnifiedVisibleOverload,
     K .route8JointBalance,
-    K .route8TerminalNoGo,
     K .typeBExcluded,
     K .typeBExclusionResidual,
     K .typeBExclusionResidualMass,
@@ -130,7 +128,11 @@ noncomputable abbrev typeAVisibleExitKeys : FactKeys EGInput.{u} :=
     K .route8TrueTwoCarrierEntry,
     K .route8CarrierDeletionWitnesses,
     K .route8PrivateCarrierBudget,
-    K .route8NoTwoCarrierContradiction]
+    K .route8TwoCarrierExit,
+    K .route8UnifiedTwoCarrierExit,
+    K .route8StageRate,
+    K .route8UnpaidTwoCarrier,
+    K .route8UnpaidWitnessFree]
 
 /-- **Nodes `[95]`--`[100]`: exits `(1)`--`(3)`** on node `[93]`'s visible arm
 (index-polymorphic).  `def:typeA-saturated-exits`, `lem:typeA-exits-discharged`:

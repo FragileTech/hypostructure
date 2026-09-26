@@ -88,12 +88,10 @@ noncomputable abbrev typeAExitSegmentKeys : FactKeys EGInput.{u} :=
     K .windowShadowSingletonTail,
     K .windowShadowHitCycle,
     K .windowShadowHitExcluded,
-    K .route8PeeledDemandResidual,
     K .route8UnpaidExitFourResidual,
     K .route8UnifiedVisibleResidual,
     K .route8UnifiedVisibleOverload,
     K .route8JointBalance,
-    K .route8TerminalNoGo,
     K .typeBExcluded,
     K .typeBExclusionResidual,
     K .typeBExclusionResidualMass,
@@ -125,7 +123,11 @@ noncomputable abbrev typeAExitSegmentKeys : FactKeys EGInput.{u} :=
     K .route8TrueTwoCarrierEntry,
     K .route8CarrierDeletionWitnesses,
     K .route8PrivateCarrierBudget,
-    K .route8NoTwoCarrierContradiction]
+    K .route8TwoCarrierExit,
+    K .route8UnifiedTwoCarrierExit,
+    K .route8StageRate,
+    K .route8UnpaidTwoCarrier,
+    K .route8UnpaidWitnessFree]
 
 /-- **Nodes `[101]`--`[102]` and the recompute-`L₄` loop**, on the shared entry of
 the exit segment (index-polymorphic).  Both node `[99]`'s no arm and node `[94]`

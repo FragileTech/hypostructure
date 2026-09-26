@@ -28,12 +28,10 @@ set_option maxHeartbeats 8000000 in
 `[25]`--`[124]` with that inequality in place of `[24]`.  Its no arm runs
 `[148]`--`[152]` and decides `[153]`: the bounded arm returns through `[24]`
 (`densityBudgetRow`, `prop:p13-density` after closure) to `[25]`; the linear arm
-extracts the configuration family and decides `[154]`.  G1 closes at `[155]`
-and G2 at `[156]` (a target-defective quotient is the sparse exit (b)); the
-silent arm `[157]` publishes the local cold-terminal exclusion of
-`thm:cold-branch-quantitative-closure`, retained at `[187]`. -/
+extracts the configuration family and decides `[154]`.  G1 closes at `[155]`;
+G2 `[156]` and the silent arm `[157]` publish the local cold-terminal exclusion
+of `thm:cold-branch-quantitative-closure`, retained at `[187]`. -/
 -- EG-NODE [146] \(\theta<1/78\)?
--- EG-NODE [156] G2: target defect, exit (4), or handoff
 -- EG-NODE [147] route-8 private-incidence collision closes
 -- EG-NODE [24] bounded cold-mass return from [153]: $\theta\le\theta_{\rm win}+o(1)$; high entropy: $\theta\le0.01198542083\ldots$
 noncomputable def Assembly.Internal.nearCubicRealized
@@ -78,11 +76,9 @@ noncomputable def Assembly.Internal.nearCubicRealized
           match coldGermDistinctionDichotomy (data := spineData) unhit
               (by key_fresh) (by key_fresh) with
           | .left distinguishedHistory =>
-              -- `[156]`: G2 is a target-defective quotient, the sparse exit
-              -- (b) excluded by the surviving branch's `K .sparseSurplusSurvivor`.
-              exact ((closeIncompatible distinguishedHistory
-                (K .coldGermSomeDistinguishing) (K .sparseSurplusSurvivor)
-                (by key_fresh)).elimClosed (by infer_instance)).elim
+              exact Or.inr (Or.inr (Or.inr
+                ((nearCubicColdTable distinguishedHistory).get
+                  (K .coldBranchClosed)).down))
           | .right silentHistory =>
               exact Or.inr (Or.inr (Or.inr
                 ((nearCubicColdTable silentHistory).get

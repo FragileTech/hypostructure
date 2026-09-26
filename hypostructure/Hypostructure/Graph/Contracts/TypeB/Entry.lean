@@ -99,7 +99,7 @@ theorem typeBDecoratedAssignedSupport
         (handoffWindowFree data object) envelope :=
     { dyadicSafe := avoids
       coreWindowFree := windowFree
-      uncompressible := uncompressible
+      uncompressible := handoffUncompressible_of_uncompressible uncompressible
       fanReturnSafe := fun centre centreMember first firstMember second
           secondMember different =>
         (envelope.fanSafe centre centreMember first firstMember second
@@ -327,7 +327,7 @@ theorem typeBFanEntry_of_absorbedGermFanData
       (handoffUncompressible data object)
       (handoffWindowFree data object) envelope :=
     Graph.DecoratedHandoff.admissible_of_envelope avoids coreSafe
-      uncompressible
+      (handoffUncompressible_of_uncompressible uncompressible)
   have assignedTwo : 1 < assigned.card := by
     rw [show assigned.card = object.degree centre by
       simp [assigned, Graph.FiniteObject.degree,

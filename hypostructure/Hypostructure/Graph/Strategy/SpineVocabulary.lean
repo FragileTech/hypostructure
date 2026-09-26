@@ -668,9 +668,6 @@ inductive Key where
   has an accepted suppressed cycle using added chords, and every such cycle
   expands to a forbidden source-cycle length. -/
   | suppressedFamilyCriticalCycle
-  /-- `def:typeB-fan-safe`: the five-clause fan-safe relation, with the four
-  non-geometric failures represented by their literal branch predicates. -/
-  | typeBFanSafe
   /-- `def:fan-closed-port`: the canonical assigned-profile predicate, exposed
   with all three manuscript clauses. -/
   | fanClosedPort
@@ -834,12 +831,6 @@ inductive Key where
   `typeASaturatedReceiver`.  No exit-(4) fact is currently produced from this
   entry: the required coordinate-specific response realization is absent. -/
   | typeASaturatedExitEntry
-  /-- The terminal saturated no-exit-`(4)` state on the silent-origin lane. -/
-  | typeASilentExitFourFree
-  /-- The no-exit-`(5)` state on the same silent-origin support and receiver. -/
-  | typeASilentExitFiveFree
-  /-- The no-exit-`(6)` state on the same silent-origin support and receiver. -/
-  | typeASilentExitSixFree
   /-- Node `[108]`, on node `[107]`'s yes arm — exit `(7)` of
   `def:typeA-saturated-exits`: *"a high-degree decorated handoff fan envelope
   is produced"*, at the visible saturated port node `[93]` delivered.  This is
@@ -1179,11 +1170,6 @@ inductive Key where
   /-- Node `[106]`, global scope: `lem:no-silent-global-smearing` gives a
   strictly smaller closed representative. -/
   | typeAExitSixGlobal
-  /-- Node `[107]`, yes arm: the selected saturated-handoff residual, after
-  exits `(4)`--`(6)` have failed, produces the exit-`(7)` decorated handoff
-  envelope.  Node `[108]` records the handoff, and node `[65]` commits its
-  admissibility interface. -/
-  | typeAExitSevenProduced
   /-- Node `[110]`, exit `(8)`: the selected route-8 residual satisfies the
   silent-core residual profile.  This is a semantic fact about the selected
   residual state, not an indexed carrier or basin transport object. -/
@@ -2006,8 +1992,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       SingleOpenPortSuppressionWitnessStatement data.toParameters object
   | .suppressedFamilyCriticalCycle, object =>
       SuppressedFamilyCriticalCycleStatement data.toParameters object
-  | .typeBFanSafe, object =>
-      TypeBFanSafeStatement data.toParameters object
   | .fanClosedPort, object =>
       FanClosedPortStatement data.toParameters object
   | .compatiblePairFanClosure, object =>
@@ -2064,14 +2048,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       TypeAExitThreeFreeStatement data.toParameters object
   | .typeASaturatedExitEntry, object =>
       TypeASaturatedExitEntryStatement data.toParameters object
-  | .typeASilentExitFourFree, object =>
-      SelectedSilentExitFourFree data.toParameters object
-  | .typeASilentExitFiveFree, object =>
-      SelectedSilentExitFiveFree data.toParameters object
-  | .typeASilentExitSixFree, object =>
-      SelectedSilentExitSixFree data.toParameters object
-  | .typeAExitSevenProduced, object =>
-      TypeAExitSevenProducedStatement data.toParameters object
   | .typeAExitSevenHandoff, object =>
       TypeAExitSevenHandoffStatement data.toParameters object
   | .typeBDecoratedAssignedSupport, object =>
@@ -2543,7 +2519,6 @@ def label : Key → String
   | .openPortSuppressionSafe => "openPortSuppressionSafe"
   | .singleOpenPortSuppressionWitness => "singleOpenPortSuppressionWitness"
   | .suppressedFamilyCriticalCycle => "suppressedFamilyCriticalCycle"
-  | .typeBFanSafe => "typeBFanSafe"
   | .fanClosedPort => "fanClosedPort"
   | .compatiblePairFanClosure => "compatiblePairFanClosure"
   | .fanClosedPortTypeBRouting => "fanClosedPortTypeBRouting"
@@ -2572,9 +2547,6 @@ def label : Key → String
   | .typeAExitThreeCollision => "typeAExitThreeCollision"
   | .typeAExitThreeFree => "typeAExitThreeFree"
   | .typeASaturatedExitEntry => "typeASaturatedExitEntry"
-  | .typeASilentExitFourFree => "typeASilentExitFourFree"
-  | .typeASilentExitFiveFree => "typeASilentExitFiveFree"
-  | .typeASilentExitSixFree => "typeASilentExitSixFree"
   | .typeAExitSevenHandoff => "typeAExitSevenHandoff"
   | .typeBDecoratedAssignedSupport => "typeBDecoratedAssignedSupport"
   | .typeAExitSevenFree => "typeAExitSevenFree"
@@ -2667,7 +2639,6 @@ def label : Key → String
   | .typeAExitSixFree => "typeAExitSixFree"
   | .typeAExitSixProper => "typeAExitSixProper"
   | .typeAExitSixGlobal => "typeAExitSixGlobal"
-  | .typeAExitSevenProduced => "typeAExitSevenProduced"
   | .route8ResidualProfile => "route8ResidualProfile"
   | .route8GlobalSqueeze => "route8GlobalSqueeze"
   | .route8BasinBurden => "route8BasinBurden"
@@ -2901,7 +2872,6 @@ example : label .singleOpenPortSuppressionWitness =
     "singleOpenPortSuppressionWitness" := rfl
 example : label .suppressedFamilyCriticalCycle =
     "suppressedFamilyCriticalCycle" := rfl
-example : label .typeBFanSafe = "typeBFanSafe" := rfl
 example : label .fanClosedPort = "fanClosedPort" := rfl
 example : label .compatiblePairFanClosure = "compatiblePairFanClosure" := rfl
 example : label .fanClosedPortTypeBRouting = "fanClosedPortTypeBRouting" := rfl
@@ -3013,7 +2983,6 @@ example : label .typeAExitSix = "typeAExitSix" := rfl
 example : label .typeAExitSixFree = "typeAExitSixFree" := rfl
 example : label .typeAExitSixProper = "typeAExitSixProper" := rfl
 example : label .typeAExitSixGlobal = "typeAExitSixGlobal" := rfl
-example : label .typeAExitSevenProduced = "typeAExitSevenProduced" := rfl
 example : label .route8ResidualProfile = "route8ResidualProfile" := rfl
 example : label .route8GlobalSqueeze = "route8GlobalSqueeze" := rfl
 example : label .route8BasinBurden = "route8BasinBurden" := rfl
@@ -3282,7 +3251,6 @@ def idx : Key → Nat
   | .openPortSuppressionSafe => 436
   | .singleOpenPortSuppressionWitness => 437
   | .suppressedFamilyCriticalCycle => 438
-  | .typeBFanSafe => 441
   | .fanClosedPort => 442
   | .compatiblePairFanClosure => 443
   | .fanClosedPortTypeBRouting => 444
@@ -3372,7 +3340,6 @@ def idx : Key → Nat
   | .typeAExitSixFree => 99
   | .typeAExitSixProper => 100
   | .typeAExitSixGlobal => 101
-  | .typeAExitSevenProduced => 158
   | .route8ResidualProfile => 159
   | .route8GlobalSqueeze => 160
   | .route8BasinBurden => 161
@@ -3402,9 +3369,6 @@ def idx : Key → Nat
   | .route8UnifiedVisibleOverload => 505
   | .route8UnifiedVisibleHistory => 512
   | .route8JointBalance => 506
-  | .typeASilentExitFourFree => 508
-  | .typeASilentExitFiveFree => 509
-  | .typeASilentExitSixFree => 510
   | .typeASilentExitSevenFree => 511
   | .route8TwoCarrierEntry => 261
   | .route8NoTwoCarrierEntry => 262
@@ -3624,7 +3588,6 @@ def ofIdx : Nat → Key
   | 436 => .openPortSuppressionSafe
   | 437 => .singleOpenPortSuppressionWitness
   | 438 => .suppressedFamilyCriticalCycle
-  | 441 => .typeBFanSafe
   | 442 => .fanClosedPort
   | 443 => .compatiblePairFanClosure
   | 444 => .fanClosedPortTypeBRouting
@@ -3708,7 +3671,6 @@ def ofIdx : Nat → Key
   | 99 => .typeAExitSixFree
   | 100 => .typeAExitSixProper
   | 101 => .typeAExitSixGlobal
-  | 158 => .typeAExitSevenProduced
   | 159 => .route8ResidualProfile
   | 160 => .route8GlobalSqueeze
   | 161 => .route8BasinBurden
@@ -3738,9 +3700,6 @@ def ofIdx : Nat → Key
   | 505 => .route8UnifiedVisibleOverload
   | 512 => .route8UnifiedVisibleHistory
   | 506 => .route8JointBalance
-  | 508 => .typeASilentExitFourFree
-  | 509 => .typeASilentExitFiveFree
-  | 510 => .typeASilentExitSixFree
   | 511 => .typeASilentExitSevenFree
   | 261 => .route8TwoCarrierEntry
   | 262 => .route8NoTwoCarrierEntry
@@ -4119,8 +4078,6 @@ def name : Key → Lean.Name
   | .suppressedFamilyCriticalCycle =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "suppressedFamilyCriticalCycle") 438
-  | .typeBFanSafe =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "typeBFanSafe") 441
   | .fanClosedPort =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "fanClosedPort") 442
   | .compatiblePairFanClosure =>
@@ -4194,15 +4151,6 @@ def name : Key → Lean.Name
   | .typeASaturatedExitEntry =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "typeASaturatedExitEntry") 123
-  | .typeASilentExitFourFree =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine
-        "typeASilentExitFourFree") 508
-  | .typeASilentExitFiveFree =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine
-        "typeASilentExitFiveFree") 509
-  | .typeASilentExitSixFree =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine
-        "typeASilentExitSixFree") 510
   | .typeAExitSevenHandoff =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "typeAExitSevenHandoff") 124
@@ -4354,9 +4302,6 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitSixProper") 100
   | .typeAExitSixGlobal =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitSixGlobal") 101
-  | .typeAExitSevenProduced =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine
-        "typeAExitSevenProduced") 158
   | .route8ResidualProfile =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8ResidualProfile") 159
   | .route8GlobalSqueeze =>

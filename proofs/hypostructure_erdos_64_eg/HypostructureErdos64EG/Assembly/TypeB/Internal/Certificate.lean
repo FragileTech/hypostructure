@@ -119,7 +119,7 @@ noncomputable def Assembly.Internal.selectedTypeBCertificateContinuation
       key_fresh)
     (windowShadowExcludedFresh : K .windowShadowHitExcluded ∉ known := by
       key_fresh)
-    (demandResidualFresh : K .route8PeeledDemandResidual ∉ known := by
+    (demandResidualFresh : K .route8StageRate ∉ known := by
       key_fresh)
     (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known := by
       key_fresh)
@@ -128,7 +128,9 @@ noncomputable def Assembly.Internal.selectedTypeBCertificateContinuation
     (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known := by
       key_fresh)
     (jointBalanceFresh : K .route8JointBalance ∉ known := by key_fresh)
-    (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known := by key_fresh) :
+    (unifiedTerminalFresh : K .route8UnifiedTwoCarrierExit ∉ known := by key_fresh)
+    (unpaidTwoFresh : K .route8UnpaidTwoCarrier ∉ known := by key_fresh)
+    (witnessFreeFresh : K .route8UnpaidWitnessFree ∉ known := by key_fresh) :
     SelectedRouteEightBoundary selected := by
   -- `[70]`: the fan-safe graph and the certificate-marked cap.
   let capped := (fanCertificateCapRow (data := spineData)).run history

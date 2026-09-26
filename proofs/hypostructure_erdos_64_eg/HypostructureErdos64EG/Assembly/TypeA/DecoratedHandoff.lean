@@ -62,12 +62,10 @@ noncomputable abbrev typeADecoratedHandoffKeys : FactKeys EGInput.{u} :=
     K .windowShadowSingletonTail,
     K .windowShadowHitCycle,
     K .windowShadowHitExcluded,
-    K .route8PeeledDemandResidual,
     K .route8UnpaidExitFourResidual,
     K .route8UnifiedVisibleResidual,
     K .route8UnifiedVisibleOverload,
     K .route8JointBalance,
-    K .route8TerminalNoGo,
     K .typeBExcluded,
     K .typeBExclusionResidual,
     K .typeBExclusionResidualMass,
@@ -82,7 +80,12 @@ noncomputable abbrev typeADecoratedHandoffKeys : FactKeys EGInput.{u} :=
     K .triangularCrossShoulder,
     K .triangularPortTypeBRouting,
     K .typeBGlobalLocalBridge,
-    closed]
+    closed,
+    K .route8TwoCarrierExit,
+    K .route8UnifiedTwoCarrierExit,
+    K .route8StageRate,
+    K .route8UnpaidTwoCarrier,
+    K .route8UnpaidWitnessFree]
 
 /-- **Node `[108]` → Type B `[65]` on the decorated envelope**: the exact
 envelope committed at `[108]` (`K .typeAExitSevenHandoff`) enters the Type B

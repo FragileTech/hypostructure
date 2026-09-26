@@ -148,7 +148,6 @@ noncomputable def selectedAbsorbedFanData
         (by key_fresh)
         (by key_fresh)
         (by key_fresh)
-        (by key_fresh)
         (by infer_instance)
         (by key_fresh)
         (routingFresh := by key_fresh)
@@ -186,8 +185,9 @@ noncomputable def selectedAbsorbedFanData
 /-- **Nodes `[175]`--`[177]`, `lem:absorbed-germ-fan-data`.**  `[175]` publishes
 the per-half-edge case split and decides whether some selected corridor avoids
 the high-degree vertices.  On its yes arm the genuine (F5) configurations
-`[176]` run `[154]`--`[157]`: G1 closes at `[155]`, G2 at `[156]`, and the silent
-arm reaches the neutral configuration `[163]`, whose genuine second strand
+`[176]` run `[154]`--`[157]`: G1 closes at `[155]`; G2 `[156]` and the silent
+configurations are recorded by the trichotomy and the same-interface table, and
+the neutral configuration `[163]` is split: its genuine second strand
 closes at `[167]`/`[168]` and whose canonical replacement is published with
 `Q = E` (`[165]`--`[166]`); the case-(ii) complement of a mixed family then
 continues at `[177]`.  On its no arm every selected corridor is `[177]` fan
@@ -238,39 +238,35 @@ noncomputable def selectedAbsorbedGermResidual
         (absorbedGermFamilyPositiveRow (data := spineData)).run positiveHistory
           (by key_fresh)
       let unhit := nearCubicColdNoHit positiveFamily
-      match coldGermDistinctionDichotomy (data := spineData) unhit
+      -- `[156]`--`[157]`: the hit-distinguished (G2) and silent configurations
+      -- are recorded together by the trichotomy and the same-interface table
+      -- (`K .coldBranchClosed`), and the neutral configuration is split below.
+      let neutralConfiguration :=
+        (neutralEqualLengthTerminalRow (data := spineData)).run unhit
+          (by key_fresh)
+      let closed := nearCubicColdTable neutralConfiguration
+      match neutralGermSymmetryDichotomy (data := spineData) closed
           (by key_fresh) (by key_fresh) with
-      | .left distinguishedHistory =>
-          exact ((closeIncompatible distinguishedHistory
-            (K .coldGermSomeDistinguishing) (K .sparseSurplusSurvivor)
-            (by key_fresh)).elimClosed (by infer_instance)).elim
-      | .right silentHistory =>
-          let neutralConfiguration :=
-            (neutralEqualLengthTerminalRow (data := spineData)).run silentHistory
+      | .right genuineHistory =>
+          let survivor :=
+            (twoStrandSurvivorRow (data := spineData)).run genuineHistory
               (by key_fresh)
-          let closed := nearCubicColdTable neutralConfiguration
-          match neutralGermSymmetryDichotomy (data := spineData) closed
-              (by key_fresh) (by key_fresh) with
-          | .right genuineHistory =>
-              let survivor :=
-                (twoStrandSurvivorRow (data := spineData)).run genuineHistory
-                  (by key_fresh)
-              let stubbed :=
-                (coldWindowStubStructureRow (data := spineData)).run survivor
-                  (by key_fresh)
-              exact ((symmetricPairEndpointExclusionRow
-                (data := spineData)).runAndCloseIncompatible stubbed
-                  (K .coldTwoStrandSurvivor) (K .coldSymmetricPairExcluded)
-                  (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
-          | .left canonicalHistory =>
-              let swapped :=
-                (canonicalReplacementSwapRow (data := spineData)).run
-                  canonicalHistory (by key_fresh)
-              let trivial :=
-                (canonicalReplacementTrivialRow (BranchState := BranchState)
-                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                  swapped (by key_fresh)
-              exact selectedAbsorbedFanData trivial
+          let stubbed :=
+            (coldWindowStubStructureRow (data := spineData)).run survivor
+              (by key_fresh)
+          exact ((symmetricPairEndpointExclusionRow
+            (data := spineData)).runAndCloseIncompatible stubbed
+              (K .coldTwoStrandSurvivor) (K .coldSymmetricPairExcluded)
+              (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
+      | .left canonicalHistory =>
+          let swapped :=
+            (canonicalReplacementSwapRow (data := spineData)).run
+              canonicalHistory (by key_fresh)
+          let trivial :=
+            (canonicalReplacementTrivialRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              swapped (by key_fresh)
+          exact selectedAbsorbedFanData trivial
 
 end HypostructureErdos64EG

@@ -84,9 +84,9 @@ Run `python3 .agents/skills/eg-proof-expansion/scripts/api_catalog.py refresh
 --repo-root .` to populate this section.
 
 <!-- BEGIN GENERATED API -->
-Compiled declarations: **813**.
+Compiled declarations: **838**.
 
-Category counts: **Canonical execution** 33, **Canonical exhaustive decisions** 11, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 35, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 164, **Minimum-degree cycle spine vocabulary** 411, **Sealed topology** 6, **Sealed total closure** 12, **Typed partial topology and sealed completion** 16.
+Category counts: **Canonical execution** 33, **Canonical exhaustive decisions** 11, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 35, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 173, **Minimum-degree cycle spine vocabulary** 427, **Sealed topology** 6, **Sealed total closure** 12, **Typed partial topology and sealed completion** 16.
 
 The `type` fields below come from the compiled Lean environment.  Docstrings
 and comments are deliberately excluded.
@@ -3501,41 +3501,6 @@ Core.Strategy.RoutedTask.Deadlock → ℕ → Format
     {progress : Core.Progress P} → Core.MinimalCounterexampleContext P Target progress → Core.Strategy.ProblemInput P
 ```
 
-### `Hypostructure.Graph.Strategy.SpineRows.Route8UnifiedVisibleResidual`
-
-#### `Hypostructure.Graph.Route8.Entry.carrierProfile.congr_simp`
-
-- Category: Minimum-degree cycle spine rows
-- Kind: `theorem`
-- Source: `Hypostructure/Graph/Strategy/SpineRows/Route8UnifiedVisibleResidual.lean`
-- Compiled type:
-
-```lean
-∀ {Target : Graph.FiniteObject → Prop} {Carrier : Type u} {inst : DecidableEq Carrier} [inst_1 : DecidableEq Carrier]
-  (entry entry_1 : Graph.Route8.Entry Target Carrier), entry = entry_1 → entry.carrierProfile = entry_1.carrierProfile
-```
-
-### `Hypostructure.Graph.Strategy.SpineRows.Route8UnpaidExitFourDichotomy`
-
-#### `Hypostructure.Graph.Route8.indexedPrivateCoreCarriers.congr_simp`
-
-- Category: Minimum-degree cycle spine rows
-- Kind: `theorem`
-- Source: `Hypostructure/Graph/Strategy/SpineRows/Route8UnpaidExitFourDichotomy.lean`
-- Compiled type:
-
-```lean
-∀ {Carrier Index : Type u} [inst : DecidableEq Carrier] {inst_1 : DecidableEq Index} [inst_2 : DecidableEq Index]
-  (entries entries_1 : Finset Index),
-  entries = entries_1 →
-    ∀ (core core_1 : Index → Finset Carrier),
-      core = core_1 →
-        ∀ (index index_1 : Index),
-          index = index_1 →
-            Graph.Route8.indexedPrivateCoreCarriers entries core index =
-              Graph.Route8.indexedPrivateCoreCarriers entries_1 core_1 index_1
-```
-
 ### `Hypostructure.Graph.Strategy.SpineVocabulary`
 
 #### `Hypostructure.Graph.Strategy.Spine.Data`
@@ -4331,6 +4296,17 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.blockedPairCountFails`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.blockedPairEntropySandwich`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -4343,6 +4319,17 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.blockedPairEntropySetup`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.blockedPairNoExit`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -4827,6 +4814,17 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.coldNeutralEqualLengthTerminal`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.coldNoPositiveGerm`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -5343,6 +5341,17 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.freePairCountFails`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.freePairEntropySandwich`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -5717,6 +5726,17 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.pairFactorizationFails`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.pairFailureOverlap`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -5740,6 +5760,28 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.pairIncrementEarlyOutcome`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.pairIncrementFails`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.pairIncrementNoEarlyOutcome`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -5783,6 +5825,17 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.pairRealizabilityFails`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.pairSerialArithmetic`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -5816,6 +5869,17 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.pairSystemNoEarlyOutcome`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.pairSystemRealizability`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -5828,6 +5892,17 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.portPowerReturn`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.primitiveClassOverload`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -6135,17 +6210,6 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.Key.route8NoTwoCarrierContradiction`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
 #### `Hypostructure.Graph.Strategy.Spine.Key.route8NoTwoCarrierEntry`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -6158,17 +6222,6 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.route8OpenBoundarySaturated`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
-#### `Hypostructure.Graph.Strategy.Spine.Key.route8PeeledDemandResidual`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -6289,7 +6342,7 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.Key.route8StageRateFailed`
+#### `Hypostructure.Graph.Strategy.Spine.Key.route8StageRate`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -6300,7 +6353,7 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.Key.route8TerminalNoGo`
+#### `Hypostructure.Graph.Strategy.Spine.Key.route8StageRateFailed`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -6334,6 +6387,17 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.route8TwoCarrierEntry`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.route8TwoCarrierExit`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -6388,6 +6452,17 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.route8UnifiedTwoCarrierExit`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.route8UnifiedVisibleHistory`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -6432,7 +6507,18 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.Key.route8VisibleExitFourRouting`
+#### `Hypostructure.Graph.Strategy.Spine.Key.route8UnpaidTwoCarrier`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.route8UnpaidWitnessFree`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -6806,6 +6892,17 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.typeAExitEightNotSilent`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.typeAExitFive`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -6818,6 +6915,28 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.typeAExitFiveFree`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.typeAExitFourAbsent`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.typeAExitFourExhausted`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -6883,6 +7002,17 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.typeAExitSevenAbsent`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.typeAExitSevenFree`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -6895,17 +7025,6 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.typeAExitSevenHandoff`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
-#### `Hypostructure.Graph.Strategy.Spine.Key.typeAExitSevenProduced`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -6949,7 +7068,29 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.typeAExitSixGlobalScope`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.typeAExitSixProper`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.typeAExitSixProperScope`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -7005,6 +7146,17 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.typeALowSurplus`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.typeANoVisibleEntry`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -7081,28 +7233,6 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.Key.typeASilentExitFiveFree`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
-#### `Hypostructure.Graph.Strategy.Spine.Key.typeASilentExitFourFree`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
 #### `Hypostructure.Graph.Strategy.Spine.Key.typeASilentExitSevenFree`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -7114,7 +7244,7 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.Key.typeASilentExitSixFree`
+#### `Hypostructure.Graph.Strategy.Spine.Key.typeASupport`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -7335,17 +7465,6 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.typeBFanLocalDichotomy`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
-#### `Hypostructure.Graph.Strategy.Spine.Key.typeBFanSafe`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -7763,6 +7882,17 @@ Graph.Strategy.Spine.KeyFresh.Keys → MVarId → Expr → Expr → MetaM Unit
 Graph.Strategy.Spine.KeyFresh.Keys → MVarId → Expr → Expr → MetaM Unit
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.KeyFresh.elementsOf`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `opaque`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Expr → optParam (Array Expr) #[] → MetaM (Array Expr)
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.KeyFresh.findHypothesis`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -7948,12 +8078,10 @@ Expr → optParam (Array Expr) #[] → MetaM (Array Expr)
             (previous :
                 Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   current known) →
-              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBDirectCycleFree)
-                    known] →
-                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBB2Choice ∉ known →
-                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBOverlapObstruction ∉ known →
-                    Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBB2Choice)
-                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBOverlapObstruction) previous
+              Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBB2Choice ∉ known →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBOverlapObstruction ∉ known →
+                  Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBB2Choice)
+                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBOverlapObstruction) previous
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows.BarrierEnumeration`
@@ -8312,6 +8440,31 @@ Expr → optParam (Array Expr) #[] → MetaM (Array Expr)
 
 ### `Hypostructure.Graph.Strategy.SpineRows.DenseNetDeficiencyCap`
 
+#### `Hypostructure.Graph.Strategy.Spine.denseDeficiencyDichotomy`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows/DenseNetDeficiencyCap.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        {current : Graph.Strategy.Spine.Input BranchState Presentation presentation data} →
+          {known : Core.Residual.FactKeys (Graph.Strategy.Spine.Input BranchState Presentation presentation data)} →
+            (previous :
+                Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                  current known) →
+              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.densePackingOverflow)
+                    known] →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.denseDeficiencyBelow ∉ known →
+                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.denseDeficiencyAtOrAbove ∉ known →
+                    Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.denseDeficiencyBelow)
+                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.denseDeficiencyAtOrAbove) previous
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.denseNetDeficiencyCapRow`
 
 - Category: Minimum-degree cycle spine rows
@@ -8346,12 +8499,10 @@ Expr → optParam (Array Expr) #[] → MetaM (Array Expr)
             (previous :
                 Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   current known) →
-              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.fanCertificateMarked)
-                    known] →
-                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBDirectCycle ∉ known →
-                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBDirectCycleFree ∉ known →
-                    Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBDirectCycle)
-                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBDirectCycleFree) previous
+              Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBDirectCycle ∉ known →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBDirectCycleFree ∉ known →
+                  Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBDirectCycle)
+                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBDirectCycleFree) previous
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows.DominantRootedType`
@@ -8416,12 +8567,10 @@ Expr → optParam (Array Expr) #[] → MetaM (Array Expr)
             (previous :
                 Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   current known) →
-              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.entropyPackageDemand)
-                    known] →
-                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.entropyCapActive ∉ known →
-                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.largeBudgetResidual ∉ known →
-                    Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.entropyCapActive)
-                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.largeBudgetResidual) previous
+              Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.entropyCapActive ∉ known →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.entropyCapBound ∉ known →
+                  Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.entropyCapActive)
+                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.entropyCapBound) previous
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows.EntropyPackage`
@@ -8521,11 +8670,10 @@ Expr → optParam (Array Expr) #[] → MetaM (Array Expr)
             (previous :
                 Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   current known) →
-              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.fanCertificateCap) known] →
-                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.fanCertificateMarked ∉ known →
-                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.fanCertificateResidual ∉ known →
-                    Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.fanCertificateMarked)
-                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.fanCertificateResidual) previous
+              Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.fanCertificateMarked ∉ known →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.fanCertificateResidual ∉ known →
+                  Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.fanCertificateMarked)
+                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.fanCertificateResidual) previous
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows.FanCertificateResidualMass`
@@ -8647,6 +8795,23 @@ Expr → optParam (Array Expr) #[] → MetaM (Array Expr)
         Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
+### `Hypostructure.Graph.Strategy.SpineRows.LowEntropyLargeBudget`
+
+#### `Hypostructure.Graph.Strategy.Spine.highEntropyLargeBudgetRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows/LowEntropyLargeBudget.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
 ### `Hypostructure.Graph.Strategy.SpineRows.HotColdPartition`
 
 #### `Hypostructure.Graph.Strategy.Spine.hotColdPartitionRow`
@@ -8750,6 +8915,89 @@ DecidableEq Graph.Strategy.Spine.Key
         Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
+### `Hypostructure.Graph.Strategy.SpineRows.NetChargeDichotomy`
+
+#### `Hypostructure.Graph.Strategy.Spine.instIncompatibleNetChargeNonNegativeCap`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineRows/NetChargeDichotomy.lean`
+- Compiled type:
+
+```lean
+∀ {BranchState : Graph.FiniteObject → Type v} {Presentation : Type} {presentation : Presentation}
+  {data : Graph.Strategy.Spine.Data},
+  Core.Strategy.Incompatible (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.netChargeNonNegative)
+    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.netChargeCap)
+```
+
+### `Hypostructure.Graph.Strategy.SpineRows.Route8PrivateCarrierBudget`
+
+#### `Hypostructure.Graph.Strategy.Spine.instIncompatibleRoute8CensusPrivateCarrierBudget`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineRows/Route8PrivateCarrierBudget.lean`
+- Compiled type:
+
+```lean
+∀ {BranchState : Graph.FiniteObject → Type v} {Presentation : Type} {presentation : Presentation}
+  {data : Graph.Strategy.Spine.Data},
+  Core.Strategy.Incompatible (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8Census)
+    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8PrivateCarrierBudget)
+```
+
+### `Hypostructure.Graph.Strategy.SpineRows.Route8SmallCoreExit`
+
+#### `Hypostructure.Graph.Strategy.Spine.instIncompatibleRoute8TrueResidualSmallCoreCollapse`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineRows/Route8SmallCoreExit.lean`
+- Compiled type:
+
+```lean
+∀ {BranchState : Graph.FiniteObject → Type v} {Presentation : Type} {presentation : Presentation}
+  {data : Graph.Strategy.Spine.Data},
+  Core.Strategy.Incompatible (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8TrueResidual)
+    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8SmallCoreCollapse)
+```
+
+### `Hypostructure.Graph.Strategy.SpineRows.Route8TwoCarrierExit`
+
+#### `Hypostructure.Graph.Strategy.Spine.instIncompatibleRoute8TrueTwoCarrierEntryTwoCarrierExit`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineRows/Route8TwoCarrierExit.lean`
+- Compiled type:
+
+```lean
+∀ {BranchState : Graph.FiniteObject → Type v} {Presentation : Type} {presentation : Presentation}
+  {data : Graph.Strategy.Spine.Data},
+  Core.Strategy.Incompatible (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8TrueTwoCarrierEntry)
+    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8TwoCarrierExit)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.instIncompatibleRoute8UnifiedTrueTwoCarrierEntryUnifiedTwoCarrierExit`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineRows/Route8TwoCarrierExit.lean`
+- Compiled type:
+
+```lean
+∀ {BranchState : Graph.FiniteObject → Type v} {Presentation : Type} {presentation : Presentation}
+  {data : Graph.Strategy.Spine.Data},
+  Core.Strategy.Incompatible (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8UnifiedTrueTwoCarrierEntry)
+    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8UnifiedTwoCarrierExit)
+```
+
 ### `Hypostructure.Graph.Strategy.SpineRows.ReturnAvoidance`
 
 #### `Hypostructure.Graph.Strategy.Spine.instIncompatibleSelectionMersenneReturn`
@@ -8765,6 +9013,23 @@ DecidableEq Graph.Strategy.Spine.Key
   Core.Strategy.Incompatible (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
     (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.selection)
     (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.mersenneReturn)
+```
+
+### `Hypostructure.Graph.Strategy.SpineRows.DirectCycleDichotomy`
+
+#### `Hypostructure.Graph.Strategy.Spine.instIncompatibleSelectionTypeBDirectCycle`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineRows/DirectCycleDichotomy.lean`
+- Compiled type:
+
+```lean
+∀ {BranchState : Graph.FiniteObject → Type v} {Presentation : Type} {presentation : Presentation}
+  {data : Graph.Strategy.Spine.Data},
+  Core.Strategy.Incompatible (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.selection)
+    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBDirectCycle)
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows.ObstructionPacking`
@@ -8956,6 +9221,18 @@ DecidableEq Graph.Strategy.Spine.Key
 ∀ {α : Type u_1} [inst : DecidableEq α] {key : α} {keys : List α}, keys.contains key = false → key ∉ keys
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.keyFresh_of_disjoint`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ {α : Type u_1} [inst : DecidableEq α] {key : α} {covering keys : List α},
+  covering.Disjoint keys → covering.contains key = true → key ∉ keys
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.keyNe_of_decide`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -9031,13 +9308,12 @@ Graph.Strategy.Spine.Key → String
             (previous :
                 Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   current known) →
-              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.remainderEntropyLow) known] →
-                [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.curvatureFullRank) known] →
-                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.localTypeCoordinateRepetitive ∉ known →
-                    Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.localTypeCoordinateNonrepetitive ∉ known →
-                      Core.Strategy.Decision
-                        (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.localTypeCoordinateRepetitive)
-                        (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.localTypeCoordinateNonrepetitive) previous
+              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.curvatureFullRank) known] →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.localTypeCoordinateRepetitive ∉ known →
+                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.localTypeCoordinateNonrepetitive ∉ known →
+                    Core.Strategy.Decision
+                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.localTypeCoordinateRepetitive)
+                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.localTypeCoordinateNonrepetitive) previous
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows.LowEntropyLargeBudget`
@@ -9130,11 +9406,10 @@ Function.Injective Graph.Strategy.Spine.name
             (previous :
                 Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   current known) →
-              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.maximalPacking) known] →
-                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.netChargeNonNegative ∉ known →
-                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.netChargeNegative ∉ known →
-                    Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.netChargeNonNegative)
-                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.netChargeNegative) previous
+              Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.netChargeNonNegative ∉ known →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.netChargeNegative ∉ known →
+                  Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.netChargeNonNegative)
+                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.netChargeNegative) previous
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows.NetChargeLocalization`
@@ -9339,11 +9614,10 @@ Function.Injective Graph.Strategy.Spine.name
             (previous :
                 Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   current known) →
-              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.forcedCurvatureCost) known] →
-                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.remainderEntropyHigh ∉ known →
-                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.remainderEntropyLow ∉ known →
-                    Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.remainderEntropyHigh)
-                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.remainderEntropyLow) previous
+              Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.remainderEntropyHigh ∉ known →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.remainderEntropyLow ∉ known →
+                  Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.remainderEntropyHigh)
+                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.remainderEntropyLow) previous
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows.RemainderNormalization`
@@ -9642,23 +9916,6 @@ Function.Injective Graph.Strategy.Spine.name
                     (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8LargeBudgetDeficitFails) previous
 ```
 
-### `Hypostructure.Graph.Strategy.SpineRows.Route8NoTwoCarrierContradiction`
-
-#### `Hypostructure.Graph.Strategy.Spine.route8NoTwoCarrierContradictionRow`
-
-- Category: Minimum-degree cycle spine rows
-- Kind: `definition`
-- Source: `Hypostructure/Graph/Strategy/SpineRows/Route8NoTwoCarrierContradiction.lean`
-- Compiled type:
-
-```lean
-{BranchState : Graph.FiniteObject → Type v} →
-  {Presentation : Type} →
-    {presentation : Presentation} →
-      {data : Graph.Strategy.Spine.Data} →
-        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-```
-
 ### `Hypostructure.Graph.Strategy.SpineRows.Route8OpenBoundarySaturated`
 
 #### `Hypostructure.Graph.Strategy.Spine.route8OpenBoundarySaturatedRow`
@@ -9666,23 +9923,6 @@ Function.Injective Graph.Strategy.Spine.name
 - Category: Minimum-degree cycle spine rows
 - Kind: `definition`
 - Source: `Hypostructure/Graph/Strategy/SpineRows/Route8OpenBoundarySaturated.lean`
-- Compiled type:
-
-```lean
-{BranchState : Graph.FiniteObject → Type v} →
-  {Presentation : Type} →
-    {presentation : Presentation} →
-      {data : Graph.Strategy.Spine.Data} →
-        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-```
-
-### `Hypostructure.Graph.Strategy.SpineRows.Route8PeeledDemandResidual`
-
-#### `Hypostructure.Graph.Strategy.Spine.route8PeeledDemandResidualRow`
-
-- Category: Minimum-degree cycle spine rows
-- Kind: `definition`
-- Source: `Hypostructure/Graph/Strategy/SpineRows/Route8PeeledDemandResidual.lean`
 - Compiled type:
 
 ```lean
@@ -9788,11 +10028,10 @@ Function.Injective Graph.Strategy.Spine.name
             (previous :
                 Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   current known) →
-              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.selection) known] →
-                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8Rate ∉ known →
-                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8RateFails ∉ known →
-                    Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8Rate)
-                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8RateFails) previous
+              Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8Rate ∉ known →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8RateFails ∉ known →
+                  Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8Rate)
+                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8RateFails) previous
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows.Route8RateFromColdBelow`
@@ -9848,11 +10087,10 @@ Function.Injective Graph.Strategy.Spine.name
             (previous :
                 Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   current known) →
-              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8CarrierCore) known] →
-                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8SmallCoreEntry ∉ known →
-                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8NoSmallCoreEntry ∉ known →
-                    Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8SmallCoreEntry)
-                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8NoSmallCoreEntry) previous
+              Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8SmallCoreEntry ∉ known →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8NoSmallCoreEntry ∉ known →
+                  Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8SmallCoreEntry)
+                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8NoSmallCoreEntry) previous
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows.Route8SmallCoreExit`
@@ -9891,24 +10129,17 @@ Function.Injective Graph.Strategy.Spine.name
             (previous :
                 Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   current known) →
-              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8PeelingDescent)
-                    known] →
-                [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8UnifiedEntryCensus)
-                      known] →
-                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8UnifiedTrueTwoCarrierEntry ∉ known →
-                    Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8StageRateFailed ∉ known →
-                      Core.Strategy.Decision
-                        (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8UnifiedTrueTwoCarrierEntry)
-                        (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8StageRateFailed) previous
+              Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8StageRate ∉ known →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8StageRateFailed ∉ known →
+                  Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8StageRate)
+                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8StageRateFailed) previous
 ```
 
-### `Hypostructure.Graph.Strategy.SpineRows.Route8TerminalNoGo`
-
-#### `Hypostructure.Graph.Strategy.Spine.route8TerminalNoGoRow`
+#### `Hypostructure.Graph.Strategy.Spine.route8StageTrueEntryRow`
 
 - Category: Minimum-degree cycle spine rows
 - Kind: `definition`
-- Source: `Hypostructure/Graph/Strategy/SpineRows/Route8TerminalNoGo.lean`
+- Source: `Hypostructure/Graph/Strategy/SpineRows/Route8StageOutcomeDichotomy.lean`
 - Compiled type:
 
 ```lean
@@ -9943,6 +10174,23 @@ Function.Injective Graph.Strategy.Spine.name
 - Category: Minimum-degree cycle spine rows
 - Kind: `definition`
 - Source: `Hypostructure/Graph/Strategy/SpineRows/Route8TrueTwoCarrierEntry.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+### `Hypostructure.Graph.Strategy.SpineRows.Route8TwoCarrierExit`
+
+#### `Hypostructure.Graph.Strategy.Spine.route8TwoCarrierExitRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows/Route8TwoCarrierExit.lean`
 - Compiled type:
 
 ```lean
@@ -10004,13 +10252,13 @@ Function.Injective Graph.Strategy.Spine.name
         Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
-### `Hypostructure.Graph.Strategy.SpineRows.Route8UnifiedTerminalNoGo`
+### `Hypostructure.Graph.Strategy.SpineRows.Route8TwoCarrierExit`
 
-#### `Hypostructure.Graph.Strategy.Spine.route8UnifiedTerminalNoGoRow`
+#### `Hypostructure.Graph.Strategy.Spine.route8UnifiedTwoCarrierExitRow`
 
 - Category: Minimum-degree cycle spine rows
 - Kind: `definition`
-- Source: `Hypostructure/Graph/Strategy/SpineRows/Route8UnifiedTerminalNoGo.lean`
+- Source: `Hypostructure/Graph/Strategy/SpineRows/Route8TwoCarrierExit.lean`
 - Compiled type:
 
 ```lean
@@ -10074,27 +10322,32 @@ Function.Injective Graph.Strategy.Spine.name
             (previous :
                 Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   current known) →
-              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8PeeledDemandResidual)
-                    known] →
-                [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8UnifiedEntryCensus)
-                      known] →
-                  [Core.Residual.FactKeys.Has
-                        (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8ExtractedEntryCensus) known] →
-                    [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.selection) known] →
-                      Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8UnifiedTrueTwoCarrierEntry ∉ known →
-                        Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8UnpaidExitFourResidual ∉ known →
-                          Core.Strategy.Decision
-                            (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8UnifiedTrueTwoCarrierEntry)
-                            (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8UnpaidExitFourResidual) previous
+              Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8UnpaidWitnessFree ∉ known →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8UnpaidExitFourResidual ∉ known →
+                  Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8UnpaidWitnessFree)
+                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.route8UnpaidExitFourResidual) previous
 ```
 
-### `Hypostructure.Graph.Strategy.SpineRows.Route8VisibleRouting`
-
-#### `Hypostructure.Graph.Strategy.Spine.route8VisibleRoutingRow`
+#### `Hypostructure.Graph.Strategy.Spine.route8UnpaidTrueEntryRow`
 
 - Category: Minimum-degree cycle spine rows
 - Kind: `definition`
-- Source: `Hypostructure/Graph/Strategy/SpineRows/Route8VisibleRouting.lean`
+- Source: `Hypostructure/Graph/Strategy/SpineRows/Route8UnpaidExitFourDichotomy.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.route8UnpaidTwoCarrierRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows/Route8UnpaidExitFourDichotomy.lean`
 - Compiled type:
 
 ```lean
@@ -10466,12 +10719,10 @@ ParserDescr
             (previous :
                 Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   current known) →
-              [Core.Residual.FactKeys.Has
-                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeASaturatedHandoffExitFourFree) known] →
-                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitFive ∉ known →
-                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitFiveFree ∉ known →
-                    Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitFive)
-                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitFiveFree) previous
+              Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitFive ∉ known →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitFiveFree ∉ known →
+                  Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitFive)
+                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitFiveFree) previous
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows.TypeAExitFourDichotomy`
@@ -10493,13 +10744,27 @@ ParserDescr
             (previous :
                 Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   current known) →
-              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeASaturatedExitEntry)
-                    known] →
-                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeASaturatedHandoffExitFour ∉ known →
-                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeASaturatedHandoffExitFourFree ∉ known →
-                    Core.Strategy.Decision
-                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeASaturatedHandoffExitFour)
-                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeASaturatedHandoffExitFourFree) previous
+              Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeASaturatedHandoffExitFour ∉ known →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitFourAbsent ∉ known →
+                  Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeASaturatedHandoffExitFour)
+                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitFourAbsent) previous
+```
+
+### `Hypostructure.Graph.Strategy.SpineRows.TypeAExitFourRetestDichotomy`
+
+#### `Hypostructure.Graph.Strategy.Spine.typeAExitFourDischargedRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows/TypeAExitFourRetestDichotomy.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows.TypeAExitFourFiniteDescent`
@@ -10509,6 +10774,23 @@ ParserDescr
 - Category: Minimum-degree cycle spine rows
 - Kind: `definition`
 - Source: `Hypostructure/Graph/Strategy/SpineRows/TypeAExitFourFiniteDescent.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+### `Hypostructure.Graph.Strategy.SpineRows.TypeAExitFourDichotomy`
+
+#### `Hypostructure.Graph.Strategy.Spine.typeAExitFourFreeEntryRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows/TypeAExitFourDichotomy.lean`
 - Compiled type:
 
 ```lean
@@ -10555,12 +10837,11 @@ ParserDescr
             (previous :
                 Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   current known) →
-              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitFourPeeled) known] →
-                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeASaturatedHandoffExitFourFree ∉ known →
-                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitFourReceiverDischarged ∉ known →
-                    Core.Strategy.Decision
-                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeASaturatedHandoffExitFourFree)
-                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitFourReceiverDischarged) previous
+              Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeASaturatedHandoffExitFourFree ∉ known →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitFourExhausted ∉ known →
+                  Core.Strategy.Decision
+                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeASaturatedHandoffExitFourFree)
+                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitFourExhausted) previous
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows.TypeAExitOneDichotomy`
@@ -10582,11 +10863,10 @@ ParserDescr
             (previous :
                 Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   current known) →
-              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAVisibleEntry) known] →
-                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitOneReturn ∉ known →
-                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitOneFree ∉ known →
-                    Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitOneReturn)
-                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitOneFree) previous
+              Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitOneReturn ∉ known →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitOneFree ∉ known →
+                  Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitOneReturn)
+                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitOneFree) previous
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows.TypeAExitSevenDichotomy`
@@ -10608,20 +10888,17 @@ ParserDescr
             (previous :
                 Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   current known) →
-              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitSixFree) known] →
-                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitSevenProduced ∉ known →
-                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitSevenFree ∉ known →
-                    Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitSevenProduced)
-                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitSevenFree) previous
+              Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitSevenHandoff ∉ known →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitSevenAbsent ∉ known →
+                  Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitSevenHandoff)
+                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitSevenAbsent) previous
 ```
 
-### `Hypostructure.Graph.Strategy.SpineRows.TypeAExitSevenHandoff`
-
-#### `Hypostructure.Graph.Strategy.Spine.typeAExitSevenHandoffRow`
+#### `Hypostructure.Graph.Strategy.Spine.typeAExitSevenFreeRow`
 
 - Category: Minimum-degree cycle spine rows
 - Kind: `definition`
-- Source: `Hypostructure/Graph/Strategy/SpineRows/TypeAExitSevenHandoff.lean`
+- Source: `Hypostructure/Graph/Strategy/SpineRows/TypeAExitSevenDichotomy.lean`
 - Compiled type:
 
 ```lean
@@ -10651,14 +10928,43 @@ ParserDescr
             (previous :
                 Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   current known) →
-              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitFiveFree) known] →
-                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitSix ∉ known →
-                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitSixFree ∉ known →
-                    Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitSix)
-                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitSixFree) previous
+              Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitSix ∉ known →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitSixFree ∉ known →
+                  Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitSix)
+                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitSixFree) previous
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows.TypeAExitSixScopeDichotomy`
+
+#### `Hypostructure.Graph.Strategy.Spine.typeAExitSixGlobalRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows/TypeAExitSixScopeDichotomy.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.typeAExitSixProperRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows/TypeAExitSixScopeDichotomy.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
 
 #### `Hypostructure.Graph.Strategy.Spine.typeAExitSixScopeDichotomy`
 
@@ -10677,11 +10983,10 @@ ParserDescr
             (previous :
                 Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   current known) →
-              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitSix) known] →
-                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitSixProper ∉ known →
-                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitSixGlobal ∉ known →
-                    Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitSixProper)
-                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitSixGlobal) previous
+              Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitSixProperScope ∉ known →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitSixGlobalScope ∉ known →
+                  Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitSixProperScope)
+                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitSixGlobalScope) previous
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows.TypeAExitThreeDichotomy`
@@ -10703,11 +11008,10 @@ ParserDescr
             (previous :
                 Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   current known) →
-              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAVisibleEntry) known] →
-                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitThreeCollision ∉ known →
-                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitThreeFree ∉ known →
-                    Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitThreeCollision)
-                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitThreeFree) previous
+              Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitThreeCollision ∉ known →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitThreeFree ∉ known →
+                  Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitThreeCollision)
+                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitThreeFree) previous
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows.TypeAExitTwoDichotomy`
@@ -10729,11 +11033,10 @@ ParserDescr
             (previous :
                 Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   current known) →
-              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAVisibleEntry) known] →
-                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitTwoTheta ∉ known →
-                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitTwoFree ∉ known →
-                    Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitTwoTheta)
-                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitTwoFree) previous
+              Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitTwoTheta ∉ known →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitTwoFree ∉ known →
+                  Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitTwoTheta)
+                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitTwoFree) previous
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows.TypeAPortReturn`
@@ -10789,11 +11092,10 @@ ParserDescr
             (previous :
                 Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   current known) →
-              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeALowSurplus) known] →
-                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeASaturatedReceiver ∉ known →
-                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAUnsaturatedReceivers ∉ known →
-                    Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeASaturatedReceiver)
-                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAUnsaturatedReceivers) previous
+              Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeASaturatedReceiver ∉ known →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAUnsaturatedReceivers ∉ known →
+                  Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeASaturatedReceiver)
+                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAUnsaturatedReceivers) previous
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows.TypeASilentExitEntry`
@@ -10811,61 +11113,6 @@ ParserDescr
     {presentation : Presentation} →
       {data : Graph.Strategy.Spine.Data} →
         Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-```
-
-### `Hypostructure.Graph.Strategy.SpineRows.TypeASilentExitFiveDichotomy`
-
-#### `Hypostructure.Graph.Strategy.Spine.typeASilentExitFiveDichotomy`
-
-- Category: Minimum-degree cycle spine rows
-- Kind: `definition`
-- Source: `Hypostructure/Graph/Strategy/SpineRows/TypeASilentExitFiveDichotomy.lean`
-- Compiled type:
-
-```lean
-{BranchState : Graph.FiniteObject → Type v} →
-  {Presentation : Type} →
-    {presentation : Presentation} →
-      {data : Graph.Strategy.Spine.Data} →
-        {current : Graph.Strategy.Spine.Input BranchState Presentation presentation data} →
-          {known : Core.Residual.FactKeys (Graph.Strategy.Spine.Input BranchState Presentation presentation data)} →
-            (previous :
-                Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-                  current known) →
-              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeASilentExitFourFree)
-                    known] →
-                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitFive ∉ known →
-                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeASilentExitFiveFree ∉ known →
-                    Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitFive)
-                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeASilentExitFiveFree) previous
-```
-
-### `Hypostructure.Graph.Strategy.SpineRows.TypeASilentExitFourTerminalDichotomy`
-
-#### `Hypostructure.Graph.Strategy.Spine.typeASilentExitFourTerminalDichotomy`
-
-- Category: Minimum-degree cycle spine rows
-- Kind: `definition`
-- Source: `Hypostructure/Graph/Strategy/SpineRows/TypeASilentExitFourTerminalDichotomy.lean`
-- Compiled type:
-
-```lean
-{BranchState : Graph.FiniteObject → Type v} →
-  {Presentation : Type} →
-    {presentation : Presentation} →
-      {data : Graph.Strategy.Spine.Data} →
-        {current : Graph.Strategy.Spine.Input BranchState Presentation presentation data} →
-          {known : Core.Residual.FactKeys (Graph.Strategy.Spine.Input BranchState Presentation presentation data)} →
-            (previous :
-                Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-                  current known) →
-              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAVisibleFirstExcess)
-                    known] →
-                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeASilentExitFourFree ∉ known →
-                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitFourReceiverDischarged ∉ known →
-                    Core.Strategy.Decision
-                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitFourReceiverDischarged)
-                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeASilentExitFourFree) previous
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows.TypeASilentExitSevenDichotomy`
@@ -10887,21 +11134,19 @@ ParserDescr
             (previous :
                 Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   current known) →
-              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeASilentExitSixFree)
-                    known] →
-                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitSevenProduced ∉ known →
-                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeASilentExitSevenFree ∉ known →
-                    Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitSevenProduced)
-                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeASilentExitSevenFree) previous
+              Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeASilentExitSevenFree ∉ known →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitEightNotSilent ∉ known →
+                  Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeASilentExitSevenFree)
+                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitEightNotSilent) previous
 ```
 
-### `Hypostructure.Graph.Strategy.SpineRows.TypeASilentExitSevenRoute8`
+### `Hypostructure.Graph.Strategy.SpineRows.TypeASupport`
 
-#### `Hypostructure.Graph.Strategy.Spine.typeASilentExitSevenRoute8Row`
+#### `Hypostructure.Graph.Strategy.Spine.typeASupportRow`
 
 - Category: Minimum-degree cycle spine rows
 - Kind: `definition`
-- Source: `Hypostructure/Graph/Strategy/SpineRows/TypeASilentExitSevenRoute8.lean`
+- Source: `Hypostructure/Graph/Strategy/SpineRows/TypeASupport.lean`
 - Compiled type:
 
 ```lean
@@ -10912,34 +11157,22 @@ ParserDescr
         Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
-### `Hypostructure.Graph.Strategy.SpineRows.TypeASilentExitSixDichotomy`
+### `Hypostructure.Graph.Strategy.SpineRows.TypeAUnsaturatedDischarge`
 
-#### `Hypostructure.Graph.Strategy.Spine.typeASilentExitSixDichotomy`
+#### `Hypostructure.Graph.Strategy.Spine.typeAUnsaturatedDischargeClosed`
 
 - Category: Minimum-degree cycle spine rows
-- Kind: `definition`
-- Source: `Hypostructure/Graph/Strategy/SpineRows/TypeASilentExitSixDichotomy.lean`
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineRows/TypeAUnsaturatedDischarge.lean`
 - Compiled type:
 
 ```lean
-{BranchState : Graph.FiniteObject → Type v} →
-  {Presentation : Type} →
-    {presentation : Presentation} →
-      {data : Graph.Strategy.Spine.Data} →
-        {current : Graph.Strategy.Spine.Input BranchState Presentation presentation data} →
-          {known : Core.Residual.FactKeys (Graph.Strategy.Spine.Input BranchState Presentation presentation data)} →
-            (previous :
-                Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-                  current known) →
-              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeASilentExitFiveFree)
-                    known] →
-                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitSix ∉ known →
-                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeASilentExitSixFree ∉ known →
-                    Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAExitSix)
-                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeASilentExitSixFree) previous
+∀ {BranchState : Graph.FiniteObject → Type v} {Presentation : Type} {presentation : Presentation}
+  {data : Graph.Strategy.Spine.Data},
+  Core.Strategy.Incompatible (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeASupport)
+    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAUnsaturatedDischarge)
 ```
-
-### `Hypostructure.Graph.Strategy.SpineRows.TypeAUnsaturatedDischarge`
 
 #### `Hypostructure.Graph.Strategy.Spine.typeAUnsaturatedDischargeRow`
 
@@ -10975,14 +11208,10 @@ ParserDescr
             (previous :
                 Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   current known) →
-              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAReceiverRouting)
-                    known] →
-                [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeASaturatedReceiver)
-                      known] →
-                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAVisibleEntry ∉ known →
-                    Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAVisibleFirstExcess ∉ known →
-                      Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAVisibleEntry)
-                        (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAVisibleFirstExcess) previous
+              Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAVisibleEntry ∉ known →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeANoVisibleEntry ∉ known →
+                  Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeAVisibleEntry)
+                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeANoVisibleEntry) previous
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows.TypeAVisibleExitEntry`
@@ -10992,6 +11221,23 @@ ParserDescr
 - Category: Minimum-degree cycle spine rows
 - Kind: `definition`
 - Source: `Hypostructure/Graph/Strategy/SpineRows/TypeAVisibleExitEntry.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+### `Hypostructure.Graph.Strategy.SpineRows.TypeAVisibleFirstExcess`
+
+#### `Hypostructure.Graph.Strategy.Spine.typeAVisibleFirstExcessRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows/TypeAVisibleFirstExcess.lean`
 - Compiled type:
 
 ```lean
@@ -11070,6 +11316,23 @@ ParserDescr
         Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
+### `Hypostructure.Graph.Strategy.SpineRows.TypeBExclusion`
+
+#### `Hypostructure.Graph.Strategy.Spine.typeBExcludedRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows/TypeBExclusion.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
 ### `Hypostructure.Graph.Strategy.SpineRows.TypeBExclusionResidualMass`
 
 #### `Hypostructure.Graph.Strategy.Spine.typeBExclusionResidualMassRow`
@@ -11077,6 +11340,23 @@ ParserDescr
 - Category: Minimum-degree cycle spine rows
 - Kind: `definition`
 - Source: `Hypostructure/Graph/Strategy/SpineRows/TypeBExclusionResidualMass.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+### `Hypostructure.Graph.Strategy.SpineRows.TypeBExclusion`
+
+#### `Hypostructure.Graph.Strategy.Spine.typeBExclusionResidualRow`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows/TypeBExclusion.lean`
 - Compiled type:
 
 ```lean
@@ -11106,11 +11386,10 @@ ParserDescr
             (previous :
                 Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   current known) →
-              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBFanEntry) known] →
-                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBFanHeavyCentre ∉ known →
-                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBFanDegreeFourCentres ∉ known →
-                    Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBFanHeavyCentre)
-                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBFanDegreeFourCentres) previous
+              Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBFanHeavyCentre ∉ known →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBFanDegreeFourCentres ∉ known →
+                  Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBFanHeavyCentre)
+                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBFanDegreeFourCentres) previous
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows.TypeBFanDegreeFourProfile`
@@ -11137,23 +11416,6 @@ ParserDescr
 - Category: Minimum-degree cycle spine rows
 - Kind: `definition`
 - Source: `Hypostructure/Graph/Strategy/SpineRows/TypeBFanLocalDichotomy.lean`
-- Compiled type:
-
-```lean
-{BranchState : Graph.FiniteObject → Type v} →
-  {Presentation : Type} →
-    {presentation : Presentation} →
-      {data : Graph.Strategy.Spine.Data} →
-        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-```
-
-### `Hypostructure.Graph.Strategy.SpineRows.TypeBFanSafe`
-
-#### `Hypostructure.Graph.Strategy.Spine.typeBFanSafeRow`
-
-- Category: Minimum-degree cycle spine rows
-- Kind: `definition`
-- Source: `Hypostructure/Graph/Strategy/SpineRows/TypeBFanSafe.lean`
 - Compiled type:
 
 ```lean
@@ -11217,11 +11479,10 @@ ParserDescr
             (previous :
                 Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   current known) →
-              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.negativeSupport) known] →
-                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeALowSurplus ∉ known →
-                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBHighSurplus ∉ known →
-                    Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeALowSurplus)
-                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBHighSurplus) previous
+              Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeALowSurplus ∉ known →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBHighSurplus ∉ known →
+                  Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeALowSurplus)
+                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBHighSurplus) previous
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineVocabulary`
@@ -11285,6 +11546,30 @@ ParserDescr
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows.WindowPackage`
+
+#### `Hypostructure.Graph.Strategy.Spine.windowPackageRealizationDichotomy`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows/WindowPackage.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        {current : Graph.Strategy.Spine.Input BranchState Presentation presentation data} →
+          {known : Core.Residual.FactKeys (Graph.Strategy.Spine.Input BranchState Presentation presentation data)} →
+            (previous :
+                Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                  current known) →
+              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.skeletonDominates) known] →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.windowPackageRealized ∉ known →
+                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.windowPackageUnrealized ∉ known →
+                    Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.windowPackageRealized)
+                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.windowPackageUnrealized) previous
+```
 
 #### `Hypostructure.Graph.Strategy.Spine.windowPackageRow`
 
@@ -11367,36 +11652,5 @@ ParserDescr
     {presentation : Presentation} →
       {data : Graph.Strategy.Spine.Data} →
         Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-```
-
-### `Hypostructure.Graph.Strategy.SpineRows.PortPowerReturn`
-
-#### `Hypostructure.Graph.VisibleEntry.AnchoredReturn.mk.congr_simp`
-
-- Category: Minimum-degree cycle spine rows
-- Kind: `theorem`
-- Source: `Hypostructure/Graph/Strategy/SpineRows/PortPowerReturn.lean`
-- Compiled type:
-
-```lean
-∀ {object : Graph.FiniteObject} {receiver outside : object.Vertex} (path path_1 : object.graph.Walk outside receiver)
-  (e_path : path = path_1) (isPath : path.IsPath) (avoidsPort : s(receiver, outside) ∉ path.edges),
-  { path := path, isPath := isPath, avoidsPort := avoidsPort } = { path := path_1, isPath := ⋯, avoidsPort := ⋯ }
-```
-
-### `Hypostructure.Graph.Strategy.SpineRows.ReplacementExclusion`
-
-#### `Hypostructure.Graph.isomorphismEquivalenceWithPresentation.congr_simp`
-
-- Category: Minimum-degree cycle spine rows
-- Kind: `theorem`
-- Source: `Hypostructure/Graph/Strategy/SpineRows/ReplacementExclusion.lean`
-- Compiled type:
-
-```lean
-∀ (Baseline : Graph.FiniteObject → Prop) (BranchState : Graph.FiniteObject → Type v) (Presentation : Type)
-  (presentation : Presentation) (baselineInvariant : Graph.FiniteObject.IsomorphismInvariant Baseline),
-  Graph.isomorphismEquivalenceWithPresentation Baseline BranchState Presentation presentation baselineInvariant =
-    Graph.isomorphismEquivalenceWithPresentation Baseline BranchState Presentation presentation baselineInvariant
 ```
 <!-- END GENERATED API -->

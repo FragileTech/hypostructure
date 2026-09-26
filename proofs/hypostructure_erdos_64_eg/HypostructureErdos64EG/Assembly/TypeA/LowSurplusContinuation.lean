@@ -110,12 +110,10 @@ noncomputable abbrev typeALowSurplusKeys : FactKeys EGInput.{u} :=
     K .windowShadowSingletonTail,
     K .windowShadowHitCycle,
     K .windowShadowHitExcluded,
-    K .route8PeeledDemandResidual,
     K .route8UnpaidExitFourResidual,
     K .route8UnifiedVisibleResidual,
     K .route8UnifiedVisibleOverload,
     K .route8JointBalance,
-    K .route8TerminalNoGo,
     K .typeBExcluded,
     K .typeBExclusionResidual,
     K .typeBExclusionResidualMass,
@@ -147,7 +145,11 @@ noncomputable abbrev typeALowSurplusKeys : FactKeys EGInput.{u} :=
     K .route8TrueTwoCarrierEntry,
     K .route8CarrierDeletionWitnesses,
     K .route8PrivateCarrierBudget,
-    K .route8NoTwoCarrierContradiction]
+    K .route8TwoCarrierExit,
+    K .route8UnifiedTwoCarrierExit,
+    K .route8StageRate,
+    K .route8UnpaidTwoCarrier,
+    K .route8UnpaidWitnessFree]
 
 /-- **Nodes `[63]`, `[86]`--`[94]`: the Type A entry**, on the `[62]` Type A arm
 (index-polymorphic).

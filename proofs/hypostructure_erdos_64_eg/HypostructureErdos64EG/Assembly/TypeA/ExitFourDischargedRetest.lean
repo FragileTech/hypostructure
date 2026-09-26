@@ -45,7 +45,7 @@ noncomputable abbrev typeADischargedRetestKeys : FactKeys EGInput.{u} :=
     K .route8PeelingDescent,
     K .route8UnifiedTrueTwoCarrierEntry,
     K .route8StageRateFailed,
-    K .route8TerminalNoGo,
+    closed,
     K .route8DemandLedger,
     K .route8DemandAbsorption,
     K .route8OpenBoundarySaturated,
@@ -55,18 +55,21 @@ noncomputable abbrev typeADischargedRetestKeys : FactKeys EGInput.{u} :=
     K .windowShadowSingletonTail,
     K .windowShadowHitCycle,
     K .windowShadowHitExcluded,
-    K .route8PeeledDemandResidual,
     K .route8UnpaidExitFourResidual,
     K .route8UnifiedVisibleResidual,
     K .route8UnifiedVisibleOverload,
-    K .route8JointBalance]
+    K .route8JointBalance,
+    K .route8UnifiedTwoCarrierExit,
+    K .route8StageRate,
+    K .route8UnpaidTwoCarrier,
+    K .route8UnpaidWitnessFree]
 
 /-- **`[102]` → `[89]` → `[123]`, the discharged receiver.**  On the no arm of
 the recompute-`L₄` retest the peeled receiver is unsaturated with nonnegative
 remaining charge (`K .typeAExitFourReceiverDischarged`,
 `lem:typeA-exit4-peeling-charge`), and its peeled target-defect loads enter
-node `[123]`'s unified target-defect/route-`8` pressure ledger.  The chain from
-`[123]` below repeats the `[113]`-fails arm of `selectedRouteEightResidual`. -/
+node `[123]`'s unified target-defect/route-`8` pressure ledger, which is the one
+shared composition `selectedRouteEightUnifiedResidual`. -/
 -- EG-NODE none (establishes no manuscript DAG node)
 noncomputable def selectedTypeAExitFourDischargedRetest
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
@@ -121,64 +124,6 @@ noncomputable def selectedTypeAExitFourDischargedRetest
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       bridgeMass (by key_fresh)
-  match typeBSublinearDichotomy (data := spineData) bridgeSublinear
-      (by key_fresh)
-      (by key_fresh) with
-  | .right residualHistory =>
-      exact Or.inl (residualHistory.get (K .typeBSublinearResidual)).down
-  | .left sublinearHistory =>
-      let unifiedDeficit :=
-        (route8UnifiedDeficitRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          sublinearHistory (by key_fresh)
-      match route8QuotientDichotomy (data := spineData) unifiedDeficit
-          (by key_fresh)
-          (by key_fresh) with
-      | .right residualHistory =>
-          exact Or.inr (Or.inl
-            (residualHistory.get (K .route8QuotientResidual)).down)
-      | .left quotientFreeHistory =>
-          let census :=
-            (route8UnifiedEntryCensusRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile)
-              (data := spineData)).run quotientFreeHistory
-                (by key_fresh)
-          let peeled := selectedLargeBudgetPressureCensus census
-            (peelingFresh := by key_fresh)
-            (unifiedTrueFresh := by key_fresh)
-            (stageFailedFresh := by key_fresh)
-            (terminalFresh := by key_fresh)
-            (demandLedgerFresh := by key_fresh)
-            (demandAbsorptionFresh := by
-              key_fresh)
-            (openBoundarySaturatedFresh := by
-              key_fresh)
-            (demandUnitCountFresh := by
-              key_fresh)
-            (windowBlockersFresh := by key_fresh)
-            (windowShadowSignatureFresh := by key_fresh)
-            (windowShadowTailFresh := by key_fresh)
-            (windowShadowCycleFresh := by key_fresh)
-            (windowShadowExcludedFresh := by key_fresh)
-            (demandResidualFresh := by key_fresh)
-          let unpaidExitFour :=
-            selectedRouteEightUnpaidExitFourReduction peeled
-              (unifiedTrueFresh := by key_fresh)
-              (residualFresh := by key_fresh)
-              (terminalFresh := by key_fresh)
-          let visibleResidual :=
-            selectedRouteEightVisibleResidual unpaidExitFour
-              (visibleFresh := by key_fresh)
-          let visibleOverload :=
-            selectedRouteEightVisibleOverload visibleResidual
-              (overloadFresh := by
-                key_fresh)
-          let jointBalance :=
-            selectedRouteEightJointBalance visibleOverload
-              (by key_fresh)
-          exact Or.inr (Or.inr
-            (jointBalance.get (K .route8JointBalance)).down)
+  exact selectedRouteEightUnifiedResidual bridgeSublinear
 
 end HypostructureErdos64EG

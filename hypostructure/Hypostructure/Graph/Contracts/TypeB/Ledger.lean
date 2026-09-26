@@ -84,15 +84,18 @@ theorem disjointLedgerCoreClosure
       exact (normalized packing valid maximal internal
         (internalSubset.trans componentData.containedInRemainder)).2
   refine ⟨Graph.TypeBMaximalCompletion.groupedOfComponentExitSeven
-    ledger selectedComponents production avoids windowFree uncompressible,
+    ledger selectedComponents production avoids windowFree
+      (handoffUncompressible_of_uncompressible uncompressible),
     ?_, ?_⟩
   · intro component
     exact Graph.TypeBMaximalCompletion.Grouped.envelope_core
-      ledger selectedComponents production avoids windowFree uncompressible
+      ledger selectedComponents production avoids windowFree
+      (handoffUncompressible_of_uncompressible uncompressible)
       component
   · intro centre
     exact Graph.TypeBMaximalCompletion.Grouped.mem_centres_iff
-      ledger selectedComponents production avoids windowFree uncompressible
+      ledger selectedComponents production avoids windowFree
+      (handoffUncompressible_of_uncompressible uncompressible)
       centre
 
 end Hypostructure.Graph.Contracts.TypeB

@@ -24,6 +24,17 @@ abbrev handoffUncompressible (data : Parameters)
         (Graph.MinimumDegreeAtLeast data.threshold)
         (Graph.HasCycleWithLength data.LengthOK) object support
 
+/-- Node `[14]` (`cor:uncompressible`, one-way `ReplacementSupport` form) gives
+the envelope's two-way reading: a target-complete compression is one instance
+of a replacement support. -/
+theorem handoffUncompressible_of_uncompressible {data : Parameters}
+    {object : Graph.FiniteObject.{u}}
+    (uncompressible : UncompressibleStatement data object) :
+    ∀ support : Finset object.Vertex, handoffUncompressible data object support :=
+  fun support compressible => uncompressible support
+    (Graph.Strategy.InterfaceReplacement.replacementSupportOfCompressibleSupport
+      _ _ _ _ compressible)
+
 /-- The counted core satisfies the paper's single compound core-safety clause:
 it is `P₁₃`-free and has no internal sub-support of minimum degree at least the
 registered baseline.  Keeping the conjunction in the existing predicate avoids
