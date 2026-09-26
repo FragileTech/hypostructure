@@ -1,6 +1,6 @@
 {
  "status": "exact selected-root reduction to [20a], [144a], [172a], [182], [186], and [187]",
- "updated_at": "2026-09-26",
+ "updated_at": "2026-09-27",
  "aggregate_validation": "Full HypostructureErdos64EG package build passed on the working tree at ae44b9b plus the removal of Assembly/Surplus/TypeBContinuation.lean and TypeBCertificateOutcome, the [132] exit/blocker decision, the single [140]/[142]/[143] audit row `homogeneousBottleneckAuditRow`, and the [144] caps-fail/caps-hold decision (9029 jobs); every node entry re-derived on 2026-09-25 from the live Lean producers and the manuscript. Kernel axiom audit (web/tools/lean_axiom_audit.py): 153 assembly declarations, all clean, no frontier stubs.",
  "nodes": {
   "1": {
@@ -644,13 +644,13 @@
    "on_probed_closed_arm": false
   },
   "65": {
-   "producer": "`typeBAssignedSupportRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBAssignedSupport.lean:59); `typeBDecoratedAssignedSupportRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBDecoratedAssignedSupport.lean:20), via `selectedTypeADecoratedHandoff` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeA/DecoratedHandoff.lean:27); `absorbedGermFanEnvelopeRow` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows.lean:2693) for the [177] entry",
+   "producer": "`typeBAssignedSupportRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBAssignedSupport.lean:20); `typeBDecoratedAssignedSupportRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBDecoratedAssignedSupport.lean:21), via `selectedTypeADecoratedHandoff` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeA/DecoratedHandoff.lean:98); `absorbedGermFanEnvelopeRow` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows.lean:2693) for the [177] entry",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "Ordinary lane: `K .typeBAssignedSupport` (the support has a high centre, derived from σ > 0) plus `K .typeBFanEntry` with the piece's high centres as assigned centres. Decorated lane: from `K .typeAExitSevenHandoff`, `K .selection`, `K .uncompressible` and `K .remainderNormalized`, it proves the four `DecoratedHandoff.Admissible` clauses (lem:decorated-fan-admissibility) and publishes `K .typeBDecoratedAssignedSupport` plus `K .typeBFanEntry`. The [177] lane publishes `K .typeBFanEntry` from `K .absorbedGermFanData`.",
-   "complete": "YES",
+   "fidelity_note": "Node [65] receives one Type B support X = (Y_X, H_X) of G per entry form (Statements/TypeBLanes.lean): ordinary (X0, H(X0)) = canonicalTypeBOrdinarySupport on the netChargeCap arm with sigma(X0) > 0 ([62] at X0); decorated (X0, {z}) = canonicalTypeBDecoratedSupport with its canonical exit-(7) envelope (admissible, lem:decorated-fan-admissibility); absorbed X_eps = canonicalTypeBAbsorbedSupport eps on the exactCollisionFails arm with the [175] data; same-token = the [144] handoff on surplusAbove. The lanes are mutually exclusive, so TypeBFanEntryStatement is one support.",
+   "complete": "YES (ordinary/decorated entries compile against F1's pinned [62]/[108] statements)",
    "local": "YES",
    "api": "OK",
-   "difference": "The three lanes share the single `K .typeBFanEntry` key (a three-way disjunction). On the ordinary lane, `typeAReceiverRoutingRow` runs just before [65].",
+   "difference": "None: every fact is at the one Type B support of G fixed by the entry (Statements/TypeBLanes.lean); see lean-vs-paper-discrepancies.md, [65]--[85].",
    "on_probed_closed_arm": false
   },
   "66": {
@@ -674,93 +674,93 @@
    "on_probed_closed_arm": false
   },
   "68": {
-   "producer": "`typeBFanDegreeDichotomy` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBFanDegreeDichotomy.lean:22)",
+   "producer": "`typeBFanDegreeDichotomy` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBFanDegreeDichotomy.lean:23)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "Yes: some assigned centre of some Type B support has d_G(h) > δ+1; no: its exact negation, every assigned centre has degree δ+1 (`typeBFanDegreeFourCentres_iff_not_heavy`). Stated over the Type B support family `TypeBSupport` (Graph/Statements/TypeB.lean): lane-free; decisions are a family predicate and its exact negation (registered in audits/erdos-64-red-team/discrepancies-F2.md).",
+   "fidelity_note": "Reads typeBFanEntry (and surplusAtOrBelow, which excludes the [144] lane) and splits at the entry's Type B support X: some centre of H_X has d_G(h) > delta+1 (TypeBLaneSome) vs every centre of H_X has degree delta+1 (TypeBLaneAll); exact complements at X (Contracts.TypeB.TypeBLaneAll.split, TypeBLaneSome.not_all). d2ded0e read the same key and split on the same lane's centres.",
    "complete": "YES",
    "local": "YES",
    "api": "OK. One composition `Assembly.Internal.selectedTypeBFanContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Continuation.lean:49) runs [67]-[85] generically over the incoming ExactLedger; the certificate walk is `Assembly.Internal.selectedTypeBCertificateContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Internal/Certificate.lean:53). Entries: [64] `selectedTypeBHighSurplusContinuation`, [108]/[66] `selectedTypeBDecoratedContinuation`, [177] `Assembly.Internal.selectedAbsorbedFanChargeContinuation`. Every open arm continues to `selectedTypeBRoute8Continuation` ([77]).",
-   "difference": "None (see discrepancies-F2.md for the support-family formulation).",
+   "difference": "None: every fact is at the one Type B support of G fixed by the entry (Statements/TypeBLanes.lean); see lean-vs-paper-discrepancies.md, [65]--[85].",
    "on_probed_closed_arm": false
   },
   "69": {
    "producer": "`sameCenterOpenPortCompatibilityRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/SameCenterOpenPortCompatibility.lean:20); `compatiblePairTypeBRoutingRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/CompatiblePairTypeBRouting.lean:19); `triangularPortTypeBRoutingRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/TriangularPortTypeBRouting.lean:20); `typeBFanLocalDichotomyRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBFanLocalDichotomy.lean:23)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`K .typeBFanLocalDichotomy` = `HeavyCentreRoutedAlternative` at every heavy assigned centre: a fan-compatible open pair with `CompatiblePairRoutes` in every profile at the centre, or exactly d_G(h)-2 >= 3 triangular ports with `TriangularPortsRoute` (D_B >= (5k-19)/4); both routings run on the heavy arm. Contract `Contracts.TypeB.heavyCentreRoutedAlternative`.",
+   "fidelity_note": "Reads typeBFanHeavyCentre; at the heavy arm's support every heavy centre carries cor:heavy-center-local-dichotomy with its routings, over fixed profiles (window W0 = windowSupport P0, canonical fan envelope). The triangular fan-core lemmas (stated at a heavy center, tex 2378-2521) now run on this arm.",
    "complete": "YES",
    "local": "YES",
    "api": "OK. One composition `Assembly.Internal.selectedTypeBFanContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Continuation.lean:49) runs [67]-[85] generically over the incoming ExactLedger; the certificate walk is `Assembly.Internal.selectedTypeBCertificateContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Internal/Certificate.lean:53). Entries: [64] `selectedTypeBHighSurplusContinuation`, [108]/[66] `selectedTypeBDecoratedContinuation`, [177] `Assembly.Internal.selectedAbsorbedFanChargeContinuation`. Every open arm continues to `selectedTypeBRoute8Continuation` ([77]).",
-   "difference": "None (see discrepancies-F2.md for the support-family formulation).",
+   "difference": "None: every fact is at the one Type B support of G fixed by the entry (Statements/TypeBLanes.lean); see lean-vs-paper-discrepancies.md, [65]--[85].",
    "on_probed_closed_arm": false
   },
   "70": {
    "producer": "`fanCertificateCapRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/FanCertificateCap.lean:22)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "Fan-safe clause (i) (`FanSafeAt`, from the selection) and the certificate-marked cap d_G(h) <= α(D) at every assigned centre. Stated over the Type B support family `TypeBSupport` (Graph/Statements/TypeB.lean): lane-free; decisions are a family predicate and its exact negation (registered in audits/erdos-64-red-team/discrepancies-F2.md).",
+   "fidelity_note": "Reads typeBFanEntry: fan-safe graph (def:typeB-fan-safe (i)) and the label-packing cap of lem:fan-certificate at every centre of the entry's support.",
    "complete": "YES",
    "local": "YES",
    "api": "OK. One composition `Assembly.Internal.selectedTypeBFanContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Continuation.lean:49) runs [67]-[85] generically over the incoming ExactLedger; the certificate walk is `Assembly.Internal.selectedTypeBCertificateContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Internal/Certificate.lean:53). Entries: [64] `selectedTypeBHighSurplusContinuation`, [108]/[66] `selectedTypeBDecoratedContinuation`, [177] `Assembly.Internal.selectedAbsorbedFanChargeContinuation`. Every open arm continues to `selectedTypeBRoute8Continuation` ([77]).",
-   "difference": "None (see discrepancies-F2.md for the support-family formulation).",
+   "difference": "None: every fact is at the one Type B support of G fixed by the entry (Statements/TypeBLanes.lean); see lean-vs-paper-discrepancies.md, [65]--[85].",
    "on_probed_closed_arm": false
   },
   "71": {
    "producer": "`fanCertificateDichotomy` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/FanCertificateDichotomy.lean:22)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "Yes: every assigned centre is certificate-marked; no: its exact negation, a fan-certificate residual centre. Stated over the Type B support family `TypeBSupport` (Graph/Statements/TypeB.lean): lane-free; decisions are a family predicate and its exact negation (registered in audits/erdos-64-red-team/discrepancies-F2.md).",
+   "fidelity_note": "Reads fanCertificateCap and splits at its support: every centre certificate-marked (with cap) vs some centre a fan-certificate residual centre.",
    "complete": "YES",
    "local": "YES",
    "api": "OK. One composition `Assembly.Internal.selectedTypeBFanContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Continuation.lean:49) runs [67]-[85] generically over the incoming ExactLedger; the certificate walk is `Assembly.Internal.selectedTypeBCertificateContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Internal/Certificate.lean:53). Entries: [64] `selectedTypeBHighSurplusContinuation`, [108]/[66] `selectedTypeBDecoratedContinuation`, [177] `Assembly.Internal.selectedAbsorbedFanChargeContinuation`. Every open arm continues to `selectedTypeBRoute8Continuation` ([77]).",
-   "difference": "None (see discrepancies-F2.md for the support-family formulation).",
+   "difference": "None: every fact is at the one Type B support of G fixed by the entry (Statements/TypeBLanes.lean); see lean-vs-paper-discrepancies.md, [65]--[85].",
    "on_probed_closed_arm": false
   },
   "72": {
-   "producer": "`directCycleDichotomy` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/DirectCycleDichotomy.lean:23); `instIncompatibleSelectionTypeBDirectCycle` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/DirectCycleDichotomy.lean:43); `hybridEntryRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/HybridEntry.lean:20); `b2AssignmentDichotomy` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/B2AssignmentDichotomy.lean:23)",
+   "producer": "`directCycleDichotomy` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/DirectCycleDichotomy.lean:24); `instIncompatibleSelectionTypeBDirectCycle` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/DirectCycleDichotomy.lean:43); `hybridEntryRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/HybridEntry.lean:20); `b2AssignmentDichotomy` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/B2AssignmentDichotomy.lean:24)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "Direct-cycle split (yes arm closed by closeIncompatible against the selection), local B1 ledger, then the B2 split: disjoint choice vs its exact negation in the positive form of lem:typeB-bridge-to-overlap. Stated over the Type B support family `TypeBSupport` (Graph/Statements/TypeB.lean): lane-free; decisions are a family predicate and its exact negation (registered in audits/erdos-64-red-team/discrepancies-F2.md).",
+   "fidelity_note": "Direct cycle: reads fanCertificateMarked and splits at its support (configuration at P0 vs direct-cycle free); the cycle arm closes by Incompatible selection. B1: hybrid entry at every marked centre at the canonical fan envelope over W0. B2: reads typeBDirectCycleFree and splits HasDisjointChoice at (P0, Y_X, H_X) vs a minimal overlap obstruction (lem:typeB-bridge-to-overlap) at X.",
    "complete": "YES",
    "local": "YES",
    "api": "OK. One composition `Assembly.Internal.selectedTypeBFanContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Continuation.lean:49) runs [67]-[85] generically over the incoming ExactLedger; the certificate walk is `Assembly.Internal.selectedTypeBCertificateContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Internal/Certificate.lean:53). Entries: [64] `selectedTypeBHighSurplusContinuation`, [108]/[66] `selectedTypeBDecoratedContinuation`, [177] `Assembly.Internal.selectedAbsorbedFanChargeContinuation`. Every open arm continues to `selectedTypeBRoute8Continuation` ([77]).",
-   "difference": "None (see discrepancies-F2.md for the support-family formulation).",
+   "difference": "None: every fact is at the one Type B support of G fixed by the entry (Statements/TypeBLanes.lean); see lean-vs-paper-discrepancies.md, [65]--[85].",
    "on_probed_closed_arm": false
   },
   "73": {
    "producer": "`typeBGlobalLocalBridgeRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBGlobalLocalBridge.lean:19)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "B2 no arm: minimal overlap obstruction; prop:typeB-global-local-bridge reflection at every canonical obstruction.",
+   "fidelity_note": "Reads typeBOverlapObstruction: at the obstructed support, every overlap obstruction on a canonical core carries the five clauses of lem:typeB-global-local-reflection.",
    "complete": "YES",
    "local": "YES",
    "api": "OK. One composition `Assembly.Internal.selectedTypeBFanContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Continuation.lean:49) runs [67]-[85] generically over the incoming ExactLedger; the certificate walk is `Assembly.Internal.selectedTypeBCertificateContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Internal/Certificate.lean:53). Entries: [64] `selectedTypeBHighSurplusContinuation`, [108]/[66] `selectedTypeBDecoratedContinuation`, [177] `Assembly.Internal.selectedAbsorbedFanChargeContinuation`. Every open arm continues to `selectedTypeBRoute8Continuation` ([77]).",
-   "difference": "None (see discrepancies-F2.md for the support-family formulation).",
+   "difference": "None: every fact is at the one Type B support of G fixed by the entry (Statements/TypeBLanes.lean); see lean-vs-paper-discrepancies.md, [65]--[85].",
    "on_probed_closed_arm": false
   },
   "74": {
-   "producer": "`disjointPostLedgerComponentsRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/DisjointPostLedgerComponents.lean:19); `typeBExcludedRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBExclusion.lean:20)",
+   "producer": "`disjointPostLedgerComponentsRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/DisjointPostLedgerComponents.lean:19); `typeBExcludedRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBExclusion.lean:21)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "B2(a)-(d) refinement and prop:typeB-bridge-reduction (nonnegative remaining core gives N₀(X) >= 0). No split: [74] -> [76] as in the paper.",
+   "fidelity_note": "B2(a)-(d) at the B2-success support: the canonical disjoint choice refines every candidate; on a canonical core the canonical B2 ledger canonicalTypeBDisjointChoice(Y_X, H_X) has its exact refinement, post-ledger hygiene and grouped coverage; typeBExcluded reads that ledger (prop:typeB-bridge-reduction).",
    "complete": "YES",
    "local": "YES",
    "api": "OK. One composition `Assembly.Internal.selectedTypeBFanContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Continuation.lean:49) runs [67]-[85] generically over the incoming ExactLedger; the certificate walk is `Assembly.Internal.selectedTypeBCertificateContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Internal/Certificate.lean:53). Entries: [64] `selectedTypeBHighSurplusContinuation`, [108]/[66] `selectedTypeBDecoratedContinuation`, [177] `Assembly.Internal.selectedAbsorbedFanChargeContinuation`. Every open arm continues to `selectedTypeBRoute8Continuation` ([77]).",
-   "difference": "None (see discrepancies-F2.md for the support-family formulation).",
+   "difference": "None: every fact is at the one Type B support of G fixed by the entry (Statements/TypeBLanes.lean); see lean-vs-paper-discrepancies.md, [65]--[85].",
    "on_probed_closed_arm": false
   },
   "75": {
    "producer": "`fanCertificateResidualMassRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/FanCertificateResidualMass.lean:20); `typeBOverlapObstructionMassRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBOverlapObstructionMass.lean:19)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "Certificate residual centres and B2 obstructions charged to assigned surplus.",
+   "fidelity_note": "Masses at the residual supports: the fan-certificate residual centre (reads fanCertificateResidual) and the obstructed support's centres (reads typeBGlobalLocalBridge) are charged at their canonical fan envelopes.",
    "complete": "YES",
    "local": "YES",
    "api": "OK. One composition `Assembly.Internal.selectedTypeBFanContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Continuation.lean:49) runs [67]-[85] generically over the incoming ExactLedger; the certificate walk is `Assembly.Internal.selectedTypeBCertificateContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Internal/Certificate.lean:53). Entries: [64] `selectedTypeBHighSurplusContinuation`, [108]/[66] `selectedTypeBDecoratedContinuation`, [177] `Assembly.Internal.selectedAbsorbedFanChargeContinuation`. Every open arm continues to `selectedTypeBRoute8Continuation` ([77]).",
-   "difference": "None (see discrepancies-F2.md for the support-family formulation).",
+   "difference": "None: every fact is at the one Type B support of G fixed by the entry (Statements/TypeBLanes.lean); see lean-vs-paper-discrepancies.md, [65]--[85].",
    "on_probed_closed_arm": false
   },
   "76": {
-   "producer": "`typeBExclusionResidualRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBExclusion.lean:36); `typeBExclusionResidualMassRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBExclusionResidualMass.lean:20)",
+   "producer": "`typeBExclusionResidualRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBExclusion.lean:37); `typeBExclusionResidualMassRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBExclusionResidualMass.lean:20)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "A canonical support is negative, so its B2 ledger leaves a negative post-ledger core: Type B carries its deficit only through route 8; continues to [77].",
+   "fidelity_note": "Reads typeBDisjointLedger and typeBExcluded: a negative support on a canonical core keeps a negative remaining core on its one canonical B2 ledger; its centres are charged (typeBExclusionResidualMass). No split at [74]/[76], as in the paper.",
    "complete": "YES",
    "local": "YES",
    "api": "OK. One composition `Assembly.Internal.selectedTypeBFanContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Continuation.lean:49) runs [67]-[85] generically over the incoming ExactLedger; the certificate walk is `Assembly.Internal.selectedTypeBCertificateContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Internal/Certificate.lean:53). Entries: [64] `selectedTypeBHighSurplusContinuation`, [108]/[66] `selectedTypeBDecoratedContinuation`, [177] `Assembly.Internal.selectedAbsorbedFanChargeContinuation`. Every open arm continues to `selectedTypeBRoute8Continuation` ([77]).",
-   "difference": "None (see discrepancies-F2.md for the support-family formulation).",
+   "difference": "None: every fact is at the one Type B support of G fixed by the entry (Statements/TypeBLanes.lean); see lean-vs-paper-discrepancies.md, [65]--[85].",
    "on_probed_closed_arm": false
   },
   "77": {
@@ -774,83 +774,83 @@
    "on_probed_closed_arm": false
   },
   "78": {
-   "producer": "`typeBFanDegreeDichotomy` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBFanDegreeDichotomy.lean:22), right arm",
+   "producer": "`typeBFanDegreeDichotomy` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBFanDegreeDichotomy.lean:23), right arm",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "Every assigned centre has degree δ+1.",
+   "fidelity_note": "Reads typeBFanEntry (and surplusAtOrBelow, which excludes the [144] lane) and splits at the entry's Type B support X: some centre of H_X has d_G(h) > delta+1 (TypeBLaneSome) vs every centre of H_X has degree delta+1 (TypeBLaneAll); exact complements at X (Contracts.TypeB.TypeBLaneAll.split, TypeBLaneSome.not_all). d2ded0e read the same key and split on the same lane's centres.",
    "complete": "YES",
    "local": "YES",
    "api": "OK. One composition `Assembly.Internal.selectedTypeBFanContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Continuation.lean:49) runs [67]-[85] generically over the incoming ExactLedger; the certificate walk is `Assembly.Internal.selectedTypeBCertificateContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Internal/Certificate.lean:53). Entries: [64] `selectedTypeBHighSurplusContinuation`, [108]/[66] `selectedTypeBDecoratedContinuation`, [177] `Assembly.Internal.selectedAbsorbedFanChargeContinuation`. Every open arm continues to `selectedTypeBRoute8Continuation` ([77]).",
-   "difference": "None (see discrepancies-F2.md for the support-family formulation).",
+   "difference": "None: every fact is at the one Type B support of G fixed by the entry (Statements/TypeBLanes.lean); see lean-vs-paper-discrepancies.md, [65]--[85].",
    "on_probed_closed_arm": false
   },
   "79": {
    "producer": "`typeBFanDegreeFourProfileRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBFanDegreeFourProfile.lean:20)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "cor:degree-four-local-activation and the degree-four profile at every assigned centre; followed by the triangular core lemmas and the fan-closed / compatible-pair routing.",
+   "fidelity_note": "Reads typeBFanDegreeFourCentres: cor:degree-four-local-activation and the degree-four profile at the canonical fan envelope of every centre of the support.",
    "complete": "YES",
    "local": "YES",
    "api": "OK. One composition `Assembly.Internal.selectedTypeBFanContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Continuation.lean:49) runs [67]-[85] generically over the incoming ExactLedger; the certificate walk is `Assembly.Internal.selectedTypeBCertificateContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Internal/Certificate.lean:53). Entries: [64] `selectedTypeBHighSurplusContinuation`, [108]/[66] `selectedTypeBDecoratedContinuation`, [177] `Assembly.Internal.selectedAbsorbedFanChargeContinuation`. Every open arm continues to `selectedTypeBRoute8Continuation` ([77]).",
-   "difference": "None (see discrepancies-F2.md for the support-family formulation).",
+   "difference": "None: every fact is at the one Type B support of G fixed by the entry (Statements/TypeBLanes.lean); see lean-vs-paper-discrepancies.md, [65]--[85].",
    "on_probed_closed_arm": false
   },
   "80": {
    "producer": "`fanCertificateDichotomy` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/FanCertificateDichotomy.lean:22)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "As [71], on the degree-four arm.",
+   "fidelity_note": "Reads fanCertificateCap and splits at its support: every centre certificate-marked (with cap) vs some centre a fan-certificate residual centre.",
    "complete": "YES",
    "local": "YES",
    "api": "OK. One composition `Assembly.Internal.selectedTypeBFanContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Continuation.lean:49) runs [67]-[85] generically over the incoming ExactLedger; the certificate walk is `Assembly.Internal.selectedTypeBCertificateContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Internal/Certificate.lean:53). Entries: [64] `selectedTypeBHighSurplusContinuation`, [108]/[66] `selectedTypeBDecoratedContinuation`, [177] `Assembly.Internal.selectedAbsorbedFanChargeContinuation`. Every open arm continues to `selectedTypeBRoute8Continuation` ([77]).",
-   "difference": "None (see discrepancies-F2.md for the support-family formulation).",
+   "difference": "None: every fact is at the one Type B support of G fixed by the entry (Statements/TypeBLanes.lean); see lean-vs-paper-discrepancies.md, [65]--[85].",
    "on_probed_closed_arm": false
   },
   "81": {
-   "producer": "`b2AssignmentDichotomy` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/B2AssignmentDichotomy.lean:23)",
+   "producer": "`b2AssignmentDichotomy` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/B2AssignmentDichotomy.lean:24)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "As [72], on the degree-four arm.",
+   "fidelity_note": "Direct cycle: reads fanCertificateMarked and splits at its support (configuration at P0 vs direct-cycle free); the cycle arm closes by Incompatible selection. B1: hybrid entry at every marked centre at the canonical fan envelope over W0. B2: reads typeBDirectCycleFree and splits HasDisjointChoice at (P0, Y_X, H_X) vs a minimal overlap obstruction (lem:typeB-bridge-to-overlap) at X.",
    "complete": "YES",
    "local": "YES",
    "api": "OK. One composition `Assembly.Internal.selectedTypeBFanContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Continuation.lean:49) runs [67]-[85] generically over the incoming ExactLedger; the certificate walk is `Assembly.Internal.selectedTypeBCertificateContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Internal/Certificate.lean:53). Entries: [64] `selectedTypeBHighSurplusContinuation`, [108]/[66] `selectedTypeBDecoratedContinuation`, [177] `Assembly.Internal.selectedAbsorbedFanChargeContinuation`. Every open arm continues to `selectedTypeBRoute8Continuation` ([77]).",
-   "difference": "None (see discrepancies-F2.md for the support-family formulation).",
+   "difference": "None: every fact is at the one Type B support of G fixed by the entry (Statements/TypeBLanes.lean); see lean-vs-paper-discrepancies.md, [65]--[85].",
    "on_probed_closed_arm": false
   },
   "82": {
-   "producer": "`typeBExcludedRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBExclusion.lean:20)",
+   "producer": "`typeBExcludedRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBExclusion.lean:21)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "As [74].",
+   "fidelity_note": "B2(a)-(d) at the B2-success support: the canonical disjoint choice refines every candidate; on a canonical core the canonical B2 ledger canonicalTypeBDisjointChoice(Y_X, H_X) has its exact refinement, post-ledger hygiene and grouped coverage; typeBExcluded reads that ledger (prop:typeB-bridge-reduction).",
    "complete": "YES",
    "local": "YES",
    "api": "OK. One composition `Assembly.Internal.selectedTypeBFanContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Continuation.lean:49) runs [67]-[85] generically over the incoming ExactLedger; the certificate walk is `Assembly.Internal.selectedTypeBCertificateContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Internal/Certificate.lean:53). Entries: [64] `selectedTypeBHighSurplusContinuation`, [108]/[66] `selectedTypeBDecoratedContinuation`, [177] `Assembly.Internal.selectedAbsorbedFanChargeContinuation`. Every open arm continues to `selectedTypeBRoute8Continuation` ([77]).",
-   "difference": "None (see discrepancies-F2.md for the support-family formulation).",
+   "difference": "None: every fact is at the one Type B support of G fixed by the entry (Statements/TypeBLanes.lean); see lean-vs-paper-discrepancies.md, [65]--[85].",
    "on_probed_closed_arm": false
   },
   "83": {
    "producer": "`typeBGlobalLocalBridgeRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBGlobalLocalBridge.lean:19)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "As [73].",
+   "fidelity_note": "Reads typeBOverlapObstruction: at the obstructed support, every overlap obstruction on a canonical core carries the five clauses of lem:typeB-global-local-reflection.",
    "complete": "YES",
    "local": "YES",
    "api": "OK. One composition `Assembly.Internal.selectedTypeBFanContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Continuation.lean:49) runs [67]-[85] generically over the incoming ExactLedger; the certificate walk is `Assembly.Internal.selectedTypeBCertificateContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Internal/Certificate.lean:53). Entries: [64] `selectedTypeBHighSurplusContinuation`, [108]/[66] `selectedTypeBDecoratedContinuation`, [177] `Assembly.Internal.selectedAbsorbedFanChargeContinuation`. Every open arm continues to `selectedTypeBRoute8Continuation` ([77]).",
-   "difference": "None (see discrepancies-F2.md for the support-family formulation).",
+   "difference": "None: every fact is at the one Type B support of G fixed by the entry (Statements/TypeBLanes.lean); see lean-vs-paper-discrepancies.md, [65]--[85].",
    "on_probed_closed_arm": false
   },
   "84": {
    "producer": "`typeBOverlapObstructionMassRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBOverlapObstructionMass.lean:19)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "As [75].",
+   "fidelity_note": "Masses at the residual supports: the fan-certificate residual centre (reads fanCertificateResidual) and the obstructed support's centres (reads typeBGlobalLocalBridge) are charged at their canonical fan envelopes.",
    "complete": "YES",
    "local": "YES",
    "api": "OK. One composition `Assembly.Internal.selectedTypeBFanContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Continuation.lean:49) runs [67]-[85] generically over the incoming ExactLedger; the certificate walk is `Assembly.Internal.selectedTypeBCertificateContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Internal/Certificate.lean:53). Entries: [64] `selectedTypeBHighSurplusContinuation`, [108]/[66] `selectedTypeBDecoratedContinuation`, [177] `Assembly.Internal.selectedAbsorbedFanChargeContinuation`. Every open arm continues to `selectedTypeBRoute8Continuation` ([77]).",
-   "difference": "None (see discrepancies-F2.md for the support-family formulation).",
+   "difference": "None: every fact is at the one Type B support of G fixed by the entry (Statements/TypeBLanes.lean); see lean-vs-paper-discrepancies.md, [65]--[85].",
    "on_probed_closed_arm": false
   },
   "85": {
-   "producer": "`typeBExclusionResidualRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBExclusion.lean:36)",
+   "producer": "`typeBExclusionResidualRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeBExclusion.lean:37)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "As [76]; continues to the route-8 census.",
+   "fidelity_note": "Reads typeBDisjointLedger and typeBExcluded: a negative support on a canonical core keeps a negative remaining core on its one canonical B2 ledger; its centres are charged (typeBExclusionResidualMass). No split at [74]/[76], as in the paper.",
    "complete": "YES",
    "local": "YES",
    "api": "OK. One composition `Assembly.Internal.selectedTypeBFanContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Continuation.lean:49) runs [67]-[85] generically over the incoming ExactLedger; the certificate walk is `Assembly.Internal.selectedTypeBCertificateContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/TypeB/Internal/Certificate.lean:53). Entries: [64] `selectedTypeBHighSurplusContinuation`, [108]/[66] `selectedTypeBDecoratedContinuation`, [177] `Assembly.Internal.selectedAbsorbedFanChargeContinuation`. Every open arm continues to `selectedTypeBRoute8Continuation` ([77]).",
-   "difference": "None (see discrepancies-F2.md for the support-family formulation).",
+   "difference": "None: every fact is at the one Type B support of G fixed by the entry (Statements/TypeBLanes.lean); see lean-vs-paper-discrepancies.md, [65]--[85].",
    "on_probed_closed_arm": true
   },
   "86": {

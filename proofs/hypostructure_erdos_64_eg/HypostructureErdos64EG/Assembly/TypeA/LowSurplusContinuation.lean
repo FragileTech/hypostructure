@@ -176,6 +176,7 @@ noncomputable def selectedTypeALowSurplusContinuation
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .remainderNormalized) known]
     [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .netChargeCap) known]
     [FactKeys.Has (K .contractionCritical) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .uncompressible) known]

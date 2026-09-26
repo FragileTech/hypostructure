@@ -6,6 +6,7 @@ import Hypostructure.Graph.Statements.TypeA
 import Hypostructure.Graph.Statements.TypeB
 import Hypostructure.Graph.Statements.RouteEight
 import Hypostructure.Graph.Statements.SurplusPair
+import Hypostructure.Graph.Statements.TypeBLanes
 
 /-!
 # The minimum-degree cycle spine: fact vocabulary

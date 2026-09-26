@@ -1,5 +1,5 @@
 import Hypostructure.Graph.Contracts.RouteEight.Basic
-import Hypostructure.Graph.Statements.TypeB
+import Hypostructure.Graph.Statements.TypeBLanes
 
 /-!
 # Contracts: the route-8 per-entry census and the all-pieces classification
@@ -335,9 +335,9 @@ theorem route8PiecesClassified (data : Parameters) (object : FiniteObject.{u})
         ((Graph.FiniteObject.mem_canonicalPieces _ _).1 pieceMem))
       negative zeroSurplus).1
   · -- `thm:branch-kill`(b): the bridge-residual dichotomy at this piece.
-    rcases bridge (canonicalWindowPacking data object) valid maximal
-        ⟨piece, pieceMem⟩ negative positiveSurplus with
-      ⟨ledger, exactRefinement, notClean, _postLedger, _grouped⟩ | obstruction
+    rcases bridge ⟨piece, pieceMem⟩ negative positiveSurplus with
+      ⟨ledger, _ledgerEq, exactRefinement, notClean, _postLedger, _grouped⟩ |
+        obstruction
     · exact Or.inl ⟨ledger, exactRefinement, notClean⟩
     · exact Or.inr obstruction
 

@@ -8067,10 +8067,12 @@ Expr → optParam (Array Expr) #[] → MetaM (Array Expr)
             (previous :
                 Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   current known) →
-              Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBB2Choice ∉ known →
-                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBOverlapObstruction ∉ known →
-                  Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBB2Choice)
-                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBOverlapObstruction) previous
+              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBDirectCycleFree)
+                    known] →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBB2Choice ∉ known →
+                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBOverlapObstruction ∉ known →
+                    Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBB2Choice)
+                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBOverlapObstruction) previous
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows.BarrierEnumeration`
@@ -8488,10 +8490,12 @@ Expr → optParam (Array Expr) #[] → MetaM (Array Expr)
             (previous :
                 Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   current known) →
-              Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBDirectCycle ∉ known →
-                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBDirectCycleFree ∉ known →
-                  Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBDirectCycle)
-                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBDirectCycleFree) previous
+              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.fanCertificateMarked)
+                    known] →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBDirectCycle ∉ known →
+                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBDirectCycleFree ∉ known →
+                    Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBDirectCycle)
+                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBDirectCycleFree) previous
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows.DominantRootedType`
@@ -8659,10 +8663,11 @@ Expr → optParam (Array Expr) #[] → MetaM (Array Expr)
             (previous :
                 Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   current known) →
-              Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.fanCertificateMarked ∉ known →
-                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.fanCertificateResidual ∉ known →
-                  Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.fanCertificateMarked)
-                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.fanCertificateResidual) previous
+              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.fanCertificateCap) known] →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.fanCertificateMarked ∉ known →
+                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.fanCertificateResidual ∉ known →
+                    Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.fanCertificateMarked)
+                      (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.fanCertificateResidual) previous
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows.FanCertificateResidualMass`
@@ -11362,10 +11367,12 @@ ParserDescr
             (previous :
                 Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
                   current known) →
-              Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBFanHeavyCentre ∉ known →
-                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBFanDegreeFourCentres ∉ known →
-                  Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBFanHeavyCentre)
-                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBFanDegreeFourCentres) previous
+              [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBFanEntry) known] →
+                [Core.Residual.FactKeys.Has (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.surplusAtOrBelow) known] →
+                  Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBFanHeavyCentre ∉ known →
+                    Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBFanDegreeFourCentres ∉ known →
+                      Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBFanHeavyCentre)
+                        (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.typeBFanDegreeFourCentres) previous
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows.TypeBFanDegreeFourProfile`

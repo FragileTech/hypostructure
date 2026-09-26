@@ -4,6 +4,7 @@ import Hypostructure.Graph.SparsePressureLedger
 import Hypostructure.Graph.GluedCrossingCycle
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.Basic
 import Hypostructure.Graph.Contracts.SurplusPair.PairCode
+import Hypostructure.Graph.Contracts.TypeB.Entry
 import Hypostructure.Graph.Contracts.SurplusPair.PairOverlap
 
 namespace Hypostructure.Graph.Strategy.Spine
@@ -122,17 +123,19 @@ Type B entry remains. -/
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.pairSystemEarlyTypeBEntry
     { Requires := [K .pairSystemEarlyOutcome, K .selection,
-        K .sparseSurplusSurvivor]
+        K .sparseSurplusSurvivor, K .surplusAbove]
       Produces := [K .typeBFanEntry]
       requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .typeBFanEntry)
-        ⟨Graph.Contracts.SurplusPair.typeBFanEntry_of_pairSystemEarlyOutcome
-          (inputs.get (K .pairSystemEarlyOutcome)).down
-          (inputs.get (K .selection)).down.1
-          (inputs.get (K .sparseSurplusSurvivor)).down⟩
+        ⟨Contracts.TypeB.typeBFanEntry_of_sameTokenHandoff
+          (inputs.get (K .surplusAbove)).down
+          (Graph.Contracts.SurplusPair.sameTokenHandoff_of_pairSystemEarlyOutcome
+            (inputs.get (K .pairSystemEarlyOutcome)).down
+            (inputs.get (K .selection)).down.1
+            (inputs.get (K .sparseSurplusSurvivor)).down)⟩
         .nil)
 
 /-- Node `[180]`: test `lem:pair-system-increment-arithmetic`'s coverage by
@@ -218,16 +221,19 @@ the survivor fact, so the literal common Type B entry remains. -/
 @[reducible] noncomputable def pairIncrementEarlyTypeBEntryRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.pairIncrementEarlyTypeBEntry
-    { Requires := [K .pairIncrementEarlyOutcome, K .sparseSurplusSurvivor]
+    { Requires := [K .pairIncrementEarlyOutcome, K .sparseSurplusSurvivor,
+        K .surplusAbove]
       Produces := [K .typeBFanEntry]
       requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .typeBFanEntry)
-        ⟨Graph.Contracts.SurplusPair.typeBFanEntry_of_pairIncrementEarlyOutcome
-          (inputs.get (K .pairIncrementEarlyOutcome)).down
-          (inputs.get (K .sparseSurplusSurvivor)).down⟩
+        ⟨Contracts.TypeB.typeBFanEntry_of_sameTokenHandoff
+          (inputs.get (K .surplusAbove)).down
+          (Graph.Contracts.SurplusPair.sameTokenHandoff_of_pairIncrementEarlyOutcome
+            (inputs.get (K .pairIncrementEarlyOutcome)).down
+            (inputs.get (K .sparseSurplusSurvivor)).down)⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

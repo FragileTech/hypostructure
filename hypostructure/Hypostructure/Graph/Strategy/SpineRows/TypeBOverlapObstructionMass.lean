@@ -19,7 +19,7 @@ variable {data : Data.{u}}
 @[reducible] noncomputable def typeBOverlapObstructionMassRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.typeBOverlapObstructionMass
-    { Requires := [K .typeBOverlapObstruction]
+    { Requires := [K .typeBGlobalLocalBridge]
       Produces := [K .typeBOverlapObstructionMass]
       requiresUnique := by simp
       producesUnique := by simp
@@ -27,7 +27,7 @@ variable {data : Data.{u}}
     (fun inputs =>
       .cons (key := K .typeBOverlapObstructionMass)
         ⟨Contracts.TypeB.typeBOverlapObstructionMass data.bridgeMassSlack
-          (inputs.get (K .typeBOverlapObstruction)).down⟩
+          (inputs.get (K .typeBGlobalLocalBridge)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

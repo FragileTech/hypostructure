@@ -153,6 +153,7 @@ noncomputable def selectedTypeAVisibleExitChain
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .netChargeCap) known]
     [FactKeys.Has (K .tightEndpoint) known]
     [FactKeys.Has (K .remainderNormalized) known]
     [FactKeys.Has (K .bridgeless) known]

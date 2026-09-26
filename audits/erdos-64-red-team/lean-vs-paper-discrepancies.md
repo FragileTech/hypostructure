@@ -206,7 +206,7 @@ negation on the remainder of the fixed maximum packing
   definitional unfolding of the fan-safe relation (a tautology read from no
   fact); its content now lives, as a genuine consequence of the selection, in
   `fanCertificateCap` on every Type B branch (previously it was published only
-  on the [177] branch). `TypeBFanSafeStatement` is kept for the vocabulary.
+  on the [177] branch). `TypeBFanSafeStatement` is deleted: no key publishes it.
 - **Why at least as strong.** Clause (i) is now a proved fact at every centre
   instead of an iff with arbitrary predicates; clauses (ii)–(v) are defining
   conditions of the fan-safe graph, not claims.
@@ -227,6 +227,51 @@ negation on the remainder of the fixed maximum packing
   is negative, so its B2 ledger leaves a negative post-ledger core), then the
   mass row and the route-8 continuation [77]. This is the paper's topology; no
   deviation remains.
+- **G-repair.** All three keys are about the one canonical B2 ledger
+  `canonicalTypeBDisjointChoice data G Y_X H_X` of the Type B support, read
+  from `K .typeBDisjointLedger` (d2ded0e's `[76]` also read that key's
+  ledger).  The d2ded0e decision's yes arm is not restored: it was
+  unreachable and was closed by a hand-built `False`.
+
+## [65]--[85]: the Type B support is the one support fixed by the entry
+
+*Family F2 (Type B), G-repair.*
+
+- **Paper** (tex 961, `def:typeB-assigned-ledger` tex 12909). Node [65]
+  receives one assigned support `X = (Y_X, H_X)`, and every node
+  [67]--[85] speaks about that `X`.
+- **Previous Lean.** Every key quantified over a family `TypeBSupport` of
+  arbitrary maximal packings and envelopes; `({a}, {h})` for any high `h`
+  was a member, so the family was "all high vertices of G".  No decision
+  read its predecessor.
+- **Lean now** (`Statements/TypeBLanes.lean`). Each entry form is a lane
+  pinned to R0's canonical object of G: ordinary `(X₀, H(X₀))`
+  (`canonicalTypeBOrdinarySupport`, on `K .netChargeCap` and `σ(X₀) > 0`),
+  decorated `(X₀, {z})` (`canonicalTypeBDecoratedSupport` with its canonical
+  envelope, on `K .netChargeCap` and `σ(X₀) = 0`), absorbed `X_ε`
+  (`canonicalTypeBAbsorbedSupport ε`, on `K .exactCollisionFails` with the
+  [175] data), and the [144] same-token handoff (on `K .surplusAbove`; no
+  continuation runs there).  The lanes are mutually exclusive
+  (`Contracts.TypeB.ordinary_decorated_exclusive`,
+  `netChargeCap_not_exactCollisionFails`; the same-token lane by
+  `surplusAbove`/`surplusAtOrBelow`), so each decision's two arms
+  `TypeBLaneSome P` / `TypeBLaneAll ¬P` are exact complements at the one
+  support (`TypeBLaneSome.not_all`).  Decisions read their d2ded0e
+  predecessor: [68] `typeBFanEntry`, [71] `fanCertificateCap`, [72]
+  `fanCertificateMarked`, B2 `typeBDirectCycleFree`; [70] reads
+  `typeBFanEntry`, [69] `typeBFanHeavyCentre`, the global-local bridge
+  `typeBOverlapObstruction`, its mass `typeBGlobalLocalBridge`.  The window
+  union is `W₀ = windowSupport P₀` and the fan envelope is
+  `canonicalEnvelope G h` throughout; the bridge statements are at `P₀` and
+  at G's canonical piece collections.
+- **Triangular keys** (`def:triangular-fan-core`, tex 2378; tex 2413, 2452,
+  2489, 2521). They are stated at a *heavy* center (`d_G(h) ≥ 5`,
+  `def:heavy-center-triangular-port` tex 2223), and so run on the heavy arm
+  [69], feeding `prop:triangular-port-typeB-routing` (tex 13780); the
+  degree-four arm runs only the routings used by
+  `cor:degree-four-local-activation` (tex 2336).  The paper's
+  cross-reference table (tex 1871--1881) lists these lemmas at [78]--[81];
+  that contradicts their own statements, which are followed here.
 
 ## [89], [93], [95], [97], [99], [101], [103], [105], [107]: now paper-exact at the fixed objects
 

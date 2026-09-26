@@ -23,7 +23,8 @@ either alternative gives fan-closed ports. -/
 @[reducible] noncomputable def typeBFanLocalDichotomyRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.typeBFanLocalDichotomy
-    { Requires := [K .highCentreNormalForm, K .compatiblePairTypeBRouting, K .triangularPortTypeBRouting]
+    { Requires := [K .highCentreNormalForm, K .typeBFanHeavyCentre,
+        K .compatiblePairTypeBRouting, K .triangularPortTypeBRouting]
       Produces := [K .typeBFanLocalDichotomy]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -33,7 +34,8 @@ either alternative gives fan-closed ports. -/
         ⟨Contracts.TypeB.typeBFanLocalDichotomy data.three_le_threshold
           (inputs.get (K .highCentreNormalForm)).down
           (inputs.get (K .compatiblePairTypeBRouting)).down
-          (inputs.get (K .triangularPortTypeBRouting)).down⟩
+          (inputs.get (K .triangularPortTypeBRouting)).down
+          (inputs.get (K .typeBFanHeavyCentre)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

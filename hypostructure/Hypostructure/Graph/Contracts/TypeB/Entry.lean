@@ -1,14 +1,14 @@
 import Hypostructure.Graph.Contracts.TypeB.Support
-import Hypostructure.Graph.Contracts.TypeA.Support
-import Hypostructure.Graph.Statements.SurplusPair
 
 /-!
 # Contracts: the Type B entries
 
-The assigned Type B supports produced by the ordinary support
-(`def:canonical-decomp`), the decorated handoff (`lem:decorated-fan-admissibility`),
-the absorbed-germ fan data (`lem:absorbed-germ-fan-data` (ii)) and the
-same-token handoff (`lem:same-token-bottleneck-routing`).
+The assigned Type B support of each entry form of node `[65]`, at the canonical
+object of `G` that the producing key fixed: the ordinary support `(X₀, H(X₀))`
+(`def:canonical-decomp`), the decorated exit-`(7)` handoff `(X₀, {z})`
+(`lem:decorated-fan-admissibility`), the absorbed-germ supports of
+`lem:absorbed-germ-fan-data` (ii), and the same-token handoff of
+`lem:same-token-bottleneck-routing`.
 -/
 
 namespace Hypostructure.Graph.Contracts.TypeB
@@ -36,92 +36,100 @@ theorem exists_highCentre_of_ambientSurplus_pos
     omega
   omega
 
-/-- `def:canonical-decomp` at the ordinary Type B support: its assigned fan
-centres are its own high centres, and there is one. -/
+/-- The ordinary Type B support `(X₀, H(X₀))` on the Type B arm `σ(X₀) > 0` of
+node `[62]`, on the net-cap arm of `[57]`. -/
+theorem typeBOrdinaryLane_of_highSurplus
+    (cap : NetChargeCapStatement data object)
+    (surplus : ∃ piece, canonicalNegativePiece data object = some piece ∧
+      0 < object.ambientSurplus piece data.threshold) :
+    ∃ piece, TypeBOrdinaryLane data object piece
+      (Graph.TypeBRefinedSupport.centres object data.threshold piece) := by
+  obtain ⟨piece, pieceEq, positive⟩ := surplus
+  exact ⟨piece, cap, by simp [canonicalTypeBOrdinarySupport, pieceEq], positive⟩
+
+/-- `def:canonical-decomp` at the ordinary Type B support: `X₀` is negative and
+carries a high centre. -/
 theorem typeBAssignedSupport
-    (negativeSupport : NegativeSupportStatement data object)
-    (typeB : TypeBHighSurplusStatement data object) :
+    (cap : NetChargeCapStatement data object)
+    (surplus : ∃ piece, canonicalNegativePiece data object = some piece ∧
+      0 < object.ambientSurplus piece data.threshold) :
     TypeBAssignedSupportStatement data object := by
-  obtain ⟨valid, maximal⟩ :=
-    Contracts.TypeA.canonicalWindowPacking_valid_maximal_of_negativeSupport data
-      object negativeSupport
-  obtain ⟨component, present, _pinned, charge, positive⟩ :=
-    Contracts.TypeA.typeBHighSurplus_support data object typeB
-  exact ⟨_, valid, maximal, component, present, charge, positive,
-    exists_highCentre_of_ambientSurplus_pos positive⟩
+  obtain ⟨piece, lane⟩ := typeBOrdinaryLane_of_highSurplus cap surplus
+  obtain ⟨_component, _componentEq, _member, _pieceEq, negative, _subset⟩ :=
+    TypeBOrdinaryLane.canonical lane
+  exact ⟨piece, _, lane, negative, exists_highCentre_of_ambientSurplus_pos lane.2.2⟩
 
-/-- The ordinary Type B support enters node `[65]` with its high centres as
-assigned centres. -/
+/-- The ordinary Type B support enters node `[65]` with its own high centres
+as assigned centres. -/
 theorem typeBFanEntry_of_highSurplus
-    (negativeSupport : NegativeSupportStatement data object)
-    (typeB : TypeBHighSurplusStatement data object) :
+    (cap : NetChargeCapStatement data object)
+    (surplus : ∃ piece, canonicalNegativePiece data object = some piece ∧
+      0 < object.ambientSurplus piece data.threshold) :
     TypeBFanEntryStatement data object := by
-  classical
-  apply Or.inl
-  obtain ⟨valid, maximal⟩ :=
-    Contracts.TypeA.canonicalWindowPacking_valid_maximal_of_negativeSupport data
-      object negativeSupport
-  obtain ⟨component, present, _pinned, charge, positive⟩ :=
-    Contracts.TypeA.typeBHighSurplus_support data object typeB
-  obtain ⟨centre, member, high⟩ := exists_highCentre_of_ambientSurplus_pos positive
-  refine ⟨_, valid, maximal, component, present,
-    Graph.TypeBRefinedSupport.centres object data.threshold
-      (object.pieceSupport (object.remainderSupport
-        (canonicalWindowPacking data object)) component),
-    Or.inl ⟨charge, positive, rfl⟩, ?_, ?_⟩
-  · exact ⟨centre, Graph.TypeBRefinedSupport.mem_centres.2 ⟨member, high⟩⟩
-  · intro vertex vertexMem
-    exact (Graph.TypeBRefinedSupport.mem_centres.1 vertexMem).2
+  obtain ⟨piece, lane⟩ := typeBOrdinaryLane_of_highSurplus cap surplus
+  obtain ⟨centre, member, high⟩ := exists_highCentre_of_ambientSurplus_pos lane.2.2
+  exact Or.inl (Or.inl ⟨piece, _, lane,
+    ⟨centre, Graph.TypeBRefinedSupport.mem_centres.2 ⟨member, high⟩⟩,
+    TypeBOrdinaryLane.high lane⟩)
 
-/-- `lem:typeA-high-degree-handoff` (tex 11110): the surviving first separator
-of an exit-`(7)` piece, with its separated connector tails, is a decorated
-handoff fan envelope whose counted core is the piece.  By
-`lem:typeA-cubic-switch-absorption` the separator has degree at least `4`, and
-the label-collision absorbing clause is refuted by target avoidance. -/
-theorem handoffEnvelope_of_separatorHandoffAt
+/-- The decorated Type B support `(X₀, {z})` of node `[108]`: on the Type A arm
+`σ(X₀) = 0` of `[62]` and the exit-`(7)` arm of `[107]` at `X₀`, the canonical
+surviving separator `z` of `X₀` exists and its canonical envelope is built
+(`lem:typeA-high-degree-handoff`, tex 11110: `z` has degree at least `4`, and
+the label-collision absorbing clause is refuted by target avoidance). -/
+theorem typeBDecoratedLane_of_handoff
+    (cap : NetChargeCapStatement data object)
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (cubic : data.threshold = 3) (degenerate : ¬ data.LengthOK 2)
-    (packing : Finset (Finset object.Vertex)) {piece : Finset object.Vertex}
-    (handoff : SeparatorHandoffAt data object piece) :
-    ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-        (handoffHighDegree data object) (handoffAbsorbing data object packing),
-      envelope.core = piece ∧ envelope.decorations.Nonempty := by
-  obtain ⟨_receiver, _receiverMem, _load, separated⟩ := handoff
-  exact Graph.Route8.TraceBasin.exists_envelope_of_traceSurvivingSeparator
-    separated avoids
-    (fun vertex high => by
-      show data.threshold < object.degree vertex
-      rw [cubic]
-      exact high)
-    (fun _centre _first _second collision =>
-      avoids (Graph.WindowLabelCollision.hasCycleWithLength_of_labelCollision
-        degenerate collision))
+    (zero : ∃ piece, canonicalNegativePiece data object = some piece ∧
+      object.ambientSurplus piece data.threshold = 0)
+    (handoff : ∃ piece, canonicalNegativePiece data object = some piece ∧
+      SeparatorHandoffAt data object piece) :
+    ∃ core centres, TypeBDecoratedLane data object core centres := by
+  obtain ⟨piece, pieceEq, zeroSurplus⟩ := zero
+  obtain ⟨piece', pieceEq', separated⟩ := handoff
+  rw [pieceEq, Option.some.injEq] at pieceEq'
+  subst pieceEq'
+  have spec := (separatorHandoffAt_iff_exists_spec data object piece).mp separated
+  obtain ⟨separation, separationEq, _⟩ := canonicalHandoffSeparationAt_spec spec
+  have supportEq : canonicalTypeBDecoratedSupport data object =
+      some (piece, {separation.2.separation.separator}) := by
+    simp [canonicalTypeBDecoratedSupport, pieceEq, canonicalHandoffSeparatorAt,
+      separationEq]
+  have envelopeSome : (canonicalTypeBDecoratedEnvelope data object).isSome := by
+    unfold canonicalTypeBDecoratedEnvelope
+    rw [pieceEq, Option.bind_some]
+    exact canonicalHandoffEnvelopeAt_isSome avoids
+      (fun vertex high => by
+        show data.threshold < object.degree vertex
+        rw [cubic]
+        exact high)
+      (fun _centre _first _second collision =>
+        avoids (Graph.WindowLabelCollision.hasCycleWithLength_of_labelCollision
+          degenerate collision))
+      spec
+  exact ⟨piece, _, cap, supportEq, zeroSurplus, envelopeSome⟩
 
 /-- `def:decorated-fan-envelope` and `lem:decorated-fan-admissibility`: the
-exit-`(7)` envelope is admissible Type B fan-envelope data. -/
+canonical exit-`(7)` envelope of `X₀` is admissible Type B fan-envelope data. -/
 theorem typeBDecoratedAssignedSupport
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
-    (cubic : data.threshold = 3) (degenerate : ¬ data.LengthOK 2)
     (uncompressible : UncompressibleStatement data object)
     (normalized : RemainderNormalizedStatement data object)
-    (negativeSupport : NegativeSupportStatement data object)
-    (handoff : TypeAExitSevenHandoffStatement data object) :
+    {core centres : Finset object.Vertex}
+    (lane : TypeBDecoratedLane data object core centres) :
     TypeBDecoratedAssignedSupportStatement data object := by
-  obtain ⟨piece, pinned, receiver, chosen, zero, state, produced⟩ := handoff
+  obtain ⟨envelope, envelopeEq, coreEq, decorations⟩ :=
+    TypeBDecoratedLane.envelope lane
+  obtain ⟨component, _componentEq, _member, pieceEq, _negative, _subset⟩ :=
+    TypeBDecoratedLane.canonical lane
   obtain ⟨valid, maximal⟩ :=
-    Contracts.TypeA.canonicalWindowPacking_valid_maximal_of_negativeSupport data
-      object negativeSupport
-  obtain ⟨_component, _present, _eq, inside, _connected, _charge⟩ :=
-    Contracts.TypeA.canonicalNegativePiece_facts data object pinned
-  obtain ⟨envelope, coreEq, nonempty⟩ :=
-    handoffEnvelope_of_separatorHandoffAt avoids cubic degenerate
-      (canonicalWindowPacking data object) produced
+    Contracts.RouteEight.canonicalWindowPacking_valid_maximal data object
   have coreInside : envelope.core ⊆
       object.remainderSupport (canonicalWindowPacking data object) := by
-    rw [coreEq]
-    exact inside
-  have windowFree :
-      handoffWindowFree data object envelope.core := by
+    rw [coreEq, ← pieceEq]
+    exact object.pieceSupport_subset _ component
+  have windowFree : handoffWindowFree data object envelope.core := by
     constructor
     · intro window subset windowInduces
       exact (normalized _ valid maximal window
@@ -140,68 +148,81 @@ theorem typeBDecoratedAssignedSupport
           secondMember different =>
         (envelope.fanSafe centre centreMember first firstMember second
           secondMember different).1 }
-  have high : ∀ centre ∈ envelope.decorations,
-      Graph.IsHighCentre object data.threshold centre := by
-    intro centre member
-    simpa [Graph.IsHighCentre] using
-      envelope.decorations_high centre member
-  exact ⟨piece, pinned, receiver, chosen, zero, state,
-    ⟨envelope, coreEq, nonempty, high,
-      fun centre member =>
-        ⟨envelope.assigned_nonempty centre member,
-          envelope.assigned_adj centre member⟩,
-      admissible⟩⟩
+  subst decorations
+  exact ⟨core, _, lane, envelope, envelopeEq, coreEq, rfl,
+    TypeBDecoratedLane.high lane,
+    fun centre member =>
+      ⟨envelope.assigned_nonempty centre member,
+        envelope.assigned_adj centre member⟩,
+    admissible⟩
 
+/-- Node `[107]` yes / `[108]` at the terminal state of `X₀`: `σ(X₀) = 0` and
+`X₀` has a surviving exit-`(7)` separator (`SeparatorHandoffAt`). -/
+theorem exitSevenHandoff_pinned
+    (handoff : TypeAExitSevenHandoffStatement data object) :
+    ∃ piece, canonicalNegativePiece data object = some piece ∧
+      object.ambientSurplus piece data.threshold = 0 ∧
+      SeparatorHandoffAt data object piece := by
+  obtain ⟨piece, pieceEq, _receiver, _receiverEq, zero, _noExitSix, separated⟩ :=
+    handoff
+  exact ⟨piece, pieceEq, zero, separated⟩
 
-/-- The decorated handoff enters node `[65]` with the envelope decorations as its
-assigned centres (`def:typeB-assigned-ledger`). -/
-theorem typeBFanEntry_of_decoratedHandoff
+/-- Node `[108]` → `[66]` → `[65]`: the canonical exit-`(7)` envelope of `X₀` is
+admissible Type B fan-envelope data. -/
+theorem typeBDecoratedAssignedSupport_of_handoff
+    (cap : NetChargeCapStatement data object)
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (cubic : data.threshold = 3) (degenerate : ¬ data.LengthOK 2)
-    (negativeSupport : NegativeSupportStatement data object)
+    (uncompressible : UncompressibleStatement data object)
+    (normalized : RemainderNormalizedStatement data object)
+    (handoff : TypeAExitSevenHandoffStatement data object) :
+    TypeBDecoratedAssignedSupportStatement data object := by
+  obtain ⟨piece, pieceEq, zero, separated⟩ := exitSevenHandoff_pinned handoff
+  obtain ⟨_core, _centres, lane⟩ := typeBDecoratedLane_of_handoff cap avoids cubic
+    degenerate ⟨piece, pieceEq, zero⟩ ⟨piece, pieceEq, separated⟩
+  exact typeBDecoratedAssignedSupport avoids uncompressible normalized lane
+
+/-- The decorated handoff enters node `[65]` with the decoration `{z}` as its
+assigned centres (`def:typeB-assigned-ledger`). -/
+theorem typeBFanEntry_of_decoratedLane {core centres : Finset object.Vertex}
+    (lane : TypeBDecoratedLane data object core centres) :
+    TypeBFanEntryStatement data object := by
+  obtain ⟨_piece, separator, _separatorEq, centresEq⟩ :=
+    decoratedSupport_eq_some lane.2.1
+  exact Or.inl (Or.inr (Or.inl ⟨core, centres, lane,
+    ⟨separator, by simp [centresEq]⟩, TypeBDecoratedLane.high lane⟩))
+
+/-- The decorated handoff of node `[108]` enters node `[65]`. -/
+theorem typeBFanEntry_of_decoratedHandoff
+    (cap : NetChargeCapStatement data object)
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (cubic : data.threshold = 3) (degenerate : ¬ data.LengthOK 2)
     (handoff : TypeAExitSevenHandoffStatement data object) :
     TypeBFanEntryStatement data object := by
-  apply Or.inl
-  obtain ⟨piece, pinned, _receiver, _chosen, zero, _state, produced⟩ := handoff
-  obtain ⟨valid, maximal⟩ :=
-    Contracts.TypeA.canonicalWindowPacking_valid_maximal_of_negativeSupport data
-      object negativeSupport
-  obtain ⟨component, present, rfl, _inside, _connected, negative⟩ :=
-    Contracts.TypeA.canonicalNegativePiece_facts data object pinned
-  obtain ⟨envelope, coreEq, nonempty⟩ :=
-    handoffEnvelope_of_separatorHandoffAt avoids cubic degenerate
-      (canonicalWindowPacking data object) produced
-  refine ⟨_, valid, maximal, component, present, envelope.decorations,
-    Or.inr ⟨negative, zero, envelope, coreEq, rfl, nonempty,
-      fun centre member =>
-        ⟨envelope.assigned_nonempty centre member,
-          envelope.assigned_adj centre member⟩⟩,
-    nonempty, fun centre member => ?_⟩
-  simpa [Graph.IsHighCentre] using
-    envelope.decorations_high centre member
+  obtain ⟨piece, pieceEq, zero, separated⟩ := exitSevenHandoff_pinned handoff
+  obtain ⟨_core, _centres, lane⟩ := typeBDecoratedLane_of_handoff cap avoids cubic
+    degenerate ⟨piece, pieceEq, zero⟩ ⟨piece, pieceEq, separated⟩
+  exact typeBFanEntry_of_decoratedLane lane
 
 
 set_option maxHeartbeats 8000000 in
-/-- `lem:absorbed-germ-fan-data` (ii): the first high centre of every retained
-corridor, with the connected first-failure prefix as core, is an admissible
-decorated handoff and enters node `[65]`. -/
-theorem typeBFanEntry_of_absorbedGermFanData
+/-- `lem:absorbed-germ-fan-data` (ii): at every selected half-edge, the first
+high centre of the retained corridor, with the connected first-failure prefix
+as core, is an admissible decorated handoff (node `[177]`). -/
+theorem absorbedGermDecoratedAssignedSupport
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (uncompressible : UncompressibleStatement data object)
     (normalized : RemainderNormalizedStatement data object)
     (fanData : AbsorbedGermFanDataStatement data object)
     (three : 3 ≤ data.threshold)
     (degenerate : ¬ data.LengthOK 2) :
-    TypeBFanEntryStatement data object := by
+    AbsorbedGermDecoratedAssignedSupportStatement data object := by
   classical
   letI : FinEnum object.Vertex :=
     object.vertices
   letI : Fintype object.Vertex := inferInstance
   letI : DecidableRel object.graph.Adj :=
     object.decideAdj
-  change TypeBFanEntryStatement data object
-  apply Or.inr
-  apply Or.inl
   simp only [AbsorbedGermDecoratedAssignedSupportStatement]
   change AbsorbedGermFanDataStatement data object at fanData
   simp only [AbsorbedGermFanDataStatement] at fanData
@@ -393,41 +414,34 @@ theorem typeBFanEntry_of_absorbedGermFanData
   exact And.intro different (And.intro firstAssigned secondAssigned)
 
 
-/-- The same-token handoff enters node `[65]` with its envelope core and
-decorations. -/
-theorem typeBFanEntry_of_sameTokenHandoff
-    (handoff : SameTokenTypeBHandoffStatement data object) :
-    TypeBFanEntryStatement data object := by
-  obtain ⟨_active, capacity, _activationEq, _cubic, _certified, _token,
-      _role, _tokenMem, _positive, _excess, _forced, _sourceClass,
-      _classified, _root, _rootEq, routed⟩ := handoff
-  have envelopeOf :
-      ∀ envelope : Graph.DecoratedHandoff.Envelope
-          object data.LengthOK
-          (handoffHighDegree data object)
-          (handoffAbsorbing data object capacity.packing),
-        envelope.decorations.Nonempty →
-          SameTokenTypeBHandoffEnvelopeStatement data
-            object :=
-    fun envelope decorated =>
-      ⟨capacity.packing, capacity.packingValid, capacity.packingMaximal,
-        envelope.core, envelope, rfl, decorated⟩
-  apply Or.inr
-  apply Or.inr
-  rcases routed with ⟨_pattern, _subset, _shape, _routed, source⟩ |
-      ⟨_centre, _pattern, _subset, _shape, _routed, source⟩ <;>
-  · exact
-      match source with
-      | ⟨_p, _hp, _q, _hq, _pq, _dp, _hdp, _dq, _hdq, _label, _rp,
-          _rq, _validP, _validQ, _maximal, _h, _a, _b, _common, _tailP,
-          _tailQ, _decompP, _decompQ, _different, _armP, _armQ, _entryP,
-          _entryQ, _adjP, _adjQ, _issuedP, _issuedQ, _chainP, _chainQ,
-          _nodupP, _nodupQ, _landsP, _landsQ, _interiorP, _interiorQ,
-          _high, _avoids, _denied, _deniedSwap, envelope, envelopeEq,
-          _escape⟩ =>
-        envelopeOf envelope (by
-          rw [envelopeEq]
-          simp [Graph.DecoratedHandoff.envelopeOfFirstSeparator])
 
+/-- Node `[177]` → `[65]`: on the failed-collision arm of `[173]`, every selected
+half-edge outside the subcubic candidates has its canonical absorbed support,
+whose single centre is high. -/
+theorem typeBFanEntry_of_absorbedGermFanData
+    (fails : ExactCollisionFailsStatement data object)
+    (fanData : AbsorbedGermFanDataStatement data object)
+    (supports : AbsorbedGermDecoratedAssignedSupportStatement data object) :
+    TypeBFanEntryStatement data object := by
+  classical
+  obtain ⟨routing, witnesses⟩ := supports
+  refine Or.inl (Or.inr (Or.inr ⟨⟨fails, fanData, routing, ?_⟩, ?_⟩))
+  · intro epsilon notCandidate
+    obtain ⟨centre, centreEq, _⟩ :=
+      canonicalAbsorbedCentre_spec routing (witnesses epsilon notCandidate)
+    simp [canonicalTypeBAbsorbedSupport, routing, centreEq]
+  · intro epsilon core centres lane
+    obtain ⟨_routing, _notCandidate, support⟩ := id lane
+    obtain ⟨centre, _centreEq, rfl⟩ := absorbedSupport_eq_some support
+    exact ⟨⟨centre, Finset.mem_singleton_self centre⟩,
+      TypeBAbsorbedLane.high lane⟩
+
+/-- Node `[144]` → `[65]`: the same-token handoff on the strict-surplus arm of
+`[19]` enters the common Type B entry. -/
+theorem typeBFanEntry_of_sameTokenHandoff
+    (above : SurplusAboveStatement data object)
+    (handoff : SameTokenTypeBHandoffStatement data object) :
+    TypeBFanEntryStatement data object :=
+  Or.inr ⟨above, handoff⟩
 
 end Hypostructure.Graph.Contracts.TypeB

@@ -15,15 +15,16 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
-/-- **Nodes `[71]`/`[80]`: certificate labelling present?**  The yes key says every
-assigned centre of every Type B support is certificate-marked
-(`def:marked-typeB-fan`); the no key is its exact negation, a fan-certificate
-residual centre. -/
+/-- **Nodes `[71]`/`[80]`: certificate labelling present?**  The decision reads
+the node-`[70]` cap (`K .fanCertificateCap`) and splits at its Type B support:
+every assigned centre is certificate-marked (`def:marked-typeB-fan`), or one of
+them is a fan-certificate residual centre. -/
 noncomputable def fanCertificateDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger (Input BranchState Presentation presentation data)
       current known)
+    [FactKeys.Has (K .fanCertificateCap) known]
     (markedFresh : K .fanCertificateMarked ∉ known)
     (residualFresh : K .fanCertificateResidual ∉ known) :
     Decision (K .fanCertificateMarked) (K .fanCertificateResidual) previous :=
@@ -31,9 +32,10 @@ noncomputable def fanCertificateDichotomy
     `Hypostructure.Graph.Strategy.Spine.fanCertificateDichotomy
     (Classical.choice (show Nonempty
         ((K .fanCertificateMarked).At current ⊕ (K .fanCertificateResidual).At current) from by
-      by_cases holds : TypeBFanCertificateMarkedStatement data.toParameters current.object
+      rcases Contracts.TypeB.fanCertificate_split
+          (ExactLedger.get previous (K .fanCertificateCap)).down with holds | holds
       · exact ⟨.inl ⟨holds⟩⟩
-      · exact ⟨.inr ⟨(Contracts.TypeB.typeBFanCertificateResidual_iff_not_marked).mpr holds⟩⟩))
+      · exact ⟨.inr ⟨holds⟩⟩))
     markedFresh residualFresh
 
 end Hypostructure.Graph.Strategy.Spine

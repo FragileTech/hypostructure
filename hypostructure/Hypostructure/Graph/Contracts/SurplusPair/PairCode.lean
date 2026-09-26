@@ -73,28 +73,29 @@ theorem pairSerialArithmetic_of_noEarlyOutcome
   | early early => exact (noEarly ⟨early⟩).elim
 
 /-- Alternatives (i)--(iv) of `lem:pair-system-realizability` on an object with
-no accepted cycle that survives the sparse exits: only the common Type B entry
-remains. -/
-theorem typeBFanEntry_of_pairSystemEarlyOutcome
+no accepted cycle that survives the sparse exits: only alternative (iv), the
+same-token Type B handoff of `lem:same-token-bottleneck-routing`, remains. -/
+theorem sameTokenHandoff_of_pairSystemEarlyOutcome
     (early : PairSystemEarlyOutcomeStatement data object)
     (noCycle : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (survives : SparseSurplusSurvivorStatement data object) :
-    TypeBFanEntryStatement data object := by
+    SameTokenTypeBHandoffStatement data object := by
   obtain ⟨early⟩ := early
   cases early with
   | targetCycle cycle => exact (noCycle cycle).elim
   | sparseExit exit => exact (survives exit).elim
-  | typeB entry => exact entry
+  | typeB handoff => exact handoff
 
 /-- The periodic alternatives of `lem:pair-system-increment-arithmetic` on an
-object surviving the sparse exits: only the common Type B entry remains. -/
-theorem typeBFanEntry_of_pairIncrementEarlyOutcome
+object surviving the sparse exits: only the same-token Type B handoff
+remains. -/
+theorem sameTokenHandoff_of_pairIncrementEarlyOutcome
     (early : PairIncrementEarlyOutcomeStatement data object)
     (survives : SparseSurplusSurvivorStatement data object) :
-    TypeBFanEntryStatement data object := by
+    SameTokenTypeBHandoffStatement data object := by
   obtain ⟨early⟩ := early
   cases early with
   | sparseExit exit => exact (survives exit).elim
-  | typeB entry => exact entry
+  | typeB handoff => exact handoff
 
 end Hypostructure.Graph.Contracts.SurplusPair

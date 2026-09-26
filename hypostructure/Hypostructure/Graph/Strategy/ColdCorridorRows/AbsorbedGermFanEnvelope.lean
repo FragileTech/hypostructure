@@ -20,17 +20,23 @@ fan data at the first high centre of every retained corridor. -/
 @[reducible] noncomputable def absorbedGermFanEnvelopeRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.absorbedGermFanEnvelope
-    { Requires := [K .selection, K .uncompressible, K .remainderNormalized, K .absorbedGermFanData]
+    { Requires := [K .selection, K .uncompressible, K .remainderNormalized,
+        K .absorbedGermFanData, K .exactCollisionFails]
       Produces := [K .typeBFanEntry]
       requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .typeBFanEntry)
-        ⟨Contracts.TypeB.typeBFanEntry_of_absorbedGermFanData (inputs.get (K .selection)).down.1
-          (inputs.get (K .uncompressible)).down (inputs.get (K .remainderNormalized)).down
-          (inputs.get (K .absorbedGermFanData)).down data.three_le_threshold
-          data.degenerateClosureRejected⟩
+        ⟨Contracts.TypeB.typeBFanEntry_of_absorbedGermFanData
+          (inputs.get (K .exactCollisionFails)).down
+          (inputs.get (K .absorbedGermFanData)).down
+          (Contracts.TypeB.absorbedGermDecoratedAssignedSupport
+            (inputs.get (K .selection)).down.1
+            (inputs.get (K .uncompressible)).down
+            (inputs.get (K .remainderNormalized)).down
+            (inputs.get (K .absorbedGermFanData)).down data.three_le_threshold
+            data.degenerateClosureRejected)⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

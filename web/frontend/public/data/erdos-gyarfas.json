@@ -18385,7 +18385,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Ordinary lane: `K .typeBAssignedSupport` (the support has a high centre, derived from σ > 0) plus `K .typeBFanEntry` with the piece's high centres as assigned centres. Decorated lane: from `K .typeAExitSevenHandoff`, `K .selection`, `K .uncompressible` and `K .remainderNormalized`, it proves the four `DecoratedHandoff.Admissible` clauses (lem:decorated-fan-admissibility) and publishes `K .typeBDecoratedAssignedSupport` plus `K .typeBFanEntry`. The [177] lane publishes `K .typeBFanEntry` from `K .absorbedGermFanData`."
+    "note": "FAITHFUL — Node [65] receives one Type B support X = (Y_X, H_X) of G per entry form (Statements/TypeBLanes.lean): ordinary (X0, H(X0)) = canonicalTypeBOrdinarySupport on the netChargeCap arm with sigma(X0) > 0 ([62] at X0); decorated (X0, {z}) = canonicalTypeBDecoratedSupport with its canonical exit-(7) envelope (admissible, lem:decorated-fan-admissibility); absorbed X_eps = canonicalTypeBAbsorbedSupport eps on the exactCollisionFails arm with the [175] data; same-token = the [144] handoff on surplusAbove. The lanes are mutually exclusive, so TypeBFanEntryStatement is one support."
    },
    "66": {
     "lean": "verified",
@@ -18409,7 +18409,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Yes: some assigned centre of some Type B support has d_G(h) > δ+1; no: its exact negation, every assigned centre has degree δ+1 (`typeBFanDegreeFourCentres_iff_not_heavy`). Stated over the Type B support family `TypeBSupport` (Graph/Statements/TypeB.lean): lane-free; decisions are a family predicate and its exact negation (registered in audits/erdos-64-red-team/discrepancies-F2.md)."
+    "note": "FAITHFUL — Reads typeBFanEntry (and surplusAtOrBelow, which excludes the [144] lane) and splits at the entry's Type B support X: some centre of H_X has d_G(h) > delta+1 (TypeBLaneSome) vs every centre of H_X has degree delta+1 (TypeBLaneAll); exact complements at X (Contracts.TypeB.TypeBLaneAll.split, TypeBLaneSome.not_all). d2ded0e read the same key and split on the same lane's centres."
    },
    "69": {
     "lean": "verified",
@@ -18417,7 +18417,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `K .typeBFanLocalDichotomy` = `HeavyCentreRoutedAlternative` at every heavy assigned centre: a fan-compatible open pair with `CompatiblePairRoutes` in every profile at the centre, or exactly d_G(h)-2 >= 3 triangular ports with `TriangularPortsRoute` (D_B >= (5k-19)/4); both routings run on the heavy arm. Contract `Contracts.TypeB.heavyCentreRoutedAlternative`."
+    "note": "FAITHFUL — Reads typeBFanHeavyCentre; at the heavy arm's support every heavy centre carries cor:heavy-center-local-dichotomy with its routings, over fixed profiles (window W0 = windowSupport P0, canonical fan envelope). The triangular fan-core lemmas (stated at a heavy center, tex 2378-2521) now run on this arm."
    },
    "70": {
     "lean": "verified",
@@ -18425,7 +18425,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Fan-safe clause (i) (`FanSafeAt`, from the selection) and the certificate-marked cap d_G(h) <= α(D) at every assigned centre. Stated over the Type B support family `TypeBSupport` (Graph/Statements/TypeB.lean): lane-free; decisions are a family predicate and its exact negation (registered in audits/erdos-64-red-team/discrepancies-F2.md)."
+    "note": "FAITHFUL — Reads typeBFanEntry: fan-safe graph (def:typeB-fan-safe (i)) and the label-packing cap of lem:fan-certificate at every centre of the entry's support."
    },
    "71": {
     "lean": "verified",
@@ -18433,7 +18433,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Yes: every assigned centre is certificate-marked; no: its exact negation, a fan-certificate residual centre. Stated over the Type B support family `TypeBSupport` (Graph/Statements/TypeB.lean): lane-free; decisions are a family predicate and its exact negation (registered in audits/erdos-64-red-team/discrepancies-F2.md)."
+    "note": "FAITHFUL — Reads fanCertificateCap and splits at its support: every centre certificate-marked (with cap) vs some centre a fan-certificate residual centre."
    },
    "72": {
     "lean": "verified",
@@ -18441,7 +18441,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Direct-cycle split (yes arm closed by closeIncompatible against the selection), local B1 ledger, then the B2 split: disjoint choice vs its exact negation in the positive form of lem:typeB-bridge-to-overlap. Stated over the Type B support family `TypeBSupport` (Graph/Statements/TypeB.lean): lane-free; decisions are a family predicate and its exact negation (registered in audits/erdos-64-red-team/discrepancies-F2.md)."
+    "note": "FAITHFUL — Direct cycle: reads fanCertificateMarked and splits at its support (configuration at P0 vs direct-cycle free); the cycle arm closes by Incompatible selection. B1: hybrid entry at every marked centre at the canonical fan envelope over W0. B2: reads typeBDirectCycleFree and splits HasDisjointChoice at (P0, Y_X, H_X) vs a minimal overlap obstruction (lem:typeB-bridge-to-overlap) at X."
    },
    "73": {
     "lean": "verified",
@@ -18449,7 +18449,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — B2 no arm: minimal overlap obstruction; prop:typeB-global-local-bridge reflection at every canonical obstruction."
+    "note": "FAITHFUL — Reads typeBOverlapObstruction: at the obstructed support, every overlap obstruction on a canonical core carries the five clauses of lem:typeB-global-local-reflection."
    },
    "74": {
     "lean": "verified",
@@ -18457,7 +18457,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — B2(a)-(d) refinement and prop:typeB-bridge-reduction (nonnegative remaining core gives N₀(X) >= 0). No split: [74] -> [76] as in the paper."
+    "note": "FAITHFUL — B2(a)-(d) at the B2-success support: the canonical disjoint choice refines every candidate; on a canonical core the canonical B2 ledger canonicalTypeBDisjointChoice(Y_X, H_X) has its exact refinement, post-ledger hygiene and grouped coverage; typeBExcluded reads that ledger (prop:typeB-bridge-reduction)."
    },
    "75": {
     "lean": "verified",
@@ -18465,7 +18465,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Certificate residual centres and B2 obstructions charged to assigned surplus."
+    "note": "FAITHFUL — Masses at the residual supports: the fan-certificate residual centre (reads fanCertificateResidual) and the obstructed support's centres (reads typeBGlobalLocalBridge) are charged at their canonical fan envelopes."
    },
    "76": {
     "lean": "verified",
@@ -18473,7 +18473,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — A canonical support is negative, so its B2 ledger leaves a negative post-ledger core: Type B carries its deficit only through route 8; continues to [77]."
+    "note": "FAITHFUL — Reads typeBDisjointLedger and typeBExcluded: a negative support on a canonical core keeps a negative remaining core on its one canonical B2 ledger; its centres are charged (typeBExclusionResidualMass). No split at [74]/[76], as in the paper."
    },
    "77": {
     "lean": "verified",
@@ -18489,7 +18489,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Every assigned centre has degree δ+1."
+    "note": "FAITHFUL — Reads typeBFanEntry (and surplusAtOrBelow, which excludes the [144] lane) and splits at the entry's Type B support X: some centre of H_X has d_G(h) > delta+1 (TypeBLaneSome) vs every centre of H_X has degree delta+1 (TypeBLaneAll); exact complements at X (Contracts.TypeB.TypeBLaneAll.split, TypeBLaneSome.not_all). d2ded0e read the same key and split on the same lane's centres."
    },
    "79": {
     "lean": "verified",
@@ -18497,7 +18497,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — cor:degree-four-local-activation and the degree-four profile at every assigned centre; followed by the triangular core lemmas and the fan-closed / compatible-pair routing."
+    "note": "FAITHFUL — Reads typeBFanDegreeFourCentres: cor:degree-four-local-activation and the degree-four profile at the canonical fan envelope of every centre of the support."
    },
    "80": {
     "lean": "verified",
@@ -18505,7 +18505,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — As [71], on the degree-four arm."
+    "note": "FAITHFUL — Reads fanCertificateCap and splits at its support: every centre certificate-marked (with cap) vs some centre a fan-certificate residual centre."
    },
    "81": {
     "lean": "verified",
@@ -18513,7 +18513,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — As [72], on the degree-four arm."
+    "note": "FAITHFUL — Direct cycle: reads fanCertificateMarked and splits at its support (configuration at P0 vs direct-cycle free); the cycle arm closes by Incompatible selection. B1: hybrid entry at every marked centre at the canonical fan envelope over W0. B2: reads typeBDirectCycleFree and splits HasDisjointChoice at (P0, Y_X, H_X) vs a minimal overlap obstruction (lem:typeB-bridge-to-overlap) at X."
    },
    "82": {
     "lean": "verified",
@@ -18521,7 +18521,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — As [74]."
+    "note": "FAITHFUL — B2(a)-(d) at the B2-success support: the canonical disjoint choice refines every candidate; on a canonical core the canonical B2 ledger canonicalTypeBDisjointChoice(Y_X, H_X) has its exact refinement, post-ledger hygiene and grouped coverage; typeBExcluded reads that ledger (prop:typeB-bridge-reduction)."
    },
    "83": {
     "lean": "verified",
@@ -18529,7 +18529,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — As [73]."
+    "note": "FAITHFUL — Reads typeBOverlapObstruction: at the obstructed support, every overlap obstruction on a canonical core carries the five clauses of lem:typeB-global-local-reflection."
    },
    "84": {
     "lean": "verified",
@@ -18537,7 +18537,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — As [75]."
+    "note": "FAITHFUL — Masses at the residual supports: the fan-certificate residual centre (reads fanCertificateResidual) and the obstructed support's centres (reads typeBGlobalLocalBridge) are charged at their canonical fan envelopes."
    },
    "85": {
     "lean": "verified",
@@ -18545,7 +18545,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — As [76]; continues to the route-8 census."
+    "note": "FAITHFUL — Reads typeBDisjointLedger and typeBExcluded: a negative support on a canonical core keeps a negative remaining core on its one canonical B2 ledger; its centres are charged (typeBExclusionResidualMass). No split at [74]/[76], as in the paper."
    },
    "86": {
     "lean": "verified",

@@ -14,7 +14,8 @@ import HypostructureErdos64EG.Assembly.RouteEight.TypeBContinuation
 /-!
 # Assembly: TypeB / Internal / Certificate
 
-Nodes `[70]`--`[77]` and `[80]`--`[85]` on the common Type B support family.
+Nodes `[70]`--`[77]` and `[80]`--`[85]` at the Type B support of the selected
+counterexample.
 -/
 
 namespace HypostructureErdos64EG
@@ -28,9 +29,10 @@ universe u w
 
 /-- **The common Type B certificate walk `[70]`--`[77]` / `[80]`--`[85]`.**
 
-`[70]` publishes the fan-safe graph and the certificate cap.  `[71]`/`[80]`
-decides the certificate labelling; its residual arm is charged to the fan mass
-`[75]`/`[84]`.  On the marked arm `[72]`/`[81]` first decides the direct
+`[70]` reads the node-`[65]` entry and publishes the fan-safe graph and the
+certificate cap at its Type B support.  `[71]`/`[80]` reads the cap and decides
+the certificate labelling at that support; its residual arm is charged to the
+fan mass `[75]`/`[84]`.  On the marked arm `[72]`/`[81]` first decides the direct
 fan-window configurations, whose arm closes against the selection, then
 publishes the local B1 ledger and decides B2.  B2 success is the bridge
 reduction `[74]`/`[82]` and the negative post-ledger residual `[76]`/`[85]`;
@@ -53,6 +55,7 @@ cores `[77]` on its own ledger. -/
 noncomputable def Assembly.Internal.selectedTypeBCertificateContinuation
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .typeBFanEntry) known]
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
