@@ -32,7 +32,7 @@ noncomputable def selectedAbsorbedGermPrerequisites
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .bridgeless) known]
     (fresh : List.Disjoint
-      [K .coldReturnCorridors, K .coldDeclaredHandoffLedger, K .coldCorridorState,
+      [K .coldReturnCorridors, K .coldCorridorState,
         K .denseColdCorridorsTerminal, K .coldFirstFailureOccurrence,
         K .coldFailureCycle, K .coldFailureDefect, K .coldFailureDefectRoute,
         K .coldFailureCompression, K .coldFailureHandoff, K .coldHandoffTransfer,
@@ -44,8 +44,7 @@ noncomputable def selectedAbsorbedGermPrerequisites
         K .coldFailureCompression :: K .coldFailureDefect ::
         K .coldFailureDefectRoute :: K .coldFailureCycle ::
         K .coldFirstFailureOccurrence :: K .denseColdCorridorsTerminal ::
-        K .coldCorridorState :: K .coldDeclaredHandoffLedger ::
-        K .coldReturnCorridors :: known) :=
+        K .coldCorridorState :: K .coldReturnCorridors :: known) :=
   let state := nearCubicColdCorridorState history
   let terminal :=
     (denseColdCorridorsTerminalRow (data := spineData)).run state (by key_fresh)

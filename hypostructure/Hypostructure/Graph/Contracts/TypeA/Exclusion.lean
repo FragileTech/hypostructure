@@ -39,7 +39,8 @@ theorem typeAExclusion
   dsimp only [TypeAExclusionStatement]
   letI : DecidableEq object.Vertex := object.vertices.decEq
   intro packing valid maximal piece _subset connected negative _zeroSurplus
-  have perLoad : ∀ receiver : object.Vertex,
+  have perLoad : ∀ receiver ∈ Graph.VisibleEntry.saturatedReceivers object piece
+        data.threshold data.dischargeScale,
       ∀ load ∈ object.routedLoads piece data.threshold receiver,
       (∃ witness : Graph.ExitFour.Witness
           (Graph.HasCycleWithLength data.LengthOK) piece
@@ -56,8 +57,8 @@ theorem typeAExclusion
         ((∃ basin : Finset object.Vertex,
             Graph.Route8.TraceBasin.TraceSurvivingSeparator object piece
               data.threshold data.LengthOK receiver load basin) ∧
-          HandoffProduced data object packing piece) := by
-    intro receiver load routed
+          SeparatorHandoffAt data object piece) := by
+    intro receiver receiverSaturated load routed
     by_cases quotient : ∃ basin : Finset object.Vertex,
         Graph.Route8.TraceBasin.select? object piece data.threshold receiver
             load = some basin ∧
@@ -68,22 +69,11 @@ theorem typeAExclusion
     by_cases separated : ∃ basin : Finset object.Vertex,
         Graph.Route8.TraceBasin.TraceSurvivingSeparator object piece
           data.threshold data.LengthOK receiver load basin
-    · refine Or.inr (Or.inr (Or.inr ⟨separated, ?_⟩))
+    · -- Exit (7): the surviving first separator at this receiver
+      -- is `SeparatorHandoffAt` of the piece (`lem:typeA-high-degree-handoff`).
       obtain ⟨basin, separator⟩ := separated
-      obtain ⟨envelope, coreEq, decorated⟩ :=
-        Graph.Route8.TraceBasin.exists_envelope_of_traceSurvivingSeparator
-          (HighDegree := handoffHighDegree data object)
-          (Absorbing := handoffAbsorbing data object packing)
-          separator avoids
-          (fun vertex high => by
-            show data.threshold < object.degree vertex
-            rw [cubic]
-            exact high)
-          (fun _centre _first _second collision =>
-            avoids
-              (Graph.WindowLabelCollision.hasCycleWithLength_of_labelCollision
-                degenerate collision))
-      exact ⟨envelope, coreEq, decorated⟩
+      exact Or.inr (Or.inr (Or.inr ⟨⟨basin, separator⟩,
+        receiver, (Finset.mem_filter.1 receiverSaturated).1, load, separator⟩))
     · rcases Graph.Route8.TraceBasin.exists_witness_or_route8Entry
           (scale := data.dischargeScale) connected routed
           (fun basin selectedEq quotientAt =>
@@ -120,7 +110,7 @@ theorem typeAExclusion
             (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
             data.dischargeScale receiver ∅)
     · exact Or.inl witnessed
-    by_cases handoff : HandoffProduced data object packing piece
+    by_cases handoff : SeparatorHandoffAt data object piece
     · exact Or.inr (Or.inr handoff)
     refine Or.inr (Or.inl ?_)
     intro receiver receiverMem
@@ -136,7 +126,7 @@ theorem typeAExclusion
                 Graph.Route8.TraceBasin.TraceResponseQuotient object piece
                   data.threshold data.LengthOK receiver load basin retained := by
       intro load routed
-      rcases perLoad receiver load routed with
+      rcases perLoad receiver receiverMem load routed with
         ⟨witness, _⟩ | entry | quotient | ⟨_, produced⟩
       · exact absurd ⟨receiver, isReceiver, ⟨witness⟩⟩ witnessed
       · exact Or.inl entry
@@ -147,12 +137,13 @@ theorem typeAExclusion
       exact collapse load (silentRouted receiver load loadMem)
     · intro outside _portMem _overloaded load loadMem
       exact collapse load (selectedRouted receiver outside load loadMem)
-  · intro receiver _receiverMem
+  · intro receiver receiverMem
     constructor
     · intro load loadMem
-      exact perLoad receiver load (silentRouted receiver load loadMem)
+      exact perLoad receiver receiverMem load (silentRouted receiver load loadMem)
     · intro outside _portMem _overloaded load loadMem
-      exact perLoad receiver load (selectedRouted receiver outside load loadMem)
+      exact perLoad receiver receiverMem load
+        (selectedRouted receiver outside load loadMem)
 
 /-- The node-`[94]` silent-excess origin of a route-`8` residual state is
 incompatible with `lem:typeA-unified-visible-ownership`: its selected excess

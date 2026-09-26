@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Statements.TypeB
+import Hypostructure.Graph.Statements.CanonicalSurplus
 
 /-!
 # Statements: SurplusPair
@@ -1273,9 +1274,7 @@ end PairSerialDemandSystem
 inductive PairSystemEarlyOutcome (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Type (u + 1) where
   | targetCycle (cycle : Graph.HasCycleWithLength data.LengthOK object)
-  | sparseExit (exit : Graph.SparseSurplusExit
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object)
+  | sparseExit (exit : DeclaredSparseSurplusExit data object)
   | typeB (entry : TypeBFanEntryStatement data object)
 
 /-- The five alternatives of `lem:pair-system-realizability`, tied to the
@@ -1339,9 +1338,7 @@ end PairSerialArithmetic
 routed by the paper: a named sparse exit or the common Type B entry. -/
 inductive PairIncrementEarlyOutcome (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Type (u + 1) where
-  | sparseExit (exit : Graph.SparseSurplusExit
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object)
+  | sparseExit (exit : DeclaredSparseSurplusExit data object)
   | typeB (entry : TypeBFanEntryStatement data object)
 
 /-- The exhaustive conclusion claimed by
@@ -1477,18 +1474,7 @@ noncomputable abbrev BaselineSpineDemandStatement
       data.threshold ∧
     ∃ (Coordinate : Type u) (family : Finset Coordinate)
       (coordinateSupport : Coordinate → Finset object.Vertex),
-      (∀ declared : Graph.DeclaredQuotient
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) object family
-          coordinateSupport,
-        declared.toRankQuotient.FunctionalOn ↑family →
-          declared.toRankQuotient.LabelInjectiveOn ↑family) ∧
-        Nonempty (Graph.BaselineCodeRealization object family) ∧
-        Graph.cubicBaselineBudget object.vertexCount data.threshold ≤
-          2 ^ (family.card + Graph.spineDeficit object.vertexCount
-            data.threshold family.card) ∧
-        Graph.spineDeficit object.vertexCount data.threshold family.card ≤
-          data.surplusScale * object.vertexCount)
+      BaselineSpineFamilySpec data object Coordinate family coordinateSupport)
 
 /-- Nodes `[130]`--`[134]`, `def:sparse-pair-response`'s pair schedule with
 `def:canonical-blocker-ledger` and
@@ -1532,42 +1518,40 @@ noncomputable abbrev SparsePairExitStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  Graph.SparseSurplusExit (Graph.MinimumDegreeAtLeast data.threshold)
-    (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
+  DeclaredSparseSurplusExit data object
 
-/-- Node `[125]`, the sole nonterminal named-exit payload: the concrete
-rank-reducing attempted quotient and identified realizations whose response
-is separated by an outside context. -/
+/-- Node `[125]`, the sole nonterminal named-exit payload: clause (b) of
+`def:named-surplus-exits` at G's declared sparse family
+(`lem:context-universality`, tex 6106-6112) -- two distinct declared
+coordinates of G, read on G's own piece at their canonical connected support,
+agree in G's actual outside context and are separated by another boundaried
+context. -/
 noncomputable abbrev SparseTargetDefectResidualStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  ∃ (Coordinate : Type u) (family : Finset Coordinate)
-    (coordinateSupport : Coordinate → Finset object.Vertex)
-    (attempt : Graph.AttemptedQuotient
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) object family
-      coordinateSupport),
-    ¬ Set.InjOn attempt.label ↑family ∧
-      ∃ reduced full, attempt.Identifies reduced full ∧
-        Graph.Response.TargetDefect
-          (Graph.HasCycleWithLength data.LengthOK) reduced full
+  Graph.ResidualTargetDefect (Graph.HasCycleWithLength data.LengthOK) object
+    (sparseDeclaredFamily data object) (sparseDeclaredSupport data object)
 
-/-- Node `[20]`: the same identified target-defect pair with its bound
-outside context and proved target-free negative constituents. -/
+/-- Node `[20]`: the same target-defective identification of two declared
+coordinates of G, with the bound target-defect geometry of its two readings on
+G's piece at their canonical support. -/
 noncomputable abbrev SparseTargetDefectStructureStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  ∃ (Coordinate : Type u) (family : Finset Coordinate)
-    (coordinateSupport : Coordinate → Finset object.Vertex)
-    (attempt : Graph.AttemptedQuotient
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) object family
-      coordinateSupport),
-    ¬ Set.InjOn attempt.label ↑family ∧
-      ∃ reduced full, attempt.Identifies reduced full ∧
-        Graph.BoundTargetDefectGeometry object attempt.support data.LengthOK reduced full
+    Prop := by
+  classical
+  exact ∃ first ∈ sparseDeclaredFamily data object,
+    ∃ second ∈ sparseDeclaredFamily data object, first ≠ second ∧
+      ∃ support : Finset object.Vertex,
+        Graph.CanonicalSupport.select? object
+            (sparseDeclaredSupport data object first ∪
+              sparseDeclaredSupport data object second) = some support ∧
+        Graph.BoundTargetDefectGeometry object support data.LengthOK
+          (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
+            support (sparseDeclaredSupport data object first))
+          (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
+            support (sparseDeclaredSupport data object second))
 
 /-- Node `[132]`, blocker arm of `lem:sparse-pair-dependence-exit` with
 `lem:mixed-sparse-spine-dependence` and
@@ -1585,8 +1569,7 @@ noncomputable abbrev CanonicalBlockerRouteStatement
   -- (no sparse surplus exit of `def:named-surplus-exits` occurs), with
   -- the blocked pair of `[130]` and its canonical blocker
   -- `Φ_can(π) = min_≺ Blk(π)` of `def:canonical-blocker-ledger`.
-  Graph.SurvivesSparseExits (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object ∧
+  DeclaredSparseSurvivor data object ∧
     ∃ (active : Graph.ActiveSurplusDemands
         (Graph.MinimumDegreeAtLeast data.threshold)
         (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
@@ -1678,9 +1661,7 @@ noncomputable abbrev MixedSparseSpineDependenceStatement
           mixedFamily mixedSupport,
           declared.toRankQuotient.FunctionalOn ↑mixedFamily →
             Set.InjOn declared.label ↑mixedFamily) →
-        Graph.SparseSurplusExit
-            (Graph.MinimumDegreeAtLeast data.threshold)
-            (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object ∨
+        DeclaredSparseSurplusExit data object ∨
           ∃ pair ∈ pairs,
             ∃ attempt : Graph.AttemptedQuotient
                 (Graph.MinimumDegreeAtLeast data.threshold)
@@ -2062,6 +2043,43 @@ noncomputable abbrev HomogeneousBottleneckPatternSchema
           (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
             (Graph.WindowCurvature.Label data.windowOrder))
 
+/-- **Node `[144a]`, the residual of the paper error at `[144]`**
+(`lem:same-token-bottleneck-routing`, parallel and cubic-first-separator cases,
+tex 5585-5620; see `lean-vs-paper-discrepancies.md#paper-errors`).  Two
+distinct scheduled pair response coordinates of G whose target-defective
+alternative (b) failed, read on G's piece at the canonical support `Z` of
+their supports: the readings lie in different boundary-degree fibres, or they
+are context-equivalent (target-complete).  The paper claims both cases are
+sparse exits (tex 5589, 5594); neither is established, and the pair is carried
+by the open leaf `[144a]`. -/
+noncomputable abbrev SameTokenPatternPairUnresolvedStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  exact ∃ active : Graph.ActiveSurplusDemands
+      (Graph.MinimumDegreeAtLeast data.threshold)
+      (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
+      data.threshold,
+    ∃ first ∈ (Graph.pairResponseActivation active).pairFamily
+        (object.portPairSchedule data.threshold),
+    ∃ second ∈ (Graph.pairResponseActivation active).pairFamily
+        (object.portPairSchedule data.threshold),
+      first ≠ second ∧
+      ∃ support : Finset object.Vertex,
+        Graph.CanonicalSupport.select? object
+            (Graph.DeclaredSignature.Coordinate.support first ∪
+              Graph.DeclaredSignature.Coordinate.support second) = some support ∧
+        ((Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
+              support (Graph.DeclaredSignature.Coordinate.support first)).boundaryDegreeProfile ≠
+            (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
+              support (Graph.DeclaredSignature.Coordinate.support second)).boundaryDegreeProfile ∨
+          Graph.Response.ContextEquivalent (Graph.HasCycleWithLength data.LengthOK)
+            (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
+              support (Graph.DeclaredSignature.Coordinate.support first))
+            (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
+              support (Graph.DeclaredSignature.Coordinate.support second)))
+
 /-- Node `[144]`, `lem:same-token-bottleneck-routing` itself: the concrete
 homogeneous pattern in the current object's canonical capacity presentation
 yields a sparse-surplus exit or the common Type B fan-ledger entry. -/
@@ -2088,9 +2106,17 @@ noncomputable abbrev BottleneckRoutingStatement
           data.windowOrder data.surplusScale data.routingLabelBound capacity
           (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
             (Graph.WindowCurvature.Label data.windowOrder)) ∧
-      (Graph.SparseSurplusExit (Graph.MinimumDegreeAtLeast data.threshold)
-            (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object ∨
-          SameTokenTypeBHandoffEnvelopeStatement data object)
+      (DeclaredSparseSurplusExit data object ∨
+          SameTokenTypeBHandoffEnvelopeStatement data object ∨
+          SameTokenPatternPairUnresolvedStatement data object)
+
+/-- Node `[144]`, the exact complement of the same-token handoff: the routed
+pattern does not produce the decorated same-token Type B handoff. -/
+noncomputable abbrev TypeBHandoffFailsStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop :=
+  ¬ SameTokenTypeBHandoffStatement data object
 
 /-- Node `[144]`, `cor:homogeneous-same-token-caps-close` at the counted
 `L_geom` and the ledger's own token supply: every token load is at most
@@ -2116,8 +2142,7 @@ noncomputable abbrev SparseSurplusSurvivorStatement
     Prop :=
   -- `def:named-surplus-exits`: none of the five sparse-surplus conclusions
   -- occurs on this branch.
-  Graph.SurvivesSparseExits (Graph.MinimumDegreeAtLeast data.threshold)
-    (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
+  DeclaredSparseSurvivor data object
 
 /-- Node `[125]`, `def:active-surplus-demands` with
 `lem:surviving-active-family`: the active family is the excess-port family,

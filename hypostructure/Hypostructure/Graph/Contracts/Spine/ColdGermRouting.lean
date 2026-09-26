@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Statements.Spine
+import Hypostructure.Graph.Contracts.Spine.ColdSubcubicCharge
 import Hypostructure.Graph.ColdIncrementArithmetic
 import Hypostructure.Graph.ColdGermFamily
 
@@ -54,8 +55,7 @@ theorem coldGermSilent_of_uncompressible (data : Parameters)
     ColdGermSilentStatement data object :=
   ⟨fun germ shorter neutral =>
       uncompressible germ.support
-        (Graph.Strategy.InterfaceReplacement.replacementSupportOfCompressibleSupport
-          _ _ _ _ (germ.compressibleSupport_of_not_distinguishing shorter neutral.2)),
+          (germ.compressibleSupport_of_not_distinguishing shorter neutral.2),
     fun germ => germ.not_lengthChanging_iff,
     fun increment base copies length positive overlapping lower upper
         accepted =>
@@ -92,8 +92,7 @@ theorem coldGermRouted_of_candidates (data : Parameters)
       germ.increment < 0 → ¬ germ.Neutral :=
     fun germ shorter neutral =>
       uncompressible germ.support
-        (Graph.Strategy.InterfaceReplacement.replacementSupportOfCompressibleSupport
-          _ _ _ _ (germ.compressibleSupport_of_not_distinguishing shorter neutral.2))
+          (germ.compressibleSupport_of_not_distinguishing shorter neutral.2)
   exact ⟨candidates, fun germ shorter =>
     have distinguishing :=
       Graph.ColdCorridor.boundedGerm_not_survives notRealizing notSilent
@@ -114,9 +113,7 @@ theorem coldSameInterfaceTable_of_candidates (data : Parameters)
     (uncompressible : UncompressibleStatement data object)
     (candidates : ColdGermCandidatesStatement data object) :
     ColdSameInterfaceTableStatement data object := by
-  let compression := fun support compressible => uncompressible support
-    (Graph.Strategy.InterfaceReplacement.replacementSupportOfCompressibleSupport
-      _ _ _ _ compressible)
+  let compression := fun support compressible => uncompressible support compressible
   let targetInvariant : Graph.FiniteObject.IsomorphismInvariant
       (Graph.HasCycleWithLength data.LengthOK) :=
     (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant
@@ -366,7 +363,7 @@ theorem absorbedGermSplit_of_handoff (data : Parameters)
   · apply Or.inl
     exact Finset.mem_filter.2
       ⟨Finset.mem_univ _,
-        Classical.choose_spec routing.surviving.holds epsilon,
+        coldSubcubicFirstFailureGerm data object routing epsilon subcubic,
         subcubic⟩
   · rcases high with
       ⟨first, firstBound, firstHigh, earlierBound, _root⟩

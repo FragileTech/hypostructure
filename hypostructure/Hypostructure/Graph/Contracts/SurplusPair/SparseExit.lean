@@ -23,8 +23,9 @@ variable {data : Parameters} {object : Graph.FiniteObject.{u}}
 
 /-- Node `[20]`, the named sparse-exit routing: at a selected minimal
 counterexample (no accepted cycle; every strictly smaller baseline object has
-one) whose proper supports admit no replacement, a sparse surplus exit is the
-target-defect exit, with its concrete rank-reducing attempted quotient. -/
+one) whose proper supports admit no replacement, a sparse surplus exit of G's
+declared family is the target-defect exit (b), i.e. a target-defective
+identification of two of G's declared coordinates. -/
 theorem sparseTargetDefectResidual_of_exit
     {BranchState : Graph.FiniteObject.{u} → Type v}
     {Presentation : Type} {presentation : Presentation}
@@ -36,10 +37,8 @@ theorem sparseTargetDefectResidual_of_exit
   cases exit with
   | dyadic cycle =>
       exact (selected.1 cycle).elim
-  | targetDefect family coordinateSupport attempt reducing reduced full
-      identified defect =>
-      exact ⟨_, family, coordinateSupport, attempt, reducing,
-        reduced, full, identified, defect⟩
+  | targetDefect defect =>
+      exact defect
   | compression support replacement =>
       exact (replacementExcluded support replacement).elim
   | delocalization representative smaller baseline transfer =>
@@ -56,18 +55,17 @@ theorem sparseTargetDefectResidual_of_exit
           expanded.isCycle, accepted⟩⟩
       exact (selected.1 cycle).elim
 
-/-- Node `[20]`: on an object with no accepted cycle, the identified
-target-defect pair of a sparse target-defect residual has its bound outside
-context and target-free negative constituents. -/
-theorem sparseTargetDefectStructure_of_residual
-    (residual : SparseTargetDefectResidualStatement data object)
+/-- The bound target-defect geometry of any two readings of one support of a
+target-avoiding object that some boundaried context separates. -/
+theorem boundTargetDefectGeometry_of_targetDefect
+    {support : Finset object.Vertex}
+    {reduced full : Graph.BoundaryPiece
+      (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary object support)}
+    (defect : Graph.Response.TargetDefect
+      (Graph.HasCycleWithLength data.LengthOK) reduced full)
     (noCycle : ¬ Graph.HasCycleWithLength data.LengthOK object) :
-    SparseTargetDefectStructureStatement data object := by
-  obtain ⟨Coordinate, family, coordinateSupport, attempt,
-    reducing, reduced, full, identified, defect⟩ := residual
+    Graph.BoundTargetDefectGeometry object support data.LengthOK reduced full := by
   classical
-  refine ⟨Coordinate, family, coordinateSupport, attempt, reducing,
-    reduced, full, identified, ?_⟩
   obtain ⟨outside, different⟩ := defect
   refine ⟨outside, different, ?_⟩
   by_cases positiveLeft : Graph.HasCycleWithLength data.LengthOK
@@ -147,5 +145,18 @@ theorem sparseTargetDefectStructure_of_residual
       · exact Or.inl localized
       · exact Or.inr ⟨mixed, Graph.DefectGeometry.twoLabels_of_exclusive c
           (Graph.DefectGeometry.pieceExclusive c contextFree) mixed⟩
+
+/-- Node `[20]`: on an object with no accepted cycle, the target-defective
+identification of the sparse residual has the bound target-defect geometry of
+its two readings on G's piece. -/
+theorem sparseTargetDefectStructure_of_residual
+    (residual : SparseTargetDefectResidualStatement data object)
+    (noCycle : ¬ Graph.HasCycleWithLength data.LengthOK object) :
+    SparseTargetDefectStructureStatement data object := by
+  classical
+  obtain ⟨first, firstMem, second, secondMem, different, support, selected,
+    _profile, _actual, defect⟩ := residual
+  exact ⟨first, firstMem, second, secondMem, different, support, selected,
+    boundTargetDefectGeometry_of_targetDefect defect noCycle⟩
 
 end Hypostructure.Graph.Contracts.SurplusPair

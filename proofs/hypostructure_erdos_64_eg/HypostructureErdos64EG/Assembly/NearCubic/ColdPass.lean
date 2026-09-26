@@ -126,17 +126,12 @@ noncomputable def nearCubicColdCorridorState
     [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .hotColdPartition) known]
     (fresh : List.Disjoint
-      [K .coldReturnCorridors, K .coldDeclaredHandoffLedger,
-        K .coldCorridorState] known := by key_fresh) :
+      [K .coldReturnCorridors, K .coldCorridorState] known := by key_fresh) :
     ExactLedger EGInput.{u} selected
-      (K .coldCorridorState :: K .coldDeclaredHandoffLedger ::
-        K .coldReturnCorridors :: known) :=
+      (K .coldCorridorState :: K .coldReturnCorridors :: known) :=
   let corridors :=
     (coldReturnCorridorRow (data := spineData)).run history (by key_fresh)
-  let declared :=
-    (coldDeclaredHandoffLedgerRow (data := spineData)).run corridors
-      (by key_fresh)
-  (coldCorridorStateRow (data := spineData)).run declared (by key_fresh)
+  (coldCorridorStateRow (data := spineData)).run corridors (by key_fresh)
 
 /-- **Node `[153]`, linear arm: first failures and the candidate family.**
 `lem:cold-corridor-first-failure`: the first failure of every corridor and its
@@ -149,7 +144,6 @@ noncomputable def nearCubicColdCandidates
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .coldCorridorState) known]
-    [FactKeys.Has (K .coldDeclaredHandoffLedger) known]
     (fresh : List.Disjoint
       [K .coldFirstFailureOccurrence, K .coldFailureCycle, K .coldFailureDefect,
         K .coldFailureDefectRoute, K .coldFailureCompression,
@@ -193,7 +187,6 @@ noncomputable def nearCubicColdGermFamily
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .coldCorridorState) known]
-    [FactKeys.Has (K .coldDeclaredHandoffLedger) known]
     [FactKeys.Has (K .coldMassLinear) known]
     [FactKeys.Has (K .coldSelectedBranchExcess) known]
     [FactKeys.Has (K .coldStubExcess) known]

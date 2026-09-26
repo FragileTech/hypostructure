@@ -22,9 +22,9 @@ sparse-surplus exits on the literal incoming ledger.  The left arm publishes
 the concrete exit; the right arm publishes exactly its negation, namely that
 the current object survives all five exits.  This is the manuscript's
 "after sparse exits" branch point: selection and replacement facts are not
-re-proved here.  Every target-defect inhabitant retains the concrete
-rank-reducing attempted quotient supplied by its originating residual; no
-arbitrary boundary defect or `DeclaredQuotient` is fabricated here. -/
+re-proved here.  The exits are tested at G's declared sparse family
+(`DeclaredSparseSurplusExit`): clause (b) is a target-defective identification
+of two of G's own declared coordinates read on G's own piece. -/
 noncomputable def sparseSurplusSurvivorDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
@@ -38,17 +38,15 @@ noncomputable def sparseSurplusSurvivorDichotomy
     (Classical.choice (show Nonempty
         ((K .sparsePairExit).At current ⊕
           (K .sparseSurplusSurvivor).At current) from by
-      by_cases exit : Graph.SparseSurplusExit
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK current.object
+      by_cases exit : DeclaredSparseSurplusExit data.toParameters current.object
       · exact ⟨.inl ⟨exit⟩⟩
       · exact ⟨.inr ⟨exit⟩⟩))
     exitFresh survivorFresh
 
 /-- Node `[125]`, named sparse-exit routing.  Four constructors are literal
 terminals against facts already present in the incoming residual.  The
-target-defect constructor alone survives, retaining its concrete attempted
-quotient as the paper's target-defect handoff. -/
+target-defect constructor alone survives, as the target-defective
+identification of two of G's declared coordinates. -/
 @[reducible] noncomputable def sparseSurplusExitRoutingRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.sparseSurplusExitRouting

@@ -333,7 +333,7 @@ abbrev SelectedSilentExitSevenFree (data : Parameters)
   SelectedNoExitSixReceiverWith data object
     (fun packing piece receiver _peeled =>
       SilentExitOriginAt data object piece receiver ∧
-        ¬ HandoffProduced data object packing piece)
+        ¬ SeparatorHandoffAt data object piece)
 
 /-- The exact finite exit-`(4)` descent theorem committed before the route-`8`
 arm.  This is a schema abbreviation only: the fact is still read from the
@@ -668,7 +668,7 @@ noncomputable abbrev TypeAExclusionStatement
                         Graph.Route8.TraceBasin.TraceResponseQuotient object
                           piece data.threshold data.LengthOK receiver load
                           basin retained) ∨
-        HandoffProduced data object packing piece) ∧
+        SeparatorHandoffAt data object piece) ∧
       -- The additive per-load publication
       -- (`lem:typeA-reduced-silent-residual` with the exit-(7) routing of
       -- `lem:typeA-exits-discharged`): at every saturated receiver, each
@@ -699,7 +699,7 @@ noncomputable abbrev TypeAExclusionStatement
                 Graph.Route8.TraceBasin.TraceSurvivingSeparator object
                   piece data.threshold data.LengthOK receiver load
                   basin) ∧
-              HandoffProduced data object packing piece)) ∧
+              SeparatorHandoffAt data object piece)) ∧
         ∀ outside ∈ Graph.VisibleEntry.completionPorts object piece
             receiver,
           data.dischargeScale ≤
@@ -724,7 +724,7 @@ noncomputable abbrev TypeAExclusionStatement
                   Graph.Route8.TraceBasin.TraceSurvivingSeparator object
                     piece data.threshold data.LengthOK receiver load
                     basin) ∧
-                HandoffProduced data object packing piece)))
+                SeparatorHandoffAt data object piece)))
 
 /-- Nodes `[89]`, `[93]`, `[94]`, `[109]`, `lem:typeA-port-return`: every
 completion port of the selected object carries at least one anchored return.
@@ -1143,7 +1143,7 @@ noncomputable abbrev TypeAExitSevenProducedStatement
   -- Node `[107]`, yes: exit `(7)` is produced on the exact selected
   -- no-exit-`(6)` residual.
   SelectedNoExitSixWith data object
-    (fun packing piece => HandoffProduced data object packing piece)
+    (fun _packing piece => SeparatorHandoffAt data object piece)
 
 /-- Node `[108]`, on node `[107]`'s yes arm — exit `(7)` of
 `def:typeA-saturated-exits`: *"a high-degree decorated handoff fan envelope
@@ -1170,7 +1170,7 @@ noncomputable abbrev TypeAExitSevenHandoffStatement
   -- Node `[108]`: the produced envelope is committed as the Type B
   -- handoff.  Its admissibility is the fact proved at node `[65]`.
   SelectedNoExitSixWith data object
-    (fun packing piece => HandoffProduced data object packing piece)
+    (fun _packing piece => SeparatorHandoffAt data object piece)
 
 /-- Node `[107]`, no arm — the entry of node `[109]`: no high-degree decorated
 handoff fan envelope is produced at any visible port of any saturated receiver
@@ -1184,7 +1184,7 @@ noncomputable abbrev TypeAExitSevenFreeStatement
   -- Node `[107]`, no: the same selected residual has no decorated
   -- handoff envelope and therefore enters the route-8 test.
   SelectedNoExitSixWith data object
-    (fun packing piece => ¬ HandoffProduced data object packing piece)
+    (fun _packing piece => ¬ SeparatorHandoffAt data object piece)
 
 /-- Node `[107]`, no arm: the exact negation of exit `(7)`.  No saturated
 peeling state of a Type A support of the canonical packing at which exits
@@ -1213,7 +1213,7 @@ noncomputable abbrev TypeAExitSevenAbsentStatement
           ExitFourFreeAt data object piece receiver peeled →
           ¬ ExitFiveAt data object piece receiver peeled →
           ¬ ExitSixDelocalizes data object piece receiver peeled →
-          ¬ HandoffProduced data object packing piece)
+          ¬ SeparatorHandoffAt data object piece)
 
 /-- Node `[109]`, the visible-origin residual: the exact negation of
 `SelectedSilentExitSevenFree`.  No route-`8` residual state of the canonical
@@ -1244,7 +1244,7 @@ noncomputable abbrev TypeAExitEightNotSilentStatement
           ¬ ExitFiveAt data object piece receiver peeled →
           ¬ ExitSixDelocalizes data object piece receiver peeled →
           ¬ (SilentExitOriginAt data object piece receiver ∧
-            ¬ HandoffProduced data object packing piece))
+            ¬ SeparatorHandoffAt data object piece))
 
 /-- Node `[102]`: the exit-`(4)` witness has been charged to the peeling
 ledger by adjoining its routed load to `P₄(w)`, preserving the routed-load

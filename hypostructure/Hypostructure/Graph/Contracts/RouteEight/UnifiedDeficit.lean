@@ -197,8 +197,7 @@ theorem route8UnifiedDeficit (data : Parameters) (object : FiniteObject.{u})
       · -- negative zero-surplus outside the unified collection is a
         -- handoff piece, excluded here
         exfalso
-        have handoff : HandoffProduced data object
-            (canonicalWindowPacking data object) piece := by
+        have handoff : SeparatorHandoffAt data object piece := by
           by_contra noHandoff
           exact notUnified (Finset.mem_filter.mpr
             ⟨memberPieces, zero, negative, noHandoff⟩)

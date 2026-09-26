@@ -158,16 +158,13 @@ theorem route8EntryFacts (data : Parameters) (object : FiniteObject.{u})
           load = some basin →
         ¬ ∃ retained, Graph.Route8.TraceBasin.TraceResponseQuotient object
           piece data.threshold data.LengthOK receiver load basin retained)
-    (noHandoff : ¬ HandoffProduced data object
-      (canonicalWindowPacking data object) piece)
+    (noHandoff : ¬ SeparatorHandoffAt data object piece)
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (minimality : ∀ representative : FiniteObject.{u},
       representative.LexicographicallySmaller object →
       Graph.MinimumDegreeAtLeast data.threshold representative →
       Graph.HasCycleWithLength data.LengthOK representative)
-    (exclusion : ReplacementExclusionStatement data object)
-    (cubic : data.threshold = 3)
-    (degenerate : ¬ data.LengthOK 2) :
+    (exclusion : ReplacementExclusionStatement data object) :
     Route8UnifiedEntryFacts data object (piece, receiver, load) := by
   classical
   obtain ⟨basin₀, selectedEq⟩ :=
@@ -188,15 +185,7 @@ theorem route8EntryFacts (data : Parameters) (object : FiniteObject.{u})
   have noSep : ¬ Graph.Route8.TraceBasin.TraceSurvivingSeparator object piece
       data.threshold data.LengthOK receiver load
       (Graph.Route8Census.basin object data.threshold (piece, receiver, load)) :=
-    Graph.Route8.TraceBasin.not_traceSurvivingSeparator_of_noEnvelope avoids
-      (fun vertex high => by
-        show data.threshold < object.degree vertex
-        rw [cubic]
-        exact high)
-      (fun _centre _first _second collision =>
-        avoids (Graph.WindowLabelCollision.hasCycleWithLength_of_labelCollision
-          degenerate collision))
-      noHandoff
+    fun separated => noHandoff ⟨receiver, receiverMem, load, separated⟩
   -- `lem:typeA-unified-carriers`: `α(ξ) ≥ 2` through the collapse engine
   let basin := Graph.Route8Census.basin object data.threshold
     (piece, receiver, load)
@@ -264,9 +253,7 @@ theorem route8UnifiedEntryCensus (data : Parameters)
       representative.LexicographicallySmaller object →
       Graph.MinimumDegreeAtLeast data.threshold representative →
       Graph.HasCycleWithLength data.LengthOK representative)
-    (exclusion : ReplacementExclusionStatement data object)
-    (cubic : data.threshold = 3)
-    (degenerate : ¬ data.LengthOK 2) :
+    (exclusion : ReplacementExclusionStatement data object) :
     Route8UnifiedEntryCensusFact data object := by
   classical
   intro index indexMem
@@ -280,15 +267,13 @@ theorem route8UnifiedEntryCensus (data : Parameters)
     exact Graph.SupportComponents.Connected.connectedOn_of_mem_order object _
       ((Graph.FiniteObject.mem_canonicalPieces _ _).1
         (Finset.mem_filter.mp componentMem).1)
-  have noHandoff' : ¬ HandoffProduced data object
-      (canonicalWindowPacking data object) index.1 := by
+  have noHandoff' : ¬ SeparatorHandoffAt data object index.1 := by
     rw [pieceEq]
     exact noHandoff
   exact route8EntryFacts data object index.1 index.2.1 index.2.2 connected
     (Finset.mem_filter.mp receiverMem).1
     (Finset.mem_sdiff.mp loadMem).1
-    (quotientFree index indexMem) noHandoff' avoids minimality exclusion cubic
-    degenerate
+    (quotientFree index indexMem) noHandoff' avoids minimality exclusion
 
 /-- **`def:typeA-unified-entries` with `lem:typeA-unified-carriers` at the
 extracted route-8 cores** (node `[123]`; `lem:typeB-bridge-with-route8-core`'s
@@ -303,9 +288,7 @@ theorem route8ExtractedEntryCensus (data : Parameters)
       representative.LexicographicallySmaller object →
       Graph.MinimumDegreeAtLeast data.threshold representative →
       Graph.HasCycleWithLength data.LengthOK representative)
-    (exclusion : ReplacementExclusionStatement data object)
-    (cubic : data.threshold = 3)
-    (degenerate : ¬ data.LengthOK 2) :
+    (exclusion : ReplacementExclusionStatement data object) :
     Route8ExtractedEntryCensusFact data object := by
   classical
   intro index indexMem
@@ -325,7 +308,7 @@ theorem route8ExtractedEntryCensus (data : Parameters)
   exact route8EntryFacts data object core receiver' load' connected receiverMem
     (Finset.mem_sdiff.mp (Finset.mem_sdiff.mp loadMem).1).1
     (coreFilter.2.2.2.2 receiver' receiverMem load' loadMem)
-    coreFilter.2.2.2.1 avoids minimality exclusion cubic degenerate
+    coreFilter.2.2.2.1 avoids minimality exclusion
 
 /-- **`thm:branch-kill`: the all-pieces classification at the canonical
 packing.**  The contrapositive of clauses (a) and (b) at every negative piece

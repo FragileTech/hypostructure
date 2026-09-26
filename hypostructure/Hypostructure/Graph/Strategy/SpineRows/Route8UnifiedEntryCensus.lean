@@ -14,7 +14,7 @@ universe u v
     {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.route8UnifiedEntryCensus
-    { Requires := [K .route8QuotientFree, K .selection, K .replacementExclusion, K .cubicBaseline]
+    { Requires := [K .route8QuotientFree, K .selection, K .replacementExclusion]
       Produces := [K .route8UnifiedEntryCensus]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -25,9 +25,7 @@ universe u v
           (inputs.get (K .route8QuotientFree)).down.1
           (inputs.get (K .selection)).down.1
           (inputs.get (K .selection)).down.2
-          (inputs.get (K .replacementExclusion)).down
-          (inputs.get (K .cubicBaseline)).down.1
-          data.degenerateClosureRejected⟩ .nil)
+          (inputs.get (K .replacementExclusion)).down⟩ .nil)
     0 0
 
 end Hypostructure.Graph.Strategy.Spine

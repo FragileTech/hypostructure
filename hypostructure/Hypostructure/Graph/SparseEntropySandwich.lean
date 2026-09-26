@@ -13,19 +13,13 @@ import Hypostructure.Graph.BarrierOverlapSystem
 
 The six statements are two theorems and their readings.
 
-**The dichotomy.**  All three dependence statements run the same case analysis
-over an inclusion-minimal determination certificate, and that analysis is
-`AttemptedQuotient.route`.  At an object that survives the sparse surplus exits
-and admits no proper-support replacement, the two exit alternatives are
-discharged — a smaller closed representative is the delocalization exit, and a
-replacement is `lem:replacement` — so what remains is exactly the manuscript's
-blocker alternative: two realizations the attempted determination identifies
-which are separated, either by their boundary degree profiles, which is the
-blocker of type (d), or by a boundaried context, which is the blocker of type
-(e).  That is `blockerSeparation_of_reducing`, and it is
-`lem:sparse-pair-dependence-exit` and `lem:mixed-sparse-spine-dependence` at
-once: neither proof inspects which coordinates the family holds, which is why
-the manuscript gives them the same four cases.
+**The blockers.**  Blockers (d) and (e) of `def:surplus-blockers` are concrete
+objects of G: the pair's actual response coordinate `r_π`, an inclusion-minimal
+determination certificate for it in G's pair family, and — as the final
+witness — two of those coordinates read on G's own piece at their canonical
+support, separated by boundary-degree profile (d) or by a boundaried context
+while agreeing in G's actual context (e, `ResidualTargetDefect`).  No boundaried
+piece that is not a piece of G enters either clause.
 
 `prop:sparse-pair-independence-dichotomy` is registered at its concrete branch
 decision.  A baseline-family instance at node `[129]` must be proved from that
@@ -644,10 +638,13 @@ structure ConditionalFactorization
 
 end SparsePairSkeletonModel
 
-/-- Clause (d) at a specified pair: a functional attempted quotient is
-rank-reducing, has an inclusion-minimal determination certificate for that
-pair's actual response coordinate, and identifies two different boundary
-degree profiles. -/
+/-- Clause (d) at a specified pair (`def:surplus-blockers` (d), tex 2897;
+`lem:degree-profile-fibres`, tex 6088): a functional attempted quotient of G's
+pair family is rank-reducing and carries an inclusion-minimal determination
+certificate for that pair's actual response coordinate `r_π`; among `r_π` and
+its determiners, two of G's own coordinates read on G's piece at their canonical
+support lie in different boundary-degree fibres, so the determination cannot
+stay in one fibre. -/
 def SparsePairDEProfileObstructionAt
     {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
     {object : FiniteObject.{u}} {Coordinate Chord : Type u}
@@ -664,21 +661,23 @@ def SparsePairDEProfileObstructionAt
       (Graph.HasCycleWithLength LengthOK) object family coordinateSupport,
     attempt.toRankQuotient.FunctionalOn ↑family ∧
       ¬ Set.InjOn attempt.label ↑family ∧
-      (∃ determiners : Finset object.PairCoordinate,
+      ∃ determiners : Finset object.PairCoordinate,
         coordinate ∈ family ∧
           determiners ⊆ family ∧
           coordinate ∉ determiners ∧
           attempt.toRankQuotient.Determines coordinate ↑determiners ∧
-          ∀ candidate ⊆ determiners,
+          (∀ candidate ⊆ determiners,
             attempt.toRankQuotient.Determines coordinate ↑candidate →
               determiners ⊆ candidate) ∧
-      ∃ left right, attempt.Identifies left right ∧
-        left.boundaryDegreeProfile ≠ right.boundaryDegreeProfile
+          ResidualProfileSeparation object
+            (@insert _ _ (@Finset.instInsert _ (Classical.decEq _)) coordinate
+              determiners) coordinateSupport
 
-/-- Clause (e) at a specified pair, with the same literal minimal
-determination certificate.  Its final witness is exactly either a distinguishing
-target context or the target-complete proper-support replacement supplied by
-the attempted quotient. -/
+/-- Clause (e) at a specified pair (`def:surplus-blockers` (e), tex 2900), with
+the same literal minimal determination certificate.  Its final witness is a
+target-defective identification among `r_π` and its determiners, read on G's
+own pieces (`ResidualTargetDefect`), or the target-complete proper-support
+replacement of the attempted quotient's support. -/
 def SparsePairDEResponseObstructionAt
     {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
     {object : FiniteObject.{u}} {Coordinate Chord : Type u}
@@ -695,18 +694,19 @@ def SparsePairDEResponseObstructionAt
       (Graph.HasCycleWithLength LengthOK) object family coordinateSupport,
     attempt.toRankQuotient.FunctionalOn ↑family ∧
       ¬ Set.InjOn attempt.label ↑family ∧
-      (∃ determiners : Finset object.PairCoordinate,
+      ∃ determiners : Finset object.PairCoordinate,
         coordinate ∈ family ∧
           determiners ⊆ family ∧
           coordinate ∉ determiners ∧
           attempt.toRankQuotient.Determines coordinate ↑determiners ∧
-          ∀ candidate ⊆ determiners,
+          (∀ candidate ⊆ determiners,
             attempt.toRankQuotient.Determines coordinate ↑candidate →
               determiners ⊆ candidate) ∧
-      ((∃ left right, attempt.Identifies left right ∧
-          Response.TargetDefect (Graph.HasCycleWithLength LengthOK) left right) ∨
-        ReplacementSupport Baseline (Graph.HasCycleWithLength LengthOK) object
-          attempt.support)
+          (ResidualTargetDefect (Graph.HasCycleWithLength LengthOK) object
+              (@insert _ _ (@Finset.instInsert _ (Classical.decEq _)) coordinate
+                determiners) coordinateSupport ∨
+            ReplacementSupport Baseline (Graph.HasCycleWithLength LengthOK)
+              object attempt.support)
 
 /-- A concrete type-(d) or type-(e) obstruction carried by its actual pair in
 `Π`.  The pair is part of the local predicate, so this cannot be discharged by
@@ -914,197 +914,6 @@ theorem recordedSparsePairDEBlocker_nonempty
                   activation pairs pair then [coordinate] else [])
             rw [if_pos response]
             simp)⟩
-
-/-- **`lem:sparse-pair-dependence-exit`.**
-
-For the concrete response family `ℛ_Π`, failure to survive its declared
-admissible quotient system produces exactly one of the paper's outcomes: a
-sparse surplus exit, or a certified type-(d)/(e) blocker on a member of `Π`.
-The four cases and their order are inherited directly from
-`AttemptedQuotient.route`. -/
-theorem sparsePairDependence_exit_or_blocker
-    {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
-    {object : FiniteObject.{u}} {Coordinate Chord : Type u}
-    (activation : object.DemandActivation Coordinate Chord)
-    (pairs : Finset (Finset (object.Vertex × object.Vertex)))
-    (attempt :
-      let family := activation.pairFamily pairs
-      let coordinateSupport : object.PairCoordinate → Finset object.Vertex := by
-        letI := object.vertices.decEq
-        exact DeclaredSignature.Coordinate.support
-      AttemptedQuotient Baseline (Graph.HasCycleWithLength LengthOK) object
-        family coordinateSupport)
-    (reducing :
-      let family := activation.pairFamily pairs
-      ¬ Set.InjOn attempt.label ↑family)
-    (functional :
-      let family := activation.pairFamily pairs
-      attempt.toRankQuotient.FunctionalOn ↑family) :
-    SparseSurplusExit Baseline (Graph.HasCycleWithLength LengthOK) LengthOK object ∨
-      HasSparsePairDEBlocker (Baseline := Baseline) (LengthOK := LengthOK)
-        activation pairs := by
-  classical
-  let family := activation.pairFamily pairs
-  let coordinateSupport : object.PairCoordinate → Finset object.Vertex := by
-    letI := object.vertices.decEq
-    exact DeclaredSignature.Coordinate.support
-  change ¬ Set.InjOn attempt.label ↑family at reducing
-  change attempt.toRankQuotient.FunctionalOn ↑family at functional
-  let quotient := attempt.toRankQuotient
-  let candidates : Finset (Finset object.PairCoordinate) :=
-    family.powerset.filter fun independent =>
-      Set.InjOn attempt.label ↑independent
-  have candidatesNonempty : candidates.Nonempty := by
-    refine ⟨∅, ?_⟩
-    simp [candidates]
-  obtain ⟨independent, independentMember, maximum⟩ :=
-    Finset.exists_mem_eq_sup candidates candidatesNonempty Finset.card
-  have independentFacts : independent ⊆ family ∧
-      Set.InjOn attempt.label ↑independent := by
-    simpa [candidates] using independentMember
-  obtain ⟨coordinate, coordinateMember, coordinateOutside⟩ :
-      ∃ coordinate ∈ family, coordinate ∉ independent := by
-    by_contra absent
-    push Not at absent
-    have equal : independent = family :=
-      Finset.Subset.antisymm independentFacts.1 absent
-    apply reducing
-    rw [← equal]
-    exact independentFacts.2
-  let candidate := insert coordinate independent
-  have candidateSubset : candidate ⊆ family := by
-    intro member membership
-    simp only [candidate, Finset.mem_insert] at membership
-    rcases membership with rfl | membership
-    · exact coordinateMember
-    · exact independentFacts.1 membership
-  have candidateNotInjective : ¬ Set.InjOn attempt.label ↑candidate := by
-    intro candidateInjective
-    have candidateMember : candidate ∈ candidates := by
-      simp only [candidates, Finset.mem_filter, Finset.mem_powerset]
-      exact ⟨candidateSubset, candidateInjective⟩
-    have bound := Finset.le_sup (f := Finset.card) candidateMember
-    rw [maximum] at bound
-    have larger : independent.card < candidate.card := by
-      simp [candidate, coordinateOutside]
-    omega
-  have candidateReducing :
-      ¬ quotient.LabelInjectiveOn
-        (insert coordinate (↑independent : Set object.PairCoordinate)) := by
-    change ¬ Set.InjOn attempt.label
-      (insert coordinate (↑independent : Set object.PairCoordinate))
-    simpa [candidate] using candidateNotInjective
-  obtain ⟨determiners, finite, determinersSubset, determines⟩ :=
-    functional independentFacts.1 coordinateMember coordinateOutside
-      independentFacts.2 candidateReducing
-  let certificates : Finset (Finset object.PairCoordinate) :=
-    finite.toFinset.powerset.filter fun certificate =>
-      quotient.Determines coordinate ↑certificate
-  have certificatesNonempty : certificates.Nonempty := by
-    refine ⟨finite.toFinset, ?_⟩
-    simp [certificates, quotient, determines]
-  obtain ⟨minimalDeterminers, minimal⟩ :=
-    certificates.exists_minimal certificatesNonempty
-  have minimalFacts : minimalDeterminers ⊆ finite.toFinset ∧
-      quotient.Determines coordinate ↑minimalDeterminers := by
-    simpa [certificates] using minimal.1
-  have minimalSubsetFamily : minimalDeterminers ⊆ family := by
-    intro determiner membership
-    exact independentFacts.1 (determinersSubset (by
-      simpa using minimalFacts.1 membership))
-  have coordinateNotMinimal : coordinate ∉ minimalDeterminers := by
-    intro membership
-    exact coordinateOutside (determinersSubset (by
-      simpa using minimalFacts.1 membership))
-  have inclusionMinimal : ∀ other ⊆ minimalDeterminers,
-      quotient.Determines coordinate ↑other → minimalDeterminers ⊆ other := by
-    intro other subset otherDetermines
-    apply minimal.2
-    · simp only [certificates, Finset.mem_filter, Finset.mem_powerset]
-      exact ⟨subset.trans minimalFacts.1, otherDetermines⟩
-    · exact subset
-  obtain ⟨pair, pairMem, pairEq⟩ : ∃ pair ∈ pairs,
-      FiniteObject.DemandActivation.pairCoordinate pair
-        ((activation.pairSupport pair).getD ∅) = coordinate := by
-    change coordinate ∈ pairs.image (fun pair =>
-      FiniteObject.DemandActivation.pairCoordinate pair
-        ((activation.pairSupport pair).getD ∅)) at coordinateMember
-    exact Finset.mem_image.mp coordinateMember
-  subst coordinate
-  have determination :
-      ∃ determiners : Finset object.PairCoordinate,
-        FiniteObject.DemandActivation.pairCoordinate pair
-              ((activation.pairSupport pair).getD ∅) ∈ family ∧
-          determiners ⊆ family ∧
-          FiniteObject.DemandActivation.pairCoordinate pair
-              ((activation.pairSupport pair).getD ∅) ∉ determiners ∧
-          quotient.Determines
-              (FiniteObject.DemandActivation.pairCoordinate pair
-                ((activation.pairSupport pair).getD ∅)) ↑determiners ∧
-          ∀ candidate ⊆ determiners,
-            quotient.Determines
-                (FiniteObject.DemandActivation.pairCoordinate pair
-                  ((activation.pairSupport pair).getD ∅)) ↑candidate →
-              determiners ⊆ candidate := by
-    refine ⟨minimalDeterminers, ?_, minimalSubsetFamily,
-      coordinateNotMinimal, minimalFacts.2, inclusionMinimal⟩
-    change FiniteObject.DemandActivation.pairCoordinate pair
-        ((activation.pairSupport pair).getD ∅) ∈
-      pairs.image (fun candidate =>
-        FiniteObject.DemandActivation.pairCoordinate candidate
-          ((activation.pairSupport candidate).getD ∅))
-    exact Finset.mem_image_of_mem _ pairMem
-  rcases attempt.route reducing with profiles | defect | replacement |
-      ⟨representative, smaller, baseline, transfer⟩
-  · exact Or.inr ⟨pair, pairMem, Or.inl
-      ⟨attempt, functional, reducing, determination, profiles⟩⟩
-  · exact Or.inr ⟨pair, pairMem, Or.inr
-      ⟨attempt, functional, reducing, determination, Or.inl defect⟩⟩
-  · exact Or.inr ⟨pair, pairMem, Or.inr
-      ⟨attempt, functional, reducing, determination, Or.inr replacement⟩⟩
-  · exact Or.inl (.delocalization representative smaller baseline transfer)
-
-/-- **`lem:sparse-pair-dependence-exit` and `lem:mixed-sparse-spine-dependence`,
-at a survivor.**
-
-> Suppose the coordinate family `ℛ_Π` does not survive every admissible rank
-> quotient.  Then either `G` has a sparse surplus exit, or some `π ∈ Π` has a
-> sparse surplus blocker of type (d) or (e).
-
-The two exit alternatives the manuscript's proof produces are discharged by the
-survivor's own hypotheses — the whole-graph case is the delocalization exit, and
-the proper-support case is `lem:replacement` — so what a rank-reducing attempted
-determination leaves is precisely the blocker: two realizations it identifies
-which are separated by their boundary degree profiles (type (d)) or by a
-boundaried context (type (e)).
-
-Both witnesses are the concrete finite objects `def:surplus-blockers` names,
-which is what `DemandActivation.blocks_boundaryProfile` and
-`blocks_targetResponse` record on the ledger. -/
-theorem blockerSeparation_of_reducing
-    {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
-    {object : FiniteObject.{u}} {Coordinate : Type u}
-    {family : Finset Coordinate}
-    {coordinateSupport : Coordinate → Finset object.Vertex}
-    (survives : SurvivesSparseExits Baseline
-      (Graph.HasCycleWithLength LengthOK) LengthOK object)
-    (noReplacement : ∀ support : Finset object.Vertex,
-      ¬ ReplacementSupport Baseline (Graph.HasCycleWithLength LengthOK) object
-        support)
-    (attempt : AttemptedQuotient Baseline (Graph.HasCycleWithLength LengthOK)
-      object family coordinateSupport)
-    (reducing : ¬ Set.InjOn attempt.label ↑family) :
-    (∃ left right, attempt.Identifies left right ∧
-        left.boundaryDegreeProfile ≠ right.boundaryDegreeProfile) ∨
-      (∃ left right, attempt.Identifies left right ∧
-        Response.TargetDefect (Graph.HasCycleWithLength LengthOK) left right) := by
-  rcases attempt.route reducing with profiles | defect | replacement |
-    ⟨representative, smaller, baseline, transfer⟩
-  · exact Or.inl profiles
-  · exact Or.inr defect
-  · exact absurd replacement (noReplacement _)
-  · exact absurd (SparseSurplusExit.delocalization representative smaller baseline
-      transfer) survives
 
 /-! ## The entropy sandwich -/
 

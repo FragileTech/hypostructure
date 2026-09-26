@@ -16,17 +16,17 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
-/-! Node `[153]`: eliminate (F1)--(F4) on the literal surviving-cold
-residual and retain the manuscript's (F5) conclusion
+/-! Node `[153]`: `lem:cold-corridor-first-failure` on the literal
+surviving-cold residual -- (F1) and (F3) are excluded by their ledger facts and
+(F2) is excluded by the node-`[125]` survivor, and every other first failure
+is routed to (F5) or (F4)
 (`Contracts.Spine.coldFailureRouting_of_failures`). -/
 
 @[reducible] noncomputable def coldFirstFailureRoutingRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldFirstFailureRouting
     { Requires := [K .coldFirstFailureOccurrence, K .coldFailureCycle,
-        K .coldFailureDefectRoute,
-        K .coldFailureCompression, K .coldFailureHandoff,
-        K .sparseSurplusSurvivor]
+        K .coldFailureCompression, K .sparseSurplusSurvivor]
       Produces := [K .coldFailureRouting]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -37,9 +37,7 @@ residual and retain the manuscript's (F5) conclusion
           inputs.current.object
           (inputs.get (K .coldFirstFailureOccurrence)).down
           (inputs.get (K .coldFailureCycle)).down
-          (inputs.get (K .coldFailureDefectRoute)).down
           (inputs.get (K .coldFailureCompression)).down
-          (inputs.get (K .coldFailureHandoff)).down
           (inputs.get (K .sparseSurplusSurvivor)).down⟩
         .nil)
 

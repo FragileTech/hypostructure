@@ -254,10 +254,13 @@ noncomputable def selectedBottleneckDischarge
     [FactKeys.Has (K .fibrePressure) known]
     [FactKeys.Has (K .surplusAbove) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
+    [FactKeys.Has (K .selection) known]
     (failFresh : K .homogeneousCapsFail ∉ known := by key_fresh)
     (capsFresh : K .homogeneousCapsHold ∉ known := by key_fresh)
     (routingFresh : K .bottleneckRouting ∉ known := by key_fresh)
     (handoffFresh : K .typeBHandoff ∉ known := by key_fresh)
+    (handoffFailsFresh : K .typeBHandoffFails ∉ known := by key_fresh)
+    (unresolvedFresh : K .sameTokenPatternUnresolved ∉ known := by key_fresh)
     (fanEntryFresh : K .typeBFanEntry ∉ known := by key_fresh)
     (capsCloseFresh : K .homogeneousBottleneck ∉ known := by key_fresh)
     (estimateFresh : K .spineSurplusEstimate ∉ known := by key_fresh)
@@ -271,20 +274,38 @@ noncomputable def selectedBottleneckDischarge
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile)
           (data := spineData)).run patternHistory (by key_fresh)
-      let entered :=
-        (sameTokenTypeBFanEntryRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile)
-          (data := spineData)).run routed (by key_fresh)
-      exact Or.inl ⟨
-        (entered.get (K .typeBHandoff)).down,
-        (entered.get (K .typeBFanEntry)).down,
-        (entered.get (K .bottleneckRouting)).down,
-        (entered.get (K .homogeneousBottleneckPattern)).down,
-        (entered.get (K .sparsePressureOverload)).down,
-        (entered.get (K .capacityTokenLedger)).down,
-        (entered.get (K .surplusAbove)).down,
-        (entered.get (K .sparseSurplusSurvivor)).down⟩
+      match sameTokenHandoffDichotomy (data := spineData) routed
+          (by key_fresh) (by key_fresh) with
+      | .left handoffHistory =>
+          let entered :=
+            (sameTokenTypeBFanEntryRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile)
+              (data := spineData)).run handoffHistory (by key_fresh)
+          exact Or.inl ⟨
+            Or.inl ⟨(entered.get (K .typeBHandoff)).down,
+              (entered.get (K .typeBFanEntry)).down⟩,
+            (entered.get (K .bottleneckRouting)).down,
+            (entered.get (K .homogeneousBottleneckPattern)).down,
+            (entered.get (K .sparsePressureOverload)).down,
+            (entered.get (K .capacityTokenLedger)).down,
+            (entered.get (K .surplusAbove)).down,
+            (entered.get (K .sparseSurplusSurvivor)).down⟩
+      | .right failsHistory =>
+          let unresolved :=
+            (sameTokenPatternUnresolvedRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile)
+              (data := spineData)).run failsHistory (by key_fresh)
+          exact Or.inl ⟨
+            Or.inr ⟨(unresolved.get (K .typeBHandoffFails)).down,
+              (unresolved.get (K .sameTokenPatternUnresolved)).down⟩,
+            (unresolved.get (K .bottleneckRouting)).down,
+            (unresolved.get (K .homogeneousBottleneckPattern)).down,
+            (unresolved.get (K .sparsePressureOverload)).down,
+            (unresolved.get (K .capacityTokenLedger)).down,
+            (unresolved.get (K .surplusAbove)).down,
+            (unresolved.get (K .sparseSurplusSurvivor)).down⟩
   | .right capsHistory =>
       let closedHistory :=
         (homogeneousCapsCloseRow (BranchState := BranchState)

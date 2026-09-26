@@ -21,7 +21,8 @@ Type B entry. -/
 @[reducible] noncomputable def typeBDecoratedAssignedSupportRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.typeBDecoratedAssignedSupport
-    { Requires := [K .selection, K .uncompressible, K .remainderNormalized, K .typeAExitSevenHandoff]
+    { Requires := [K .selection, K .uncompressible, K .remainderNormalized,
+        K .typeAExitSevenHandoff, K .cubicBaseline]
       Produces := [K .typeBDecoratedAssignedSupport, K .typeBFanEntry]
       requiresUnique := by key_fresh
       producesUnique := by key_fresh
@@ -29,10 +30,13 @@ Type B entry. -/
     (fun inputs =>
       .cons (key := K .typeBDecoratedAssignedSupport)
         ⟨Contracts.TypeB.typeBDecoratedAssignedSupport (inputs.get (K .selection)).down.1
+          (inputs.get (K .cubicBaseline)).down.1 data.degenerateClosureRejected
           (inputs.get (K .uncompressible)).down (inputs.get (K .remainderNormalized)).down
           (inputs.get (K .typeAExitSevenHandoff)).down⟩
         (.cons (key := K .typeBFanEntry)
           ⟨Contracts.TypeB.typeBFanEntry_of_decoratedHandoff
+            (inputs.get (K .selection)).down.1
+            (inputs.get (K .cubicBaseline)).down.1 data.degenerateClosureRejected
             (inputs.get (K .typeAExitSevenHandoff)).down⟩
           .nil))
 

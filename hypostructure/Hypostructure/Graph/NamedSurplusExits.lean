@@ -4,6 +4,7 @@ import Hypostructure.Graph.SimultaneousTightVertexSuppression
 import Hypostructure.Graph.InterfaceReplacement
 import Hypostructure.Graph.SparsePortActivation
 import Hypostructure.Graph.ExcessPortFamily
+import Hypostructure.Graph.CanonicalSupportSelection
 
 /-!
 # The named sparse-surplus exits
@@ -30,38 +31,156 @@ published on one arm, and `SurvivesSparseExits` is published on the other.  In
 particular, this declaration does not claim that selection or replacement
 alone rules out target defects, delocalizations, or suppression chords.
 
-Clause (b) retains the actual rank-reducing `AttemptedQuotient` on the declared
-family, together with the two realizations it identifies and their separating
-context.  It is not a `DeclaredQuotient`: a declared admissible quotient is
-already target-complete and would assume away the exit being tested.
+Clause (b) is stated at the residual's declared coordinate family: two distinct
+coordinates, read on G's own piece at the canonical connected support of their
+union (`ResidualTargetDefect`), agree in G's actual outside context and are
+separated by another boundaried context.  An identification of arbitrary
+boundaried pieces, or a quotient with caller-chosen values, is not an exit of G:
+such data made the former clause hold on every graph with a vertex.
 -/
 
 namespace Hypostructure.Graph
 
 open Hypostructure.Graph.Strategy.InterfaceReplacement
 
-universe u
+universe u w w'
 
-/-- **A sparse surplus exit** of `def:named-surplus-exits`. -/
+/-! ## Clause (b): a target-defective identification of G's own coordinates
+
+`lem:context-universality` (tex 6106-6112) speaks about two coordinates
+`r₁, r₂ ∈ ℛ(X)` of a piece `X` **of G**: an identification valid for the actual
+outside context `G - X` but not for every `T`-boundaried context is
+target-defective.  Clause (b) is therefore stated about a declared coordinate
+family of the residual: each coordinate is read as G's own piece at the
+canonical connected support `Z` of the two coordinates' union, restricted to the
+coordinate's declared support (`SupportAtom.retainedPiece`), on the unchanged
+boundary `∂Z`.  Nothing is caller-chosen: no attempted label or value map, no
+boundary piece that is not a piece of G. -/
+
+/-- Gluing G's actual outside context `G - Z` to any edge restriction of G's
+own piece at `Z` is a subgraph of G. -/
+theorem retainedGlue_hom (object : FiniteObject.{u})
+    (support retained : Finset object.Vertex) :
+    ∃ hom : (glue (SupportAtom.retainedPiece object support retained)
+        (SupportAtom.outside object support)).graph →g object.graph,
+      Function.Injective hom := by
+  classical
+  have le : glueGraph (SupportAtom.retainedPiece object support retained)
+      (SupportAtom.outside object support) ≤
+      glueGraph (SupportAtom.piece object support)
+        (SupportAtom.outside object support) := by
+    apply glueGraph_mono (piece := SupportAtom.piece object support)
+      (SupportAtom.outside object support)
+    intro left right adjacent
+    exact adjacent.1
+  let iso := (SupportAtom.decomposition object support).reconstructionIso
+  refine ⟨iso.toHom.comp (SimpleGraph.Hom.ofLE le), ?_⟩
+  intro left right equal
+  exact iso.injective equal
+
+/-- On a target-avoiding object no retained reading glued to its actual outside
+context is target-positive. -/
+theorem not_target_retainedGlue {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}}
+    (avoids : ¬ HasCycleWithLength LengthOK object)
+    (support retained : Finset object.Vertex) :
+    ¬ HasCycleWithLength LengthOK
+      (glue (SupportAtom.retainedPiece object support retained)
+        (SupportAtom.outside object support)) := by
+  intro cycle
+  obtain ⟨hom, injective⟩ := retainedGlue_hom object support retained
+  exact avoids (hasCycleWithLength_of_hom hom injective cycle)
+
+/-- **Clause (b) at G's declared family** (`lem:context-universality`,
+tex 6106-6112; `def:target-complete-compression`, tex 6138): two distinct
+declared coordinates of the family, read on G's own piece at the canonical
+connected support `Z` of their union, lie in one boundary-degree fibre, agree
+in G's actual outside context `G - Z`, and are separated by some
+`∂Z`-boundaried context. -/
+def ResidualTargetDefect (Target : FiniteObject.{u} → Prop)
+    (object : FiniteObject.{u}) {Coordinate : Type w}
+    (family : Finset Coordinate)
+    (coordinateSupport : Coordinate → Finset object.Vertex) : Prop := by
+  classical
+  exact ∃ first ∈ family, ∃ second ∈ family, first ≠ second ∧
+    ∃ support : Finset object.Vertex,
+      CanonicalSupport.select? object
+          (coordinateSupport first ∪ coordinateSupport second) = some support ∧
+      (SupportAtom.retainedPiece object support
+          (coordinateSupport first)).boundaryDegreeProfile =
+        (SupportAtom.retainedPiece object support
+          (coordinateSupport second)).boundaryDegreeProfile ∧
+      (Target (glue (SupportAtom.retainedPiece object support
+            (coordinateSupport first)) (SupportAtom.outside object support)) ↔
+        Target (glue (SupportAtom.retainedPiece object support
+            (coordinateSupport second)) (SupportAtom.outside object support))) ∧
+      Response.TargetDefect Target
+        (SupportAtom.retainedPiece object support (coordinateSupport first))
+        (SupportAtom.retainedPiece object support (coordinateSupport second))
+
+/-- The boundary-profile companion of clause (b) (`lem:degree-profile-fibres`,
+tex 6088): two distinct declared coordinates of the family whose readings on
+G's piece at their canonical support lie in different boundary-degree fibres.
+This is the concrete object of blocker (d) in `def:surplus-blockers`. -/
+def ResidualProfileSeparation (object : FiniteObject.{u}) {Coordinate : Type w}
+    (family : Finset Coordinate)
+    (coordinateSupport : Coordinate → Finset object.Vertex) : Prop := by
+  classical
+  exact ∃ first ∈ family, ∃ second ∈ family, first ≠ second ∧
+    ∃ support : Finset object.Vertex,
+      CanonicalSupport.select? object
+          (coordinateSupport first ∪ coordinateSupport second) = some support ∧
+      (SupportAtom.retainedPiece object support
+          (coordinateSupport first)).boundaryDegreeProfile ≠
+        (SupportAtom.retainedPiece object support
+          (coordinateSupport second)).boundaryDegreeProfile
+
+/-- A family with at most one coordinate identifies nothing, so it has no
+clause-(b) defect. -/
+theorem not_residualTargetDefect_of_card_le_one (Target : FiniteObject.{u} → Prop)
+    (object : FiniteObject.{u}) {Coordinate : Type w}
+    (family : Finset Coordinate)
+    (coordinateSupport : Coordinate → Finset object.Vertex)
+    (small : family.card ≤ 1) :
+    ¬ ResidualTargetDefect Target object family coordinateSupport := by
+  rintro ⟨first, firstMem, second, secondMem, different, -⟩
+  exact different (Finset.card_le_one.mp small first firstMem second secondMem)
+
+/-- A defect among the coordinates of a subfamily is a defect of every family
+containing them with the same declared supports. -/
+theorem ResidualTargetDefect.map {Target : FiniteObject.{u} → Prop}
+    {object : FiniteObject.{u}} {Coordinate : Type w} {Coordinate' : Type w'}
+    {family : Finset Coordinate} {family' : Finset Coordinate'}
+    {coordinateSupport : Coordinate → Finset object.Vertex}
+    {coordinateSupport' : Coordinate' → Finset object.Vertex}
+    (embed : Coordinate → Coordinate')
+    (injective : ∀ first ∈ family, ∀ second ∈ family,
+      embed first = embed second → first = second)
+    (maps : ∀ coordinate ∈ family, embed coordinate ∈ family')
+    (supports : ∀ coordinate ∈ family,
+      coordinateSupport' (embed coordinate) = coordinateSupport coordinate)
+    (defect : ResidualTargetDefect Target object family coordinateSupport) :
+    ResidualTargetDefect Target object family' coordinateSupport' := by
+  obtain ⟨first, firstMem, second, secondMem, different, support, selected,
+    profile, actual, separated⟩ := defect
+  refine ⟨embed first, maps first firstMem, embed second, maps second secondMem,
+    fun equal => different (injective first firstMem second secondMem equal),
+    support, ?_⟩
+  rw [supports first firstMem, supports second secondMem]
+  exact ⟨selected, profile, actual, separated⟩
+
+/-- **A sparse surplus exit** of `def:named-surplus-exits` (tex 2754-2772), at
+the residual's declared coordinate family. -/
 inductive SparseSurplusExit (Baseline Target : FiniteObject.{u} → Prop)
-    (LengthOK : Nat → Prop) (object : FiniteObject.{u}) : Prop
+    (LengthOK : Nat → Prop) (object : FiniteObject.{u}) {Coordinate : Type w}
+    (family : Finset Coordinate)
+    (coordinateSupport : Coordinate → Finset object.Vertex) : Prop
   /-- (a) a direct dyadic contradiction: an accepted cycle. -/
   | dyadic (cycle : Graph.HasCycleWithLength LengthOK object)
-  /-- (b) a target-defective quotient, exactly as
-  `lem:context-universality` defines it: the proposed reduced and full
-  realizations are identified by the incoming rank-reducing attempt, and a
-  compatible outside context distinguishes their target responses.  This is
-  the residual's attempted local identification, not arbitrary boundary data
-  or an already target-complete `DeclaredQuotient`. -/
-  | targetDefect {Coordinate : Type u} (family : Finset Coordinate)
-      (coordinateSupport : Coordinate → Finset object.Vertex)
-      (attempt : AttemptedQuotient Baseline Target object family
-        coordinateSupport)
-      (reducing : ¬ Set.InjOn attempt.label ↑family)
-      (reduced full : BoundaryPiece
-        (SupportAtom.boundary object attempt.support))
-      (identified : attempt.Identifies reduced full)
-      (defect : Response.TargetDefect Target reduced full)
+  /-- (b) a target-defective quotient, as `lem:context-universality` defines
+  it, among the family's own coordinates read on G's own pieces. -/
+  | targetDefect
+      (defect : ResidualTargetDefect Target object family coordinateSupport)
   /-- (c) a nontrivial target-complete compression of a proper atom, recorded
   at the one-way `ReplacementSupport` strength used by `lem:replacement`. -/
   | compression (support : Finset object.Vertex)
@@ -75,16 +194,18 @@ inductive SparseSurplusExit (Baseline Target : FiniteObject.{u} → Prop)
   /-- (e) an open-port suppression cycle whose chord set violates the arithmetic
   conclusion of `lem:suppressed-family-critical-cycle`: the lifted length
   `2^j + |𝒮|` is accepted, where that lemma concludes it is not. -/
-  | suppressionChord (family : TightVertexSuppression.CompatibleFamily object)
-      (certificate : Graph.CycleCertificate family.suppressed LengthOK)
+  | suppressionChord (tvs : TightVertexSuppression.CompatibleFamily object)
+      (certificate : Graph.CycleCertificate tvs.suppressed LengthOK)
       (violates : LengthOK (certificate.walk.length +
-        (family.usedChords certificate.walk).card))
+        (tvs.usedChords certificate.walk).card))
 
-/-- **A graph survives the sparse surplus exits** when none of the five
-conclusions occurs. -/
+/-- **A graph survives the sparse surplus exits** of its declared family when
+none of the five conclusions occurs. -/
 def SurvivesSparseExits (Baseline Target : FiniteObject.{u} → Prop)
-    (LengthOK : Nat → Prop) (object : FiniteObject.{u}) : Prop :=
-  ¬ SparseSurplusExit Baseline Target LengthOK object
+    (LengthOK : Nat → Prop) (object : FiniteObject.{u}) {Coordinate : Type w}
+    (family : Finset Coordinate)
+    (coordinateSupport : Coordinate → Finset object.Vertex) : Prop :=
+  ¬ SparseSurplusExit Baseline Target LengthOK object family coordinateSupport
 
 /-- **`def:active-surplus-demands`.**
 
@@ -93,17 +214,16 @@ def SurvivesSparseExits (Baseline Target : FiniteObject.{u} → Prop)
 > `lem:sparse-port-activation`, and not already removed by a sparse surplus exit
 > of `def:named-surplus-exits`.
 
-Exit-freeness is a property of the graph, not of one port: the manuscript's
-"survives" clause quantifies over every selected demand, every selected pair,
-and every baseline spine coordinate at once.  So the family is active exactly
-when the object survives and every selected port carries its canonical data.
+This structure records the canonical port data.  Exit-freeness is a separate
+ledger fact about the graph (node `[125]`, `K .sparseSurplusSurvivor`, stated at
+G's declared sparse family): the manuscript's "survives" clause quantifies over
+every selected demand, every selected pair and every baseline spine coordinate
+at once, so it is read from the ledger where it is needed, not bundled here.
 `T(p)` is `SurplusPort.support`, which every port has; `R_p` is clause (b),
 whose existence is the field below. -/
 structure ActiveSurplusDemands (Baseline Target : FiniteObject.{u} → Prop)
     (LengthOK : Nat → Prop) (object : FiniteObject.{u}) (threshold : Nat) :
     Prop where
-  /-- No sparse surplus exit removes any selected demand. -/
-  survives : SurvivesSparseExits Baseline Target LengthOK object
   /-- `|𝒜₀| = σ(G)`. -/
   count : (object.excessPorts threshold).card = object.degreeSurplus threshold
   /-- The canonical shoulder pair of every selected port.  At the manuscript's
@@ -147,15 +267,14 @@ structure ActiveSurplusDemands (Baseline Target : FiniteObject.{u} → Prop)
 > family of active surplus demands and `|𝒜₀| = σ(G)`.
 
 The proof is the manuscript's: every selected port has the canonical data by
-`lem:sparse-excess-port-extraction` and `lem:sparse-port-activation`, and since
-the object survives, no selected demand is removed by an exit.  Each of the
+`lem:sparse-excess-port-extraction` and `lem:sparse-port-activation`; the
+survival clause is the separate node-`[125]` ledger fact.  Each of the
 three inputs is a fact the branch already carries, in full -- node `[128]`'s
 entry is read whole rather than projected, because all three of its clauses are
 canonical data of an active demand. -/
 theorem surviving_active_family
     {Baseline Target : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
     {object : FiniteObject.{u}} {threshold : Nat}
-    (survives : SurvivesSparseExits Baseline Target LengthOK object)
     (count : (object.excessPorts threshold).card =
       object.degreeSurplus threshold)
     (shoulderPair : ∀ pair : object.Vertex × object.Vertex,
@@ -181,8 +300,7 @@ theorem surviving_active_family
               object.graph.Adj pair.2 left ∧ object.graph.Adj left right ∧
                 object.graph.Adj right pair.2)) :
     ActiveSurplusDemands Baseline Target LengthOK object threshold :=
-  { survives := survives
-    count := count
+  { count := count
     shoulderPair := shoulderPair
     activated := activated }
 

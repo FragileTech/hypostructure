@@ -297,8 +297,7 @@ theorem typeAExitFive_contradiction
       (Graph.Route8.PresentedEntry.retainedBaseCoordinates object piece
         retained), ?_, baseline, smaller, ?_⟩
   · exact complete.profile_eq
-  · exact fun outside replacementTarget =>
-      (complete.contextEquivalent outside).mp replacementTarget
+  · exact fun outside => complete.contextEquivalent outside
 
 /-! ## Exit `(6)`, nodes `[105]`--`[106]` -/
 

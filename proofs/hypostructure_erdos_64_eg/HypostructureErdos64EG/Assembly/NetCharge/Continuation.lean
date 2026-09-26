@@ -31,7 +31,7 @@ Type A / Type B / route-8 continuations it enters. -/
 noncomputable abbrev netChargeContinuationKeys : FactKeys EGInput.{u} :=
   [K .netChargeCap, K .exactCollisionFails, K .absorbedConfigurationResidual,
     K .absorbedGermSplit, K .bridgeless, K .coldReturnCorridors,
-    K .coldDeclaredHandoffLedger, K .coldCorridorState,
+    K .coldCorridorState,
     K .denseColdCorridorsTerminal, K .coldFirstFailureOccurrence,
     K .coldFailureRouting, K .coldFailureCycle, K .coldFailureDefect,
     K .coldFailureDefectRoute, K .coldFailureCompression, K .coldFailureHandoff,

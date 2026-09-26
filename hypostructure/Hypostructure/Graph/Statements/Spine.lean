@@ -1150,21 +1150,37 @@ noncomputable def ColdCorridorStateStatement (data : Parameters)
       ∀ epsilon : ColdCrossWindowHalfEdge data object,
         (crossIncidence epsilon).support = {epsilon.1.1, epsilon.1.2}
 
-/-- The exact F4 support predicate named upstream of the cold first-failure
-owner: declared decorated Type-B envelope cores or route-8 response supports
-of the current object. -/
+/-- **A piece of G produces a decorated Type B handoff** (exit `(7)` of
+`def:typeA-saturated-exits`, tex 10811; `lem:typeA-visible-entry`, tex
+11240-11250; `lem:typeA-high-degree-handoff`, tex 11110;
+`def:typeA-unified-negative`, tex 15236): some receiver of the piece has a
+routed load whose continuation family through one completion port has a
+surviving first separator (the hypothesis of `lem:typeA-high-degree-handoff`).  The handoff envelope is the one
+`lem:typeA-high-degree-handoff` builds at that separator
+(`DecoratedHandoff.envelopeOfSeparation`, core the piece); it is not an
+arbitrary envelope whose core happens to be the piece. -/
+def SeparatorHandoffAt (data : Parameters) (object : Graph.FiniteObject.{u})
+    (piece : Finset object.Vertex) : Prop :=
+  ∃ receiver ∈ object.receivers piece data.threshold,
+    ∃ load : object.Vertex,
+      Graph.Route8.TraceBasin.TraceSurvivingSeparator object piece data.threshold
+        data.LengthOK receiver load piece
+
+/-- **The (F4) registry** of `def:cold-corridor-first-failure` (tex 7234:
+"the corridor first enters a declared Type B handoff envelope or the route-8
+response support already recorded in the branch state"): the canonical pieces
+of `R(P₀)` that produce a decorated Type B handoff at a surviving separator
+(`SeparatorHandoffAt`, the declared envelope core of
+`lem:typeA-high-degree-handoff`), or that carry a route-8 response support. -/
 noncomputable def ColdDeclaredHandoffSupport (data : Parameters)
     (object : Graph.FiniteObject.{u}) (support : Finset object.Vertex) : Prop := by
   classical
   let packing := canonicalWindowPacking data object
   let remainder := object.remainderSupport packing
   exact
-    (∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-        (fun vertex => data.threshold < object.degree vertex)
-        (fun _centre _first _second =>
-          Graph.WindowLabelCollision.LabelCollision object
-            data.windowOrder data.LengthOK packing),
-      envelope.core = support ∧ envelope.decorations.Nonempty) ∨
+    (∃ component ∈ object.canonicalPieces remainder,
+      object.pieceSupport remainder component = support ∧
+        SeparatorHandoffAt data object support) ∨
     ∃ component ∈ object.canonicalPieces remainder,
       object.pieceSupport remainder component = support ∧
         object.NegativeNetCharge support data.threshold data.dischargeScale ∧
@@ -1182,14 +1198,6 @@ noncomputable def ColdDeclaredHandoffSupport (data : Parameters)
                     (Graph.HasCycleWithLength data.LengthOK) support
                     data.threshold data.dischargeScale receiver ∅,
                   witness.load = load
-
-/-- The surviving cold residual's F4 registry.  Every Type-B or route-8
-handoff has already left this residual along its paper-prescribed ledger edge,
-so the registry read by the first-failure row is exactly empty. -/
-noncomputable def ColdDeclaredHandoffLedgerStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  ∃ Handoff : Finset object.Vertex → Prop,
-    ∀ support, ¬ Handoff support
 
 set_option maxHeartbeats 800000 in
 /-- Clause (F1) at one segment of the retained cold corridor. -/
@@ -1307,8 +1315,6 @@ endpoint.  The published segment satisfies one alternative and no strictly
 earlier segment satisfies any alternative. -/
 structure ColdFirstFailureOccurrenceData (data : Parameters)
     (object : Graph.FiniteObject.{u}) where
-  Handoff : Finset object.Vertex → Prop
-  handoffAbsent : ∀ support, ¬ Handoff support
   state : ColdCorridorStateStatement data object
   occurs :
     letI : FinEnum object.Vertex := object.vertices
@@ -1331,11 +1337,11 @@ structure ColdFirstFailureOccurrenceData (data : Parameters)
       let presentation := presentationAt epsilon
       let index := indexAt epsilon
       ∃ first : corridor.Segment,
-        ColdFirstFailureEvent data object corridor presentation index germ Handoff
-            first ∧
+        ColdFirstFailureEvent data object corridor presentation index germ
+            (ColdDeclaredHandoffSupport data object) first ∧
           ∀ earlier : corridor.Segment, earlier.1 < first.1 →
             ¬ ColdFirstFailureEvent data object corridor presentation index germ
-              Handoff earlier
+              (ColdDeclaredHandoffSupport data object) earlier
 
 /-- The retained occurrence payload is inhabited.  `Nonempty` keeps the ledger
 value proof-irrelevant while the sealed owner may still store the exact
@@ -1401,7 +1407,7 @@ structure ColdFirstFailureGermOccurrence (data : Parameters)
     ColdFirstFailureGermAt data object corridor presentation index germ first ∧
       ∀ earlier : corridor.Segment, earlier.1 < first.1 →
         ¬ ColdFirstFailureEvent data object corridor presentation index germ
-          occurrence.Handoff earlier
+          (ColdDeclaredHandoffSupport data object) earlier
 
 noncomputable def ColdFirstFailureHandoffOccurrence (data : Parameters)
     (object : Graph.FiniteObject.{u})
@@ -1412,10 +1418,10 @@ noncomputable def ColdFirstFailureHandoffOccurrence (data : Parameters)
   let presentation := coldOccurrencePresentationAt data object occurrence epsilon
   let index := coldOccurrenceIndexAt data object occurrence epsilon
   exact ∃ first : corridor.Segment,
-    ColdFirstFailureHandoffAt object corridor occurrence.Handoff first ∧
+    ColdFirstFailureHandoffAt object corridor (ColdDeclaredHandoffSupport data object) first ∧
       ∀ earlier : corridor.Segment, earlier.1 < first.1 →
         ¬ ColdFirstFailureEvent data object corridor presentation index germ
-          occurrence.Handoff earlier
+          (ColdDeclaredHandoffSupport data object) earlier
 
 /-- The exact corridor consequence produced at node `[162]`: the retained
 corridor state from the incoming ledger, together with terminality of every
@@ -1472,28 +1478,26 @@ noncomputable def ColdReturnCorridorsStatement (data : Parameters)
       (selected.filter fun stub => stub.2 ∉ windows).card +
         (selected.filter fun stub => stub.2 ∈ windows).card
 
-/-- The manuscript's surviving first-failure classification.  F1--F3 are
-excluded by their ledger facts and every F4 support has already left along its
-handoff edge, so every occurrence remaining on this residual is the actual
-terminal/least-repeat F5 germ. -/
+/-- `lem:cold-corridor-first-failure` (tex 7234-7295), the routed first
+failure of every selected half-edge.  (F1) is a target cycle and (F3) a
+target-complete compression, both excluded by their ledger facts, and (F2) is
+a sparse exit excluded on the surviving branch (tex 7265-7270).  What remains
+is exactly the lemma's two routes: (F5) a cold bounded configuration, or (F4)
+an already named Type B or route-8 handoff of the declared registry. -/
 structure ColdSurvivingFirstFailureStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop where
   holds : ∃ occurrence : ColdFirstFailureOccurrenceData data object,
     ∀ epsilon : ColdEligibleHalfEdge data object,
-      ColdFirstFailureGermOccurrence data object occurrence epsilon
+      ColdFirstFailureGermOccurrence data object occurrence epsilon ∨
+        ColdFirstFailureHandoffOccurrence data object occurrence epsilon
 
-/-- `lem:cold-corridor-first-failure` on the current surviving residual.
-
-The retained state and its literal least F1--F5 occurrence are paired with the
-incoming global sparse-exit exclusion and the proved (F4)-or-(F5)
-classification.  Consumers therefore use exact ledger facts instead of
-reopening or recreating the corridor presentation. -/
+/-- `lem:cold-corridor-first-failure` on the current surviving residual: the
+retained state, its literal least F1--F5 occurrence, and the lemma's routing
+of every selected half-edge.  The sparse-exit survival of the branch is its own
+ledger fact (`K .sparseSurplusSurvivor`) and is read from the ledger where it
+is used, not copied here. -/
 structure ColdFailureRoutingStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop where
-  sparseSurvivor :
-    Graph.SurvivesSparseExits
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
   surviving : ColdSurvivingFirstFailureStatement data object
 
 /-- Canonical classified first-failure data projected from the retained routing
@@ -1824,7 +1828,11 @@ noncomputable def ColdFailureCycleStatement (data : Parameters)
     (segment : corridor.Segment),
     ¬ corridor.FirstFailureCycle window data.LengthOK segment
 
-/-- The concrete sparse-exit consequence of clause F2. -/
+/-- `lem:cold-corridor-first-failure` (ii) through `lem:context-universality`
+(tex 7240, 7265-7270): an (F2) pair of prefixes of one of G's corridors is a
+target-defective quotient -- its identification is target-complete in no
+immutable profile fibre, since some context separates the two readings on G's
+own piece. -/
 noncomputable def ColdFailureDefectRoutesStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∀ (windows component : Finset object.Vertex)
@@ -1835,9 +1843,16 @@ noncomputable def ColdFailureDefectRoutesStatement (data : Parameters)
     Graph.ColdCorridor.Corridor.FirstFailureDefect corridor presentation index
         (Graph.HasCycleWithLength data.LengthOK)
         (fun stage => corridor.prefixSupport stage.1) left right →
-      Graph.SparseSurplusExit
-        (Graph.MinimumDegreeAtLeast data.threshold)
-        (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
+      ∀ (Profile : Type)
+        (profile : Graph.BoundaryPiece
+          (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary object
+            (corridor.prefixSupport right.1)) → Profile),
+        ¬ Graph.Response.TargetComplete profile
+          (Graph.HasCycleWithLength data.LengthOK)
+          (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
+            (corridor.prefixSupport right.1) (corridor.prefixSupport left.1))
+          (Graph.Strategy.InterfaceReplacement.SupportAtom.piece object
+            (corridor.prefixSupport right.1))
 
 /-- The context-universality consequence when clause F2 is excluded. -/
 noncomputable def ColdFailureDefectEquivalentStatement (data : Parameters)
@@ -1983,16 +1998,6 @@ abbrev handoffAbsorbing (data : Parameters) (object : Graph.FiniteObject.{u})
   fun _centre _first _second =>
     Graph.WindowLabelCollision.LabelCollision object data.windowOrder
       data.LengthOK packing
-
-/-- **A decorated handoff fan envelope is produced at a support.**  The test
-node `[107]` splits on: `def:decorated-fan-envelope`'s data, with the Type A
-support as the counted core and at least one high-degree decoration. -/
-def HandoffProduced (data : Parameters) (object : Graph.FiniteObject.{u})
-    (packing : Finset (Finset object.Vertex))
-    (piece : Finset object.Vertex) : Prop :=
-  ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-      (handoffHighDegree data object) (handoffAbsorbing data object packing),
-    envelope.core = piece ∧ envelope.decorations.Nonempty
 
 /-- Residual C, node `[55]`: `prop:two-budget`'s "in every case the surviving
 residual is subsequently passed to the large-budget net-charge analysis" — the
@@ -2455,17 +2460,18 @@ noncomputable abbrev ReplacementExclusionStatement
         (Graph.HasCycleWithLength data.LengthOK) object support)
 
 /-- Node `[14]`: no proper boundaried piece admits a nontrivial target-complete
-compression (`cor:uncompressible`).  By `def:target-complete-compression` a
-nontrivial target-complete compression is a smaller representative satisfying
-the hypotheses of `lem:replacement`, so the obstruction inclusion is one-way
-(`ReplacementSupport`); a two-way context-equivalent compression is one
-instance (`replacementSupportOfCompressibleSupport`). -/
+compression (`cor:uncompressible`, tex 6142): no proper support of G has a
+strictly smaller boundaried representative with the same boundary-degree
+profile and the same target response against every context
+(`CompressibleSupport`).  It is derived from node `[13]`'s one-way
+`ReplacementSupport` exclusion by `replacementSupportOfCompressibleSupport`;
+the two facts are distinct statements of the paper. -/
 noncomputable abbrev UncompressibleStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
   (∀ support : Finset object.Vertex,
-    ¬ Graph.Strategy.InterfaceReplacement.ReplacementSupport
+    ¬ Graph.Strategy.InterfaceReplacement.CompressibleSupport
         (Graph.MinimumDegreeAtLeast data.threshold)
         (Graph.HasCycleWithLength data.LengthOK) object support)
 
@@ -3595,8 +3601,7 @@ noncomputable abbrev ColdGermRoutedStatement
               (Graph.HasCycleWithLength data.LengthOK)
               germ.piece germ.canonical) ∧
           (germ.Distinguishing ∨
-            HandoffProduced data object (canonicalWindowPacking data object)
-              germ.support)
+            SeparatorHandoffAt data object germ.support)
 
 /-- Node `[154]`, first binary test of `lem:cold-bounded-germ-trichotomy`
 (G1): some configuration of the extracted active family is hit-realized. -/

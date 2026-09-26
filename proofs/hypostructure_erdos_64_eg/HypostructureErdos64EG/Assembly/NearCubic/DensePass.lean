@@ -29,7 +29,7 @@ universe u w
 /-- Every key committed on the linear arm of the dense pass. -/
 noncomputable abbrev denseLinearKeys : FactKeys EGInput.{u} :=
   [K .remainderNormalized, K .remainderRelabelingEntropy, K .bridgeless,
-    K .coldReturnCorridors, K .coldDeclaredHandoffLedger, K .coldCorridorState,
+    K .coldReturnCorridors, K .coldCorridorState,
     K .denseColdCorridorsTerminal, K .coldFirstFailureOccurrence,
     K .coldFailureCycle, K .coldFailureDefect, K .coldFailureDefectRoute,
     K .coldFailureCompression, K .coldFailureHandoff, K .coldHandoffTransfer,

@@ -61,18 +61,45 @@ theorem typeBFanEntry_of_highSurplus
   · intro vertex vertexMem
     exact (Graph.TypeBRefinedSupport.mem_centres.1 vertexMem).2
 
+/-- `lem:typeA-high-degree-handoff` (tex 11110): the surviving first separator
+of an exit-`(7)` piece, with its separated connector tails, is a decorated
+handoff fan envelope whose counted core is the piece.  By
+`lem:typeA-cubic-switch-absorption` the separator has degree at least `4`, and
+the label-collision absorbing clause is refuted by target avoidance. -/
+theorem handoffEnvelope_of_separatorHandoffAt
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (cubic : data.threshold = 3) (degenerate : ¬ data.LengthOK 2)
+    (packing : Finset (Finset object.Vertex)) {piece : Finset object.Vertex}
+    (handoff : SeparatorHandoffAt data object piece) :
+    ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
+        (handoffHighDegree data object) (handoffAbsorbing data object packing),
+      envelope.core = piece ∧ envelope.decorations.Nonempty := by
+  obtain ⟨_receiver, _receiverMem, _load, separated⟩ := handoff
+  exact Graph.Route8.TraceBasin.exists_envelope_of_traceSurvivingSeparator
+    separated avoids
+    (fun vertex high => by
+      show data.threshold < object.degree vertex
+      rw [cubic]
+      exact high)
+    (fun _centre _first _second collision =>
+      avoids (Graph.WindowLabelCollision.hasCycleWithLength_of_labelCollision
+        degenerate collision))
+
 /-- `def:decorated-fan-envelope` and `lem:decorated-fan-admissibility`: the
 exit-`(7)` envelope is admissible Type B fan-envelope data. -/
 theorem typeBDecoratedAssignedSupport
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (cubic : data.threshold = 3) (degenerate : ¬ data.LengthOK 2)
     (uncompressible : UncompressibleStatement data object)
     (normalized : RemainderNormalizedStatement data object)
     (handoff : TypeAExitSevenHandoffStatement data object) :
     TypeBDecoratedAssignedSupportStatement data object := by
   obtain ⟨packing, canonical, valid, maximal, component, present, negative, zero,
     receiver, isReceiver, peeled, peeledSubset, saturated, noExitFour,
-    noCompression, noDelocalization, envelope, coreEq, nonempty⟩ :=
+    noCompression, noDelocalization, produced⟩ :=
     handoff
+  obtain ⟨envelope, coreEq, nonempty⟩ :=
+    handoffEnvelope_of_separatorHandoffAt avoids cubic degenerate packing produced
   let piece := object.pieceSupport
     (object.remainderSupport packing) component
   have inside : piece ⊆
@@ -122,13 +149,17 @@ theorem typeBDecoratedAssignedSupport
 /-- The decorated handoff enters node `[65]` with the envelope decorations as its
 assigned centres (`def:typeB-assigned-ledger`). -/
 theorem typeBFanEntry_of_decoratedHandoff
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (cubic : data.threshold = 3) (degenerate : ¬ data.LengthOK 2)
     (handoff : TypeAExitSevenHandoffStatement data object) :
     TypeBFanEntryStatement data object := by
   apply Or.inl
   obtain ⟨packing, _canonical, valid, maximal, component, present, negative, zero,
     _receiver, _isReceiver, _peeled, _peeledSubset, _saturated, _noExitFour,
-    _noCompression, _noDelocalization, envelope, coreEq, nonempty⟩ :=
+    _noCompression, _noDelocalization, produced⟩ :=
     handoff
+  obtain ⟨envelope, coreEq, nonempty⟩ :=
+    handoffEnvelope_of_separatorHandoffAt avoids cubic degenerate packing produced
   refine ⟨packing, valid, maximal, component, present, envelope.decorations,
     Or.inr ⟨negative, zero, envelope, coreEq, rfl, nonempty,
       fun centre member =>

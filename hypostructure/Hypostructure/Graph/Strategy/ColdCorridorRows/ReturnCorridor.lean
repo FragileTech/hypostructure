@@ -39,24 +39,4 @@ ledger; the connection is the component's own. -/
           (inputs.get (K .hotColdPartition)).down⟩
         .nil)
 
-/-! ## Node `[145]`, declared F4 support registry
-
-`def:cold-corridor-first-failure` reaches this residual only after the Type-B
-and route-8 handoff edges have been taken.  This owner therefore publishes the
-exact empty active F4 registry; the occurrence row reads it through
-`inputs.get`. -/
-@[reducible] noncomputable def coldDeclaredHandoffLedgerRow :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.coldDeclaredHandoffLedger
-    { Requires := []
-      Produces := [K .coldDeclaredHandoffLedger]
-      requiresUnique := by simp
-      producesUnique := by simp
-      producesNonempty := by simp }
-    (fun inputs =>
-      .cons (key := K .coldDeclaredHandoffLedger)
-        ⟨Contracts.Spine.coldDeclaredHandoffLedger_empty data.toParameters
-          inputs.current.object⟩
-        .nil)
-
 end Hypostructure.Graph.Strategy.Spine

@@ -23,7 +23,7 @@ abbrev SilentCoreResidualProfile (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   SelectedNoExitSixReceiverWith data object
     (fun packing piece _receiver _peeled =>
-      ¬ HandoffProduced data object packing piece)
+      ¬ SeparatorHandoffAt data object piece)
 
 /-- The exact component predicate used by node `[111]` to form `𝒳_A`.
 
@@ -65,7 +65,7 @@ noncomputable def route8UnifiedComponents (data : Parameters)
     let piece := object.pieceSupport support component
     object.ambientSurplus piece data.threshold = 0 ∧
       object.NegativeNetCharge piece data.threshold data.dischargeScale ∧
-      ¬ HandoffProduced data object packing piece
+      ¬ SeparatorHandoffAt data object piece
 
 /-- The unified indexed collection `\tilde\Xi` used by the implemented burden
 identity: saturated receivers and their visible-first unpaid excess loads on
@@ -121,8 +121,7 @@ def Route8QuotientFreeStatement (data : Parameters)
       ∀ core ∈ (object.canonicalPieces deleted).image
           (object.pieceSupport deleted),
         object.NegativeNetCharge core data.threshold data.dischargeScale →
-        ¬ HandoffProduced data object (canonicalWindowPacking data object)
-          core →
+        ¬ SeparatorHandoffAt data object core →
         ∀ receiver ∈ object.receivers core data.threshold,
           ∀ load ∈ Graph.VisibleEntry.excessBasinReduced object core
               data.threshold data.dischargeScale receiver ∅,
@@ -249,7 +248,7 @@ abbrev Route8UnifiedNegative (data : Parameters)
       (∀ piece ∈ collection,
         object.ambientSurplus piece data.threshold = 0 ∧
           object.NegativeNetCharge piece data.threshold data.dischargeScale ∧
-          ¬ HandoffProduced data object packing piece ∧
+          ¬ SeparatorHandoffAt data object piece ∧
           0 < piece.card -
             data.dischargeScale * object.positiveDeficiency piece data.threshold) ∧
       ∃ scaledDeficit : Nat,
@@ -344,7 +343,7 @@ noncomputable def route8ExtractedCores (data : Parameters)
           (object.pieceSupport deleted)).filter fun core =>
         object.ambientSurplus core data.threshold = 0 ∧
           object.NegativeNetCharge core data.threshold data.dischargeScale ∧
-          ¬ HandoffProduced data object packing core ∧
+          ¬ SeparatorHandoffAt data object core ∧
           ∀ receiver ∈ object.receivers core data.threshold,
             ∀ load ∈ Graph.VisibleEntry.excessBasinReduced object core
                 data.threshold data.dischargeScale receiver ∅,
@@ -772,7 +771,7 @@ noncomputable def Route8UnifiedVisibleHistoryStatement (data : Parameters)
           data.dischargeScale (route8StageSlack data object) chain.toFinset) ∧
     SelectedNoExitSixReceiverWith data object
       (fun packing piece receiver peeled =>
-        ¬ HandoffProduced data object packing piece ∧
+        ¬ SeparatorHandoffAt data object piece ∧
           ¬ Graph.ExitFour.SilentUnpeeledExcessAt piece data.threshold
             data.dischargeScale receiver peeled ∧
           ∃ package : Graph.ExitFour.VisibleFourUnpeeledPackage piece
@@ -1362,7 +1361,7 @@ noncomputable abbrev Route8PiecesClassifiedStatement
                         piece data.threshold data.LengthOK receiver load
                         basin retained)
     (fun piece =>
-      HandoffProduced data object (canonicalWindowPacking data object) piece)
+      SeparatorHandoffAt data object piece)
     (fun piece =>
       -- `def:typeB-bridge-statements` at the piece: the B2 disjoint ledger
       -- with strictly negative remaining scaled core charge, or a minimal

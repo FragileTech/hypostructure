@@ -86,14 +86,6 @@ theorem coldReturnCorridors_of_bridgeless (data : Parameters)
       (fun stub => stub.2 ∉ windows)
     simpa only [not_not] using partition.symm
 
-/-- **Node `[145]`, the declared F4 registry is empty.**  The cold residual is
-reached only after the Type-B and route-8 handoff edges have been taken, so the
-active F4 registry is the empty predicate. -/
-theorem coldDeclaredHandoffLedger_empty (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    ColdDeclaredHandoffLedgerStatement data object :=
-  ⟨fun _support => False, fun _support impossible => impossible⟩
-
 /-- **Node `[165]`, `lem:refined-minimality-swap`: the canonical exchange.**
 For every neutral configuration whose canonical representative `E` differs
 from the corridor piece `Q`, gluing `E` into the retained outside context

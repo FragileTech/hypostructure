@@ -319,6 +319,7 @@ theorem capacityTokenLedger_of_pairLedger
     (pairLedger : CanonicalPairLedgerStatement data object)
     (upperEnvelope : SparseUpperEnvelopeStatement data object)
     (noProperBaseline : NoProperBaselineStatement data object)
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (threeLe : 3 ≤ data.threshold)
     (joinSlack : data.threshold * data.windowOrder + 2 ≤ 4 * data.windowOrder) :
     CapacityTokenLedgerStatement data object := by
@@ -448,10 +449,6 @@ theorem capacityTokenLedger_of_pairLedger
           of_decide_eq_true chordFacts.2
         obtain ⟨_pairSubset, family, suppressionCertificate,
             _familyPorts, _chordEnds, usedChords⟩ := obstruction
-        have avoids : ¬ Graph.HasCycleWithLength data.LengthOK
-            object := by
-          intro cycle
-          exact active.survives (.dyadic cycle)
         have usedNonempty :=
           family.usedChords_nonempty_of_avoids avoids
             suppressionCertificate

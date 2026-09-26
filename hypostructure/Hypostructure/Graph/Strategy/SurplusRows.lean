@@ -153,7 +153,6 @@ they close the suppression.  Its first edge after `x(p)` is a shoulder. -/
     (fun inputs =>
       .cons (key := K .activeSurplusDemands)
         ⟨Graph.Contracts.SurplusPair.activeSurplusDemands_of_activation data.threshold_eq_three
-          (inputs.get (K .sparseSurplusSurvivor)).down
           (inputs.get (K .activeSurplusFamily)).down
           (inputs.get (K .sparsePortActivation)).down⟩
         .nil)
@@ -369,7 +368,8 @@ canonical-fibre no-overcount identities. -/
 @[reducible] noncomputable def capacityTokenLedgerRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.capacityTokenLedger
-    { Requires := [K .canonicalPairLedger, K .sparseUpperEnvelope, K .noProperBaseline]
+    { Requires := [K .canonicalPairLedger, K .sparseUpperEnvelope, K .noProperBaseline,
+        K .selection]
       Produces := [K .capacityTokenLedger]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -380,6 +380,7 @@ canonical-fibre no-overcount identities. -/
           (inputs.get (K .canonicalPairLedger)).down
           (inputs.get (K .sparseUpperEnvelope)).down
           (inputs.get (K .noProperBaseline)).down
+          (inputs.get (K .selection)).down.1
           data.three_le_threshold data.joinSlack⟩
         .nil)
 

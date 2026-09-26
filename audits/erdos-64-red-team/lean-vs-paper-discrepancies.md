@@ -573,3 +573,81 @@ This entry supersedes the `freePairCoupledExcessDichotomy` entry of
   clause (b), which appears to accept any two boundary pieces and would close
   the branch vacuously.  G2 is recorded again and the cold outcome returns to
   `[187]` (`K .coldBranchClosed`), as at `d2ded0e`.
+
+## Paper errors
+
+Each entry is a claim of the paper that is not established, stated faithfully
+at its node.  In the live Lean tree it is either a `sorry` tagged
+`-- PAPER-ERROR [node] tex:<line>` on the proof of exactly that claim, or,
+where the user decided so, a residual carried by the node's open leaf.
+
+### [144] `lem:same-token-bottleneck-routing`, parallel and cubic-first-separator cases (tex 5585-5620)
+
+- **Paper claim.** The two same-label demands' response coordinates "lie in the
+  same boundary-degree fibre" (tex 5589).  Their identification is either
+  target-defective (exit (b)) or "target-complete on a proper support", which
+  "`lem:replacement`, `cor:uncompressible` give [as] the target-complete
+  compression exit" (tex 5594; tex 5614 is the same claim at a cubic first
+  separator).
+- **Faithful Lean statement.** Read the two coordinates on G's own piece at the
+  canonical support `Z` of their union (`SupportAtom.retainedPiece`).  The case
+  with equal fibres and a separating context is exit (b) at G's declared family
+  (`declaredSparseSurplusExit_of_pairDefect`).  Two cases remain:
+  - the readings lie in different fibres; the routing label records the `T(p)`
+    profile, not the reading at `Z`;
+  - the readings are context-equivalent.
+- **Why it fails.** `def:admissible-rank-quotient` (tex 6026-6029): "a
+  target-complete proper-support correlation that has no smaller graph
+  representative is not an admissible rank reduction."  The paper never
+  constructs the smaller representative that exit (c) needs.
+- **Counterexample.** `Quarantine/PaperRepairs/Node144Gap.lean` gives the
+  survivor dichotomy L1′ (a target-complete pair adds no exit, L3) and two
+  locally G-valid configurations, F1 (a shoulder star) and F2 (a binary cubic
+  funnel), that reach [144] with no exit.
+- **Representation (user decision).** No `sorry`.  The two remaining cases are
+  `SameTokenPatternPairUnresolvedStatement` (key
+  `K .sameTokenPatternUnresolved`), published on the no-handoff arm of the exact
+  decision `sameTokenHandoffDichotomy` (`K .typeBHandoff` /
+  `K .typeBHandoffFails`).  They are carried by the open leaf [144a]:
+  `Node144aOutcome` is the handoff, or the unresolved pattern pair, together
+  with every [144] retained fact.
+
+### [153] (F2) exclusion, `lem:cold-corridor-first-failure` (ii) (tex 7265-7270)
+
+- **Paper claim.** An (F2) first failure is "a target-defective quotient ...
+  exactly the sparse exits ... excluded in `def:surviving-cold-branch`".
+- **Faithful Lean statement.** `Contracts.Spine.coldFailureDefect_excluded`:
+  on the survivor (`K .sparseSurplusSurvivor`), no (F2) event occurs.  The row
+  reads the survivor key, as at d2ded0e.
+- **Why it fails.** The (F2) pair compares two corridor prefixes through their
+  cut-state interface (tex 7187-7197).  It is not an identification of two
+  declared coordinates of G's sparse family: demands, pairs and spine
+  coordinates (tex 2769-2772).  The two readings of an (F2) pair are the retained
+  piece `retainedPiece(prefix_right, prefix_left)` and the piece
+  `piece(prefix_right)`, and they have different boundary-degree profiles on
+  `∂prefix_right`.  So the pair is not a clause-(b) exit, and the survivor fact
+  does not refute it.
+- **Tag.** `sorry`, `PAPER-ERROR [153] tex:7268`, in
+  `Graph/Contracts/Spine/ColdFirstFailure.lean`.
+
+### [153]/[175] full charge of a subcubic cold half-edge, `lem:absorbed-germ-fan-data` (i) (tex 7920-7922) with `lem:cold-germ-extraction` (tex 7318-7322)
+
+- **Paper claim.** A half-edge whose first-failure support is subcubic "is
+  charged in full" by the extraction count, i.e. it is an (F5) candidate.  The
+  (F4) handoff incidences are "already routed" and removed at `o(n)` cost.
+- **Faithful Lean statement.** `Contracts.Spine.coldSubcubicFirstFailureGerm`:
+  on the routed classification (every half-edge is (F5) or (F4)), a subcubic
+  first-failure prefix is (F5).
+- **Why it fails.** The registry the paper declares at (F4) (tex 7234) consists
+  of declared Type B envelope cores and route-8 response supports.  A corridor
+  whose foot lies in such a support is (F4) at segment 0, even when the support
+  is subcubic (`Quarantine/PaperRepairs/ColdF4Charge.lean`,
+  `coldF4_of_foot_declared`).  The paper neither bounds nor excludes these
+  half-edges.
+- **Tag.** `sorry`, `PAPER-ERROR [153] tex:7920`, in
+  `Graph/Contracts/Spine/ColdSubcubicCharge.lean`.
+- **Inconsistency.** Tex 7926-7934 (`lem:absorbed-germ-fan-data` (ii)) reads a
+  handoff as reaching a vertex of degree ≥ 4 (the heavy-centre reading).
+  Tex 7234 declares whole supports.  Lean implements the (F4) definition as
+  stated at its node (tex 7234).  The heavy-centre reading is quarantined in
+  `Quarantine/PaperRepairs/ColdF4Charge.lean`.

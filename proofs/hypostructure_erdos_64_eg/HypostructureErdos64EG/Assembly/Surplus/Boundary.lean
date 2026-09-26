@@ -30,12 +30,20 @@ active-demand and capacity presentations (`K .sparsePressureOverload`,
 `K .capacityTokenLedger`), the homogeneous bottleneck pattern
 (`K .homogeneousBottleneckPattern`) whose packing/core/decorated envelope is
 carried by the handoff, its strict-surplus ancestry (`K .surplusAbove`,
-`K .sparseSurplusSurvivor`), and the Type B fan entry `K .typeBFanEntry`.  No
-cap or near-cubic estimate is part of this outcome. -/
+`K .sparseSurplusSurvivor`), and the Type B fan entry `K .typeBFanEntry`; or,
+when the routed pattern produces no handoff (`K .typeBHandoffFails`), the
+residual of the paper error at `[144]` (`K .sameTokenPatternUnresolved`: the
+same-label pattern pair whose readings are profile-separated without exit or
+target-complete).  No cap or near-cubic estimate is part of this outcome. -/
 abbrev Node144aOutcome (selected : EGInput.{u}) :=
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .typeBHandoff selected.object ∧
-  StrictSurplusTypeBOutcome selected ∧
+  ((Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+        erdosReceiverLoadProfile spineData .typeBHandoff selected.object ∧
+      StrictSurplusTypeBOutcome selected) ∨
+    (Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+        erdosReceiverLoadProfile spineData .typeBHandoffFails selected.object ∧
+      Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+        erdosReceiverLoadProfile spineData .sameTokenPatternUnresolved
+          selected.object)) ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .bottleneckRouting selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile

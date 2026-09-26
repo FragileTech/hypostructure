@@ -41,7 +41,9 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       .cons (key := K .uncompressible)
         (show Value BranchState Presentation presentation data
             .uncompressible inputs.current from
-          ⟨fun support replacement => replacementExcluded support replacement⟩)
+          ⟨fun support compressible => replacementExcluded support
+            (Graph.Strategy.InterfaceReplacement.replacementSupportOfCompressibleSupport
+              _ _ _ support compressible)⟩)
         .nil)
     0 0
 

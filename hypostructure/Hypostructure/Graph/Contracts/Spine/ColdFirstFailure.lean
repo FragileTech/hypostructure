@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Statements.Spine
+import Hypostructure.Graph.Statements.CanonicalSurplus
 import Hypostructure.Graph.ColdIncrementArithmetic
 import Hypostructure.Graph.ColdGermFamily
 
@@ -19,63 +20,19 @@ open Hypostructure.Graph.Strategy.Spine
 
 universe u
 
-/-- **(F2) is a sparse exit (b).**  The two prefixes of an (F2) pair and their
-distinguishing context form a rank-reducing attempted quotient with a target
-defect, i.e. the sparse surplus exit (b). -/
+/-- **(F2) is a target-defective quotient** (`lem:cold-corridor-first-failure`
+(ii), through `lem:context-universality`): the separating context of an (F2)
+pair shows that its identification on G's own prefix piece is target-complete
+in no immutable profile fibre. -/
 theorem coldFailureDefectRoutes
     (data : Parameters) (object : Graph.FiniteObject.{u}) :
     ColdFailureDefectRoutesStatement data object := by
-      intro windows component corridor presentation index left right
-      intro failure
-      classical
-      let support := corridor.prefixSupport right.1
-      let reduced :=
-        Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece
-          object support (corridor.prefixSupport left.1)
-      let full :=
-        Graph.Strategy.InterfaceReplacement.SupportAtom.piece object support
-      let family : Finset (ULift.{u} (Fin 2)) := Finset.univ
-      let coordinateSupport : ULift.{u} (Fin 2) →
-          Finset object.Vertex := fun _ => ∅
-      let attempt : Graph.AttemptedQuotient
-          (Coordinate := ULift.{u} (Fin 2))
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK)
-          object family coordinateSupport :=
-        { support := support
-          connected := corridor.prefixSupport_connectedOn right.1
-          carries := by
-            intro coordinate member vertex vertexMember
-            simp [coordinateSupport] at vertexMember
-          Label := ULift.{u + 1} Unit
-          Value := ULift.{u + 1} Unit
-          label := fun _ => ULift.up ()
-          value := fun _ _ => ULift.up ()
-          properRepresentative := by
-            intro _proper _reducing complete
-            exfalso
-            obtain ⟨outside, separates⟩ := failure.2
-            apply separates
-            exact (complete reduced full
-              (by intro coordinate member; rfl)).2 outside
-          closedRepresentative := by
-            intro _closed _reducing complete
-            exfalso
-            obtain ⟨outside, separates⟩ := failure.2
-            apply separates
-            exact (complete reduced full
-              (by intro coordinate member; rfl)).2 outside }
-      have reducing : ¬ Set.InjOn attempt.label ↑family := by
-        intro injective
-        have equal : ULift.up (0 : Fin 2) = ULift.up 1 :=
-          injective (by simp [family]) (by simp [family]) rfl
-        have downEqual : (0 : Fin 2) = 1 := congrArg ULift.down equal
-        omega
-      have identified : attempt.Identifies reduced full := by
-        intro coordinate member
-        rfl
-      exact .targetDefect family coordinateSupport attempt reducing
-        reduced full identified failure.2
+  unfold ColdFailureDefectRoutesStatement
+  intro _windows _component corridor _presentation _index _left _right failure
+    _Profile profile
+  exact Graph.ColdCorridor.Corridor.not_targetComplete_of_firstFailureDefect
+    (support := fun stage => corridor.prefixSupport stage.1)
+    (profile := profile) failure
 
 /-- **F2-free context equivalence.**  When (F2) is excluded on two prefixes
 with the same state, the two prefixes agree against every outside context. -/
@@ -116,9 +73,7 @@ theorem coldFailureCompression_of_uncompressible
     ColdFailureCompressionStatement data object := by
   intro windows component corridor presentation index support
   exact Graph.ColdCorridor.Corridor.FirstFailureCompression.not_occurs
-    (fun support compressible => uncompressible support
-      (Graph.Strategy.InterfaceReplacement.replacementSupportOfCompressibleSupport
-        _ _ _ _ compressible))
+    (fun support compressible => uncompressible support compressible)
 
 /-- **(F4) transfers to the handoff support.**  A corridor that first enters a
 declared handoff support has its head in that support. -/
@@ -128,18 +83,16 @@ theorem coldFailureHandoff_holds (object : Graph.FiniteObject.{u}) :
   exact Graph.ColdCorridor.Corridor.handoff_mem failure
 
 /-- **The ordered first failure.**  On the retained cold corridor state, with
-the declared (empty) handoff ledger, every eligible half-edge has a first event
+the declared handoff registry `ColdDeclaredHandoffSupport`, every eligible half-edge has a first event
 in the ordered (F1)--(F5) list: the germ event of the state witnesses that the
 set of failing segments is nonempty, and its minimum is the first failure. -/
 theorem coldFirstFailureOccurrence_of_state
     (data : Parameters) (object : Graph.FiniteObject.{u})
-    (state : ColdCorridorStateStatement data object)
-    (handoffLedger : ColdDeclaredHandoffLedgerStatement data object) :
+    (state : ColdCorridorStateStatement data object) :
     ColdFirstFailureOccurrenceStatement data object := by
   classical
   letI : FinEnum object.Vertex := object.vertices
-  obtain ⟨Handoff, handoffAbsent⟩ := handoffLedger
-  refine ⟨⟨Handoff, handoffAbsent, state, ?_⟩⟩
+  refine ⟨⟨state, ?_⟩⟩
   intro Eligible incidence stateOne componentAt stateTwo corridorAt stateTail
     presentationAt indexAt epsilon
   let indexTail := Classical.choose_spec stateTail
@@ -168,7 +121,8 @@ theorem coldFirstFailureOccurrence_of_state
         (fun stage => corridor.prefixSupport stage.1),
       failure.stage = segment
   let handoffAt : corridor.Segment → Prop := fun segment =>
-    Graph.ColdCorridor.Corridor.FirstFailureHandoff corridor Handoff segment
+    Graph.ColdCorridor.Corridor.FirstFailureHandoff corridor
+      (ColdDeclaredHandoffSupport data object) segment
   let germAt : corridor.Segment → Prop := fun segment =>
     (corridor.TerminalCorridor data.coldSignature ∧
       germ.support = corridor.prefixSupport corridor.statesRead ∧
@@ -195,7 +149,7 @@ theorem coldFirstFailureOccurrence_of_state
       segment = right
   let failureAt : corridor.Segment → Prop := fun segment =>
     ColdFirstFailureEvent data object corridor presentation index germ
-      Handoff segment
+      (ColdDeclaredHandoffSupport data object) segment
   change ∃ first : corridor.Segment,
     failureAt first ∧
       ∀ earlier : corridor.Segment, earlier.1 < first.1 →
@@ -232,22 +186,39 @@ theorem coldFirstFailureOccurrence_of_state
   have firstLeEarlier := Finset.min'_le failures earlier earlierMember
   exact (Nat.not_lt_of_ge firstLeEarlier) earlierBefore
 
-/-- **(F5) is the only surviving first failure.**  On the sparse-exit survivor,
-(F1) and (F3) never occur, an (F2) pair would be a sparse exit, and every (F4)
-support is absent from the declared handoff ledger; so every first failure is
-the terminal/least-repeat germ. -/
+/-- **`lem:cold-corridor-first-failure` (ii), the paper's claim** (tex
+7265-7270): on the surviving cold branch an (F2) first failure does not occur,
+because the (F2) pair is a target-defective quotient, i.e. a sparse surplus
+exit, excluded by `K .sparseSurplusSurvivor`.  Recorded as a paper error: the
+(F2) pair compares two corridor prefixes through their cut-state interface, not
+two declared coordinates of G's sparse family, so it is not a sparse exit of
+`def:named-surplus-exits` and the survivor fact does not refute it
+(`lean-vs-paper-discrepancies.md#paper-errors`). -/
+theorem coldFailureDefect_excluded (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (_survivor : DeclaredSparseSurvivor data object)
+    {windows component : Finset object.Vertex}
+    (corridor : Graph.ColdCorridor.Corridor object windows component)
+    (presentation : Graph.ColdCorridor.Presentation data.coldSignature object)
+    (index : corridor.Segment → presentation.Segment)
+    (segment : corridor.Segment) :
+    ¬ ColdFirstFailureDefectAt data object corridor presentation index segment := by
+  -- PAPER-ERROR [153] tex:7268 — see lean-vs-paper-discrepancies.md#paper-errors
+  sorry
+
+/-- **`lem:cold-corridor-first-failure`, the routing** (tex 7234-7295): (F1)
+is a target cycle and (F3) a target-complete compression, both excluded by the
+ledger; (F2) is a sparse exit excluded by the node-`[125]` survivor; every
+other first failure is routed as the lemma states -- (F5) a cold bounded
+configuration or (F4) an already named Type B or route-8 handoff of the
+declared registry. -/
 theorem coldFailureRouting_of_failures
     (data : Parameters) (object : Graph.FiniteObject.{u})
     (occurrence : ColdFirstFailureOccurrenceStatement data object)
     (failureCycle : ColdFailureCycleStatement data object)
-    (failureDefectRoute : ColdFailureDefectRoutesStatement data object)
     (failureCompression : ColdFailureCompressionStatement data object)
-    (failureHandoff : ColdFailureHandoffStatement object)
-    (sparseSurvivor : Graph.SurvivesSparseExits
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object) :
+    (survivor : DeclaredSparseSurvivor data object) :
     ColdFailureRoutingStatement data object := by
-  refine ⟨sparseSurvivor, ?_⟩
   let occurrenceData := Classical.choice occurrence
   refine ⟨⟨occurrenceData, ?_⟩⟩
   intro epsilon
@@ -258,17 +229,12 @@ theorem coldFailureRouting_of_failures
         (Classical.choose_spec
           (Classical.choose_spec cycle).2).2).elim
   | defect defect =>
-      exact (sparseSurvivor
-        (failureDefectRoute _ _ _ _ _ (Classical.choose defect) first
-          (Classical.choose_spec defect).2)).elim
+      exact (coldFailureDefect_excluded data object survivor _ _ _ _ defect).elim
   | compression compression =>
       exact (failureCompression _ _ _ _ _ _
         ⟨Classical.choose compression⟩).elim
-  | handoff handoff =>
-      obtain ⟨support, supportHandoff, _⟩ :=
-        failureHandoff _ _ _ _ _ handoff
-      exact (occurrenceData.handoffAbsent support supportHandoff).elim
-  | germ germ => exact ⟨⟨first, germ, minimal⟩⟩
+  | handoff handoff => exact Or.inr ⟨first, handoff, minimal⟩
+  | germ germ => exact Or.inl ⟨⟨first, germ, minimal⟩⟩
 
 /-- **The first-failure exchange is bounded by `M_cold`.** -/
 theorem coldExchangeBound_of_routing

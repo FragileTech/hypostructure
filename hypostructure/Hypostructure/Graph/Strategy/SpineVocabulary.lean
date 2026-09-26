@@ -864,11 +864,6 @@ inductive Key where
   /-- Node `[109]` on the node-`[94]` lane, with the original silent support
   and receiver still identified after exit `(7)` also fails. -/
   | typeASilentExitSevenFree
-  /-- The incoming support registry read by
-  `def:cold-corridor-first-failure` (F4).  It records exactly the declared
-  Type-B envelope cores and route-8 response supports of the current object;
-  the cold occurrence owner queries this key instead of rediscovering them. -/
-  | coldDeclaredHandoffLedger
   | coldFailureCycle
   | coldFailureDefect
   /-- The concrete sparse-exit half of (F2), cached separately so the
@@ -1531,6 +1526,11 @@ inductive Key where
   sparse-exit arm is impossible, so the same current object is entered directly
   in the Type B fan ledger. -/
   | typeBHandoff
+  /-- Node `[144]`, the exact complement of the same-token handoff. -/
+  | typeBHandoffFails
+  /-- Node `[144a]`, the residual of the paper error at `[144]`: the
+  unresolved same-label pattern pair. -/
+  | sameTokenPatternUnresolved
   /-- Node `[144]`, `cor:homogeneous-same-token-caps-close` at the counted
   `L_geom` and the ledger's own token supply: every token load is at most
   `M₀ = Cap_hom(L_geom)`, hence `|Π_blk| ≤ M₀|𝔗_cap|`,
@@ -1754,8 +1754,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       ColdGermDistinguishedStatement data.toParameters object
   | .coldGermSilent, object =>
       ColdGermSilentStatement data.toParameters object
-  | .coldDeclaredHandoffLedger, object =>
-      ColdDeclaredHandoffLedgerStatement data.toParameters object
   | .coldFailureCycle, object =>
       -- `lem:cold-corridor-first-failure` (i).  The displayed completion of
       -- clause (F1) -- the window position the entry stub lands on, the stub,
@@ -2355,6 +2353,10 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- The direct Type B handoff on the survivor branch, with exactly the
       -- core/envelope clauses proved at `[144]` and no imported Type-A state.
       SameTokenTypeBHandoffStatement data.toParameters object
+  | .typeBHandoffFails, object =>
+      TypeBHandoffFailsStatement data.toParameters object
+  | .sameTokenPatternUnresolved, object =>
+      SameTokenPatternPairUnresolvedStatement data.toParameters object
   | .homogeneousBottleneck, object =>
       HomogeneousBottleneckStatement data.toParameters object
   | .sparseSurplusSurvivor, object =>
@@ -2551,7 +2553,6 @@ def label : Key → String
   | .typeBDecoratedAssignedSupport => "typeBDecoratedAssignedSupport"
   | .typeAExitSevenFree => "typeAExitSevenFree"
   | .typeASilentExitSevenFree => "typeASilentExitSevenFree"
-  | .coldDeclaredHandoffLedger => "coldDeclaredHandoffLedger"
   | .coldFailureCycle => "coldFailureCycle"
   | .coldFailureDefect => "coldFailureDefect"
   | .coldFailureDefectRoute => "coldFailureDefectRoute"
@@ -2718,6 +2719,8 @@ def label : Key → String
   | .homogeneousBottleneckPattern => "homogeneousBottleneckPattern"
   | .bottleneckRouting => "bottleneckRouting"
   | .typeBHandoff => "typeBHandoff"
+  | .typeBHandoffFails => "typeBHandoffFails"
+  | .sameTokenPatternUnresolved => "sameTokenPatternUnresolved"
   | .homogeneousBottleneck => "homogeneousBottleneck"
   | .sparseSurplusSurvivor => "sparseSurplusSurvivor"
   | .activeSurplusDemands => "activeSurplusDemands"
@@ -3075,6 +3078,8 @@ example : label .homogeneousCapsFail = "homogeneousCapsFail" := rfl
 example : label .homogeneousBottleneckPattern = "homogeneousBottleneckPattern" := rfl
 example : label .bottleneckRouting = "bottleneckRouting" := rfl
 example : label .typeBHandoff = "typeBHandoff" := rfl
+example : label .typeBHandoffFails = "typeBHandoffFails" := rfl
+example : label .sameTokenPatternUnresolved = "sameTokenPatternUnresolved" := rfl
 example : label .homogeneousBottleneck = "homogeneousBottleneck" := rfl
 example : label .sparseSurplusSurvivor = "sparseSurplusSurvivor" := rfl
 example : label .activeSurplusDemands = "activeSurplusDemands" := rfl
@@ -3282,7 +3287,6 @@ def idx : Key → Nat
   | .typeAExitSevenHandoff => 124
   | .typeBDecoratedAssignedSupport => 220
   | .typeAExitSevenFree => 125
-  | .coldDeclaredHandoffLedger => 407
   | .coldFailureCycle => 64
   | .coldFailureDefect => 65
   | .coldFailureDefectRoute => 422
@@ -3419,6 +3423,8 @@ def idx : Key → Nat
   | .homogeneousBottleneckPattern => 141
   | .bottleneckRouting => 142
   | .typeBHandoff => 184
+  | .typeBHandoffFails => 1801
+  | .sameTokenPatternUnresolved => 1802
   | .homogeneousBottleneck => 118
   | .sparseSurplusSurvivor => 119
   | .activeSurplusDemands => 120
@@ -3613,7 +3619,6 @@ def ofIdx : Nat → Key
   | 61 => .typeAExitTwoFree
   | 62 => .typeAExitThreeCollision
   | 63 => .typeAExitThreeFree
-  | 407 => .coldDeclaredHandoffLedger
   | 64 => .coldFailureCycle
   | 65 => .coldFailureDefect
   | 422 => .coldFailureDefectRoute
@@ -3729,6 +3734,8 @@ def ofIdx : Nat → Key
   | 141 => .homogeneousBottleneckPattern
   | 142 => .bottleneckRouting
   | 184 => .typeBHandoff
+  | 1801 => .typeBHandoffFails
+  | 1802 => .sameTokenPatternUnresolved
   | 118 => .homogeneousBottleneck
   | 119 => .sparseSurplusSurvivor
   | 120 => .activeSurplusDemands
@@ -4162,9 +4169,6 @@ def name : Key → Lean.Name
   | .typeASilentExitSevenFree =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "typeASilentExitSevenFree") 511
-  | .coldDeclaredHandoffLedger =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine
-        "coldDeclaredHandoffLedger") 407
   | .coldFailureCycle =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldFailureCycle") 64
   | .coldFailureDefect =>
@@ -4501,6 +4505,11 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "bottleneckRouting") 142
   | .typeBHandoff =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeBHandoff") 184
+  | .typeBHandoffFails =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeBHandoffFails") 1801
+  | .sameTokenPatternUnresolved =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "sameTokenPatternUnresolved") 1802
   | .homogeneousBottleneck =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "homogeneousBottleneck") 118

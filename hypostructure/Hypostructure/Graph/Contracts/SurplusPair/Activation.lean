@@ -79,15 +79,15 @@ theorem sparsePortActivation_of_selection
           (shoulders right |>.2 (Or.inr rfl)) adjacent⟩
 
 /-- Node `[125]`, `def:active-surplus-demands` with
-`lem:surviving-active-family`: at the cubic baseline, a survivor of the sparse
-exits with the extracted and activated excess ports has its active family. -/
+`lem:surviving-active-family`: at the cubic baseline, the extracted and
+activated excess ports carry the canonical port data of every active demand.
+Exit-freeness is the separate node-`[125]` survivor fact. -/
 theorem activeSurplusDemands_of_activation
     (cubic : data.threshold = 3)
-    (survivor : SparseSurplusSurvivorStatement data object)
     (family : ActiveSurplusFamilyStatement data object)
     (activation : SparsePortActivationStatement data object) :
     ActiveSurplusDemandsStatement data object :=
-  Graph.surviving_active_family survivor family.1
+  Graph.surviving_active_family family.1
     (by
       classical
       intro pair member

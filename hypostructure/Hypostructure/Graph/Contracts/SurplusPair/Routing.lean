@@ -3,7 +3,6 @@ import Hypostructure.Graph.NamedSurplusExits
 import Hypostructure.Graph.SparsePressureLedger
 import Hypostructure.Graph.GluedCrossingCycle
 import Hypostructure.Graph.SameTokenRoutingArms
-import Hypostructure.Graph.QuadrilateralAttemptedQuotient
 
 /-!
 # Contract lemma: `lem:same-token-bottleneck-routing` (node `[144]`)
@@ -20,6 +19,7 @@ open Hypostructure.Graph.Strategy.Spine
 
 universe u
 
+set_option maxHeartbeats 4000000 in
 /-- `lem:same-token-bottleneck-routing` at the object: from the homogeneous
 bottleneck pattern of its canonical capacity presentation, the active family,
 the cubic baseline, the capacity-token ledger, `lem:bridgeless` and the
@@ -37,11 +37,13 @@ theorem sameTokenBottleneckRouting_of_pattern
     (objectBaseline : Graph.MinimumDegreeAtLeast data.threshold object)
     (threeLe : 3 ≤ data.threshold)
     (quadrilateralAccepted : data.LengthOK 4)
-    (degenerateClosureRejected : ¬ data.LengthOK 2) :
+    (degenerateClosureRejected : ¬ data.LengthOK 2)
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (survivor : DeclaredSparseSurvivor data object) :
     BottleneckRoutingStatement data object ∧
-      (Graph.SparseSurplusExit (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object ∨
-        SameTokenTypeBHandoffStatement data object) := by
+      (DeclaredSparseSurplusExit data object ∨
+        SameTokenTypeBHandoffStatement data object ∨
+        SameTokenPatternPairUnresolvedStatement data object) := by
   classical
   obtain ⟨patternActive, capacity, activationEq, concretePattern⟩ :=
     patternFact
@@ -49,19 +51,17 @@ theorem sameTokenBottleneckRouting_of_pattern
   subst patternActive
   have activationFacts := active.activated
   have cubic := cubicFact.1
-  have survivor := active.survives
   obtain ⟨_ledgerActive, _ledgerCapacity, _ledgerActivationEq,
       _primitiveCarrierCard, _primitiveCarrierBound,
       _concreteCapacityLedger, objectConnected⟩ := capacityLedger
   refine (fun (outcome :
-      Graph.SparseSurplusExit (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK
-          object ∨
+      DeclaredSparseSurplusExit data object ∨
         (SameTokenTypeBHandoffEnvelopeStatement data object ∧
-          SameTokenTypeBHandoffStatement data object)) =>
+          SameTokenTypeBHandoffStatement data object) ∨
+        SameTokenPatternPairUnresolvedStatement data object) =>
     ⟨⟨active, capacity, activationEq, concretePattern,
-        Or.imp_right And.left outcome⟩,
-      Or.imp_right And.right outcome⟩) ?_
+        Or.imp_right (Or.imp_left And.left) outcome⟩,
+      Or.imp_right (Or.imp_left And.right) outcome⟩) ?_
   let activation := capacity.activation
   letI : FinEnum object.Vertex := object.vertices
   letI : DecidableRel object.graph.Adj := object.decideAdj
@@ -82,8 +82,6 @@ theorem sameTokenBottleneckRouting_of_pattern
   -- directly from a hypothesis or the capacity presentation
   -- sealed in the homogeneous-pattern entry.
   have noSparseExit := survivor
-  have avoids : ¬ Graph.HasCycleWithLength data.LengthOK object :=
-    fun cycle => noSparseExit (.dyadic cycle)
   have packingValid := capacity.packingValid
   have packingMaximal := capacity.packingMaximal
   obtain ⟨certified, token, role, tokenMem, _positiveCoupledExcess,
@@ -315,45 +313,6 @@ theorem sameTokenBottleneckRouting_of_pattern
         exact card
       · exact absurd (pairFacts.1 (Finset.mem_toList.mp (List.get_mem _ _))) hu
 
-  -- Route one actual declared identification by the framework theorem
-  -- implementing `def:admissible-rank-quotient`.  The first arm is
-  -- excluded by the registered common boundary-degree fibre; the
-  -- remaining three arms are exactly sparse exits (b)--(d).  No case
-  -- of `AttemptedQuotient.route` is reproved here.
-  have routeAttemptedIdentification
-      {family : Finset (Graph.FiniteObject.PairCoordinate object)}
-      {coordinateSupport :
-        Graph.FiniteObject.PairCoordinate object →
-          Finset object.Vertex}
-      (attempt : Graph.AttemptedQuotient
-        (Graph.MinimumDegreeAtLeast data.threshold)
-        (Graph.HasCycleWithLength data.LengthOK)
-        object family coordinateSupport)
-      (reducing : ¬ Set.InjOn attempt.label ↑family)
-      (sameFibre : ∀ left right,
-        attempt.Identifies left right →
-          left.boundaryDegreeProfile =
-            right.boundaryDegreeProfile) :
-      Graph.SparseSurplusExit
-        (Graph.MinimumDegreeAtLeast data.threshold)
-        (Graph.HasCycleWithLength data.LengthOK)
-        data.LengthOK object := by
-    rcases attempt.route reducing with
-      profiles | defect | replacement |
-        ⟨representative, smaller, baseline, transfer⟩
-    · obtain ⟨leftPiece, rightPiece, identified, different⟩ :=
-        profiles
-      exact False.elim
-        (different (sameFibre leftPiece rightPiece identified))
-    · obtain ⟨leftPiece, rightPiece, identified, targetDefect⟩ :=
-        defect
-      exact .targetDefect (family := family)
-        (coordinateSupport := coordinateSupport) (attempt := attempt)
-        (reducing := reducing) leftPiece rightPiece identified
-        targetDefect
-    · exact .compression attempt.support replacement
-    · exact .delocalization representative smaller baseline transfer
-
   -- Every recorded type-(e) obstruction already carries the exact
   -- failed-response quotient obtained at `[132]`.  Read that retained
   -- obstruction from the activation instead of constructing another
@@ -365,10 +324,7 @@ theorem sameTokenBottleneckRouting_of_pattern
       (coordinate : Graph.FiniteObject.PairCoordinate object)
       (obstructs : coordinate ∈
         capacity.activation.responseObstructions pair) :
-      Graph.SparseSurplusExit
-        (Graph.MinimumDegreeAtLeast data.threshold)
-        (Graph.HasCycleWithLength data.LengthOK)
-        data.LengthOK object := by
+      DeclaredSparseSurplusExit data object := by
     have recordedObstructs : coordinate ∈
         ((Graph.recordSparsePairDEBlockers
           (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
@@ -388,20 +344,18 @@ theorem sameTokenBottleneckRouting_of_pattern
       split at recordedObstructs
       next present => exact present
       next absent => simp at recordedObstructs
-    obtain ⟨attempt, _functional, reducing, _determination,
+    obtain ⟨attempt, _functional, _reducing, determiners, coordinateMem,
+        determinersSubset, _outside, _determines, _minimal,
         defect | replacement⟩ := obstruction
-    · obtain ⟨leftPiece, rightPiece, identified,
-        targetDefect⟩ := defect
-      let family := (Graph.pairResponseActivation active).pairFamily
-        (object.portPairSchedule data.threshold)
-      let coordinateSupport : object.PairCoordinate →
-          Finset object.Vertex := by
-        letI := object.vertices.decEq
-        exact Graph.DeclaredSignature.Coordinate.support
-      exact .targetDefect (family := family)
-        (coordinateSupport := coordinateSupport) (attempt := attempt)
-        (reducing := reducing) leftPiece rightPiece identified
-        targetDefect
+    · -- Clause (e) is a target-defective identification among G's own pair
+      -- coordinates `r_π ∪ determiners`: sparse exit (b) of G's declared
+      -- family.
+      classical
+      refine declaredSparseSurplusExit_of_pairDefect data object active ?_ defect
+      intro member memberIn
+      rcases Finset.mem_insert.mp memberIn with rfl | inDeterminers
+      · exact coordinateMem
+      · exact determinersSubset inDeterminers
     · exact .compression attempt.support replacement
 
   -- If type (e) is the canonical role, canonical-blocker membership
@@ -411,10 +365,7 @@ theorem sameTokenBottleneckRouting_of_pattern
       (assigned : capacity.role pair = role)
       (targetRole : role.blocker =
         Graph.SameTokenBlockerRoles.BlockerKind.targetResponse) :
-      Graph.SparseSurplusExit
-        (Graph.MinimumDegreeAtLeast data.threshold)
-        (Graph.HasCycleWithLength data.LengthOK)
-        data.LengthOK object := by
+      DeclaredSparseSurplusExit data object := by
     have canonicalKind :
         ((Graph.FiniteObject.canonicalBlocker capacity.activation pair).map
             Graph.FiniteObject.Blocker.kind).getD
@@ -448,12 +399,10 @@ theorem sameTokenBottleneckRouting_of_pattern
             exact responseObstructionRoutes pair coordinate obstructs
 
   have routedOutcome :
-      Graph.SparseSurplusExit
-            (Graph.MinimumDegreeAtLeast data.threshold)
-            (Graph.HasCycleWithLength data.LengthOK) data.LengthOK
-            object ∨
+      DeclaredSparseSurplusExit data object ∨
         (SameTokenTypeBHandoffEnvelopeStatement data object ∧
-          SameTokenTypeBHandoffStatement data object) := by
+          SameTokenTypeBHandoffStatement data object) ∨
+        SameTokenPatternPairUnresolvedStatement data object := by
     obtain ⟨pattern, patternSubset, patternShape, large, configurations,
         pairs, first, second, different, left, right, leftMem, rightMem,
         demandsDifferent, routingLabelsEqual⟩ :
@@ -873,57 +822,80 @@ theorem sameTokenBottleneckRouting_of_pattern
       simp only [firstResponseCoordinate, secondResponseCoordinate,
         Graph.FiniteObject.DemandActivation.pairCoordinate] at equal
       exact Graph.DeclaredSignature.Coordinate.base.inj equal |>.2.1
-    -- The support-dependence paragraph, used verbatim by the
-    -- parallel and cubic-switch cases: on any connected support
-    -- carrying both declared response coordinates, a recorded
-    -- type-(e) obstruction or the type-(e) role routes directly, and
-    -- otherwise the profile-recording attempted identification of
-    -- the two distinct coordinates is rank reducing, so
-    -- `AttemptedQuotient.route` returns a sparse exit.
+    -- The support-dependence paragraph of `lem:same-token-bottleneck-routing`
+    -- (tex 5585-5600), used verbatim by the parallel and cubic-switch cases:
+    -- on any connected support carrying both declared response coordinates,
+    -- a recorded type-(e) obstruction or the type-(e) role routes directly.
+    -- Otherwise the two coordinates are read on G's own piece at their
+    -- canonical support: a separating context with equal profiles is sparse
+    -- exit (b).  The paper claims the two remaining cases (different fibres,
+    -- tex 5589; target-complete readings, tex 5594) are sparse exits; that
+    -- claim is a paper error (`lean-vs-paper-discrepancies.md#paper-errors`),
+    -- and the unresolved pair is carried by the open leaf `[144a]`.
     have supportRoutes :
         ∀ support : Finset object.Vertex,
           Graph.SupportComponents.Connected.ConnectedOn object support →
           (∀ coordinate ∈ responseFamily,
             responseCoordinateSupport coordinate ⊆ support) →
-          Graph.SparseSurplusExit
-            (Graph.MinimumDegreeAtLeast data.threshold)
-            (Graph.HasCycleWithLength data.LengthOK)
-            data.LengthOK object := by
+          DeclaredSparseSurplusExit data object ∨
+            SameTokenPatternPairUnresolvedStatement data object := by
       intro support supportConnected supportCarries
       have supportDependenceExit :
-          Graph.SparseSurplusExit
-            (Graph.MinimumDegreeAtLeast data.threshold)
-            (Graph.HasCycleWithLength data.LengthOK)
-            data.LengthOK object := by
-        obtain ⟨attempt, _supportEq, identifiesCoordinates,
-            sameFibre⟩ :=
-          Graph.AttemptedQuotient.exists_profileQuotient_of_avoids
-            (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-            quadrilateralAccepted avoids support
-            supportConnected supportCarries
-            firstResponseCoordinate firstResponseCoordinate
-            secondResponseCoordinate (by simp [responseFamily])
-        have reducing :
-            ¬ Set.InjOn attempt.label ↑responseFamily := by
-          intro injective
-          apply responseCoordinatesDifferent
-          apply injective
-          · simp [responseFamily]
-          · simp [responseFamily]
-          · exact identifiesCoordinates
-        exact routeAttemptedIdentification attempt reducing sameFibre
+          DeclaredSparseSurplusExit data object ∨
+            SameTokenPatternPairUnresolvedStatement data object := by
+        have seedInside :
+            responseCoordinateSupport firstResponseCoordinate ∪
+                responseCoordinateSupport secondResponseCoordinate ⊆ support := by
+          intro vertex member
+          rcases Finset.mem_union.1 member with inFirst | inSecond
+          · exact supportCarries firstResponseCoordinate
+              (Finset.mem_insert_self _ _) inFirst
+          · exact supportCarries secondResponseCoordinate
+              (Finset.mem_insert_of_mem (Finset.mem_singleton_self _)) inSecond
+        obtain ⟨canonical, selected⟩ := Option.isSome_iff_exists.mp
+          (Graph.CanonicalSupport.select?_isSome ⟨support,
+            Graph.CanonicalSupport.mem_candidates_iff.2
+              ⟨seedInside, supportConnected⟩⟩)
+        let firstReading :=
+          Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
+            canonical (responseCoordinateSupport firstResponseCoordinate)
+        let secondReading :=
+          Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
+            canonical (responseCoordinateSupport secondResponseCoordinate)
+        by_cases profileEq :
+            firstReading.boundaryDegreeProfile = secondReading.boundaryDegreeProfile
+        · by_cases equivalent : Graph.Response.ContextEquivalent
+              (Graph.HasCycleWithLength data.LengthOK) firstReading secondReading
+          · exact Or.inr ⟨active, firstResponseCoordinate, firstResponseInBaseFamily,
+              secondResponseCoordinate, secondResponseInBaseFamily,
+              responseCoordinatesDifferent, canonical, selected, Or.inr equivalent⟩
+          · apply Or.inl
+            refine declaredSparseSurplusExit_of_pairDefect data object active
+              responseFamily_subset_base ?_
+            refine ⟨firstResponseCoordinate, Finset.mem_insert_self _ _,
+              secondResponseCoordinate,
+              Finset.mem_insert_of_mem (Finset.mem_singleton_self _),
+              responseCoordinatesDifferent, canonical,
+              (by convert selected using 4), profileEq,
+              ?_, Graph.Response.targetDefect_of_not_contextEquivalent equivalent⟩
+            exact iff_of_false
+              (Graph.not_target_retainedGlue avoids canonical _)
+              (Graph.not_target_retainedGlue avoids canonical _)
+        · exact Or.inr ⟨active, firstResponseCoordinate, firstResponseInBaseFamily,
+            secondResponseCoordinate, secondResponseInBaseFamily,
+            responseCoordinatesDifferent, canonical, selected, Or.inl profileEq⟩
       by_cases firstResponded : ∃ coordinate, coordinate ∈
           capacity.activation.responseObstructions first.1
       · obtain ⟨coordinate, obstructs⟩ := firstResponded
-        exact responseObstructionRoutes first.1 coordinate obstructs
+        exact Or.inl (responseObstructionRoutes first.1 coordinate obstructs)
       · by_cases secondResponded : ∃ coordinate, coordinate ∈
             capacity.activation.responseObstructions second.1
         · obtain ⟨coordinate, obstructs⟩ := secondResponded
-          exact responseObstructionRoutes second.1 coordinate obstructs
+          exact Or.inl (responseObstructionRoutes second.1 coordinate obstructs)
         · by_cases targetRole : role.blocker =
               Graph.SameTokenBlockerRoles.BlockerKind.targetResponse
-          · exact targetResponseRoleRoutes first.1 firstAssignedRole
-              targetRole
+          · exact Or.inl (targetResponseRoleRoutes first.1 firstAssignedRole
+              targetRole)
           · exact supportDependenceExit
     let commonSelectedSupport : Finset object.Vertex :=
       capacity.activation.localBuffer left ∪
@@ -1050,10 +1022,8 @@ theorem sameTokenBottleneckRouting_of_pattern
           routingLabel first.1 (pairs first.1 firstPattern) left =
               routingLabel second.1
                 (pairs second.1 secondPattern) right →
-          Graph.SparseSurplusExit
-            (Graph.MinimumDegreeAtLeast data.threshold)
-            (Graph.HasCycleWithLength data.LengthOK)
-            data.LengthOK object := by
+          DeclaredSparseSurplusExit data object ∨
+            SameTokenPatternPairUnresolvedStatement data object := by
       intro _parallel connected _firstCarried _secondCarried
         _different _declared _base _profile _label
       exact supportRoutes parallelSupport connected (by
@@ -1065,12 +1035,12 @@ theorem sameTokenBottleneckRouting_of_pattern
         · exact secondResponseCarriedByParallelSupport)
     rcases routingDichotomy with parallel |
         ⟨separator, separatesAt⟩
-    · exact Or.inl (parallelRoutes parallel parallelSupportConnected
+    · exact (parallelRoutes parallel parallelSupportConnected
           firstResponseCarriedByParallelSupport
           secondResponseCarriedByParallelSupport
           responseCoordinatesDifferent responseFamily_subset_declared
           responseFamily_subset_base sameBoundedPortProfileData
-          routingLabelsEqual)
+          routingLabelsEqual).elim Or.inl (fun unresolved => Or.inr (Or.inr unresolved))
     · exact by
         obtain ⟨common, nextLeft, nextRight, tailLeft, tailRight,
             leftDecomposition, rightDecomposition, nextDifferent⟩ :=
@@ -1345,19 +1315,15 @@ theorem sameTokenBottleneckRouting_of_pattern
                 routingLabel second.1
                   (pairs second.1 secondPattern) right →
               firstResponseCoordinate ≠ secondResponseCoordinate →
-              Graph.SparseSurplusExit
-                (Graph.MinimumDegreeAtLeast data.threshold)
-                (Graph.HasCycleWithLength data.LengthOK)
-                data.LengthOK object := by
+              DeclaredSparseSurplusExit data object ∨
+                SameTokenPatternPairUnresolvedStatement data object := by
           intros
           exact supportRoutes switchSupport switchConnected
             switchCarriesResponseFamily
         have cubicSeparatorRoutes :
             object.degree separator = data.threshold →
-              Graph.SparseSurplusExit
-                (Graph.MinimumDegreeAtLeast data.threshold)
-                (Graph.HasCycleWithLength data.LengthOK)
-                data.LengthOK object := by
+              DeclaredSparseSurplusExit data object ∨
+                SameTokenPatternPairUnresolvedStatement data object := by
           intro cubicDegree
           have cubicIncidencePackage :
               ∃ rootIncidence,
@@ -1387,10 +1353,12 @@ theorem sameTokenBottleneckRouting_of_pattern
             responseFamily_subset_declared responseFamily_subset_base
             sameBoundedPortProfileData routingLabelsEqual
             responseCoordinatesDifferent
+        by_cases cubicCase : object.degree separator = data.threshold
+        · rcases cubicSeparatorRoutes cubicCase with exitCase | unresolved
+          · exact (noSparseExit exitCase).elim
+          · exact Or.inr (Or.inr unresolved)
         have separatorNotCubic :
-            object.degree separator ≠ data.threshold := by
-          intro cubicDegree
-          exact noSparseExit (cubicSeparatorRoutes cubicDegree)
+            object.degree separator ≠ data.threshold := cubicCase
         have separatorHigh :
             handoffHighDegree data object separator := by
           exact lt_of_le_of_ne separatorMinimumDegree
@@ -1595,7 +1563,7 @@ theorem sameTokenBottleneckRouting_of_pattern
         have decorated : envelope.decorations.Nonempty := by
           simp [envelope,
             Graph.DecoratedHandoff.envelopeOfFirstSeparator]
-        exact Or.inr ⟨handoff_of_envelope core envelope envelopeCore
+        exact Or.inr (Or.inl ⟨handoff_of_envelope core envelope envelopeCore
             decorated, by
           obtain ⟨neighbour, adjacent, outside, notCentre, _location⟩ :=
             outsideSkeletonLocation
@@ -1643,12 +1611,13 @@ theorem sameTokenBottleneckRouting_of_pattern
             outside⟩
           rcases patternShape with matching | ⟨centre, star⟩
           · exact Or.inl ⟨pattern, patternSubset, matching, source⟩
-          · exact Or.inr ⟨centre, pattern, patternSubset, star, source⟩⟩
+          · exact Or.inr ⟨centre, pattern, patternSubset, star, source⟩⟩)
   exact routedOutcome
 
-/-- Node `[144]`, handoff arm: the active family carries the survival of the
-sparse exits, so `lem:same-token-bottleneck-routing` yields the decorated
-same-token Type B handoff. -/
+/-- Node `[144]`, handoff arm: on the node-`[125]` survivor of the sparse exits
+of G's declared family, `lem:same-token-bottleneck-routing` yields the
+decorated same-token Type B handoff, or the unresolved pattern pair that the
+paper error at `[144]` leaves to the open leaf `[144a]`. -/
 theorem sameTokenTypeBHandoff_of_pattern
     {data : Parameters} {object : Graph.FiniteObject.{u}}
     (patternFact : HomogeneousBottleneckPatternSchema data object)
@@ -1660,13 +1629,16 @@ theorem sameTokenTypeBHandoff_of_pattern
     (objectBaseline : Graph.MinimumDegreeAtLeast data.threshold object)
     (threeLe : 3 ≤ data.threshold)
     (quadrilateralAccepted : data.LengthOK 4)
-    (degenerateClosureRejected : ¬ data.LengthOK 2) :
+    (degenerateClosureRejected : ¬ data.LengthOK 2)
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (survivor : DeclaredSparseSurvivor data object) :
     BottleneckRoutingStatement data object ∧
-      SameTokenTypeBHandoffStatement data object := by
+      (SameTokenTypeBHandoffStatement data object ∨
+        SameTokenPatternPairUnresolvedStatement data object) := by
   obtain ⟨routing, outcome⟩ := sameTokenBottleneckRouting_of_pattern
     patternFact active cubicFact capacityLedger bridgeless
     highCentreNormalForm objectBaseline threeLe quadrilateralAccepted
-    degenerateClosureRejected
-  exact ⟨routing, outcome.resolve_left active.survives⟩
+    degenerateClosureRejected avoids survivor
+  exact ⟨routing, outcome.resolve_left survivor⟩
 
 end Hypostructure.Graph.Contracts.SurplusPair

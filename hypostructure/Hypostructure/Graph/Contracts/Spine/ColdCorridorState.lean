@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Statements.Spine
+import Hypostructure.Graph.Contracts.Spine.ColdSubcubicCharge
 import Hypostructure.Graph.ColdIncrementArithmetic
 import Hypostructure.Graph.ColdGermFamily
 import Hypostructure.Graph.ColdGermOverlap
@@ -575,7 +576,6 @@ theorem coldGermCandidates_of_routing (data : Parameters)
   let Selected := ColdSelectedHalfEdge data object
   change ColdFailureRoutingStatement data object at routing
   let classified := coldRoutedClassified data object routing
-  let classification := Classical.choose_spec routing.surviving.holds
   let state := classified.state
   change ColdCorridorStateStatement data object at state
   let outsideIncidence : Eligible →
@@ -761,10 +761,11 @@ theorem coldGermCandidates_of_routing (data : Parameters)
     extraction.2 Occurrence (Classical.decEq Occurrence) incidence candidates
       candidateFamily
   have failureClassified : ∀ epsilon : Eligible,
-      firstFailureGerm epsilon := by
-    intro epsilon
-    simpa only [firstFailureHandoff, firstFailureGerm] using
-      classification epsilon
+      (∀ vertex ∈ (corridorAt epsilon).prefixSupport (traceEnd epsilon),
+        object.degree vertex ≤ data.threshold) →
+      firstFailureGerm epsilon :=
+    fun epsilon subcubic =>
+      coldSubcubicFirstFailureGerm data object routing epsilon subcubic
   have noncandidateClassified : ∀ occurrence : Occurrence,
       occurrence ∉ candidates →
         ∃ charged root : object.Vertex,
@@ -786,7 +787,7 @@ theorem coldGermCandidates_of_routing (data : Parameters)
         · exfalso
           apply notCandidate
           exact Finset.mem_filter.2
-            ⟨Finset.mem_univ _, failureClassified epsilon, subcubic⟩
+            ⟨Finset.mem_univ _, failureClassified epsilon subcubic, subcubic⟩
         · obtain ⟨first, _bound, firstHigh, _earlier,
               root, adjacent, rootSubcubic, sourceReach⟩ := high
           exact ⟨(corridorAt epsilon).head first, root, firstHigh,

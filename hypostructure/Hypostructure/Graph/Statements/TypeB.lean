@@ -24,16 +24,13 @@ abbrev handoffUncompressible (data : Parameters)
         (Graph.MinimumDegreeAtLeast data.threshold)
         (Graph.HasCycleWithLength data.LengthOK) object support
 
-/-- Node `[14]` (`cor:uncompressible`, one-way `ReplacementSupport` form) gives
-the envelope's two-way reading: a target-complete compression is one instance
-of a replacement support. -/
+/-- Node `[14]` (`cor:uncompressible`) is literally the envelope's
+uncompressibility clause at every support. -/
 theorem handoffUncompressible_of_uncompressible {data : Parameters}
     {object : Graph.FiniteObject.{u}}
     (uncompressible : UncompressibleStatement data object) :
     ∀ support : Finset object.Vertex, handoffUncompressible data object support :=
-  fun support compressible => uncompressible support
-    (Graph.Strategy.InterfaceReplacement.replacementSupportOfCompressibleSupport
-      _ _ _ _ compressible)
+  fun support compressible => uncompressible support compressible
 
 /-- The counted core satisfies the paper's single compound core-safety clause:
 it is `P₁₃`-free and has no internal sub-support of minimum degree at least the
@@ -1038,7 +1035,7 @@ def TypeBSublinearHypotheses (data : Parameters)
               component
             object.NegativeNetCharge piece data.threshold data.dischargeScale ∧
               object.ambientSurplus piece data.threshold = 0 ∧
-              HandoffProduced data object packing piece)) ∧
+              SeparatorHandoffAt data object piece)) ∧
       ∃ centres : Finset object.Vertex,
         (∀ centre ∈ centres, data.threshold < object.degree centre) ∧
         ∃ fanEnvelope : object.Vertex → Finset object.Vertex,

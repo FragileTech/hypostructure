@@ -22,7 +22,7 @@ variable {data : Data.{u}}
 @[reducible] noncomputable def coldFirstFailureOccurrenceRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldFirstFailureOccurrence
-    { Requires := [K .coldCorridorState, K .coldDeclaredHandoffLedger]
+    { Requires := [K .coldCorridorState]
       Produces := [K .coldFirstFailureOccurrence]
       requiresUnique := by simp
       producesUnique := by simp
@@ -30,8 +30,7 @@ variable {data : Data.{u}}
     (fun inputs =>
       .cons (key := K .coldFirstFailureOccurrence)
         ⟨Contracts.Spine.coldFirstFailureOccurrence_of_state data.toParameters
-          inputs.current.object (inputs.get (K .coldCorridorState)).down
-          (inputs.get (K .coldDeclaredHandoffLedger)).down⟩
+          inputs.current.object (inputs.get (K .coldCorridorState)).down⟩
         .nil)
 
 
