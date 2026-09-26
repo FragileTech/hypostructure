@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.SpineRemainder
 
 /-! Independently compiled spine row declarations. -/
 
@@ -58,15 +59,10 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let object := inputs.current.object
-      let avoids := (inputs.get (K .selection)).down.1
       .cons (key := K .remainderNormalized)
-        (show Value BranchState Presentation presentation data
-            .remainderNormalized inputs.current from
-          ⟨fun _packing _valid maximal support inside =>
-            ⟨object.not_inducesWindow_of_subset_remainderSupport maximal inside,
-              object.not_baseline_induce_of_subset_remainderSupport
-                data.freeForcesTarget avoids maximal inside⟩⟩)
+        ⟨Contracts.Spine.remainderNormalized_of_selection data.toParameters
+          inputs.current.object data.freeForcesTarget
+          (inputs.get (K .selection)).down⟩
         .nil)
     0 0
 

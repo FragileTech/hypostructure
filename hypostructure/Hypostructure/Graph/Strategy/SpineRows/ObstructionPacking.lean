@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.SpineWindows
 
 /-! Independently compiled spine row declarations. -/
 
@@ -83,27 +84,9 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let object := inputs.current.object
-      let present := (inputs.get (K .windowPresent)).down
-      -- Node `[15]`'s no arm: the induced window is a vertex support.
-      let carried : ∃ support : Finset object.Vertex,
-          object.InducesWindow data.windowOrder support := by
-        by_contra empty
-        push Not at empty
-        exact Graph.FiniteObject.inducedPathFree_of_forall_not_inducesWindow
-          object empty present
-      let attaining := object.exists_windowPacking_card_eq data.windowOrder
       .cons (key := K .maximalPacking)
-        (show Value BranchState Presentation presentation data
-            .maximalPacking inputs.current from
-          ⟨by
-          obtain ⟨support, window⟩ := carried
-          obtain ⟨packing, valid, attains⟩ := attaining
-          exact ⟨object.windowPackingNumber_pos data.windowOrder_pos window,
-            packing, valid, attains,
-            fun other otherWindow =>
-              object.exists_mem_not_disjoint_of_card_eq data.windowOrder_pos
-                valid attains otherWindow⟩⟩)
+        ⟨Contracts.Spine.maximalPacking_of_windowPresent data.toParameters
+          inputs.current.object (inputs.get (K .windowPresent)).down⟩
         .nil)
     0 0
 

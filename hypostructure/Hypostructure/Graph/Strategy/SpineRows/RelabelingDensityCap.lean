@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineRows.Basic
+import Hypostructure.Graph.Contracts.Spine.SpineWindows
 
 /-! Independently compiled spine row declarations. -/
 
@@ -36,29 +37,8 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     (sourceFreeManifest (K .relabelingDensityCap))
     (fun inputs =>
       .cons (key := K .relabelingDensityCap)
-        (show Value BranchState Presentation presentation data
-            .relabelingDensityCap inputs.current from
-          ⟨fun packing _valid labels => by
-            dsimp only
-            intro State stateDecidable skeletons state stabilizerBound
-              closed invariant bounded
-            classical
-            letI : DecidableEq State := stateDecidable
-            have cap :=
-              Core.FiniteRelabelingOrbit.card_image_mul_card_group_le_card_mul_stabilizerBound
-                skeletons state stabilizerBound closed invariant bounded
-            rw [Graph.LabelledRelabeling.card_fixedSupportPermutations] at cap
-            have complementCard :
-                inputs.current.object.vertexCount -
-                    ((inputs.current.object.windowSupport packing).map
-                      labels.toEmbedding).card =
-                  (Finset.univ \ ((inputs.current.object.windowSupport packing).map
-                    labels.toEmbedding)).card := by
-              rw [Finset.card_sdiff, Finset.inter_univ, Finset.card_univ,
-                Finset.card_map]
-              simp only [Fintype.card_fin]
-            rw [complementCard] at cap
-            exact cap⟩)
+        ⟨Contracts.Spine.relabelingDensityCap_of_orbitCount data.toParameters
+          inputs.current.object⟩
         .nil)
     0 0
 

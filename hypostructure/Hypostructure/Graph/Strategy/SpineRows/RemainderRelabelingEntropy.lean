@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.SpineRemainder
 
 /-! Independently compiled spine row declarations. -/
 
@@ -38,32 +39,9 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let normalized := inputs.get (K .remainderNormalized)
       .cons (key := K .remainderRelabelingEntropy)
-        (show Value BranchState Presentation presentation data
-            .remainderRelabelingEntropy inputs.current from
-          ⟨fun packing valid maximal support inside => by
-            have windowFree : ∀ inner : Finset inputs.current.object.Vertex,
-                inner ⊆ support →
-                ¬ inputs.current.object.InducesWindow data.windowOrder inner := by
-              intro inner innerInside
-              exact (normalized.down packing valid maximal inner
-                (innerInside.trans inside)).1
-            have coreFree : ∀ inner : Finset inputs.current.object.Vertex,
-                inner ⊆ support →
-                ¬ Graph.MinimumDegreeAtLeast data.threshold
-                  (inputs.current.object.induce inner) := by
-              intro inner innerInside
-              exact (normalized.down packing valid maximal inner
-                (innerInside.trans inside)).2
-            have orbit :=
-              Graph.LabelledRelabeling.factorial_le_remainderStateCount_mul_stabilizer
-                inputs.current.object support data.windowOrder data.threshold
-                windowFree coreFree
-            dsimp only at orbit
-            rw [Graph.FiniteObject.positiveDeficiency_labelledInduce,
-              Graph.FiniteObject.card_edgeSet_labelledInduce] at orbit
-            exact orbit⟩)
+        ⟨Contracts.Spine.remainderRelabelingEntropy_of_normalized data.toParameters
+          inputs.current.object (inputs.get (K .remainderNormalized)).down⟩
         .nil)
     0 0
 

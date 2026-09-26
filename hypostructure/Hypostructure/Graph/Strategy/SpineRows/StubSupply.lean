@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.SpineRemainder
 
 /-! Independently compiled spine row declarations. -/
 
@@ -40,24 +41,11 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let baseline : ∀ vertex : inputs.current.object.Vertex,
-          data.threshold ≤ inputs.current.object.degree vertex :=
-        fun vertex => le_trans inputs.current.baseline
-          (inputs.current.object.minDegree_le_degree vertex)
-      let demand := (inputs.get (K .boundaryDemand)).down
-      let ceiling := (inputs.get (K .surplusAtOrBelow)).down
       .cons (key := K .stubSupply)
-        (show Value BranchState Presentation presentation data
-            .stubSupply inputs.current from
-          ⟨fun packing valid => by
-          have links := demand packing valid
-          have windowSurplus :=
-            inputs.current.object.ambientSurplus_le_degreeSurplus
-              (Graph.FiniteObject.windowSupport packing) data.threshold baseline
-          have globalSurplus :
-              inputs.current.object.degreeSurplus data.threshold ≤
-                data.surplusThreshold inputs.current.object.vertexCount := ceiling
-          omega⟩)
+        ⟨Contracts.Spine.stubSupply_of_boundaryDemand data.toParameters
+          inputs.current.object inputs.current.baseline
+          (inputs.get (K .boundaryDemand)).down
+          (inputs.get (K .surplusAtOrBelow)).down⟩
         .nil)
     0 0
 

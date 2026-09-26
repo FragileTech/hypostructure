@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.SpineWindows
 
 /-! Independently compiled spine row declarations. -/
 
@@ -52,38 +53,10 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .barrierCap)
-        (show Value BranchState Presentation presentation data
-            .barrierCap inputs.current from
-          ⟨by
-            let object := inputs.current.object
-            change 2 ^ (data.windowRate *
-                data.separatedScaleCount object.vertexCount *
-                (canonicalHotWindows data.toParameters object).card) ≤
-              Graph.skeletonBudget object
-            have split := (inputs.get (K .hotColdPartition)).down
-            have dominates := (inputs.get (K .skeletonDominates)).down
-            have package := (inputs.get (K .windowPackageSeparated)).down
-            obtain
-              ⟨_valid, _attains, _maximal, hotFacts, _coldIff, _disjoint, _cover⟩ :=
-                split
-            obtain ⟨_hotSubset, retained, _hotMaximal⟩ := hotFacts
-            obtain ⟨_packing, _packingValid, _packingCard, _packingMaximal,
-              _packageCard, _packagesDisjoint, _familyCard, rateLe, _⟩ := package
-            have exponentLe :
-                data.windowRate * data.separatedScaleCount object.vertexCount *
-                    (canonicalHotWindows data.toParameters object).card ≤
-                  windowPackageBits data.toParameters object *
-                    (canonicalHotWindows data.toParameters object).card :=
-              Nat.mul_le_mul_right _ rateLe
-            rcases retained with
-              ⟨State, stateOf, packageStates, _retainedCode⟩ |
-                ⟨hotEmpty, _emptyUnrealized⟩
-            · have realizedBound := dominates.2 State stateOf
-              exact (Nat.pow_le_pow_right (by norm_num) exponentLe).trans
-                (packageStates.trans realizedBound)
-            · rw [hotEmpty]
-              simp only [Finset.card_empty, Nat.mul_zero, pow_zero]
-              exact Graph.skeletonBudget_pos object⟩)
+        ⟨Contracts.Spine.barrierCap_of_hotColdPartition data.toParameters
+          inputs.current.object (inputs.get (K .hotColdPartition)).down
+          (inputs.get (K .skeletonDominates)).down
+          (inputs.get (K .windowPackageSeparated)).down⟩
         .nil)
     0 0
 

@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.SpineWindows
 
 /-! Independently compiled spine row declarations. -/
 
@@ -45,28 +46,9 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       requiresUnique := by simp
       producesUnique := by simp
       producesNonempty := by simp }
-    (fun inputs =>
+    (fun _inputs =>
       .cons (key := K .barrierEnumeration)
-        (show Value BranchState Presentation presentation data
-            .barrierEnumeration inputs.current from
-          ⟨by
-            change BarrierEnumerationStatement data.toParameters
-            let barrier := data.windowBarrier
-            letI := barrier.indexFintype
-            let row := data.curvatureBarrierRow
-            let left := barrier.table.counts.leftLength row
-            let right := barrier.table.counts.rightLength row
-            let safe := barrier.table.counts.storedSafe row
-            let flat := barrier.table.counts.storedFlat row
-            let curvaturePositive := safe - flat
-            refine ⟨safe, curvaturePositive, flat, rfl, rfl, rfl,
-              barrier.table.storedSafe_eq row, ?_,
-              barrier.table.storedFlat_eq row, rfl⟩
-            change barrier.table.counts.storedSafe row -
-                barrier.table.counts.storedFlat row =
-              barrier.profile.obstructedCount left right
-            rw [barrier.table.storedSafe_eq, barrier.table.storedFlat_eq]
-            rfl⟩)
+        ⟨Contracts.Spine.barrierEnumeration data.toParameters⟩
         .nil)
     0 0
 

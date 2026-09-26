@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.SpineRemainder
 
 /-! Independently compiled spine row declarations. -/
 
@@ -68,30 +69,10 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      -- The lemma proper, read at the remainder's regions.  The registered
-      -- baseline is the only hypothesis, and no packing enters the count.
-      let supply : ∀ packing : Finset (Finset inputs.current.object.Vertex),
-          inputs.current.object.IsWindowPacking data.windowOrder packing →
-          ∀ support : Finset inputs.current.object.Vertex,
-            support ⊆ inputs.current.object.remainderSupport packing →
-            data.threshold * support.card ≤
-              inputs.current.object.internalWedgeCount support +
-                2 * inputs.current.object.positiveDeficiency support
-                  data.threshold :=
-        fun _packing _valid support _inside =>
-          inputs.current.object.baseline_mul_card_le_internalWedgeCount_add_two_mul_positiveDeficiency
-            support data.threshold data.three_le_threshold
       .cons (key := K .wedgeSupply)
-        (show Value BranchState Presentation presentation data
-            .wedgeSupply inputs.current from
-          ⟨⟨supply, fun packing valid => by
-            have wedge :=
-              supply packing valid
-                (inputs.current.object.remainderSupport packing)
-                (Finset.Subset.refl _)
-            have ceiling :=
-              (inputs.get (K .stubSupply)).down packing valid
-            omega⟩⟩)
+        ⟨Contracts.Spine.wedgeSupply_of_stubSupply data.toParameters
+          inputs.current.object data.three_le_threshold
+          (inputs.get (K .stubSupply)).down⟩
         .nil)
     0 0
 

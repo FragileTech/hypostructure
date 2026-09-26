@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.SpineSelection
 
 /-! Independently compiled spine row declarations. -/
 
@@ -42,13 +43,10 @@ noncomputable def returnAvoidanceDichotomy
     `Hypostructure.Graph.Strategy.Spine.returnAvoidanceDichotomy
     (Classical.choice (show Nonempty
         ((K .mersenneReturn).At current ⊕ (K .returnAvoidance).At current) from by
-      by_cases exists' : ∃ dart : current.object.graph.Dart,
-          ¬ Disjoint (Graph.returnLengthSet current.object dart)
-            (Graph.shiftedAcceptedSet data.LengthOK)
+      by_cases exists' : MersenneReturnStatement data.toParameters current.object
       · exact ⟨.inl ⟨exists'⟩⟩
-      · exact ⟨.inr ⟨fun dart => by
-          by_contra meets
-          exact exists' ⟨dart, meets⟩⟩⟩))
+      · exact ⟨.inr ⟨Contracts.Spine.returnAvoidance_of_not_mersenneReturn
+          data.toParameters current.object exists'⟩⟩))
     returnFresh avoidanceFresh
 
 /-- **Node `[7]`: a Mersenne return is a power-of-two cycle.**
@@ -57,10 +55,8 @@ which the selection's avoidance denies. -/
 noncomputable instance instIncompatibleSelectionMersenneReturn :
     Incompatible (Input BranchState Presentation presentation data)
       (K .selection) (K .mersenneReturn) where
-  contradiction := fun input selection mersenne => by
-    obtain ⟨dart, meets⟩ := mersenne.down
-    exact meets
-      ((Graph.not_hasCycleWithLength_iff_returnLengthSets_disjoint data.LengthOK
-        input.object).mp selection.down.1 dart)
+  contradiction := fun input selection mersenne =>
+    Contracts.Spine.not_mersenneReturn_of_avoids data.toParameters input.object
+      selection.down.1 mersenne.down
 
 end Hypostructure.Graph.Strategy.Spine
