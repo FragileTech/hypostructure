@@ -123,7 +123,6 @@ import Hypostructure.Graph.Strategy.SpineRows.TypeAExitFourPeelingStep
 import Hypostructure.Graph.Strategy.SpineRows.TypeAExitFourRetestDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.TypeAExitOneDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.TypeAExitSevenDichotomy
-import Hypostructure.Graph.Strategy.SpineRows.TypeAExitSevenHandoff
 import Hypostructure.Graph.Strategy.SpineRows.TypeAExitSixDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.TypeAExitSixScopeDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.TypeAExitThreeDichotomy
@@ -132,14 +131,12 @@ import Hypostructure.Graph.Strategy.SpineRows.TypeAPortReturn
 import Hypostructure.Graph.Strategy.SpineRows.TypeAReceiverRouting
 import Hypostructure.Graph.Strategy.SpineRows.TypeASaturationDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.TypeASilentExitEntry
-import Hypostructure.Graph.Strategy.SpineRows.TypeASilentExitFiveDichotomy
-import Hypostructure.Graph.Strategy.SpineRows.TypeASilentExitFourTerminalDichotomy
+import Hypostructure.Graph.Strategy.SpineRows.TypeASupport
 import Hypostructure.Graph.Strategy.SpineRows.TypeASilentExitSevenDichotomy
-import Hypostructure.Graph.Strategy.SpineRows.TypeASilentExitSevenRoute8
-import Hypostructure.Graph.Strategy.SpineRows.TypeASilentExitSixDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.TypeAUnsaturatedDischarge
 import Hypostructure.Graph.Strategy.SpineRows.TypeAVisibleEntryDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.TypeAVisibleExitEntry
+import Hypostructure.Graph.Strategy.SpineRows.TypeAVisibleFirstExcess
 import Hypostructure.Graph.Strategy.SpineRows.TypeBAssignedSupport
 import Hypostructure.Graph.Strategy.SpineRows.TypeBBridgeReduction
 import Hypostructure.Graph.Strategy.SpineRows.TypeBBridgeSublinear

@@ -27,6 +27,40 @@ open Hypostructure.Graph.Strategy.Spine
 
 universe u w
 
+/-- The keys the Part IX continuation of the discharged receiver may add. -/
+noncomputable abbrev typeADischargedRetestKeys : FactKeys EGInput.{u} :=
+  [K .route8UnifiedNegative,
+    K .typeAExclusion,
+    K .typeBBridgeReduction,
+    K .route8PiecesClassified,
+    K .typeBBridgeMass,
+    K .typeBBridgeSublinear,
+    K .typeBSublinearLedger,
+    K .typeBSublinearResidual,
+    K .route8UnifiedDeficit,
+    K .route8QuotientFree,
+    K .route8QuotientResidual,
+    K .route8UnifiedEntryCensus,
+    K .route8ExtractedEntryCensus,
+    K .route8PeelingDescent,
+    K .route8UnifiedTrueTwoCarrierEntry,
+    K .route8StageRateFailed,
+    K .route8TerminalNoGo,
+    K .route8DemandLedger,
+    K .route8DemandAbsorption,
+    K .route8OpenBoundarySaturated,
+    K .route8DemandUnitCount,
+    K .route8WindowBlockers,
+    K .windowShadowSignature,
+    K .windowShadowSingletonTail,
+    K .windowShadowHitCycle,
+    K .windowShadowHitExcluded,
+    K .route8PeeledDemandResidual,
+    K .route8UnpaidExitFourResidual,
+    K .route8UnifiedVisibleResidual,
+    K .route8UnifiedVisibleOverload,
+    K .route8JointBalance]
+
 /-- **`[102]` → `[89]`, the retest of the peeled receiver.**  `K
 .typeAExitFourReceiverDischarged` records the outcome of the recompute-`L₄`
 loop: a witnessed peeling set `P₄(w)` at which the receiver is unsaturated
@@ -38,7 +72,6 @@ ledger, where `lem:typeA-pressure-is-exit4-peel` reads the witnesses. -/
 noncomputable def selectedTypeAExitFourDischargedRetest
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .typeAExitFourReceiverDischarged) known]
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .negativeSupport) known]
     [FactKeys.Has (K .selection) known]
@@ -49,45 +82,10 @@ noncomputable def selectedTypeAExitFourDischargedRetest
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .typeAReceiverRouting) known]
-    (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known)
-    (typeAExclusionFresh : K .typeAExclusion ∉ known)
-    (typeBBridgeReductionFresh : K .typeBBridgeReduction ∉ known)
-    (piecesClassifiedFresh : K .route8PiecesClassified ∉ known)
-    (bridgeMassFresh : K .typeBBridgeMass ∉ known)
-    (bridgeSublinearFresh : K .typeBBridgeSublinear ∉ known)
-    (sublinearLedgerFresh : K .typeBSublinearLedger ∉ known)
-    (sublinearResidualFresh : K .typeBSublinearResidual ∉ known)
-    (unifiedDeficitFresh : K .route8UnifiedDeficit ∉ known)
-    (quotientFreeFresh : K .route8QuotientFree ∉ known)
-    (quotientResidualFresh : K .route8QuotientResidual ∉ known)
-    (unifiedCensusFresh : K .route8UnifiedEntryCensus ∉ known)
-    (extractedCensusFresh : K .route8ExtractedEntryCensus ∉ known)
-    (peelingFresh : K .route8PeelingDescent ∉ known)
-    (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known)
-    (stageFailedFresh : K .route8StageRateFailed ∉ known)
-    (terminalFresh : K .route8TerminalNoGo ∉ known)
-    (demandLedgerFresh : K .route8DemandLedger ∉ known)
-    (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known)
-    (openBoundarySaturatedFresh : K .route8OpenBoundarySaturated ∉ known)
-    (demandUnitCountFresh : K .route8DemandUnitCount ∉ known)
-    (windowBlockersFresh : K .route8WindowBlockers ∉ known)
-    (windowShadowSignatureFresh : K .windowShadowSignature ∉ known)
-    (windowShadowTailFresh : K .windowShadowSingletonTail ∉ known)
-    (windowShadowCycleFresh : K .windowShadowHitCycle ∉ known)
-    (windowShadowExcludedFresh : K .windowShadowHitExcluded ∉ known)
-    (demandResidualFresh : K .route8PeeledDemandResidual ∉ known)
-    (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known := by
-      key_fresh)
-    (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known := by
-      key_fresh)
-    (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known := by
-      key_fresh)
-    (jointBalanceFresh : K .route8JointBalance ∉ known := by
-      key_fresh)
-   :
+    (fresh : List.Disjoint typeADischargedRetestKeys known := by key_fresh) :
     SelectedRouteEightBoundary selected := by
-  -- Read the discharged receiver fact from the accumulated ledger.
-  let _discharged := history.get (K .typeAExitFourReceiverDischarged)
+  have fresh' := fresh
+  repeat (rw [List.disjoint_cons_left] at fresh'; obtain ⟨_fresh, fresh'⟩ := fresh')
   -- `[123]`: publish `def:typeA-unified-negative` on this residual.
   let unifiedNegative :=
     (route8UnifiedNegativeRow (BranchState := BranchState)

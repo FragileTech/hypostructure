@@ -1,6 +1,14 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.TypeA.Exits
 
-/-! Independently compiled spine row declarations. -/
+/-! # Nodes `[107]`--`[109]`: exit `(7)` and the route-`8` residual
+
+Exit `(7)` is asked at the saturated states where exits `(4)`--`(6)` fail.
+The yes arm (`K .typeAExitSevenHandoff`) is node `[108]`: the produced
+decorated handoff fan envelope, which returns to Type B at `[65]`.  The no arm
+(`K .typeAExitSevenAbsent`) is its exact negation, and on it the
+exit-`(4)`-free state of the segment is node `[109]`, the route-`8` residual
+continued in Part IX. -/
 
 namespace Hypostructure.Graph.Strategy.Spine
 
@@ -14,53 +22,44 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
-variable [FactSystem (Input BranchState Presentation presentation data)]
-
-/-! ## Node `[107]`: exit `(7)`, the decorated handoff fan
-
-`def:typeA-saturated-exits` (7): is a high-degree decorated handoff fan
-envelope produced at the selected residual after exits `(4)`--`(6)` have
-failed?  The yes arm is reclassified at node `[108]` and leaves the Type A
-charge calculation for Type B (`lem:typeA-exits-discharged`); the no arm is
-node `[109]`, the route-8 residual of Part IX. -/
-omit [FactSystem (Input BranchState Presentation presentation data)] in
 noncomputable def typeAExitSevenDichotomy
     {current : Input BranchState Presentation presentation data}
-    {known : @FactKeys (Input BranchState Presentation presentation data)
-      _ (factSystem BranchState Presentation presentation data)}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous :
-      @ExactLedger (Input BranchState Presentation presentation data)
-        _ (factSystem BranchState Presentation presentation data) current known)
-    [@FactKeys.Has (Input BranchState Presentation presentation data) _
-      (factSystem BranchState Presentation presentation data)
-      (K .typeAExitSixFree) known]
-    (producedFresh : K .typeAExitSevenProduced ∉ known)
-    (freeFresh : K .typeAExitSevenFree ∉ known) :
-    @Decision (Input BranchState Presentation presentation data) _
-      (factSystem BranchState Presentation presentation data) current known
-      (K .typeAExitSevenProduced) (K .typeAExitSevenFree) previous :=
-  @Decision.run (Input BranchState Presentation presentation data) _
-    (factSystem BranchState Presentation presentation data) current known
-    previous (K .typeAExitSevenProduced) (K .typeAExitSevenFree)
+      ExactLedger (Input BranchState Presentation presentation data) current
+        known)
+    (handoffFresh : K .typeAExitSevenHandoff ∉ known)
+    (absentFresh : K .typeAExitSevenAbsent ∉ known) :
+    Decision (K .typeAExitSevenHandoff) (K .typeAExitSevenAbsent) previous :=
+  Decision.run previous (K .typeAExitSevenHandoff) (K .typeAExitSevenAbsent)
     `Hypostructure.Graph.Strategy.Spine.typeAExitSevenDichotomy
     (by
       classical
-      apply Classical.choice
-      obtain ⟨packing, canonical, valid, maximal, component, present, negative, zero,
-        receiver, isReceiver, peeled, peeledSubset, saturated, noExitFour,
-        noCompression, noDelocalization⟩ :=
-        (@ExactLedger.get (Input BranchState Presentation presentation data) _
-          (factSystem BranchState Presentation presentation data)
-          current known previous (K .typeAExitSixFree)).down
-      let piece := current.object.pieceSupport
-        (current.object.remainderSupport packing) component
-      by_cases produced : HandoffProduced data.toParameters current.object packing piece
-      · exact ⟨.inl ⟨⟨packing, canonical, valid, maximal, component, present, negative, zero,
-          receiver, isReceiver, peeled, peeledSubset, saturated, noExitFour,
-          noCompression, noDelocalization, produced⟩⟩⟩
-      · exact ⟨.inr ⟨⟨packing, canonical, valid, maximal, component, present, negative, zero,
-          receiver, isReceiver, peeled, peeledSubset, saturated, noExitFour,
-          noCompression, noDelocalization, produced⟩⟩⟩)
-    producedFresh freeFresh
+      by_cases handoff :
+          TypeAExitSevenHandoffStatement data.toParameters current.object
+      · exact .inl ⟨handoff⟩
+      · exact .inr ⟨Graph.Contracts.TypeA.typeAExitSevenAbsent_of_not_handoff
+          data.toParameters current.object handoff⟩)
+    handoffFresh absentFresh
+
+/-- Node `[109]`: the route-`8` residual state. -/
+@[reducible] noncomputable def typeAExitSevenFreeRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.typeAExitSevenFree
+    { Requires := [K .typeASaturatedHandoffExitFourFree, K .typeAExitFiveFree,
+        K .typeAExitSixFree, K .typeAExitSevenAbsent]
+      Produces := [K .typeAExitSevenFree]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .typeAExitSevenFree)
+        ⟨Graph.Contracts.TypeA.typeAExitSevenFree data.toParameters
+          inputs.current.object
+          (inputs.get (K .typeASaturatedHandoffExitFourFree)).down
+          (inputs.get (K .typeAExitFiveFree)).down
+          (inputs.get (K .typeAExitSixFree)).down
+          (inputs.get (K .typeAExitSevenAbsent)).down⟩
+        .nil)
 
 end Hypostructure.Graph.Strategy.Spine

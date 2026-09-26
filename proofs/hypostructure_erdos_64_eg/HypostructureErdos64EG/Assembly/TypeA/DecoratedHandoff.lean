@@ -4,7 +4,7 @@ import HypostructureErdos64EG.Assembly.TypeB.DecoratedContinuation
 /-!
 # Assembly: TypeA / DecoratedHandoff
 
-Part of the dependency-separated Erdős–Gyárfás assembly.
+Node `[108]` → Type B `[65]`.
 -/
 
 namespace HypostructureErdos64EG
@@ -15,6 +15,74 @@ open Hypostructure.Core.Strategy
 open Hypostructure.Graph.Strategy.Spine
 
 universe u w
+
+/-- The keys the decorated Type B continuation from node `[108]` may add. -/
+noncomputable abbrev typeADecoratedHandoffKeys : FactKeys EGInput.{u} :=
+  [K .typeBDecoratedAssignedSupport,
+    K .typeBFanEntry,
+    K .highCentreNormalForm,
+    K .typeBFanHeavyCentre,
+    K .typeBFanDegreeFourCentres,
+    K .typeBFanLocalDichotomy,
+    K .sameCenterOpenPortCompatibility,
+    K .typeBFanDegreeFourProfile,
+    K .triangularFanCore,
+    K .fanCertificateCap,
+    K .fanCertificateMarked,
+    K .fanCertificateResidual,
+    K .fanCertificateResidualMass,
+    K .typeBDirectCycle,
+    K .typeBDirectCycleFree,
+    K .typeBB2Choice,
+    K .typeBOverlapObstruction,
+    K .typeBHybridEntry,
+    K .typeBDisjointLedger,
+    K .typeBBridgeMass,
+    K .typeBBridgeSublinear,
+    K .route8UnifiedNegative,
+    K .typeAExclusion,
+    K .typeBBridgeReduction,
+    K .route8PiecesClassified,
+    K .typeBSublinearLedger,
+    K .typeBSublinearResidual,
+    K .route8UnifiedDeficit,
+    K .route8QuotientFree,
+    K .route8QuotientResidual,
+    K .route8UnifiedEntryCensus,
+    K .route8ExtractedEntryCensus,
+    K .route8UnifiedTrueTwoCarrierEntry,
+    K .route8PeelingDescent,
+    K .route8StageRateFailed,
+    K .route8DemandLedger,
+    K .route8DemandAbsorption,
+    K .route8OpenBoundarySaturated,
+    K .route8DemandUnitCount,
+    K .route8WindowBlockers,
+    K .windowShadowSignature,
+    K .windowShadowSingletonTail,
+    K .windowShadowHitCycle,
+    K .windowShadowHitExcluded,
+    K .route8PeeledDemandResidual,
+    K .route8UnpaidExitFourResidual,
+    K .route8UnifiedVisibleResidual,
+    K .route8UnifiedVisibleOverload,
+    K .route8JointBalance,
+    K .route8TerminalNoGo,
+    K .typeBExcluded,
+    K .typeBExclusionResidual,
+    K .typeBExclusionResidualMass,
+    K .typeBOverlapObstructionMass,
+    K .fanClosedPort,
+    K .compatiblePairFanClosure,
+    K .fanClosedPortTypeBRouting,
+    K .compatiblePairTypeBRouting,
+    K .triangularShoulderCompletion,
+    K .triangularPortReturn,
+    K .triangularFirstLanding,
+    K .triangularCrossShoulder,
+    K .triangularPortTypeBRouting,
+    K .typeBGlobalLocalBridge,
+    closed]
 
 /-- **Node `[108]` → Type B `[65]` on the decorated envelope**: the exact
 envelope committed at `[108]` (`K .typeAExitSevenHandoff`) enters the Type B
@@ -28,113 +96,50 @@ noncomputable def selectedTypeADecoratedHandoff
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .uncompressible) known]
+    [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .typeAExitSevenHandoff) known]
+    [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .tightEndpoint) known]
-    [FactKeys.Has (K .typeAExitSevenHandoff) known]
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .negativeSupport) known]
-    [FactKeys.Has (K .surplusAtOrBelow) known]
-    [FactKeys.Has (K .uncompressible) known]
-    [FactKeys.Has (K .remainderNormalized) known]
     [FactKeys.Has (K .remainderRelabelingEntropy) known]
+    [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .typeAReceiverRouting) known]
-    [FactKeys.Has (K .bridgeless) known]
-    (decoratedFresh : K .typeBDecoratedAssignedSupport ∉ known)
-    (normalFormFresh : K .highCentreNormalForm ∉ known)
-    (decoratedHeavyFresh : K .typeBFanHeavyCentre ∉ known)
-    (decoratedDegreeFourFresh : K .typeBFanDegreeFourCentres ∉ known)
-    (decoratedLocalFresh : K .typeBFanLocalDichotomy ∉ known)
-    (decoratedCompatibilityFresh :
-      K .sameCenterOpenPortCompatibility ∉ known)
-    (decoratedProfileFresh : K .typeBFanDegreeFourProfile ∉ known)
-    (decoratedTriangularCoreFresh : K .triangularFanCore ∉ known)
-    (fanCapFresh : K .fanCertificateCap ∉ known)
-    (decoratedMarkedFresh : K .fanCertificateMarked ∉ known)
-    (decoratedResidualFresh : K .fanCertificateResidual ∉ known)
-    (decoratedCertificateMassFresh : K .fanCertificateResidualMass ∉ known)
-    (decoratedCycleFresh : K .typeBDirectCycle ∉ known)
-    (decoratedFreeFresh : K .typeBDirectCycleFree ∉ known)
-    (decoratedFanEntryFresh : K .typeBFanEntry ∉ known)
-    (decoratedB2ChoiceFresh : K .typeBB2Choice ∉ known)
-    (decoratedB2ObstructionFresh : K .typeBOverlapObstruction ∉ known)
-    (decoratedHybridFresh : K .typeBHybridEntry ∉ known)
-    (decoratedLedgerFresh : K .typeBDisjointLedger ∉ known)
-    (decoratedBridgeMassFresh : K .typeBBridgeMass ∉ known)
-    (decoratedBridgeSublinearFresh : K .typeBBridgeSublinear ∉ known)
-    (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known)
-    (typeAExclusionFresh : K .typeAExclusion ∉ known)
-    (typeBBridgeReductionFresh : K .typeBBridgeReduction ∉ known)
-    (piecesClassifiedFresh : K .route8PiecesClassified ∉ known)
-    (sublinearLedgerFresh : K .typeBSublinearLedger ∉ known)
-    (sublinearResidualFresh : K .typeBSublinearResidual ∉ known)
-    (unifiedDeficitFresh : K .route8UnifiedDeficit ∉ known)
-    (quotientFreeFresh : K .route8QuotientFree ∉ known)
-    (quotientResidualFresh : K .route8QuotientResidual ∉ known)
-    (unifiedCensusFresh : K .route8UnifiedEntryCensus ∉ known)
-    (extractedCensusFresh : K .route8ExtractedEntryCensus ∉ known)
-    (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known)
-    (peelingFresh : K .route8PeelingDescent ∉ known)
-    (stageFailedFresh : K .route8StageRateFailed ∉ known)
-    (demandLedgerFresh : K .route8DemandLedger ∉ known)
-    (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known)
-    (openBoundarySaturatedFresh : K .route8OpenBoundarySaturated ∉ known)
-    (demandUnitCountFresh : K .route8DemandUnitCount ∉ known)
-    (windowBlockersFresh : K .route8WindowBlockers ∉ known)
-    (windowShadowSignatureFresh : K .windowShadowSignature ∉ known)
-    (windowShadowTailFresh : K .windowShadowSingletonTail ∉ known)
-    (windowShadowCycleFresh : K .windowShadowHitCycle ∉ known)
-    (windowShadowExcludedFresh : K .windowShadowHitExcluded ∉ known)
-    (demandResidualFresh : K .route8PeeledDemandResidual ∉ known)
-    (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known)
-    (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known)
-    (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known)
-    (jointBalanceFresh : K .route8JointBalance ∉ known)
-    (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known)
-    (decoratedExcludedFresh : K .typeBExcluded ∉ known)
-    (decoratedExclusionResidualFresh : K .typeBExclusionResidual ∉ known)
-    (decoratedExclusionMassFresh : K .typeBExclusionResidualMass ∉ known)
-    (decoratedObstructionMassFresh : K .typeBOverlapObstructionMass ∉ known)
-    (decoratedGlobalLocalBridgeFresh : K .typeBGlobalLocalBridge ∉ known)
-    (fanClosedFresh : K .fanClosedPort ∉ known)
-    (compatibleClosureFresh : K .compatiblePairFanClosure ∉ known)
-    (fanClosedRoutingFresh : K .fanClosedPortTypeBRouting ∉ known)
-    (compatibleRoutingFresh : K .compatiblePairTypeBRouting ∉ known)
-    (shoulderCompletionFresh : K .triangularShoulderCompletion ∉ known)
-    (portReturnFresh : K .triangularPortReturn ∉ known)
-    (firstLandingFresh : K .triangularFirstLanding ∉ known)
-    (crossShoulderFresh : K .triangularCrossShoulder ∉ known)
-    (triangularRoutingFresh : K .triangularPortTypeBRouting ∉ known)
-    :
+    (fresh : List.Disjoint typeADecoratedHandoffKeys known := by key_fresh) :
     SelectedRouteEightBoundary selected := by
+  have fresh' := fresh
+  repeat (rw [List.disjoint_cons_left] at fresh'; obtain ⟨_fresh, fresh'⟩ := fresh')
   let assigned :=
     (typeBDecoratedAssignedSupportRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       history (by key_fresh)
   exact selectedTypeBDecoratedContinuation assigned
-    (by key_fresh)
-    (by key_fresh) (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
+    (normalFormFresh := by key_fresh)
+    (decoratedHeavyFresh := by key_fresh)
+    (decoratedDegreeFourFresh := by key_fresh)
+    (decoratedLocalFresh := by key_fresh)
+    (decoratedCompatibilityFresh := by key_fresh)
+    (decoratedProfileFresh := by key_fresh)
+    (decoratedTriangularCoreFresh := by key_fresh)
+    (fanCapFresh := by key_fresh)
+    (decoratedMarkedFresh := by key_fresh)
+    (decoratedResidualFresh := by key_fresh)
+    (decoratedCertificateMassFresh := by key_fresh)
+    (decoratedCycleFresh := by key_fresh)
+    (decoratedFreeFresh := by key_fresh)
+    (decoratedB2ChoiceFresh := by key_fresh)
+    (decoratedB2ObstructionFresh := by key_fresh)
+    (decoratedHybridFresh := by key_fresh)
+    (decoratedLedgerFresh := by key_fresh)
+    (decoratedBridgeMassFresh := by key_fresh)
+    (decoratedBridgeSublinearFresh := by key_fresh)
+    (unifiedNegativeFresh := by key_fresh)
     (typeAExclusionFresh := by key_fresh)
-    (typeBBridgeReductionFresh := by
-      key_fresh)
+    (typeBBridgeReductionFresh := by key_fresh)
     (piecesClassifiedFresh := by key_fresh)
     (sublinearLedgerFresh := by key_fresh)
     (sublinearResidualFresh := by key_fresh)
@@ -158,19 +163,13 @@ noncomputable def selectedTypeADecoratedHandoff
     (demandResidualFresh := by key_fresh)
     (unpaidExitFourFresh := by key_fresh)
     (unifiedVisibleFresh := by key_fresh)
-    (unifiedVisibleOverloadFresh := by
-      key_fresh)
+    (unifiedVisibleOverloadFresh := by key_fresh)
     (jointBalanceFresh := by key_fresh)
     (unifiedTerminalFresh := by key_fresh)
     (decoratedExcludedFresh := by key_fresh)
-    (decoratedExclusionResidualFresh := by
-      key_fresh)
-    (decoratedExclusionMassFresh := by
-      key_fresh)
-    (decoratedObstructionMassFresh := by
-      key_fresh)
-    (decoratedGlobalLocalBridgeFresh := by
-      key_fresh)
+    (decoratedExclusionResidualFresh := by key_fresh)
+    (decoratedExclusionMassFresh := by key_fresh)
+    (decoratedObstructionMassFresh := by key_fresh)
     (fanClosedFresh := by key_fresh)
     (compatibleClosureFresh := by key_fresh)
     (fanClosedRoutingFresh := by key_fresh)
@@ -180,5 +179,6 @@ noncomputable def selectedTypeADecoratedHandoff
     (firstLandingFresh := by key_fresh)
     (crossShoulderFresh := by key_fresh)
     (triangularRoutingFresh := by key_fresh)
+    (decoratedGlobalLocalBridgeFresh := by key_fresh)
 
 end HypostructureErdos64EG

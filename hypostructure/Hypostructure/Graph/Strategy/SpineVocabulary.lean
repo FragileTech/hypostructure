@@ -1604,6 +1604,23 @@ inductive Key where
   skeleton budget, and every canonical state map realizes at most that many
   states. -/
   | skeletonDominates
+  -- F1 keys
+  /-- Node `[86]`: the Type A support, `σ(X) = 0` and `s·def⁺(X) < |V(X)|`. -/
+  | typeASupport
+  /-- Node `[93]`, no arm: no saturated receiver of a Type A support has an overloaded completion port. -/
+  | typeANoVisibleEntry
+  /-- Node `[101]`, no arm: no witnessed saturated peeling state realizes exit `(4)`. -/
+  | typeAExitFourAbsent
+  /-- Node `[102]` → `[89]` retest, no arm: every saturated peeling state still realizes exit `(4)`. -/
+  | typeAExitFourExhausted
+  /-- Node `[106]`, proper scope: an exit-`(6)` delocalization adjoins a proper support. -/
+  | typeAExitSixProperScope
+  /-- Node `[106]`, whole-graph scope: every exit-`(6)` delocalization adjoins all of `G`. -/
+  | typeAExitSixGlobalScope
+  /-- Node `[107]`, no arm: no exits-`(4)`--`(6)`-free state produces a decorated handoff envelope. -/
+  | typeAExitSevenAbsent
+  /-- Node `[109]`, visible origin: no route-`8` residual state has the node-`[94]` silent origin. -/
+  | typeAExitEightNotSilent
   deriving DecidableEq
 
 /-- The value schema of each spine fact, stated of the *object* alone.
@@ -2359,6 +2376,23 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       RemainderRelabelingEntropyStatement data.toParameters object
   | .relabelingDensityCap, object =>
       RelabelingDensityCapStatement data.toParameters object
+  -- F1 keys
+  | .typeASupport, object =>
+      TypeASupportStatement data.toParameters object
+  | .typeANoVisibleEntry, object =>
+      TypeANoVisibleEntryStatement data.toParameters object
+  | .typeAExitFourAbsent, object =>
+      TypeAExitFourAbsentStatement data.toParameters object
+  | .typeAExitFourExhausted, object =>
+      TypeAExitFourExhaustedStatement data.toParameters object
+  | .typeAExitSixProperScope, object =>
+      TypeAExitSixProperScopeStatement data.toParameters object
+  | .typeAExitSixGlobalScope, object =>
+      TypeAExitSixGlobalScopeStatement data.toParameters object
+  | .typeAExitSevenAbsent, object =>
+      TypeAExitSevenAbsentStatement data.toParameters object
+  | .typeAExitEightNotSilent, object =>
+      TypeAExitEightNotSilentStatement data.toParameters object
 
 /-- Audit labels.  They are diagnostics; every routing and lookup decision
 compares exact keys. -/
@@ -2679,6 +2713,15 @@ def label : Key → String
   | .exactCubicBaselineBudget => "exactCubicBaselineBudget"
   | .incrementalSkeletonRoom => "incrementalSkeletonRoom"
   | .skeletonDominates => "skeletonDominates"
+  -- F1 keys
+  | .typeASupport => "typeASupport"
+  | .typeANoVisibleEntry => "typeANoVisibleEntry"
+  | .typeAExitFourAbsent => "typeAExitFourAbsent"
+  | .typeAExitFourExhausted => "typeAExitFourExhausted"
+  | .typeAExitSixProperScope => "typeAExitSixProperScope"
+  | .typeAExitSixGlobalScope => "typeAExitSixGlobalScope"
+  | .typeAExitSevenAbsent => "typeAExitSevenAbsent"
+  | .typeAExitEightNotSilent => "typeAExitEightNotSilent"
 
 /-! ### Label pins
 
@@ -3019,6 +3062,15 @@ example : label .skeletonDominates = "skeletonDominates" := rfl
 example : label .exactResponseProfile = "exactResponseProfile" := rfl
 example : label .admissibleRankQuotient = "admissibleRankQuotient" := rfl
 example : label .barrierEnumeration = "barrierEnumeration" := rfl
+-- F1 keys
+example : label .typeASupport = "typeASupport" := rfl
+example : label .typeANoVisibleEntry = "typeANoVisibleEntry" := rfl
+example : label .typeAExitFourAbsent = "typeAExitFourAbsent" := rfl
+example : label .typeAExitFourExhausted = "typeAExitFourExhausted" := rfl
+example : label .typeAExitSixProperScope = "typeAExitSixProperScope" := rfl
+example : label .typeAExitSixGlobalScope = "typeAExitSixGlobalScope" := rfl
+example : label .typeAExitSevenAbsent = "typeAExitSevenAbsent" := rfl
+example : label .typeAExitEightNotSilent = "typeAExitEightNotSilent" := rfl
 end LabelPins
 
 /-- The value schema at a residual: the object-level statement, read at the
@@ -3348,6 +3400,15 @@ def idx : Key → Nat
   | .targetRankCircuit => 210
   | .remainderRelabelingEntropy => 501
   | .relabelingDensityCap => 502
+  -- F1 keys
+  | .typeASupport => 1000
+  | .typeANoVisibleEntry => 1001
+  | .typeAExitFourAbsent => 1002
+  | .typeAExitFourExhausted => 1003
+  | .typeAExitSixProperScope => 1004
+  | .typeAExitSixGlobalScope => 1005
+  | .typeAExitSevenAbsent => 1006
+  | .typeAExitEightNotSilent => 1007
 
 /-- Left inverse of `idx`.  Writing it out is also what checks the numbering:
 two keys sharing an index would make `ofIdx_idx` unprovable. -/
@@ -3666,6 +3727,15 @@ def ofIdx : Nat → Key
   | 208 => .admissibleRankQuotient
   | 210 => .targetRankCircuit
   | 211 => .barrierEnumeration
+  -- F1 keys
+  | 1000 => .typeASupport
+  | 1001 => .typeANoVisibleEntry
+  | 1002 => .typeAExitFourAbsent
+  | 1003 => .typeAExitFourExhausted
+  | 1004 => .typeAExitSixProperScope
+  | 1005 => .typeAExitSixGlobalScope
+  | 1006 => .typeAExitSevenAbsent
+  | 1007 => .typeAExitEightNotSilent
   | _ => .selection
 
 theorem ofIdx_idx (k : Key) : ofIdx (idx k) = k := by
@@ -4433,6 +4503,23 @@ def name : Key → Lean.Name
         "remainderRelabelingEntropy") 501
   | .relabelingDensityCap =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "relabelingDensityCap") 502
+  -- F1 keys
+  | .typeASupport =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeASupport") 1000
+  | .typeANoVisibleEntry =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeANoVisibleEntry") 1001
+  | .typeAExitFourAbsent =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitFourAbsent") 1002
+  | .typeAExitFourExhausted =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitFourExhausted") 1003
+  | .typeAExitSixProperScope =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitSixProperScope") 1004
+  | .typeAExitSixGlobalScope =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitSixGlobalScope") 1005
+  | .typeAExitSevenAbsent =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitSevenAbsent") 1006
+  | .typeAExitEightNotSilent =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitEightNotSilent") 1007
 
 /-- The written-out names agree with `label` and `idx`.  `name` is spelled out
 so that reducing it in a downstream audit proof costs one unfolding rather
