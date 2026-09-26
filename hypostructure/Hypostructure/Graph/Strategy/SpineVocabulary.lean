@@ -749,10 +749,6 @@ inductive Key where
   anchored returns of a port, and without this fact "no return of the port has
   property `p`" would be satisfied by a port with no returns at all. -/
   | typeAPortReturn
-  /-- Every eligible completion port of the selected Type A support carries an
-  anchored return of power-of-two length.  The manuscript has no such
-  corollary and no label for it. -/
-  | portPowerReturn
   /-- Node `[93]`, yes arm — the entry of the saturated exit chain at node
   `[95]`: some completion port of a saturated receiver of the Type A support
   carries `s` visible receiver-entry returns, in the sense of
@@ -1598,21 +1594,17 @@ inductive Key where
   `pairIncrementEarlyOutcome`. -/
   | pairIncrementNoEarlyOutcome
   -- F1 keys
-  /-- Node `[86]`: the Type A support, `σ(X) = 0` and `s·def⁺(X) < |V(X)|`. -/
+  /-- Node `[86]`: the Type A support `X₀`, `s·def⁺(X₀) < |V(X₀)|`. -/
   | typeASupport
-  /-- Node `[93]`, no arm: no saturated receiver of a Type A support has an overloaded completion port. -/
+  /-- Node `[93]`, no arm: no saturated receiver of `X₀` has an overloaded completion port. -/
   | typeANoVisibleEntry
-  /-- Node `[101]`, no arm: no witnessed saturated peeling state realizes exit `(4)`. -/
+  /-- Node `[101]`, no arm: the entry state of the exit-chain receiver of `X₀` has no exit `(4)`. -/
   | typeAExitFourAbsent
-  /-- Node `[102]` → `[89]` retest, no arm: every saturated peeling state still realizes exit `(4)`. -/
-  | typeAExitFourExhausted
-  /-- Node `[106]`, proper scope: an exit-`(6)` delocalization adjoins a proper support. -/
+  /-- Node `[106]`, proper scope: the canonical exit-`(6)` delocalization adjoins a proper support. -/
   | typeAExitSixProperScope
-  /-- Node `[106]`, whole-graph scope: every exit-`(6)` delocalization adjoins all of `G`. -/
+  /-- Node `[106]`, whole-graph scope: the canonical exit-`(6)` delocalization adjoins all of `G`. -/
   | typeAExitSixGlobalScope
-  /-- Node `[107]`, no arm: no exits-`(4)`--`(6)`-free state produces a decorated handoff envelope. -/
-  | typeAExitSevenAbsent
-  /-- Node `[109]`, visible origin: no route-`8` residual state has the node-`[94]` silent origin. -/
+  /-- Node `[109]`, visible origin: the route-`8` residual state does not carry the node-`[94]` silent origin. -/
   | typeAExitEightNotSilent
   -- F3 keys
   /-- Node `[124]`, `lem:typeA-carrier-deletion-exit` on the route-`8` collection `𝒳_A`:
@@ -2026,8 +2018,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       Route8ExtractedEntryCensusFact data.toParameters object
   | .typeAPortReturn, object =>
       TypeAPortReturnStatement data.toParameters object
-  | .portPowerReturn, object =>
-      PortPowerReturnStatement data.toParameters object
   | .typeAVisibleEntry, object =>
       TypeAVisibleEntryStatement data.toParameters object
   | .typeAVisibleFirstExcess, object =>
@@ -2395,14 +2385,10 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       TypeANoVisibleEntryStatement data.toParameters object
   | .typeAExitFourAbsent, object =>
       TypeAExitFourAbsentStatement data.toParameters object
-  | .typeAExitFourExhausted, object =>
-      TypeAExitFourExhaustedStatement data.toParameters object
   | .typeAExitSixProperScope, object =>
       TypeAExitSixProperScopeStatement data.toParameters object
   | .typeAExitSixGlobalScope, object =>
       TypeAExitSixGlobalScopeStatement data.toParameters object
-  | .typeAExitSevenAbsent, object =>
-      TypeAExitSevenAbsentStatement data.toParameters object
   | .typeAExitEightNotSilent, object =>
       TypeAExitEightNotSilentStatement data.toParameters object
   -- F3 keys
@@ -2539,7 +2525,6 @@ def label : Key → String
   | .route8DemandLedger => "route8DemandLedger"
   | .route8ExtractedEntryCensus => "route8ExtractedEntryCensus"
   | .typeAPortReturn => "typeAPortReturn"
-  | .portPowerReturn => "portPowerReturn"
   | .typeAVisibleEntry => "typeAVisibleEntry"
   | .typeAVisibleFirstExcess => "typeAVisibleFirstExcess"
   | .typeAExitOneReturn => "typeAExitOneReturn"
@@ -2747,10 +2732,8 @@ def label : Key → String
   | .typeASupport => "typeASupport"
   | .typeANoVisibleEntry => "typeANoVisibleEntry"
   | .typeAExitFourAbsent => "typeAExitFourAbsent"
-  | .typeAExitFourExhausted => "typeAExitFourExhausted"
   | .typeAExitSixProperScope => "typeAExitSixProperScope"
   | .typeAExitSixGlobalScope => "typeAExitSixGlobalScope"
-  | .typeAExitSevenAbsent => "typeAExitSevenAbsent"
   | .typeAExitEightNotSilent => "typeAExitEightNotSilent"
   -- F3 keys
   | .route8TwoCarrierExit => "route8TwoCarrierExit"
@@ -2895,7 +2878,6 @@ example : label .route8DemandLedger = "route8DemandLedger" := rfl
 example : label .route8ExtractedEntryCensus = "route8ExtractedEntryCensus" :=
   rfl
 example : label .typeAPortReturn = "typeAPortReturn" := rfl
-example : label .portPowerReturn = "portPowerReturn" := rfl
 example : label .typeAVisibleEntry = "typeAVisibleEntry" := rfl
 example : label .typeAVisibleFirstExcess = "typeAVisibleFirstExcess" := rfl
 example : label .typeAExitOneReturn = "typeAExitOneReturn" := rfl
@@ -3106,10 +3088,8 @@ example : label .pairIncrementNoEarlyOutcome = "pairIncrementNoEarlyOutcome" := 
 example : label .typeASupport = "typeASupport" := rfl
 example : label .typeANoVisibleEntry = "typeANoVisibleEntry" := rfl
 example : label .typeAExitFourAbsent = "typeAExitFourAbsent" := rfl
-example : label .typeAExitFourExhausted = "typeAExitFourExhausted" := rfl
 example : label .typeAExitSixProperScope = "typeAExitSixProperScope" := rfl
 example : label .typeAExitSixGlobalScope = "typeAExitSixGlobalScope" := rfl
-example : label .typeAExitSevenAbsent = "typeAExitSevenAbsent" := rfl
 example : label .typeAExitEightNotSilent = "typeAExitEightNotSilent" := rfl
 -- F3 keys
 example : label .route8TwoCarrierExit = "route8TwoCarrierExit" := rfl
@@ -3274,7 +3254,6 @@ def idx : Key → Nat
   | .route8DemandLedger => 349
   | .route8ExtractedEntryCensus => 350
   | .typeAPortReturn => 121
-  | .portPowerReturn => 440
   | .typeAVisibleEntry => 56
   | .typeAVisibleFirstExcess => 57
   | .typeAExitOneReturn => 58
@@ -3454,10 +3433,8 @@ def idx : Key → Nat
   | .typeASupport => 1000
   | .typeANoVisibleEntry => 1001
   | .typeAExitFourAbsent => 1002
-  | .typeAExitFourExhausted => 1003
   | .typeAExitSixProperScope => 1004
   | .typeAExitSixGlobalScope => 1005
-  | .typeAExitSevenAbsent => 1006
   | .typeAExitEightNotSilent => 1007
   -- F3 keys
   | .route8TwoCarrierExit => 1400
@@ -3740,7 +3717,6 @@ def ofIdx : Nat → Key
   | 119 => .sparseSurplusSurvivor
   | 120 => .activeSurplusDemands
   | 121 => .typeAPortReturn
-  | 440 => .portPowerReturn
   | 123 => .typeASaturatedExitEntry
   | 124 => .typeAExitSevenHandoff
   | 220 => .typeBDecoratedAssignedSupport
@@ -3791,10 +3767,8 @@ def ofIdx : Nat → Key
   | 1000 => .typeASupport
   | 1001 => .typeANoVisibleEntry
   | 1002 => .typeAExitFourAbsent
-  | 1003 => .typeAExitFourExhausted
   | 1004 => .typeAExitSixProperScope
   | 1005 => .typeAExitSixGlobalScope
-  | 1006 => .typeAExitSevenAbsent
   | 1007 => .typeAExitEightNotSilent
   -- F3 keys
   | 1400 => .route8TwoCarrierExit
@@ -4135,8 +4109,6 @@ def name : Key → Lean.Name
         "route8ExtractedEntryCensus") 350
   | .typeAPortReturn =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPortReturn") 121
-  | .portPowerReturn =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "portPowerReturn") 440
   | .typeAVisibleEntry =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAVisibleEntry") 56
   | .typeAVisibleFirstExcess =>
@@ -4573,14 +4545,10 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeANoVisibleEntry") 1001
   | .typeAExitFourAbsent =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitFourAbsent") 1002
-  | .typeAExitFourExhausted =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitFourExhausted") 1003
   | .typeAExitSixProperScope =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitSixProperScope") 1004
   | .typeAExitSixGlobalScope =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitSixGlobalScope") 1005
-  | .typeAExitSevenAbsent =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitSevenAbsent") 1006
   | .typeAExitEightNotSilent =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitEightNotSilent") 1007
   -- F3 keys

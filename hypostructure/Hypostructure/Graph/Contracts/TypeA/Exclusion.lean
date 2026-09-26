@@ -154,12 +154,11 @@ theorem selectedSilentExitSevenFree_unifiedVisibleResidual_contradiction
     (visible : Route8UnifiedVisibleResidualStatement data object) : False := by
   classical
   letI : DecidableEq object.Vertex := object.vertices.decEq
-  obtain ⟨packing, canonical, _valid, _maximal, component, present, negative,
-    zero, receiver, isReceiver, _peeled, _peeledSubset, _saturated,
-    _noExitFour, _noExitFive, _noExitSix, origin, noHandoff⟩ := silent
-  subst packing
-  let packing := canonicalWindowPacking data object
-  let piece := object.pieceSupport (object.remainderSupport packing) component
+  obtain ⟨piece, pinned, receiver, chosen, zero, _state, noHandoff, origin⟩ :=
+    silent
+  have isReceiver := (canonicalExitReceiverAt_spec_of_eq_some chosen).1
+  obtain ⟨component, eq, rfl⟩ := (canonicalNegativePiece_eq_some_iff).mp pinned
+  obtain ⟨present, negative⟩ := canonicalNegativeComponent_spec_of_eq_some eq
   obtain ⟨_noVisibleFour, originalSaturated, silentAtOrigin, _count⟩ := origin
   obtain ⟨_portBound, nonemptyExcess, silentSubset⟩ := silentAtOrigin
   obtain ⟨load, loadExcess⟩ := nonemptyExcess
@@ -168,32 +167,31 @@ theorem selectedSilentExitSevenFree_unifiedVisibleResidual_contradiction
     dsimp only
     exact Finset.mem_filter.mpr ⟨present, zero, negative, noHandoff⟩
   have receiverUnified : receiver ∈
-      Graph.VisibleEntry.saturatedReceivers object piece data.threshold
-        data.dischargeScale := by
+      Graph.VisibleEntry.saturatedReceivers object
+        (object.pieceSupport (canonicalRemainder data object) component)
+        data.threshold data.dischargeScale := by
     unfold Graph.VisibleEntry.saturatedReceivers
     exact Finset.mem_filter.mpr ⟨object.mem_receivers.mpr isReceiver,
       originalSaturated⟩
   have loadBasin : load ∈
-      Graph.VisibleEntry.excessBasin object piece data.threshold
-        data.dischargeScale receiver :=
-    Graph.ExitFour.unpeeledExcess_subset_excessBasin piece data.threshold
+      Graph.VisibleEntry.excessBasin object
+        (object.pieceSupport (canonicalRemainder data object) component)
+        data.threshold data.dischargeScale receiver :=
+    Graph.ExitFour.unpeeledExcess_subset_excessBasin _ data.threshold
       data.dischargeScale receiver ∅ loadExcess
-  have entryMem : (piece, receiver, load) ∈ route8UnifiedEntries data object := by
+  have entryMem :
+      (object.pieceSupport (canonicalRemainder data object) component, receiver,
+        load) ∈ route8UnifiedEntries data object := by
     unfold route8UnifiedEntries Graph.Route8Census.entriesOfComponents
     apply Finset.mem_biUnion.mpr
     refine ⟨component, componentUnified, ?_⟩
     dsimp only
     apply Finset.mem_biUnion.mpr
-    refine ⟨receiver, ?_, ?_⟩
-    · simpa [piece] using receiverUnified
-    · apply Finset.mem_image.mpr
-      exact ⟨load, by simpa [piece] using loadBasin, rfl⟩
-  have isVisible : load ∈
-      Graph.VisibleEntry.visibleLoads object piece data.threshold receiver :=
-    visible.1 (piece, receiver, load) entryMem
-  have notVisible : load ∉
-      Graph.VisibleEntry.visibleLoads object piece data.threshold receiver :=
-    (Finset.mem_sdiff.mp (silentSubset loadExcess)).2
+    refine ⟨receiver, receiverUnified, ?_⟩
+    apply Finset.mem_image.mpr
+    exact ⟨load, loadBasin, rfl⟩
+  have isVisible := visible.1 _ entryMem
+  have notVisible := (Finset.mem_sdiff.mp (silentSubset loadExcess)).2
   exact notVisible isVisible
 
 end Hypostructure.Graph.Contracts.TypeA

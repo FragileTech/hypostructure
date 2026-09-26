@@ -33,13 +33,8 @@ residual profile.  It is the node-`[107]` no-arm residual (no decorated
 handoff) with the selected receiver and peeling set exposed. -/
 theorem route8ResidualProfile (data : Parameters) (object : FiniteObject.{u})
     (exitSevenFree : TypeAExitSevenFreeStatement data object) :
-    SilentCoreResidualProfile data object := by
-  obtain ⟨packing, canonical, valid, maximal, component, present, negative, zero,
-    receiver, isReceiver, peeled, peeledSubset, saturated, routing,
-    noCompression, noDelocalization, noHandoff⟩ := exitSevenFree
-  exact ⟨packing, canonical, valid, maximal, component, present, negative, zero,
-    receiver, isReceiver, peeled, peeledSubset, saturated, routing,
-    noCompression, noDelocalization, noHandoff⟩
+    SilentCoreResidualProfile data object :=
+  exitSevenFree
 
 /-- **Node `[111]`**: the exact route-`8` Type A collection `𝒳_A` on the
 canonical packing and the cleared defining sum `s·D_A(𝒳_A)`.  This is a

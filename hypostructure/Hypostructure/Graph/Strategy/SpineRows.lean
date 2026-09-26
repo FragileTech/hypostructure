@@ -56,7 +56,6 @@ import Hypostructure.Graph.Strategy.SpineRows.NoProperBaseline
 import Hypostructure.Graph.Strategy.SpineRows.ObstructionPacking
 import Hypostructure.Graph.Strategy.SpineRows.OpenPortSuppression
 import Hypostructure.Graph.Strategy.SpineRows.OpenPortSuppressionSafe
-import Hypostructure.Graph.Strategy.SpineRows.PortPowerReturn
 import Hypostructure.Graph.Strategy.SpineRows.RelabelingDensityCap
 import Hypostructure.Graph.Strategy.SpineRows.RemainderEntropyDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.RemainderNormalization

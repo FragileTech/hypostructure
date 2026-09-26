@@ -1,4 +1,3 @@
-import Hypostructure.Graph.Strategy.SpineRows.PortPowerReturn
 import Hypostructure.Graph.Strategy.SpineRows.TypeABoundedSupport
 import Hypostructure.Graph.Strategy.SpineRows.TypeAPortReturn
 import Hypostructure.Graph.Strategy.SpineRows.TypeAReceiverRouting
@@ -34,7 +33,6 @@ noncomputable abbrev typeALowSurplusKeys : FactKeys EGInput.{u} :=
     K .typeAUnsaturatedReceivers,
     K .typeAUnsaturatedDischarge,
     K .typeAPortReturn,
-    K .portPowerReturn,
     K .typeAVisibleEntry,
     K .typeANoVisibleEntry,
     K .typeAVisibleFirstExcess,
@@ -51,7 +49,6 @@ noncomputable abbrev typeALowSurplusKeys : FactKeys EGInput.{u} :=
     K .typeAExitFourAbsent,
     K .typeAExitFourPeeled,
     K .typeASaturatedHandoffExitFourFree,
-    K .typeAExitFourExhausted,
     K .typeAExitFourReceiverDischarged,
     K .typeAExitFive,
     K .typeAExitFiveFree,
@@ -62,7 +59,6 @@ noncomputable abbrev typeALowSurplusKeys : FactKeys EGInput.{u} :=
     K .typeAExitSixProper,
     K .typeAExitSixGlobal,
     K .typeAExitSevenHandoff,
-    K .typeAExitSevenAbsent,
     K .typeAExitSevenFree,
     K .typeASilentExitSevenFree,
     K .typeAExitEightNotSilent,
@@ -230,14 +226,8 @@ noncomputable def selectedTypeALowSurplusContinuation
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           saturatedHistory (by key_fresh)
-      -- Power-of-two port returns (no manuscript label).
-      let powerReturns :=
-        (portPowerReturnRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          ports (by key_fresh)
       -- `[93]`
-      match typeAVisibleEntryDichotomy (data := spineData) powerReturns
+      match typeAVisibleEntryDichotomy (data := spineData) ports
           (by key_fresh) (by key_fresh) with
       | .left visibleHistory =>
           -- `[95]`--`[109]` on the visible lane.

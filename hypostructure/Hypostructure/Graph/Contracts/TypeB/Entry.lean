@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Contracts.TypeB.Support
+import Hypostructure.Graph.Contracts.TypeA.Support
 import Hypostructure.Graph.Statements.SurplusPair
 
 /-!
@@ -38,24 +39,35 @@ theorem exists_highCentre_of_ambientSurplus_pos
 /-- `def:canonical-decomp` at the ordinary Type B support: its assigned fan
 centres are its own high centres, and there is one. -/
 theorem typeBAssignedSupport
+    (negativeSupport : NegativeSupportStatement data object)
     (typeB : TypeBHighSurplusStatement data object) :
     TypeBAssignedSupportStatement data object := by
-  obtain ⟨packing, valid, maximal, component, present, charge, positive⟩ := typeB
-  exact ⟨packing, valid, maximal, component, present, charge, positive,
+  obtain ⟨valid, maximal⟩ :=
+    Contracts.TypeA.canonicalWindowPacking_valid_maximal_of_negativeSupport data
+      object negativeSupport
+  obtain ⟨component, present, _pinned, charge, positive⟩ :=
+    Contracts.TypeA.typeBHighSurplus_support data object typeB
+  exact ⟨_, valid, maximal, component, present, charge, positive,
     exists_highCentre_of_ambientSurplus_pos positive⟩
 
 /-- The ordinary Type B support enters node `[65]` with its high centres as
 assigned centres. -/
 theorem typeBFanEntry_of_highSurplus
+    (negativeSupport : NegativeSupportStatement data object)
     (typeB : TypeBHighSurplusStatement data object) :
     TypeBFanEntryStatement data object := by
   classical
   apply Or.inl
-  obtain ⟨packing, valid, maximal, component, present, charge, positive⟩ := typeB
+  obtain ⟨valid, maximal⟩ :=
+    Contracts.TypeA.canonicalWindowPacking_valid_maximal_of_negativeSupport data
+      object negativeSupport
+  obtain ⟨component, present, _pinned, charge, positive⟩ :=
+    Contracts.TypeA.typeBHighSurplus_support data object typeB
   obtain ⟨centre, member, high⟩ := exists_highCentre_of_ambientSurplus_pos positive
-  refine ⟨packing, valid, maximal, component, present,
+  refine ⟨_, valid, maximal, component, present,
     Graph.TypeBRefinedSupport.centres object data.threshold
-      (object.pieceSupport (object.remainderSupport packing) component),
+      (object.pieceSupport (object.remainderSupport
+        (canonicalWindowPacking data object)) component),
     Or.inl ⟨charge, positive, rfl⟩, ?_, ?_⟩
   · exact ⟨centre, Graph.TypeBRefinedSupport.mem_centres.2 ⟨member, high⟩⟩
   · intro vertex vertexMem
@@ -92,33 +104,30 @@ theorem typeBDecoratedAssignedSupport
     (cubic : data.threshold = 3) (degenerate : ¬ data.LengthOK 2)
     (uncompressible : UncompressibleStatement data object)
     (normalized : RemainderNormalizedStatement data object)
+    (negativeSupport : NegativeSupportStatement data object)
     (handoff : TypeAExitSevenHandoffStatement data object) :
     TypeBDecoratedAssignedSupportStatement data object := by
-  obtain ⟨packing, canonical, valid, maximal, component, present, negative, zero,
-    receiver, isReceiver, peeled, peeledSubset, saturated, noExitFour,
-    noCompression, noDelocalization, produced⟩ :=
-    handoff
+  obtain ⟨piece, pinned, receiver, chosen, zero, state, produced⟩ := handoff
+  obtain ⟨valid, maximal⟩ :=
+    Contracts.TypeA.canonicalWindowPacking_valid_maximal_of_negativeSupport data
+      object negativeSupport
+  obtain ⟨_component, _present, _eq, inside, _connected, _charge⟩ :=
+    Contracts.TypeA.canonicalNegativePiece_facts data object pinned
   obtain ⟨envelope, coreEq, nonempty⟩ :=
-    handoffEnvelope_of_separatorHandoffAt avoids cubic degenerate packing produced
-  let piece := object.pieceSupport
-    (object.remainderSupport packing) component
-  have inside : piece ⊆
-      object.remainderSupport packing :=
-    object.pieceSupport_subset
-      (object.remainderSupport packing) component
+    handoffEnvelope_of_separatorHandoffAt avoids cubic degenerate
+      (canonicalWindowPacking data object) produced
   have coreInside : envelope.core ⊆
-      object.remainderSupport packing := by
-    intro vertex member
-    exact inside (by simpa [piece, coreEq] using member)
-  have normalized := normalized
+      object.remainderSupport (canonicalWindowPacking data object) := by
+    rw [coreEq]
+    exact inside
   have windowFree :
       handoffWindowFree data object envelope.core := by
     constructor
     · intro window subset windowInduces
-      exact (normalized packing valid maximal window
+      exact (normalized _ valid maximal window
         (subset.trans coreInside)).1 windowInduces
     · intro internal subset
-      exact (normalized packing valid maximal internal
+      exact (normalized _ valid maximal internal
         (subset.trans coreInside)).2
   have admissible :
       Graph.DecoratedHandoff.Admissible object
@@ -136,9 +145,7 @@ theorem typeBDecoratedAssignedSupport
     intro centre member
     simpa [Graph.IsHighCentre] using
       envelope.decorations_high centre member
-  exact ⟨packing, canonical, valid, maximal, component, present, negative, zero,
-    receiver, isReceiver, peeled, peeledSubset, saturated, noExitFour,
-    noCompression, noDelocalization,
+  exact ⟨piece, pinned, receiver, chosen, zero, state,
     ⟨envelope, coreEq, nonempty, high,
       fun centre member =>
         ⟨envelope.assigned_nonempty centre member,
@@ -151,16 +158,20 @@ assigned centres (`def:typeB-assigned-ledger`). -/
 theorem typeBFanEntry_of_decoratedHandoff
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (cubic : data.threshold = 3) (degenerate : ¬ data.LengthOK 2)
+    (negativeSupport : NegativeSupportStatement data object)
     (handoff : TypeAExitSevenHandoffStatement data object) :
     TypeBFanEntryStatement data object := by
   apply Or.inl
-  obtain ⟨packing, _canonical, valid, maximal, component, present, negative, zero,
-    _receiver, _isReceiver, _peeled, _peeledSubset, _saturated, _noExitFour,
-    _noCompression, _noDelocalization, produced⟩ :=
-    handoff
+  obtain ⟨piece, pinned, _receiver, _chosen, zero, _state, produced⟩ := handoff
+  obtain ⟨valid, maximal⟩ :=
+    Contracts.TypeA.canonicalWindowPacking_valid_maximal_of_negativeSupport data
+      object negativeSupport
+  obtain ⟨component, present, rfl, _inside, _connected, negative⟩ :=
+    Contracts.TypeA.canonicalNegativePiece_facts data object pinned
   obtain ⟨envelope, coreEq, nonempty⟩ :=
-    handoffEnvelope_of_separatorHandoffAt avoids cubic degenerate packing produced
-  refine ⟨packing, valid, maximal, component, present, envelope.decorations,
+    handoffEnvelope_of_separatorHandoffAt avoids cubic degenerate
+      (canonicalWindowPacking data object) produced
+  refine ⟨_, valid, maximal, component, present, envelope.decorations,
     Or.inr ⟨negative, zero, envelope, coreEq, rfl, nonempty,
       fun centre member =>
         ⟨envelope.assigned_nonempty centre member,

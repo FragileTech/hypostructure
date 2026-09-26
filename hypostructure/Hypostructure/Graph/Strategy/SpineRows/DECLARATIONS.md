@@ -106,7 +106,6 @@ Public names remain in `Hypostructure.Graph.Strategy.Spine`.
 | `typeAUnsaturatedDischargeRow` | 7752 | [TypeAUnsaturatedDischarge.lean:27](TypeAUnsaturatedDischarge.lean#L27) |
 | `typeAVisibleEntryDichotomy` | 7838 | [TypeAVisibleEntryDichotomy.lean:41](TypeAVisibleEntryDichotomy.lean#L41) |
 | `typeAPortReturnRow` | 7989 | [TypeAPortReturn.lean:37](TypeAPortReturn.lean#L37) |
-| `portPowerReturnRow` | 8041 | [PortPowerReturn.lean:26](PortPowerReturn.lean#L26) |
 | `typeAExitSevenHandoffRow` | 8100 | [TypeAExitSevenHandoff.lean:34](TypeAExitSevenHandoff.lean#L34) |
 | `typeBDecoratedAssignedSupportRow` | 8129 | [TypeBDecoratedAssignedSupport.lean:20](TypeBDecoratedAssignedSupport.lean#L20) |
 | `route8ResidualProfileRow` | 8222 | [Route8ResidualProfile.lean:20](Route8ResidualProfile.lean#L20) |

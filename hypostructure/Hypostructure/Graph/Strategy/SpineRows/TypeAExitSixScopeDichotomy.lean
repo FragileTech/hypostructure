@@ -3,13 +3,13 @@ import Hypostructure.Graph.Contracts.TypeA.Exits
 
 /-! # Node `[106]`: the scope of the exit-`(6)` support dependence
 
-`lem:typeA-exits-discharged` closes exit `(6)` by `lem:proper-smearing` when
-the enlarging support is proper and by `lem:no-silent-global-smearing` when it
-is all of `G`.  The scope decision is exact: the yes arm
-(`K .typeAExitSixProperScope`) is a proper enlarging support, the no arm
-(`K .typeAExitSixGlobalScope`) its negation.  Each arm then commits the
-smearing lemma's conclusion, which the framework closes against the
-replacement exclusion, respectively the selection's minimality. -/
+The committed exit-`(6)` state (`K .typeAExitSix`) has one canonical
+delocalization (`canonicalExitSixDelocalizationAt`, d2ded0e: the one
+delocalization of that state).  The decision splits on its enlarging support
+`Z`: proper (`K .typeAExitSixProperScope`, closed by `lem:proper-smearing`
+against the replacement exclusion) or all of `G`
+(`K .typeAExitSixGlobalScope`, closed by `lem:no-silent-global-smearing`
+against the selection's minimality). -/
 
 namespace Hypostructure.Graph.Strategy.Spine
 
@@ -23,26 +23,32 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
+/-- Node `[106]`, decided at the canonical delocalization of the exit-`(6)` state. -/
 noncomputable def typeAExitSixScopeDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous :
       ExactLedger (Input BranchState Presentation presentation data) current
         known)
+    [FactKeys.Has (K .typeAExitSix) known]
     (properFresh : K .typeAExitSixProperScope ∉ known)
     (globalFresh : K .typeAExitSixGlobalScope ∉ known) :
-    Decision (K .typeAExitSixProperScope) (K .typeAExitSixGlobalScope)
-      previous :=
-  Decision.run previous (K .typeAExitSixProperScope)
-    (K .typeAExitSixGlobalScope)
+    Decision (K .typeAExitSixProperScope) (K .typeAExitSixGlobalScope) previous :=
+  Decision.run previous (K .typeAExitSixProperScope) (K .typeAExitSixGlobalScope)
     `Hypostructure.Graph.Strategy.Spine.typeAExitSixScopeDichotomy
-    (by
+    (Classical.choice (show Nonempty
+        ((K .typeAExitSixProperScope).At current ⊕ (K .typeAExitSixGlobalScope).At current) from by
       classical
-      by_cases proper :
-          TypeAExitSixProperScopeStatement data.toParameters current.object
-      · exact .inl ⟨proper⟩
-      · exact .inr ⟨Graph.Contracts.TypeA.typeAExitSixGlobalScope_of_not_proper
-          data.toParameters current.object proper⟩)
+      obtain ⟨piece, pinned, receiver, chosen, _state, six⟩ :=
+        (previous.get (K .typeAExitSix)).down
+      obtain ⟨delocalization, found⟩ := canonicalExitSixDelocalizationAt_spec six
+      by_cases proper : ∃ vertex, vertex ∉ delocalization.2.quotient.support
+      · exact ⟨.inl ⟨⟨piece, pinned, receiver, chosen, delocalization, found,
+          proper⟩⟩⟩
+      · exact ⟨.inr ⟨⟨piece, pinned, receiver, chosen, delocalization, found,
+          fun vertex => by
+            by_contra outside
+            exact proper ⟨vertex, outside⟩⟩⟩⟩))
     properFresh globalFresh
 
 /-- `lem:proper-smearing` on the proper-scope arm. -/
@@ -64,16 +70,15 @@ noncomputable def typeAExitSixScopeDichotomy
 @[reducible] noncomputable def typeAExitSixGlobalRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.typeAExitSixGlobal
-    { Requires := [K .typeAExitSix, K .typeAExitSixGlobalScope]
+    { Requires := [K .typeAExitSixGlobalScope]
       Produces := [K .typeAExitSixGlobal]
-      requiresUnique := by key_fresh
+      requiresUnique := by simp
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .typeAExitSixGlobal)
         ⟨Graph.Contracts.TypeA.typeAExitSixGlobal_of_scope data.toParameters
-          inputs.current.object (inputs.get (K .typeAExitSix)).down
-          (inputs.get (K .typeAExitSixGlobalScope)).down⟩
+          inputs.current.object (inputs.get (K .typeAExitSixGlobalScope)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine
