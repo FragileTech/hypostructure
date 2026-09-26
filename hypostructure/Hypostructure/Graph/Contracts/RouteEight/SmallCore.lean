@@ -1,4 +1,4 @@
-import Hypostructure.Graph.Contracts.RouteEight.Basic
+import Hypostructure.Graph.Contracts.RouteEight.EntryCensus
 
 /-!
 # Contracts: nodes `[115]`--`[116]`, the zero/one-core collapse
@@ -52,28 +52,6 @@ theorem route8SmallCoreCollapse (data : Parameters) (object : FiniteObject.{u})
       data.threshold receiver := by
     have excess := (Finset.mem_sdiff.mp loadMem).1
     exact (Finset.mem_sdiff.mp excess).1
-  have loadDegree : object.internalDegree piece load =
-      data.threshold :=
-    (object.mem_routedLoads.mp loadRouted).2.1
-  have receiverDegree : object.internalDegree piece receiver <
-      data.threshold :=
-    (object.mem_receivers.mp
-      (by
-        have receiverFacts :
-            receiver ∈ object.receivers piece data.threshold ∧
-              object.Saturated piece data.threshold
-                data.dischargeScale receiver := by
-          simpa [Graph.VisibleEntry.saturatedReceivers] using receiverMem
-        exact receiverFacts.1)).2
-  have loadNeReceiver : load ≠ receiver := by
-    intro same
-    subst load
-    omega
-  obtain ⟨trace, traceSelected, traceInside⟩ := minimal.1.2.1
-  have tracePositive : 0 < trace.1.length := by
-    apply Nat.pos_of_ne_zero
-    intro zero
-    exact loadNeReceiver (trace.1.eq_of_length_eq_zero zero)
   let crossing := (entry.retained entry.essentialCore).filter
     (fun coordinate =>
       ∃ event : Graph.Route8.CoordinateEvent object,
@@ -107,75 +85,9 @@ theorem route8SmallCoreCollapse (data : Parameters) (object : FiniteObject.{u})
             receiver load basin ∨
         Graph.Route8.TraceBasin.TraceSurvivingSeparator
           object piece data.threshold data.LengthOK
-            receiver load basin := by
-    apply entry.smallCoreCollapseFacts parity
-    intro crossingEq
-    right
-    left
-    let traceCoordinate : presented.Coordinate :=
-      Graph.Route8.PresentedEntry.TraceCoordinate.traceIncidence
-    let retained :=
-      (entry.retained entry.essentialCore \ crossing).erase traceCoordinate
-    refine ⟨retained, ?_, ?_, ?_⟩
-    · intro coordinate member
-      have retainedMember := (Finset.mem_erase.mp member).2
-      have crossingMember := (Finset.mem_sdiff.mp retainedMember).1
-      exact (entry.mem_retained.mp crossingMember).1
-    · refine ⟨traceCoordinate, ?_, ?_, ?_⟩
-      · change Graph.Route8.PresentedEntry.TraceCoordinate.traceIncidence ∈
-          Graph.Route8.PresentedEntry.traceCoordinates
-            object piece data.threshold receiver load
-        exact Finset.mem_insert_self _ _
-      · exact Finset.notMem_erase _ _
-      · left
-        refine ⟨rfl, trace, traceSelected, tracePositive, ?_⟩
-        exact traceInside
-    · have retainedBaseEq :
-          Graph.Route8.PresentedEntry.retainedBaseCoordinates
-              object piece retained =
-            Graph.Route8.PresentedEntry.retainedBaseCoordinates
-              object piece
-                (entry.retained entry.essentialCore \ crossing) := by
-        apply Finset.ext
-        intro coordinate
-        simp only [Graph.Route8.PresentedEntry.retainedBaseCoordinates,
-          Finset.mem_filter]
-        constructor
-        · intro member
-          exact ⟨member.1, (Finset.mem_erase.mp member.2).2⟩
-        · intro member
-          refine ⟨member.1, Finset.mem_erase.mpr ⟨?_, member.2⟩⟩
-          simp [traceCoordinate]
-      have traceErase :
-          presented.state retained =
-            presented.state (entry.retained entry.essentialCore \ crossing) := by
-        change Graph.Route8.PresentedEntry.retainedReading
-            object piece basin data.threshold data.LengthOK
-              (Graph.Route8.PresentedEntry.retainedBaseCoordinates
-                object piece retained) =
-          Graph.Route8.PresentedEntry.retainedReading
-            object piece basin data.threshold data.LengthOK
-              (Graph.Route8.PresentedEntry.retainedBaseCoordinates
-                object piece
-                  (entry.retained entry.essentialCore \ crossing))
-        exact congrArg
-          (Graph.Route8.PresentedEntry.retainedReading
-            object piece basin data.threshold data.LengthOK)
-          retainedBaseEq
-      have retainedEq :
-          presented.state retained = entry.restriction entry.essentialCore :=
-        traceErase.trans crossingEq
-      -- `lem:typeA-one-terminal-collapse` step 3:
-      -- the quotient is target-complete against the declared
-      -- `u`-supported target algebra (`def:typeA-trace-basin`) because `alpha <= 1`
-      -- refutes the failure side -- a surviving mixed return would carry
-      -- two distinct boundary incidences of the core
-      -- (`lem:typeA-carrier-cut-parity`).  This replaces the
-      -- `essentialCore_complete` shortcut.
-      exact fun realization _realizes =>
-        Graph.Route8.TraceBasin.allQuotientRealizations_declaredEquivalent_of_alpha_le_one
-          alphaSmall realization _
-    exact alphaSmall
+            receiver load basin :=
+    Or.inr (Or.inl (route8Entry_smallCoreQuotient data object piece receiver load
+      (Finset.mem_filter.mp receiverMem).1 loadRouted minimal.1 parity alphaSmall))
   refine ⟨component, componentMem, receiver, receiverMem, load, loadMem,
     alphaSmall, alternatives⟩
 

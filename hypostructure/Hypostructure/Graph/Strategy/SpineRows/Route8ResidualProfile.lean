@@ -1,50 +1,28 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
-
-/-! Independently compiled spine row declarations. -/
+import Hypostructure.Graph.Contracts.RouteEight.Collection
 
 namespace Hypostructure.Graph.Strategy.Spine
 
-open Hypostructure
-open Hypostructure.Core.Residual
-open Hypostructure.Core.Strategy
+open Hypostructure.Core.Residual Hypostructure.Core.Strategy
 
 universe u v
 
-variable {BranchState : Graph.FiniteObject.{u} → Type v}
-variable {Presentation : Type} {presentation : Presentation}
-variable {data : Data.{u}}
-
-variable [FactSystem (Input BranchState Presentation presentation data)]
-
-omit [FactSystem (Input BranchState Presentation presentation data)] in
+/-- **Node `[110]`**: the exit-`(8)` route-`8` residual profile, read from the
+node-`[109]` exit-`(7)`-free fact. -/
 @[reducible] noncomputable def route8ResidualProfileRow
-    : @AtomicStrategy (Input BranchState Presentation presentation data) _
-        (instFactSystem (BranchState := BranchState)
-          (Presentation := Presentation) (presentation := presentation)
-          (data := data)) :=
-  letI : FactSystem (Input BranchState Presentation presentation data) :=
-    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
-      (presentation := presentation) (data := data)
-  @factOnly (Input BranchState Presentation presentation data) _
-    (instFactSystem (BranchState := BranchState)
-      (Presentation := Presentation) (presentation := presentation)
-      (data := data))
-    `Hypostructure.Graph.Strategy.Spine.route8ResidualProfile
+    {BranchState : Graph.FiniteObject.{u} → Type v}
+    {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.route8ResidualProfile
     { Requires := [K .typeAExitSevenFree]
       Produces := [K .route8ResidualProfile]
       requiresUnique := by simp
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let residual := inputs.get (K .typeAExitSevenFree)
       .cons (key := K .route8ResidualProfile)
-        ⟨by
-          obtain ⟨packing, canonical, valid, maximal, component, present, negative, zero,
-            receiver, isReceiver, peeled, peeledSubset, saturated, routing,
-            noCompression, noDelocalization, noHandoff⟩ := residual.down
-          exact ⟨packing, canonical, valid, maximal, component, present, negative, zero,
-            receiver, isReceiver, peeled, peeledSubset, saturated, routing,
-            noCompression, noDelocalization, noHandoff⟩⟩ .nil)
+        ⟨Graph.Contracts.RouteEight.route8ResidualProfile data.toParameters inputs.current.object
+          (inputs.get (K .typeAExitSevenFree)).down⟩ .nil)
     0 0
 
 end Hypostructure.Graph.Strategy.Spine
