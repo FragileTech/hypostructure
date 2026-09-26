@@ -63,7 +63,7 @@ noncomputable def Assembly.Internal.selectedAbsorbedFanChargeContinuation
     (portReturnFresh : K .triangularPortReturn ∉ known)
     (firstLandingFresh : K .triangularFirstLanding ∉ known)
     (crossShoulderFresh : K .triangularCrossShoulder ∉ known)
-    (fanSafeFresh : K .typeBFanSafe ∉ known)
+    (_fanSafeFresh : K .typeBFanSafe ∉ known)
     (bridgeMassFresh : K .typeBBridgeMass ∉ known)
     (bridgeSublinearFresh : K .typeBBridgeSublinear ∉ known)
     (cubicFresh : FactKeys.Has (K .cubicBaseline) known := by infer_instance)
