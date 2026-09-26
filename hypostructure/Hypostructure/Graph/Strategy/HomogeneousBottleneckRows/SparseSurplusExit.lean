@@ -3,6 +3,7 @@ import Hypostructure.Graph.NamedSurplusExits
 import Hypostructure.Graph.SparsePressureLedger
 import Hypostructure.Graph.GluedCrossingCycle
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.Basic
+import Hypostructure.Graph.Contracts.SurplusPair.SparseExit
 
 namespace Hypostructure.Graph.Strategy.Spine
 
@@ -51,42 +52,17 @@ quotient as the paper's target-defect handoff. -/
 @[reducible] noncomputable def sparseSurplusExitRoutingRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.sparseSurplusExitRouting
-    { Requires := [K .sparsePairExit, K .selection,
-        K .replacementExclusion]
+    { Requires := [K .sparsePairExit, K .selection, K .replacementExclusion]
       Produces := [K .sparseTargetDefectResidual]
       requiresUnique := by key_fresh
-      producesUnique := by key_fresh
+      producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let exit := (inputs.get (K .sparsePairExit)).down
-      let selected := (inputs.get (K .selection)).down
-      let replacementExcluded :=
-        (inputs.get (K .replacementExclusion)).down
       .cons (key := K .sparseTargetDefectResidual)
-        (show Value BranchState Presentation presentation data
-            .sparseTargetDefectResidual inputs.current from ⟨by
-          cases exit with
-          | dyadic cycle =>
-              exact (selected.1 cycle).elim
-          | targetDefect family coordinateSupport attempt reducing reduced full
-              identified defect =>
-              exact ⟨_, family, coordinateSupport, attempt, reducing,
-                reduced, full, identified, defect⟩
-          | compression support replacement =>
-              exact (replacementExcluded support replacement).elim
-          | delocalization representative smaller baseline transfer =>
-              exact (selected.1
-                (transfer (selected.2 representative smaller baseline))).elim
-          | suppressionChord family certificate violates =>
-              let expanded := family.expandCycle certificate
-              have accepted : data.LengthOK expanded.walk.length := by
-                rw [expanded.length_eq]
-                exact violates
-              have cycle : Graph.HasCycleWithLength data.LengthOK
-                  inputs.current.object :=
-                ⟨⟨family.sourceVertex certificate.vertex, expanded.walk,
-                  expanded.isCycle, accepted⟩⟩
-              exact (selected.1 cycle).elim⟩)
+        ⟨Graph.Contracts.SurplusPair.sparseTargetDefectResidual_of_exit
+          (inputs.get (K .sparsePairExit)).down
+          (inputs.get (K .selection)).down
+          (inputs.get (K .replacementExclusion)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

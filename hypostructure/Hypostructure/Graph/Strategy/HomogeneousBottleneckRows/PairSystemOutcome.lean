@@ -4,6 +4,7 @@ import Hypostructure.Graph.SparsePressureLedger
 import Hypostructure.Graph.GluedCrossingCycle
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.Basic
 import Hypostructure.Graph.Contracts.SurplusPair.PairCode
+import Hypostructure.Graph.Contracts.SurplusPair.PairOverlap
 
 namespace Hypostructure.Graph.Strategy.Spine
 
@@ -33,11 +34,7 @@ returns and graph-derived `ℓ_ret` bound on the same monotone ledger. -/
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .pairDemandReturns)
-        (show Value BranchState Presentation presentation data
-            .pairDemandReturns inputs.current from
-          ⟨⟨PairDemandReturns.of
-            (Classical.choice
-              (inputs.get (K .pairFailureOverlap)).down)⟩⟩)
+        ⟨Graph.Contracts.SurplusPair.pairDemandReturns_of_failureOverlap (inputs.get (K .pairFailureOverlap)).down⟩
         .nil)
 
 /-- Node `[179]`: test `lem:pair-system-realizability`'s coverage by exact case

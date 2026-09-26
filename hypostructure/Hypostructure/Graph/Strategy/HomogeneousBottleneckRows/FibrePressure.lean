@@ -4,6 +4,7 @@ import Hypostructure.Graph.SparsePressureLedger
 import Hypostructure.Graph.GluedCrossingCycle
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.Basic
 import Hypostructure.Graph.SparseUpperEnvelope
+import Hypostructure.Graph.Contracts.SurplusPair.Pressure
 
 namespace Hypostructure.Graph.Strategy.Spine
 
@@ -30,17 +31,7 @@ same certified ledger whose count was just accepted. -/
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .fibrePressure)
-        (show Value BranchState Presentation presentation data
-            .fibrePressure inputs.current from
-          ⟨by
-            obtain ⟨active, presentation, activationEq, certified,
-                _partition⟩ :=
-              (inputs.get (K .roleFibrePartition)).down
-            let ledger := certified.ledger
-            obtain ⟨token, tokenMem, role, display, roleBound, forced,
-                pattern⟩ := ledger.presented.exists_forced_pattern
-            exact ⟨active, presentation, activationEq, certified, token, role,
-              tokenMem, display, roleBound, forced, pattern⟩⟩)
+        ⟨Graph.Contracts.SurplusPair.fibrePressure_of_partition (inputs.get (K .roleFibrePartition)).down⟩
         .nil)
 
 /-- Node `[137]`, the coupled excess test `D_all > 0?` of

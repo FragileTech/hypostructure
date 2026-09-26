@@ -3,6 +3,7 @@ import Hypostructure.Graph.NamedSurplusExits
 import Hypostructure.Graph.SparsePressureLedger
 import Hypostructure.Graph.GluedCrossingCycle
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.Basic
+import Hypostructure.Graph.Contracts.SurplusPair.PairOverlap
 
 namespace Hypostructure.Graph.Strategy.Spine
 
@@ -35,29 +36,9 @@ response support `X_π`. -/
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .pairOverlapFirstFailure)
-        (show Value BranchState Presentation presentation data
-            .pairOverlapFirstFailure inputs.current from
-          ⟨by
-            obtain ⟨active, Coordinate, family, coordinateSupport,
-                blockerFree, _survives, realizationExists, _demand, _deficitBound,
-                _scheduleCard, _countFailure, pairSetNonempty,
-                firstFailureExists⟩ :=
-              (inputs.get (K .freePairCodeUnrealized)).down
-            let realization := Classical.choice realizationExists
-            let firstFailure := Classical.choice firstFailureExists
-            exact ⟨PairOverlapFirstFailure.of data.toParameters inputs.current.object active
-              Coordinate family coordinateSupport realization
-              (inputs.current.object.portPairSchedule data.threshold)
-              pairSetNonempty (by intro pair member; exact member)
-              (by
-                intro pair pairMem
-                constructor
-                · intro obstruction
-                  exact blockerFree ⟨pair, pairMem, Or.inl obstruction⟩
-                · intro obstruction
-                  exact blockerFree ⟨pair, pairMem, Or.inr obstruction⟩)
-              firstFailure
-              (inputs.get (K .noProperBaseline)).down.2⟩⟩)
+        ⟨Graph.Contracts.SurplusPair.pairOverlapFirstFailure_of_freeCodeUnrealized
+          (inputs.get (K .freePairCodeUnrealized)).down
+          (inputs.get (K .noProperBaseline)).down⟩
         .nil)
 
 /-- Node `[178]` on the literal capacity-free side selected at `[137]`. -/
@@ -71,99 +52,9 @@ response support `X_π`. -/
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .pairOverlapFirstFailure)
-        (show Value BranchState Presentation presentation data
-            .pairOverlapFirstFailure inputs.current from
-          ⟨by
-            obtain ⟨active, capacity, activationEq, _primitiveEq,
-                _primitiveLe, _concrete, _scheduleCard, Coordinate, family,
-                coordinateSupport, _survives, realizationExists, _demand,
-                _deficitBound, _countFailure, pairSetNonempty,
-                firstFailureExists⟩ :=
-              (inputs.get (K .blockedPairCodeUnrealized)).down
-            let pairSet := Graph.freeSide
-              inputs.current.object.vertexPairDecidableEq
-              (inputs.current.object.portPairSchedule data.threshold)
-              capacity.tokenOrder capacity.Eligible capacity.eligibleDecidable
-            let realization := Classical.choice realizationExists
-            let firstFailure := Classical.choice firstFailureExists
-            let activation := Graph.pairResponseActivation active
-            let recorded := Graph.recordSparsePairDEBlockers
-              (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-              (LengthOK := data.LengthOK) activation
-              (inputs.current.object.portPairSchedule data.threshold)
-            have pairSetBlockerFree : ∀ pair, pair ∈ pairSet →
-                ¬ Graph.SparsePairDEProfileObstructionAt
-                    (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-                    (LengthOK := data.LengthOK) activation
-                      (inputs.current.object.portPairSchedule data.threshold) pair ∧
-                  ¬ Graph.SparsePairDEResponseObstructionAt
-                    (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-                    (LengthOK := data.LengthOK) activation
-                      (inputs.current.object.portPairSchedule data.threshold) pair := by
-              intro pair pairMem
-              have freeRecorded : pair ∈ capacity.activation.freePairs
-                  data.threshold :=
-                capacity.freeSide_subset_activationFree pairMem
-              have freeParts :
-                  pair ∈ inputs.current.object.portPairSchedule data.threshold ∧
-                    ¬ (Graph.CanonicalFibreLedger.canonicalLabel
-                      Graph.SameTokenBlockerRoles.canonicalBlockerOrder
-                      capacity.activation.Blocks pair).isSome := by
-                simpa [Graph.FiniteObject.DemandActivation.freePairs,
-                  Graph.FiniteObject.freePairs,
-                  Graph.CanonicalFibreLedger.unassigned] using freeRecorded
-              have noRecordedBlocker :
-                  ¬ (recorded.blockers pair).Nonempty := by
-                have noCapacityBlocker :
-                    ¬ (capacity.activation.blockers pair).Nonempty := by
-                  intro blocked
-                  obtain ⟨kind, blocks⟩ :=
-                    (capacity.activation.exists_blocks_iff_blockers_nonempty
-                      pair).mpr blocked
-                  apply freeParts.2
-                  exact (Graph.CanonicalFibreLedger.isSome_canonicalLabel_iff
-                    Graph.SameTokenBlockerRoles.canonicalBlockerOrder
-                    capacity.activation.Blocks pair).mpr
-                      ⟨kind, capacity.activation.blocks_mem_canonicalBlockerOrder
-                        blocks, blocks⟩
-                simpa [recorded, activation, activationEq] using
-                  (show ¬ (capacity.activation.blockers pair).Nonempty from
-                    noCapacityBlocker)
-              constructor
-              · intro obstruction
-                apply noRecordedBlocker
-                let coordinate :=
-                  Graph.FiniteObject.DemandActivation.pairCoordinate pair
-                    ((activation.pairSupport pair).getD ∅)
-                have member : coordinate ∈
-                    recorded.profileObstructions pair := by
-                  simp [recorded, Graph.recordSparsePairDEBlockers,
-                    obstruction, coordinate]
-                exact (recorded.exists_blocks_iff_blockers_nonempty pair).mp
-                  ⟨.boundaryProfile, recorded.blocks_boundaryProfile member⟩
-              · intro obstruction
-                apply noRecordedBlocker
-                let coordinate :=
-                  Graph.FiniteObject.DemandActivation.pairCoordinate pair
-                    ((activation.pairSupport pair).getD ∅)
-                have member : coordinate ∈
-                    recorded.responseObstructions pair := by
-                  simp [recorded, Graph.recordSparsePairDEBlockers,
-                    obstruction, coordinate]
-                exact (recorded.exists_blocks_iff_blockers_nonempty pair).mp
-                  ⟨.targetResponse, recorded.blocks_targetResponse member⟩
-            exact ⟨PairOverlapFirstFailure.of data.toParameters inputs.current.object active
-              Coordinate family coordinateSupport realization pairSet
-              pairSetNonempty (by
-                intro pair member
-                have membership :
-                    pair ∈ inputs.current.object.portPairSchedule data.threshold ∧
-                      Graph.CanonicalFibreLedger.canonicalLabel
-                        capacity.tokenOrder capacity.Eligible pair = none := by
-                  simpa [pairSet, Graph.freeSide,
-                    Graph.CanonicalFibreLedger.unassigned] using member
-                exact membership.1) pairSetBlockerFree firstFailure
-              (inputs.get (K .noProperBaseline)).down.2⟩⟩)
+        ⟨Graph.Contracts.SurplusPair.pairOverlapFirstFailure_of_blockedCodeUnrealized
+          (inputs.get (K .blockedPairCodeUnrealized)).down
+          (inputs.get (K .noProperBaseline)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine
