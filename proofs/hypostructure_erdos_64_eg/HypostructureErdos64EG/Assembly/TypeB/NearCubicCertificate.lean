@@ -89,7 +89,7 @@ noncomputable def selectedTypeBNearCubicCertificateAfterPortRouting
     (windowShadowTailFresh : K .windowShadowSingletonTail ∉ known := by key_fresh)
     (windowShadowCycleFresh : K .windowShadowHitCycle ∉ known := by key_fresh)
     (windowShadowExcludedFresh : K .windowShadowHitExcluded ∉ known := by key_fresh)
-    (demandResidualFresh : K .route8PeeledDemandResidual ∉ known := by
+    (demandResidualFresh : K .route8StageRate ∉ known := by
       key_fresh)
     (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known := by
       key_fresh)
@@ -99,9 +99,12 @@ noncomputable def selectedTypeBNearCubicCertificateAfterPortRouting
       key_fresh)
     (jointBalanceFresh : K .route8JointBalance ∉ known := by
       key_fresh)
-    (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known)
+    (unifiedTerminalFresh : K .route8UnifiedTwoCarrierExit ∉ known)
     (globalLocalBridgeFresh : K .typeBGlobalLocalBridge ∉ known := by
       key_fresh)
+    (unpaidTwoFresh : K .route8UnpaidTwoCarrier ∉ known := by key_fresh)
+    (witnessFreeFresh : K .route8UnpaidWitnessFree ∉ known := by key_fresh)
+    (route8ClosureFresh : closed ∉ known := by key_fresh)
    :
     SelectedRouteEightBoundary selected := by
   match Assembly.Internal.selectedTypeBCertificateBoundaryAfterPortRouting history markedFresh residualFresh
@@ -111,39 +114,6 @@ noncomputable def selectedTypeBNearCubicCertificateAfterPortRouting
       (globalLocalBridgeFresh := globalLocalBridgeFresh) with
   | .inl mass =>
       exact selectedTypeBRoute8Continuation mass
-        (bridgeMassFresh := by key_fresh)
-        (bridgeSublinearFresh := by key_fresh)
-        (unifiedNegativeFresh := by key_fresh)
-        (typeAExclusionFresh := by key_fresh)
-        (typeBBridgeReductionFresh := by
-          key_fresh)
-        (piecesClassifiedFresh := by key_fresh)
-        (sublinearLedgerFresh := by key_fresh)
-        (sublinearResidualFresh := by key_fresh)
-        (unifiedDeficitFresh := by key_fresh)
-        (quotientFreeFresh := by key_fresh)
-        (quotientResidualFresh := by key_fresh)
-        (unifiedCensusFresh := by key_fresh)
-        (extractedCensusFresh := by key_fresh)
-        (unifiedTrueFresh := by key_fresh)
-        (peelingFresh := by key_fresh)
-        (stageFailedFresh := by key_fresh)
-        (demandLedgerFresh := by key_fresh)
-        (demandAbsorptionFresh := by key_fresh)
-        (openBoundarySaturatedFresh := by key_fresh)
-        (demandUnitCountFresh := by key_fresh)
-        (windowBlockersFresh := by key_fresh)
-        (windowShadowSignatureFresh := by key_fresh)
-        (windowShadowTailFresh := by key_fresh)
-        (windowShadowCycleFresh := by key_fresh)
-        (windowShadowExcludedFresh := by key_fresh)
-        (demandResidualFresh := by key_fresh)
-        (unpaidExitFourFresh := by key_fresh)
-        (unifiedVisibleFresh := by key_fresh)
-        (unifiedVisibleOverloadFresh := by
-          key_fresh)
-        (jointBalanceFresh := by key_fresh)
-        (unifiedTerminalFresh := by key_fresh)
   | .inr (.inl paid) =>
       rcases (paid.get (K .typeBExcluded)).down with canonical | _handoff
       · obtain ⟨_packing, _valid, _maximal, canonicalPiece,
@@ -157,109 +127,10 @@ noncomputable def selectedTypeBNearCubicCertificateAfterPortRouting
           canonicalPiece.vertices spineData.{u}.threshold
             spineData.{u}.dischargeScale).mpr nonnegative negative).elim
       · exact selectedTypeBRoute8Continuation paid
-          (bridgeMassFresh := by key_fresh)
-          (bridgeSublinearFresh := by key_fresh)
-          (unifiedNegativeFresh := by key_fresh)
-          (typeAExclusionFresh := by key_fresh)
-          (typeBBridgeReductionFresh := by
-            key_fresh)
-          (piecesClassifiedFresh := by key_fresh)
-          (sublinearLedgerFresh := by key_fresh)
-          (sublinearResidualFresh := by key_fresh)
-          (unifiedDeficitFresh := by key_fresh)
-          (quotientFreeFresh := by key_fresh)
-          (quotientResidualFresh := by key_fresh)
-          (unifiedCensusFresh := by key_fresh)
-          (extractedCensusFresh := by key_fresh)
-          (unifiedTrueFresh := by key_fresh)
-          (peelingFresh := by key_fresh)
-          (stageFailedFresh := by key_fresh)
-          (demandLedgerFresh := by key_fresh)
-          (demandAbsorptionFresh := by key_fresh)
-          (openBoundarySaturatedFresh := by key_fresh)
-          (demandUnitCountFresh := by key_fresh)
-          (windowBlockersFresh := by key_fresh)
-          (windowShadowSignatureFresh := by key_fresh)
-          (windowShadowTailFresh := by key_fresh)
-          (windowShadowCycleFresh := by key_fresh)
-          (windowShadowExcludedFresh := by key_fresh)
-          (demandResidualFresh := by key_fresh)
-          (unpaidExitFourFresh := by key_fresh)
-          (unifiedVisibleFresh := by key_fresh)
-          (unifiedVisibleOverloadFresh := by
-            key_fresh)
-          (jointBalanceFresh := by key_fresh)
-          (unifiedTerminalFresh := by key_fresh)
   | .inr (.inr (.inl mass)) =>
       exact selectedTypeBRoute8Continuation mass
-        (bridgeMassFresh := by key_fresh)
-        (bridgeSublinearFresh := by key_fresh)
-        (unifiedNegativeFresh := by key_fresh)
-        (typeAExclusionFresh := by key_fresh)
-        (typeBBridgeReductionFresh := by
-          key_fresh)
-        (piecesClassifiedFresh := by key_fresh)
-        (sublinearLedgerFresh := by key_fresh)
-        (sublinearResidualFresh := by key_fresh)
-        (unifiedDeficitFresh := by key_fresh)
-        (quotientFreeFresh := by key_fresh)
-        (quotientResidualFresh := by key_fresh)
-        (unifiedCensusFresh := by key_fresh)
-        (extractedCensusFresh := by key_fresh)
-        (unifiedTrueFresh := by key_fresh)
-        (peelingFresh := by key_fresh)
-        (stageFailedFresh := by key_fresh)
-        (demandLedgerFresh := by key_fresh)
-        (demandAbsorptionFresh := by key_fresh)
-        (openBoundarySaturatedFresh := by key_fresh)
-        (demandUnitCountFresh := by key_fresh)
-        (windowBlockersFresh := by key_fresh)
-        (windowShadowSignatureFresh := by key_fresh)
-        (windowShadowTailFresh := by key_fresh)
-        (windowShadowCycleFresh := by key_fresh)
-        (windowShadowExcludedFresh := by key_fresh)
-        (demandResidualFresh := by key_fresh)
-        (unpaidExitFourFresh := by key_fresh)
-        (unifiedVisibleFresh := by key_fresh)
-        (unifiedVisibleOverloadFresh := by
-          key_fresh)
-        (jointBalanceFresh := by key_fresh)
-        (unifiedTerminalFresh := by key_fresh)
   | .inr (.inr (.inr mass)) =>
       exact selectedTypeBRoute8Continuation mass
-        (bridgeMassFresh := by key_fresh)
-        (bridgeSublinearFresh := by key_fresh)
-        (unifiedNegativeFresh := by key_fresh)
-        (typeAExclusionFresh := by key_fresh)
-        (typeBBridgeReductionFresh := by
-          key_fresh)
-        (piecesClassifiedFresh := by key_fresh)
-        (sublinearLedgerFresh := by key_fresh)
-        (sublinearResidualFresh := by key_fresh)
-        (unifiedDeficitFresh := by key_fresh)
-        (quotientFreeFresh := by key_fresh)
-        (quotientResidualFresh := by key_fresh)
-        (unifiedCensusFresh := by key_fresh)
-        (extractedCensusFresh := by key_fresh)
-        (unifiedTrueFresh := by key_fresh)
-        (peelingFresh := by key_fresh)
-        (stageFailedFresh := by key_fresh)
-        (demandLedgerFresh := by key_fresh)
-        (demandAbsorptionFresh := by key_fresh)
-        (openBoundarySaturatedFresh := by key_fresh)
-        (demandUnitCountFresh := by key_fresh)
-        (windowBlockersFresh := by key_fresh)
-        (windowShadowSignatureFresh := by key_fresh)
-        (windowShadowTailFresh := by key_fresh)
-        (windowShadowCycleFresh := by key_fresh)
-        (windowShadowExcludedFresh := by key_fresh)
-        (demandResidualFresh := by key_fresh)
-        (unpaidExitFourFresh := by key_fresh)
-        (unifiedVisibleFresh := by key_fresh)
-        (unifiedVisibleOverloadFresh := by
-          key_fresh)
-        (jointBalanceFresh := by key_fresh)
-        (unifiedTerminalFresh := by key_fresh)
 
 /-- Compatibility name for callers that already carry the common `[72]`
 port-routing ledger.  New branch assembly uses the explicit

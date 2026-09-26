@@ -85,12 +85,12 @@ noncomputable def selectedTypeADecoratedHandoff
     (windowShadowTailFresh : K .windowShadowSingletonTail ∉ known)
     (windowShadowCycleFresh : K .windowShadowHitCycle ∉ known)
     (windowShadowExcludedFresh : K .windowShadowHitExcluded ∉ known)
-    (demandResidualFresh : K .route8PeeledDemandResidual ∉ known)
+    (demandResidualFresh : K .route8StageRate ∉ known)
     (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known)
     (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known)
     (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known)
     (jointBalanceFresh : K .route8JointBalance ∉ known)
-    (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known)
+    (unifiedTerminalFresh : K .route8UnifiedTwoCarrierExit ∉ known)
     (decoratedExcludedFresh : K .typeBExcluded ∉ known)
     (decoratedExclusionResidualFresh : K .typeBExclusionResidual ∉ known)
     (decoratedExclusionMassFresh : K .typeBExclusionResidualMass ∉ known)
@@ -105,6 +105,9 @@ noncomputable def selectedTypeADecoratedHandoff
     (firstLandingFresh : K .triangularFirstLanding ∉ known)
     (crossShoulderFresh : K .triangularCrossShoulder ∉ known)
     (triangularRoutingFresh : K .triangularPortTypeBRouting ∉ known)
+    (unpaidTwoFresh : K .route8UnpaidTwoCarrier ∉ known := by key_fresh)
+    (witnessFreeFresh : K .route8UnpaidWitnessFree ∉ known := by key_fresh)
+    (route8ClosureFresh : closed ∉ known := by key_fresh)
     :
     SelectedRouteEightBoundary selected := by
   let assigned :=

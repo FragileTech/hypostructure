@@ -234,9 +234,9 @@ noncomputable def selectedNetChargeContinuation
       by key_fresh)
     (privateBudgetFresh : K .route8PrivateCarrierBudget ∉ known :=
       by key_fresh)
-    (noTwoContradictionFresh : K .route8NoTwoCarrierContradiction ∉ known :=
+    (noTwoContradictionFresh : K .route8PrivateCarrierBudget ∉ known :=
       by key_fresh)
-    (terminalNoGoFresh : K .route8TerminalNoGo ∉ known := by key_fresh)
+    (terminalNoGoFresh : K .route8TwoCarrierExit ∉ known := by key_fresh)
     (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known := by key_fresh)
     (typeAExclusionFresh : K .typeAExclusion ∉ known := by key_fresh)
     (typeBBridgeReductionFresh : K .typeBBridgeReduction ∉ known := by
@@ -262,7 +262,7 @@ noncomputable def selectedNetChargeContinuation
     (windowShadowTailFresh : K .windowShadowSingletonTail ∉ known := by key_fresh)
     (windowShadowCycleFresh : K .windowShadowHitCycle ∉ known := by key_fresh)
     (windowShadowExcludedFresh : K .windowShadowHitExcluded ∉ known := by key_fresh)
-    (demandResidualFresh : K .route8PeeledDemandResidual ∉ known := by key_fresh)
+    (demandResidualFresh : K .route8StageRate ∉ known := by key_fresh)
     (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known := by
       key_fresh)
     (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known := by
@@ -271,7 +271,7 @@ noncomputable def selectedNetChargeContinuation
       key_fresh)
     (jointBalanceFresh : K .route8JointBalance ∉ known := by
       key_fresh)
-    (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known := by key_fresh)
+    (unifiedTerminalFresh : K .route8UnifiedTwoCarrierExit ∉ known := by key_fresh)
     (globalLocalBridgeFresh : K .typeBGlobalLocalBridge ∉ known := by key_fresh)
     (fanClosedFresh : K .fanClosedPort ∉ known := by key_fresh)
     (compatibleClosureFresh : K .compatiblePairFanClosure ∉ known := by key_fresh)
@@ -291,6 +291,8 @@ noncomputable def selectedNetChargeContinuation
       key_fresh)
     (silentSevenFreeFresh : K .typeASilentExitSevenFree ∉ known := by
       key_fresh)
+    (unpaidTwoFresh : K .route8UnpaidTwoCarrier ∉ known := by key_fresh)
+    (witnessFreeFresh : K .route8UnpaidWitnessFree ∉ known := by key_fresh)
     :
     SelectedNetChargeBoundary selected := by
   letI := cubicBaselineFresh

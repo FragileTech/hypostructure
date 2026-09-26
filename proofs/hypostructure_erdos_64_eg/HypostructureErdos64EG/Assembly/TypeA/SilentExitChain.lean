@@ -93,8 +93,8 @@ noncomputable def selectedTypeASilentExitChain
     (trueEntryFresh : K .route8TrueTwoCarrierEntry ∉ known)
     (deletionWitnessesFresh : K .route8CarrierDeletionWitnesses ∉ known)
     (privateBudgetFresh : K .route8PrivateCarrierBudget ∉ known)
-    (noTwoContradictionFresh : K .route8NoTwoCarrierContradiction ∉ known)
-    (terminalNoGoFresh : K .route8TerminalNoGo ∉ known)
+    (noTwoContradictionFresh : K .route8PrivateCarrierBudget ∉ known)
+    (terminalNoGoFresh : K .route8TwoCarrierExit ∉ known)
     (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known)
     (typeAExclusionFresh : K .typeAExclusion ∉ known)
     (typeBBridgeReductionFresh : K .typeBBridgeReduction ∉ known)
@@ -118,12 +118,12 @@ noncomputable def selectedTypeASilentExitChain
     (windowShadowTailFresh : K .windowShadowSingletonTail ∉ known)
     (windowShadowCycleFresh : K .windowShadowHitCycle ∉ known)
     (windowShadowExcludedFresh : K .windowShadowHitExcluded ∉ known)
-    (demandResidualFresh : K .route8PeeledDemandResidual ∉ known)
+    (demandResidualFresh : K .route8StageRate ∉ known)
     (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known)
     (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known)
     (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known)
     (jointBalanceFresh : K .route8JointBalance ∉ known)
-    (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known)
+    (unifiedTerminalFresh : K .route8UnifiedTwoCarrierExit ∉ known)
     [FactKeys.Has (K .bridgeless) known]
     (decoratedGlobalLocalBridgeFresh : K .typeBGlobalLocalBridge ∉ known)
     (fanClosedFresh : K .fanClosedPort ∉ known)
@@ -145,6 +145,8 @@ noncomputable def selectedTypeASilentExitChain
       key_fresh)
     (silentSevenFreeFresh : K .typeASilentExitSevenFree ∉ known := by
       key_fresh)
+    (unpaidTwoFresh : K .route8UnpaidTwoCarrier ∉ known := by key_fresh)
+    (witnessFreeFresh : K .route8UnpaidWitnessFree ∉ known := by key_fresh)
    : SelectedRouteEightBoundary selected := by
   letI := cubicBaselineFresh
   let _cubicBaseline := (history.get (K .cubicBaseline)).down

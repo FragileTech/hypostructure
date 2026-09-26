@@ -39,16 +39,13 @@ set_option maxHeartbeats 1000000 in
       (Presentation := Presentation) (presentation := presentation)
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.route8UnifiedVisibleOverload
-    { Requires := [K .route8UnifiedVisibleResidual,
-        K .route8PeeledDemandResidual]
+    { Requires := [K .route8UnifiedVisibleResidual]
       Produces := [K .route8UnifiedVisibleOverload]
       requiresUnique := by simp
       producesUnique := by key_fresh
       producesNonempty := by simp }
     (fun inputs =>
       let visible := (inputs.get (K .route8UnifiedVisibleResidual)).down
-      let peeledResidual :=
-        (inputs.get (K .route8PeeledDemandResidual)).down
       have overloadStatement : Route8UnifiedVisibleOverloadStatement data.toParameters
           inputs.current.object := by
           classical

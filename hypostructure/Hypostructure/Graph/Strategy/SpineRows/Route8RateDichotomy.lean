@@ -26,10 +26,6 @@ noncomputable def route8RateDichotomy
     (previous :
       @ExactLedger (Input BranchState Presentation presentation data)
         _ (factSystem BranchState Presentation presentation data) current known)
-    [@Core.Residual.FactKeys.Has
-      (Input BranchState Presentation presentation data) _
-      (factSystem BranchState Presentation presentation data)
-      (K .selection) known]
     (rateFresh : K .route8Rate ∉ known)
     (failsFresh : K .route8RateFails ∉ known) :
     @Decision (Input BranchState Presentation presentation data) _
@@ -41,10 +37,6 @@ noncomputable def route8RateDichotomy
     `Hypostructure.Graph.Strategy.Spine.route8RateDichotomy
     (by
       classical
-      let _selected := (@ExactLedger.get
-        (Input BranchState Presentation presentation data) _
-        (factSystem BranchState Presentation presentation data)
-        current known previous (K .selection)).down
       exact if rate : Graph.Route8Census.Rate current.object
           (canonicalWindowPacking data.toParameters current.object) data.threshold data.dischargeScale
           (data.bridgeMassFactor * data.dischargeScale *

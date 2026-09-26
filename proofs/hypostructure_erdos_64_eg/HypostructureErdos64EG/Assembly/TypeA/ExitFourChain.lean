@@ -59,8 +59,8 @@ noncomputable def selectedTypeAExitFourChain
     (collapseFresh : K .route8SmallCoreCollapse ∉ known)
     (deletionWitnessesFresh : K .route8CarrierDeletionWitnesses ∉ known)
     (privateBudgetFresh : K .route8PrivateCarrierBudget ∉ known)
-    (noTwoContradictionFresh : K .route8NoTwoCarrierContradiction ∉ known)
-    (terminalNoGoFresh : K .route8TerminalNoGo ∉ known)
+    (noTwoContradictionFresh : K .route8PrivateCarrierBudget ∉ known)
+    (terminalNoGoFresh : K .route8TwoCarrierExit ∉ known)
     (descentFresh : K .typeAExitFourFiniteDescent ∉ known)
     (exitFourFresh : K .typeASaturatedHandoffExitFour ∉ known)
     (exitFourFreeFresh : K .typeASaturatedHandoffExitFourFree ∉ known)
@@ -125,12 +125,12 @@ noncomputable def selectedTypeAExitFourChain
     (windowShadowTailFresh : K .windowShadowSingletonTail ∉ known)
     (windowShadowCycleFresh : K .windowShadowHitCycle ∉ known)
     (windowShadowExcludedFresh : K .windowShadowHitExcluded ∉ known)
-    (demandResidualFresh : K .route8PeeledDemandResidual ∉ known)
+    (demandResidualFresh : K .route8StageRate ∉ known)
     (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known)
     (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known)
     (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known)
     (jointBalanceFresh : K .route8JointBalance ∉ known)
-    (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known)
+    (unifiedTerminalFresh : K .route8UnifiedTwoCarrierExit ∉ known)
     (decoratedExcludedFresh : K .typeBExcluded ∉ known)
     (decoratedExclusionResidualFresh : K .typeBExclusionResidual ∉ known)
     (decoratedExclusionMassFresh : K .typeBExclusionResidualMass ∉ known)
@@ -149,6 +149,8 @@ noncomputable def selectedTypeAExitFourChain
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .negativeSupport) known]
     (closureFresh : closed ∉ known)
+    (unpaidTwoFresh : K .route8UnpaidTwoCarrier ∉ known := by key_fresh)
+    (witnessFreeFresh : K .route8UnpaidWitnessFree ∉ known := by key_fresh)
    : SelectedRouteEightBoundary selected := by
   letI := cubicBaselineFresh
   let _cubicBaseline := (history.get (K .cubicBaseline)).down
@@ -243,38 +245,6 @@ noncomputable def selectedTypeAExitFourChain
           -- target-defect loads (Part IX pressure ledger `[123]`) — the next
           -- producer.
           exact selectedTypeAExitFourDischargedRetest dischargedHistory
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (unpaidExitFourFresh := by key_fresh)
-            (unifiedVisibleFresh := by key_fresh)
-            (unifiedVisibleOverloadFresh := by
-              key_fresh)
-            (jointBalanceFresh := by key_fresh)
   | .right freeHistory =>
       exact selectedTypeAExitFiveToSeven freeHistory
         (by key_fresh) (by key_fresh)

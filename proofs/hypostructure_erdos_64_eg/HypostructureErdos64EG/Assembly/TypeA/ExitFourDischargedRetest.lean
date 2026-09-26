@@ -49,33 +49,33 @@ noncomputable def selectedTypeAExitFourDischargedRetest
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .typeAReceiverRouting) known]
-    (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known)
-    (typeAExclusionFresh : K .typeAExclusion ∉ known)
-    (typeBBridgeReductionFresh : K .typeBBridgeReduction ∉ known)
-    (piecesClassifiedFresh : K .route8PiecesClassified ∉ known)
-    (bridgeMassFresh : K .typeBBridgeMass ∉ known)
-    (bridgeSublinearFresh : K .typeBBridgeSublinear ∉ known)
-    (sublinearLedgerFresh : K .typeBSublinearLedger ∉ known)
-    (sublinearResidualFresh : K .typeBSublinearResidual ∉ known)
-    (unifiedDeficitFresh : K .route8UnifiedDeficit ∉ known)
-    (quotientFreeFresh : K .route8QuotientFree ∉ known)
-    (quotientResidualFresh : K .route8QuotientResidual ∉ known)
-    (unifiedCensusFresh : K .route8UnifiedEntryCensus ∉ known)
-    (extractedCensusFresh : K .route8ExtractedEntryCensus ∉ known)
-    (peelingFresh : K .route8PeelingDescent ∉ known)
-    (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known)
-    (stageFailedFresh : K .route8StageRateFailed ∉ known)
-    (terminalFresh : K .route8TerminalNoGo ∉ known)
-    (demandLedgerFresh : K .route8DemandLedger ∉ known)
-    (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known)
-    (openBoundarySaturatedFresh : K .route8OpenBoundarySaturated ∉ known)
-    (demandUnitCountFresh : K .route8DemandUnitCount ∉ known)
-    (windowBlockersFresh : K .route8WindowBlockers ∉ known)
-    (windowShadowSignatureFresh : K .windowShadowSignature ∉ known)
-    (windowShadowTailFresh : K .windowShadowSingletonTail ∉ known)
-    (windowShadowCycleFresh : K .windowShadowHitCycle ∉ known)
-    (windowShadowExcludedFresh : K .windowShadowHitExcluded ∉ known)
-    (demandResidualFresh : K .route8PeeledDemandResidual ∉ known)
+    (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known := by key_fresh)
+    (typeAExclusionFresh : K .typeAExclusion ∉ known := by key_fresh)
+    (typeBBridgeReductionFresh : K .typeBBridgeReduction ∉ known := by key_fresh)
+    (piecesClassifiedFresh : K .route8PiecesClassified ∉ known := by key_fresh)
+    (bridgeMassFresh : K .typeBBridgeMass ∉ known := by key_fresh)
+    (bridgeSublinearFresh : K .typeBBridgeSublinear ∉ known := by key_fresh)
+    (sublinearLedgerFresh : K .typeBSublinearLedger ∉ known := by key_fresh)
+    (sublinearResidualFresh : K .typeBSublinearResidual ∉ known := by key_fresh)
+    (unifiedDeficitFresh : K .route8UnifiedDeficit ∉ known := by key_fresh)
+    (quotientFreeFresh : K .route8QuotientFree ∉ known := by key_fresh)
+    (quotientResidualFresh : K .route8QuotientResidual ∉ known := by key_fresh)
+    (unifiedCensusFresh : K .route8UnifiedEntryCensus ∉ known := by key_fresh)
+    (extractedCensusFresh : K .route8ExtractedEntryCensus ∉ known := by key_fresh)
+    (peelingFresh : K .route8PeelingDescent ∉ known := by key_fresh)
+    (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known := by key_fresh)
+    (stageFailedFresh : K .route8StageRateFailed ∉ known := by key_fresh)
+    (closureFresh : closed ∉ known := by key_fresh)
+    (demandLedgerFresh : K .route8DemandLedger ∉ known := by key_fresh)
+    (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known := by key_fresh)
+    (openBoundarySaturatedFresh : K .route8OpenBoundarySaturated ∉ known := by key_fresh)
+    (demandUnitCountFresh : K .route8DemandUnitCount ∉ known := by key_fresh)
+    (windowBlockersFresh : K .route8WindowBlockers ∉ known := by key_fresh)
+    (windowShadowSignatureFresh : K .windowShadowSignature ∉ known := by key_fresh)
+    (windowShadowTailFresh : K .windowShadowSingletonTail ∉ known := by key_fresh)
+    (windowShadowCycleFresh : K .windowShadowHitCycle ∉ known := by key_fresh)
+    (windowShadowExcludedFresh : K .windowShadowHitExcluded ∉ known := by key_fresh)
+    (demandResidualFresh : K .route8StageRate ∉ known := by key_fresh)
     (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known := by
       key_fresh)
     (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known := by
@@ -84,6 +84,9 @@ noncomputable def selectedTypeAExitFourDischargedRetest
       key_fresh)
     (jointBalanceFresh : K .route8JointBalance ∉ known := by
       key_fresh)
+    (unifiedExitFresh : K .route8UnifiedTwoCarrierExit ∉ known := by key_fresh)
+    (unpaidTwoFresh : K .route8UnpaidTwoCarrier ∉ known := by key_fresh)
+    (witnessFreeFresh : K .route8UnpaidWitnessFree ∉ known := by key_fresh)
    :
     SelectedRouteEightBoundary selected := by
   -- Read the discharged receiver fact from the accumulated ledger.
@@ -124,64 +127,6 @@ noncomputable def selectedTypeAExitFourDischargedRetest
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       bridgeMass (by key_fresh)
-  match typeBSublinearDichotomy (data := spineData) bridgeSublinear
-      (by key_fresh)
-      (by key_fresh) with
-  | .right residualHistory =>
-      exact Or.inl (residualHistory.get (K .typeBSublinearResidual)).down
-  | .left sublinearHistory =>
-      let unifiedDeficit :=
-        (route8UnifiedDeficitRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          sublinearHistory (by key_fresh)
-      match route8QuotientDichotomy (data := spineData) unifiedDeficit
-          (by key_fresh)
-          (by key_fresh) with
-      | .right residualHistory =>
-          exact Or.inr (Or.inl
-            (residualHistory.get (K .route8QuotientResidual)).down)
-      | .left quotientFreeHistory =>
-          let census :=
-            (route8UnifiedEntryCensusRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile)
-              (data := spineData)).run quotientFreeHistory
-                (by key_fresh)
-          let peeled := selectedLargeBudgetPressureCensus census
-            (peelingFresh := by key_fresh)
-            (unifiedTrueFresh := by key_fresh)
-            (stageFailedFresh := by key_fresh)
-            (terminalFresh := by key_fresh)
-            (demandLedgerFresh := by key_fresh)
-            (demandAbsorptionFresh := by
-              key_fresh)
-            (openBoundarySaturatedFresh := by
-              key_fresh)
-            (demandUnitCountFresh := by
-              key_fresh)
-            (windowBlockersFresh := by key_fresh)
-            (windowShadowSignatureFresh := by key_fresh)
-            (windowShadowTailFresh := by key_fresh)
-            (windowShadowCycleFresh := by key_fresh)
-            (windowShadowExcludedFresh := by key_fresh)
-            (demandResidualFresh := by key_fresh)
-          let unpaidExitFour :=
-            selectedRouteEightUnpaidExitFourReduction peeled
-              (unifiedTrueFresh := by key_fresh)
-              (residualFresh := by key_fresh)
-              (terminalFresh := by key_fresh)
-          let visibleResidual :=
-            selectedRouteEightVisibleResidual unpaidExitFour
-              (visibleFresh := by key_fresh)
-          let visibleOverload :=
-            selectedRouteEightVisibleOverload visibleResidual
-              (overloadFresh := by
-                key_fresh)
-          let jointBalance :=
-            selectedRouteEightJointBalance visibleOverload
-              (by key_fresh)
-          exact Or.inr (Or.inr
-            (jointBalance.get (K .route8JointBalance)).down)
+  exact selectedRouteEightUnifiedResidual bridgeSublinear
 
 end HypostructureErdos64EG

@@ -94,7 +94,7 @@ noncomputable def Assembly.Internal.selectedAbsorbedFanChargeContinuation
     (windowShadowTailFresh : K .windowShadowSingletonTail ∉ known := by key_fresh)
     (windowShadowCycleFresh : K .windowShadowHitCycle ∉ known := by key_fresh)
     (windowShadowExcludedFresh : K .windowShadowHitExcluded ∉ known := by key_fresh)
-    (demandResidualFresh : K .route8PeeledDemandResidual ∉ known := by key_fresh)
+    (demandResidualFresh : K .route8StageRate ∉ known := by key_fresh)
     (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known := by
       key_fresh)
     (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known := by
@@ -103,7 +103,10 @@ noncomputable def Assembly.Internal.selectedAbsorbedFanChargeContinuation
       key_fresh)
     (jointBalanceFresh : K .route8JointBalance ∉ known := by
       key_fresh)
-    (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known := by key_fresh)
+    (unifiedTerminalFresh : K .route8UnifiedTwoCarrierExit ∉ known := by key_fresh)
+    (unpaidTwoFresh : K .route8UnpaidTwoCarrier ∉ known := by key_fresh)
+    (witnessFreeFresh : K .route8UnpaidWitnessFree ∉ known := by key_fresh)
+    (route8ClosureFresh : closed ∉ known := by key_fresh)
    :
     SelectedRouteEightBoundary selected := by
   letI := cubicFresh

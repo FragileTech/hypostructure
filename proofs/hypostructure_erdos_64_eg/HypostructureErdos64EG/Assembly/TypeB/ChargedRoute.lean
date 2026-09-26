@@ -61,7 +61,7 @@ noncomputable def selectedTypeBChargedRoute8Continuation
     (windowShadowTailFresh : K .windowShadowSingletonTail ∉ known := by key_fresh)
     (windowShadowCycleFresh : K .windowShadowHitCycle ∉ known := by key_fresh)
     (windowShadowExcludedFresh : K .windowShadowHitExcluded ∉ known := by key_fresh)
-    (demandResidualFresh : K .route8PeeledDemandResidual ∉ known := by key_fresh)
+    (demandResidualFresh : K .route8StageRate ∉ known := by key_fresh)
     (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known := by
       key_fresh)
     (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known := by
@@ -70,7 +70,10 @@ noncomputable def selectedTypeBChargedRoute8Continuation
       key_fresh)
     (jointBalanceFresh : K .route8JointBalance ∉ known := by
       key_fresh)
-    (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known := by key_fresh)
+    (unifiedTerminalFresh : K .route8UnifiedTwoCarrierExit ∉ known := by key_fresh)
+    (unpaidTwoFresh : K .route8UnpaidTwoCarrier ∉ known := by key_fresh)
+    (witnessFreeFresh : K .route8UnpaidWitnessFree ∉ known := by key_fresh)
+    (route8ClosureFresh : closed ∉ known := by key_fresh)
    :
     SelectedRouteEightBoundary selected := by
   letI := cubicFresh
@@ -82,37 +85,5 @@ noncomputable def selectedTypeBChargedRoute8Continuation
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       cubic (by key_fresh)
   exact selectedTypeBRoute8Continuation routed
-    (bridgeMassFresh := by key_fresh)
-    (bridgeSublinearFresh := by key_fresh)
-    (unifiedNegativeFresh := by key_fresh)
-    (typeAExclusionFresh := by key_fresh)
-    (typeBBridgeReductionFresh := by key_fresh)
-    (piecesClassifiedFresh := by key_fresh)
-    (sublinearLedgerFresh := by key_fresh)
-    (sublinearResidualFresh := by key_fresh)
-    (unifiedDeficitFresh := by key_fresh)
-    (quotientFreeFresh := by key_fresh)
-    (quotientResidualFresh := by key_fresh)
-    (unifiedCensusFresh := by key_fresh)
-    (extractedCensusFresh := by key_fresh)
-    (unifiedTrueFresh := by key_fresh)
-    (peelingFresh := by key_fresh)
-    (stageFailedFresh := by key_fresh)
-    (demandLedgerFresh := by key_fresh)
-    (demandAbsorptionFresh := by key_fresh)
-    (openBoundarySaturatedFresh := by key_fresh)
-    (demandUnitCountFresh := by key_fresh)
-    (windowBlockersFresh := by key_fresh)
-    (windowShadowSignatureFresh := by key_fresh)
-    (windowShadowTailFresh := by key_fresh)
-    (windowShadowCycleFresh := by key_fresh)
-    (windowShadowExcludedFresh := by key_fresh)
-    (demandResidualFresh := by key_fresh)
-    (unpaidExitFourFresh := by key_fresh)
-    (unifiedVisibleFresh := by key_fresh)
-    (unifiedVisibleOverloadFresh := by
-      key_fresh)
-    (jointBalanceFresh := by key_fresh)
-    (unifiedTerminalFresh := by key_fresh)
 
 end HypostructureErdos64EG

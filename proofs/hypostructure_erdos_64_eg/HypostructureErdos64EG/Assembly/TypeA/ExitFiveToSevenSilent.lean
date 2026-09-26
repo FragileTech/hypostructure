@@ -1,3 +1,4 @@
+import Hypostructure.Graph.Strategy.TypeAExitRun
 import Hypostructure.Graph.Strategy.SpineRows.HighCentreNormalForm
 import Hypostructure.Graph.Strategy.SpineRows.TypeAExitSevenHandoff
 import Hypostructure.Graph.Strategy.SpineRows.TypeAExitSixScopeDichotomy
@@ -105,8 +106,8 @@ noncomputable def selectedTypeAExitFiveToSevenSilent
     (trueEntryFresh : K .route8TrueTwoCarrierEntry ∉ known)
     (deletionWitnessesFresh : K .route8CarrierDeletionWitnesses ∉ known)
     (privateBudgetFresh : K .route8PrivateCarrierBudget ∉ known)
-    (noTwoContradictionFresh : K .route8NoTwoCarrierContradiction ∉ known)
-    (terminalNoGoFresh : K .route8TerminalNoGo ∉ known)
+    (noTwoContradictionFresh : K .route8PrivateCarrierBudget ∉ known)
+    (terminalNoGoFresh : K .route8TwoCarrierExit ∉ known)
     (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known)
     (typeAExclusionFresh : K .typeAExclusion ∉ known)
     (typeBBridgeReductionFresh : K .typeBBridgeReduction ∉ known)
@@ -130,12 +131,12 @@ noncomputable def selectedTypeAExitFiveToSevenSilent
     (windowShadowTailFresh : K .windowShadowSingletonTail ∉ known)
     (windowShadowCycleFresh : K .windowShadowHitCycle ∉ known)
     (windowShadowExcludedFresh : K .windowShadowHitExcluded ∉ known)
-    (demandResidualFresh : K .route8PeeledDemandResidual ∉ known)
+    (demandResidualFresh : K .route8StageRate ∉ known)
     (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known)
     (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known)
     (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known)
     (jointBalanceFresh : K .route8JointBalance ∉ known)
-    (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known)
+    (unifiedTerminalFresh : K .route8UnifiedTwoCarrierExit ∉ known)
     (decoratedGlobalLocalBridgeFresh : K .typeBGlobalLocalBridge ∉ known)
     (fanClosedFresh : K .fanClosedPort ∉ known)
     (compatibleClosureFresh : K .compatiblePairFanClosure ∉ known)
@@ -153,6 +154,8 @@ noncomputable def selectedTypeAExitFiveToSevenSilent
       key_fresh)
     (silentSevenFreeFresh : K .typeASilentExitSevenFree ∉ known := by
       key_fresh)
+    (unpaidTwoFresh : K .route8UnpaidTwoCarrier ∉ known := by key_fresh)
+    (witnessFreeFresh : K .route8UnpaidWitnessFree ∉ known := by key_fresh)
    : SelectedRouteEightBoundary selected := by
   -- `[103]`
   match typeASilentExitFiveDichotomy (data := spineData) history fiveFresh
@@ -254,56 +257,5 @@ noncomputable def selectedTypeAExitFiveToSevenSilent
                   (data := spineData)).run sharedRoute8
                     (by key_fresh)
               exact selectedRouteEightResidual normal
-                (by key_fresh) (by key_fresh)
-                (by key_fresh) (by key_fresh)
-                (by key_fresh)
-                (by key_fresh)
-                (by key_fresh)
-                (by key_fresh)
-                (by key_fresh)
-                (by key_fresh)
-                (by key_fresh)
-                (by key_fresh)
-                (by key_fresh)
-                (by key_fresh) (by key_fresh)
-                (by key_fresh)
-                (by key_fresh)
-                (by key_fresh)
-                (by key_fresh)
-                (by key_fresh)
-                (by key_fresh)
-                (by key_fresh)
-                (typeAExclusionFresh := by key_fresh)
-                (typeBBridgeReductionFresh := by
-                  key_fresh)
-                (piecesClassifiedFresh := by key_fresh)
-                (sublinearLedgerFresh := by key_fresh)
-                (sublinearResidualFresh := by key_fresh)
-                (unifiedDeficitFresh := by key_fresh)
-                (quotientFreeFresh := by key_fresh)
-                (quotientResidualFresh := by key_fresh)
-                (unifiedCensusFresh := by key_fresh)
-                (extractedCensusFresh := by key_fresh)
-                (unifiedTrueFresh := by key_fresh)
-                (peelingFresh := by key_fresh)
-                (stageFailedFresh := by key_fresh)
-                (demandLedgerFresh := by key_fresh)
-                (demandAbsorptionFresh := by key_fresh)
-                (openBoundarySaturatedFresh := by key_fresh)
-                (demandUnitCountFresh := by key_fresh)
-                (windowBlockersFresh := by key_fresh)
-                (windowShadowSignatureFresh := by key_fresh)
-                (windowShadowTailFresh := by key_fresh)
-                (windowShadowCycleFresh := by key_fresh)
-                (windowShadowExcludedFresh := by key_fresh)
-                (demandResidualFresh := by key_fresh)
-                (unpaidExitFourFresh := by key_fresh)
-                (unifiedVisibleFresh := by key_fresh)
-                (unifiedVisibleOverloadFresh := by
-                  key_fresh)
-                (jointBalanceFresh := by key_fresh)
-                (silentClosure := some ⟨by infer_instance, by
-                  key_fresh⟩)
-                (unifiedTerminalFresh := by key_fresh)
 
 end HypostructureErdos64EG

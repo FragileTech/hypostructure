@@ -16,7 +16,6 @@ import HypostructureErdos64EG.Assembly.NetCharge.Boundary
 import HypostructureErdos64EG.Assembly.NetCharge.Continuation
 import HypostructureErdos64EG.Assembly.RouteEight.Boundary
 import HypostructureErdos64EG.Assembly.RouteEight.Local
-import HypostructureErdos64EG.Assembly.RouteEight.RateFailure
 import HypostructureErdos64EG.Assembly.RouteEight.Residual
 import HypostructureErdos64EG.Assembly.RouteEight.TypeBContinuation
 import HypostructureErdos64EG.Assembly.Surplus.Boundary

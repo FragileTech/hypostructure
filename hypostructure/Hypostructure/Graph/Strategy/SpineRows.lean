@@ -71,13 +71,11 @@ import Hypostructure.Graph.Strategy.SpineRows.Route8CarrierDeletionWitnesses
 import Hypostructure.Graph.Strategy.SpineRows.Route8CarrierDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.Route8Census
 import Hypostructure.Graph.Strategy.SpineRows.Route8DemandAbsorption
-import Hypostructure.Graph.Strategy.SpineRows.Route8DemandLedgerDichotomy
+import Hypostructure.Graph.Strategy.SpineRows.Route8DemandPartition
 import Hypostructure.Graph.Strategy.SpineRows.Route8ExtractedEntryCensus
 import Hypostructure.Graph.Strategy.SpineRows.Route8GlobalSqueeze
 import Hypostructure.Graph.Strategy.SpineRows.Route8JointBalance
 import Hypostructure.Graph.Strategy.SpineRows.Route8LargeBudgetDeficit
-import Hypostructure.Graph.Strategy.SpineRows.Route8NoTwoCarrierContradiction
-import Hypostructure.Graph.Strategy.SpineRows.Route8PeeledDemandResidual
 import Hypostructure.Graph.Strategy.SpineRows.Route8PeelingDescent
 import Hypostructure.Graph.Strategy.SpineRows.Route8PiecesClassified
 import Hypostructure.Graph.Strategy.SpineRows.Route8PrivateCarrierBudget
@@ -88,17 +86,14 @@ import Hypostructure.Graph.Strategy.SpineRows.Route8ResidualProfile
 import Hypostructure.Graph.Strategy.SpineRows.Route8SmallCoreCollapse
 import Hypostructure.Graph.Strategy.SpineRows.Route8SmallCoreExit
 import Hypostructure.Graph.Strategy.SpineRows.Route8StageOutcomeDichotomy
-import Hypostructure.Graph.Strategy.SpineRows.Route8TerminalNoGo
 import Hypostructure.Graph.Strategy.SpineRows.Route8TrueResidual
 import Hypostructure.Graph.Strategy.SpineRows.Route8TrueTwoCarrierEntry
 import Hypostructure.Graph.Strategy.SpineRows.Route8UnifiedDeficit
 import Hypostructure.Graph.Strategy.SpineRows.Route8UnifiedEntryCensus
 import Hypostructure.Graph.Strategy.SpineRows.Route8UnifiedNegative
-import Hypostructure.Graph.Strategy.SpineRows.Route8UnifiedTerminalNoGo
 import Hypostructure.Graph.Strategy.SpineRows.Route8UnifiedVisibleOverload
 import Hypostructure.Graph.Strategy.SpineRows.Route8UnifiedVisibleResidual
 import Hypostructure.Graph.Strategy.SpineRows.Route8UnpaidExitFourDichotomy
-import Hypostructure.Graph.Strategy.SpineRows.Route8VisibleRouting
 import Hypostructure.Graph.Strategy.SpineRows.Route8WindowBlockers
 import Hypostructure.Graph.Strategy.SpineRows.RouteEightNetDeficiencyCap
 import Hypostructure.Graph.Strategy.SpineRows.SameCenterOpenPortCompatibility
@@ -156,6 +151,7 @@ import Hypostructure.Graph.Strategy.SpineRows.TypeBSublinearDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.TypeSplitDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.WedgeSupply
 import Hypostructure.Graph.Strategy.SpineRows.WindowPackage
+import Hypostructure.Graph.Strategy.SpineRows.Route8TwoCarrierExit
 
 /-!
 # Spine rows
