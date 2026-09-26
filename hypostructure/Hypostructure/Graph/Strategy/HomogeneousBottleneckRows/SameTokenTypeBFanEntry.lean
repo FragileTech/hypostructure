@@ -20,14 +20,15 @@ entry. -/
 @[reducible] noncomputable def sameTokenTypeBFanEntryRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.sameTokenTypeBFanEntry
-    { Requires := [K .typeBHandoff]
+    { Requires := [K .typeBHandoff, K .surplusAbove]
       Produces := [K .typeBFanEntry]
-      requiresUnique := by simp
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .typeBFanEntry)
-        ⟨Contracts.TypeB.typeBFanEntry_of_sameTokenHandoff (inputs.get (K .typeBHandoff)).down⟩
+        ⟨Contracts.TypeB.typeBFanEntry_of_sameTokenHandoff (inputs.get (K .surplusAbove)).down
+          (inputs.get (K .typeBHandoff)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

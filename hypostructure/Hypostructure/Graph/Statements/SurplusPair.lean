@@ -1275,7 +1275,7 @@ inductive PairSystemEarlyOutcome (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Type (u + 1) where
   | targetCycle (cycle : Graph.HasCycleWithLength data.LengthOK object)
   | sparseExit (exit : DeclaredSparseSurplusExit data object)
-  | typeB (entry : TypeBFanEntryStatement data object)
+  | typeB (handoff : SameTokenTypeBHandoffStatement data object)
 
 /-- The five alternatives of `lem:pair-system-realizability`, tied to the
 literal overlap obstruction read from the ledger. -/
@@ -1335,11 +1335,12 @@ noncomputable def spectrum {data : Parameters}
 end PairSerialArithmetic
 
 /-- The periodic-response alternatives of node `[180]` that are already
-routed by the paper: a named sparse exit or the common Type B entry. -/
+routed by the paper: a named sparse exit or the same-token Type B handoff of
+`lem:same-token-bottleneck-routing`. -/
 inductive PairIncrementEarlyOutcome (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Type (u + 1) where
   | sparseExit (exit : DeclaredSparseSurplusExit data object)
-  | typeB (entry : TypeBFanEntryStatement data object)
+  | typeB (handoff : SameTokenTypeBHandoffStatement data object)
 
 /-- The exhaustive conclusion claimed by
 `lem:pair-system-increment-arithmetic`: either the corrected full-modulus

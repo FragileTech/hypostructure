@@ -99,6 +99,7 @@ noncomputable def selectedTypeADecoratedHandoff
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .netChargeCap) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
     [FactKeys.Has (K .typeAExitSevenHandoff) known]

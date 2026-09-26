@@ -22,20 +22,21 @@ Type B entry. -/
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.typeBDecoratedAssignedSupport
     { Requires := [K .selection, K .uncompressible, K .remainderNormalized,
-        K .typeAExitSevenHandoff, K .cubicBaseline]
+        K .netChargeCap, K .typeAExitSevenHandoff, K .cubicBaseline]
       Produces := [K .typeBDecoratedAssignedSupport, K .typeBFanEntry]
       requiresUnique := by key_fresh
       producesUnique := by key_fresh
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .typeBDecoratedAssignedSupport)
-        ⟨Contracts.TypeB.typeBDecoratedAssignedSupport (inputs.get (K .selection)).down.1
+        ⟨Contracts.TypeB.typeBDecoratedAssignedSupport_of_handoff
+          (inputs.get (K .netChargeCap)).down (inputs.get (K .selection)).down.1
           (inputs.get (K .cubicBaseline)).down.1 data.degenerateClosureRejected
           (inputs.get (K .uncompressible)).down (inputs.get (K .remainderNormalized)).down
           (inputs.get (K .typeAExitSevenHandoff)).down⟩
         (.cons (key := K .typeBFanEntry)
           ⟨Contracts.TypeB.typeBFanEntry_of_decoratedHandoff
-            (inputs.get (K .selection)).down.1
+            (inputs.get (K .netChargeCap)).down (inputs.get (K .selection)).down.1
             (inputs.get (K .cubicBaseline)).down.1 data.degenerateClosureRejected
             (inputs.get (K .typeAExitSevenHandoff)).down⟩
           .nil))

@@ -28,6 +28,7 @@ noncomputable def selectedTypeBHighSurplusContinuation
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .typeBHighSurplus) known]
     [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .netChargeCap) known]
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .tightEndpoint) known]
     [FactKeys.Has (K .bridgeless) known]

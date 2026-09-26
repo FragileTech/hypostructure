@@ -20,7 +20,7 @@ variable {data : Data.{u}}
 @[reducible] noncomputable def hybridEntryRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.hybridEntry
-    { Requires := [K .selection, K .fanCertificateMarked, K .fanCertificateCap]
+    { Requires := [K .selection, K .fanCertificateMarked]
       Produces := [K .typeBHybridEntry]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -29,8 +29,7 @@ variable {data : Data.{u}}
       .cons (key := K .typeBHybridEntry)
         ⟨Contracts.TypeB.typeBFanHybridEntry (inputs.get (K .selection)).down.1
           data.quadrilateralAccepted data.three_le_threshold data.fanCapSlack
-          data.highCentreDeficitSlack (inputs.get (K .fanCertificateMarked)).down
-          (inputs.get (K .fanCertificateCap)).down⟩
+          data.highCentreDeficitSlack (inputs.get (K .fanCertificateMarked)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

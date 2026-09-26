@@ -22,14 +22,16 @@ assigned centre. -/
 @[reducible] noncomputable def fanCertificateCapRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.fanCertificateCap
-    { Requires := [K .selection]
+    { Requires := [K .typeBFanEntry, K .selection, K .surplusAtOrBelow]
       Produces := [K .fanCertificateCap]
-      requiresUnique := by simp
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .fanCertificateCap)
-        ⟨Contracts.TypeB.typeBFanCertificateCap (inputs.get (K .selection)).down.1⟩
+        ⟨Contracts.TypeB.typeBFanCertificateCap (inputs.get (K .selection)).down.1
+          (inputs.get (K .typeBFanEntry)).down
+          (inputs.get (K .surplusAtOrBelow)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

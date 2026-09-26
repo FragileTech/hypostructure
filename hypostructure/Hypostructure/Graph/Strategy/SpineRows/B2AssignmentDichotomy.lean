@@ -15,16 +15,18 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
-/-- **Nodes `[72]`/`[81]`: B2 disjointness holds?**  The yes key is the disjoint
-choice of candidate entries at every Type B support
-(`def:typeB-bridge-statements` B2); the no key is its exact negation in the
-positive form of `lem:typeB-bridge-to-overlap`: a minimal overlap obstruction
+/-- **Nodes `[72]`/`[81]`: B2 disjointness holds?**  The decision reads the
+direct-cycle-free fact (`K .typeBDirectCycleFree`) and splits at its Type B
+support `X`: the assigned centres of `X` admit a disjoint choice of candidate
+entries at `P₀` (`def:typeB-bridge-statements` B2), or, in the positive form of
+`lem:typeB-bridge-to-overlap`, `X` carries a minimal overlap obstruction
 (`[73]`/`[83]`). -/
 noncomputable def b2AssignmentDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger (Input BranchState Presentation presentation data)
       current known)
+    [FactKeys.Has (K .typeBDirectCycleFree) known]
     (choiceFresh : K .typeBB2Choice ∉ known)
     (obstructionFresh : K .typeBOverlapObstruction ∉ known) :
     Decision (K .typeBB2Choice) (K .typeBOverlapObstruction) previous :=
@@ -32,9 +34,10 @@ noncomputable def b2AssignmentDichotomy
     `Hypostructure.Graph.Strategy.Spine.b2AssignmentDichotomy
     (Classical.choice (show Nonempty
         ((K .typeBB2Choice).At current ⊕ (K .typeBOverlapObstruction).At current) from by
-      by_cases holds : TypeBB2ChoiceStatement data.toParameters current.object
+      rcases Contracts.TypeB.b2_split
+          (ExactLedger.get previous (K .typeBDirectCycleFree)).down with holds | holds
       · exact ⟨.inl ⟨holds⟩⟩
-      · exact ⟨.inr ⟨(Contracts.TypeB.typeBB2Obstruction_iff_not_choice).mpr holds⟩⟩))
+      · exact ⟨.inr ⟨holds⟩⟩))
     choiceFresh obstructionFresh
 
 end Hypostructure.Graph.Strategy.Spine

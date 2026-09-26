@@ -35,12 +35,14 @@ universe u w
 It is run after node `[65]` on every entry: the ordinary support `[64]`, the
 decorated handoff `[66]`/`[108]`, and the absorbed-germ fan data `[177]`.  It
 reads only facts of the literal incoming ledger.  `[67]` is the normal form;
-`[68]` decides whether some assigned centre is heavy.  The heavy arm is `[69]`:
-the same-centre compatibility lemma, the fan-closed port routing, and the routed
-local dichotomy (fan-compatible pair or `k - 2` triangular ports, each giving
-fan-closed ports).  The degree-four arm is `[78]`--`[79]`: the degree-four
-profile, the triangular fan core and its landing lemmas, and the fan-closed port
-routing of `cor:degree-four-local-activation`.  Both arms enter `[70]`. -/
+`[68]` reads the node-`[65]` entry and decides whether some assigned centre of
+its Type B support is heavy.  The heavy arm is `[69]`: the same-centre
+compatibility lemma, the triangular fan core and its landing lemmas (stated at a
+heavy centre), the fan-closed port routing, and the routed local dichotomy
+(fan-compatible pair or `k - 2` triangular ports, each giving fan-closed ports).
+The degree-four arm is `[78]`--`[79]`: the degree-four profile and the
+fan-closed port routing of `cor:degree-four-local-activation`.  Both arms enter
+`[70]`. -/
 -- EG-NODE [67] high-degree centers independent; fan neighbours cubic
 -- EG-NODE [68] some center has \(d_G(h)>4\)?
 -- EG-NODE [69] degree \(>4\) local dichotomy: fan-compatible open pair or \(k-2\) triangular ports gives fan-closed ports
@@ -49,6 +51,7 @@ routing of `cor:degree-four-local-activation`.  Both arms enter `[70]`. -/
 noncomputable def Assembly.Internal.selectedTypeBFanContinuation
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .typeBFanEntry) known]
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .tightEndpoint) known]
     [FactKeys.Has (K .bridgeless) known]
@@ -158,11 +161,25 @@ noncomputable def Assembly.Internal.selectedTypeBFanContinuation
   match typeBFanDegreeDichotomy (data := spineData) normal
       (by key_fresh) (by key_fresh) with
   | .left heavyHistory =>
-      -- `[69]`: `lem:same-center-open-port-compatibility`, the fan-closed port
-      -- routing, and the routed heavy-centre local dichotomy.
+      -- `[69]`: `lem:same-center-open-port-compatibility`; the triangular fan
+      -- core and its landing lemmas (`def:triangular-fan-core`,
+      -- `lem:triangular-shoulder-completion`, `lem:triangular-port-return`,
+      -- `lem:triangular-first-landing`, `lem:triangular-cross-shoulder`, all
+      -- stated at a heavy centre, tex 2378--2521); the fan-closed port routing;
+      -- and the routed heavy-centre local dichotomy.
       let compatible := (sameCenterOpenPortCompatibilityRow (data := spineData)).run
         heavyHistory (by key_fresh)
-      let fanClosed := (fanClosedPortRow (data := spineData)).run compatible
+      let core := (triangularFanCoreRow (data := spineData)).run compatible
+        (by key_fresh)
+      let completed := (triangularShoulderCompletionRow (data := spineData)).run
+        core (by key_fresh)
+      let returned := (triangularPortReturnRow (data := spineData)).run completed
+        (by key_fresh)
+      let landed := (triangularFirstLandingRow (data := spineData)).run returned
+        (by key_fresh)
+      let crossed := (triangularCrossShoulderRow (data := spineData)).run landed
+        (by key_fresh)
+      let fanClosed := (fanClosedPortRow (data := spineData)).run crossed
         (by key_fresh)
       let pairClosure := (compatiblePairFanClosureRow (data := spineData)).run
         fanClosed (by key_fresh)
@@ -177,22 +194,13 @@ noncomputable def Assembly.Internal.selectedTypeBFanContinuation
         triangularRouting (by key_fresh)
       exact Assembly.Internal.selectedTypeBCertificateContinuation localDichotomy
   | .right degreeFourHistory =>
-      -- `[78]`--`[79]`: the degree-four fan profile, the triangular fan core and
-      -- its landing lemmas, and the fan-closed port routing of
-      -- `cor:degree-four-local-activation`.
+      -- `[78]`--`[79]`: the degree-four fan profile and the fan-closed port
+      -- routing of `cor:degree-four-local-activation` (tex 2336): alternative
+      -- (i) routes by `cor:compatible-pair-typeB-routing`, alternative (ii) by
+      -- `prop:fan-closed-port-typeB-routing` with `r = 2`.
       let profile := (typeBFanDegreeFourProfileRow (data := spineData)).run
         degreeFourHistory (by key_fresh)
-      let core := (triangularFanCoreRow (data := spineData)).run profile
-        (by key_fresh)
-      let completed := (triangularShoulderCompletionRow (data := spineData)).run
-        core (by key_fresh)
-      let returned := (triangularPortReturnRow (data := spineData)).run completed
-        (by key_fresh)
-      let landed := (triangularFirstLandingRow (data := spineData)).run returned
-        (by key_fresh)
-      let crossed := (triangularCrossShoulderRow (data := spineData)).run landed
-        (by key_fresh)
-      let fanClosed := (fanClosedPortRow (data := spineData)).run crossed
+      let fanClosed := (fanClosedPortRow (data := spineData)).run profile
         (by key_fresh)
       let pairClosure := (compatiblePairFanClosureRow (data := spineData)).run
         fanClosed (by key_fresh)

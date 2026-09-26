@@ -1,5 +1,5 @@
 import Hypostructure.Graph.Contracts.RouteEight.Basic
-import Hypostructure.Graph.Statements.TypeB
+import Hypostructure.Graph.Statements.TypeBLanes
 
 /-!
 # Contracts: the unified deficit
@@ -40,9 +40,9 @@ theorem route8UnifiedDeficit (data : Parameters) (object : FiniteObject.{u})
   obtain ⟨valid, maximal⟩ := canonicalWindowPacking_valid_maximal data object
   have degreeAt : ∀ vertex : object.Vertex, data.threshold ≤ object.degree vertex :=
     degree_ge_of_minDegree data object baseline
-  obtain ⟨pairAt, handoffPieces, handoffChar, centres, high,
-    fanEnvelope, absorbedAt, perPiece, covered⟩ :=
-    sublinear (canonicalWindowPacking data object) valid maximal
+  obtain ⟨pairAt, handoffPieces, handoffChar, centres, _centresEq, high,
+    fanEnvelope, _fanEnvelopeEq, absorbedAt, _absorbedAtEq, perPiece, covered⟩ :=
+    sublinear
   -- |R| = Σ pieces |piece|, split as cleared deficiency plus cleared mass
   have totalCard : (object.remainderSupport
       (canonicalWindowPacking data object)).card ≤

@@ -15,19 +15,20 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
-/-- Nodes `[74]`/`[82]`, `prop:typeB-bridge-reduction`: a B2 ledger with
-nonnegative remaining core gives `N₀(X) ≥ 0`. -/
+/-- Nodes `[74]`/`[82]`, `prop:typeB-bridge-reduction` on the canonical B2 ledger
+of the Type B support read from `K .typeBDisjointLedger`: a nonnegative
+remaining core gives `N₀(Y_X) ≥ 0`. -/
 @[reducible] noncomputable def typeBExcludedRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.typeBExcluded
-    { Requires := []
+    { Requires := [K .typeBDisjointLedger]
       Produces := [K .typeBExcluded]
       requiresUnique := by simp
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .typeBExcluded)
-        ⟨Contracts.TypeB.typeBExcluded⟩
+        ⟨Contracts.TypeB.typeBExcluded (inputs.get (K .typeBDisjointLedger)).down⟩
         .nil)
 
 /-- Nodes `[76]`/`[85]`: a Type B support with a canonical core is negative, so its

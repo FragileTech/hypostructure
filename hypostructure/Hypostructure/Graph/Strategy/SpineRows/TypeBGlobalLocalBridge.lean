@@ -19,7 +19,8 @@ variable {data : Data.{u}}
 @[reducible] noncomputable def typeBGlobalLocalBridgeRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.typeBGlobalLocalBridge
-    { Requires := [K .selection, K .highCentreNormalForm]
+    { Requires := [K .typeBOverlapObstruction, K .selection,
+        K .highCentreNormalForm]
       Produces := [K .typeBGlobalLocalBridge]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -27,7 +28,8 @@ variable {data : Data.{u}}
     (fun inputs =>
       .cons (key := K .typeBGlobalLocalBridge)
         ⟨Contracts.TypeB.typeBGlobalLocalBridge (inputs.get (K .selection)).down.1
-          (inputs.get (K .highCentreNormalForm)).down⟩
+          (inputs.get (K .highCentreNormalForm)).down
+          (inputs.get (K .typeBOverlapObstruction)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

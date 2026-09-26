@@ -15,16 +15,18 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
-/-- **Nodes `[72]`/`[81]`: local fan-window ledger complete?**  The yes key is a
-direct fan-window configuration at some assigned centre
-(`lem:typeB-direct-fan-window-cycles`, `lem:typeB-two-window-cycles`); the no
-key is its exact negation, `def:direct-cycle-free-closed-pair` at every
-assigned centre. -/
+/-- **Nodes `[72]`/`[81]`: local fan-window ledger complete?**  The decision
+reads the marked fact (`K .fanCertificateMarked`) and splits at its Type B
+support `X`: some assigned centre of `X` carries a direct fan-window
+configuration at `P₀` (`lem:typeB-direct-fan-window-cycles`,
+`lem:typeB-two-window-cycles`), or every assigned centre of `X` is
+direct-cycle free (`def:direct-cycle-free-closed-pair`). -/
 noncomputable def directCycleDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger (Input BranchState Presentation presentation data)
       current known)
+    [FactKeys.Has (K .fanCertificateMarked) known]
     (cycleFresh : K .typeBDirectCycle ∉ known)
     (freeFresh : K .typeBDirectCycleFree ∉ known) :
     Decision (K .typeBDirectCycle) (K .typeBDirectCycleFree) previous :=
@@ -32,9 +34,10 @@ noncomputable def directCycleDichotomy
     `Hypostructure.Graph.Strategy.Spine.directCycleDichotomy
     (Classical.choice (show Nonempty
         ((K .typeBDirectCycle).At current ⊕ (K .typeBDirectCycleFree).At current) from by
-      by_cases holds : TypeBFanDirectCycleStatement data.toParameters current.object
+      rcases Contracts.TypeB.directCycle_split
+          (ExactLedger.get previous (K .fanCertificateMarked)).down with holds | holds
       · exact ⟨.inl ⟨holds⟩⟩
-      · exact ⟨.inr ⟨(Contracts.TypeB.typeBFanDirectCycleFree_iff_not_directCycle).mpr holds⟩⟩))
+      · exact ⟨.inr ⟨holds⟩⟩))
     cycleFresh freeFresh
 
 /-- **The direct-cycle arm closes.**  A direct fan-window configuration builds a
