@@ -1,4 +1,4 @@
-import Hypostructure.Graph.Statements.SurplusPair
+import Hypostructure.Graph.Statements.SurplusPairCode
 import Hypostructure.Graph.NamedSurplusExits
 import Hypostructure.Graph.SparsePressureLedger
 import Hypostructure.Graph.GluedCrossingCycle
@@ -21,53 +21,48 @@ universe u
 
 variable {data : Parameters} {object : Graph.FiniteObject.{u}}
 
-/-- Node `[178]` on the full pair schedule of `[131]`: the realized baseline
-code and its least failed pair extension, with the failed pair's canonical
-connected response support. -/
+/-- Node `[178]` on the full pair schedule of `[131]`: the canonical pair set is
+the schedule (G's canonical activation is blocker-free there), and the
+canonical realization of G's spine family's code fails on it, so the canonical
+first failure of G's pair code exists. -/
 theorem pairOverlapFirstFailure_of_freeCodeUnrealized
     (unrealized : FreePairCodeUnrealizedStatement data object)
     (noProperBaseline : NoProperBaselineStatement data object) :
     PairOverlapFirstFailureStatement data object := by
-  obtain ⟨active, Coordinate, family, coordinateSupport,
-      blockerFree, _survives, realizationExists, _demand, _deficitBound,
-      _scheduleCard, _countFailure, pairSetNonempty,
-      firstFailureExists⟩ :=
-    unrealized
-  let realization := Classical.choice realizationExists
-  let firstFailure := Classical.choice firstFailureExists
-  exact ⟨PairOverlapFirstFailure.of data object active
-    Coordinate family coordinateSupport realization
-    (object.portPairSchedule data.threshold)
-    pairSetNonempty (by intro pair member; exact member)
-    (by
-      intro pair pairMem
-      constructor
-      · intro obstruction
-        exact blockerFree ⟨pair, pairMem, Or.inl obstruction⟩
-      · intro obstruction
-        exact blockerFree ⟨pair, pairMem, Or.inr obstruction⟩)
-    firstFailure
-    noProperBaseline.2⟩
+  obtain ⟨activation, spine, realization, activationSelected, spineSelected,
+      realizationSelected, blockerFree, _scheduleCard, countFailure,
+      pairSetNonempty⟩ := unrealized
+  obtain ⟨active, rfl⟩ :=
+    exists_active_of_canonicalPairActivation_eq_some activationSelected
+  refine canonicalPairFirstFailure_isSome data object spineSelected
+    realizationSelected
+    (canonicalCodePairSet_eq_schedule data object activationSelected blockerFree)
+    ⟨active, pairSetNonempty, fun _ member => member, ?_, countFailure,
+      noProperBaseline.2⟩
+  intro pair pairMem
+  constructor
+  · intro obstruction
+    exact blockerFree ⟨pair, pairMem, Or.inl obstruction⟩
+  · intro obstruction
+    exact blockerFree ⟨pair, pairMem, Or.inr obstruction⟩
 
-/-- Node `[178]` on the capacity-free side of `[137]`: the realized baseline
-code and its least failed free-pair extension; every free pair is blocker-free
-at the recorded activation. -/
+/-- Node `[178]` on the capacity-free side of `[137]`: on the dependent arm of
+`[130]` the canonical pair set is the free side of G's canonical capacity
+charge, every free pair is blocker-free at the recorded activation, and the
+canonical realization of G's spine family's code fails on it, so the canonical
+first failure of G's pair code exists. -/
 theorem pairOverlapFirstFailure_of_blockedCodeUnrealized
     (unrealized : BlockedPairCodeUnrealizedStatement data object)
+    (dependent : DependentPairFamilyStatement data object)
     (noProperBaseline : NoProperBaselineStatement data object) :
     PairOverlapFirstFailureStatement data object := by
-  obtain ⟨active, capacity, activationEq, _primitiveEq,
-      _primitiveLe, _concrete, _scheduleCard, Coordinate, family,
-      coordinateSupport, _survives, realizationExists, _demand,
-      _deficitBound, _countFailure, pairSetNonempty,
-      firstFailureExists⟩ :=
+  obtain ⟨capacity, spine, realization, capacitySelected, spineSelected,
+      realizationSelected, _scheduleCard, countFailure, pairSetNonempty⟩ :=
     unrealized
-  let pairSet := Graph.freeSide
-    object.vertexPairDecidableEq
-    (object.portPairSchedule data.threshold)
-    capacity.tokenOrder capacity.Eligible capacity.eligibleDecidable
-  let realization := Classical.choice realizationExists
-  let firstFailure := Classical.choice firstFailureExists
+  obtain ⟨dependentActivation, activationSelected, blocked⟩ := dependent
+  obtain ⟨⟨active, activationEq⟩, -⟩ :=
+    canonicalCapacity_spec_of_eq_some data object capacitySelected
+  let pairSet := codeFreeSide data object capacity
   let activation := Graph.pairResponseActivation active
   let recorded := Graph.recordSparsePairDEBlockers
     (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
@@ -77,11 +72,11 @@ theorem pairOverlapFirstFailure_of_blockedCodeUnrealized
       ¬ Graph.SparsePairDEProfileObstructionAt
           (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
           (LengthOK := data.LengthOK) activation
-            (object.portPairSchedule data.threshold) pair ∧
+            pair ∧
         ¬ Graph.SparsePairDEResponseObstructionAt
           (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
           (LengthOK := data.LengthOK) activation
-            (object.portPairSchedule data.threshold) pair := by
+            pair := by
     intro pair pairMem
     have freeRecorded : pair ∈ capacity.activation.freePairs
         data.threshold :=
@@ -134,29 +129,29 @@ theorem pairOverlapFirstFailure_of_blockedCodeUnrealized
           obstruction, coordinate]
       exact (recorded.exists_blocks_iff_blockers_nonempty pair).mp
         ⟨.targetResponse, recorded.blocks_targetResponse member⟩
-  exact ⟨PairOverlapFirstFailure.of data object active
-    Coordinate family coordinateSupport realization pairSet
-    pairSetNonempty (by
-      intro pair member
-      have membership :
-          pair ∈ object.portPairSchedule data.threshold ∧
-            Graph.CanonicalFibreLedger.canonicalLabel
-              capacity.tokenOrder capacity.Eligible pair = none := by
-        simpa [pairSet, Graph.freeSide,
-          Graph.CanonicalFibreLedger.unassigned] using member
-      exact membership.1) pairSetBlockerFree firstFailure
-    noProperBaseline.2⟩
+  refine canonicalPairFirstFailure_isSome data object spineSelected
+    realizationSelected
+    (canonicalCodePairSet_eq_freeSide data object activationSelected blocked
+      capacitySelected)
+    ⟨active, pairSetNonempty, ?_, pairSetBlockerFree, countFailure,
+      noProperBaseline.2⟩
+  intro pair member
+  have membership :
+      pair ∈ object.portPairSchedule data.threshold ∧
+        Graph.CanonicalFibreLedger.canonicalLabel
+          capacity.tokenOrder capacity.Eligible pair = none := by
+    simpa [pairSet, codeFreeSide, Graph.freeSide,
+      Graph.CanonicalFibreLedger.unassigned] using member
+  exact membership.1
 
-/-- Node `[178]`, `def:pair-overlap-system`: the first failure, every
-canonical pair support `X_π`, and the literal conditional-fibre overlap system
-whose failed family is an obstruction. -/
-theorem pairOverlapSystem_of_firstFailure
-    (firstFailure : PairOverlapFirstFailureStatement data object)
+/-- `def:pair-overlap-system` at a first failure of a connected object: every
+canonical pair support `X_π`, the canonical encoding order of `Π`, and the
+literal conditional-fibre overlap system whose failed family (the prefix
+through the first failed extension) is an obstruction. -/
+theorem exists_pairOverlapSystem (first : PairOverlapFirstFailure data object)
     (noProperBaseline : NoProperBaselineStatement data object) :
-    PairOverlapSystemStatement data object := by
+    ∃ system, PairOverlapSystemSpec data object first system := by
   classical
-  let first := Classical.choice
-    firstFailure
   let activation := Graph.pairResponseActivation first.active
   let connectedOn :
       Graph.SupportComponents.Connected.ConnectedOn object
@@ -531,20 +526,28 @@ theorem pairOverlapSystem_of_firstFailure
       failedFamily_nonempty := failedFamilyNonempty
       failedFamily_obstruction := by
         simpa [model] using failedFamilyObstruction }
-  exact ⟨system⟩
+  exact ⟨system, rfl, fun _ => rfl⟩
 
-/-- `lem:pair-failure-overlap`, node `[178]`: on a conditionally factorizing
-pair overlap system, an inclusion-minimal obstruction inside the failed family
-has two overlapping members and a connected union of response supports. -/
-theorem pairFailureOverlap_of_factorization
-    (factorizationHolds : PairConditionalFactorizationStatement data object) :
-    PairFailureOverlapStatement data object := by
-  refine ⟨?_⟩
+/-- Node `[178]`, `def:pair-overlap-system` at G: the canonical overlap system of
+the canonical first failure exists. -/
+theorem pairOverlapSystem_of_firstFailure
+    (firstFailure : PairOverlapFirstFailureStatement data object)
+    (noProperBaseline : NoProperBaselineStatement data object) :
+    PairOverlapSystemStatement data object := by
+  obtain ⟨first, firstSelected⟩ := firstFailure
+  obtain ⟨system, selected, -⟩ :=
+    canonicalChoice_spec (exists_pairOverlapSystem first noProperBaseline)
+  exact ⟨system, by
+    rw [canonicalPairOverlapSystem, firstSelected, Option.bind_some]
+    exact selected⟩
+
+/-- `lem:pair-failure-overlap`: on a conditionally factorizing pair overlap
+system, an inclusion-minimal obstruction inside the failed family has two
+overlapping members and a connected union of response supports. -/
+theorem exists_pairFailureOverlap (system : PairOverlapSystem data object)
+    (factorization : system.ConditionalFactorization) :
+    ∃ overlap : PairFailureOverlap data object, overlap.system = system := by
   classical
-  let factorizationFact := Classical.choice factorizationHolds
-  let system := factorizationFact.1
-  have factorization : system.ConditionalFactorization :=
-    factorizationFact.2
   let candidates := system.failedFamily.powerset.filter system.obstruction
   have candidatesNonempty : candidates.Nonempty := by
     refine ⟨system.failedFamily, ?_⟩
@@ -796,20 +799,34 @@ theorem pairFailureOverlap_of_factorization
       exact unionEq
     rw [familyUnionEq] at joined
     exact joined
-  exact
+  exact ⟨
     { system := system
       family := family
       factorization := factorization
       minimal := minimal
       overlapWitness := overlapWitness
-      connected := connected }
+      connected := connected }, rfl⟩
+
+/-- `lem:pair-failure-overlap`, node `[178]`, at G: the canonical overlap system
+factorizes, so its canonical minimal overlap obstruction exists. -/
+theorem pairFailureOverlap_of_factorization
+    (factorizationHolds : PairConditionalFactorizationStatement data object) :
+    PairFailureOverlapStatement data object := by
+  obtain ⟨system, systemSelected, factorization⟩ := factorizationHolds
+  obtain ⟨overlap, selected, -⟩ :=
+    canonicalChoice_spec (exists_pairFailureOverlap system factorization)
+  exact ⟨overlap, by
+    rw [canonicalPairFailureOverlap, systemSelected, Option.bind_some]
+    exact selected⟩
 
 /-- Node `[179]`: the two demands of the minimal overlap obstruction with their
 canonical port returns and the graph-derived return bound. -/
 theorem pairDemandReturns_of_failureOverlap
     (overlap : PairFailureOverlapStatement data object) :
-    PairDemandReturnsStatement data object :=
-  ⟨PairDemandReturns.of (Classical.choice overlap)⟩
+    PairDemandReturnsStatement data object := by
+  obtain ⟨overlap, selected⟩ := overlap
+  exact ⟨PairDemandReturns.of overlap, by
+    rw [canonicalPairDemandReturns, selected, Option.map_some]⟩
 
 /-- Node `[180]`, direct arithmetic arm (`lem:pair-system-increment-arithmetic`
 with `SerialSystem.Spectrum.exists_pow_realized`): the corrected full-modulus
@@ -821,10 +838,7 @@ theorem pairPowerOfTwoCycle_of_arithmetic
       Core.DyadicLength.PowerOfTwoLength length) :
     PairPowerOfTwoCycleStatement data object := by
   classical
-  let package := Classical.choice
-    arithmeticFact
-  let serial := package.1
-  let arithmetic := Classical.choice package.2
+  obtain ⟨_serial, arithmetic, -, -⟩ := arithmeticFact
   let spectrum := arithmetic.spectrum
   letI : NeZero arithmetic.modulus := arithmetic.modulus_neZero
   letI : NeZero spectrum.modulus :=

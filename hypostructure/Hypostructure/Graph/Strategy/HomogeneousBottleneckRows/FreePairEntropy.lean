@@ -29,13 +29,17 @@ the residual on which it fails, carried as its own branch.  On the yes arm the
 rest is arithmetic already proved in `Graph.SparsePressureLedger`. -/
 
 /-- Node `[131]`: the entropy count of `prop:sparse-entropy-sandwich` at the full
-pair schedule, decided by exact case analysis on its predicate.  The count-fails
+pair schedule, decided on the literal independent residual of `[130]`.  The
+decision reads G's node-`[129]` spine family and G's canonical activation from
+their keys and splits on the count at exactly those two objects; the count-fails
 arm is its literal negation. -/
 noncomputable def freePairEntropyDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger (Input BranchState Presentation presentation data)
       current known)
+    [FactKeys.Has (K .baselineSpineDemand) known]
+    [FactKeys.Has (K .independentPairFamily) known]
     (sandwichFresh : K .freePairEntropySandwich ∉ known)
     (failsFresh : K .freePairCountFails ∉ known) :
     Decision (K .freePairEntropySandwich) (K .freePairCountFails) previous := by
@@ -43,21 +47,35 @@ noncomputable def freePairEntropyDichotomy
   exact Decision.run previous (K .freePairEntropySandwich)
     (K .freePairCountFails)
     `Hypostructure.Graph.Strategy.Spine.freePairEntropyDichotomy
-    (if realized : Holds BranchState Presentation presentation data
-        .freePairEntropySandwich current.object then
-      .inl ⟨realized⟩
-    else
-      .inr ⟨realized⟩)
+    (Classical.choice (show Nonempty
+        ((K .freePairEntropySandwich).At current ⊕
+          (K .freePairCountFails).At current) from by
+      obtain ⟨spine, spineSelected, -⟩ :=
+        (previous.get (K .baselineSpineDemand)).down
+      obtain ⟨activation, activationSelected, -⟩ :=
+        (previous.get (K .independentPairFamily)).down
+      by_cases count : 2 ^ (spine.family.card +
+          (activation.pairFamily
+            (current.object.portPairSchedule data.threshold)).card) ≤
+        Graph.skeletonBudget current.object
+      · exact ⟨.inl ⟨⟨activation, spine, activationSelected, spineSelected, count⟩⟩⟩
+      · refine ⟨.inr ⟨?_⟩⟩
+        rintro ⟨activation', spine', activationSelected', spineSelected', count'⟩
+        obtain rfl := Option.some.inj
+          (activationSelected'.symm.trans activationSelected)
+        obtain rfl := Option.some.inj (spineSelected'.symm.trans spineSelected)
+        exact count count'))
     sandwichFresh failsFresh
 
-/-- Node `[131]`, count fails: the failure is the failure for the node-`[129]`
-baseline family itself, with its first failed pair extension on the literal
-blocker-free pair schedule; this is node `[178]`'s input. -/
+/-- Node `[131]`, count fails: at G's node-`[129]` spine family and G's canonical
+activation, the failure is the failure on the literal blocker-free schedule,
+with the canonical realization of the spine family's code; this is node
+`[178]`'s input. -/
 @[reducible] noncomputable def freePairCodeUnrealizedRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.freePairCodeUnrealized
     { Requires := [K .freePairCountFails, K .baselineSpineDemand,
-        K .independentPairFamily, K .incrementalSkeletonRoom]
+        K .independentPairFamily]
       Produces := [K .freePairCodeUnrealized]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -68,8 +86,7 @@ blocker-free pair schedule; this is node `[178]`'s input. -/
           inputs.current.baseline
           (inputs.get (K .freePairCountFails)).down
           (inputs.get (K .baselineSpineDemand)).down
-          (inputs.get (K .independentPairFamily)).down
-          (inputs.get (K .incrementalSkeletonRoom)).down⟩
+          (inputs.get (K .independentPairFamily)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

@@ -1,5 +1,5 @@
 import Hypostructure.Graph.Contracts.TypeB.Support
-import Hypostructure.Graph.Statements.SurplusPair
+import Hypostructure.Graph.Statements.SurplusPairRouting
 
 /-!
 # Contracts: the Type B entries
@@ -382,41 +382,22 @@ theorem typeBFanEntry_of_absorbedGermFanData
   exact And.intro different (And.intro firstAssigned secondAssigned)
 
 
-/-- The same-token handoff enters node `[65]` with its envelope core and
-decorations. -/
+/-- The same-token handoff of G enters node `[65]`: its canonical envelope, at
+the node-`[19]` packing, with its core `{d_p, d_q}` and decorations `{h}`. -/
 theorem typeBFanEntry_of_sameTokenHandoff
     (handoff : SameTokenTypeBHandoffStatement data object) :
     TypeBFanEntryStatement data object := by
-  obtain ⟨_active, capacity, _activationEq, _cubic, _certified, _token,
-      _role, _tokenMem, _positive, _excess, _forced, _sourceClass,
-      _classified, _root, _rootEq, routed⟩ := handoff
-  have envelopeOf :
-      ∀ envelope : Graph.DecoratedHandoff.Envelope
-          object data.LengthOK
-          (handoffHighDegree data object)
-          (handoffAbsorbing data object capacity.packing),
-        envelope.decorations.Nonempty →
-          SameTokenTypeBHandoffEnvelopeStatement data
-            object :=
-    fun envelope decorated =>
-      ⟨capacity.packing, capacity.packingValid, capacity.packingMaximal,
-        envelope.core, envelope, rfl, decorated⟩
-  apply Or.inr
-  apply Or.inr
-  rcases routed with ⟨_pattern, _subset, _shape, _routed, source⟩ |
-      ⟨_centre, _pattern, _subset, _shape, _routed, source⟩ <;>
-  · exact
-      match source with
-      | ⟨_p, _hp, _q, _hq, _pq, _dp, _hdp, _dq, _hdq, _label, _rp,
-          _rq, _validP, _validQ, _maximal, _h, _a, _b, _common, _tailP,
-          _tailQ, _decompP, _decompQ, _different, _armP, _armQ, _entryP,
-          _entryQ, _adjP, _adjQ, _issuedP, _issuedQ, _chainP, _chainQ,
-          _nodupP, _nodupQ, _landsP, _landsQ, _interiorP, _interiorQ,
-          _high, _avoids, _denied, _deniedSwap, envelope, envelopeEq,
-          _escape⟩ =>
-        envelopeOf envelope (by
-          rw [envelopeEq]
-          simp [Graph.DecoratedHandoff.envelopeOfFirstSeparator])
+  obtain ⟨_core, _centres, _routing, _split, envelope, _separatorEq, envelopeEq,
+      _escape, _coreEq, _centresEq⟩ := handoff
+  obtain ⟨routing, split, _selected, spec, conditions, built⟩ :=
+    (canonicalSameTokenEnvelope_eq_some_iff data object).1 envelopeEq
+  have decorated : envelope.decorations.Nonempty := by
+    rw [← built, sameTokenEnvelopeOf_decorations]
+    exact Finset.singleton_nonempty _
+  obtain ⟨valid, maximal⟩ := Classical.choose_spec
+    (object.exists_windowPacking_card_eq data.windowOrder)
+  exact Or.inr (Or.inr ⟨canonicalWindowPacking data object, valid, maximal,
+    envelope.core, envelope, rfl, decorated⟩)
 
 
 end Hypostructure.Graph.Contracts.TypeB

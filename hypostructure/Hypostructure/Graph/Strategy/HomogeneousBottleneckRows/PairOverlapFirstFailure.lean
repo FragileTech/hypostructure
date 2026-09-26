@@ -41,11 +41,14 @@ response support `X_π`. -/
           (inputs.get (K .noProperBaseline)).down⟩
         .nil)
 
-/-- Node `[178]` on the literal capacity-free side selected at `[137]`. -/
+/-- Node `[178]` on the literal capacity-free side selected at `[137]`: the
+dependent arm of `[130]` selects the free side of G's canonical capacity charge
+as the pair set. -/
 @[reducible] noncomputable def blockedPairOverlapFirstFailureRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.blockedPairOverlapFirstFailure
-    { Requires := [K .blockedPairCodeUnrealized, K .noProperBaseline]
+    { Requires := [K .blockedPairCodeUnrealized, K .dependentPairFamily,
+        K .noProperBaseline]
       Produces := [K .pairOverlapFirstFailure]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -54,6 +57,7 @@ response support `X_π`. -/
       .cons (key := K .pairOverlapFirstFailure)
         ⟨Graph.Contracts.SurplusPair.pairOverlapFirstFailure_of_blockedCodeUnrealized
           (inputs.get (K .blockedPairCodeUnrealized)).down
+          (inputs.get (K .dependentPairFamily)).down
           (inputs.get (K .noProperBaseline)).down⟩
         .nil)
 

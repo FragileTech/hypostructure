@@ -24,47 +24,94 @@ universe u
 
 variable {data : Parameters} {object : Graph.FiniteObject.{u}}
 
-/-- Node `[143]`'s entry: an overload whose token is in neither `𝔗_W` nor
-`𝔗_R` has its token in `𝔗_prim`. -/
+/-- The canonical overload of G is read off its canonical ledger and the
+canonical token and role at that ledger. -/
+theorem canonicalOverload_eq_some
+    {capacity : SurplusCapacity data object}
+    {certified : SurplusCertified data object capacity}
+    {token : certified.ledger.presented.Token}
+    {role : Graph.SameTokenBlockerRoles.Role}
+    (ledgerSelected : canonicalCertifiedCapacityData data object =
+      some ⟨capacity, certified⟩)
+    (tokenSelected : canonicalOverloadTokenAt data object certified =
+      some (token, role)) :
+    canonicalOverload data object = some ⟨⟨capacity, certified⟩, (token, role)⟩ := by
+  unfold canonicalOverload
+  rw [ledgerSelected, Option.bind_some]
+  simp only
+  rw [tokenSelected, Option.map_some]
+
+/-- The canonical overload of G, when it exists, is the canonical token and
+role at G's canonical ledger. -/
+theorem canonicalOverload_selected
+    {overload : (ledger : (capacity : SurplusCapacity data object) ×
+        SurplusCertified data object capacity) ×
+      (ledger.2.ledger.presented.Token × Graph.SameTokenBlockerRoles.Role)}
+    (selected : canonicalOverload data object = some overload) :
+    canonicalCertifiedCapacityData data object = some overload.1 ∧
+      canonicalOverloadTokenAt data object overload.1.2 = some overload.2 := by
+  unfold canonicalOverload at selected
+  cases ledgerSelected : canonicalCertifiedCapacityData data object with
+  | none => simp [ledgerSelected] at selected
+  | some ledger =>
+    rw [ledgerSelected, Option.bind_some] at selected
+    cases tokenSelected : canonicalOverloadTokenAt data object ledger.2 with
+    | none => simp [tokenSelected] at selected
+    | some choice =>
+      rw [tokenSelected, Option.map_some, Option.some.injEq] at selected
+      subst selected
+      exact ⟨rfl, tokenSelected⟩
+
+/-- Node `[137]`, overload arm, `prop:single-graph-sparse-pressure-routing`
+(b) with `cor:coupled-single-graph-overload-budget`: positive coupled excess
+at G's canonical ledger exhibits an overloaded role fibre
+(`exists_overloaded_roleFibre`), so the canonical overloading token of G
+exists and has a class. -/
+theorem canonicalOverloadClass_of_overload
+    (overload : SparsePressureOverloadSchema data object) :
+    ∃ value, canonicalOverloadClass data object = some value := by
+  classical
+  obtain ⟨capacity, certified, ledgerSelected, positive⟩ := overload
+  obtain ⟨token, tokenMem, role, excess, pattern⟩ :=
+    certified.ledger.presented.exists_overloaded_roleFibre
+      certified.ledger.presented.tokenClass
+      (fun _ => Graph.SameTokenBlockerRoles.geometricPatternBound
+        data.routingLabelBound)
+  obtain ⟨chosenToken, chosenRole, tokenSelected, _spec⟩ :=
+    canonicalOverloadTokenAt_spec data object certified
+      ⟨token, role, tokenMem, positive, excess, pattern⟩
+  refine ⟨certified.ledger.presented.tokenClass chosenToken, ?_⟩
+  unfold canonicalOverloadClass
+  rw [canonicalOverload_eq_some ledgerSelected tokenSelected, Option.map_some]
+
+/-- Node `[143]`'s entry: the class of G's overloading token is neither
+`𝔗_W` (node `[139]` no arm) nor `𝔗_R` (node `[141]` no arm), so it is
+`𝔗_prim`. -/
 theorem primitiveClassOverload_of_classesAbsent
-    (overload : SparsePressureOverloadSchema data object)
     (windowAbsent : WindowClassAbsentStatement data object)
     (remainderAbsent : RemainderClassAbsentStatement data object) :
     PrimitiveClassOverloadStatement data object := by
-  obtain ⟨active, capacity, activationEq, certified, token, role, tokenMem,
-    _selected, rest⟩ := overload
-  cases classified : certified.ledger.presented.tokenClass token with
-  | windowIncidence =>
-      exact (windowAbsent ⟨active, capacity, activationEq, certified, token,
-        role, tokenMem, classified, rest⟩).elim
-  | remainderSurplus =>
-      exact (remainderAbsent ⟨active, capacity, activationEq, certified, token,
-        role, tokenMem, classified, rest⟩).elim
-  | primitiveCarrier =>
-      exact ⟨active, capacity, activationEq, certified, token, role, tokenMem,
-        classified, rest⟩
+  obtain ⟨value, classified, notWindow⟩ := windowAbsent
+  obtain ⟨value', classified', notRemainder⟩ := remainderAbsent
+  have same : value' = value :=
+    Option.some.inj (classified'.symm.trans classified)
+  subst same
+  change canonicalOverloadClass data object = some .primitiveCarrier
+  cases value' with
+  | windowIncidence => exact (notWindow rfl).elim
+  | remainderSurplus => exact (notRemainder rfl).elim
+  | primitiveCarrier => exact classified
 
-/-- Nodes `[140]`, `[142]`, `[143]`: the geometric audit of an overload whose
-token class satisfies `Selects`.  Its positive role-fibre excess makes the role
-fibre exceed `(L_geom - 1)(2 L_geom - 3)`, so it carries an `L_geom`-matching or
-`L_geom`-star, and on the object's connected vertex set every endpoint of
-every pattern edge has its declared same-root connector configuration. -/
-theorem homogeneousBottleneckPattern_of_overloadAtClass
-    {Selects : Graph.SameTokenBlockerRoles.TokenClass → Prop}
-    (overload : ∃ active : Graph.ActiveSurplusDemands
-        (Graph.MinimumDegreeAtLeast data.threshold)
-        (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
-        data.threshold,
-      ∃ capacity : Graph.CapacityPresentation object data.threshold
-          data.windowOrder,
-        capacity.activation =
-            (Graph.recordSparsePairDEBlockers
-              (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-              (LengthOK := data.LengthOK)
-              (Graph.pairResponseActivation active)
-              (object.portPairSchedule data.threshold)) ∧
-          Graph.OverloadAtClass object data.threshold data.windowOrder
-            data.surplusScale data.routingLabelBound capacity Selects)
+set_option maxHeartbeats 1000000 in
+/-- Nodes `[140]`, `[142]`, `[143]`: the geometric audit of G's overloading
+token, whatever its class.  Its positive role-fibre excess makes the role
+fibre exceed `(L_geom - 1)(2 L_geom - 3)`, so it carries an `L_geom`-matching
+or `L_geom`-star, and on G's connected vertex set (node `[136]`) every endpoint
+of every pattern edge has its declared same-root connector configuration.  The
+node publishes the canonical such pattern of G. -/
+theorem homogeneousBottleneckPattern_of_class
+    {value : Graph.SameTokenBlockerRoles.TokenClass}
+    (classified : canonicalOverloadClass data object = some value)
     (capacityLedger : CapacityTokenLedgerStatement data object)
     (labelCount : data.routingLabelBound = Fintype.card
       (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
@@ -72,11 +119,25 @@ theorem homogeneousBottleneckPattern_of_overloadAtClass
     HomogeneousBottleneckPatternSchema data object := by
   classical
   letI := data.boundaryProfileFintype
-  obtain ⟨active, declared, activationEq, certified, token, role,
-      tokenMem, _selected, positive, absorbs, quantitativePattern⟩ := overload
-  have connectedOn :
-      Graph.SupportComponents.Connected.ConnectedOn object object.vertexFinset :=
-    capacityLedger.choose_spec.choose_spec.2.2.2.2
+  obtain ⟨overload, overloadSelected⟩ :
+      ∃ overload, canonicalOverload data object = some overload := by
+    unfold canonicalOverloadClass at classified
+    cases selected : canonicalOverload data object with
+    | none => simp [selected] at classified
+    | some overload => exact ⟨overload, rfl⟩
+  obtain ⟨ledgerSelected, tokenSelected⟩ := canonicalOverload_selected overloadSelected
+  obtain ⟨⟨declared, certified⟩, token, role⟩ := overload
+  obtain ⟨tokenMem, positive, absorbs, _quantitativePattern⟩ :=
+    canonicalOverloadTokenAt_spec_of_eq_some data object tokenSelected
+  -- Node `[136]`'s presentation of G, with its connectedness.
+  obtain ⟨capacity, capacitySelected, capacitySpec⟩ := capacityLedger
+  have sameCapacity : capacity = declared :=
+    Option.some.inj (capacitySelected.symm.trans
+      ((canonicalCertifiedCapacityData_eq_some_iff data object declared
+        certified).1 ledgerSelected).1)
+  subst sameCapacity
+  obtain ⟨⟨active, activationEq⟩, _primitiveEq, _primitiveLe, _concrete,
+      connectedOn, _packingEq⟩ := capacitySpec
   let ledger := certified.ledger
   have productPositive :
       0 < Graph.SameTokenBlockerRoles.sameTokenRoleBound *
@@ -113,14 +174,14 @@ theorem homogeneousBottleneckPattern_of_overloadAtClass
   have configurations :
       ∀ pair ∈ ledger.presented.roleFibre token role,
         ∃ responseSupport : Finset object.Vertex,
-          declared.activation.pairSupport pair = some responseSupport ∧
+          capacity.activation.pairSupport pair = some responseSupport ∧
             ∀ demand ∈ pair,
               ∃ configuration :
                   Graph.SameTokenRoutingGerms.RoutingConfiguration
                     object
-                    (declared.sameTokenRoutingSupport token pair)
+                    (capacity.sameTokenRoutingSupport token pair)
                     (Graph.CapacityPresentation.tokenSupport token)
-                    (declared.activation.localBuffer demand),
+                    (capacity.activation.localBuffer demand),
                 configuration.path.head? =
                   some (Graph.CapacityPresentation.tokenRoot token) ∧
                   configuration.path.getLast? = some demand.2 := by
@@ -135,44 +196,44 @@ theorem homogeneousBottleneckPattern_of_overloadAtClass
       object.subset_excessPorts_of_mem_portPairSchedule
         data.threshold pairSchedule
     have charge :
-        Graph.FiniteObject.capacityCharge declared.activation
-            declared.carrier data.threshold declared.packing pair =
+        Graph.FiniteObject.capacityCharge capacity.activation
+            capacity.carrier data.threshold capacity.packing pair =
           some token := by
       have labelled := (Finset.mem_filter.mp pairTokenFibre).2
       change Graph.CanonicalFibreLedger.canonicalLabel
-          declared.tokenOrder declared.Eligible pair = some token at labelled
-      have charged : declared.Eligible token pair :=
+          capacity.tokenOrder capacity.Eligible pair = some token at labelled
+      have charged : capacity.Eligible token pair :=
         Graph.CanonicalFibreLedger.applies_canonicalLabel labelled
       exact charged
     exact Graph.CapacityPresentation.exists_sameRootRoutingConfigurationFamily_of_charge
-        active declared
+        active capacity
         activationEq pairSubset connectedOn charge
-  refine ⟨active, declared, activationEq, certified, token, role,
-    tokenMem, positive, absorbs, quantitativePattern,
-    ledger.presented.tokenClass token, rfl,
-    Graph.CapacityPresentation.tokenRoot token, rfl, ?_⟩
-  rcases structured with
-      ⟨matching, matchingSubset, matchingShape, matchingLarge⟩ |
-      ⟨centre, star, starSubset, starShape, starLarge⟩
-  · refine Or.inl ⟨matching, matchingSubset, matchingShape, ?_, ?_⟩
-    · change Fintype.card
-          (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
-            (Graph.WindowCurvature.Label data.windowOrder)) + 1 ≤
-        matching.card
-      rw [← labelCount]
-      simpa only [Graph.SameTokenBlockerRoles.geometricPatternBound] using
-        matchingLarge
-    · intro pair pairMem
-      exact configurations pair (matchingSubset pairMem)
-  · refine Or.inr ⟨centre, star, starSubset, starShape, ?_, ?_⟩
-    · change Fintype.card
-          (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
-            (Graph.WindowCurvature.Label data.windowOrder)) + 1 ≤
-        star.card
-      rw [← labelCount]
-      simpa only [Graph.SameTokenBlockerRoles.geometricPatternBound] using
-        starLarge
-    · intro pair pairMem
-      exact configurations pair (starSubset pairMem)
+  have boundEq : Graph.SameTokenRoutingGerms.patternBound
+        (SurplusRoutingLabel data) =
+      Graph.SameTokenBlockerRoles.geometricPatternBound data.routingLabelBound := by
+    change Fintype.card
+        (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+          (Graph.WindowCurvature.Label data.windowOrder)) + 1 = _
+    rw [← labelCount]
+    rfl
+  have exists_ : ∃ pattern,
+      HomogeneousPatternSpec data object certified token role pattern := by
+    rcases structured with
+        ⟨matching, matchingSubset, matchingShape, matchingLarge⟩ |
+        ⟨centre, star, starSubset, starShape, starLarge⟩
+    · refine ⟨matching, matchingSubset, Or.inl matchingShape, ?_, ?_⟩
+      · rw [boundEq]
+        exact matchingLarge
+      · intro pair pairMem
+        exact configurations pair (matchingSubset pairMem)
+    · refine ⟨star, starSubset, Or.inr ⟨centre, starShape⟩, ?_, ?_⟩
+      · rw [boundEq]
+        exact starLarge
+      · intro pair pairMem
+        exact configurations pair (starSubset pairMem)
+  obtain ⟨pattern, patternSelected, patternSpec⟩ :=
+    canonicalHomogeneousPatternAt_spec data object certified token role exists_
+  exact ⟨⟨⟨capacity, certified⟩, (token, role)⟩, pattern, overloadSelected,
+    patternSelected, patternSpec⟩
 
 end Hypostructure.Graph.Contracts.SurplusPair

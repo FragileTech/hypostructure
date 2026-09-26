@@ -29,20 +29,22 @@ universe u
 variable {data : Parameters} {object : Graph.FiniteObject.{u}}
 
 /-- Node `[131]`, `lem:mixed-sparse-spine-dependence`: on the node-`[129]`
-baseline spine family and the full pair-response schedule, a functional
-admissible rank quotient that reduces the mixed family yields a sparse surplus
-exit or a clause-(e) blocker at an actual scheduled pair. -/
+baseline spine family of G and G's full pair-response schedule at its canonical
+activation, a functional admissible rank quotient that reduces the mixed family
+yields a sparse surplus exit of G or a clause-(e) blocker at an actual
+scheduled pair. -/
 theorem mixedSparseSpineDependence_of_baseline
+    (active : ActiveSurplusDemandsStatement data object)
     (baselineDemand : BaselineSpineDemandStatement data object) :
     MixedSparseSpineDependenceStatement data object := by
-  obtain ⟨active, Coordinate, family, coordinateSupport, survives,
-      _realization, demand, deficitBound⟩ :=
+  classical
+  obtain ⟨⟨Coordinate, family, coordinateSupport⟩, spineSelected, _spec⟩ :=
     baselineDemand
-  refine ⟨active, Coordinate, family, coordinateSupport, survives,
-    demand, deficitBound, ?_⟩
+  refine ⟨Graph.pairResponseActivation active,
+    canonicalPairActivation_eq data object active,
+    ⟨Coordinate, family, coordinateSupport⟩, spineSelected, ?_⟩
   dsimp only
   intro notIndependent
-  classical
   let activation := Graph.pairResponseActivation active
   let pairs := object.portPairSchedule data.threshold
   let pairFamily := activation.pairFamily pairs
@@ -257,9 +259,8 @@ theorem canonicalPairLedger_of_blockerRoute
     (atBaseline : Graph.MinimumDegreeAtLeast data.threshold object)
     (blockerRoute : CanonicalBlockerRouteStatement data object) :
     CanonicalPairLedgerStatement data object := by
-  obtain ⟨_survives, active, certificate, _canonical⟩ :=
+  obtain ⟨_survives, activation, selected, certificate, _canonical⟩ :=
     blockerRoute
-  let activation := Graph.pairResponseActivation active
   let pairs := object.portPairSchedule data.threshold
   let recorded := Graph.recordSparsePairDEBlockers
     (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
@@ -268,7 +269,7 @@ theorem canonicalPairLedger_of_blockerRoute
       data.threshold ≤ object.degree vertex :=
     fun vertex => le_trans atBaseline
       (object.minDegree_le_degree vertex)
-  refine ⟨active, certificate, rfl, ?_, ?_, ?_, ?_, ?_⟩
+  refine ⟨activation, selected, certificate, ?_, ?_, ?_, ?_, ?_⟩
   · exact object.card_portPairSchedule baseline
   · simpa [recorded] using
       recorded.card_blockedPairs_add_card_unblockedPairs data.threshold
@@ -283,7 +284,6 @@ theorem canonicalPairLedger_of_blockerRoute
 packing satisfies the exact window-join identity. -/
 theorem sparseUpperEnvelope_of_packing
     (atBaseline : Graph.MinimumDegreeAtLeast data.threshold object)
-    (maximalPacking : MaximalPackingStatement data object)
     (noProperBaseline : NoProperBaselineStatement data object)
     (tight : TightEndpointStatement data object)
     (above : data.surplusThreshold object.vertexCount <
@@ -305,10 +305,12 @@ theorem sparseUpperEnvelope_of_packing
     threeLe
     noProperBaseline.1
     tight edgePositive
-  obtain ⟨_, packing, valid, maximal, _⟩ :=
-    maximalPacking
-  exact ⟨envelope, packing, valid, maximal,
-    object.exact_window_join_identity valid baseline⟩
+  -- `𝒫` is the maximal packing fixed at node `[19]`.
+  have valid : object.IsWindowPacking data.windowOrder
+      (canonicalWindowPacking data object) :=
+    (Classical.choose_spec
+      (object.exists_windowPacking_card_eq data.windowOrder)).1
+  exact ⟨envelope, object.exact_window_join_identity valid baseline⟩
 
 /-- Node `[136]`, `def:capacity-token-ledger` with `lem:capacity-token-supply`,
 `lem:token-ledger-no-overcount` and `def:same-token-patterns`: the object's
@@ -323,11 +325,20 @@ theorem capacityTokenLedger_of_pairLedger
     (threeLe : 3 ≤ data.threshold)
     (joinSlack : data.threshold * data.windowOrder + 2 ≤ 4 * data.windowOrder) :
     CapacityTokenLedgerStatement data object := by
-  obtain ⟨active, certificate, _pairsEq, scheduleCard,
+  obtain ⟨canonical, selected, certificate, _scheduleCard,
       _partition, _incidence, _multiplicity, _blocked⟩ :=
     pairLedger
-  obtain ⟨envelope, packing, valid, maximal, _joinIdentity⟩ :=
-    upperEnvelope
+  obtain ⟨active, rfl⟩ :=
+    exists_active_of_canonicalPairActivation_eq_some selected
+  obtain ⟨envelope, _joinIdentity⟩ := upperEnvelope
+  -- `𝒫` is the maximal packing fixed at node `[19]`.
+  let packing := canonicalWindowPacking data object
+  have valid : object.IsWindowPacking data.windowOrder packing :=
+    (Classical.choose_spec
+      (object.exists_windowPacking_card_eq data.windowOrder)).1
+  have maximal : packing.card = object.windowPackingNumber data.windowOrder :=
+    (Classical.choose_spec
+      (object.exists_windowPacking_card_eq data.windowOrder)).2
   let activation := Graph.recordSparsePairDEBlockers
     (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
     (LengthOK := data.LengthOK)
@@ -541,11 +552,12 @@ theorem capacityTokenLedger_of_pairLedger
               data.threshold packing member,
           Graph.FiniteObject.card_tokenFibre_eq_pairMultiplicity activation
             presentation data.threshold packing token⟩
-  refine ⟨active, accounting, ?_,
+  -- The node publishes the canonical choice of its own `∃`-body: the
+  -- presentation constructed above witnesses that `𝔗_cap` of G exists.
+  refine canonicalCapacity_spec data object ⟨accounting, ⟨active, rfl⟩,
     object.card_primitiveCarrier baseline,
     object.card_primitiveCarrier_le baseline
-      threeLe handshake envelope, ?_, connectedOn⟩
-  · rfl
+      threeLe handshake envelope, ?_, connectedOn, rfl⟩
   change Graph.FiniteObject.ConcreteCapacityTokenLedgerStatement
     object data.threshold data.windowOrder activation
       presentation packing

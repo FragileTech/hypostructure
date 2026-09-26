@@ -638,75 +638,39 @@ structure ConditionalFactorization
 
 end SparsePairSkeletonModel
 
-/-- Clause (d) at a specified pair (`def:surplus-blockers` (d), tex 2897;
-`lem:degree-profile-fibres`, tex 6088): a functional attempted quotient of G's
-pair family is rank-reducing and carries an inclusion-minimal determination
-certificate for that pair's actual response coordinate `r_π`; among `r_π` and
-its determiners, two of G's own coordinates read on G's piece at their canonical
-support lie in different boundary-degree fibres, so the determination cannot
-stay in one fibre. -/
+/-- **Clause (d) at a specified pair** (`def:surplus-blockers` (d), tex 2897;
+`lem:degree-profile-fibres`, tex 6088): a boundary-degree-profile coordinate of
+the pair's own embedded pieces prevents an identification from staying in one
+fibre.  The two demands `p, q` of `π`, each read on G's own piece at the
+canonical connected support of their declared supports `T(·) ∪ Γ(·)`, lie in
+different boundary-degree fibres.  No attempted quotient, label or value is
+chosen by a caller. -/
 def SparsePairDEProfileObstructionAt
     {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
     {object : FiniteObject.{u}} {Coordinate Chord : Type u}
     (activation : object.DemandActivation Coordinate Chord)
-    (pairs : Finset (Finset (object.Vertex × object.Vertex)))
     (pair : Finset (object.Vertex × object.Vertex)) : Prop :=
-  let family := activation.pairFamily pairs
-  let coordinateSupport : object.PairCoordinate → Finset object.Vertex := by
-    letI := object.vertices.decEq
-    exact DeclaredSignature.Coordinate.support
-  let coordinate := FiniteObject.DemandActivation.pairCoordinate pair
-    ((activation.pairSupport pair).getD ∅)
-  ∃ attempt : AttemptedQuotient Baseline
-      (Graph.HasCycleWithLength LengthOK) object family coordinateSupport,
-    attempt.toRankQuotient.FunctionalOn ↑family ∧
-      ¬ Set.InjOn attempt.label ↑family ∧
-      ∃ determiners : Finset object.PairCoordinate,
-        coordinate ∈ family ∧
-          determiners ⊆ family ∧
-          coordinate ∉ determiners ∧
-          attempt.toRankQuotient.Determines coordinate ↑determiners ∧
-          (∀ candidate ⊆ determiners,
-            attempt.toRankQuotient.Determines coordinate ↑candidate →
-              determiners ⊆ candidate) ∧
-          ResidualProfileSeparation object
-            (@insert _ _ (@Finset.instInsert _ (Classical.decEq _)) coordinate
-              determiners) coordinateSupport
+  ResidualProfileSeparation object pair activation.declaredSupport
 
-/-- Clause (e) at a specified pair (`def:surplus-blockers` (e), tex 2900), with
-the same literal minimal determination certificate.  Its final witness is a
-target-defective identification among `r_π` and its determiners, read on G's
-own pieces (`ResidualTargetDefect`), or the target-complete proper-support
-replacement of the attempted quotient's support. -/
+/-- **Clause (e) at a specified pair** (`def:surplus-blockers` (e), tex 2900;
+`lem:context-universality`, `cor:uncompressible`): a target-response
+coordinate of the pair's own embedded pieces witnesses a target-defective
+identification or a target-complete compression.  Either the canonical
+responses (`canonicalCoordinateResponse`) of the two demands of `π` on G's own
+piece at their canonical support agree in G's actual context and are
+separated by another boundaried context, or the pair's canonical response
+support `X_π` admits a target-complete proper-support replacement. -/
 def SparsePairDEResponseObstructionAt
     {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
     {object : FiniteObject.{u}} {Coordinate Chord : Type u}
     (activation : object.DemandActivation Coordinate Chord)
-    (pairs : Finset (Finset (object.Vertex × object.Vertex)))
     (pair : Finset (object.Vertex × object.Vertex)) : Prop :=
-  let family := activation.pairFamily pairs
-  let coordinateSupport : object.PairCoordinate → Finset object.Vertex := by
-    letI := object.vertices.decEq
-    exact DeclaredSignature.Coordinate.support
-  let coordinate := FiniteObject.DemandActivation.pairCoordinate pair
-    ((activation.pairSupport pair).getD ∅)
-  ∃ attempt : AttemptedQuotient Baseline
-      (Graph.HasCycleWithLength LengthOK) object family coordinateSupport,
-    attempt.toRankQuotient.FunctionalOn ↑family ∧
-      ¬ Set.InjOn attempt.label ↑family ∧
-      ∃ determiners : Finset object.PairCoordinate,
-        coordinate ∈ family ∧
-          determiners ⊆ family ∧
-          coordinate ∉ determiners ∧
-          attempt.toRankQuotient.Determines coordinate ↑determiners ∧
-          (∀ candidate ⊆ determiners,
-            attempt.toRankQuotient.Determines coordinate ↑candidate →
-              determiners ⊆ candidate) ∧
-          (ResidualTargetDefect (Graph.HasCycleWithLength LengthOK) object
-              (@insert _ _ (@Finset.instInsert _ (Classical.decEq _)) coordinate
-                determiners) coordinateSupport ∨
-            ReplacementSupport Baseline (Graph.HasCycleWithLength LengthOK)
-              object attempt.support)
+  ResidualTargetDefect (Graph.HasCycleWithLength LengthOK) object pair
+      activation.declaredSupport ∨
+    ∃ support : Finset object.Vertex,
+      activation.pairSupport pair = some support ∧
+        ReplacementSupport Baseline (Graph.HasCycleWithLength LengthOK)
+          object support
 
 /-- A concrete type-(d) or type-(e) obstruction carried by its actual pair in
 `Π`.  The pair is part of the local predicate, so this cannot be discharged by
@@ -718,9 +682,9 @@ def HasSparsePairDEBlocker
     (pairs : Finset (Finset (object.Vertex × object.Vertex))) : Prop :=
   ∃ pair ∈ pairs,
     SparsePairDEProfileObstructionAt
-        (Baseline := Baseline) (LengthOK := LengthOK) activation pairs pair ∨
+        (Baseline := Baseline) (LengthOK := LengthOK) activation pair ∨
       SparsePairDEResponseObstructionAt
-        (Baseline := Baseline) (LengthOK := LengthOK) activation pairs pair
+        (Baseline := Baseline) (LengthOK := LengthOK) activation pair
 
 /-- The declared coordinate used to record the certified pair obstruction. -/
 noncomputable def sparsePairDECoordinate
@@ -753,13 +717,13 @@ noncomputable def recordSparsePairDEBlockers
     returnSupport := activation.returnSupport
     profileObstructions := fun pair =>
       if SparsePairDEProfileObstructionAt
-          (Baseline := Baseline) (LengthOK := LengthOK) activation pairs pair then
+          (Baseline := Baseline) (LengthOK := LengthOK) activation pair then
         [FiniteObject.DemandActivation.pairCoordinate pair
           ((activation.pairSupport pair).getD ∅)]
       else []
     responseObstructions := fun pair =>
       if SparsePairDEResponseObstructionAt
-          (Baseline := Baseline) (LengthOK := LengthOK) activation pairs pair then
+          (Baseline := Baseline) (LengthOK := LengthOK) activation pair then
         [FiniteObject.DemandActivation.pairCoordinate pair
           ((activation.pairSupport pair).getD ∅)]
       else []
@@ -898,7 +862,7 @@ theorem recordedSparsePairDEBlocker_nonempty
             change coordinate ∈
               (if SparsePairDEProfileObstructionAt
                   (Baseline := Baseline) (LengthOK := LengthOK)
-                  activation pairs pair then [coordinate] else [])
+                  activation pair then [coordinate] else [])
             rw [if_pos profile]
             simp)⟩
   · exact ((recordSparsePairDEBlockers (Baseline := Baseline)
@@ -911,7 +875,7 @@ theorem recordedSparsePairDEBlocker_nonempty
             change coordinate ∈
               (if SparsePairDEResponseObstructionAt
                   (Baseline := Baseline) (LengthOK := LengthOK)
-                  activation pairs pair then [coordinate] else [])
+                  activation pair then [coordinate] else [])
             rw [if_pos response]
             simp)⟩
 

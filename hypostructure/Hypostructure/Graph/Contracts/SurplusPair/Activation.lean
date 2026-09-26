@@ -109,7 +109,6 @@ independently target-testable, realized in the current fixed-edge stratum, and
 its cubic-baseline deficit is at most `C_E n`. -/
 theorem baselineSpineDemand_of_survivor
     (atBaseline : Graph.MinimumDegreeAtLeast data.threshold object)
-    (activeFact : ActiveSurplusDemandsStatement data object)
     (survivorFact : SparseSurplusSurvivorStatement data object)
     (above : data.surplusThreshold object.vertexCount <
       object.degreeSurplus data.threshold)
@@ -120,7 +119,6 @@ theorem baselineSpineDemand_of_survivor
       data.surplusScale) :
     BaselineSpineDemandStatement data object := by
   classical
-  let active := activeFact
   let survivor := survivorFact
   have surplusPositive :
       0 < object.degreeSurplus data.threshold :=
@@ -263,25 +261,30 @@ theorem baselineSpineDemand_of_survivor
             coordinate
         · rename_i edgeCount
           exact (edgeCount (encode assignment).2).elim }
-  refine ⟨active, Coordinate, family, coordinateSupport, ?_,
-    ⟨realization⟩, ?_, ?_⟩
-  · intro declared _functional
-    by_contra reducing
-    rcases declared.localize reducing with replacement |
-      ⟨representative, smaller, baseline, transfer⟩
-    · exact survivor
-        (.compression declared.support replacement)
-    · exact survivor
-        (.delocalization representative smaller baseline transfer)
-  · rw [familyCard]
-    exact
-      Graph.cubicBaselineBudget_le_two_pow_add_spineDeficit
-        object.vertexCount
-        (le_trans (by omega) threeLe) bits
-  · rw [familyCard]
-    exact (Graph.spineDeficit_realizableBaselineExponent_le
-      object.vertexCount data.threshold).trans
-        (Nat.mul_le_mul_right object.vertexCount
-          deficitSafety)
+  have spec : BaselineSpineFamilySpec data object Coordinate family
+      coordinateSupport := by
+    refine ⟨?_, ⟨realization⟩, ?_, ?_⟩
+    · intro declared _functional
+      by_contra reducing
+      rcases declared.localize reducing with replacement |
+        ⟨representative, smaller, baseline, transfer⟩
+      · exact survivor
+          (.compression declared.support replacement)
+      · exact survivor
+          (.delocalization representative smaller baseline transfer)
+    · rw [familyCard]
+      exact
+        Graph.cubicBaselineBudget_le_two_pow_add_spineDeficit
+          object.vertexCount
+          (le_trans (by omega) threeLe) bits
+    · rw [familyCard]
+      exact (Graph.spineDeficit_realizableBaselineExponent_le
+        object.vertexCount data.threshold).trans
+          (Nat.mul_le_mul_right object.vertexCount
+            deficitSafety)
+  -- The node publishes the canonical choice of its own `∃`-body: the family
+  -- constructed above witnesses that the canonical spine family of G exists.
+  exact canonicalBaselineSpineFamily_spec data object
+    ⟨Coordinate, family, coordinateSupport, spec⟩
 
 end Hypostructure.Graph.Contracts.SurplusPair

@@ -18,15 +18,17 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
-/-- Node `[178]`: the manuscript's conditional-factorization test, decided by
-exact case analysis on its predicate.  The positive arm is the sole input of
-`lem:pair-failure-overlap`; the negative arm is its literal negation, from
-which `pairFactorizationResidualRow` publishes the open node-`[182]` residual. -/
+/-- Node `[178]`: the manuscript's conditional-factorization test on G's
+canonical overlap system, read from `K .pairOverlapSystem`.  The positive arm is
+the sole input of `lem:pair-failure-overlap`; the negative arm is its literal
+negation, from which `pairFactorizationResidualRow` publishes the open
+node-`[182]` residual. -/
 noncomputable def pairConditionalFactorizationDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger (Input BranchState Presentation presentation data)
       current known)
+    [FactKeys.Has (K .pairOverlapSystem) known]
     (factorizationFresh : K .pairConditionalFactorization ∉ known)
     (failsFresh : K .pairFactorizationFails ∉ known) :
     Decision (K .pairConditionalFactorization)
@@ -35,11 +37,16 @@ noncomputable def pairConditionalFactorizationDichotomy
   exact Decision.run previous (K .pairConditionalFactorization)
     (K .pairFactorizationFails)
     `Hypostructure.Graph.Strategy.Spine.pairConditionalFactorizationDichotomy
-    (if factorization : Holds BranchState Presentation presentation data
-        .pairConditionalFactorization current.object then
-      .inl ⟨factorization⟩
-    else
-      .inr ⟨factorization⟩)
+    (Classical.choice (show Nonempty
+        ((K .pairConditionalFactorization).At current ⊕
+          (K .pairFactorizationFails).At current) from by
+      obtain ⟨system, selected⟩ := (previous.get (K .pairOverlapSystem)).down
+      by_cases factorization : system.ConditionalFactorization
+      · exact ⟨.inl ⟨⟨system, selected, factorization⟩⟩⟩
+      · refine ⟨.inr ⟨?_⟩⟩
+        rintro ⟨system', selected', factorization'⟩
+        obtain rfl := Option.some.inj (selected'.symm.trans selected)
+        exact factorization factorization'))
     factorizationFresh failsFresh
 
 /-- Node `[182]` from `[178]`: the failed factorization test retains the

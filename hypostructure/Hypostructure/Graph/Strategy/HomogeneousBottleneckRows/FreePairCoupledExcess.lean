@@ -29,6 +29,7 @@ of the coupled test. -/
     (fun inputs =>
       .cons (key := K .spineSurplusEstimate)
         ⟨Graph.Contracts.SurplusPair.spineSurplusEstimate_of_pairSandwich
+          inputs.current.baseline
           (inputs.get (K .freePairEntropySandwich)).down
           (inputs.get (K .sparseSlackSurplus)).down
           (inputs.get (K .surplusAbove)).down

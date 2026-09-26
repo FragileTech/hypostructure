@@ -6,6 +6,8 @@ import Hypostructure.Graph.Statements.TypeA
 import Hypostructure.Graph.Statements.TypeB
 import Hypostructure.Graph.Statements.RouteEight
 import Hypostructure.Graph.Statements.SurplusPair
+import Hypostructure.Graph.Statements.SurplusPairRouting
+import Hypostructure.Graph.Statements.SurplusPairCode
 
 /-!
 # The minimum-degree cycle spine: fact vocabulary
@@ -1497,11 +1499,6 @@ inductive Key where
   /-- Node `[141]`, no arm: the selected overloading token lies in
   `𝔗_prim`, so that same witness enters `[143]`. -/
   | remainderClassAbsent
-  /-- `cor:quantitative-homogeneous-overload`: the forced role-homogeneous
-  pattern scale `K_hom(G) ≥ ψ(N_*(G)/(Q_st(8n+σ(G))))`, cleared of division.
-  Committed on each of the three audit arms, because it is what makes the audit
-  a quantitative verdict rather than a bare alternative. -/
-  | quantitativeOverload
   /-- Node `[144]`, the tested half of
   `thm:homogeneous-overload-geometric-closure`: no capacity token of the object
   supports a role-homogeneous same-token `L_geom`-matching or `L_geom`-star, at
@@ -2338,9 +2335,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       RemainderClassOverloadStatement data.toParameters object
   | .remainderClassAbsent, object =>
       RemainderClassAbsentStatement data.toParameters object
-  | .quantitativeOverload, object =>
-      -- `cor:quantitative-homogeneous-overload`.
-      Graph.QuantitativeOverloadStatement object data.threshold data.windowOrder
   | .homogeneousCapsHold, object =>
       HomogeneousCapsHoldStatement data.toParameters object
   | .homogeneousCapsFail, object =>
@@ -2713,7 +2707,6 @@ def label : Key → String
   | .windowClassAbsent => "windowClassAbsent"
   | .remainderClassOverload => "remainderClassOverload"
   | .remainderClassAbsent => "remainderClassAbsent"
-  | .quantitativeOverload => "quantitativeOverload"
   | .homogeneousCapsHold => "homogeneousCapsHold"
   | .homogeneousCapsFail => "homogeneousCapsFail"
   | .homogeneousBottleneckPattern => "homogeneousBottleneckPattern"
@@ -3072,7 +3065,6 @@ example : label .windowClassOverload = "windowClassOverload" := rfl
 example : label .windowClassAbsent = "windowClassAbsent" := rfl
 example : label .remainderClassOverload = "remainderClassOverload" := rfl
 example : label .remainderClassAbsent = "remainderClassAbsent" := rfl
-example : label .quantitativeOverload = "quantitativeOverload" := rfl
 example : label .homogeneousCapsHold = "homogeneousCapsHold" := rfl
 example : label .homogeneousCapsFail = "homogeneousCapsFail" := rfl
 example : label .homogeneousBottleneckPattern = "homogeneousBottleneckPattern" := rfl
@@ -3417,7 +3409,6 @@ def idx : Key → Nat
   | .windowClassAbsent => 131
   | .remainderClassOverload => 132
   | .remainderClassAbsent => 133
-  | .quantitativeOverload => 137
   | .homogeneousCapsHold => 140
   | .homogeneousCapsFail => 601
   | .homogeneousBottleneckPattern => 141
@@ -3728,7 +3719,6 @@ def ofIdx : Nat → Key
   | 131 => .windowClassAbsent
   | 132 => .remainderClassOverload
   | 133 => .remainderClassAbsent
-  | 137 => .quantitativeOverload
   | 140 => .homogeneousCapsHold
   | 601 => .homogeneousCapsFail
   | 141 => .homogeneousBottleneckPattern
@@ -4492,8 +4482,6 @@ def name : Key → Lean.Name
         "remainderClassOverload") 132
   | .remainderClassAbsent =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "remainderClassAbsent") 133
-  | .quantitativeOverload =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "quantitativeOverload") 137
   | .homogeneousCapsHold =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "homogeneousCapsHold") 140
   | .homogeneousCapsFail =>
