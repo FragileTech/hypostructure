@@ -1644,6 +1644,10 @@ inductive Key where
   /-- Node `[181]`, yes: some unpaid entry of a maximal demand ledger has no
   exit-`(4)` witness. -/
   | route8UnpaidWitnessFree
+  -- F5 keys
+  /-- Node `[175]`, no arm: every selected corridor meets a high-degree
+  vertex. -/
+  | coldNoPositiveGerm
   deriving DecidableEq
 
 /-- The value schema of each spine fact, stated of the *object* alone.
@@ -2436,6 +2440,9 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       Route8UnpaidTwoCarrierStatement data.toParameters object
   | .route8UnpaidWitnessFree, object =>
       Route8UnpaidWitnessFreeStatement data.toParameters object
+  -- F5 keys
+  | .coldNoPositiveGerm, object =>
+      ColdNoPositiveGermStatement data.toParameters object
 
 /-- Audit labels.  They are diagnostics; every routing and lookup decision
 compares exact keys. -/
@@ -2777,6 +2784,8 @@ def label : Key → String
   | .route8StageRate => "route8StageRate"
   | .route8UnpaidTwoCarrier => "route8UnpaidTwoCarrier"
   | .route8UnpaidWitnessFree => "route8UnpaidWitnessFree"
+  -- F5 keys
+  | .coldNoPositiveGerm => "coldNoPositiveGerm"
 
 /-! ### Label pins
 
@@ -3134,6 +3143,8 @@ example : label .route8UnifiedTwoCarrierExit = "route8UnifiedTwoCarrierExit" := 
 example : label .route8StageRate = "route8StageRate" := rfl
 example : label .route8UnpaidTwoCarrier = "route8UnpaidTwoCarrier" := rfl
 example : label .route8UnpaidWitnessFree = "route8UnpaidWitnessFree" := rfl
+-- F5 keys
+example : label .coldNoPositiveGerm = "coldNoPositiveGerm" := rfl
 end LabelPins
 
 /-- The value schema at a residual: the object-level statement, read at the
@@ -3484,6 +3495,8 @@ def idx : Key → Nat
   | .route8StageRate => 1402
   | .route8UnpaidTwoCarrier => 1403
   | .route8UnpaidWitnessFree => 1404
+  -- F5 keys
+  | .coldNoPositiveGerm => 1800
 
 /-- Left inverse of `idx`.  Writing it out is also what checks the numbering:
 two keys sharing an index would make `ofIdx_idx` unprovable. -/
@@ -3823,6 +3836,8 @@ def ofIdx : Nat → Key
   | 1402 => .route8StageRate
   | 1403 => .route8UnpaidTwoCarrier
   | 1404 => .route8UnpaidWitnessFree
+  -- F5 keys
+  | 1800 => .coldNoPositiveGerm
   | _ => .selection
 
 theorem ofIdx_idx (k : Key) : ofIdx (idx k) = k := by
@@ -4625,6 +4640,9 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8UnpaidTwoCarrier") 1403
   | .route8UnpaidWitnessFree =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8UnpaidWitnessFree") 1404
+  -- F5 keys
+  | .coldNoPositiveGerm =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldNoPositiveGerm") 1800
 
 /-- The written-out names agree with `label` and `idx`.  `name` is spelled out
 so that reducing it in a downstream audit proof costs one unfolding rather
@@ -4790,6 +4808,14 @@ theorem keyFresh_of_contains {α : Type _} [DecidableEq α] {key : α}
     have present : keys.contains key = true := List.elem_eq_true_of_mem member
     rw [absent] at present
     exact Bool.noConfusion present
+
+/-- A key of a covering list is fresh for every list disjoint from it: one
+`List.Disjoint covering known` hypothesis stands for the freshness of each key
+of `covering` in an opaque ledger index `known`. -/
+theorem keyFresh_of_disjoint {α : Type _} [DecidableEq α] {key : α}
+    {covering keys : List α} (disjoint : List.Disjoint covering keys)
+    (present : covering.contains key = true) : key ∉ keys :=
+  fun member => disjoint (List.mem_of_elem_eq_true present) member
 
 theorem keyNe_of_decide {α : Type _} [DecidableEq α] {left right : α}
     (distinct : decide (left = right) = false) : left ≠ right :=
@@ -4979,6 +5005,16 @@ partial def restrictFresh (keys : Keys) (key proof spine target : Expr) :
     else
       return none
 
+/-- Every element of a closed key list, unfolding its cells as far as needed. -/
+partial def elementsOf (e : Expr) (acc : Array Expr := #[]) : MetaM (Array Expr) := do
+  let cell ← listCell e
+  if cell.isAppOfArity ``List.cons 3 then
+    elementsOf cell.appArg! (acc.push (← instantiateMVars cell.appFn!.appArg!))
+  else if cell.isAppOfArity ``HAppend.hAppend 6 || cell.isAppOfArity ``List.append 3 then
+    elementsOf cell.appArg! (← elementsOf cell.appFn!.appArg! acc)
+  else
+    return acc
+
 /-- The caller's freshness hypothesis for an opaque ledger index `list`: a
 local `key ∉ spine` whose spine contains `list` as a visible segment. -/
 def findHypothesis (keys : Keys) (list key : Expr) : MetaM (Option Expr) := do
@@ -4997,6 +5033,19 @@ def findHypothesis (keys : Keys) (list key : Expr) : MetaM (Option Expr) := do
     if ← isDefEq hypothesisKey key then
       if let some proof ← restrictFresh keys key proof spine list then
         return some proof
+  -- A covering hypothesis `List.Disjoint covering list` whose literal
+  -- `covering` contains `key`; the kernel checks the membership.
+  let key ← instantiateMVars key
+  for decl in ← getLCtx do
+    if decl.isImplementationDetail then continue
+    let type := (← instantiateMVars decl.type).cleanupAnnotations
+    let_expr List.Disjoint _ covering spine := type | continue
+    unless (← instantiateMVars spine).cleanupAnnotations == list do continue
+    if (← mentionsListFVar covering) then continue
+    let elements ← elementsOf covering
+    unless elements.contains key || (← elements.anyM (isDefEq · key)) do continue
+    return some <| mkApp7 (mkConst ``keyFresh_of_disjoint [keys.level]) keys.type
+      keys.decEq key covering list decl.toExpr (boolRefl true)
   return none
 
 mutual
@@ -5054,6 +5103,17 @@ partial def disjoint (keys : Keys) (goal : MVarId) (left right : Expr) : MetaM U
       refuteVisible claim right key
     return ← closeByKernel goal claim test true fun rfl =>
       mkApp5 (mkConst ``keyDisjoint_of_all [keys.level]) keys.type keys.decEq left right rfl
+  -- The caller's own covering hypothesis `List.Disjoint left right`, verbatim.
+  let left ← instantiateMVars left
+  let right ← instantiateMVars right
+  for decl in ← getLCtx do
+    if decl.isImplementationDetail then continue
+    let type := (← instantiateMVars decl.type).cleanupAnnotations
+    let_expr List.Disjoint _ covering spine := type | continue
+    if covering.cleanupAnnotations == left.cleanupAnnotations &&
+        spine.cleanupAnnotations == right.cleanupAnnotations then
+      goal.assign decl.toExpr
+      return
   let rightCell ← listCell right
   if rightCell.isAppOf ``HAppend.hAppend || rightCell.isAppOf ``List.append then
     let first := rightCell.appFn!.appArg!

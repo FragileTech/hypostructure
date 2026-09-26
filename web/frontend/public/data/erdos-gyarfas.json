@@ -17968,8 +17968,8 @@
     "kernel": "verified",
     "wired": "verified",
     "local": "verified",
-    "fidelity": "partial",
-    "note": "WEAKER — `Holds .uncompressible` = ∀ support, ¬ `CompressibleSupport`, where the compression must be two-way context-equivalent (`Target(glue X′ Y) ↔ Target(glue X Y)` for every Y). The paper's def:target-complete-compression only requires the replacement hypotheses (one-way inclusion (i)), so the published statement is weaker than cor:uncompressible's first assertion; it is derived from [13] by `replacementSupportOfCompressibleSupport`-style weakening."
+    "fidelity": "verified",
+    "note": "FAITHFUL — `Holds .uncompressible` = ∀ support, ¬ `ReplacementSupport` (one-way obstruction inclusion), the first assertion of cor:uncompressible under def:target-complete-compression; equal in content to [13]."
    },
    "15": {
     "lean": "verified",
@@ -18041,7 +18041,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `Decision.run` on `skeletonBudget < 2^(rate·scales·|𝒫_hot|)` (`.barrierOverflow`) vs its negation (`.barrierCap`), with 𝒫_hot/𝒫_cold the canonical partition published as `.hotColdPartition`; def:window-realization-test defines this as a counting branch test."
+    "note": "FAITHFUL — Exact complements barrierCap / barrierOverflow on the canonical hot family; [23] closes through Core."
    },
    "23": {
     "lean": "verified",
@@ -18264,8 +18264,8 @@
     "kernel": "verified",
     "wired": "verified",
     "local": "partial",
-    "fidelity": "partial",
-    "note": "DIVERGENT — The threshold is exact: `n^{|R|} ≤ |𝒢(R)|^d` with d = `remainderEntropyThresholdDenominator` = 10 (Problem.lean:79), which is η(R) >= (1/10)log2 n with the logarithm and division cleared. The quantifier differs: `K .remainderEntropyHigh` requires the rate at every valid window packing, not necessarily a maximum one (∀ packing, IsWindowPacking → …), and `K .remainderEntropyLow` gives ∃ such a packing. The manuscript's test is on the single fixed remainder R of the maximum packing. lem:dominant-type is a separate key, `K .dominantRootedType`, published on the repetitive arm with the finite threshold T(n) in place of ε|R|."
+    "fidelity": "verified",
+    "note": "FAITHFUL — High and low arms are the exact rate test and its negation on the remainder of the fixed maximum packing (`packing = canonicalWindowPacking`)."
    },
    "51": {
     "lean": "verified",
@@ -18289,7 +18289,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "partial",
-    "note": "DIVERGENT — The test is `skeletonBudget < jointPackageDemand` (`K .entropyCapActive`) against `jointPackageDemand ≤ skeletonBudget`, which is the Or.inl of `K .largeBudgetResidual`. That is eq:entropy-cap with the forced-obstruction term K(1-13θ) set to 0. The node's question is 'remaining non-obstruction budget < K|R|?'. The yes arm is therefore strictly harder to enter than the paper's."
+    "note": "DIVERGENT — Exact complements `K .entropyCapActive` (budget < demand) / `K .entropyCapBound` (demand ≤ budget) with K = 0, on the high arm after [52]."
    },
    "54": {
     "lean": "verified",
@@ -18305,7 +18305,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL-TRIVIAL — `K .largeBudgetResidual` = `LargeBudgetResidual` (SpineVocabulary.lean:5836): the [53] no-arm inequality, or the low-entropy witness. It is a routing record of the entering arm. The box's θ ≤ θ_win + o(1) is not re-proved here, and the paper only re-cites prop:p13-density. Lean carries θ as the incoming lane fact that [56] reads: `K .densityCap` from [24], `K .coldRoute8Below`, or `K .denseDeficiencyBelow`."
+    "note": "FAITHFUL-TRIVIAL — Residual C is published from the arm's defining fact ([53] no arm or the low-entropy arm)."
    },
    "56": {
     "lean": "verified",
@@ -18345,7 +18345,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — This is a real contradiction on one packing. The `K .netChargeNonNegative` witness packing (canonical, maximum) gives N0(R) >= 0, and `K .netChargeCap` instantiated at the same packing gives N0(R) < 0 (`not_negativeNetCharge_iff`)."
+    "note": "FAITHFUL — The [59] yes-arm N0(R) ≥ 0 at the selected maximum packing against the net cap N0(R) < 0 at every maximum packing."
    },
    "61": {
     "lean": "verified",
@@ -19065,7 +19065,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Derives False from `K .coldHotEntropyOverflow`, `K .barrierCap` (2^(rate·scales·|𝒫_hot|) ≤ skeletonBudget), and `K .surplusAtOrBelow`, via `Graph.two_mul_exponent_le_scale_mul_edgeBudget`. This is prop:p13-density's entropy cap on the current residual."
+    "note": "FAITHFUL — [22]'s live-hot cap and the near-cubic spine give the exact live-hot entropy cap; Core closes it against the [148] overflow arm."
    },
    "150": {
     "lean": "verified",
@@ -19120,8 +19120,8 @@
     "kernel": "verified",
     "wired": "partial",
     "local": "verified",
-    "fidelity": "partial",
-    "note": "WEAKER — `K .coldGermRouted` publishes that every surviving length-changing germ is distinguishing and not target-complete in every profile fibre (the G2 target-defect route). The manuscript's [156] is a closed terminal: this route lands in the sparse-exit/exit-(4)/handoff ledgers, which def:surviving-cold-branch excludes. No row derives that contradiction."
+    "fidelity": "verified",
+    "note": "FAITHFUL — A hit-distinguished active configuration is the sparse exit (b); the surviving branch excludes it."
    },
    "157": {
     "lean": "verified",
@@ -19137,7 +19137,7 @@
     "wired": "verified",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Decision.run on `WindowPackageRealized` (some map from labelled skeletons has range ≥ 2^{b_𝒫}). That is def:window-realization-test's realization sentence. Because a range never exceeds its domain, this is exactly 2^{b_𝒫} ≤ |𝒢_{n,m}|."
+    "note": "FAITHFUL — Realized vs not realized at the fixed maximal packing."
    },
    "159": {
     "lean": "verified",
@@ -19153,7 +19153,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — The first decision is the exact τ(θ)<1/4 comparison with the √n allowance (`K .denseDeficiencyBelow`/`AtOrAbove`). Only on its yes-arm is `Route8Census.Rate` (τ<3/13 with allowances; `K .route8Rate`/`K .route8RateFails`) decided, as lem:dense-deficiency-routing prescribes."
+    "note": "FAITHFUL — τ(θ) < 1/4 exact test, then the private-carrier rate on its yes arm."
    },
    "161": {
     "lean": "verified",
@@ -19241,7 +19241,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — On the additive arm the row publishes `K .blockedCompressionBound` (|𝓑(𝒫)|·2^{b·p} ≤ |a-priori class|) and `K .blockedCompressionCap` (2^{b·p} ≤ skeletonBudget), using G ∈ 𝓑(𝒫). `runAndCloseIncompatible` then closes the cap against `K .densePackingOverflow` from [159]."
+    "note": "FAITHFUL — Compression cap against [159]'s strict overflow, closed by Core."
    },
    "172a": {
     "lean": "verified",
@@ -19273,7 +19273,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `K .absorbedGermSplit` publishes, for every selected branch-excess half-edge, either a subcubic candidate germ or a first high vertex whose neighbours are all at threshold (via `K .slackIndependent`). `absorbedGermDichotomy` then decides whether the candidate class is nonempty: `K .coldPositiveGerm` ([176]) or `K .absorbedGermFanData` ([177])."
+    "note": "FAITHFUL — Exact complements `K .coldPositiveGerm` / `K .coldNoPositiveGerm` (new key, idx 1800); the per-half-edge split and the [177] fan data are deterministic facts on both arms."
    },
    "176": {
     "lean": "verified",
@@ -19281,7 +19281,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `K .coldPositiveGerm` plus `K .coldGermFamilyPositive` (nonempty disjoint extracted (F5) germ family, derived from the [153] extraction). This family is routed through [163] neutral-germ symmetry, [154]-[157] trichotomy/table/`coldBranchClosed`, [165]-[166] swap to Q=E, or [167]-[168] closure."
+    "note": "FAITHFUL — [154]: G1 closes, G2 closes against the sparse survivor; silent arm → [163]: genuine strand closes at [167]/[168]; canonical arm publishes Q = E and continues with the [177] complement."
    },
    "177": {
     "lean": "verified",

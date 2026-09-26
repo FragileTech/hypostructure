@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.NetCharge
 
 /-! Independently compiled spine row declarations. -/
 
@@ -37,63 +38,17 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       (Presentation := Presentation) (presentation := presentation)
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.netDeficiencyCap
-    { Requires := [K .largeBudgetResidual, K .densityCap]
+    { Requires := [K .densityCap]
       Produces := [K .netDeficiencyCap]
-      requiresUnique := by key_fresh
+      requiresUnique := by simp
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let _residual := (inputs.get (K .largeBudgetResidual)).down
       .cons (key := K .netDeficiencyCap)
-        (show Value BranchState Presentation presentation data
-            .netDeficiencyCap inputs.current from
-          ⟨by
-            intro packing valid cardinality large
-            have density :
-                2 * (data.windowRate *
-                  data.separatedScaleCount inputs.current.object.vertexCount *
-                  inputs.current.object.windowPackingNumber data.windowOrder) ≤
-                (Graph.dyadicScaleCount inputs.current.object + 1) *
-                  (data.threshold * inputs.current.object.vertexCount +
-                    data.surplusThreshold inputs.current.object.vertexCount) +
-                data.densitySlack * (data.windowRate *
-                  data.separatedScaleCount inputs.current.object.vertexCount) *
-                  data.surplusThreshold inputs.current.object.vertexCount :=
-              (inputs.get (K .densityCap)).down
-            have density' :
-                2 * (data.windowRate * Nat.log2 inputs.current.object.vertexCount *
-                  packing.card) ≤
-                (Nat.log2 inputs.current.object.vertexCount + 1) *
-                  (data.threshold * inputs.current.object.vertexCount +
-                    data.spineScale *
-                      Core.ceilSqrt inputs.current.object.vertexCount) +
-                data.densitySlack * (data.windowRate * Nat.log2 inputs.current.object.vertexCount) *
-                  (data.spineScale *
-                    Core.ceilSqrt inputs.current.object.vertexCount) := by
-              rw [data.separatedScaleCount_eq_log2, Graph.dyadicScaleCount,
-                ← cardinality] at density
-              simpa [Parameters.surplusThreshold] using density
-            have cardinality' :
-                data.windowOrder * packing.card +
-                    (inputs.current.object.remainderSupport packing).card =
-                  inputs.current.object.vertexCount := by
-              simpa [Nat.add_comm] using
-                inputs.current.object.remainderSupport_card_add_eq valid
-            have thresholdPos : 0 < data.threshold :=
-              lt_of_lt_of_le (by omega) data.three_le_threshold
-            have debitLe :
-                2 * (data.windowOrder - 1) ≤ data.threshold * data.windowOrder := by
-              calc
-                2 * (data.windowOrder - 1) ≤ 2 * data.windowOrder := by omega
-                _ ≤ data.threshold * data.windowOrder :=
-                  Nat.mul_le_mul_right data.windowOrder
-                    (le_trans (by omega) data.three_le_threshold)
-            exact Graph.FiniteObject.strictCap_of_densityCap_of_sufficientlyLarge
-              data.threshold data.dischargeScale data.windowOrder data.windowRate
-              data.spineScale data.densitySlack inputs.current.object.vertexCount packing.card
-              (inputs.current.object.remainderSupport packing).card
-              data.windowOrder_pos thresholdPos debitLe data.netCapRateSlack
-              large density' cardinality'⟩)
+        ⟨Contracts.Spine.netDeficiencyCap_of_densityCap data.toParameters
+          inputs.current.object data.separatedScaleCount_eq_log2
+          data.three_le_threshold data.netCapRateSlack
+          (inputs.get (K .densityCap)).down⟩
         .nil)
     0 0
 

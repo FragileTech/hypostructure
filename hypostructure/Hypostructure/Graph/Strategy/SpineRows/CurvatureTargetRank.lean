@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.SpineRemainder
 
 /-! Independently compiled spine row declarations. -/
 
@@ -95,18 +96,8 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
             ⟨fun _Coordinate _family _coordinateSupport quotient reducing =>
               quotient.localize reducing⟩)
           (.cons (key := K .curvatureTargetRank)
-            (show Value BranchState Presentation presentation data
-                .curvatureTargetRank inputs.current from
-              ⟨fun packing _valid _card =>
-                ⟨Graph.FiniteObject.exists_attaining_curvatureTargetRank
-                    (Graph.MinimumDegreeAtLeast data.threshold)
-                    (Graph.HasCycleWithLength data.LengthOK) inputs.current.object
-                    (inputs.current.object.remainderSupport packing),
-                  fun _candidate subset survives =>
-                    Graph.FiniteObject.card_le_curvatureTargetRank
-                      (Graph.MinimumDegreeAtLeast data.threshold)
-                      (Graph.HasCycleWithLength data.LengthOK) inputs.current.object
-                      (inputs.current.object.remainderSupport packing) subset survives⟩⟩)
+            ⟨Contracts.Spine.curvatureTargetRank_attained data.toParameters
+              inputs.current.object⟩
             .nil)))
     0 0
 

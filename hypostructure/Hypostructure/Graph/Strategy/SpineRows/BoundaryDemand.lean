@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.SpineRemainder
 
 /-! Independently compiled spine row declarations. -/
 
@@ -46,32 +47,15 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       (Presentation := Presentation) (presentation := presentation)
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.boundaryDemand
-    { Requires := [K .remainderNormalized]
+    { Requires := []
       Produces := [K .boundaryDemand]
       requiresUnique := by simp
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      -- Node `[28]` is entered only on the normalized remainder residual.  Read
-      -- that literal predecessor fact; the framework retains it when the new
-      -- demand fact is appended.
-      let _normalized := inputs.get (K .remainderNormalized)
-      -- The standing baseline, read off the residual rather than from a fact.
-      let baseline : ∀ vertex : inputs.current.object.Vertex,
-          data.threshold ≤ inputs.current.object.degree vertex :=
-        fun vertex => le_trans inputs.current.baseline
-          (inputs.current.object.minDegree_le_degree vertex)
       .cons (key := K .boundaryDemand)
-        -- `lem:surplus-aware-window-stub`: the demand link and the capacity
-        -- link, each at its own hypothesis and neither near-cubic.
-        (show Value BranchState Presentation presentation data
-            .boundaryDemand inputs.current from
-          ⟨fun packing valid =>
-            ⟨inputs.current.object.positiveDeficiency_le_boundaryIncidence
-              (inputs.current.object.remainderSupport packing) data.threshold
-              baseline,
-            inputs.current.object.boundaryIncidence_add_internal_mass_le valid
-              baseline⟩⟩)
+        ⟨Contracts.Spine.boundaryDemand_of_baseline data.toParameters
+          inputs.current.object inputs.current.baseline⟩
         .nil)
     0 0
 

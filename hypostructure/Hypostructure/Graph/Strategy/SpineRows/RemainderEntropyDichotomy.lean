@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.RemainderEntropy
 
 /-! Independently compiled spine row declarations. -/
 
@@ -35,27 +36,20 @@ noncomputable def remainderEntropyDichotomy
     (previous :
       @ExactLedger (Input BranchState Presentation presentation data)
         _ (factSystem BranchState Presentation presentation data) current known)
-    [@FactKeys.Has (Input BranchState Presentation presentation data) _
-      (factSystem BranchState Presentation presentation data)
-      (K .forcedCurvatureCost) known]
     (highFresh : K .remainderEntropyHigh ∉ known)
     (lowFresh : K .remainderEntropyLow ∉ known) :
     @Decision (Input BranchState Presentation presentation data) _
       (factSystem BranchState Presentation presentation data) current known
       (K .remainderEntropyHigh) (K .remainderEntropyLow) previous :=
-  -- Node `[49]` is asked of the residual carrying node `[48]`'s forced cost.
-  let _cost := (@ExactLedger.get (Input BranchState Presentation presentation data) _
-    (factSystem BranchState Presentation presentation data)
-    current known previous (K .forcedCurvatureCost)).down
   @Decision.run (Input BranchState Presentation presentation data) _
     (factSystem BranchState Presentation presentation data) current known
     previous (K .remainderEntropyHigh) (K .remainderEntropyLow)
     `Hypostructure.Graph.Strategy.Spine.remainderEntropyDichotomy
     (by
       classical
+      -- `[50]` is asked of the remainder of the fixed maximum packing.
+      let packing := canonicalWindowPacking data.toParameters current.object
       by_cases high :
-          ∀ packing : Finset (Finset current.object.Vertex),
-            current.object.IsWindowPacking data.windowOrder packing →
             Graph.AtLeastEntropyRate current.object.vertexCount
               data.entropyDenominator data.windowOrder data.threshold
               (current.object.positiveDeficiency
@@ -63,12 +57,10 @@ noncomputable def remainderEntropyDichotomy
               (current.object.internalEdgeCount
                 (current.object.remainderSupport packing))
               (current.object.remainderSupport packing).card
-      · exact .inl ⟨high⟩
-      · refine .inr ⟨?_⟩
-        push Not at high
-        obtain ⟨packing, valid, below⟩ := high
-        exact ⟨packing, valid,
-          (Graph.not_atLeastEntropyRate_iff _ _ _ _ _ _ _).mp below⟩)
+      · exact .inl ⟨Contracts.Spine.remainderEntropyHigh_of_atLeast
+          data.toParameters current.object high⟩
+      · exact .inr ⟨Contracts.Spine.remainderEntropyLow_of_not_atLeast
+          data.toParameters current.object high⟩)
     highFresh lowFresh
 
 end Hypostructure.Graph.Strategy.Spine

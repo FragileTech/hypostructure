@@ -134,13 +134,13 @@
    "on_probed_closed_arm": true
   },
   "14": {
-   "producer": "`interfaceReplacementRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/InterfaceReplacement.lean:20), run in `selectedEntryPrefix` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Entry.lean:137-145)",
-   "fidelity": "WEAKER",
-   "fidelity_note": "`Holds .uncompressible` = ∀ support, ¬ `CompressibleSupport`, where the compression must be two-way context-equivalent (`Target(glue X′ Y) ↔ Target(glue X Y)` for every Y). The paper's def:target-complete-compression only requires the replacement hypotheses (one-way inclusion (i)), so the published statement is weaker than cor:uncompressible's first assertion; it is derived from [13] by `replacementSupportOfCompressibleSupport`-style weakening.",
+   "producer": "`interfaceReplacementRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/InterfaceReplacement.lean), statement `UncompressibleStatement` (hypostructure/Hypostructure/Graph/Statements/Spine.lean:2463)",
+   "fidelity": "FAITHFUL",
+   "fidelity_note": "`Holds .uncompressible` = ∀ support, ¬ `ReplacementSupport` (one-way obstruction inclusion), the first assertion of cor:uncompressible under def:target-complete-compression; equal in content to [13].",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "The paper-strength form is still on the ledger as `K .replacementExclusion` ([13]), so no downstream consumer loses content. The key no longer bundles the [12] clause; that is now `K .targetCompleteContextUniversality`.",
+   "difference": "Consumers holding a two-way `CompressibleSupport` weaken it with `replacementSupportOfCompressibleSupport`.",
    "on_probed_closed_arm": true
   },
   "15": {
@@ -214,13 +214,13 @@
    "on_probed_closed_arm": true
   },
   "22": {
-   "producer": "`hotColdPartitionRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/HotColdPartition.lean:29); `selectedBarrierDichotomy` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Cold/Barrier.lean:29); invoked at proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/Realized.lean:31-35 (and in the [162] pass at Survivor/UnrealizedDense.lean:32, Survivor/BelowRateFailure.lean:51)",
+   "producer": "`nearCubicHotColdCap` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/ColdPass.lean:51), decision `barrierDichotomy` (hypostructure/Hypostructure/Graph/Strategy/EntropyClosure.lean)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`Decision.run` on `skeletonBudget < 2^(rate·scales·|𝒫_hot|)` (`.barrierOverflow`) vs its negation (`.barrierCap`), with 𝒫_hot/𝒫_cold the canonical partition published as `.hotColdPartition`; def:window-realization-test defines this as a counting branch test.",
+   "fidelity_note": "Exact complements barrierCap / barrierOverflow on the canonical hot family; [23] closes through Core.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "𝒫_hot is defined as a maximal realized subfamily (`canonicalHotWindows`), so the overflow arm is refuted by construction at [23] and the split gives no information about the residual.",
+   "difference": "Decision moved from the EG assembly into the framework.",
    "on_probed_closed_arm": true
   },
   "23": {
@@ -494,13 +494,13 @@
    "on_probed_closed_arm": true
   },
   "50": {
-   "producer": "`remainderEntropyDichotomy` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/RemainderEntropyDichotomy.lean:31); `localTypeCoordinateDichotomy` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/LocalTypeCoordinateDichotomy.lean:26); `dominantRootedTypeRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/DominantRootedType.lean:26)",
-   "fidelity": "DIVERGENT",
-   "fidelity_note": "The threshold is exact: `n^{|R|} ≤ |𝒢(R)|^d` with d = `remainderEntropyThresholdDenominator` = 10 (Problem.lean:79), which is η(R) >= (1/10)log2 n with the logarithm and division cleared. The quantifier differs: `K .remainderEntropyHigh` requires the rate at every valid window packing, not necessarily a maximum one (∀ packing, IsWindowPacking → …), and `K .remainderEntropyLow` gives ∃ such a packing. The manuscript's test is on the single fixed remainder R of the maximum packing. lem:dominant-type is a separate key, `K .dominantRootedType`, published on the repetitive arm with the finite threshold T(n) in place of ε|R|.",
+   "producer": "`remainderEntropyDichotomy` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/RemainderEntropyDichotomy.lean:32), lemmas `remainderEntropyHigh_of_atLeast`/`remainderEntropyLow_of_not_atLeast` (hypostructure/Hypostructure/Graph/Contracts/Spine/RemainderEntropy.lean)",
+   "fidelity": "FAITHFUL",
+   "fidelity_note": "High and low arms are the exact rate test and its negation on the remainder of the fixed maximum packing (`packing = canonicalWindowPacking`).",
    "complete": "YES",
    "local": "PARTIAL: the split reads the current object, but it quantifies over all window packings instead of the fixed canonical maximum packing's remainder",
    "api": "OK",
-   "difference": "The high arm is ∀ over every window packing, including non-maximum ones such as the empty packing. The low arm is ∃ some packing. The paper tests the one R left by the fixed maximum packing. Downstream, `entropyPackageRow` instantiates the high arm at `canonicalWindowPacking`. The dichotomy reads `K .forcedCurvatureCost` into an unused binder `_cost`.",
+   "difference": "The class 𝒢(R) is the Lean class of [49] (see [49]).",
    "on_probed_closed_arm": true
   },
   "51": {
@@ -526,11 +526,11 @@
   "53": {
    "producer": "`entropyCapDichotomy` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/EntropyCapDichotomy.lean:30)",
    "fidelity": "DIVERGENT",
-   "fidelity_note": "The test is `skeletonBudget < jointPackageDemand` (`K .entropyCapActive`) against `jointPackageDemand ≤ skeletonBudget`, which is the Or.inl of `K .largeBudgetResidual`. That is eq:entropy-cap with the forced-obstruction term K(1-13θ) set to 0. The node's question is 'remaining non-obstruction budget < K|R|?'. The yes arm is therefore strictly harder to enter than the paper's.",
+   "fidelity_note": "Exact complements `K .entropyCapActive` (budget < demand) / `K .entropyCapBound` (demand ≤ budget) with K = 0, on the high arm after [52].",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "The diagram places [53] on [50]'s no arm. Lean places it on the high-entropy arm, after [52], following prop:entropy-high-theta ('in the high-entropy branch'). The low arm goes straight to [55] and never meets [53]. The K term is dropped, justified in comments by rem:closure-robust. Cases the paper closes at [54] only through the forced cost go to [55] instead, which is safe for routing.",
+   "difference": "Registered in audits/erdos-64-red-team/discrepancies-F5.md: follows prop:two-budget/prop:entropy-high-theta (high arm) where the diagram places [53] on [50]'s no arm; K = 0 per rem:closure-robust.",
    "on_probed_closed_arm": true
   },
   "54": {
@@ -544,13 +544,13 @@
    "on_probed_closed_arm": true
   },
   "55": {
-   "producer": "`entropyCapDichotomy` .right arm (`K .largeBudgetResidual`, hypostructure/Hypostructure/Graph/Strategy/SpineRows/EntropyCapDichotomy.lean:30); `lowEntropyLargeBudgetRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/LowEntropyLargeBudget.lean:26)",
+   "producer": "`highEntropyLargeBudgetRow`, `lowEntropyLargeBudgetRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/LowEntropyLargeBudget.lean)",
    "fidelity": "FAITHFUL-TRIVIAL",
-   "fidelity_note": "`K .largeBudgetResidual` = `LargeBudgetResidual` (SpineVocabulary.lean:5836): the [53] no-arm inequality, or the low-entropy witness. It is a routing record of the entering arm. The box's θ ≤ θ_win + o(1) is not re-proved here, and the paper only re-cites prop:p13-density. Lean carries θ as the incoming lane fact that [56] reads: `K .densityCap` from [24], `K .coldRoute8Below`, or `K .denseDeficiencyBelow`.",
+   "fidelity_note": "Residual C is published from the arm's defining fact ([53] no arm or the low-entropy arm).",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "The manuscript's (b) and (c) low-entropy branches merge into one residual key. On the route-8 lanes (Realized/Dense/BelowRateFailure 'Below'), the ledger has no `K .densityCap`; the θ input there is the [146]/[160] rate fact.",
+   "difference": "None.",
    "on_probed_closed_arm": true
   },
   "56": {
@@ -594,13 +594,13 @@
    "on_probed_closed_arm": false
   },
   "60": {
-   "producer": "inline `have impossible : False` in `selectedNetChargeContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NetCharge/Continuation.lean:435-443)",
+   "producer": "`closeIncompatible` with `instIncompatibleNetChargeNonNegativeCap` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/NetChargeDichotomy.lean:22), called in `selectedNetChargeContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NetCharge/Continuation.lean)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "This is a real contradiction on one packing. The `K .netChargeNonNegative` witness packing (canonical, maximum) gives N0(R) >= 0, and `K .netChargeCap` instantiated at the same packing gives N0(R) < 0 (`not_negativeNetCharge_iff`).",
+   "fidelity_note": "The [59] yes-arm N0(R) ≥ 0 at the selected maximum packing against the net cap N0(R) < 0 at every maximum packing.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "The closure is written by hand with two `ExactLedger.get` reads and `False.elim`, not through an `Incompatible` instance and `runAndCloseIncompatible`. The unbuilt SpineAssembly.lean:170 instance is dead.",
+   "difference": "None; framework closure.",
    "on_probed_closed_arm": false
   },
   "61": {
@@ -1480,13 +1480,13 @@
    "on_probed_closed_arm": true
   },
   "149": {
-   "producer": "`selectedColdHotEntropyCloses` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Cold/Entropy.lean:57), invoked at proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/RealizedAtOrAbove.lean:35, proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/DenseAtOrAbove.lean:37, proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/BelowRateFailure.lean:132",
+   "producer": "`coldHotEntropyCapRow` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows/EntryDichotomies.lean:61), lemma `coldHotEntropyCap_of_barrierCap` (hypostructure/Hypostructure/Graph/Contracts/Spine/ColdEntry.lean); closed by `runAndCloseIncompatible` in `nearCubicColdStubs` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/ColdPass.lean:87)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "Derives False from `K .coldHotEntropyOverflow`, `K .barrierCap` (2^(rate·scales·|𝒫_hot|) ≤ skeletonBudget), and `K .surplusAtOrBelow`, via `Graph.two_mul_exponent_le_scale_mul_edgeBudget`. This is prop:p13-density's entropy cap on the current residual.",
+   "fidelity_note": "[22]'s live-hot cap and the near-cubic spine give the exact live-hot entropy cap; Core closes it against the [148] overflow arm.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "Consumes no cold-branch fact: it re-uses [22]'s cap, so the arm it closes is provably empty.",
+   "difference": "The overflow arm is provably empty (it reuses [22]'s cap).",
    "on_probed_closed_arm": true
   },
   "150": {
@@ -1550,13 +1550,13 @@
    "on_probed_closed_arm": false
   },
   "156": {
-   "producer": "`coldGermTrichotomyRow` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows.lean:2920), keys `K .coldGermDistinguished`, `K .coldGermRouted`; then `coldBranchClosedRow` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows.lean:3626)",
-   "fidelity": "WEAKER",
-   "fidelity_note": "`K .coldGermRouted` publishes that every surviving length-changing germ is distinguishing and not target-complete in every profile fibre (the G2 target-defect route). The manuscript's [156] is a closed terminal: this route lands in the sparse-exit/exit-(4)/handoff ledgers, which def:surviving-cold-branch excludes. No row derives that contradiction.",
+   "producer": "`closeIncompatible (K .coldGermSomeDistinguishing) (K .sparseSurplusSurvivor)` with `instIncompatibleColdGermSomeDistinguishingSurvivor` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows/Basic.lean:51), lemma `sparseSurplusExit_of_distinguishing` (hypostructure/Hypostructure/Graph/Contracts/Spine/ColdGerm.lean)",
+   "fidelity": "FAITHFUL",
+   "fidelity_note": "A hit-distinguished active configuration is the sparse exit (b); the surviving branch excludes it.",
    "complete": "YES (row fully defined); the G2 route is not discharged against `K .sparseSurplusSurvivor`/exit-(4) ledgers",
    "local": "YES",
    "api": "OK",
-   "difference": "G2 is recorded, not closed. On the realized arm the cold oval leaves as `K .coldBranchClosed` (NoTerminalColdResidual), which Final.lean files under the returned [187] disjunction (`OtherReturnedOutcome`), not as a contradiction. The third disjunct `Distinguishing ∨ HandoffProduced` is filled trivially by `Or.inl`.",
+   "difference": "Closed on the realized arm, the dense linear arm and the absorbed [176] arm. See discrepancies-F5.md for the vacuity of clause (b).",
    "on_probed_closed_arm": false
   },
   "157": {
@@ -1570,13 +1570,13 @@
    "on_probed_closed_arm": false
   },
   "158": {
-   "producer": "`selectedWindowPackageRealizationDichotomy` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Local.lean:73), invoked at Assembly/NearCubic/Survivor.lean:27",
+   "producer": "`windowPackageRealizationDichotomy` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/WindowPackage.lean:22)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "Decision.run on `WindowPackageRealized` (some map from labelled skeletons has range ≥ 2^{b_𝒫}). That is def:window-realization-test's realization sentence. Because a range never exceeds its domain, this is exactly 2^{b_𝒫} ≤ |𝒢_{n,m}|.",
+   "fidelity_note": "Realized vs not realized at the fixed maximal packing.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "The `State` type is arbitrary rather than 'target-complete states'. This is harmless for the counting test, but the yes-arm consumers see only a count. The decision is inlined in the Assembly rather than exported from a row module.",
+   "difference": "Decision moved into the framework.",
    "on_probed_closed_arm": true
   },
   "159": {
@@ -1590,13 +1590,13 @@
    "on_probed_closed_arm": false
   },
   "160": {
-   "producer": "inline `Decision.run` on `DenseDeficiencyBelowStatement` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/Unrealized.lean:45; statement hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean:2641), then `route8RateDichotomy` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8RateDichotomy.lean:22) at proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/UnrealizedBelow.lean:36",
+   "producer": "`denseDeficiencyDichotomy` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/DenseNetDeficiencyCap.lean:23) then `route8RateDichotomy`",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "The first decision is the exact τ(θ)<1/4 comparison with the √n allowance (`K .denseDeficiencyBelow`/`AtOrAbove`). Only on its yes-arm is `Route8Census.Rate` (τ<3/13 with allowances; `K .route8Rate`/`K .route8RateFails`) decided, as lem:dense-deficiency-routing prescribes.",
+   "fidelity_note": "τ(θ) < 1/4 exact test, then the private-carrier rate on its yes arm.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "None. The first decision is inlined in the Assembly under the tag `selectedDenseDeficiencyDichotomy`, which names no declaration.",
+   "difference": "Decision moved into the framework.",
    "on_probed_closed_arm": false
   },
   "161": {
@@ -1700,13 +1700,13 @@
    "on_probed_closed_arm": false
   },
   "171": {
-   "producer": "`blockedCompressionRow` (hypostructure/Hypostructure/Graph/Strategy/BlockedCompressionRows.lean:468); `blockedCompressionCloses` (hypostructure/Hypostructure/Graph/Strategy/BlockedCompressionRows.lean:1020)",
+   "producer": "`blockedCompressionRow.runAndCloseIncompatible` in `selectedCanonicalReplacementContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Replacement.lean:65)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "On the additive arm the row publishes `K .blockedCompressionBound` (|𝓑(𝒫)|·2^{b·p} ≤ |a-priori class|) and `K .blockedCompressionCap` (2^{b·p} ≤ skeletonBudget), using G ∈ 𝓑(𝒫). `runAndCloseIncompatible` then closes the cap against `K .densePackingOverflow` from [159].",
+   "fidelity_note": "Compression cap against [159]'s strict overflow, closed by Core.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "None",
+   "difference": "The former wrapper `blockedCompressionCloses` is removed.",
    "on_probed_closed_arm": false
   },
   "173": {
@@ -1730,23 +1730,23 @@
    "on_probed_closed_arm": false
   },
   "175": {
-   "producer": "`absorbedGermSplitRow` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows.lean:2488); `absorbedGermDichotomy` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows.lean:2548); `selectedAbsorbedGermResidual` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Absorbed/Residual.lean:20)",
+   "producer": "`absorbedGermDichotomy` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows/AbsorbedGerm.lean:61), in `selectedAbsorbedGermResidual` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Absorbed/Residual.lean:194)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`K .absorbedGermSplit` publishes, for every selected branch-excess half-edge, either a subcubic candidate germ or a first high vertex whose neighbours are all at threshold (via `K .slackIndependent`). `absorbedGermDichotomy` then decides whether the candidate class is nonempty: `K .coldPositiveGerm` ([176]) or `K .absorbedGermFanData` ([177]).",
+   "fidelity_note": "Exact complements `K .coldPositiveGerm` / `K .coldNoPositiveGerm` (new key, idx 1800); the per-half-edge split and the [177] fan data are deterministic facts on both arms.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "The diagram's yes/no test is per corridor. Lean's decision is on the aggregate candidate class, and on the positive arm it still appends [177]'s fan data for the complement, so mixed families keep both.",
+   "difference": "The object-level test decides whether some selected corridor avoids high-degree vertices; mixed families continue through both routes.",
    "on_probed_closed_arm": false
   },
   "176": {
-   "producer": "`absorbedGermDichotomy` .left arm (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows.lean:2548); `absorbedGermFamilyPositiveRow` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows.lean:2635); `selectedAbsorbedGermResidual` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Absorbed/Residual.lean:20)",
+   "producer": "`selectedAbsorbedGermResidual` positive arm (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Absorbed/Residual.lean:194)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`K .coldPositiveGerm` plus `K .coldGermFamilyPositive` (nonempty disjoint extracted (F5) germ family, derived from the [153] extraction). This family is routed through [163] neutral-germ symmetry, [154]-[157] trichotomy/table/`coldBranchClosed`, [165]-[166] swap to Q=E, or [167]-[168] closure.",
+   "fidelity_note": "[154]: G1 closes, G2 closes against the sparse survivor; silent arm → [163]: genuine strand closes at [167]/[168]; canonical arm publishes Q = E and continues with the [177] complement.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "The manuscript draws [176] as a terminal 'closed by [154]-[157], [165]-[168]'. In Lean only the genuine-second-strand arm ([167]-[168]) closes. The canonical Q=E arm does not close: it appends [177] fan data and continues through `selectedAbsorbedFanChargeContinuation` to the route-8 boundary. It does not enter [169].",
+   "difference": "The canonical Q = E arm continues through the fan data of the complement rather than closing (paper: closed by [165]-[166]).",
    "on_probed_closed_arm": false
   },
   "177": {

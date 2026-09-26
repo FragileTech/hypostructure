@@ -1,4 +1,5 @@
-import Hypostructure.Graph.Strategy.DominantRootedType
+import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.DominantType
 
 /-! Independently compiled spine row declarations. -/
 
@@ -42,14 +43,11 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let repetitiveInput :=
-        (inputs.get (K .localTypeCoordinateRepetitive)).down
-      let nearCubic := (inputs.get (K .surplusAtOrBelow)).down
       .cons (key := K .dominantRootedType)
-        (show Value BranchState Presentation presentation data
-            .dominantRootedType inputs.current from
-          ⟨dominantRootedType_of_repetitive data inputs.current.object
-            inputs.current.baseline repetitiveInput nearCubic⟩)
+        ⟨Contracts.Spine.dominantRootedType_of_repetitive data.toParameters
+          inputs.current.object inputs.current.baseline
+          (inputs.get (K .localTypeCoordinateRepetitive)).down
+          (inputs.get (K .surplusAtOrBelow)).down⟩
         .nil)
     0 0
 

@@ -36,19 +36,7 @@ noncomputable def selectedNearCubicBranch
       (data := spineData) history
       (by key_fresh) (by key_fresh) with
   | .left exitHistory =>
-      let targetDefect :=
-        (sparseSurplusExitRoutingRow
-          (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile)
-          (data := spineData)).run exitHistory
-          (by key_fresh)
-      let structured :=
-        (sparseTargetDefectStructureRow
-          (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile)
-          (data := spineData)).run targetDefect (by key_fresh)
+      let structured := selectedSparseTargetDefectExit exitHistory
       exact Or.inl ⟨
         (structured.get (K .sparseTargetDefectResidual)).down,
         (structured.get (K .sparseTargetDefectStructure)).down⟩
@@ -171,19 +159,9 @@ noncomputable def selectedLedgerBoundary
                   (Or.inr (Or.inr (Or.inr (Or.inl ⟨quotient, (nearCubicHistory.get (K .surplusAtOrBelow)).down⟩))))))))
             | .inr (.inr joint) =>
                 exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inl joint))))
-          have liftAbsorbed : SelectedAbsorbedGermBoundary selected →
-              SelectedLedgerBoundaryResult selected := by
-            intro absorbed
-            match absorbed with
-            | .inl route => exact liftRoute route
-            | .inr (.inl cold) =>
-                exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
-                  (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr ⟨cold, (nearCubicHistory.get (K .surplusAtOrBelow)).down⟩)))))))))
-            | .inr (.inr blocked) =>
-                exact Or.inr (Or.inr (Or.inl blocked))
           match survivor with
           | .inl (.inl route) => exact liftRoute route
-          | .inl (.inr absorbed) => exact liftAbsorbed absorbed
+          | .inl (.inr absorbed) => exact liftRoute absorbed
           | .inr (.inl rate) =>
               exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
                 (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl ⟨rate, (nearCubicHistory.get (K .surplusAtOrBelow)).down⟩)))))))))

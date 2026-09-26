@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.NetCharge
 
 /-! Independently compiled spine row declarations. -/
 
@@ -13,6 +14,29 @@ universe u v
 variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
+
+/-- **Node `[160]`, `lem:dense-deficiency-routing`, first comparison**: on the
+dense-packing residual `[159]`, decide the exact `τ(θ) < 1/4` deficiency test of
+node `[56]` (`K .denseDeficiencyBelow`) against its exact complement
+(`K .denseDeficiencyAtOrAbove`).  The second comparison of `[160]`, the
+private-carrier rate, is `route8RateDichotomy` on the yes-arm only. -/
+noncomputable def denseDeficiencyDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger
+      (Input BranchState Presentation presentation data) current known)
+    [FactKeys.Has (K .densePackingOverflow) known]
+    (belowFresh : K .denseDeficiencyBelow ∉ known)
+    (atOrAboveFresh : K .denseDeficiencyAtOrAbove ∉ known) :
+    Decision (K .denseDeficiencyBelow) (K .denseDeficiencyAtOrAbove) previous := by
+  classical
+  exact Decision.run previous (K .denseDeficiencyBelow) (K .denseDeficiencyAtOrAbove)
+    `Hypostructure.Graph.Strategy.Spine.denseDeficiencyDichotomy
+    (if below : DenseDeficiencyBelowStatement data.toParameters current.object then
+      .inl ⟨below⟩
+    else
+      .inr ⟨below⟩)
+    belowFresh atOrAboveFresh
 
 variable [FactSystem (Input BranchState Presentation presentation data)]
 
@@ -38,46 +62,15 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       (Presentation := Presentation) (presentation := presentation)
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.denseNetDeficiencyCap
-    { Requires := [K .largeBudgetResidual, K .denseDeficiencyBelow]
+    { Requires := [K .denseDeficiencyBelow]
       Produces := [K .netDeficiencyCap]
-      requiresUnique := by key_fresh
+      requiresUnique := by simp
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let _residual := (inputs.get (K .largeBudgetResidual)).down
-      let below := (inputs.get (K .denseDeficiencyBelow)).down
       .cons (key := K .netDeficiencyCap)
-        (show Value BranchState Presentation presentation data
-            .netDeficiencyCap inputs.current from
-          ⟨by
-            intro packing valid cardinality _large
-            have canonicalCard :
-                (canonicalWindowPacking data.toParameters inputs.current.object).card =
-                  inputs.current.object.windowPackingNumber data.windowOrder :=
-              (Classical.choose_spec
-                (inputs.current.object.exists_windowPacking_card_eq data.windowOrder)).2
-            change data.dischargeScale *
-                (data.threshold * (data.windowOrder *
-                  (canonicalWindowPacking data.toParameters inputs.current.object).card) +
-                  data.spineScale * Core.ceilSqrt inputs.current.object.vertexCount) <
-              data.dischargeScale *
-                  (2 * (data.windowOrder - 1) *
-                    (canonicalWindowPacking data.toParameters inputs.current.object).card) +
-                (inputs.current.object.vertexCount - data.windowOrder *
-                  (canonicalWindowPacking data.toParameters inputs.current.object).card) at below
-            rw [canonicalCard, ← cardinality] at below
-            have cardinality' :
-                data.windowOrder * packing.card +
-                    (inputs.current.object.remainderSupport packing).card =
-                  inputs.current.object.vertexCount := by
-              simpa [Nat.add_comm] using
-                inputs.current.object.remainderSupport_card_add_eq valid
-            have remainder :
-                inputs.current.object.vertexCount - data.windowOrder * packing.card =
-                  (inputs.current.object.remainderSupport packing).card := by
-              omega
-            rw [remainder] at below
-            exact below⟩)
+        ⟨Contracts.Spine.netDeficiencyCap_of_denseDeficiencyBelow data.toParameters
+          inputs.current.object (inputs.get (K .denseDeficiencyBelow)).down⟩
         .nil)
     0 0
 

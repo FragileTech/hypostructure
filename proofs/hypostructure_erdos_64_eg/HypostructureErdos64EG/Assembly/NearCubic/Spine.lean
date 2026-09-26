@@ -1,0 +1,767 @@
+import Hypostructure.Graph.Strategy.EntropyClosure
+import Hypostructure.Graph.Strategy.SpineRows.BoundaryDemand
+import Hypostructure.Graph.Strategy.SpineRows.BranchDependence
+import Hypostructure.Graph.Strategy.SpineRows.CurvatureRankDichotomy
+import Hypostructure.Graph.Strategy.SpineRows.CurvatureTargetRank
+import Hypostructure.Graph.Strategy.SpineRows.DenseNetDeficiencyCap
+import Hypostructure.Graph.Strategy.SpineRows.DominantRootedType
+import Hypostructure.Graph.Strategy.SpineRows.DominantRootedTypeWedgeDichotomy
+import Hypostructure.Graph.Strategy.SpineRows.EntropyCapDichotomy
+import Hypostructure.Graph.Strategy.SpineRows.EntropyPackage
+import Hypostructure.Graph.Strategy.SpineRows.ForcedCurvatureCost
+import Hypostructure.Graph.Strategy.SpineRows.IndependentObstructionTranslates
+import Hypostructure.Graph.Strategy.SpineRows.LocalTypeCoordinateDichotomy
+import Hypostructure.Graph.Strategy.SpineRows.LowEntropyLargeBudget
+import Hypostructure.Graph.Strategy.SpineRows.NetDeficiencyCap
+import Hypostructure.Graph.Strategy.SpineRows.RemainderEntropyDichotomy
+import Hypostructure.Graph.Strategy.SpineRows.RemainderNormalization
+import Hypostructure.Graph.Strategy.SpineRows.RemainderRelabelingEntropy
+import Hypostructure.Graph.Strategy.SpineRows.Route8RateDichotomy
+import Hypostructure.Graph.Strategy.SpineRows.RouteEightNetDeficiencyCap
+import Hypostructure.Graph.Strategy.SpineRows.SeparatedTesters
+import Hypostructure.Graph.Strategy.SpineRows.StubSupply
+import Hypostructure.Graph.Strategy.SpineRows.TargetRankCircuit
+import Hypostructure.Graph.Strategy.SpineRows.WedgeSupply
+import HypostructureErdos64EG.Assembly.NearCubic.Boundary
+import HypostructureErdos64EG.Assembly.NearCubic.Local
+import HypostructureErdos64EG.Assembly.NetCharge.Continuation
+
+/-!
+# Assembly: NearCubic / Spine
+
+The spine `[25]`--`[56]` of Part II--IV, written once and run on every arm
+that continues at `[25]`: the bounded arm of `[153]` returning through `[24]`,
+the `[146]` yes-arm `[147]` (`θ < 1/78`), and the `[160]` double-yes arm
+`[161]`.  Each composition is generic over the incoming ledger index `known`;
+its requirements are `FactKeys.Has` constraints and its freshness is one
+`List.Disjoint` covering hypothesis, discharged at the literal call sites.
+
+`[56]` reads the arm's density input -- `lem:dense-deficiency-routing`: "nodes
+`[56]`--`[64]` consume the density cap only through the inequality
+`def⁺(R) − σ(R) < |R|/4`" -- which is `K .densityCap` on the `[24]` arm,
+`K .coldRoute8Below` on the `[147]` arm and `K .denseDeficiencyBelow` on the
+`[161]` arm.  The route-8 private-carrier rate consumed at `[120]`--`[122]` is
+already on the ledger on the `[147]` and `[161]` arms, retained as failed on
+the `[160]` second complement, and decided at the entry of the route-8
+continuation on the `[24]` arm, whose density cap does not decide it.  These
+are the four spine exits `nearCubicLargeBudget*` below.
+-/
+
+namespace HypostructureErdos64EG
+
+open Hypostructure
+open Hypostructure.Core.Residual
+open Hypostructure.Core.Strategy
+open Hypostructure.Graph.Strategy.Spine
+
+universe u w
+
+/-- Every key committed from `[25]` through Branch D's closure `[46]`. -/
+noncomputable abbrev nearCubicResidualAKeys : FactKeys EGInput.{u} :=
+  [K .remainderNormalized, K .remainderRelabelingEntropy, K .boundaryDemand,
+    K .stubSupply, K .wedgeSupply, K .exactResponseProfile,
+    K .admissibleRankQuotient, K .curvatureTargetRank, K .targetRankCircuit,
+    K .curvatureRankDrop, K .curvatureFullRank, K .branchDependence,
+    K .separatedTesters, K .contextDefect, K .contextUniversal,
+    K .atomCompression, K .delocalizedSupport, K .properDelocalization,
+    K .globalDelocalization, K .repairIdentity, K .globalBarrier, closed]
+
+/-- Every key committed from `[47]` through the net-charge continuation, on an
+arm whose route-8 rate is already decided. -/
+noncomputable abbrev nearCubicResidualBKeys : FactKeys EGInput.{u} :=
+  [K .forcedCurvatureCost, K .remainderEntropyHigh, K .remainderEntropyLow,
+    K .entropyPackageDemand, K .entropyCapActive, K .largeBudgetResidual,
+    K .entropyCapBound, K .localTypeCoordinateRepetitive,
+    K .localTypeCoordinateNonrepetitive, K .dominantRootedType,
+    K .dominantRootedWedgeType, K .dominantRootedTypeWedgeFree,
+    K .independentObstructionTranslates, K .netDeficiencyCap] ++
+    netChargeContinuationKeys
+
+/-- Branch D, nodes `[36]`--`[46]`, on the literal ledger returned by node
+`[35]`.  The displayed state at `[35]` repeats `[33]` verbatim, while the
+separate `separatedTestersRow` appends exactly `lem:separated-testers` without
+altering that state.  The context-validity decision `[36]` with its
+target-defect terminal `[37]`, the atom-compression test `[38]` with its
+terminal `[39]`, the delocalization scope `[40]`/`[41]` with its proper-support
+terminal `[42]`, and the whole-graph route `[43]`--`[45]` closed at `[46]`.
+Every terminal is a framework closure over the ledger of its arm. -/
+-- EG-NODE [35] Branch D: rank-reducing obstruction dependence
+-- EG-NODE [36] valid against every outside context?
+-- EG-NODE [37] target-defective quotient
+-- EG-NODE [38] target-complete with smaller proper representative?
+-- EG-NODE [39] proper-piece compression
+-- EG-NODE [40] requires enlarged connected support $Z\supsetneq C$
+-- EG-NODE [41] $Z\subsetneq G$?
+-- EG-NODE [42] proper-support dependence closure: target defect or compression
+-- EG-NODE [43] $Z=G$: whole-graph support dependence
+-- EG-NODE [44] $1$--$3$ repair identity $s=p-2+2\beta-\sigma$
+-- EG-NODE [45] target / replacement / global profile barrier
+-- EG-NODE [46] rank-drop branch closed
+-- EG-NODE [12] context-universality for target-complete identifications
+theorem nearCubicRankDropCloses
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .branchDependence) known]
+    [FactKeys.Has (K .uncompressible) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .selection) known]
+    (fresh : List.Disjoint
+      [K .contextDefect, K .contextUniversal, K .atomCompression,
+        K .delocalizedSupport, K .properDelocalization,
+        K .globalDelocalization, K .repairIdentity, K .globalBarrier, closed]
+      known := by key_fresh) : False := by
+  match contextValidityDichotomy (data := spineData) history
+      (by key_fresh) (by key_fresh) with
+  | .left defectHistory =>
+      -- `[37]`: target-defective quotient — uninhabited (`lem:context-universality`).
+      exact (closeImpossible defectHistory (K .contextDefect)
+        (by key_fresh)).elimClosed (by infer_instance)
+  | .right universalHistory =>
+      -- `[38]`: target-complete with a smaller proper representative?
+      match atomCompressionDichotomy (data := spineData) universalHistory
+          (by key_fresh) (by key_fresh) with
+      | .left compressionHistory =>
+          -- `[39]`: proper atom compression, forbidden by `cor:uncompressible`.
+          exact (closeIncompatible compressionHistory (K .selection)
+            (K .atomCompression) (by key_fresh)).elimClosed
+            (by infer_instance)
+      | .right delocalizedHistory =>
+          -- `[40]`/`[41]`: the enlarged connected support `Z ⊋ C`; is `Z ⊊ G`?
+          match delocalizationScopeDichotomy (data := spineData) delocalizedHistory
+              (by key_fresh) (by key_fresh) with
+          | .left properHistory =>
+              -- `[42]`: proper-support smearing closure (`lem:proper-smearing`).
+              exact (closeIncompatible properHistory (K .selection)
+                (K .properDelocalization) (by key_fresh)).elimClosed
+                (by infer_instance)
+          | .right globalHistory =>
+              -- `[43]`--`[45]`: whole-graph delocalization, the `1`--`3` repair
+              -- identity, and the target/replacement/global-profile barrier.
+              let repaired :=
+                (repairIdentityRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) spineData).run
+                  globalHistory (by key_fresh)
+              let barrier :=
+                (globalBarrierRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) spineData).run
+                  repaired (by key_fresh)
+              -- `[46]`: rank-drop branch closed (`lem:no-silent-global-smearing`).
+              exact (closeIncompatible barrier (K .selection) (K .globalBarrier)
+                (by key_fresh)).elimClosed (by infer_instance)
+
+/-- **Nodes `[25]`--`[34]`** on the literal residual of an arm continuing at
+`[25]`: Residual A and its normalization `[25]`--`[28]`, the external-incidence
+supply `[29]`, the wedge lower bound `[30]`, the obstruction rank `[31]` with
+`lem:target-rank-circuit`, and the exact finite rank split `[32]` at the
+canonical maximal packing.  Its rank-drop arm is Branch D `[33]`/`[35]`, closed
+by `nearCubicRankDropCloses`; the returned ledger is the full-rank arm `[34]`. -/
+-- EG-NODE [25] Residual A: $R=G-\bigcup V(P)$ is large and componentwise $P_{13}$-free
+-- EG-NODE [26] Residual A: $R$ large and componentwise $P_{13}$-free
+-- EG-NODE [27] no component of $R$ has an internal $3$-core
+-- EG-NODE [28] positive deficiency $\defp(X)=\sum_v\max(0,3-d_X(v))$
+-- EG-NODE [29] external-incidence supply: $\defp(R)\le15p_{13}+o(n)$ and $\defp(R)-\sigma_R\le15p_{13}+o(n)$
+-- EG-NODE [30] wedge lower bound: $W_2(R)\ge\omega_{\rm win}|R|-o(|R|)$ (sharper high-entropy $\omega=2.57407357888\ldots$)
+-- EG-NODE [31] obstruction rank $r_\Omega(R)$
+-- EG-NODE [32] rank drop? $r_\Omega(R)<W_2(R)-o(W_2)$
+-- EG-NODE [33] Branch D: rank-reducing obstruction dependence
+-- EG-NODE [34] Residual B: no rank drop; full obstruction rank $r_\Omega(R)\ge W_2(R)-o(W_2)$
+noncomputable def nearCubicFullRank
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .surplusAtOrBelow) known]
+    [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .uncompressible) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    (fresh : List.Disjoint nearCubicResidualAKeys.{u} known := by key_fresh) :
+    ExactLedger EGInput.{u} selected
+      (K .curvatureFullRank :: K .targetRankCircuit :: K .exactResponseProfile ::
+        K .admissibleRankQuotient :: K .curvatureTargetRank :: K .wedgeSupply ::
+        K .stubSupply :: K .boundaryDemand :: K .remainderRelabelingEntropy ::
+        K .remainderNormalized :: known) :=
+  let remainder :=
+    (remainderNormalizationRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      history (by key_fresh)
+  let relabelingEntropy :=
+    (remainderRelabelingEntropyRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      remainder (by key_fresh)
+  let boundary :=
+    (boundaryDemandRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      relabelingEntropy (by key_fresh)
+  let stubSupply :=
+    (stubSupplyRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      boundary (by key_fresh)
+  let wedge :=
+    (wedgeSupplyRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      stubSupply (by key_fresh)
+  let rank :=
+    (curvatureTargetRankRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      wedge (by key_fresh)
+  let circuit :=
+    (targetRankCircuitRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      rank (by key_fresh)
+  match curvatureRankDichotomy (data := spineData) circuit
+      (by key_fresh) (by key_fresh) with
+  | .left dropHistory =>
+      let dependence :=
+        (branchDependenceRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) spineData).run
+          dropHistory (by key_fresh)
+      let tested :=
+        (separatedTestersRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) spineData).run
+          dependence (by key_fresh)
+      (nearCubicRankDropCloses tested).elim
+  | .right fullRankHistory => fullRankHistory
+
+/-- The route-8 continuation `[57]`--`[124]` entered from the `[24]` arm.  It
+consumes the private-carrier rate at `[120]`--`[122]`, and `[24]`'s density cap
+does not decide it (`Hypostructure.Fixtures.Route8RateDensityCapGap`); its exact
+test is taken here, at the entry of that continuation, and a failed rate is
+retained as the `[187]` outcome. -/
+noncomputable def nearCubicRouteEightEntry
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .surplusAtOrBelow) known]
+    [FactKeys.Has (K .netDeficiencyCap) known]
+    [FactKeys.Has (K .stubSupply) known]
+    [FactKeys.Has (K .boundaryDemand) known]
+    [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .largeBudgetResidual) known]
+    [FactKeys.Has (K .contractionCritical) known]
+    [FactKeys.Has (K .hotColdPartition) known]
+    [FactKeys.Has (K .slackIndependent) known]
+    [FactKeys.Has (K .sparseSurplusSurvivor) known]
+    [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
+    [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .returnAvoidance) known]
+    [FactKeys.Has (K .uncompressible) known]
+    [FactKeys.Has (K .replacementExclusion) known]
+    [FactKeys.Has (K .tightEndpoint) known]
+    [FactKeys.Has (K .cubicBaseline) known]
+    (fresh : List.Disjoint
+      (K .route8Rate :: K .route8RateFails :: netChargeContinuationKeys.{u}) known := by
+        key_fresh) :
+    SelectedNearCubicSurvivorBoundary selected :=
+  match route8RateDichotomy (data := spineData) history
+      (by key_fresh) (by key_fresh) with
+  | .left rated => Or.inl (selectedNetChargeContinuation rated)
+  | .right rateFails => Or.inr (Or.inl (rateFails.get (K .route8RateFails)).down)
+
+/-- The route-8 continuation `[57]`--`[124]` on the `[162]` arm entered from
+`[160]`'s second complement: the ledger retains the failed private-carrier rate
+the continuation would consume at `[120]`--`[122]`, and the retained failure is
+the `[187]` outcome. -/
+noncomputable def nearCubicRateFailedExit
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .route8RateFails) known] :
+    SelectedNearCubicSurvivorBoundary selected :=
+  Or.inr (Or.inl (history.get (K .route8RateFails)).down)
+
+/-- **Nodes `[47]`--`[56]`** on the full-rank arm `[34]`, `[147]` arm (`θ < 1/78`): `[56]` reads the strict cap from `K .coldRoute8Below`,
+the route-8 carrier inequality `τ(θ) < 3/13 < 1/4`; the private-carrier rate
+`K .route8Rate` consumed at `[120]`--`[122]` is already on this ledger.
+
+`[47]`/`[48]`: `cor:forced-curvature-cost`; `[49]`/`[50]`: the per-vertex
+remainder-entropy split; on the high arm `[52]`/`[53]` the joint account and the
+entropy-cap test, closed at `[54]`; on the low arm the repetitive and root-wedge
+splits of `lem:dominant-type`; every surviving arm is Residual C `[55]`. -/
+-- EG-NODE [47] Residual B: full obstruction rank $r_\Omega(R)\ge W_2(R)-o(W_2)$
+-- EG-NODE [48] forced obstruction cost $c_\Omega W_2(R)\ge K_{\rm win}|R|-o(|R|)$ (high entropy: $K=5.89262883286\ldots$)
+-- EG-NODE [49] per-vertex remainder entropy $\eta(R)=\log_2|\mathcal G(R)|/|R|$
+-- EG-NODE [50] $\eta(R)\ge\frac1{10}\log_2 n$?
+-- EG-NODE [51] high-entropy remainder branch
+-- EG-NODE [52] window plus remainder accounting bounds $\theta$
+-- EG-NODE [53] remaining non-obstruction budget $<K|R|$?
+-- EG-NODE [54] entropy cap closes
+-- EG-NODE [55] Residual C: large-budget branch; $\theta\le\theta_{\rm win}+o(1)$
+-- EG-NODE [56] $\Delta_{\mathrm{net}}(R)=\dfrac{\defp(R)-\sigma_R}{|R|}\le\tau_{\rm win}+o(1)<1/4$
+-- EG-NODE [164] all-cold comparison closes: \(|\mathcal G(R)|\le|\mathcal G_{n,m}|\) by the remainder glue
+noncomputable def nearCubicLargeBudgetColdRate
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .curvatureFullRank) known]
+    [FactKeys.Has (K .wedgeSupply) known]
+    [FactKeys.Has (K .coldRoute8Below) known]
+    [FactKeys.Has (K .route8Rate) known]
+    [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .surplusAtOrBelow) known]
+    [FactKeys.Has (K .hotColdPartition) known]
+    [FactKeys.Has (K .windowPackageSeparated) known]
+    [FactKeys.Has (K .skeletonDominates) known]
+    [FactKeys.Has (K .stubSupply) known]
+    [FactKeys.Has (K .boundaryDemand) known]
+    [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .contractionCritical) known]
+    [FactKeys.Has (K .slackIndependent) known]
+    [FactKeys.Has (K .sparseSurplusSurvivor) known]
+    [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
+    [FactKeys.Has (K .returnAvoidance) known]
+    [FactKeys.Has (K .uncompressible) known]
+    [FactKeys.Has (K .replacementExclusion) known]
+    [FactKeys.Has (K .tightEndpoint) known]
+    [FactKeys.Has (K .cubicBaseline) known]
+    (fresh : List.Disjoint nearCubicResidualBKeys.{u} known := by key_fresh) :
+    SelectedNearCubicSurvivorBoundary selected := by
+  let cost :=
+    (forcedCurvatureCostRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      history (by key_fresh)
+  match remainderEntropyDichotomy (data := spineData) cost
+      (by key_fresh) (by key_fresh) with
+  | .left highHistory =>
+      let package :=
+        (entropyPackageRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) spineData).run
+          highHistory (by key_fresh)
+      match entropyCapDichotomy (data := spineData) package
+          (by key_fresh) (by key_fresh) with
+      | .left activeHistory =>
+          exact ((entropyCapBoundRow (BranchState := BranchState)
+            (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+            (presentation := erdosReceiverLoadProfile)
+            (data := spineData)).runAndCloseIncompatible activeHistory
+              (K .entropyCapActive) (K .entropyCapBound)
+              (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
+      | .right boundHistory =>
+          -- `[55]`: Residual C on the high-entropy arm.
+          let largeHistory :=
+            (highEntropyLargeBudgetRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              boundHistory (by key_fresh)
+          exact Or.inl (selectedNetChargeContinuation
+                ((routeEightNetDeficiencyCapRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  largeHistory (by key_fresh)))
+  | .right lowHistory =>
+      match localTypeCoordinateDichotomy (data := spineData) lowHistory
+          (by key_fresh) (by key_fresh) with
+      | .right nonrepetitiveHistory =>
+          let large :=
+            (lowEntropyLargeBudgetRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              nonrepetitiveHistory (by key_fresh)
+          exact Or.inl (selectedNetChargeContinuation
+                ((routeEightNetDeficiencyCapRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  large (by key_fresh)))
+      | .left repetitiveHistory =>
+          let dominant :=
+            (dominantRootedTypeRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              repetitiveHistory (by key_fresh)
+          match dominantRootedTypeWedgeDichotomy (data := spineData) dominant
+              (by key_fresh) (by key_fresh) with
+          | .right wedgeFreeHistory =>
+              let large :=
+                (lowEntropyLargeBudgetRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  wedgeFreeHistory (by key_fresh)
+              exact Or.inl (selectedNetChargeContinuation
+                ((routeEightNetDeficiencyCapRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  large (by key_fresh)))
+          | .left wedgeHistory =>
+              let translated :=
+                (independentObstructionTranslatesRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  wedgeHistory (by key_fresh)
+              let large :=
+                (lowEntropyLargeBudgetRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  translated (by key_fresh)
+              exact Or.inl (selectedNetChargeContinuation
+                ((routeEightNetDeficiencyCapRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  large (by key_fresh)))
+
+/-- **Nodes `[47]`--`[56]`** on the full-rank arm `[34]`, `[161]` arm: `[56]` reads `[160]`'s deficiency cap `K .denseDeficiencyBelow` in place
+of `[24]` (`lem:dense-deficiency-routing`); `[160]`'s second test left
+`K .route8Rate` on this ledger.
+
+`[47]`/`[48]`: `cor:forced-curvature-cost`; `[49]`/`[50]`: the per-vertex
+remainder-entropy split; on the high arm `[52]`/`[53]` the joint account and the
+entropy-cap test, closed at `[54]`; on the low arm the repetitive and root-wedge
+splits of `lem:dominant-type`; every surviving arm is Residual C `[55]`. -/
+noncomputable def nearCubicLargeBudgetDenseRate
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .curvatureFullRank) known]
+    [FactKeys.Has (K .wedgeSupply) known]
+    [FactKeys.Has (K .denseDeficiencyBelow) known]
+    [FactKeys.Has (K .route8Rate) known]
+    [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .surplusAtOrBelow) known]
+    [FactKeys.Has (K .hotColdPartition) known]
+    [FactKeys.Has (K .windowPackageSeparated) known]
+    [FactKeys.Has (K .skeletonDominates) known]
+    [FactKeys.Has (K .stubSupply) known]
+    [FactKeys.Has (K .boundaryDemand) known]
+    [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .contractionCritical) known]
+    [FactKeys.Has (K .slackIndependent) known]
+    [FactKeys.Has (K .sparseSurplusSurvivor) known]
+    [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
+    [FactKeys.Has (K .returnAvoidance) known]
+    [FactKeys.Has (K .uncompressible) known]
+    [FactKeys.Has (K .replacementExclusion) known]
+    [FactKeys.Has (K .tightEndpoint) known]
+    [FactKeys.Has (K .cubicBaseline) known]
+    (fresh : List.Disjoint nearCubicResidualBKeys.{u} known := by key_fresh) :
+    SelectedNearCubicSurvivorBoundary selected := by
+  let cost :=
+    (forcedCurvatureCostRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      history (by key_fresh)
+  match remainderEntropyDichotomy (data := spineData) cost
+      (by key_fresh) (by key_fresh) with
+  | .left highHistory =>
+      let package :=
+        (entropyPackageRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) spineData).run
+          highHistory (by key_fresh)
+      match entropyCapDichotomy (data := spineData) package
+          (by key_fresh) (by key_fresh) with
+      | .left activeHistory =>
+          exact ((entropyCapBoundRow (BranchState := BranchState)
+            (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+            (presentation := erdosReceiverLoadProfile)
+            (data := spineData)).runAndCloseIncompatible activeHistory
+              (K .entropyCapActive) (K .entropyCapBound)
+              (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
+      | .right boundHistory =>
+          -- `[55]`: Residual C on the high-entropy arm.
+          let largeHistory :=
+            (highEntropyLargeBudgetRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              boundHistory (by key_fresh)
+          exact Or.inl (selectedNetChargeContinuation
+                ((denseNetDeficiencyCapRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  largeHistory (by key_fresh)))
+  | .right lowHistory =>
+      match localTypeCoordinateDichotomy (data := spineData) lowHistory
+          (by key_fresh) (by key_fresh) with
+      | .right nonrepetitiveHistory =>
+          let large :=
+            (lowEntropyLargeBudgetRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              nonrepetitiveHistory (by key_fresh)
+          exact Or.inl (selectedNetChargeContinuation
+                ((denseNetDeficiencyCapRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  large (by key_fresh)))
+      | .left repetitiveHistory =>
+          let dominant :=
+            (dominantRootedTypeRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              repetitiveHistory (by key_fresh)
+          match dominantRootedTypeWedgeDichotomy (data := spineData) dominant
+              (by key_fresh) (by key_fresh) with
+          | .right wedgeFreeHistory =>
+              let large :=
+                (lowEntropyLargeBudgetRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  wedgeFreeHistory (by key_fresh)
+              exact Or.inl (selectedNetChargeContinuation
+                ((denseNetDeficiencyCapRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  large (by key_fresh)))
+          | .left wedgeHistory =>
+              let translated :=
+                (independentObstructionTranslatesRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  wedgeHistory (by key_fresh)
+              let large :=
+                (lowEntropyLargeBudgetRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  translated (by key_fresh)
+              exact Or.inl (selectedNetChargeContinuation
+                ((denseNetDeficiencyCapRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  large (by key_fresh)))
+
+/-- **Nodes `[47]`--`[56]`** on the full-rank arm `[34]`, `[24]` arm (bounded arm of `[153]`): `[56]` reads `[24]`'s density cap
+`K .densityCap`.  The density cap does not decide the private-carrier rate
+consumed at `[120]`--`[122]` (`Hypostructure.Fixtures.Route8RateDensityCapGap`),
+so its exact test is taken at the entry of the route-8 continuation; a failed
+rate is retained as the `[187]` outcome.
+
+`[47]`/`[48]`: `cor:forced-curvature-cost`; `[49]`/`[50]`: the per-vertex
+remainder-entropy split; on the high arm `[52]`/`[53]` the joint account and the
+entropy-cap test, closed at `[54]`; on the low arm the repetitive and root-wedge
+splits of `lem:dominant-type`; every surviving arm is Residual C `[55]`. -/
+noncomputable def nearCubicLargeBudgetDensityCap
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .curvatureFullRank) known]
+    [FactKeys.Has (K .wedgeSupply) known]
+    [FactKeys.Has (K .densityCap) known]
+    [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .surplusAtOrBelow) known]
+    [FactKeys.Has (K .hotColdPartition) known]
+    [FactKeys.Has (K .windowPackageSeparated) known]
+    [FactKeys.Has (K .skeletonDominates) known]
+    [FactKeys.Has (K .stubSupply) known]
+    [FactKeys.Has (K .boundaryDemand) known]
+    [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .contractionCritical) known]
+    [FactKeys.Has (K .slackIndependent) known]
+    [FactKeys.Has (K .sparseSurplusSurvivor) known]
+    [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
+    [FactKeys.Has (K .returnAvoidance) known]
+    [FactKeys.Has (K .uncompressible) known]
+    [FactKeys.Has (K .replacementExclusion) known]
+    [FactKeys.Has (K .tightEndpoint) known]
+    [FactKeys.Has (K .cubicBaseline) known]
+    (fresh : List.Disjoint
+      (K .route8Rate :: K .route8RateFails :: nearCubicResidualBKeys.{u}) known := by
+        key_fresh) :
+    SelectedNearCubicSurvivorBoundary selected := by
+  let cost :=
+    (forcedCurvatureCostRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      history (by key_fresh)
+  match remainderEntropyDichotomy (data := spineData) cost
+      (by key_fresh) (by key_fresh) with
+  | .left highHistory =>
+      let package :=
+        (entropyPackageRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) spineData).run
+          highHistory (by key_fresh)
+      match entropyCapDichotomy (data := spineData) package
+          (by key_fresh) (by key_fresh) with
+      | .left activeHistory =>
+          exact ((entropyCapBoundRow (BranchState := BranchState)
+            (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+            (presentation := erdosReceiverLoadProfile)
+            (data := spineData)).runAndCloseIncompatible activeHistory
+              (K .entropyCapActive) (K .entropyCapBound)
+              (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
+      | .right boundHistory =>
+          -- `[55]`: Residual C on the high-entropy arm.
+          let largeHistory :=
+            (highEntropyLargeBudgetRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              boundHistory (by key_fresh)
+          exact nearCubicRouteEightEntry ((netDeficiencyCapRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  largeHistory (by key_fresh))
+  | .right lowHistory =>
+      match localTypeCoordinateDichotomy (data := spineData) lowHistory
+          (by key_fresh) (by key_fresh) with
+      | .right nonrepetitiveHistory =>
+          let large :=
+            (lowEntropyLargeBudgetRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              nonrepetitiveHistory (by key_fresh)
+          exact nearCubicRouteEightEntry ((netDeficiencyCapRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  large (by key_fresh))
+      | .left repetitiveHistory =>
+          let dominant :=
+            (dominantRootedTypeRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              repetitiveHistory (by key_fresh)
+          match dominantRootedTypeWedgeDichotomy (data := spineData) dominant
+              (by key_fresh) (by key_fresh) with
+          | .right wedgeFreeHistory =>
+              let large :=
+                (lowEntropyLargeBudgetRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  wedgeFreeHistory (by key_fresh)
+              exact nearCubicRouteEightEntry ((netDeficiencyCapRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  large (by key_fresh))
+          | .left wedgeHistory =>
+              let translated :=
+                (independentObstructionTranslatesRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  wedgeHistory (by key_fresh)
+              let large :=
+                (lowEntropyLargeBudgetRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  translated (by key_fresh)
+              exact nearCubicRouteEightEntry ((netDeficiencyCapRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  large (by key_fresh))
+
+/-- **Nodes `[47]`--`[56]`** on the full-rank arm `[34]`, `[24]` arm of the `[162]` pass entered from `[160]`'s second complement:
+`[56]` reads `[24]`'s density cap, and the ledger retains `[160]`'s failed
+private-carrier rate `K .route8RateFails`, which the route-8 continuation would
+consume at `[120]`--`[122]`; the retained failure is the `[187]` outcome.
+
+`[47]`/`[48]`: `cor:forced-curvature-cost`; `[49]`/`[50]`: the per-vertex
+remainder-entropy split; on the high arm `[52]`/`[53]` the joint account and the
+entropy-cap test, closed at `[54]`; on the low arm the repetitive and root-wedge
+splits of `lem:dominant-type`; every surviving arm is Residual C `[55]`. -/
+noncomputable def nearCubicLargeBudgetRateFailed
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .curvatureFullRank) known]
+    [FactKeys.Has (K .wedgeSupply) known]
+    [FactKeys.Has (K .densityCap) known]
+    [FactKeys.Has (K .route8RateFails) known]
+    [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .surplusAtOrBelow) known]
+    [FactKeys.Has (K .hotColdPartition) known]
+    [FactKeys.Has (K .windowPackageSeparated) known]
+    [FactKeys.Has (K .skeletonDominates) known]
+    [FactKeys.Has (K .stubSupply) known]
+    [FactKeys.Has (K .boundaryDemand) known]
+    [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .contractionCritical) known]
+    [FactKeys.Has (K .slackIndependent) known]
+    [FactKeys.Has (K .sparseSurplusSurvivor) known]
+    [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
+    [FactKeys.Has (K .returnAvoidance) known]
+    [FactKeys.Has (K .uncompressible) known]
+    [FactKeys.Has (K .replacementExclusion) known]
+    [FactKeys.Has (K .tightEndpoint) known]
+    [FactKeys.Has (K .cubicBaseline) known]
+    (fresh : List.Disjoint nearCubicResidualBKeys.{u} known := by key_fresh) :
+    SelectedNearCubicSurvivorBoundary selected := by
+  let cost :=
+    (forcedCurvatureCostRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      history (by key_fresh)
+  match remainderEntropyDichotomy (data := spineData) cost
+      (by key_fresh) (by key_fresh) with
+  | .left highHistory =>
+      let package :=
+        (entropyPackageRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) spineData).run
+          highHistory (by key_fresh)
+      match entropyCapDichotomy (data := spineData) package
+          (by key_fresh) (by key_fresh) with
+      | .left activeHistory =>
+          exact ((entropyCapBoundRow (BranchState := BranchState)
+            (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+            (presentation := erdosReceiverLoadProfile)
+            (data := spineData)).runAndCloseIncompatible activeHistory
+              (K .entropyCapActive) (K .entropyCapBound)
+              (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
+      | .right boundHistory =>
+          -- `[55]`: Residual C on the high-entropy arm.
+          let largeHistory :=
+            (highEntropyLargeBudgetRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              boundHistory (by key_fresh)
+          exact nearCubicRateFailedExit ((netDeficiencyCapRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  largeHistory (by key_fresh))
+  | .right lowHistory =>
+      match localTypeCoordinateDichotomy (data := spineData) lowHistory
+          (by key_fresh) (by key_fresh) with
+      | .right nonrepetitiveHistory =>
+          let large :=
+            (lowEntropyLargeBudgetRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              nonrepetitiveHistory (by key_fresh)
+          exact nearCubicRateFailedExit ((netDeficiencyCapRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  large (by key_fresh))
+      | .left repetitiveHistory =>
+          let dominant :=
+            (dominantRootedTypeRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              repetitiveHistory (by key_fresh)
+          match dominantRootedTypeWedgeDichotomy (data := spineData) dominant
+              (by key_fresh) (by key_fresh) with
+          | .right wedgeFreeHistory =>
+              let large :=
+                (lowEntropyLargeBudgetRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  wedgeFreeHistory (by key_fresh)
+              exact nearCubicRateFailedExit ((netDeficiencyCapRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  large (by key_fresh))
+          | .left wedgeHistory =>
+              let translated :=
+                (independentObstructionTranslatesRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  wedgeHistory (by key_fresh)
+              let large :=
+                (lowEntropyLargeBudgetRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  translated (by key_fresh)
+              exact nearCubicRateFailedExit ((netDeficiencyCapRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+                  large (by key_fresh))
+
+end HypostructureErdos64EG

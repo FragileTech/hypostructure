@@ -3,9 +3,6 @@ import HypostructureErdos64EG.Assembly.Absorbed.FanCharge
 import HypostructureErdos64EG.Assembly.Absorbed.Prerequisites
 import HypostructureErdos64EG.Assembly.Absorbed.Residual
 import HypostructureErdos64EG.Assembly.Basic
-import HypostructureErdos64EG.Assembly.Cold.Barrier
-import HypostructureErdos64EG.Assembly.Cold.Entropy
-import HypostructureErdos64EG.Assembly.Cold.Germs
 import HypostructureErdos64EG.Assembly.Entry
 import HypostructureErdos64EG.Assembly.Final
 import HypostructureErdos64EG.Assembly.NearCubic.Boundary

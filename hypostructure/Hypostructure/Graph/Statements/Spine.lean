@@ -1607,6 +1607,12 @@ noncomputable def ColdPositiveGermStatement (data : Parameters)
   exact ∃ routing : ColdFailureRoutingStatement data object,
     0 < (coldRoutedCandidates data object routing).card
 
+/-- Node `[175]`, no arm: the exact complement of `ColdPositiveGermStatement`,
+every selected corridor meets a high-degree vertex. -/
+noncomputable def ColdNoPositiveGermStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ¬ ColdPositiveGermStatement data object
+
 /-- The literal occurrence accounting available at node `[153]`: actual F5
 outside-corridor candidates together with immediate terminal exchanges for
 cross-window incidences, their disjoint extracted subfamily, and every omitted
@@ -1996,6 +2002,7 @@ abbrev LargeBudgetResidual (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   (jointPackageDemand data object ≤ Graph.skeletonBudget object ∨
     ∃ packing : Finset (Finset object.Vertex),
+      packing = canonicalWindowPacking data object ∧
       object.IsWindowPacking data.windowOrder packing ∧
         Graph.BelowEntropyRate object.vertexCount data.entropyDenominator
           data.windowOrder data.threshold
@@ -2447,14 +2454,18 @@ noncomputable abbrev ReplacementExclusionStatement
         (Graph.MinimumDegreeAtLeast data.threshold)
         (Graph.HasCycleWithLength data.LengthOK) object support)
 
-/-- Node `[14]`: no proper atom admits a nontrivial target-complete
-compression (`cor:uncompressible`). -/
+/-- Node `[14]`: no proper boundaried piece admits a nontrivial target-complete
+compression (`cor:uncompressible`).  By `def:target-complete-compression` a
+nontrivial target-complete compression is a smaller representative satisfying
+the hypotheses of `lem:replacement`, so the obstruction inclusion is one-way
+(`ReplacementSupport`); a two-way context-equivalent compression is one
+instance (`replacementSupportOfCompressibleSupport`). -/
 noncomputable abbrev UncompressibleStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
   (∀ support : Finset object.Vertex,
-    ¬ Graph.Strategy.InterfaceReplacement.CompressibleSupport
+    ¬ Graph.Strategy.InterfaceReplacement.ReplacementSupport
         (Graph.MinimumDegreeAtLeast data.threshold)
         (Graph.HasCycleWithLength data.LengthOK) object support)
 
@@ -2763,6 +2774,7 @@ noncomputable abbrev CurvatureRankDropStatement
   -- Any strict loss of raw curvature rank supplies the proper
   -- target-dependence routed by Branch D.
   (∃ packing : Finset (Finset object.Vertex),
+    packing = canonicalWindowPacking data object ∧
     object.IsWindowPacking data.windowOrder packing ∧
       packing.card = object.windowPackingNumber data.windowOrder ∧
       remainderCurvatureTargetRank data object packing <
@@ -2790,6 +2802,7 @@ noncomputable abbrev CurvatureFullRankStatement
     Prop :=
   -- This is the equality proved in the last paragraph of `lem:full-rank`.
   (∃ packing : Finset (Finset object.Vertex),
+    packing = canonicalWindowPacking data object ∧
     object.IsWindowPacking data.windowOrder packing ∧
       packing.card = object.windowPackingNumber data.windowOrder ∧
         remainderCurvatureTargetRank data object packing =
@@ -3682,8 +3695,10 @@ noncomputable abbrev RemainderEntropyHighStatement
   -- Node `[50]`, yes -- node `[51]`.  `η(R) ≥ (1/d)·log₂ n`, exponentiated
   -- by `d·|R|`: the remainder's realized states number at least
   -- `n^{|R|/d}`, which is `prop:two-budget` (a)'s own display.
-  (∀ packing : Finset (Finset object.Vertex),
-    object.IsWindowPacking data.windowOrder packing →
+  -- It is tested on the remainder `R` of the fixed maximum packing.
+  (∃ packing : Finset (Finset object.Vertex),
+    packing = canonicalWindowPacking data object ∧
+    object.IsWindowPacking data.windowOrder packing ∧
     Graph.AtLeastEntropyRate object.vertexCount data.entropyDenominator
       data.windowOrder data.threshold
       (object.positiveDeficiency (object.remainderSupport packing)
@@ -3697,8 +3712,9 @@ noncomputable abbrev RemainderEntropyLowStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- Node `[50]`, no.  The exact negation, with the witness exhibited.
+  -- Node `[50]`, no.  The exact negation at the same fixed maximum packing.
   (∃ packing : Finset (Finset object.Vertex),
+    packing = canonicalWindowPacking data object ∧
     object.IsWindowPacking data.windowOrder packing ∧
       Graph.BelowEntropyRate object.vertexCount data.entropyDenominator
         data.windowOrder data.threshold
@@ -3716,6 +3732,7 @@ noncomputable abbrev LocalTypeCoordinateRepetitiveStatement
   -- The literal maximum-packing coordinate selected from the full-rank
   -- residual lies below the finite relabelling threshold.
   ∃ packing : Finset (Finset object.Vertex),
+    packing = canonicalWindowPacking data object ∧
     object.IsWindowPacking data.windowOrder packing ∧
       packing.card = object.windowPackingNumber data.windowOrder ∧
       remainderCurvatureTargetRank data object packing =
@@ -3730,6 +3747,7 @@ noncomputable abbrev LocalTypeCoordinateNonrepetitiveStatement
     Prop :=
   -- Exact complementary arm of the same coordinate decision.
   ∃ packing : Finset (Finset object.Vertex),
+    packing = canonicalWindowPacking data object ∧
     object.IsWindowPacking data.windowOrder packing ∧
       packing.card = object.windowPackingNumber data.windowOrder ∧
       remainderCurvatureTargetRank data object packing =

@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.SpineWindows
 
 /-! Independently compiled spine row declarations. -/
 
@@ -46,46 +47,8 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .hotColdPartition)
-        (show Value BranchState Presentation presentation data
-            .hotColdPartition inputs.current from
-          ⟨by
-            classical
-            let object := inputs.current.object
-            let packing := canonicalWindowPacking data.toParameters object
-            have packingFacts :
-                object.IsWindowPacking data.windowOrder packing ∧
-                  packing.card = object.windowPackingNumber data.windowOrder :=
-              Classical.choose_spec
-                (object.exists_windowPacking_card_eq data.windowOrder)
-            let hot := canonicalHotWindows data.toParameters object
-            let cold := canonicalColdWindows data.toParameters object
-            have hotFacts :
-                hot ⊆ packing ∧
-                  (WindowFamilyRealized data.toParameters object hot ∨
-                    (hot = ∅ ∧ ¬ WindowFamilyRealized data.toParameters object ∅)) ∧
-                  ∀ other : Finset (Finset object.Vertex), other ⊆ packing →
-                    WindowFamilyRealized data.toParameters object other →
-                      other.card ≤ hot.card :=
-              Classical.choose_spec (exists_maximal_windowFamilyRealized data.toParameters object)
-            show IsHotColdWindowPartition data.toParameters object packing hot cold
-            refine ⟨packingFacts.1, packingFacts.2, ?_, hotFacts, ?_, ?_, ?_⟩
-            · intro support window
-              exact object.exists_mem_not_disjoint_of_card_eq
-                data.windowOrder_pos packingFacts.1 packingFacts.2 window
-            · intro window
-              simp [cold, packing, hot, canonicalColdWindows]
-            · exact Finset.disjoint_sdiff
-            · intro window
-              constructor
-              · intro member
-                by_cases inHot : window ∈ hot
-                · exact Or.inl inHot
-                · exact Or.inr (by
-                    simp [cold, packing, hot, canonicalColdWindows, member, inHot])
-              · intro member
-                rcases member with member | member
-                · exact hotFacts.1 member
-                · exact (Finset.mem_sdiff.mp member).1⟩)
+        ⟨Contracts.Spine.hotColdPartition_canonical data.toParameters
+          inputs.current.object⟩
         .nil)
     0 0
 

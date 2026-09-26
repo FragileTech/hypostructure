@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.SpineSelection
 
 /-! Independently compiled spine row declarations. -/
 
@@ -50,30 +51,13 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       producesUnique := by key_fresh
       producesNonempty := by simp }
     (fun inputs =>
-      let object := inputs.current.object
-      let profile := Graph.minimumDegreeDeletionCriticalityProfile data.threshold
-      let noProper := (inputs.get (K .noProperBaseline)).down.1
-      -- Node `[9]`: an edge with two slack endpoints would survive deletion.
-      let tight : ∀ dart : object.graph.Dart,
-          object.degree dart.fst = data.threshold ∨
-            object.degree dart.snd = data.threshold := by
-        intro dart
-        by_contra noncritical
-        exact noProper (Graph.ProperSubgraph.deleteEdge object
-            (object.edgeOfDart dart))
-          (profile.baseline_of_not_critical inputs.current.baseline dart
-            noncritical)
-      .cons (key := K .tightEndpoint)
-        (show Value BranchState Presentation presentation data
-            .tightEndpoint inputs.current from ⟨tight⟩)
+      let tight := Contracts.Spine.tightEndpoint_of_noProperBaseline
+        data.toParameters inputs.current.object inputs.current.baseline
+        (inputs.get (K .noProperBaseline)).down
+      .cons (key := K .tightEndpoint) ⟨tight⟩
         (.cons (key := K .slackIndependent)
-          -- Node `[10]`: two adjacent slack carriers would contradict `[9]`.
-          (show Value BranchState Presentation presentation data
-              .slackIndependent inputs.current from
-            ⟨fun left right leftSlack rightSlack adjacent =>
-            match tight ⟨(left, right), adjacent⟩ with
-            | .inl atThreshold => Nat.ne_of_lt' leftSlack atThreshold
-            | .inr atThreshold => Nat.ne_of_lt' rightSlack atThreshold⟩)
+          ⟨Contracts.Spine.slackIndependent_of_tightEndpoint data.toParameters
+            inputs.current.object tight⟩
           .nil))
     0 0
 

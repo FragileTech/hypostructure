@@ -1,18 +1,11 @@
-import Hypostructure.Graph.Strategy.ColdCorridorRows.CorridorState
 import Hypostructure.Graph.Strategy.ColdCorridorRows.DenseTerminal
-import Hypostructure.Graph.Strategy.ColdCorridorRows.FailureClauses
-import Hypostructure.Graph.Strategy.ColdCorridorRows.FirstFailureOccurrence
-import Hypostructure.Graph.Strategy.ColdCorridorRows.FirstFailureRouting
-import Hypostructure.Graph.Strategy.ColdCorridorRows.GermCandidates
-import Hypostructure.Graph.Strategy.ColdCorridorRows.GermExtraction
-import Hypostructure.Graph.Strategy.ColdCorridorRows.HandoffTransfer
-import Hypostructure.Graph.Strategy.ColdCorridorRows.ReturnCorridor
-import HypostructureErdos64EG.Assembly.Basic
+import HypostructureErdos64EG.Assembly.NearCubic.ColdPass
 
 /-!
 # Assembly: Absorbed / Prerequisites
 
-Part of the dependency-separated Erdős–Gyárfás assembly.
+The node-`[153]` corridor and extraction facts which node `[175]` receives on
+the absorbed-configuration residual `[174]`.
 -/
 
 namespace HypostructureErdos64EG
@@ -24,52 +17,11 @@ open Hypostructure.Graph.Strategy.Spine
 
 universe u w
 
-/-- **Nodes `[174]`--`[177]`, `lem:absorbed-germ-fan-data`: the absorbed-germ
-residual**, index-polymorphic over any residual carrying the hot/cold ledger of
-the fixed packing and the actual `[153]` first-failure state and extraction.
-Its cold windows' selected branch-excess corridors were charged as the
-germ-extraction loss; the charge is restored here at `[175]`: a selected corridor with a
-subcubic first-failure support is a genuine (F5) germ, routed exactly as
-`[154]`--`[157]` and the `[163]` symmetry split (`[176]`); otherwise every
-  selected corridor meets a heavy centre and the half-edges are decorated
-  handoff fan data entering Type B at `[65]` (`[177]`).  The function then runs
-  the paper's common `[67]`--`[85]` continuation and returns its literal
-  ExactLedger boundary.  The genuine-germ arm closes and is eliminated into
-  the same result type; no `[64]`-specific quantitative tail is imported.
-Entered only from the exact collision failure (`[173]`). -/
--- EG-NODE [153] linear first-failure extraction? \(N_{\rm conf}\ge9C/D_{\rm cold}-o(n)\)
--- EG-NODE [154] bounded configuration case?
--- EG-NODE [155] G1: power-of-two cycle
--- EG-NODE [156] G2: target defect, exit (4), or handoff
--- EG-NODE [157] G3 or same-interface table: compression
--- EG-NODE [163] neutral equal-length terminal configuration: second strand graph-realized?
--- EG-NODE [165] canonical replacement \(E\ne Q\): swap \(Q\to E\) gives a same-size counterexample
--- EG-NODE [166] refined lexicographic minimality: \(Q=E\)
--- EG-NODE [167] symmetric strand pair: finite two-strand check on the closing lengths \(2\ell\), \(\ell+d\)
--- EG-NODE [169] trivial neutral-configuration residual: dense packing, every corridor terminal and neutral, \(Q=E\); every window is blocked at every dyadic scale
--- EG-NODE [175] selected corridor meets a high-degree vertex?
--- EG-NODE [176] graph-realized (F5) configuration: closed by [154]--[157], [165]--[168]
--- EG-NODE [177] decorated handoff fan data at the heavy centre \(z\): continue at Type B [65]
-private noncomputable abbrev AbsorbedPrerequisiteKnown (known : FactKeys EGInput.{u}) :
-    FactKeys EGInput.{u} :=
-  coldGermCandidatesRow.manifest.Produces ++
-    (coldGermExtractionRow.manifest.Produces ++
-      (coldFirstFailureRoutingRow.manifest.Produces ++
-        (coldHandoffTransferRow.manifest.Produces ++
-          (coldFailureHandoffRow.manifest.Produces ++
-            (coldFailureCompressionRow.manifest.Produces ++
-              (coldFailureDefectRow.manifest.Produces ++
-                (coldFailureCycleRow.manifest.Produces ++
-                  (coldFirstFailureOccurrenceRow.manifest.Produces ++
-                      (denseColdCorridorsTerminalRow.manifest.Produces ++
-                          (coldCorridorStateRow.manifest.Produces ++
-                          (coldDeclaredHandoffLedgerRow.manifest.Produces ++
-                            (coldReturnCorridorRow.manifest.Produces ++ known))))))))))))
-
-/-- The enclosing node-`[174]` assembly publishes the corridor and extraction
-facts which node `[175]` receives.  These are the canonical registered owners
-from node `[153]`; `[175]` never reconstructs them and only queries their
-ExactLedger entries. -/
+/-- **Node `[174]`**: the absorbed configurations are the cold corridors whose
+charge node `[153]`'s bounded arm discarded.  Their return corridors
+(`lem:bridgeless`), states, terminality on the dense residual, first failures
+and candidate family are published by the registered node-`[153]` owners on
+this literal residual; `[175]` only queries them. -/
 noncomputable def selectedAbsorbedGermPrerequisites
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -77,63 +29,26 @@ noncomputable def selectedAbsorbedGermPrerequisites
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .hotColdPartition) known]
     [FactKeys.Has (K .remainderNormalized) known]
-    [FactKeys.Has (K .remainderRelabelingEntropy) known]
-    [FactKeys.Has (K .absorbedConfigurationResidual) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .bridgeless) known]
-    (returnFresh : K .coldReturnCorridors ∉ known)
-    (declaredFresh : K .coldDeclaredHandoffLedger ∉ known)
-    (stateFresh : K .coldCorridorState ∉ known)
-    (terminalFresh : K .denseColdCorridorsTerminal ∉ known)
-    (occurrenceFresh : K .coldFirstFailureOccurrence ∉ known)
-    (routingFresh : K .coldFailureRouting ∉ known)
-    (failureCycleFresh : K .coldFailureCycle ∉ known)
-    (failureDefectFresh : K .coldFailureDefect ∉ known)
-    (failureDefectRouteFresh : K .coldFailureDefectRoute ∉ known)
-    (failureCompressionFresh : K .coldFailureCompression ∉ known)
-    (failureHandoffFresh : K .coldFailureHandoff ∉ known)
-    (handoffTransferFresh : K .coldHandoffTransfer ∉ known)
-    (exchangeFresh : K .coldExchangeBound ∉ known)
-    (extractionFresh : K .coldGermExtraction ∉ known)
-    (candidatesFresh : K .coldGermCandidates ∉ known) :
-    ExactLedger EGInput.{u} selected (AbsorbedPrerequisiteKnown known) := by
-  let returned :=
-    (coldReturnCorridorRow (data := spineData)).run history
-      (by key_fresh)
-  let declared :=
-    (coldDeclaredHandoffLedgerRow (data := spineData)).run returned
-      (by key_fresh)
-  let state :=
-    (coldCorridorStateRow (data := spineData)).run declared
-      (by key_fresh)
+    (fresh : List.Disjoint
+      [K .coldReturnCorridors, K .coldDeclaredHandoffLedger, K .coldCorridorState,
+        K .denseColdCorridorsTerminal, K .coldFirstFailureOccurrence,
+        K .coldFailureCycle, K .coldFailureDefect, K .coldFailureDefectRoute,
+        K .coldFailureCompression, K .coldFailureHandoff, K .coldHandoffTransfer,
+        K .coldFailureRouting, K .coldExchangeBound, K .coldGermExtraction,
+        K .coldGermCandidates] known := by key_fresh) :
+    ExactLedger EGInput.{u} selected
+      (K .coldGermCandidates :: K .coldExchangeBound :: K .coldGermExtraction ::
+        K .coldFailureRouting :: K .coldHandoffTransfer :: K .coldFailureHandoff ::
+        K .coldFailureCompression :: K .coldFailureDefect ::
+        K .coldFailureDefectRoute :: K .coldFailureCycle ::
+        K .coldFirstFailureOccurrence :: K .denseColdCorridorsTerminal ::
+        K .coldCorridorState :: K .coldDeclaredHandoffLedger ::
+        K .coldReturnCorridors :: known) :=
+  let state := nearCubicColdCorridorState history
   let terminal :=
-    (denseColdCorridorsTerminalRow (data := spineData)).run state
-      (by key_fresh)
-  let occurrence :=
-    (coldFirstFailureOccurrenceRow (data := spineData)).run terminal
-      (by key_fresh)
-  let failureCycle :=
-    (coldFailureCycleRow (data := spineData)).run occurrence
-      (by key_fresh)
-  let failureDefect :=
-    (coldFailureDefectRow (data := spineData)).run failureCycle
-      (by key_fresh)
-  let failureCompression :=
-    (coldFailureCompressionRow (data := spineData)).run failureDefect
-      (by key_fresh)
-  let failureHandoff :=
-    (coldFailureHandoffRow (data := spineData)).run failureCompression
-      (by key_fresh)
-  let handoffTransfer :=
-    (coldHandoffTransferRow (data := spineData)).run failureHandoff
-      (by key_fresh)
-  let routed :=
-    (coldFirstFailureRoutingRow (data := spineData)).run handoffTransfer
-      (by key_fresh)
-  let extracted :=
-    (coldGermExtractionRow (data := spineData)).run routed
-      (by key_fresh)
-  exact (coldGermCandidatesRow (data := spineData)).run extracted
-    (by key_fresh)
+    (denseColdCorridorsTerminalRow (data := spineData)).run state (by key_fresh)
+  nearCubicColdCandidates terminal
 
 end HypostructureErdos64EG

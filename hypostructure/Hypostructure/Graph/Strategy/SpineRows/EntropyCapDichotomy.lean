@@ -34,28 +34,21 @@ noncomputable def entropyCapDichotomy
     (previous :
       @ExactLedger (Input BranchState Presentation presentation data)
         _ (factSystem BranchState Presentation presentation data) current known)
-    [@FactKeys.Has (Input BranchState Presentation presentation data) _
-      (factSystem BranchState Presentation presentation data)
-      (K .entropyPackageDemand) known]
     (activeFresh : K .entropyCapActive ∉ known)
-    (largeFresh : K .largeBudgetResidual ∉ known) :
+    (boundFresh : K .entropyCapBound ∉ known) :
     @Decision (Input BranchState Presentation presentation data) _
       (factSystem BranchState Presentation presentation data) current known
-      (K .entropyCapActive) (K .largeBudgetResidual) previous :=
+      (K .entropyCapActive) (K .entropyCapBound) previous :=
   @Decision.run (Input BranchState Presentation presentation data) _
     (factSystem BranchState Presentation presentation data) current known
-    previous (K .entropyCapActive) (K .largeBudgetResidual)
+    previous (K .entropyCapActive) (K .entropyCapBound)
     `Hypostructure.Graph.Strategy.Spine.entropyCapDichotomy
     (by
       classical
-      have _packageDemand :=
-        (@ExactLedger.get (Input BranchState Presentation presentation data) _
-          (factSystem BranchState Presentation presentation data)
-          current known previous (K .entropyPackageDemand)).down
       by_cases active :
           Graph.skeletonBudget current.object < jointPackageDemand data.toParameters current.object
       · exact .inl ⟨active⟩
-      · exact .inr ⟨Or.inl (Nat.le_of_not_lt active)⟩)
-    activeFresh largeFresh
+      · exact .inr ⟨Nat.le_of_not_lt active⟩)
+    activeFresh boundFresh
 
 end Hypostructure.Graph.Strategy.Spine

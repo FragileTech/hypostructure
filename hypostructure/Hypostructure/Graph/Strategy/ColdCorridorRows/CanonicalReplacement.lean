@@ -2,6 +2,7 @@ import Hypostructure.Graph.Strategy.SpineVocabulary
 import Hypostructure.Graph.ColdIncrementArithmetic
 import Hypostructure.Graph.ColdGermFamily
 import Hypostructure.Graph.Strategy.ColdCorridorRows.Basic
+import Hypostructure.Graph.Contracts.Spine.ColdNeutral
 
 namespace Hypostructure.Graph.Strategy.Spine
 
@@ -28,73 +29,15 @@ contradiction belongs to node `[166]`.
 @[reducible] noncomputable def canonicalReplacementSwapRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.canonicalReplacementSwap
-    { Requires := [K .coldCanonicalNeutralConfiguration]
+    { Requires := []
       Produces := [K .coldCanonicalReplacementSwap]
       requiresUnique := by simp
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let canonical :=
-        (inputs.get (K .coldCanonicalNeutralConfiguration)).down
       .cons (key := K .coldCanonicalReplacementSwap)
-        ⟨by
-          classical
-          change CanonicalNeutralConfigurationStatement data.toParameters
-            inputs.current.object at canonical
-          change CanonicalReplacementSwapStatement data.toParameters inputs.current.object
-          obtain ⟨_markedGerm, _markedRepresentative, _markedConfiguration,
-            _notRealized⟩ := canonical
-          intro germ representative configuration different
-          dsimp only
-          obtain ⟨_active, representativeReading, equalSize, canonicalPosition,
-            sourceAvoids⟩ := configuration
-          let baselineInvariant :=
-            Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold
-          have reconstruction :
-              (Graph.glue germ.piece germ.atom.outside).Isomorphic
-                inputs.current.object :=
-            ⟨germ.atom.reconstructionIso⟩
-          have sourceBaseline :
-              Graph.MinimumDegreeAtLeast data.threshold
-                (Graph.glue germ.piece germ.atom.outside) :=
-            (baselineInvariant.iff_of_iso reconstruction).mpr
-              inputs.current.baseline
-          have swappedBaseline :
-              Graph.MinimumDegreeAtLeast data.threshold
-                (Graph.glue representative.toPiece germ.atom.outside) :=
-            representativeReading.1.2.2 germ.atom.outside sourceBaseline
-          have swappedAvoids :
-              ¬ Graph.HasCycleWithLength data.LengthOK
-                (Graph.glue representative.toPiece germ.atom.outside) := by
-            intro hit
-            exact sourceAvoids
-              ((representativeReading.1.2.1 germ.atom.outside).mp hit)
-          have vertexCountEq :
-              (Graph.glue representative.toPiece germ.atom.outside).vertexCount =
-                inputs.current.object.vertexCount := by
-            calc
-              (Graph.glue representative.toPiece
-                  germ.atom.outside).vertexCount =
-                  (Graph.glue germ.piece germ.atom.outside).vertexCount := by
-                    simp only [Graph.glue_vertexCount,
-                      Graph.CanonicalPiece.toPiece_internalVertexCount]
-                    omega
-              _ = inputs.current.object.vertexCount :=
-                Graph.FiniteObject.vertexCount_eq_of_isomorphic reconstruction
-          have edgeCountEq :
-              (Graph.glue representative.toPiece germ.atom.outside).edgeCount =
-                inputs.current.object.edgeCount := by
-            calc
-              (Graph.glue representative.toPiece
-                  germ.atom.outside).edgeCount =
-                  (Graph.glue germ.piece germ.atom.outside).edgeCount :=
-                    representativeReading.2
-              _ = inputs.current.object.edgeCount :=
-                Graph.FiniteObject.edgeCount_eq_of_isomorphic reconstruction
-          obtain ⟨representativePrecedes, refinedDecrease⟩ :=
-            canonicalPosition.resolve_left different
-          exact ⟨swappedBaseline, swappedAvoids, vertexCountEq, edgeCountEq,
-            representativePrecedes, refinedDecrease⟩⟩
+        ⟨Contracts.Spine.canonicalReplacementSwap_of_baseline data.toParameters
+          inputs.current.object inputs.current.baseline⟩
         .nil)
 
 /-! ## Node `[166]`: refined minimality forces the trivial replacement -/
@@ -108,26 +51,10 @@ contradiction belongs to node `[166]`.
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let selected := (inputs.get (K .selection)).down
-      let swap := (inputs.get (K .coldCanonicalReplacementSwap)).down
       .cons (key := K .coldCanonicalReplacementTrivial)
-        ⟨by
-          classical
-          change CanonicalReplacementSwapStatement data.toParameters inputs.current.object at swap
-          change CanonicalReplacementTrivialStatement data.toParameters inputs.current.object
-          intro germ representative configuration
-          by_contra different
-          let swapped := Graph.glue representative.toPiece germ.atom.outside
-          obtain ⟨baseline, avoids, _vertexCount, _edgeCount,
-              _precedes, refinedDecrease⟩ :=
-            swap germ representative configuration different
-          have smaller :
-              (refinedProgress BranchState Presentation presentation data.toParameters).Smaller
-                swapped inputs.current.object :=
-            (refinedProgress_smaller_iff BranchState Presentation presentation data.toParameters).2
-              refinedDecrease
-          exact avoids
-            (selected.2.refinedMinimal swapped smaller baseline)⟩
+        ⟨Contracts.Spine.canonicalReplacementTrivial_of_swap data.toParameters
+          inputs.current.object (inputs.get (K .selection)).down
+          (inputs.get (K .coldCanonicalReplacementSwap)).down⟩
         .nil)
 
 /-! ## `lem:refined-minimality-swap`, the size split of the canonical replacement
@@ -147,7 +74,6 @@ noncomputable def canonicalSwapSizeDichotomy
     (sameFresh : K .coldCanonicalSwapSameSize ∉ known) :
     Decision (K .coldCanonicalSwapSmaller) (K .coldCanonicalSwapSameSize) previous := by
   classical
-  let _proper := (previous.get (K .coldCanonicalNeutralConfiguration)).down
   exact Decision.run previous (K .coldCanonicalSwapSmaller) (K .coldCanonicalSwapSameSize)
     `Hypostructure.Graph.Strategy.Spine.canonicalSwapSizeDichotomy
     (if smaller : ∃ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
@@ -157,9 +83,8 @@ noncomputable def canonicalSwapSizeDichotomy
           (germCanonicalRepresentative data.toParameters germ).size < germ.piece.internalVertexCount then
       .inl ⟨smaller⟩
     else
-      .inr ⟨by
-        intro germ neutral lt
-        exact smaller ⟨germ, neutral, lt⟩⟩)
+      .inr ⟨Contracts.Spine.coldCanonicalSwapSameSize_of_not_smaller
+        data.toParameters current.object smaller⟩)
     smallerFresh sameFresh
 
 end Hypostructure.Graph.Strategy.Spine

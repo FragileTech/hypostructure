@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.SpineSelection
 
 /-! Independently compiled spine row declarations. -/
 
@@ -43,20 +44,10 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let fact := inputs.get (K .selection)
-      let noProper : ∀ subgraph : Graph.ProperSubgraph inputs.current.object,
-          ¬ Graph.MinimumDegreeAtLeast data.threshold subgraph.value :=
-        fun subgraph baseline =>
-          fact.down.1
-            ((Graph.cycleProperSubgraphTargetMonotone data.LengthOK).map subgraph
-              (fact.down.2 subgraph.value subgraph.decreases baseline))
       .cons (key := K .noProperBaseline)
-        (show Value BranchState Presentation presentation data
-            .noProperBaseline inputs.current from
-          ⟨noProper,
-            inputs.current.object.connected_of_noProperBaseline data.threshold
-              (lt_of_lt_of_le (by omega) data.three_le_threshold)
-              inputs.current.baseline noProper⟩)
+        ⟨Contracts.Spine.noProperBaseline_of_selection data.toParameters
+          inputs.current.object inputs.current.baseline data.three_le_threshold
+          (inputs.get (K .selection)).down⟩
         .nil)
     0 0
 

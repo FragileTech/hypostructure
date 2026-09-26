@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.RemainderEntropy
 
 /-!
 # Window-entropy terminals: nodes `[23]` and `[54]`
@@ -52,6 +53,30 @@ noncomputable instance instIncompatibleBarrierOverflowCap :
   contradiction := fun _residual overflow cap =>
     (Nat.not_lt_of_ge cap.down) overflow.down
 
+/-- **Node `[22]`, the live-hot entropy cap test** (`def:cold-window-ledger`):
+does the canonical hot family's package overflow the labelled skeleton budget,
+`skeletonBudget < 2^{rate·scales·|𝒫_hot|}` (`K .barrierOverflow`, node `[23]`),
+or fit it (`K .barrierCap`, the no-edge continuing at `[145]`)?  The two keys
+are exact complements on the same canonical hot family; the split itself is
+node `[22]`'s `K .hotColdPartition`. -/
+noncomputable def barrierDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger
+      (Input BranchState Presentation presentation data) current known)
+    [FactKeys.Has (K .hotColdPartition) known]
+    (capFresh : K .barrierCap ∉ known)
+    (overflowFresh : K .barrierOverflow ∉ known) :
+    Decision (K .barrierCap) (K .barrierOverflow) previous := by
+  classical
+  exact Decision.run previous (K .barrierCap) (K .barrierOverflow)
+    `Hypostructure.Graph.Strategy.Spine.barrierDichotomy
+    (if overflow : BarrierOverflowStatement data.toParameters current.object then
+      .inr ⟨overflow⟩
+    else
+      .inl ⟨Nat.le_of_not_lt overflow⟩)
+    capFresh overflowFresh
+
 /-- Node `[54]`'s active comparison and its exact skeleton bound cannot coexist.
 The two facts are retrieved only by Core's closure boundary. -/
 noncomputable instance instIncompatibleEntropyCapActiveBound :
@@ -91,56 +116,10 @@ against `K .entropyCapActive`. -/
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .entropyCapBound)
-        (show Value BranchState Presentation presentation data
-            .entropyCapBound inputs.current from
-          ⟨by
-            let object := inputs.current.object
-            change jointPackageDemand data.toParameters object ≤ Graph.skeletonBudget object
-            have split := (inputs.get (K .hotColdPartition)).down
-            have package := (inputs.get (K .windowPackageSeparated)).down
-            have dominates := (inputs.get (K .skeletonDominates)).down
-            obtain ⟨_valid, _attains, _maximal, hotFacts, _coldIff, _disjoint,
-              _cover⟩ := split
-            obtain ⟨_packing, _packingValid, _packingCard, _packingMaximal,
-              _packageCard, _packagesDisjoint, _familyCard, rateLe, _⟩ := package
-            rcases hotFacts.2.1 with retained | allCold
-            · obtain ⟨State, stateOf, _packageStates, retainedCodeLe⟩ := retained
-              have demandLe : jointPackageDemand data.toParameters object ≤
-                  retainedCode data.toParameters object (canonicalHotWindows data.toParameters object) := by
-                unfold jointPackageDemand retainedCode
-                calc
-                  2 ^ (data.windowRate *
-                        data.separatedScaleCount object.vertexCount *
-                        (canonicalHotWindows data.toParameters object).card) *
-                      remainderStates data.toParameters object
-                        (canonicalWindowPacking data.toParameters object)
-                      ≤ 2 ^ (windowPackageBits data.toParameters object *
-                            (canonicalHotWindows data.toParameters object).card) *
-                          remainderStates data.toParameters object
-                            (canonicalWindowPacking data.toParameters object) :=
-                        Nat.mul_le_mul_right _
-                          (Nat.pow_le_pow_right (by omega)
-                            (Nat.mul_le_mul_right _ rateLe))
-                  _ = 2 ^ (windowPackageBits data.toParameters object *
-                            (canonicalHotWindows data.toParameters object).card) *
-                          remainderStates data.toParameters object
-                            (canonicalWindowPacking data.toParameters object) * 1 := by
-                        rw [Nat.mul_one]
-                  _ ≤ 2 ^ (windowPackageBits data.toParameters object *
-                            (canonicalHotWindows data.toParameters object).card) *
-                          remainderStates data.toParameters object
-                            (canonicalWindowPacking data.toParameters object) *
-                          2 ^ (data.curvatureCost *
-                            remainderCurvatureTargetRank data.toParameters object
-                              (canonicalWindowPacking data.toParameters object)) :=
-                        Nat.mul_le_mul_left _ Nat.one_le_two_pow
-              exact demandLe.trans
-                (retainedCodeLe.trans (dominates.2 State stateOf))
-            · unfold jointPackageDemand
-              rw [allCold.1, Finset.card_empty, Nat.mul_zero, pow_zero,
-                Nat.one_mul]
-              exact Graph.RemainderGlue.remainderStateCount_le_skeletonBudget
-                _ _ _ _⟩)
+        ⟨Contracts.Spine.entropyCapBound_of_hotColdPartition data.toParameters
+          inputs.current.object (inputs.get (K .hotColdPartition)).down
+          (inputs.get (K .windowPackageSeparated)).down
+          (inputs.get (K .skeletonDominates)).down⟩
         .nil)
     0 0
 

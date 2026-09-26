@@ -45,7 +45,6 @@ import Hypostructure.Core.Strategy.Dag
 import Hypostructure.Graph.Strategy.SpineVocabulary
 import Hypostructure.Graph.Strategy.SpineRows
 import Hypostructure.Graph.Strategy.TypeAExitRun
-import Hypostructure.Graph.Strategy.SurplusRun
 import Hypostructure.Graph.Strategy.SpineContinuationRun
 import Hypostructure.Graph.Strategy.ColdCorridorRows
 import Hypostructure.Graph.Strategy.BranchDClosure
@@ -63,7 +62,6 @@ import Hypostructure.Fixtures.TypeAExitOne
 import Hypostructure.Fixtures.TypeAExitTwo
 import Hypostructure.Fixtures.TypeAExitThree
 import Hypostructure.Fixtures.TypeBFanWindowNode
-import Hypostructure.Fixtures.SurplusRun
 import Hypostructure.Fixtures.ExitFourFamily
 import Hypostructure.Fixtures.ExitFourWitnessInhabited
 import Hypostructure.Fixtures.Route8RateDensityCapGap

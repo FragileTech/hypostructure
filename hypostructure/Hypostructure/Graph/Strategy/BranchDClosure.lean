@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.BranchD
 
 /-!
 # Branch D terminals: nodes `[37]`, `[39]`, `[42]`, `[46]`
@@ -42,12 +43,8 @@ concrete outside-context defect recorded by `K .contextDefect`. -/
 noncomputable instance instImpossibleContextDefect :
     Impossible (Input BranchState Presentation presentation data)
       (K .contextDefect) where
-  contradiction := fun _residual value => by
-    obtain ⟨_packing, _valid, _packingCard, _test, _determiners, quotient,
-      _supportData, _certificate, _minimal, left, right, identified,
-      outside, distinguishes⟩ := value.down
-    exact distinguishes
-      (quotient.contextUniversal left right identified outside)
+  contradiction := fun residual value =>
+    Contracts.Spine.contextDefect_false data.toParameters residual.object value.down
 
 /-- **The terminal `[39]` closes against the selected object.**  The
 `K .atomCompression` fact contains the proper-support replacement derived at
@@ -56,22 +53,10 @@ minimal counterexample. -/
 noncomputable instance instIncompatibleAtomCompression :
     Incompatible (Input BranchState Presentation presentation data)
       (K .selection) (K .atomCompression) where
-  contradiction := fun residual selected compression => by
-    obtain ⟨_packing, _valid, quotient, _certificate, _complete, _inside,
-      replacement⟩ := compression.down
-    exact Graph.Strategy.InterfaceReplacement.not_replacementSupport
-      (Graph.MinimumDegreeAtLeast data.threshold) BranchState
-      (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
-      Presentation presentation
-      (Core.Target.ofPredicate _ (Graph.HasCycleWithLength data.LengthOK))
-      ((Graph.cycleTargetInterface data.LengthOK).coreInvariantWithPresentation
-        (Graph.MinimumDegreeAtLeast data.threshold) BranchState
-        Presentation presentation
-        (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold))
-      { G := residual.object, baseline := residual.baseline,
-        state := residual.branchState, avoids := selected.down.1,
-        minimal := selected.down.2.sizeMinimal }
-      quotient.support replacement
+  contradiction := fun residual selected compression =>
+    Contracts.Spine.atomCompression_selection_false BranchState Presentation
+      presentation data.toParameters residual.object residual.branchState
+      residual.baseline selected.down compression.down
 
 /-- **The terminal `[42]` closes against the selected object.**  The proper
 enlarged support `Z ⊊ G` carries a target-complete rank reduction, hence a
@@ -79,22 +64,10 @@ replacement (`lem:proper-smearing`), forbidden by `cor:uncompressible`. -/
 noncomputable instance instIncompatibleProperDelocalization :
     Incompatible (Input BranchState Presentation presentation data)
       (K .selection) (K .properDelocalization) where
-  contradiction := fun residual selected smearing => by
-    obtain ⟨_packing, _valid, quotient, _certificate, _complete, _outside,
-      _vertex, _vertexOutside, replacement⟩ := smearing.down
-    exact Graph.Strategy.InterfaceReplacement.not_replacementSupport
-      (Graph.MinimumDegreeAtLeast data.threshold) BranchState
-      (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
-      Presentation presentation
-      (Core.Target.ofPredicate _ (Graph.HasCycleWithLength data.LengthOK))
-      ((Graph.cycleTargetInterface data.LengthOK).coreInvariantWithPresentation
-        (Graph.MinimumDegreeAtLeast data.threshold) BranchState
-        Presentation presentation
-        (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold))
-      { G := residual.object, baseline := residual.baseline,
-        state := residual.branchState, avoids := selected.down.1,
-        minimal := selected.down.2.sizeMinimal }
-      quotient.support replacement
+  contradiction := fun residual selected smearing =>
+    Contracts.Spine.properDelocalization_selection_false BranchState Presentation
+      presentation data.toParameters residual.object residual.branchState
+      residual.baseline selected.down smearing.down
 
 /-- **The terminal `[46]` closes against the selected object.**  The global
 barrier stores the surviving conclusion of `lem:no-silent-global-smearing`: a
@@ -104,10 +77,8 @@ object, and selection avoidance gives the contradiction. -/
 noncomputable instance instIncompatibleGlobalBarrier :
     Incompatible (Input BranchState Presentation presentation data)
       (K .selection) (K .globalBarrier) where
-  contradiction := fun residual selected barrier => by
-    obtain ⟨representative, smaller, representativeBaseline, transfer⟩ :=
-      barrier.down
-    exact selected.down.1
-      (transfer (selected.down.2 representative smaller representativeBaseline))
+  contradiction := fun residual selected barrier =>
+    Contracts.Spine.globalBarrier_selection_false BranchState Presentation
+      presentation data.toParameters residual.object selected.down barrier.down
 
 end Hypostructure.Graph.Strategy.Spine

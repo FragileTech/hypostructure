@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.NetCharge
 
 /-! Independently compiled spine row declarations. -/
 
@@ -43,12 +44,8 @@ prerequisite. -/
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .netChargeLocalization)
-        (show Value BranchState Presentation presentation data
-            .netChargeLocalization inputs.current from
-          ⟨fun packing _valid negative =>
-            inputs.current.object.exists_canonicalPiece_negativeNetCharge
-              (inputs.current.object.remainderSupport packing) data.threshold
-              data.dischargeScale negative⟩)
+        ⟨Contracts.Spine.netChargeLocalization data.toParameters
+          inputs.current.object⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

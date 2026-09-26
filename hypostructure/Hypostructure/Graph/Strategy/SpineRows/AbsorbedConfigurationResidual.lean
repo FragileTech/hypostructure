@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.NetCharge
 
 /-! Independently compiled spine row declarations. -/
 
@@ -52,65 +53,12 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let fails := (inputs.get (K .exactCollisionFails)).down
-      let demand := (inputs.get (K .boundaryDemand)).down
-      let split := (inputs.get (K .hotColdPartition)).down
       .cons (key := K .absorbedConfigurationResidual)
-        (show Value BranchState Presentation presentation data
-            .absorbedConfigurationResidual inputs.current from
-          ⟨by
-            classical
-            obtain ⟨packing, valid, cardinality, nonneg⟩ := fails
-            refine ⟨packing, valid, cardinality, nonneg, ?_⟩
-            obtain ⟨deficiencyLe, incidenceLe⟩ := demand packing valid
-            have sizes := inputs.current.object.remainderSupport_card_add_eq valid
-            obtain ⟨_, canonicalCard, _, _, _, disjoint, cover⟩ := split
-            -- `p = |𝒫_hot| + |𝒫_cold|`: the fixed packing is the disjoint union.
-            have union :
-                canonicalWindowPacking data.toParameters inputs.current.object =
-                  canonicalHotWindows data.toParameters inputs.current.object ∪
-                    canonicalColdWindows data.toParameters inputs.current.object := by
-              ext window
-              simp only [Finset.mem_union]
-              exact cover window
-            have countEq :
-                packing.card =
-                  (canonicalHotWindows data.toParameters inputs.current.object).card +
-                    (canonicalColdWindows data.toParameters inputs.current.object).card := by
-              rw [cardinality, ← canonicalCard, union,
-                Finset.card_union_of_disjoint disjoint]
-            rw [← countEq]
-            unfold Graph.FiniteObject.NonNegativeNetCharge at nonneg
-            unfold Parameters.netChargeCoefficient
-            -- `e(R,W) ≤ (δ·order − 2(order−1))·p + σ_W`, in both truncation cases.
-            have assoc :
-                data.threshold * data.windowOrder * packing.card =
-                  data.threshold * (data.windowOrder * packing.card) :=
-              Nat.mul_assoc _ _ _
-            have supply :
-                inputs.current.object.boundaryIncidence
-                    (inputs.current.object.remainderSupport packing) ≤
-                  (data.threshold * data.windowOrder - 2 * (data.windowOrder - 1)) *
-                      packing.card +
-                    inputs.current.object.ambientSurplus
-                      (Graph.FiniteObject.windowSupport packing) data.threshold := by
-              rcases Nat.le_total (2 * (data.windowOrder - 1))
-                  (data.threshold * data.windowOrder) with small | large
-              · have recombine :
-                    (data.threshold * data.windowOrder - 2 * (data.windowOrder - 1)) *
-                        packing.card +
-                      2 * (data.windowOrder - 1) * packing.card =
-                      data.threshold * data.windowOrder * packing.card := by
-                  rw [← Nat.add_mul, Nat.sub_add_cancel small]
-                omega
-              · rw [Nat.sub_eq_zero_of_le large, Nat.zero_mul, Nat.zero_add]
-                have := Nat.mul_le_mul_right packing.card large
-                omega
-            have scaledDeficiency := Nat.mul_le_mul_left data.dischargeScale deficiencyLe
-            have scaledSupply := Nat.mul_le_mul_left data.dischargeScale supply
-            rw [Nat.mul_add] at scaledSupply
-            rw [Nat.add_mul, Nat.mul_assoc]
-            omega⟩)
+        ⟨Contracts.Spine.absorbedConfigurationResidual_of_exactCollisionFails
+          data.toParameters inputs.current.object
+          (inputs.get (K .exactCollisionFails)).down
+          (inputs.get (K .boundaryDemand)).down
+          (inputs.get (K .hotColdPartition)).down⟩
         .nil)
     0 0
 

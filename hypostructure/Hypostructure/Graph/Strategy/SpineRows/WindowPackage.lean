@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.SpineWindows
 
 /-! Independently compiled spine row declarations. -/
 
@@ -13,6 +14,28 @@ universe u v
 variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
+
+/-- **Node `[158]`**, the exact finite form of the realization sentence of
+`lem:p13-window-package`/`prop:p13-density`: is the joint window package of
+the fixed maximal packing realized by the labelled skeleton class?  The yes arm
+continues at `[22]`; the no arm is the dense-packing residual `[159]`. -/
+noncomputable def windowPackageRealizationDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger
+      (Input BranchState Presentation presentation data) current known)
+    [FactKeys.Has (K .skeletonDominates) known]
+    (realizedFresh : K .windowPackageRealized ∉ known)
+    (unrealizedFresh : K .windowPackageUnrealized ∉ known) :
+    Decision (K .windowPackageRealized) (K .windowPackageUnrealized) previous := by
+  classical
+  exact Decision.run previous (K .windowPackageRealized) (K .windowPackageUnrealized)
+    `Hypostructure.Graph.Strategy.Spine.windowPackageRealizationDichotomy
+    (if realized : WindowPackageRealizedStatement data.toParameters current.object then
+      .inl ⟨realized⟩
+    else
+      .inr ⟨realized⟩)
+    realizedFresh unrealizedFresh
 
 variable [FactSystem (Input BranchState Presentation presentation data)]
 
@@ -61,147 +84,11 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .windowPackageSeparated)
-        (show Value BranchState Presentation presentation data
-            .windowPackageSeparated inputs.current from
-          ⟨by
-            classical
-            simp only [Holds, WindowPackageSeparatedStatement]
-            let noReplacement := (inputs.get (K .replacementExclusion)).down
-            let selected := (inputs.get (K .selection)).down
-            obtain ⟨_positive, packing, valid, maximum, maximal⟩ :=
-              (inputs.get (K .maximalPacking)).down
-            refine ⟨packing, valid, maximum, maximal, ?_⟩
-            let barrier := data.windowBarrier
-            letI := barrier.indexFintype
-            let scales := data.separatedScaleCount
-              inputs.current.object.vertexCount
-            let safe := Core.Finite.CertifiedTableAggregation.safeProduct
-              barrier.table
-            let flat := Core.Finite.CertifiedTableAggregation.flatProduct
-              barrier.table
-            let bits := windowPackageBits data.toParameters inputs.current.object
-            have bitsEq : bits = Nat.log2 ((safe ^ scales - 1) / flat ^ scales) := rfl
-            -- `|ℐ_win| ≥ (c₁₃ − o(1)) log₂ n` per window: the registered rate,
-            -- floored once per scale, is dominated by the compounded floor.
-            have rateLe : data.windowRate * scales ≤ bits := by
-              rw [bitsEq]
-              have flatPos : 0 < flat := barrier.flatPositive
-              have improves : flat ≤ safe := barrier.improves
-              rcases Nat.eq_zero_or_pos scales with scalesZero | scalesPos
-              · simp [scalesZero]
-              rcases lt_or_eq_of_le improves with flatLt | flatEq
-              · -- `2 ^ rate · flat ≤ safe − 1`, then compound across the scales.
-                have rateBound : 2 ^ data.windowRate * flat ≤ safe - 1 := by
-                  have rateDef : data.windowRate =
-                      Nat.log2 ((safe - 1) / flat) := by
-                    rw [data.windowRate_eq_barrier]
-                    show Core.Finite.CertifiedTableAggregation.binaryRateFloor
-                      barrier.table = _
-                    rw [Core.Finite.CertifiedTableAggregation.binaryRateFloor,
-                      if_neg (Nat.ne_of_gt flatPos)]
-                  rw [rateDef]
-                  rcases Nat.eq_zero_or_pos ((safe - 1) / flat) with qZero | qPos
-                  · rw [qZero]
-                    simp only [Nat.log2_zero, pow_zero, one_mul]
-                    omega
-                  · calc 2 ^ Nat.log2 ((safe - 1) / flat) * flat
-                        ≤ ((safe - 1) / flat) * flat :=
-                          Nat.mul_le_mul_right _ (by
-                            simpa [Nat.log2_eq_log_two] using
-                              Nat.pow_log_le_self 2 (Nat.ne_of_gt qPos))
-                      _ ≤ safe - 1 := Nat.div_mul_le_self _ _
-                have compounded : 2 ^ (data.windowRate * scales) * flat ^ scales ≤
-                    safe ^ scales - 1 := by
-                  have step : (2 ^ data.windowRate * flat) ^ scales ≤
-                      (safe - 1) ^ scales :=
-                    Nat.pow_le_pow_left rateBound scales
-                  rw [mul_pow, ← pow_mul] at step
-                  refine step.trans ?_
-                  -- `(S − 1)^s ≤ S^s − 1` for `S ≥ 1`, `s ≥ 1`.
-                  have onePos : 1 ≤ safe := le_trans (Nat.one_le_iff_ne_zero.mpr
-                    (Nat.ne_of_gt flatPos)) improves
-                  have : (safe - 1) ^ scales + 1 ≤ safe ^ scales := by
-                    have := Nat.pow_le_pow_left (Nat.sub_le safe 1) scales
-                    have strict : (safe - 1) ^ scales < safe ^ scales :=
-                      Nat.pow_lt_pow_left (by omega) (Nat.ne_of_gt scalesPos)
-                    omega
-                  omega
-                have flatPowPos : 0 < flat ^ scales := pow_pos flatPos scales
-                have divBound : 2 ^ (data.windowRate * scales) ≤
-                    (safe ^ scales - 1) / flat ^ scales :=
-                  (Nat.le_div_iff_mul_le flatPowPos).mpr compounded
-                have quotientPos : (safe ^ scales - 1) / flat ^ scales ≠ 0 :=
-                  Nat.ne_of_gt (lt_of_lt_of_le (Nat.one_le_two_pow) divBound)
-                exact (Nat.le_log2 quotientPos).mpr divBound
-              · -- `flat = safe`: the registered rate is `0`.
-                have rateZero : data.windowRate = 0 := by
-                  rw [data.windowRate_eq_barrier]
-                  show Core.Finite.CertifiedTableAggregation.binaryRateFloor
-                    barrier.table = 0
-                  rw [Core.Finite.CertifiedTableAggregation.binaryRateFloor,
-                    if_neg (Nat.ne_of_gt flatPos)]
-                  have : (safe - 1) / flat = 0 :=
-                    Nat.div_eq_of_lt (by omega)
-                  change Nat.log2 ((safe - 1) / flat) = 0
-                  rw [this]
-                  rfl
-                simp [rateZero]
-            let Coordinate := Graph.DeclaredSignature.Coordinate
-              inputs.current.object.Vertex
-                (Fin bits × Finset inputs.current.object.Vertex)
-            let package : Finset inputs.current.object.Vertex →
-                Finset Coordinate := fun window =>
-              Finset.univ.image fun bit =>
-                Graph.DeclaredSignature.Coordinate.base
-                  .windowLabel (bit, window) window
-            let family := packing.biUnion package
-            have packageCard : ∀ window, (package window).card = bits := by
-              intro window
-              rw [Finset.card_image_iff.mpr]
-              · simp
-              · intro left _ right _ equality
-                cases equality
-                rfl
-            have packagesDisjoint :
-                ∀ left ∈ packing, ∀ right ∈ packing, left ≠ right →
-                  Disjoint (package left) (package right) := by
-              intro left _leftMem right _rightMem different
-              rw [Finset.disjoint_left]
-              intro coordinate leftMember rightMember
-              obtain ⟨leftBit, _, leftEq⟩ := Finset.mem_image.mp leftMember
-              obtain ⟨rightBit, _, rightEq⟩ := Finset.mem_image.mp rightMember
-              rw [← leftEq] at rightEq
-              have supportEq := congrArg
-                Graph.DeclaredSignature.Coordinate.support rightEq
-              simp only [Graph.DeclaredSignature.Coordinate.support_base]
-                at supportEq
-              exact different supportEq.symm
-            have familyCard : family.card = bits * packing.card := by
-              rw [Finset.card_biUnion]
-              · simp_rw [packageCard]
-                simp [Nat.mul_comm]
-              · intro left leftMem right rightMem different
-                exact packagesDisjoint left leftMem right rightMem different
-            refine ⟨(fun window _member => by
-                simpa only [package, bits] using packageCard window),
-              (by simpa only [package] using packagesDisjoint),
-              (by simpa only [family, bits] using familyCard),
-              (by simpa only [bits, scales] using rateLe), ?_, ?_⟩
-            · intro declared _functional
-              by_contra reducing
-              rcases declared.localize reducing with replacement |
-                ⟨representative, smaller, baseline, transfer⟩
-              · exact noReplacement declared.support replacement
-              · exact selected.1 (transfer (selected.2 representative smaller baseline))
-            · intro BaselineCoordinate baseline baselineSupport
-                _baselineIndependent
-              intro declared _functional
-              by_contra reducing
-              rcases declared.localize reducing with replacement |
-                ⟨representative, smaller, baselineObject, transfer⟩
-              · exact noReplacement declared.support replacement
-              · exact selected.1
-                  (transfer (selected.2 representative smaller baselineObject))⟩)
+        ⟨Contracts.Spine.windowPackageSeparated_of_maximalPacking data.toParameters
+          inputs.current.object data.windowRate_eq_barrier
+          (inputs.get (K .maximalPacking)).down
+          (inputs.get (K .replacementExclusion)).down
+          (inputs.get (K .selection)).down⟩
         .nil)
     0 0
 

@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.SpineSelection
 
 /-! Independently compiled spine row declarations. -/
 
@@ -54,71 +55,10 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let fact := inputs.get (K .selection)
-      let context :
-          Core.MinimalCounterexampleContext
-            (problem BranchState Presentation presentation data.toParameters)
-            (Graph.HasCycleWithLength data.LengthOK)
-            (progress BranchState Presentation presentation data.toParameters) :=
-        { G := inputs.current.object
-          baseline := inputs.current.baseline
-          state := inputs.current.branchState
-          avoids := fact.down.1
-          minimal := fact.down.2.sizeMinimal }
-      let targetInvariant : Core.TargetInvariant
-          (Graph.isomorphismEquivalenceWithPresentation
-            (Graph.MinimumDegreeAtLeast data.threshold) BranchState
-            Presentation presentation
-            (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold))
-          (Graph.HasCycleWithLength data.LengthOK) := by
-        simpa [Graph.minimumDegreeIsomorphismSemantics] using
-          (Graph.minimumDegreeCycleTargetInvariant data.threshold BranchState
-            Presentation presentation data.LengthOK)
-      let profile :=
-        Graph.Strategy.InterfaceReplacement.profileWithPresentation
-          (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-          (BranchState := BranchState)
-          (baselineInvariant :=
-            Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
-          Presentation presentation
-          (T := Core.Target.ofPredicate _
-            (Graph.HasCycleWithLength data.LengthOK)) targetInvariant
       .cons (key := K .replacementExclusion)
-        (show Value BranchState Presentation presentation data
-            .replacementExclusion inputs.current from
-          ⟨fun support replacementSupport => by
-            rcases replacementSupport with
-              ⟨connected, proper, replacement, signatureEq, baseline, smaller,
-                obstructionLE⟩
-            let site :=
-              Graph.Strategy.InterfaceReplacement.SupportAtom.properAtom
-                context.G support connected proper
-            let replacement' : profile.assembly.Replacement context.G site :=
-              { atom := replacement
-                compatible := trivial }
-            let strictReplacement : profile.StrictReplacement context site :=
-              { replacement := replacement'
-                signature_eq := congrArg ULift.up signatureEq
-                obstruction_le := by
-                  intro outside _ _ replacementTarget
-                  exact obstructionLE outside replacementTarget
-                baseline := baseline
-                smaller := smaller }
-            have replacementTarget : Graph.HasCycleWithLength data.LengthOK
-                (profile.assembly.replace strictReplacement.replacement) :=
-              context.target_of_smaller strictReplacement.smaller
-                strictReplacement.baseline
-            have sourceTarget : Graph.HasCycleWithLength data.LengthOK
-                (profile.assembly.assemble
-                  (profile.assembly.atom context.G site)
-                  (profile.assembly.context context.G site)) :=
-              strictReplacement.obstruction_le
-                (profile.assembly.context context.G site)
-                (profile.assembly.extractedCompatible context.G site)
-                strictReplacement.replacement.compatible replacementTarget
-            exact context.avoids
-              ((profile.targetInvariant.target_iff
-                (profile.assembly.reconstruct context.G site)).mp sourceTarget)⟩)
+        ⟨Contracts.Spine.replacementExclusion_of_selection data.toParameters
+          inputs.current.object inputs.current.baseline inputs.current.branchState
+          (inputs.get (K .selection)).down⟩
         .nil)
     0 0
 

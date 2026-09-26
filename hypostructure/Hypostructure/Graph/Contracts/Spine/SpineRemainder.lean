@@ -1,0 +1,197 @@
+import Hypostructure.Graph.Statements.Spine
+
+/-!
+# Contracts: the packed-window remainder `[25]`--`[31]`
+
+Proof-agnostic contract lemmas for the remainder a maximal packing leaves:
+normalization, relabelling entropy, boundary demand, stub supply, the wedge
+lower bound, the curvature target rank, and its finite circuit.  Each lemma is
+stated over a `Graph.FiniteObject` with the registered `Parameters` as a
+parameter and every hypothesis explicit; its conclusion is exactly the
+statement of the fact it proves.  This module imports no strategy, row, or
+vocabulary module.
+-/
+
+namespace Hypostructure.Graph.Contracts.Spine
+
+open Hypostructure
+open Hypostructure.Graph.Strategy.Spine
+
+universe u v
+
+/-- **Nodes `[25]`--`[27]`, `sec:remainder`.**  The remainder of a maximal
+packing carries no induced window (it would extend the packing), and no subset
+of it induces a baseline subgraph: that subgraph would be window-free, so the
+cited closure law gives it an accepted cycle, which is a cycle of the
+target-avoiding object. -/
+theorem remainderNormalized_of_selection
+    {BranchState : Graph.FiniteObject.{u} → Type v}
+    {Presentation : Type} {presentation : Presentation}
+    (data : Parameters) (object : Graph.FiniteObject.{u})
+    (freeForcesTarget : ∀ other : Graph.FiniteObject.{u},
+      Graph.MinimumDegreeAtLeast data.threshold other →
+      Graph.InducedPathFree other data.windowOrder →
+      Graph.HasCycleWithLength data.LengthOK other)
+    (selection : SelectionStatement BranchState Presentation presentation data object) :
+    RemainderNormalizedStatement data object :=
+  fun _packing _valid maximal _support inside =>
+    ⟨object.not_inducesWindow_of_subset_remainderSupport maximal inside,
+      object.not_baseline_induce_of_subset_remainderSupport
+        freeForcesTarget selection.1 maximal inside⟩
+
+/-- **Remainder relabelling entropy.**  Every support inside a normalized
+remainder is window-free and core-free at every sub-support, so its labelled
+relabelling orbit gives `|S|! ≤ remainderStateCount · |Stab|`. -/
+theorem remainderRelabelingEntropy_of_normalized (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (normalized : RemainderNormalizedStatement data object) :
+    RemainderRelabelingEntropyStatement data object :=
+  fun packing valid maximal support inside => by
+    have windowFree : ∀ inner : Finset object.Vertex,
+        inner ⊆ support →
+        ¬ object.InducesWindow data.windowOrder inner := by
+      intro inner innerInside
+      exact (normalized packing valid maximal inner
+        (innerInside.trans inside)).1
+    have coreFree : ∀ inner : Finset object.Vertex,
+        inner ⊆ support →
+        ¬ Graph.MinimumDegreeAtLeast data.threshold (object.induce inner) := by
+      intro inner innerInside
+      exact (normalized packing valid maximal inner
+        (innerInside.trans inside)).2
+    have orbit :=
+      Graph.LabelledRelabeling.factorial_le_remainderStateCount_mul_stabilizer
+        object support data.windowOrder data.threshold windowFree coreFree
+    dsimp only at orbit
+    rw [Graph.FiniteObject.positiveDeficiency_labelledInduce,
+      Graph.FiniteObject.card_edgeSet_labelledInduce] at orbit
+    exact orbit
+
+/-- **Nodes `[28]`--`[29]`, `lem:surplus-aware-window-stub`.**  On the baseline,
+`def⁺(R) ≤ e(R,W)` pointwise-summed, and the boundary incidences plus the
+windows' internal mass are bounded by the windows' degree capacity.  No
+near-cubic hypothesis is used. -/
+theorem boundaryDemand_of_baseline (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (baseline : Graph.MinimumDegreeAtLeast data.threshold object) :
+    BoundaryDemandStatement data object :=
+  have lower : ∀ vertex : object.Vertex, data.threshold ≤ object.degree vertex :=
+    fun vertex => le_trans baseline (object.minDegree_le_degree vertex)
+  fun packing valid =>
+    ⟨object.positiveDeficiency_le_boundaryIncidence
+        (object.remainderSupport packing) data.threshold lower,
+      object.boundaryIncidence_add_internal_mass_le valid lower⟩
+
+/-- **Node `[29]`, `lem:stub-positive`.**  The boundary-demand chain with the
+object's own surplus in place of the windows', and the near-cubic ceiling
+`σ(G) ≤ T(n)` spent against it. -/
+theorem stubSupply_of_boundaryDemand (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
+    (demand : BoundaryDemandStatement data object)
+    (ceiling : SurplusAtOrBelowStatement data object) :
+    StubSupplyStatement data object := by
+  have lower : ∀ vertex : object.Vertex, data.threshold ≤ object.degree vertex :=
+    fun vertex => le_trans baseline (object.minDegree_le_degree vertex)
+  intro packing valid
+  have links := demand packing valid
+  have windowSurplus :=
+    object.ambientSurplus_le_degreeSurplus
+      (Graph.FiniteObject.windowSupport packing) data.threshold lower
+  have globalSurplus :
+      object.degreeSurplus data.threshold ≤
+        data.surplusThreshold object.vertexCount := ceiling
+  omega
+
+/-- **Node `[30]`, `lem:wedge-lower`.**  Every region `X` of the remainder has
+`δ|X| ≤ W₂(X) + 2 def⁺(X)` (for `δ ≥ 3`), and at `X = R` the stub-supply
+ceiling turns it into the demand floor of the final collision. -/
+theorem wedgeSupply_of_stubSupply (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (three_le_threshold : 3 ≤ data.threshold)
+    (stubSupply : StubSupplyStatement data object) :
+    WedgeSupplyStatement data object := by
+  have supply : ∀ packing : Finset (Finset object.Vertex),
+      object.IsWindowPacking data.windowOrder packing →
+      ∀ support : Finset object.Vertex,
+        support ⊆ object.remainderSupport packing →
+        data.threshold * support.card ≤
+          object.internalWedgeCount support +
+            2 * object.positiveDeficiency support data.threshold :=
+    fun _packing _valid support _inside =>
+      object.baseline_mul_card_le_internalWedgeCount_add_two_mul_positiveDeficiency
+        support data.threshold three_le_threshold
+  refine ⟨supply, fun packing valid => ?_⟩
+  have wedge :=
+    supply packing valid (object.remainderSupport packing)
+      (Finset.Subset.refl _)
+  have ceiling := stubSupply packing valid
+  omega
+
+/-- **Node `[31]`, `def:curvature-target-rank`.**  At the remainder of every
+maximal packing, the curvature target rank is attained by a surviving
+subfamily and bounds every surviving subfamily. -/
+theorem curvatureTargetRank_attained (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    CurvatureTargetRankStatement data object :=
+  fun packing _valid _card =>
+    ⟨Graph.FiniteObject.exists_attaining_curvatureTargetRank
+        (Graph.MinimumDegreeAtLeast data.threshold)
+        (Graph.HasCycleWithLength data.LengthOK) object
+        (object.remainderSupport packing),
+      fun _candidate subset survives =>
+        Graph.FiniteObject.card_le_curvatureTargetRank
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object
+          (object.remainderSupport packing) subset survives⟩
+
+/-- **`lem:target-rank-circuit`.**  Adjoining a raw test to a maximal surviving
+subfamily breaks survival, so some functional admissible quotient is injective
+on the family but not on the extension, and its functional clause supplies a
+finite proper determining subfamily; conversely a family with no such
+dependence survives. -/
+theorem targetRankCircuit_of_curvatureTargetRank (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (rank : CurvatureTargetRankStatement data object) :
+    TargetRankCircuitStatement data object :=
+  fun packing valid card => by
+    classical
+    obtain ⟨_attained, maximal⟩ := rank packing valid card
+    refine ⟨fun independent subset survives maximum test testMem outside => ?_,
+      fun noDependence => ?_⟩
+    · -- `𝓘 ∪ {a}` does not survive: its size would exceed `r_Ω(R)`.
+      have notSurvive : ¬ Graph.FiniteObject.SurvivesCurvatureSystem
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object
+          (object.remainderSupport packing)
+          (insert test independent) := by
+        intro survivesInsert
+        have le := maximal (insert test independent)
+          (Finset.insert_subset testMem subset) survivesInsert
+        rw [Finset.card_insert_of_notMem outside] at le
+        omega
+      simp only [Graph.FiniteObject.SurvivesCurvatureSystem, not_forall]
+        at notSurvive
+      obtain ⟨quotient, functional, notInjective⟩ := notSurvive
+      have injective := survives quotient functional
+      have insertCoe : (↑(insert test independent) :
+          Set (object.InternalWedge
+            (object.remainderSupport packing))) =
+          insert test ↑independent := by simp
+      rw [Core.TargetRank.RankQuotient.LabelInjectiveOn, insertCoe] at notInjective
+      obtain ⟨determiners, finite, determinersSubset, determines⟩ :=
+        functional (Finset.coe_subset.2 subset) testMem
+          (by simpa using outside) injective notInjective
+      refine ⟨determiners, determinersSubset, finite,
+        fun mem => outside (determinersSubset mem), quotient, functional, ?_,
+        determines⟩
+      intro injectiveFamily
+      exact notInjective (injectiveFamily.mono (by
+        rw [← insertCoe]
+        exact Finset.coe_subset.2 (Finset.insert_subset testMem subset)))
+    · exact Graph.FiniteObject.survives_of_no_dependence
+        (Graph.MinimumDegreeAtLeast data.threshold)
+        (Graph.HasCycleWithLength data.LengthOK) object
+        (object.remainderSupport packing) noDependence
+
+end Hypostructure.Graph.Contracts.Spine

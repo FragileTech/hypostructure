@@ -2,6 +2,7 @@ import Hypostructure.Graph.Strategy.SpineVocabulary
 import Hypostructure.Graph.ColdIncrementArithmetic
 import Hypostructure.Graph.ColdGermFamily
 import Hypostructure.Graph.Strategy.ColdCorridorRows.Basic
+import Hypostructure.Graph.Contracts.Spine.ColdGermRouting
 
 namespace Hypostructure.Graph.Strategy.Spine
 
@@ -36,53 +37,20 @@ G2 for every surviving length-changing germ. -/
       producesNonempty := by simp }
     (fun inputs =>
       let candidates := (inputs.get (K .coldGermCandidates)).down
-      let selected := (inputs.get (K .selection)).down
+      let avoids := (inputs.get (K .selection)).down.1
       let uncompressible := (inputs.get (K .uncompressible)).down
-      let targetInvariant : Graph.FiniteObject.IsomorphismInvariant
-          (Graph.HasCycleWithLength data.LengthOK) :=
-        (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant
-      let notRealizing : ∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) inputs.current.object,
-          ¬ germ.Realizing :=
-        fun germ realizing =>
-          selected.1 (germ.target_of_realizing targetInvariant realizing)
-      let notSilent : ∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) inputs.current.object,
-          germ.increment < 0 → ¬ germ.Neutral :=
-        fun germ shorter neutral =>
-          uncompressible germ.support
-            (germ.compressibleSupport_of_not_distinguishing shorter neutral.2)
       .cons (key := K .coldGermRealized)
-        ⟨⟨candidates, notRealizing, fun germ => germ.trichotomy⟩⟩
+        ⟨Contracts.Spine.coldGermRealized_of_candidates data.toParameters
+          inputs.current.object avoids candidates⟩
         (.cons (key := K .coldGermDistinguished)
-          ⟨⟨candidates, fun germ Profile profile distinguishing =>
-            germ.not_targetComplete_of_distinguishing profile distinguishing⟩⟩
+          ⟨Contracts.Spine.coldGermDistinguished_of_candidates data.toParameters
+            inputs.current.object candidates⟩
           (.cons (key := K .coldGermSilent)
-            ⟨⟨notSilent,
-              fun germ => germ.not_lengthChanging_iff,
-              fun increment base copies length positive overlapping lower upper
-                  accepted =>
-                Graph.ColdCorridor.exists_not_survivesSmear_of_mem_interval
-                  positive overlapping lower upper accepted,
-              fun increment base exponent residue positive small reached congruent
-                  accepted =>
-                Graph.ColdCorridor.exists_not_survivesSmear_of_pow_congruent
-                  positive small reached congruent accepted,
-              fun increment base _ wide criterion =>
-                Graph.ColdCorridor.exists_hit_of_orderOf_lt (base := base) wide criterion,
-              fun transient exponent odd past =>
-                Graph.ColdCorridor.pow_mod_of_le past⟩⟩
+            ⟨Contracts.Spine.coldGermSilent_of_uncompressible data.toParameters
+              inputs.current.object uncompressible⟩
             (.cons (key := K .coldGermRouted)
-              ⟨⟨candidates, fun germ shorter =>
-                have distinguishing :=
-                  Graph.ColdCorridor.boundedGerm_not_survives notRealizing notSilent
-                    germ shorter
-                ⟨distinguishing,
-                  fun Profile profile =>
-                    germ.not_targetComplete_of_distinguishing profile distinguishing,
-                  Or.inl distinguishing⟩⟩⟩
+              ⟨Contracts.Spine.coldGermRouted_of_candidates data.toParameters
+                inputs.current.object avoids uncompressible candidates⟩
               .nil))))
 
 /-! ## Node `[157]`, `lem:cold-same-interface-table` and
@@ -101,23 +69,11 @@ survive their smear and are routed the same way; and the table is finite. -/
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let candidates := (inputs.get (K .coldGermCandidates)).down
-      let selected := (inputs.get (K .selection)).down
-      let uncompressible := (inputs.get (K .uncompressible)).down
-      let targetInvariant : Graph.FiniteObject.IsomorphismInvariant
-          (Graph.HasCycleWithLength data.LengthOK) :=
-        (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant
       .cons (key := K .coldSameInterfaceTable)
-        ⟨⟨candidates, fun Handoff row =>
-            Graph.ColdCorridor.row_closed targetInvariant selected.1
-              uncompressible row,
-          fun Handoff self =>
-            Graph.ColdCorridor.selfReturn_closed targetInvariant selected.1
-              uncompressible self,
-          fun length failed =>
-            Graph.ColdCorridor.exists_accepted_of_not_survivesSmear failed,
-          rfl,
-          fun Handoff row => row.increment_eq_zero⟩⟩
+        ⟨Contracts.Spine.coldSameInterfaceTable_of_candidates data.toParameters
+          inputs.current.object (inputs.get (K .selection)).down.1
+          (inputs.get (K .uncompressible)).down
+          (inputs.get (K .coldGermCandidates)).down⟩
         .nil)
 
 /-! ## Node `[168]`: the stub structure of the ambient-cubic cold windows
@@ -139,23 +95,10 @@ single-stub attachments. -/
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let split := (inputs.get (K .hotColdPartition)).down
       .cons (key := K .coldWindowStubStructure)
-        ⟨by
-          classical
-          intro window member
-          have windowMem : window ∈ canonicalWindowPacking data.toParameters inputs.current.object :=
-            Finset.sdiff_subset (Finset.mem_filter.1 member).1
-          have cubic : ∀ vertex ∈ window, inputs.current.object.degree vertex = data.threshold :=
-            (Finset.mem_filter.1 member).2
-          have induces : inputs.current.object.InducesWindow data.windowOrder window :=
-            split.1.1 window windowMem
-          obtain ⟨ends, endsSubset, endsCard, interior, endpoints⟩ :=
-            Graph.FiniteObject.exists_ends_externalNeighbours window
-              data.three_le_windowOrder induces cubic
-          exact ⟨ends, endsSubset, endsCard, interior, endpoints,
-            Graph.FiniteObject.interior_stubs_le_asymmetric window
-              data.three_le_windowOrder induces cubic⟩⟩
+        ⟨Contracts.Spine.coldWindowStubStructure_of_split data.toParameters
+          inputs.current.object data.three_le_windowOrder
+          (inputs.get (K .hotColdPartition)).down⟩
         .nil)
 
 /-! ## Node `[169]`, `def:blocked-class`: the trivial neutral-configuration residual
@@ -172,24 +115,61 @@ class is dominated by the skeleton budget (`lem:skeleton-dominates`,
 @[reducible] noncomputable def blockedClassRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.blockedClassMember
-    { Requires := [K .selection, K .hotColdPartition,
-        K .coldCanonicalReplacementTrivial]
+    { Requires := [K .selection, K .hotColdPartition]
       Produces := [K .blockedClassMember]
       requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let avoids := (inputs.get (K .selection)).down.1
-      let split := (inputs.get (K .hotColdPartition)).down
-      let _trivial :=
-        (inputs.get (K .coldCanonicalReplacementTrivial)).down
       .cons (key := K .blockedClassMember)
-        ⟨Graph.BlockedClass.minDegree_objectSkeleton inputs.current.object data.threshold
-            inputs.current.baseline,
-          Graph.BlockedClass.objectSkeleton_blocked inputs.current.object data.windowOrder
-            data.LengthOK (canonicalWindowPacking data.toParameters inputs.current.object) split.1 avoids,
-          Graph.BlockedClass.card_blocked_le_skeletonBudget inputs.current.object
-            data.threshold data.windowOrder data.LengthOK _⟩
+        ⟨Contracts.Spine.blockedClassMember_of_split data.toParameters
+          inputs.current.object inputs.current.baseline
+          (inputs.get (K .selection)).down.1
+          (inputs.get (K .hotColdPartition)).down⟩
         .nil)
+
+/-- **Node `[154]`, `lem:cold-bounded-germ-trichotomy`, first binary test (G1).**
+Is some configuration of node `[153]`'s extracted active family hit-realized?
+The no-arm is the literal negation on the same family. -/
+noncomputable def coldGermRealizationDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger
+      (Input BranchState Presentation presentation data) current known)
+    [FactKeys.Has (K .coldGermFamilyPositive) known]
+    (someFresh : K .coldGermSomeRealizing ∉ known)
+    (noneFresh : K .coldGermNoneRealizing ∉ known) :
+    Decision (K .coldGermSomeRealizing) (K .coldGermNoneRealizing) previous := by
+  classical
+  exact Decision.run previous (K .coldGermSomeRealizing) (K .coldGermNoneRealizing)
+    `Hypostructure.Graph.Strategy.Spine.coldGermRealizationDichotomy
+    (if hit : ColdGermSomeRealizingStatement data.toParameters current.object then
+      .inl ⟨hit⟩
+    else
+      .inr ⟨hit⟩)
+    someFresh noneFresh
+
+/-- **Node `[154]`, second binary test on the no-G1 arm (G2).**  Is some active
+configuration hit-distinguished?  The no-arm is its literal negation: every
+active configuration is silent (G3 or the equal-length table, `[157]`). -/
+noncomputable def coldGermDistinctionDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger
+      (Input BranchState Presentation presentation data) current known)
+    [FactKeys.Has (K .coldGermNoneRealizing) known]
+    (someFresh : K .coldGermSomeDistinguishing ∉ known)
+    (noneFresh : K .coldGermNoneDistinguishing ∉ known) :
+    Decision (K .coldGermSomeDistinguishing) (K .coldGermNoneDistinguishing)
+      previous := by
+  classical
+  exact Decision.run previous (K .coldGermSomeDistinguishing)
+    (K .coldGermNoneDistinguishing)
+    `Hypostructure.Graph.Strategy.Spine.coldGermDistinctionDichotomy
+    (if hit : ColdGermSomeDistinguishingStatement data.toParameters current.object then
+      .inl ⟨hit⟩
+    else
+      .inr ⟨hit⟩)
+    someFresh noneFresh
 
 end Hypostructure.Graph.Strategy.Spine

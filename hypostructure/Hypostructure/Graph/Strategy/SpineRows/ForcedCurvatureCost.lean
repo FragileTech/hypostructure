@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.RemainderEntropy
 
 /-! Independently compiled spine row declarations. -/
 
@@ -47,32 +48,10 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      -- `lem:wedge-lower`'s "in particular": node `[30]`'s demand floor.
-      let floor := (inputs.get (K .wedgeSupply)).down.2
-      let rank := (inputs.get (K .curvatureFullRank)).down
       .cons (key := K .forcedCurvatureCost)
-        (show Value BranchState Presentation presentation data
-            .forcedCurvatureCost inputs.current from ⟨by
-          rcases rank with ⟨packing, valid, maximal, rankEq⟩
-          refine ⟨packing, valid, maximal, ?_⟩
-          have demand := floor packing valid
-          -- `W₂(R) ≤ r_Ω(R)`, from the exact full-rank ledger fact.
-          have supply :
-              remainderWedgeSupply inputs.current.object packing ≤
-                remainderCurvatureTargetRank data.toParameters inputs.current.object packing :=
-            rankEq.ge
-          calc data.curvatureCost *
-                (data.threshold *
-                    (inputs.current.object.remainderSupport packing).card +
-                  2 * (2 * (data.windowOrder - 1) * packing.card))
-              ≤ data.curvatureCost *
-                  (remainderCurvatureTargetRank data.toParameters inputs.current.object
-                        packing +
-                    2 * (data.threshold * (data.windowOrder * packing.card) +
-                      data.surplusThreshold inputs.current.object.vertexCount)) :=
-                Nat.mul_le_mul_left _
-                  (le_trans demand (Nat.add_le_add_right supply _))
-            _ = _ := by ring⟩)
+        ⟨Contracts.Spine.forcedCurvatureCost_of_fullRank data.toParameters
+          inputs.current.object (inputs.get (K .wedgeSupply)).down
+          (inputs.get (K .curvatureFullRank)).down⟩
         .nil)
     0 0
 

@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.NetCharge
 
 /-! Independently compiled spine row declarations. -/
 
@@ -14,14 +15,30 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
+/-- **The terminal `[60]`, the net-cap contradiction.**  On the yes-arm of
+`[59]` the selected maximum packing has `N₀(R) ≥ 0`; the large-budget net cap
+`K .netChargeCap` of `[57]` gives `N₀(R) < 0` at every maximum packing, in
+particular at that one. -/
+noncomputable instance instIncompatibleNetChargeNonNegativeCap :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K .netChargeNonNegative) (K .netChargeCap) where
+  contradiction := fun residual nonNegative cap => by
+    obtain ⟨packing, _canonical, valid, cardinality, _maximal, nonnegative⟩ :=
+      nonNegative.down
+    exact ((residual.object.not_negativeNetCharge_iff
+      (residual.object.remainderSupport packing) data.threshold
+      data.dischargeScale).mpr nonnegative) (cap.down packing valid cardinality)
+
 variable [FactSystem (Input BranchState Presentation presentation data)]
 
 /-! ## Node `[59]`: the net-charge sign test
 
 `N₀(R) ≥ 0?`  Here `R` is the complement of the one maximum packing selected
-at node `[27]`, not a quantifier over every maximal packing.  The executor reads
-that witness from `K .maximalPacking`, decides its exact integer charge, and
-carries the same packing in either branch fact.  The yes arm is the manuscript's
+at node `[27]` (`canonicalWindowPacking`), not a quantifier over every maximal
+packing.  The decision tests its exact integer charge, and each arm is a
+contract lemma (`Contracts.Spine.netChargeNonNegative_of_nonNegative`,
+`Contracts.Spine.netChargeNegative_of_not_nonNegative`) carrying that same
+packing and its maximality.  The yes arm is the manuscript's
 node `[60]`; the no arm is node `[61]`, where a connected negative support is
 selected.  The decision itself does not close `[60]`: that terminal additionally
 uses the strict net-cap estimate of `prop:negative-net-charge`. -/
@@ -33,9 +50,6 @@ noncomputable def netChargeDichotomy
     (previous :
       @ExactLedger (Input BranchState Presentation presentation data)
         _ (factSystem BranchState Presentation presentation data) current known)
-    [@FactKeys.Has (Input BranchState Presentation presentation data) _
-      (factSystem BranchState Presentation presentation data)
-      (K .maximalPacking) known]
     (nonNegativeFresh : K .netChargeNonNegative ∉ known)
     (negativeFresh : K .netChargeNegative ∉ known) :
     @Decision (Input BranchState Presentation presentation data) _
@@ -47,27 +61,14 @@ noncomputable def netChargeDichotomy
     `Hypostructure.Graph.Strategy.Spine.netChargeDichotomy
     (by
       classical
-      have selected :=
-        (@ExactLedger.get (Input BranchState Presentation presentation data) _
-          (factSystem BranchState Presentation presentation data)
-          current known previous (K .maximalPacking)).down
       let packing := canonicalWindowPacking data.toParameters current.object
-      have packingSpec := Classical.choose_spec
-        (current.object.exists_windowPacking_card_eq data.windowOrder)
-      have valid := packingSpec.1
-      have cardinality := packingSpec.2
-      have maximal : ∀ window : Finset current.object.Vertex,
-          current.object.InducesWindow data.windowOrder window →
-            ∃ member ∈ packing, ¬ Disjoint window member :=
-        fun window windowMem =>
-          current.object.exists_mem_not_disjoint_of_card_eq
-            data.windowOrder_pos valid cardinality windowMem
       by_cases nonNegative : current.object.NonNegativeNetCharge
           (current.object.remainderSupport packing) data.threshold
           data.dischargeScale
-      · exact .inl ⟨packing, rfl, valid, cardinality, maximal, nonNegative⟩
-      · exact .inr ⟨packing, rfl, valid, cardinality, maximal,
-          Nat.lt_of_not_le nonNegative⟩)
+      · exact .inl ⟨Contracts.Spine.netChargeNonNegative_of_nonNegative
+          data.toParameters current.object nonNegative⟩
+      · exact .inr ⟨Contracts.Spine.netChargeNegative_of_not_nonNegative
+          data.toParameters current.object nonNegative⟩)
     nonNegativeFresh negativeFresh
 
 end Hypostructure.Graph.Strategy.Spine

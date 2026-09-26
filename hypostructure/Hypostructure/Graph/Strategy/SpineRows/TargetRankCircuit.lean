@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.SpineRemainder
 
 /-! Independently compiled spine row declarations. -/
 
@@ -45,49 +46,9 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let rank := (inputs.get (K .curvatureTargetRank)).down
       .cons (key := K .targetRankCircuit)
-        (show Value BranchState Presentation presentation data
-            .targetRankCircuit inputs.current from
-          ⟨fun packing valid card => by
-            classical
-            obtain ⟨_attained, maximal⟩ := rank packing valid card
-            refine ⟨fun independent subset survives maximum test testMem outside => ?_,
-              fun noDependence => ?_⟩
-            · -- `𝓘 ∪ {a}` does not survive: its size would exceed `r_Ω(R)`.
-              have notSurvive : ¬ Graph.FiniteObject.SurvivesCurvatureSystem
-                  (Graph.MinimumDegreeAtLeast data.threshold)
-                  (Graph.HasCycleWithLength data.LengthOK) inputs.current.object
-                  (inputs.current.object.remainderSupport packing)
-                  (insert test independent) := by
-                intro survivesInsert
-                have le := maximal (insert test independent)
-                  (Finset.insert_subset testMem subset) survivesInsert
-                rw [Finset.card_insert_of_notMem outside] at le
-                omega
-              simp only [Graph.FiniteObject.SurvivesCurvatureSystem, not_forall]
-                at notSurvive
-              obtain ⟨quotient, functional, notInjective⟩ := notSurvive
-              have injective := survives quotient functional
-              have insertCoe : (↑(insert test independent) :
-                  Set (inputs.current.object.InternalWedge
-                    (inputs.current.object.remainderSupport packing))) =
-                  insert test ↑independent := by simp
-              rw [Core.TargetRank.RankQuotient.LabelInjectiveOn, insertCoe] at notInjective
-              obtain ⟨determiners, finite, determinersSubset, determines⟩ :=
-                functional (Finset.coe_subset.2 subset) testMem
-                  (by simpa using outside) injective notInjective
-              refine ⟨determiners, determinersSubset, finite,
-                fun mem => outside (determinersSubset mem), quotient, functional, ?_,
-                determines⟩
-              intro injectiveFamily
-              exact notInjective (injectiveFamily.mono (by
-                rw [← insertCoe]
-                exact Finset.coe_subset.2 (Finset.insert_subset testMem subset)))
-            · exact Graph.FiniteObject.survives_of_no_dependence
-                (Graph.MinimumDegreeAtLeast data.threshold)
-                (Graph.HasCycleWithLength data.LengthOK) inputs.current.object
-                (inputs.current.object.remainderSupport packing) noDependence⟩)
+        ⟨Contracts.Spine.targetRankCircuit_of_curvatureTargetRank data.toParameters
+          inputs.current.object (inputs.get (K .curvatureTargetRank)).down⟩
         .nil)
     0 0
 
