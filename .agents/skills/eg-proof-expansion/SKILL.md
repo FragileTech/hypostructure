@@ -306,7 +306,9 @@ strengthen, or replace a mathematical alternative.  Correct the Lean topology
 only when it differs from the paper; never invent a new strategy to make Lean
 easier.
 
-There is one exception. When the Lean argument is kernel-checked, weakens no
+(Superseded by the user's no-deviation rule below: from now on, even a strictly
+better Lean argument is not substituted. Deviations already registered stay
+documented, and new ones are not made.) Earlier exception: when the Lean argument is kernel-checked, weakens no
 paper fact, closes the node the paper closes, and is better than the paper's
 argument, the Lean prevails. Register that deviation in
 `audits/erdos-64-red-team/lean-vs-paper-discrepancies.md`, giving the node,
@@ -314,15 +316,15 @@ the paper argument with tex lines, the Lean argument with its declarations,
 and the reason it is at least as strong. An unregistered deviation is a
 defect.
 
-When the paper's argument has a gap (a step that does not follow, a missing
-link, or a hypothesis it never establishes), repair it. Do not report it and
-stop. Find a correct proof of the same conclusion, or of a stronger one, from
-the facts on the branch's ledger, prove it as a contract lemma, and register
-the repair in the discrepancy file: the gap, the repair, and why the result
-is at least as strong as the paper's claim. A statement may be left unproved
-only when it is shown to be false. In that case, give a concrete
-counterexample, checked in Lean where feasible, together with the strongest
-correct statement that replaces it.
+Never repair and never deviate. Implement the paper exactly as written,
+through the Hypostructure machinery as prescribed. When a step of the paper
+does not hold, or is not proved by the paper's own argument, do not repair it,
+do not substitute a different argument or definition, and do not widen an
+outcome. Report it in `audits/erdos-64-red-team/lean-vs-paper-discrepancies.md`
+under "Paper errors" with: the node, the tex line, the paper's exact claim,
+the faithful formal statement, why it fails, and a Lean-checked counterexample
+where feasible. The user decides how an unprovable paper step is represented
+in Lean.
 
 
 ## Enforce the proof-specific boundary
