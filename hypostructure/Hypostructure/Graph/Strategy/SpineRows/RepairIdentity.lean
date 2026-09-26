@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineRows.Basic
+import Hypostructure.Graph.Contracts.Spine.BranchD
 
 /-! Independently compiled spine row declarations. -/
 
@@ -40,20 +41,7 @@ places the quotient in the closed rather than proper-support clause. -/
     (sourceFreeManifest (K .repairIdentity))
     (fun inputs =>
       .cons (key := K .repairIdentity)
-        (show Value BranchState Presentation presentation data
-            .repairIdentity inputs.current from
-          ⟨by
-            dsimp only [Holds, RepairIdentityStatement]
-            intro component _componentOnActiveSupport
-            have handshake :
-                (3 : Int) * component.internal.card + component.surplus +
-                    component.boundary.card =
-                  2 * component.object.edgeCount := by
-              exact_mod_cast component.handshake
-            have rank := component.cycleRank_cast
-            rw [component.vertexCard_eq] at rank
-            push_cast at rank
-            linarith⟩)
+        ⟨Contracts.Spine.repairIdentity inputs.current.object⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

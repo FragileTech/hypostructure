@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.RemainderEntropy
 
 /-! Independently compiled spine row declarations. -/
 
@@ -35,18 +36,11 @@ noncomputable def remainderEntropyDichotomy
     (previous :
       @ExactLedger (Input BranchState Presentation presentation data)
         _ (factSystem BranchState Presentation presentation data) current known)
-    [@FactKeys.Has (Input BranchState Presentation presentation data) _
-      (factSystem BranchState Presentation presentation data)
-      (K .forcedCurvatureCost) known]
     (highFresh : K .remainderEntropyHigh ∉ known)
     (lowFresh : K .remainderEntropyLow ∉ known) :
     @Decision (Input BranchState Presentation presentation data) _
       (factSystem BranchState Presentation presentation data) current known
       (K .remainderEntropyHigh) (K .remainderEntropyLow) previous :=
-  -- Node `[49]` is asked of the residual carrying node `[48]`'s forced cost.
-  let _cost := (@ExactLedger.get (Input BranchState Presentation presentation data) _
-    (factSystem BranchState Presentation presentation data)
-    current known previous (K .forcedCurvatureCost)).down
   @Decision.run (Input BranchState Presentation presentation data) _
     (factSystem BranchState Presentation presentation data) current known
     previous (K .remainderEntropyHigh) (K .remainderEntropyLow)
@@ -55,9 +49,6 @@ noncomputable def remainderEntropyDichotomy
       classical
       -- `[50]` is asked of the remainder of the fixed maximum packing.
       let packing := canonicalWindowPacking data.toParameters current.object
-      have valid : current.object.IsWindowPacking data.windowOrder packing :=
-        (Classical.choose_spec
-          (current.object.exists_windowPacking_card_eq data.windowOrder)).1
       by_cases high :
             Graph.AtLeastEntropyRate current.object.vertexCount
               data.entropyDenominator data.windowOrder data.threshold
@@ -66,9 +57,10 @@ noncomputable def remainderEntropyDichotomy
               (current.object.internalEdgeCount
                 (current.object.remainderSupport packing))
               (current.object.remainderSupport packing).card
-      · exact .inl ⟨⟨packing, rfl, valid, high⟩⟩
-      · exact .inr ⟨⟨packing, rfl, valid,
-          (Graph.not_atLeastEntropyRate_iff _ _ _ _ _ _ _).mp high⟩⟩)
+      · exact .inl ⟨Contracts.Spine.remainderEntropyHigh_of_atLeast
+          data.toParameters current.object high⟩
+      · exact .inr ⟨Contracts.Spine.remainderEntropyLow_of_not_atLeast
+          data.toParameters current.object high⟩)
     highFresh lowFresh
 
 end Hypostructure.Graph.Strategy.Spine

@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.RemainderEntropy
 
 /-! Independently compiled spine row declarations. -/
 
@@ -43,14 +44,8 @@ the budget side is node `[53]`'s comparison. -/
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .entropyPackageDemand)
-        (show Value BranchState Presentation presentation data
-            .entropyPackageDemand inputs.current from
-          ⟨by
-            simp only [Holds, EntropyPackageDemandStatement]
-            obtain ⟨_packing, rfl, _valid, high⟩ :=
-              (inputs.get (K .remainderEntropyHigh)).down
-            rw [jointPackageDemand, mul_pow]
-            exact Nat.mul_le_mul (le_refl _) high⟩)
+        ⟨Contracts.Spine.entropyPackageDemand_of_high data.toParameters
+          inputs.current.object (inputs.get (K .remainderEntropyHigh)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.BranchD
 
 /-! Independently compiled spine row declarations. -/
 
@@ -48,37 +49,16 @@ noncomputable def contextValidityDichotomy
     `Hypostructure.Graph.Strategy.Spine.contextValidityDichotomy
     (by
       classical
-      let inherited := (@ExactLedger.get
+      let dependence := (@ExactLedger.get
         (Input BranchState Presentation presentation data) _
         (factSystem BranchState Presentation presentation data)
         current known previous (K .branchDependence)).down
-      let packing := Classical.choose inherited
-      have packingSpec := Classical.choose_spec inherited
-      let test := Classical.choose packingSpec.2.2.2
-      have testSpec := Classical.choose_spec packingSpec.2.2.2
-      dsimp only at testSpec
-      let determiners := Classical.choose testSpec
-      have determinersSpec := Classical.choose_spec testSpec
-      let quotient := Classical.choose determinersSpec
-      have quotientSpec := Classical.choose_spec determinersSpec
-      let supportData := Classical.choose quotientSpec
-      have selected := Classical.choose_spec quotientSpec
-      have certified := selected.1
-      have minimal := selected.2
-      have valid := packingSpec.1
-      have packingCard := packingSpec.2.1
-      by_cases universal :
-          ∀ left right, Identified quotient left right →
-            Graph.Response.ContextEquivalent
-              (Graph.HasCycleWithLength data.LengthOK) left right
-      · exact .inr ⟨⟨packing, valid, packingCard, test, determiners, quotient,
-          supportData, certified, minimal, universal⟩⟩
-      · refine .inl ⟨⟨packing, valid, packingCard, test, determiners, quotient,
-          supportData, certified, minimal, ?_⟩⟩
-        push Not at universal
-        obtain ⟨left, right, identified, failure⟩ := universal
-        exact ⟨left, right, identified,
-          Graph.Response.targetDefect_of_not_contextEquivalent failure⟩)
+      exact if universal :
+          ContextUniversalStatement data.toParameters current.object then
+        .inr ⟨universal⟩
+      else
+        .inl ⟨(Contracts.Spine.contextDefect_or_contextUniversal data.toParameters
+          current.object dependence).resolve_right universal⟩)
     defectFresh universalFresh
 
 end Hypostructure.Graph.Strategy.Spine

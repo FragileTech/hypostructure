@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.BranchD
 
 /-! Independently compiled spine row declarations. -/
 
@@ -27,17 +28,8 @@ variable [FactSystem (Input BranchState Presentation presentation data)]
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .globalBarrier)
-        (show Value BranchState Presentation presentation data
-            .globalBarrier inputs.current from
-          ⟨by
-            dsimp only [Holds, GlobalBarrierStatement]
-            obtain ⟨packing, _valid, quotient, certificate, _complete, _outside,
-              covers⟩ := (inputs.get (K .globalDelocalization)).down
-            obtain ⟨_test, _determiners, _supportData, certified⟩ := certificate
-            have reducing : quotient.toRankQuotient.RankReducingOn
-                ↑(remainderCurvatureTests inputs.current.object packing) :=
-              certified.2.2.2.2.2.1
-            exact quotient.closedRepresentative covers reducing⟩)
+        ⟨Contracts.Spine.globalBarrier_of_globalDelocalization data.toParameters
+          inputs.current.object (inputs.get (K .globalDelocalization)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

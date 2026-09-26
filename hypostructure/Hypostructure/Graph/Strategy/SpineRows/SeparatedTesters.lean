@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineRows.Basic
+import Hypostructure.Graph.Contracts.Spine.BranchD
 
 /-! Independently compiled spine row declarations. -/
 
@@ -33,57 +34,12 @@ proof reads only `inputs.current`.  The row introduces no proof-specific data
 carrier and appends its sole output to the literal `ExactLedger`. -/
 @[reducible] noncomputable def separatedTestersRow
     (data : Data.{u}) :
-    AtomicStrategy (Input BranchState Presentation presentation data) := by
-  classical
-  exact
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
     factOnly `Hypostructure.Graph.Strategy.Spine.separatedTesters
       (sourceFreeManifest (K .separatedTesters))
       (fun inputs =>
         .cons (key := K .separatedTesters)
-          ⟨by
-            intro packing _valid _packingCard radius u v _uMem _vMem
-            dsimp only
-            intro leftWedge rightWedge _leftMem _rightMem _leftRoot _rightRoot
-              _sameType _disjoint
-            constructor
-            · intro decomposition pieceCovers represented _separates internal
-              constructor <;> intro inBall
-              · obtain ⟨inside, same⟩ :=
-                  (pieceCovers _).mp (Or.inl inBall)
-                have impossible :
-                    Graph.pieceEmbedding decomposition.piece
-                        decomposition.outside inside =
-                      Graph.contextEmbedding decomposition.piece
-                        decomposition.outside (.inr internal) := by
-                  apply decomposition.vertexEquiv.injective
-                  simpa [Graph.OwnedDecomposition.pieceIntoAmbient] using same
-                cases inside <;>
-                  simp [Graph.pieceEmbedding, Graph.contextEmbedding] at impossible
-              · obtain ⟨inside, same⟩ :=
-                  (pieceCovers _).mp (Or.inr inBall)
-                have impossible :
-                    Graph.pieceEmbedding decomposition.piece
-                        decomposition.outside inside =
-                      Graph.contextEmbedding decomposition.piece
-                        decomposition.outside (.inr internal) := by
-                  apply decomposition.vertexEquiv.injective
-                  simpa [Graph.OwnedDecomposition.pieceIntoAmbient] using same
-                cases inside <;>
-                  simp [Graph.pieceEmbedding, Graph.contextEmbedding] at impossible
-            · intro attempt _identified
-              by_cases universal :
-                  ∀ left right : Graph.BoundaryPiece
-                      (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary
-                        inputs.current.object attempt.support),
-                    attempt.Identifies left right →
-                      Graph.Response.ContextEquivalent
-                        (Graph.HasCycleWithLength data.LengthOK) left right
-              · exact Or.inl universal
-              · right
-                push Not at universal
-                obtain ⟨left, right, sameValues, failure⟩ := universal
-                exact ⟨left, right, sameValues,
-                  Graph.Response.targetDefect_of_not_contextEquivalent failure⟩⟩
+          ⟨Contracts.Spine.separatedTesters data.toParameters inputs.current.object⟩
           .nil)
 
 end Hypostructure.Graph.Strategy.Spine

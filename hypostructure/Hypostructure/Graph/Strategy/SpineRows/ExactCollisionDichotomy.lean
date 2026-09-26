@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.NetCharge
 
 /-! Independently compiled spine row declarations. -/
 
@@ -45,19 +46,11 @@ noncomputable def exactCollisionDichotomy
     `Hypostructure.Graph.Strategy.Spine.exactCollisionDichotomy
     (by
       classical
-      exact if holds : ∀ packing : Finset (Finset current.object.Vertex),
-          current.object.IsWindowPacking data.windowOrder packing →
-            packing.card = current.object.windowPackingNumber data.windowOrder →
-              current.object.NegativeNetCharge (current.object.remainderSupport packing)
-                data.threshold data.dischargeScale then
+      exact if holds : NetChargeCapStatement data.toParameters current.object then
         .inl ⟨holds⟩
       else
-        .inr ⟨by
-          push_neg at holds
-          obtain ⟨packing, valid, cardinality, notNegative⟩ := holds
-          exact ⟨packing, valid, cardinality,
-            (Graph.FiniteObject.not_negativeNetCharge_iff current.object _ _ _).1
-              notNegative⟩⟩)
+        .inr ⟨Contracts.Spine.exactCollisionFails_of_not_netChargeCap
+          data.toParameters current.object holds⟩)
     capFresh failsFresh
 
 end Hypostructure.Graph.Strategy.Spine

@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.DominantType
 
 /-! Independently compiled spine row declarations. -/
 
@@ -32,9 +33,6 @@ noncomputable def localTypeCoordinateDichotomy
         _ (factSystem BranchState Presentation presentation data) current known)
     [@FactKeys.Has (Input BranchState Presentation presentation data) _
       (factSystem BranchState Presentation presentation data)
-      (K .remainderEntropyLow) known]
-    [@FactKeys.Has (Input BranchState Presentation presentation data) _
-      (factSystem BranchState Presentation presentation data)
       (K .curvatureFullRank) known]
     (repetitiveFresh : K .localTypeCoordinateRepetitive ∉ known)
     (nonrepetitiveFresh : K .localTypeCoordinateNonrepetitive ∉ known) :
@@ -42,10 +40,6 @@ noncomputable def localTypeCoordinateDichotomy
       (factSystem BranchState Presentation presentation data) current known
       (K .localTypeCoordinateRepetitive)
       (K .localTypeCoordinateNonrepetitive) previous :=
-  let _low := (@ExactLedger.get
-    (Input BranchState Presentation presentation data) _
-    (factSystem BranchState Presentation presentation data)
-    current known previous (K .remainderEntropyLow)).down
   let fullRank := (@ExactLedger.get
     (Input BranchState Presentation presentation data) _
     (factSystem BranchState Presentation presentation data)
@@ -57,16 +51,13 @@ noncomputable def localTypeCoordinateDichotomy
     `Hypostructure.Graph.Strategy.Spine.localTypeCoordinateDichotomy
     (by
       classical
-      let packing := Classical.choose fullRank
-      have fullRankSpec := Classical.choose_spec fullRank
-      have canonical := fullRankSpec.1
-      have valid := fullRankSpec.2.1
-      have maximal := fullRankSpec.2.2.1
-      have rankEq := fullRankSpec.2.2.2
       by_cases repetitive :
-          RemainderTypeCoordinateRepetitive data.toParameters current.object packing
-      · exact .inl ⟨packing, canonical, valid, maximal, rankEq, repetitive⟩
-      · exact .inr ⟨packing, canonical, valid, maximal, rankEq, repetitive⟩)
+          RemainderTypeCoordinateRepetitive data.toParameters current.object
+            (canonicalWindowPacking data.toParameters current.object)
+      · exact .inl ⟨Contracts.Spine.localTypeCoordinateRepetitive_of_fullRank
+          data.toParameters current.object fullRank repetitive⟩
+      · exact .inr ⟨Contracts.Spine.localTypeCoordinateNonrepetitive_of_fullRank
+          data.toParameters current.object fullRank repetitive⟩)
     repetitiveFresh nonrepetitiveFresh
 
 end Hypostructure.Graph.Strategy.Spine

@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.BranchD
 
 /-! Independently compiled spine row declarations. -/
 
@@ -81,77 +82,29 @@ noncomputable def atomCompressionDichotomy
     `Hypostructure.Graph.Strategy.Spine.atomCompressionDichotomy
     (by
       classical
-      let inherited := (@ExactLedger.get
+      let universal := (@ExactLedger.get
         (Input BranchState Presentation presentation data) _
         (factSystem BranchState Presentation presentation data)
         current known previous (K .contextUniversal)).down
-      let packing := Classical.choose inherited
-      have packingSpec := Classical.choose_spec inherited
-      have valid := packingSpec.1
-      have packingCard := packingSpec.2.1
-      let test := Classical.choose packingSpec.2.2
-      have testSpec := Classical.choose_spec packingSpec.2.2
-      let determiners := Classical.choose testSpec
-      have determinersSpec := Classical.choose_spec testSpec
-      let quotient := Classical.choose determinersSpec
-      have quotientSpec := Classical.choose_spec determinersSpec
-      let supportData := Classical.choose quotientSpec
-      have selected := Classical.choose_spec quotientSpec
-      have certified := selected.1
-      have universal := selected.2.2
-      have packingPositive :=
-        (@ExactLedger.get
-          (Input BranchState Presentation presentation data) _
-          (factSystem BranchState Presentation presentation data)
-          current known previous (K .maximalPacking)).down.1
-      have complete : TargetCompleteAt data.toParameters quotient := by
-        intro left right identified
-        have targetComplete : Graph.Response.TargetComplete
-            Graph.BoundaryPiece.boundaryDegreeProfile
-            (Graph.HasCycleWithLength data.LengthOK) left right :=
-          ⟨quotient.fibrewise left right identified,
-            universal left right identified⟩
-        exact ⟨(@ExactLedger.get
-              (Input BranchState Presentation presentation data) _
-              (factSystem BranchState Presentation presentation data)
-              current known previous (K .degreeProfileFibres)).down
-                quotient.support left right targetComplete,
-          (@ExactLedger.get
-            (Input BranchState Presentation presentation data) _
-            (factSystem BranchState Presentation presentation data)
-            current known previous
-              (K .targetCompleteContextUniversality)).down
-              quotient.support left right targetComplete⟩
-      by_cases inside :
-          quotient.support ⊆ current.object.remainderSupport packing
-      · have packingNonempty : packing.Nonempty :=
-          Finset.card_pos.mp (packingCard ▸ packingPositive)
-        let member := Classical.choose packingNonempty
-        have memberMem := Classical.choose_spec packingNonempty
-        have windowNonempty :=
-          current.object.nonempty_of_inducesWindow data.windowOrder_pos
-            (valid.1 member memberMem)
-        let vertex := Classical.choose windowNonempty
-        have vertexMem := Classical.choose_spec windowNonempty
-        have supportProper : ∃ vertex, vertex ∉ quotient.support := by
-          refine ⟨vertex, ?_⟩
-          intro vertexInSupport
-          have vertexInRemainder := inside vertexInSupport
-          exact
-            (current.object.notMem_windowSupport_of_mem_remainderSupport
-              vertexInRemainder)
-              (current.object.mem_windowSupport memberMem vertexMem)
-        have reducing : quotient.toRankQuotient.RankReducingOn
-            ↑(remainderCurvatureTests current.object packing) :=
-          certified.2.2.2.2.2.1
-        have replacement := quotient.properRepresentative supportProper reducing
-        exact .inl ⟨⟨packing, valid, quotient,
-          ⟨test, determiners, supportData, certified⟩, complete, inside,
-          replacement⟩⟩
-      · exact .inr ⟨⟨packing, valid, quotient,
-          ⟨test, determiners, supportData, certified⟩, complete, inside,
-          remainderSupport_ssubset_delocalizationSupport data.toParameters quotient
-            inside⟩⟩)
+      let fibres := (@ExactLedger.get
+        (Input BranchState Presentation presentation data) _
+        (factSystem BranchState Presentation presentation data)
+        current known previous (K .degreeProfileFibres)).down
+      let completeUniversality := (@ExactLedger.get
+        (Input BranchState Presentation presentation data) _
+        (factSystem BranchState Presentation presentation data)
+        current known previous (K .targetCompleteContextUniversality)).down
+      let maximal := (@ExactLedger.get
+        (Input BranchState Presentation presentation data) _
+        (factSystem BranchState Presentation presentation data)
+        current known previous (K .maximalPacking)).down
+      exact if compression :
+          AtomCompressionStatement data.toParameters current.object then
+        .inl ⟨compression⟩
+      else
+        .inr ⟨(Contracts.Spine.atomCompression_or_delocalizedSupport
+          data.toParameters current.object universal fibres completeUniversality
+          maximal).resolve_left compression⟩)
     compressionFresh delocalizedFresh
 
 end Hypostructure.Graph.Strategy.Spine

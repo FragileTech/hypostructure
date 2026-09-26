@@ -34,9 +34,6 @@ noncomputable def entropyCapDichotomy
     (previous :
       @ExactLedger (Input BranchState Presentation presentation data)
         _ (factSystem BranchState Presentation presentation data) current known)
-    [@FactKeys.Has (Input BranchState Presentation presentation data) _
-      (factSystem BranchState Presentation presentation data)
-      (K .entropyPackageDemand) known]
     (activeFresh : K .entropyCapActive ∉ known)
     (boundFresh : K .entropyCapBound ∉ known) :
     @Decision (Input BranchState Presentation presentation data) _
@@ -48,10 +45,6 @@ noncomputable def entropyCapDichotomy
     `Hypostructure.Graph.Strategy.Spine.entropyCapDichotomy
     (by
       classical
-      have _packageDemand :=
-        (@ExactLedger.get (Input BranchState Presentation presentation data) _
-          (factSystem BranchState Presentation presentation data)
-          current known previous (K .entropyPackageDemand)).down
       by_cases active :
           Graph.skeletonBudget current.object < jointPackageDemand data.toParameters current.object
       · exact .inl ⟨active⟩

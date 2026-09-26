@@ -2,6 +2,7 @@ import Hypostructure.Graph.Strategy.SpineVocabulary
 import Hypostructure.Graph.ColdIncrementArithmetic
 import Hypostructure.Graph.ColdGermFamily
 import Hypostructure.Graph.Strategy.ColdCorridorRows.Basic
+import Hypostructure.Graph.Contracts.Spine.ColdMass
 
 namespace Hypostructure.Graph.Strategy.Spine
 
@@ -36,7 +37,6 @@ noncomputable def coldFamilyDichotomy
     (emptyFresh : K .coldFamilyEmpty ∉ known) :
     Decision (K .coldFamilyPositive) (K .coldFamilyEmpty) previous := by
   classical
-  let _split := (previous.get (K .hotColdPartition)).down
   exact Decision.run previous (K .coldFamilyPositive) (K .coldFamilyEmpty)
     `Hypostructure.Graph.Strategy.Spine.coldFamilyDichotomy
     (if positive : 0 < (canonicalColdWindows data.toParameters current.object).card then
@@ -60,15 +60,11 @@ manuscript's Part XI leaves are drawn. -/
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let extraction := (inputs.get (K .coldGermExtraction)).down
-      let routed := (inputs.get (K .coldGermRouted)).down
-      let table := (inputs.get (K .coldSameInterfaceTable)).down
       .cons (key := K .coldBranchClosed)
-        ⟨Graph.ColdCorridor.noTerminalColdResidual_of_routing extraction.2
-          (fun germ shorter =>
-            let routedGerm := routed.2 germ shorter
-            ⟨routedGerm.1, routedGerm.2.1⟩)
-          table.2.1 table.2.2.1⟩
+        ⟨Contracts.Spine.coldBranchClosed_of_routing data.toParameters
+          inputs.current.object (inputs.get (K .coldGermExtraction)).down
+          (inputs.get (K .coldGermRouted)).down
+          (inputs.get (K .coldSameInterfaceTable)).down⟩
         .nil)
 
 /-! ## Node `[24]`: `prop:p13-density`, after the cold branch
@@ -90,87 +86,13 @@ density cap with its exact `o(1)`. -/
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let mass := (inputs.get (K .coldMass)).down
-      let bounded := (inputs.get (K .coldMassBounded)).down
-      let cubic := (inputs.get (K .coldAmbientCubic)).down
-      let split := (inputs.get (K .hotColdPartition)).down
       .cons (key := K .densityCap)
-        ⟨by
-          classical
-          let object := inputs.current.object
-          let packing := canonicalWindowPacking data.toParameters object
-          let cold := canonicalColdWindows data.toParameters object
-          let perWindow := coldInteriorBranchExcess data.toParameters
-          have perWindowPos : 0 < perWindow := by
-            have order := data.five_le_windowOrder
-            simp only [perWindow, coldInteriorBranchExcess,
-              Graph.ColdCorridor.branchExcessOf]
-            omega
-          let overlap := Graph.ColdCorridor.overlapBound data.threshold data.coldSignature
-          let highLoss := (data.threshold + 1) * overlap
-          have coldBound : cold.card ≤
-              (1 + highLoss) * object.degreeSurplus data.threshold := by
-            change perWindow * cold.card ≤
-              (perWindow + highLoss) * object.degreeSurplus data.threshold at bounded
-            have : perWindow * cold.card ≤
-                perWindow * ((1 + highLoss) * object.degreeSurplus data.threshold) := by
-              refine bounded.trans ?_
-              have : perWindow + highLoss ≤ perWindow * (1 + highLoss) := by
-                have := Nat.mul_le_mul_right highLoss perWindowPos
-                rw [Nat.mul_add]; omega
-              rw [← Nat.mul_assoc]
-              exact Nat.mul_le_mul_right _ this
-            exact Nat.le_of_mul_le_mul_left this perWindowPos
-          have surplusBound : object.degreeSurplus data.threshold ≤
-              data.surplusThreshold object.vertexCount := by
-            change (cold.card ≤ (cold.filter (AmbientCubicWindow data.toParameters object)).card +
-              object.degreeSurplus data.threshold) ∧
-              object.degreeSurplus data.threshold ≤
-                data.surplusThreshold object.vertexCount at cubic
-            exact cubic.2
-          have packingCard : packing.card = object.windowPackingNumber data.windowOrder := by
-            rcases split with ⟨_, attains, _, _, _, _, _⟩
-            exact attains
-          change coldWindowBitRate data.toParameters object * packing.card ≤
-            coldWindowBitRate data.toParameters object * cold.card +
-              coldSkeletonAllowance data.toParameters object at mass
-          change 2 * (data.windowRate * data.separatedScaleCount object.vertexCount *
-              object.windowPackingNumber data.windowOrder) ≤
-            (Graph.dyadicScaleCount object + 1) *
-              (data.threshold * object.vertexCount +
-                data.surplusThreshold object.vertexCount) +
-            data.densitySlack * (data.windowRate * data.separatedScaleCount object.vertexCount) *
-              data.surplusThreshold object.vertexCount
-          rw [← packingCard]
-          have coldTerm : 2 * (data.windowRate * data.separatedScaleCount object.vertexCount) *
-              cold.card ≤
-              data.densitySlack * (data.windowRate * data.separatedScaleCount object.vertexCount) *
-                data.surplusThreshold object.vertexCount := by
-            calc 2 * (data.windowRate * data.separatedScaleCount object.vertexCount) *
-                  cold.card
-                ≤ 2 * (data.windowRate * data.separatedScaleCount object.vertexCount) *
-                    ((1 + highLoss) * data.surplusThreshold object.vertexCount) :=
-                  Nat.mul_le_mul_left _ (coldBound.trans
-                    (Nat.mul_le_mul_left (1 + highLoss) surplusBound))
-              _ = data.densitySlack * (data.windowRate * data.separatedScaleCount object.vertexCount) *
-                    data.surplusThreshold object.vertexCount := by
-                  simp only [Parameters.densitySlack, highLoss, overlap]; ring
-          simp only [coldWindowBitRate, coldSkeletonAllowance] at mass
-          have key := le_trans mass (Nat.add_le_add_right coldTerm _)
-          calc 2 * (data.windowRate * data.separatedScaleCount object.vertexCount *
-                packing.card)
-              = 2 * (data.windowRate * data.separatedScaleCount object.vertexCount) *
-                  packing.card := by ring
-            _ ≤ data.densitySlack * (data.windowRate * data.separatedScaleCount object.vertexCount) *
-                  data.surplusThreshold object.vertexCount +
-                (Graph.dyadicScaleCount object + 1) *
-                  (data.threshold * object.vertexCount +
-                    data.surplusThreshold object.vertexCount) := key
-            _ = (Graph.dyadicScaleCount object + 1) *
-                  (data.threshold * object.vertexCount +
-                    data.surplusThreshold object.vertexCount) +
-                data.densitySlack * (data.windowRate * data.separatedScaleCount object.vertexCount) *
-                  data.surplusThreshold object.vertexCount := by ring⟩
+        ⟨Contracts.Spine.densityCap_of_coldMassBounded data.toParameters
+          inputs.current.object data.five_le_windowOrder
+          (inputs.get (K .coldMass)).down
+          (inputs.get (K .coldMassBounded)).down
+          (inputs.get (K .coldAmbientCubic)).down
+          (inputs.get (K .hotColdPartition)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

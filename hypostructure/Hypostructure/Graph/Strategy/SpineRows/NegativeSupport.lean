@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.NetCharge
 
 /-! Independently compiled spine row declarations. -/
 
@@ -44,18 +45,9 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .negativeSupport)
-        (show Value BranchState Presentation presentation data
-            .negativeSupport inputs.current from ⟨by
-          let negativeFact := (inputs.get (K .netChargeNegative)).down
-          let packing := Classical.choose negativeFact
-          have packingSpec := Classical.choose_spec negativeFact
-          have canonical := packingSpec.1
-          have valid := packingSpec.2.1
-          have maximal := packingSpec.2.2.2.1
-          have negative := packingSpec.2.2.2.2
-          obtain ⟨component, present, charge⟩ :=
-            (inputs.get (K .netChargeLocalization)).down packing valid negative
-          exact ⟨packing, canonical, valid, maximal, component, present, charge⟩⟩)
+        ⟨Contracts.Spine.negativeSupport_of_netChargeNegative data.toParameters
+          inputs.current.object (inputs.get (K .netChargeNegative)).down
+          (inputs.get (K .netChargeLocalization)).down⟩
         .nil)
     0 0
 

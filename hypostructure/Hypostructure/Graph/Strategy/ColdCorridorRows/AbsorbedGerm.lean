@@ -2,6 +2,7 @@ import Hypostructure.Graph.Strategy.SpineVocabulary
 import Hypostructure.Graph.ColdIncrementArithmetic
 import Hypostructure.Graph.ColdGermFamily
 import Hypostructure.Graph.Strategy.ColdCorridorRows.Basic
+import Hypostructure.Graph.Contracts.Spine.ColdGermRouting
 
 namespace Hypostructure.Graph.Strategy.Spine
 
@@ -28,7 +29,6 @@ sit exactly at the threshold, so `z` is a heavy centre.  The row publishes
 that dichotomy for every selected half-edge, on the literal residual; the
 exhaustive object-level decision that follows (`absorbedGermDichotomy`) only
 chooses which continuation closes the branch. -/
-set_option maxHeartbeats 4000000 in
 @[reducible] noncomputable def absorbedGermSplitRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.absorbedGermSplit
@@ -39,52 +39,12 @@ set_option maxHeartbeats 4000000 in
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let family := (inputs.get (K .coldGermCandidates)).down
-      let handoff := (inputs.get (K .coldHandoffTransfer)).down
-      let independent := (inputs.get (K .slackIndependent)).down
       .cons (key := K .absorbedGermSplit)
-        ⟨by
-          classical
-          -- Generalize the current object after reading the ledger, so the
-          -- retained cold witnesses are destructured over an abstract object.
-          have familyRead := family
-          have handoffRead := handoff
-          have independentRead := independent
-          have baselineRead : Graph.MinimumDegreeAtLeast data.threshold
-              inputs.current.object := inputs.current.baseline
-          revert familyRead handoffRead independentRead baselineRead
-          generalize inputs.current.object = object
-          intro family handoff independent baseline
-          letI : FinEnum object.Vertex := object.vertices
-          letI : Fintype object.Vertex := @FinEnum.instFintype _ object.vertices
-          letI : Fintype (ColdEligibleHalfEdge data.toParameters object) :=
-            coldEligibleHalfEdgeFintype data.toParameters object
-          change ColdGermCandidatesStatement data.toParameters object at family
-          rcases family with
-            ⟨routing, _incidence, _candidates, _disjointFamily, _corridorLoss,
-              _familyWitness⟩
-          change AbsorbedGermSplitStatement data.toParameters object
-          simp only [AbsorbedGermSplitStatement]
-          refine ⟨routing, ?_⟩
-          intro epsilon
-          let classified := coldRoutedClassified data.toParameters object routing
-          let state := classified.state
-          rcases handoff state epsilon with subcubic | high
-          · apply Or.inl
-            exact Finset.mem_filter.2
-              ⟨Finset.mem_univ _,
-                Classical.choose_spec routing.surviving.holds epsilon,
-                subcubic⟩
-          · rcases high with
-              ⟨first, firstBound, firstHigh, earlierBound, _root⟩
-            refine Or.inr ⟨first, firstBound, firstHigh, earlierBound,
-              fun neighbour adjacent => ?_⟩
-            apply le_antisymm
-            · by_contra above
-              push Not at above
-              exact independent ((coldOccurrenceCorridorAt data.toParameters object classified
-                epsilon).head first) neighbour firstHigh above adjacent
-            · exact le_trans baseline (object.minDegree_le_degree neighbour)⟩
+        ⟨Contracts.Spine.absorbedGermSplit_of_handoff data.toParameters
+          inputs.current.object inputs.current.baseline
+          (inputs.get (K .coldGermCandidates)).down
+          (inputs.get (K .coldHandoffTransfer)).down
+          (inputs.get (K .slackIndependent)).down⟩
         .nil)
 
 /-! ## Nodes `[174]`--`[177]`, `lem:absorbed-germ-fan-data`: the absorbed-germ split
@@ -131,29 +91,10 @@ complete case-(ii) accounting without re-proving node `[153]`. -/
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let split := (inputs.get (K .absorbedGermSplit)).down
-      let family := (inputs.get (K .coldGermCandidates)).down
       .cons (key := K .absorbedGermFanData)
-        ⟨by
-          classical
-          let object := inputs.current.object
-          letI : FinEnum object.Vertex := object.vertices
-          change AbsorbedGermSplitStatement data.toParameters object at split
-          change ColdGermCandidatesStatement data.toParameters object at family
-          simp only [AbsorbedGermSplitStatement] at split
-          obtain ⟨splitRouting, alternatives⟩ := split
-          obtain ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
-              familyWitness⟩ := family
-          have routingEq : splitRouting = routing := Subsingleton.elim _ _
-          subst splitRouting
-          change AbsorbedGermFanDataStatement data.toParameters object
-          simp only [AbsorbedGermFanDataStatement]
-          refine ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
-            familyWitness, ?_⟩
-          intro epsilon notCandidate
-          rcases alternatives epsilon with candidate | high
-          · exact (notCandidate candidate).elim
-          · exact high⟩
+        ⟨Contracts.Spine.absorbedGermFanData_of_split data.toParameters
+          inputs.current.object (inputs.get (K .absorbedGermSplit)).down
+          (inputs.get (K .coldGermCandidates)).down⟩
         .nil)
 
 /-- Node `[176]`: the positive class chosen at `[175]` is the exact candidate
@@ -168,38 +109,10 @@ greedy extraction theorem makes that same disjoint family nonempty. -/
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let positive := (inputs.get (K .coldPositiveGerm)).down
-      let family := (inputs.get (K .coldGermCandidates)).down
       .cons (key := K .coldGermFamilyPositive)
-        ⟨by
-          classical
-          let object := inputs.current.object
-          letI : FinEnum object.Vertex := object.vertices
-          change ColdPositiveGermStatement data.toParameters object at positive
-          change ColdGermCandidatesStatement data.toParameters object at family
-          rcases positive with ⟨positiveRouting, positiveCard⟩
-          rcases family with
-            ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
-              familyWitness⟩
-          have routingEq : positiveRouting = routing := Subsingleton.elim _ _
-          subst positiveRouting
-          simp only [ColdGermFamilyWitness] at familyWitness
-          rcases familyWitness with
-            ⟨incidenceEq, candidatesEq, candidateFamily, extracted,
-              noncandidateClassified, occurrenceCount, selectedCount,
-              lossBound, quantitative⟩
-          have candidatePositive : 0 < candidates.card := by
-            rw [candidatesEq]
-            exact positiveCard
-          have disjointPositive : 0 < disjointFamily.card :=
-            Graph.ColdCorridor.coldGerm_nonempty extracted.2.2 candidatePositive
-          change ColdGermFamilyPositiveStatement data.toParameters object
-          refine ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
-            ?_, disjointPositive⟩
-          simp only [ColdGermFamilyWitness]
-          exact ⟨incidenceEq, candidatesEq, candidateFamily, extracted,
-            noncandidateClassified, occurrenceCount, selectedCount,
-            lossBound, quantitative⟩⟩
+        ⟨Contracts.Spine.coldGermFamilyPositive_of_positiveGerm data.toParameters
+          inputs.current.object (inputs.get (K .coldPositiveGerm)).down
+          (inputs.get (K .coldGermCandidates)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

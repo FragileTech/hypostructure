@@ -111,7 +111,7 @@ noncomputable def selectedAbsorbedFanData
     (absorbedGermFanDataRow (data := spineData)).run history (by key_fresh)
   let fanEntry :=
     (absorbedGermFanEnvelopeRow (data := spineData)).run fanData (by key_fresh)
-  Or.inl (Assembly.Internal.selectedAbsorbedFanChargeContinuation fanEntry
+  Assembly.Internal.selectedAbsorbedFanChargeContinuation fanEntry
         (by key_fresh)
         (by key_fresh)
         (by key_fresh)
@@ -178,7 +178,7 @@ noncomputable def selectedAbsorbedFanData
         (unifiedVisibleOverloadFresh := by
           key_fresh)
         (jointBalanceFresh := by key_fresh)
-        (unifiedTerminalFresh := by key_fresh))
+        (unifiedTerminalFresh := by key_fresh)
 
 /-- **Nodes `[175]`--`[177]`, `lem:absorbed-germ-fan-data`.**  `[175]` publishes
 the per-half-edge case split and decides whether some selected corridor avoids

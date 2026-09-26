@@ -289,6 +289,17 @@ the route-8 carrier inequality `τ(θ) < 3/13 < 1/4`; the private-carrier rate
 remainder-entropy split; on the high arm `[52]`/`[53]` the joint account and the
 entropy-cap test, closed at `[54]`; on the low arm the repetitive and root-wedge
 splits of `lem:dominant-type`; every surviving arm is Residual C `[55]`. -/
+-- EG-NODE [47] Residual B: full obstruction rank $r_\Omega(R)\ge W_2(R)-o(W_2)$
+-- EG-NODE [48] forced obstruction cost $c_\Omega W_2(R)\ge K_{\rm win}|R|-o(|R|)$ (high entropy: $K=5.89262883286\ldots$)
+-- EG-NODE [49] per-vertex remainder entropy $\eta(R)=\log_2|\mathcal G(R)|/|R|$
+-- EG-NODE [50] $\eta(R)\ge\frac1{10}\log_2 n$?
+-- EG-NODE [51] high-entropy remainder branch
+-- EG-NODE [52] window plus remainder accounting bounds $\theta$
+-- EG-NODE [53] remaining non-obstruction budget $<K|R|$?
+-- EG-NODE [54] entropy cap closes
+-- EG-NODE [55] Residual C: large-budget branch; $\theta\le\theta_{\rm win}+o(1)$
+-- EG-NODE [56] $\Delta_{\mathrm{net}}(R)=\dfrac{\defp(R)-\sigma_R}{|R|}\le\tau_{\rm win}+o(1)<1/4$
+-- EG-NODE [164] all-cold comparison closes: \(|\mathcal G(R)|\le|\mathcal G_{n,m}|\) by the remainder glue
 noncomputable def nearCubicLargeBudgetColdRate
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)

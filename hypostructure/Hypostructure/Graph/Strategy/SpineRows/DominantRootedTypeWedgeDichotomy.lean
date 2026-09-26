@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.DominantType
 
 /-! Independently compiled spine row declarations. -/
 
@@ -45,29 +46,12 @@ noncomputable def dominantRootedTypeWedgeDichotomy
     `Hypostructure.Graph.Strategy.Spine.dominantRootedTypeWedgeDichotomy
     (by
       classical
-      let packing := Classical.choose dominantInput
-      have packingSpec := Classical.choose_spec dominantInput
-      have valid := packingSpec.1
-      have maximal := packingSpec.2.1
-      have rankEq := packingSpec.2.2.1
-      have dominantData := packingSpec.2.2.2
-      dsimp only at dominantData
-      let dominant := Classical.choose dominantData
-      have dominantSpec := Classical.choose_spec dominantData
-      let root := Classical.choose dominantSpec
-      have rootSpec := Classical.choose_spec dominantSpec
-      let dominantSubset := Classical.choose rootSpec
-      have dominantSubsetSpec := Classical.choose_spec rootSpec
-      let rootMem := Classical.choose dominantSubsetSpec
-      have payload := Classical.choose_spec dominantSubsetSpec
-      have count := payload.1
-      have sameType := payload.2.1
-      let subcubic := remainderSubcubicSupport data.toParameters current.object packing
-      by_cases wedge : DominantRootWedgeClause current.object subcubic root
-      · exact .inl ⟨packing, valid, maximal, rankEq, dominant, root,
-          dominantSubset, rootMem, count, sameType, wedge⟩
-      · exact .inr ⟨packing, valid, maximal, rankEq, dominant, root,
-          dominantSubset, rootMem, count, sameType, wedge⟩)
+      exact if wedge :
+          DominantRootedWedgeTypeStatement data.toParameters current.object then
+        .inl ⟨wedge⟩
+      else
+        .inr ⟨(Contracts.Spine.dominantRootedWedgeType_or_wedgeFree
+          data.toParameters current.object dominantInput).resolve_left wedge⟩)
     wedgeFresh wedgeFreeFresh
 
 end Hypostructure.Graph.Strategy.Spine

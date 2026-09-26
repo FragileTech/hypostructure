@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.Spine.NetCharge
 
 /-! Independently compiled spine row declarations. -/
 
@@ -44,23 +45,10 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let selection := (inputs.get (K .selection)).down
       .cons (key := K .bridgeless)
-        (show Value BranchState Presentation presentation data
-            .bridgeless inputs.current from
-          ⟨fun contraction => by
-            have baseline := inputs.current.baseline
-            have degreeSum : data.threshold + 2 ≤
-                inputs.current.object.degree contraction.tail +
-                  inputs.current.object.degree contraction.head := by
-              have three := data.three_le_threshold
-              have left := le_trans baseline
-                (inputs.current.object.minDegree_le_degree contraction.tail)
-              have right := le_trans baseline
-                (inputs.current.object.minDegree_le_degree contraction.head)
-              omega
-            exact contraction.hasReturn_of_minimal (LengthOK := data.LengthOK)
-              degreeSum baseline selection.1 selection.2⟩)
+        ⟨Contracts.Spine.bridgeless_of_selection BranchState Presentation presentation
+          data.toParameters inputs.current.object inputs.current.baseline
+          data.three_le_threshold (inputs.get (K .selection)).down⟩
         .nil)
     0 0
 

@@ -147,19 +147,9 @@ noncomputable def selectedLedgerBoundary
                   (Or.inr (Or.inr (Or.inr (Or.inl ⟨quotient, (nearCubicHistory.get (K .surplusAtOrBelow)).down⟩))))))))
             | .inr (.inr joint) =>
                 exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inl joint))))
-          have liftAbsorbed : SelectedAbsorbedGermBoundary selected →
-              SelectedLedgerBoundaryResult selected := by
-            intro absorbed
-            match absorbed with
-            | .inl route => exact liftRoute route
-            | .inr (.inl cold) =>
-                exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
-                  (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr ⟨cold, (nearCubicHistory.get (K .surplusAtOrBelow)).down⟩)))))))))
-            | .inr (.inr blocked) =>
-                exact Or.inr (Or.inr (Or.inl blocked))
           match survivor with
           | .inl (.inl route) => exact liftRoute route
-          | .inl (.inr absorbed) => exact liftAbsorbed absorbed
+          | .inl (.inr absorbed) => exact liftRoute absorbed
           | .inr (.inl rate) =>
               exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
                 (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl ⟨rate, (nearCubicHistory.get (K .surplusAtOrBelow)).down⟩)))))))))
