@@ -1,6 +1,11 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.TypeA.Support
 
-/-! Independently compiled spine row declarations. -/
+/-! # Node `[94]` → `[101]`: the silent entry of the exit segment
+
+On the silent lane the node-`[94]` saturated receiver enters the same exit
+segment at the empty peeling set (`lem:typeA-unpeeled-silent-routing`).  Thin
+adapter of `Contracts.TypeA.typeASaturatedExitEntry_of_visibleFirstExcess`. -/
 
 namespace Hypostructure.Graph.Strategy.Spine
 
@@ -14,25 +19,9 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
-variable [FactSystem (Input BranchState Presentation presentation data)]
-
-omit [FactSystem (Input BranchState Presentation presentation data)] in
-/-- The silent entry of the shared exit segment: node `[94]`
-(`lem:typeA-unpeeled-silent-routing`) commits the same saturated exit entry at
-the empty peeling set. -/
 @[reducible] noncomputable def typeASilentExitEntryRow :
-    @AtomicStrategy (Input BranchState Presentation presentation data) _
-      (instFactSystem (BranchState := BranchState)
-        (Presentation := Presentation) (presentation := presentation)
-        (data := data)) :=
-  letI : FactSystem (Input BranchState Presentation presentation data) :=
-    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
-      (presentation := presentation) (data := data)
-  @factOnly (Input BranchState Presentation presentation data) _
-    (instFactSystem (BranchState := BranchState)
-      (Presentation := Presentation) (presentation := presentation)
-      (data := data))
-    `Hypostructure.Graph.Strategy.Spine.typeASilentExitEntry
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.typeASilentExitEntry
     { Requires := [K .typeAVisibleFirstExcess]
       Produces := [K .typeASaturatedExitEntry]
       requiresUnique := by simp
@@ -40,22 +29,9 @@ the empty peeling set. -/
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .typeASaturatedExitEntry)
-        (show Value BranchState Presentation presentation data
-            .typeASaturatedExitEntry inputs.current from ⟨by
-          classical
-          obtain ⟨packing, canonical, valid, maximal, component, present, negative, zero,
-            _noVisible,
-            receiver, isReceiver, saturated, _silent, _count⟩ :=
-            (inputs.get (K .typeAVisibleFirstExcess)).down
-          let piece := inputs.current.object.pieceSupport
-            (inputs.current.object.remainderSupport packing) component
-          exact ⟨packing, canonical, valid, maximal, component, present, negative, zero,
-            receiver, isReceiver, ∅, Finset.empty_subset _,
-            (Graph.ExitFour.saturatedAfter_empty piece data.threshold
-              data.dischargeScale receiver).mpr saturated,
-            Graph.ExitFour.peeledByWitnesses_empty _ piece data.threshold
-              data.dischargeScale receiver⟩⟩)
+        ⟨Graph.Contracts.TypeA.typeASaturatedExitEntry_of_visibleFirstExcess
+          data.toParameters inputs.current.object
+          (inputs.get (K .typeAVisibleFirstExcess)).down⟩
         .nil)
-    0 0
 
 end Hypostructure.Graph.Strategy.Spine

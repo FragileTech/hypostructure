@@ -24,14 +24,10 @@ import HypostructureErdos64EG.Assembly.Surplus.Local
 import HypostructureErdos64EG.Assembly.Surplus.Strict
 import HypostructureErdos64EG.Assembly.TypeA.DecoratedHandoff
 import HypostructureErdos64EG.Assembly.TypeA.ExitFiveToSeven
-import HypostructureErdos64EG.Assembly.TypeA.ExitFiveToSevenSilent
 import HypostructureErdos64EG.Assembly.TypeA.ExitFourChain
-import HypostructureErdos64EG.Assembly.TypeA.ExitFourChainSilent
 import HypostructureErdos64EG.Assembly.TypeA.ExitFourDischargedRetest
 import HypostructureErdos64EG.Assembly.TypeA.LowSurplusContinuation
-import HypostructureErdos64EG.Assembly.TypeA.SilentExitChain
 import HypostructureErdos64EG.Assembly.TypeA.VisibleExitChain
-import HypostructureErdos64EG.Assembly.TypeA.VisibleExitFour
 import HypostructureErdos64EG.Assembly.TypeB.Continuation
 import HypostructureErdos64EG.Assembly.TypeB.DecoratedContinuation
 import HypostructureErdos64EG.Assembly.TypeB.HighSurplusContinuation

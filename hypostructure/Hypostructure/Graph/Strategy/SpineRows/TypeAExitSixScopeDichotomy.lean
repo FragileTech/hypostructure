@@ -1,6 +1,15 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.TypeA.Exits
 
-/-! Independently compiled spine row declarations. -/
+/-! # Node `[106]`: the scope of the exit-`(6)` support dependence
+
+`lem:typeA-exits-discharged` closes exit `(6)` by `lem:proper-smearing` when
+the enlarging support is proper and by `lem:no-silent-global-smearing` when it
+is all of `G`.  The scope decision is exact: the yes arm
+(`K .typeAExitSixProperScope`) is a proper enlarging support, the no arm
+(`K .typeAExitSixGlobalScope`) its negation.  Each arm then commits the
+smearing lemma's conclusion, which the framework closes against the
+replacement exclusion, respectively the selection's minimality. -/
 
 namespace Hypostructure.Graph.Strategy.Spine
 
@@ -14,45 +23,57 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
-variable [FactSystem (Input BranchState Presentation presentation data)]
-
-omit [FactSystem (Input BranchState Presentation presentation data)] in
-/-- Node `[106]`: the scope of the committed exit-`(6)` delocalization —
-`Delocalization.localize` at the presented entry: proper (a replacement of the
-enlarging support) or global (a strictly smaller closed representative). -/
 noncomputable def typeAExitSixScopeDichotomy
     {current : Input BranchState Presentation presentation data}
-    {known : @FactKeys (Input BranchState Presentation presentation data)
-      _ (factSystem BranchState Presentation presentation data)}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous :
-      @ExactLedger (Input BranchState Presentation presentation data)
-        _ (factSystem BranchState Presentation presentation data) current known)
-    [@FactKeys.Has (Input BranchState Presentation presentation data) _
-      (factSystem BranchState Presentation presentation data)
-      (K .typeAExitSix) known]
-    (properFresh : K .typeAExitSixProper ∉ known)
-    (globalFresh : K .typeAExitSixGlobal ∉ known) :
-    @Decision (Input BranchState Presentation presentation data) _
-      (factSystem BranchState Presentation presentation data) current known
-      (K .typeAExitSixProper) (K .typeAExitSixGlobal) previous :=
-  @Decision.run (Input BranchState Presentation presentation data) _
-    (factSystem BranchState Presentation presentation data) current known
-    previous (K .typeAExitSixProper) (K .typeAExitSixGlobal)
+      ExactLedger (Input BranchState Presentation presentation data) current
+        known)
+    (properFresh : K .typeAExitSixProperScope ∉ known)
+    (globalFresh : K .typeAExitSixGlobalScope ∉ known) :
+    Decision (K .typeAExitSixProperScope) (K .typeAExitSixGlobalScope)
+      previous :=
+  Decision.run previous (K .typeAExitSixProperScope)
+    (K .typeAExitSixGlobalScope)
     `Hypostructure.Graph.Strategy.Spine.typeAExitSixScopeDichotomy
     (by
       classical
-      apply Classical.choice
-      obtain ⟨_packing, _canonical, _valid, _maximal, _component, _present, _negative,
-        _zero, _receiver, _isReceiver, _peeled, _peeledSubset, _saturated,
-        _noExitFour, _noCompression, _load, _eligible, _basin, _selected,
-        delocalizes⟩ :=
-        (@ExactLedger.get (Input BranchState Presentation presentation data) _
-          (factSystem BranchState Presentation presentation data)
-          current known previous (K .typeAExitSix)).down
-      obtain ⟨delocalization⟩ := delocalizes
-      rcases delocalization.localize with proper | global
-      · exact ⟨.inl ⟨⟨_, proper⟩⟩⟩
-      · exact ⟨.inr ⟨global⟩⟩)
+      by_cases proper :
+          TypeAExitSixProperScopeStatement data.toParameters current.object
+      · exact .inl ⟨proper⟩
+      · exact .inr ⟨Graph.Contracts.TypeA.typeAExitSixGlobalScope_of_not_proper
+          data.toParameters current.object proper⟩)
     properFresh globalFresh
+
+/-- `lem:proper-smearing` on the proper-scope arm. -/
+@[reducible] noncomputable def typeAExitSixProperRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.typeAExitSixProper
+    { Requires := [K .typeAExitSixProperScope]
+      Produces := [K .typeAExitSixProper]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .typeAExitSixProper)
+        ⟨Graph.Contracts.TypeA.typeAExitSixProper_of_scope data.toParameters
+          inputs.current.object (inputs.get (K .typeAExitSixProperScope)).down⟩
+        .nil)
+
+/-- `lem:no-silent-global-smearing` on the whole-graph arm. -/
+@[reducible] noncomputable def typeAExitSixGlobalRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.typeAExitSixGlobal
+    { Requires := [K .typeAExitSix, K .typeAExitSixGlobalScope]
+      Produces := [K .typeAExitSixGlobal]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .typeAExitSixGlobal)
+        ⟨Graph.Contracts.TypeA.typeAExitSixGlobal_of_scope data.toParameters
+          inputs.current.object (inputs.get (K .typeAExitSix)).down
+          (inputs.get (K .typeAExitSixGlobalScope)).down⟩
+        .nil)
 
 end Hypostructure.Graph.Strategy.Spine

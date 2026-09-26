@@ -1,6 +1,13 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.TypeA.Exits
 
-/-! Independently compiled spine row declarations. -/
+/-! # Node `[109]`: the provenance of the route-`8` residual
+
+The route-`8` residual either sits at a receiver whose Type A support has the
+node-`[94]` silent-excess origin (`K .typeASilentExitSevenFree`), or it does
+not (`K .typeAExitEightNotSilent`, the exact negation).  The silent-origin arm
+is closed at node `[184]` against `lem:typeA-unified-visible-ownership`; the
+other arm continues through Part IX. -/
 
 namespace Hypostructure.Graph.Strategy.Spine
 
@@ -14,47 +21,26 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
-variable [FactSystem (Input BranchState Presentation presentation data)]
-
-omit [FactSystem (Input BranchState Presentation presentation data)] in
-/-- Exit `(7)` on the exact silent-origin state. -/
 noncomputable def typeASilentExitSevenDichotomy
     {current : Input BranchState Presentation presentation data}
-    {known : @FactKeys (Input BranchState Presentation presentation data)
-      _ (factSystem BranchState Presentation presentation data)}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous :
-      @ExactLedger (Input BranchState Presentation presentation data)
-        _ (factSystem BranchState Presentation presentation data) current known)
-    [@FactKeys.Has (Input BranchState Presentation presentation data) _
-      (factSystem BranchState Presentation presentation data)
-      (K .typeASilentExitSixFree) known]
-    (producedFresh : K .typeAExitSevenProduced ∉ known)
-    (freeFresh : K .typeASilentExitSevenFree ∉ known) :
-    @Decision (Input BranchState Presentation presentation data) _
-      (factSystem BranchState Presentation presentation data) current known
-      (K .typeAExitSevenProduced) (K .typeASilentExitSevenFree) previous :=
-  @Decision.run (Input BranchState Presentation presentation data) _
-    (factSystem BranchState Presentation presentation data) current known
-    previous (K .typeAExitSevenProduced) (K .typeASilentExitSevenFree)
+      ExactLedger (Input BranchState Presentation presentation data) current
+        known)
+    (silentFresh : K .typeASilentExitSevenFree ∉ known)
+    (notSilentFresh : K .typeAExitEightNotSilent ∉ known) :
+    Decision (K .typeASilentExitSevenFree) (K .typeAExitEightNotSilent)
+      previous :=
+  Decision.run previous (K .typeASilentExitSevenFree)
+    (K .typeAExitEightNotSilent)
     `Hypostructure.Graph.Strategy.Spine.typeASilentExitSevenDichotomy
     (by
       classical
-      apply Classical.choice
-      obtain ⟨packing, canonical, valid, maximal, component, present, negative,
-        zero, receiver, isReceiver, peeled, peeledSubset, saturated,
-        noExitFour, noCompression, noDelocalization, origin⟩ :=
-        (@ExactLedger.get (Input BranchState Presentation presentation data) _
-          (factSystem BranchState Presentation presentation data)
-          current known previous (K .typeASilentExitSixFree)).down
-      let piece := current.object.pieceSupport
-        (current.object.remainderSupport packing) component
-      by_cases produced : HandoffProduced data.toParameters current.object packing piece
-      · exact ⟨.inl ⟨⟨packing, canonical, valid, maximal, component, present,
-          negative, zero, receiver, isReceiver, peeled, peeledSubset, saturated,
-          noExitFour, noCompression, noDelocalization, produced⟩⟩⟩
-      · exact ⟨.inr ⟨⟨packing, canonical, valid, maximal, component, present,
-          negative, zero, receiver, isReceiver, peeled, peeledSubset, saturated,
-          noExitFour, noCompression, noDelocalization, origin, produced⟩⟩⟩)
-    producedFresh freeFresh
+      by_cases silent :
+          SelectedSilentExitSevenFree data.toParameters current.object
+      · exact .inl ⟨silent⟩
+      · exact .inr ⟨Graph.Contracts.TypeA.typeAExitEightNotSilent_of_not_silent
+          data.toParameters current.object silent⟩)
+    silentFresh notSilentFresh
 
 end Hypostructure.Graph.Strategy.Spine

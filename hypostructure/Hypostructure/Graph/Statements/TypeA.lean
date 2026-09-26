@@ -101,9 +101,79 @@ def ExitFourFreeAt (data : Parameters) (object : Graph.FiniteObject.{u})
       witness.load ∈ Graph.ExitFour.unpeeledExcess piece data.threshold
         data.dischargeScale receiver peeled)
 
-/-- Exit `(5)` at one selected receiver and peeling set.  This abbreviation is
-used only by the provenance-preserving silent lane; it is definitionally the
-same local predicate used by the shared exit chain. -/
+/-- Exit `(4)` at one selected receiver and peeling set
+(`lem:typeA-exit4-residual-routing`): a canonical target-defective quotient of
+`def:typeA-exit4-family` whose declared routed-load support contains an unpeeled
+load of the lane the state lies in — one of the four selected visible unpeeled
+loads when a completion port carries four visible unpeeled returns
+(`lem:typeA-unpeeled-visible-routing`), a load of the residual excess `E₄(w)`
+otherwise (`lem:typeA-unpeeled-silent-routing`).  The two lanes are exclusive
+and, at a saturated state, exhaustive, so this is one predicate of the state,
+not a branch. -/
+def ExitFourAt (data : Parameters) (object : Graph.FiniteObject.{u})
+    (piece : Finset object.Vertex) (receiver : object.Vertex)
+    (peeled : Finset object.Vertex) : Prop :=
+  (∃ package : Graph.ExitFour.VisibleFourUnpeeledPackage piece data.threshold
+      data.dischargeScale receiver peeled,
+    ∃ witness : Graph.ExitFour.Witness
+        (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+        data.dischargeScale receiver peeled,
+      ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
+          data.threshold data.dischargeScale receiver package.outside peeled,
+        witness.load = load) ∨
+  (Graph.ExitFour.SilentUnpeeledExcessAt piece data.threshold
+      data.dischargeScale receiver peeled ∧
+    ∃ witness : Graph.ExitFour.Witness
+        (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+        data.dischargeScale receiver peeled,
+      witness.load ∈ Graph.ExitFour.unpeeledExcess piece data.threshold
+        data.dischargeScale receiver peeled)
+
+/-- Exit `(6)` with a *proper* enlarging support (`lem:proper-smearing`'s
+case of node `[106]`): some eligible load of the state has a selected trace
+basin one of whose delocalizations adjoins a support missing a vertex of `G`.
+The eligible loads are exactly those of `ExitSixDelocalizes`. -/
+def ExitSixProperAt (data : Parameters) (object : Graph.FiniteObject.{u})
+    (piece : Finset object.Vertex) (receiver : object.Vertex)
+    (peeled : Finset object.Vertex) : Prop :=
+  ∃ load : object.Vertex,
+    (((∃ package :
+          Graph.ExitFour.VisibleFourUnpeeledPackage piece data.threshold
+            data.dischargeScale receiver peeled,
+        (¬ ∃ witness : Graph.ExitFour.Witness
+            (Graph.HasCycleWithLength data.LengthOK) piece data.threshold data.dischargeScale
+            receiver peeled,
+          ∃ selected ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
+              data.threshold data.dischargeScale receiver package.outside
+              peeled,
+            witness.load = selected) ∧
+          load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
+            data.threshold data.dischargeScale receiver package.outside
+            peeled) ∨
+      (Graph.ExitFour.SilentUnpeeledExcessAt piece data.threshold
+          data.dischargeScale receiver peeled ∧
+        (¬ ∃ witness : Graph.ExitFour.Witness
+            (Graph.HasCycleWithLength data.LengthOK) piece data.threshold data.dischargeScale
+            receiver peeled,
+          witness.load ∈ Graph.ExitFour.unpeeledExcess piece data.threshold
+            data.dischargeScale receiver peeled) ∧
+        load ∈ Graph.ExitFour.unpeeledExcess piece data.threshold
+          data.dischargeScale receiver peeled)) ∧
+      ∃ basin : Finset object.Vertex,
+        Graph.Route8.TraceBasin.select? object piece data.threshold
+            receiver load = some basin ∧
+          ∃ delocalization : Graph.Route8.Delocalization
+              (Graph.MinimumDegreeAtLeast data.threshold)
+              (Graph.HasCycleWithLength data.LengthOK)
+              (Graph.Route8.PresentedEntry.ofTraceBasin object piece basin
+                data.threshold data.LengthOK receiver load)
+              basin,
+            ∃ vertex : object.Vertex,
+              vertex ∉ delocalization.quotient.support)
+
+/-- Exit `(5)` at one selected receiver and peeling set: some eligible load of
+the state has a selected trace basin with a target-complete compression
+(`def:typeA-saturated-exits` (5)). -/
 def ExitFiveAt (data : Parameters) (object : Graph.FiniteObject.{u})
     (piece : Finset object.Vertex) (receiver : object.Vertex)
     (peeled : Finset object.Vertex) : Prop :=
@@ -316,17 +386,33 @@ abbrev TypeAExitFourFiniteDescentFact (data : Parameters)
 The statement each vocabulary key of this family publishes, stated over the
 registered parameters and the selected object. -/
 
-/-- Node `[62]`, no arm — node `[63]`, Type A: the selected negative support
-carries no assigned high-degree surplus. -/
+/-- Node `[62]`, no arm — node `[63]`, Type A: no negative support of a
+maximal packing's remainder carries assigned high-degree surplus.  This is the
+exact negation of `TypeBHighSurplusStatement`, the yes arm of the same test,
+written in positive form: every negative canonical piece has `σ(X) = 0`. -/
 noncomputable abbrev TypeALowSurplusStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- Node `[62]`, no -- node `[63]`, Type A: the selected support carries no
-  -- assigned surplus.  The packing keeps its maximality: `def:typeA-support`
-  -- is `def:admissible` with `σ(X) = 0`, and the inherited clauses the Type
-  -- A ladder spends -- window-freeness and the empty internal `δ`-core --
-  -- are node `[27]`'s conclusions about the remainder of a maximal packing.
+  (∀ packing : Finset (Finset object.Vertex),
+    object.IsWindowPacking data.windowOrder packing →
+    (∀ window : Finset object.Vertex,
+      object.InducesWindow data.windowOrder window →
+      ∃ member ∈ packing, ¬ Disjoint window member) →
+    ∀ component ∈ object.canonicalPieces (object.remainderSupport packing),
+      let piece := object.pieceSupport
+        (object.remainderSupport packing) component
+      object.NegativeNetCharge piece data.threshold data.dischargeScale →
+        object.ambientSurplus piece data.threshold = 0)
+
+/-- Node `[86]`: the Type A support.  The selected negative canonical piece has
+`σ(X) = 0` (`def:typeA-support`), hence its net charge
+`N₀(X) = def⁺(X) − |V(X)|/s < 0` reads `s·def⁺(X) < |V(X)|`, the node's
+`def⁺(X) < |X|/4` cleared of the division. -/
+noncomputable abbrev TypeASupportStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop :=
   (∃ packing : Finset (Finset object.Vertex),
     packing = canonicalWindowPacking data object ∧
       object.IsWindowPacking data.windowOrder packing ∧
@@ -339,7 +425,9 @@ noncomputable abbrev TypeALowSurplusStatement
           (object.remainderSupport packing) component
         object.NegativeNetCharge piece data.threshold
             data.dischargeScale ∧
-          object.ambientSurplus piece data.threshold = 0)
+          object.ambientSurplus piece data.threshold = 0 ∧
+          data.dischargeScale * object.positiveDeficiency piece data.threshold <
+            piece.card)
 
 /-- Node `[87]`: the selected Type A support is induced-`P_windowOrder`-free;
 every two of its vertices have an internal path of length at most
@@ -471,55 +559,52 @@ noncomputable abbrev TypeASaturatedReceiverStatement
                 receiver)
 
 /-- Node `[89]`, no arm — node `[90]`: every receiver of every Type A support
-is unsaturated, `L(w) ≤ s·q(w) − 1`.  This is the capacity the `3/7/11`
+of the canonical packing is unsaturated, `L(w) ≤ s·q(w) − 1`.  This is the
+exact negation of `TypeASaturatedReceiverStatement`, in the subtraction-free
+positive form `1 + L(w) ≤ s·q(w)`; it is the capacity the `3/7/11`
 discharging of node `[91]` spends. -/
 noncomputable abbrev TypeAUnsaturatedReceiversStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- Node `[89]`, no -- node `[90]`: every receiver of that same selected
-  -- canonical component satisfies `L(w) ≤ s·q(w) − 1`.
-  (∃ packing : Finset (Finset object.Vertex),
-    object.IsWindowPacking data.windowOrder packing ∧
-      (∀ window : Finset object.Vertex,
-        object.InducesWindow data.windowOrder window →
-        ∃ member ∈ packing, ¬ Disjoint window member) ∧
-      ∃ component ∈ object.canonicalPieces
-          (object.remainderSupport packing),
-        let piece := object.pieceSupport
-          (object.remainderSupport packing) component
-        object.NegativeNetCharge piece data.threshold
-            data.dischargeScale ∧
-          object.ambientSurplus piece data.threshold = 0 ∧
+  (∀ packing : Finset (Finset object.Vertex),
+    packing = canonicalWindowPacking data object →
+    object.IsWindowPacking data.windowOrder packing →
+    (∀ window : Finset object.Vertex,
+      object.InducesWindow data.windowOrder window →
+      ∃ member ∈ packing, ¬ Disjoint window member) →
+    ∀ component ∈ object.canonicalPieces (object.remainderSupport packing),
+      let piece := object.pieceSupport
+        (object.remainderSupport packing) component
+      object.NegativeNetCharge piece data.threshold data.dischargeScale →
+      object.ambientSurplus piece data.threshold = 0 →
       ∀ receiver : object.Vertex,
         object.IsReceiver piece data.threshold receiver →
         1 + object.routedLoad piece data.threshold receiver ≤
           data.dischargeScale *
             object.missingPorts piece data.threshold receiver)
 
-/-- Node `[91]`: the `3/7/11` discharging conclusion on every unsaturated
-Type A support, in the exact integral form
-`|V(X)| ≤ s * def⁺(X)`. -/
+/-- Node `[91]`: the `3/7/11` discharging conclusion
+(`lem:typeA-unsaturated-discharge`) on every Type A support of the canonical
+packing all of whose receivers are unsaturated, in the exact integral form
+`|V(X)| ≤ s·def⁺(X)`. -/
 noncomputable abbrev TypeAUnsaturatedDischargeStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- Node `[91]`, `lem:typeA-unsaturated-discharge`, on the same selected
-  -- canonical component carried by node `[90]`.
-  (∃ packing : Finset (Finset object.Vertex),
-    object.IsWindowPacking data.windowOrder packing ∧
+  (∀ packing : Finset (Finset object.Vertex),
+    packing = canonicalWindowPacking data object →
+    object.IsWindowPacking data.windowOrder packing →
     (∀ window : Finset object.Vertex,
       object.InducesWindow data.windowOrder window →
-      ∃ member ∈ packing, ¬ Disjoint window member) ∧
-    ∃ component ∈ object.canonicalPieces
-        (object.remainderSupport packing),
+      ∃ member ∈ packing, ¬ Disjoint window member) →
+    ∀ component ∈ object.canonicalPieces (object.remainderSupport packing),
       let piece := object.pieceSupport
         (object.remainderSupport packing) component
-      object.NegativeNetCharge piece data.threshold data.dischargeScale ∧
-        object.ambientSurplus piece data.threshold = 0 ∧
-        piece.card ≤
-          data.dischargeScale *
-            object.positiveDeficiency piece data.threshold)
+      object.NegativeNetCharge piece data.threshold data.dischargeScale →
+      object.ambientSurplus piece data.threshold = 0 →
+      piece.card ≤
+        data.dischargeScale * object.positiveDeficiency piece data.threshold)
 
 /-- Node `[86]`, `lem:typeA-exclusion` (via `lem:density-mersenne`), at the
 minimal counterexample: every negative zero-surplus canonical piece of a
@@ -750,6 +835,32 @@ noncomputable abbrev TypeAVisibleEntryStatement
                 (Graph.ExitFour.VisibleFourUnpeeledPackage piece
                   data.threshold data.dischargeScale receiver ∅))
 
+/-- Node `[93]`, no arm: no saturated receiver of any Type A support of the
+canonical packing has a completion port carrying `s` visible receiver-entry
+returns.  This is the exact negation of `TypeAVisibleEntryStatement`, and it is
+the hypothesis of `lem:typeA-silent-excess-count` at node `[94]`. -/
+noncomputable abbrev TypeANoVisibleEntryStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop :=
+  (∀ packing : Finset (Finset object.Vertex),
+    packing = canonicalWindowPacking data object →
+    object.IsWindowPacking data.windowOrder packing →
+    (∀ window : Finset object.Vertex,
+      object.InducesWindow data.windowOrder window →
+      ∃ member ∈ packing, ¬ Disjoint window member) →
+    ∀ component ∈ object.canonicalPieces (object.remainderSupport packing),
+      let piece := object.pieceSupport
+        (object.remainderSupport packing) component
+      object.NegativeNetCharge piece data.threshold data.dischargeScale →
+      object.ambientSurplus piece data.threshold = 0 →
+      ∀ receiver : object.Vertex,
+        object.IsReceiver piece data.threshold receiver →
+        object.Saturated piece data.threshold data.dischargeScale receiver →
+        ¬ Nonempty
+          (Graph.ExitFour.VisibleFourUnpeeledPackage piece
+            data.threshold data.dischargeScale receiver ∅))
+
 /-- Node `[93]`, no arm — node `[94]`, `lem:typeA-silent-excess-count`: no
 saturated receiver of the Type A support has a completion port carrying `s`
 visible receiver-entry returns, so the visible-first excess basins of
@@ -798,17 +909,18 @@ noncomputable abbrev TypeAVisibleFirstExcessStatement
 
 /-- Node `[95]`, yes arm — exit `(1)` of `def:typeA-saturated-exits`: *"an
 anchored return through a completion port of `w` has length in `Mers`"*, at a
-saturated receiver `w` of a Type A support.  `Mers` is the shifted accepted
-set: the return's length plus the restored port edge is an accepted cycle
-length.  `lem:return-equivalence` closes the port edge over the return, so
-this alternative *is* a target cycle, which is why `lem:typeA-exits-discharged`
-lists exit `(1)` among the closed exits. -/
+saturated receiver `w` of a Type A support whose port carries `s` visible
+receiver-entry returns.  `Mers` is the shifted accepted set: the return's length
+plus the restored port edge is an accepted cycle length, so
+`lem:return-equivalence` closes the port edge over the return into a target
+cycle (`lem:typeA-exits-discharged`). -/
 noncomputable abbrev TypeAExitOneReturnStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
   (∃ packing : Finset (Finset object.Vertex),
-    object.IsWindowPacking data.windowOrder packing ∧
+    packing = canonicalWindowPacking data object ∧
+      object.IsWindowPacking data.windowOrder packing ∧
       (∀ window : Finset object.Vertex,
         object.InducesWindow data.windowOrder window →
         ∃ member ∈ packing, ¬ Disjoint window member) ∧
@@ -827,49 +939,48 @@ noncomputable abbrev TypeAExitOneReturnStatement
                     package.outside,
                   Graph.ShiftedCycleLength data.LengthOK return'.path.length)
 
-/-- Node `[95]`, no arm — the entry of node `[97]`: no anchored return through
-any completion port of any saturated receiver of any Type A support has
-accepted length, so exit `(1)` is not the exit this branch realizes and the
-saturated exit list continues at exit `(2)`. -/
+/-- Node `[95]`, no arm — the entry of node `[97]`: the exact negation of
+exit `(1)`.  No anchored return through the selected overloaded port of any
+saturated receiver of any Type A support of the canonical packing has length in
+`Mers`. -/
 noncomputable abbrev TypeAExitOneFreeStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop :=
+  (∀ packing : Finset (Finset object.Vertex),
+    packing = canonicalWindowPacking data object →
+    object.IsWindowPacking data.windowOrder packing →
+    (∀ window : Finset object.Vertex,
+      object.InducesWindow data.windowOrder window →
+      ∃ member ∈ packing, ¬ Disjoint window member) →
+    ∀ component ∈ object.canonicalPieces (object.remainderSupport packing),
+      let piece := object.pieceSupport
+        (object.remainderSupport packing) component
+      object.NegativeNetCharge piece data.threshold data.dischargeScale →
+      object.ambientSurplus piece data.threshold = 0 →
+      ∀ receiver : object.Vertex,
+        object.IsReceiver piece data.threshold receiver →
+        object.Saturated piece data.threshold data.dischargeScale receiver →
+        ∀ package : Graph.ExitFour.VisibleFourUnpeeledPackage piece
+          data.threshold data.dischargeScale receiver ∅,
+        ∀ return' : Graph.VisibleEntry.AnchoredReturn object receiver
+            package.outside,
+          ¬ Graph.ShiftedCycleLength data.LengthOK return'.path.length)
+
+/-- Node `[97]`, yes arm — exit `(2)` of `def:typeA-saturated-exits`: *"two
+anchored receiver-entry returns through one completion port are internally
+vertex-disjoint as anchored paths and their lengths sum to a power of two"*, at
+the selected overloaded port of a saturated receiver of a Type A support.
+`lem:typeA-common-port-return-cycle` glues the two returns into a simple cycle
+of accepted length, which is why `lem:typeA-exits-discharged` lists exit `(2)`
+among the closed exits. -/
+noncomputable abbrev TypeAExitTwoThetaStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
   (∃ packing : Finset (Finset object.Vertex),
     packing = canonicalWindowPacking data object ∧
       object.IsWindowPacking data.windowOrder packing ∧
-      (∀ window : Finset object.Vertex,
-        object.InducesWindow data.windowOrder window →
-        ∃ member ∈ packing, ¬ Disjoint window member) ∧
-      ∃ component ∈ object.canonicalPieces
-          (object.remainderSupport packing),
-        let piece := object.pieceSupport
-          (object.remainderSupport packing) component
-        object.NegativeNetCharge piece data.threshold data.dischargeScale ∧
-          object.ambientSurplus piece data.threshold = 0 ∧
-          ∃ receiver : object.Vertex,
-            object.IsReceiver piece data.threshold receiver ∧
-              object.Saturated piece data.threshold data.dischargeScale receiver ∧
-              ∃ package : Graph.ExitFour.VisibleFourUnpeeledPackage piece
-                  data.threshold data.dischargeScale receiver ∅,
-                ∀ return' : Graph.VisibleEntry.AnchoredReturn object receiver
-                    package.outside,
-                  ¬ Graph.ShiftedCycleLength data.LengthOK return'.path.length)
-
-/-- Node `[97]`, yes arm — exit `(2)` of `def:typeA-saturated-exits`: *"two
-anchored receiver-entry returns through one completion port are internally
-vertex-disjoint as anchored paths and their lengths sum to a power of two"*,
-at a saturated receiver `w` of a Type A support.  Both returns run between the
-two ends of the same port, so `lem:typeA-common-port-return-cycle` glues them
-into a simple cycle of length `|P₁| + |P₂|`; the exit's own side condition is
-that this sum is accepted, which is why `lem:typeA-exits-discharged` lists
-exit `(2)` among the closed exits. -/
-noncomputable abbrev TypeAExitTwoThetaStatement
-    (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  (∃ packing : Finset (Finset object.Vertex),
-    object.IsWindowPacking data.windowOrder packing ∧
       (∀ window : Finset object.Vertex,
         object.InducesWindow data.windowOrder window →
         ∃ member ∈ packing, ¬ Disjoint window member) ∧
@@ -887,77 +998,44 @@ noncomputable abbrev TypeAExitTwoThetaStatement
                 Graph.VisibleEntry.ExitTwoThrough object piece data.LengthOK
                   receiver package.outside)
 
-/-- Node `[97]`, no arm — the entry of node `[99]`: at every saturated
-receiver of every Type A support, no two receiver-entry returns through one
-of its completion ports are internally vertex-disjoint with accepted total
-length, so exit `(2)` is not the exit this branch realizes and the saturated
-exit list continues at exit `(3)`. -/
+/-- Node `[97]`, no arm — the entry of node `[99]`: the exact negation of
+exit `(2)` at every selected overloaded port of every saturated receiver of
+every Type A support of the canonical packing. -/
 noncomputable abbrev TypeAExitTwoFreeStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  (∃ packing : Finset (Finset object.Vertex),
-    packing = canonicalWindowPacking data object ∧
-      object.IsWindowPacking data.windowOrder packing ∧
-      (∀ window : Finset object.Vertex,
-        object.InducesWindow data.windowOrder window →
-        ∃ member ∈ packing, ¬ Disjoint window member) ∧
-      ∃ component ∈ object.canonicalPieces
-          (object.remainderSupport packing),
-        let piece := object.pieceSupport
-          (object.remainderSupport packing) component
-        object.NegativeNetCharge piece data.threshold data.dischargeScale ∧
-          object.ambientSurplus piece data.threshold = 0 ∧
-          ∃ receiver : object.Vertex,
-            object.IsReceiver piece data.threshold receiver ∧
-              object.Saturated piece data.threshold data.dischargeScale receiver ∧
-              ∃ package : Graph.ExitFour.VisibleFourUnpeeledPackage piece
-                  data.threshold data.dischargeScale receiver ∅,
-                ¬ Graph.VisibleEntry.ExitTwoThrough object piece data.LengthOK
-                  receiver package.outside)
+  (∀ packing : Finset (Finset object.Vertex),
+    packing = canonicalWindowPacking data object →
+    object.IsWindowPacking data.windowOrder packing →
+    (∀ window : Finset object.Vertex,
+      object.InducesWindow data.windowOrder window →
+      ∃ member ∈ packing, ¬ Disjoint window member) →
+    ∀ component ∈ object.canonicalPieces (object.remainderSupport packing),
+      let piece := object.pieceSupport
+        (object.remainderSupport packing) component
+      object.NegativeNetCharge piece data.threshold data.dischargeScale →
+      object.ambientSurplus piece data.threshold = 0 →
+      ∀ receiver : object.Vertex,
+        object.IsReceiver piece data.threshold receiver →
+        object.Saturated piece data.threshold data.dischargeScale receiver →
+        ∀ package : Graph.ExitFour.VisibleFourUnpeeledPackage piece
+          data.threshold data.dischargeScale receiver ∅,
+        ¬ Graph.VisibleEntry.ExitTwoThrough object piece data.LengthOK
+          receiver package.outside)
 
 /-- Node `[99]`, yes arm — exit `(3)` of `def:typeA-saturated-exits`: *"a
-shared `P₁₃` window violates the corresponding legal-label relation `C_s`"*.
-`lem:typeA-visible-entry` reads it as *"if two traces pass through a common
-`P₁₃` window, their labels are governed by the relations `C_s` of
-`lem:labels`; failure of the corresponding `C_s` test is the stated label
-collision"*: two outside vertices attach to one packed window, the simple path
-joining them avoids that window, and the cycle their attachment coordinates
-close through the window has accepted length.  `lem:typeA-exits-discharged`
-lists exit `(3)` among the closed exits, and this is why: the collision *is* a
-target event. -/
+shared `P₁₃` window violates the corresponding legal-label relation `C_s`"*,
+asked at a saturated receiver of a Type A support whose port carries `s`
+visible receiver-entry returns.  Two outside vertices attach to one packed
+window, the simple path joining them avoids that window, and the cycle their
+attachment coordinates close through the window has accepted length; the
+collision *is* a target event (`lem:typeA-exits-discharged`). -/
 noncomputable abbrev TypeAExitThreeCollisionStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
   (∃ packing : Finset (Finset object.Vertex),
-    object.IsWindowPacking data.windowOrder packing ∧
-      (∀ window : Finset object.Vertex,
-        object.InducesWindow data.windowOrder window →
-        ∃ member ∈ packing, ¬ Disjoint window member) ∧
-      ∃ component ∈ object.canonicalPieces
-          (object.remainderSupport packing),
-        let piece := object.pieceSupport
-          (object.remainderSupport packing) component
-        object.NegativeNetCharge piece data.threshold data.dischargeScale ∧
-          object.ambientSurplus piece data.threshold = 0 ∧
-          ∃ receiver : object.Vertex,
-            object.IsReceiver piece data.threshold receiver ∧
-              object.Saturated piece data.threshold data.dischargeScale receiver ∧
-              ∃ package : Graph.ExitFour.VisibleFourUnpeeledPackage piece
-                  data.threshold data.dischargeScale receiver ∅,
-                Graph.WindowLabelCollision.LabelCollision object
-                  data.windowOrder data.LengthOK packing)
-
-/-- Node `[99]`, no arm — the entry of node `[101]`: every shared window of
-the packing satisfies its legal-label relation at every outside connector, so
-exit `(3)` is not the exit this branch realizes and the saturated exit list
-continues at exit `(4)`. -/
-noncomputable abbrev TypeAExitThreeFreeStatement
-    (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  (∃ packing : Finset (Finset object.Vertex),
     packing = canonicalWindowPacking data object ∧
       object.IsWindowPacking data.windowOrder packing ∧
       (∀ window : Finset object.Vertex,
@@ -972,10 +1050,36 @@ noncomputable abbrev TypeAExitThreeFreeStatement
           ∃ receiver : object.Vertex,
             object.IsReceiver piece data.threshold receiver ∧
               object.Saturated piece data.threshold data.dischargeScale receiver ∧
-              ∃ package : Graph.ExitFour.VisibleFourUnpeeledPackage piece
+              ∃ _package : Graph.ExitFour.VisibleFourUnpeeledPackage piece
                   data.threshold data.dischargeScale receiver ∅,
-                Graph.WindowLabelCollision.LabelCollisionFree object
+                Graph.WindowLabelCollision.LabelCollision object
                   data.windowOrder data.LengthOK packing)
+
+/-- Node `[99]`, no arm — the entry of node `[101]`: the exact negation of
+exit `(3)`.  At every visible saturated configuration of the canonical packing,
+every shared window satisfies its legal-label relation. -/
+noncomputable abbrev TypeAExitThreeFreeStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop :=
+  (∀ packing : Finset (Finset object.Vertex),
+    packing = canonicalWindowPacking data object →
+    object.IsWindowPacking data.windowOrder packing →
+    (∀ window : Finset object.Vertex,
+      object.InducesWindow data.windowOrder window →
+      ∃ member ∈ packing, ¬ Disjoint window member) →
+    ∀ component ∈ object.canonicalPieces (object.remainderSupport packing),
+      let piece := object.pieceSupport
+        (object.remainderSupport packing) component
+      object.NegativeNetCharge piece data.threshold data.dischargeScale →
+      object.ambientSurplus piece data.threshold = 0 →
+      ∀ receiver : object.Vertex,
+        object.IsReceiver piece data.threshold receiver →
+        object.Saturated piece data.threshold data.dischargeScale receiver →
+        ∀ _package : Graph.ExitFour.VisibleFourUnpeeledPackage piece
+          data.threshold data.dischargeScale receiver ∅,
+        ¬ Graph.WindowLabelCollision.LabelCollision object
+          data.windowOrder data.LengthOK packing)
 
 /-- **The shared entry of nodes `[101]`--`[107]`**, and the hypothesis of
 `lem:typeA-exit4-residual-routing`: *"let `w` be a saturated Type A receiver
@@ -1082,6 +1186,66 @@ noncomputable abbrev TypeAExitSevenFreeStatement
   SelectedNoExitSixWith data object
     (fun packing piece => ¬ HandoffProduced data object packing piece)
 
+/-- Node `[107]`, no arm: the exact negation of exit `(7)`.  No saturated
+peeling state of a Type A support of the canonical packing at which exits
+`(4)`--`(6)` fail produces a high-degree decorated handoff fan envelope. -/
+noncomputable abbrev TypeAExitSevenAbsentStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop :=
+  (∀ packing : Finset (Finset object.Vertex),
+    packing = canonicalWindowPacking data object →
+    object.IsWindowPacking data.windowOrder packing →
+    (∀ window : Finset object.Vertex,
+      object.InducesWindow data.windowOrder window →
+      ∃ member ∈ packing, ¬ Disjoint window member) →
+    ∀ component ∈ object.canonicalPieces (object.remainderSupport packing),
+      let piece := object.pieceSupport
+        (object.remainderSupport packing) component
+      object.NegativeNetCharge piece data.threshold data.dischargeScale →
+      object.ambientSurplus piece data.threshold = 0 →
+      ∀ receiver : object.Vertex,
+        object.IsReceiver piece data.threshold receiver →
+        ∀ peeled : Finset object.Vertex,
+          peeled ⊆ object.routedLoads piece data.threshold receiver →
+          Graph.ExitFour.SaturatedAfter piece data.threshold
+            data.dischargeScale receiver peeled →
+          ExitFourFreeAt data object piece receiver peeled →
+          ¬ ExitFiveAt data object piece receiver peeled →
+          ¬ ExitSixDelocalizes data object piece receiver peeled →
+          ¬ HandoffProduced data object packing piece)
+
+/-- Node `[109]`, the visible-origin residual: the exact negation of
+`SelectedSilentExitSevenFree`.  No route-`8` residual state of the canonical
+packing (exits `(4)`--`(7)` all absent) sits at a receiver whose Type A support
+has the node-`[94]` silent-excess origin. -/
+noncomputable abbrev TypeAExitEightNotSilentStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop :=
+  (∀ packing : Finset (Finset object.Vertex),
+    packing = canonicalWindowPacking data object →
+    object.IsWindowPacking data.windowOrder packing →
+    (∀ window : Finset object.Vertex,
+      object.InducesWindow data.windowOrder window →
+      ∃ member ∈ packing, ¬ Disjoint window member) →
+    ∀ component ∈ object.canonicalPieces (object.remainderSupport packing),
+      let piece := object.pieceSupport
+        (object.remainderSupport packing) component
+      object.NegativeNetCharge piece data.threshold data.dischargeScale →
+      object.ambientSurplus piece data.threshold = 0 →
+      ∀ receiver : object.Vertex,
+        object.IsReceiver piece data.threshold receiver →
+        ∀ peeled : Finset object.Vertex,
+          peeled ⊆ object.routedLoads piece data.threshold receiver →
+          Graph.ExitFour.SaturatedAfter piece data.threshold
+            data.dischargeScale receiver peeled →
+          ExitFourFreeAt data object piece receiver peeled →
+          ¬ ExitFiveAt data object piece receiver peeled →
+          ¬ ExitSixDelocalizes data object piece receiver peeled →
+          ¬ (SilentExitOriginAt data object piece receiver ∧
+            ¬ HandoffProduced data object packing piece))
+
 /-- Node `[102]`: the exit-`(4)` witness has been charged to the peeling
 ledger by adjoining its routed load to `P₄(w)`, preserving the routed-load
 condition and dropping the residual load by one. -/
@@ -1127,16 +1291,15 @@ noncomputable abbrev TypeAExitFourPeeledStatement
                         Graph.ExitFour.residualLoad piece data.threshold
                           receiver peeled)
 
-/-- `lem:typeA-exit4-residual-routing`, exit-`(4)` arm at the exact current
-saturated receiver/peeling state. -/
+/-- Node `[101]`, yes arm — `lem:typeA-exit4-residual-routing`, exit `(4)` at a
+witnessed saturated peeling state: some saturated receiver of a Type A support
+of the canonical packing, with a peeling set `P₄(w)` all of whose loads carry
+exit-`(4)` witnesses and `L₄(w) ≥ s·q(w)`, has a canonical target-defective
+quotient supporting an unpeeled load of its lane. -/
 noncomputable abbrev TypeASaturatedHandoffExitFourStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- `lem:typeA-exit4-residual-routing`, exit `(4)` at the current peeling
-  -- state.  In the visible case the witness supports one of the selected
-  -- four visible loads; in the silent case it supports a load from the
-  -- canonical residual excess set `E₄(w)`.
   (∃ packing : Finset (Finset object.Vertex),
     packing = canonicalWindowPacking data object ∧
       object.IsWindowPacking data.windowOrder packing ∧
@@ -1158,23 +1321,36 @@ noncomputable abbrev TypeASaturatedHandoffExitFourStatement
                   Graph.ExitFour.PeeledByWitnesses
                     (Graph.HasCycleWithLength data.LengthOK) piece
                     data.threshold data.dischargeScale receiver peeled ∧
-                  ((∃ package :
-                      Graph.ExitFour.VisibleFourUnpeeledPackage piece
-                        data.threshold data.dischargeScale receiver peeled,
-                    ∃ witness : Graph.ExitFour.Witness
-                        (Graph.HasCycleWithLength data.LengthOK) piece
-                        data.threshold data.dischargeScale receiver peeled,
-                      ∃ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads
-                          piece data.threshold data.dischargeScale receiver
-                          package.outside peeled,
-                        witness.load = load) ∨
-                    (Graph.ExitFour.SilentUnpeeledExcessAt piece
-                        data.threshold data.dischargeScale receiver peeled ∧
-                      ∃ witness : Graph.ExitFour.Witness
-                          (Graph.HasCycleWithLength data.LengthOK) piece
-                          data.threshold data.dischargeScale receiver peeled,
-                        witness.load ∈ Graph.ExitFour.unpeeledExcess piece
-                          data.threshold data.dischargeScale receiver peeled)))
+                  ExitFourAt data object piece receiver peeled)
+
+/-- Node `[101]`, no arm: the exact negation of exit `(4)`.  No witnessed
+saturated peeling state of any Type A support of the canonical packing has a
+canonical target-defective quotient supporting an unpeeled load of its lane. -/
+noncomputable abbrev TypeAExitFourAbsentStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop :=
+  (∀ packing : Finset (Finset object.Vertex),
+    packing = canonicalWindowPacking data object →
+    object.IsWindowPacking data.windowOrder packing →
+    (∀ window : Finset object.Vertex,
+      object.InducesWindow data.windowOrder window →
+      ∃ member ∈ packing, ¬ Disjoint window member) →
+    ∀ component ∈ object.canonicalPieces (object.remainderSupport packing),
+      let piece := object.pieceSupport
+        (object.remainderSupport packing) component
+      object.NegativeNetCharge piece data.threshold data.dischargeScale →
+      object.ambientSurplus piece data.threshold = 0 →
+      ∀ receiver : object.Vertex,
+        object.IsReceiver piece data.threshold receiver →
+        ∀ peeled : Finset object.Vertex,
+          peeled ⊆ object.routedLoads piece data.threshold receiver →
+          Graph.ExitFour.SaturatedAfter piece data.threshold
+            data.dischargeScale receiver peeled →
+          Graph.ExitFour.PeeledByWitnesses
+            (Graph.HasCycleWithLength data.LengthOK) piece
+            data.threshold data.dischargeScale receiver peeled →
+          ¬ ExitFourAt data object piece receiver peeled)
 
 /-- `lem:typeA-exit4-residual-routing`, no exit-`(4)` at the exact current
 saturated receiver/peeling state; this is the predecessor of exit `(5)`. -/
@@ -1203,6 +1379,34 @@ noncomputable abbrev TypeASaturatedHandoffExitFourFreeStatement
                   Graph.ExitFour.SaturatedAfter piece data.threshold
                     data.dischargeScale receiver peeled ∧
                   ExitFourFreeAt data object piece receiver peeled)
+
+/-- Node `[102]` → `[89]`, the retest after an exit-`(4)` peel, no arm: the
+exact negation of `TypeASaturatedHandoffExitFourFreeStatement`.  Every
+saturated peeling state of every Type A support of the canonical packing still
+realizes exit `(4)`, so the recompute-`L₄` loop keeps peeling until the receiver
+is unsaturated (`lem:typeA-saturated-handoff`). -/
+noncomputable abbrev TypeAExitFourExhaustedStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop :=
+  (∀ packing : Finset (Finset object.Vertex),
+    packing = canonicalWindowPacking data object →
+    object.IsWindowPacking data.windowOrder packing →
+    (∀ window : Finset object.Vertex,
+      object.InducesWindow data.windowOrder window →
+      ∃ member ∈ packing, ¬ Disjoint window member) →
+    ∀ component ∈ object.canonicalPieces (object.remainderSupport packing),
+      let piece := object.pieceSupport
+        (object.remainderSupport packing) component
+      object.NegativeNetCharge piece data.threshold data.dischargeScale →
+      object.ambientSurplus piece data.threshold = 0 →
+      ∀ receiver : object.Vertex,
+        object.IsReceiver piece data.threshold receiver →
+        ∀ peeled : Finset object.Vertex,
+          peeled ⊆ object.routedLoads piece data.threshold receiver →
+          Graph.ExitFour.SaturatedAfter piece data.threshold
+            data.dischargeScale receiver peeled →
+          ¬ ExitFourFreeAt data object piece receiver peeled)
 
 /-- Node `[102]`, no-loop arm: after the exit-`(4)` peel, the selected
 receiver is no longer saturated at the peeled residual, so its remaining
@@ -1244,18 +1448,14 @@ noncomputable abbrev TypeAExitFourReceiverDischargedStatement
                     data.dischargeScale *
                       object.missingPorts piece data.threshold receiver)
 
-/-- Node `[103]`, yes arm: the exact selected saturated-handoff residual
-after no exit `(4)` carries exit `(5)`, a target-complete proper-support
-compression. -/
+/-- Node `[103]`, yes arm: a saturated peeling state of a Type A support of the
+canonical packing at which exit `(4)` is absent carries exit `(5)`, a
+target-complete response compression at the selected trace basin of one of its
+eligible loads. -/
 noncomputable abbrev TypeAExitFiveStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- Node `[103]`, yes: one load in the exact visible/silent post-exit-`(4)`
-  -- residual has a selected trace basin whose declared `u`-supported
-  -- response algebra admits alternative (b), including the paper's
-  -- proper-realization / trace-response-only split.
-  let exitFiveAt := ExitFiveAt data object
   (∃ packing : Finset (Finset object.Vertex),
     packing = canonicalWindowPacking data object ∧
       object.IsWindowPacking data.windowOrder packing ∧
@@ -1274,53 +1474,44 @@ noncomputable abbrev TypeAExitFiveStatement
                 peeled ⊆ object.routedLoads piece data.threshold receiver ∧
                   Graph.ExitFour.SaturatedAfter piece data.threshold
                     data.dischargeScale receiver peeled ∧
-                  exitFiveAt piece receiver peeled)
+                  ExitFourFreeAt data object piece receiver peeled ∧
+                  ExitFiveAt data object piece receiver peeled)
 
-/-- Node `[103]`, no arm: the exact selected saturated-handoff residual
-after no exit `(4)` carries no target-complete proper-support compression,
-so the branch may continue to exit `(6)`. -/
+/-- Node `[103]`, no arm: the exact negation of exit `(5)`.  No saturated
+exit-`(4)`-free peeling state of any Type A support of the canonical packing
+carries a target-complete response compression. -/
 noncomputable abbrev TypeAExitFiveFreeStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- Node `[103]`, no: the same exact post-exit-`(4)` residual is retained,
-  -- and none of its eligible loads has alternative (b) at its selected
-  -- trace basin.
-  let exitFiveAt := ExitFiveAt data object
-  (∃ packing : Finset (Finset object.Vertex),
-    packing = canonicalWindowPacking data object ∧
-      object.IsWindowPacking data.windowOrder packing ∧
-      (∀ window : Finset object.Vertex,
-        object.InducesWindow data.windowOrder window →
-        ∃ member ∈ packing, ¬ Disjoint window member) ∧
-      ∃ component ∈ object.canonicalPieces
-          (object.remainderSupport packing),
-        let piece := object.pieceSupport
-          (object.remainderSupport packing) component
-        object.NegativeNetCharge piece data.threshold data.dischargeScale ∧
-          object.ambientSurplus piece data.threshold = 0 ∧
-          ∃ receiver : object.Vertex,
-            object.IsReceiver piece data.threshold receiver ∧
-              ∃ peeled : Finset object.Vertex,
-                peeled ⊆ object.routedLoads piece data.threshold receiver ∧
-                  Graph.ExitFour.SaturatedAfter piece data.threshold
-                    data.dischargeScale receiver peeled ∧
-                  ExitFourFreeAt data object piece receiver peeled ∧
-                  ¬ exitFiveAt piece receiver peeled)
+  (∀ packing : Finset (Finset object.Vertex),
+    packing = canonicalWindowPacking data object →
+    object.IsWindowPacking data.windowOrder packing →
+    (∀ window : Finset object.Vertex,
+      object.InducesWindow data.windowOrder window →
+      ∃ member ∈ packing, ¬ Disjoint window member) →
+    ∀ component ∈ object.canonicalPieces (object.remainderSupport packing),
+      let piece := object.pieceSupport
+        (object.remainderSupport packing) component
+      object.NegativeNetCharge piece data.threshold data.dischargeScale →
+      object.ambientSurplus piece data.threshold = 0 →
+      ∀ receiver : object.Vertex,
+        object.IsReceiver piece data.threshold receiver →
+        ∀ peeled : Finset object.Vertex,
+          peeled ⊆ object.routedLoads piece data.threshold receiver →
+          Graph.ExitFour.SaturatedAfter piece data.threshold
+            data.dischargeScale receiver peeled →
+          ExitFourFreeAt data object piece receiver peeled →
+          ¬ ExitFiveAt data object piece receiver peeled)
 
-/-- Node `[105]`, yes arm: the selected saturated-handoff residual, after
-exits `(4)` and `(5)` have failed, has a response equality that becomes
-target-complete only after adjoining a larger connected support. -/
+/-- Node `[105]`, yes arm: a saturated peeling state of a Type A support of the
+canonical packing, after exits `(4)` and `(5)` have failed, has a response
+equality that becomes target-complete only after adjoining a larger connected
+support. -/
 noncomputable abbrev TypeAExitSixStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- Node `[105]`, yes: the selected saturated handoff state, after exits
-  -- `(4)` and `(5)` have failed, carries an equality of declared response
-  -- coordinates that becomes target-complete only after adjoining a larger
-  -- connected support.  The witness is tied to the incoming residual; it is
-  -- not an arbitrary route-8 object.
-  let exitFiveAt := ExitFiveAt data object
   (∃ packing : Finset (Finset object.Vertex),
     packing = canonicalWindowPacking data object ∧
       object.IsWindowPacking data.windowOrder packing ∧
@@ -1340,18 +1531,42 @@ noncomputable abbrev TypeAExitSixStatement
                   Graph.ExitFour.SaturatedAfter piece data.threshold
                     data.dischargeScale receiver peeled ∧
                   ExitFourFreeAt data object piece receiver peeled ∧
-                  (¬ exitFiveAt piece receiver peeled ∧
+                  (¬ ExitFiveAt data object piece receiver peeled ∧
                     ExitSixDelocalizes data object piece receiver peeled))
 
-/-- Node `[105]`, no arm: that same selected residual has no exit-`(6)`
-delocalization, so it can continue to exit `(7)`. -/
+/-- Node `[105]`, no arm: the exact negation of exit `(6)` on the same
+states. -/
 noncomputable abbrev TypeAExitSixFreeStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- Node `[105]`, no: the same selected saturated handoff state has no
-  -- exit-`(6)` delocalization witness.
-  let exitFiveAt := ExitFiveAt data object
+  (∀ packing : Finset (Finset object.Vertex),
+    packing = canonicalWindowPacking data object →
+    object.IsWindowPacking data.windowOrder packing →
+    (∀ window : Finset object.Vertex,
+      object.InducesWindow data.windowOrder window →
+      ∃ member ∈ packing, ¬ Disjoint window member) →
+    ∀ component ∈ object.canonicalPieces (object.remainderSupport packing),
+      let piece := object.pieceSupport
+        (object.remainderSupport packing) component
+      object.NegativeNetCharge piece data.threshold data.dischargeScale →
+      object.ambientSurplus piece data.threshold = 0 →
+      ∀ receiver : object.Vertex,
+        object.IsReceiver piece data.threshold receiver →
+        ∀ peeled : Finset object.Vertex,
+          peeled ⊆ object.routedLoads piece data.threshold receiver →
+          Graph.ExitFour.SaturatedAfter piece data.threshold
+            data.dischargeScale receiver peeled →
+          ExitFourFreeAt data object piece receiver peeled →
+          ¬ ExitFiveAt data object piece receiver peeled →
+          ¬ ExitSixDelocalizes data object piece receiver peeled)
+
+/-- Node `[106]`, proper scope: some exit-`(6)` state has a delocalization
+whose enlarging support is proper in `G`. -/
+noncomputable abbrev TypeAExitSixProperScopeStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop :=
   (∃ packing : Finset (Finset object.Vertex),
     packing = canonicalWindowPacking data object ∧
       object.IsWindowPacking data.windowOrder packing ∧
@@ -1371,8 +1586,35 @@ noncomputable abbrev TypeAExitSixFreeStatement
                   Graph.ExitFour.SaturatedAfter piece data.threshold
                     data.dischargeScale receiver peeled ∧
                   ExitFourFreeAt data object piece receiver peeled ∧
-                  (¬ exitFiveAt piece receiver peeled ∧
-                    ¬ ExitSixDelocalizes data object piece receiver peeled))
+                  ¬ ExitFiveAt data object piece receiver peeled ∧
+                  ExitSixProperAt data object piece receiver peeled)
+
+/-- Node `[106]`, whole-graph scope: the exact negation of the proper scope.
+Every delocalization at every exit-`(6)` state adjoins all of `G`. -/
+noncomputable abbrev TypeAExitSixGlobalScopeStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop :=
+  (∀ packing : Finset (Finset object.Vertex),
+    packing = canonicalWindowPacking data object →
+    object.IsWindowPacking data.windowOrder packing →
+    (∀ window : Finset object.Vertex,
+      object.InducesWindow data.windowOrder window →
+      ∃ member ∈ packing, ¬ Disjoint window member) →
+    ∀ component ∈ object.canonicalPieces (object.remainderSupport packing),
+      let piece := object.pieceSupport
+        (object.remainderSupport packing) component
+      object.NegativeNetCharge piece data.threshold data.dischargeScale →
+      object.ambientSurplus piece data.threshold = 0 →
+      ∀ receiver : object.Vertex,
+        object.IsReceiver piece data.threshold receiver →
+        ∀ peeled : Finset object.Vertex,
+          peeled ⊆ object.routedLoads piece data.threshold receiver →
+          Graph.ExitFour.SaturatedAfter piece data.threshold
+            data.dischargeScale receiver peeled →
+          ExitFourFreeAt data object piece receiver peeled →
+          ¬ ExitFiveAt data object piece receiver peeled →
+          ¬ ExitSixProperAt data object piece receiver peeled)
 
 /-- Node `[106]`, proper scope: the enlarging support is proper in `G`, so
 `lem:proper-smearing` gives the replacement contradiction. -/

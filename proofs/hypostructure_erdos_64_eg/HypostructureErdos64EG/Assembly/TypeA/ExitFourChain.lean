@@ -8,7 +8,8 @@ import HypostructureErdos64EG.Assembly.TypeA.ExitFourDischargedRetest
 /-!
 # Assembly: TypeA / ExitFourChain
 
-Part of the dependency-separated Erdős–Gyárfás assembly.
+The saturated Type A exit segment `[101]`--`[109]`, shared by the visible and
+the silent entry.
 -/
 
 namespace HypostructureErdos64EG
@@ -20,326 +21,180 @@ open Hypostructure.Graph.Strategy.Spine
 
 universe u w
 
-/-- **Nodes `[101]`--`[102]` and their loop back to `[89]`**, on the shared
-saturated exit entry (index-polymorphic).  `lem:typeA-exit4-finite-descent` is
-put on the ledger for `[123]`; then `[101]` tests exit `(4)` at the entry state.
-Yes: `[102]` peels the witness's load (`lem:typeA-exit4-discharge`) and the
-"recompute `L₄`" loop is the finite descent `typeAExitFourRetestDichotomy`,
-which ends either at a saturated state with no further exit-`(4)` witness — the
-hypothesis of exits `(5)`--`(8)` — or at an unsaturated peeled state whose
-receiver charge is nonnegative (`lem:typeA-exit4-peeling-charge`) and whose
-peeled loads are target-defect entries: the retest at `[89]` with the
-target-defect ledger (Part IX `[123]`), the next producer.  No: exits
-`(5)`--`(8)` at the entry state. -/
+/-- The keys the exit segment `[101]`--`[109]` and its continuations may add. -/
+noncomputable abbrev typeAExitSegmentKeys : FactKeys EGInput.{u} :=
+  [K .typeAExitFourFiniteDescent,
+    K .typeASaturatedHandoffExitFour,
+    K .typeAExitFourAbsent,
+    K .typeAExitFourPeeled,
+    K .typeASaturatedHandoffExitFourFree,
+    K .typeAExitFourExhausted,
+    K .typeAExitFourReceiverDischarged,
+    K .typeAExitFive,
+    K .typeAExitFiveFree,
+    K .typeAExitSix,
+    K .typeAExitSixFree,
+    K .typeAExitSixProperScope,
+    K .typeAExitSixGlobalScope,
+    K .typeAExitSixProper,
+    K .typeAExitSixGlobal,
+    K .typeAExitSevenHandoff,
+    K .typeAExitSevenAbsent,
+    K .typeAExitSevenFree,
+    K .typeASilentExitSevenFree,
+    K .typeAExitEightNotSilent,
+    K .highCentreNormalForm,
+    closed,
+    K .typeBDecoratedAssignedSupport,
+    K .typeBFanEntry,
+    K .typeBFanHeavyCentre,
+    K .typeBFanDegreeFourCentres,
+    K .typeBFanLocalDichotomy,
+    K .sameCenterOpenPortCompatibility,
+    K .typeBFanDegreeFourProfile,
+    K .triangularFanCore,
+    K .fanCertificateCap,
+    K .fanCertificateMarked,
+    K .fanCertificateResidual,
+    K .fanCertificateResidualMass,
+    K .typeBDirectCycle,
+    K .typeBDirectCycleFree,
+    K .typeBB2Choice,
+    K .typeBOverlapObstruction,
+    K .typeBHybridEntry,
+    K .typeBDisjointLedger,
+    K .typeBBridgeMass,
+    K .typeBBridgeSublinear,
+    K .route8UnifiedNegative,
+    K .typeAExclusion,
+    K .typeBBridgeReduction,
+    K .route8PiecesClassified,
+    K .typeBSublinearLedger,
+    K .typeBSublinearResidual,
+    K .route8UnifiedDeficit,
+    K .route8QuotientFree,
+    K .route8QuotientResidual,
+    K .route8UnifiedEntryCensus,
+    K .route8ExtractedEntryCensus,
+    K .route8UnifiedTrueTwoCarrierEntry,
+    K .route8PeelingDescent,
+    K .route8StageRateFailed,
+    K .route8DemandLedger,
+    K .route8DemandAbsorption,
+    K .route8OpenBoundarySaturated,
+    K .route8DemandUnitCount,
+    K .route8WindowBlockers,
+    K .windowShadowSignature,
+    K .windowShadowSingletonTail,
+    K .windowShadowHitCycle,
+    K .windowShadowHitExcluded,
+    K .route8PeeledDemandResidual,
+    K .route8UnpaidExitFourResidual,
+    K .route8UnifiedVisibleResidual,
+    K .route8UnifiedVisibleOverload,
+    K .route8JointBalance,
+    K .route8TerminalNoGo,
+    K .typeBExcluded,
+    K .typeBExclusionResidual,
+    K .typeBExclusionResidualMass,
+    K .typeBOverlapObstructionMass,
+    K .fanClosedPort,
+    K .compatiblePairFanClosure,
+    K .fanClosedPortTypeBRouting,
+    K .compatiblePairTypeBRouting,
+    K .triangularShoulderCompletion,
+    K .triangularPortReturn,
+    K .triangularFirstLanding,
+    K .triangularCrossShoulder,
+    K .triangularPortTypeBRouting,
+    K .typeBGlobalLocalBridge,
+    K .route8ResidualProfile,
+    K .route8GlobalSqueeze,
+    K .route8BasinBurden,
+    K .route8LargeBudgetDeficit,
+    K .route8LargeBudgetDeficitFails,
+    K .route8CarrierCore,
+    K .route8TrueResidual,
+    K .route8CarrierCutParity,
+    K .route8SmallCoreEntry,
+    K .route8NoSmallCoreEntry,
+    K .route8SmallCoreCollapse,
+    K .route8Census,
+    K .route8TwoCarrierEntry,
+    K .route8NoTwoCarrierEntry,
+    K .route8TrueTwoCarrierEntry,
+    K .route8CarrierDeletionWitnesses,
+    K .route8PrivateCarrierBudget,
+    K .route8NoTwoCarrierContradiction]
+
+/-- **Nodes `[101]`--`[102]` and the recompute-`L₄` loop**, on the shared entry of
+the exit segment (index-polymorphic).  Both node `[99]`'s no arm and node `[94]`
+enter here (`lem:typeA-exit4-residual-routing`).  `lem:typeA-exit4-finite-descent`
+is committed at the entry state; then `[101]` tests exit `(4)`.  No: the entry
+state is exit-`(4)`-free and exits `(5)`--`(8)` follow.  Yes: `[102]` peels the
+witness's load (`lem:typeA-exit4-discharge`) and the saturated test is asked
+again: if some saturated peeling state is exit-`(4)`-free, exits `(5)`--`(8)`
+are asked there; otherwise every saturated state still realizes exit `(4)`, so
+the finite descent discharges the peeled receiver
+(`lem:typeA-saturated-handoff`, `lem:typeA-exit4-peeling-charge`) and its
+target-defect loads enter Part IX at `[123]`. -/
 -- EG-NODE [101] exit 4? target-defective quotient
 -- EG-NODE [102] target-defect peels one load
-noncomputable def selectedTypeAExitFourChain
+noncomputable def selectedTypeAExitSegment
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .surplusAtOrBelow) known]
-    [FactKeys.Has (K .tightEndpoint) known]
     [FactKeys.Has (K .typeASaturatedExitEntry) known]
     [FactKeys.Has (K .uncompressible) known]
-    [FactKeys.Has (K .remainderNormalized) known]
-    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .selection) known]
-    [FactKeys.Has (K .route8Rate) known]
-    [FactKeys.Has (K .typeAReceiverRouting) known]
-    (profileFresh : K .route8ResidualProfile ∉ known)
-    (squeezeFresh : K .route8GlobalSqueeze ∉ known)
-    (burdenFresh : K .route8BasinBurden ∉ known)
-    (deficitFresh : K .route8LargeBudgetDeficit ∉ known)
-    (deficitFailsFresh : K .route8LargeBudgetDeficitFails ∉ known)
-    (coreFresh : K .route8CarrierCore ∉ known)
-    (trueResidualFresh : K .route8TrueResidual ∉ known)
-    (cutParityFresh : K .route8CarrierCutParity ∉ known)
-    (smallFresh : K .route8SmallCoreEntry ∉ known)
-    (noSmallFresh : K .route8NoSmallCoreEntry ∉ known)
-    (collapseFresh : K .route8SmallCoreCollapse ∉ known)
-    (deletionWitnessesFresh : K .route8CarrierDeletionWitnesses ∉ known)
-    (privateBudgetFresh : K .route8PrivateCarrierBudget ∉ known)
-    (noTwoContradictionFresh : K .route8NoTwoCarrierContradiction ∉ known)
-    (terminalNoGoFresh : K .route8TerminalNoGo ∉ known)
-    (descentFresh : K .typeAExitFourFiniteDescent ∉ known)
-    (exitFourFresh : K .typeASaturatedHandoffExitFour ∉ known)
-    (exitFourFreeFresh : K .typeASaturatedHandoffExitFourFree ∉ known)
-    (peeledFresh : K .typeAExitFourPeeled ∉ known)
-    (dischargedFresh : K .typeAExitFourReceiverDischarged ∉ known)
-    (fiveFresh : K .typeAExitFive ∉ known)
-    (fiveFreeFresh : K .typeAExitFiveFree ∉ known)
-    (sixFresh : K .typeAExitSix ∉ known)
-    (sixFreeFresh : K .typeAExitSixFree ∉ known)
-    (sixProperFresh : K .typeAExitSixProper ∉ known)
-    (sixGlobalFresh : K .typeAExitSixGlobal ∉ known)
-    (sevenProducedFresh : K .typeAExitSevenProduced ∉ known)
-    (sevenFreeFresh : K .typeAExitSevenFree ∉ known)
-    (sevenHandoffFresh : K .typeAExitSevenHandoff ∉ known)
-    (decoratedFresh : K .typeBDecoratedAssignedSupport ∉ known)
-    (cubicBaselineFresh : FactKeys.Has (K .cubicBaseline) known := by infer_instance)
-    (normalFormFresh : K .highCentreNormalForm ∉ known)
-    (decoratedHeavyFresh : K .typeBFanHeavyCentre ∉ known)
-    (decoratedDegreeFourFresh : K .typeBFanDegreeFourCentres ∉ known)
-    (decoratedLocalFresh : K .typeBFanLocalDichotomy ∉ known)
-    (decoratedCompatibilityFresh :
-      K .sameCenterOpenPortCompatibility ∉ known)
-    (decoratedProfileFresh : K .typeBFanDegreeFourProfile ∉ known)
-    (decoratedTriangularCoreFresh : K .triangularFanCore ∉ known)
-    (fanCapFresh : K .fanCertificateCap ∉ known)
-    (decoratedMarkedFresh : K .fanCertificateMarked ∉ known)
-    (decoratedResidualFresh : K .fanCertificateResidual ∉ known)
-    (decoratedCertificateMassFresh : K .fanCertificateResidualMass ∉ known)
-    (decoratedCycleFresh : K .typeBDirectCycle ∉ known)
-    (decoratedFreeFresh : K .typeBDirectCycleFree ∉ known)
-    (decoratedFanEntryFresh : K .typeBFanEntry ∉ known)
-    (decoratedB2ChoiceFresh : K .typeBB2Choice ∉ known)
-    (decoratedB2ObstructionFresh : K .typeBOverlapObstruction ∉ known)
-    (decoratedHybridFresh : K .typeBHybridEntry ∉ known)
-    (decoratedLedgerFresh : K .typeBDisjointLedger ∉ known)
-    (decoratedBridgeMassFresh : K .typeBBridgeMass ∉ known)
-    (decoratedBridgeSublinearFresh : K .typeBBridgeSublinear ∉ known)
-    (censusFresh : K .route8Census ∉ known)
-    (twoFresh : K .route8TwoCarrierEntry ∉ known)
-    (noTwoFresh : K .route8NoTwoCarrierEntry ∉ known)
-    (trueEntryFresh : K .route8TrueTwoCarrierEntry ∉ known)
-    (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known)
-    (typeAExclusionFresh : K .typeAExclusion ∉ known)
-    (typeBBridgeReductionFresh : K .typeBBridgeReduction ∉ known)
-    (piecesClassifiedFresh : K .route8PiecesClassified ∉ known)
-    (sublinearLedgerFresh : K .typeBSublinearLedger ∉ known)
-    (sublinearResidualFresh : K .typeBSublinearResidual ∉ known)
-    (unifiedDeficitFresh : K .route8UnifiedDeficit ∉ known)
-    (quotientFreeFresh : K .route8QuotientFree ∉ known)
-    (quotientResidualFresh : K .route8QuotientResidual ∉ known)
-    (unifiedCensusFresh : K .route8UnifiedEntryCensus ∉ known)
-    (extractedCensusFresh : K .route8ExtractedEntryCensus ∉ known)
-    (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known)
-    (peelingFresh : K .route8PeelingDescent ∉ known)
-    (stageFailedFresh : K .route8StageRateFailed ∉ known)
-    (demandLedgerFresh : K .route8DemandLedger ∉ known)
-    (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known)
-    (openBoundarySaturatedFresh : K .route8OpenBoundarySaturated ∉ known)
-    (demandUnitCountFresh : K .route8DemandUnitCount ∉ known)
-    (windowBlockersFresh : K .route8WindowBlockers ∉ known)
-    (windowShadowSignatureFresh : K .windowShadowSignature ∉ known)
-    (windowShadowTailFresh : K .windowShadowSingletonTail ∉ known)
-    (windowShadowCycleFresh : K .windowShadowHitCycle ∉ known)
-    (windowShadowExcludedFresh : K .windowShadowHitExcluded ∉ known)
-    (demandResidualFresh : K .route8PeeledDemandResidual ∉ known)
-    (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known)
-    (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known)
-    (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known)
-    (jointBalanceFresh : K .route8JointBalance ∉ known)
-    (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known)
-    (decoratedExcludedFresh : K .typeBExcluded ∉ known)
-    (decoratedExclusionResidualFresh : K .typeBExclusionResidual ∉ known)
-    (decoratedExclusionMassFresh : K .typeBExclusionResidualMass ∉ known)
-    (decoratedObstructionMassFresh : K .typeBOverlapObstructionMass ∉ known)
+    [FactKeys.Has (K .tightEndpoint) known]
+    [FactKeys.Has (K .remainderNormalized) known]
     [FactKeys.Has (K .bridgeless) known]
-    (decoratedGlobalLocalBridgeFresh : K .typeBGlobalLocalBridge ∉ known)
-    (fanClosedFresh : K .fanClosedPort ∉ known)
-    (compatibleClosureFresh : K .compatiblePairFanClosure ∉ known)
-    (fanClosedRoutingFresh : K .fanClosedPortTypeBRouting ∉ known)
-    (compatibleRoutingFresh : K .compatiblePairTypeBRouting ∉ known)
-    (shoulderCompletionFresh : K .triangularShoulderCompletion ∉ known)
-    (portReturnFresh : K .triangularPortReturn ∉ known)
-    (firstLandingFresh : K .triangularFirstLanding ∉ known)
-    (crossShoulderFresh : K .triangularCrossShoulder ∉ known)
-    (triangularRoutingFresh : K .triangularPortTypeBRouting ∉ known)
+    [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .negativeSupport) known]
-    (closureFresh : closed ∉ known)
-   : SelectedRouteEightBoundary selected := by
-  letI := cubicBaselineFresh
-  let _cubicBaseline := (history.get (K .cubicBaseline)).down
-  let cubic := history
-  -- `lem:typeA-exit4-finite-descent` on the ledger (read again at `[123]`).
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
+    [FactKeys.Has (K .surplusAtOrBelow) known]
+    [FactKeys.Has (K .typeAReceiverRouting) known]
+    [FactKeys.Has (K .route8Rate) known]
+    (fresh : List.Disjoint typeAExitSegmentKeys known := by key_fresh) :
+    SelectedRouteEightBoundary selected := by
+  have fresh' := fresh
+  repeat (rw [List.disjoint_cons_left] at fresh'; obtain ⟨_fresh, fresh'⟩ := fresh')
+  -- `lem:typeA-exit4-finite-descent` at the entry state.
   let descended :=
     (typeAExitFourFiniteDescentRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      cubic (by key_fresh)
+      history (by key_fresh)
   -- `[101]`
   match typeAExitFourDichotomy (data := spineData) descended
       (by key_fresh) (by key_fresh) with
+  | .right absentHistory =>
+      let exitFree :=
+        (typeAExitFourFreeEntryRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          absentHistory (by key_fresh)
+      exact selectedTypeAExitFiveToEight exitFree
   | .left exitFourHistory =>
       -- `[102]`
       let peeled :=
         (typeAExitFourPeelingStepRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           exitFourHistory (by key_fresh)
-      -- `[102]` → `[89]`: recompute `L₄` — the finite exit-`(4)` descent.
+      -- `[102]` → `[89]`: recompute `L₄`.
       match typeAExitFourRetestDichotomy (data := spineData) peeled
           (by key_fresh) (by key_fresh) with
-      | .left terminalHistory =>
-          exact selectedTypeAExitFiveToSeven terminalHistory
-            (by key_fresh) (by key_fresh)
-            (by key_fresh) (by key_fresh)
-            (by key_fresh) (by key_fresh)
-            (by key_fresh)
-            (by key_fresh) (by key_fresh)
-            (by key_fresh) (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh) (by key_fresh)
-            (by key_fresh) (by key_fresh)
-            (by key_fresh) (by key_fresh)
-            (by key_fresh) (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh)
-            (by key_fresh) (by key_fresh)
-            (by key_fresh) (by key_fresh)
-            (by key_fresh)
-            (typeAExclusionFresh := by key_fresh)
-            (typeBBridgeReductionFresh := by key_fresh)
-            (piecesClassifiedFresh := by key_fresh)
-            (sublinearLedgerFresh := by key_fresh)
-            (sublinearResidualFresh := by key_fresh)
-            (unifiedDeficitFresh := by key_fresh)
-            (quotientFreeFresh := by key_fresh)
-            (quotientResidualFresh := by key_fresh)
-            (unifiedCensusFresh := by key_fresh)
-            (extractedCensusFresh := by key_fresh)
-            (unifiedTrueFresh := by key_fresh)
-            (peelingFresh := by key_fresh)
-            (stageFailedFresh := by key_fresh)
-            (demandLedgerFresh := by key_fresh)
-            (demandAbsorptionFresh := by key_fresh)
-            (openBoundarySaturatedFresh := by key_fresh)
-            (demandUnitCountFresh := by key_fresh)
-            (windowBlockersFresh := by key_fresh)
-            (windowShadowSignatureFresh := by key_fresh)
-            (windowShadowTailFresh := by key_fresh)
-            (windowShadowCycleFresh := by key_fresh)
-            (windowShadowExcludedFresh := by key_fresh)
-            (demandResidualFresh := by key_fresh)
-            (unpaidExitFourFresh := by key_fresh)
-            (unifiedVisibleFresh := by key_fresh)
-            (unifiedVisibleOverloadFresh := by
-              key_fresh)
-            (jointBalanceFresh := by key_fresh)
-            (unifiedTerminalFresh := by key_fresh)
-            (decoratedExcludedFresh := by key_fresh)
-            (decoratedExclusionResidualFresh := by key_fresh)
-            (decoratedExclusionMassFresh := by key_fresh)
-            (decoratedObstructionMassFresh := by key_fresh)
-            (decoratedGlobalLocalBridgeFresh := by key_fresh)
-            (fanClosedFresh := by key_fresh)
-            (compatibleClosureFresh := by key_fresh)
-            (fanClosedRoutingFresh := by key_fresh)
-            (compatibleRoutingFresh := by key_fresh)
-            (shoulderCompletionFresh := by key_fresh)
-            (portReturnFresh := by key_fresh)
-            (firstLandingFresh := by key_fresh)
-            (crossShoulderFresh := by key_fresh)
-            (triangularRoutingFresh := by key_fresh)
-            (by key_fresh)
-      | .right dischargedHistory =>
-          -- `[89]` retest of the discharged receiver with its peeled
-          -- target-defect loads (Part IX pressure ledger `[123]`) — the next
-          -- producer.
-          exact selectedTypeAExitFourDischargedRetest dischargedHistory
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (by key_fresh)
-            (unpaidExitFourFresh := by key_fresh)
-            (unifiedVisibleFresh := by key_fresh)
-            (unifiedVisibleOverloadFresh := by
-              key_fresh)
-            (jointBalanceFresh := by key_fresh)
-  | .right freeHistory =>
-      exact selectedTypeAExitFiveToSeven freeHistory
-        (by key_fresh) (by key_fresh)
-        (by key_fresh) (by key_fresh)
-        (by key_fresh) (by key_fresh)
-        (by key_fresh)
-        (by key_fresh) (by key_fresh)
-        (by key_fresh) (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh) (by key_fresh)
-        (by key_fresh) (by key_fresh)
-        (by key_fresh) (by key_fresh)
-        (by key_fresh) (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh) (by key_fresh)
-        (by key_fresh) (by key_fresh)
-        (by key_fresh) (by key_fresh)
-        (by key_fresh)
-        (typeAExclusionFresh := by key_fresh)
-        (typeBBridgeReductionFresh := by key_fresh)
-        (piecesClassifiedFresh := by key_fresh)
-        (sublinearLedgerFresh := by key_fresh)
-        (sublinearResidualFresh := by key_fresh)
-        (unifiedDeficitFresh := by key_fresh)
-        (quotientFreeFresh := by key_fresh)
-        (quotientResidualFresh := by key_fresh)
-        (unifiedCensusFresh := by key_fresh)
-        (extractedCensusFresh := by key_fresh)
-        (unifiedTrueFresh := by key_fresh)
-        (peelingFresh := by key_fresh)
-        (stageFailedFresh := by key_fresh)
-        (demandLedgerFresh := by key_fresh)
-        (demandAbsorptionFresh := by key_fresh)
-        (openBoundarySaturatedFresh := by key_fresh)
-        (demandUnitCountFresh := by key_fresh)
-        (windowBlockersFresh := by key_fresh)
-        (windowShadowSignatureFresh := by key_fresh)
-        (windowShadowTailFresh := by key_fresh)
-        (windowShadowCycleFresh := by key_fresh)
-        (windowShadowExcludedFresh := by key_fresh)
-        (demandResidualFresh := by key_fresh)
-        (unpaidExitFourFresh := by key_fresh)
-        (unifiedVisibleFresh := by key_fresh)
-        (unifiedVisibleOverloadFresh := by
-          key_fresh)
-        (jointBalanceFresh := by key_fresh)
-        (unifiedTerminalFresh := by key_fresh)
-        (decoratedExcludedFresh := by key_fresh)
-        (decoratedExclusionResidualFresh := by key_fresh)
-        (decoratedExclusionMassFresh := by key_fresh)
-        (decoratedObstructionMassFresh := by key_fresh)
-        (decoratedGlobalLocalBridgeFresh := by key_fresh)
-        (fanClosedFresh := by key_fresh)
-        (compatibleClosureFresh := by key_fresh)
-        (fanClosedRoutingFresh := by key_fresh)
-        (compatibleRoutingFresh := by key_fresh)
-        (shoulderCompletionFresh := by key_fresh)
-        (portReturnFresh := by key_fresh)
-        (firstLandingFresh := by key_fresh)
-        (crossShoulderFresh := by key_fresh)
-        (triangularRoutingFresh := by key_fresh)
-        (by key_fresh)
+      | .left exitFree =>
+          exact selectedTypeAExitFiveToEight exitFree
+      | .right exhaustedHistory =>
+          let discharged :=
+            (typeAExitFourDischargedRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              exhaustedHistory (by key_fresh)
+          exact selectedTypeAExitFourDischargedRetest discharged
 
 end HypostructureErdos64EG
