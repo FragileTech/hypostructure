@@ -178,6 +178,42 @@ plumbing already written directly in `StrategyDag.lean`.
    classification of every split on the path. Collect fresh evidence for each
    item.
 
+### Every fact is about the incoming residual
+
+This is the purpose of Hypostructure and the `ExactLedger`, and it is not a
+matter of style: it is the proof methodology itself. The argument works
+throughout with ONE counterexample, the selected minimal G, and with the
+objects fixed on G along the branch. A fact about generic pieces or
+independently chosen witnesses cannot carry that argument. Every published
+fact is a statement about the incoming residual, and it is computed from that
+residual:
+
+- Each key's `Holds` is evaluated at the branch's residual. It speaks about
+  `inputs.current`: its object, its state, and the objects the ledger has
+  already fixed on this branch (the canonical packing, the selected pieces,
+  components, receivers, coordinates, tokens and witnesses).
+- A fact may quantify only over the residual's own objects. It must not
+  quantify over arbitrary graphs, arbitrary boundaried pieces, arbitrary
+  contexts, or separately chosen witnesses that the residual does not
+  determine. An existential over "some piece somewhere" is not a fact about
+  the residual. Such facts can be vacuously true or never satisfiable, and
+  they make branches trivial.
+- Each executor computes its fact from `inputs.current` and `inputs.get`
+  facts on the literal incoming ledger. The contract lemma receives the
+  residual's objects as arguments.
+- Every proof in the repository is ultimately applied to G. A contract lemma
+  may be generic (∀ object, hypotheses → conclusion), and a more general or
+  reusable version is welcome. For the proof, though, it is always
+  instantiated at G and at the objects fixed on G, and every hypothesis is
+  checked on G from G's ledger facts. The published `Holds` is that
+  instantiation, never the generic statement and never an existential that
+  re-chooses what G already fixed.
+- A decision splits on a predicate about the residual. Both arms carry that
+  predicate or its negation, about the same residual objects.
+- Check satisfiability. A survivor or exclusion key that cannot hold on any
+  counterexample makes its branch vacuous; that is a defect, not a closure.
+  Never close a branch through such a fact.
+
 ### Classify every split as a dichotomy
 
 Every branch point of the manuscript strategy is an exhaustive, exclusive
