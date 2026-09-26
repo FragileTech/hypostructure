@@ -76,21 +76,6 @@ abbrev NearCubicTargetDefectOutcome (selected : EGInput.{u}) :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .surplusAtOrBelow selected.object
 
-/-- The two sparse target-defect exits have incompatible surplus ancestry. -/
-theorem node20a_nearCubicTargetDefect_disjoint
-    {selected : EGInput.{u}}
-    (strict : Node20aOutcome selected)
-    (near : NearCubicTargetDefectOutcome selected) : False := by
-  have above :
-      spineData.{u}.surplusThreshold selected.object.vertexCount <
-        selected.object.degreeSurplus spineData.{u}.threshold :=
-    strict.2.2.2
-  have atOrBelow :
-      selected.object.degreeSurplus spineData.{u}.threshold ≤
-        spineData.{u}.surplusThreshold selected.object.vertexCount :=
-    near.2.2
-  exact Nat.not_lt_of_ge atOrBelow above
-
 /-- Node `[187]` collects only the other literal selected-root outcomes.
 The pair-system entry retains its own source key and is not `[144a]`. -/
 abbrev OtherReturnedOutcome (selected : EGInput.{u}) :=

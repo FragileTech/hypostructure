@@ -3,7 +3,7 @@ import HypostructureErdos64EG.Assembly.NearCubic.Local
 import HypostructureErdos64EG.Assembly.NearCubic.Survivor.Realized
 import HypostructureErdos64EG.Assembly.NearCubic.Survivor.Unrealized
 
-/-! The near-cubic survivor dispatcher. Branch proofs compile independently. -/
+/-! The near-cubic survivor dispatcher. -/
 
 namespace HypostructureErdos64EG
 
@@ -15,16 +15,25 @@ open Hypostructure.Graph.Strategy.Spine
 universe u w
 
 set_option maxHeartbeats 8000000 in
+/-- **Nodes `[21]` and `[158]`** on the sparse survivor of `[19]`: the finite
+enumeration `[21]`, then `[158]`, the exact finite form of the realization
+sentence of `lem:p13-window-package`/`prop:p13-density`.  The yes arm continues
+at `[22]`; the no arm is the dense-packing residual `[159]`. -/
+-- EG-NODE [158] joint window package realized in the labelled class?
 noncomputable def selectedNearCubicSurvivorBranch
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .sparseSurplusSurvivor, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking,
-        K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
+        K .windowPresent, K .uncompressible, K .replacementExclusion,
+        K .targetCompleteContextUniversality, K .degreeProfileFibres,
+        K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .contractionCritical,
+        K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
     SelectedNearCubicSurvivorBoundary selected := by
   let dominated := selectedNearCubicNode21 history
-  match selectedWindowPackageRealizationDichotomy dominated with
+  match windowPackageRealizationDichotomy (data := spineData) dominated
+      (by key_fresh) (by key_fresh) with
   | .right unrealizedHistory =>
       exact Assembly.Internal.nearCubicUnrealized unrealizedHistory
   | .left enumerated =>

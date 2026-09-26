@@ -52,6 +52,30 @@ noncomputable instance instIncompatibleBarrierOverflowCap :
   contradiction := fun _residual overflow cap =>
     (Nat.not_lt_of_ge cap.down) overflow.down
 
+/-- **Node `[22]`, the live-hot entropy cap test** (`def:cold-window-ledger`):
+does the canonical hot family's package overflow the labelled skeleton budget,
+`skeletonBudget < 2^{rate·scales·|𝒫_hot|}` (`K .barrierOverflow`, node `[23]`),
+or fit it (`K .barrierCap`, the no-edge continuing at `[145]`)?  The two keys
+are exact complements on the same canonical hot family; the split itself is
+node `[22]`'s `K .hotColdPartition`. -/
+noncomputable def barrierDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger
+      (Input BranchState Presentation presentation data) current known)
+    [FactKeys.Has (K .hotColdPartition) known]
+    (capFresh : K .barrierCap ∉ known)
+    (overflowFresh : K .barrierOverflow ∉ known) :
+    Decision (K .barrierCap) (K .barrierOverflow) previous := by
+  classical
+  exact Decision.run previous (K .barrierCap) (K .barrierOverflow)
+    `Hypostructure.Graph.Strategy.Spine.barrierDichotomy
+    (if overflow : BarrierOverflowStatement data.toParameters current.object then
+      .inr ⟨overflow⟩
+    else
+      .inl ⟨Nat.le_of_not_lt overflow⟩)
+    capFresh overflowFresh
+
 /-- Node `[54]`'s active comparison and its exact skeleton bound cannot coexist.
 The two facts are retrieved only by Core's closure boundary. -/
 noncomputable instance instIncompatibleEntropyCapActiveBound :

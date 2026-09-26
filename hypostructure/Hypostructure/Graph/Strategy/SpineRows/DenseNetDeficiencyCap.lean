@@ -14,6 +14,29 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
+/-- **Node `[160]`, `lem:dense-deficiency-routing`, first comparison**: on the
+dense-packing residual `[159]`, decide the exact `τ(θ) < 1/4` deficiency test of
+node `[56]` (`K .denseDeficiencyBelow`) against its exact complement
+(`K .denseDeficiencyAtOrAbove`).  The second comparison of `[160]`, the
+private-carrier rate, is `route8RateDichotomy` on the yes-arm only. -/
+noncomputable def denseDeficiencyDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger
+      (Input BranchState Presentation presentation data) current known)
+    [FactKeys.Has (K .densePackingOverflow) known]
+    (belowFresh : K .denseDeficiencyBelow ∉ known)
+    (atOrAboveFresh : K .denseDeficiencyAtOrAbove ∉ known) :
+    Decision (K .denseDeficiencyBelow) (K .denseDeficiencyAtOrAbove) previous := by
+  classical
+  exact Decision.run previous (K .denseDeficiencyBelow) (K .denseDeficiencyAtOrAbove)
+    `Hypostructure.Graph.Strategy.Spine.denseDeficiencyDichotomy
+    (if below : DenseDeficiencyBelowStatement data.toParameters current.object then
+      .inl ⟨below⟩
+    else
+      .inr ⟨below⟩)
+    belowFresh atOrAboveFresh
+
 variable [FactSystem (Input BranchState Presentation presentation data)]
 
 /-! ## Node `[56]`, the large-budget net-deficiency cap (dense arm).

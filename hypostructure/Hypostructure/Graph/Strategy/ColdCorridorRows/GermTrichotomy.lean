@@ -192,4 +192,48 @@ class is dominated by the skeleton budget (`lem:skeleton-dominates`,
             data.threshold data.windowOrder data.LengthOK _⟩
         .nil)
 
+/-- **Node `[154]`, `lem:cold-bounded-germ-trichotomy`, first binary test (G1).**
+Is some configuration of node `[153]`'s extracted active family hit-realized?
+The no-arm is the literal negation on the same family. -/
+noncomputable def coldGermRealizationDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger
+      (Input BranchState Presentation presentation data) current known)
+    [FactKeys.Has (K .coldGermFamilyPositive) known]
+    (someFresh : K .coldGermSomeRealizing ∉ known)
+    (noneFresh : K .coldGermNoneRealizing ∉ known) :
+    Decision (K .coldGermSomeRealizing) (K .coldGermNoneRealizing) previous := by
+  classical
+  exact Decision.run previous (K .coldGermSomeRealizing) (K .coldGermNoneRealizing)
+    `Hypostructure.Graph.Strategy.Spine.coldGermRealizationDichotomy
+    (if hit : ColdGermSomeRealizingStatement data.toParameters current.object then
+      .inl ⟨hit⟩
+    else
+      .inr ⟨hit⟩)
+    someFresh noneFresh
+
+/-- **Node `[154]`, second binary test on the no-G1 arm (G2).**  Is some active
+configuration hit-distinguished?  The no-arm is its literal negation: every
+active configuration is silent (G3 or the equal-length table, `[157]`). -/
+noncomputable def coldGermDistinctionDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger
+      (Input BranchState Presentation presentation data) current known)
+    [FactKeys.Has (K .coldGermNoneRealizing) known]
+    (someFresh : K .coldGermSomeDistinguishing ∉ known)
+    (noneFresh : K .coldGermNoneDistinguishing ∉ known) :
+    Decision (K .coldGermSomeDistinguishing) (K .coldGermNoneDistinguishing)
+      previous := by
+  classical
+  exact Decision.run previous (K .coldGermSomeDistinguishing)
+    (K .coldGermNoneDistinguishing)
+    `Hypostructure.Graph.Strategy.Spine.coldGermDistinctionDichotomy
+    (if hit : ColdGermSomeDistinguishingStatement data.toParameters current.object then
+      .inl ⟨hit⟩
+    else
+      .inr ⟨hit⟩)
+    someFresh noneFresh
+
 end Hypostructure.Graph.Strategy.Spine

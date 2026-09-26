@@ -14,6 +14,28 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
+/-- **Node `[158]`**, the exact finite form of the realization sentence of
+`lem:p13-window-package`/`prop:p13-density`: is the joint window package of
+the fixed maximal packing realized by the labelled skeleton class?  The yes arm
+continues at `[22]`; the no arm is the dense-packing residual `[159]`. -/
+noncomputable def windowPackageRealizationDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger
+      (Input BranchState Presentation presentation data) current known)
+    [FactKeys.Has (K .skeletonDominates) known]
+    (realizedFresh : K .windowPackageRealized ∉ known)
+    (unrealizedFresh : K .windowPackageUnrealized ∉ known) :
+    Decision (K .windowPackageRealized) (K .windowPackageUnrealized) previous := by
+  classical
+  exact Decision.run previous (K .windowPackageRealized) (K .windowPackageUnrealized)
+    `Hypostructure.Graph.Strategy.Spine.windowPackageRealizationDichotomy
+    (if realized : WindowPackageRealizedStatement data.toParameters current.object then
+      .inl ⟨realized⟩
+    else
+      .inr ⟨realized⟩)
+    realizedFresh unrealizedFresh
+
 variable [FactSystem (Input BranchState Presentation presentation data)]
 
 /-! ## Node `[21]`: the separated window package

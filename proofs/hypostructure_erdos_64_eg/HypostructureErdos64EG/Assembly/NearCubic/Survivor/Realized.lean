@@ -1,10 +1,14 @@
-import Hypostructure.Graph.Strategy.SpineRows.HotColdPartition
-import HypostructureErdos64EG.Assembly.Cold.Barrier
-import HypostructureErdos64EG.Assembly.NearCubic.Boundary
-import HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedAtOrAbove
-import HypostructureErdos64EG.Assembly.NearCubic.Survivor.RealizedBelow
+import Hypostructure.Graph.Strategy.ColdCorridorRows.ColdFamilyClosure
+import Hypostructure.Graph.Strategy.SpineRows.Route8RateFromColdBelow
+import HypostructureErdos64EG.Assembly.NearCubic.ColdPass
+import HypostructureErdos64EG.Assembly.NearCubic.Spine
 
-/-! A branch of the near-cubic survivor, retaining its full literal ledger. -/
+/-!
+# Assembly: NearCubic / Survivor / Realized
+
+The yes-arm of `[158]`: the hot/cold split `[22]` and the cold branch
+`[145]`--`[157]` of Part XI on the realized-package residual.
+-/
 
 namespace HypostructureErdos64EG
 
@@ -16,6 +20,19 @@ open Hypostructure.Graph.Strategy.Spine
 universe u w
 
 set_option maxHeartbeats 8000000 in
+/-- **The realized-package arm of `[158]`.**  `[22]`--`[23]`, then `[146]`
+(`θ < 1/78`).  Its yes arm `[147]`: the route-8 private-carrier inequality
+`τ(θ) < 3/13` is `K .coldRoute8Below` read through `|∂R| ≤ 15p + σ_W`
+(`route8RateFromColdBelowRow`); the arm runs the spine's route-8 closure
+`[25]`--`[124]` with that inequality in place of `[24]`.  Its no arm runs
+`[148]`--`[152]` and decides `[153]`: the bounded arm returns through `[24]`
+(`densityBudgetRow`, `prop:p13-density` after closure) to `[25]`; the linear arm
+extracts the configuration family and decides `[154]`.  G1 closes at `[155]`;
+G2 `[156]` and the silent arm `[157]` publish the local cold-terminal exclusion
+of `thm:cold-branch-quantitative-closure`, retained at `[187]`. -/
+-- EG-NODE [146] \(\theta<1/78\)?
+-- EG-NODE [147] route-8 private-incidence collision closes
+-- EG-NODE [24] bounded cold-mass return from [153]: $\theta\le\theta_{\rm win}+o(1)$; high entropy: $\theta\le0.01198542083\ldots$
 noncomputable def Assembly.Internal.nearCubicRealized
     {selected : EGInput.{u}}
     (enumerated : ExactLedger EGInput.{u} selected
@@ -27,24 +44,38 @@ noncomputable def Assembly.Internal.nearCubicRealized
        K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
        K .selection]) :
     SelectedNearCubicSurvivorBoundary selected := by
-  let partitioned :=
-    (hotColdPartitionRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      enumerated (by key_fresh)
-  match selectedBarrierDichotomy partitioned
+  let cap := nearCubicHotColdCap enumerated
+  match coldRoute8Dichotomy (data := spineData) cap
       (by key_fresh) (by key_fresh) with
-  | .left capHistory =>
-      -- `[145]` carries no mathematical assertion of its own: pass the
-      -- literal `[22]` ledger directly to `[146]`.
-      match coldRoute8Dichotomy (data := spineData) capHistory
+  | .left belowHistory =>
+      let rated :=
+        (route8RateFromColdBelowRow (BranchState := BranchState)
+            (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+            (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          belowHistory (by key_fresh)
+      exact nearCubicLargeBudgetColdRate (nearCubicFullRank rated)
+  | .right atOrAboveHistory =>
+      let stubs := nearCubicColdStubs atOrAboveHistory
+      match coldMassDichotomy (data := spineData) stubs
           (by key_fresh) (by key_fresh) with
-      | .left belowHistory =>
-          exact Assembly.Internal.nearCubicRealizedBelow belowHistory
-      | .right atOrAboveHistory =>
-          exact Assembly.Internal.nearCubicRealizedAtOrAbove atOrAboveHistory
-  | .right overflowHistory =>
-      exact (selectedBarrierOverflowCloses overflowHistory
-        (by key_fresh) (by key_fresh)).elim
+      | .right boundedHistory =>
+          let density :=
+            (densityBudgetRow (data := spineData)).run boundedHistory
+              (by key_fresh)
+          exact nearCubicLargeBudgetDensityCap (nearCubicFullRank density)
+      | .left linearHistory =>
+          let family :=
+            nearCubicColdGermFamily (nearCubicColdCorridorState linearHistory)
+          let unhit := nearCubicColdNoHit family
+          match coldGermDistinctionDichotomy (data := spineData) unhit
+              (by key_fresh) (by key_fresh) with
+          | .left distinguishedHistory =>
+              exact Or.inr (Or.inr (Or.inr
+                ((nearCubicColdTable distinguishedHistory).get
+                  (K .coldBranchClosed)).down))
+          | .right silentHistory =>
+              exact Or.inr (Or.inr (Or.inr
+                ((nearCubicColdTable silentHistory).get
+                  (K .coldBranchClosed)).down))
 
 end HypostructureErdos64EG

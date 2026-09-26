@@ -14,6 +14,20 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
+/-- **The terminal `[60]`, the net-cap contradiction.**  On the yes-arm of
+`[59]` the selected maximum packing has `N₀(R) ≥ 0`; the large-budget net cap
+`K .netChargeCap` of `[57]` gives `N₀(R) < 0` at every maximum packing, in
+particular at that one. -/
+noncomputable instance instIncompatibleNetChargeNonNegativeCap :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K .netChargeNonNegative) (K .netChargeCap) where
+  contradiction := fun residual nonNegative cap => by
+    obtain ⟨packing, _canonical, valid, cardinality, _maximal, nonnegative⟩ :=
+      nonNegative.down
+    exact ((residual.object.not_negativeNetCharge_iff
+      (residual.object.remainderSupport packing) data.threshold
+      data.dischargeScale).mpr nonnegative) (cap.down packing valid cardinality)
+
 variable [FactSystem (Input BranchState Presentation presentation data)]
 
 /-! ## Node `[59]`: the net-charge sign test

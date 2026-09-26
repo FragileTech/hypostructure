@@ -1014,27 +1014,4 @@ noncomputable instance instIncompatibleDensePackingOverflowCompressionCap :
   contradiction := fun _input overflow cap =>
     (Nat.not_lt_of_ge cap.down) overflow.down
 
-/-- Node `[171]` on its additive arm: run the compression producer on the
-literal incoming ledger and let Core close its budget cap against node
-`[159]`'s strict overflow. -/
-noncomputable def blockedCompressionCloses
-    {current : Input BranchState Presentation presentation data}
-    {known : FactKeys (Input BranchState Presentation presentation data)}
-    (previous : ExactLedger
-      (Input BranchState Presentation presentation data) current known)
-    [FactKeys.Has (K .blockedClassMember) known]
-    [FactKeys.Has (K .blockedScaleAdditive) known]
-    [FactKeys.Has (K .densePackingOverflow) known]
-    (boundFresh : K .blockedCompressionBound ∉ known)
-    (capFresh : K .blockedCompressionCap ∉ known)
-    (closureFresh : closed ∉ known) : False := by
-  let closedHistory :=
-    (blockedCompressionRow (BranchState := BranchState)
-      (Presentation := Presentation) (presentation := presentation)
-      (data := data)).runAndCloseIncompatible previous
-        (K .densePackingOverflow) (K .blockedCompressionCap)
-        (by simp [boundFresh, capFresh])
-        (by simp [closureFresh])
-  exact closedHistory.elimClosed (by infer_instance)
-
 end Hypostructure.Graph.Strategy.Spine
