@@ -7,7 +7,7 @@ import Mathlib.Tactic.Ring
 This fixture is **evidence, not machinery**: it exhibits concrete numbers at
 which node `[24]`'s density cap holds while `Graph.Route8Census.Rate` — the
 object-level inequality carried by `K .route8Rate` and consumed by
-`route8NoTwoCarrierContradictionRow` at nodes `[120]`--`[122]` — fails.
+the census closure `instIncompatibleRoute8CensusPrivateCarrierBudget` at nodes `[121]`--`[122]` — fails.
 
 It exists so that the gap between the two is recorded permanently, with the
 manuscript's own constants, and cannot be "repaired" later by quietly asserting

@@ -141,7 +141,7 @@ noncomputable def selectedAbsorbedGermResidual
     (absorbedWindowShadowTailFresh : K .windowShadowSingletonTail ∉ known := by key_fresh)
     (absorbedWindowShadowCycleFresh : K .windowShadowHitCycle ∉ known := by key_fresh)
     (absorbedWindowShadowExcludedFresh : K .windowShadowHitExcluded ∉ known := by key_fresh)
-    (absorbedDemandResidualFresh : K .route8PeeledDemandResidual ∉ known := by key_fresh)
+    (absorbedDemandResidualFresh : K .route8StageRate ∉ known := by key_fresh)
     (absorbedUnpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known := by
       key_fresh)
     (absorbedUnifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known := by
@@ -150,7 +150,9 @@ noncomputable def selectedAbsorbedGermResidual
         K .route8UnifiedVisibleOverload ∉ known := by key_fresh)
     (absorbedJointBalanceFresh : K .route8JointBalance ∉ known := by
       key_fresh)
-    (absorbedUnifiedTerminalFresh : K .route8TerminalNoGo ∉ known := by key_fresh)
+    (absorbedUnifiedTerminalFresh : K .route8UnifiedTwoCarrierExit ∉ known := by key_fresh)
+    (absorbedUnpaidTwoFresh : K .route8UnpaidTwoCarrier ∉ known := by key_fresh)
+    (absorbedWitnessFreeFresh : K .route8UnpaidWitnessFree ∉ known := by key_fresh)
    :
     SelectedAbsorbedGermBoundary selected := by
   letI := absorbedCubicFresh

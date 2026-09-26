@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.RouteEight.WindowShadow
 
 namespace Hypostructure.Graph.Strategy.Spine
 
@@ -6,8 +7,8 @@ open Hypostructure.Core.Residual Hypostructure.Core.Strategy
 
 universe u v
 
-/-- Consume the recorded-hit cycle certificate against the same selected
-graph's avoidance fact. No path or target fact comes from another branch. -/
+/-- The selected object has no recorded shadow hit
+(`lem:typeA-window-shadow-hit-routes`). -/
 @[reducible] noncomputable def windowShadowHitExcludedRow
     {BranchState : Graph.FiniteObject.{u} → Type v}
     {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
@@ -20,14 +21,10 @@ graph's avoidance fact. No path or target fact comes from another branch. -/
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .windowShadowHitExcluded)
-        (show Value BranchState Presentation presentation data
-            .windowShadowHitExcluded inputs.current from ⟨by
-          intro window x y a b corridor path avoids attachA attachB distinct hit
-          obtain ⟨cycle, isCycle, _length, accepted⟩ :=
-            (inputs.get (K .windowShadowHitCycle)).down
-              window x y a b corridor path avoids attachA attachB distinct hit
-          exact (inputs.get (K .selection)).down.1
-            ⟨⟨window a, cycle, isCycle, accepted⟩⟩⟩)
+        ⟨Graph.Contracts.RouteEight.windowShadowHitExcluded data.toParameters inputs.current.object
+          (inputs.get (K .selection)).down.1
+          (inputs.get (K .windowShadowHitCycle)).down⟩
         .nil)
+    0 0
 
 end Hypostructure.Graph.Strategy.Spine

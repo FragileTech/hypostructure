@@ -18793,7 +18793,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `K .route8SmallCoreCollapse` derives, for the selected alpha ≤ 1 entry, the ordered alternatives TraceLocalTargetDefect / TraceResponseQuotient / TraceDelocalization / TraceSurvivingSeparator (exits (4)--(7)). It uses `smallCoreCollapseFacts`, [114] cut parity and the nontrivial trace-incidence quotient (`lem:typeA-one-terminal-collapse`)."
+    "note": "FAITHFUL — `K .route8SmallCoreCollapse` publishes the zero/one-core entry and its exit-(4)--(7) trace-basin alternative (lem:typeA-one-terminal-collapse); the terminal is the framework closure against the target-complete minimality of `K .route8TrueResidual`."
    },
    "117": {
     "lean": "verified",
@@ -18841,7 +18841,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — Reads `K .route8Census` and `K .route8PrivateCarrierBudget` (delta*|entries| <= |supply|) and publishes `K .route8NoTwoCarrierContradiction` whose Holds is `False`, via the integer squeeze with floor = delta; at delta=3, s=4 this is exactly tau >= 12(1/4 - tau) against tau < 3/13."
+    "note": "FAITHFUL — No False-valued key: the private budget of [119]-[120] is Incompatible with the census deficit/rate readings (rem:route8-carrier-margin)."
    },
    "123": {
     "lean": "verified",
@@ -18849,7 +18849,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `K .route8PeelingDescent` holds a finite peel list with its `Route8Pressure.StageOutcome` (chain, exact stage accounting, and terminal) on the unified entries at the fixed maximal packing. `route8StageOutcomeDichotomy` then splits into `K .route8UnifiedTrueTwoCarrierEntry` (true route 8, to [124]) or `K .route8StageRateFailed` (failed reduced rate, which gets the demand, absorption, and window-blocker ledgers and goes to [181]). This matches the node's exhaustive terminal test."
+    "note": "FAITHFUL — The descent pins its terminal stage `route8DescentChain`; the decision is the reduced-rate test `route8StageRate` versus its exact negation `route8StageRateFailed` at that stage. Yes -> [124]; no -> demand, absorption, window-blocker ledgers -> [181]."
    },
    "124": {
     "lean": "verified",
@@ -18857,7 +18857,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `K .route8TerminalNoGo` holds `False` (SpineVocabulary.lean:7090). Each executor reads the selected two-support entry and its deletion witnesses / true-entry package from the ledger (`route8TrueResidual`, `route8NoSmallCoreEntry`, `route8CarrierDeletionWitnesses`, or `route8UnifiedTrueTwoCarrierEntry`), builds the canonical Q5 exit-(4) witness locally, and contradicts the same entry's no-exit-(4) clause. This is thm:typeA-two-carrier-nogo."
+    "note": "FAITHFUL — thm:typeA-two-carrier-nogo: lem:typeA-carrier-deletion-exit is published as `K .route8TwoCarrierExit` / `K .route8UnifiedTwoCarrierExit` and is Incompatible with the terminal true two-support entry's absent exit (4). No False-valued key."
    },
    "125": {
     "lean": "verified",
@@ -19321,7 +19321,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — `K .route8PeeledDemandResidual` bundles the failed stage, the maximal demand ledger, the absorption and the window blockers. The [181] `Decision` then yields either `K .route8UnifiedTrueTwoCarrierEntry` (a witness-free entry, closed by the existing [124] `route8UnifiedTerminalNoGoRow`) or `K .route8UnpaidExitFourResidual` (every unpaid entry has two or fewer private carriers and a canonical exit-(4) witness)."
+    "note": "FAITHFUL — (168.1) is its own fact; the decision is outcome (i) `route8UnpaidWitnessFree` against its exact negation `route8UnpaidExitFourResidual`; outcome (i) is the terminal input of thm:typeA-two-carrier-nogo and closes at [124]."
    },
    "182": {
     "lean": "verified",
@@ -19337,7 +19337,7 @@
     "wired": "partial",
     "local": "verified",
     "fidelity": "verified",
-    "note": "FAITHFUL — On the `K .route8UnpaidExitFourResidual` survivor, `route8UnifiedVisibleResidualRow` uses the shortest-trace boundary-support argument to publish `K .route8UnifiedVisibleResidual`: every retained unified entry is visible, so the silent-entry count is zero (lem:typeA-unified-visible-ownership)."
+    "note": "FAITHFUL — `K .route8UnpaidExitFourResidual`: every unpaid entry of every maximal ledger carries its canonical exit-(4) witness (168.2)."
    },
    "184": {
     "lean": "verified",

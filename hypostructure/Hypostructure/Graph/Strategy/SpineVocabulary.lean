@@ -1232,13 +1232,6 @@ inductive Key where
   /-- Nodes `[119]`--`[120]`: the no-two-carrier branch gives the private
   essential-carrier budget against the selected route-`8` carrier supply. -/
   | route8PrivateCarrierBudget
-  /-- Nodes `[121]`--`[122]`: the no-two-carrier branch contradicts the
-  route-`8` burden/deficit and registered rate facts. -/
-  | route8NoTwoCarrierContradiction
-  /-- Node `[124]`: the terminal two-carrier route-`8` no-go.  Carrier-deletion
-  witnesses become canonical Q5 exit-`(4)` witnesses, contradicting the
-  no-exit-`(4)` fact of the same true route-`8` residual. -/
-  | route8TerminalNoGo
   /-- Nodes `[111]`--`[113]` and `[120]`: the object-level census of the
   extracted Type A collection `𝒳_A` — the deficit `|R| ≤ N_basin + s·|∂R|`
   (`lem:typeA-route8-burden` in `def:typeA-large-budget-deficit`) and the
@@ -1306,10 +1299,6 @@ inductive Key where
   | windowShadowHitCycle
   /-- Selection excludes every recorded shadow hit on the same object. -/
   | windowShadowHitExcluded
-  /-- Node `[181]`: the explicit residual left by node `[123]` after exact
-  peeling accounting, the maximal 2/3-demand ledger, demand absorption, and
-  packed-window blocker accounting. -/
-  | route8PeeledDemandResidual
   /-- Node 182: one-entry augmentation exhausts every unpaid entry with
   three private carriers; the no-exit-(4) arm routes to node 124, and the sole
   survivor consists of two-carrier unpaid entries with canonical exit-(4)
@@ -1353,12 +1342,6 @@ inductive Key where
   stage with a true two-carrier entry of the peeled ledger or a stage where the
   stage rate fails (`Graph.Route8Pressure.StageOutcome`). -/
   | route8PeelingDescent
-  /-- Node `[123]`, `lem:typeA-visible-entry` at the unified collection: a
-  visible excess load of a collection piece carries the canonical exit-`(4)`
-  witness (clause (Q1) of `def:typeA-exit4-family`), because exits
-  `(1)`--`(3)`, `(5)`, `(6)` are standing-invariant contradictions and the
-  collection produces no Type B handoff (`rem:unified-covers-exit4`). -/
-  | route8VisibleExitFourRouting
   /-- Node `[123]`, terminal survivor of the unified peeling ledger: an
   unpeeled two-support entry with no exit-`(4)` target-defect witness.  This is
   kept distinct from the pure collection's `route8TrueTwoCarrierEntry`. -/
@@ -1645,6 +1628,22 @@ inductive Key where
   | typeAExitSevenAbsent
   /-- Node `[109]`, visible origin: no route-`8` residual state has the node-`[94]` silent origin. -/
   | typeAExitEightNotSilent
+  -- F3 keys
+  /-- Node `[124]`, `lem:typeA-carrier-deletion-exit` on the route-`8` collection `𝒳_A`:
+  every two-support entry of `Ξ(𝒳_A)` carries its canonical exit-`(4)` witness. -/
+  | route8TwoCarrierExit
+  /-- Node `[124]`, `lem:typeA-carrier-deletion-exit` on the unified collection:
+  every two-support entry of `Ξ̃` carries its canonical exit-`(4)` witness. -/
+  | route8UnifiedTwoCarrierExit
+  /-- Node `[123]`, yes: the reduced-rate test passes at the terminal stage of the
+  exit-`(4)` descent. -/
+  | route8StageRate
+  /-- Node `[181]`, (168.1): every unpaid entry of a maximal demand ledger is
+  two-support. -/
+  | route8UnpaidTwoCarrier
+  /-- Node `[181]`, yes: some unpaid entry of a maximal demand ledger has no
+  exit-`(4)` witness. -/
+  | route8UnpaidWitnessFree
   deriving DecidableEq
 
 /-- The value schema of each spine fact, stated of the *object* alone.
@@ -2217,14 +2216,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- Nodes `[119]`--`[120]`: no two-carrier entry gives the
       -- private-carrier budget on the selected route-8 residual.
       Route8PrivateCarrierBudget data.toParameters object
-  | .route8NoTwoCarrierContradiction, object =>
-      -- Nodes `[121]`--`[122]`: the no-two-carrier branch contradicts the
-      -- selected burden/deficit and rate facts.
-      Route8NoTwoCarrierContradiction data.toParameters object
-  | .route8TerminalNoGo, object =>
-      -- Node `[124]`: terminal two-carrier route-8 no-go through Q5
-      -- carrier-deletion and the committed no-exit-(4) fact.
-      Route8TerminalNoGo data.toParameters object
   | .route8Census, object =>
       Route8CensusStatement data.toParameters object
   | .route8Deficit, object =>
@@ -2261,8 +2252,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       WindowShadowSingletonTailStatement data.toParameters object
   | .route8WindowBlockers, object =>
       Route8WindowBlockersStatement data.toParameters object
-  | .route8PeeledDemandResidual, object =>
-      Route8PeeledDemandResidualStatement data.toParameters object
   | .route8UnpaidExitFourResidual, object =>
       Route8UnpaidExitFourResidualStatement data.toParameters object
   | .route8UnifiedVisibleResidual, object =>
@@ -2279,8 +2268,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       Route8NoTwoCarrierEntryStatement data.toParameters object
   | .route8TrueTwoCarrierEntry, object =>
       Route8TrueTwoCarrierEntryStatement data.toParameters object
-  | .route8VisibleExitFourRouting, object =>
-      Route8VisibleExitFourRoutingStatement data.toParameters object
   | .route8PeelingDescent, object =>
       Route8PeelingDescentStatement data.toParameters object
   | .route8UnifiedTrueTwoCarrierEntry, object =>
@@ -2436,6 +2423,19 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       TypeAExitSevenAbsentStatement data.toParameters object
   | .typeAExitEightNotSilent, object =>
       TypeAExitEightNotSilentStatement data.toParameters object
+  -- F3 keys
+  | .route8TwoCarrierExit, object =>
+      Route8TwoCarrierExitStatement data.toParameters object
+        (route8SurvivorComponents data.toParameters object)
+  | .route8UnifiedTwoCarrierExit, object =>
+      Route8TwoCarrierExitStatement data.toParameters object
+        (route8UnifiedComponents data.toParameters object)
+  | .route8StageRate, object =>
+      Route8StageRateStatement data.toParameters object
+  | .route8UnpaidTwoCarrier, object =>
+      Route8UnpaidTwoCarrierStatement data.toParameters object
+  | .route8UnpaidWitnessFree, object =>
+      Route8UnpaidWitnessFreeStatement data.toParameters object
 
 /-- Audit labels.  They are diagnostics; every routing and lookup decision
 compares exact keys. -/
@@ -2674,8 +2674,6 @@ def label : Key → String
   | .route8SmallCoreCollapse => "route8SmallCoreCollapse"
   | .route8CarrierDeletionWitnesses => "route8CarrierDeletionWitnesses"
   | .route8PrivateCarrierBudget => "route8PrivateCarrierBudget"
-  | .route8NoTwoCarrierContradiction => "route8NoTwoCarrierContradiction"
-  | .route8TerminalNoGo => "route8TerminalNoGo"
   | .route8Census => "route8Census"
   | .route8Deficit => "route8Deficit"
   | .route8Rate => "route8Rate"
@@ -2687,7 +2685,6 @@ def label : Key → String
   | .route8StageRateFailed => "route8StageRateFailed"
   | .route8DemandAbsorption => "route8DemandAbsorption"
   | .route8WindowBlockers => "route8WindowBlockers"
-  | .route8PeeledDemandResidual => "route8PeeledDemandResidual"
   | .route8UnpaidExitFourResidual => "route8UnpaidExitFourResidual"
   | .route8UnifiedVisibleResidual => "route8UnifiedVisibleResidual"
   | .route8UnifiedVisibleOverload => "route8UnifiedVisibleOverload"
@@ -2697,7 +2694,6 @@ def label : Key → String
   | .route8NoTwoCarrierEntry => "route8NoTwoCarrierEntry"
   | .route8TrueTwoCarrierEntry => "route8TrueTwoCarrierEntry"
   | .route8PeelingDescent => "route8PeelingDescent"
-  | .route8VisibleExitFourRouting => "route8VisibleExitFourRouting"
   | .route8UnifiedTrueTwoCarrierEntry => "route8UnifiedTrueTwoCarrierEntry"
   | .sparseSlackSurplus => "sparseSlackSurplus"
   | .activeSurplusFamily => "activeSurplusFamily"
@@ -2775,6 +2771,12 @@ def label : Key → String
   | .typeAExitSixGlobalScope => "typeAExitSixGlobalScope"
   | .typeAExitSevenAbsent => "typeAExitSevenAbsent"
   | .typeAExitEightNotSilent => "typeAExitEightNotSilent"
+  -- F3 keys
+  | .route8TwoCarrierExit => "route8TwoCarrierExit"
+  | .route8UnifiedTwoCarrierExit => "route8UnifiedTwoCarrierExit"
+  | .route8StageRate => "route8StageRate"
+  | .route8UnpaidTwoCarrier => "route8UnpaidTwoCarrier"
+  | .route8UnpaidWitnessFree => "route8UnpaidWitnessFree"
 
 /-! ### Label pins
 
@@ -3020,10 +3022,6 @@ example : label .route8CarrierDeletionWitnesses =
     "route8CarrierDeletionWitnesses" := rfl
 example : label .route8PrivateCarrierBudget =
     "route8PrivateCarrierBudget" := rfl
-example : label .route8NoTwoCarrierContradiction =
-    "route8NoTwoCarrierContradiction" := rfl
-example : label .route8TerminalNoGo =
-    "route8TerminalNoGo" := rfl
 example : label .route8Census = "route8Census" := rfl
 example : label .route8Deficit = "route8Deficit" := rfl
 example : label .route8Rate = "route8Rate" := rfl
@@ -3035,8 +3033,6 @@ example : label .route8UnifiedEntryCensus = "route8UnifiedEntryCensus" := rfl
 example : label .route8StageRateFailed = "route8StageRateFailed" := rfl
 example : label .route8DemandAbsorption = "route8DemandAbsorption" := rfl
 example : label .route8WindowBlockers = "route8WindowBlockers" := rfl
-example : label .route8PeeledDemandResidual =
-    "route8PeeledDemandResidual" := rfl
 example : label .route8UnpaidExitFourResidual =
     "route8UnpaidExitFourResidual" := rfl
 example : label .route8UnifiedVisibleResidual =
@@ -3050,8 +3046,6 @@ example : label .route8TwoCarrierEntry = "route8TwoCarrierEntry" := rfl
 example : label .route8NoTwoCarrierEntry = "route8NoTwoCarrierEntry" := rfl
 example : label .route8TrueTwoCarrierEntry = "route8TrueTwoCarrierEntry" := rfl
 example : label .route8PeelingDescent = "route8PeelingDescent" := rfl
-example : label .route8VisibleExitFourRouting =
-    "route8VisibleExitFourRouting" := rfl
 example : label .route8UnifiedTrueTwoCarrierEntry =
     "route8UnifiedTrueTwoCarrierEntry" := rfl
 example : label .sparseSlackSurplus = "sparseSlackSurplus" := rfl
@@ -3134,6 +3128,12 @@ example : label .typeAExitSixProperScope = "typeAExitSixProperScope" := rfl
 example : label .typeAExitSixGlobalScope = "typeAExitSixGlobalScope" := rfl
 example : label .typeAExitSevenAbsent = "typeAExitSevenAbsent" := rfl
 example : label .typeAExitEightNotSilent = "typeAExitEightNotSilent" := rfl
+-- F3 keys
+example : label .route8TwoCarrierExit = "route8TwoCarrierExit" := rfl
+example : label .route8UnifiedTwoCarrierExit = "route8UnifiedTwoCarrierExit" := rfl
+example : label .route8StageRate = "route8StageRate" := rfl
+example : label .route8UnpaidTwoCarrier = "route8UnpaidTwoCarrier" := rfl
+example : label .route8UnpaidWitnessFree = "route8UnpaidWitnessFree" := rfl
 end LabelPins
 
 /-- The value schema at a residual: the object-level statement, read at the
@@ -3375,8 +3375,6 @@ def idx : Key → Nat
   | .route8SmallCoreCollapse => 168
   | .route8CarrierDeletionWitnesses => 170
   | .route8PrivateCarrierBudget => 171
-  | .route8NoTwoCarrierContradiction => 172
-  | .route8TerminalNoGo => 174
   | .route8Census => 260
   | .route8Deficit => 263
   | .route8Rate => 264
@@ -3388,7 +3386,6 @@ def idx : Key → Nat
   | .route8StageRateFailed => 342
   | .route8DemandAbsorption => 351
   | .route8WindowBlockers => 352
-  | .route8PeeledDemandResidual => 353
   | .route8UnpaidExitFourResidual => 503
   | .route8UnifiedVisibleResidual => 504
   | .route8UnifiedVisibleOverload => 505
@@ -3402,7 +3399,6 @@ def idx : Key → Nat
   | .route8NoTwoCarrierEntry => 262
   | .route8TrueTwoCarrierEntry => 280
   | .route8PeelingDescent => 282
-  | .route8VisibleExitFourRouting => 338
   | .route8UnifiedTrueTwoCarrierEntry => 334
   | .sparseSlackSurplus => 109
   | .activeSurplusFamily => 110
@@ -3482,6 +3478,12 @@ def idx : Key → Nat
   | .typeAExitSixGlobalScope => 1005
   | .typeAExitSevenAbsent => 1006
   | .typeAExitEightNotSilent => 1007
+  -- F3 keys
+  | .route8TwoCarrierExit => 1400
+  | .route8UnifiedTwoCarrierExit => 1401
+  | .route8StageRate => 1402
+  | .route8UnpaidTwoCarrier => 1403
+  | .route8UnpaidWitnessFree => 1404
 
 /-- Left inverse of `idx`.  Writing it out is also what checks the numbering:
 two keys sharing an index would make `ofIdx_idx` unprovable. -/
@@ -3707,8 +3709,6 @@ def ofIdx : Nat → Key
   | 168 => .route8SmallCoreCollapse
   | 170 => .route8CarrierDeletionWitnesses
   | 171 => .route8PrivateCarrierBudget
-  | 172 => .route8NoTwoCarrierContradiction
-  | 174 => .route8TerminalNoGo
   | 260 => .route8Census
   | 263 => .route8Deficit
   | 264 => .route8Rate
@@ -3720,7 +3720,6 @@ def ofIdx : Nat → Key
   | 342 => .route8StageRateFailed
   | 351 => .route8DemandAbsorption
   | 352 => .route8WindowBlockers
-  | 353 => .route8PeeledDemandResidual
   | 503 => .route8UnpaidExitFourResidual
   | 504 => .route8UnifiedVisibleResidual
   | 505 => .route8UnifiedVisibleOverload
@@ -3734,7 +3733,6 @@ def ofIdx : Nat → Key
   | 262 => .route8NoTwoCarrierEntry
   | 280 => .route8TrueTwoCarrierEntry
   | 282 => .route8PeelingDescent
-  | 338 => .route8VisibleExitFourRouting
   | 334 => .route8UnifiedTrueTwoCarrierEntry
   | 109 => .sparseSlackSurplus
   | 110 => .activeSurplusFamily
@@ -3819,6 +3817,12 @@ def ofIdx : Nat → Key
   | 1005 => .typeAExitSixGlobalScope
   | 1006 => .typeAExitSevenAbsent
   | 1007 => .typeAExitEightNotSilent
+  -- F3 keys
+  | 1400 => .route8TwoCarrierExit
+  | 1401 => .route8UnifiedTwoCarrierExit
+  | 1402 => .route8StageRate
+  | 1403 => .route8UnpaidTwoCarrier
+  | 1404 => .route8UnpaidWitnessFree
   | _ => .selection
 
 theorem ofIdx_idx (k : Key) : ofIdx (idx k) = k := by
@@ -4373,12 +4377,6 @@ def name : Key → Lean.Name
   | .route8PrivateCarrierBudget =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "route8PrivateCarrierBudget") 171
-  | .route8NoTwoCarrierContradiction =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine
-        "route8NoTwoCarrierContradiction") 172
-  | .route8TerminalNoGo =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine
-        "route8TerminalNoGo") 174
   | .route8Census =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8Census") 260
   | .route8Deficit =>
@@ -4405,9 +4403,6 @@ def name : Key → Lean.Name
   | .route8WindowBlockers =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "route8WindowBlockers") 352
-  | .route8PeeledDemandResidual =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine
-        "route8PeeledDemandResidual") 353
   | .route8UnpaidExitFourResidual =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "route8UnpaidExitFourResidual") 503
@@ -4431,9 +4426,6 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8TrueTwoCarrierEntry") 280
   | .route8PeelingDescent =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8PeelingDescent") 282
-  | .route8VisibleExitFourRouting =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine
-        "route8VisibleExitFourRouting") 338
   | .route8UnifiedTrueTwoCarrierEntry =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "route8UnifiedTrueTwoCarrierEntry") 334
@@ -4622,6 +4614,17 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitSevenAbsent") 1006
   | .typeAExitEightNotSilent =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitEightNotSilent") 1007
+  -- F3 keys
+  | .route8TwoCarrierExit =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8TwoCarrierExit") 1400
+  | .route8UnifiedTwoCarrierExit =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8UnifiedTwoCarrierExit") 1401
+  | .route8StageRate =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8StageRate") 1402
+  | .route8UnpaidTwoCarrier =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8UnpaidTwoCarrier") 1403
+  | .route8UnpaidWitnessFree =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8UnpaidWitnessFree") 1404
 
 /-- The written-out names agree with `label` and `idx`.  `name` is spelled out
 so that reducing it in a downstream audit proof costs one unfolding rather
