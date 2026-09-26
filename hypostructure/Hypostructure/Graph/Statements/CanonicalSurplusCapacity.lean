@@ -1,4 +1,4 @@
-import Hypostructure.Graph.Statements.Parameters
+import Hypostructure.Graph.Statements.Spine
 
 /-!
 # Canonical objects of the sparse-surplus capacity/pair ledger
@@ -36,7 +36,7 @@ statements in `Statements/SurplusPair.lean` and the library predicates of
 refolded onto these `Spec`s when the keys are restated at the canonical
 objects.
 
-This module imports only `Statements/Parameters`; it may be imported by any
+This module imports only `Statements/Spine` (for the node-`[19]` packing); it may be imported by any
 statement module.
 -/
 
@@ -90,7 +90,10 @@ def CapacityLedgerSpec (capacity : SurplusCapacity data object) : Prop :=
     Graph.FiniteObject.ConcreteCapacityTokenLedgerStatement object
       data.threshold data.windowOrder capacity.activation capacity.carrier
       capacity.packing ∧
-    Graph.SupportComponents.Connected.ConnectedOn object object.vertexFinset
+    Graph.SupportComponents.Connected.ConnectedOn object object.vertexFinset ∧
+    -- `def:window-remainder-surplus-split` builds `𝔗_W` on *the* maximal
+    -- packing `𝒫` fixed at node `[19]`, not on a re-chosen one.
+    capacity.packing = canonicalWindowPacking data object
 
 /-- **The canonical capacity presentation `𝔗_cap` of `G`**: the witness of
 node `[136]`'s `.capacityTokenLedger` (`CapacityTokenLedgerStatement`), chosen
