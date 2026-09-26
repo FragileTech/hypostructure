@@ -97,13 +97,13 @@ noncomputable def selectedRouteEightResidual
     (demandResidualFresh : K .route8PeeledDemandResidual ∉ known)
     (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known)
     (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (jointBalanceFresh : K .route8JointBalance ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (silentClosure : Option
       (PProd (FactKeys.Has (K .typeASilentExitSevenFree) known)
         (closed ∉ known)) := none)
@@ -122,25 +122,25 @@ noncomputable def selectedRouteEightResidual
     (route8ResidualProfileRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by simp [K_eq_iff, profileFresh])
+      history (by key_fresh)
   -- `[111]`
   let squeezed :=
     (route8GlobalSqueezeRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      profile (by simp [K_eq_iff, squeezeFresh])
+      profile (by key_fresh)
   -- `[112]`
   let burdened :=
     (route8BasinBurdenRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      squeezed (by simp [K_eq_iff, burdenFresh])
+      squeezed (by key_fresh)
   -- `[113]`: the route-8-only lower bound is tested, because the manuscript's
   -- unified-demand correction explicitly forbids deriving it from the residual-C
   -- marker while target-defect supports may still carry negative mass.
   match route8LargeBudgetDeficitRow (data := spineData) burdened
-      (by simp [K_eq_iff, deficitFresh])
-      (by simp [K_eq_iff, deficitFailsFresh]) with
+      (by key_fresh)
+      (by key_fresh) with
   | .left deficit =>
       -- `[114]`--`[116]` are the conditional route-8 reduction on the exact
       -- positive `[113]` ledger.
@@ -148,26 +148,26 @@ noncomputable def selectedRouteEightResidual
         (route8CarrierCoreRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          deficit (by simp [K_eq_iff, coreFresh])
+          deficit (by key_fresh)
       let trueResidual :=
         (route8TrueResidualRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          cored (by simp [K_eq_iff, trueResidualFresh])
+          cored (by key_fresh)
       let cutParity :=
         (route8CarrierCutParityRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          trueResidual (by simp [K_eq_iff, cutParityFresh])
+          trueResidual (by key_fresh)
       match route8SmallCoreCollapseRow (data := spineData) cutParity
-          (by simp [K_eq_iff, smallFresh])
-          (by simp [K_eq_iff, noSmallFresh]) with
+          (by key_fresh)
+          (by key_fresh) with
       | .left small =>
           let collapsed :=
             (route8SmallCoreExitRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              small (by simp [K_eq_iff, collapseFresh])
+              small (by key_fresh)
           have trueFacts := (collapsed.get (K .route8TrueResidual)).down
           have collapseFacts := (collapsed.get (K .route8SmallCoreCollapse)).down
           obtain ⟨_componentCore, component, componentMem, receiver, receiverMem,
@@ -188,10 +188,10 @@ noncomputable def selectedRouteEightResidual
             (route8CensusRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              noSmall (by simp [K_eq_iff, censusFresh])
+              noSmall (by key_fresh)
           match route8CarrierDichotomy (data := spineData) census
-              (by simp [K_eq_iff, twoFresh])
-              (by simp [K_eq_iff, noTwoFresh]) with
+              (by key_fresh)
+              (by key_fresh) with
           | .right noTwo =>
               -- `[119]`--`[122]`: publish the exact private-incidence budget,
               -- then publish its contradiction with the census readings.
@@ -200,13 +200,13 @@ noncomputable def selectedRouteEightResidual
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile)
                   (data := spineData)).run noTwo
-                  (by simp [K_eq_iff, privateBudgetFresh])
+                  (by key_fresh)
               let contradicted :=
                 (route8NoTwoCarrierContradictionRow (BranchState := BranchState)
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile)
                   (data := spineData)).run budgeted
-                  (by simp [K_eq_iff, noTwoContradictionFresh])
+                  (by key_fresh)
               exact (contradicted.get
                 (K .route8NoTwoCarrierContradiction)).down.elim
           | .left twoCarrier =>
@@ -217,13 +217,13 @@ noncomputable def selectedRouteEightResidual
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile)
                   (data := spineData)).run twoCarrier
-                  (by simp [K_eq_iff, trueEntryFresh])
+                  (by key_fresh)
               let witnessed :=
                 (route8CarrierDeletionWitnessesRow (BranchState := BranchState)
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile)
                   (data := spineData)).run trueEntry
-                  (by simp [K_eq_iff, deletionWitnessesFresh])
+                  (by key_fresh)
               -- `[124]`: canonical Q5 contradicts the no-exit-(4) fact on
               -- this same monotone ledger.
               let closed :=
@@ -231,7 +231,7 @@ noncomputable def selectedRouteEightResidual
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile)
                   (data := spineData)).run witnessed
-                  (by simp [K_eq_iff, terminalNoGoFresh])
+                  (by key_fresh)
               exact (closed.get (K .route8TerminalNoGo)).down.elim
   | .right deficitFails =>
       -- The negative `[113]` fact remains in the ledger while the Type B
@@ -240,41 +240,41 @@ noncomputable def selectedRouteEightResidual
         (bridgeFanMassRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          deficitFails (by simp [K_eq_iff, bridgeMassFresh])
+          deficitFails (by key_fresh)
       let bridgeSublinear :=
         (typeBBridgeSublinearRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          bridgeMass (by simp [K_eq_iff, bridgeSublinearFresh])
+          bridgeMass (by key_fresh)
       -- `[123]`: publish the unified negative collection on this residual.
       let unifiedNegative :=
         (route8UnifiedNegativeRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          bridgeSublinear (by simp [K_eq_iff, unifiedNegativeFresh])
+          bridgeSublinear (by key_fresh)
       let typeAExcluded :=
         (typeAExclusionRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          unifiedNegative (by simp [K_eq_iff, typeAExclusionFresh])
+          unifiedNegative (by key_fresh)
       let typeBReduced :=
         (typeBBridgeReductionRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          typeAExcluded (by simp [K_eq_iff, typeBBridgeReductionFresh])
+          typeAExcluded (by key_fresh)
       let classified :=
         (route8PiecesClassifiedRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          typeBReduced (by simp [K_eq_iff, piecesClassifiedFresh])
+          typeBReduced (by key_fresh)
       let extractedCensus :=
         (route8ExtractedEntryCensusRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          classified (by simp [K_eq_iff, extractedCensusFresh])
+          classified (by key_fresh)
       match typeBSublinearDichotomy (data := spineData) extractedCensus
-          (by simp [K_eq_iff, sublinearLedgerFresh])
-          (by simp [K_eq_iff, sublinearResidualFresh]) with
+          (by key_fresh)
+          (by key_fresh) with
       | .right residualHistory =>
           exact Or.inl
             (residualHistory.get (K .typeBSublinearResidual)).down
@@ -283,10 +283,10 @@ noncomputable def selectedRouteEightResidual
             (route8UnifiedDeficitRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              sublinearHistory (by simp [K_eq_iff, unifiedDeficitFresh])
+              sublinearHistory (by key_fresh)
           match route8QuotientDichotomy (data := spineData) unifiedDeficit
-              (by simp [K_eq_iff, quotientFreeFresh])
-              (by simp [K_eq_iff, quotientResidualFresh]) with
+              (by key_fresh)
+              (by key_fresh) with
           | .right residualHistory =>
               exact Or.inr (Or.inl
                 (residualHistory.get (K .route8QuotientResidual)).down)
@@ -296,47 +296,47 @@ noncomputable def selectedRouteEightResidual
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile)
                   (data := spineData)).run quotientFreeHistory
-                    (by simp [K_eq_iff, unifiedCensusFresh])
+                    (by key_fresh)
               let peeled := selectedLargeBudgetPressureCensus census
-                (peelingFresh := by simp [K_eq_iff, peelingFresh])
+                (peelingFresh := by key_fresh)
                 (unifiedTrueFresh := by
-                  simp [K_eq_iff, unifiedTrueFresh])
+                  key_fresh)
                 (stageFailedFresh := by
-                  simp [K_eq_iff, stageFailedFresh])
+                  key_fresh)
                 (terminalFresh := by
-                  simp [K_eq_iff, unifiedTerminalFresh])
+                  key_fresh)
                 (demandLedgerFresh := by
-                  simp [K_eq_iff, demandLedgerFresh])
+                  key_fresh)
                 (demandAbsorptionFresh := by
-                  simp [K_eq_iff, demandAbsorptionFresh])
+                  key_fresh)
                 (openBoundarySaturatedFresh := by
-                  simp [K_eq_iff, openBoundarySaturatedFresh])
+                  key_fresh)
                 (demandUnitCountFresh := by
-                  simp [K_eq_iff, demandUnitCountFresh])
+                  key_fresh)
                 (windowBlockersFresh := by
-                  simp [K_eq_iff, windowBlockersFresh])
+                  key_fresh)
                 (windowShadowSignatureFresh := by
-                  simp [K_eq_iff, windowShadowSignatureFresh])
+                  key_fresh)
                 (windowShadowTailFresh := by
-                  simp [K_eq_iff, windowShadowTailFresh])
+                  key_fresh)
                 (windowShadowCycleFresh := by
-                  simp [K_eq_iff, windowShadowCycleFresh])
+                  key_fresh)
                 (windowShadowExcludedFresh := by
-                  simp [K_eq_iff, windowShadowExcludedFresh])
+                  key_fresh)
                 (demandResidualFresh := by
-                  simp [K_eq_iff, demandResidualFresh])
+                  key_fresh)
               let unpaidExitFour :=
                 selectedRouteEightUnpaidExitFourReduction peeled
                   (unifiedTrueFresh := by
-                    simp [K_eq_iff, unifiedTrueFresh])
+                    key_fresh)
                   (residualFresh := by
-                    simp [K_eq_iff, unpaidExitFourFresh])
+                    key_fresh)
                   (terminalFresh := by
-                    simp [K_eq_iff, unifiedTerminalFresh])
+                    key_fresh)
               let visibleResidual :=
                 selectedRouteEightVisibleResidual unpaidExitFour
                   (visibleFresh := by
-                    simp [K_eq_iff, unifiedVisibleFresh])
+                    key_fresh)
               match silentClosure with
               | some silentData =>
                   letI : FactKeys.Has (K .typeASilentExitSevenFree) known :=
@@ -344,16 +344,16 @@ noncomputable def selectedRouteEightResidual
                   exact ((closeIncompatible visibleResidual
                     (K .typeASilentExitSevenFree)
                     (K .route8UnifiedVisibleResidual)
-                    (by simp [K_eq_iff, silentData.2])).elimClosed
+                    (by have closureFresh := silentData.2; key_fresh)).elimClosed
                       (by infer_instance)).elim
               | none =>
                   let visibleOverload :=
                     selectedRouteEightVisibleOverload visibleResidual
                       (overloadFresh := by
-                        simp [K_eq_iff, unifiedVisibleOverloadFresh])
+                        key_fresh)
                   let jointBalance :=
                     selectedRouteEightJointBalance visibleOverload
-                      (by simp [K_eq_iff, jointBalanceFresh])
+                      (by key_fresh)
                   exact Or.inr (Or.inr
                     (jointBalance.get (K .route8JointBalance)).down)
 

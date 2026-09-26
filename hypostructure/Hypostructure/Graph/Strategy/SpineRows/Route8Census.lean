@@ -35,7 +35,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     { Requires := [K .route8BasinBurden, K .route8LargeBudgetDeficit,
         K .route8Rate]
       Produces := [K .route8Census]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>

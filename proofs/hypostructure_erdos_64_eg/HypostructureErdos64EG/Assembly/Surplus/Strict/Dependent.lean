@@ -4,9 +4,20 @@ import Hypostructure.Graph.Strategy.SpineRows.CurvatureTargetRank
 import Hypostructure.Graph.Strategy.SpineRows.HighCentreNormalForm
 import Hypostructure.Graph.Strategy.SpineRows.RemainderNormalization
 import Hypostructure.Graph.Strategy.SpineRows.RemainderRelabelingEntropy
+import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.BlockedPairEntropy
+import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.HomogeneousBottleneckAudit
+import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.HomogeneousCapsClose
+import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.PairFailureOverlap
+import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.PairOverlapFirstFailure
+import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.PairOverlapSystem
+import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.PairPowerOfTwoCycle
+import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.PairSystemOutcome
+import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.PressureSpineSurplusEstimate
+import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.RoleFibrePartition
+import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.WindowOverloadClass
 import HypostructureErdos64EG.Assembly.NearCubic.Local
 import HypostructureErdos64EG.Assembly.Surplus.Local
-import HypostructureErdos64EG.Assembly.Surplus.TypeBContinuation
+import HypostructureErdos64EG.Assembly.Surplus.Boundary
 
 /-! A strict-surplus branch, with the complete original ledger. -/
 
@@ -19,6 +30,11 @@ open Hypostructure.Graph.Strategy.Spine
 
 universe u w
 
+-- EG-NODE [140] window-incidence geometric audit: homogeneous matching/star
+-- EG-NODE [142] remainder-surplus geometric audit: homogeneous matching/star
+-- EG-NODE [143] primitive blocker-support geometric audit: homogeneous matching/star
+-- EG-NODE [144] same-token bottleneck: Type B handoff or capped route?
+-- EG-NODE [138] no coupled overload: explicit quadratic bound on \(\sigma\); near-cubic spine
 set_option maxHeartbeats 1000000 in
 noncomputable def Assembly.Internal.strictSurplusDependent
     {selected : EGInput.{u}}
@@ -29,7 +45,7 @@ noncomputable def Assembly.Internal.strictSurplusDependent
         K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
         K .openPortSuppression,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
+        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
         K .selection]) :
     StrictSurplusBoundaryResult selected := by
@@ -49,9 +65,9 @@ noncomputable def Assembly.Internal.strictSurplusDependent
         (blockedPairEntropySetupRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          tokens (by simp [blockedPairEntropySetupRow, K_eq_iff])
+          tokens (by key_fresh)
       match blockedPairEntropyDichotomy (data := spineData) entropySetup
-          (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+          (by key_fresh) (by key_fresh) with
       | .right unrealizedHistory =>
           -- `[178]` (free side of `[137]`): the residual on which the entropy
           -- count of the free side of the capacity charge fails
@@ -66,16 +82,15 @@ noncomputable def Assembly.Internal.strictSurplusDependent
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
               (data := spineData)).run unrealizedHistory (by
-                simp [blockedPairOverlapFirstFailureRow, K_eq_iff])
+                key_fresh)
           let overlapSystem :=
             (pairOverlapSystemRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
               (data := spineData)).run firstFailure (by
-                simp [pairOverlapSystemRow,
-                  blockedPairOverlapFirstFailureRow, K_eq_iff])
+                key_fresh)
           match pairConditionalFactorizationDichotomy (data := spineData)
-              overlapSystem (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+              overlapSystem (by key_fresh) (by key_fresh) with
           | .right residualHistory =>
               let openResidual := residualHistory.get
                 (K .pairConditionalFactorizationResidual)
@@ -87,16 +102,16 @@ noncomputable def Assembly.Internal.strictSurplusDependent
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile)
                   (data := spineData)).run factorizationHistory
-                    (by simp [K_eq_iff])
+                    (by key_fresh)
               let demandReturns :=
                 (pairDemandReturnsRow (BranchState := BranchState)
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile)
                   (data := spineData)).run overlapFailure
-                    (by simp [K_eq_iff])
+                    (by key_fresh)
               match pairSystemRealizabilityDichotomy (data := spineData)
-                  demandReturns (by simp [K_eq_iff])
-                    (by simp [K_eq_iff]) with
+                  demandReturns (by key_fresh)
+                    (by key_fresh) with
               | .right residualHistory =>
                   let openResidual := residualHistory.get
                     (K .pairConditionalFactorizationResidual)
@@ -104,8 +119,8 @@ noncomputable def Assembly.Internal.strictSurplusDependent
                   exact Sum.inr (Sum.inr openResidual)
               | .left coveredHistory =>
                   match pairSystemOutcomeDichotomy (data := spineData)
-                      coveredHistory (by simp [K_eq_iff])
-                        (by simp [K_eq_iff]) with
+                      coveredHistory (by key_fresh)
+                        (by key_fresh) with
                   | .left earlyHistory =>
                       let typeBHistory :=
                         (pairSystemEarlyTypeBEntryRow
@@ -114,35 +129,35 @@ noncomputable def Assembly.Internal.strictSurplusDependent
                             Graph.ReceiverLoad.LoadCapacityProfile)
                           (presentation := erdosReceiverLoadProfile)
                           (data := spineData)).run earlyHistory
-                            (by simp [K_eq_iff])
+                            (by key_fresh)
                       let typeBEntry := typeBHistory.get (K .typeBFanEntry)
                       change ((K .typeBFanEntry).At selected) at typeBEntry
                       let bridgelessrowStep :=
                         (bridgelessRow (BranchState := BranchState)
                           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                          typeBHistory (by simp [K_eq_iff])
+                          typeBHistory (by key_fresh)
                       let remaindernormalizationrowStep :=
                         (remainderNormalizationRow (BranchState := BranchState)
                           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                          bridgelessrowStep (by simp [K_eq_iff])
+                          bridgelessrowStep (by key_fresh)
                       let remainderrelabelingentropyrowStep :=
                         (remainderRelabelingEntropyRow (BranchState := BranchState)
                           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                          remaindernormalizationrowStep (by simp [K_eq_iff])
+                          remaindernormalizationrowStep (by key_fresh)
                       exact Sum.inr (Sum.inl ⟨⟨
                         Or.inl (remainderrelabelingentropyrowStep.get
                           (K .pairSystemEarlyOutcome)).down,
-                        selectedStrictSurplusTypeBContinuation
-                          remainderrelabelingentropyrowStep,
+                        (remainderrelabelingentropyrowStep.get
+                          (K .typeBFanEntry)).down,
                     (remainderrelabelingentropyrowStep.get (K .surplusAbove)).down,
                     (remainderrelabelingentropyrowStep.get (K .sparseSurplusSurvivor)).down⟩⟩)
                   | .right serialHistory =>
                       match pairIncrementCoveredDichotomy (data := spineData)
-                          serialHistory (by simp [K_eq_iff])
-                            (by simp [K_eq_iff]) with
+                          serialHistory (by key_fresh)
+                            (by key_fresh) with
                       | .right residualHistory =>
                           let openResidual := residualHistory.get
                             (K .pairConditionalFactorizationResidual)
@@ -151,8 +166,8 @@ noncomputable def Assembly.Internal.strictSurplusDependent
                       | .left incrementHistory =>
                           match pairIncrementOutcomeDichotomy
                               (data := spineData) incrementHistory
-                                (by simp [K_eq_iff])
-                                (by simp [K_eq_iff]) with
+                                (by key_fresh)
+                                (by key_fresh) with
                           | .left earlyHistory =>
                               let typeBHistory :=
                                 (pairIncrementEarlyTypeBEntryRow
@@ -161,7 +176,7 @@ noncomputable def Assembly.Internal.strictSurplusDependent
                                     Graph.ReceiverLoad.LoadCapacityProfile)
                                   (presentation := erdosReceiverLoadProfile)
                                   (data := spineData)).run earlyHistory
-                                    (by simp [K_eq_iff])
+                                    (by key_fresh)
                               let typeBEntry :=
                                 typeBHistory.get (K .typeBFanEntry)
                               change ((K .typeBFanEntry).At selected) at typeBEntry
@@ -169,22 +184,22 @@ noncomputable def Assembly.Internal.strictSurplusDependent
                                 (bridgelessRow (BranchState := BranchState)
                                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                                  typeBHistory (by simp [K_eq_iff])
+                                  typeBHistory (by key_fresh)
                               let remaindernormalizationrowStep :=
                                 (remainderNormalizationRow (BranchState := BranchState)
                                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                                  bridgelessrowStep (by simp [K_eq_iff])
+                                  bridgelessrowStep (by key_fresh)
                               let remainderrelabelingentropyrowStep :=
                                 (remainderRelabelingEntropyRow (BranchState := BranchState)
                                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                                  remaindernormalizationrowStep (by simp [K_eq_iff])
+                                  remaindernormalizationrowStep (by key_fresh)
                               exact Sum.inr (Sum.inl ⟨⟨
                                 Or.inr (remainderrelabelingentropyrowStep.get
                                   (K .pairIncrementEarlyOutcome)).down,
-                                selectedStrictSurplusTypeBContinuation
-                                  remainderrelabelingentropyrowStep,
+                                (remainderrelabelingentropyrowStep.get
+                                  (K .typeBFanEntry)).down,
                     (remainderrelabelingentropyrowStep.get (K .surplusAbove)).down,
                     (remainderrelabelingentropyrowStep.get (K .sparseSurplusSurvivor)).down⟩⟩)
                           | .right arithmeticHistory =>
@@ -197,8 +212,8 @@ noncomputable def Assembly.Internal.strictSurplusDependent
                                   (data := spineData)).runAndCloseIncompatible
                                     arithmeticHistory (K .selection)
                                     (K .pairPowerOfTwoCycle)
-                                    (by simp [K_eq_iff])
-                                    (by simp [K_eq_iff])
+                                    (by key_fresh)
+                                    (by key_fresh)
                               exact (closedHistory.elimClosed
                                 (by infer_instance)).elim
       | .left sandwichHistory =>
@@ -206,21 +221,21 @@ noncomputable def Assembly.Internal.strictSurplusDependent
             (roleFibrePartitionRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              sandwichHistory (by simp [K_eq_iff])
+              sandwichHistory (by key_fresh)
           let pressure :=
             (fibrePressureRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              fibres (by simp [K_eq_iff])
+              fibres (by key_fresh)
           match selectedCoupledExcessDichotomy pressure
-              (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+              (by key_fresh) (by key_fresh) with
           | .left nearCubicHistory =>
               -- `[138]`: `σ(G) ≤ R_L(n) ≤ C_sp ⌈√n⌉` against `[19]`.
               let estimate :=
                 (pressureSpineSurplusEstimateRow (BranchState := BranchState)
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                  nearCubicHistory (by simp [K_eq_iff])
+                  nearCubicHistory (by key_fresh)
               exact (selectedSpineSurplusEstimateCloses estimate).elim
           | .right overloadHistory =>
               -- `[139]`--`[144]` on the literal overload residual.
@@ -229,14 +244,13 @@ noncomputable def Assembly.Internal.strictSurplusDependent
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile)
                   (data := spineData)).run overloadHistory (by
-                    simp [bridgelessRow, K_eq_iff])
+                    key_fresh)
               let normal :=
                 (highCentreNormalFormRow (BranchState := BranchState)
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile)
                   (data := spineData)).run bridgeless (by
-                    simp [highCentreNormalFormRow, bridgelessRow,
-                      K_eq_iff])
+                    key_fresh)
               -- `[144]` consumes the standing cubic-baseline equation
               -- already retained in this ExactLedger; it is not
               -- republished on the overload branch.
@@ -252,83 +266,118 @@ noncomputable def Assembly.Internal.strictSurplusDependent
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile)
                   (data := spineData)).run cubic (by
-                    simp [curvatureTargetRankRow, cubicBaselineRow,
-                      highCentreNormalFormRow, K_eq_iff])
+                    key_fresh)
               let normalized :=
                 (remainderNormalizationRow (BranchState := BranchState)
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile)
-                  (data := spineData)).run quotientFacts (by simp [K_eq_iff])
+                  (data := spineData)).run quotientFacts (by key_fresh)
               let relabelingEntropy :=
                 (remainderRelabelingEntropyRow (BranchState := BranchState)
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile)
-                  (data := spineData)).run normalized (by simp [K_eq_iff])
+                  (data := spineData)).run normalized (by key_fresh)
               match windowOverloadClassDichotomy (data := spineData) relabelingEntropy
-                  (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+                  (by key_fresh) (by key_fresh) with
               | .left windowHistory =>
+                  -- `[140]`: geometric audit of the selected overload.
                   let audited :=
-                    (windowIncidenceAuditRow (BranchState := BranchState)
+                    (homogeneousBottleneckAuditRow (BranchState := BranchState)
                       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                       (presentation := erdosReceiverLoadProfile)
-                      (data := spineData)).run windowHistory (by simp [K_eq_iff])
-                  let routed := selectedBottleneckDischarge audited
-                    (by simp [K_eq_iff]) (by simp [K_eq_iff])
-                    (by simp [K_eq_iff])
-                  exact Sum.inl ⟨⟨
-                    (routed.get (K .typeBHandoff)).down,
-                    (routed.get (K .typeBFanEntry)).down,
+                      (data := spineData)).run windowHistory (by key_fresh)
+                  -- `[144]`: the fixed caps fail (the audited pattern routes) or hold.
+                  match homogeneousBottleneckDichotomy (data := spineData) audited
+                      (by key_fresh) (by key_fresh) with
+                  | .left patternHistory =>
+                      let routed := selectedBottleneckDischarge patternHistory
+                        (by key_fresh) (by key_fresh)
+                        (by key_fresh)
+                      exact Sum.inl ⟨⟨
+                        (routed.get (K .typeBHandoff)).down,
+                        (routed.get (K .typeBFanEntry)).down,
                         (routed.get (K .bottleneckRouting)).down,
                         (routed.get (K .homogeneousBottleneckPattern)).down,
                         (routed.get (K .sparsePressureOverload)).down,
                         (routed.get (K .capacityTokenLedger)).down,
-                    (routed.get (K .surplusAbove)).down,
-                    (routed.get (K .sparseSurplusSurvivor)).down,
-                    selectedSameTokenTypeBFanLedger routed⟩⟩
+                        (routed.get (K .surplusAbove)).down,
+                        (routed.get (K .sparseSurplusSurvivor)).down⟩⟩
+                  | .right capsHistory =>
+                      -- `[138]`: the caps give `σ(G) ≤ C_sp ⌈√n⌉` against `[19]`.
+                      let estimate :=
+                        (homogeneousCapsCloseRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile)
+                          (data := spineData)).run capsHistory (by key_fresh)
+                      exact (selectedSpineSurplusEstimateCloses estimate).elim
               | .right windowAbsent =>
                   match remainderOverloadClassDichotomy (data := spineData)
-                      windowAbsent (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+                      windowAbsent (by key_fresh) (by key_fresh) with
                   | .left remainderHistory =>
+                      -- `[142]`: geometric audit of the selected overload.
                       let audited :=
-                        (remainderSurplusAuditRow (BranchState := BranchState)
+                        (homogeneousBottleneckAuditRow (BranchState := BranchState)
                           (Presentation :=
                             Graph.ReceiverLoad.LoadCapacityProfile)
                           (presentation := erdosReceiverLoadProfile)
                           (data := spineData)).run remainderHistory (by
-                            simp [K_eq_iff])
-                      let routed := selectedBottleneckDischarge audited
-                        (by simp [K_eq_iff]) (by simp [K_eq_iff])
-                        (by simp [K_eq_iff])
-                      exact Sum.inl ⟨⟨
-                        (routed.get (K .typeBHandoff)).down,
-                        (routed.get (K .typeBFanEntry)).down,
-                        (routed.get (K .bottleneckRouting)).down,
-                        (routed.get (K .homogeneousBottleneckPattern)).down,
-                        (routed.get (K .sparsePressureOverload)).down,
-                        (routed.get (K .capacityTokenLedger)).down,
-                        (routed.get (K .surplusAbove)).down,
-                        (routed.get (K .sparseSurplusSurvivor)).down,
-                        selectedSameTokenTypeBFanLedger routed⟩⟩
+                            key_fresh)
+                      -- `[144]`: the fixed caps fail (the audited pattern routes) or hold.
+                      match homogeneousBottleneckDichotomy (data := spineData) audited
+                          (by key_fresh) (by key_fresh) with
+                      | .left patternHistory =>
+                          let routed := selectedBottleneckDischarge patternHistory
+                            (by key_fresh) (by key_fresh)
+                            (by key_fresh)
+                          exact Sum.inl ⟨⟨
+                            (routed.get (K .typeBHandoff)).down,
+                            (routed.get (K .typeBFanEntry)).down,
+                            (routed.get (K .bottleneckRouting)).down,
+                            (routed.get (K .homogeneousBottleneckPattern)).down,
+                            (routed.get (K .sparsePressureOverload)).down,
+                            (routed.get (K .capacityTokenLedger)).down,
+                            (routed.get (K .surplusAbove)).down,
+                            (routed.get (K .sparseSurplusSurvivor)).down⟩⟩
+                      | .right capsHistory =>
+                          -- `[138]`: the caps give `σ(G) ≤ C_sp ⌈√n⌉` against `[19]`.
+                          let estimate :=
+                            (homogeneousCapsCloseRow (BranchState := BranchState)
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile)
+                              (data := spineData)).run capsHistory (by key_fresh)
+                          exact (selectedSpineSurplusEstimateCloses estimate).elim
                   | .right remainderAbsent =>
+                      -- `[143]`: geometric audit of the selected overload.
                       let audited :=
-                        (primitiveCarrierAuditRow (BranchState := BranchState)
+                        (homogeneousBottleneckAuditRow (BranchState := BranchState)
                           (Presentation :=
                             Graph.ReceiverLoad.LoadCapacityProfile)
                           (presentation := erdosReceiverLoadProfile)
                           (data := spineData)).run remainderAbsent (by
-                            simp [K_eq_iff])
-                      let routed := selectedBottleneckDischarge audited
-                        (by simp [K_eq_iff]) (by simp [K_eq_iff])
-                        (by simp [K_eq_iff])
-                      exact Sum.inl ⟨⟨
-                        (routed.get (K .typeBHandoff)).down,
-                        (routed.get (K .typeBFanEntry)).down,
-                        (routed.get (K .bottleneckRouting)).down,
-                        (routed.get (K .homogeneousBottleneckPattern)).down,
-                        (routed.get (K .sparsePressureOverload)).down,
-                        (routed.get (K .capacityTokenLedger)).down,
-                        (routed.get (K .surplusAbove)).down,
-                        (routed.get (K .sparseSurplusSurvivor)).down,
-                        selectedSameTokenTypeBFanLedger routed⟩⟩
+                            key_fresh)
+                      -- `[144]`: the fixed caps fail (the audited pattern routes) or hold.
+                      match homogeneousBottleneckDichotomy (data := spineData) audited
+                          (by key_fresh) (by key_fresh) with
+                      | .left patternHistory =>
+                          let routed := selectedBottleneckDischarge patternHistory
+                            (by key_fresh) (by key_fresh)
+                            (by key_fresh)
+                          exact Sum.inl ⟨⟨
+                            (routed.get (K .typeBHandoff)).down,
+                            (routed.get (K .typeBFanEntry)).down,
+                            (routed.get (K .bottleneckRouting)).down,
+                            (routed.get (K .homogeneousBottleneckPattern)).down,
+                            (routed.get (K .sparsePressureOverload)).down,
+                            (routed.get (K .capacityTokenLedger)).down,
+                            (routed.get (K .surplusAbove)).down,
+                            (routed.get (K .sparseSurplusSurvivor)).down⟩⟩
+                      | .right capsHistory =>
+                          -- `[138]`: the caps give `σ(G) ≤ C_sp ⌈√n⌉` against `[19]`.
+                          let estimate :=
+                            (homogeneousCapsCloseRow (BranchState := BranchState)
+                              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                              (presentation := erdosReceiverLoadProfile)
+                              (data := spineData)).run capsHistory (by key_fresh)
+                          exact (selectedSpineSurplusEstimateCloses estimate).elim
 
 end HypostructureErdos64EG

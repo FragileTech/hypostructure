@@ -73,22 +73,22 @@ noncomputable def Assembly.Internal.selectedTypeBPortRoutingPrefix
     (fanClosedPortRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by simp [K_eq_iff, fanClosedFresh])
+      history (by key_fresh)
   let compatibleClosure :=
     (compatiblePairFanClosureRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      fanClosed (by simp [K_eq_iff, compatibleClosureFresh])
+      fanClosed (by key_fresh)
   let fanClosedRouting :=
     (fanClosedPortTypeBRoutingRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      compatibleClosure (by simp [K_eq_iff, fanClosedRoutingFresh])
+      compatibleClosure (by key_fresh)
   exact
     (compatiblePairTypeBRoutingRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      fanClosedRouting (by simp [K_eq_iff, compatibleRoutingFresh])
+      fanClosedRouting (by key_fresh)
 
 /-- **The common Type B core `[71]`--`[75]` / `[80]`--`[84]`.**
 
@@ -115,35 +115,35 @@ noncomputable def Assembly.Internal.selectedTypeBCertificateBoundaryAfterPortRou
     [FactKeys.Has (K .compatiblePairFanClosure) known]
     [FactKeys.Has (K .fanClosedPortTypeBRouting) known]
     [FactKeys.Has (K .compatiblePairTypeBRouting) known]
-    (markedFresh : K .fanCertificateMarked ∉ known := by simp [K_eq_iff])
-    (residualFresh : K .fanCertificateResidual ∉ known := by simp [K_eq_iff])
+    (markedFresh : K .fanCertificateMarked ∉ known := by key_fresh)
+    (residualFresh : K .fanCertificateResidual ∉ known := by key_fresh)
     (certificateMassFresh : K .fanCertificateResidualMass ∉ known := by
-      simp [K_eq_iff])
-    (cycleFresh : K .typeBDirectCycle ∉ known := by simp [K_eq_iff])
-    (freeFresh : K .typeBDirectCycleFree ∉ known := by simp [K_eq_iff])
-    (choiceFresh : K .typeBB2Choice ∉ known := by simp [K_eq_iff])
-    (obstructionFresh : K .typeBOverlapObstruction ∉ known := by simp [K_eq_iff])
-    (hybridFresh : K .typeBHybridEntry ∉ known := by simp [K_eq_iff])
-    (ledgerFresh : K .typeBDisjointLedger ∉ known := by simp [K_eq_iff])
-    (excludedFresh : K .typeBExcluded ∉ known := by simp [K_eq_iff])
-    (exclusionResidualFresh : K .typeBExclusionResidual ∉ known := by simp [K_eq_iff])
-    (exclusionMassFresh : K .typeBExclusionResidualMass ∉ known := by simp [K_eq_iff])
+      key_fresh)
+    (cycleFresh : K .typeBDirectCycle ∉ known := by key_fresh)
+    (freeFresh : K .typeBDirectCycleFree ∉ known := by key_fresh)
+    (choiceFresh : K .typeBB2Choice ∉ known := by key_fresh)
+    (obstructionFresh : K .typeBOverlapObstruction ∉ known := by key_fresh)
+    (hybridFresh : K .typeBHybridEntry ∉ known := by key_fresh)
+    (ledgerFresh : K .typeBDisjointLedger ∉ known := by key_fresh)
+    (excludedFresh : K .typeBExcluded ∉ known := by key_fresh)
+    (exclusionResidualFresh : K .typeBExclusionResidual ∉ known := by key_fresh)
+    (exclusionMassFresh : K .typeBExclusionResidualMass ∉ known := by key_fresh)
     (obstructionMassFresh : K .typeBOverlapObstructionMass ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (globalLocalBridgeFresh : K .typeBGlobalLocalBridge ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     :
     Assembly.Internal.TypeBCertificateBoundary selected known := by
   -- `[71]`/`[80]`: certificate labelling present at every assigned centre?
   match fanCertificateDichotomy (data := spineData) history
-      (by simp [K_eq_iff, markedFresh]) (by simp [K_eq_iff, residualFresh]) with
+      (by key_fresh) (by key_fresh) with
   | .right residualHistory =>
       -- `[75]`/`[84]`: the residual centre is charged to the bridge fan mass.
       let mass :=
         (fanCertificateResidualMassRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          residualHistory (by simp [K_eq_iff, certificateMassFresh])
+          residualHistory (by key_fresh)
       exact Sum.inl mass
   | .left markedHistory =>
       -- `[72]`--`[85]` on the common Type B carrier: the direct fan-window
@@ -151,7 +151,7 @@ noncomputable def Assembly.Internal.selectedTypeBCertificateBoundaryAfterPortRou
       -- assigned support or the indexed absorbed witness.  B2 is the next
       -- boundary: it may proceed only once its own literal carrier is present.
       match directCycleDichotomy (data := spineData) markedHistory
-          (by simp [K_eq_iff, cycleFresh]) (by simp [K_eq_iff, freeFresh]) with
+          (by key_fresh) (by key_fresh) with
       | .left cycleHistory =>
           have impossible : False := by
             rcases (cycleHistory.get (K .typeBDirectCycle)).down with
@@ -186,19 +186,19 @@ noncomputable def Assembly.Internal.selectedTypeBCertificateBoundaryAfterPortRou
             (hybridEntryRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              freeHistory (by simp [K_eq_iff, hybridFresh])
+              freeHistory (by key_fresh)
           match b2AssignmentDichotomy (data := spineData) hybrid
-              (by simp [K_eq_iff, choiceFresh])
-              (by simp [K_eq_iff, obstructionFresh]) with
+              (by key_fresh)
+              (by key_fresh) with
           | .left choiceHistory =>
               let ledger :=
                 (disjointPostLedgerComponentsRow (BranchState := BranchState)
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                  choiceHistory (by simp [K_eq_iff, ledgerFresh])
+                  choiceHistory (by key_fresh)
               match typeBExclusionDichotomy (data := spineData) ledger
-                  (by simp [K_eq_iff, excludedFresh])
-                  (by simp [K_eq_iff, exclusionResidualFresh]) with
+                  (by key_fresh)
+                  (by key_fresh) with
               | .left excludedHistory =>
                   -- The exact paid ledger is returned without inspecting its
                   -- carrier.  Ordinary `[64]` closes its canonical alternative;
@@ -209,7 +209,7 @@ noncomputable def Assembly.Internal.selectedTypeBCertificateBoundaryAfterPortRou
                     (typeBExclusionResidualMassRow (BranchState := BranchState)
                       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                      residualHistory (by simp [K_eq_iff, exclusionMassFresh])
+                      residualHistory (by key_fresh)
                   exact Sum.inr (Sum.inr (Sum.inl mass))
           | .right obstructionHistory =>
               let reflected :=
@@ -217,12 +217,12 @@ noncomputable def Assembly.Internal.selectedTypeBCertificateBoundaryAfterPortRou
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                   obstructionHistory
-                    (by simp [K_eq_iff, globalLocalBridgeFresh])
+                    (by key_fresh)
               let mass :=
                 (typeBOverlapObstructionMassRow (BranchState := BranchState)
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                  reflected (by simp [K_eq_iff, obstructionMassFresh])
+                  reflected (by key_fresh)
               exact Sum.inr (Sum.inr (Sum.inr mass))
 
 end HypostructureErdos64EG

@@ -14,6 +14,3 @@ subprocess.run(['/runtime/lean/bin/lake', 'build',
                 'Hypostructure.Graph.Strategy.HomogeneousBottleneckRows'], cwd=project, check=True)
 subprocess.run(['/usr/bin/python3', '/input/policy/scripts/check_execution.py', 'check',
                 '/input/record', '--repo', str(workspace)], check=True)
-subprocess.run(['/usr/bin/python3',
-                str(workspace / '.agents/skills/eg-proof-expansion/scripts/audit_tables.py'),
-                'check', '--repo-root', str(workspace)], check=True)

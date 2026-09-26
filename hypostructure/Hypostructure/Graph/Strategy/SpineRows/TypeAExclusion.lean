@@ -59,7 +59,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     `Hypostructure.Graph.Strategy.Spine.typeAExclusion
     { Requires := [K .selection, K .replacementExclusion, K .cubicBaseline]
       Produces := [K .typeAExclusion]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>

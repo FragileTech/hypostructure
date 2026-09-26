@@ -32,7 +32,7 @@ named module with warm dependencies, then restored the exact original source.
 | `Route8WindowBlockers` | 17.28 s |
 | `Route8UnifiedTerminalNoGo` | 50.01 s |
 
-All 153 row modules compile, exporting the same 156 public declarations.
+The split produced 153 row modules, exporting the same 156 public declarations.
 All 156 types, universes, declaration kinds, and axiom sets match the original
 compiled module; comparison ignores only the module component of generated
 hygienic binder names. Source comparison also confirms unchanged row bodies,
@@ -80,7 +80,7 @@ were removed. Machine-readable measurements and rebuilt-module lists are in
 
 ## Compatibility and audit checks
 
-- The full EG package builds successfully with 90 Assembly modules and 153
+- The full EG package builds successfully with 89 Assembly modules and 158
   SpineRows modules behind imports-only compatibility files.
 - All 88 original public Assembly declarations match their original types,
   universes, declaration kinds, and axiom sets. Shared former private names and
@@ -88,13 +88,12 @@ were removed. Machine-readable measurements and rebuilt-module lists are in
 - Expanding the extracted helper calls reconstructs the original survivor and
   strict-surplus proof tokens, ignoring whitespace and comments.
 - All 230 original `EG-NODE` annotation lines are preserved.
-- The axiom audit ran in a disposable package copy: 144 declarations inspected,
-  no frontier stubs, no tracer-tainted declarations, and none unreported. This
+- The axiom audit (`web/tools/lean_axiom_audit.py`) inspects 153 Assembly
+  declarations: no frontier stubs, no tracer-tainted declarations. This
   does not remove any existing mathematical assumption or open residual.
 - Eight Python regression checks cover recursive audit discovery, private-name
   handling, restoration on failure, import cycles, and compatibility coverage.
-- The live node tables retain their judgments; declaration links and the API
-  catalog point to the new modules.
+- The API catalog points to the new modules.
 
 ## Reproducing a local check
 

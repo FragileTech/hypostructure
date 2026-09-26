@@ -624,6 +624,10 @@ inductive Key where
   accepted set at every oriented edge.  This is the return-set form of target
   avoidance, the standing invariant the rest of the spine consumes. -/
   | returnAvoidance
+  /-- Node `[6]`, yes arm: some oriented edge carries a Mersenne return, i.e.
+  its return-length set meets the shifted accepted set.  This is the exact
+  complement of `returnAvoidance` on the same object. -/
+  | mersenneReturn
   /-- Node `[8]`: no proper subgraph satisfies the baseline. -/
   | noProperBaseline
   /-- Node `[9]`: every oriented edge has an endpoint exactly at the
@@ -650,6 +654,13 @@ inductive Key where
   /-- Node `[14]`: no proper atom admits a nontrivial target-complete
   compression (`cor:uncompressible`). -/
   | uncompressible
+  /-- Node `[15]`, yes arm: the object is induced-window-free at the
+  registered window order (`G` is `P₁₃`-free). -/
+  | windowFree
+  /-- Node `[15]`, no arm: the object contains an induced window of the
+  registered order (`cor:p13-exists`).  This is the exact complement of
+  `windowFree` on the same object. -/
+  | windowPresent
   /-- Nodes `[15]`--`[17]`: the object carries a maximal vertex-disjoint family
   of induced windows, and the family is nonempty. -/
   | maximalPacking
@@ -1318,6 +1329,17 @@ inductive Key where
   | coldPositiveGerm
   | coldGermRouted
   | coldBranchClosed
+  /-- Node `[154]`, first binary test of `lem:cold-bounded-germ-trichotomy`
+  (G1): some configuration of the extracted active family is hit-realized. -/
+  | coldGermSomeRealizing
+  /-- Node `[154]`, the exact complement of `coldGermSomeRealizing`. -/
+  | coldGermNoneRealizing
+  /-- Node `[154]`, second binary test on the no-G1 arm (G2): some configuration
+  of the extracted active family is hit-distinguished. -/
+  | coldGermSomeDistinguishing
+  /-- Node `[154]`, the exact complement of `coldGermSomeDistinguishing`: every
+  active configuration is silent (G3 or the equal-length table). -/
+  | coldGermNoneDistinguishing
   /-- Node `[67]`, the standing law: every high centre of the object has its
   neighbourhood in the normal form of `lem:heavy-neighbourhood-normal-form` --
   cubic neighbours, a matching inside `N_G(h)`, and no common neighbour outside
@@ -1794,15 +1816,6 @@ inductive Key where
   /-- Node `[141]`, no arm: the selected overloading token lies in
   `𝔗_prim`, so that same witness enters `[143]`. -/
   | remainderClassAbsent
-  /-- Node `[140]`, the window-incidence geometric audit: a token of `𝔗_W` whose
-  load exceeds `Cap_hom(L_geom)` carries a role-homogeneous `L_geom`-matching or
-  `L_geom`-star, at the counted routing-label alphabet of
-  `def:same-token-routing-germs`. -/
-  | windowIncidenceAudit
-  /-- Node `[142]`, the remainder-surplus geometric audit, at `𝔗_R`. -/
-  | remainderSurplusAudit
-  /-- Node `[143]`, the primitive-carrier geometric audit, at `𝔗_prim`. -/
-  | primitiveCarrierAudit
   /-- `cor:quantitative-homogeneous-overload`: the forced role-homogeneous
   pattern scale `K_hom(G) ≥ ψ(N_*(G)/(Q_st(8n+σ(G))))`, cleared of division.
   Committed on each of the three audit arms, because it is what makes the audit
@@ -1814,9 +1827,15 @@ inductive Key where
   the counted routing-label alphabet.  This is the subbranch the manuscript's
   fixed caps `L_W = L_R = L_P = L_geom` hold on. -/
   | homogeneousCapsHold
-  /-- Node `[144]`, the bottleneck arm: some capacity token *does* support such
-  a pattern.  `lem:same-token-bottleneck-routing` reads it as a sparse surplus
-  exit or as decorated Type B handoff fan data. -/
+  /-- Node `[144]`, the other arm: the exact complement of the fixed caps.
+  Some capacity presentation and ledger of the object has a token supporting a
+  role-homogeneous same-token `L_geom`-matching or `L_geom`-star. -/
+  | homogeneousCapsFail
+  /-- Nodes `[140]`, `[142]`, `[143]`, the geometric audit of the selected
+  overload: its token supports a role-homogeneous same-token `L_geom`-matching
+  or `L_geom`-star, with every declared same-root connector configuration.
+  `lem:same-token-bottleneck-routing` reads it as a sparse surplus exit or as
+  decorated Type B handoff fan data. -/
   | homogeneousBottleneckPattern
   /-- Node `[144]`, `lem:same-token-bottleneck-routing` itself: the concrete
   homogeneous pattern in the current object's canonical capacity presentation
@@ -8546,6 +8565,10 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       (∀ dart : object.graph.Dart,
         Disjoint (Graph.returnLengthSet object dart)
           (Graph.shiftedAcceptedSet data.LengthOK))
+  | .mersenneReturn, object =>
+      (∃ dart : object.graph.Dart,
+        ¬ Disjoint (Graph.returnLengthSet object dart)
+          (Graph.shiftedAcceptedSet data.LengthOK))
   | .noProperBaseline, object =>
       (∀ subgraph : Graph.ProperSubgraph object,
         ¬ Graph.MinimumDegreeAtLeast data.threshold subgraph.value) ∧
@@ -8591,6 +8614,10 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
         ¬ Graph.Strategy.InterfaceReplacement.CompressibleSupport
             (Graph.MinimumDegreeAtLeast data.threshold)
             (Graph.HasCycleWithLength data.LengthOK) object support)
+  | .windowFree, object =>
+      Graph.InducedPathFree object data.windowOrder
+  | .windowPresent, object =>
+      Graph.HasInducedPath object data.windowOrder
   | .maximalPacking, object =>
       (0 < object.windowPackingNumber data.windowOrder ∧
         ∃ packing : Finset (Finset object.Vertex),
@@ -9514,6 +9541,30 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
               (germ.Distinguishing ∨
                 HandoffProduced data object (canonicalWindowPacking data object)
                   germ.support)
+  | .coldGermSomeRealizing, object =>
+      -- `lem:cold-bounded-germ-trichotomy`, G1 read as the `[154]` test on the
+      -- node-`[153]` active family: some configuration is hit-realized.
+      ∃ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object,
+        ActiveColdGermStatement data object germ ∧ germ.Realizing
+  | .coldGermNoneRealizing, object =>
+      ¬ ∃ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object,
+        ActiveColdGermStatement data object germ ∧ germ.Realizing
+  | .coldGermSomeDistinguishing, object =>
+      -- G2 read as the second `[154]` test: some active configuration is
+      -- hit-distinguished.
+      ∃ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object,
+        ActiveColdGermStatement data object germ ∧ germ.Distinguishing
+  | .coldGermNoneDistinguishing, object =>
+      ¬ ∃ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) object,
+        ActiveColdGermStatement data object germ ∧ germ.Distinguishing
   | .coldBranchClosed, object =>
       -- `thm:cold-branch-quantitative-closure`, in the form consumed by the
       -- cold oval: after the current residual's length-changing germs and
@@ -11516,14 +11567,28 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
           ∃ reduced full, attempt.Identifies reduced full ∧
             Graph.BoundTargetDefectGeometry object attempt.support data.LengthOK reduced full
   | .canonicalBlockerRoute, object =>
-      ∃ active : Graph.ActiveSurplusDemands
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
-          data.threshold,
-          Graph.HasSparsePairDEBlocker
+      -- Node `[132]`, blocker arm: the exact complement of `.sparsePairExit`
+      -- (no sparse surplus exit of `def:named-surplus-exits` occurs), with
+      -- the blocked pair of `[130]` and its canonical blocker
+      -- `Φ_can(π) = min_≺ Blk(π)` of `def:canonical-blocker-ledger`.
+      Graph.SurvivesSparseExits (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object ∧
+        ∃ (active : Graph.ActiveSurplusDemands
+            (Graph.MinimumDegreeAtLeast data.threshold)
+            (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
+            data.threshold)
+          (_certificate : Graph.HasSparsePairDEBlocker
             (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
             (LengthOK := data.LengthOK) (Graph.pairResponseActivation active)
-              (object.portPairSchedule data.threshold)
+              (object.portPairSchedule data.threshold)),
+          let recorded := Graph.recordSparsePairDEBlockers
+            (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+            (LengthOK := data.LengthOK) (Graph.pairResponseActivation active)
+            (object.portPairSchedule data.threshold)
+          ∃ pair ∈ object.portPairSchedule data.threshold,
+            (recorded.blockers pair).Nonempty ∧
+              ∃ blocker, Graph.FiniteObject.canonicalBlocker recorded pair =
+                some blocker
   | .dependentPairFamily, object =>
       -- Node `[130]`, no: one pair in the full schedule carries a literal
       -- clause-(d)/(e) obstruction.  Clause (e) includes the manuscript's
@@ -11835,63 +11900,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
             Graph.SparsePressureOverloadInClass object data.threshold
               data.windowOrder data.surplusScale data.routingLabelBound capacity
                 .primitiveCarrier
-  | .windowIncidenceAudit, object =>
-      -- Node `[140]`: the actual `L_geom` pattern forced by the selected
-      -- window-incidence overload witness.
-      ∃ active : Graph.ActiveSurplusDemands
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
-          data.threshold,
-        ∃ capacity : Graph.CapacityPresentation object data.threshold
-            data.windowOrder,
-          capacity.activation =
-              (Graph.recordSparsePairDEBlockers
-                (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-                (LengthOK := data.LengthOK)
-                (Graph.pairResponseActivation active)
-                (object.portPairSchedule data.threshold)) ∧
-            Graph.HomogeneousBottleneckPatternStatement object data.threshold
-              data.windowOrder data.surplusScale data.routingLabelBound capacity
-              (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
-                (Graph.WindowCurvature.Label data.windowOrder))
-  | .remainderSurplusAudit, object =>
-      -- Node `[142]`: the actual `L_geom` pattern forced by the selected
-      -- remainder-surplus overload witness.
-      ∃ active : Graph.ActiveSurplusDemands
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
-          data.threshold,
-        ∃ capacity : Graph.CapacityPresentation object data.threshold
-            data.windowOrder,
-          capacity.activation =
-              (Graph.recordSparsePairDEBlockers
-                (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-                (LengthOK := data.LengthOK)
-                (Graph.pairResponseActivation active)
-                (object.portPairSchedule data.threshold)) ∧
-            Graph.HomogeneousBottleneckPatternStatement object data.threshold
-              data.windowOrder data.surplusScale data.routingLabelBound capacity
-              (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
-                (Graph.WindowCurvature.Label data.windowOrder))
-  | .primitiveCarrierAudit, object =>
-      -- Node `[143]`: the actual `L_geom` pattern forced by the selected
-      -- primitive-carrier overload witness.
-      ∃ active : Graph.ActiveSurplusDemands
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
-          data.threshold,
-        ∃ capacity : Graph.CapacityPresentation object data.threshold
-            data.windowOrder,
-          capacity.activation =
-              (Graph.recordSparsePairDEBlockers
-                (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-                (LengthOK := data.LengthOK)
-                (Graph.pairResponseActivation active)
-                (object.portPairSchedule data.threshold)) ∧
-            Graph.HomogeneousBottleneckPatternStatement object data.threshold
-              data.windowOrder data.surplusScale data.routingLabelBound capacity
-              (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
-                (Graph.WindowCurvature.Label data.windowOrder))
   | .quantitativeOverload, object =>
       -- `cor:quantitative-homogeneous-overload`.
       Graph.QuantitativeOverloadStatement object data.threshold data.windowOrder
@@ -11901,9 +11909,14 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       Graph.HomogeneousCapsHold object data.threshold data.windowOrder
         (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
           (Graph.WindowCurvature.Label data.windowOrder))
+  | .homogeneousCapsFail, object =>
+      -- Node `[144]`: the exact complement of `.homogeneousCapsHold`.
+      ¬ Graph.HomogeneousCapsHold object data.threshold data.windowOrder
+        (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+          (Graph.WindowCurvature.Label data.windowOrder))
   | .homogeneousBottleneckPattern, object =>
-      -- Its complement, normalized to the positive same-token bottleneck
-      -- pattern the paper routes at node `[144]`.
+      -- Nodes `[140]`, `[142]`, `[143]`: the positive same-token bottleneck
+      -- pattern of the selected overload witness, routed at node `[144]`.
       ∃ active : Graph.ActiveSurplusDemands
           (Graph.MinimumDegreeAtLeast data.threshold)
           (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
@@ -12019,6 +12032,7 @@ def label : Key → String
   | .gadgetClosure => "gadgetClosure"
   | .contractionCritical => "contractionCritical"
   | .returnAvoidance => "returnAvoidance"
+  | .mersenneReturn => "mersenneReturn"
   | .noProperBaseline => "noProperBaseline"
   | .tightEndpoint => "tightEndpoint"
   | .slackIndependent => "slackIndependent"
@@ -12027,6 +12041,8 @@ def label : Key → String
   | .targetCompleteContextUniversality => "targetCompleteContextUniversality"
   | .replacementExclusion => "replacementExclusion"
   | .uncompressible => "uncompressible"
+  | .windowFree => "windowFree"
+  | .windowPresent => "windowPresent"
   | .maximalPacking => "maximalPacking"
   | .localAlgebra => "localAlgebra"
   | .surplusAbove => "surplusAbove"
@@ -12191,6 +12207,10 @@ def label : Key → String
   | .coldPositiveGerm => "coldPositiveGerm"
   | .coldGermRouted => "coldGermRouted"
   | .coldBranchClosed => "coldBranchClosed"
+  | .coldGermSomeRealizing => "coldGermSomeRealizing"
+  | .coldGermNoneRealizing => "coldGermNoneRealizing"
+  | .coldGermSomeDistinguishing => "coldGermSomeDistinguishing"
+  | .coldGermNoneDistinguishing => "coldGermNoneDistinguishing"
   | .highCentreNormalForm => "highCentreNormalForm"
   | .fanCertificateCap => "fanCertificateCap"
   | .fanCertificateMarked => "fanCertificateMarked"
@@ -12299,11 +12319,9 @@ def label : Key → String
   | .windowClassAbsent => "windowClassAbsent"
   | .remainderClassOverload => "remainderClassOverload"
   | .remainderClassAbsent => "remainderClassAbsent"
-  | .windowIncidenceAudit => "windowIncidenceAudit"
-  | .remainderSurplusAudit => "remainderSurplusAudit"
-  | .primitiveCarrierAudit => "primitiveCarrierAudit"
   | .quantitativeOverload => "quantitativeOverload"
   | .homogeneousCapsHold => "homogeneousCapsHold"
+  | .homogeneousCapsFail => "homogeneousCapsFail"
   | .homogeneousBottleneckPattern => "homogeneousBottleneckPattern"
   | .bottleneckRouting => "bottleneckRouting"
   | .typeBHandoff => "typeBHandoff"
@@ -12347,6 +12365,9 @@ example : label .targetCompleteContextUniversality =
     "targetCompleteContextUniversality" := rfl
 example : label .replacementExclusion = "replacementExclusion" := rfl
 example : label .uncompressible = "uncompressible" := rfl
+example : label .mersenneReturn = "mersenneReturn" := rfl
+example : label .windowFree = "windowFree" := rfl
+example : label .windowPresent = "windowPresent" := rfl
 example : label .maximalPacking = "maximalPacking" := rfl
 example : label .localAlgebra = "localAlgebra" := rfl
 example : label .surplusAbove = "surplusAbove" := rfl
@@ -12506,6 +12527,10 @@ example : label .coldGermExtraction = "coldGermExtraction" := rfl
 example : label .coldPositiveGerm = "coldPositiveGerm" := rfl
 example : label .coldGermRouted = "coldGermRouted" := rfl
 example : label .coldBranchClosed = "coldBranchClosed" := rfl
+example : label .coldGermSomeRealizing = "coldGermSomeRealizing" := rfl
+example : label .coldGermNoneRealizing = "coldGermNoneRealizing" := rfl
+example : label .coldGermSomeDistinguishing = "coldGermSomeDistinguishing" := rfl
+example : label .coldGermNoneDistinguishing = "coldGermNoneDistinguishing" := rfl
 example : label .highCentreNormalForm = "highCentreNormalForm" := rfl
 example : label .fanCertificateCap = "fanCertificateCap" := rfl
 example : label .fanCertificateMarked = "fanCertificateMarked" := rfl
@@ -12634,11 +12659,9 @@ example : label .windowClassOverload = "windowClassOverload" := rfl
 example : label .windowClassAbsent = "windowClassAbsent" := rfl
 example : label .remainderClassOverload = "remainderClassOverload" := rfl
 example : label .remainderClassAbsent = "remainderClassAbsent" := rfl
-example : label .windowIncidenceAudit = "windowIncidenceAudit" := rfl
-example : label .remainderSurplusAudit = "remainderSurplusAudit" := rfl
-example : label .primitiveCarrierAudit = "primitiveCarrierAudit" := rfl
 example : label .quantitativeOverload = "quantitativeOverload" := rfl
 example : label .homogeneousCapsHold = "homogeneousCapsHold" := rfl
+example : label .homogeneousCapsFail = "homogeneousCapsFail" := rfl
 example : label .homogeneousBottleneckPattern = "homogeneousBottleneckPattern" := rfl
 example : label .bottleneckRouting = "bottleneckRouting" := rfl
 example : label .typeBHandoff = "typeBHandoff" := rfl
@@ -12680,6 +12703,9 @@ def idx : Key → Nat
   | .gadgetClosure => 500
   | .contractionCritical => 439
   | .returnAvoidance => 1
+  | .mersenneReturn => 606
+  | .windowFree => 607
+  | .windowPresent => 608
   | .noProperBaseline => 2
   | .tightEndpoint => 3
   | .slackIndependent => 4
@@ -12845,6 +12871,10 @@ def idx : Key → Nat
   | .coldGermExtraction => 70
   | .coldGermRouted => 71
   | .coldBranchClosed => 176
+  | .coldGermSomeRealizing => 602
+  | .coldGermNoneRealizing => 603
+  | .coldGermSomeDistinguishing => 604
+  | .coldGermNoneDistinguishing => 605
   | .highCentreNormalForm => 72
   | .fanCertificateCap => 76
   | .fanCertificateMarked => 77
@@ -12955,11 +12985,9 @@ def idx : Key → Nat
   | .windowClassAbsent => 131
   | .remainderClassOverload => 132
   | .remainderClassAbsent => 133
-  | .windowIncidenceAudit => 134
-  | .remainderSurplusAudit => 135
-  | .primitiveCarrierAudit => 136
   | .quantitativeOverload => 137
   | .homogeneousCapsHold => 140
+  | .homogeneousCapsFail => 601
   | .homogeneousBottleneckPattern => 141
   | .bottleneckRouting => 142
   | .typeBHandoff => 184
@@ -12993,6 +13021,9 @@ def ofIdx : Nat → Key
   | 500 => .gadgetClosure
   | 439 => .contractionCritical
   | 1 => .returnAvoidance
+  | 606 => .mersenneReturn
+  | 607 => .windowFree
+  | 608 => .windowPresent
   | 2 => .noProperBaseline
   | 3 => .tightEndpoint
   | 4 => .slackIndependent
@@ -13153,6 +13184,10 @@ def ofIdx : Nat → Key
   | 70 => .coldGermExtraction
   | 71 => .coldGermRouted
   | 176 => .coldBranchClosed
+  | 602 => .coldGermSomeRealizing
+  | 603 => .coldGermNoneRealizing
+  | 604 => .coldGermSomeDistinguishing
+  | 605 => .coldGermNoneDistinguishing
   | 72 => .highCentreNormalForm
   | 76 => .fanCertificateCap
   | 77 => .fanCertificateMarked
@@ -13242,11 +13277,9 @@ def ofIdx : Nat → Key
   | 131 => .windowClassAbsent
   | 132 => .remainderClassOverload
   | 133 => .remainderClassAbsent
-  | 134 => .windowIncidenceAudit
-  | 135 => .remainderSurplusAudit
-  | 136 => .primitiveCarrierAudit
   | 137 => .quantitativeOverload
   | 140 => .homogeneousCapsHold
+  | 601 => .homogeneousCapsFail
   | 141 => .homogeneousBottleneckPattern
   | 142 => .bottleneckRouting
   | 184 => .typeBHandoff
@@ -13325,6 +13358,12 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "contractionCritical") 439
   | .returnAvoidance =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "returnAvoidance") 1
+  | .mersenneReturn =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "mersenneReturn") 606
+  | .windowFree =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "windowFree") 607
+  | .windowPresent =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "windowPresent") 608
   | .noProperBaseline =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "noProperBaseline") 2
   | .tightEndpoint =>
@@ -13720,6 +13759,14 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldGermRouted") 71
   | .coldBranchClosed =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldBranchClosed") 176
+  | .coldGermSomeRealizing =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldGermSomeRealizing") 602
+  | .coldGermNoneRealizing =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldGermNoneRealizing") 603
+  | .coldGermSomeDistinguishing =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldGermSomeDistinguishing") 604
+  | .coldGermNoneDistinguishing =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldGermNoneDistinguishing") 605
   | .highCentreNormalForm =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "highCentreNormalForm") 72
   | .fanCertificateCap =>
@@ -13994,16 +14041,12 @@ def name : Key → Lean.Name
         "remainderClassOverload") 132
   | .remainderClassAbsent =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "remainderClassAbsent") 133
-  | .windowIncidenceAudit =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "windowIncidenceAudit") 134
-  | .remainderSurplusAudit =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "remainderSurplusAudit") 135
-  | .primitiveCarrierAudit =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "primitiveCarrierAudit") 136
   | .quantitativeOverload =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "quantitativeOverload") 137
   | .homogeneousCapsHold =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "homogeneousCapsHold") 140
+  | .homogeneousCapsFail =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "homogeneousCapsFail") 601
   | .homogeneousBottleneckPattern =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "homogeneousBottleneckPattern") 141
@@ -14174,5 +14217,387 @@ abbrev closed
       (vocabulary := vocabulary BranchState Presentation presentation data)
   intro impossible
   cases impossible
+
+/-! ## Key freshness by kernel decision
+
+Freshness, distinctness and disjointness of spine keys are decided from the
+closed vocabulary: a literal key list is tested by the kernel with the
+vocabulary's own decidable equality (`Key`'s derived `DecidableEq`, which
+compares constructor indices), so no pair of keys is ever compared by case
+analysis and no table is written down.  An opaque ledger index `known` is
+split off and closed by the caller's freshness hypothesis. -/
+
+theorem keyFresh_append {α : Type _} {key : α} {left right : List α}
+    (leftFresh : key ∉ left) (rightFresh : key ∉ right) :
+    key ∉ left ++ right := by
+  rw [List.mem_append]
+  exact fun member => member.elim leftFresh rightFresh
+
+theorem keyFresh_cons {α : Type _} {key head : α} {tail : List α}
+    (headNe : key ≠ head) (tailFresh : key ∉ tail) : key ∉ head :: tail := by
+  rw [List.mem_cons]
+  exact fun member => member.elim headNe tailFresh
+
+theorem keyFresh_of_cons_tail {α : Type _} {key head : α} {tail : List α}
+    (fresh : key ∉ head :: tail) : key ∉ tail :=
+  fun member => fresh (List.mem_cons_of_mem head member)
+
+theorem keyFresh_of_append_left {α : Type _} {key : α} {left right : List α}
+    (fresh : key ∉ left ++ right) : key ∉ left :=
+  fun member => fresh (List.mem_append_left right member)
+
+theorem keyFresh_of_append_right {α : Type _} {key : α} {left right : List α}
+    (fresh : key ∉ left ++ right) : key ∉ right :=
+  fun member => fresh (List.mem_append_right left member)
+
+theorem keyFresh_of_contains {α : Type _} [DecidableEq α] {key : α}
+    {keys : List α} (absent : keys.contains key = false) : key ∉ keys :=
+  fun member => by
+    have present : keys.contains key = true := List.elem_eq_true_of_mem member
+    rw [absent] at present
+    exact Bool.noConfusion present
+
+theorem keyNe_of_decide {α : Type _} [DecidableEq α] {left right : α}
+    (distinct : decide (left = right) = false) : left ≠ right :=
+  of_decide_eq_false distinct
+
+theorem keyDisjoint_of_all {α : Type _} [DecidableEq α] {left right : List α}
+    (fresh : (left.all fun key => !right.contains key) = true) :
+    List.Disjoint left right := fun key member member' => by
+  have absent := List.all_eq_true.mp fresh key member
+  have present : right.contains key = true := List.elem_eq_true_of_mem member'
+  rw [present] at absent
+  exact Bool.noConfusion absent
+
+theorem keyDisjoint_append_right {α : Type _} {left first second : List α}
+    (firstDisjoint : List.Disjoint left first)
+    (secondDisjoint : List.Disjoint left second) :
+    List.Disjoint left (first ++ second) := fun _ member member' => by
+  rw [List.mem_append] at member'
+  exact member'.elim (firstDisjoint member) (secondDisjoint member)
+
+theorem keyDisjoint_cons_right {α : Type _} {left tail : List α} {head : α}
+    (headFresh : head ∉ left) (tailDisjoint : List.Disjoint left tail) :
+    List.Disjoint left (head :: tail) := fun _ member member' => by
+  rw [List.mem_cons] at member'
+  exact member'.elim (fun same => headFresh (same ▸ member))
+    (tailDisjoint member)
+
+theorem keyDisjoint_cons_left {α : Type _} {head : α} {tail right : List α}
+    (headFresh : head ∉ right) (tailDisjoint : List.Disjoint tail right) :
+    List.Disjoint (head :: tail) right := fun _ member member' => by
+  rw [List.mem_cons] at member
+  exact member.elim (fun same => headFresh (same ▸ member'))
+    (fun member => tailDisjoint member member')
+
+theorem keyDisjoint_append_left {α : Type _} {first second right : List α}
+    (firstDisjoint : List.Disjoint first right)
+    (secondDisjoint : List.Disjoint second right) :
+    List.Disjoint (first ++ second) right := fun _ member member' => by
+  rw [List.mem_append] at member
+  exact member.elim (fun member => firstDisjoint member member')
+    (fun member => secondDisjoint member member')
+
+theorem keyDisjoint_nil_left {α : Type _} {right : List α} :
+    List.Disjoint ([] : List α) right := fun _ member => nomatch member
+
+namespace KeyFresh
+
+open Lean Meta Elab Tactic
+
+/-- The key type of one `key_fresh` call, its universe, and its decidable
+equality and list membership instances, found once per call. -/
+structure Keys where
+  type : Expr
+  level : Level
+  decEq : Expr
+  membership : Expr
+
+def Keys.ofType (type : Expr) : MetaM Keys := do
+  let level ← decLevel (← getLevel type)
+  -- A locally installed instance (`letI : FactSystem _ := instFactSystem`) is
+  -- replaced by its value, so the evidence mentions the vocabulary's own
+  -- decidable equality and stays checkable without unfolding local lets.
+  let decEq ← zetaReduce (← instantiateMVars
+    (← synthInstance (mkApp (mkConst ``DecidableEq [level.succ]) type)))
+  let listType := mkApp (mkConst ``List [level]) type
+  let membership ← zetaReduce (← instantiateMVars (← synthInstance
+    (mkApp2 (mkConst ``Membership [level, level]) type listType)))
+  return { type, level, decEq, membership }
+
+def Keys.list (keys : Keys) : Expr := mkApp (mkConst ``List [keys.level]) keys.type
+
+def Keys.notMem (keys : Keys) (list key : Expr) : Expr :=
+  mkNot <| mkApp5 (mkConst ``Membership.mem [keys.level, keys.level]) keys.type
+    keys.list keys.membership list key
+
+def Keys.disjoint (keys : Keys) (left right : Expr) : Expr :=
+  mkApp3 (mkConst ``List.Disjoint [keys.level]) keys.type left right
+
+def Keys.ne (keys : Keys) (left right : Expr) : Expr :=
+  mkApp3 (mkConst ``Ne [keys.level.succ]) keys.type left right
+
+def Keys.contains (keys : Keys) (list key : Expr) : Expr :=
+  let beq := mkApp2 (mkConst ``instBEqOfDecidableEq [keys.level.succ]) keys.type keys.decEq
+  mkApp4 (mkConst ``List.contains [keys.level]) keys.type beq list key
+
+/-- Does `e` mention a free variable whose type is a list?  Such a variable is
+an opaque ledger index; every other free variable is a parameter that the
+kernel decision does not inspect. -/
+def mentionsListFVar (e : Expr) : MetaM Bool := do
+  let fvars := (collectFVars {} e).fvarIds
+  fvars.anyM fun fvar => do
+    let decl ← fvar.getDecl
+    if decl.isLet then return false
+    return (← whnfR (← instantiateMVars decl.type)).isAppOf ``List
+
+def isListSpine (e : Expr) : Bool :=
+  e.isAppOf ``HAppend.hAppend || e.isAppOf ``List.append ||
+    e.isAppOf ``List.cons || e.isAppOf ``List.nil || e.isFVar
+
+/-- Expose the next cell of a key list: `let`s and let-bound variables are
+substituted, and anything else (a row manifest projection, say) is unfolded
+to weak head normal form. -/
+partial def listCell (e : Expr) : MetaM Expr := do
+  let e := (← instantiateMVars e).cleanupAnnotations
+  match e with
+  | .letE _ _ value body _ => listCell (body.instantiate1 value)
+  | .fvar fvar =>
+    match ← fvar.getValue? with
+    | some value => listCell value
+    | none => return e
+  | _ =>
+    if isListSpine e then return e
+    let e' ← whnfD e
+    if e' == e then return e else listCell e'
+
+def bool (value : Bool) : Expr :=
+  if value then mkConst ``Bool.true else mkConst ``Bool.false
+
+def boolRefl (value : Bool) : Expr :=
+  mkApp2 (mkConst ``Eq.refl [Level.one]) (mkConst ``Bool) (bool value)
+
+/-- The literal elements of a key list, as far as they are syntactically
+visible (`let`s and let-bound variables substituted, nothing unfolded). -/
+partial def visibleElements (e : Expr) (acc : Array Expr := #[]) : MetaM (Array Expr) := do
+  let e := (← instantiateMVars e).cleanupAnnotations
+  match e with
+  | .letE _ _ value body _ => visibleElements (body.instantiate1 value) acc
+  | .fvar fvar =>
+    match ← fvar.getValue? with
+    | some value => visibleElements value acc
+    | none => return acc
+  | _ =>
+    if e.isAppOfArity ``List.cons 3 then
+      visibleElements e.appArg! (acc.push e.appFn!.appArg!)
+    else if e.isAppOfArity ``HAppend.hAppend 6 || e.isAppOfArity ``List.append 3 then
+      visibleElements e.appArg! (← visibleElements e.appFn!.appArg! acc)
+    else
+      return acc
+
+/-- Report a claim the goal itself refutes: `key` appears literally in
+`list`.  This is diagnostics only; the verdict is the kernel's. -/
+def refuteVisible (claim list key : Expr) : MetaM Unit := do
+  let key ← instantiateMVars key
+  if (← visibleElements list).contains key then
+    throwError "key_fresh: the key occurs in the list{indentExpr claim}"
+
+/-- Close `claim` with `proof rfl`, where `rfl : test = expected`.  The
+kernel evaluates `test` -- the closed vocabulary's decidable equality on the
+literal keys -- when it checks the enclosing declaration, sharing its
+reduction cache across every key compared there. -/
+def closeByKernel (goal : MVarId) (claim test : Expr) (expected : Bool)
+    (proof : Expr → Expr) : MetaM Unit := do
+  if (← instantiateMVars test).hasMVar then
+    throwError "key_fresh: statement still has metavariables{indentExpr claim}"
+  goal.assign (proof (boolRefl expected))
+
+/-- Restrict a freshness proof `proof : key ∉ spine` to the opaque segment
+`target` of `spine`, following its visible `cons`/`++` cells. -/
+partial def restrictFresh (keys : Keys) (key proof spine target : Expr) :
+    MetaM (Option Expr) := do
+  let spine := (← instantiateMVars spine).cleanupAnnotations
+  if spine == target then return some proof
+  match spine with
+  | .letE _ _ value body _ =>
+      restrictFresh keys key proof (body.instantiate1 value) target
+  | .fvar fvar =>
+      match ← fvar.getValue? with
+      | some value => restrictFresh keys key proof value target
+      | none => return none
+  | _ =>
+    if spine.isAppOfArity ``List.cons 3 then
+      let head := spine.appFn!.appArg!
+      let tail := spine.appArg!
+      restrictFresh keys key
+        (mkApp5 (mkConst ``keyFresh_of_cons_tail [keys.level]) keys.type key head tail proof)
+        tail target
+    else if spine.isAppOfArity ``HAppend.hAppend 6 || spine.isAppOfArity ``List.append 3 then
+      let left := spine.appFn!.appArg!
+      let right := spine.appArg!
+      if let some restricted ← restrictFresh keys key
+          (mkApp5 (mkConst ``keyFresh_of_append_right [keys.level]) keys.type key left right
+            proof) right target then
+        return some restricted
+      restrictFresh keys key
+        (mkApp5 (mkConst ``keyFresh_of_append_left [keys.level]) keys.type key left right proof)
+        left target
+    else
+      return none
+
+/-- The caller's freshness hypothesis for an opaque ledger index `list`: a
+local `key ∉ spine` whose spine contains `list` as a visible segment. -/
+def findHypothesis (keys : Keys) (list key : Expr) : MetaM (Option Expr) := do
+  let mut candidates := #[]
+  for decl in ← getLCtx do
+    if decl.isImplementationDetail then continue
+    let type := (← instantiateMVars decl.type).cleanupAnnotations
+    let_expr Not inner := type | continue
+    let_expr Membership.mem _ _ _ spine hypothesisKey := inner | continue
+    if hypothesisKey == key then
+      if let some proof ← restrictFresh keys key decl.toExpr spine list then
+        return some proof
+    else
+      candidates := candidates.push (decl.toExpr, spine, hypothesisKey)
+  for (proof, spine, hypothesisKey) in candidates do
+    if ← isDefEq hypothesisKey key then
+      if let some proof ← restrictFresh keys key proof spine list then
+        return some proof
+  return none
+
+mutual
+
+/-- `key ∉ list`. -/
+partial def notMem (keys : Keys) (goal : MVarId) (list key : Expr) : MetaM Unit := do
+  let claim := keys.notMem list key
+  if !(← mentionsListFVar list) then
+    refuteVisible claim list key
+    return ← closeByKernel goal claim (keys.contains list key) false fun rfl =>
+      mkApp5 (mkConst ``keyFresh_of_contains [keys.level]) keys.type keys.decEq key list rfl
+  let cell ← listCell list
+  if cell.isAppOf ``HAppend.hAppend || cell.isAppOf ``List.append then
+    let left := cell.appFn!.appArg!
+    let right := cell.appArg!
+    let leftGoal ← mkFreshExprSyntheticOpaqueMVar (keys.notMem left key)
+    let rightGoal ← mkFreshExprSyntheticOpaqueMVar (keys.notMem right key)
+    goal.assign <| mkApp6 (mkConst ``keyFresh_append [keys.level]) keys.type key left right
+      leftGoal rightGoal
+    notMem keys leftGoal.mvarId! left key
+    notMem keys rightGoal.mvarId! right key
+  else if cell.isAppOf ``List.cons then
+    let head := cell.appFn!.appArg!
+    let tail := cell.appArg!
+    let headGoal ← mkFreshExprSyntheticOpaqueMVar (keys.ne key head)
+    let tailGoal ← mkFreshExprSyntheticOpaqueMVar (keys.notMem tail key)
+    goal.assign <| mkApp6 (mkConst ``keyFresh_cons [keys.level]) keys.type key head tail
+      headGoal tailGoal
+    distinct keys headGoal.mvarId! key head
+    notMem keys tailGoal.mvarId! tail key
+  else if cell.isAppOf ``List.nil then
+    goal.assign <| mkApp2 (mkConst ``List.not_mem_nil [keys.level]) keys.type key
+  else
+    match ← findHypothesis keys cell key with
+    | some proof => goal.assign proof
+    | none => throwError "key_fresh: no freshness hypothesis for{indentExpr claim}"
+
+/-- `left ≠ right`. -/
+partial def distinct (keys : Keys) (goal : MVarId) (left right : Expr) : MetaM Unit := do
+  let equality := mkApp3 (mkConst ``Eq [keys.level.succ]) keys.type left right
+  let test := mkApp2 (mkConst ``Decidable.decide) equality (mkApp2 keys.decEq left right)
+  if (← instantiateMVars left) == (← instantiateMVars right) then
+    throwError "key_fresh: the two keys are equal{indentExpr (keys.ne left right)}"
+  closeByKernel goal (keys.ne left right) test false fun rfl =>
+    mkApp5 (mkConst ``keyNe_of_decide [keys.level]) keys.type keys.decEq left right rfl
+
+/-- `List.Disjoint left right`. -/
+partial def disjoint (keys : Keys) (goal : MVarId) (left right : Expr) : MetaM Unit := do
+  let claim := keys.disjoint left right
+  if !(← mentionsListFVar left) && !(← mentionsListFVar right) then
+    let predicate ← withLocalDeclD `key keys.type fun key => do
+      mkLambdaFVars #[key] <| mkApp (mkConst ``not) (keys.contains right key)
+    let test := mkApp3 (mkConst ``List.all [keys.level]) keys.type left predicate
+    for key in ← visibleElements left do
+      refuteVisible claim right key
+    return ← closeByKernel goal claim test true fun rfl =>
+      mkApp5 (mkConst ``keyDisjoint_of_all [keys.level]) keys.type keys.decEq left right rfl
+  let rightCell ← listCell right
+  if rightCell.isAppOf ``HAppend.hAppend || rightCell.isAppOf ``List.append then
+    let first := rightCell.appFn!.appArg!
+    let second := rightCell.appArg!
+    let firstGoal ← mkFreshExprSyntheticOpaqueMVar (keys.disjoint left first)
+    let secondGoal ← mkFreshExprSyntheticOpaqueMVar (keys.disjoint left second)
+    goal.assign <| mkApp6 (mkConst ``keyDisjoint_append_right [keys.level]) keys.type
+      left first second firstGoal secondGoal
+    disjoint keys firstGoal.mvarId! left first
+    disjoint keys secondGoal.mvarId! left second
+    return
+  if rightCell.isAppOf ``List.cons then
+    let head := rightCell.appFn!.appArg!
+    let tail := rightCell.appArg!
+    let headGoal ← mkFreshExprSyntheticOpaqueMVar (keys.notMem left head)
+    let tailGoal ← mkFreshExprSyntheticOpaqueMVar (keys.disjoint left tail)
+    goal.assign <| mkApp6 (mkConst ``keyDisjoint_cons_right [keys.level]) keys.type
+      left tail head headGoal tailGoal
+    notMem keys headGoal.mvarId! left head
+    disjoint keys tailGoal.mvarId! left tail
+    return
+  let leftCell ← listCell left
+  if leftCell.isAppOf ``List.cons then
+    let head := leftCell.appFn!.appArg!
+    let tail := leftCell.appArg!
+    let headGoal ← mkFreshExprSyntheticOpaqueMVar (keys.notMem right head)
+    let tailGoal ← mkFreshExprSyntheticOpaqueMVar (keys.disjoint tail right)
+    goal.assign <| mkApp6 (mkConst ``keyDisjoint_cons_left [keys.level]) keys.type
+      head tail right headGoal tailGoal
+    notMem keys headGoal.mvarId! right head
+    disjoint keys tailGoal.mvarId! tail right
+  else if leftCell.isAppOf ``HAppend.hAppend || leftCell.isAppOf ``List.append then
+    let first := leftCell.appFn!.appArg!
+    let second := leftCell.appArg!
+    let firstGoal ← mkFreshExprSyntheticOpaqueMVar (keys.disjoint first right)
+    let secondGoal ← mkFreshExprSyntheticOpaqueMVar (keys.disjoint second right)
+    goal.assign <| mkApp6 (mkConst ``keyDisjoint_append_left [keys.level]) keys.type
+      first second right firstGoal secondGoal
+    disjoint keys firstGoal.mvarId! first right
+    disjoint keys secondGoal.mvarId! second right
+  else if leftCell.isAppOf ``List.nil then
+    goal.assign <| mkApp2 (mkConst ``keyDisjoint_nil_left [keys.level]) keys.type right
+  else
+    throwError "key_fresh: no disjointness hypothesis for{indentExpr claim}"
+
+end
+
+/-- Dispatch one freshness, distinctness or disjointness goal. -/
+def fresh (goal : MVarId) : MetaM Unit := goal.withContext do
+  let claim := (← instantiateMVars (← goal.getType)).cleanupAnnotations
+  match_expr claim with
+  | Not inner =>
+      match_expr inner with
+      | Membership.mem keyType _ _ list key =>
+          notMem (← Keys.ofType keyType) goal list key
+      | Eq keyType left right =>
+          distinct (← Keys.ofType keyType) goal left right
+      | _ => throwError "key_fresh: not a key freshness goal{indentExpr claim}"
+  | Ne keyType left right => distinct (← Keys.ofType keyType) goal left right
+  | List.Disjoint keyType left right =>
+      disjoint (← Keys.ofType keyType) goal left right
+  | List.Nodup keyType list =>
+      let keys ← Keys.ofType keyType
+      let decision := mkApp3 (mkConst ``List.nodupDecidable [keys.level]) keyType keys.decEq list
+      closeByKernel goal claim (mkApp2 (mkConst ``Decidable.decide) claim decision) true
+        fun rfl => mkApp3 (mkConst ``of_decide_eq_true) claim decision rfl
+  | _ => throwError "key_fresh: not a key freshness goal{indentExpr claim}"
+
+end KeyFresh
+
+/-- `key_fresh` discharges fact-key freshness and distinctness: `k ∉ keys`,
+`List.Disjoint produced keys`, `k ≠ k'` and `List.Nodup keys`.  A literal key
+list is decided by one kernel evaluation of the closed vocabulary's decidable
+equality; an opaque ledger index is split off and closed by the caller's
+freshness hypothesis. -/
+elab "key_fresh" : tactic => do
+  let goal ← Lean.Elab.Tactic.getMainGoal
+  KeyFresh.fresh goal
+  Lean.Elab.Tactic.replaceMainGoal []
 
 end Hypostructure.Graph.Strategy.Spine

@@ -45,7 +45,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     { Requires := [K .typeBB2Choice, K .selection, K .uncompressible,
         K .remainderNormalized]
       Produces := [K .typeBDisjointLedger]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>

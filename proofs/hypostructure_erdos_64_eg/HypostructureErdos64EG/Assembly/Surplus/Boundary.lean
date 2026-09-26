@@ -24,41 +24,14 @@ abbrev StrictSurplusTypeBOutcome (selected : EGInput.{u}) :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
     erdosReceiverLoadProfile spineData .typeBFanEntry selected.object
 
-/-- The four non-closing outcomes of the common Type B certificate core
-`[71]`--`[75]` / `[80]`--`[84]` (`Assembly.Internal.TypeBCertificateBoundary`):
-certificate failure charged to the bridge fan mass `[75]`/`[84]`, successful B2
-`[74]`/`[82]`, the surviving canonical post-ledger core, and the minimal B2
-overlap obstruction `[73]`/`[83]`.  Direct cycles and the B2-paid negative
-support close inside that core. -/
-abbrev TypeBCertificateOutcome (selected : EGInput.{u}) : Prop :=
-  (Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .fanCertificateResidualMass selected.object ∧
-    Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .fanCertificateResidual selected.object) ∨
-  (Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .typeBExcluded selected.object ∧
-    Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .typeBDisjointLedger selected.object ∧
-    Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .typeBB2Choice selected.object) ∨
-  (Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .typeBExclusionResidualMass selected.object ∧
-    Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .typeBExclusionResidual selected.object ∧
-    Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .typeBDisjointLedger selected.object) ∨
-  (Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .typeBOverlapObstructionMass selected.object ∧
-    Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .typeBGlobalLocalBridge selected.object ∧
-    Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .typeBOverlapObstruction selected.object)
-
-/-- The actual same-token handoff at node `[144a]`, retaining its
-strict-surplus source and the common Type B entry, after it has entered the
-Type B fan ledger (`lem:same-token-bottleneck-routing`): the common
-continuation `[68]`--`[75]` / `[78]`--`[84]` returns one of the four
-certificate outcomes on the same ledger. -/
+/-- **Node `[144a]`** (`thm:main` (ii)): the same-token handoff retained with
+its token/role fibre (`K .typeBHandoff`, `K .bottleneckRouting`), the
+active-demand and capacity presentations (`K .sparsePressureOverload`,
+`K .capacityTokenLedger`), the homogeneous bottleneck pattern
+(`K .homogeneousBottleneckPattern`) whose packing/core/decorated envelope is
+carried by the handoff, its strict-surplus ancestry (`K .surplusAbove`,
+`K .sparseSurplusSurvivor`), and the Type B fan entry `K .typeBFanEntry`.  No
+cap or near-cubic estimate is part of this outcome. -/
 abbrev Node144aOutcome (selected : EGInput.{u}) :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .typeBHandoff selected.object ∧
@@ -74,8 +47,7 @@ abbrev Node144aOutcome (selected : EGInput.{u}) :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .surplusAbove selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .sparseSurplusSurvivor selected.object ∧
-  TypeBCertificateOutcome selected
+      erdosReceiverLoadProfile spineData .sparseSurplusSurvivor selected.object
 
 /-- A Type B entry reached from one of the pair-system outcomes, with its
 own source fact rather than the node-`[144]` handoff. -/

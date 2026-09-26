@@ -13,20 +13,19 @@ open Hypostructure.Graph.Strategy.Spine
 
 universe u w
 
+-- EG-NODE [125] sparse-load survivor: after \(P_{13}\) label algebra and sparse exits
 set_option maxHeartbeats 1000000 in
 noncomputable def selectedStrictSurplusBranch
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
         K .maximalPacking,
-        K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
+        K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
     StrictSurplusBoundaryResult selected := by
-  -- The enclosing `[20]` decision has already selected the survivor arm.
-  -- `[125]` is the exact identity edge prescribed by the diagram; only that
-  -- same ledger can enter `[126]`--`[128]` and `[129]`.
-  let node125 := selectedSparseSurplusSurvivorNode125 history
-  let activated := selectedSparseSurplusActivation node125
+  -- The enclosing `[20]` decision has already selected the survivor arm;
+  -- its literal ledger is node `[125]`, which enters `[126]`--`[128]`.
+  let activated := selectedSparseSurplusActivation history
   let baseline := selectedBaselineSpineDemand activated
   match selectedPairResponseIndependenceDichotomy baseline with
   | .left independentHistory =>

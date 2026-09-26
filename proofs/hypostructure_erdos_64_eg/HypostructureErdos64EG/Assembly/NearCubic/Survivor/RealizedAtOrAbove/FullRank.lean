@@ -1,4 +1,4 @@
-import Hypostructure.Graph.Strategy.ColdCorridorRows
+import Hypostructure.Graph.Strategy.ColdCorridorRows.Basic
 import Hypostructure.Graph.Strategy.EntropyClosure
 import Hypostructure.Graph.Strategy.SpineRows.DominantRootedType
 import Hypostructure.Graph.Strategy.SpineRows.DominantRootedTypeWedgeDichotomy
@@ -31,11 +31,11 @@ noncomputable def Assembly.Internal.nearCubicRealizedAtOrAboveFullRank
       [K .curvatureFullRank, K .targetRankCircuit, K .exactResponseProfile,
        K .admissibleRankQuotient, K .curvatureTargetRank, K .wedgeSupply, K .stubSupply,
        K .boundaryDemand, K .remainderRelabelingEntropy, K .remainderNormalized,
-       K .route8Rate, K .densityCap, K .coldMassBounded, K .coldSelectedBranchExcess, K .coldAmbientCubicStubExcess, K .coldStubExcess,
+       K .densityCap, K .coldMassBounded, K .coldSelectedBranchExcess, K .coldAmbientCubicStubExcess, K .coldStubExcess,
        K .coldAmbientCubic, K .coldMass, K .coldHotEntropyCap, K .coldRoute8AtOrAbove,
        K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
        K .windowPackageSeparated, K .barrierEnumeration, K .sparseSurplusSurvivor,
-       K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking, K .uncompressible,
+       K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
        K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres,
        K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
        K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap,
@@ -49,16 +49,16 @@ noncomputable def Assembly.Internal.nearCubicRealizedAtOrAboveFullRank
     (forcedCurvatureCostRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      fullRankHistory (by simp [K_eq_iff])
+      fullRankHistory (by key_fresh)
   match remainderEntropyDichotomy (data := spineData) cost
-      (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+      (by key_fresh) (by key_fresh) with
   | .left highHistory =>
       exact Assembly.Internal.nearCubicRealizedAtOrAboveHighEntropy highHistory
   | .right lowHistory =>
       -- `[50]`--`[52]`: retain the exact low-arm refinement and
       -- invoke the translate row only on the root-wedge arm.
       match localTypeCoordinateDichotomy (data := spineData) lowHistory
-          (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+          (by key_fresh) (by key_fresh) with
       | .right nonrepetitiveHistory =>
           exact Assembly.Internal.nearCubicRealizedAtOrAboveNonrepetitive nonrepetitiveHistory
       | .left repetitiveHistory =>
@@ -66,10 +66,10 @@ noncomputable def Assembly.Internal.nearCubicRealizedAtOrAboveFullRank
             (dominantRootedTypeRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              repetitiveHistory (by simp [K_eq_iff])
+              repetitiveHistory (by key_fresh)
           match dominantRootedTypeWedgeDichotomy (data := spineData) dominant
-              (by simp [K_eq_iff])
-              (by simp [K_eq_iff]) with
+              (by key_fresh)
+              (by key_fresh) with
           | .right wedgeFreeHistory =>
               exact Assembly.Internal.nearCubicRealizedAtOrAboveWedgeFree wedgeFreeHistory
           | .left wedgeHistory =>

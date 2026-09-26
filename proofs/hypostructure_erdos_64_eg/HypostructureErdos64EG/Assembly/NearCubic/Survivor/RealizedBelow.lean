@@ -1,4 +1,4 @@
-import Hypostructure.Graph.Strategy.ColdCorridorRows
+import Hypostructure.Graph.Strategy.ColdCorridorRows.Basic
 import Hypostructure.Graph.Strategy.EntropyClosure
 import Hypostructure.Graph.Strategy.SpineRows.BoundaryDemand
 import Hypostructure.Graph.Strategy.SpineRows.BranchDependence
@@ -33,7 +33,7 @@ noncomputable def Assembly.Internal.nearCubicRealizedBelow
       [K .coldRoute8Below, K .barrierCap, K .hotColdPartition, K .windowPackageRealized,
        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
        K .sparseSurplusSurvivor, K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-       K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality,
+       K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality,
        K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure,
        K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
@@ -44,7 +44,7 @@ noncomputable def Assembly.Internal.nearCubicRealizedBelow
     (route8RateFromColdBelowRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      belowHistory (by simp [K_eq_iff])
+      belowHistory (by key_fresh)
   -- `[147]`: "If `θ < 1/78`, then `τ(θ) < 3/13` by
   -- `def:cold-window-ledger`; this is exactly the private-carrier
   -- inequality used in `thm:large-budget-route8-only`, so the route-8
@@ -59,40 +59,40 @@ noncomputable def Assembly.Internal.nearCubicRealizedBelow
     (remainderNormalizationRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      belowHistory (by simp [K_eq_iff])
+      belowHistory (by key_fresh)
   let relabelingEntropy :=
     (remainderRelabelingEntropyRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile)
-      (data := spineData)).run remainder (by simp [K_eq_iff])
+      (data := spineData)).run remainder (by key_fresh)
   let boundary :=
     (boundaryDemandRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      relabelingEntropy (by simp [K_eq_iff])
+      relabelingEntropy (by key_fresh)
   let stubSupply :=
     (stubSupplyRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      boundary (by simp [K_eq_iff])
+      boundary (by key_fresh)
   let wedge :=
     (wedgeSupplyRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      stubSupply (by simp [K_eq_iff])
+      stubSupply (by key_fresh)
   let rank :=
     (curvatureTargetRankRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      wedge (by simp [K_eq_iff])
+      wedge (by key_fresh)
   let circuit :=
     (targetRankCircuitRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      rank (by simp [K_eq_iff])
+      rank (by key_fresh)
   -- `[32]`: the exact finite rank split at the canonical maximal packing.
   match curvatureRankDichotomy (data := spineData) circuit
-      (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+      (by key_fresh) (by key_fresh) with
   | .left dropHistory =>
       -- `[33]`: Branch D, the rank-reducing curvature dependence with its
       -- inclusion-minimal connected support.
@@ -100,18 +100,18 @@ noncomputable def Assembly.Internal.nearCubicRealizedBelow
         (branchDependenceRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) spineData).run
-          dropHistory (by simp [K_eq_iff])
+          dropHistory (by key_fresh)
       -- `[35]`: the repeated Branch-D state plus the exact
       -- `lem:separated-testers` fact on this literal ancestry.
       let tested :=
         (separatedTestersRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) spineData).run
-          dependence (by simp [K_eq_iff])
+          dependence (by key_fresh)
       exact (selectedRankDropCloses tested
-        (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
-        (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])
-        (by simp [K_eq_iff]) (by simp [K_eq_iff]) (by simp [K_eq_iff])).elim
+        (by key_fresh) (by key_fresh) (by key_fresh)
+        (by key_fresh) (by key_fresh) (by key_fresh)
+        (by key_fresh) (by key_fresh) (by key_fresh)).elim
   | .right fullRankHistory =>
       exact Assembly.Internal.nearCubicRealizedBelowFullRank fullRankHistory
 

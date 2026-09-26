@@ -2,7 +2,8 @@ import Hypostructure.Graph.Strategy.SpineRows.OpenPortSuppression
 import Hypostructure.Graph.Strategy.SpineRows.OpenPortSuppressionSafe
 import Hypostructure.Graph.Strategy.SpineRows.SingleOpenPortSuppressionWitness
 import Hypostructure.Graph.Strategy.SpineRows.SuppressedFamilyCriticalCycle
-import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows
+import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SameTokenBottleneckRouting
+import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SameTokenTypeBFanEntry
 import Hypostructure.Graph.Strategy.SurplusRows
 import HypostructureErdos64EG.Assembly.Basic
 
@@ -30,7 +31,7 @@ noncomputable def selectedSparseSurplusActivation
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
+        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -40,61 +41,53 @@ noncomputable def selectedSparseSurplusActivation
         K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
         K .openPortSuppression,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
+        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
         K .selection] := by
   let suppressionDefined :=
     (openPortSuppressionRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by simp [openPortSuppressionRow, K_eq_iff])
+      history (by key_fresh)
   let suppressionSafe :=
     (openPortSuppressionSafeRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       suppressionDefined (by
-        simp [openPortSuppressionSafeRow, openPortSuppressionRow, K_eq_iff])
+        key_fresh)
   let singleSuppressionWitnessed :=
     (singleOpenPortSuppressionWitnessRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       suppressionSafe (by
-        simp [singleOpenPortSuppressionWitnessRow, openPortSuppressionSafeRow,
-          openPortSuppressionRow, K_eq_iff])
+        key_fresh)
   let familyCritical :=
     (suppressedFamilyCriticalCycleRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       singleSuppressionWitnessed (by
-        simp [suppressedFamilyCriticalCycleRow,
-          singleOpenPortSuppressionWitnessRow, openPortSuppressionSafeRow,
-          openPortSuppressionRow, K_eq_iff])
+        key_fresh)
   let h2 :=
     (sparseSlackSurplusRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       familyCritical (by
-        simp [sparseSlackSurplusRow, suppressedFamilyCriticalCycleRow,
-          singleOpenPortSuppressionWitnessRow, openPortSuppressionSafeRow,
-          openPortSuppressionRow, K_eq_iff])
+        key_fresh)
   let h3 :=
     (activeSurplusFamilyRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run h2 (by
-        simp [activeSurplusFamilyRow, sparseSlackSurplusRow, K_eq_iff])
+        key_fresh)
   let h4 :=
     (sparsePortActivationRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run h3 (by
-        simp [sparsePortActivationRow, activeSurplusFamilyRow,
-          sparseSlackSurplusRow, K_eq_iff])
+        key_fresh)
   exact
     (activeSurplusDemandsRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run h4 (by
-        simp [activeSurplusDemandsRow, sparsePortActivationRow,
-          activeSurplusFamilyRow, sparseSlackSurplusRow,
-          K_eq_iff])
+        key_fresh)
 
 /-- Node `[129]`, the paper's full active family and baseline spine demand.
 The row reads the literal `[125]` survivor, the active surplus demands, and the
@@ -110,7 +103,7 @@ noncomputable def selectedBaselineSpineDemand
         K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
         K .openPortSuppression,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion,
+        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion,
         K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
@@ -121,14 +114,14 @@ noncomputable def selectedBaselineSpineDemand
         K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
         K .openPortSuppression, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .replacementExclusion,
+        K .windowPresent, K .uncompressible, K .replacementExclusion,
         K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection] :=
   (baselineSpineDemandRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
     (presentation := erdosReceiverLoadProfile) (data := spineData)).run history
-      (by simp [baselineSpineDemandRow, K_eq_iff])
+      (by key_fresh)
 
 /-- Node `[130]`: the full pair-response family, split into the paper's
 independent and dependent residuals on the literal `[129]` ledger. -/
@@ -142,12 +135,12 @@ noncomputable def selectedPairResponseIndependenceDichotomy
         K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
         K .openPortSuppression,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
+        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
         K .selection]) :
     Decision (K .independentPairFamily) (K .dependentPairFamily) history :=
   pairResponseIndependenceDichotomy (data := spineData) history
-    (by simp [K_eq_iff]) (by simp [K_eq_iff])
+    (by key_fresh) (by key_fresh)
 
 /-- Node `[132]`, the sparse-pair routing split after baseline demand. -/
 -- EG-NODE [132] blocked-pair routing: exit or canonical blocker?
@@ -161,7 +154,7 @@ noncomputable def selectedBlockedPairRoutingDichotomy
         K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
         K .openPortSuppression, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
+        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
         K .selection]) :
     Decision
@@ -175,7 +168,7 @@ noncomputable def selectedBlockedPairRoutingDichotomy
         .canonicalBlockerRoute)
       history :=
   blockedPairRoutingDichotomy (data := spineData) history
-    (by simp [K_eq_iff]) (by simp [K_eq_iff])
+    (by key_fresh) (by key_fresh)
 
 /-- Node `[133]`, sparse-pair exit closes against the survivor fact. -/
 -- EG-NODE [133] sparse surplus exit closes
@@ -189,7 +182,7 @@ noncomputable def selectedSparsePairExitCloses
         K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
         K .openPortSuppression, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
+        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
         K .selection]) : False := by
   exact (history.get (K .sparseSurplusSurvivor)).down
@@ -212,7 +205,7 @@ noncomputable def selectedCanonicalPairFacts
         K .openPortSuppression,
         K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .replacementExclusion,
+        K .windowPresent, K .uncompressible, K .replacementExclusion,
         K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
@@ -225,14 +218,14 @@ noncomputable def selectedCanonicalPairFacts
         K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
         K .openPortSuppression, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion,
+        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion,
         K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
         K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
         K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection] :=
   (canonicalPairLedgerRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
     (presentation := erdosReceiverLoadProfile) (data := spineData)).run history (by
-      simp [canonicalPairLedgerRow, K_eq_iff])
+      key_fresh)
 
 /-- Node `[135]`, exact window-join pressure on the literal `[134]` residual. -/
 -- EG-NODE [135] exact window-join load: \(e(R,W)+2e_\times(W)=15p_{13}+\sigma_W\)
@@ -247,7 +240,7 @@ noncomputable def selectedExactWindowJoinPressure
         K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
         K .openPortSuppression,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
+        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
         K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -259,12 +252,12 @@ noncomputable def selectedExactWindowJoinPressure
         K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
         K .openPortSuppression, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
+        K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection] :=
   (exactWindowJoinPressureRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
     (presentation := erdosReceiverLoadProfile) (data := spineData)).run history (by
-      simp [exactWindowJoinPressureRow, K_eq_iff])
+      key_fresh)
 
 /-- Node `[136]`, capacity tokens on the literal `[135]` residual. -/
 -- EG-NODE [136] tokenized blocked-pair ledger: \(|\Pi_{\rm blk}|=\sum_{C,t,r}\ell(t,r)\), supplies \(15p_{13}+\sigma_W,\sigma_R,4n+2\sigma\)
@@ -279,7 +272,7 @@ noncomputable def selectedCapacityTokenFacts
         K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
         K .openPortSuppression, K .sparseSurplusSurvivor,
         K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
+        K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .capacityTokenLedger, K .sparseUpperEnvelope,
@@ -291,13 +284,13 @@ noncomputable def selectedCapacityTokenFacts
         K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
         K .openPortSuppression,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
+        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
         K .selection] :=
   (capacityTokenLedgerRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
     (presentation := erdosReceiverLoadProfile) (data := spineData)).run history (by
-      simp [capacityTokenLedgerRow, K_eq_iff])
+      key_fresh)
 
 /-- **Node `[138]`, the near-cubic outcome of the strict branch**, on the literal
 residual of any of its routes (`[131]` at the free pair schedule, `[137]`'s capped
@@ -322,14 +315,14 @@ noncomputable def selectedSpineSurplusEstimateCloses
   exact Nat.not_lt_of_ge (by
     simpa [Graph.Strategy.Spine.Data.surplusThreshold] using upper) lower
 
-/-- **Node `[144]`, same-token bottleneck discharge.**  Run the
-paper's routing lemma on the literal overload ledger.  Sparse exits are
+/-- **Node `[144]`, handoff arm.**  Run the paper's routing lemma on the
+literal pattern-arm ledger of the `[144]` decision.  Sparse exits are
 incompatible with the retained survivor fact, so the surviving output is the
 decorated same-token Type B handoff.  Node `[65]` then appends the common
 `typeBFanEntry` key for exactly that packing, core, envelope, and decoration
 data.  This boundary returns the routed ledger; it does not assert closure or
 import facts from the low-surplus Type B branch. -/
--- EG-NODE [144] bottleneck discharge: sparse exit, Type B, or near-cubic spine
+-- EG-NODE [144] same-token bottleneck: Type B handoff or capped route?
 noncomputable def selectedBottleneckDischarge
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -383,6 +376,6 @@ noncomputable def selectedBottleneckDischarge
     (sameTokenTypeBFanEntryRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      routed (by simp [K_eq_iff, fanEntryFresh])
+      routed (by key_fresh)
 
 end HypostructureErdos64EG

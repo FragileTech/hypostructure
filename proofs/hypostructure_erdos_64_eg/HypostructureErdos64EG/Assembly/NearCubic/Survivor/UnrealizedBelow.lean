@@ -18,10 +18,10 @@ set_option maxHeartbeats 8000000 in
 noncomputable def Assembly.Internal.nearCubicUnrealizedBelow
     {selected : EGInput.{u}}
     (belowHistory : ExactLedger EGInput.{u} selected
-      [K .denseDeficiencyBelow, K .hotColdPartition, K .densePackingOverflow,
+      [K .denseDeficiencyBelow, K .densePackingOverflow,
        K .windowPackageUnrealized, K .skeletonDominates, K .windowPackageSeparated,
        K .barrierEnumeration, K .sparseSurplusSurvivor, K .surplusAtOrBelow, K .localAlgebra,
-       K .maximalPacking, K .uncompressible, K .replacementExclusion,
+       K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion,
        K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
        K .tightEndpoint, K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
        K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
@@ -34,7 +34,7 @@ noncomputable def Assembly.Internal.nearCubicUnrealizedBelow
   -- density interval `3/13 ≤ τ < 1/4`, row 2 of `tab:cold-branch-ledger`,
   -- which the manuscript sends to the hot/cold pass — is the next producer.
   match route8RateDichotomy (data := spineData) belowHistory
-      (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+      (by key_fresh) (by key_fresh) with
   | .right rateFails =>
       exact Assembly.Internal.nearCubicBelowRateFailure rateFails
   | .left belowHistory =>

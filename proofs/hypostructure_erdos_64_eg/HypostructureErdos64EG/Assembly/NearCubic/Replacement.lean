@@ -1,5 +1,6 @@
 import Hypostructure.Graph.Strategy.BlockedCompressionRows
-import Hypostructure.Graph.Strategy.ColdCorridorRows
+import Hypostructure.Graph.Strategy.ColdCorridorRows.CanonicalReplacement
+import Hypostructure.Graph.Strategy.ColdCorridorRows.GermTrichotomy
 import HypostructureErdos64EG.Assembly.Basic
 
 /-!
@@ -60,8 +61,8 @@ noncomputable def selectedScaleAdditivityDichotomy
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .blockedClassMember) known]
-    (additiveFresh : K .blockedScaleAdditive ∉ known := by simp [K_eq_iff])
-    (overlapFresh : K .blockedBarrierOverlap ∉ known := by simp [K_eq_iff]) :
+    (additiveFresh : K .blockedScaleAdditive ∉ known := by key_fresh)
+    (overlapFresh : K .blockedBarrierOverlap ∉ known := by key_fresh) :
     Decision (K .blockedScaleAdditive) (K .blockedBarrierOverlap) history :=
   scaleAdditivityDichotomy (data := spineData) history additiveFresh overlapFresh
 
@@ -76,14 +77,14 @@ noncomputable def selectedCanonicalReplacementContinuation
     [FactKeys.Has (K .hotColdPartition) known]
     [FactKeys.Has (K .densePackingOverflow) known]
     (trivialFresh : K .coldCanonicalReplacementTrivial ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (blockedFresh : K .blockedClassMember ∉
-        K .coldCanonicalReplacementTrivial :: known := by simp [K_eq_iff])
-    (additiveFresh : K .blockedScaleAdditive ∉ known := by simp [K_eq_iff])
-    (overlapFresh : K .blockedBarrierOverlap ∉ known := by simp [K_eq_iff])
-    (boundFresh : K .blockedCompressionBound ∉ known := by simp [K_eq_iff])
-    (capFresh : K .blockedCompressionCap ∉ known := by simp [K_eq_iff])
-    (closureFresh : closed ∉ known := by simp [K_eq_iff]) :
+        K .coldCanonicalReplacementTrivial :: known := by key_fresh)
+    (additiveFresh : K .blockedScaleAdditive ∉ known := by key_fresh)
+    (overlapFresh : K .blockedBarrierOverlap ∉ known := by key_fresh)
+    (boundFresh : K .blockedCompressionBound ∉ known := by key_fresh)
+    (capFresh : K .blockedCompressionCap ∉ known := by key_fresh)
+    (closureFresh : closed ∉ known := by key_fresh) :
     Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .blockedBarrierOverlap
       selected.object := by
@@ -91,23 +92,23 @@ noncomputable def selectedCanonicalReplacementContinuation
     (canonicalReplacementTrivialRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by simp [K_eq_iff, trivialFresh])
+      history (by key_fresh)
   let blocked :=
     (blockedClassRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      trivial (by simp [K_eq_iff, blockedFresh])
+      trivial (by key_fresh)
   match selectedScaleAdditivityDichotomy blocked
-      (additiveFresh := by simp [K_eq_iff, additiveFresh])
-      (overlapFresh := by simp [K_eq_iff, overlapFresh]) with
+      (additiveFresh := by key_fresh)
+      (overlapFresh := by key_fresh) with
   | .left additiveHistory =>
       exact (blockedCompressionCloses (BranchState := BranchState)
         (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
         (presentation := erdosReceiverLoadProfile) (data := spineData)
         additiveHistory
-        (by simp [K_eq_iff, boundFresh])
-        (by simp [K_eq_iff, capFresh])
-        (by simp [K_eq_iff, closureFresh])).elim
+        (by key_fresh)
+        (by key_fresh)
+        (by key_fresh)).elim
   | .right overlapHistory =>
       exact (overlapHistory.get (K .blockedBarrierOverlap)).down
 

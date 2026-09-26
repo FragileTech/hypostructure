@@ -47,7 +47,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     `Hypostructure.Graph.Strategy.Spine.typeABoundedSupport
     { Requires := [K .typeALowSurplus, K .remainderNormalized]
       Produces := [K .typeABoundedSupport]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>

@@ -114,137 +114,138 @@ noncomputable def selectedTypeBAfterNormalFormContinuation
     (exclusionResidualFresh : K .typeBExclusionResidual ∉ known)
     (exclusionMassFresh : K .typeBExclusionResidualMass ∉ known)
     (obstructionMassFresh : K .typeBOverlapObstructionMass ∉ known)
-    (fanClosedFresh : K .fanClosedPort ∉ known := by simp [K_eq_iff])
+    (fanClosedFresh : K .fanClosedPort ∉ known := by key_fresh)
     (compatibleClosureFresh : K .compatiblePairFanClosure ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (fanClosedRoutingFresh : K .fanClosedPortTypeBRouting ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (compatibleRoutingFresh : K .compatiblePairTypeBRouting ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (triangularRoutingFresh : K .triangularPortTypeBRouting ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (shoulderCompletionFresh : K .triangularShoulderCompletion ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (portReturnFresh : K .triangularPortReturn ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (firstLandingFresh : K .triangularFirstLanding ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (crossShoulderFresh : K .triangularCrossShoulder ∉ known := by
-      simp [K_eq_iff])
-    (fanSafeFresh : K .typeBFanSafe ∉ known := by simp [K_eq_iff])
+      key_fresh)
+    (fanSafeFresh : K .typeBFanSafe ∉ known := by key_fresh)
     (globalLocalBridgeFresh : K .typeBGlobalLocalBridge ∉ known := by
-      simp [K_eq_iff]) :
+      key_fresh) :
     TypeBAfterNormalFormBoundary selected known := by
   let fanSafe :=
     (typeBFanSafeRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by simp [K_eq_iff, fanSafeFresh])
+      history (by key_fresh)
   match typeBFanDegreeDichotomy (data := spineData) fanSafe
-      (by simp [K_eq_iff, heavyFresh])
-      (by simp [K_eq_iff, degreeFourFresh]) with
+      (by key_fresh)
+      (by key_fresh) with
   | .left heavyHistory =>
       let compatible :=
         (sameCenterOpenPortCompatibilityRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          heavyHistory (by simp [K_eq_iff, compatibilityFresh])
+          heavyHistory (by key_fresh)
       let localHistory :=
         (typeBFanLocalDichotomyRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          compatible (by simp [K_eq_iff, localFresh])
+          compatible (by key_fresh)
       let portRouted := Assembly.Internal.selectedTypeBPortRoutingPrefix localHistory
-        (by simp [K_eq_iff, fanClosedFresh])
-        (by simp [K_eq_iff, compatibleClosureFresh])
-        (by simp [K_eq_iff, fanClosedRoutingFresh])
-        (by simp [K_eq_iff, compatibleRoutingFresh])
+        (by key_fresh)
+        (by key_fresh)
+        (by key_fresh)
+        (by key_fresh)
       let capped :=
         (fanCertificateCapRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          portRouted (by simp [K_eq_iff, capFresh])
+          portRouted (by key_fresh)
       exact Sum.inl (Assembly.Internal.selectedTypeBCertificateBoundaryAfterPortRouting capped
-        (by simp [K_eq_iff, markedFresh])
-        (by simp [K_eq_iff, residualFresh])
-        (by simp [K_eq_iff, certificateMassFresh])
-        (by simp [K_eq_iff, cycleFresh])
-        (by simp [K_eq_iff, freeFresh])
-        (by simp [K_eq_iff, choiceFresh])
-        (by simp [K_eq_iff, obstructionFresh])
-        (by simp [K_eq_iff, hybridFresh])
-        (by simp [K_eq_iff, ledgerFresh])
-        (by simp [K_eq_iff, excludedFresh])
-        (by simp [K_eq_iff, exclusionResidualFresh])
-        (by simp [K_eq_iff, exclusionMassFresh])
-        (by simp [K_eq_iff, obstructionMassFresh])
-        (globalLocalBridgeFresh := by simp [K_eq_iff, globalLocalBridgeFresh]))
+        (by key_fresh)
+        (by key_fresh)
+        (by key_fresh)
+        (by key_fresh)
+        (by key_fresh)
+        (by key_fresh)
+        (by key_fresh)
+        (by key_fresh)
+        (by key_fresh)
+        (by key_fresh)
+        (by key_fresh)
+        (by key_fresh)
+        (by key_fresh)
+        (globalLocalBridgeFresh := by key_fresh))
   | .right degreeFourHistory =>
       let profile :=
         (typeBFanDegreeFourProfileRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          degreeFourHistory (by simp [K_eq_iff, profileFresh])
+          degreeFourHistory (by key_fresh)
       let triangular :=
         (triangularFanCoreRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          profile (by simp [K_eq_iff, triangularCoreFresh])
+          profile (by key_fresh)
       let completed :=
         (triangularShoulderCompletionRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          triangular (by simp [K_eq_iff, shoulderCompletionFresh])
+          triangular (by key_fresh)
       let returned :=
         (triangularPortReturnRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          completed (by simp [K_eq_iff, portReturnFresh])
+          completed (by key_fresh)
       let firstLanded :=
         (triangularFirstLandingRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          returned (by simp [K_eq_iff, firstLandingFresh])
+          returned (by key_fresh)
       let crossShouldered :=
         (triangularCrossShoulderRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          firstLanded (by simp [K_eq_iff, crossShoulderFresh])
+          firstLanded (by key_fresh)
       let portRouted := Assembly.Internal.selectedTypeBPortRoutingPrefix crossShouldered
-        (by simp [K_eq_iff, fanClosedFresh])
-        (by simp [K_eq_iff, compatibleClosureFresh])
-        (by simp [K_eq_iff, fanClosedRoutingFresh])
-        (by simp [K_eq_iff, compatibleRoutingFresh])
+        (by key_fresh)
+        (by key_fresh)
+        (by key_fresh)
+        (by key_fresh)
       let triangularRouted :=
         (triangularPortTypeBRoutingRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          portRouted (by simp [K_eq_iff, triangularRoutingFresh])
+          portRouted (by key_fresh)
       let capped :=
         (fanCertificateCapRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          triangularRouted (by simp [K_eq_iff, capFresh])
+          triangularRouted (by key_fresh)
       exact Sum.inr (Assembly.Internal.selectedTypeBCertificateBoundaryAfterPortRouting capped
-        (by simp [K_eq_iff, markedFresh])
-        (by simp [K_eq_iff, residualFresh])
-        (by simp [K_eq_iff, certificateMassFresh])
-        (by simp [K_eq_iff, cycleFresh])
-        (by simp [K_eq_iff, freeFresh])
-        (by simp [K_eq_iff, choiceFresh])
-        (by simp [K_eq_iff, obstructionFresh])
-        (by simp [K_eq_iff, hybridFresh])
-        (by simp [K_eq_iff, ledgerFresh])
-        (by simp [K_eq_iff, excludedFresh])
-        (by simp [K_eq_iff, exclusionResidualFresh])
-        (by simp [K_eq_iff, exclusionMassFresh])
-        (by simp [K_eq_iff, obstructionMassFresh])
-        (globalLocalBridgeFresh := by simp [K_eq_iff, globalLocalBridgeFresh]))
+        (by key_fresh)
+        (by key_fresh)
+        (by key_fresh)
+        (by key_fresh)
+        (by key_fresh)
+        (by key_fresh)
+        (by key_fresh)
+        (by key_fresh)
+        (by key_fresh)
+        (by key_fresh)
+        (by key_fresh)
+        (by key_fresh)
+        (by key_fresh)
+        (globalLocalBridgeFresh := by key_fresh))
 
 /-- **The common Type B continuation `[67]`--`[85]`.**
 
-This is the literal continuation shared by the ordinary `[64]`, same-token
-`[144]`, and absorbed-germ `[177]` entries at node `[65]`.  It reads only the
+This is the literal continuation run from the absorbed-germ `[177]` entry at
+node `[65]` (`Absorbed/FanCharge.lean`).  The same-token `[144a]` leaf does not
+run it: the manuscript stops that endpoint at the fan entry.  It reads only the
 paper facts used by these nodes.  In particular it does not manufacture a
 `cubicBaseline`, canonical negative support, route-8 rate, or near-cubic bridge
 estimate for carriers that do not have those facts. -/
@@ -280,26 +281,26 @@ noncomputable def selectedTypeBContinuation
     (exclusionResidualFresh : K .typeBExclusionResidual ∉ known)
     (exclusionMassFresh : K .typeBExclusionResidualMass ∉ known)
     (obstructionMassFresh : K .typeBOverlapObstructionMass ∉ known)
-    (fanClosedFresh : K .fanClosedPort ∉ known := by simp [K_eq_iff])
+    (fanClosedFresh : K .fanClosedPort ∉ known := by key_fresh)
     (compatibleClosureFresh : K .compatiblePairFanClosure ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (fanClosedRoutingFresh : K .fanClosedPortTypeBRouting ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (compatibleRoutingFresh : K .compatiblePairTypeBRouting ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (triangularRoutingFresh : K .triangularPortTypeBRouting ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (shoulderCompletionFresh : K .triangularShoulderCompletion ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (portReturnFresh : K .triangularPortReturn ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (firstLandingFresh : K .triangularFirstLanding ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (crossShoulderFresh : K .triangularCrossShoulder ∉ known := by
-      simp [K_eq_iff])
-    (fanSafeFresh : K .typeBFanSafe ∉ known := by simp [K_eq_iff])
+      key_fresh)
+    (fanSafeFresh : K .typeBFanSafe ∉ known := by key_fresh)
     (globalLocalBridgeFresh : K .typeBGlobalLocalBridge ∉ known := by
-      simp [K_eq_iff]) :
+      key_fresh) :
     TypeBContinuationBoundary selected known := by
   -- `[67]`, `lem:heavy-neighbourhood-normal-form`, is already object-wide and
   -- uses exactly the selection and tight-endpoint facts in its manifest.
@@ -307,7 +308,7 @@ noncomputable def selectedTypeBContinuation
     (highCentreNormalFormRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by simp [K_eq_iff, normalFormFresh])
+      history (by key_fresh)
   letI : FactKeys.Has (K .typeBFanEntry)
       ([K .highCentreNormalForm] ++ known) :=
     ⟨.tail fanEntryHas.member⟩
@@ -334,36 +335,36 @@ noncomputable def selectedTypeBContinuation
     ⟨.tail relabelingEntropyHas.member⟩
   exact selectedTypeBAfterNormalFormContinuation
       (known := [K .highCentreNormalForm] ++ known) normal
-    (by simp [K_eq_iff, heavyFresh])
-    (by simp [K_eq_iff, degreeFourFresh])
-    (by simp [K_eq_iff, compatibilityFresh])
-    (by simp [K_eq_iff, localFresh])
-    (by simp [K_eq_iff, profileFresh])
-    (by simp [K_eq_iff, triangularCoreFresh])
-    (by simp [K_eq_iff, capFresh])
-    (by simp [K_eq_iff, markedFresh])
-    (by simp [K_eq_iff, residualFresh])
-    (by simp [K_eq_iff, certificateMassFresh])
-    (by simp [K_eq_iff, cycleFresh])
-    (by simp [K_eq_iff, freeFresh])
-    (by simp [K_eq_iff, choiceFresh])
-    (by simp [K_eq_iff, obstructionFresh])
-    (by simp [K_eq_iff, hybridFresh])
-    (by simp [K_eq_iff, ledgerFresh])
-    (by simp [K_eq_iff, excludedFresh])
-    (by simp [K_eq_iff, exclusionResidualFresh])
-    (by simp [K_eq_iff, exclusionMassFresh])
-    (by simp [K_eq_iff, obstructionMassFresh])
-    (fanClosedFresh := by simp [K_eq_iff, fanClosedFresh])
-    (compatibleClosureFresh := by simp [K_eq_iff, compatibleClosureFresh])
-    (fanClosedRoutingFresh := by simp [K_eq_iff, fanClosedRoutingFresh])
-    (compatibleRoutingFresh := by simp [K_eq_iff, compatibleRoutingFresh])
-    (triangularRoutingFresh := by simp [K_eq_iff, triangularRoutingFresh])
-    (shoulderCompletionFresh := by simp [K_eq_iff, shoulderCompletionFresh])
-    (portReturnFresh := by simp [K_eq_iff, portReturnFresh])
-    (firstLandingFresh := by simp [K_eq_iff, firstLandingFresh])
-    (crossShoulderFresh := by simp [K_eq_iff, crossShoulderFresh])
-    (fanSafeFresh := by simp [K_eq_iff, fanSafeFresh])
-    (globalLocalBridgeFresh := by simp [K_eq_iff, globalLocalBridgeFresh])
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (fanClosedFresh := by key_fresh)
+    (compatibleClosureFresh := by key_fresh)
+    (fanClosedRoutingFresh := by key_fresh)
+    (compatibleRoutingFresh := by key_fresh)
+    (triangularRoutingFresh := by key_fresh)
+    (shoulderCompletionFresh := by key_fresh)
+    (portReturnFresh := by key_fresh)
+    (firstLandingFresh := by key_fresh)
+    (crossShoulderFresh := by key_fresh)
+    (fanSafeFresh := by key_fresh)
+    (globalLocalBridgeFresh := by key_fresh)
 
 end HypostructureErdos64EG

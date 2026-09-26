@@ -11,9 +11,10 @@ scripts/check_total_execution.py --self-test
 scripts/check_total_execution.py
 ```
 
-The self-test must always pass. The production scan is expected to fail while
-the migration is incomplete, and becomes a green regression gate once the
-reported Core/Graph/PDE execution-boundary occurrences have been removed.
+The self-test must always pass. The production scan runs in `make lint` and
+passes: no file under `Core`, `Graph` or `PDE` currently matches its boundary
+filter, so it checks zero files and fails only if such a boundary file
+reappears with a forbidden construct.
 
 Positive fixtures deliberately include ordinary mathematical `Option` use and
 an intended total dispatcher shape. Negative fixtures independently cover:
@@ -24,5 +25,7 @@ an intended total dispatcher shape. Negative fixtures independently cover:
 - wildcard production dispatch falling through to `none`.
 
 The scanner removes Lean comments and strings before matching and scans only
-official execution/compiler boundary filenames. It therefore does not ban
-ordinary `Option`-valued mathematics in strategy feature modules.
+official execution/compiler boundary files: `Compiler.lean`,
+`DependentExecutor.lean`, `Execution.lean`, `ExecutionJson.lean`,
+`Executor.lean` and `Report.lean` inside an `Official` directory. It therefore
+does not ban ordinary `Option`-valued mathematics in strategy feature modules.

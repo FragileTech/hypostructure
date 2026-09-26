@@ -21,7 +21,7 @@ noncomputable def Assembly.Internal.nearCubicRealized
     (enumerated : ExactLedger EGInput.{u} selected
       [K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
        K .barrierEnumeration, K .sparseSurplusSurvivor, K .surplusAtOrBelow, K .localAlgebra,
-       K .maximalPacking, K .uncompressible, K .replacementExclusion,
+       K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion,
        K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
        K .tightEndpoint, K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
        K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
@@ -31,20 +31,20 @@ noncomputable def Assembly.Internal.nearCubicRealized
     (hotColdPartitionRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      enumerated (by simp [K_eq_iff])
+      enumerated (by key_fresh)
   match selectedBarrierDichotomy partitioned
-      (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+      (by key_fresh) (by key_fresh) with
   | .left capHistory =>
       -- `[145]` carries no mathematical assertion of its own: pass the
       -- literal `[22]` ledger directly to `[146]`.
       match coldRoute8Dichotomy (data := spineData) capHistory
-          (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+          (by key_fresh) (by key_fresh) with
       | .left belowHistory =>
           exact Assembly.Internal.nearCubicRealizedBelow belowHistory
       | .right atOrAboveHistory =>
           exact Assembly.Internal.nearCubicRealizedAtOrAbove atOrAboveHistory
   | .right overflowHistory =>
       exact (selectedBarrierOverflowCloses overflowHistory
-        (by simp [K_eq_iff]) (by simp [K_eq_iff])).elim
+        (by key_fresh) (by key_fresh)).elim
 
 end HypostructureErdos64EG

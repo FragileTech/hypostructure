@@ -42,7 +42,7 @@ set_option maxHeartbeats 2000000 in
         K .route8UnifiedVisibleResidual, K .route8PeeledDemandResidual,
         K .route8UnifiedDeficit, K .route8DemandUnitCount]
       Produces := [K .route8JointBalance]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>

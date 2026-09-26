@@ -1,5 +1,16 @@
 import Hypostructure.Graph.Strategy.SpineRows.Bridgeless
-import Hypostructure.Graph.Strategy.ColdCorridorRows
+import Hypostructure.Graph.Strategy.ColdCorridorRows.ColdFamilyClosure
+import Hypostructure.Graph.Strategy.ColdCorridorRows.ColdMass
+import Hypostructure.Graph.Strategy.ColdCorridorRows.CorridorState
+import Hypostructure.Graph.Strategy.ColdCorridorRows.FailureClauses
+import Hypostructure.Graph.Strategy.ColdCorridorRows.FirstFailureOccurrence
+import Hypostructure.Graph.Strategy.ColdCorridorRows.FirstFailureRouting
+import Hypostructure.Graph.Strategy.ColdCorridorRows.GermCandidates
+import Hypostructure.Graph.Strategy.ColdCorridorRows.GermExtraction
+import Hypostructure.Graph.Strategy.ColdCorridorRows.GermFamilyPositive
+import Hypostructure.Graph.Strategy.ColdCorridorRows.GermTrichotomy
+import Hypostructure.Graph.Strategy.ColdCorridorRows.HandoffTransfer
+import Hypostructure.Graph.Strategy.ColdCorridorRows.ReturnCorridor
 import HypostructureErdos64EG.Assembly.Basic
 
 /-!
@@ -26,10 +37,10 @@ noncomputable def selectedColdMass
       [K .coldHotEntropyCap, K .coldRoute8AtOrAbove,
         K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
+        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
         K .selection]) :=
-  (coldMassRow (data := spineData)).run history (by simp [K_eq_iff])
+  (coldMassRow (data := spineData)).run history (by key_fresh)
 
 /-- Node `[151]`: append the ambient-cubic loss bound without rebuilding or
 copying any predecessor fact. -/
@@ -40,10 +51,10 @@ noncomputable def selectedColdAmbientCubic
       [K .coldMass, K .coldHotEntropyCap, K .coldRoute8AtOrAbove,
         K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
+        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
         K .selection]) :=
-  (coldAmbientCubicRow (data := spineData)).run history (by simp [K_eq_iff])
+  (coldAmbientCubicRow (data := spineData)).run history (by key_fresh)
 
 /-- Node `[152]`, with node `[168]`'s endpoint repair: append the selected
 interior branch-excess inequality to the same residual. -/
@@ -54,10 +65,10 @@ noncomputable def selectedColdStubExcess
       [K .coldAmbientCubic, K .coldMass, K .coldHotEntropyCap,
         K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
+        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
         K .selection]) :=
-  (coldStubExcessRow (data := spineData)).run history (by simp [K_eq_iff])
+  (coldStubExcessRow (data := spineData)).run history (by key_fresh)
 
 /-- Node `[153]`: the exact finite germ-positivity comparison on the literal
 `[152]` residual
@@ -72,11 +83,11 @@ noncomputable def selectedColdMassDichotomy
         K .coldStubExcess, K .coldAmbientCubic, K .coldMass, K .coldHotEntropyCap,
         K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
+        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
         K .selection]) :=
   coldMassDichotomy (data := spineData) history
-    (by simp [K_eq_iff]) (by simp [K_eq_iff])
+    (by key_fresh) (by key_fresh)
 
 /-- `lem:bridgeless` on the literal `[153]` linear residual: the selected
 object has no bridge; every oriented edge has a return. -/
@@ -88,7 +99,7 @@ noncomputable def selectedBridgeless
         K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
         K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -96,13 +107,13 @@ noncomputable def selectedBridgeless
         K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
         K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection] :=
   (bridgelessRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
     (presentation := erdosReceiverLoadProfile) (data := spineData)).run history
-    (by simp [K_eq_iff])
+    (by key_fresh)
 
 /-- Node `[153]`, `def:cold-corridor-first-failure`: every boundary stub of every
 outside component of `X_cold` has its cold return corridor. -/
@@ -114,7 +125,7 @@ noncomputable def selectedColdReturnCorridors
         K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
         K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -122,10 +133,10 @@ noncomputable def selectedColdReturnCorridors
         K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
         K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection] :=
-  (coldReturnCorridorRow (data := spineData)).run history (by simp [K_eq_iff])
+  (coldReturnCorridorRow (data := spineData)).run history (by key_fresh)
 
 /-- Node `[153]`, `lem:cold-corridor-first-failure`: cut-states and (F1)--(F5)
 routing on the literal linear residual. -/
@@ -138,7 +149,7 @@ noncomputable def selectedColdFirstFailureRouting
         K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
         K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -152,36 +163,36 @@ noncomputable def selectedColdFirstFailureRouting
           K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
         K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection] := by
   let declared :=
     (coldDeclaredHandoffLedgerRow (data := spineData)).run history
-      (by simp [K_eq_iff])
+      (by key_fresh)
   let state :=
     (coldCorridorStateRow (data := spineData)).run declared
-      (by simp [K_eq_iff])
+      (by key_fresh)
   let occurrence :=
     (coldFirstFailureOccurrenceRow (data := spineData)).run state
-      (by simp [K_eq_iff])
+      (by key_fresh)
   let cycle :=
     (coldFailureCycleRow (data := spineData)).run occurrence
-      (by simp [K_eq_iff])
+      (by key_fresh)
   let defect :=
     (coldFailureDefectRow (data := spineData)).run cycle
-      (by simp [K_eq_iff])
+      (by key_fresh)
   let compression :=
     (coldFailureCompressionRow (data := spineData)).run defect
-      (by simp [K_eq_iff])
+      (by key_fresh)
   let handoff :=
     (coldFailureHandoffRow (data := spineData)).run compression
-      (by simp [K_eq_iff])
+      (by key_fresh)
   let transferred :=
     (coldHandoffTransferRow (data := spineData)).run handoff
-      (by simp [K_eq_iff])
+      (by key_fresh)
   exact
     (coldFirstFailureRoutingRow (data := spineData)).run transferred
-      (by simp [K_eq_iff])
+      (by key_fresh)
 
 /-- Node `[153]`, `lem:cold-germ-extraction`: the exchange bound and the greedy
 extraction, on the routed residual. -/
@@ -195,7 +206,7 @@ noncomputable def selectedColdGermExtraction
           K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
         K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -206,10 +217,10 @@ noncomputable def selectedColdGermExtraction
           K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
         K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection] :=
-  (coldGermExtractionRow (data := spineData)).run history (by simp [K_eq_iff])
+  (coldGermExtractionRow (data := spineData)).run history (by key_fresh)
 
 /-- Node `[153]`, `lem:cold-germ-extraction`: the (F5) candidate germ family of
 the selected branch-excess half-edges — its count, overlap bound, and extracted
@@ -226,7 +237,7 @@ noncomputable def selectedColdGermCandidates
           K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
         K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -237,10 +248,10 @@ noncomputable def selectedColdGermCandidates
           K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
         K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection] :=
-  (coldGermCandidatesRow (data := spineData)).run history (by simp [K_eq_iff])
+  (coldGermCandidatesRow (data := spineData)).run history (by key_fresh)
 
 /-- Node `[153]`, terminal linear-arm obligation: pay the two registered
 surplus losses and publish that node `[153]`'s literal extracted disjoint germ
@@ -252,10 +263,10 @@ noncomputable def selectedColdGermFamilyPositive
     [FactKeys.Has (K .coldMassLinear) known]
     [FactKeys.Has (K .coldSelectedBranchExcess) known]
     [FactKeys.Has (K .coldStubExcess) known]
-    (fresh : K .coldGermFamilyPositive ∉ known := by simp [K_eq_iff]) :
+    (fresh : K .coldGermFamilyPositive ∉ known := by key_fresh) :
     ExactLedger EGInput.{u} selected (K .coldGermFamilyPositive :: known) :=
   (coldGermFamilyPositiveRow (data := spineData)).run history
-    (by simp [K_eq_iff, fresh])
+    (by key_fresh)
 
 /-- Nodes `[154]`--`[156]`, `lem:cold-bounded-germ-trichotomy` and
 `lem:cold-increment-arithmetic` on the literal extracted residual. -/
@@ -271,7 +282,7 @@ noncomputable def selectedColdGermTrichotomy
           K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
         K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
     ExactLedger EGInput.{u} selected [K .coldGermRealized, K .coldGermDistinguished, K .coldGermSilent,
@@ -282,10 +293,10 @@ noncomputable def selectedColdGermTrichotomy
           K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
         K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection] :=
-  (coldGermTrichotomyRow (data := spineData)).run history (by simp [K_eq_iff])
+  (coldGermTrichotomyRow (data := spineData)).run history (by key_fresh)
 
 /-- Node `[157]`, `lem:cold-same-interface-table` with the short self-return
 filter, on the literal trichotomy residual. -/
@@ -300,7 +311,7 @@ noncomputable def selectedColdSameInterfaceTable
           K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
         K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
     ExactLedger EGInput.{u} selected [K .coldSameInterfaceTable, K .coldGermRealized, K .coldGermDistinguished, K .coldGermSilent,
@@ -311,10 +322,10 @@ noncomputable def selectedColdSameInterfaceTable
           K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
         K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection] :=
-  (coldSameInterfaceTableRow (data := spineData)).run history (by simp [K_eq_iff])
+  (coldSameInterfaceTableRow (data := spineData)).run history (by key_fresh)
 
 /-- `thm:cold-branch-quantitative-closure`: no terminal cold residual remains;
 the branch is closed by routing to the target-defect and handoff ledgers. -/
@@ -329,7 +340,7 @@ noncomputable def selectedColdBranchClosed
           K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
         K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
     ExactLedger EGInput.{u} selected [K .coldBranchClosed, K .coldSameInterfaceTable, K .coldGermRealized, K .coldGermDistinguished, K .coldGermSilent,
@@ -340,9 +351,9 @@ noncomputable def selectedColdBranchClosed
           K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
         K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection] :=
-  (coldBranchClosedRow (data := spineData)).run history (by simp [K_eq_iff])
+  (coldBranchClosedRow (data := spineData)).run history (by key_fresh)
 
 end HypostructureErdos64EG

@@ -84,9 +84,9 @@ Run `python3 .agents/skills/eg-proof-expansion/scripts/api_catalog.py refresh
 --repo-root .` to populate this section.
 
 <!-- BEGIN GENERATED API -->
-Compiled declarations: **1314**.
+Compiled declarations: **1362**.
 
-Category counts: **Canonical execution** 33, **Canonical exhaustive decisions** 11, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 35, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 161, **Minimum-degree cycle spine vocabulary** 915, **Sealed topology** 6, **Sealed total closure** 12, **Typed partial topology and sealed completion** 16.
+Category counts: **Canonical execution** 33, **Canonical exhaustive decisions** 11, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 35, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 164, **Minimum-degree cycle spine vocabulary** 960, **Sealed topology** 6, **Sealed total closure** 12, **Typed partial topology and sealed completion** 16.
 
 The `type` fields below come from the compiled Lean environment.  Docstrings
 and comments are deliberately excluded.
@@ -7615,6 +7615,28 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.coldGermNoneDistinguishing`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.coldGermNoneRealizing`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.coldGermRealized`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -7638,6 +7660,28 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.coldGermSilent`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.coldGermSomeDistinguishing`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.coldGermSomeRealizing`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -8308,6 +8352,17 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
+#### `Hypostructure.Graph.Strategy.Spine.Key.homogeneousCapsFail`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
 #### `Hypostructure.Graph.Strategy.Spine.Key.homogeneousCapsHold`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -8408,6 +8463,17 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.maximalPacking`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.mersenneReturn`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -8704,17 +8770,6 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.Key.primitiveCarrierAudit`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
 #### `Hypostructure.Graph.Strategy.Spine.Key.properDelocalization`
 
 - Category: Minimum-degree cycle spine vocabulary
@@ -8804,17 +8859,6 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.remainderRelabelingEntropy`
-
-- Category: Minimum-degree cycle spine vocabulary
-- Kind: `constructor`
-- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
-- Compiled type:
-
-```lean
-Graph.Strategy.Spine.Key
-```
-
-#### `Hypostructure.Graph.Strategy.Spine.Key.remainderSurplusAudit`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -10365,7 +10409,7 @@ Graph.Strategy.Spine.Key
 Graph.Strategy.Spine.Key
 ```
 
-#### `Hypostructure.Graph.Strategy.Spine.Key.windowIncidenceAudit`
+#### `Hypostructure.Graph.Strategy.Spine.Key.windowFree`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -10399,6 +10443,17 @@ Graph.Strategy.Spine.Key
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.Key.windowPackageUnrealized`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.Key.windowPresent`
 
 - Category: Minimum-degree cycle spine vocabulary
 - Kind: `constructor`
@@ -10451,6 +10506,292 @@ Graph.Strategy.Spine.Key
 
 ```lean
 Graph.Strategy.Spine.Key
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.KeyFresh.Keys`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `inductive`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Type
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.KeyFresh.Keys.contains`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.KeyFresh.Keys → Expr → Expr → Expr
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.KeyFresh.Keys.decEq`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.KeyFresh.Keys → Expr
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.KeyFresh.Keys.disjoint`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.KeyFresh.Keys → Expr → Expr → Expr
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.KeyFresh.Keys.level`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.KeyFresh.Keys → Level
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.KeyFresh.Keys.list`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.KeyFresh.Keys → Expr
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.KeyFresh.Keys.membership`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.KeyFresh.Keys → Expr
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.KeyFresh.Keys.mk`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `constructor`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Expr → Level → Expr → Expr → Graph.Strategy.Spine.KeyFresh.Keys
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.KeyFresh.Keys.ne`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.KeyFresh.Keys → Expr → Expr → Expr
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.KeyFresh.Keys.notMem`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.KeyFresh.Keys → Expr → Expr → Expr
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.KeyFresh.Keys.ofType`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Expr → MetaM Graph.Strategy.Spine.KeyFresh.Keys
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.KeyFresh.Keys.type`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.KeyFresh.Keys → Expr
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.KeyFresh.bool`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Bool → Expr
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.KeyFresh.boolRefl`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Bool → Expr
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.KeyFresh.closeByKernel`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+MVarId → Expr → Expr → Bool → (Expr → Expr) → MetaM Unit
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.KeyFresh.disjoint`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `opaque`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.KeyFresh.Keys → MVarId → Expr → Expr → MetaM Unit
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.KeyFresh.distinct`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.KeyFresh.Keys → MVarId → Expr → Expr → MetaM Unit
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.KeyFresh.findHypothesis`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.KeyFresh.Keys → Expr → Expr → MetaM (Option Expr)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.KeyFresh.fresh`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+MVarId → MetaM Unit
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.KeyFresh.isListSpine`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Expr → Bool
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.KeyFresh.listCell`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `opaque`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Expr → MetaM Expr
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.KeyFresh.mentionsListFVar`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Expr → MetaM Bool
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.KeyFresh.notMem`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `opaque`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.KeyFresh.Keys → MVarId → Expr → Expr → MetaM Unit
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.KeyFresh.refuteVisible`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Expr → Expr → Expr → MetaM Unit
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.KeyFresh.restrictFresh`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `opaque`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Graph.Strategy.Spine.KeyFresh.Keys → Expr → Expr → Expr → Expr → MetaM (Option Expr)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.KeyFresh.visibleElements`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `opaque`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+Expr → optParam (Array Expr) #[] → MetaM (Array Expr)
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.LargeBudgetResidual`
@@ -15474,6 +15815,40 @@ DecidableEq Graph.Strategy.Spine.Key
         Core.Residual.FactSystem (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
+### `Hypostructure.Graph.Strategy.SpineRows.ReturnAvoidance`
+
+#### `Hypostructure.Graph.Strategy.Spine.instIncompatibleSelectionMersenneReturn`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineRows/ReturnAvoidance.lean`
+- Compiled type:
+
+```lean
+∀ {BranchState : Graph.FiniteObject → Type v} {Presentation : Type} {presentation : Presentation}
+  {data : Graph.Strategy.Spine.Data},
+  Core.Strategy.Incompatible (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.selection)
+    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.mersenneReturn)
+```
+
+### `Hypostructure.Graph.Strategy.SpineRows.ObstructionPacking`
+
+#### `Hypostructure.Graph.Strategy.Spine.instIncompatibleSelectionWindowFree`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineRows/ObstructionPacking.lean`
+- Compiled type:
+
+```lean
+∀ {BranchState : Graph.FiniteObject → Type v} {Presentation : Type} {presentation : Presentation}
+  {data : Graph.Strategy.Spine.Data},
+  Core.Strategy.Incompatible (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.selection)
+    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.windowFree)
+```
+
 ### `Hypostructure.Graph.Strategy.SpineRows.InterfaceReplacement`
 
 #### `Hypostructure.Graph.Strategy.Spine.interfaceReplacementRow`
@@ -15519,6 +15894,152 @@ Graph.Strategy.Spine.Data → Graph.FiniteObject → ℕ
         Graph.Strategy.Spine.Key →
           Core.Residual.FactKey
             (Core.Strategy.ProblemInput (Graph.Strategy.Spine.problem BranchState Presentation presentation data))
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.keyDisjoint_append_left`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ {α : Type u_1} {first second right : List α},
+  first.Disjoint right → second.Disjoint right → (first ++ second).Disjoint right
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.keyDisjoint_append_right`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ {α : Type u_1} {left first second : List α},
+  left.Disjoint first → left.Disjoint second → left.Disjoint (first ++ second)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.keyDisjoint_cons_left`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ {α : Type u_1} {head : α} {tail right : List α}, head ∉ right → tail.Disjoint right → (head :: tail).Disjoint right
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.keyDisjoint_cons_right`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ {α : Type u_1} {left tail : List α} {head : α}, head ∉ left → left.Disjoint tail → left.Disjoint (head :: tail)
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.keyDisjoint_nil_left`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ {α : Type u_1} {right : List α}, [].Disjoint right
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.keyDisjoint_of_all`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ {α : Type u_1} [inst : DecidableEq α] {left right : List α},
+  (left.all fun key => !right.contains key) = true → left.Disjoint right
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.keyFresh_append`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ {α : Type u_1} {key : α} {left right : List α}, key ∉ left → key ∉ right → key ∉ left ++ right
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.keyFresh_cons`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ {α : Type u_1} {key head : α} {tail : List α}, key ≠ head → key ∉ tail → key ∉ head :: tail
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.keyFresh_of_append_left`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ {α : Type u_1} {key : α} {left right : List α}, key ∉ left ++ right → key ∉ left
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.keyFresh_of_append_right`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ {α : Type u_1} {key : α} {left right : List α}, key ∉ left ++ right → key ∉ right
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.keyFresh_of_cons_tail`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ {α : Type u_1} {key head : α} {tail : List α}, key ∉ head :: tail → key ∉ tail
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.keyFresh_of_contains`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ {α : Type u_1} [inst : DecidableEq α] {key : α} {keys : List α}, keys.contains key = false → key ∉ keys
+```
+
+#### `Hypostructure.Graph.Strategy.Spine.keyNe_of_decide`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `theorem`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+∀ {α : Type u_1} [inst : DecidableEq α] {left right : α}, decide (left = right) = false → left ≠ right
 ```
 
 #### `Hypostructure.Graph.Strategy.Spine.label`
@@ -16205,7 +16726,7 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
 
 ### `Hypostructure.Graph.Strategy.SpineRows.ReturnAvoidance`
 
-#### `Hypostructure.Graph.Strategy.Spine.returnAvoidanceRow`
+#### `Hypostructure.Graph.Strategy.Spine.returnAvoidanceDichotomy`
 
 - Category: Minimum-degree cycle spine rows
 - Kind: `definition`
@@ -16217,7 +16738,15 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Finset o
   {Presentation : Type} →
     {presentation : Presentation} →
       {data : Graph.Strategy.Spine.Data} →
-        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+        {current : Graph.Strategy.Spine.Input BranchState Presentation presentation data} →
+          {known : Core.Residual.FactKeys (Graph.Strategy.Spine.Input BranchState Presentation presentation data)} →
+            (previous :
+                Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                  current known) →
+              Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.mersenneReturn ∉ known →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.returnAvoidance ∉ known →
+                  Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.mersenneReturn)
+                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.returnAvoidance) previous
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows.Route8BasinBurden`
@@ -17152,6 +17681,19 @@ Graph.Strategy.Spine.Data → (object : Graph.FiniteObject) → Finset (Graph.Ro
     {presentation : Presentation} →
       {data : Graph.Strategy.Spine.Data} →
         Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+### `Hypostructure.Graph.Strategy.SpineVocabulary`
+
+#### `Hypostructure.Graph.Strategy.Spine.tacticKey_fresh`
+
+- Category: Minimum-degree cycle spine vocabulary
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineVocabulary.lean`
+- Compiled type:
+
+```lean
+ParserDescr
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows.TargetCompleteContextUniversality`
@@ -18146,6 +18688,31 @@ Graph.Strategy.Spine.Data → ℕ
     {presentation : Presentation} →
       {data : Graph.Strategy.Spine.Data} →
         Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+```
+
+### `Hypostructure.Graph.Strategy.SpineRows.ObstructionPacking`
+
+#### `Hypostructure.Graph.Strategy.Spine.windowFreeDichotomy`
+
+- Category: Minimum-degree cycle spine rows
+- Kind: `definition`
+- Source: `Hypostructure/Graph/Strategy/SpineRows/ObstructionPacking.lean`
+- Compiled type:
+
+```lean
+{BranchState : Graph.FiniteObject → Type v} →
+  {Presentation : Type} →
+    {presentation : Presentation} →
+      {data : Graph.Strategy.Spine.Data} →
+        {current : Graph.Strategy.Spine.Input BranchState Presentation presentation data} →
+          {known : Core.Residual.FactKeys (Graph.Strategy.Spine.Input BranchState Presentation presentation data)} →
+            (previous :
+                Core.Residual.ExactLedger (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
+                  current known) →
+              Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.windowFree ∉ known →
+                Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.windowPresent ∉ known →
+                  Core.Strategy.Decision (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.windowFree)
+                    (Graph.Strategy.Spine.K Graph.Strategy.Spine.Key.windowPresent) previous
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineVocabulary`

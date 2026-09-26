@@ -44,7 +44,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     `Hypostructure.Graph.Strategy.Spine.route8VisibleExitFourRouting
     { Requires := [K .selection, K .replacementExclusion, K .cubicBaseline]
       Produces := [K .route8VisibleExitFourRouting]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>

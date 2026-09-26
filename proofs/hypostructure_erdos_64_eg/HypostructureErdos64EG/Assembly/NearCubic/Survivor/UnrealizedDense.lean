@@ -1,3 +1,4 @@
+import Hypostructure.Graph.Strategy.SpineRows.HotColdPartition
 import HypostructureErdos64EG.Assembly.Cold.Barrier
 import HypostructureErdos64EG.Assembly.NearCubic.Boundary
 import HypostructureErdos64EG.Assembly.NearCubic.Survivor.DenseAtOrAbove
@@ -18,26 +19,33 @@ set_option maxHeartbeats 8000000 in
 noncomputable def Assembly.Internal.nearCubicUnrealizedDense
     {selected : EGInput.{u}}
     (denseHistory : ExactLedger EGInput.{u} selected
-      [K .denseDeficiencyAtOrAbove, K .hotColdPartition, K .densePackingOverflow,
+      [K .denseDeficiencyAtOrAbove, K .densePackingOverflow,
        K .windowPackageUnrealized, K .skeletonDominates, K .windowPackageSeparated,
        K .barrierEnumeration, K .sparseSurplusSurvivor, K .surplusAtOrBelow, K .localAlgebra,
-       K .maximalPacking, K .uncompressible, K .replacementExclusion,
+       K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion,
        K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
        K .tightEndpoint, K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
        K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
        K .selection]) :
     SelectedNearCubicSurvivorBoundary selected := by
-  -- `τ(θ) ≥ 1/4`, the dense residual: `[22]`'s live-hot cap decision and the
-  -- cold branch `[145]`--`[157]` on it.
-  match selectedBarrierDichotomy denseHistory
-      (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+  -- `[162]` on the `τ(θ) ≥ 1/4` complement of `[160]`: the dense hot/cold
+  -- pass runs `[22]` -- the canonical hot/cold partition and its live-hot
+  -- cap decision -- and then the cold branch `[145]`--`[157]` on this
+  -- literal residual.
+  let partitioned :=
+    (hotColdPartitionRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      denseHistory (by key_fresh)
+  match selectedBarrierDichotomy partitioned
+      (by key_fresh) (by key_fresh) with
   | .right overflowHistory =>
       exact (selectedBarrierOverflowCloses overflowHistory
-        (by simp [K_eq_iff]) (by simp [K_eq_iff])).elim
+        (by key_fresh) (by key_fresh)).elim
   | .left capHistory =>
-  -- `[145]`'s split is already on this ledger (run before the deficiency test).
+  -- `[145]` carries no assertion: pass the literal `[22]` cap ledger to `[146]`.
   match coldRoute8Dichotomy (data := spineData) capHistory
-      (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+      (by key_fresh) (by key_fresh) with
   | .left belowHistory =>
       exact Assembly.Internal.nearCubicDenseBelow belowHistory
   | .right atOrAboveHistory =>

@@ -18,7 +18,7 @@ assignment and contradicts its retained maximality. -/
     { Requires := [K .route8DemandAbsorption]
       Produces := [K .route8OpenBoundarySaturated, K .route8DemandUnitCount]
       requiresUnique := by simp
-      producesUnique := by simp [K_eq_iff]
+      producesUnique := by key_fresh
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .route8OpenBoundarySaturated)

@@ -80,7 +80,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       Produces := [K .exactResponseProfile, K .admissibleRankQuotient,
         K .curvatureTargetRank]
       requiresUnique := by simp
-      producesUnique := by simp [K_eq_iff]
+      producesUnique := by key_fresh
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .exactResponseProfile)

@@ -1,4 +1,4 @@
-import Hypostructure.Graph.Strategy.ColdCorridorRows
+import Hypostructure.Graph.Strategy.ColdCorridorRows.Basic
 import Hypostructure.Graph.Strategy.EntropyClosure
 import Hypostructure.Graph.Strategy.SpineRows.LowEntropyLargeBudget
 import Hypostructure.Graph.Strategy.SpineRows.RouteEightNetDeficiencyCap
@@ -28,7 +28,7 @@ noncomputable def Assembly.Internal.nearCubicRealizedBelowNonrepetitive
        K .route8Rate, K .coldRoute8Below, K .barrierCap, K .hotColdPartition,
        K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
        K .barrierEnumeration, K .sparseSurplusSurvivor, K .surplusAtOrBelow, K .localAlgebra,
-       K .maximalPacking, K .uncompressible, K .replacementExclusion,
+       K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion,
        K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
        K .tightEndpoint, K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
        K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
@@ -38,12 +38,12 @@ noncomputable def Assembly.Internal.nearCubicRealizedBelowNonrepetitive
     (lowEntropyLargeBudgetRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      nonrepetitiveHistory (by simp [K_eq_iff])
+      nonrepetitiveHistory (by key_fresh)
   let netCap :=
     (routeEightNetDeficiencyCapRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      large (by simp [K_eq_iff])
+      large (by key_fresh)
   exact Or.inl (selectedNetChargeContinuation netCap)
 
 end HypostructureErdos64EG

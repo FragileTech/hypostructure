@@ -18,13 +18,13 @@ universe u w
 
 /-- Establish `def:surviving-cold-branch` before entering any hot/cold or
 net-charge descendant.  The exhaustive sparse-exit split belongs to the
-enclosing routing; its survivor ledger crosses `[125]` unchanged and is then
+enclosing routing; its survivor ledger enters `[21]` directly and is then
 retained monotonically by every later ExactLedger. -/
 noncomputable def selectedNearCubicBranch
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-        K .uncompressible, K .replacementExclusion,
+        K .windowPresent, K .uncompressible, K .replacementExclusion,
         K .targetCompleteContextUniversality, K .degreeProfileFibres,
         K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
@@ -34,7 +34,7 @@ noncomputable def selectedNearCubicBranch
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile)
       (data := spineData) history
-      (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+      (by key_fresh) (by key_fresh) with
   | .left exitHistory =>
       let targetDefect :=
         (sparseSurplusExitRoutingRow
@@ -42,19 +42,20 @@ noncomputable def selectedNearCubicBranch
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile)
           (data := spineData)).run exitHistory
-          (by simp [K_eq_iff])
+          (by key_fresh)
       let structured :=
         (sparseTargetDefectStructureRow
           (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile)
-          (data := spineData)).run targetDefect (by simp [K_eq_iff])
+          (data := spineData)).run targetDefect (by key_fresh)
       exact Or.inl ⟨
         (structured.get (K .sparseTargetDefectResidual)).down,
         (structured.get (K .sparseTargetDefectStructure)).down⟩
   | .right survivorHistory =>
-      let node125 := selectedSparseSurplusSurvivorNode125 survivorHistory
-      exact Or.inr (selectedNearCubicSurvivorBranch node125)
+      -- The at-or-below survivor goes to `[21]`; `[125]` is entered only
+      -- from the strict arm `[20]`.
+      exact Or.inr (selectedNearCubicSurvivorBranch survivorHistory)
 
 /-- Node `[20a]`: the exact strict-surplus named-exit survivor, including
 the source decision and the structured target-defect witness. -/

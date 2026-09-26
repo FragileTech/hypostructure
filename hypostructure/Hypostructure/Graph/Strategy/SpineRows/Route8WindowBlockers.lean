@@ -34,7 +34,7 @@ set_option maxHeartbeats 1000000 in
     { Requires := [K .route8UnifiedEntryCensus,
         K .route8DemandAbsorption, K .route8DemandLedger]
       Produces := [K .route8WindowBlockers]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>

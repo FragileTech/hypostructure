@@ -47,7 +47,7 @@ subregion. -/
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.typeAReceiverRouting
     (rowManifest (K .remainderNormalized) (K .typeAReceiverRouting)
-      (by simp [K_eq_iff]))
+      (by key_fresh))
     (fun inputs =>
       let normalized := (inputs.get (K .remainderNormalized)).down
       .cons (key := K .typeAReceiverRouting)

@@ -41,7 +41,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     { Requires := [K .route8StageRateFailed, K .route8DemandLedger,
         K .route8DemandAbsorption, K .route8WindowBlockers]
       Produces := [K .route8PeeledDemandResidual]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>

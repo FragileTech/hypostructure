@@ -1,14 +1,28 @@
 {
  "status": "validated",
- "updated_at": "2026-09-22",
- "current_validation": "All 144 assembly declarations were inspected after a successful package build in a disposable copy. No frontier stubs were required. Clean means independent of the frontierGap tracer; existing mathematical assumptions are unchanged.",
- "previous_validation": {
-  "status": "current validation blocked by aggregate Assembly failure",
-  "updated_at": "2026-08-30",
-  "current_validation": "The aggregate Assembly check fails before a complete #print axioms audit can be generated. No declaration is classified as clean or tainted until regeneration succeeds."
- },
+ "updated_at": "2026-09-25",
+ "current_validation": "All 153 assembly declarations were inspected by web/tools/lean_axiom_audit.py after a successful package build of the working tree (ae44b9b plus the removal of Assembly/Surplus/TypeBContinuation.lean and TypeBCertificateOutcome, and the [132] exit/blocker decision, the single [140]/[142]/[143] audit row homogeneousBottleneckAuditRow, and the [144] caps-fail/caps-hold decision). No frontier stubs were required. Clean means independent of the frontierGap tracer; existing mathematical assumptions are unchanged.",
+ "previous_validation": [
+  {
+   "updated_at": "2026-09-25",
+   "current_validation": "All 153 assembly declarations were inspected by web/tools/lean_axiom_audit.py after a successful package build of the working tree (ae44b9b plus the removal of Assembly/Surplus/TypeBContinuation.lean and TypeBCertificateOutcome). No frontier stubs were required. Clean means independent of the frontierGap tracer; existing mathematical assumptions are unchanged."
+  },
+  {
+   "updated_at": "2026-09-25",
+   "current_validation": "All 156 assembly declarations were inspected after a successful package build at ae44b9b. No frontier stubs were required. Clean means independent of the frontierGap tracer; existing mathematical assumptions are unchanged."
+  },
+  {
+   "updated_at": "2026-09-22",
+   "current_validation": "All 144 assembly declarations were inspected after a successful package build in a disposable copy. No frontier stubs were required. Clean means independent of the frontierGap tracer; existing mathematical assumptions are unchanged."
+  },
+  {
+   "status": "current validation blocked by aggregate Assembly failure",
+   "updated_at": "2026-08-30",
+   "current_validation": "The aggregate Assembly check fails before a complete #print axioms audit can be generated. No declaration is classified as clean or tainted until regeneration succeeds."
+  }
+ ],
  "tracer": "frontierGap",
- "declarations": 144,
+ "declarations": 153,
  "frontier_stubs": [],
  "clean": [
   "AbsorbedPrerequisiteKnown",
@@ -68,6 +82,11 @@
   "EGProblem",
   "EGSelectionKey",
   "EGTarget",
+  "NearCubicTargetDefectOutcome",
+  "Node144aOutcome",
+  "Node20aOutcome",
+  "OtherReturnedOutcome",
+  "PairTypeBOutcome",
   "SelectedAbsorbedGermBoundary",
   "SelectedLedgerBoundaryResult",
   "SelectedNearCubicBoundary",
@@ -75,9 +94,12 @@
   "SelectedNetChargeBoundary",
   "SelectedRouteEightBoundary",
   "SelectedSparseTargetDefectBoundary",
+  "StrictSurplusBoundaryResult",
   "StrictSurplusTypeBOutcome",
   "TypeBAfterNormalFormBoundary",
   "TypeBContinuationBoundary",
+  "node20a_nearCubicTargetDefect_disjoint",
+  "officialCounterexample_reaches_selectedLedgerBoundary",
   "openSelectedCounterexample",
   "selectedAbsorbedGermPrerequisites",
   "selectedAbsorbedGermResidual",
@@ -106,6 +128,7 @@
   "selectedColdRoute8Dichotomy",
   "selectedColdSameInterfaceTable",
   "selectedColdStubExcess",
+  "selectedCounterexample_reaches_exactBoundary",
   "selectedCoupledExcessDichotomy",
   "selectedDensityBudget",
   "selectedEntryPrefix",
@@ -131,9 +154,9 @@
   "selectedSparseSurplusDichotomy",
   "selectedSparseSurplusExitContinuation",
   "selectedSparseSurplusSurvivorNode125",
+  "selectedSparseTargetDefectStructureContinuation",
   "selectedSpineSurplusEstimateCloses",
   "selectedStrictSurplusBranch",
-  "selectedStrictSurplusTypeBContinuation",
   "selectedSurplusDichotomy",
   "selectedTypeADecoratedHandoff",
   "selectedTypeAExitFiveToSeven",

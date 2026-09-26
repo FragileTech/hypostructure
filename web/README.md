@@ -38,7 +38,7 @@ as an entry is chosen. Both are `SidebarRail` (`frontend/src/components/`) over
 the `useSidebar` hook (`frontend/src/hooks/`); the rail is hidden in CSS rather
 than unmounted, so every page of it stays addressable.
 
-Nothing on the site is hand-written mathematics, with four stated exceptions:
+Nothing on the site is hand-written mathematics, with five stated exceptions:
 each proof's introduction, in `frontend/src/proofs/registry.ts`; the panel
 names and Erdős panel summaries in `web/tools/papers/`; the landing page's
 *The methodology* section, `frontend/src/components/MethodologySection.tsx`, a
@@ -46,8 +46,13 @@ condensed reading of `to_formalize/structural_exhaustion.tex` — the account of
 Structural Exhaustion, the method both proofs were built with — together with
 a table of the proof moves, drawn from the tactic library of
 `branch_closure_methodology_extended.tex` and each proof's chapter 1, and an
-account of local review and repair for controlled mathematical benchmark tasks; and the *Hypostructure*
-documentation under `frontend/src/docs/`, described below. The
+account of local review and repair for controlled mathematical benchmark tasks; the
+structural survey under `frontend/src/structural-survey/` — the landing page's
+*Techniques and structural invariants* part, whose techniques and properties
+come from `tools/methodology_gate/policy/structural-register.json`, and the
+Erdős–Gyárfás overview's table binding each of the manuscript's 38 invariants
+to them (`data.ts`); and the *Hypostructure* documentation under
+`frontend/src/docs/`, described below. The
 Navier–Stokes panel summaries are the manuscripts' own — they live in each
 paper's *Diagram map*, so improving them there improves both the paper and this
 site.
@@ -80,7 +85,7 @@ headings and destinations. The navigation test checks that every metadata row
 has a rendered heading and a matching link.
 
 The execution recipe reads the same unversioned policy as the task controller.
-`ExecutionRecipe.tsx` renders its phase contracts; `TaskRunViewer.tsx` displays
+In `frontend/src/methodology/`, `ExecutionRecipe.tsx` renders its phase contracts; `TaskRunViewer.tsx` displays
 a saved live queue; `recipe-reference.ts` supplies candidate examples and the
 artifact table. The sequence is branch restoration, accounting, unused
 structure, structural tension, textbook catalogue, conditional payoff,
@@ -159,16 +164,25 @@ Source* must be **GitHub Actions**, or the deploy job fails.
 
 ## Regenerating the data
 
-Each proof is one committed JSON file under `frontend/public/data/`. Rebuild
-after a manuscript changes:
+Each proof is one committed JSON file under `frontend/public/data/`, and each
+manuscript PDF has a label-to-page map under `frontend/public/data/pages/`,
+read from the `.aux` file of the build that produced it. Rebuild after a
+manuscript changes:
 
 ```sh
-make web-data                                          # both, plus the checks
-python web/tools/extract_proof_graph.py --proof navier-stokes
+make web-data                                          # both proofs, the page maps, then the checks
+python3 web/tools/extract_proof_graph.py --proof navier-stokes
+python3 web/tools/extract_page_map.py --proof navier-stokes
 ```
 
-The extractor uses only the Python standard library. From each manuscript it
-reads:
+The checks are `tools/test_extract_proof_graph.py`, which needs `pytest`
+(a dependency in the repository's `pyproject.toml`). Plain `python3` without it
+fails the target at import; after `uv sync`, run `make web-data
+PYTHON=.venv/bin/python`, or run the checks alone with
+`uv run --with pytest python3 web/tools/test_extract_proof_graph.py`.
+
+Both extractors use only the Python standard library. From each manuscript,
+`extract_proof_graph.py` reads:
 
 | From the paper | What it yields |
 | --- | --- |
@@ -215,7 +229,7 @@ does, then the results behind it. *Referee mode* — the "Read as" toggle in the
 toolbar, `?mode=referee` in the address — reorders the same facts as evidence:
 a status strip along the dimensions a referee keeps apart (manuscript present,
 placed on a page, dependencies mapped, cases or closure recorded, Lean, kernel,
-wired, local, external input, human review — each said as "not recorded" when
+matches manuscript, wired, local, external input, human review — each said as "not recorded" when
 the document is silent), then the claim, the standing constraints available
 before / read / established at the step (reads are the inputs the paper's own
 requirement rows declare; a constraint read where nothing upstream tracks it,
@@ -223,7 +237,10 @@ or a number the ledger does not list, is flagged), the cases of a branch test as
 the closure of a leaf, the results, what arrives, what falls downstream, and
 where each result sits in the PDF. Everything is derived from the document; the
 Lean and review dimensions read an optional `review` side-car keyed by step,
-which the Erdős–Gyárfás host supplies from the checked-in Lean audit side-car.
+which the Erdős–Gyárfás host supplies from the checked-in node audit
+`web/data/eg_node_audit.json`, folded in by `tools/lean_review.py`. The kernel
+axiom report beside it, `web/data/eg_axiom_audit.json`, is regenerated by
+`make lean-audit`, which needs a working Lean toolchain.
 
 `make web-data` also runs the structural checks: numbering without gaps in each
 paper, every arrow resolving, the whole diagram connected, every cross-reference
@@ -239,15 +256,24 @@ web/
     papers/erdos64.py            one paper, described as data
     papers/navier_stokes.py      three papers, and how they join
     extract_proof_graph.py       the CLI over those descriptions
-    test_extract_proof_graph.py  structural assertions, over every proof
+    extract_page_map.py          label -> line and PDF page, from the .aux files
+    lean_review.py               the Erdős–Gyárfás review side-car, from data/
+    lean_axiom_audit.py          the kernel axiom audit behind `make lean-audit`
+    test_*.py                    structural assertions over every proof, and the audit tools' tests
+  data/
+    eg_node_audit.json           per-node Lean status, committed
+    eg_axiom_audit.json          kernel axiom report, committed
   frontend/
     public/data/*.json           generated, committed
+    public/data/pages/*.json     page maps, generated, committed
     public/papers/*.pdf          the manuscripts, for the header's download link
     src/
       graph-explorer/            the reusable explorer (see below)
       proofs/                    the registry, the loader and their tests
       docs/                      the Hypostructure documentation section
-      pages/ components/ styles/ the site around it
+      methodology/               the execution recipe and the task-run viewer
+      structural-survey/         the technique and invariant survey
+      pages/ components/ hooks/ styles/ the site around it
 ```
 
 ## Adding a proof
@@ -290,7 +316,7 @@ usable on their own:
 | `RefereePanel` / `refereeDossier` | the same step read as a referee, and the derivation behind it |
 | `indexDocument` | lookup tables for steps, results, panels, papers, constraints and arrows |
 | `traceFrom` | walk a branch upstream, downstream or both |
-| `buildGraph` / `boundsOf` | lay the document out for the canvas, and frame part of it |
+| `buildGraph` | lay the document out for the canvas |
 | `layoutGraph` | rank any set of boxes and links |
 | `buildSearchIndex` / `matchNodes` | search across steps and the results behind them |
 | `useDetailWidth` / `clampDetailWidth` | the resizable detail column, remembered per document |
@@ -306,3 +332,8 @@ check that it really is reusable.
 ```sh
 make web-test        # the extractor's assertions, then typecheck and the suite
 ```
+
+The extractor's assertions need `pytest`, as for `make web-data`:
+`make web-test PYTHON=.venv/bin/python` after `uv sync`. All the Python tests
+under `tools/`, including the audit tools', run with
+`uv run --with pytest python3 -m pytest web/tools`.

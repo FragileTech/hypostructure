@@ -1,4 +1,4 @@
-import Hypostructure.Graph.Strategy.ColdCorridorRows
+import Hypostructure.Graph.Strategy.ColdCorridorRows.EntryDichotomies
 import HypostructureErdos64EG.Assembly.Basic
 
 /-!
@@ -26,11 +26,11 @@ noncomputable def selectedColdRoute8Dichotomy
     (history : ExactLedger EGInput.{u} selected
       [K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
+        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
         K .selection]) :=
   coldRoute8Dichotomy (data := spineData) history
-    (by simp [K_eq_iff]) (by simp [K_eq_iff])
+    (by key_fresh) (by key_fresh)
 
 /-- Node `[148]`: only the no arm of `[146]` reaches the live-hot entropy
 decision. -/
@@ -40,11 +40,11 @@ noncomputable def selectedColdHotEntropyDichotomy
     (history : ExactLedger EGInput.{u} selected
       [K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
         K .barrierEnumeration, K .surplusAtOrBelow, K .localAlgebra,
-        K .maximalPacking, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
+        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
         K .selection]) :=
   coldHotEntropyDichotomy (data := spineData) history
-    (by simp [K_eq_iff]) (by simp [K_eq_iff])
+    (by key_fresh) (by key_fresh)
 
 /-- Node `[149]`: the live-hot entropy comparison closes on `[148]`'s literal
 overflow residual.  On the `[22]` cap arm the ledger already carries

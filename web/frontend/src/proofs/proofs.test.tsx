@@ -406,18 +406,22 @@ describe("referee mode", () => {
     // The selected step stays legible even when the constraint dims the rest.
     expect(view.container.querySelector(".proof-node.is-selected")).not.toHaveClass("is-dimmed");
 
-    // Kernel-verified steps carry a check; steps still resting on an unfinished
-    // producer do not.  [7] counts as proved even though it is a terminal the
-    // proof only ever refutes -- discharging the branch is the proof of it.
-    // [172a] is one of the six boundary outcomes the manuscript leaves open, so
-    // no Lean stands behind it and it carries no check.
+    // A step carries a check only when its producer kernel-checks and publishes
+    // the manuscript's statement.  [7] counts as proved even though it is a
+    // terminal the proof only ever refutes -- discharging the branch is the
+    // proof of it.  [172a] is one of the six open boundary outcomes; the routing
+    // that reaches it kernel-checks, so it carries a check like [144a].  [14]
+    // kernel-checks but publishes a weaker statement than the paper, so it
+    // carries none.
     const badge = (id: string) =>
       view.container
         .querySelector(`.react-flow__node[data-id="${id}"] .proof-node-verified`);
     expect(badge("5")).not.toBeNull();
     expect(badge("7")).not.toBeNull();
     expect(view.container.querySelector(`.react-flow__node[data-id="172a"]`)).not.toBeNull();
-    expect(badge("172a")).toBeNull();
+    expect(badge("172a")).not.toBeNull();
+    expect(view.container.querySelector(`.react-flow__node[data-id="14"]`)).not.toBeNull();
+    expect(badge("14")).toBeNull();
     expect(screen.getByRole("status")).toHaveTextContent("clear");
 
     changes.length = 0;

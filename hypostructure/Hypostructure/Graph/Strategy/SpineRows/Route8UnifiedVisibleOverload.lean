@@ -43,7 +43,7 @@ set_option maxHeartbeats 1000000 in
         K .route8PeeledDemandResidual]
       Produces := [K .route8UnifiedVisibleOverload]
       requiresUnique := by simp
-      producesUnique := by simp [K_eq_iff]
+      producesUnique := by key_fresh
       producesNonempty := by simp }
     (fun inputs =>
       let visible := (inputs.get (K .route8UnifiedVisibleResidual)).down

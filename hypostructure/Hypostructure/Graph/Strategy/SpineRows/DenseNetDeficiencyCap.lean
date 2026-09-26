@@ -40,7 +40,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     `Hypostructure.Graph.Strategy.Spine.denseNetDeficiencyCap
     { Requires := [K .largeBudgetResidual, K .denseDeficiencyBelow]
       Produces := [K .netDeficiencyCap]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>

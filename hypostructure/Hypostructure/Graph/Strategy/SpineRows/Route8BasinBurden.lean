@@ -32,7 +32,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     `Hypostructure.Graph.Strategy.Spine.route8BasinBurden
     { Requires := [K .route8GlobalSqueeze, K .typeAReceiverRouting]
       Produces := [K .route8BasinBurden]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>

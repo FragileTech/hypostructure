@@ -46,7 +46,7 @@ set_option maxHeartbeats 1600000 in
     { Requires := [K .route8QuotientFree, K .selection, K .replacementExclusion,
         K .cubicBaseline]
       Produces := [K .route8UnifiedEntryCensus]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>

@@ -39,7 +39,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     `Hypostructure.Graph.Strategy.Spine.route8TrueTwoCarrierEntry
     { Requires := [K .route8TwoCarrierEntry, K .route8TrueResidual]
       Produces := [K .route8TrueTwoCarrierEntry]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>

@@ -33,7 +33,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     { Requires := [K .route8TrueResidual, K .route8NoSmallCoreEntry,
         K .route8CarrierDeletionWitnesses]
       Produces := [K .route8TerminalNoGo]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>

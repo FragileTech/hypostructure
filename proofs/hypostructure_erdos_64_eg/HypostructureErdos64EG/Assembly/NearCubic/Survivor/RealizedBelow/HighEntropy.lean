@@ -1,4 +1,4 @@
-import Hypostructure.Graph.Strategy.ColdCorridorRows
+import Hypostructure.Graph.Strategy.ColdCorridorRows.Basic
 import Hypostructure.Graph.Strategy.EntropyClosure
 import Hypostructure.Graph.Strategy.SpineRows.EntropyCapDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.EntropyPackage
@@ -29,7 +29,7 @@ noncomputable def Assembly.Internal.nearCubicRealizedBelowHighEntropy
        K .coldRoute8Below, K .barrierCap, K .hotColdPartition, K .windowPackageRealized,
        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
        K .sparseSurplusSurvivor, K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-       K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality,
+       K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality,
        K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure,
        K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
@@ -40,9 +40,9 @@ noncomputable def Assembly.Internal.nearCubicRealizedBelowHighEntropy
     (entropyPackageRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) spineData).run
-      highHistory (by simp [K_eq_iff])
+      highHistory (by key_fresh)
   match entropyCapDichotomy (data := spineData) package
-      (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+      (by key_fresh) (by key_fresh) with
   | .left activeHistory =>
       -- `[54]`: the sealed row handles both alternatives already
       -- stored in `K .hotColdPartition` and publishes only the exact
@@ -53,7 +53,7 @@ noncomputable def Assembly.Internal.nearCubicRealizedBelowHighEntropy
           (presentation := erdosReceiverLoadProfile)
           (data := spineData)).runAndCloseIncompatible activeHistory
             (K .entropyCapActive) (K .entropyCapBound)
-            (by simp [K_eq_iff]) (by simp [K_eq_iff])
+            (by key_fresh) (by key_fresh)
       exact (closedHistory.elimClosed (by infer_instance)).elim
   | .right largeHistory =>
       -- `[55]`: Residual C on the high-entropy arm.
@@ -63,7 +63,7 @@ noncomputable def Assembly.Internal.nearCubicRealizedBelowHighEntropy
         (routeEightNetDeficiencyCapRow (BranchState := BranchState)
   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          largeHistory (by simp [K_eq_iff])
+          largeHistory (by key_fresh)
       -- `[57]` onward on this residual is the next producer.
       exact Or.inl (selectedNetChargeContinuation netCap)
 

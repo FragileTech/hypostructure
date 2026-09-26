@@ -1,6 +1,6 @@
 import Hypostructure.Graph.Strategy.SpineRows.LiveHotBarrierCap
 import Hypostructure.Graph.Strategy.EntropyClosure
-import Hypostructure.Graph.Strategy.ColdCorridorRows
+import Hypostructure.Graph.Strategy.ColdCorridorRows.ColdFamilyClosure
 import HypostructureErdos64EG.Assembly.Basic
 
 /-!
@@ -82,7 +82,7 @@ noncomputable def selectedDensityBudget
         K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
         K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
     ExactLedger EGInput.{u} selected
@@ -90,9 +90,9 @@ noncomputable def selectedDensityBudget
         K .coldStubExcess, K .coldAmbientCubic, K .coldMass,
         K .coldHotEntropyCap, K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized, K .skeletonDominates,
         K .windowPackageSeparated, K .barrierEnumeration, K .surplusAtOrBelow,
-        K .localAlgebra, K .maximalPacking, K .uncompressible,
+        K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
         K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection] :=
-  (densityBudgetRow (data := spineData)).run history (by simp [K_eq_iff])
+  (densityBudgetRow (data := spineData)).run history (by key_fresh)
 
 end HypostructureErdos64EG

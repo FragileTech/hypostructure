@@ -1,4 +1,12 @@
-import Hypostructure.Graph.Strategy.ColdCorridorRows
+import Hypostructure.Graph.Strategy.ColdCorridorRows.CorridorState
+import Hypostructure.Graph.Strategy.ColdCorridorRows.DenseTerminal
+import Hypostructure.Graph.Strategy.ColdCorridorRows.FailureClauses
+import Hypostructure.Graph.Strategy.ColdCorridorRows.FirstFailureOccurrence
+import Hypostructure.Graph.Strategy.ColdCorridorRows.FirstFailureRouting
+import Hypostructure.Graph.Strategy.ColdCorridorRows.GermCandidates
+import Hypostructure.Graph.Strategy.ColdCorridorRows.GermExtraction
+import Hypostructure.Graph.Strategy.ColdCorridorRows.HandoffTransfer
+import Hypostructure.Graph.Strategy.ColdCorridorRows.ReturnCorridor
 import HypostructureErdos64EG.Assembly.Basic
 
 /-!
@@ -91,43 +99,41 @@ noncomputable def selectedAbsorbedGermPrerequisites
     ExactLedger EGInput.{u} selected (AbsorbedPrerequisiteKnown known) := by
   let returned :=
     (coldReturnCorridorRow (data := spineData)).run history
-      (by simp [K_eq_iff, returnFresh])
+      (by key_fresh)
   let declared :=
     (coldDeclaredHandoffLedgerRow (data := spineData)).run returned
-      (by simp [K_eq_iff, declaredFresh])
+      (by key_fresh)
   let state :=
     (coldCorridorStateRow (data := spineData)).run declared
-      (by simp [K_eq_iff, stateFresh])
+      (by key_fresh)
   let terminal :=
     (denseColdCorridorsTerminalRow (data := spineData)).run state
-      (by simp [K_eq_iff, terminalFresh])
+      (by key_fresh)
   let occurrence :=
     (coldFirstFailureOccurrenceRow (data := spineData)).run terminal
-      (by simp [K_eq_iff, occurrenceFresh])
+      (by key_fresh)
   let failureCycle :=
     (coldFailureCycleRow (data := spineData)).run occurrence
-      (by simp [K_eq_iff, failureCycleFresh])
+      (by key_fresh)
   let failureDefect :=
     (coldFailureDefectRow (data := spineData)).run failureCycle
-      (by simp [K_eq_iff, failureDefectFresh, failureDefectRouteFresh])
+      (by key_fresh)
   let failureCompression :=
     (coldFailureCompressionRow (data := spineData)).run failureDefect
-      (by simp [K_eq_iff, failureCompressionFresh])
+      (by key_fresh)
   let failureHandoff :=
     (coldFailureHandoffRow (data := spineData)).run failureCompression
-      (by simp [K_eq_iff, failureHandoffFresh])
+      (by key_fresh)
   let handoffTransfer :=
     (coldHandoffTransferRow (data := spineData)).run failureHandoff
-      (by simp [K_eq_iff, handoffTransferFresh])
+      (by key_fresh)
   let routed :=
     (coldFirstFailureRoutingRow (data := spineData)).run handoffTransfer
-      (by simp [K_eq_iff, stateFresh, occurrenceFresh, routingFresh, failureCycleFresh,
-        failureDefectFresh, failureDefectRouteFresh, failureCompressionFresh,
-        failureHandoffFresh, handoffTransferFresh])
+      (by key_fresh)
   let extracted :=
     (coldGermExtractionRow (data := spineData)).run routed
-      (by simp [K_eq_iff, exchangeFresh, extractionFresh])
+      (by key_fresh)
   exact (coldGermCandidatesRow (data := spineData)).run extracted
-    (by simp [K_eq_iff, candidatesFresh])
+    (by key_fresh)
 
 end HypostructureErdos64EG

@@ -14,15 +14,49 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
+/-! ## Node `[15]`: `G` is `P₁₃`-free?
+
+The yes key is `windowFree` (the object has no induced window of the registered
+order), the no key `windowPresent` (it has one); the two are exact complements
+on the same object.  The yes arm closes at node `[16]`: the registered external
+law `thm:p13free` gives an accepted cycle, which the selection denies
+(`cor:p13-exists`).  The closure is the framework's, read off the two committed
+facts by `Incompatible`. -/
+
+/-- **Node `[15]`: `G` is `P₁₃`-free?** -/
+noncomputable def windowFreeDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger (Input BranchState Presentation presentation data)
+      current known)
+    (freeFresh : K .windowFree ∉ known)
+    (presentFresh : K .windowPresent ∉ known) :
+    Decision (K .windowFree) (K .windowPresent) previous :=
+  Decision.run previous (K .windowFree) (K .windowPresent)
+    `Hypostructure.Graph.Strategy.Spine.windowFreeDichotomy
+    (Classical.choice (show Nonempty
+        ((K .windowFree).At current ⊕ (K .windowPresent).At current) from by
+      by_cases present : Graph.HasInducedPath current.object data.windowOrder
+      · exact ⟨.inr ⟨present⟩⟩
+      · exact ⟨.inl ⟨present⟩⟩))
+    freeFresh presentFresh
+
+/-- **Node `[16]`: the HSS theorem gives a target cycle.**  The registered
+external law `data.freeForcesTarget` (`thm:p13free`) turns the yes arm of node
+`[15]` into an accepted cycle at the baseline, which the selection denies. -/
+noncomputable instance instIncompatibleSelectionWindowFree :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K .selection) (K .windowFree) where
+  contradiction := fun input selection free =>
+    selection.down.1 (data.freeForcesTarget input.object input.baseline free.down)
+
 variable [FactSystem (Input BranchState Presentation presentation data)]
 
-/-! ## Nodes `[15]`--`[17]`: the maximal induced-window packing
+/-! ## Node `[17]`: the maximal induced-window packing
 
-`cor:p13-exists` and the packing that follows it.  If the selected object had
-no induced window of the registered order it would be window-free, and the
-registered external law would give it an accepted cycle -- which node `[1]`
-has excluded.  So some window is present, the packing number is positive, and
-some vertex-disjoint family attains it.
+Node `[15]`'s no arm says the selected object contains an induced window of the
+registered order, so the packing number is positive and some vertex-disjoint
+family attains it.
 
 Maximality is not assumed: `exists_mem_not_disjoint_of_card_eq` derives it from
 attaining the maximum, because a window disjoint from every member could be
@@ -43,23 +77,21 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       (Presentation := Presentation) (presentation := presentation)
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.obstructionPacking
-    { Requires := [K .selection]
+    { Requires := [K .windowPresent]
       Produces := [K .maximalPacking]
       requiresUnique := by simp
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       let object := inputs.current.object
-      let avoids := (inputs.get (K .selection)).down.1
-      -- `cor:p13-exists`: window-freeness would force the target.
+      let present := (inputs.get (K .windowPresent)).down
+      -- Node `[15]`'s no arm: the induced window is a vertex support.
       let carried : ∃ support : Finset object.Vertex,
           object.InducesWindow data.windowOrder support := by
         by_contra empty
         push Not at empty
-        exact avoids
-          (data.freeForcesTarget object inputs.current.baseline
-            (Graph.FiniteObject.inducedPathFree_of_forall_not_inducesWindow
-              object empty))
+        exact Graph.FiniteObject.inducedPathFree_of_forall_not_inducesWindow
+          object empty present
       let attaining := object.exists_windowPacking_card_eq data.windowOrder
       .cons (key := K .maximalPacking)
         (show Value BranchState Presentation presentation data

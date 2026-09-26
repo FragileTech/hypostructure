@@ -1,7 +1,23 @@
 # Illegal data carriers in Core and Graph
 
-**None remain in the build.**  `scripts/check_quarantine.py` passes, and it is
-wired into `make lint`, so a new one cannot land silently.
+**Some are back in the build.**  `scripts/check_quarantine.py` (wired into
+`make lint`) currently fails with 15 violations:
+
+- eight quarantined modules are imported by live code again:
+  `Graph.TypeBFanClosedPorts` and `Graph.TypeBPostLedgerCore` (from
+  `Graph.Strategy.SpineVocabulary`), `Graph.TypeABCertificate` (from
+  `Graph.TypeBGlobalLocalReflection`), `Graph.TypeBProfileSchedule` (from
+  `Graph.TypeBCanonicalB2`), and, through them, `Graph.DecoratedFan`,
+  `Graph.ReceiverExhaustion`, `Graph.TypeBHybridLedger` and
+  `Graph.TypeBMarkedFan`;
+- `Core/Strategy/ExactExecution.lean:191` declares into the canonical
+  `Core.Residual.ExactLedger` namespace;
+- six ledger-named declarations: the carriers `CapacityTokenLedger`
+  (`Graph/CapacityTokenLedger.lean`), `ObjectCapacityLedger` and
+  `CertifiedObjectCapacityLedger` (`Graph/ObjectCapacityLedger.lean`) and
+  `DisjointLedger` (`Graph/TypeBCanonicalB2.lean`), and the accessors
+  `canonicalIncidenceLedger` (`Graph/SurplusBlockers.lean`) and
+  `augmentedLedger` (`Graph/TypeBCanonicalB2.lean`).
 
 There is one allowed API: `Core.Residual.ExactLedger` and the accessors it
 exposes.
@@ -23,8 +39,9 @@ between their mathematics and their `Ledger.Extension` plumbing.  With the
 spine's import closure clean, the whole legacy-ledger cone -- 226 live modules
 at that point -- could leave the build without touching it.
 
-The quarantined modules are still on disk and are the porting reference for the
-rows that have not been rewritten yet.  See `quarantine.txt`.
+The quarantined modules still on disk are the porting reference for the rows
+that have not been rewritten yet.  See `quarantine.txt`: 73 of its 82 entries
+are on disk; the other nine have since been deleted.
 
 **Deleted outright, once their rows had exactly one implementation.**  Block A's
 legacy layer is no longer quarantined beside the spine -- it is gone.  Twenty-two
@@ -36,24 +53,29 @@ with `Graph.External.HegdeSandeepShashank`, `Graph.WindowCurvatureTypeB` and
 `Graph.Strategy.Official.Universal`.  The EG registration layer that drove them
 (`Official/`, `AB/`, `Presentation.lean`) went with them.
 
-**The framework stopped naming the problem.**  The curvature algebra is
-order-generic; the specializations at `windowOrder = 13` and the label count
-`399`, and the Hegde--Sandeep--Shashank axiom, now live in the proof and reach
-the framework only as fields of the problem's registered `Spine.Data`.
+**The framework names the problem only through `Spine.Data`.**  The curvature
+algebra is order-generic.  The Hegde--Sandeep--Shashank axiom
+(`p13Free_hasPowerOfTwoCycle`) lives in the proof's `WindowAlgebra.lean` and
+reaches the framework as the `freeForcesTarget` field, and `windowOrder` is a
+field whose value the proof supplies.  The field types of `Spine.Data` in
+`Graph/Strategy/SpineVocabulary.lean` do still pin the manuscript's values
+(`threshold_eq_three`, `labelCount : ... = 399`, `labelSizeDistribution`), and
+the `.localAlgebra` fact statement repeats `399` and the size distribution.
 
 ## Where things stand
 
 | | |
 |---|---|
-| live modules in the build | 106 |
-| quarantined | 302 |
-| entry-spine import closure | 62 modules |
-| legacy residual stack reachable from the spine | none |
-| problem-specific declarations in Core or Graph | none |
-| gate violations | 0 |
+| live modules in the build | 410 |
+| quarantined (`quarantine.txt` entries) | 82 |
+| `Graph.Strategy.SpineVocabulary` import closure | 187 modules |
+| quarantined modules reachable from the spine | 8 |
+| legacy `Core.Residual.Ledger` / `Ledger.Extension` in the build | none |
+| gate violations | 15 |
 
-The spine reaches no `Ledger`, `Stage`, `Query`, `Focus`, or `Decision`.  Block
-A runs on `ExactLedger` by construction, not by convention.
+The spine reaches no legacy `Core.Residual.Ledger` or `Ledger.Extension`, but
+its import closure includes the eight quarantined modules and the ledger-named
+carriers listed above.
 
 ## Scope note
 
@@ -63,4 +85,4 @@ clean run is necessary and not sufficient.  The structural guarantee is
 `FactSystem.value_subsingleton`, which makes a fact value unable to hold data at
 all; and the legacy side channel that the name gate never saw --
 `Ledger.Extension`, a dependent pair that let a stage carry anything -- is now
-outside the build entirely.
+outside the build entirely: no live module mentions it.

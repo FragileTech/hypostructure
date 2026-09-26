@@ -1,6 +1,7 @@
 # Spine row declaration locations
 
 Original line numbers refer to the working-tree snapshot before this refactor.
+Rows written directly as their own modules have no original line (`—`).
 Public names remain in `Hypostructure.Graph.Strategy.Spine`.
 
 | Declaration | Original line | Current source |
@@ -161,3 +162,8 @@ Public names remain in `Hypostructure.Graph.Strategy.Spine`.
 | `typeASilentExitSixDichotomy` | 14352 | [TypeASilentExitSixDichotomy.lean:21](TypeASilentExitSixDichotomy.lean#L21) |
 | `typeASilentExitSevenDichotomy` | 14394 | [TypeASilentExitSevenDichotomy.lean:21](TypeASilentExitSevenDichotomy.lean#L21) |
 | `typeASilentExitSevenRoute8Row` | 14436 | [TypeASilentExitSevenRoute8.lean:22](TypeASilentExitSevenRoute8.lean#L22) |
+| `route8OpenBoundarySaturatedRow` | — | [Route8OpenBoundarySaturated.lean:13](Route8OpenBoundarySaturated.lean#L13) |
+| `windowShadowSignatureRow` | — | [WindowShadowSignature.lean:11](WindowShadowSignature.lean#L11) |
+| `windowShadowSingletonTailRow` | — | [WindowShadowSingletonTail.lean:13](WindowShadowSingletonTail.lean#L13) |
+| `windowShadowHitCycleRow` | — | [WindowShadowHitCycle.lean:12](WindowShadowHitCycle.lean#L12) |
+| `windowShadowHitExcludedRow` | — | [WindowShadowHitExcluded.lean:11](WindowShadowHitExcluded.lean#L11) |

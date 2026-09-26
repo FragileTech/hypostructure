@@ -223,15 +223,14 @@ degree preservation proved. This resumed attempt has not discharged it.
 - Explicit 66-vertex graph and outside-component certificate: passed.
 - The live graph has no outgoing edge from any open node; [172b] and [172c]
   are not live nodes. The regression test enforces this property.
-- Graph extraction: 66 tests passed. App proof views: 53 tests passed.
-  Frontend type checking passed.
+- Graph extraction and app proof-view tests passed. Frontend type checking
+  passed.
 - The manuscript PDF rebuilt successfully; the changed diagram and mathematical
   pages were visually inspected. The local app PDF and page map were updated.
 
-The repository-wide API check was already blocked before edits by the missing
-`ColdCorridorRows.olean` required by `Canonical.WebExport`. The final rerun
-completed its export but reported a stale `allowed-api.md` catalog. No
-production API was added in this repair, and the catalog was not refreshed to
-accept unrelated changes. The audit-table check still reports the pre-existing
-extra `cor:conditional-conjecture` row. Neither failure is reported as a
-successful global validation or repaired by altering unrelated work.
+The repository-wide API check
+(`python3 .agents/skills/eg-proof-expansion/scripts/api_catalog.py check --repo-root .`)
+now reports that the catalog is current. The noncanonical ledger types it
+previously reported at `Assembly/Surplus/Strict/Dependent.lean` and in the
+same-token Type B continuation module were removed together with that module;
+the [144a] outcome is now read directly from the routed `ExactLedger`.

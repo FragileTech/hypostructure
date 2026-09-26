@@ -1,8 +1,8 @@
 """Per-node review status for the Erdos-Gyarfas proof.
 
-Read from ``web/data/eg_node_audit.json``, the current numeric-node audit plus
-the manuscript's live alphanumeric [20a], [144a], and [172a] leaves. Proposed continuations
-[172b]--[172c] remain in the audit but are not nodes of the live proof graph.
+Read from ``web/data/eg_node_audit.json``, one entry per live node of the
+manuscript's proof graph: the numeric nodes plus the alphanumeric [20a],
+[144a], and [172a] leaves.
 Nothing here parses ``-- EG-NODE`` comments or infers coverage from prose:
 those annotations are unreliable in both directions (declarations that
 implement a node carry none, and one umbrella claims 44 nodes it merely
@@ -95,9 +95,9 @@ def build_review(repo_root: Path) -> dict | None:
             # marked partial have a finished producer on an unprobed arm; that
             # is unmeasured, not failing.
             # A node that establishes no proposition cannot claim membership
-            # of the arm that runs past it: [11] and [51] sit on probed arms
-            # and contribute nothing to them, so the arm is closed despite
-            # them rather than through them.
+            # of the arm that runs past it: an ABSENT node on a probed arm
+            # contributes nothing to it, so the arm is closed despite it
+            # rather than through it.
             "wired": _state(
                 entry["on_probed_closed_arm"] and fidelity != "ABSENT",
                 partial=complete.startswith("YES"),

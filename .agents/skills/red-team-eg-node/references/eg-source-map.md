@@ -51,9 +51,11 @@ hashes serialized file bytes, so those values are intentionally incomparable.
   `web/tools/papers/erdos64.py`
 - Checked-in explorer graph: `web/frontend/public/data/erdos-gyarfas.json`
 - Lean node-status sidecar: `web/data/eg_node_audit.json`
-- Human Lean/fidelity tables: `Assembly_node_audit.md`
-- Main application assembly:
-  `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly.lean`
+- Main application assembly: the modules under
+  `proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/`
+  (imported together by `Assembly.lean`); the root reduction
+  `officialCounterexample_reaches_selectedLedgerBoundary` is in
+  `Assembly/Final.lean`
 - Principal row and fact vocabulary sources:
   `hypostructure/Hypostructure/Graph/Strategy/SpineRows.lean` and
   `hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean`
@@ -104,7 +106,7 @@ back edge is not automatically circular reasoning.
 Node [65] has three incoming routes ([66], [64], and decorated handoff [177]).
 The common Type B destination does not imply that all three paths carry the same
 payload. Similar merge care is required at [25], [54], [70], [75], [76], [84],
-[85], [89], [101], [110], [137], [144], [155], and [178]. Always use the live
+[85], [89], [101], [110], [124], [137], [144], [155], [178], [182], and [187]. Always use the live
 graph rather than this list as the final authority.
 
 ### Routing-only and terminal nodes
@@ -117,7 +119,7 @@ that is not automatically a nonexhaustive decision.
 
 ## 5. Lean evidence
 
-Use `web/data/eg_node_audit.json` and `Assembly_node_audit.md` to locate a
+Use `web/data/eg_node_audit.json` to locate a
 producer, then inspect the source declaration. Check:
 
 - the exact `Holds` proposition, not the fact-key name;
@@ -147,7 +149,7 @@ For every corrected label, search the whole manuscript and formalization:
 ```bash
 rg -n 'LABEL|distinctive phrase|word for word|same proof|analog' \
   to_formalize/erdos_64_proof.tex \
-  hypostructure proofs Assembly_node_audit.md web/data/eg_node_audit.json
+  hypostructure proofs web/data/eg_node_audit.json
 ```
 
 Inspect theorem statements, proof references, dependency-table rows, constraint

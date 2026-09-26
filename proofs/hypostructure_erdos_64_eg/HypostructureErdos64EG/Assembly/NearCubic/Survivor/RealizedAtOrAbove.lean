@@ -1,4 +1,5 @@
-import Hypostructure.Graph.Strategy.ColdCorridorRows
+import Hypostructure.Graph.Strategy.ColdCorridorRows.ColdMass
+import Hypostructure.Graph.Strategy.ColdCorridorRows.EntryDichotomies
 import Hypostructure.Graph.Strategy.EntropyClosure
 import HypostructureErdos64EG.Assembly.Cold.Entropy
 import HypostructureErdos64EG.Assembly.NearCubic.Boundary
@@ -24,27 +25,27 @@ noncomputable def Assembly.Internal.nearCubicRealizedAtOrAbove
       [K .coldRoute8AtOrAbove, K .barrierCap, K .hotColdPartition, K .windowPackageRealized,
        K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
        K .sparseSurplusSurvivor, K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking,
-       K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality,
+       K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality,
        K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure,
        K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
     SelectedNearCubicSurvivorBoundary selected := by
   match coldHotEntropyDichotomy (data := spineData) atOrAboveHistory
-      (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+      (by key_fresh) (by key_fresh) with
   | .left overflowHistory =>
       exact (selectedColdHotEntropyCloses overflowHistory).elim
   | .right hotCapHistory =>
       let mass :=
         (coldMassRow (data := spineData)).run hotCapHistory
-          (by simp [K_eq_iff])
+          (by key_fresh)
       let cubic :=
         (coldAmbientCubicRow (data := spineData)).run mass
-          (by simp [K_eq_iff])
+          (by key_fresh)
       let stubs :=
         (coldStubExcessRow (data := spineData)).run cubic
-          (by simp [K_eq_iff])
+          (by key_fresh)
       match coldMassDichotomy (data := spineData) stubs
-          (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+          (by key_fresh) (by key_fresh) with
       | .left linearHistory =>
           exact Assembly.Internal.nearCubicRealizedAtOrAboveLinear linearHistory
       | .right boundedHistory =>

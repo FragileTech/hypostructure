@@ -39,7 +39,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     { Requires := [K .bridgeless, K .selection, K .highCentreNormalForm,
         K .triangularShoulderCompletion]
       Produces := [K .triangularPortReturn]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>

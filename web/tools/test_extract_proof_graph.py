@@ -334,8 +334,8 @@ def test_every_absent_node_says_what_blocks_it() -> None:
     """ABSENT is a verdict about the tree, so it must name what stands in the way.
 
     It distinguishes a step whose only route runs through a referenced-but-undefined
-    declaration from a paper-side remark that nothing downstream consumes -- [87] is
-    the latter and must not read as a hole in the argument.
+    declaration from a paper-side remark that nothing downstream consumes, which
+    must not read as a hole in the argument.
     """
     from lean_review import load_audit
 
@@ -358,20 +358,42 @@ def test_faithful_triviality_is_not_reported_as_a_defect() -> None:
 
     audit = load_audit(REPO_ROOT)["nodes"]
     states = ERDOS["review"]["nodes"]
-    for node in (6, 7, 11, 12, 18, 23, 31, 36, 37, 55, 88, 126, 138, 147, 154, 155, 176):
+    for node in (
+        6, 7, 11, 12, 23, 26, 31, 35, 36, 37, 55, 66, 88,
+        108, 110, 111, 126, 138, 145, 154, 155,
+    ):
         assert audit[str(node)]["fidelity"] == "FAITHFUL-TRIVIAL", node
         assert states[str(node)]["fidelity"] == "verified", node
 
 
-def test_surrogate_triviality_is_reported_as_a_defect() -> None:
-    """Triviality manufactured by a weakened statement is not verified."""
+def test_weakened_or_divergent_statements_are_reported_as_defects() -> None:
+    """A producer publishing less than, or other than, the paper is not verified.
+
+    Each node was checked against its manuscript statement: [14] requires a
+    two-way context equivalence where the paper's compression is one-way; [69]
+    omits the triangular half on the heavy arm; [156] never turns G2 into a
+    contradiction; [165]-[166] decide the refined decrease at construction;
+    [49], [50], [53] state a different remainder class, packing quantifier,
+    and entropy-cap comparison.
+    """
     from lean_review import load_audit
 
     audit = load_audit(REPO_ROOT)["nodes"]
     states = ERDOS["review"]["nodes"]
-    for node in (129, 134):
-        assert audit[str(node)]["fidelity"] == "SURROGATE-TRIVIAL", node
+    for node in (14, 69, 156, 165, 166):
+        assert audit[str(node)]["fidelity"] == "WEAKER", node
         assert states[str(node)]["fidelity"] == "partial", node
+    for node in (49, 50, 53):
+        assert audit[str(node)]["fidelity"] == "DIVERGENT", node
+        assert states[str(node)]["fidelity"] == "partial", node
+
+
+def test_surrogate_triviality_is_reported_as_a_defect() -> None:
+    """Triviality manufactured by a weakened statement is never verified."""
+    from lean_review import _FAITHFUL, _PARTIAL
+
+    assert "SURROGATE-TRIVIAL" in _PARTIAL
+    assert "SURROGATE-TRIVIAL" not in _FAITHFUL
 
 
 def test_axiom_audit_classifications_match_current_status() -> None:
@@ -411,15 +433,15 @@ def test_every_node_records_a_producer_or_says_it_has_none() -> None:
     from lean_review import load_audit
 
     audit = load_audit(REPO_ROOT)["nodes"]
-    assert len(audit) == 192  # 189 live nodes, aggregate [172], proposed [172b]-[172c]
+    # Exactly the live nodes: no entry for a retired or proposed node.
+    assert set(audit) == {entry["id"] for entry in ERDOS["nodes"]}
     for node in (entry["id"] for entry in ERDOS["nodes"]):
         entry = audit[node]
         assert entry["fidelity"], node
         assert entry["complete"], node
         if entry["fidelity"] == "ABSENT":
             # ABSENT means no proposition is established. A branch cursor may
-            # still exist -- node [51] carries the high-entropy arm but states
-            # no lemma -- so the absence is recorded in the note, not inferred
+            # still exist, so the absence is recorded in the note, not inferred
             # from the producer field being empty.
             assert entry["fidelity_note"], node
 

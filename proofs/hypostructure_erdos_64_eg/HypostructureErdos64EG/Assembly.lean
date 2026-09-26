@@ -22,7 +22,6 @@ import HypostructureErdos64EG.Assembly.RouteEight.TypeBContinuation
 import HypostructureErdos64EG.Assembly.Surplus.Boundary
 import HypostructureErdos64EG.Assembly.Surplus.Local
 import HypostructureErdos64EG.Assembly.Surplus.Strict
-import HypostructureErdos64EG.Assembly.Surplus.TypeBContinuation
 import HypostructureErdos64EG.Assembly.TypeA.DecoratedHandoff
 import HypostructureErdos64EG.Assembly.TypeA.ExitFiveToSeven
 import HypostructureErdos64EG.Assembly.TypeA.ExitFiveToSevenSilent

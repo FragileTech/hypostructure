@@ -72,7 +72,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     { Requires := [K .typeBHighSurplus]
       Produces := [K .typeBAssignedSupport, K .typeBFanEntry]
       requiresUnique := by simp
-      producesUnique := by simp [K_eq_iff]
+      producesUnique := by key_fresh
       producesNonempty := by simp }
     (fun inputs =>
       let typeB := (inputs.get (K .typeBHighSurplus)).down

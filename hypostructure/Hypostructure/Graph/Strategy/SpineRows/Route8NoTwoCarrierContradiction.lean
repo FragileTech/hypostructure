@@ -32,7 +32,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     `Hypostructure.Graph.Strategy.Spine.route8NoTwoCarrierContradiction
     { Requires := [K .route8Census, K .route8PrivateCarrierBudget]
       Produces := [K .route8NoTwoCarrierContradiction]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>

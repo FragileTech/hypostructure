@@ -1,11 +1,10 @@
-import Hypostructure.Graph.Strategy.ColdCorridorRows
+import Hypostructure.Graph.Strategy.ColdCorridorRows.Basic
 import Hypostructure.Graph.Strategy.EntropyClosure
 import Hypostructure.Graph.Strategy.SpineRows.DominantRootedType
 import Hypostructure.Graph.Strategy.SpineRows.DominantRootedTypeWedgeDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.ForcedCurvatureCost
 import Hypostructure.Graph.Strategy.SpineRows.LocalTypeCoordinateDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.RemainderEntropyDichotomy
-import HypostructureErdos64EG.Assembly.Cold.Barrier
 import HypostructureErdos64EG.Assembly.Cold.Entropy
 import HypostructureErdos64EG.Assembly.NearCubic.Boundary
 import HypostructureErdos64EG.Assembly.NearCubic.Local
@@ -33,43 +32,44 @@ noncomputable def Assembly.Internal.nearCubicBelowRateFailureFullRank
       [K .curvatureFullRank, K .targetRankCircuit, K .exactResponseProfile,
        K .admissibleRankQuotient, K .curvatureTargetRank, K .wedgeSupply, K .stubSupply,
        K .boundaryDemand, K .remainderRelabelingEntropy, K .remainderNormalized,
-       K .route8Rate, K .coldRoute8Below, K .barrierCap, K .route8RateFails,
-       K .denseDeficiencyBelow, K .hotColdPartition, K .densePackingOverflow,
-       K .windowPackageUnrealized, K .skeletonDominates, K .windowPackageSeparated,
-       K .barrierEnumeration, K .sparseSurplusSurvivor, K .surplusAtOrBelow, K .localAlgebra,
-       K .maximalPacking, K .uncompressible, K .replacementExclusion,
-       K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
-       K .tightEndpoint, K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-       K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
-       K .selection]) :
+       K .densityCap, K .coldMassBounded, K .coldSelectedBranchExcess, K .coldAmbientCubicStubExcess, K .coldStubExcess,
+       K .coldAmbientCubic, K .coldMass, K .coldHotEntropyCap, K .coldRoute8AtOrAbove,
+       K .barrierCap, K .hotColdPartition, K .route8RateFails, K .denseDeficiencyBelow,
+       K .densePackingOverflow, K .windowPackageUnrealized, K .skeletonDominates,
+       K .windowPackageSeparated, K .barrierEnumeration, K .sparseSurplusSurvivor,
+       K .surplusAtOrBelow, K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
+       K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres,
+       K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
+       K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap,
+       K .cubicBaseline, K .selection]) :
     SelectedNearCubicSurvivorBoundary selected := by
   -- `[34]`/`[47]`/`[48]`: full rank and `cor:forced-curvature-cost`.
   let cost :=
     (forcedCurvatureCostRow (BranchState := BranchState)
         (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
         (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-        fullRankHistory (by simp [K_eq_iff])
+        fullRankHistory (by key_fresh)
   match remainderEntropyDichotomy (data := spineData) cost
-      (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+      (by key_fresh) (by key_fresh) with
   | .left highHistory =>
       exact Assembly.Internal.nearCubicBelowRateFailureHighEntropy highHistory
   | .right lowHistory =>
-    match localTypeCoordinateDichotomy (data := spineData) lowHistory
-          (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
-    | .right nonrepetitiveHistory =>
-        exact Assembly.Internal.nearCubicBelowRateFailureNonrepetitive nonrepetitiveHistory
-    | .left repetitiveHistory =>
-        let dominant :=
-          (dominantRootedTypeRow (BranchState := BranchState)
-            (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-            (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-            repetitiveHistory (by simp [K_eq_iff])
-        match dominantRootedTypeWedgeDichotomy (data := spineData) dominant
-            (by simp [K_eq_iff])
-            (by simp [K_eq_iff]) with
-        | .right wedgeFreeHistory =>
-            exact Assembly.Internal.nearCubicBelowRateFailureWedgeFree wedgeFreeHistory
-        | .left wedgeHistory =>
-            exact Assembly.Internal.nearCubicBelowRateFailureWedge wedgeHistory
+      match localTypeCoordinateDichotomy (data := spineData) lowHistory
+          (by key_fresh) (by key_fresh) with
+      | .right nonrepetitiveHistory =>
+          exact Assembly.Internal.nearCubicBelowRateFailureNonrepetitive nonrepetitiveHistory
+      | .left repetitiveHistory =>
+          let dominant :=
+            (dominantRootedTypeRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              repetitiveHistory (by key_fresh)
+          match dominantRootedTypeWedgeDichotomy (data := spineData) dominant
+              (by key_fresh)
+              (by key_fresh) with
+          | .right wedgeFreeHistory =>
+              exact Assembly.Internal.nearCubicBelowRateFailureWedgeFree wedgeFreeHistory
+          | .left wedgeHistory =>
+              exact Assembly.Internal.nearCubicBelowRateFailureWedge wedgeHistory
 
 end HypostructureErdos64EG

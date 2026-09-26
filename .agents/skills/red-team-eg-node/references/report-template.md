@@ -29,7 +29,7 @@ node dossier; do not invent hashes.
   "benchmark_policy_sha256": "COPY_FROM_DOSSIER",
   "proof": "erdos-gyarfas",
   "node": 1,
-  "node_label": "finite simple graph G",
+  "node_label": "finite simple graph $G$",
   "panel": "fig:proof-diagram-part-i",
   "contract_sha256": "COPY_FROM_DOSSIER",
   "manuscript_sha256": "COPY_FROM_DOSSIER",

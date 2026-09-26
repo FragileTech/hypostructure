@@ -52,7 +52,7 @@ set_option maxHeartbeats 1600000 in
     `Hypostructure.Graph.Strategy.Spine.route8ExtractedEntryCensus
     { Requires := [K .selection, K .replacementExclusion, K .cubicBaseline]
       Produces := [K .route8ExtractedEntryCensus]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>

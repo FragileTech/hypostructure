@@ -427,7 +427,7 @@ display.  The stronger remainder-and-curvature retained code remains solely in
   factOnly `Hypostructure.Graph.Strategy.Spine.densePackingOverflow
     { Requires := [K .windowPackageUnrealized, K .skeletonDominates]
       Produces := [K .densePackingOverflow]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
@@ -470,8 +470,8 @@ compression inequality and its skeleton-budget consequence. -/
   factOnly `Hypostructure.Graph.Strategy.Spine.blockedCompression
     { Requires := [K .blockedClassMember, K .blockedScaleAdditive]
       Produces := [K .blockedCompressionBound, K .blockedCompressionCap]
-      requiresUnique := by simp [K_eq_iff]
-      producesUnique := by simp [K_eq_iff]
+      requiresUnique := by key_fresh
+      producesUnique := by key_fresh
       producesNonempty := by simp }
     (fun inputs => by
       let object : Graph.FiniteObject := inputs.current.object

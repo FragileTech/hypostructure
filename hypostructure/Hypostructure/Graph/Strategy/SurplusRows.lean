@@ -185,7 +185,7 @@ they close the suppression.  Its first edge after `x(p)` is a shoulder. -/
     { Requires := [K .sparseSurplusSurvivor, K .activeSurplusFamily,
         K .sparsePortActivation]
       Produces := [K .activeSurplusDemands]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
@@ -233,7 +233,7 @@ deficit is bounded linearly using the registered coefficient inequality. -/
     { Requires := [K .activeSurplusDemands, K .sparseSurplusSurvivor,
         K .surplusAbove, K .noProperBaseline, K .tightEndpoint]
       Produces := [K .baselineSpineDemand]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
@@ -451,7 +451,7 @@ semantic fact. -/
   factOnly `Hypostructure.Graph.Strategy.Spine.mixedSparseSpineDependence
     { Requires := [K .baselineSpineDemand]
       Produces := [K .mixedSparseSpineDependence]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
@@ -715,11 +715,14 @@ proved inside this executor and published on the same exact ledger. -/
             exact realized.trans_eq count⟩)
         .nil)
 
-/-- `lem:sparse-pair-dependence-exit` on the literal residual produced by
-node `[130]`.  The attempted quotient and its failure of injectivity are read
-from that residual's exact ledger.  The two conclusions are distinct decision
-arms, and `Decision.run` preserves the complete incoming ancestry on either
-arm. -/
+/-- Node `[132]`, blocked-pair routing: exit or canonical blocker?  On the
+literal blocked residual of `[130]`, the paper's split is whether a sparse
+surplus exit of `def:named-surplus-exits` occurs.  The yes arm publishes that
+exit (closed at `[133]`); the no arm publishes its exact negation together with
+the blocked pair read from `[130]` and its canonical blocker
+`Φ_can(π) = min_≺ Blk(π)` of `def:canonical-blocker-ledger`.  The decision is a
+case analysis on the exit predicate itself; `Decision.run` preserves the
+complete incoming ancestry on either arm. -/
 noncomputable def blockedPairRoutingDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
@@ -734,9 +737,25 @@ noncomputable def blockedPairRoutingDichotomy
     (Classical.choice (show Nonempty
         ((K .sparsePairExit).At current ⊕
           (K .canonicalBlockerRoute).At current) from by
-      obtain ⟨active, blocker⟩ :=
-        (previous.get (K .dependentPairFamily)).down
-      exact ⟨.inr ⟨active, blocker⟩⟩))
+      classical
+      by_cases exit : Graph.SparseSurplusExit
+          (Graph.MinimumDegreeAtLeast data.threshold)
+          (Graph.HasCycleWithLength data.LengthOK) data.LengthOK current.object
+      · exact ⟨.inl ⟨exit⟩⟩
+      · obtain ⟨active, certificate⟩ :=
+          (previous.get (K .dependentPairFamily)).down
+        let pairs := current.object.portPairSchedule data.threshold
+        let recorded := Graph.recordSparsePairDEBlockers
+          (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+          (LengthOK := data.LengthOK) (Graph.pairResponseActivation active)
+          pairs
+        obtain ⟨pair, pairMem, blocked⟩ :=
+          Graph.recordedSparsePairDEBlocker_nonempty
+            (Graph.pairResponseActivation active) pairs certificate
+        obtain ⟨blocker, canonical⟩ := Option.isSome_iff_exists.mp
+          (Graph.FiniteObject.isSome_canonicalBlocker recorded blocked)
+        exact ⟨.inr ⟨exit, active, certificate, pair, pairMem, blocked,
+          blocker, canonical⟩⟩))
     exitFresh blockerFresh
 
 /-! ## Node `[134]`: canonical blocker ledger -/
@@ -760,7 +779,7 @@ canonical-fibre no-overcount identities. -/
         (show Value BranchState Presentation presentation data
             .canonicalPairLedger inputs.current from
           ⟨by
-            obtain ⟨active, certificate⟩ :=
+            obtain ⟨_survives, active, certificate, _canonical⟩ :=
               (inputs.get (K .canonicalBlockerRoute)).down
             let activation := Graph.pairResponseActivation active
             let pairs := inputs.current.object.portPairSchedule data.threshold
@@ -790,7 +809,7 @@ canonical-fibre no-overcount identities. -/
     { Requires := [K .maximalPacking, K .noProperBaseline,
         K .tightEndpoint, K .surplusAbove]
       Produces := [K .sparseUpperEnvelope]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
@@ -827,7 +846,7 @@ canonical-fibre no-overcount identities. -/
     { Requires := [K .canonicalPairLedger, K .sparseUpperEnvelope,
         K .noProperBaseline]
       Produces := [K .capacityTokenLedger]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>

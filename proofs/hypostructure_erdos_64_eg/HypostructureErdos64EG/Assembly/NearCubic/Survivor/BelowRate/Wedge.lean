@@ -1,4 +1,4 @@
-import Hypostructure.Graph.Strategy.ColdCorridorRows
+import Hypostructure.Graph.Strategy.ColdCorridorRows.Basic
 import Hypostructure.Graph.Strategy.EntropyClosure
 import Hypostructure.Graph.Strategy.SpineRows.DenseNetDeficiencyCap
 import Hypostructure.Graph.Strategy.SpineRows.IndependentObstructionTranslates
@@ -26,11 +26,11 @@ noncomputable def Assembly.Internal.nearCubicBelowRateWedge
        K .remainderEntropyLow, K .forcedCurvatureCost, K .curvatureFullRank,
        K .targetRankCircuit, K .exactResponseProfile, K .admissibleRankQuotient,
        K .curvatureTargetRank, K .wedgeSupply, K .stubSupply, K .boundaryDemand,
-       K .remainderRelabelingEntropy, K .remainderNormalized, K .route8Rate,
-       K .denseDeficiencyBelow, K .hotColdPartition, K .densePackingOverflow,
+       K .remainderRelabelingEntropy, K .remainderNormalized, K .hotColdPartition,
+       K .route8Rate, K .denseDeficiencyBelow, K .densePackingOverflow,
        K .windowPackageUnrealized, K .skeletonDominates, K .windowPackageSeparated,
        K .barrierEnumeration, K .sparseSurplusSurvivor, K .surplusAtOrBelow, K .localAlgebra,
-       K .maximalPacking, K .uncompressible, K .replacementExclusion,
+       K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion,
        K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
        K .tightEndpoint, K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
        K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
@@ -40,17 +40,17 @@ noncomputable def Assembly.Internal.nearCubicBelowRateWedge
     (independentObstructionTranslatesRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      wedgeHistory (by simp [K_eq_iff])
+      wedgeHistory (by key_fresh)
   let large :=
     (lowEntropyLargeBudgetRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      translated (by simp [K_eq_iff])
+      translated (by key_fresh)
   let netCap :=
     (denseNetDeficiencyCapRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      large (by simp [K_eq_iff])
+      large (by key_fresh)
   exact Or.inl (selectedNetChargeContinuation netCap)
 
 end HypostructureErdos64EG

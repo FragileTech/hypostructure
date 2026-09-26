@@ -1,6 +1,6 @@
 ---
 name: eg-proof-expansion
-description: Implement or review controlled textbook-mathematics benchmark nodes in the Erdős–Gyárfás StrategyDag Lean proof. Use whenever Codex is asked to fix, implement, expand, route, or make compliant a node in proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/StrategyDag.lean or its supporting declarations, while matching the original paper exactly, using only the canonical ExactLedger and sealed Strategy/CT APIs, removing proof-specific plumbing, and synchronizing the label and node tables in Assembly_node_audit.md.
+description: Implement or review controlled textbook-mathematics benchmark nodes in the Erdős–Gyárfás StrategyDag Lean proof. Use whenever Codex is asked to fix, implement, expand, route, or make compliant a node in proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/StrategyDag.lean or its supporting declarations, while matching the original paper exactly, using only the canonical ExactLedger and sealed Strategy/CT APIs, and removing proof-specific plumbing.
 ---
 
 # EG proof expansion
@@ -19,26 +19,34 @@ This is the controlling workflow. Apply every broader audit, dependency,
 cleanup, and framework instruction below only inside this scope.
 
 1. Identify the single manuscript label explicitly requested by the user. If
-   the user names a node, use the live tables to identify its single first
-   failing label. Do not begin a second label in the same turn.
+   the user names a node, take its open leaf from the manuscript diagram and
+   identify, from the live Lean source and a build, the single first
+   manuscript label that Lean does not establish on that leaf's ledger. Do
+   not begin a second label in the same turn. First classify the split that
+   produced the leaf as a dichotomy (see "Classify every split as a
+   dichotomy"): the leaf's residual is exactly its arm's defining fact plus
+   the retained ledger.
 2. Copy that label's exact proposition, inherited hypotheses, alternatives,
    and proof strategy from the manuscript. Do not infer a stronger
    prerequisite, global version, replacement theorem, or different strategy.
 3. Identify only the facts already present on the literal incoming residual
    that the manuscript proof consumes. Read them only through
    `FactInputs.current` and `FactInputs.get` inside the executor. Never request
-   a sibling fact, ambient theorem parameter, callback, side carrier, supplied
-   certificate, or detached universal proof.
-4. Translate that one proof into Lean. Publish each externally usable
-   conclusion prescribed for that label in one literal `FactManifest`, and
-   append it with `AtomicCT.run` to the same `ExactLedger`.
+   a sibling fact, ambient theorem parameter, callback, side carrier, or
+   supplied certificate.
+4. Translate that one proof into Lean. Prove it as a contract lemma in the
+   proof-agnostic library (see "Reusable mathematics lives in contract
+   lemmas"), or reuse an existing one. Publish each externally usable
+   conclusion prescribed for that label in one literal `FactManifest`, whose
+   thin adapter executor discharges the lemma's hypotheses from the ledger,
+   and append it with `AtomicCT.run` to the same `ExactLedger`.
 5. Delete an illegal wrapper, callback, side carrier, or compatibility shim
    only while repairing the valid mathematical proof it transported to use
    the canonical ledger API. Never delete, weaken, broaden, or replace a
    correct paper fact merely because its current transport is illegal.
-6. Update exactly the corresponding paper-fact row and node row from the
-   kernel-checked implementation. Build the narrow target and report the first
-   downstream failure. Stop there unless the user explicitly requests the
+6. Build the narrow target and report the first downstream failure.
+7. Refresh the web explorer's data for the touched nodes (see "Keep the web
+   explorer current"). Stop there unless the user explicitly requests the
    next label.
 
 Dependency tracing is diagnostic and read-only. It never expands the edit
@@ -48,29 +56,42 @@ repair of another label. Do not speculate about such designs. State the exact
 requested formula that remains unproved and implement it with a permitted
 Type A pattern.
 
-### Ban detached proof declarations
+### Reusable mathematics lives in contract lemmas; the ledger wires them
 
-Implement the selected paper fact only as the value returned for its declared
-`Produces` key by the sealed atomic executor. Keep its proof as an anonymous
-tactic or term subexpression inside that executor. Do not declare a `theorem`,
-`lemma`, helper `def`, public conversion, quotient-system constructor, or other
-standalone declaration whose conclusion supplies, implies, packages, or
-reconstructs the selected fact. This prohibition applies even when the
-declaration is generic, mathematically true, reusable, or convenient to test.
+Reusable mathematics and the EG proof are kept separate. Every paper fact is
+proved as a **contract lemma**. The ExactLedger machinery wires those lemmas
+into the paper's topology.
 
-Before editing, name the exact existing atomic row that will own the proof. If
-no such row exists, create only the permitted Type A row and its vocabulary
-entry; do not first stage the mathematics in a detached declaration. Construct
-all temporary mathematical objects with local `let` or `have` bindings inside
-the executor from `inputs.current` and `inputs.get` facts.
+- A contract lemma is a `theorem` in a proof-agnostic library module under
+  `hypostructure/Hypostructure/Graph/` (or `Core/`). It is stated over a
+  Mathlib `SimpleGraph` or `Graph.FiniteObject`, and every paper assumption is
+  an explicit hypothesis. Paper constants such as the minimum degree, the
+  window order, the target length predicate and the scales are parameters.
+  Its conclusion is exactly the paper's statement, neither weaker nor
+  stronger.
+- A contract lemma never mentions keys, `Holds`, `ExactLedger`, `FactInputs`,
+  `Spine.Data`, branches, or node numbers. It never imports
+  `SpineVocabulary` or any row module, directly or transitively, so adding a
+  key never rebuilds it.
+- The definitions it uses belong in the same library, not in the vocabulary.
+  Each key's `Holds` is the library predicate instantiated at the branch's
+  object and presentation.
+- A row executor is a thin adapter. It reads `inputs.current` and each
+  prerequisite with `inputs.get`, discharges every hypothesis of the lemma
+  from those facts, and returns the lemma's conclusion under the declared key.
+  A hypothesis may come only from `inputs.get` or `inputs.current`, never from
+  an ambient parameter, a callback, a supplied certificate, or a theorem
+  argument threaded from outside the ledger.
+- One argument, one lemma. When several rows or lanes use the same argument
+  under different hypotheses, they call one parameterized lemma. Never keep
+  copies of the argument.
+- Contract lemmas are tested on their own, with fixtures on concrete graphs,
+  and their statements are what the paper-fidelity audit checks.
 
-Before compiling or updating the audit tables, inspect the complete diff for
-new top-level declarations. If any new declaration outside the vocabulary and
-Type A row carries mathematical content for the selected label, the repair is
-invalid: delete it, inline its proof into the executor, and repeat the diff
-inspection. Never report the fact as implemented while such a declaration
-exists. Report any downstream elaboration failure at its exact statement after
-repairing the selected row through the canonical API.
+Before compiling, inspect the diff. Mathematics inside an executor that could
+be a contract lemma belongs in the library. A library declaration that
+mentions ledger machinery belongs in the adapter. A duplicated argument is a
+defect.
 
 ### Never confuse mathematical data with a transport interface
 
@@ -96,8 +117,8 @@ unresolved Lean obligation or downstream compilation failure precisely.
 
 Do not delete valid mathematics when deleting illegal transport. Reconstruct
 and publish the same paper fact through the ledger. Do not replace it with a
-surrogate, a universally quantified detached theorem, or a stronger fact that
-bypasses the manuscript argument.
+surrogate, a stronger fact that bypasses the manuscript argument, or a lemma
+whose hypotheses are met by anything other than ledger facts.
 
 This section overrides every broader paragraph below. In particular, “repair
 the row completely”, “transitive implementation slice”, “follow referenced
@@ -110,13 +131,11 @@ Work from the repository root.  Require these live sources:
 
 - `to_formalize/erdos_64_proof.tex`: sole authority for mathematical
   statements, hypotheses, alternatives, order, and terminal behavior.
-- Actual Lean declaration types, bodies, fields, call sites, imports, and the
-  generated sealed report: sole authority for what the implementation does.
-- `Assembly_node_audit.md`: sole authority for current Lean implementation
-  status, wiring, ledger compliance, and the next unresolved work. Its two
-  implementation tables are live; its stable rubrics are explanatory.
+- Actual Lean declaration types, bodies, fields, call sites, and imports:
+  sole authority for what the implementation does.
 
-Use comments and audit tables as locators. Check the actual declaration type
+Use comments as locators only; never rely on a status report or audit table.
+Check the actual declaration type
 and the application required for this label. Reuse accepted inputs at their
 exact statements; revisit an input only for a concrete mismatch. Correct a
 misleading comment within the selected label when needed for the edit.
@@ -135,15 +154,9 @@ plumbing already written directly in `StrategyDag.lean`.
 
 ## Audit the requested row before editing
 
-1. Locate every affected row in both `Assembly_node_audit.md` tables: the
-   `Paper-fact implementation table` by manuscript label and the
-   `Node-by-node table` by diagram node. Run the table checker before relying
-   on either table:
-
-   ```bash
-   python3 .agents/skills/eg-proof-expansion/scripts/audit_tables.py check \
-     --repo-root .
-   ```
+1. Locate the diagram node and its manuscript label in
+   `to_formalize/erdos_64_proof.tex`, and the Lean declarations that implement
+   them by searching the live source.
 2. Read the manuscript around every label consumed by the row.  Record the
    exact statement, inherited hypotheses, exhaustive alternatives, branch
    order, continuation, and terminals.  Read accepted prerequisite statements far enough to
@@ -154,27 +167,63 @@ plumbing already written directly in `StrategyDag.lean`.
    specific statement or application discrepancy.
 4. Trace the literal incoming `ExactLedger`, its immutable ancestry, indexed
    active residual, complete exact-key list, CT/Strategy manifests, commits,
-   routing, and closure facts.  Inspect the generated sealed JSON
-   when topology or branch status matters.
-5. Write a private checklist for every affected table column. At the label
-   level cover tactic, Lean declaration, partial match, kernel check,
+   routing, and closure facts.  Inspect the composed branch reached from
+   `Assembly/Final.lean` when topology or branch status matters.
+5. Write a private checklist. At the label level cover tactic, Lean
+   declaration, partial match, kernel check,
    residual locality, ledger reads/writes, wiring, legality, and hardcoded
    facts. At the node level cover implementation, combinator, CT ownership,
    reachability, wiring, locality, registration, illegal carriers,
-   manuscript difference, kernel check, and manuscript labels. Do not edit a
-   cell before collecting fresh evidence.
+   manuscript difference, kernel check, manuscript labels, and dichotomy
+   classification of every split on the path. Collect fresh evidence for each
+   item.
 
-### Report failures by the two live table rows
+### Classify every split as a dichotomy
+
+Every branch point of the manuscript strategy is an exhaustive, exclusive
+dichotomy: a predicate `P` and its exact complement `¬P`, possibly normalized
+to a positive form the paper states (for example, "the homogeneous caps hold"
+versus "some token carries a homogeneous pattern of size `L_geom`").  A
+multi-way split is a sequence of nested binary dichotomies in paper order.
+
+- Before auditing or editing, list every split on the path from the incoming
+  ledger to the requested row. For each one, record the predicate, its
+  complement, both arms, each arm's defining fact, and where each arm goes.
+- In Lean, implement every split as a `Decision yesKey noKey previous` whose
+  two keys' `Holds` are exactly the arm-defining predicate and its complement.
+  The chosen arm's key goes on that arm's ledger. Never implement a paper
+  split as an unconditional run, a route that silently assumes one arm, or an
+  unkeyed disjunction. When the Lean topology hides a split, that is a
+  topology difference from the paper, and it must be corrected.
+- An arm's defining fact is part of its residual. Consequences derived only
+  on the complementary arm are excluded from it by definition, not missing
+  from it. An open leaf is exactly what its dichotomy left: attack it by
+  structural exhaustion using the facts on its own arm. Never propose, cite
+  as required, or report as a gap a lemma whose hypothesis is the other arm's
+  defining fact.
+- The two keys must be exact complements on the same object: the paper
+  predicate and its negation, about the same pinned packing, component,
+  receiver, or witness that the paper fixes. Two existentials over separately
+  chosen witnesses do not count, and neither does an arm that drops the pin
+  or re-quantifies it.
+- Every terminal contradiction closes through the framework: `closeIncompatible`
+  or `AtomicCT.runAndCloseIncompatible` with an `Incompatible` instance
+  appends the distinguished closure key. Never encode a terminal as a key whose
+  `Holds` is `False`, a hand-built `False` from `.get … .down`, `.down.elim`,
+  or a caller-supplied closure option. The closed ledger that results is
+  discharged at the end of its branch with `ExactLedger.elimClosed`, and never
+  in any other way.
+
+### Report failures by node and label
 
 Every explanation of a missing fact, noncompliant node, compilation break, or
-next repair must identify both live audit rows before drawing a conclusion:
+next repair must identify the node and label before drawing a conclusion:
 
-- name the diagram row as `Node [n]`, reproduce its exact mathematical output,
-  and cite the node table's current implementation, wiring, registration, and
-  kernel-check cells;
-- name every corresponding manuscript-label row in the paper-fact table and
-  cite its current Lean declaration, partial-match assessment, ledger write,
-  wiring, legality, and hardcoded-fact cells;
+- name the diagram node as `Node [n]`, reproduce its exact mathematical
+  output, and cite its implementing Lean declaration, wiring, and build
+  result;
+- name every corresponding manuscript label and cite its Lean declaration,
+  exact published key, and ledger reads and writes;
 - state the first exact proposition or witness that Lean does not currently
   establish.  Write its complete mathematical formula and all objects it is
   quantified over; never report only a node range, umbrella theorem, generic
@@ -184,23 +233,28 @@ next repair must identify both live audit rows before drawing a conclusion:
   fact published under the wrong schema, fact published but not wired, illegal
   read/write or carrier, wrong branch ancestry, or downstream interface
   mismatch.  Do not conflate these categories;
-- distinguish the first failing audit row from later facts that merely cannot
+- distinguish the first failing label from later facts that merely cannot
   be derived because of it.  A compiler error at a later line is not the first
-  mathematical gap when an earlier table row is absent or incorrectly
-  implemented;
-- if the two tables disagree with the inspected Lean source, update both table
-  rows from fresh evidence before using them to answer.  Never silently replace
-  the tables with an informal diagnosis.
+  mathematical gap when an earlier label is absent or incorrectly
+  implemented.
 
-The final answer for any audit or failure question must lead with this exact
-row-and-fact identification.  It may then explain prerequisites and downstream
+The final answer for any failure question must lead with this exact
+node-and-fact identification.  It may then explain prerequisites and downstream
 effects, but those effects must not be presented as additional missing facts
-unless their own table rows independently fail.
+unless they independently fail.
 
 The paper strategy is immutable.  Never add, remove, merge, reorder, weaken,
 strengthen, or replace a mathematical alternative.  Correct the Lean topology
 only when it differs from the paper; never invent a new strategy to make Lean
 easier.
+
+There is one exception. When the Lean argument is kernel-checked, weakens no
+paper fact, closes the node the paper closes, and is better than the paper's
+argument, the Lean prevails. Register that deviation in
+`audits/erdos-64-red-team/lean-vs-paper-discrepancies.md`, giving the node,
+the paper argument with tex lines, the Lean argument with its declarations,
+and the reason it is at least as strong. An unregistered deviation is a
+defect.
 
 ## Enforce the proof-specific boundary
 
@@ -221,8 +275,10 @@ Repair those facts onto the canonical ledger before removing their illegal
 transport. Do not delete or generalize unrelated declarations in a transitive
 slice, and do not retain a dead shim for downstream code.
 
-Place reusable logic under `hypostructure/Hypostructure/Core`, the applicable
-`CT1`--`CT17` module, or a proof-agnostic `Hypostructure.Graph` module.  Generic
+Place reusable logic under `hypostructure/Hypostructure/Core` or a
+proof-agnostic `Hypostructure.Graph` module. Keep contract lemmas and the
+definitions they use in library modules that do not import the vocabulary.
+Keep rows and decisions in `Graph/Strategy` as thin adapters. Generic
 framework code must:
 
 - import no `HypostructureErdos64EG` module;
@@ -355,7 +411,8 @@ New or repaired rows may use only these Type A forms:
   `AtomicStrategy`, built with `factOnly`, a literal `FactManifest`, and a
   sealed executor.  The executor reads `inputs.current` and
   `inputs.get key`, and returns the exact heterogeneous `.cons ... .nil`
-  production bundle.  Execution is the resulting row's `.run`/
+  production bundle.  Each produced value is a contract lemma instantiated at
+  `inputs.current.object`, with its hypotheses taken from the `inputs.get` facts.  Execution is the resulting row's `.run`/
   `AtomicCT.run` on the literal incoming `ExactLedger`, with an explicit
   freshness proof.
 - An exhaustive binary paper alternative is a `noncomputable def` returning
@@ -408,17 +465,17 @@ Type A forms above.
 - Change the residual only through a generic atomic Strategy/CT whose
   `refines` proof certifies the restriction.  Equality is the ordinary choice
   for a fact-only step.
-- Use the applicable CT specification, capability, execution, certificate,
-  continuation, and work theorems.  Never duplicate its enumeration,
-  classification, certification, accounting, or terminal logic.
+- Use the applicable generic Core or Graph framework theorems.  Never
+  duplicate their enumeration, classification, certification, accounting, or
+  terminal logic.
 - Use sealed Strategy DAG combinators for topology and canonical ledger routing
   for readiness and closure.  Never write an EG function that transports or
   routes branch payloads.
 - Prove exactly the paper fact.  Do not smuggle it through an axiom, `sorry`,
   `admit`, an opaque assumption, a supplied callback, or a stronger surrogate.
-  Do not prove it first as a detached universal theorem and call that theorem
-  from the executor. The executor itself must derive the produced value from
-  the incoming residual facts.
+  Prove it as a contract lemma whose conclusion is exactly the paper
+  statement, and call that lemma from the executor. The executor supplies
+  every hypothesis from the incoming residual's facts.
 
 Framework ownership is necessary but not sufficient for a Graph Strategy
 adapter: inspect its body and use it only when its catalog entry and body show
@@ -426,7 +483,7 @@ that Core or a CT owns execution, data movement, residuals, ledgers, routing,
 and terminals.  Delete and replace a framework adapter that is itself ad hoc or
 noncompliant.
 
-## Validate and update the audit
+## Validate
 
 Compile the canonical API and all positive and negative enforcement fixtures
 before any row-specific target:
@@ -452,41 +509,60 @@ lake build Hypostructure.Core.Residual.ExactLedger \
 
 The negative fixtures must compile because their forbidden examples are inside
 `#guard_msgs`; deleting or weakening a guard is a failure.  Then compile each
-changed generic module and its row-specific generic fixture.  Finally build
-the narrowest EG target that elaborates the repaired row, followed by
-`HypostructureErdos64EG.Official.StructuralProgram` and the strict
-`Official/ClosureProbe.lean` when reachable.  Inspect the regenerated sealed
-report for the literal predecessor, outputs, terminal status, and routing.
+changed generic module and its row-specific generic fixture.  Finally build,
+from `proofs/hypostructure_erdos_64_eg`, the narrowest EG target that
+elaborates the repaired row, followed by the package default target
+`HypostructureErdos64EG`, whose root reduction
+`officialCounterexample_reaches_selectedLedgerBoundary` is in
+`Assembly/Final.lean`.  Inspect the composed branch for the literal
+predecessor, outputs, terminal status, and routing.
 
-A downstream failure does not justify weakening the repaired row. Correct the
-affected downstream label and node table cells from the observed failure, and
-do not repair that node unless requested.
+A downstream failure does not justify weakening the repaired row. Report it
+at its exact statement, and do not repair that node unless requested.
 
-Whenever a fact is implemented, repaired, weakened, strengthened, rerouted, or
-invalidated, update its paper-label row and every corresponding diagram-node
-row in the same change. Rewrite all affected cells from the current Lean
-types, bodies, exact ledger indices, call graph, and build results; do not only
-flip a status icon. Keep shared labels and shared nodes synchronized in both
-directions. Blank implementation cells remain blank when nothing implements
-the object.
-
-Do not add a changelog, progress entry, gap narrative, dated snapshot,
-executive-status paragraph, or per-row prose section to
-`Assembly_node_audit.md`. Live status belongs only in the two tables. Update
-the stable rubrics only when a column's meaning changes.
-
-After the code and both tables agree, run the table checker again. Report
+Report
 changed generic APIs, deleted ad hoc declarations, validation commands, and
 deliberately unfixed downstream failures in the final handoff.
 
+## Keep the web explorer current
+
+The explorer reads two data sources: the manuscript, and the hand-maintained
+node-status file `web/data/eg_node_audit.json`. Nothing regenerates that file
+from Lean, so every change to a node goes stale unless this step updates it.
+It is output only: never read it as evidence for this workflow.
+
+After the build, rewrite the `nodes` entry of every diagram node whose Lean
+producer, published fact, wiring, or build status changed. Take every field
+from the live Lean source and the build you just ran:
+
+- `producer`: the implementing declaration with its file and line;
+- `fidelity`: one of `FAITHFUL`, `FAITHFUL-TRIVIAL`, `STRONGER`, `WEAKER`,
+  `DIVERGENT`, `SURROGATE-TRIVIAL`, `PLUMBING`, `VACUOUS`, or `ABSENT`, judged
+  against the manuscript statement;
+- `fidelity_note`: the published `Holds` content compared with the paper;
+- `complete`: `YES` when the node's own producer kernel-checks without an
+  unfinished dependency, `YES <qualifier>` for partial, and otherwise `NO`;
+- `local`, `api`, `difference`, `on_probed_closed_arm`, and `blocked_by` when
+  it applies.
+
+Also update the top-level `updated_at` field. Edit only this data file; never
+edit web code. Then regenerate and test the explorer data from the manuscript
+and the refreshed file:
+
+```bash
+make web-data
+```
+
+Report the refreshed node entries and the `make web-data` result in the
+handoff.
+
 ## API catalog maintenance
 
-Run the non-mutating drift, canonical-boundary, and table-synchronization
-checks before starting and before finishing:
+Run the non-mutating drift and canonical-boundary check before starting and
+before finishing:
 
 ```bash
 python3 .agents/skills/eg-proof-expansion/scripts/api_catalog.py check --repo-root .
-python3 .agents/skills/eg-proof-expansion/scripts/audit_tables.py check --repo-root .
 ```
 
 Do not refresh the catalog to legalize a new proof-data operation. This skill

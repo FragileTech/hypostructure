@@ -42,93 +42,93 @@ noncomputable def selectedTypeBRoute8Continuation
     [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .highCentreNormalForm) known]
     [FactKeys.Has (K .cubicBaseline) known]
-    (bridgeMassFresh : K .typeBBridgeMass ∉ known := by simp [K_eq_iff])
-    (bridgeSublinearFresh : K .typeBBridgeSublinear ∉ known := by simp [K_eq_iff])
-    (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known := by simp [K_eq_iff])
-    (typeAExclusionFresh : K .typeAExclusion ∉ known := by simp [K_eq_iff])
+    (bridgeMassFresh : K .typeBBridgeMass ∉ known := by key_fresh)
+    (bridgeSublinearFresh : K .typeBBridgeSublinear ∉ known := by key_fresh)
+    (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known := by key_fresh)
+    (typeAExclusionFresh : K .typeAExclusion ∉ known := by key_fresh)
     (typeBBridgeReductionFresh : K .typeBBridgeReduction ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (piecesClassifiedFresh : K .route8PiecesClassified ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (sublinearLedgerFresh : K .typeBSublinearLedger ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (sublinearResidualFresh : K .typeBSublinearResidual ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (unifiedDeficitFresh : K .route8UnifiedDeficit ∉ known := by
-      simp [K_eq_iff])
-    (quotientFreeFresh : K .route8QuotientFree ∉ known := by simp [K_eq_iff])
+      key_fresh)
+    (quotientFreeFresh : K .route8QuotientFree ∉ known := by key_fresh)
     (quotientResidualFresh : K .route8QuotientResidual ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (unifiedCensusFresh : K .route8UnifiedEntryCensus ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (extractedCensusFresh : K .route8ExtractedEntryCensus ∉ known := by
-      simp [K_eq_iff])
-    (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known := by simp [K_eq_iff])
-    (peelingFresh : K .route8PeelingDescent ∉ known := by simp [K_eq_iff])
-    (stageFailedFresh : K .route8StageRateFailed ∉ known := by simp [K_eq_iff])
-    (demandLedgerFresh : K .route8DemandLedger ∉ known := by simp [K_eq_iff])
+      key_fresh)
+    (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known := by key_fresh)
+    (peelingFresh : K .route8PeelingDescent ∉ known := by key_fresh)
+    (stageFailedFresh : K .route8StageRateFailed ∉ known := by key_fresh)
+    (demandLedgerFresh : K .route8DemandLedger ∉ known := by key_fresh)
     (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (openBoundarySaturatedFresh : K .route8OpenBoundarySaturated ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (demandUnitCountFresh : K .route8DemandUnitCount ∉ known := by
-      simp [K_eq_iff])
-    (windowBlockersFresh : K .route8WindowBlockers ∉ known := by simp [K_eq_iff])
-    (windowShadowSignatureFresh : K .windowShadowSignature ∉ known := by simp [K_eq_iff])
-    (windowShadowTailFresh : K .windowShadowSingletonTail ∉ known := by simp [K_eq_iff])
-    (windowShadowCycleFresh : K .windowShadowHitCycle ∉ known := by simp [K_eq_iff])
-    (windowShadowExcludedFresh : K .windowShadowHitExcluded ∉ known := by simp [K_eq_iff])
+      key_fresh)
+    (windowBlockersFresh : K .route8WindowBlockers ∉ known := by key_fresh)
+    (windowShadowSignatureFresh : K .windowShadowSignature ∉ known := by key_fresh)
+    (windowShadowTailFresh : K .windowShadowSingletonTail ∉ known := by key_fresh)
+    (windowShadowCycleFresh : K .windowShadowHitCycle ∉ known := by key_fresh)
+    (windowShadowExcludedFresh : K .windowShadowHitExcluded ∉ known := by key_fresh)
     (demandResidualFresh : K .route8PeeledDemandResidual ∉ known := by
-      simp [K_eq_iff])
-    (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known := by simp [K_eq_iff])
+      key_fresh)
+    (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known := by key_fresh)
     (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (jointBalanceFresh : K .route8JointBalance ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
    :
     SelectedRouteEightBoundary selected := by
   let bridgeMass :=
     (bridgeFanMassRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by simp [K_eq_iff, bridgeMassFresh])
+      history (by key_fresh)
   let bridgeSublinear :=
     (typeBBridgeSublinearRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      bridgeMass (by simp [K_eq_iff, bridgeSublinearFresh])
+      bridgeMass (by key_fresh)
   let unifiedNegative :=
     (route8UnifiedNegativeRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      bridgeSublinear (by simp [K_eq_iff, unifiedNegativeFresh])
+      bridgeSublinear (by key_fresh)
   let typeAExcluded :=
     (typeAExclusionRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      unifiedNegative (by simp [K_eq_iff, typeAExclusionFresh])
+      unifiedNegative (by key_fresh)
   let typeBReduced :=
     (typeBBridgeReductionRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      typeAExcluded (by simp [K_eq_iff, typeBBridgeReductionFresh])
+      typeAExcluded (by key_fresh)
   let classified :=
     (route8PiecesClassifiedRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      typeBReduced (by simp [K_eq_iff, piecesClassifiedFresh])
+      typeBReduced (by key_fresh)
   let extractedCensus :=
     (route8ExtractedEntryCensusRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      classified (by simp [K_eq_iff, extractedCensusFresh])
+      classified (by key_fresh)
   match typeBSublinearDichotomy (data := spineData) extractedCensus
-      (by simp [K_eq_iff, sublinearLedgerFresh])
-      (by simp [K_eq_iff, sublinearResidualFresh]) with
+      (by key_fresh)
+      (by key_fresh) with
   | .right residualHistory =>
       exact Or.inl (residualHistory.get (K .typeBSublinearResidual)).down
   | .left sublinearHistory =>
@@ -136,10 +136,10 @@ noncomputable def selectedTypeBRoute8Continuation
         (route8UnifiedDeficitRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          sublinearHistory (by simp [K_eq_iff, unifiedDeficitFresh])
+          sublinearHistory (by key_fresh)
       match route8QuotientDichotomy (data := spineData) deficit
-          (by simp [K_eq_iff, quotientFreeFresh])
-          (by simp [K_eq_iff, quotientResidualFresh]) with
+          (by key_fresh)
+          (by key_fresh) with
       | .right residualHistory =>
           exact Or.inr (Or.inl
             (residualHistory.get (K .route8QuotientResidual)).down)
@@ -149,40 +149,40 @@ noncomputable def selectedTypeBRoute8Continuation
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
               (data := spineData)).run quotientFreeHistory
-                (by simp [K_eq_iff, unifiedCensusFresh])
+                (by key_fresh)
           let peeled := selectedLargeBudgetPressureCensus census
-            (peelingFresh := by simp [K_eq_iff, peelingFresh])
-            (unifiedTrueFresh := by simp [K_eq_iff, unifiedTrueFresh])
-            (stageFailedFresh := by simp [K_eq_iff, stageFailedFresh])
-            (terminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
-            (demandLedgerFresh := by simp [K_eq_iff, demandLedgerFresh])
+            (peelingFresh := by key_fresh)
+            (unifiedTrueFresh := by key_fresh)
+            (stageFailedFresh := by key_fresh)
+            (terminalFresh := by key_fresh)
+            (demandLedgerFresh := by key_fresh)
             (demandAbsorptionFresh := by
-              simp [K_eq_iff, demandAbsorptionFresh])
+              key_fresh)
             (openBoundarySaturatedFresh := by
-              simp [K_eq_iff, openBoundarySaturatedFresh])
+              key_fresh)
             (demandUnitCountFresh := by
-              simp [K_eq_iff, demandUnitCountFresh])
-            (windowBlockersFresh := by simp [K_eq_iff, windowBlockersFresh])
-            (windowShadowSignatureFresh := by simp [K_eq_iff, windowShadowSignatureFresh])
-            (windowShadowTailFresh := by simp [K_eq_iff, windowShadowTailFresh])
-            (windowShadowCycleFresh := by simp [K_eq_iff, windowShadowCycleFresh])
-            (windowShadowExcludedFresh := by simp [K_eq_iff, windowShadowExcludedFresh])
-            (demandResidualFresh := by simp [K_eq_iff, demandResidualFresh])
+              key_fresh)
+            (windowBlockersFresh := by key_fresh)
+            (windowShadowSignatureFresh := by key_fresh)
+            (windowShadowTailFresh := by key_fresh)
+            (windowShadowCycleFresh := by key_fresh)
+            (windowShadowExcludedFresh := by key_fresh)
+            (demandResidualFresh := by key_fresh)
           let unpaidExitFour :=
             selectedRouteEightUnpaidExitFourReduction peeled
-              (unifiedTrueFresh := by simp [K_eq_iff, unifiedTrueFresh])
-              (residualFresh := by simp [K_eq_iff, unpaidExitFourFresh])
-              (terminalFresh := by simp [K_eq_iff, unifiedTerminalFresh])
+              (unifiedTrueFresh := by key_fresh)
+              (residualFresh := by key_fresh)
+              (terminalFresh := by key_fresh)
           let visibleResidual :=
             selectedRouteEightVisibleResidual unpaidExitFour
-              (visibleFresh := by simp [K_eq_iff, unifiedVisibleFresh])
+              (visibleFresh := by key_fresh)
           let visibleOverload :=
             selectedRouteEightVisibleOverload visibleResidual
               (overloadFresh := by
-                simp [K_eq_iff, unifiedVisibleOverloadFresh])
+                key_fresh)
           let jointBalance :=
             selectedRouteEightJointBalance visibleOverload
-              (by simp [K_eq_iff, jointBalanceFresh])
+              (by key_fresh)
           exact Or.inr (Or.inr
             (jointBalance.get (K .route8JointBalance)).down)
 

@@ -33,7 +33,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     { Requires := [K .highCentreNormalForm, K .typeBFanHeavyCentre,
         K .sameCenterOpenPortCompatibility]
       Produces := [K .typeBFanLocalDichotomy]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>

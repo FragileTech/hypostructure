@@ -82,8 +82,8 @@ noncomputable def selectedRouteEightCensus
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       history (by simp [peelingFresh])
   match route8StageOutcomeDichotomy (data := spineData) descended
-      (by simp [K_eq_iff, unifiedTrueFresh])
-      (by simp [K_eq_iff, stageFailedFresh]) with
+      (by key_fresh)
+      (by key_fresh) with
   | .left trueStage =>
       -- `[124]`: construct Q5 locally and contradict the same entry's committed
       -- no-exit-`(4)` fact.
@@ -91,12 +91,12 @@ noncomputable def selectedRouteEightCensus
         (route8UnifiedTerminalNoGoRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          trueStage (by simp [K_eq_iff, terminalFresh])
+          trueStage (by key_fresh)
       exact (closed.get (K .route8TerminalNoGo)).down.elim
   | .right failedStage =>
       match route8DemandLedgerDichotomy (data := spineData) failedStage
-          (by simp [K_eq_iff, unifiedTrueFresh])
-          (by simp [K_eq_iff, demandLedgerFresh]) with
+          (by key_fresh)
+          (by key_fresh) with
       | .left trueEntry =>
           -- The demand-ledger L1 terminal is the same `[124]` obstruction;
           -- reuse its sole producer instead of duplicating the deletion proof.
@@ -104,49 +104,49 @@ noncomputable def selectedRouteEightCensus
             (route8UnifiedTerminalNoGoRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              trueEntry (by simp [K_eq_iff, terminalFresh])
+              trueEntry (by key_fresh)
           exact (closed.get (K .route8TerminalNoGo)).down.elim
       | .right demandHistory =>
           let absorbed :=
             (route8DemandAbsorptionRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              demandHistory (by simp [K_eq_iff, demandAbsorptionFresh])
+              demandHistory (by key_fresh)
           let saturated :=
             (route8OpenBoundarySaturatedRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              absorbed (by simp [K_eq_iff, openBoundarySaturatedFresh, demandUnitCountFresh])
+              absorbed (by key_fresh)
           let blocked :=
             (route8WindowBlockersRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              saturated (by simp [K_eq_iff, windowBlockersFresh])
+              saturated (by key_fresh)
           let shadowSignature :=
             (windowShadowSignatureRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              blocked (by simp [K_eq_iff, windowShadowSignatureFresh])
+              blocked (by key_fresh)
           let shadowTail :=
             (windowShadowSingletonTailRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              shadowSignature (by simp [K_eq_iff, windowShadowTailFresh])
+              shadowSignature (by key_fresh)
           let shadowCycle :=
             (windowShadowHitCycleRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              shadowTail (by simp [K_eq_iff, windowShadowCycleFresh])
+              shadowTail (by key_fresh)
           let shadowExcluded :=
             (windowShadowHitExcludedRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              shadowCycle (by simp [K_eq_iff, windowShadowExcludedFresh])
+              shadowCycle (by key_fresh)
           exact
             (route8PeeledDemandResidualRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              shadowExcluded (by simp [K_eq_iff, demandResidualFresh])
+              shadowExcluded (by key_fresh)
 
 /-- **Node `[123]`: exact large-budget descent.**
 
@@ -178,30 +178,30 @@ noncomputable def selectedLargeBudgetPressureCensus
     [FactKeys.Has (K .route8UnifiedEntryCensus) known]
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .typeAReceiverRouting) known]
-    (peelingFresh : K .route8PeelingDescent ∉ known := by simp [K_eq_iff])
+    (peelingFresh : K .route8PeelingDescent ∉ known := by key_fresh)
     (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known := by
-      simp [K_eq_iff])
-    (stageFailedFresh : K .route8StageRateFailed ∉ known := by simp [K_eq_iff])
-    (terminalFresh : K .route8TerminalNoGo ∉ known := by simp [K_eq_iff])
-    (demandLedgerFresh : K .route8DemandLedger ∉ known := by simp [K_eq_iff])
+      key_fresh)
+    (stageFailedFresh : K .route8StageRateFailed ∉ known := by key_fresh)
+    (terminalFresh : K .route8TerminalNoGo ∉ known := by key_fresh)
+    (demandLedgerFresh : K .route8DemandLedger ∉ known := by key_fresh)
     (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (openBoundarySaturatedFresh : K .route8OpenBoundarySaturated ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (demandUnitCountFresh : K .route8DemandUnitCount ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (windowBlockersFresh : K .route8WindowBlockers ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (windowShadowSignatureFresh : K .windowShadowSignature ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (windowShadowTailFresh : K .windowShadowSingletonTail ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (windowShadowCycleFresh : K .windowShadowHitCycle ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (windowShadowExcludedFresh : K .windowShadowHitExcluded ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (demandResidualFresh : K .route8PeeledDemandResidual ∉ known := by
-      simp [K_eq_iff]) :
+      key_fresh) :
     ExactLedger EGInput.{u} selected
       ([K .route8PeeledDemandResidual, K .windowShadowHitExcluded,
         K .windowShadowHitCycle, K .windowShadowSingletonTail, K .windowShadowSignature,
@@ -210,20 +210,20 @@ noncomputable def selectedLargeBudgetPressureCensus
         K .route8DemandAbsorption, K .route8DemandLedger,
         K .route8StageRateFailed, K .route8PeelingDescent] ++ known) :=
   selectedRouteEightCensus history
-    (by simp [K_eq_iff, peelingFresh])
-    (by simp [K_eq_iff, unifiedTrueFresh])
-    (by simp [K_eq_iff, stageFailedFresh])
-    (by simp [K_eq_iff, terminalFresh])
-    (by simp [K_eq_iff, demandLedgerFresh])
-    (by simp [K_eq_iff, demandAbsorptionFresh])
-    (by simp [K_eq_iff, openBoundarySaturatedFresh])
-    (by simp [K_eq_iff, demandUnitCountFresh])
-    (by simp [K_eq_iff, windowBlockersFresh])
-    (by simp [K_eq_iff, windowShadowSignatureFresh])
-    (by simp [K_eq_iff, windowShadowTailFresh])
-    (by simp [K_eq_iff, windowShadowCycleFresh])
-    (by simp [K_eq_iff, windowShadowExcludedFresh])
-    (by simp [K_eq_iff, demandResidualFresh])
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
 
 /-- **Nodes `[181]`--`[183]`: maximal-ledger exit-`(4)` reduction.**
 
@@ -242,17 +242,17 @@ noncomputable def selectedRouteEightUnpaidExitFourReduction
     [FactKeys.Has (K .route8ExtractedEntryCensus) known]
     [FactKeys.Has (K .selection) known]
     (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (residualFresh : K .route8UnpaidExitFourResidual ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (terminalFresh : K .route8TerminalNoGo ∉
         (K .route8UnifiedTrueTwoCarrierEntry :: known) := by
-      simp [K_eq_iff]) :
+      key_fresh) :
     ExactLedger EGInput.{u} selected
       (K .route8UnpaidExitFourResidual :: known) := by
   match route8UnpaidExitFourDichotomy (data := spineData) history
-      (by simp [K_eq_iff, unifiedTrueFresh])
-      (by simp [K_eq_iff, residualFresh]) with
+      (by key_fresh)
+      (by key_fresh) with
   | .left trueEntry =>
       -- This is literally the node `[124]` proposition, so its existing local
       -- deletion contradiction closes the arm without weakening the ledger.
@@ -260,7 +260,7 @@ noncomputable def selectedRouteEightUnpaidExitFourReduction
         (route8UnifiedTerminalNoGoRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          trueEntry (by simp [K_eq_iff, terminalFresh])
+          trueEntry (by key_fresh)
       exact (closed.get (K .route8TerminalNoGo)).down.elim
   | .right residualHistory =>
       exact residualHistory
@@ -280,13 +280,13 @@ noncomputable def selectedRouteEightVisibleResidual
     [FactKeys.Has (K .route8UnpaidExitFourResidual) known]
     [FactKeys.Has (K .route8UnifiedEntryCensus) known]
     (visibleFresh : K .route8UnifiedVisibleResidual ∉ known := by
-      simp [K_eq_iff]) :
+      key_fresh) :
     ExactLedger EGInput.{u} selected
       (K .route8UnifiedVisibleResidual :: known) :=
   (route8UnifiedVisibleResidualRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
     (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-    history (by simp [K_eq_iff, visibleFresh])
+    history (by key_fresh)
 
 /-- **Node `[185]`: visible-first prefix exhaustion.**
 
@@ -303,13 +303,13 @@ noncomputable def selectedRouteEightVisibleOverload
     [FactKeys.Has (K .route8UnifiedVisibleResidual) known]
     [FactKeys.Has (K .route8PeeledDemandResidual) known]
     (overloadFresh : K .route8UnifiedVisibleOverload ∉ known := by
-      simp [K_eq_iff]) :
+      key_fresh) :
     ExactLedger EGInput.{u} selected
       ([K .route8UnifiedVisibleOverload] ++ known) :=
   (route8UnifiedVisibleOverloadRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
     (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-    history (by simp [K_eq_iff, overloadFresh])
+    history (by key_fresh)
 
 /-- **Node `[186]`: simultaneous balance of the literal `[185]` residual.**
 
@@ -330,6 +330,6 @@ noncomputable def selectedRouteEightJointBalance
   (route8JointBalanceRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
     (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-    history (by simpa [K_eq_iff] using jointFresh)
+    history (by key_fresh)
 
 end HypostructureErdos64EG

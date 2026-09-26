@@ -38,7 +38,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     `Hypostructure.Graph.Strategy.Spine.portPowerReturn
     { Requires := [K .typeASaturatedReceiver, K .contractionCritical]
       Produces := [K .portPowerReturn]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>

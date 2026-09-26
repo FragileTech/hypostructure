@@ -162,8 +162,8 @@ Assess the assigned deliverable against its existing contract. Each objection mu
 
 Use the maintained controller prompt at
 `tools/methodology_gate/policy/executor-prompt.md`, the shared `workflow.json`,
-and `references/record-format.md`. They implement the stage contracts described above.
-The reviewer prompt is independently maintained beside them and checks the exact
+and `tools/methodology_gate/policy/references/record-format.md`. They implement the stage contracts described above.
+The reviewer prompt (`tools/methodology_gate/policy/reviewer-prompt.md`) is independently maintained beside them and checks the exact
 conditional payoff, strongest alternatives and actual advancement. Inventory, selection, construction and review each use their assigned
 contract. Every stage receives its own deliverable and review; no failed-stage
 label waives construction authorization.

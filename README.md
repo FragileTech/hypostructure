@@ -138,42 +138,44 @@ make framework-build   # build the Hypostructure package
 make erdos-build       # build the Erdős–Gyárfás application
 (cd proofs/hypostructure_erdos_64_eg && lake build HypostructureErdos64EG.Assembly.Final) # six-outcome reduction
 make erdos             # attempt the fully closed conjecture theorem (not yet available)
-make lint              # total-execution, quarantine, and API-catalog gates
+make lint              # total-execution, quarantine, API-catalog, and Type II manuscript gates
+make lean-audit        # kernel axiom audit of the Erdős–Gyárfás assembly
 make web-test          # extractor assertions, typecheck, frontend suite
 ```
 
+The extractor assertions (run by `make web-data` and `make web-test`) need
+`pytest`, a project dependency: after `uv sync`, pass
+`PYTHON=.venv/bin/python` to those targets.
+
 ## Implementation status
 
-This is work in progress. The Erdős–Gyárfás reduction status below reflects
-the full Lean root build and transitive axiom check on 2026-09-24. Other
-component summaries should be checked against the live source and audit tables.
+This is work in progress. The Erdős–Gyárfás row reflects the full package build
+and the kernel axiom audit; other rows should be checked against the live
+source and builds.
 
 | Component | Status                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
 | --- |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Manuscripts | Erdős–Gyárfás and the three Navier–Stokes papers are complete drafts with chapter-1 diagrams, ledgers and audit tables; the methodology papers are the reference.                                                                                                                                                                                                                                                                                                                   |
 | Proof explorer | Both proofs published, all features above live. Referee mode's Lean and review dimensions are supplied for the Erdős–Gyárfás proof from the checked-in node audit (`web/data/eg_node_audit.json`, folded into the site data by `web/tools/lean_review.py`); the Navier–Stokes document carries no such side-car yet.                                                                                                                     |
 | Framework core | Builds (`lake build Hypostructure`). `ExactLedger`, `AtomicCT`, problem registration and the fixtures are live and are the only API; ongoing deprecation of stale code — the quarantine lint gate (`make lint`) currently fails, flagging several previously-quarantined modules back in the build plus a handful of parallel ledger-shaped APIs still to retire. Implementing the high level API of problem-independent proof moves is pending.                                                                                                                                                                                                                                                           |
-| Erdős–Gyárfás in Lean | The full `HypostructureErdos64EG.Assembly.Final` root built successfully (9022 jobs). Its theorem proves that any counterexample to the finite-graph statement yields a selected minimal counterexample in one of six outcomes: [20a], [144a], [172a], [182], [186], or the explicit other-outcomes disjunction [187]. These are the only returned cases in the formal reduction. Excluding all six for selected minimal counterexamples would prove the conjecture; their exclusion is open. The theorem uses the project’s existing Hegde–Sandeep–Shashank external axiom and generated `native_decide` axioms. See [`Assembly_node_audit.md`](Assembly_node_audit.md) and the [exact boundary certification](audits/erdos-64-red-team/reduction-certification/exact-current-boundary.md). |
+| Erdős–Gyárfás in Lean | `lake build HypostructureErdos64EG`, whose root imports `Assembly.Final`, builds (9029 jobs). The root theorem `officialCounterexample_reaches_selectedLedgerBoundary` proves that any counterexample to the finite-graph statement yields a selected minimal counterexample in one of six outcomes: [20a], [144a], [172a], [182], [186], or the explicit other-outcomes disjunction [187]. These are the only returned cases in the formal reduction. Excluding all six for selected minimal counterexamples would prove the conjecture; their exclusion is open, so `make erdos` (the closed `erdos_64` theorem) does not yet succeed. The theorem depends on `propext`, `Classical.choice`, `Quot.sound`, the project’s existing Hegde–Sandeep–Shashank external axiom `p13Free_hasPowerOfTwoCycle`, and generated `native_decide` axioms; no `sorryAx`. The kernel axiom audit (`make lean-audit`, `web/data/eg_axiom_audit.json`) finds all 153 assembly declarations clean with no frontier stubs. The API-catalog gate (`api_catalog.py check`) reports the catalog is current. See the [exact boundary certification](audits/erdos-64-red-team/reduction-certification/exact-current-boundary.md). |
 | Navier–Stokes in Lean | Not started; queued after the Erdős–Gyárfás application, in manuscript dependency order.                                                                                                                                                                                                                                                                                                                                                                                            |
 
-The authoritative per-fact and per-node record is
-[`Assembly_node_audit.md`](Assembly_node_audit.md): one row per labeled manuscript
-result and one per diagram node, each cell updated only from live Lean types, bodies,
-and builds. Read it, not this table, for what is done today.
+Live Lean types, bodies, and builds are the only record of what is done today;
+this table is a summary.
 
 ## Repository layout
 
 ```
 to_formalize/                      manuscripts (methodology, Erdős–Gyárfás, Navier–Stokes)
-web/                               proof explorer: tools/ (extractor), frontend/ (site)
+web/                               proof explorer: tools/ (extractor, Lean audits), data/ (audit side-cars), frontend/ (site)
 hypostructure/                     Lean 4 framework
   Hypostructure/Core/                domain-neutral kernel
   Hypostructure/Graph/               finite-graph instantiation and reusable rows
   Hypostructure/Fixtures/            positive and negative sealing fixtures
   scripts/                           the gates
 proofs/hypostructure_erdos_64_eg/  the Erdős–Gyárfás application
-Assembly_node_audit.md             implementation status, per fact and per node
-audits/erdos-64-red-team/          live red-team reports, summary, and coverage ledger
+audits/erdos-64-red-team/          red-team obstruction report, checks, reduction certification
 tools/methodology_gate/           controlled mathematical reasoning benchmark
 ```
 

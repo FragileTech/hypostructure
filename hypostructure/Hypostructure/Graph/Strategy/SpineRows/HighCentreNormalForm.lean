@@ -31,7 +31,7 @@ variable [FactSystem (Input BranchState Presentation presentation data)]
     `Hypostructure.Graph.Strategy.Spine.highCentreNormalForm
     { Requires := [K .selection, K .tightEndpoint]
       Produces := [K .highCentreNormalForm]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>

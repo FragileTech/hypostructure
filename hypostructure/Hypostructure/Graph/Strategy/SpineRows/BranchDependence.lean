@@ -36,7 +36,7 @@ appends exactly that fact before node `[36]` tests the same certificate. -/
   exact
     factOnly `Hypostructure.Graph.Strategy.Spine.branchDependence
       (rowManifest (K .curvatureRankDrop) (K .branchDependence)
-        (by simp [K_eq_iff]))
+        (by key_fresh))
       (fun inputs =>
         let inherited := (inputs.get (K .curvatureRankDrop)).down
         .cons (key := K .branchDependence)

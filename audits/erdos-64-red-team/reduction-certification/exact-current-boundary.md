@@ -9,7 +9,7 @@ neither excludes an endpoint.
 | Endpoint | Literal producer | Exposed facts |
 | --- | --- | --- |
 | [20a] | `selectedSparseSurplusExitContinuation`, followed by `selectedSparseTargetDefectStructureContinuation` on the strict left arm of [20] | `sparseTargetDefectResidual`, `sparseTargetDefectStructure`, `sparsePairExit`, `surplusAbove` |
-| [144a] | `selectedBottleneckDischarge` on one of the three strict token-class audits | `typeBHandoff`, `typeBFanEntry`, `bottleneckRouting`, `homogeneousBottleneckPattern`, `sparsePressureOverload`, `capacityTokenLedger`, `surplusAbove`, `sparseSurplusSurvivor` |
+| [144a] | `selectedBottleneckDischarge` on the caps-fail arm of `homogeneousBottleneckDichotomy` ([144]), after the audit row `homogeneousBottleneckAuditRow` at any of the three strict token classes; `Node144aOutcome` is read from the routed ledger | `typeBHandoff`, `typeBFanEntry`, `bottleneckRouting`, `homogeneousBottleneckPattern`, `sparsePressureOverload`, `capacityTokenLedger`, `surplusAbove`, `sparseSurplusSurvivor` |
 | [172a] | blocked barrier failure after the negative [170] decision | `blockedBarrierOverlap` at its previously proved strength |
 | [182] | first uncovered pair-system implication | `pairConditionalFactorizationResidual` at its previously proved strength |
 | [186] | visible-entry route-8 balance | `route8JointBalance` at its previously proved strength |
@@ -43,8 +43,11 @@ contractionCritical, gadgetClosure, relabelingDensityCap,
 cubicBaseline, selection
 ```
 
-The exact [144a] outgoing ledger is
-`[typeBFanEntry, bottleneckRouting, typeBHandoff] ++ known`.
+The exact ledger returned by `selectedBottleneckDischarge` is
+`[typeBFanEntry, bottleneckRouting, typeBHandoff] ++ known`;
+`Assembly.Internal.strictSurplusDependent` reads the eight `Node144aOutcome`
+facts from that same ledger with `.get … .down`. No Type B certificate core
+runs on this endpoint.
 `selectedBottleneckDischarge` requires these keys in `known`:
 
 ```text
@@ -54,7 +57,7 @@ baselineSpineDemand, sparseSlackSurplus, surplusAbove,
 activeSurplusDemands, sparsePortActivation, activeSurplusFamily,
 cubicBaseline, capacityTokenLedger, canonicalPairLedger,
 canonicalBlockerRoute, dependentPairFamily, sparseUpperEnvelope,
-maximalPacking, selection, returnAvoidance, tightEndpoint,
+maximalPacking, selection, bridgeless, returnAvoidance, tightEndpoint,
 slackIndependent, highCentreNormalForm, localAlgebra,
 degreeProfileFibres, targetCompleteContextUniversality,
 replacementExclusion, exactResponseProfile,
@@ -79,8 +82,8 @@ key and `typeBFanEntry`.
 
 ## Kernel verification
 
-`lake build HypostructureErdos64EG.Assembly.Final` completed successfully
-with 9022 jobs. Both `selectedCounterexample_reaches_exactBoundary` and
+`lake build HypostructureErdos64EG` (in `proofs/hypostructure_erdos_64_eg`)
+completed successfully with 9029 jobs. Both `selectedCounterexample_reaches_exactBoundary` and
 `officialCounterexample_reaches_selectedLedgerBoundary` are declarations in
 the compiled `Assembly.Final` owner. Their `#print axioms` results agree:
 `propext`, `Classical.choice`, `Quot.sound`, generated `native_decide` axioms,

@@ -47,7 +47,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     { Requires := [K .noProperBaseline]
       Produces := [K .tightEndpoint, K .slackIndependent]
       requiresUnique := by simp
-      producesUnique := by simp [K_eq_iff]
+      producesUnique := by key_fresh
       producesNonempty := by simp }
     (fun inputs =>
       let object := inputs.current.object

@@ -1,9 +1,10 @@
-import Hypostructure.Graph.Strategy.ColdCorridorRows
+import Hypostructure.Graph.Strategy.ColdCorridorRows.Basic
 import Hypostructure.Graph.Strategy.EntropyClosure
 import Hypostructure.Graph.Strategy.SpineRows.BoundaryDemand
 import Hypostructure.Graph.Strategy.SpineRows.BranchDependence
 import Hypostructure.Graph.Strategy.SpineRows.CurvatureRankDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.CurvatureTargetRank
+import Hypostructure.Graph.Strategy.SpineRows.HotColdPartition
 import Hypostructure.Graph.Strategy.SpineRows.RemainderNormalization
 import Hypostructure.Graph.Strategy.SpineRows.RemainderRelabelingEntropy
 import Hypostructure.Graph.Strategy.SpineRows.SeparatedTesters
@@ -29,74 +30,85 @@ set_option maxHeartbeats 8000000 in
 noncomputable def Assembly.Internal.nearCubicBelowRate
     {selected : EGInput.{u}}
     (belowHistory : ExactLedger EGInput.{u} selected
-      [K .route8Rate, K .denseDeficiencyBelow, K .hotColdPartition, K .densePackingOverflow,
+      [K .route8Rate, K .denseDeficiencyBelow, K .densePackingOverflow,
        K .windowPackageUnrealized, K .skeletonDominates, K .windowPackageSeparated,
        K .barrierEnumeration, K .sparseSurplusSurvivor, K .surplusAtOrBelow, K .localAlgebra,
-       K .maximalPacking, K .uncompressible, K .replacementExclusion,
+       K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion,
        K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
        K .tightEndpoint, K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
        K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
        K .selection]) :
     SelectedNearCubicSurvivorBoundary selected := by
+  -- `[161]`: both `[160]` rates hold; continue at `[25]` with the deficiency
+  -- cap in place of `[24]`.  No `[22]` decision is run on this arm.  The
+  -- spine continuation consumes `def:cold-window-ledger`'s canonical
+  -- hot/cold partition of the fixed packing (`[54]`'s entropy-cap bound and
+  -- the `[173]`--`[177]` corridor charge), so that definitional fact is
+  -- appended here, on this arm's own ledger.
+  let partitioned :=
+    (hotColdPartitionRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      belowHistory (by key_fresh)
   let remainder :=
     (remainderNormalizationRow (BranchState := BranchState)
         (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
         (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-        belowHistory (by simp [K_eq_iff])
+        partitioned (by key_fresh)
   let relabelingEntropy :=
     (remainderRelabelingEntropyRow (BranchState := BranchState)
         (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
         (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-        remainder (by simp [K_eq_iff])
+        remainder (by key_fresh)
   let boundary :=
     (boundaryDemandRow (BranchState := BranchState)
         (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
         (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-        relabelingEntropy (by simp [K_eq_iff])
+        relabelingEntropy (by key_fresh)
   let stubSupply :=
     (stubSupplyRow (BranchState := BranchState)
         (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
         (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-        boundary (by simp [K_eq_iff])
+        boundary (by key_fresh)
   let wedge :=
     (wedgeSupplyRow (BranchState := BranchState)
         (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
         (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-        stubSupply (by simp [K_eq_iff])
+        stubSupply (by key_fresh)
   -- `[31]`: the curvature target-rank of the remainder and `lem:target-rank-circuit`.
   let rank :=
     (curvatureTargetRankRow (BranchState := BranchState)
         (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
         (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-        wedge (by simp [K_eq_iff])
+        wedge (by key_fresh)
   let circuit :=
     (targetRankCircuitRow (BranchState := BranchState)
         (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
         (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-        rank (by simp [K_eq_iff])
+        rank (by key_fresh)
   -- `[32]`: the exact finite rank split at the canonical maximal packing.
   match curvatureRankDichotomy (data := spineData) circuit
-      (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+      (by key_fresh) (by key_fresh) with
   | .left dropHistory =>
       -- `[33]`--`[46]`: Branch D, closed.
       let dependence :=
         (branchDependenceRow (BranchState := BranchState)
         (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
         (presentation := erdosReceiverLoadProfile) spineData).run
-        dropHistory (by simp [K_eq_iff])
+        dropHistory (by key_fresh)
       -- `[35]`: retain the Branch-D state and append only
       -- `lem:separated-testers` to the same literal ledger.
       let tested :=
         (separatedTestersRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) spineData).run
-          dependence (by simp [K_eq_iff])
+          dependence (by key_fresh)
       exact (selectedRankDropCloses tested
-        (by simp [K_eq_iff]) (by simp [K_eq_iff])
-        (by simp [K_eq_iff]) (by simp [K_eq_iff])
-        (by simp [K_eq_iff]) (by simp [K_eq_iff])
-        (by simp [K_eq_iff]) (by simp [K_eq_iff])
-        (by simp [K_eq_iff])).elim
+        (by key_fresh) (by key_fresh)
+        (by key_fresh) (by key_fresh)
+        (by key_fresh) (by key_fresh)
+        (by key_fresh) (by key_fresh)
+        (by key_fresh)).elim
   | .right fullRankHistory =>
       exact Assembly.Internal.nearCubicBelowRateFullRank fullRankHistory
 

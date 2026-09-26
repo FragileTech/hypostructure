@@ -1,4 +1,4 @@
-import Hypostructure.Graph.Strategy.ColdCorridorRows
+import Hypostructure.Graph.Strategy.ColdCorridorRows.Basic
 import Hypostructure.Graph.Strategy.EntropyClosure
 import Hypostructure.Graph.Strategy.SpineRows.DenseNetDeficiencyCap
 import Hypostructure.Graph.Strategy.SpineRows.EntropyCapDichotomy
@@ -25,11 +25,11 @@ noncomputable def Assembly.Internal.nearCubicBelowRateHighEntropy
       [K .remainderEntropyHigh, K .forcedCurvatureCost, K .curvatureFullRank,
        K .targetRankCircuit, K .exactResponseProfile, K .admissibleRankQuotient,
        K .curvatureTargetRank, K .wedgeSupply, K .stubSupply, K .boundaryDemand,
-       K .remainderRelabelingEntropy, K .remainderNormalized, K .route8Rate,
-       K .denseDeficiencyBelow, K .hotColdPartition, K .densePackingOverflow,
+       K .remainderRelabelingEntropy, K .remainderNormalized, K .hotColdPartition,
+       K .route8Rate, K .denseDeficiencyBelow, K .densePackingOverflow,
        K .windowPackageUnrealized, K .skeletonDominates, K .windowPackageSeparated,
        K .barrierEnumeration, K .sparseSurplusSurvivor, K .surplusAtOrBelow, K .localAlgebra,
-       K .maximalPacking, K .uncompressible, K .replacementExclusion,
+       K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion,
        K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
        K .tightEndpoint, K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
        K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
@@ -41,9 +41,9 @@ noncomputable def Assembly.Internal.nearCubicBelowRateHighEntropy
     (entropyPackageRow (BranchState := BranchState)
     (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
     (presentation := erdosReceiverLoadProfile) spineData).run
-    highHistory (by simp [K_eq_iff])
+    highHistory (by key_fresh)
   match entropyCapDichotomy (data := spineData) package
-      (by simp [K_eq_iff]) (by simp [K_eq_iff]) with
+      (by key_fresh) (by key_fresh) with
   | .left activeHistory =>
       -- `[54]`: the sealed row derives the exact opposite budget bound on
       -- both alternatives stored in `K .hotColdPartition`; Core closes the
@@ -54,15 +54,15 @@ noncomputable def Assembly.Internal.nearCubicBelowRateHighEntropy
           (presentation := erdosReceiverLoadProfile) (data := spineData)).runAndCloseIncompatible
             activeHistory
             (K .entropyCapActive) (K .entropyCapBound)
-            (by simp [K_eq_iff])
-            (by simp [K_eq_iff])
+            (by key_fresh)
+            (by key_fresh)
       exact (closedHistory.elimClosed (by infer_instance)).elim
   | .right largeHistory =>
       let netCap :=
         (denseNetDeficiencyCapRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          largeHistory (by simp [K_eq_iff])
+          largeHistory (by key_fresh)
       exact Or.inl (selectedNetChargeContinuation netCap)
 
 end HypostructureErdos64EG

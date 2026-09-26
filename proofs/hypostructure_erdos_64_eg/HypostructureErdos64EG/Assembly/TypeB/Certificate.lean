@@ -28,51 +28,51 @@ noncomputable def selectedTypeBCertificateBoundary
     [FactKeys.Has (K .remainderNormalized) known]
     [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .highCentreNormalForm) known]
-    (markedFresh : K .fanCertificateMarked ∉ known := by simp [K_eq_iff])
-    (residualFresh : K .fanCertificateResidual ∉ known := by simp [K_eq_iff])
+    (markedFresh : K .fanCertificateMarked ∉ known := by key_fresh)
+    (residualFresh : K .fanCertificateResidual ∉ known := by key_fresh)
     (certificateMassFresh : K .fanCertificateResidualMass ∉ known := by
-      simp [K_eq_iff])
-    (cycleFresh : K .typeBDirectCycle ∉ known := by simp [K_eq_iff])
-    (freeFresh : K .typeBDirectCycleFree ∉ known := by simp [K_eq_iff])
-    (choiceFresh : K .typeBB2Choice ∉ known := by simp [K_eq_iff])
-    (obstructionFresh : K .typeBOverlapObstruction ∉ known := by simp [K_eq_iff])
+      key_fresh)
+    (cycleFresh : K .typeBDirectCycle ∉ known := by key_fresh)
+    (freeFresh : K .typeBDirectCycleFree ∉ known := by key_fresh)
+    (choiceFresh : K .typeBB2Choice ∉ known := by key_fresh)
+    (obstructionFresh : K .typeBOverlapObstruction ∉ known := by key_fresh)
     (globalLocalBridgeFresh : K .typeBGlobalLocalBridge ∉ known := by
-      simp [K_eq_iff])
-    (hybridFresh : K .typeBHybridEntry ∉ known := by simp [K_eq_iff])
-    (ledgerFresh : K .typeBDisjointLedger ∉ known := by simp [K_eq_iff])
-    (excludedFresh : K .typeBExcluded ∉ known := by simp [K_eq_iff])
+      key_fresh)
+    (hybridFresh : K .typeBHybridEntry ∉ known := by key_fresh)
+    (ledgerFresh : K .typeBDisjointLedger ∉ known := by key_fresh)
+    (excludedFresh : K .typeBExcluded ∉ known := by key_fresh)
     (exclusionResidualFresh : K .typeBExclusionResidual ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (exclusionMassFresh : K .typeBExclusionResidualMass ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (obstructionMassFresh : K .typeBOverlapObstructionMass ∉ known := by
-      simp [K_eq_iff])
-    (fanClosedFresh : K .fanClosedPort ∉ known := by simp [K_eq_iff])
+      key_fresh)
+    (fanClosedFresh : K .fanClosedPort ∉ known := by key_fresh)
     (compatibleClosureFresh : K .compatiblePairFanClosure ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (fanClosedRoutingFresh : K .fanClosedPortTypeBRouting ∉ known := by
-      simp [K_eq_iff])
+      key_fresh)
     (compatibleRoutingFresh : K .compatiblePairTypeBRouting ∉ known := by
-      simp [K_eq_iff]) :
+      key_fresh) :
     Assembly.Internal.TypeBCertificateBoundary selected
       ([K .compatiblePairTypeBRouting, K .fanClosedPortTypeBRouting,
         K .compatiblePairFanClosure, K .fanClosedPort] ++ known) := by
   let routed := Assembly.Internal.selectedTypeBPortRoutingPrefix history fanClosedFresh
     compatibleClosureFresh fanClosedRoutingFresh compatibleRoutingFresh
   exact Assembly.Internal.selectedTypeBCertificateBoundaryAfterPortRouting routed
-    (by simp [K_eq_iff, markedFresh])
-    (by simp [K_eq_iff, residualFresh])
-    (by simp [K_eq_iff, certificateMassFresh])
-    (by simp [K_eq_iff, cycleFresh])
-    (by simp [K_eq_iff, freeFresh])
-    (by simp [K_eq_iff, choiceFresh])
-    (by simp [K_eq_iff, obstructionFresh])
-    (by simp [K_eq_iff, hybridFresh])
-    (by simp [K_eq_iff, ledgerFresh])
-    (by simp [K_eq_iff, excludedFresh])
-    (by simp [K_eq_iff, exclusionResidualFresh])
-    (by simp [K_eq_iff, exclusionMassFresh])
-    (by simp [K_eq_iff, obstructionMassFresh])
-    (globalLocalBridgeFresh := by simp [K_eq_iff, globalLocalBridgeFresh])
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (by key_fresh)
+    (globalLocalBridgeFresh := by key_fresh)
 
 end HypostructureErdos64EG

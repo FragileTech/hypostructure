@@ -1,2 +1,0 @@
-import HypostructureErdos64EG.Problem
-#print axioms HypostructureErdos64EG.spineData

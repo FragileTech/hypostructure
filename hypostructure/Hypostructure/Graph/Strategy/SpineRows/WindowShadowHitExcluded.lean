@@ -15,7 +15,7 @@ graph's avoidance fact. No path or target fact comes from another branch. -/
   factOnly `Hypostructure.Graph.Strategy.Spine.windowShadowHitExcluded
     { Requires := [K .selection, K .windowShadowHitCycle]
       Produces := [K .windowShadowHitExcluded]
-      requiresUnique := by simp [K_eq_iff]
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>

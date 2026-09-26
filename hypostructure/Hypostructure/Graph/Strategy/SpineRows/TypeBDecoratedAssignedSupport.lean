@@ -33,8 +33,8 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     { Requires := [K .selection, K .uncompressible, K .remainderNormalized,
         K .typeAExitSevenHandoff]
       Produces := [K .typeBDecoratedAssignedSupport, K .typeBFanEntry]
-      requiresUnique := by simp [K_eq_iff]
-      producesUnique := by simp [K_eq_iff]
+      requiresUnique := by key_fresh
+      producesUnique := by key_fresh
       producesNonempty := by simp }
     (fun inputs =>
       let handoff := (inputs.get (K .typeAExitSevenHandoff)).down
