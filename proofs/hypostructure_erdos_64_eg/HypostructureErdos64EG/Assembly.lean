@@ -32,13 +32,10 @@ import HypostructureErdos64EG.Assembly.TypeA.LowSurplusContinuation
 import HypostructureErdos64EG.Assembly.TypeA.SilentExitChain
 import HypostructureErdos64EG.Assembly.TypeA.VisibleExitChain
 import HypostructureErdos64EG.Assembly.TypeA.VisibleExitFour
-import HypostructureErdos64EG.Assembly.TypeB.Certificate
-import HypostructureErdos64EG.Assembly.TypeB.ChargedRoute
 import HypostructureErdos64EG.Assembly.TypeB.Continuation
 import HypostructureErdos64EG.Assembly.TypeB.DecoratedContinuation
 import HypostructureErdos64EG.Assembly.TypeB.HighSurplusContinuation
 import HypostructureErdos64EG.Assembly.TypeB.Internal.Certificate
-import HypostructureErdos64EG.Assembly.TypeB.NearCubicCertificate
 
 /-!
 # Erdős–Gyárfás assembly

@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.TypeB.Certificate
 
 /-! Independently compiled spine row declarations. -/
 
@@ -14,99 +15,36 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
-variable [FactSystem (Input BranchState Presentation presentation data)]
-
-/-! ## Node `[72]`, first half: is a direct fan-window cycle present?
-
-`lem:typeB-direct-fan-window-cycles` and `lem:typeB-two-window-cycles`.  Before
-any incidence credit is counted, the four direct configurations are removed
-structurally: a same-window closed neighbour whose label gap closes a cycle, two
-closed neighbours whose wedge through the centre closes one, two whose closed
-labels interlace, and two with incidences to distinct packed windows.  Each
-display *builds* a cycle whose length the manuscript's arithmetic side condition
-declares accepted, so the arm that takes the configuration is uninhabited on a
-branch whose object avoids those lengths -- which is why this row's yes arm
-closes and its no arm carries `def:direct-cycle-free-closed-pair` forward.
-
-Nothing here writes `{2, 6}` or `{0, 4, 12}`.  Each side condition is
-`data.LengthOK` of the length of its own cycle; at the registered target and
-window order those readings are exactly the manuscript's sets.
-
-The split is `Classical.em` on the literal carrier's configuration proposition.
-The yes arm retains an actual centre and direct configuration; the no arm
-records their absence at every applicable centre.  This is a `Decision`: the
-arm not taken is absent from the taken branch's key index. -/
-omit [FactSystem (Input BranchState Presentation presentation data)] in
+/-- **Nodes `[72]`/`[81]`: local fan-window ledger complete?**  The yes key is a
+direct fan-window configuration at some assigned centre
+(`lem:typeB-direct-fan-window-cycles`, `lem:typeB-two-window-cycles`); the no
+key is its exact negation, `def:direct-cycle-free-closed-pair` at every
+assigned centre. -/
 noncomputable def directCycleDichotomy
     {current : Input BranchState Presentation presentation data}
-    {known : @FactKeys (Input BranchState Presentation presentation data) _
-      (instFactSystem (BranchState := BranchState)
-        (Presentation := Presentation) (presentation := presentation)
-        (data := data))}
-    (previous :
-      @ExactLedger (Input BranchState Presentation presentation data) _
-        (instFactSystem (BranchState := BranchState)
-          (Presentation := Presentation) (presentation := presentation)
-          (data := data)) current known)
-    [@FactKeys.Has (Input BranchState Presentation presentation data) _
-      (instFactSystem (BranchState := BranchState)
-        (Presentation := Presentation) (presentation := presentation)
-        (data := data)) (K .fanCertificateMarked) known]
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger (Input BranchState Presentation presentation data)
+      current known)
     (cycleFresh : K .typeBDirectCycle ∉ known)
     (freeFresh : K .typeBDirectCycleFree ∉ known) :
-    @Decision (Input BranchState Presentation presentation data) _
-      (instFactSystem (BranchState := BranchState)
-        (Presentation := Presentation) (presentation := presentation)
-        (data := data)) current known
-      (K .typeBDirectCycle) (K .typeBDirectCycleFree) previous :=
-  letI : FactSystem (Input BranchState Presentation presentation data) :=
-    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
-      (presentation := presentation) (data := data)
+    Decision (K .typeBDirectCycle) (K .typeBDirectCycleFree) previous :=
   Decision.run previous (K .typeBDirectCycle) (K .typeBDirectCycleFree)
     `Hypostructure.Graph.Strategy.Spine.directCycleDichotomy
-    (by
-      classical
-      apply Classical.choice
-      rcases (ExactLedger.get previous (K .fanCertificateMarked)).down with
-        support | absorbed | sameToken
-      · obtain ⟨packing, valid, maximal, component, present, centres, assigned,
-          _marked⟩ := support
-        by_cases configuration :
-            ∃ centre ∈ centres,
-              Graph.IsHighCentre current.object data.threshold centre ∧
-                Graph.TypeBDirectCycle.DirectCycleConfiguration current.object
-                  data.windowOrder data.LengthOK packing centre
-        · exact ⟨.inl ⟨.inl ⟨packing, valid, maximal, component, present, centres,
-              assigned, configuration⟩⟩⟩
-        · exact ⟨.inr ⟨.inl ⟨packing, valid, maximal, component, present, centres,
-              assigned, fun centre member high present =>
-                configuration ⟨centre, member, high, present⟩⟩⟩⟩
-      · by_cases configuration :
-            ∃ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-                  (Graph.MinimumDegreeAtLeast data.threshold)
-                  (Graph.HasCycleWithLength data.LengthOK) current.object)
-                (centre : current.object.Vertex),
-              AbsorbedGermFanEnvelopeWitness data.toParameters current.object germ centre ∧
-                Graph.TypeBDirectCycle.DirectCycleConfiguration current.object
-                  data.windowOrder data.LengthOK
-                  (canonicalWindowPacking data.toParameters current.object) centre
-        · exact ⟨.inl ⟨Or.inr (Or.inl ⟨absorbed, configuration⟩)⟩⟩
-        · exact ⟨.inr ⟨Or.inr (Or.inl ⟨absorbed,
-            fun germ centre witness present =>
-              configuration ⟨germ, centre, witness, present⟩⟩)⟩⟩
-      · obtain ⟨packing, valid, maximal, core, envelope, coreEq, nonempty,
-          marked⟩ := sameToken
-        by_cases configuration :
-            ∃ centre ∈ envelope.decorations,
-              Graph.IsHighCentre current.object data.threshold centre ∧
-                Graph.TypeBDirectCycle.DirectCycleConfiguration current.object
-                  data.windowOrder data.LengthOK packing centre
-        · exact ⟨.inl ⟨Or.inr (Or.inr ⟨packing, valid, maximal, core,
-            envelope, coreEq, nonempty, marked, configuration⟩)⟩⟩
-        · exact ⟨.inr ⟨Or.inr (Or.inr ⟨packing, valid, maximal, core,
-            envelope, coreEq, nonempty, marked,
-            fun centre member high present =>
-              configuration ⟨centre, member, high, present⟩⟩)⟩⟩)
+    (Classical.choice (show Nonempty
+        ((K .typeBDirectCycle).At current ⊕ (K .typeBDirectCycleFree).At current) from by
+      by_cases holds : TypeBFanDirectCycleStatement data.toParameters current.object
+      · exact ⟨.inl ⟨holds⟩⟩
+      · exact ⟨.inr ⟨(Contracts.TypeB.typeBFanDirectCycleFree_iff_not_directCycle).mpr holds⟩⟩))
     cycleFresh freeFresh
+
+/-- **The direct-cycle arm closes.**  A direct fan-window configuration builds a
+cycle of accepted length, which the selection denies; the framework appends the
+closure key from the two committed facts. -/
+noncomputable instance instIncompatibleSelectionTypeBDirectCycle :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K .selection) (K .typeBDirectCycle) where
+  contradiction := fun _input selection cycle =>
+    selection.down.1
+      (Contracts.TypeB.hasCycleWithLength_of_typeBFanDirectCycle cycle.down)
 
 end Hypostructure.Graph.Strategy.Spine

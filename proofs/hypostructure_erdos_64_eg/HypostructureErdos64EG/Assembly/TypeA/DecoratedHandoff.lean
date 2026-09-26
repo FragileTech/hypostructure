@@ -105,6 +105,7 @@ noncomputable def selectedTypeADecoratedHandoff
     (firstLandingFresh : K .triangularFirstLanding ∉ known)
     (crossShoulderFresh : K .triangularCrossShoulder ∉ known)
     (triangularRoutingFresh : K .triangularPortTypeBRouting ∉ known)
+    (closureFresh : closed ∉ known := by key_fresh)
     :
     SelectedRouteEightBoundary selected := by
   let assigned :=

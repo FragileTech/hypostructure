@@ -203,152 +203,163 @@ def TypeBFanEntryStatement (data : Parameters) (object : Graph.FiniteObject.{u})
   AbsorbedGermDecoratedAssignedSupportStatement data object ∨
   SameTokenTypeBHandoffEnvelopeStatement data object
 
-/-- Node `[68]`, yes arm, for the indexed `[177]` input.  The complete family
-of decorated handoff witnesses is retained, and one of its actual centres is
-heavy.  This is the paper's test `d_G(h) > 4`, written relative to the registered
-baseline rather than with an EG-specific numeral. -/
-noncomputable def AbsorbedGermFanHeavyCentreStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop := by
-  classical
-  exact AbsorbedGermDecoratedAssignedSupportStatement data object ∧
+/-! ## The Type B support family
+
+Node `[65]` receives an assigned Type B support `X = (Y_X, H_X)` in one of
+three literal forms (`def:typeB-assigned-ledger`, `def:decorated-fan-envelope`,
+`lem:absorbed-germ-fan-data`, `lem:same-token-bottleneck-routing`).  Every
+argument of Parts VI--VII is a statement about the counted core `Y_X`, the
+assigned centres `H_X`, and the fixed maximal packing; none reads the
+provenance of the support.  The family below is therefore the single object
+on which every Type B fact is stated: a fact about all supports is universal
+over the family, and the two arms of a Type B decision are a family predicate
+and its exact negation.  No entry form is a separate ledger lane. -/
+
+/-- The ordinary and decorated forms: `Y_X` is a canonical piece of the
+remainder and `H_X` its assigned centres (`def:typeB-assigned-ledger`). -/
+def TypeBCanonicalForm (data : Parameters) (object : Graph.FiniteObject.{u})
+    (packing : Finset (Finset object.Vertex))
+    (core centres : Finset object.Vertex) : Prop :=
+  (∃ piece : Graph.TypeBRefinedSupport.CanonicalPiece object packing,
+      piece.vertices = core) ∧
+    TypeBAssignedCentres data object packing core centres
+
+/-- The indexed absorbed-germ form (`lem:absorbed-germ-fan-data` (ii)): the
+first high centre of a retained cold corridor, charged on the germ support
+at the canonical maximum packing. -/
+noncomputable def TypeBAbsorbedForm (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (packing : Finset (Finset object.Vertex))
+    (core centres : Finset object.Vertex) : Prop :=
+  packing = canonicalWindowPacking data object ∧
     ∃ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
           (Graph.MinimumDegreeAtLeast data.threshold)
           (Graph.HasCycleWithLength data.LengthOK) object)
         (centre : object.Vertex),
       AbsorbedGermFanEnvelopeWitness data object germ centre ∧
-        data.threshold + 1 < object.degree centre
+        core = germ.support ∧ centres = {centre}
 
-/-- Node `[68]`, no arm, for the indexed `[177]` input.  For every selected
-half-edge the preserved decorated handoff witness can be chosen with its centre
-at the unique high-but-not-heavy degree, namely `threshold + 1`. -/
-noncomputable def AbsorbedGermFanDegreeFourCentresStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop := by
-  classical
-  exact AbsorbedGermDecoratedAssignedSupportStatement data object ∧
-    ∀ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) object)
-        (centre : object.Vertex),
-      AbsorbedGermFanEnvelopeWitness data object germ centre →
-        object.degree centre = data.threshold + 1
+/-- The same-token handoff form (`lem:same-token-bottleneck-routing`): a
+decorated envelope at a maximum packing, with `Y_X` its core and `H_X` its
+decorations. -/
+def TypeBSameTokenForm (data : Parameters) (object : Graph.FiniteObject.{u})
+    (packing : Finset (Finset object.Vertex))
+    (core centres : Finset object.Vertex) : Prop :=
+  packing.card = object.windowPackingNumber data.windowOrder ∧
+    ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
+        (handoffHighDegree data object) (handoffAbsorbing data object packing),
+      envelope.core = core ∧ envelope.decorations = centres
 
-/-- Node `[68]`, yes arm, on each paper-prescribed Type B input.  The
-same-token lane retains its literal packing, core, and decorated envelope and
-tests heaviness on the envelope's actual decorations. -/
+/-- **An assigned Type B support `X = (Y_X, H_X)`** at a maximal window
+packing: a nonempty family of high centres together with one of the three
+entry forms of node `[65]`. -/
+def TypeBSupport (data : Parameters) (object : Graph.FiniteObject.{u})
+    (packing : Finset (Finset object.Vertex))
+    (core centres : Finset object.Vertex) : Prop :=
+  object.IsWindowPacking data.windowOrder packing ∧
+    (∀ window : Finset object.Vertex,
+      object.InducesWindow data.windowOrder window →
+      ∃ member ∈ packing, ¬ Disjoint window member) ∧
+    centres.Nonempty ∧
+    (∀ centre ∈ centres, Graph.IsHighCentre object data.threshold centre) ∧
+    (TypeBCanonicalForm data object packing core centres ∨
+      TypeBAbsorbedForm data object packing core centres ∨
+      TypeBSameTokenForm data object packing core centres)
+
+/-- A Type B support whose core is the canonical remainder piece `piece`: the
+supports carrying the B2 post-ledger core of `prop:typeB-bridge-reduction`. -/
+def TypeBCanonicalSupport (data : Parameters) (object : Graph.FiniteObject.{u})
+    (packing : Finset (Finset object.Vertex))
+    (piece : Graph.TypeBRefinedSupport.CanonicalPiece object packing)
+    (centres : Finset object.Vertex) : Prop :=
+  TypeBSupport data object packing piece.vertices centres ∧
+    TypeBAssignedCentres data object packing piece.vertices centres
+
+/-- Node `[68]`, yes arm: some assigned centre of some Type B support is
+heavy, `d_G(h) > δ + 1` (`d_G(h) > 4` at the registered baseline). -/
 def TypeBFanHeavyCentreStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBFanSupportWith data object (fun _packing _piece centres =>
-    ∃ centre ∈ centres, data.threshold + 1 < object.degree centre) ∨
-  AbsorbedGermFanHeavyCentreStatement data object ∨
-  ∃ packing : Finset (Finset object.Vertex),
-    object.IsWindowPacking data.windowOrder packing ∧
-      packing.card = object.windowPackingNumber data.windowOrder ∧
-      ∃ core : Finset object.Vertex,
-        ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-            (handoffHighDegree data object)
-            (handoffAbsorbing data object packing),
-          envelope.core = core ∧ envelope.decorations.Nonempty ∧
-            ∃ centre ∈ envelope.decorations,
-              data.threshold + 1 < object.degree centre
+  ∃ (packing : Finset (Finset object.Vertex)) (core centres : Finset object.Vertex),
+    TypeBSupport data object packing core centres ∧
+      ∃ centre ∈ centres, data.threshold + 1 < object.degree centre
 
-/-- Node `[68]`, no arm, on each paper-prescribed Type B input.  On the
-same-token lane every retained decoration is high by the envelope, so failure
-of the heavy test forces the unique high-but-not-heavy degree
-`data.threshold + 1`. -/
+/-- Node `[68]`, no arm: the exact negation of the heavy arm, normalized by the
+high-centre bound `δ < d_G(h)`: every assigned centre has degree `δ + 1`. -/
 def TypeBFanDegreeFourCentresStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBFanSupportWith data object (fun _packing _piece centres =>
-    ∀ centre ∈ centres, object.degree centre = data.threshold + 1) ∨
-  AbsorbedGermFanDegreeFourCentresStatement data object ∨
-  ∃ packing : Finset (Finset object.Vertex),
-    object.IsWindowPacking data.windowOrder packing ∧
-      packing.card = object.windowPackingNumber data.windowOrder ∧
-      ∃ core : Finset object.Vertex,
-        ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-            (handoffHighDegree data object)
-            (handoffAbsorbing data object packing),
-          envelope.core = core ∧ envelope.decorations.Nonempty ∧
-            ∀ centre ∈ envelope.decorations,
-              object.degree centre = data.threshold + 1
+  ∀ (packing : Finset (Finset object.Vertex)) (core centres : Finset object.Vertex),
+    TypeBSupport data object packing core centres →
+      ∀ centre ∈ centres, object.degree centre = data.threshold + 1
 
-/-- Node `[69]` on the indexed `[177]` lane.  The original absorbed-germ
-witness and its indices remain the carrier; at the heavy centre selected by
-`[68]`, `cor:heavy-center-local-dichotomy` supplies exactly the same local
-alternative as on an ordinary Type B support. -/
-noncomputable def AbsorbedGermFanLocalDichotomyStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop := by
-  classical
-  exact AbsorbedGermDecoratedAssignedSupportStatement data object ∧
-    ∃ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) object)
-        (centre : object.Vertex),
-      AbsorbedGermFanEnvelopeWitness data object germ centre ∧
-        data.threshold + 1 < object.degree centre ∧
-        ((∃ left right : object.Vertex,
-            Graph.FanCompatible object centre left right) ∨
-          (object.degree centre - 2 ≤
-              (Graph.triangularEndpoints object centre).card ∧
-            3 ≤ (Graph.triangularEndpoints object centre).card))
+/-- `cor:compatible-pair-typeB-routing` at one assigned profile and one
+fan-compatible open pair. -/
+def CompatiblePairRoutes (object : Graph.FiniteObject.{u})
+    (profile : Graph.TypeBFanClosedPorts.Profile object)
+    (left right : object.Vertex) : Prop :=
+  ∀ (ledger : Graph.ReceiverLoad.LoadCapacityProfile)
+      (_normal : Graph.NormalForm object 3 profile.marked.fan.hub),
+    ledger.loadMultiplier = 4 →
+    Graph.FanCompatible object profile.marked.fan.hub left right →
+    left ∈ profile.remainder →
+    right ∈ profile.remainder →
+    (∀ shoulder,
+      Graph.IsShoulder object profile.marked.fan.hub left shoulder →
+        shoulder ∈ profile.envelope) →
+    (∀ shoulder,
+      Graph.IsShoulder object profile.marked.fan.hub right shoulder →
+        shoulder ∈ profile.envelope) →
+    2 ≤ profile.closedCount ∧
+      ((object.degree profile.marked.fan.hub : ℚ) + 1) *
+          (1 / (ledger.loadMultiplier : ℚ)) - 1
+        ≤ profile.closedNeighbourDeficit ledger ∧
+      0 < profile.closedNeighbourDeficit ledger
 
-/-- Node `[79]` on the indexed `[177]` lane.  For every selected cold
-half-edge, the degree-`threshold + 1` decorated centre chosen by `[68]` carries
-`cor:degree-four-local-activation` and the exact registered-scale fan profile.
-No canonical remainder piece is inserted into this statement. -/
-noncomputable def AbsorbedGermFanDegreeFourProfileStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop := by
-  classical
-  exact AbsorbedGermDecoratedAssignedSupportStatement data object ∧
-    ∀ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) object)
-        (centre : object.Vertex),
-      AbsorbedGermFanEnvelopeWitness data object germ centre →
-          object.degree centre = data.threshold + 1 ∧
-          ((∃ left right : object.Vertex,
-              Graph.FanCompatible object centre left right) ∨
-            data.threshold - 1 ≤
-              (Graph.triangularEndpoints object centre).card) ∧
-          object.degree centre - data.threshold = 1 ∧
-          ∀ fanEnvelope : Finset object.Vertex,
-            Graph.TypeBFanIncidence.closedCount object data.threshold
-                fanEnvelope centre ≤ data.threshold + 1 ∧
-              Graph.TypeBFanIncidence.scaledDeficit object data.threshold
-                  data.dischargeScale fanEnvelope centre =
-                (data.dischargeScale : Int) *
-                    (Graph.TypeBFanIncidence.closedCount object data.threshold
-                      fanEnvelope centre : Int) -
-                  (data.dischargeScale : Int) * (data.threshold : Int) +
-                  ((data.threshold : Int) + 2)
+/-- `prop:triangular-port-typeB-routing` at one assigned profile and one
+family of `k - 2` triangular ports. -/
+def TriangularPortsRoute (object : Graph.FiniteObject.{u})
+    (profile : Graph.TypeBFanClosedPorts.Profile object)
+    (ports : Finset object.Vertex) : Prop :=
+  ∀ (ledger : Graph.ReceiverLoad.LoadCapacityProfile)
+      (_normal : Graph.NormalForm object 3 profile.marked.fan.hub),
+    ledger.loadMultiplier = 4 →
+    ports ⊆ Graph.triangularEndpoints object profile.marked.fan.hub →
+    ports.card = object.degree profile.marked.fan.hub - 2 →
+    5 ≤ object.degree profile.marked.fan.hub →
+    (∀ endpoint ∈ ports, endpoint ∈ profile.remainder) →
+    (∀ endpoint ∈ ports, ∀ shoulder,
+      Graph.IsShoulder object profile.marked.fan.hub endpoint shoulder →
+        shoulder ∈ profile.envelope) →
+    ports.card ≤ profile.closedCount ∧
+      (5 * (object.degree profile.marked.fan.hub : ℚ) - 19) / 4 ≤
+        profile.closedNeighbourDeficit ledger ∧
+      0 < profile.closedNeighbourDeficit ledger
 
-/-- Node `[69]` on every paper-prescribed Type B input.  The same-token form
-retains the exact packing, core, and envelope from `[144]` and applies the
-paper's local dichotomy to each of its actual heavy decorations. -/
+/-- The two routed alternatives of node `[69]` at one heavy centre:
+`cor:heavy-center-local-dichotomy` with each alternative carried to fan-closed
+ports in every assigned profile at the centre --- a fan-compatible open pair
+by `cor:compatible-pair-typeB-routing`, or a family of `d_G(h) - 2` triangular
+ports (in particular three) by `prop:triangular-port-typeB-routing`. -/
+def HeavyCentreRoutedAlternative (object : Graph.FiniteObject.{u})
+    (centre : object.Vertex) : Prop :=
+  (∃ left right : object.Vertex,
+      Graph.FanCompatible object centre left right ∧
+        ∀ profile : Graph.TypeBFanClosedPorts.Profile object,
+          profile.marked.fan.hub = centre →
+            CompatiblePairRoutes object profile left right) ∨
+    (∃ ports ⊆ Graph.triangularEndpoints object centre,
+      ports.card = object.degree centre - 2 ∧ 3 ≤ ports.card ∧
+        ∀ profile : Graph.TypeBFanClosedPorts.Profile object,
+          profile.marked.fan.hub = centre →
+            TriangularPortsRoute object profile ports)
+
+/-- Node `[69]`: every heavy assigned centre of every Type B support carries
+the routed local dichotomy. -/
 def TypeBFanLocalDichotomyStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBFanSupportWith data object (fun _packing _piece centres =>
+  ∀ (packing : Finset (Finset object.Vertex)) (core centres : Finset object.Vertex),
+    TypeBSupport data object packing core centres →
       ∀ centre ∈ centres, data.threshold + 1 < object.degree centre →
-        (∃ left right : object.Vertex,
-          Graph.FanCompatible object centre left right) ∨
-        (object.degree centre - 2 ≤
-            (Graph.triangularEndpoints object centre).card ∧
-          3 ≤ (Graph.triangularEndpoints object centre).card)) ∨
-    AbsorbedGermFanLocalDichotomyStatement data object ∨
-    ∃ packing : Finset (Finset object.Vertex),
-      object.IsWindowPacking data.windowOrder packing ∧
-        packing.card = object.windowPackingNumber data.windowOrder ∧
-        ∃ core : Finset object.Vertex,
-          ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-              (handoffHighDegree data object)
-              (handoffAbsorbing data object packing),
-            envelope.core = core ∧ envelope.decorations.Nonempty ∧
-              ∀ centre ∈ envelope.decorations,
-                data.threshold + 1 < object.degree centre →
-                  (∃ left right : object.Vertex,
-                    Graph.FanCompatible object centre left right) ∨
-                  (object.degree centre - 2 ≤
-                      (Graph.triangularEndpoints object centre).card ∧
-                    3 ≤ (Graph.triangularEndpoints object centre).card)
+        HeavyCentreRoutedAlternative object centre
 
 /-- `lem:same-center-open-port-compatibility` on the selected residual object.
 The paper's port hypotheses are all explicit; the conclusion is the canonical
@@ -366,54 +377,34 @@ def SameCenterOpenPortCompatibilityStatement (data : Parameters)
         Graph.IsOpenPort object centre right →
         Graph.FanCompatible object centre left right
 
-/-- Node `[79]` on every paper-prescribed Type B input.  The same-token form
-keeps the original envelope and records the paper's degree-four activation and
-registered-scale profile at each decoration. -/
+/-- The degree-four fan profile of `cor:degree-four-local-activation` at one
+centre: degree `δ + 1`, a fan-compatible open pair or `δ - 1` triangular ports,
+centre surplus `1`, and the registered-scale closed-neighbour profile. -/
+def DegreeFourFanProfile (data : Parameters) (object : Graph.FiniteObject.{u})
+    (centre : object.Vertex) : Prop :=
+  object.degree centre = data.threshold + 1 ∧
+    ((∃ left right : object.Vertex,
+        Graph.FanCompatible object centre left right) ∨
+      data.threshold - 1 ≤ (Graph.triangularEndpoints object centre).card) ∧
+    object.degree centre - data.threshold = 1 ∧
+    ∀ fanEnvelope : Finset object.Vertex,
+      Graph.TypeBFanIncidence.closedCount object data.threshold
+          fanEnvelope centre ≤ data.threshold + 1 ∧
+        Graph.TypeBFanIncidence.scaledDeficit object data.threshold
+            data.dischargeScale fanEnvelope centre =
+          (data.dischargeScale : Int) *
+              (Graph.TypeBFanIncidence.closedCount object data.threshold
+                fanEnvelope centre : Int) -
+            (data.dischargeScale : Int) * (data.threshold : Int) +
+            ((data.threshold : Int) + 2)
+
+/-- Node `[79]`: every assigned centre of every Type B support carries the
+degree-four fan profile. -/
 noncomputable def TypeBFanDegreeFourProfileStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBFanSupportWith data object (fun _packing _piece centres =>
-      ∀ centre ∈ centres,
-        object.degree centre = data.threshold + 1 ∧
-        ((∃ left right : object.Vertex,
-            Graph.FanCompatible object centre left right) ∨
-          data.threshold - 1 ≤ (Graph.triangularEndpoints object centre).card) ∧
-        object.degree centre - data.threshold = 1 ∧
-        ∀ fanEnvelope : Finset object.Vertex,
-          Graph.TypeBFanIncidence.closedCount object data.threshold
-              fanEnvelope centre ≤ data.threshold + 1 ∧
-            Graph.TypeBFanIncidence.scaledDeficit object data.threshold
-                data.dischargeScale fanEnvelope centre =
-              (data.dischargeScale : Int) *
-                  (Graph.TypeBFanIncidence.closedCount object data.threshold
-                    fanEnvelope centre : Int) -
-                (data.dischargeScale : Int) * (data.threshold : Int) +
-                ((data.threshold : Int) + 2)) ∨
-    AbsorbedGermFanDegreeFourProfileStatement data object ∨
-    ∃ packing : Finset (Finset object.Vertex),
-      object.IsWindowPacking data.windowOrder packing ∧
-        packing.card = object.windowPackingNumber data.windowOrder ∧
-        ∃ core : Finset object.Vertex,
-          ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-              (handoffHighDegree data object)
-              (handoffAbsorbing data object packing),
-            envelope.core = core ∧ envelope.decorations.Nonempty ∧
-              ∀ centre ∈ envelope.decorations,
-                object.degree centre = data.threshold + 1 ∧
-                ((∃ left right : object.Vertex,
-                    Graph.FanCompatible object centre left right) ∨
-                  data.threshold - 1 ≤
-                    (Graph.triangularEndpoints object centre).card) ∧
-                object.degree centre - data.threshold = 1 ∧
-                ∀ fanEnvelope : Finset object.Vertex,
-                  Graph.TypeBFanIncidence.closedCount object data.threshold
-                      fanEnvelope centre ≤ data.threshold + 1 ∧
-                    Graph.TypeBFanIncidence.scaledDeficit object data.threshold
-                        data.dischargeScale fanEnvelope centre =
-                      (data.dischargeScale : Int) *
-                          (Graph.TypeBFanIncidence.closedCount object data.threshold
-                            fanEnvelope centre : Int) -
-                        (data.dischargeScale : Int) * (data.threshold : Int) +
-                        ((data.threshold : Int) + 2)
+  ∀ (packing : Finset (Finset object.Vertex)) (core centres : Finset object.Vertex),
+    TypeBSupport data object packing core centres →
+      ∀ centre ∈ centres, DegreeFourFanProfile data object centre
 
 /-- `def:triangular-fan-core` on the active object.  Ports are represented by
 their endpoints because the centre is fixed.  The shoulder finset is exactly
@@ -730,25 +721,25 @@ noncomputable def SuppressedFamilyCriticalCycleStatement (data : Parameters)
               (family.usedChords certificate.walk).card ∧
             ¬ data.LengthOK expanded.walk.length
 
-/-- `def:typeB-fan-safe`, without collapsing clauses (ii)--(v).  For any
-literal predicates expressing the label, target-defect, target-compression,
-and delocalization failures, the canonical fan-safe relation is the geometric
-return prohibition together with the denial of each of those four failures. -/
+/-- `def:typeB-fan-safe`, clause (i), at one centre `h`: no two distinct fan
+neighbours are joined by a simple return in `G - h` whose closing length is
+accepted. -/
+def FanSafeAt (data : Parameters) (object : Graph.FiniteObject.{u})
+    (centre : object.Vertex) : Prop :=
+  ∀ first second : object.Vertex,
+    object.graph.Adj centre first → object.graph.Adj centre second →
+      first ≠ second →
+      ∀ return' : Graph.DecoratedHandoff.FanReturn object centre first second,
+        ¬ data.LengthOK (return'.walk.length + 2)
+
+/-- The fan-safe graph (`def:typeB-fan-safe`, clause (i)) at every assigned
+centre of every Type B support.  Node `[70]` publishes it together with the
+certificate cap in `TypeBFanCertificateCapStatement`. -/
 def TypeBFanSafeStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  ∀ (labelFailure targetDefect targetCompression delocalization :
-      object.Vertex → object.Vertex → object.Vertex → Prop)
-    (centre first second : object.Vertex),
-    Graph.DecoratedHandoff.FanSafe object data.LengthOK
-        (fun h u v => labelFailure h u v ∨ targetDefect h u v ∨
-          targetCompression h u v ∨ delocalization h u v)
-        centre first second ↔
-      (∀ return' : Graph.DecoratedHandoff.FanReturn object centre first second,
-        ¬ data.LengthOK (return'.walk.length + 2)) ∧
-      ¬ labelFailure centre first second ∧
-      ¬ targetDefect centre first second ∧
-      ¬ targetCompression centre first second ∧
-      ¬ delocalization centre first second
+  ∀ (packing : Finset (Finset object.Vertex)) (core centres : Finset object.Vertex),
+    TypeBSupport data object packing core centres →
+      ∀ centre ∈ centres, FanSafeAt data object centre
 
 /-- `def:fan-closed-port`, using the canonical upstream assigned Type-B
 profile.  The equivalence exposes clauses (a)--(c) of the manuscript; clause
@@ -808,24 +799,8 @@ def FanClosedPortTypeBRoutingStatement (_data : Parameters)
 def CompatiblePairTypeBRoutingStatement (_data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∀ (profile : Graph.TypeBFanClosedPorts.Profile object)
-      (ledger : Graph.ReceiverLoad.LoadCapacityProfile)
-      (normal : Graph.NormalForm object 3 profile.marked.fan.hub),
-    ledger.loadMultiplier = 4 →
-    ∀ left right : object.Vertex,
-      Graph.FanCompatible object profile.marked.fan.hub left right →
-      left ∈ profile.remainder →
-      right ∈ profile.remainder →
-      (∀ shoulder,
-        Graph.IsShoulder object profile.marked.fan.hub left shoulder →
-          shoulder ∈ profile.envelope) →
-      (∀ shoulder,
-        Graph.IsShoulder object profile.marked.fan.hub right shoulder →
-          shoulder ∈ profile.envelope) →
-      2 ≤ profile.closedCount ∧
-        ((object.degree profile.marked.fan.hub : ℚ) + 1) *
-            (1 / (ledger.loadMultiplier : ℚ)) - 1
-          ≤ profile.closedNeighbourDeficit ledger ∧
-      0 < profile.closedNeighbourDeficit ledger
+      (left right : object.Vertex),
+    CompatiblePairRoutes object profile left right
 
 /-- `prop:triangular-port-typeB-routing`, in the canonical upstream form.
 The family has the manuscript's exact size `k - 2`; every endpoint is recorded
@@ -834,650 +809,164 @@ assigned to the fan envelope. -/
 def TriangularPortTypeBRoutingStatement (_data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∀ (profile : Graph.TypeBFanClosedPorts.Profile object)
-      (ledger : Graph.ReceiverLoad.LoadCapacityProfile)
-      (normal : Graph.NormalForm object 3 profile.marked.fan.hub),
-    ledger.loadMultiplier = 4 →
-    ∀ ports : Finset object.Vertex,
-      ports ⊆ Graph.triangularEndpoints object profile.marked.fan.hub →
-      ports.card = object.degree profile.marked.fan.hub - 2 →
-      5 ≤ object.degree profile.marked.fan.hub →
-      (∀ endpoint ∈ ports, endpoint ∈ profile.remainder) →
-      (∀ endpoint ∈ ports, ∀ shoulder,
-        Graph.IsShoulder object profile.marked.fan.hub endpoint shoulder →
-          shoulder ∈ profile.envelope) →
-      ports.card ≤ profile.closedCount ∧
-        (5 * (object.degree profile.marked.fan.hub : ℚ) - 19) / 4 ≤
-          profile.closedNeighbourDeficit ledger ∧
-        0 < profile.closedNeighbourDeficit ledger
+      (ports : Finset object.Vertex),
+    TriangularPortsRoute object profile ports
 
-/-- Node `[70]` on the indexed `[177]` lane.  The fan-certificate cap is
-pointwise and therefore applies directly to every actual decorated centre;
-the corridor/envelope indices are retained and no canonical support is
-manufactured. -/
-noncomputable def AbsorbedGermFanCertificateCapStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop := by
-  classical
-  exact AbsorbedGermDecoratedAssignedSupportStatement data object ∧
-    ∀ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) object)
-        (centre : object.Vertex),
-      AbsorbedGermFanEnvelopeWitness data object germ centre →
-        ∀ _marking : Graph.FanCertificateLabelling object data.windowOrder centre,
-          object.degree centre ≤ Graph.WindowCurvature.fanPackingCap data.windowOrder
-
-/-- Node `[70]` on every paper-prescribed Type B input.  The same-token form
-retains the exact `[144]` envelope and states the label-packing cap pointwise
-on its actual decorations. -/
+/-- Node `[70]`: the fan-safe graph (`def:typeB-fan-safe`, clause (i)) and the
+certificate-marked cap of `lem:fan-certificate` at every assigned centre of
+every Type B support. -/
 noncomputable def TypeBFanCertificateCapStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBFanSupportWith data object (fun _packing _piece centres =>
+  ∀ (packing : Finset (Finset object.Vertex)) (core centres : Finset object.Vertex),
+    TypeBSupport data object packing core centres →
       ∀ centre ∈ centres,
-        ∀ _marking : Graph.FanCertificateLabelling object data.windowOrder centre,
-          object.degree centre ≤
-            Graph.WindowCurvature.fanPackingCap data.windowOrder) ∨
-    AbsorbedGermFanCertificateCapStatement data object ∨
-    ∃ packing : Finset (Finset object.Vertex),
-      object.IsWindowPacking data.windowOrder packing ∧
-        packing.card = object.windowPackingNumber data.windowOrder ∧
-        ∃ core : Finset object.Vertex,
-          ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-              (handoffHighDegree data object)
-              (handoffAbsorbing data object packing),
-            envelope.core = core ∧ envelope.decorations.Nonempty ∧
-              ∀ centre ∈ envelope.decorations,
-                ∀ _marking : Graph.FanCertificateLabelling object
-                    data.windowOrder centre,
-                  object.degree centre ≤
-                    Graph.WindowCurvature.fanPackingCap data.windowOrder
+        FanSafeAt data object centre ∧
+          ∀ _marking : Graph.FanCertificateLabelling object data.windowOrder centre,
+            object.degree centre ≤
+              Graph.WindowCurvature.fanPackingCap data.windowOrder
 
-/-- Node `[71]`/`[80]`, yes arm, on the indexed `[177]` lane.  The complete
-absorbed family is retained, and every actual centre witnessing one of its
-selected corridor entries carries the paper's fan-certificate labelling and
-the cap already proved at `[70]`. -/
-noncomputable def AbsorbedGermFanCertificateMarkedStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop := by
-  classical
-  exact AbsorbedGermDecoratedAssignedSupportStatement data object ∧
-    ∀ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) object)
-        (centre : object.Vertex),
-      AbsorbedGermFanEnvelopeWitness data object germ centre →
-        ∃ _marking : Graph.FanCertificateLabelling object data.windowOrder centre,
-          object.degree centre ≤ Graph.WindowCurvature.fanPackingCap data.windowOrder
-
-/-- Node `[71]`/`[80]`, no arm, on the indexed `[177]` lane.  The full
-absorbed family remains available and one of its literal corridor-indexed
-centres has no fan-certificate labelling. -/
-noncomputable def AbsorbedGermFanCertificateResidualStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop := by
-  classical
-  exact AbsorbedGermDecoratedAssignedSupportStatement data object ∧
-    ∃ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) object)
-        (centre : object.Vertex),
-      AbsorbedGermFanEnvelopeWitness data object germ centre ∧
-        IsEmpty (Graph.FanCertificateLabelling object data.windowOrder centre)
-
-/-- Nodes `[71]`/`[80]`, yes arm, on every paper-prescribed Type B input.
-The same-token form retains the exact packing, core, and envelope and records
-the certificate labelling, together with `[70]`'s cap, at every actual
-decoration. -/
+/-- Nodes `[71]`/`[80]`, yes arm (`def:marked-typeB-fan`): every assigned
+centre of every Type B support carries a fan-certificate labelling. -/
 noncomputable def TypeBFanCertificateMarkedStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBFanSupportWith data object (fun _packing _piece centres =>
+  ∀ (packing : Finset (Finset object.Vertex)) (core centres : Finset object.Vertex),
+    TypeBSupport data object packing core centres →
       ∀ centre ∈ centres,
-        ∃ _marking : Graph.FanCertificateLabelling object data.windowOrder centre,
-          object.degree centre ≤
-            Graph.WindowCurvature.fanPackingCap data.windowOrder) ∨
-    AbsorbedGermFanCertificateMarkedStatement data object ∨
-    ∃ packing : Finset (Finset object.Vertex),
-      object.IsWindowPacking data.windowOrder packing ∧
-        packing.card = object.windowPackingNumber data.windowOrder ∧
-        ∃ core : Finset object.Vertex,
-          ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-              (handoffHighDegree data object)
-              (handoffAbsorbing data object packing),
-            envelope.core = core ∧ envelope.decorations.Nonempty ∧
-              ∀ centre ∈ envelope.decorations,
-                ∃ _marking : Graph.FanCertificateLabelling object
-                    data.windowOrder centre,
-                  object.degree centre ≤
-                    Graph.WindowCurvature.fanPackingCap data.windowOrder
+        Nonempty (Graph.FanCertificateLabelling object data.windowOrder centre)
 
-/-- Nodes `[71]`/`[80]`, no arm, on every paper-prescribed Type B input.  The
-same-token form retains the exact incoming envelope and one of its literal
-high-degree decorations at which no fan-certificate labelling exists. -/
+/-- Nodes `[71]`/`[80]`, no arm: the exact negation --- some assigned centre of
+some Type B support is a fan-certificate residual centre. -/
 noncomputable def TypeBFanCertificateResidualStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBFanSupportWith data object (fun _packing _piece centres =>
+  ∃ (packing : Finset (Finset object.Vertex)) (core centres : Finset object.Vertex),
+    TypeBSupport data object packing core centres ∧
       ∃ centre ∈ centres,
-        Graph.IsHighCentre object data.threshold centre ∧
-          IsEmpty (Graph.FanCertificateLabelling object data.windowOrder centre)) ∨
-    AbsorbedGermFanCertificateResidualStatement data object ∨
-    ∃ packing : Finset (Finset object.Vertex),
-      object.IsWindowPacking data.windowOrder packing ∧
-        packing.card = object.windowPackingNumber data.windowOrder ∧
-        ∃ core : Finset object.Vertex,
-          ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-              (handoffHighDegree data object)
-              (handoffAbsorbing data object packing),
-            envelope.core = core ∧ envelope.decorations.Nonempty ∧
-              ∃ centre ∈ envelope.decorations,
-                Graph.IsHighCentre object data.threshold centre ∧
-                  IsEmpty (Graph.FanCertificateLabelling object
-                    data.windowOrder centre)
+        IsEmpty (Graph.FanCertificateLabelling object data.windowOrder centre)
 
-/-- Node `[74]`/`[82]` on the indexed `[177]` lane.  The marked absorbed
-family is retained while the hybrid B1 calculation is recorded at each actual
-centre selected by its corridor witness. -/
-noncomputable def AbsorbedGermFanHybridEntryStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop := by
-  classical
-  exact AbsorbedGermFanCertificateMarkedStatement data object ∧
-    ∀ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) object)
-        (centre : object.Vertex),
-      AbsorbedGermFanEnvelopeWitness data object germ centre →
-        ∀ envelope windowSupport : Finset object.Vertex,
-          (∀ left ∈ Graph.TypeBFanIncidence.closedNeighbours object
-              data.threshold envelope centre,
-            ∀ right ∈ Graph.TypeBFanIncidence.closedNeighbours object
-                data.threshold envelope centre,
-              left ≠ right →
-              ∀ shared : object.Vertex,
-                shared ∈ Graph.TypeBHybridIncidence.nonHubIncidences object
-                  centre left →
-                shared ∉ Graph.TypeBHybridIncidence.nonHubIncidences object
-                  centre right) ∧
-          Graph.TypeBHybridIncidence.windowIncidences object data.threshold
-                envelope windowSupport centre +
-              Graph.TypeBHybridIncidence.nonWindowIncidences object
-                data.threshold envelope windowSupport centre =
-            (data.threshold - 1) *
-              Graph.TypeBFanIncidence.closedCount object data.threshold envelope centre ∧
-          2 * Graph.TypeBFanIncidence.scaledDeficit object data.threshold
-                  data.dischargeScale envelope centre ≤
-              (data.dischargeScale : Int) *
-                ((Graph.TypeBHybridIncidence.windowIncidences object
-                    data.threshold envelope windowSupport centre : Int) +
-                  (Graph.TypeBHybridIncidence.nonWindowIncidences object
-                    data.threshold envelope windowSupport centre : Int)) ∧
-          Graph.TypeBHybridIncidence.nonWindowDemand object data.threshold
-                data.dischargeScale envelope windowSupport centre ≤
-              (data.dischargeScale : Int) *
-                (Graph.TypeBHybridIncidence.nonWindowIncidences object
-                  data.threshold envelope windowSupport centre : Int) ∧
-          (2 ≤ Graph.TypeBFanIncidence.closedCount object data.threshold
-              envelope centre →
-            0 < Graph.TypeBFanIncidence.scaledDeficit object data.threshold
-              data.dischargeScale envelope centre)
+/-- The local B1 incidence calculation (`lem:typeB-hybrid-incidence-budget`,
+`lem:typeB-hybrid-B1`) at one marked high centre and one fan envelope. -/
+noncomputable def HybridB1Entry (data : Parameters)
+    (object : Graph.FiniteObject.{u}) (centre : object.Vertex)
+    (envelope windowSupport : Finset object.Vertex) : Prop :=
+  (∀ left ∈ Graph.TypeBFanIncidence.closedNeighbours object
+      data.threshold envelope centre,
+    ∀ right ∈ Graph.TypeBFanIncidence.closedNeighbours object
+        data.threshold envelope centre,
+      left ≠ right →
+      ∀ shared : object.Vertex,
+        shared ∈ Graph.TypeBHybridIncidence.nonHubIncidences object
+          centre left →
+        shared ∉ Graph.TypeBHybridIncidence.nonHubIncidences object
+          centre right) ∧
+  Graph.TypeBHybridIncidence.windowIncidences object data.threshold
+        envelope windowSupport centre +
+      Graph.TypeBHybridIncidence.nonWindowIncidences object
+        data.threshold envelope windowSupport centre =
+    (data.threshold - 1) *
+      Graph.TypeBFanIncidence.closedCount object data.threshold
+        envelope centre ∧
+  2 * Graph.TypeBFanIncidence.scaledDeficit object data.threshold
+          data.dischargeScale envelope centre ≤
+      (data.dischargeScale : Int) *
+        ((Graph.TypeBHybridIncidence.windowIncidences object
+            data.threshold envelope windowSupport centre : Int) +
+          (Graph.TypeBHybridIncidence.nonWindowIncidences object
+            data.threshold envelope windowSupport centre : Int)) ∧
+  Graph.TypeBHybridIncidence.nonWindowDemand object data.threshold
+        data.dischargeScale envelope windowSupport centre ≤
+      (data.dischargeScale : Int) *
+        (Graph.TypeBHybridIncidence.nonWindowIncidences object
+          data.threshold envelope windowSupport centre : Int) ∧
+  (2 ≤ Graph.TypeBFanIncidence.closedCount object data.threshold
+      envelope centre →
+    0 < Graph.TypeBFanIncidence.scaledDeficit object data.threshold
+      data.dischargeScale envelope centre)
 
-/-- Node `[74]`/`[82]` on every paper-prescribed Type B carrier.  The
-same-token form retains `[144]`'s exact packing, core, and marked envelope and
-publishes the local B1 incidence calculation at each actual decoration. -/
+/-- Nodes `[72]`/`[81]`, the local B1 fan ledger: every assigned centre of
+every Type B support carries the hybrid B1 entry at every fan envelope. -/
 noncomputable def TypeBFanHybridEntryStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBFanSupportWith data object (fun _packing _piece centres =>
-      ∀ centre ∈ centres,
-        Graph.IsHighCentre object data.threshold centre →
-          ∀ envelope windowSupport : Finset object.Vertex,
-            (∀ left ∈ Graph.TypeBFanIncidence.closedNeighbours object
-                data.threshold envelope centre,
-              ∀ right ∈ Graph.TypeBFanIncidence.closedNeighbours object
-                  data.threshold envelope centre,
-                left ≠ right →
-                ∀ shared : object.Vertex,
-                  shared ∈ Graph.TypeBHybridIncidence.nonHubIncidences object
-                    centre left →
-                  shared ∉ Graph.TypeBHybridIncidence.nonHubIncidences object
-                    centre right) ∧
-            Graph.TypeBHybridIncidence.windowIncidences object data.threshold
-                  envelope windowSupport centre +
-                Graph.TypeBHybridIncidence.nonWindowIncidences object
-                  data.threshold envelope windowSupport centre =
-              (data.threshold - 1) *
-                Graph.TypeBFanIncidence.closedCount object data.threshold
-                  envelope centre ∧
-            2 * Graph.TypeBFanIncidence.scaledDeficit object data.threshold
-                    data.dischargeScale envelope centre ≤
-                (data.dischargeScale : Int) *
-                  ((Graph.TypeBHybridIncidence.windowIncidences object
-                      data.threshold envelope windowSupport centre : Int) +
-                    (Graph.TypeBHybridIncidence.nonWindowIncidences object
-                      data.threshold envelope windowSupport centre : Int)) ∧
-            Graph.TypeBHybridIncidence.nonWindowDemand object data.threshold
-                  data.dischargeScale envelope windowSupport centre ≤
-                (data.dischargeScale : Int) *
-                  (Graph.TypeBHybridIncidence.nonWindowIncidences object
-                    data.threshold envelope windowSupport centre : Int) ∧
-            (2 ≤ Graph.TypeBFanIncidence.closedCount object data.threshold
-                envelope centre →
-              0 < Graph.TypeBFanIncidence.scaledDeficit object data.threshold
-                data.dischargeScale envelope centre)) ∨
-    AbsorbedGermFanHybridEntryStatement data object ∨
-    ∃ packing : Finset (Finset object.Vertex),
-      object.IsWindowPacking data.windowOrder packing ∧
-        packing.card = object.windowPackingNumber data.windowOrder ∧
-        ∃ core : Finset object.Vertex,
-          ∃ handoff : Graph.DecoratedHandoff.Envelope object data.LengthOK
-              (handoffHighDegree data object)
-              (handoffAbsorbing data object packing),
-            handoff.core = core ∧ handoff.decorations.Nonempty ∧
-              (∀ centre ∈ handoff.decorations,
-                ∃ _marking : Graph.FanCertificateLabelling object
-                    data.windowOrder centre,
-                  object.degree centre ≤
-                    Graph.WindowCurvature.fanPackingCap data.windowOrder) ∧
-              ∀ centre ∈ handoff.decorations,
-                ∀ envelope windowSupport : Finset object.Vertex,
-                  (∀ left ∈ Graph.TypeBFanIncidence.closedNeighbours object
-                      data.threshold envelope centre,
-                    ∀ right ∈ Graph.TypeBFanIncidence.closedNeighbours object
-                        data.threshold envelope centre,
-                      left ≠ right →
-                      ∀ shared : object.Vertex,
-                        shared ∈ Graph.TypeBHybridIncidence.nonHubIncidences
-                          object centre left →
-                        shared ∉ Graph.TypeBHybridIncidence.nonHubIncidences
-                          object centre right) ∧
-                  Graph.TypeBHybridIncidence.windowIncidences object
-                        data.threshold envelope windowSupport centre +
-                      Graph.TypeBHybridIncidence.nonWindowIncidences object
-                        data.threshold envelope windowSupport centre =
-                    (data.threshold - 1) *
-                      Graph.TypeBFanIncidence.closedCount object data.threshold
-                        envelope centre ∧
-                  2 * Graph.TypeBFanIncidence.scaledDeficit object
-                          data.threshold data.dischargeScale envelope centre ≤
-                      (data.dischargeScale : Int) *
-                        ((Graph.TypeBHybridIncidence.windowIncidences object
-                            data.threshold envelope windowSupport centre : Int) +
-                          (Graph.TypeBHybridIncidence.nonWindowIncidences object
-                            data.threshold envelope windowSupport centre : Int)) ∧
-                  Graph.TypeBHybridIncidence.nonWindowDemand object
-                        data.threshold data.dischargeScale envelope windowSupport
-                        centre ≤
-                      (data.dischargeScale : Int) *
-                        (Graph.TypeBHybridIncidence.nonWindowIncidences object
-                          data.threshold envelope windowSupport centre : Int) ∧
-                  (2 ≤ Graph.TypeBFanIncidence.closedCount object data.threshold
-                      envelope centre →
-                    0 < Graph.TypeBFanIncidence.scaledDeficit object
-                      data.threshold data.dischargeScale envelope centre)
+  ∀ (packing : Finset (Finset object.Vertex)) (core centres : Finset object.Vertex),
+    TypeBSupport data object packing core centres →
+      ∀ centre ∈ centres, ∀ envelope windowSupport : Finset object.Vertex,
+        HybridB1Entry data object centre envelope windowSupport
 
-/-- Node `[72]`/`[81]`, direct-cycle arm, on the indexed `[177]` lane. -/
-noncomputable def AbsorbedGermFanDirectCycleStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop := by
-  classical
-  exact AbsorbedGermFanCertificateMarkedStatement data object ∧
-    ∃ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) object)
-        (centre : object.Vertex),
-      AbsorbedGermFanEnvelopeWitness data object germ centre ∧
-        Graph.TypeBDirectCycle.DirectCycleConfiguration object data.windowOrder
-          data.LengthOK (canonicalWindowPacking data object) centre
-
-/-- Node `[72]`/`[81]`, direct-cycle-free arm, on the indexed `[177]` lane. -/
-noncomputable def AbsorbedGermFanDirectCycleFreeStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop := by
-  classical
-  exact AbsorbedGermFanCertificateMarkedStatement data object ∧
-    ∀ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) object)
-        (centre : object.Vertex),
-      AbsorbedGermFanEnvelopeWitness data object germ centre →
-        Graph.TypeBDirectCycle.DirectCycleFree object data.windowOrder data.LengthOK
-          (canonicalWindowPacking data object) centre
-
-/-- Node `[72]`/`[81]`, direct-cycle arm, on every paper-prescribed Type B
-carrier.  The same-token form tests the actual decorations against the exact
-packing retained from `[144]`. -/
+/-- Nodes `[72]`/`[81]`, direct-cycle arm (`lem:typeB-direct-fan-window-cycles`,
+`lem:typeB-two-window-cycles`): some assigned centre of some Type B support
+carries a direct fan-window configuration at the support's packing. -/
 noncomputable def TypeBFanDirectCycleStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBFanSupportWith data object (fun packing _piece centres =>
+  ∃ (packing : Finset (Finset object.Vertex)) (core centres : Finset object.Vertex),
+    TypeBSupport data object packing core centres ∧
       ∃ centre ∈ centres,
-        Graph.IsHighCentre object data.threshold centre ∧
-          Graph.TypeBDirectCycle.DirectCycleConfiguration object
-            data.windowOrder data.LengthOK packing centre) ∨
-    AbsorbedGermFanDirectCycleStatement data object ∨
-    ∃ packing : Finset (Finset object.Vertex),
-      object.IsWindowPacking data.windowOrder packing ∧
-        packing.card = object.windowPackingNumber data.windowOrder ∧
-        ∃ core : Finset object.Vertex,
-          ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-              (handoffHighDegree data object)
-              (handoffAbsorbing data object packing),
-            envelope.core = core ∧ envelope.decorations.Nonempty ∧
-              (∀ centre ∈ envelope.decorations,
-                ∃ _marking : Graph.FanCertificateLabelling object
-                    data.windowOrder centre,
-                  object.degree centre ≤
-                    Graph.WindowCurvature.fanPackingCap data.windowOrder) ∧
-              ∃ centre ∈ envelope.decorations,
-                Graph.IsHighCentre object data.threshold centre ∧
-                  Graph.TypeBDirectCycle.DirectCycleConfiguration object
-                    data.windowOrder data.LengthOK packing centre
+        Graph.TypeBDirectCycle.DirectCycleConfiguration object
+          data.windowOrder data.LengthOK packing centre
 
-/-- Node `[72]`/`[81]`, direct-cycle-free arm, on every paper-prescribed Type B
-carrier.  The same-token form retains the marked envelope and records the
-absence of every direct configuration at its actual decorations. -/
+/-- Nodes `[72]`/`[81]`, direct-cycle-free arm
+(`def:direct-cycle-free-closed-pair`): the exact negation. -/
 noncomputable def TypeBFanDirectCycleFreeStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBFanSupportWith data object (fun packing _piece centres =>
+  ∀ (packing : Finset (Finset object.Vertex)) (core centres : Finset object.Vertex),
+    TypeBSupport data object packing core centres →
       ∀ centre ∈ centres,
-        Graph.IsHighCentre object data.threshold centre →
-          Graph.TypeBDirectCycle.DirectCycleFree object data.windowOrder
-            data.LengthOK packing centre) ∨
-    AbsorbedGermFanDirectCycleFreeStatement data object ∨
-    ∃ packing : Finset (Finset object.Vertex),
-      object.IsWindowPacking data.windowOrder packing ∧
-        packing.card = object.windowPackingNumber data.windowOrder ∧
-        ∃ core : Finset object.Vertex,
-          ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-              (handoffHighDegree data object)
-              (handoffAbsorbing data object packing),
-            envelope.core = core ∧ envelope.decorations.Nonempty ∧
-              (∀ centre ∈ envelope.decorations,
-                ∃ _marking : Graph.FanCertificateLabelling object
-                    data.windowOrder centre,
-                  object.degree centre ≤
-                    Graph.WindowCurvature.fanPackingCap data.windowOrder) ∧
-              ∀ centre ∈ envelope.decorations,
-                Graph.IsHighCentre object data.threshold centre →
-                  Graph.TypeBDirectCycle.DirectCycleFree object
-                    data.windowOrder data.LengthOK packing centre
+        Graph.TypeBDirectCycle.DirectCycleFree object data.windowOrder
+          data.LengthOK packing centre
 
-/-- Node `[72]`/`[81]`, B2 yes arm, on the literal indexed `[177]` fan datum.
-For every retained cold-corridor witness, its actual heavy centre admits the
-paper's candidate entry on that same first-failure support.  The singleton is
-the one centre whose discarded half-edge is being charged; no decorated Type A
-core is manufactured. -/
-noncomputable def AbsorbedGermFanB2ChoiceStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop := by
-  classical
-  let packing := canonicalWindowPacking data object
-  exact AbsorbedGermFanDirectCycleFreeStatement data object ∧
-    ∀ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) object)
-        (centre : object.Vertex),
-      AbsorbedGermFanEnvelopeWitness data object germ centre →
-        Graph.TypeBRefinedSupport.HasDisjointChoice object data.threshold
-          data.dischargeScale packing germ.support {centre} {centre}
-
-/-- Node `[72]`/`[81]`, B2 no arm, on the literal indexed `[177]` fan datum.
-The published failure is the paper's genuine minimal overlap obstruction on
-the same first-failure support and its actual heavy centre. -/
-noncomputable def AbsorbedGermFanB2ObstructionStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop := by
-  classical
-  let packing := canonicalWindowPacking data object
-  exact AbsorbedGermFanDirectCycleFreeStatement data object ∧
-    ∃ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) object)
-        (centre : object.Vertex),
-      AbsorbedGermFanEnvelopeWitness data object germ centre ∧
-        Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction object
-          data.threshold data.dischargeScale packing germ.support {centre})
-
-/-- Nodes `[74]`/`[82]` on the indexed `[177]` lane.  This is the literal
-successful B2(a)--(c) datum on the first-failure support: it retains the
-chosen `DisjointChoice`, hence all of its candidate and pairwise-disjoint
-carrier fields, and records the candidate's nonnegative augmented payment.
-It deliberately does not manufacture a canonical remainder piece or assert
-the post-ledger Type A component conclusions that require one. -/
-noncomputable def AbsorbedGermFanB2PaidStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop := by
-  classical
-  let packing := canonicalWindowPacking data object
-  exact AbsorbedGermFanB2ChoiceStatement data object ∧
-    ∀ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) object)
-        (centre : object.Vertex),
-      AbsorbedGermFanEnvelopeWitness data object germ centre →
-        ∃ choice : Graph.TypeBRefinedSupport.DisjointChoice object
-            data.threshold data.dischargeScale packing germ.support {centre} {centre},
-          ∀ member : centre ∈ ({centre} : Finset object.Vertex),
-            (choice.entry centre member).EntryRefines data.threshold
-              data.dischargeScale germ.support centre
-
-/-- Node `[84]` on the indexed `[177]` B2-failure lane.  The mass estimate is
-attached to the same corridor indices, actual heavy centre, first-failure
-support, and minimal overlap obstruction; no canonical support is substituted. -/
-noncomputable def AbsorbedGermFanB2ObstructionMassStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop := by
-  classical
-  let packing := canonicalWindowPacking data object
-  exact AbsorbedGermFanDirectCycleFreeStatement data object ∧
-    ∃ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) object)
-        (centre : object.Vertex),
-      AbsorbedGermFanEnvelopeWitness data object germ centre ∧
-        Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction object
-          data.threshold data.dischargeScale packing germ.support {centre}) ∧
-        ∀ envelope : Finset object.Vertex,
-          Graph.TypeBEnvelopeCharge.envelopeNegativePart object data.threshold
-              data.dischargeScale envelope centre ≤
-            data.bridgeMassFactor * data.dischargeScale *
-              (object.degree centre - data.threshold)
-
-/-- Node `[75]`/`[84]` on the indexed `[177]` certificate-residual lane. -/
-noncomputable def AbsorbedGermFanCertificateResidualMassStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop := by
-  classical
-  exact AbsorbedGermDecoratedAssignedSupportStatement data object ∧
-    ∃ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) object)
-        (centre : object.Vertex),
-      AbsorbedGermFanEnvelopeWitness data object germ centre ∧
-        IsEmpty (Graph.FanCertificateLabelling object data.windowOrder centre) ∧
-        ∀ envelope : Finset object.Vertex,
-          Graph.TypeBEnvelopeCharge.envelopeNegativePart object data.threshold
-              data.dischargeScale envelope centre ≤
-            data.bridgeMassFactor * data.dischargeScale *
-              (object.degree centre - data.threshold)
-
-/-- Node `[75]`/`[84]`, certificate-residual mass, on either Type B carrier. -/
-noncomputable def TypeBFanCertificateResidualMassStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBFanSupportWith data object (fun _packing _piece centres =>
-      ∃ centre ∈ centres,
-        Graph.IsHighCentre object data.threshold centre ∧
-          IsEmpty (Graph.FanCertificateLabelling object data.windowOrder centre) ∧
-          ∀ envelope : Finset object.Vertex,
-            Graph.TypeBEnvelopeCharge.envelopeNegativePart object data.threshold
-                data.dischargeScale envelope centre ≤
-              data.bridgeMassFactor * data.dischargeScale *
-                (object.degree centre - data.threshold)) ∨
-    AbsorbedGermFanCertificateResidualMassStatement data object ∨
-    (∃ packing : Finset (Finset object.Vertex),
-      object.IsWindowPacking data.windowOrder packing ∧
-        packing.card = object.windowPackingNumber data.windowOrder ∧
-        ∃ core : Finset object.Vertex,
-          ∃ handoff : Graph.DecoratedHandoff.Envelope object data.LengthOK
-              (handoffHighDegree data object)
-              (handoffAbsorbing data object packing),
-            handoff.core = core ∧ handoff.decorations.Nonempty ∧
-              ∃ centre ∈ handoff.decorations,
-                Graph.IsHighCentre object data.threshold centre ∧
-                  IsEmpty (Graph.FanCertificateLabelling object
-                    data.windowOrder centre) ∧
-                  ∀ envelope : Finset object.Vertex,
-                    Graph.TypeBEnvelopeCharge.envelopeNegativePart object
-                        data.threshold data.dischargeScale envelope centre ≤
-                      data.bridgeMassFactor * data.dischargeScale *
-                        (object.degree centre - data.threshold))
-
-/-- The assigned centres of either manuscript form are high centres, and they
-include every high centre of the counted core (`def:typeB-assigned-ledger`):
-for the ordinary support they are exactly the core's high centres; for a
-decorated handoff envelope the core has `σ = 0`, hence no high centre, and the
-decorations are high by `def:decorated-fan-envelope`. -/
-theorem TypeBAssignedCentres.high (data : Parameters) (object : Graph.FiniteObject.{u})
-    {packing : Finset (Finset object.Vertex)} {piece centres : Finset object.Vertex}
-    (assigned : TypeBAssignedCentres data object packing piece centres) :
-    ∀ centre ∈ centres, Graph.IsHighCentre object data.threshold centre := by
-  intro centre member
-  rcases assigned with ⟨_, _, rfl⟩ | ⟨_, _, envelope, _, rfl, _, _⟩
-  · exact (Graph.TypeBRefinedSupport.mem_centres.mp member).2
-  · exact envelope.decorations_high centre member
-
-theorem TypeBAssignedCentres.centres_subset (data : Parameters)
-    (object : Graph.FiniteObject.{u})
-    {packing : Finset (Finset object.Vertex)} {piece centres : Finset object.Vertex}
-    (assigned : TypeBAssignedCentres data object packing piece centres) :
-    Graph.TypeBRefinedSupport.centres object data.threshold piece ⊆ centres := by
-  rcases assigned with ⟨_, _, rfl⟩ | ⟨_, zero, _⟩
-  · exact Finset.Subset.refl _
-  · intro centre member
-    exfalso
-    obtain ⟨inPiece, high⟩ := Graph.TypeBRefinedSupport.mem_centres.mp member
-    have : object.degree centre - data.threshold = 0 := by
-      unfold Graph.FiniteObject.ambientSurplus at zero
-      exact Finset.sum_eq_zero_iff.mp zero centre inPiece
-    exact absurd high (by
-      show ¬ data.threshold < object.degree centre
-      omega)
-
-/-- **The assigned Type B support as the B2 ledger reads it**: a canonical piece
-of the remainder of a maximal packing (`CanonicalPiece`, whose vertex set is
-the counted core `Y_X`) with assigned centres `H_X` in either manuscript form,
-and a clause `P` about the packing, the piece and the centres. -/
-def TypeBAssignedLedgerWith (data : Parameters) (object : Graph.FiniteObject.{u})
-    (P : (packing : Finset (Finset object.Vertex)) →
-      Graph.TypeBRefinedSupport.CanonicalPiece object packing →
-      Finset object.Vertex → Prop) : Prop :=
-  ∃ packing : Finset (Finset object.Vertex),
-    object.IsWindowPacking data.windowOrder packing ∧
-      (∀ window : Finset object.Vertex,
-        object.InducesWindow data.windowOrder window →
-        ∃ member ∈ packing, ¬ Disjoint window member) ∧
-      ∃ canonicalPiece : Graph.TypeBRefinedSupport.CanonicalPiece object packing,
-        ∃ centres : Finset object.Vertex,
-          TypeBAssignedCentres data object packing canonicalPiece.vertices centres ∧
-            P packing canonicalPiece centres
-
-/-- Node `[72]`/`[81]`, B2 yes arm, on every paper-prescribed Type B input.
-The same-token form retains `[144]`'s literal maximal packing, core, marked
-envelope, and direct-cycle-free readings.  Its B2 support is the manuscript's
-assigned support `X = (Y_X, H_X)`, namely `Y_X = core` and
-`H_X = envelope.decorations`; no canonical remainder component is substituted. -/
+/-- Nodes `[72]`/`[81]`, B2 yes arm (`def:typeB-bridge-statements`): every
+Type B support admits a disjoint choice of candidate ledger entries at its
+assigned centres. -/
 noncomputable def TypeBB2ChoiceStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBAssignedLedgerWith data object (fun packing canonicalPiece centres =>
-    Graph.TypeBRefinedSupport.HasDisjointChoice object data.threshold
-      data.dischargeScale packing canonicalPiece.vertices centres centres) ∨
-  AbsorbedGermFanB2ChoiceStatement data object ∨
-  ∃ packing : Finset (Finset object.Vertex),
-    object.IsWindowPacking data.windowOrder packing ∧
-      packing.card = object.windowPackingNumber data.windowOrder ∧
-      ∃ core : Finset object.Vertex,
-        ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-            (handoffHighDegree data object)
-            (handoffAbsorbing data object packing),
-          envelope.core = core ∧ envelope.decorations.Nonempty ∧
-            (∀ centre ∈ envelope.decorations,
-              ∃ _marking : Graph.FanCertificateLabelling object
-                  data.windowOrder centre,
-                object.degree centre ≤
-                  Graph.WindowCurvature.fanPackingCap data.windowOrder) ∧
-            (∀ centre ∈ envelope.decorations,
-              Graph.IsHighCentre object data.threshold centre →
-                Graph.TypeBDirectCycle.DirectCycleFree object
-                  data.windowOrder data.LengthOK packing centre) ∧
-            Graph.TypeBRefinedSupport.HasDisjointChoice object data.threshold
-              data.dischargeScale packing core envelope.decorations
-                envelope.decorations
+  ∀ (packing : Finset (Finset object.Vertex)) (core centres : Finset object.Vertex),
+    TypeBSupport data object packing core centres →
+      Graph.TypeBRefinedSupport.HasDisjointChoice object data.threshold
+        data.dischargeScale packing core centres centres
 
-/-- Node `[72]`/`[81]`, B2 no arm, on every paper-prescribed Type B input.
-The same-token form publishes the paper's minimal failed demand subfamily on
-the exact assigned support `(core, envelope.decorations)` while retaining every
-incoming `[144]` fact. -/
+/-- Nodes `[73]`/`[83]`, B2 no arm (`lem:typeB-bridge-to-overlap`): some Type B
+support carries a minimal overlap obstruction.  This is the positive form of the
+exact negation of the yes arm: at high centres a disjoint choice fails exactly
+when a minimal overlap obstruction exists. -/
 noncomputable def TypeBB2ObstructionStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBAssignedLedgerWith data object (fun packing canonicalPiece centres =>
-    Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction object
-      data.threshold data.dischargeScale packing canonicalPiece.vertices
-      centres)) ∨
-  AbsorbedGermFanB2ObstructionStatement data object ∨
-  ∃ packing : Finset (Finset object.Vertex),
-    object.IsWindowPacking data.windowOrder packing ∧
-      packing.card = object.windowPackingNumber data.windowOrder ∧
-      ∃ core : Finset object.Vertex,
-        ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-            (handoffHighDegree data object)
-            (handoffAbsorbing data object packing),
-          envelope.core = core ∧ envelope.decorations.Nonempty ∧
-            (∀ centre ∈ envelope.decorations,
-              ∃ _marking : Graph.FanCertificateLabelling object
-                  data.windowOrder centre,
-                object.degree centre ≤
-                  Graph.WindowCurvature.fanPackingCap data.windowOrder) ∧
-            (∀ centre ∈ envelope.decorations,
-              Graph.IsHighCentre object data.threshold centre →
-                Graph.TypeBDirectCycle.DirectCycleFree object
-                  data.windowOrder data.LengthOK packing centre) ∧
-            Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction object
-              data.threshold data.dischargeScale packing core
-                envelope.decorations)
+  ∃ (packing : Finset (Finset object.Vertex)) (core centres : Finset object.Vertex),
+    TypeBSupport data object packing core centres ∧
+      Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction object
+        data.threshold data.dischargeScale packing core centres)
 
-/-- `prop:typeB-global-local-bridge` on the literal B2-obstruction carrier.
-The canonical arm enriches its actual obstruction with the complete five-clause
-reflection.  The two auxiliary handoff arms are retained verbatim: neither is
-silently converted into a canonical remainder component. -/
+/-- `prop:typeB-global-local-bridge`: every minimal overlap obstruction of a
+Type B support with a canonical core inherits the five global-to-local
+constraints of `lem:typeB-global-local-reflection`. -/
 noncomputable def TypeBGlobalLocalBridgeStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  TypeBAssignedLedgerWith data object (fun packing canonicalPiece centres =>
-    ∃ obstruction : Graph.TypeBRefinedSupport.OverlapObstruction object
-        data.threshold data.dischargeScale packing canonicalPiece.vertices centres,
-      Graph.TypeBRefinedSupport.GlobalLocalReflectionACE data.typeABPresentation
-        object data.windowOrder data.LengthOK data.threshold data.dischargeScale
-        canonicalPiece centres obstruction) ∨
-  AbsorbedGermFanB2ObstructionStatement data object ∨
-  (∃ packing : Finset (Finset object.Vertex),
-    object.IsWindowPacking data.windowOrder packing ∧
-      packing.card = object.windowPackingNumber data.windowOrder ∧
-      ∃ core : Finset object.Vertex,
-        ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-            (handoffHighDegree data object)
-            (handoffAbsorbing data object packing),
-          envelope.core = core ∧ envelope.decorations.Nonempty ∧
-            (∀ centre ∈ envelope.decorations,
-              ∃ _marking : Graph.FanCertificateLabelling object
-                  data.windowOrder centre,
-                object.degree centre ≤
-                  Graph.WindowCurvature.fanPackingCap data.windowOrder) ∧
-            (∀ centre ∈ envelope.decorations,
-              Graph.IsHighCentre object data.threshold centre →
-                Graph.TypeBDirectCycle.DirectCycleFree object
-                  data.windowOrder data.LengthOK packing centre) ∧
-            Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction object
-              data.threshold data.dischargeScale packing core
-                envelope.decorations))
+  ∀ (packing : Finset (Finset object.Vertex))
+      (piece : Graph.TypeBRefinedSupport.CanonicalPiece object packing)
+      (centres : Finset object.Vertex),
+    TypeBSupport data object packing piece.vertices centres →
+      ∀ obstruction : Graph.TypeBRefinedSupport.OverlapObstruction object
+          data.threshold data.dischargeScale packing piece.vertices centres,
+        Graph.TypeBRefinedSupport.GlobalLocalReflectionACE data.typeABPresentation
+          object data.windowOrder data.LengthOK data.threshold
+          data.dischargeScale piece centres obstruction
 
-/-- **The envelope produced is admissible Type B fan-envelope data**
-(`lem:decorated-fan-admissibility`).  This is the handoff interface, and by
-`rem:typeA-typeB-stratification` it uses no conclusion of
-`lem:typeB-exclusion`. -/
-def HandoffAdmissible (data : Parameters) (object : Graph.FiniteObject.{u})
-    (packing : Finset (Finset object.Vertex))
-    (piece : Finset object.Vertex) : Prop :=
-  ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-      (handoffHighDegree data object) (handoffAbsorbing data object packing),
-    envelope.core = piece ∧ envelope.decorations.Nonempty ∧
-      Graph.DecoratedHandoff.Admissible object data.LengthOK
-        (handoffUncompressible data object) (handoffWindowFree data object)
-        envelope
+/-- The envelope residual charge bound of `def:typeB-residual-mass` at one
+assigned centre. -/
+noncomputable def CentreBridgeMassBound (data : Parameters)
+    (object : Graph.FiniteObject.{u}) (centre : object.Vertex) : Prop :=
+  ∀ envelope : Finset object.Vertex,
+    Graph.TypeBEnvelopeCharge.envelopeNegativePart object data.threshold
+        data.dischargeScale envelope centre ≤
+      data.bridgeMassFactor * data.dischargeScale *
+        (object.degree centre - data.threshold)
+
+/-- Nodes `[75]`/`[84]`, certificate-residual mass: a fan-certificate residual
+centre of a Type B support, charged to its assigned surplus. -/
+noncomputable def TypeBFanCertificateResidualMassStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ (packing : Finset (Finset object.Vertex)) (core centres : Finset object.Vertex),
+    TypeBSupport data object packing core centres ∧
+      ∃ centre ∈ centres,
+        IsEmpty (Graph.FanCertificateLabelling object data.windowOrder centre) ∧
+          CentreBridgeMassBound data object centre
 
 /-- `def:decorated-fan-envelope`, the selected-handoff instance of
 `def:typeB-assigned-ledger`, and `lem:decorated-fan-admissibility`: the complete
@@ -1710,148 +1199,161 @@ noncomputable abbrev HighCentreNormalFormStatement
     Graph.IsHighCentre object data.threshold centre →
     Graph.NormalForm object data.threshold centre)
 
-/-- The B2-success arm: the selected canonical piece carries the one disjoint
-candidate ledger, its exact augmented-ledger refinement, the inherited Type A
-hygiene of every remaining component, and the grouped exit-`(7)` handoff
-coverage used by B2(d). -/
+/-- The remaining scaled core charge of one B2 disjoint ledger: the
+post-ledger core charge summed by `prop:typeB-bridge-reduction`. -/
+noncomputable def RemainingCoreCharge (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    {packing : Finset (Finset object.Vertex)}
+    {core centres : Finset object.Vertex}
+    (ledger : Graph.TypeBRefinedSupport.DisjointLedger object data.threshold
+      data.dischargeScale packing core centres) : Int :=
+  ∑ vertex ∈ ledger.remainingCore,
+    Graph.TypeBRefinedSupport.scaledCoreCharge object data.threshold
+      data.dischargeScale core vertex
+
+/-- Every remaining component of one B2 disjoint ledger carries the post-ledger
+Type A hygiene of `lem:typeB-postledger-core-hygiene`. -/
+noncomputable def PostLedgerComponents (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    {packing : Finset (Finset object.Vertex)}
+    {piece : Graph.TypeBRefinedSupport.CanonicalPiece object packing}
+    {centres : Finset object.Vertex}
+    (ledger : Graph.TypeBRefinedSupport.DisjointLedger object data.threshold
+      data.dischargeScale packing piece.vertices centres) : Prop :=
+  ∀ component : Graph.SupportComponents.Connected.Component
+        object ledger.remainingCore,
+    component ∈ Graph.SupportComponents.Connected.order object
+        ledger.remainingCore →
+      Graph.TypeBPostLedgerCore.PostLedgerComponent
+        data.typeABPresentation ledger component
+
+/-- B2(d): the exit-`(7)` productions of any family of remaining components of
+one B2 disjoint ledger form a grouped decorated envelope on exactly those
+components. -/
+noncomputable def GroupedEnvelopeCoverage (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    {packing : Finset (Finset object.Vertex)}
+    {piece : Graph.TypeBRefinedSupport.CanonicalPiece object packing}
+    {centres : Finset object.Vertex}
+    (ledger : Graph.TypeBRefinedSupport.DisjointLedger object data.threshold
+      data.dischargeScale packing piece.vertices centres) : Prop :=
+  ∀ components :
+      Finset (Graph.TypeBMaximalCompletion.RemainingComponent ledger),
+    (∀ component ∈ components,
+      component ∈ Graph.SupportComponents.Connected.order object
+        ledger.remainingCore) →
+      ∀ production : ∀ component :
+          Graph.TypeBMaximalCompletion.SelectedComponent ledger components,
+        Graph.TypeBMaximalCompletion.ComponentExitSeven ledger
+          component.1 data.LengthOK (handoffHighDegree data object)
+          (handoffAbsorbing data object packing),
+        ∃ grouped :
+          Graph.DecoratedHandoff.GroupedEnvelopes object
+            data.LengthOK (handoffUncompressible data object)
+            (handoffWindowFree data object)
+            (handoffHighDegree data object)
+            (handoffAbsorbing data object packing)
+            (Graph.TypeBMaximalCompletion.SelectedComponent ledger components),
+          (∀ component :
+              Graph.TypeBMaximalCompletion.SelectedComponent ledger components,
+            (grouped.envelope component).core =
+              Graph.SupportComponents.Connected.vertices object
+                ledger.remainingCore component.1) ∧
+            ∀ centre : object.Vertex,
+              centre ∈ grouped.centres ↔
+                ∃ component :
+                  Graph.TypeBMaximalCompletion.SelectedComponent ledger
+                    components,
+                  centre = (production component).separation.separator
+
+/-- Node `[74]`/`[82]`, the B2 refinement (`def:typeB-bridge-statements`
+B2(a)--(d)): every Type B support has a disjoint choice whose entries refine
+their candidate charge, and every Type B support with a canonical core carries
+one disjoint ledger with its exact augmented refinement, its post-ledger core
+hygiene, and its grouped envelope coverage. -/
 noncomputable abbrev TypeBDisjointLedgerStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  (TypeBAssignedLedgerWith data object (fun packing canonicalPiece centres =>
-          ∃ ledger : Graph.TypeBRefinedSupport.DisjointLedger object
-              data.threshold data.dischargeScale packing
-                canonicalPiece.vertices centres,
-            ledger.ExactAugmentedLedgerRefinement ∧
-              (∀ component : Graph.SupportComponents.Connected.Component
-                    object ledger.remainingCore,
-                  component ∈ Graph.SupportComponents.Connected.order object
-                      ledger.remainingCore →
-                    Graph.TypeBPostLedgerCore.PostLedgerComponent
-                      data.typeABPresentation ledger component) ∧
-              ∀ components :
-                  Finset (Graph.TypeBMaximalCompletion.RemainingComponent
-                    ledger),
-                (∀ component ∈ components,
-                  component ∈ Graph.SupportComponents.Connected.order object
-                    ledger.remainingCore) →
-                  ∀ production : ∀ component :
-                      Graph.TypeBMaximalCompletion.SelectedComponent ledger
-                        components,
-                    Graph.TypeBMaximalCompletion.ComponentExitSeven ledger
-                      component.1 data.LengthOK (handoffHighDegree data object)
-                      (handoffAbsorbing data object packing),
-                    ∃ grouped :
-                      Graph.DecoratedHandoff.GroupedEnvelopes object
-                        data.LengthOK (handoffUncompressible data object)
-                        (handoffWindowFree data object)
-                        (handoffHighDegree data object)
-                        (handoffAbsorbing data object packing)
-                        (Graph.TypeBMaximalCompletion.SelectedComponent
-                          ledger components),
-                      (∀ component :
-                          Graph.TypeBMaximalCompletion.SelectedComponent
-                            ledger components,
-                        (grouped.envelope component).core =
-                          Graph.SupportComponents.Connected.vertices object
-                            ledger.remainingCore component.1) ∧
-                        ∀ centre : object.Vertex,
-                          centre ∈ grouped.centres ↔
-                            ∃ component :
-                              Graph.TypeBMaximalCompletion.SelectedComponent
-                                ledger components,
-                              centre =
-                                (production component).separation.separator)) ∨
-    AbsorbedGermFanB2PaidStatement data object ∨
-    (∃ packing : Finset (Finset object.Vertex),
-      object.IsWindowPacking data.windowOrder packing ∧
-        packing.card = object.windowPackingNumber data.windowOrder ∧
-        ∃ core : Finset object.Vertex,
-          ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-              (handoffHighDegree data object)
-              (handoffAbsorbing data object packing),
-            envelope.core = core ∧ envelope.decorations.Nonempty ∧
-              (∀ centre ∈ envelope.decorations,
-                ∃ _marking : Graph.FanCertificateLabelling object
-                    data.windowOrder centre,
-                  object.degree centre ≤
-                    Graph.WindowCurvature.fanPackingCap data.windowOrder) ∧
-              (∀ centre ∈ envelope.decorations,
-                Graph.IsHighCentre object data.threshold centre →
-                  Graph.TypeBDirectCycle.DirectCycleFree object
-                    data.windowOrder data.LengthOK packing centre) ∧
-              ∃ choice : Graph.TypeBRefinedSupport.DisjointChoice object
-                  data.threshold data.dischargeScale packing core
-                    envelope.decorations envelope.decorations,
-                ∀ centre (member : centre ∈ envelope.decorations),
-                  (choice.entry centre member).EntryRefines data.threshold
-                    data.dischargeScale core centre)
+  (∀ (packing : Finset (Finset object.Vertex)) (core centres : Finset object.Vertex),
+    TypeBSupport data object packing core centres →
+      ∃ choice : Graph.TypeBRefinedSupport.DisjointChoice object
+          data.threshold data.dischargeScale packing core centres centres,
+        ∀ centre (member : centre ∈ centres),
+          (choice.entry centre member).EntryRefines data.threshold
+            data.dischargeScale core centre) ∧
+  ∀ (packing : Finset (Finset object.Vertex))
+      (piece : Graph.TypeBRefinedSupport.CanonicalPiece object packing)
+      (centres : Finset object.Vertex),
+    TypeBCanonicalSupport data object packing piece centres →
+      ∃ ledger : Graph.TypeBRefinedSupport.DisjointLedger object
+          data.threshold data.dischargeScale packing piece.vertices centres,
+        ledger.ExactAugmentedLedgerRefinement ∧
+          PostLedgerComponents data object ledger ∧
+          GroupedEnvelopeCoverage data object ledger
 
-/-- Nodes `[83]`/`[84]`: the fan-mass bound instantiated at the selected
-minimal overlap obstruction. -/
-noncomputable abbrev TypeBOverlapObstructionMassStatement
+/-- Node `[74]`/`[82]`, `prop:typeB-bridge-reduction`: on a Type B support with
+a canonical core, a B2 disjoint ledger whose remaining core charge is
+nonnegative gives `N₀(X) ≥ 0`. -/
+noncomputable abbrev TypeBExcludedStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  (TypeBAssignedLedgerWith data object (fun packing canonicalPiece centres =>
-          Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction object
-            data.threshold data.dischargeScale packing
-              canonicalPiece.vertices centres) ∧
-          ∀ centre ∈ centres,
-            ∀ envelope : Finset object.Vertex,
-              Graph.TypeBEnvelopeCharge.envelopeNegativePart object
-                  data.threshold data.dischargeScale envelope centre ≤
-                data.bridgeMassFactor * data.dischargeScale *
-                  (object.degree centre - data.threshold))) ∨
-    AbsorbedGermFanB2ObstructionMassStatement data object ∨
-    (∃ packing : Finset (Finset object.Vertex),
-      object.IsWindowPacking data.windowOrder packing ∧
-        packing.card = object.windowPackingNumber data.windowOrder ∧
-        ∃ core : Finset object.Vertex,
-          ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-              (handoffHighDegree data object)
-              (handoffAbsorbing data object packing),
-            envelope.core = core ∧ envelope.decorations.Nonempty ∧
-              (∀ centre ∈ envelope.decorations,
-                ∃ _marking : Graph.FanCertificateLabelling object
-                    data.windowOrder centre,
-                  object.degree centre ≤
-                    Graph.WindowCurvature.fanPackingCap data.windowOrder) ∧
-              (∀ centre ∈ envelope.decorations,
-                Graph.IsHighCentre object data.threshold centre →
-                  Graph.TypeBDirectCycle.DirectCycleFree object
-                    data.windowOrder data.LengthOK packing centre) ∧
-              Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction object
-                data.threshold data.dischargeScale packing core
-                  envelope.decorations) ∧
-              ∀ centre ∈ envelope.decorations,
-                ∀ localEnvelope : Finset object.Vertex,
-                  Graph.TypeBEnvelopeCharge.envelopeNegativePart object
-                      data.threshold data.dischargeScale localEnvelope centre ≤
-                    data.bridgeMassFactor * data.dischargeScale *
-                      (object.degree centre - data.threshold))
+  ∀ (packing : Finset (Finset object.Vertex))
+      (piece : Graph.TypeBRefinedSupport.CanonicalPiece object packing)
+      (centres : Finset object.Vertex),
+    TypeBCanonicalSupport data object packing piece centres →
+      ∀ ledger : Graph.TypeBRefinedSupport.DisjointLedger object
+          data.threshold data.dischargeScale packing piece.vertices centres,
+        0 ≤ RemainingCoreCharge data object ledger →
+          object.NonNegativeNetCharge piece.vertices data.threshold
+            data.dischargeScale
 
-/-- Nodes `[76]`/`[85]`: the fan-mass bound instantiated at the selected
-failure of the disjoint B2 ledger. -/
+/-- Node `[76]`/`[85]`: a Type B support with a canonical core carries negative
+net charge, so by the bridge reduction its B2 ledger leaves a negative
+post-ledger core --- the Type B support carries its deficit only through the
+route-`8` residual. -/
+noncomputable abbrev TypeBExclusionResidualStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop :=
+  ∀ (packing : Finset (Finset object.Vertex))
+      (piece : Graph.TypeBRefinedSupport.CanonicalPiece object packing)
+      (centres : Finset object.Vertex),
+    TypeBCanonicalSupport data object packing piece centres →
+      ∃ ledger : Graph.TypeBRefinedSupport.DisjointLedger object
+          data.threshold data.dischargeScale packing piece.vertices centres,
+        ledger.ExactAugmentedLedgerRefinement ∧
+          PostLedgerComponents data object ledger ∧
+          ¬ 0 ≤ RemainingCoreCharge data object ledger
+
+/-- Nodes `[76]`/`[85]`: the fan-mass bound at every assigned centre of the
+negative post-ledger residual. -/
 noncomputable abbrev TypeBExclusionResidualMassStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  TypeBAssignedLedgerWith data object (fun packing canonicalPiece centres =>
+  ∀ (packing : Finset (Finset object.Vertex))
+      (piece : Graph.TypeBRefinedSupport.CanonicalPiece object packing)
+      (centres : Finset object.Vertex),
+    TypeBCanonicalSupport data object packing piece centres →
       ∃ ledger : Graph.TypeBRefinedSupport.DisjointLedger object
-          data.threshold data.dischargeScale packing
-            canonicalPiece.vertices centres,
+          data.threshold data.dischargeScale packing piece.vertices centres,
         ledger.ExactAugmentedLedgerRefinement ∧
-          (¬ (0 : Int) ≤ ∑ vertex ∈ ledger.remainingCore,
-            Graph.TypeBRefinedSupport.scaledCoreCharge object
-              data.threshold data.dischargeScale canonicalPiece.vertices
-              vertex) ∧
-          ∀ centre ∈ centres,
-            ∀ envelope : Finset object.Vertex,
-              Graph.TypeBEnvelopeCharge.envelopeNegativePart object
-              data.threshold data.dischargeScale envelope centre ≤
-                data.bridgeMassFactor * data.dischargeScale *
-                  (object.degree centre - data.threshold))
+          ¬ 0 ≤ RemainingCoreCharge data object ledger ∧
+          ∀ centre ∈ centres, CentreBridgeMassBound data object centre
+
+/-- Nodes `[73]`/`[75]`, `[83]`/`[84]`: the fan-mass bound at every assigned
+centre of a Type B support carrying a minimal overlap obstruction. -/
+noncomputable abbrev TypeBOverlapObstructionMassStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop :=
+  ∃ (packing : Finset (Finset object.Vertex)) (core centres : Finset object.Vertex),
+    TypeBSupport data object packing core centres ∧
+      Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction object
+        data.threshold data.dischargeScale packing core centres) ∧
+      ∀ centre ∈ centres, CentreBridgeMassBound data object centre
 
 /-- Nodes `[73]`/`[75]` and `[83]`/`[84]`: the Type B residual fan-mass facts
 for certificate residuals, overlap obstructions, and grouped decorated
@@ -1991,67 +1493,5 @@ noncomputable abbrev TypeBBridgeSublinearStatement
               object.degreeSurplus data.threshold)) ∧
     object.degreeSurplus data.threshold ≤
       data.surplusThreshold object.vertexCount)
-
-/-- Node `[76]`/`[85]`, closed arm: the selected Type B ledger gives
-nonnegative net charge. -/
-noncomputable abbrev TypeBExcludedStatement
-    (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  -- Nodes `[74]`/`[82]`, the successful B2 reduction.  A canonical
-  -- assigned support publishes the paper's literal `N₀(X) ≥ 0`.
-  -- The indexed `[177]` lane publishes its literal paid B2 entry: that
-  -- lane has no canonical negative remainder support and must not be
-  -- relabelled as the B2-failure residual of `[84]`.
-  (TypeBAssignedLedgerWith data object
-      (fun _packing canonicalPiece _centres =>
-        object.NonNegativeNetCharge canonicalPiece.vertices data.threshold
-          data.dischargeScale)) ∨
-    AbsorbedGermFanB2PaidStatement data object ∨
-    (∃ packing : Finset (Finset object.Vertex),
-      object.IsWindowPacking data.windowOrder packing ∧
-        packing.card = object.windowPackingNumber data.windowOrder ∧
-        ∃ core : Finset object.Vertex,
-          ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-              (handoffHighDegree data object)
-              (handoffAbsorbing data object packing),
-            envelope.core = core ∧ envelope.decorations.Nonempty ∧
-              (∀ centre ∈ envelope.decorations,
-                ∃ _marking : Graph.FanCertificateLabelling object
-                    data.windowOrder centre,
-                  object.degree centre ≤
-                    Graph.WindowCurvature.fanPackingCap data.windowOrder) ∧
-              (∀ centre ∈ envelope.decorations,
-                Graph.IsHighCentre object data.threshold centre →
-                  Graph.TypeBDirectCycle.DirectCycleFree object
-                    data.windowOrder data.LengthOK packing centre) ∧
-              ∃ choice : Graph.TypeBRefinedSupport.DisjointChoice object
-                  data.threshold data.dischargeScale packing core
-                    envelope.decorations envelope.decorations,
-                ∀ centre (member : centre ∈ envelope.decorations),
-                  (choice.entry centre member).EntryRefines data.threshold
-                    data.dischargeScale core centre)
-
-/-- Node `[76]`/`[85]`, surviving arm: the Type B exclusion hypotheses are not
-all discharged on the selected B2 branch. -/
-noncomputable abbrev TypeBExclusionResidualStatement
-    (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  TypeBAssignedLedgerWith data object (fun packing canonicalPiece centres =>
-          ∃ ledger : Graph.TypeBRefinedSupport.DisjointLedger object
-              data.threshold data.dischargeScale packing
-                canonicalPiece.vertices centres,
-            ledger.ExactAugmentedLedgerRefinement ∧
-              (∀ component : Graph.SupportComponents.Connected.Component
-                    object ledger.remainingCore,
-                  component ∈ Graph.SupportComponents.Connected.order object
-                      ledger.remainingCore →
-                    Graph.TypeBPostLedgerCore.PostLedgerComponent
-                      data.typeABPresentation ledger component) ∧
-              ¬ (0 : Int) ≤ ∑ vertex ∈ ledger.remainingCore,
-                Graph.TypeBRefinedSupport.scaledCoreCharge object
-                  data.threshold data.dischargeScale canonicalPiece.vertices
-                  vertex)
 
 end Hypostructure.Graph.Strategy.Spine
