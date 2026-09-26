@@ -215,11 +215,10 @@ noncomputable def nearCubicColdNoHit
         (by key_fresh)).elimClosed (by infer_instance)).elim
   | .right unhitHistory => unhitHistory
 
-/-- **Nodes `[156]`--`[157]`: the bounded-configuration trichotomy and the finite
+/-- **Node `[157]`: the bounded-configuration trichotomy and the finite
 same-interface table** (`lem:cold-bounded-germ-trichotomy`,
 `lem:cold-same-interface-table`), and the local cold-terminal exclusion of
 `thm:cold-branch-quantitative-closure`. -/
--- EG-NODE [156] G2: target defect, exit (4), or handoff
 -- EG-NODE [157] G3 or same-interface table: compression
 noncomputable def nearCubicColdTable
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}

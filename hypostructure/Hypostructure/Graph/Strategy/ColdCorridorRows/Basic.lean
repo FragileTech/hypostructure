@@ -1,6 +1,7 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
 import Hypostructure.Graph.ColdIncrementArithmetic
 import Hypostructure.Graph.ColdGermFamily
+import Hypostructure.Graph.Contracts.Spine.ColdGerm
 
 namespace Hypostructure.Graph.Strategy.Spine
 
@@ -37,6 +38,24 @@ noncomputable instance instIncompatibleColdGermSomeRealizingSelection :
     obtain ⟨germ, _active, realizing⟩ := hit.down
     exact selected.down.1 (germ.target_of_realizing
       (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant realizing)
+
+/-! ## Node `[156]`: G2 closes
+
+`lem:cold-bounded-germ-trichotomy`, G2: *"The induced quotient is
+target-defective, so it is routed to the sparse exit or exit-(4) ledger.  Both
+are excluded by `def:surviving-cold-branch`."*  A hit-distinguished active
+configuration is the sparse surplus exit (b) of `def:named-surplus-exits`
+(`Contracts.Spine.sparseSurplusExit_of_distinguishing`), and the surviving
+branch retains the joint negation of the sparse exits as
+`K .sparseSurplusSurvivor`. -/
+noncomputable instance instIncompatibleColdGermSomeDistinguishingSurvivor :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K .coldGermSomeDistinguishing) (K .sparseSurplusSurvivor) where
+  contradiction := fun _residual hit survivor => by
+    obtain ⟨germ, _active, distinguishing⟩ := hit.down
+    exact survivor.down
+      (Contracts.Spine.sparseSurplusExit_of_distinguishing data.LengthOK germ
+        distinguishing)
 
 /-! ## Node `[168]`, `lem:symmetric-pair-endpoint`
 

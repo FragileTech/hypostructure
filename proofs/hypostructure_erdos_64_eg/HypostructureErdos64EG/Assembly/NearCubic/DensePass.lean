@@ -50,7 +50,7 @@ noncomputable abbrev denseLinearKeys : FactKeys EGInput.{u} :=
 normalization) because every return corridor of the dense residual is terminal:
 the boundaried pieces of `R` are induced-`P₁₃`-free and subcubic, hence of
 bounded diameter.  The first failures, the extracted family and `[154]` run as
-on the spine; G1 closes at `[155]`.  G2 is the `[156]` outcome.  On the silent
+on the spine; G1 closes at `[155]` and G2 at `[156]`.  On the silent
 arm `[157]` the only outcome not refuted by a ledger fact is the neutral
 equal-length terminal configuration `[163]`, a symmetry
 (`lem:neutral-germ-symmetry`): its canonical-replacement arm `[165]`--`[166]`
@@ -92,8 +92,10 @@ noncomputable def nearCubicDenseLinear
   match coldGermDistinctionDichotomy (data := spineData) unhit
       (by key_fresh) (by key_fresh) with
   | .left distinguishedHistory =>
-      exact Or.inr (Or.inr (Or.inr
-        ((nearCubicColdTable distinguishedHistory).get (K .coldBranchClosed)).down))
+      -- `[156]`: G2 is the sparse exit (b), excluded on the surviving branch.
+      exact ((closeIncompatible distinguishedHistory
+        (K .coldGermSomeDistinguishing) (K .sparseSurplusSurvivor)
+        (by key_fresh)).elimClosed (by infer_instance)).elim
   | .right silentHistory =>
       let neutralConfiguration :=
         (neutralEqualLengthTerminalRow (data := spineData)).run silentHistory
