@@ -62,9 +62,13 @@ abbrev PairTypeBOutcome (selected : EGInput.{u}) :=
     Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .sparseSurplusSurvivor selected.object)
 
-abbrev StrictSurplusBoundaryResult (selected : EGInput.{u}) :=
-  Sum (PLift (Node144aOutcome selected))
-    (Sum (PLift (PairTypeBOutcome selected))
-      ((K .pairConditionalFactorizationResidual).At selected))
+/-- The strict-surplus branch returns exactly the three root outcomes it can
+reach, as the literal disjunction the root boundary lists: the node-`[144a]`
+handoff, a `[179]`/`[180]` Type B entry, or the open node-`[182]` residual. -/
+abbrev StrictSurplusBoundaryResult (selected : EGInput.{u}) : Prop :=
+  Node144aOutcome selected ∨ PairTypeBOutcome selected ∨
+    Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData
+        .pairConditionalFactorizationResidual selected.object
 
 end HypostructureErdos64EG

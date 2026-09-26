@@ -4,8 +4,15 @@ import Hypostructure.Graph.Strategy.SpineRows.SingleOpenPortSuppressionWitness
 import Hypostructure.Graph.Strategy.SpineRows.SuppressedFamilyCriticalCycle
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SameTokenBottleneckRouting
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SameTokenTypeBFanEntry
+import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.HomogeneousBottleneckAudit
+import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.HomogeneousCapsClose
+import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.FibrePressure
+import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.PairFailureOverlap
+import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.PairOverlapSystem
+import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.PairPowerOfTwoCycle
+import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.PairSystemOutcome
 import Hypostructure.Graph.Strategy.SurplusRows
-import HypostructureErdos64EG.Assembly.Basic
+import HypostructureErdos64EG.Assembly.Surplus.Boundary
 
 /-!
 # Assembly: Surplus / Local
@@ -89,293 +96,188 @@ noncomputable def selectedSparseSurplusActivation
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run h4 (by
         key_fresh)
 
-/-- Node `[129]`, the paper's full active family and baseline spine demand.
-The row reads the literal `[125]` survivor, the active surplus demands, and the
-strict-surplus fact from this ledger; it writes only the resulting baseline
-demand fact. -/
--- EG-NODE [129] full active family and baseline: \(\mathcal A_0=\mathcal P_{\rm exc}\), \(E_{\rm spine}\le C_E n\)
-noncomputable def selectedBaselineSpineDemand
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .activeSurplusDemands, K .sparsePortActivation,
-        K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .suppressedFamilyCriticalCycle,
-        K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
-        K .openPortSuppression,
-        K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion,
-        K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
-        K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
-        K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
-    ExactLedger EGInput.{u} selected
-      [K .baselineSpineDemand, K .activeSurplusDemands,
-        K .sparsePortActivation, K .activeSurplusFamily,
-        K .sparseSlackSurplus, K .suppressedFamilyCriticalCycle,
-        K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
-        K .openPortSuppression, K .sparseSurplusSurvivor,
-        K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .windowPresent, K .uncompressible, K .replacementExclusion,
-        K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
-        K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
-        K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection] :=
-  (baselineSpineDemandRow (BranchState := BranchState)
-    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-    (presentation := erdosReceiverLoadProfile) (data := spineData)).run history
-      (by key_fresh)
-
-/-- Node `[130]`: the full pair-response family, split into the paper's
-independent and dependent residuals on the literal `[129]` ledger. -/
--- EG-NODE [130] canonical pair split: blocker-free?
-noncomputable def selectedPairResponseIndependenceDichotomy
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .baselineSpineDemand, K .activeSurplusDemands, K .sparsePortActivation,
-        K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .suppressedFamilyCriticalCycle,
-        K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
-        K .openPortSuppression,
-        K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
-        K .selection]) :
-    Decision (K .independentPairFamily) (K .dependentPairFamily) history :=
-  pairResponseIndependenceDichotomy (data := spineData) history
-    (by key_fresh) (by key_fresh)
-
-/-- Node `[132]`, the sparse-pair routing split after baseline demand. -/
--- EG-NODE [132] blocked-pair routing: exit or canonical blocker?
-noncomputable def selectedBlockedPairRoutingDichotomy
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .dependentPairFamily, K .baselineSpineDemand,
-        K .activeSurplusDemands,
-        K .sparsePortActivation, K .activeSurplusFamily,
-        K .sparseSlackSurplus, K .suppressedFamilyCriticalCycle,
-        K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
-        K .openPortSuppression, K .sparseSurplusSurvivor,
-        K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
-        K .selection]) :
-    Decision
-      (K (BranchState := BranchState)
-        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-        (presentation := erdosReceiverLoadProfile) (data := spineData)
-        .sparsePairExit)
-      (K (BranchState := BranchState)
-        (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-        (presentation := erdosReceiverLoadProfile) (data := spineData)
-        .canonicalBlockerRoute)
-      history :=
-  blockedPairRoutingDichotomy (data := spineData) history
-    (by key_fresh) (by key_fresh)
-
-/-- Node `[133]`, sparse-pair exit closes against the survivor fact. -/
--- EG-NODE [133] sparse surplus exit closes
-noncomputable def selectedSparsePairExitCloses
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .sparsePairExit, K .dependentPairFamily, K .baselineSpineDemand,
-        K .activeSurplusDemands,
-        K .sparsePortActivation, K .activeSurplusFamily,
-        K .sparseSlackSurplus, K .suppressedFamilyCriticalCycle,
-        K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
-        K .openPortSuppression, K .sparseSurplusSurvivor,
-        K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
-        K .selection]) : False := by
-  exact (history.get (K .sparseSurplusSurvivor)).down
-    (history.get (K .sparsePairExit)).down
-
-/-- Node `[134]`: construct the full canonical blocker ledger on the literal
-blocker arm.  The row reads the `[132]` certificate through `ExactLedger` and
-writes only the canonical partition and no-overcount facts prescribed by the
-paper. -/
--- EG-NODE [134] canonical blocker ledger: each blocked pair gets one \(B_\pi\) and one capacity token
-noncomputable def selectedCanonicalPairFacts
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .canonicalBlockerRoute, K .dependentPairFamily,
-        K .baselineSpineDemand,
-        K .activeSurplusDemands, K .sparsePortActivation,
-        K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .suppressedFamilyCriticalCycle,
-        K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
-        K .openPortSuppression,
-        K .sparseSurplusSurvivor,
-        K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .windowPresent, K .uncompressible, K .replacementExclusion,
-        K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
-        K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
-        K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
-    ExactLedger EGInput.{u} selected
-      [K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .dependentPairFamily, K .baselineSpineDemand,
-        K .activeSurplusDemands,
-        K .sparsePortActivation, K .activeSurplusFamily,
-        K .sparseSlackSurplus, K .suppressedFamilyCriticalCycle,
-        K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
-        K .openPortSuppression, K .sparseSurplusSurvivor,
-        K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion,
-        K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
-        K .tightEndpoint, K .slackIndependent, K .noProperBaseline,
-        K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection] :=
-  (canonicalPairLedgerRow (BranchState := BranchState)
-    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-    (presentation := erdosReceiverLoadProfile) (data := spineData)).run history (by
-      key_fresh)
-
-/-- Node `[135]`, exact window-join pressure on the literal `[134]` residual. -/
--- EG-NODE [135] exact window-join load: \(e(R,W)+2e_\times(W)=15p_{13}+\sigma_W\)
-noncomputable def selectedExactWindowJoinPressure
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .dependentPairFamily, K .baselineSpineDemand,
-        K .activeSurplusDemands, K .sparsePortActivation,
-        K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .suppressedFamilyCriticalCycle,
-        K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
-        K .openPortSuppression,
-        K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
-        K .selection]) :
-    ExactLedger EGInput.{u} selected
-      [K .sparseUpperEnvelope, K .canonicalPairLedger,
-        K .canonicalBlockerRoute, K .dependentPairFamily,
-        K .baselineSpineDemand, K .activeSurplusDemands,
-        K .sparsePortActivation, K .activeSurplusFamily,
-        K .sparseSlackSurplus, K .suppressedFamilyCriticalCycle,
-        K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
-        K .openPortSuppression, K .sparseSurplusSurvivor,
-        K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection] :=
-  (exactWindowJoinPressureRow (BranchState := BranchState)
-    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-    (presentation := erdosReceiverLoadProfile) (data := spineData)).run history (by
-      key_fresh)
-
-/-- Node `[136]`, capacity tokens on the literal `[135]` residual. -/
--- EG-NODE [136] tokenized blocked-pair ledger: \(|\Pi_{\rm blk}|=\sum_{C,t,r}\ell(t,r)\), supplies \(15p_{13}+\sigma_W,\sigma_R,4n+2\sigma\)
-noncomputable def selectedCapacityTokenFacts
-    {selected : EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected
-      [K .sparseUpperEnvelope, K .canonicalPairLedger,
-        K .canonicalBlockerRoute, K .dependentPairFamily,
-        K .baselineSpineDemand, K .activeSurplusDemands,
-        K .sparsePortActivation, K .activeSurplusFamily,
-        K .sparseSlackSurplus, K .suppressedFamilyCriticalCycle,
-        K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
-        K .openPortSuppression, K .sparseSurplusSurvivor,
-        K .surplusAbove, K .localAlgebra, K .maximalPacking,
-        K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
-    ExactLedger EGInput.{u} selected
-      [K .capacityTokenLedger, K .sparseUpperEnvelope,
-        K .canonicalPairLedger, K .canonicalBlockerRoute,
-        K .dependentPairFamily, K .baselineSpineDemand,
-        K .activeSurplusDemands, K .sparsePortActivation,
-        K .activeSurplusFamily, K .sparseSlackSurplus,
-        K .suppressedFamilyCriticalCycle,
-        K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
-        K .openPortSuppression,
-        K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
-        K .selection] :=
-  (capacityTokenLedgerRow (BranchState := BranchState)
-    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-    (presentation := erdosReceiverLoadProfile) (data := spineData)).run history (by
-      key_fresh)
-
-/-- **Node `[138]`, the near-cubic outcome of the strict branch**, on the literal
-residual of any of its routes (`[131]` at the free pair schedule, `[137]`'s capped
-arm, `[144]`'s caps arm): the spine surplus estimate `σ(G) ≤ C_sp ⌈√n⌉` published
-on this branch contradicts node `[19]`'s strict lower bound on the same object,
-so the residual is exactly the near-cubic spine already handled by the other
-arm of `[19]`. -/
--- EG-NODE [138] no coupled overload: explicit quadratic bound on \(\sigma\); near-cubic spine
-noncomputable def selectedSpineSurplusEstimateCloses
+/-- Nodes `[178]`--`[180]`, the pair-code chain on any ledger that already
+carries the node-`[178]` first failure `K .pairOverlapFirstFailure` (from the
+free side of `[131]` or of `[137]`).  Each paper test is a `Decision`; each
+uncovered implication is retained at the open node `[182]`, each covered Type B
+alternative returns with its own `[179]`/`[180]` source key, and the
+full-modulus arithmetic arm closes against node `[1]` through the framework. -/
+-- EG-NODE [178] pair-code unrealized residual: conditional factorization gives a minimal connected pair overlap obstruction
+-- EG-NODE [179] covered uncrossing: target/sparse-exit/Type B, or a graph-realized serial demand system
+-- EG-NODE [180] covered increment split: periodic sparse-exit/Type B, or full-modulus arithmetic gives an actual power-of-two cycle
+-- EG-NODE [182] OPEN: the exact [178], [179], or [180] implication not supplied by the manuscript
+noncomputable def selectedPairCodeChain
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .spineSurplusEstimate) known]
-    [FactKeys.Has (K .surplusAbove) known] : False := by
-  have lower :
-      spineData.{u}.surplusThreshold selected.object.vertexCount <
-        selected.object.degreeSurplus spineData.{u}.threshold :=
-    (history.get (K .surplusAbove)).down
-  have upper :
-      selected.object.degreeSurplus spineData.{u}.threshold ≤
-        spineData.{u}.spineScale * Core.ceilSqrt selected.object.vertexCount :=
-    (history.get (K .spineSurplusEstimate)).down
-  exact Nat.not_lt_of_ge (by
-    simpa [Graph.Strategy.Spine.Parameters.surplusThreshold] using upper) lower
-
-/-- **Node `[144]`, handoff arm.**  Run the paper's routing lemma on the
-literal pattern-arm ledger of the `[144]` decision.  Sparse exits are
-incompatible with the retained survivor fact, so the surviving output is the
-decorated same-token Type B handoff.  Node `[65]` then appends the common
-`typeBFanEntry` key for exactly that packing, core, envelope, and decoration
-data.  This boundary returns the routed ledger; it does not assert closure or
-import facts from the low-surplus Type B branch. -/
--- EG-NODE [144] same-token bottleneck: Type B handoff or capped route?
-noncomputable def selectedBottleneckDischarge
-    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .homogeneousBottleneckPattern) known]
-    [FactKeys.Has (K .sparsePressureOverload) known]
-    [FactKeys.Has (K .blockedPairEntropySandwich) known]
-    [FactKeys.Has (K .roleFibrePartition) known]
-    [FactKeys.Has (K .fibrePressure) known]
-    [FactKeys.Has (K .baselineSpineDemand) known]
-    [FactKeys.Has (K .sparseSlackSurplus) known]
+    [FactKeys.Has (K .pairOverlapFirstFailure) known]
+    [FactKeys.Has (K .noProperBaseline) known]
+    [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .surplusAbove) known]
-    [FactKeys.Has (K .activeSurplusDemands) known]
-    [FactKeys.Has (K .sparsePortActivation) known]
-    [FactKeys.Has (K .activeSurplusFamily) known]
-    [FactKeys.Has (K .cubicBaseline) known]
+    (systemFresh : K .pairOverlapSystem ∉ known)
+    (factorizationFresh : K .pairConditionalFactorization ∉ known)
+    (residualFresh : K .pairConditionalFactorizationResidual ∉ known)
+    (overlapFresh : K .pairFailureOverlap ∉ known)
+    (returnsFresh : K .pairDemandReturns ∉ known)
+    (realizabilityFresh : K .pairSystemRealizability ∉ known)
+    (systemEarlyFresh : K .pairSystemEarlyOutcome ∉ known)
+    (serialFresh : K .pairSerialDemandSystem ∉ known)
+    (fanEntryFresh : K .typeBFanEntry ∉ known)
+    (incrementFresh : K .pairIncrementCovered ∉ known)
+    (incrementEarlyFresh : K .pairIncrementEarlyOutcome ∉ known)
+    (arithmeticFresh : K .pairSerialArithmetic ∉ known)
+    (cycleFresh : K .pairPowerOfTwoCycle ∉ known)
+    (closedFresh : closed ∉ known) :
+    StrictSurplusBoundaryResult selected := by
+  let overlapSystem :=
+    (pairOverlapSystemRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      history (by key_fresh)
+  match pairConditionalFactorizationDichotomy (data := spineData)
+      overlapSystem (by key_fresh) (by key_fresh) with
+  | .right residualHistory =>
+      exact Or.inr (Or.inr
+        (residualHistory.get (K .pairConditionalFactorizationResidual)).down)
+  | .left factorizationHistory =>
+      let overlapFailure :=
+        (pairFailureOverlapRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run factorizationHistory (by key_fresh)
+      let demandReturns :=
+        (pairDemandReturnsRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run overlapFailure (by key_fresh)
+      match pairSystemRealizabilityDichotomy (data := spineData)
+          demandReturns (by key_fresh) (by key_fresh) with
+      | .right residualHistory =>
+          exact Or.inr (Or.inr
+            (residualHistory.get (K .pairConditionalFactorizationResidual)).down)
+      | .left coveredHistory =>
+          match pairSystemOutcomeDichotomy (data := spineData)
+              coveredHistory (by key_fresh) (by key_fresh) with
+          | .left earlyHistory =>
+              let typeBHistory :=
+                (pairSystemEarlyTypeBEntryRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run earlyHistory (by key_fresh)
+              exact Or.inr (Or.inl ⟨
+                Or.inl (typeBHistory.get (K .pairSystemEarlyOutcome)).down,
+                (typeBHistory.get (K .typeBFanEntry)).down,
+                (typeBHistory.get (K .surplusAbove)).down,
+                (typeBHistory.get (K .sparseSurplusSurvivor)).down⟩)
+          | .right serialHistory =>
+              match pairIncrementCoveredDichotomy (data := spineData)
+                  serialHistory (by key_fresh) (by key_fresh) with
+              | .right residualHistory =>
+                  exact Or.inr (Or.inr
+                    (residualHistory.get
+                      (K .pairConditionalFactorizationResidual)).down)
+              | .left incrementHistory =>
+                  match pairIncrementOutcomeDichotomy (data := spineData)
+                      incrementHistory (by key_fresh) (by key_fresh) with
+                  | .left earlyHistory =>
+                      let typeBHistory :=
+                        (pairIncrementEarlyTypeBEntryRow
+                          (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile)
+                          (data := spineData)).run earlyHistory (by key_fresh)
+                      exact Or.inr (Or.inl ⟨
+                        Or.inr (typeBHistory.get
+                          (K .pairIncrementEarlyOutcome)).down,
+                        (typeBHistory.get (K .typeBFanEntry)).down,
+                        (typeBHistory.get (K .surplusAbove)).down,
+                        (typeBHistory.get (K .sparseSurplusSurvivor)).down⟩)
+                  | .right arithmeticHistory =>
+                      let closedHistory :=
+                        (pairPowerOfTwoCycleRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile)
+                          (data := spineData)).runAndCloseIncompatible
+                            arithmeticHistory (K .selection)
+                            (K .pairPowerOfTwoCycle) (by key_fresh)
+                            (by key_fresh)
+                      exact (closedHistory.elimClosed (by infer_instance)).elim
+
+/-- Nodes `[140]`, `[142]`, `[143]` and `[144]`, on any overload ledger whose
+token class has just been decided at `[139]`/`[141]`: the geometric audit of
+the selected overload publishes the homogeneous bottleneck pattern, and `[144]`
+decides the fixed caps.  On the failing arm `lem:same-token-bottleneck-routing`
+routes the pattern to the decorated same-token Type B handoff and node `[65]`
+appends the common Type B entry, reaching `[144a]`; the caps arm gives node
+`[138]`'s `σ(G) ≤ C_sp ⌈√n⌉`, which closes against node `[19]`. -/
+-- EG-NODE [140] window-incidence geometric audit: homogeneous matching/star
+-- EG-NODE [142] remainder-surplus geometric audit: homogeneous matching/star
+-- EG-NODE [143] primitive blocker-support geometric audit: homogeneous matching/star
+-- EG-NODE [144] same-token bottleneck: Type B handoff or capped route?
+-- EG-NODE [138] no coupled overload: explicit quadratic bound on \(\sigma\); near-cubic spine
+noncomputable def selectedBottleneckAudit
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .sparsePressureOverload) known]
     [FactKeys.Has (K .capacityTokenLedger) known]
-    [FactKeys.Has (K .canonicalPairLedger) known]
-    [FactKeys.Has (K .canonicalBlockerRoute) known]
-    [FactKeys.Has (K .dependentPairFamily) known]
-    [FactKeys.Has (K .sparseUpperEnvelope) known]
-    [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .activeSurplusDemands) known]
+    [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .bridgeless) known]
-    [FactKeys.Has (K .returnAvoidance) known]
-    [FactKeys.Has (K .tightEndpoint) known]
-    [FactKeys.Has (K .slackIndependent) known]
     [FactKeys.Has (K .highCentreNormalForm) known]
-    [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .degreeProfileFibres) known]
     [FactKeys.Has (K .targetCompleteContextUniversality) known]
     [FactKeys.Has (K .replacementExclusion) known]
-    [FactKeys.Has (K .exactResponseProfile) known]
-    [FactKeys.Has (K .admissibleRankQuotient) known]
     [FactKeys.Has (K .uncompressible) known]
-    [FactKeys.Has (K .noProperBaseline) known]
-    [FactKeys.Has (K .remainderNormalized) known]
-    [FactKeys.Has (K .remainderRelabelingEntropy) known]
-    [FactKeys.Has (K .highCentreNormalForm) known]
+    [FactKeys.Has (K .sparseSlackSurplus) known]
+    [FactKeys.Has (K .fibrePressure) known]
+    [FactKeys.Has (K .surplusAbove) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
+    (patternFresh : K .homogeneousBottleneckPattern ∉ known)
+    (failFresh : K .homogeneousCapsFail ∉ known)
+    (capsFresh : K .homogeneousCapsHold ∉ known)
     (routingFresh : K .bottleneckRouting ∉ known)
     (handoffFresh : K .typeBHandoff ∉ known)
-    (fanEntryFresh : K .typeBFanEntry ∉ known) :
-    ExactLedger EGInput.{u} selected
-      ([K .typeBFanEntry, K .bottleneckRouting, K .typeBHandoff] ++ known) := by
-  let routed :=
-    (sameTokenBottleneckRoutingRow (BranchState := BranchState)
+    (fanEntryFresh : K .typeBFanEntry ∉ known)
+    (capsCloseFresh : K .homogeneousBottleneck ∉ known)
+    (estimateFresh : K .spineSurplusEstimate ∉ known)
+    (closedFresh : closed ∉ known) :
+    StrictSurplusBoundaryResult selected := by
+  let audited :=
+    (homogeneousBottleneckAuditRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by simp [routingFresh, handoffFresh])
-  exact
-    (sameTokenTypeBFanEntryRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      routed (by key_fresh)
+      (presentation := erdosReceiverLoadProfile)
+      (data := spineData)).run history (by key_fresh)
+  match homogeneousBottleneckDichotomy (data := spineData) audited
+      (by key_fresh) (by key_fresh) with
+  | .left patternHistory =>
+      let routed :=
+        (sameTokenBottleneckRoutingRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run patternHistory (by key_fresh)
+      let entered :=
+        (sameTokenTypeBFanEntryRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run routed (by key_fresh)
+      exact Or.inl ⟨
+        (entered.get (K .typeBHandoff)).down,
+        (entered.get (K .typeBFanEntry)).down,
+        (entered.get (K .bottleneckRouting)).down,
+        (entered.get (K .homogeneousBottleneckPattern)).down,
+        (entered.get (K .sparsePressureOverload)).down,
+        (entered.get (K .capacityTokenLedger)).down,
+        (entered.get (K .surplusAbove)).down,
+        (entered.get (K .sparseSurplusSurvivor)).down⟩
+  | .right capsHistory =>
+      let closedHistory :=
+        (homogeneousCapsCloseRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).runAndCloseIncompatible capsHistory
+            (K .surplusAbove) (K .spineSurplusEstimate) (by key_fresh)
+            (by key_fresh)
+      exact (closedHistory.elimClosed (by infer_instance)).elim
 
 end HypostructureErdos64EG
