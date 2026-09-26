@@ -329,6 +329,11 @@ paper's claim exactly at its node, and make its proof `sorry` tagged
 sorry only for a genuine paper error, never as a placeholder for unfinished
 work. `#print axioms` on the root then shows `sorryAx` exactly for these.
 
+User decision (2026-09-26), node [144]: the residual left by the paper's
+error at [144] is carried by the open leaf [144a]. Its retained content is the
+handoff, or the unresolved same-label pattern-pair residual about G's
+canonical pattern pair. The root keeps its six outcomes.
+
 Repairs are quarantined, never deleted. Any repair lemma, alternative argument
 or reverted repair goes to `hypostructure/Hypostructure/Quarantine/PaperRepairs/`
 (listed in `hypostructure/quarantine.txt`, described in that folder's
