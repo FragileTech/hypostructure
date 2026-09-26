@@ -7,6 +7,7 @@ import Hypostructure.Graph.Statements.CanonicalTypeA
 import Hypostructure.Graph.Statements.CanonicalTypeB
 import Hypostructure.Graph.Statements.TypeBLanes
 import Hypostructure.Graph.Statements.CanonicalRouteEight
+import Hypostructure.Graph.Statements.RouteEightPinned
 import Hypostructure.Graph.Statements.CanonicalCold
 import Hypostructure.Graph.Statements.CanonicalBranchD
 import Hypostructure.Fixtures.Route8OpenBoundarySaturated

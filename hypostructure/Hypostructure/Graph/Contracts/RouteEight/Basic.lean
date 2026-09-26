@@ -1,4 +1,4 @@
-import Hypostructure.Graph.Statements.RouteEight
+import Hypostructure.Graph.Statements.RouteEightPinned
 
 /-!
 # Contracts: route-8 basic facts

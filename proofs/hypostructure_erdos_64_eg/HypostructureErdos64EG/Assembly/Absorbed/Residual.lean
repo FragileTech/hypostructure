@@ -56,7 +56,7 @@ noncomputable abbrev netChargeFanDataKeys : FactKeys EGInput.{u} :=
     K .typeBExcluded, K .typeBExclusionResidual, K .typeBExclusionResidualMass,
     K .typeBOverlapObstructionMass, K .typeBFanDegreeFourProfile,
     K .triangularFanCore, K .typeBDecoratedAssignedSupport,
-    K .route8ResidualProfile, K .route8GlobalSqueeze, K .route8BasinBurden,
+    K .route8ResidualProfile, K .route8BasinBurden,
     K .route8LargeBudgetDeficit, K .route8LargeBudgetDeficitFails,
     K .route8CarrierCore, K .route8TrueResidual, K .route8CarrierCutParity,
     K .route8SmallCoreEntry, K .route8NoSmallCoreEntry,

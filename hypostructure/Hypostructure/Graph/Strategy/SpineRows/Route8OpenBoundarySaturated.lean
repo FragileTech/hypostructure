@@ -24,7 +24,8 @@ count on the committed maximal absorption. -/
         ⟨Graph.Contracts.RouteEight.route8OpenBoundarySaturated data.toParameters inputs.current.object
           (inputs.get (K .route8DemandAbsorption)).down⟩
         (.cons (key := K .route8DemandUnitCount)
-        ⟨Graph.Contracts.RouteEight.route8DemandUnitCount data.toParameters inputs.current.object⟩
+        ⟨Graph.Contracts.RouteEight.route8DemandUnitCount data.toParameters
+          inputs.current.object (inputs.get (K .route8DemandAbsorption)).down⟩
         .nil))
     0 0
 

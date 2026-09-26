@@ -1,4 +1,4 @@
-import Hypostructure.Graph.Contracts.RouteEight.Basic
+import Hypostructure.Graph.Contracts.RouteEight.Terminal
 
 /-!
 # Contracts: node `[118]`, the selected two-carrier entry
@@ -31,20 +31,23 @@ its excess basin (every vertex of a zero-surplus piece has degree exactly the
 threshold), so that no-exit fact applies to the selected entry.  The
 target-defect alternative belongs only to the unified peeling ledger of
 `[123]`. -/
-theorem route8TrueTwoCarrierEntry (data : Parameters)
+theorem trueTwoCarrierEntry_at (data : Parameters)
     (object : FiniteObject.{u})
-    (selected : Route8TwoCarrierEntryStatement data object)
     (trueResidual : Route8TrueResidual data object)
     (baseline : data.threshold ≤ object.minDegree)
-    (scalePos : 0 < data.dischargeScale) :
-    Route8TrueTwoCarrierEntryStatement data object := by
+    (scalePos : 0 < data.dischargeScale)
+    {index : Graph.Route8Census.Index object}
+    (selected : Route8TwoCarrierEntrySpec data object index) :
+    ¬ ∃ witness : Graph.ExitFour.Witness (Graph.HasCycleWithLength data.LengthOK)
+        index.1 data.threshold data.dischargeScale index.2.1 ∅,
+      witness.load = index.2.2 := by
   classical
   letI : DecidableEq object.Vertex := object.vertices.decEq
-  obtain ⟨index, indexMem, two⟩ := selected
+  obtain ⟨indexMem, _two⟩ := selected
   obtain ⟨component, componentMem, pieceEq, receiverMem, loadMem⟩ :=
     mem_entriesOfComponents.mp indexMem
   have survives := (Finset.mem_filter.mp componentMem).2
-  have componentFacts := trueResidual.2 component componentMem
+  have componentFacts := trueResidual component componentMem
   have receiverFacts := componentFacts.2 index.2.1 (pieceEq ▸ receiverMem)
   have exactDegree : ∀ vertex ∈ object.pieceSupport
       (object.remainderSupport (canonicalWindowPacking data object)) component,
@@ -67,24 +70,36 @@ theorem route8TrueTwoCarrierEntry (data : Parameters)
       (fun saturated => componentFacts.1 index.2.1 receiverFacts.1 saturated)]
     exact pieceEq ▸ loadMem
   have noExitFour := (receiverFacts.2.2 index.2.2 silentLoadMem).2.2
-  exact ⟨index, indexMem, two, pieceEq ▸ noExitFour⟩
+  exact pieceEq ▸ noExitFour
 
-/-- **Node `[118]`, clause (T5) of `def:typeA-terminal-two-carrier`**: the
-selected two-support census entry together with the declared deletion
-witnesses forced by its canonical essential core. -/
+/-- **Node `[118]` at `ι₂`**: the two-support entry of `𝒳_A` fixed by node
+`[117]` is a true route-`8` entry.  On the pure collection selected at `[111]`
+the true route-`8` residual records (R2), the absence of the canonical
+exit-`(4)` family, and at `ι₂` the load's silent excess is its excess basin
+(every vertex of a zero-surplus piece has degree exactly the threshold). -/
+theorem route8TrueTwoCarrierEntry (data : Parameters)
+    (object : FiniteObject.{u})
+    (selected : Route8TwoCarrierEntryStatement data object)
+    (trueResidual : Route8TrueResidual data object)
+    (baseline : data.threshold ≤ object.minDegree)
+    (scalePos : 0 < data.dischargeScale) :
+    Route8TrueTwoCarrierEntryStatement data object := by
+  obtain ⟨index, pin, spec⟩ := canonicalRoute8TwoCarrierIndex_spec data object
+    ((route8TwoCarrierEntry_iff_exists_spec data object).mp selected)
+  exact ⟨index, pin,
+    trueTwoCarrierEntry_at data object trueResidual baseline scalePos spec⟩
+
+/-- **Node `[118]`, clause (T5) of `def:typeA-terminal-two-carrier`, at `ι₂`**:
+the declared deletion witnesses of the canonical essential core of the
+two-support entry fixed by node `[117]`. -/
 theorem route8CarrierDeletionWitnesses (data : Parameters)
     (object : FiniteObject.{u})
     (selected : Route8TwoCarrierEntryStatement data object) :
     Route8CarrierDeletionWitnesses data object := by
-  classical
-  letI : DecidableEq object.Vertex := object.vertices.decEq
-  obtain ⟨index, indexMem, two⟩ := selected
-  let entry := (Graph.Route8Census.presented object data.threshold
-    data.LengthOK index).toEntry (Graph.HasCycleWithLength data.LengthOK)
-  exact ⟨index, indexMem, two,
-    Graph.Route8.twoCarrierDeletionWitnesses
-      (Target := Graph.HasCycleWithLength data.LengthOK) entry.carriers
-      entry.coordinates entry.car entry.car_subset entry.state _
-      (Graph.Route8Census.core object data.threshold data.LengthOK) two rfl⟩
+  obtain ⟨index, pin, spec⟩ := canonicalRoute8TwoCarrierIndex_spec data object
+    ((route8TwoCarrierEntry_iff_exists_spec data object).mp selected)
+  exact ⟨index, pin, twoCarrier_deletionWitnesses data.LengthOK object
+    (canonicalWindowPacking data object) (route8SurvivorComponents data object)
+    data.threshold data.dischargeScale spec.2⟩
 
 end Hypostructure.Graph.Contracts.RouteEight

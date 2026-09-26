@@ -155,8 +155,9 @@ noncomputable def selectedRouteEightDescent
 (`thm:typeA-unpaid-exit4-reduction`).
 
 The incoming node-`[181]` ledger is retained verbatim.  The one-entry
-augmentation (168.1) is published first; the decision then asks whether some
-unpaid entry of a maximal ledger lacks an exit-`(4)` witness.  Such an entry is
+augmentation (168.1) at the committed ledger `P₀` of node `[349]` is published
+first; the decision then reads `[349]` and asks whether some unpaid entry of
+`P₀` lacks an exit-`(4)` witness.  Such an entry is
 exactly the terminal input of `thm:typeA-two-carrier-nogo` and is closed at
 node `[124]`; the only survivor is node `[183]`, (168.2). -/
 -- EG-NODE [181] maximal-ledger augmentation: some unpaid entry lacks an exit-\textup{(4)} witness?
@@ -165,6 +166,8 @@ noncomputable def selectedRouteEightUnpaidReduction
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .route8UnifiedEntryCensus) known]
+    [FactKeys.Has (K .route8DemandLedger) known]
+    [FactKeys.Has (K .route8StageRateFailed) known]
     (unpaidTwoFresh : K .route8UnpaidTwoCarrier ∉ known := by key_fresh)
     (witnessFreeFresh : K .route8UnpaidWitnessFree ∉ known := by key_fresh)
     (residualFresh : K .route8UnpaidExitFourResidual ∉ known := by key_fresh)

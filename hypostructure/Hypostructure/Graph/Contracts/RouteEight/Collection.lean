@@ -7,8 +7,6 @@ Proof-agnostic contract lemmas for Part IX nodes `[110]`--`[114]`, `[120]` and
 `[123]`:
 
 * node `[110]`: the silent-core residual profile (`route8ResidualProfile`);
-* node `[111]`: the exact route-`8` collection `𝒳_A` and its cleared deficit
-  (`route8GlobalSqueeze`);
 * node `[112]`, `lem:typeA-route8-burden` (`route8BasinBurden`);
 * nodes `[111]`--`[113]`, `[120]`: the route-`8` census (`route8Census`);
 * node `[114]`: the true residual, the carrier core and the carrier cut parity
@@ -35,13 +33,6 @@ theorem route8ResidualProfile (data : Parameters) (object : FiniteObject.{u})
     (exitSevenFree : TypeAExitSevenFreeStatement data object) :
     SilentCoreResidualProfile data object :=
   exitSevenFree
-
-/-- **Node `[111]`**: the exact route-`8` Type A collection `𝒳_A` on the
-canonical packing and the cleared defining sum `s·D_A(𝒳_A)`.  This is a
-definition-level fact: it reads no upstream fact. -/
-theorem route8GlobalSqueeze (data : Parameters) (object : FiniteObject.{u}) :
-    Route8GlobalSqueeze data object :=
-  ⟨_, rfl, _, rfl⟩
 
 /-- A zero-surplus piece at the degree baseline has every vertex of degree
 exactly the baseline. -/
@@ -317,16 +308,14 @@ theorem route8Census (data : Parameters) (object : FiniteObject.{u})
   omega
 
 /-- **Node `[114]`, `def:typeA-true-route8-residual`**: clauses (R1)--(R4) for
-every actual indexed entry of the route-`8` collection selected at `[111]`,
-with clause (R3) the node-`[110]` residual profile. -/
-theorem route8TrueResidual (data : Parameters) (object : FiniteObject.{u})
-    (profile : SilentCoreResidualProfile data object) :
+every actual indexed entry of the route-`8` collection selected at `[111]`
+(clause (R3) is the node-`[110]` fact, not republished). -/
+theorem route8TrueResidual (data : Parameters) (object : FiniteObject.{u}) :
     Route8TrueResidual data object := by
   classical
   letI : DecidableEq object.Vertex := object.vertices.decEq
   let packing := canonicalWindowPacking data object
   let support := object.remainderSupport packing
-  refine ⟨profile, ?_⟩
   intro component componentMem
   let piece := object.pieceSupport support component
   have survives : Route8Survives data object packing component :=
@@ -392,7 +381,7 @@ theorem route8CarrierCutParity (data : Parameters) (object : FiniteObject.{u})
   let presented := Graph.Route8Census.presented object data.threshold
     data.LengthOK index
   let entry := presented.toEntry (Graph.HasCycleWithLength data.LengthOK)
-  have minimal := (((trueResidual.2 component componentMem).2 receiver
+  have minimal := (((trueResidual component componentMem).2 receiver
     receiverMem).2.2 load loadMem).2.1
   have basinSubset :
       Graph.Route8Census.basin object data.threshold index ⊆ piece :=

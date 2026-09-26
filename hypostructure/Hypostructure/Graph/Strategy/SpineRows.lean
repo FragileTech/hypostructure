@@ -72,7 +72,6 @@ import Hypostructure.Graph.Strategy.SpineRows.Route8Census
 import Hypostructure.Graph.Strategy.SpineRows.Route8DemandAbsorption
 import Hypostructure.Graph.Strategy.SpineRows.Route8DemandPartition
 import Hypostructure.Graph.Strategy.SpineRows.Route8ExtractedEntryCensus
-import Hypostructure.Graph.Strategy.SpineRows.Route8GlobalSqueeze
 import Hypostructure.Graph.Strategy.SpineRows.Route8JointBalance
 import Hypostructure.Graph.Strategy.SpineRows.Route8LargeBudgetDeficit
 import Hypostructure.Graph.Strategy.SpineRows.Route8PeelingDescent

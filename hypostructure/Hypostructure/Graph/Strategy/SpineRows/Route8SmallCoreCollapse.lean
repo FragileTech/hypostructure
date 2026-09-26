@@ -18,12 +18,15 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
-/-- **Node `[115]`**: decided by case analysis on the paper predicate. -/
+/-- **Node `[115]`**: reads the node-`[114]` carrier cores and decides whether
+some entry of `𝒳_A` has `α ≤ 1`; the yes arm fixes the small-core entry
+`ι₁ = canonicalRoute8SmallCoreEntry`. -/
 noncomputable def route8SmallCoreCollapseRow
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger (Input BranchState Presentation presentation data)
       current known)
+    [FactKeys.Has (K .route8CarrierCore) known]
     (smallFresh : K .route8SmallCoreEntry ∉ known)
     (noSmallFresh : K .route8NoSmallCoreEntry ∉ known) :
     Decision (K .route8SmallCoreEntry) (K .route8NoSmallCoreEntry) previous :=
@@ -32,6 +35,9 @@ noncomputable def route8SmallCoreCollapseRow
     (Classical.choice (show Nonempty
         ((K .route8SmallCoreEntry).At current ⊕
           (K .route8NoSmallCoreEntry).At current) from by
+      -- `[114]`: the entries of `𝒳_A` pass to their canonical essential
+      -- carrier cores, whose cardinality `α` is tested here.
+      have _cores := (previous.get (K .route8CarrierCore)).down
       by_cases small : Route8SmallCoreEntry data.toParameters current.object
       · exact ⟨.inl ⟨small⟩⟩
       · refine ⟨.inr ⟨?_⟩⟩

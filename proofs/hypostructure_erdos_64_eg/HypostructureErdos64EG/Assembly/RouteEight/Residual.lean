@@ -4,7 +4,6 @@ import Hypostructure.Graph.Strategy.SpineRows.Route8CarrierCutParity
 import Hypostructure.Graph.Strategy.SpineRows.Route8CarrierDeletionWitnesses
 import Hypostructure.Graph.Strategy.SpineRows.Route8CarrierDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.Route8Census
-import Hypostructure.Graph.Strategy.SpineRows.Route8GlobalSqueeze
 import Hypostructure.Graph.Strategy.SpineRows.Route8LargeBudgetDeficit
 import Hypostructure.Graph.Strategy.SpineRows.Route8PrivateCarrierBudget
 import Hypostructure.Graph.Strategy.SpineRows.Route8ResidualProfile
@@ -43,10 +42,9 @@ noncomputable def selectedRouteEightProfile
     [FactKeys.Has (K .typeAExitSevenFree) known]
     [FactKeys.Has (K .typeAReceiverRouting) known]
     (profileFresh : K .route8ResidualProfile ∉ known := by key_fresh)
-    (squeezeFresh : K .route8GlobalSqueeze ∉ known := by key_fresh)
     (burdenFresh : K .route8BasinBurden ∉ known := by key_fresh) :
     ExactLedger EGInput.{u} selected
-      ([K .route8BasinBurden, K .route8GlobalSqueeze, K .route8ResidualProfile]
+      ([K .route8BasinBurden, K .route8ResidualProfile]
         ++ known) :=
   -- `[110]`
   let profile :=
@@ -54,18 +52,14 @@ noncomputable def selectedRouteEightProfile
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       history (by key_fresh)
-  -- `[111]`
-  let squeezed :=
-    (route8GlobalSqueezeRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      profile (by key_fresh)
+  -- `[111]` is the canonical collection `𝒳_A = route8SurvivorComponents`,
+  -- read by `[112]` onward; it carries no fact of its own.
   -- `[112]`
   let burdened :=
     (route8BasinBurdenRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      squeezed (by key_fresh)
+      profile (by key_fresh)
   -- `[113]`: the route-8-only lower bound is tested, because the manuscript's
   -- unified-demand correction (`rem:why-unified`) forbids deriving it while
   -- target-defect supports may still carry negative mass.
@@ -201,7 +195,6 @@ noncomputable def selectedRouteEightResidual
     [FactKeys.Has (K .remainderNormalized) known]
     [FactKeys.Has (K .cubicBaseline) known]
     (profileFresh : K .route8ResidualProfile ∉ known := by key_fresh)
-    (squeezeFresh : K .route8GlobalSqueeze ∉ known := by key_fresh)
     (burdenFresh : K .route8BasinBurden ∉ known := by key_fresh)
     (deficitFresh : K .route8LargeBudgetDeficit ∉ known := by key_fresh)
     (deficitFailsFresh : K .route8LargeBudgetDeficitFails ∉ known := by
@@ -298,7 +291,6 @@ noncomputable def selectedRouteEightResidualSilent
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .typeASilentExitSevenFree) known]
     (profileFresh : K .route8ResidualProfile ∉ known := by key_fresh)
-    (squeezeFresh : K .route8GlobalSqueeze ∉ known := by key_fresh)
     (burdenFresh : K .route8BasinBurden ∉ known := by key_fresh)
     (deficitFresh : K .route8LargeBudgetDeficit ∉ known := by key_fresh)
     (deficitFailsFresh : K .route8LargeBudgetDeficitFails ∉ known := by
