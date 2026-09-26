@@ -18,26 +18,29 @@ variable {data : Data.{u}}
 
 /-! ## Node `[165]`, `lem:refined-minimality-swap`: the canonical exchange
 
-The no-arm of `[163]` enters the canonical-replacement case.  This row proves
-the manuscript's exchange uniformly: for every neutral configuration, if its
-canonical representative `E` is different from the corridor piece `Q`, gluing
-`E` into the retained outside context preserves the baseline, target
-avoidance, vertex count, and edge count, and replaces `Q` by a strict
-predecessor in the fixed canonical piece order.  The refined-minimality
-contradiction belongs to node `[166]`.
+The no-arm of `[163]` (`K .coldCanonicalNeutralConfiguration`) enters the
+canonical-replacement case at node `[406]`'s marked configuration
+`markedNeutralGerm?`.  If its marked representative `E` is different from the
+corridor piece `Q`, gluing `E` into the retained outside context preserves the
+baseline, target avoidance, vertex count, and edge count, and replaces `Q` by a
+strict predecessor in the fixed canonical piece order
+(`Contracts.Spine.canonicalReplacementSwap_at`, the paper's universal lemma, at
+the marked configuration).  The refined-minimality contradiction belongs to
+node `[166]`.
 -/
 @[reducible] noncomputable def canonicalReplacementSwapRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.canonicalReplacementSwap
-    { Requires := []
+    { Requires := [K .coldCanonicalNeutralConfiguration]
       Produces := [K .coldCanonicalReplacementSwap]
       requiresUnique := by simp
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .coldCanonicalReplacementSwap)
-        ⟨Contracts.Spine.canonicalReplacementSwap_of_baseline data.toParameters
-          inputs.current.object inputs.current.baseline⟩
+        ⟨Contracts.Spine.canonicalReplacementSwap_of_neutral data.toParameters
+          inputs.current.object inputs.current.baseline
+          (inputs.get (K .coldCanonicalNeutralConfiguration)).down⟩
         .nil)
 
 /-! ## Node `[166]`: refined minimality forces the trivial replacement -/
@@ -59,11 +62,13 @@ contradiction belongs to node `[166]`.
 
 /-! ## `lem:refined-minimality-swap`, the size split of the canonical replacement
 
-On the residual where a neutral germ has a canonical replacement piece
-`E ≠ Q[x,y]`, the fixed canonical order compares sizes first: either `E` has
-strictly fewer internal vertices — then exchanging `Q` for `E` is a strictly
-smaller counterexample and the `[4]` minimality closes (node `[165]`) — or `E`
-has the same size, which is the tie-break of node `[166]`. -/
+At node `[406]`'s marked configuration (read from node `[163]`'s no-arm
+`K .coldCanonicalNeutralConfiguration`), the fixed canonical order compares
+sizes first: either the canonical representative of its corridor piece has
+strictly fewer internal vertices — then exchanging is a strictly smaller
+counterexample and the `[4]` minimality closes (node `[165]`) — or it has the
+same size, which is the tie-break of node `[166]`.  Both arms are about the one
+marked configuration. -/
 noncomputable def canonicalSwapSizeDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
@@ -74,17 +79,15 @@ noncomputable def canonicalSwapSizeDichotomy
     (sameFresh : K .coldCanonicalSwapSameSize ∉ known) :
     Decision (K .coldCanonicalSwapSmaller) (K .coldCanonicalSwapSameSize) previous := by
   classical
+  let neutral := (previous.get (K .coldCanonicalNeutralConfiguration)).down
   exact Decision.run previous (K .coldCanonicalSwapSmaller) (K .coldCanonicalSwapSameSize)
     `Hypostructure.Graph.Strategy.Spine.canonicalSwapSizeDichotomy
-    (if smaller : ∃ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) current.object,
-        germ.Neutral ∧
-          (germCanonicalRepresentative data.toParameters germ).size < germ.piece.internalVertexCount then
+    (if smaller : ColdCanonicalSwapSmallerStatement data.toParameters
+        current.object then
       .inl ⟨smaller⟩
     else
       .inr ⟨Contracts.Spine.coldCanonicalSwapSameSize_of_not_smaller
-        data.toParameters current.object smaller⟩)
+        data.toParameters current.object neutral smaller⟩)
     smallerFresh sameFresh
 
 end Hypostructure.Graph.Strategy.Spine

@@ -305,9 +305,9 @@ theorem sparseUpperEnvelope_of_packing
     threeLe
     noProperBaseline.1
     tight edgePositive
-  obtain ⟨_, packing, valid, maximal, _⟩ :=
+  obtain ⟨_, valid, maximal, _⟩ :=
     maximalPacking
-  exact ⟨envelope, packing, valid, maximal,
+  exact ⟨envelope, canonicalWindowPacking data object, valid, maximal,
     object.exact_window_join_identity valid baseline⟩
 
 /-- Node `[136]`, `def:capacity-token-ledger` with `lem:capacity-token-supply`,

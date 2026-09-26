@@ -1090,34 +1090,4 @@ theorem blockedCompressionCap_of_bound (data : Parameters)
     le_trans (le_trans one compressionBound) nearCubic
   exact compressionCap
 
-/-- **Node `[159]`, `def:window-realization-test`: the dense residual.**  The
-identity map on the labelled skeleton class has range equal to the exact
-skeleton budget, so a denied window-package realization gives the strict
-display. -/
-theorem densePackingOverflow_of_unrealized (data : Parameters)
-    (object : Graph.FiniteObject.{u})
-    (unrealized : WindowPackageUnrealizedStatement data object)
-    (skeletonCard : Nat.card (Graph.PackedWindowRealization.Skeleton
-        object.vertexCount object.edgeCount) = Graph.skeletonBudget object) :
-    DensePackingOverflowStatement data object := by
-  classical
-  by_contra notDense
-  have packageLe :
-      2 ^ (windowPackageBits data object *
-        (canonicalWindowPacking data object).card) ≤
-        Graph.skeletonBudget object :=
-    Nat.le_of_not_gt notDense
-  apply unrealized
-  refine ⟨ULift.{u} (Graph.PackedWindowRealization.Skeleton
-    object.vertexCount object.edgeCount),
-    ULift.up, ?_⟩
-  have range : Nat.card (Set.range (ULift.up.{u} :
-      Graph.PackedWindowRealization.Skeleton
-        object.vertexCount object.edgeCount → _)) =
-      Graph.skeletonBudget object := by
-    rw [Set.range_eq_univ.2 (fun state => ⟨state.down, rfl⟩),
-      Nat.card_univ, Nat.card_ulift]
-    exact skeletonCard
-  rwa [range]
-
 end Hypostructure.Graph.Contracts.Spine

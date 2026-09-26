@@ -40,7 +40,7 @@ noncomputable def Assembly.Internal.nearCubicRealized
       [K .windowPackageRealized, K .skeletonDominates, K .windowPackageSeparated,
        K .barrierEnumeration, K .sparseSurplusSurvivor, K .surplusAtOrBelow, K .localAlgebra,
        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion,
-       K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
+       K .cycleRankConstraint,
        K .tightEndpoint, K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
        K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
        K .selection]) :

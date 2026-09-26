@@ -16,33 +16,25 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
-/-! ## Node `[153]`, `lem:cold-germ-extraction`: exchange bound and extraction
+/-! ## Node `[153]`, the `M_cold` exchange bound
 
-The first-failure cold exchange is bounded by `M_cold` (`exchange_card_le`),
-and an occurrence-indexed candidate family with the paper's overlap bound has
-a disjoint subfamily of size at least `|𝒢_cand|/D_cold` (greedy independent
-set, `coldGermOccurrenceExtractionLocal`).  Positivity belongs to the later
-linear arm, not to this finite extraction theorem
-(`Contracts.Spine.coldExchangeBound_of_routing`,
-`Contracts.Spine.coldGermExtraction_of_exchangeBound`). -/
+On the routed first-failure residual (`K .coldFailureRouting`), a terminal cold
+corridor reads at most `M_cold` cut states beyond the interface budget
+(`exchange_card_le`, `Contracts.Spine.coldExchangeBound_holds`).  The greedy
+extraction of `lem:cold-germ-extraction` is applied directly by node `[153]`'s
+candidate owner (`Contracts.Spine.coldGermCandidates_of_routing`). -/
 @[reducible] noncomputable def coldGermExtractionRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldGermExtraction
     { Requires := [K .coldFailureRouting]
-      Produces := [K .coldExchangeBound, K .coldGermExtraction]
+      Produces := [K .coldExchangeBound]
       requiresUnique := by simp
-      producesUnique := by key_fresh
+      producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let exchange := Contracts.Spine.coldExchangeBound_of_routing
-        data.toParameters inputs.current.object
-        (inputs.get (K .coldFailureRouting)).down
       .cons (key := K .coldExchangeBound)
-        ⟨exchange⟩
-        (.cons (key := K .coldGermExtraction)
-          ⟨Contracts.Spine.coldGermExtraction_of_exchangeBound data.toParameters
-            inputs.current.object exchange⟩
-          .nil))
-
+        ⟨Contracts.Spine.coldExchangeBound_holds data.toParameters
+          inputs.current.object⟩
+        .nil)
 
 end Hypostructure.Graph.Strategy.Spine

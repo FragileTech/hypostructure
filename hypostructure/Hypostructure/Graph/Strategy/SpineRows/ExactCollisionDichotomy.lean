@@ -22,7 +22,8 @@ variable [FactSystem (Input BranchState Presentation presentation data)]
 `lem:exact-collision-test`.  Node `[56]`'s collision is an inequality of the
 current object — with the actual surpluses, the actual hot and cold window
 counts, and the exact skeleton budget — and node `[173]` decides it on the
-object: `def⁺(R) − σ_R < |R|/s` at every maximal packing (`NegativeNetCharge`),
+object: `def⁺(R₀) − σ(R₀) < |R₀|/s` at the remainder `R₀` of the fixed maximum
+packing `P₀` (`NegativeNetCharge`),
 which is exactly `K .netChargeCap`.  Its yes arm continues at `[58]`; its no arm
 is the absorbed-germ residual `[174]` (`K .exactCollisionFails`).  No condition
 on `n` is used (`rem:no-sufficient-order`): the sufficient-order reading of

@@ -43,8 +43,7 @@ as `K .blockedCompressionBound` and its budget consequence as
 The density hypothesis is the
 dense-packing residual `[159]` itself: by `def:window-realization-test` the
 no-branch of `[158]` is `2^{c₁₃p₁₃log₂n} > |𝒢_{n,m}|`, which
-`densePackingOverflowRow` publishes as `K .densePackingOverflow` from the
-literal no-arm and `lem:skeleton-dominates`.  On that display
+`K .windowPackageUnrealized`, the literal no-arm.  On that display
 Core closes the two incompatible ledger facts, giving
 `card 𝓑(𝒫) < 1` and contradicting
 `G ∈ 𝓑(𝒫)`.  The complementary half of the same reading — the *joint* retained
@@ -68,7 +67,7 @@ noncomputable def selectedCanonicalReplacementContinuation
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .coldCanonicalReplacementSwap) known]
     [FactKeys.Has (K .hotColdPartition) known]
-    [FactKeys.Has (K .densePackingOverflow) known]
+    [FactKeys.Has (K .windowPackageUnrealized) known]
     (fresh : List.Disjoint
       [K .coldCanonicalReplacementTrivial, K .blockedClassMember,
         K .blockedScaleAdditive, K .blockedBarrierOverlap,
@@ -95,7 +94,7 @@ noncomputable def selectedCanonicalReplacementContinuation
         (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
         (presentation := erdosReceiverLoadProfile)
         (data := spineData)).runAndCloseIncompatible additiveHistory
-          (K .densePackingOverflow) (K .blockedCompressionCap)
+          (K .windowPackageUnrealized) (K .blockedCompressionCap)
           (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
   | .right overlapHistory =>
       exact (overlapHistory.get (K .blockedBarrierOverlap)).down

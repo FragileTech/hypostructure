@@ -35,13 +35,8 @@ theorem maximalPacking_of_windowPresent (data : Parameters)
     exact Graph.FiniteObject.inducedPathFree_of_forall_not_inducesWindow
       object empty present
   obtain ⟨support, window⟩ := carried
-  obtain ⟨packing, valid, attains⟩ :=
-    object.exists_windowPacking_card_eq data.windowOrder
   exact ⟨object.windowPackingNumber_pos data.windowOrder_pos window,
-    packing, valid, attains,
-    fun other otherWindow =>
-      object.exists_mem_not_disjoint_of_card_eq data.windowOrder_pos
-        valid attains otherWindow⟩
+    canonicalWindowPacking_spec data object⟩
 
 /-- **Node `[21]`, `lem:curv-enum`.**  The registered certified barrier table's
 stored safe and flat counts are the finite safe, curvature-positive, and flat
@@ -66,9 +61,9 @@ theorem barrierEnumeration (data : Parameters) :
   rw [barrier.table.storedSafe_eq, barrier.table.storedFlat_eq]
   rfl
 
-/-- **Node `[21]`, `lem:p13-window-package`.**  On a selected object with a
-maximal packing and the replacement exclusion, the multi-scale window package
-of the packing is separated: its coordinates are disjoint per window, each
+/-- **Node `[21]`, `lem:p13-window-package`.**  On a selected object with the
+replacement exclusion, the multi-scale window package of the fixed maximum
+packing `P₀` is separated: its coordinates are disjoint per window, each
 window carries `windowPackageBits` coordinates, the registered per-scale rate is
 dominated by the compounded floor, and every functional declared quotient of
 the package (or of a baseline family extended by it) is label-injective. -/
@@ -77,7 +72,6 @@ theorem windowPackageSeparated_of_maximalPacking
     {Presentation : Type} {presentation : Presentation}
     (data : Parameters) (object : Graph.FiniteObject.{u})
     (windowRate_eq_barrier : data.windowRate = data.windowBarrier.binaryRateFloor)
-    (maximalPacking : MaximalPackingStatement data object)
     (replacementExclusion : ReplacementExclusionStatement data object)
     (selection : SelectionStatement BranchState Presentation presentation data object) :
     WindowPackageSeparatedStatement data object := by
@@ -85,9 +79,7 @@ theorem windowPackageSeparated_of_maximalPacking
   simp only [WindowPackageSeparatedStatement]
   let noReplacement := replacementExclusion
   let selected := selection
-  obtain ⟨_positive, packing, valid, maximum, maximal⟩ :=
-    maximalPacking
-  refine ⟨packing, valid, maximum, maximal, ?_⟩
+  let packing := canonicalWindowPacking data object
   let barrier := data.windowBarrier
   letI := barrier.indexFintype
   let scales := data.separatedScaleCount
@@ -210,8 +202,7 @@ theorem windowPackageSeparated_of_maximalPacking
       ⟨representative, smaller, baseline, transfer⟩
     · exact noReplacement declared.support replacement
     · exact selected.1 (transfer (selected.2 representative smaller baseline))
-  · intro BaselineCoordinate baseline baselineSupport
-      _baselineIndependent
+  · intro _baselineIndependent
     intro declared _functional
     by_contra reducing
     rcases declared.localize reducing with replacement |
@@ -231,8 +222,8 @@ theorem hotColdPartition_canonical (data : Parameters)
   have packingFacts :
       object.IsWindowPacking data.windowOrder packing ∧
         packing.card = object.windowPackingNumber data.windowOrder :=
-    Classical.choose_spec
-      (object.exists_windowPacking_card_eq data.windowOrder)
+    ⟨(canonicalWindowPacking_spec data object).1,
+      (canonicalWindowPacking_spec data object).2.1⟩
   let hot := canonicalHotWindows data object
   let cold := canonicalColdWindows data object
   have hotFacts :
@@ -284,8 +275,7 @@ theorem barrierCap_of_hotColdPartition (data : Parameters)
     ⟨_valid, _attains, _maximal, hotFacts, _coldIff, _disjoint, _cover⟩ :=
       split
   obtain ⟨_hotSubset, retained, _hotMaximal⟩ := hotFacts
-  obtain ⟨_packing, _packingValid, _packingCard, _packingMaximal,
-    _packageCard, _packagesDisjoint, _familyCard, rateLe, _⟩ := package
+  obtain ⟨_packageCard, _packagesDisjoint, _familyCard, rateLe, _⟩ := package
   have exponentLe :
       data.windowRate * data.separatedScaleCount object.vertexCount *
           (canonicalHotWindows data object).card ≤
@@ -308,8 +298,9 @@ at most the skeleton count times the stabilizer bound. -/
 theorem relabelingDensityCap_of_orbitCount (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     RelabelingDensityCapStatement data object :=
-  fun packing _valid labels => by
+  fun labels => by
     dsimp only
+    let packing := canonicalWindowPacking data object
     intro State stateDecidable skeletons state stabilizerBound
       closed invariant bounded
     classical

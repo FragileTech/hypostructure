@@ -1,4 +1,4 @@
-import Hypostructure.Graph.Statements.Spine
+import Hypostructure.Graph.Statements.SpineDominantType
 
 /-!
 # Contracts: the dominant rooted type and its translates, `[51]`--`[52]`
@@ -55,7 +55,9 @@ theorem dominantRootedType_of_repetitive (data : Parameters)
     (nearCubic : SurplusAtOrBelowStatement data object) :
     DominantRootedTypeSchema data object := by
   classical
-  obtain ⟨packing, _canonical, valid, maximal, rankEq, repetitive⟩ := repetitiveInput
+  obtain ⟨packing', canonical, _valid, _maximal, rankEq, repetitive⟩ := repetitiveInput
+  subst canonical
+  set packing := canonicalWindowPacking data object with packingDef
   letI : FinEnum object.Vertex := object.vertices
   letI : Fintype object.Vertex := inferInstance
   letI : DecidableEq object.Vertex := Classical.decEq object.Vertex
@@ -115,35 +117,34 @@ theorem dominantRootedType_of_repetitive (data : Parameters)
   have supportCount : support.card ≤ dominant.card +
       2 * data.surplusThreshold object.vertexCount := by
     omega
-  refine ⟨packing, valid, maximal, rankEq, ?_⟩
-  dsimp only
-  refine ⟨dominant, root.1, dominantSubset, rootMem, supportCount, ?_,
-    True.intro⟩
-  intro vertex vertexMem
-  obtain ⟨localVertex, localMember, localValue⟩ :=
-    Finset.mem_image.mp vertexMem
-  have equalToRoot : code localVertex = code root :=
-    (Finset.mem_filter.mp localMember).2
-  subst vertex
-  exact equalToRoot.symm
+  refine ⟨rankEq, ?_⟩
+  obtain ⟨dominantRoot, canonicalEq, _⟩ :=
+    canonicalDominantRootedType?_spec (data := data) (object := object)
+      ⟨(dominant, root.1), dominantSubset, rootMem, supportCount, by
+        intro vertex vertexMem
+        obtain ⟨localVertex, localMember, localValue⟩ :=
+          Finset.mem_image.mp vertexMem
+        have equalToRoot : code localVertex = code root :=
+          (Finset.mem_filter.mp localMember).2
+        subst vertex
+        exact equalToRoot.symm⟩
+  exact ⟨dominantRoot, canonicalEq⟩
 
 /-- **After `lem:dominant-type`: does the dominant root contain an internal
-wedge?**  The same packing, dominant fibre, root, count and type equalities
-carry to exactly one of the two subarms. -/
+wedge?**  The split is at the one canonical dominant pair node `[431]` fixed;
+both arms name it. -/
 theorem dominantRootedWedgeType_or_wedgeFree (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (dominantType : DominantRootedTypeSchema data object) :
     DominantRootedWedgeTypeStatement data object ∨
       DominantRootedTypeWedgeFreeStatement data object := by
   classical
-  obtain ⟨packing, valid, maximal, rankEq, dominant, root, dominantSubset, rootMem,
-    count, sameType, _⟩ := dominantType
+  obtain ⟨_rankEq, dominantRoot, canonicalEq⟩ := dominantType
   by_cases wedge : DominantRootWedgeClause object
-      (remainderSubcubicSupport data object packing) root
-  · exact .inl ⟨packing, valid, maximal, rankEq, dominant, root,
-      dominantSubset, rootMem, count, sameType, wedge⟩
-  · exact .inr ⟨packing, valid, maximal, rankEq, dominant, root,
-      dominantSubset, rootMem, count, sameType, wedge⟩
+      (remainderSubcubicSupport data object (canonicalWindowPacking data object))
+      dominantRoot.2
+  · exact .inl ⟨dominantRoot, canonicalEq, wedge⟩
+  · exact .inr ⟨dominantRoot, canonicalEq, wedge⟩
 
 /-- **Nodes `[51]`--`[52]`, `lem:translates-independent`.**  A dominant rooted
 radius-two type whose root carries an internal wedge supplies a translated raw
@@ -153,15 +154,18 @@ the subcubic support, and its distinct wedges are independent coordinates of
 the full-rank remainder, so `|R| ≤ b'·r_Ω(R) + 2T(n)`. -/
 theorem independentObstructionTranslates_of_dominantRootedWedgeType
     (data : Parameters) (object : Graph.FiniteObject.{u})
-    (cubic : data.threshold = 3)
+    (cubicBaseline : CubicBaselineStatement data)
+    (dominantType : DominantRootedTypeSchema data object)
     (dominantWedge : DominantRootedWedgeTypeStatement data object) :
     IndependentObstructionTranslatesStatement data object := by
   classical
-  obtain ⟨packing, valid, maximal, rankEq, dominant, root,
-    dominantSubset, rootMem, dominantCount, sameType, rootWedge⟩ :=
-    dominantWedge
+  have cubic : data.threshold = 3 := cubicBaseline.1
+  obtain ⟨rankEq, -⟩ := dominantType
+  obtain ⟨⟨dominant, root⟩, canonicalEq, rootWedge⟩ := dominantWedge
+  obtain ⟨dominantSubset, rootMem, dominantCount, sameType⟩ :=
+    canonicalDominantRootedType?_spec_of_eq_some canonicalEq
+  let packing := canonicalWindowPacking data object
   let radius := 2
-  refine ⟨packing, valid, maximal, radius, by simp [radius], ?_⟩
   let support := object.remainderSupport packing
   let subcubic := remainderSubcubicSupport data object packing
   have subcubicSubsetSupport : subcubic ⊆ support := by

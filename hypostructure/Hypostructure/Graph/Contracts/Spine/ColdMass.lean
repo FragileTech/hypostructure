@@ -305,15 +305,14 @@ theorem coldGermFamilyPositive_of_linear (data : Parameters)
   let cubic := cold.filter (AmbientCubicWindow data object)
   let selected := Graph.ColdCorridor.allSelectedStubs object cubic
   let perWindow := coldInteriorBranchExcess data
-  change ColdGermCandidatesStatement data object at family
-  rcases family with
-    ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
-      familyWitness⟩
+  obtain ⟨⟨disjointFamily, corridorLoss⟩, extractionEq, routing,
+      familyWitness⟩ := coldGermExtraction?_spec_of_candidates data object family
   simp only [ColdGermFamilyWitness] at familyWitness
   rcases familyWitness with
-    ⟨incidenceEq, candidatesEq, candidateFamily, extracted,
-      noncandidateClassified, occurrenceCount, selectedCount,
-      lossBound, quantitative⟩
+    ⟨_incidenceEq, _candidatesEq, _candidateFamily, extracted,
+      _noncandidateClassified, _occurrenceCount, selectedCount,
+      lossBound, _quantitative⟩
+  set candidates := coldRoutedCandidates data object routing
   have lossSmall : corridorLoss < selected.card := by
     have selectedExact := selectedExcess.1
     change selected.card = perWindow * cubic.card at selectedExact
@@ -335,14 +334,7 @@ theorem coldGermFamilyPositive_of_linear (data : Parameters)
     omega
   have disjointPositive : 0 < disjointFamily.card :=
     Graph.ColdCorridor.coldGerm_nonempty extracted.2.2 candidatePositive
-  change ColdGermFamilyPositiveStatement data object
-  simp only [ColdGermFamilyPositiveStatement]
-  exact ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
-    by
-      simp only [ColdGermFamilyWitness]
-      exact ⟨incidenceEq, candidatesEq, candidateFamily, extracted,
-        noncandidateClassified, occurrenceCount, selectedCount,
-        lossBound, quantitative⟩,
+  exact ⟨(disjointFamily, corridorLoss), extractionEq,
     disjointPositive⟩
 
 /-- **Node `[162]`, `lem:dense-cold-pass`: terminality in the remainder.**
@@ -408,15 +400,14 @@ With the germs extracted and routed and the same-interface table closed, no
 local terminal cold pattern remains. -/
 theorem coldBranchClosed_of_routing (data : Parameters)
     (object : Graph.FiniteObject.{u})
-    (extraction : ColdGermExtractionStatement data object)
     (routed : ColdGermRoutedStatement data object)
     (table : ColdSameInterfaceTableStatement data object) :
     ColdBranchClosedStatement data object :=
-  Graph.ColdCorridor.noTerminalColdResidual_of_routing extraction.2
+  Graph.ColdCorridor.noTerminalColdResidual_of_routing
     (fun germ shorter =>
-      let routedGerm := routed.2 germ shorter
+      let routedGerm := routed germ shorter
       ⟨routedGerm.1, routedGerm.2.1⟩)
-    table.2.1 table.2.2.1
+    table.1 table.2.1
 
 /-- **Node `[24]`, `prop:p13-density` after the cold branch.**  On the bounded
 arm the cold mass is `C ≤ (1 + (threshold+1)·B_cold)·σ(G)`; with the cleared

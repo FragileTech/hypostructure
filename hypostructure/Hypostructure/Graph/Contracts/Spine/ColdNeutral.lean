@@ -1,4 +1,4 @@
-import Hypostructure.Graph.Statements.Spine
+import Hypostructure.Graph.Statements.ColdGerm
 import Hypostructure.Graph.ColdIncrementArithmetic
 import Hypostructure.Graph.ColdGermFamily
 
@@ -86,18 +86,30 @@ theorem coldReturnCorridors_of_bridgeless (data : Parameters)
       (fun stub => stub.2 ∉ windows)
     simpa only [not_not] using partition.symm
 
-/-- **Node `[165]`, `lem:refined-minimality-swap`: the canonical exchange.**
-For every neutral configuration whose canonical representative `E` differs
-from the corridor piece `Q`, gluing `E` into the retained outside context
-preserves the baseline, target avoidance, vertex count and edge count, and
-replaces `Q` by a strict predecessor in the fixed canonical piece order. -/
-theorem canonicalReplacementSwap_of_baseline (data : Parameters)
+/-- **`lem:refined-minimality-swap`: the canonical exchange** (the paper's
+universal statement).  For every neutral configuration whose canonical
+representative `E` differs from the corridor piece `Q`, gluing `E` into the
+retained outside context preserves the baseline, target avoidance, vertex count
+and edge count, and replaces `Q` by a strict predecessor in the fixed canonical
+piece order. -/
+theorem canonicalReplacementSwap_at (data : Parameters)
     (object : Graph.FiniteObject.{u})
-    (baseline : Graph.MinimumDegreeAtLeast data.threshold object) :
-    CanonicalReplacementSwapStatement data object := by
+    (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
+    (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
+      (Graph.MinimumDegreeAtLeast data.threshold)
+      (Graph.HasCycleWithLength data.LengthOK) object)
+    (representative : Graph.CanonicalPiece germ.atom.interface)
+    (configuration :
+      NeutralEqualLengthTerminalConfigurationAt data object germ representative)
+    (different : representative ≠ germ.piece.toCanonical) :
+    let swapped := Graph.glue representative.toPiece germ.atom.outside
+    Graph.MinimumDegreeAtLeast data.threshold swapped ∧
+      ¬ Graph.HasCycleWithLength data.LengthOK swapped ∧
+      swapped.vertexCount = object.vertexCount ∧
+      swapped.edgeCount = object.edgeCount ∧
+      Graph.CanonicalPiece.Precedes representative germ.piece.toCanonical ∧
+      RefinedLexicographicallySmaller swapped object := by
   classical
-  change CanonicalReplacementSwapStatement data object
-  intro germ representative configuration different
   dsimp only
   obtain ⟨_active, representativeReading, equalSize, canonicalPosition,
     sourceAvoids⟩ := configuration
@@ -147,6 +159,19 @@ theorem canonicalReplacementSwap_of_baseline (data : Parameters)
   exact ⟨swappedBaseline, swappedAvoids, vertexCountEq, edgeCountEq,
     representativePrecedes, refinedDecrease⟩
 
+/-- **Node `[165]`, at the marked configuration.**  On node `[163]`'s no-arm
+the marked configuration of node `[406]` exists; the canonical exchange is the
+universal lemma at it. -/
+theorem canonicalReplacementSwap_of_neutral (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
+    (neutral : CanonicalNeutralConfigurationStatement data object) :
+    CanonicalReplacementSwapStatement data object := by
+  obtain ⟨marked, markedEq, _noStrand⟩ := neutral
+  exact ⟨marked, markedEq,
+    canonicalReplacementSwap_at data object baseline marked.1 marked.2
+      (markedNeutralGerm?_spec_of_eq_some data object markedEq)⟩
+
 /-- **Node `[166]`: refined minimality forces the trivial replacement.**  A
 different canonical representative would give, by the exchange of `[165]`, a
 baseline target-avoiding object strictly smaller in the refined `(|V|,|E|,Φ)`
@@ -159,14 +184,12 @@ theorem canonicalReplacementTrivial_of_swap
     (swap : CanonicalReplacementSwapStatement data object) :
     CanonicalReplacementTrivialStatement data object := by
   classical
-  change CanonicalReplacementSwapStatement data object at swap
-  change CanonicalReplacementTrivialStatement data object
-  intro germ representative configuration
+  obtain ⟨marked, markedEq, exchange⟩ := swap
+  refine ⟨marked, markedEq, ?_⟩
   by_contra different
-  let swapped := Graph.glue representative.toPiece germ.atom.outside
+  let swapped := Graph.glue marked.2.toPiece marked.1.atom.outside
   obtain ⟨baseline, avoids, _vertexCount, _edgeCount,
-      _precedes, refinedDecrease⟩ :=
-    swap germ representative configuration different
+      _precedes, refinedDecrease⟩ := exchange different
   have smaller :
       (refinedProgress BranchState Presentation presentation data).Smaller
         swapped object :=
@@ -175,14 +198,15 @@ theorem canonicalReplacementTrivial_of_swap
   exact avoids
     (selected.2.refinedMinimal swapped smaller baseline)
 
-/-- **`lem:refined-minimality-swap`, the same-size arm** is the exact
-complement of the strictly-smaller arm. -/
+/-- **`lem:refined-minimality-swap`, the same-size arm** at the marked
+configuration is the exact complement of the strictly-smaller arm. -/
 theorem coldCanonicalSwapSameSize_of_not_smaller (data : Parameters)
     (object : Graph.FiniteObject.{u})
+    (neutral : CanonicalNeutralConfigurationStatement data object)
     (smaller : ¬ ColdCanonicalSwapSmallerStatement data object) :
     ColdCanonicalSwapSameSizeStatement data object := by
-  intro germ neutral lt
-  exact smaller ⟨germ, neutral, lt⟩
+  obtain ⟨marked, markedEq, _noStrand⟩ := neutral
+  exact ⟨marked, markedEq, fun lt => smaller ⟨marked, markedEq, lt⟩⟩
 
 /-- **Node `[167]`, `lem:two-strand-check`: the literal finite check.**  The
 genuine arm retains the two ambient strands and the window segment; they close
@@ -199,9 +223,9 @@ theorem twoStrandSurvivor_of_genuine (data : Parameters)
   classical
   change GenuineSecondStrandStatement data object at genuine
   change TwoStrandSurvivorStatement data object
-  obtain ⟨germ, representative, config, neutral, realized⟩ := genuine
+  obtain ⟨marked, markedEq, config, realized⟩ := genuine
   obtain ⟨witness⟩ := realized
-  refine ⟨germ, representative, config, neutral, ⟨witness⟩, ?_⟩
+  refine ⟨marked, markedEq, config, ⟨witness⟩, ?_⟩
   apply Graph.TwoStrand.mem_survivors.2
   refine ⟨witness.length_le, witness.gap_lt, ?_⟩
   intro dyadic
@@ -248,7 +272,7 @@ theorem coldSymmetricPairExcluded_of_stubStructure (data : Parameters)
   classical
   change ¬ TwoStrandSurvivorStatement data object
   intro survivor
-  obtain ⟨germ, representative, config, neutral, realized, survives⟩ := survivor
+  obtain ⟨⟨germ, representative⟩, -, config, realized, -⟩ := survivor
   obtain ⟨witness⟩ := realized
   have windowMember : witness.window ∈
       (canonicalColdWindows data object).filter
@@ -271,21 +295,19 @@ theorem coldSymmetricPairExcluded_of_stubStructure (data : Parameters)
   have leftEnd : witness.left ∈ ends := by
     by_contra notEnd
     have one := interior witness.left witness.left_mem notEnd
-    rw [thresholdEq] at one
     omega
   have rightEnd : witness.right ∈ ends := by
     by_contra notEnd
     have one := interior witness.right witness.right_mem notEnd
-    rw [thresholdEq] at one
     omega
   have leftEndpointCount :
       (object.externalNeighbours witness.window witness.left).card = 2 := by
     have count := endpoints witness.left leftEnd
-    simpa [thresholdEq] using count
+    omega
   have rightEndpointCount :
       (object.externalNeighbours witness.window witness.right).card = 2 := by
     have count := endpoints witness.right rightEnd
-    simpa [thresholdEq] using count
+    omega
   have selectedInterior :=
     Graph.ColdCorridor.mem_selectedStubs_isInterior
       object witness.origin_mem_window

@@ -31,9 +31,9 @@ noncomputable abbrev denseLinearKeys : FactKeys EGInput.{u} :=
   [K .remainderNormalized, K .remainderRelabelingEntropy, K .bridgeless,
     K .coldReturnCorridors, K .coldCorridorState,
     K .denseColdCorridorsTerminal, K .coldFirstFailureOccurrence,
-    K .coldFailureCycle, K .coldFailureDefect, K .coldFailureDefectRoute,
-    K .coldFailureCompression, K .coldFailureHandoff, K .coldHandoffTransfer,
-    K .coldFailureRouting, K .coldExchangeBound, K .coldGermExtraction,
+    K .coldFailureCycle, K .coldFailureDefectRoute,
+    K .coldFailureCompression, K .coldHandoffTransfer,
+    K .coldFailureRouting, K .coldExchangeBound,
     K .coldGermCandidates, K .coldGermFamilyPositive, K .coldGermSomeRealizing,
     K .coldGermNoneRealizing, K .coldGermSomeDistinguishing,
     K .coldGermNoneDistinguishing, K .coldGermRealized, K .coldGermDistinguished,
@@ -69,7 +69,7 @@ noncomputable def nearCubicDenseLinear
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .hotColdPartition) known]
-    [FactKeys.Has (K .densePackingOverflow) known]
+    [FactKeys.Has (K .windowPackageUnrealized) known]
     [FactKeys.Has (K .coldMassLinear) known]
     [FactKeys.Has (K .coldSelectedBranchExcess) known]
     [FactKeys.Has (K .coldStubExcess) known]

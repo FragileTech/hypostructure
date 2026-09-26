@@ -34,26 +34,6 @@ theorem coldFailureDefectRoutes
     (support := fun stage => corridor.prefixSupport stage.1)
     (profile := profile) failure
 
-/-- **F2-free context equivalence.**  When (F2) is excluded on two prefixes
-with the same state, the two prefixes agree against every outside context. -/
-theorem coldFailureDefectEquivalent
-    (data : Parameters) (object : Graph.FiniteObject.{u}) :
-    ColdFailureDefectEquivalentStatement data object := by
-      intro windows component corridor presentation index left right
-        excluded same
-      classical
-      intro outside
-      by_contra distinguishes
-      exact excluded ⟨same, ⟨outside, distinguishes⟩⟩
-
-/-- **(F2), complete local content**: the sparse-exit route and the F2-free
-context equivalence. -/
-theorem coldFailureDefectFact
-    (data : Parameters) (object : Graph.FiniteObject.{u}) :
-    ColdFailureDefectStatement data object :=
-  { routes := coldFailureDefectRoutes data object
-    equivalent := coldFailureDefectEquivalent data object }
-
 /-- **(F1) never occurs.**  An (F1) completion is a target cycle of the object;
 an object avoiding the target has none. -/
 theorem coldFailureCycle_of_avoids
@@ -74,13 +54,6 @@ theorem coldFailureCompression_of_uncompressible
   intro windows component corridor presentation index support
   exact Graph.ColdCorridor.Corridor.FirstFailureCompression.not_occurs
     (fun support compressible => uncompressible support compressible)
-
-/-- **(F4) transfers to the handoff support.**  A corridor that first enters a
-declared handoff support has its head in that support. -/
-theorem coldFailureHandoff_holds (object : Graph.FiniteObject.{u}) :
-    ColdFailureHandoffStatement object := by
-  intro windows component corridor Handoff segment failure
-  exact Graph.ColdCorridor.Corridor.handoff_mem failure
 
 /-- **The ordered first failure.**  On the retained cold corridor state, with
 the declared handoff registry `ColdDeclaredHandoffSupport`, every eligible half-edge has a first event
@@ -237,20 +210,10 @@ theorem coldFailureRouting_of_failures
   | germ germ => exact Or.inl ⟨⟨first, germ, minimal⟩⟩
 
 /-- **The first-failure exchange is bounded by `M_cold`.** -/
-theorem coldExchangeBound_of_routing
-    (data : Parameters) (object : Graph.FiniteObject.{u})
-    (routing : ColdFailureRoutingStatement data object) :
+theorem coldExchangeBound_holds
+    (data : Parameters) (object : Graph.FiniteObject.{u}) :
     ColdExchangeBoundStatement data object :=
-  ⟨routing, fun _windows _component corridor terminal =>
-    corridor.exchange_card_le terminal⟩
-
-/-- **`lem:cold-germ-extraction`, the finite extraction.**  With the exchange
-bound, an occurrence-indexed candidate family with the paper's overlap bound
-has a disjoint subfamily of size at least `|𝒢_cand|/D_cold`. -/
-theorem coldGermExtraction_of_exchangeBound
-    (data : Parameters) (object : Graph.FiniteObject.{u})
-    (exchange : ColdExchangeBoundStatement data object) :
-    ColdGermExtractionStatement data object :=
-  ⟨exchange, Graph.ColdCorridor.coldGermOccurrenceExtractionLocal⟩
+  fun _windows _component corridor terminal =>
+    corridor.exchange_card_le terminal
 
 end Hypostructure.Graph.Contracts.Spine

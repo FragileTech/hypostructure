@@ -53,8 +53,7 @@ manuscript's Part XI leaves are drawn. -/
 @[reducible] noncomputable def coldBranchClosedRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldBranchClosed
-    { Requires := [K .coldGermExtraction, K .coldGermRouted,
-        K .coldSameInterfaceTable]
+    { Requires := [K .coldGermRouted, K .coldSameInterfaceTable]
       Produces := [K .coldBranchClosed]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -62,7 +61,7 @@ manuscript's Part XI leaves are drawn. -/
     (fun inputs =>
       .cons (key := K .coldBranchClosed)
         ⟨Contracts.Spine.coldBranchClosed_of_routing data.toParameters
-          inputs.current.object (inputs.get (K .coldGermExtraction)).down
+          inputs.current.object
           (inputs.get (K .coldGermRouted)).down
           (inputs.get (K .coldSameInterfaceTable)).down⟩
         .nil)

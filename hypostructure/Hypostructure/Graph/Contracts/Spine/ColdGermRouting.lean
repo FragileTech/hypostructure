@@ -25,25 +25,22 @@ universe u v
 /-- **(G1) never occurs.**  A hit-realizing germ gives an accepted cycle of the
 target-avoiding object; every germ of the retained family satisfies the
 trichotomy. -/
-theorem coldGermRealized_of_candidates (data : Parameters)
+theorem coldGermRealized_of_avoids (data : Parameters)
     (object : Graph.FiniteObject.{u})
-    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
-    (candidates : ColdGermCandidatesStatement data object) :
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object) :
     ColdGermRealizedStatement data object :=
-  ⟨candidates,
-    fun germ realizing =>
+  ⟨fun germ realizing =>
       avoids (germ.target_of_realizing
         (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant realizing),
     fun germ => germ.trichotomy⟩
 
 /-- **(G2) is target-defective.**  A distinguishing context makes the germ's
 identification not target-complete. -/
-theorem coldGermDistinguished_of_candidates (data : Parameters)
-    (object : Graph.FiniteObject.{u})
-    (candidates : ColdGermCandidatesStatement data object) :
+theorem coldGermDistinguished_holds (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
     ColdGermDistinguishedStatement data object :=
-  ⟨candidates, fun germ Profile profile distinguishing =>
-    germ.not_targetComplete_of_distinguishing profile distinguishing⟩
+  fun germ Profile profile distinguishing =>
+    germ.not_targetComplete_of_distinguishing profile distinguishing
 
 /-- **(G3) never occurs, with the increment arithmetic.**  A shortening
 neutral germ is a target-complete compression of a proper support, which
@@ -73,11 +70,10 @@ theorem coldGermSilent_of_uncompressible (data : Parameters)
 /-- **Nodes `[154]`--`[156]`: every surviving length-changing germ is (G2).**
 (G1) is refuted by target avoidance and (G3) by uncompressibility, so every
 shortening germ is distinguishing and routed to the target-defect ledger. -/
-theorem coldGermRouted_of_candidates (data : Parameters)
+theorem coldGermRouted_of_uncompressible (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
-    (uncompressible : UncompressibleStatement data object)
-    (candidates : ColdGermCandidatesStatement data object) :
+    (uncompressible : UncompressibleStatement data object) :
     ColdGermRoutedStatement data object := by
   let notRealizing : ∀ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
       (Graph.MinimumDegreeAtLeast data.threshold)
@@ -93,38 +89,37 @@ theorem coldGermRouted_of_candidates (data : Parameters)
     fun germ shorter neutral =>
       uncompressible germ.support
           (germ.compressibleSupport_of_not_distinguishing shorter neutral.2)
-  exact ⟨candidates, fun germ shorter =>
+  exact fun germ shorter =>
     have distinguishing :=
       Graph.ColdCorridor.boundedGerm_not_survives notRealizing notSilent
         germ shorter
     ⟨distinguishing,
       fun Profile profile =>
         germ.not_targetComplete_of_distinguishing profile distinguishing,
-      Or.inl distinguishing⟩⟩
+      Or.inl distinguishing⟩
 
 /-- **Node `[157]`, `lem:cold-same-interface-table` and
 `lem:cold-short-self-return-filter`.**  No table row is realizing, and a row
 is handed off or distinguishing (otherwise it compresses its own proper
 support); the short self-return exceptions are routed the same way; the table
 is finite. -/
-theorem coldSameInterfaceTable_of_candidates (data : Parameters)
+theorem coldSameInterfaceTable_of_uncompressible (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
-    (uncompressible : UncompressibleStatement data object)
-    (candidates : ColdGermCandidatesStatement data object) :
+    (uncompressible : UncompressibleStatement data object) :
     ColdSameInterfaceTableStatement data object := by
   let compression := fun support compressible => uncompressible support compressible
   let targetInvariant : Graph.FiniteObject.IsomorphismInvariant
       (Graph.HasCycleWithLength data.LengthOK) :=
     (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant
-  exact ⟨candidates, fun Handoff row =>
+  exact ⟨fun row =>
       Graph.ColdCorridor.row_closed targetInvariant avoids compression row,
-    fun Handoff self =>
+    fun self =>
       Graph.ColdCorridor.selfReturn_closed targetInvariant avoids compression self,
     fun length failed =>
       Graph.ColdCorridor.exists_accepted_of_not_survivesSmear failed,
     rfl,
-    fun Handoff row => row.increment_eq_zero⟩
+    fun row => row.increment_eq_zero⟩
 
 /-- **Node `[168]`: the stub structure of the ambient-cubic cold windows.**
 The two path endpoints carry `δ - 1` external stubs each, every interior vertex
@@ -183,16 +178,13 @@ theorem neutralEqualLengthTerminal_of_positive
     NeutralEqualLengthTerminalConfigurationStatement data object := by
   classical
   letI : FinEnum object.Vertex := object.vertices
-  change ColdGermFamilyPositiveStatement data object at positive
-  rcases positive with
-    ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
-      familyWitness, positiveCard⟩
+  obtain ⟨extraction, extractionEq, positiveCard⟩ := positive
+  obtain ⟨routing, _familyWitness⟩ :=
+    coldGermExtraction?_spec_of_eq_some data object extractionEq
   obtain ⟨epsilon, epsilonMem⟩ := Finset.card_pos.mp positiveCard
-  let germ := incidence epsilon
-  have active : ActiveColdGermStatement data object germ := by
-    refine ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
-      familyWitness, ?_⟩
-    exact ⟨epsilon, epsilonMem, rfl⟩
+  let germ := coldRoutedOccurrenceIncidence data object routing epsilon
+  have active : CanonicalActiveColdGerm data object germ :=
+    ⟨extraction, extractionEq, routing, epsilon, epsilonMem, rfl⟩
   let baselineInvariant :=
     Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold
   let targetInvariant :=
@@ -312,7 +304,7 @@ theorem neutralEqualLengthTerminal_of_positive
           decrease⟩
     · exact Or.inl rfl
   refine ⟨terminal, germ, representative, ?_⟩
-  change ActiveColdGermStatement data object germ ∧
+  change CanonicalActiveColdGerm data object germ ∧
     (Graph.CanonicalPiece.CutStateReading
         (Graph.MinimumDegreeAtLeast data.threshold)
         (Graph.HasCycleWithLength data.LengthOK)
@@ -381,23 +373,16 @@ the exact candidate/loss identity and the `B_cold·σ(G)` loss bound; the
 per-half-edge split supplies the least-high witness on every non-candidate. -/
 theorem absorbedGermFanData_of_split (data : Parameters)
     (object : Graph.FiniteObject.{u})
-    (split : AbsorbedGermSplitStatement data object)
-    (family : ColdGermCandidatesStatement data object) :
+    (split : AbsorbedGermSplitStatement data object) :
     AbsorbedGermFanDataStatement data object := by
   classical
   letI : FinEnum object.Vertex := object.vertices
   change AbsorbedGermSplitStatement data object at split
-  change ColdGermCandidatesStatement data object at family
   simp only [AbsorbedGermSplitStatement] at split
-  obtain ⟨splitRouting, alternatives⟩ := split
-  obtain ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
-      familyWitness⟩ := family
-  have routingEq : splitRouting = routing := Subsingleton.elim _ _
-  subst splitRouting
+  obtain ⟨routing, alternatives⟩ := split
   change AbsorbedGermFanDataStatement data object
   simp only [AbsorbedGermFanDataStatement]
-  refine ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
-    familyWitness, ?_⟩
+  refine ⟨routing, ?_⟩
   intro epsilon notCandidate
   rcases alternatives epsilon with candidate | high
   · exact (notCandidate candidate).elim
@@ -414,29 +399,15 @@ theorem coldGermFamilyPositive_of_positiveGerm (data : Parameters)
   classical
   letI : FinEnum object.Vertex := object.vertices
   change ColdPositiveGermStatement data object at positive
-  change ColdGermCandidatesStatement data object at family
   rcases positive with ⟨positiveRouting, positiveCard⟩
-  rcases family with
-    ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
-      familyWitness⟩
+  obtain ⟨extraction, extractionEq, routing, familyWitness⟩ :=
+    coldGermExtraction?_spec_of_candidates data object family
   have routingEq : positiveRouting = routing := Subsingleton.elim _ _
   subst positiveRouting
   simp only [ColdGermFamilyWitness] at familyWitness
-  rcases familyWitness with
-    ⟨incidenceEq, candidatesEq, candidateFamily, extracted,
-      noncandidateClassified, occurrenceCount, selectedCount,
-      lossBound, quantitative⟩
-  have candidatePositive : 0 < candidates.card := by
-    rw [candidatesEq]
-    exact positiveCard
-  have disjointPositive : 0 < disjointFamily.card :=
-    Graph.ColdCorridor.coldGerm_nonempty extracted.2.2 candidatePositive
-  change ColdGermFamilyPositiveStatement data object
-  refine ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
-    ?_, disjointPositive⟩
-  simp only [ColdGermFamilyWitness]
-  exact ⟨incidenceEq, candidatesEq, candidateFamily, extracted,
-    noncandidateClassified, occurrenceCount, selectedCount,
-    lossBound, quantitative⟩
+  obtain ⟨_incidenceEq, _candidatesEq, _candidateFamily, extracted,
+    _rest⟩ := familyWitness
+  exact ⟨extraction, extractionEq,
+    Graph.ColdCorridor.coldGerm_nonempty extracted.2.2 positiveCard⟩
 
 end Hypostructure.Graph.Contracts.Spine

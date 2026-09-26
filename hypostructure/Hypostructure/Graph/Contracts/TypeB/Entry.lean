@@ -194,8 +194,7 @@ theorem typeBFanEntry_of_absorbedGermFanData
   simp only [AbsorbedGermDecoratedAssignedSupportStatement]
   change AbsorbedGermFanDataStatement data object at fanData
   simp only [AbsorbedGermFanDataStatement] at fanData
-  obtain ⟨routing, _incidence, _candidates, _disjointFamily,
-      _corridorLoss, _familyWitness, fanData⟩ := fanData
+  obtain ⟨routing, fanData⟩ := fanData
   refine ⟨routing, ?_⟩
   intro epsilon notCandidate
   obtain ⟨firstIndex, firstBound, high, earlierBound,

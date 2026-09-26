@@ -23,10 +23,10 @@ variable [FactSystem (Input BranchState Presentation presentation data)]
 `p` boundary leaves, `s` internal vertices, cycle rank `β` and surplus `σ`
 satisfies `s = p − 2 + 2β − σ`.  The manuscript proves it from the handshake
 identity and the cycle-rank formula.  The row below performs that derivation
-inside its atomic executor for every repair component embedded in the active
-support.  Node `[43]` remains in the literal ledger ancestry but is not copied
-or falsely declared as an arithmetic prerequisite; the proof does not appeal
-to a detached universal result.
+at the delayed compensation components of the support of the certificate
+node `[43]` routes (`branchCertificate?`): they are read from `K
+.globalDelocalization`, and their internal degree bound from the residual's
+baseline at the cubic threshold (`K .cubicBaseline`).
 
 `[45]` is the barrier `lem:no-silent-global-smearing` raises against a
 whole-graph dependence: the closed clause of `def:admissible-rank-quotient`
@@ -38,10 +38,16 @@ places the quotient in the closed rather than proper-support clause. -/
     (data : Data.{u}) :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.repairIdentity
-    (sourceFreeManifest (K .repairIdentity))
+    { Requires := [K .globalDelocalization, K .cubicBaseline]
+      Produces := [K .repairIdentity]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .repairIdentity)
-        ⟨Contracts.Spine.repairIdentity inputs.current.object⟩
+        ⟨Contracts.Spine.repairIdentity_of_globalDelocalization data.toParameters
+          inputs.current.object (inputs.get (K .globalDelocalization)).down
+          inputs.current.baseline (inputs.get (K .cubicBaseline)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

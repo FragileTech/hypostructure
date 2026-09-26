@@ -27,10 +27,10 @@ theorem forcedCurvatureCost_of_fullRank (data : Parameters)
     (wedgeSupply : WedgeSupplyStatement data object)
     (rank : CurvatureFullRankStatement data object) :
     ForcedCurvatureCostStatement data object := by
-  have floor := wedgeSupply.2
-  rcases rank with ⟨packing, _canonical, valid, maximal, rankEq⟩
-  refine ⟨packing, valid, maximal, ?_⟩
-  have demand := floor packing valid
+  have demand := wedgeSupply.2
+  rcases rank with ⟨packing, canonical, _valid, _maximal, rankEq⟩
+  subst canonical
+  set packing := canonicalWindowPacking data object with packingDef
   -- `W₂(R) ≤ r_Ω(R)`, from the exact full-rank equality.
   have supply :
       remainderWedgeSupply object packing ≤
@@ -62,8 +62,7 @@ theorem remainderEntropyHigh_of_atLeast (data : Parameters)
         (object.remainderSupport (canonicalWindowPacking data object)).card) :
     RemainderEntropyHighStatement data object :=
   ⟨canonicalWindowPacking data object, rfl,
-    (Classical.choose_spec
-      (object.exists_windowPacking_card_eq data.windowOrder)).1, high⟩
+    (canonicalWindowPacking_spec data object).1, high⟩
 
 /-- **Node `[50]`, low arm.**  At the fixed maximum packing, failure of
 `n^{|R|} ≤ |𝒢(R)|^d` is the strict low-entropy comparison. -/
@@ -80,8 +79,7 @@ theorem remainderEntropyLow_of_not_atLeast (data : Parameters)
         (object.remainderSupport (canonicalWindowPacking data object)).card) :
     RemainderEntropyLowStatement data object :=
   ⟨canonicalWindowPacking data object, rfl,
-    (Classical.choose_spec
-      (object.exists_windowPacking_card_eq data.windowOrder)).1,
+    (canonicalWindowPacking_spec data object).1,
     (Graph.not_atLeastEntropyRate_iff _ _ _ _ _ _ _).mp notHigh⟩
 
 /-- **Node `[52]`, `prop:two-budget` (a): the joint demand.**  Raising the
@@ -110,8 +108,7 @@ theorem entropyCapBound_of_hotColdPartition (data : Parameters)
   change jointPackageDemand data object ≤ Graph.skeletonBudget object
   obtain ⟨_valid, _attains, _maximal, hotFacts, _coldIff, _disjoint,
     _cover⟩ := split
-  obtain ⟨_packing, _packingValid, _packingCard, _packingMaximal,
-    _packageCard, _packagesDisjoint, _familyCard, rateLe, _⟩ := package
+  obtain ⟨_packageCard, _packagesDisjoint, _familyCard, rateLe, _⟩ := package
   rcases hotFacts.2.1 with retained | allCold
   · obtain ⟨State, stateOf, _packageStates, retainedCodeLe⟩ := retained
     have demandLe : jointPackageDemand data object ≤

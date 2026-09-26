@@ -33,7 +33,12 @@ theorem netDeficiencyCap_of_densityCap (data : Parameters)
         2 * data.windowRate)
     (densityCap : DensityCapStatement data object) :
     NetDeficiencyCapStatement data object := by
-  intro packing valid cardinality large
+  intro large
+  set packing := canonicalWindowPacking data object with packingDef
+  have valid : object.IsWindowPacking data.windowOrder packing :=
+    (canonicalWindowPacking_spec data object).1
+  have cardinality : packing.card = object.windowPackingNumber data.windowOrder :=
+    (canonicalWindowPacking_spec data object).2.1
   have density :
       2 * (data.windowRate *
         data.separatedScaleCount object.vertexCount *
@@ -87,12 +92,16 @@ theorem netDeficiencyCap_of_denseDeficiencyBelow (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (below : DenseDeficiencyBelowStatement data object) :
     NetDeficiencyCapStatement data object := by
-  intro packing valid cardinality _large
+  intro _large
+  set packing := canonicalWindowPacking data object with packingDef
+  have valid : object.IsWindowPacking data.windowOrder packing :=
+    (canonicalWindowPacking_spec data object).1
+  have cardinality : packing.card = object.windowPackingNumber data.windowOrder :=
+    (canonicalWindowPacking_spec data object).2.1
   have canonicalCard :
       (canonicalWindowPacking data object).card =
         object.windowPackingNumber data.windowOrder :=
-    (Classical.choose_spec
-      (object.exists_windowPacking_card_eq data.windowOrder)).2
+    (canonicalWindowPacking_spec data object).2.1
   change data.dischargeScale *
       (data.threshold * (data.windowOrder *
         (canonicalWindowPacking data object).card) +
@@ -124,12 +133,16 @@ theorem netDeficiencyCap_of_coldRoute8Below (data : Parameters)
     (cubic : data.threshold = 3)
     (below : ColdRoute8BelowStatement data object) :
     NetDeficiencyCapStatement data object := by
-  intro packing valid cardinality _large
+  intro _large
+  set packing := canonicalWindowPacking data object with packingDef
+  have valid : object.IsWindowPacking data.windowOrder packing :=
+    (canonicalWindowPacking_spec data object).1
+  have cardinality : packing.card = object.windowPackingNumber data.windowOrder :=
+    (canonicalWindowPacking_spec data object).2.1
   have canonicalCard :
       (canonicalWindowPacking data object).card =
         object.windowPackingNumber data.windowOrder :=
-    (Classical.choose_spec
-      (object.exists_windowPacking_card_eq data.windowOrder)).2
+    (canonicalWindowPacking_spec data object).2.1
   change (data.threshold * data.dischargeScale + 1) *
       (coldExternalStubCount data *
         (canonicalWindowPacking data object).card +
@@ -163,22 +176,17 @@ theorem netDeficiencyCap_of_coldRoute8Below (data : Parameters)
     Nat.zero_le (data.bridgeMassFactor * data.dischargeScale *
       (data.spineScale * Core.ceilSqrt object.vertexCount))]
 
-/-- **Node `[173]`, `lem:exact-collision-test`, no arm.**  If the remainder is
-not negatively charged at every maximal packing, some maximal packing has
-nonnegative remainder charge. -/
+/-- **Node `[173]`, `lem:exact-collision-test`, no arm.**  If the remainder
+`R₀` of the fixed maximum packing is not negatively charged, its net charge is
+nonnegative. -/
 theorem exactCollisionFails_of_not_netChargeCap (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (notCap : ¬ NetChargeCapStatement data object) :
     ExactCollisionFailsStatement data object := by
-  classical
-  simp only [NetChargeCapStatement] at notCap
-  push Not at notCap
-  obtain ⟨packing, valid, cardinality, notNegative⟩ := notCap
-  exact ⟨packing, valid, cardinality,
-    (Graph.FiniteObject.not_negativeNetCharge_iff object _ _ _).1 notNegative⟩
+  exact (Graph.FiniteObject.not_negativeNetCharge_iff object _ _ _).1 notCap
 
 /-- **Node `[174]`, `lem:exact-collision-test`, the failure consequence.**  At
-the failure witness packing the remainder has nonnegative net charge; the exact
+the fixed maximum packing `P₀` the remainder has nonnegative net charge; the exact
 boundary demand `def⁺(R) ≤ e(R,W) ≤ (δ·order − 2(order−1))·p + σ_W`, the count
 `|R| + order·p = n` and the hot/cold split `p = |𝒫_hot| + |𝒫_cold|` rearrange
 it to `n + s·σ_R ≤ A·(|𝒫_hot| + |𝒫_cold|) + s·σ_W`. -/
@@ -189,9 +197,15 @@ theorem absorbedConfigurationResidual_of_exactCollisionFails (data : Parameters)
     (split : HotColdWindowStatement data object) :
     AbsorbedConfigurationResidualStatement data object := by
   classical
-  obtain ⟨packing, valid, cardinality, nonneg⟩ := fails
-  refine ⟨packing, valid, cardinality, nonneg, ?_⟩
-  obtain ⟨deficiencyLe, incidenceLe⟩ := demand packing valid
+  simp only [AbsorbedConfigurationResidualStatement,
+    ExactCollisionFailsStatement, BoundaryDemandStatement] at fails demand ⊢
+  set packing := canonicalWindowPacking data object with packingDef
+  have valid : object.IsWindowPacking data.windowOrder packing :=
+    (canonicalWindowPacking_spec data object).1
+  have cardinality : packing.card = object.windowPackingNumber data.windowOrder :=
+    (canonicalWindowPacking_spec data object).2.1
+  have nonneg := fails
+  obtain ⟨deficiencyLe, incidenceLe⟩ := demand
   have sizes := object.remainderSupport_card_add_eq valid
   obtain ⟨_, canonicalCard, _, _, _, disjoint, cover⟩ := split
   -- `p = |𝒫_hot| + |𝒫_cold|`: the fixed packing is the disjoint union.
@@ -206,8 +220,7 @@ theorem absorbedConfigurationResidual_of_exactCollisionFails (data : Parameters)
       packing.card =
         (canonicalHotWindows data object).card +
           (canonicalColdWindows data object).card := by
-    rw [cardinality, ← canonicalCard, union,
-      Finset.card_union_of_disjoint disjoint]
+    rw [packingDef, union, Finset.card_union_of_disjoint disjoint]
   rw [← countEq]
   unfold Graph.FiniteObject.NonNegativeNetCharge at nonneg
   unfold Parameters.netChargeCoefficient
@@ -246,21 +259,10 @@ total charge has a connected canonical piece of negative charge. -/
 theorem netChargeLocalization (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     NetChargeLocalizationStatement data object :=
-  fun packing _valid negative =>
+  fun negative =>
     object.exists_canonicalPiece_negativeNetCharge
-      (object.remainderSupport packing) data.threshold data.dischargeScale negative
-
-/-- The fixed maximum packing meets every induced window. -/
-private theorem canonicalWindowPacking_maximal (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    ∀ window : Finset object.Vertex,
-      object.InducesWindow data.windowOrder window →
-        ∃ member ∈ canonicalWindowPacking data object, ¬ Disjoint window member := by
-  have packingSpec := Classical.choose_spec
-    (object.exists_windowPacking_card_eq data.windowOrder)
-  exact fun window windowMem =>
-    object.exists_mem_not_disjoint_of_card_eq
-      data.windowOrder_pos packingSpec.1 packingSpec.2 windowMem
+      (object.remainderSupport (canonicalWindowPacking data object))
+      data.threshold data.dischargeScale negative
 
 /-- **Node `[59]`, yes arm.**  `N₀(R) ≥ 0` at the fixed maximum packing, which
 meets every induced window. -/
@@ -270,10 +272,9 @@ theorem netChargeNonNegative_of_nonNegative (data : Parameters)
       (object.remainderSupport (canonicalWindowPacking data object))
       data.threshold data.dischargeScale) :
     NetChargeNonNegativeStatement data object := by
-  have packingSpec := Classical.choose_spec
-    (object.exists_windowPacking_card_eq data.windowOrder)
-  exact ⟨canonicalWindowPacking data object, rfl, packingSpec.1, packingSpec.2,
-    canonicalWindowPacking_maximal data object, nonNegative⟩
+  have packingSpec := canonicalWindowPacking_spec data object
+  exact ⟨canonicalWindowPacking data object, rfl, packingSpec.1, packingSpec.2.1,
+    packingSpec.2.2, nonNegative⟩
 
 /-- **Node `[59]`, no arm.**  `N₀(R) < 0` at the fixed maximum packing. -/
 theorem netChargeNegative_of_not_nonNegative (data : Parameters)
@@ -282,10 +283,9 @@ theorem netChargeNegative_of_not_nonNegative (data : Parameters)
       (object.remainderSupport (canonicalWindowPacking data object))
       data.threshold data.dischargeScale) :
     NetChargeNegativeStatement data object := by
-  have packingSpec := Classical.choose_spec
-    (object.exists_windowPacking_card_eq data.windowOrder)
-  exact ⟨canonicalWindowPacking data object, rfl, packingSpec.1, packingSpec.2,
-    canonicalWindowPacking_maximal data object, Nat.lt_of_not_le notNonNegative⟩
+  have packingSpec := canonicalWindowPacking_spec data object
+  exact ⟨canonicalWindowPacking data object, rfl, packingSpec.1, packingSpec.2.1,
+    packingSpec.2.2, Nat.lt_of_not_le notNonNegative⟩
 
 /-- **Node `[61]`, `prop:negative-net-charge`.**  The negative remainder of the
 fixed maximum packing, localized through the canonical component
@@ -296,8 +296,9 @@ theorem negativeSupport_of_netChargeNegative (data : Parameters)
     (localization : NetChargeLocalizationStatement data object) :
     NegativeSupportStatement data object := by
   obtain ⟨packing, canonical, valid, _cardinality, maximal, negative⟩ := negativeFact
-  obtain ⟨component, present, charge⟩ := localization packing valid negative
-  exact ⟨packing, canonical, valid, maximal, component, present, charge⟩
+  subst canonical
+  obtain ⟨component, present, charge⟩ := localization negative
+  exact ⟨_, rfl, valid, maximal, component, present, charge⟩
 
 /-- **`lem:bridgeless`.**  A bridge of the selected minimal counterexample
 contracts to a smaller counterexample; the degree side condition is the

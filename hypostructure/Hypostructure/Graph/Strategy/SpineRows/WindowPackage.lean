@@ -34,7 +34,7 @@ noncomputable def windowPackageRealizationDichotomy
     (if realized : WindowPackageRealizedStatement data.toParameters current.object then
       .inl ⟨realized⟩
     else
-      .inr ⟨realized⟩)
+      .inr ⟨Nat.lt_of_not_le realized⟩)
     realizedFresh unrealizedFresh
 
 variable [FactSystem (Input BranchState Presentation presentation data)]
@@ -77,7 +77,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       (Presentation := Presentation) (presentation := presentation)
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.windowPackage
-    { Requires := [K .maximalPacking, K .replacementExclusion, K .selection]
+    { Requires := [K .replacementExclusion, K .selection]
       Produces := [K .windowPackageSeparated]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -86,7 +86,6 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       .cons (key := K .windowPackageSeparated)
         ⟨Contracts.Spine.windowPackageSeparated_of_maximalPacking data.toParameters
           inputs.current.object data.windowRate_eq_barrier
-          (inputs.get (K .maximalPacking)).down
           (inputs.get (K .replacementExclusion)).down
           (inputs.get (K .selection)).down⟩
         .nil)

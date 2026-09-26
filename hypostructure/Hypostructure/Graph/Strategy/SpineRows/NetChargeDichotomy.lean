@@ -16,18 +16,19 @@ variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
 /-- **The terminal `[60]`, the net-cap contradiction.**  On the yes-arm of
-`[59]` the selected maximum packing has `N₀(R) ≥ 0`; the large-budget net cap
-`K .netChargeCap` of `[57]` gives `N₀(R) < 0` at every maximum packing, in
-particular at that one. -/
+`[59]` the fixed maximum packing `P₀` has `N₀(R₀) ≥ 0`; the collision
+`K .netChargeCap` of `[57]`/`[173]` gives `N₀(R₀) < 0` at the same `R₀`. -/
 noncomputable instance instIncompatibleNetChargeNonNegativeCap :
     Incompatible (Input BranchState Presentation presentation data)
       (K .netChargeNonNegative) (K .netChargeCap) where
   contradiction := fun residual nonNegative cap => by
-    obtain ⟨packing, _canonical, valid, cardinality, _maximal, nonnegative⟩ :=
+    obtain ⟨packing, canonical, _valid, _cardinality, _maximal, nonnegative⟩ :=
       nonNegative.down
+    subst canonical
     exact ((residual.object.not_negativeNetCharge_iff
-      (residual.object.remainderSupport packing) data.threshold
-      data.dischargeScale).mpr nonnegative) (cap.down packing valid cardinality)
+      (residual.object.remainderSupport
+        (canonicalWindowPacking data.toParameters residual.object))
+      data.threshold data.dischargeScale).mpr nonnegative) cap.down
 
 variable [FactSystem (Input BranchState Presentation presentation data)]
 

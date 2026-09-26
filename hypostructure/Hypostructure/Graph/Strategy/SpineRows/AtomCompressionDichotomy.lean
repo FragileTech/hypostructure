@@ -62,14 +62,6 @@ noncomputable def atomCompressionDichotomy
     [@Core.Residual.FactKeys.Has
       (Input BranchState Presentation presentation data) _
       (factSystem BranchState Presentation presentation data)
-      (K .degreeProfileFibres) known]
-    [@Core.Residual.FactKeys.Has
-      (Input BranchState Presentation presentation data) _
-      (factSystem BranchState Presentation presentation data)
-      (K .targetCompleteContextUniversality) known]
-    [@Core.Residual.FactKeys.Has
-      (Input BranchState Presentation presentation data) _
-      (factSystem BranchState Presentation presentation data)
       (K .maximalPacking) known]
     (compressionFresh : K .atomCompression ∉ known)
     (delocalizedFresh : K .delocalizedSupport ∉ known) :
@@ -86,14 +78,6 @@ noncomputable def atomCompressionDichotomy
         (Input BranchState Presentation presentation data) _
         (factSystem BranchState Presentation presentation data)
         current known previous (K .contextUniversal)).down
-      let fibres := (@ExactLedger.get
-        (Input BranchState Presentation presentation data) _
-        (factSystem BranchState Presentation presentation data)
-        current known previous (K .degreeProfileFibres)).down
-      let completeUniversality := (@ExactLedger.get
-        (Input BranchState Presentation presentation data) _
-        (factSystem BranchState Presentation presentation data)
-        current known previous (K .targetCompleteContextUniversality)).down
       let maximal := (@ExactLedger.get
         (Input BranchState Presentation presentation data) _
         (factSystem BranchState Presentation presentation data)
@@ -103,8 +87,8 @@ noncomputable def atomCompressionDichotomy
         .inl ⟨compression⟩
       else
         .inr ⟨(Contracts.Spine.atomCompression_or_delocalizedSupport
-          data.toParameters current.object universal fibres completeUniversality
-          maximal).resolve_left compression⟩)
+          data.toParameters current.object universal
+          maximal.1).resolve_left compression⟩)
     compressionFresh delocalizedFresh
 
 end Hypostructure.Graph.Strategy.Spine

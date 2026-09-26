@@ -16,25 +16,20 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
-set_option maxHeartbeats 1600000 in
-/-- Node `[153]`, (F2): register the concrete sparse-exit route and the
-F2-free context equivalence on the current object
-(`Contracts.Spine.coldFailureDefectFact`). -/
+/-- Node `[153]`, (F2): an (F2) pair of prefixes of one of G's corridors is a
+target-defective quotient (`Contracts.Spine.coldFailureDefectRoutes`). -/
 @[reducible] noncomputable def coldFailureDefectRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldFailureDefect
     { Requires := []
-      Produces := [K .coldFailureDefect, K .coldFailureDefectRoute]
+      Produces := [K .coldFailureDefectRoute]
       requiresUnique := by simp
-      producesUnique := by key_fresh
+      producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      .cons (key := K .coldFailureDefect)
-        ⟨Contracts.Spine.coldFailureDefectFact data.toParameters
-          inputs.current.object⟩
-        (.cons (key := K .coldFailureDefectRoute)
-          ⟨Contracts.Spine.coldFailureDefectRoutes data.toParameters
-            inputs.current.object⟩ .nil))
+      .cons (key := K .coldFailureDefectRoute)
+        ⟨Contracts.Spine.coldFailureDefectRoutes data.toParameters
+          inputs.current.object⟩ .nil)
 
 /-- Node `[153]`, (F1): the selected residual contains no target cycle. -/
 @[reducible] noncomputable def coldFailureCycleRow :
@@ -66,21 +61,6 @@ representative on the current residual. -/
         ⟨Contracts.Spine.coldFailureCompression_of_uncompressible
           data.toParameters inputs.current.object
           (inputs.get (K .uncompressible)).down⟩
-        .nil)
-
-/-- Node `[153]`, (F4): a declared Type-B/route-8 support is returned to
-the already-declared handoff ledger. -/
-@[reducible] noncomputable def coldFailureHandoffRow :
-    AtomicStrategy (Input BranchState Presentation presentation data) :=
-  factOnly `Hypostructure.Graph.Strategy.Spine.coldFailureHandoff
-    { Requires := []
-      Produces := [K .coldFailureHandoff]
-      requiresUnique := by simp
-      producesUnique := by simp
-      producesNonempty := by simp }
-    (fun inputs =>
-      .cons (key := K .coldFailureHandoff)
-        ⟨Contracts.Spine.coldFailureHandoff_holds inputs.current.object⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

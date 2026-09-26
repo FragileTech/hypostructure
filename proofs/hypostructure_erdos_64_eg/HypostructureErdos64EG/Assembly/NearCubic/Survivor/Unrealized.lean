@@ -34,11 +34,11 @@ through `[24]` to `[25]`, retaining the failed rate. -/
 noncomputable def Assembly.Internal.nearCubicDensePassRateFailed
     {selected : EGInput.{u}}
     (rateFails : ExactLedger EGInput.{u} selected
-      [K .route8RateFails, K .denseDeficiencyBelow, K .densePackingOverflow,
+      [K .route8RateFails, K .denseDeficiencyBelow,
        K .windowPackageUnrealized, K .skeletonDominates, K .windowPackageSeparated,
        K .barrierEnumeration, K .sparseSurplusSurvivor, K .surplusAtOrBelow, K .localAlgebra,
        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion,
-       K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
+       K .cycleRankConstraint,
        K .tightEndpoint, K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
        K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
        K .selection]) :
@@ -72,11 +72,11 @@ the bounded arm returns through `[24]` to `[25]`. -/
 noncomputable def Assembly.Internal.nearCubicDensePassAtOrAbove
     {selected : EGInput.{u}}
     (denseHistory : ExactLedger EGInput.{u} selected
-      [K .denseDeficiencyAtOrAbove, K .densePackingOverflow,
+      [K .denseDeficiencyAtOrAbove,
        K .windowPackageUnrealized, K .skeletonDominates, K .windowPackageSeparated,
        K .barrierEnumeration, K .sparseSurplusSurvivor, K .surplusAtOrBelow, K .localAlgebra,
        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion,
-       K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
+       K .cycleRankConstraint,
        K .tightEndpoint, K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
        K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
        K .selection]) :
@@ -104,7 +104,7 @@ noncomputable def Assembly.Internal.nearCubicDensePassAtOrAbove
 
 set_option maxHeartbeats 8000000 in
 /-- **The dense-packing residual, the no-arm of `[158]`.**  `[159]`: the exact
-package size exceeds the labelled skeleton count (`densePackingOverflowRow`).
+package size exceeds the labelled skeleton count (`K .windowPackageUnrealized`).
 `[160]` decides `τ(θ) < 1/4` and, on its yes arm, the private-carrier rate
 `τ(θ) < 3/13` (`lem:dense-deficiency-routing`).  The double-yes arm `[161]`
 continues at `[25]` with the deficiency cap in place of `[24]`; the spine
@@ -120,17 +120,12 @@ noncomputable def Assembly.Internal.nearCubicUnrealized
       [K .windowPackageUnrealized, K .skeletonDominates, K .windowPackageSeparated,
        K .barrierEnumeration, K .sparseSurplusSurvivor, K .surplusAtOrBelow, K .localAlgebra,
        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion,
-       K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint,
+       K .cycleRankConstraint,
        K .tightEndpoint, K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
        K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
        K .selection]) :
     SelectedNearCubicSurvivorBoundary selected := by
-  let denseOverflow :=
-    (densePackingOverflowRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      unrealizedHistory (by key_fresh)
-  match denseDeficiencyDichotomy (data := spineData) denseOverflow
+  match denseDeficiencyDichotomy (data := spineData) unrealizedHistory
       (by key_fresh) (by key_fresh) with
   | .right denseHistory =>
       exact Assembly.Internal.nearCubicDensePassAtOrAbove denseHistory

@@ -26,8 +26,7 @@ already the definitions `WindowCurvature.Safe` and
 reflection theorems outside the registered legal-label schedule.
 
 No predecessor fact is needed: the direct enumeration depends only on the
-registered window order, while the produced proposition is indexed by the
-active object's actual induced-window supports.
+registered window order.
 -/
 omit [FactSystem (Input BranchState Presentation presentation data)] in
 @[reducible] noncomputable def localAlgebraRow :
@@ -49,12 +48,10 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let object := inputs.current.object
       .cons (key := K .localAlgebra)
         (show Value BranchState Presentation presentation data
             .localAlgebra inputs.current from
-          ⟨fun (_support : Finset object.Vertex) _window =>
-            ⟨data.labelCount, data.labelSizeDistribution⟩⟩)
+          ⟨⟨data.labelCount, data.labelSizeDistribution⟩⟩)
         .nil)
     0 0
 
