@@ -329,6 +329,13 @@ paper's claim exactly at its node, and make its proof `sorry` tagged
 sorry only for a genuine paper error, never as a placeholder for unfinished
 work. `#print axioms` on the root then shows `sorryAx` exactly for these.
 
+Repairs are quarantined, never deleted. Any repair lemma, alternative argument
+or reverted repair goes to `hypostructure/Hypostructure/Quarantine/PaperRepairs/`
+(listed in `hypostructure/quarantine.txt`, described in that folder's
+README.md). No live module may import it; `hypostructure/scripts/check_quarantine.py`
+enforces this. Quarantined modules listed in `quarantine.txt` are reference
+only: never delete them, and never import them.
+
 
 ## Enforce the proof-specific boundary
 
