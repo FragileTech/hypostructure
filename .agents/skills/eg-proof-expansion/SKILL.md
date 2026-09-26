@@ -256,6 +256,17 @@ the paper argument with tex lines, the Lean argument with its declarations,
 and the reason it is at least as strong. An unregistered deviation is a
 defect.
 
+When the paper's argument has a gap (a step that does not follow, a missing
+link, or a hypothesis it never establishes), repair it. Do not report it and
+stop. Find a correct proof of the same conclusion, or of a stronger one, from
+the facts on the branch's ledger, prove it as a contract lemma, and register
+the repair in the discrepancy file: the gap, the repair, and why the result
+is at least as strong as the paper's claim. A statement may be left unproved
+only when it is shown to be false. In that case, give a concrete
+counterexample, checked in Lean where feasible, together with the strongest
+correct statement that replaces it.
+
+
 ## Enforce the proof-specific boundary
 
 Permit problem-specific code in exactly two files:
