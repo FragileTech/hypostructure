@@ -1,6 +1,6 @@
 {
  "status": "exact selected-root reduction to [20a], [144a], [172a], [182], [186], and [187]",
- "updated_at": "2026-09-26",
+ "updated_at": "2026-09-27",
  "aggregate_validation": "Full HypostructureErdos64EG package build passed on the working tree at ae44b9b plus the removal of Assembly/Surplus/TypeBContinuation.lean and TypeBCertificateOutcome, the [132] exit/blocker decision, the single [140]/[142]/[143] audit row `homogeneousBottleneckAuditRow`, and the [144] caps-fail/caps-hold decision (9029 jobs); every node entry re-derived on 2026-09-25 from the live Lean producers and the manuscript. Kernel axiom audit (web/tools/lean_axiom_audit.py): 153 assembly declarations, all clean, no frontier stubs.",
  "nodes": {
   "1": {
@@ -1104,9 +1104,9 @@
    "on_probed_closed_arm": false
   },
   "111": {
-   "producer": "`route8GlobalSqueezeRow` (SpineRows/Route8GlobalSqueeze.lean:20)",
+   "producer": "Definitional object `route8SurvivorComponents` (hypostructure/Hypostructure/Graph/Statements/RouteEight.lean); read by `route8BasinBurdenRow` ([112]) onward. The tautological key `route8GlobalSqueeze` was deleted.",
    "fidelity": "FAITHFUL-TRIVIAL",
-   "fidelity_note": "`K .route8GlobalSqueeze` (`Route8GlobalSqueeze`) names X_A as the canonical pieces passing `Route8Survives` (negative, zero surplus, silent-first, every unpaid silent load a target-complete-minimal basin with no exit-(4) witness) and s·D_A(X_A) = `route8Deficit`. Both are `rfl`: this is the definition `def:typeA-large-budget-deficit`.",
+   "fidelity_note": "X_A is the canonical collection `route8SurvivorComponents G` (canonical pieces passing `Route8Survives`) and s·D_A is `route8Deficit` on it. Both are functions of G, so no fact is published for them; [112]/[113] state their bounds on this object.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
@@ -1136,7 +1136,7 @@
   "114": {
    "producer": "`route8CarrierCoreRow` (SpineRows/Route8CarrierCore.lean:20); `route8TrueResidualRow` (SpineRows/Route8TrueResidual.lean:20); `route8CarrierCutParityRow` (SpineRows/Route8CarrierCutParity.lean:20)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`K .route8CarrierCore` gives `CarrierCoreFacts` of every actual (X,w,u,B_u) entry's graph-derived reading. `K .route8TrueResidual` gives R1--R4 (profile, silent-first, selected target-complete-minimal basin, no exit-(4) witness). `K .route8CarrierCutParity` proves 2 ≤ |car(r) ∩ C_ess| for a retained core coordinate whose event has an edge inside B_u and an edge leaving X.",
+   "fidelity_note": "`K .route8CarrierCore` gives `CarrierCoreFacts` of every actual (X,w,u,B_u) entry of X_A. `K .route8TrueResidual` gives (R1), (R2) and (R4) for every entry of X_A; (R3) is the node-[110] fact `K .route8ResidualProfile`, which stays on the ledger and is no longer republished inside [332]. `K .route8CarrierCutParity` is lem:typeA-carrier-cut-parity at every retained mixed event.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
@@ -1144,9 +1144,9 @@
    "on_probed_closed_arm": false
   },
   "115": {
-   "producer": "`route8SmallCoreCollapseRow` (SpineRows/Route8SmallCoreCollapse.lean:20)",
+   "producer": "`route8SmallCoreCollapseRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8SmallCoreCollapse.lean:24)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "Decision on the literal [114] ledger: `K .route8SmallCoreEntry` = an actual X_A entry whose canonical essential core has alpha ≤ 1; `K .route8NoSmallCoreEntry` = all entries alpha ≥ 2. Both conjoin the inherited `Route8CarrierCore`.",
+   "fidelity_note": "Decision reading the node-[114] carrier cores `K .route8CarrierCore`: `K .route8SmallCoreEntry` = some entry of X_A has alpha ≤ 1; `K .route8NoSmallCoreEntry` = every entry has alpha ≥ 2 (exact complement). The yes arm fixes the small-core entry `ι₁ = canonicalRoute8SmallCoreEntry G`, the choice of exactly this existential.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
@@ -1154,9 +1154,9 @@
    "on_probed_closed_arm": false
   },
   "116": {
-   "producer": "`route8SmallCoreExitRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8SmallCoreExit.lean) over `route8SmallCoreCollapse` (hypostructure/Hypostructure/Graph/Contracts/RouteEight/SmallCore.lean); closure `instIncompatibleRoute8TrueResidualSmallCoreCollapse` via runAndCloseIncompatible (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/RouteEight/Residual.lean)",
+   "producer": "`route8SmallCoreExitRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8SmallCoreExit.lean:21) over `route8SmallCoreCollapse`/`smallCoreCollapse_at` (hypostructure/Hypostructure/Graph/Contracts/RouteEight/SmallCore.lean); closure `instIncompatibleRoute8TrueResidualSmallCoreCollapse` via runAndCloseIncompatible (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/RouteEight/Residual.lean)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`K .route8SmallCoreCollapse` publishes the zero/one-core entry and its exit-(4)--(7) trace-basin alternative (lem:typeA-one-terminal-collapse); the terminal is the framework closure against the target-complete minimality of `K .route8TrueResidual`.",
+   "fidelity_note": "`K .route8SmallCoreCollapse` (`Route8SmallCoreCollapse`, hypostructure/Hypostructure/Graph/Statements/RouteEightPinned.lean:181): at the pinned entry ι₁ (`∃ e, canonicalRoute8SmallCoreEntry G = some e ∧ …`), one of the trace-basin alternatives of exits (4)-(7). It is closed against [332]'s target-complete minimality at the same ι₁.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
@@ -1173,9 +1173,9 @@
    "on_probed_closed_arm": false
   },
   "118": {
-   "producer": "`route8TrueTwoCarrierEntryRow` (SpineRows/Route8TrueTwoCarrierEntry.lean:27); `route8CarrierDeletionWitnessesRow` (SpineRows/Route8CarrierDeletionWitnesses.lean:20)",
+   "producer": "`route8TrueTwoCarrierEntryRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8TrueTwoCarrierEntry.lean:12); `route8CarrierDeletionWitnessesRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8CarrierDeletionWitnesses.lean:12)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`K .route8TrueTwoCarrierEntry` attaches the no-exit-(4) clause from `K .route8TrueResidual` to the selected two-carrier entry. `K .route8CarrierDeletionWitnesses` publishes `TwoCarrierDeletionWitnesses` for that entry's canonical core (`def:typeA-carrier-deletion-witness`, `lem:typeA-essential-deletion-witness`).",
+   "fidelity_note": "Both keys are at the two-support entry `ι₂ = canonicalRoute8TwoCarrierIndex G` fixed by [117]: `K .route8TrueTwoCarrierEntry` = (T2), no exit-(4) witness at ι₂ (hypostructure/Hypostructure/Graph/Statements/RouteEightPinned.lean:144); `K .route8CarrierDeletionWitnesses` = (T5), the declared deletion witnesses of ι₂'s essential core (hypostructure/Hypostructure/Graph/Statements/RouteEightPinned.lean:153), which is read by [124].",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
@@ -1231,9 +1231,9 @@
    "on_probed_closed_arm": false
   },
   "124": {
-   "producer": "`route8TwoCarrierExitRow` / `route8UnifiedTwoCarrierExitRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8TwoCarrierExit.lean) over `twoCarrier_exitFour` (hypostructure/Hypostructure/Graph/Contracts/RouteEight/Terminal.lean); closures `instIncompatibleRoute8TrueTwoCarrierEntryTwoCarrierExit` and `instIncompatibleRoute8UnifiedTrueTwoCarrierEntryUnifiedTwoCarrierExit`",
+   "producer": "`route8TwoCarrierExitRow` / `route8UnifiedTwoCarrierExitRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8TwoCarrierExit.lean:26/50) over `exitFour_of_deletionWitnesses` / `twoCarrier_exitFour` (hypostructure/Hypostructure/Graph/Contracts/RouteEight/Terminal.lean); closures `instIncompatibleRoute8TrueTwoCarrierEntryTwoCarrierExit` and `instIncompatibleRoute8UnifiedTrueTwoCarrierEntryUnifiedTwoCarrierExit`",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "thm:typeA-two-carrier-nogo: lem:typeA-carrier-deletion-exit is published as `K .route8TwoCarrierExit` / `K .route8UnifiedTwoCarrierExit` and is Incompatible with the terminal true two-support entry's absent exit (4). No False-valued key.",
+   "fidelity_note": "lem:typeA-carrier-deletion-exit at the one terminal entry. On X_A: the exit-(4) witness at ι₂, built from [118]'s (T5) deletion witnesses at ι₂, against (T2) at ι₂. On the unified lane: the witness at the terminal entry `ξ = canonicalRoute8TerminalEntry G` (ξ† on the [123] rate arm, ξ* of P₀ on the [181] arm), read from [334] at ξ. The closures identify the two indices by Option injectivity.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
@@ -1800,9 +1800,9 @@
    "on_probed_closed_arm": false
   },
   "181": {
-   "producer": "`selectedRouteEightUnpaidReduction` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/RouteEight/Local.lean); `route8UnpaidTwoCarrierRow`, `route8UnpaidExitFourDichotomy`, `route8UnpaidTrueEntryRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8UnpaidExitFourDichotomy.lean) over hypostructure/Hypostructure/Graph/Contracts/RouteEight/DemandLedger.lean",
+   "producer": "`selectedRouteEightUnpaidReduction` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/RouteEight/Local.lean); `route8UnpaidTwoCarrierRow`, `route8UnpaidExitFourDichotomy`, `route8UnpaidTrueEntryRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8UnpaidExitFourDichotomy.lean:25/71/45) over hypostructure/Hypostructure/Graph/Contracts/RouteEight/DemandLedger.lean",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "(168.1) is its own fact; the decision is outcome (i) `route8UnpaidWitnessFree` against its exact negation `route8UnpaidExitFourResidual`; outcome (i) is the terminal input of thm:typeA-two-carrier-nogo and closes at [124].",
+   "fidelity_note": "All facts are at the committed ledger `P₀ = canonicalRoute8Partition G`, the choice of [349]'s record, which is the record d2ded0e opened with `Classical.choice`. (168.1) is at P₀ (reads [349]). The decision reads [349] and splits at P₀: `K .route8UnpaidWitnessFree` (some unpaid ξ of P₀ has no exit-(4) witness) against its exact negation `K .route8UnpaidExitFourResidual` at the same P₀. On the yes arm, ξ* of P₀ is the terminal entry of thm:typeA-two-carrier-nogo ([334], reading [342]) and closes at [124]. The absorption A₀ ([351]) and window blocker b₀ ([352]) are likewise pinned at P₀.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
@@ -1821,7 +1821,7 @@
   "183": {
    "producer": "`route8UnpaidExitFourDichotomy` no arm (hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8UnpaidExitFourDichotomy.lean)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`K .route8UnpaidExitFourResidual`: every unpaid entry of every maximal ledger carries its canonical exit-(4) witness (168.2).",
+   "fidelity_note": "`K .route8UnpaidExitFourResidual`: every unpaid entry of the committed ledger P₀ carries its canonical exit-(4) witness (168.2), as the exact negation of outcome (i) at P₀.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
@@ -1850,7 +1850,7 @@
   "186": {
    "producer": "`route8JointBalanceRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8JointBalance.lean:28); `selectedRouteEightJointBalance` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/RouteEight/Local.lean:320); `SelectedRouteEightBoundary` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/RouteEight/Boundary.lean:62); `selectedLedgerBoundary` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:129)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`K .route8JointBalance` (`Route8JointBalanceStatement`) holds on the literal [185] residual. It records the visible-overload statement, universal saturated-load visibility, ¬SilentUnpeeledExcessAt (silent-terminal exclusion), and one peel chain with stage accounting, a maximal pinned demand partition, a maximal absorption and the coupled peel/deficit/open-unit bounds. This is lem:typeA-unified-joint-balance at the open endpoint.",
+   "fidelity_note": "`Route8JointBalanceStatement`: [185]'s fact, universal saturated-load visibility, silent-terminal exclusion (168.22), and (168.15)-(168.20) at the node-[181] objects: the peel chain `route8DescentChain G`, `P₀ = canonicalRoute8Partition G` and `A₀ = canonicalRoute8Absorption G P₀` (pinned, no re-chosen chain, partition or absorption). `unused` is determined by `N = D + unused`. The leaf stays OPEN.",
    "complete": "YES: exact routing; endpoint remains open",
    "local": "YES",
    "api": "OK",

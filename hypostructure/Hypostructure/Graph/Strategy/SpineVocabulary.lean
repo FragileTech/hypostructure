@@ -4,7 +4,7 @@ import Hypostructure.Graph.Statements.Parameters
 import Hypostructure.Graph.Statements.Spine
 import Hypostructure.Graph.Statements.TypeA
 import Hypostructure.Graph.Statements.TypeB
-import Hypostructure.Graph.Statements.RouteEight
+import Hypostructure.Graph.Statements.RouteEightPinned
 import Hypostructure.Graph.Statements.SurplusPair
 
 /-!
@@ -1169,10 +1169,6 @@ inductive Key where
   silent-core residual profile.  This is a semantic fact about the selected
   residual state, not an indexed carrier or basin transport object. -/
   | route8ResidualProfile
-  /-- Node `[111]`: the selected route-`8` packing determines the canonical
-  Type A subcollection whose saturated receivers survive only through route
-  `8`, together with the cleared value of `D_A` on that collection. -/
-  | route8GlobalSqueeze
   /-- Node `[112]`: the selected route-`8` residual carries the basin-burden
   lower side of `lem:typeA-route8-burden`. -/
   | route8BasinBurden
@@ -1219,11 +1215,6 @@ inductive Key where
   private-carrier rate `((δ+1)s+1)·|∂R| < (δ+1)·|R|` (`τ < 3/13`), at the fixed
   maximal packing. -/
   | route8Census
-  /-- The later unified-demand deficit reading used at node `[123]`,
-  `|R| ≤ N_basin + s·|∂R| + F·s·T(n)` — `def:typeA-large-budget-deficit` with
-  `lem:typeA-route8-burden` and the Type B bridge mass of
-  `prop:typeB-bridge-sublinear` (`o(|R|)`, the registered `F·s·T(n)`). -/
-  | route8Deficit
   /-- Node `[120]`: the private-carrier rate reading of the census alone,
   `((δ+1)s+1)·|∂R| + (δ+1)·F·s·T(n) < (δ+1)·|R|` (`τ < 3/13` with the
   `o(|R|)` allowance, `rem:route8-carrier-margin`), read from the arm's density
@@ -1236,7 +1227,7 @@ inductive Key where
   /-- `thm:branch-kill`'s all-pieces classification: every negative piece of
   the canonical decomposition is silent-first when it has no ambient surplus,
   and is a Type B bridge component when it has positive surplus.  This is not
-  node `[111]`, whose sole output is `route8GlobalSqueeze`. -/
+  node `[111]`. -/
   | route8PiecesClassified
   /-- Node `[123]`, `def:typeA-unified-negative`: the canonical collection of
   exactly the zero-surplus negative supports which produce no decorated Type B
@@ -1295,11 +1286,6 @@ inductive Key where
   completion port.  The canonical visible-four package is retained, and the
   non-overloaded subfamily has cardinality zero. -/
   | route8UnifiedVisibleOverload
-  /-- Node `[185]`, the graph-owned history behind the visible-overload
-  package.  For every retained entry and every selected origin pair, the
-  ledger keeps the two exact scheduled receiver-entry returns together with
-  the distinct loads for which those returns are visible. -/
-  | route8UnifiedVisibleHistory
   /-- Node `[186]`, `lem:typeA-unified-joint-balance`: the failed peel rate,
   unified deficit, committed maximal demand ledger, and maximal type-(A1)
   absorption are read simultaneously.  Their exact cardinality identities
@@ -2149,10 +2135,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       -- Node `[110]`: the selected route-8 residual satisfies the
       -- silent-core residual profile, without creating a secondary carrier.
       SilentCoreResidualProfile data.toParameters object
-  | .route8GlobalSqueeze, object =>
-      -- Node `[111]`: the exact route-8 Type A collection and the cleared
-      -- defining sum for `D_A` on the selected residual packing.
-      Route8GlobalSqueeze data.toParameters object
   | .route8BasinBurden, object =>
       -- Node `[112]`: the selected route-8 residual carries the basin-burden
       -- lower side of `lem:typeA-route8-burden`.
@@ -2196,8 +2178,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       Route8PrivateCarrierBudget data.toParameters object
   | .route8Census, object =>
       Route8CensusStatement data.toParameters object
-  | .route8Deficit, object =>
-      Route8DeficitStatement data.toParameters object
   | .route8Rate, object =>
       Route8RateStatement data.toParameters object
   | .route8RateFails, object =>
@@ -2236,8 +2216,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       Route8UnifiedVisibleResidualStatement data.toParameters object
   | .route8UnifiedVisibleOverload, object =>
       Route8UnifiedVisibleOverloadStatement data.toParameters object
-  | .route8UnifiedVisibleHistory, object =>
-      Route8UnifiedVisibleHistoryStatement data.toParameters object
   | .route8JointBalance, object =>
       Route8JointBalanceStatement data.toParameters object
   | .route8TwoCarrierEntry, object =>
@@ -2407,11 +2385,9 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       TypeAExitEightNotSilentStatement data.toParameters object
   -- F3 keys
   | .route8TwoCarrierExit, object =>
-      Route8TwoCarrierExitStatement data.toParameters object
-        (route8SurvivorComponents data.toParameters object)
+      Route8SurvivorTwoCarrierExitStatement data.toParameters object
   | .route8UnifiedTwoCarrierExit, object =>
-      Route8TwoCarrierExitStatement data.toParameters object
-        (route8UnifiedComponents data.toParameters object)
+      Route8UnifiedTwoCarrierExitStatement data.toParameters object
   | .route8StageRate, object =>
       Route8StageRateStatement data.toParameters object
   | .route8UnpaidTwoCarrier, object =>
@@ -2641,7 +2617,6 @@ def label : Key → String
   | .typeAExitSixProper => "typeAExitSixProper"
   | .typeAExitSixGlobal => "typeAExitSixGlobal"
   | .route8ResidualProfile => "route8ResidualProfile"
-  | .route8GlobalSqueeze => "route8GlobalSqueeze"
   | .route8BasinBurden => "route8BasinBurden"
   | .route8LargeBudgetDeficit => "route8LargeBudgetDeficit"
   | .route8LargeBudgetDeficitFails => "route8LargeBudgetDeficitFails"
@@ -2654,7 +2629,6 @@ def label : Key → String
   | .route8CarrierDeletionWitnesses => "route8CarrierDeletionWitnesses"
   | .route8PrivateCarrierBudget => "route8PrivateCarrierBudget"
   | .route8Census => "route8Census"
-  | .route8Deficit => "route8Deficit"
   | .route8Rate => "route8Rate"
   | .route8RateFails => "route8RateFails"
   | .route8PiecesClassified => "route8PiecesClassified"
@@ -2667,7 +2641,6 @@ def label : Key → String
   | .route8UnpaidExitFourResidual => "route8UnpaidExitFourResidual"
   | .route8UnifiedVisibleResidual => "route8UnifiedVisibleResidual"
   | .route8UnifiedVisibleOverload => "route8UnifiedVisibleOverload"
-  | .route8UnifiedVisibleHistory => "route8UnifiedVisibleHistory"
   | .route8JointBalance => "route8JointBalance"
   | .route8TwoCarrierEntry => "route8TwoCarrierEntry"
   | .route8NoTwoCarrierEntry => "route8NoTwoCarrierEntry"
@@ -2987,7 +2960,6 @@ example : label .typeAExitSixFree = "typeAExitSixFree" := rfl
 example : label .typeAExitSixProper = "typeAExitSixProper" := rfl
 example : label .typeAExitSixGlobal = "typeAExitSixGlobal" := rfl
 example : label .route8ResidualProfile = "route8ResidualProfile" := rfl
-example : label .route8GlobalSqueeze = "route8GlobalSqueeze" := rfl
 example : label .route8BasinBurden = "route8BasinBurden" := rfl
 example : label .route8LargeBudgetDeficit = "route8LargeBudgetDeficit" := rfl
 example : label .route8LargeBudgetDeficitFails =
@@ -3004,7 +2976,6 @@ example : label .route8CarrierDeletionWitnesses =
 example : label .route8PrivateCarrierBudget =
     "route8PrivateCarrierBudget" := rfl
 example : label .route8Census = "route8Census" := rfl
-example : label .route8Deficit = "route8Deficit" := rfl
 example : label .route8Rate = "route8Rate" := rfl
 example : label .route8RateFails = "route8RateFails" := rfl
 example : label .route8PiecesClassified = "route8PiecesClassified" := rfl
@@ -3020,8 +2991,6 @@ example : label .route8UnifiedVisibleResidual =
     "route8UnifiedVisibleResidual" := rfl
 example : label .route8UnifiedVisibleOverload =
     "route8UnifiedVisibleOverload" := rfl
-example : label .route8UnifiedVisibleHistory =
-    "route8UnifiedVisibleHistory" := rfl
 example : label .route8JointBalance = "route8JointBalance" := rfl
 example : label .route8TwoCarrierEntry = "route8TwoCarrierEntry" := rfl
 example : label .route8NoTwoCarrierEntry = "route8NoTwoCarrierEntry" := rfl
@@ -3345,7 +3314,6 @@ def idx : Key → Nat
   | .typeAExitSixProper => 100
   | .typeAExitSixGlobal => 101
   | .route8ResidualProfile => 159
-  | .route8GlobalSqueeze => 160
   | .route8BasinBurden => 161
   | .route8LargeBudgetDeficit => 162
   | .route8LargeBudgetDeficitFails => 329
@@ -3358,7 +3326,6 @@ def idx : Key → Nat
   | .route8CarrierDeletionWitnesses => 170
   | .route8PrivateCarrierBudget => 171
   | .route8Census => 260
-  | .route8Deficit => 263
   | .route8Rate => 264
   | .route8RateFails => 265
   | .route8PiecesClassified => 266
@@ -3371,7 +3338,6 @@ def idx : Key → Nat
   | .route8UnpaidExitFourResidual => 503
   | .route8UnifiedVisibleResidual => 504
   | .route8UnifiedVisibleOverload => 505
-  | .route8UnifiedVisibleHistory => 512
   | .route8JointBalance => 506
   | .typeASilentExitSevenFree => 511
   | .route8TwoCarrierEntry => 261
@@ -3677,7 +3643,6 @@ def ofIdx : Nat → Key
   | 100 => .typeAExitSixProper
   | 101 => .typeAExitSixGlobal
   | 159 => .route8ResidualProfile
-  | 160 => .route8GlobalSqueeze
   | 161 => .route8BasinBurden
   | 162 => .route8LargeBudgetDeficit
   | 329 => .route8LargeBudgetDeficitFails
@@ -3690,7 +3655,6 @@ def ofIdx : Nat → Key
   | 170 => .route8CarrierDeletionWitnesses
   | 171 => .route8PrivateCarrierBudget
   | 260 => .route8Census
-  | 263 => .route8Deficit
   | 264 => .route8Rate
   | 265 => .route8RateFails
   | 266 => .route8PiecesClassified
@@ -3703,7 +3667,6 @@ def ofIdx : Nat → Key
   | 503 => .route8UnpaidExitFourResidual
   | 504 => .route8UnifiedVisibleResidual
   | 505 => .route8UnifiedVisibleOverload
-  | 512 => .route8UnifiedVisibleHistory
   | 506 => .route8JointBalance
   | 511 => .typeASilentExitSevenFree
   | 261 => .route8TwoCarrierEntry
@@ -4308,8 +4271,6 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitSixGlobal") 101
   | .route8ResidualProfile =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8ResidualProfile") 159
-  | .route8GlobalSqueeze =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "route8GlobalSqueeze") 160
   | .route8BasinBurden =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8BasinBurden") 161
   | .route8LargeBudgetDeficit =>
@@ -4343,8 +4304,6 @@ def name : Key → Lean.Name
         "route8PrivateCarrierBudget") 171
   | .route8Census =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8Census") 260
-  | .route8Deficit =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "route8Deficit") 263
   | .route8Rate =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8Rate") 264
   | .route8RateFails =>
@@ -4376,9 +4335,6 @@ def name : Key → Lean.Name
   | .route8UnifiedVisibleOverload =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "route8UnifiedVisibleOverload") 505
-  | .route8UnifiedVisibleHistory =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine
-        "route8UnifiedVisibleHistory") 512
   | .route8JointBalance =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "route8JointBalance") 506

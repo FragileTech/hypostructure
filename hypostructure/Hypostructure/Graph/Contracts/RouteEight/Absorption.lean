@@ -1,4 +1,4 @@
-import Hypostructure.Graph.Contracts.RouteEight.Basic
+import Hypostructure.Graph.Contracts.RouteEight.DemandLedger
 
 /-!
 # Contracts: the node-`[181]` absorption and window-blocker ledgers
@@ -24,12 +24,15 @@ universe u
 `lem:typeA-pressure-absorber-no-overcount`**: every committed maximal
 `2/3`-demand ledger carries a maximal same-support single-use absorption with
 empty type-(A2) set, and `3Ñ ≤ e(R, W) + B_dep + 𝖯_open`. -/
-theorem route8DemandAbsorption (data : Parameters) (object : FiniteObject.{u}) :
-    Route8DemandAbsorptionStatement data object := by
+theorem exists_route8AbsorptionSpec (data : Parameters)
+    (object : FiniteObject.{u})
+    (P : DemandPartition.Partition
+      (route8UnifiedEntries data object) (route8DemandCore data object)) :
+    ∃ x : DemandPartition.Absorption P (Route8Census.Index object × Nat) ×
+        Finset (Route8Census.Index object × Nat),
+      Route8AbsorptionSpec data object P x.1 x.2 := by
   classical
   letI : DecidableEq object.Vertex := object.vertices.decEq
-  unfold Route8DemandAbsorptionStatement
-  refine fun P _pinnedP _maximalP _raw _defect => ?_
   obtain ⟨A, absorbedUnits, absorberSupplied, absorberSameSupport,
     absorbedDisjoint, maximalA⟩ :=
     Graph.DemandPartition.Partition.exists_maximal_absorption
@@ -73,26 +76,38 @@ theorem route8DemandAbsorption (data : Parameters) (object : FiniteObject.{u}) :
         (Graph.Route8Census.Index object × Nat))
       (Finset.empty_subset _) absorbedDisjoint
   rw [Graph.Route8Census.card_supply] at display
-  exact ⟨A, ∅, absorbedUnits, absorberSupplied, absorberSameSupport,
+  exact ⟨(A, ∅), absorbedUnits, absorberSupplied, absorberSameSupport,
     Finset.empty_subset _, absorbedDisjoint, rfl, maximalA, display⟩
+
+/-- **Node `[351]`** at the committed ledger `P₀`: the canonical absorption
+`A₀` exists and has the displayed properties. -/
+theorem route8DemandAbsorption (data : Parameters) (object : FiniteObject.{u})
+    (ledger : Route8DemandLedgerStatement data object) :
+    Route8DemandAbsorptionStatement data object := by
+  obtain ⟨P, pin⟩ := canonicalRoute8Partition_exists data object ledger
+  obtain ⟨x, xPin, spec⟩ := canonicalRoute8Absorption_spec data object P
+    (exists_route8AbsorptionSpec data object P)
+  exact ⟨P, pin, x, xPin, spec⟩
 
 /-- **(O2) of `lem:typeA-routed-overload-not-open`**: after the committed
 absorption is maximal, an open demand unit has no unused eligible boundary
 incidence -- inserting it would enlarge the maximal absorption. -/
-theorem route8OpenBoundarySaturated (data : Parameters)
+theorem openBoundarySaturated_of_absorptionSpec (data : Parameters)
     (object : FiniteObject.{u})
-    (absorption : Route8DemandAbsorptionStatement data object) :
-    Route8OpenBoundarySaturatedStatement data object := by
+    (P : DemandPartition.Partition
+      (route8UnifiedEntries data object) (route8DemandCore data object))
+    (A : DemandPartition.Absorption P (Route8Census.Index object × Nat))
+    (dep : Finset (Route8Census.Index object × Nat))
+    (spec : Route8AbsorptionSpec data object P A dep) :
+    ∀ unit ∈ P.demandUnits \ (A.absorbed ∪ dep),
+      ∀ carrier : Sym2 object.Vertex,
+        carrier ∈ Route8.cutEdges object unit.1.1 →
+        (∀ index ∈ P.three ∪ P.two, carrier ∉ P.assigned index) →
+        ∃ other ∈ A.absorbed, A.absorber other = carrier := by
   classical
   letI : DecidableEq object.Vertex := object.vertices.decEq
-  unfold Route8OpenBoundarySaturatedStatement
-  refine fun P pinnedP maximalP raw defect => ?_
-  obtain ⟨A, dep, absorbedUnits, supplied, sameSupport, depUnits,
-    disjoint, depEmpty, maximalA, display⟩ :=
-    absorption
-      P pinnedP maximalP raw defect
-  refine ⟨A, dep, absorbedUnits, supplied, sameSupport, depUnits,
-    disjoint, depEmpty, maximalA, display, ?_⟩
+  obtain ⟨absorbedUnits, supplied, sameSupport, _depUnits,
+    disjoint, _depEmpty, maximalA, _display⟩ := spec
   intro unit openUnit carrier inSupport ledgerUnused
   by_contra notAssigned
   have unitMem := (Finset.mem_sdiff.mp openUnit).1
@@ -181,12 +196,23 @@ theorem route8OpenBoundarySaturated (data : Parameters)
   rw [Finset.card_insert_of_notMem notAbsorbed] at bound
   omega
 
+/-- **Node `[517]`** at `(P₀, A₀)`, reading node `[351]`. -/
+theorem route8OpenBoundarySaturated (data : Parameters)
+    (object : FiniteObject.{u})
+    (absorption : Route8DemandAbsorptionStatement data object) :
+    Route8OpenBoundarySaturatedStatement data object := by
+  obtain ⟨P, pin, x, xPin, spec⟩ := absorption
+  exact ⟨P, pin, x, xPin,
+    openBoundarySaturated_of_absorptionSpec data object P x.1 x.2 spec⟩
+
 /-- The actual demand units of every ledger number exactly its external
 demand defect `𝖯_ext = N₂ + 3N_res`. -/
-theorem route8DemandUnitCount (data : Parameters) (object : FiniteObject.{u}) :
-    Route8DemandUnitCountStatement data object := by
+theorem demandUnits_card_eq_externalDefect (data : Parameters)
+    (object : FiniteObject.{u})
+    (P : DemandPartition.Partition
+      (route8UnifiedEntries data object) (route8DemandCore data object)) :
+    P.demandUnits.card = P.externalDefect := by
   classical
-  intro P
   have blocks : ∀ index ∈ P.two ∪ P.residual,
       (((Finset.range (P.demandWeight index)).image
         fun j => (index, j)).card) = P.demandWeight index := by
@@ -211,18 +237,29 @@ theorem route8DemandUnitCount (data : Parameters) (object : FiniteObject.{u}) :
     Graph.DemandPartition.Partition.externalDefect_eq_sum_demandWeight]
   exact Finset.sum_congr rfl blocks
 
+/-- **Node `[518]`** at `P₀`, read from node `[351]`'s pin. -/
+theorem route8DemandUnitCount (data : Parameters) (object : FiniteObject.{u})
+    (absorption : Route8DemandAbsorptionStatement data object) :
+    Route8DemandUnitCountStatement data object := by
+  obtain ⟨P, pin, _⟩ := absorption
+  exact ⟨P, pin, demandUnits_card_eq_externalDefect data object P⟩
+
 /-- **`def:typeA-open-window-blocker` with
 `lem:typeA-open-window-blocker-count`**: on the unified census every open
 demand unit has an actual available carrier edge of its owner leaving the
 remainder into a packed window, and `𝖯_open = Σ_P B_open(P)`. -/
-theorem route8WindowBlockers (data : Parameters) (object : FiniteObject.{u})
-    (census : Route8UnifiedEntryCensusFact data object) :
-    Route8WindowBlockersStatement data object := by
+theorem exists_route8WindowBlockerSpec (data : Parameters)
+    (object : FiniteObject.{u})
+    (census : Route8UnifiedEntryCensusFact data object)
+    (P : DemandPartition.Partition
+      (route8UnifiedEntries data object) (route8DemandCore data object))
+    (A : DemandPartition.Absorption P (Route8Census.Index object × Nat))
+    (dep : Finset (Route8Census.Index object × Nat)) :
+    ∃ y : (Route8Census.Index object × Nat → Sym2 object.Vertex) ×
+        (Route8Census.Index object × Nat → Finset object.Vertex),
+      Route8WindowBlockerSpec data object P A dep y.1 y.2 := by
   classical
   letI : DecidableEq object.Vertex := object.vertices.decEq
-  unfold Route8WindowBlockersStatement
-  refine fun P _pinnedP _maximalP _raw _defect A dep _absorbedUnits
-    _absorberSupplied _depUnits _depDisjoint => ?_
   let packing := canonicalWindowPacking data object
   let remainder := object.remainderSupport packing
   let entries := route8UnifiedEntries data object
@@ -299,8 +336,19 @@ theorem route8WindowBlockers (data : Parameters) (object : FiniteObject.{u})
       _insideRemainder, _outsideRemainder, _outsideWindow,
       windowMem⟩ := assigned υ υMem
     exact windowMem
-  exact ⟨carrier, blocker, assigned,
+  exact ⟨(carrier, blocker), assigned,
     Graph.DemandPartition.card_eq_sum_fibres openUnits packing blocker
       assignedWindow⟩
+
+/-- **Node `[352]`** at `(P₀, A₀)`: the canonical window blocker `b₀`, read
+from the unified census and node `[351]`. -/
+theorem route8WindowBlockers (data : Parameters) (object : FiniteObject.{u})
+    (census : Route8UnifiedEntryCensusFact data object)
+    (absorption : Route8DemandAbsorptionStatement data object) :
+    Route8WindowBlockersStatement data object := by
+  obtain ⟨P, pin, x, xPin, _spec⟩ := absorption
+  obtain ⟨y, yPin, spec⟩ := canonicalRoute8WindowBlocker_spec data object P x.1
+    x.2 (exists_route8WindowBlockerSpec data object census P x.1 x.2)
+  exact ⟨P, pin, x, xPin, y, yPin, spec⟩
 
 end Hypostructure.Graph.Contracts.RouteEight

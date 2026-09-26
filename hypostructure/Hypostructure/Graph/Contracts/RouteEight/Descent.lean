@@ -211,35 +211,49 @@ theorem route8PeelingDescent (data : Parameters) (object : FiniteObject.{u})
     (exists_route8StageOutcome data object baseline thresholdPos dischargePos
       routing deficit)
 
-/-- **Node `[123]`, yes arm → node `[124]`** (`thm:large-budget-route8-only`):
-if the terminal stage passes the reduced-rate test, its two-support entry is
-not target-defective at that stage, so by the unified census
-(`lem:typeA-unified-carriers`) its basin is target-complete-minimal and its
-load has no exit-`(4)` witness: it is the terminal true two-support route-`8`
-entry of `thm:typeA-two-carrier-nogo`. -/
+/-- **`thm:large-budget-route8-only`, the true entry of a stage**: a true
+entry of the terminal stage is not target-defective at that stage, so by the
+unified census (`lem:typeA-unified-carriers`) its basin is
+target-complete-minimal and its load has no exit-`(4)` witness. -/
+theorem stageTrueEntry_at (data : Parameters) (object : FiniteObject.{u})
+    (census : Route8UnifiedEntryCensusFact data object)
+    {index : Route8Census.Index object}
+    (isTrue : Route8StageTrueEntrySpec data object index) :
+    Route8TerminalTrueEntry data object index := by
+  classical
+  letI : DecidableEq object.Vertex := Route8.vertexDecEq object
+  let final := route8DescentChain data object
+  have transported := Route8Pressure.trueEntry_transport object
+    (canonicalWindowPacking data object) (route8UnifiedEntries data object)
+    data.threshold data.dischargeScale data.LengthOK final.toFinset isTrue
+  have entryFacts := census index transported.1
+  rcases entryFacts.2.2 with routeEntry | targetDefect
+  · exact ⟨transported.1, transported.2.1, entryFacts, routeEntry,
+      transported.2.2⟩
+  · obtain ⟨witness, witnessLoad⟩ := targetDefect.2.2.2.2
+    have fresh : index ∉ final.toFinset := (Finset.mem_sdiff.mp isTrue.1).2
+    have currentDefect := Route8Pressure.targetDefectAt_of_empty object
+      data.threshold data.dischargeScale (HasCycleWithLength data.LengthOK)
+      final.toFinset index fresh witness witnessLoad
+    exact (isTrue.2.2 currentDefect).elim
+
+/-- **Node `[123]`, yes arm → node `[334]`**: on the rate arm the terminal
+entry `ξ` is the true entry `ξ†` of the terminal stage of `route8DescentChain`,
+and it is a true two-support route-`8` entry. -/
 theorem route8StageTrueEntry (data : Parameters) (object : FiniteObject.{u})
     (descent : Route8PeelingDescentStatement data object)
     (rate : Route8StageRateStatement data object)
     (census : Route8UnifiedEntryCensusFact data object) :
     Route8UnifiedTrueTwoCarrierEntryStatement data object := by
-  classical
-  letI : DecidableEq object.Vertex := Route8.vertexDecEq object
-  let final := route8DescentChain data object
   obtain ⟨_chain, _accounting, ends⟩ := descent
-  rcases ends with ⟨_rate, index, isTrue⟩ | rateFails
-  · have transported := Route8Pressure.trueEntry_transport object
-      (canonicalWindowPacking data object) (route8UnifiedEntries data object)
-      data.threshold data.dischargeScale data.LengthOK final.toFinset isTrue
-    have entryFacts := census index transported.1
-    rcases entryFacts.2.2 with routeEntry | targetDefect
-    · exact ⟨⟨index, transported.1, transported.2.1, entryFacts, routeEntry,
-        transported.2.2⟩⟩
-    · obtain ⟨witness, witnessLoad⟩ := targetDefect.2.2.2.2
-      have fresh : index ∉ final.toFinset := (Finset.mem_sdiff.mp isTrue.1).2
-      have currentDefect := Route8Pressure.targetDefectAt_of_empty object
-        data.threshold data.dischargeScale (HasCycleWithLength data.LengthOK)
-        final.toFinset index fresh witness witnessLoad
-      exact (isTrue.2.2 currentDefect).elim
-  · exact (rateFails rate).elim
+  have exists_ : ∃ index, Route8StageTrueEntrySpec data object index := by
+    rcases ends with ⟨_rate, index, isTrue⟩ | rateFails
+    · exact ⟨index, isTrue⟩
+    · exact (rateFails rate).elim
+  obtain ⟨index, pin, isTrue⟩ :=
+    canonicalRoute8StageTrueEntry_spec data object exists_
+  refine ⟨index, ?_, stageTrueEntry_at data object census isTrue⟩
+  rw [canonicalRoute8TerminalEntry_eq_of_rate data object rate]
+  exact pin
 
 end Hypostructure.Graph.Contracts.RouteEight

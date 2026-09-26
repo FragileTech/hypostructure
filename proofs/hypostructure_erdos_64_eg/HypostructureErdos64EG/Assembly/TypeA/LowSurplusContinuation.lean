@@ -129,7 +129,6 @@ noncomputable abbrev typeALowSurplusKeys : FactKeys EGInput.{u} :=
     K .triangularPortTypeBRouting,
     K .typeBGlobalLocalBridge,
     K .route8ResidualProfile,
-    K .route8GlobalSqueeze,
     K .route8BasinBurden,
     K .route8LargeBudgetDeficit,
     K .route8LargeBudgetDeficitFails,

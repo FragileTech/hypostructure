@@ -20,8 +20,8 @@ universe u v
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .route8TrueResidual)
-        ⟨Graph.Contracts.RouteEight.route8TrueResidual data.toParameters inputs.current.object
-          (inputs.get (K .route8ResidualProfile)).down⟩ .nil)
+        ⟨Graph.Contracts.RouteEight.route8TrueResidual data.toParameters
+          inputs.current.object⟩ .nil)
     0 0
 
 end Hypostructure.Graph.Strategy.Spine

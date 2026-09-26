@@ -19,16 +19,17 @@ open Hypostructure.Core.Residual Hypostructure.Core.Strategy
 
 universe u v
 
-/-- **Node `[124]` on `𝒳_A`**: every two-support entry of the route-`8`
-collection carries its canonical exit-`(4)` witness.  The true route-`8`
-residual supplies the selected basins, the node-`[115]` no-arm supplies
-`α ≥ 2`. -/
+/-- **Node `[124]` on `𝒳_A`, at `ι₂`**: the two-support entry fixed by node
+`[117]` carries its canonical exit-`(4)` witness, built from its declared
+deletion witnesses (T5, node `[118]`).  The true route-`8` residual supplies
+its selected basin, the node-`[115]` no-arm supplies `α ≥ 2`. -/
 @[reducible] noncomputable def route8TwoCarrierExitRow
     {BranchState : Graph.FiniteObject.{u} → Type v}
     {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.route8TwoCarrierExit
-    { Requires := [K .route8TrueResidual, K .route8NoSmallCoreEntry]
+    { Requires := [K .route8TrueResidual, K .route8NoSmallCoreEntry,
+        K .route8CarrierDeletionWitnesses]
       Produces := [K .route8TwoCarrierExit]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -39,18 +40,19 @@ residual supplies the selected basins, the node-`[115]` no-arm supplies
           data.toParameters inputs.current.object inputs.current.baseline
           data.dischargeScale_pos
           (inputs.get (K .route8TrueResidual)).down
-          (inputs.get (K .route8NoSmallCoreEntry)).down⟩ .nil)
+          (inputs.get (K .route8NoSmallCoreEntry)).down
+          (inputs.get (K .route8CarrierDeletionWitnesses)).down⟩ .nil)
     0 0
 
-/-- **Node `[124]` on the unified collection**: every two-support unified
-entry carries its canonical exit-`(4)` witness; the unified census supplies
-the selected basins and `α ≥ 2`. -/
+/-- **Node `[124]` on the unified collection, at the terminal entry `ξ`**:
+`ξ`'s (T1)--(T4) clauses (node `[334]`) give its canonical exit-`(4)`
+witness. -/
 @[reducible] noncomputable def route8UnifiedTwoCarrierExitRow
     {BranchState : Graph.FiniteObject.{u} → Type v}
     {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.route8UnifiedTwoCarrierExit
-    { Requires := [K .route8UnifiedEntryCensus]
+    { Requires := [K .route8UnifiedTrueTwoCarrierEntry]
       Produces := [K .route8UnifiedTwoCarrierExit]
       requiresUnique := by simp
       producesUnique := by simp
@@ -59,7 +61,7 @@ the selected basins and `α ≥ 2`. -/
       .cons (key := K .route8UnifiedTwoCarrierExit)
         ⟨Graph.Contracts.RouteEight.route8UnifiedTwoCarrierExit
           data.toParameters inputs.current.object
-          (inputs.get (K .route8UnifiedEntryCensus)).down⟩ .nil)
+          (inputs.get (K .route8UnifiedTrueTwoCarrierEntry)).down⟩ .nil)
     0 0
 
 variable {BranchState : Graph.FiniteObject.{u} → Type v}

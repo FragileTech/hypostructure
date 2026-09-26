@@ -23,15 +23,30 @@ residual with the carrier cut parity of `lem:typeA-carrier-cut-parity`, a
 zero/one-core entry of `𝒳_A` realizes, in order, a trace-local target defect,
 a nontrivial target-complete response quotient, a delocalization, or a
 surviving separator: the trace-basin alternatives of exits `(4)`--`(7)`. -/
-theorem route8SmallCoreCollapse (data : Parameters) (object : FiniteObject.{u})
+theorem smallCoreCollapse_at (data : Parameters) (object : FiniteObject.{u})
     (trueResidual : Route8TrueResidual data object)
-    (small : Route8SmallCoreEntry data object)
-    (cutParity : Route8CarrierCutParity data object) :
-    Route8SmallCoreCollapse data object := by
+    (cutParity : Route8CarrierCutParity data object)
+    {entry : SupportComponents.Connected.Component object
+        (object.remainderSupport (canonicalWindowPacking data object)) ×
+      object.Vertex × object.Vertex}
+    (small : Route8SmallCoreEntrySpec data object entry) :
+    let piece := object.pieceSupport
+      (object.remainderSupport (canonicalWindowPacking data object)) entry.1
+    let basin := Graph.Route8Census.basin object data.threshold
+      (piece, entry.2.1, entry.2.2)
+    Graph.Route8.TraceBasin.TraceLocalTargetDefect object piece
+        data.threshold data.LengthOK entry.2.1 entry.2.2 basin ∨
+      (∃ retained,
+        Graph.Route8.TraceBasin.TraceResponseQuotient object piece
+          data.threshold data.LengthOK entry.2.1 entry.2.2 basin retained) ∨
+      Graph.Route8.TraceBasin.TraceDelocalization object piece
+        data.threshold data.LengthOK entry.2.1 entry.2.2 basin ∨
+      Graph.Route8.TraceBasin.TraceSurvivingSeparator object piece
+        data.threshold data.LengthOK entry.2.1 entry.2.2 basin := by
   classical
   letI : DecidableEq object.Vertex := object.vertices.decEq
-  obtain ⟨component, componentMem, receiver,
-    receiverMem, load, loadMem, alphaSmall⟩ := small
+  obtain ⟨component, receiver, load⟩ := entry
+  obtain ⟨componentMem, receiverMem, loadMem, alphaSmall⟩ := small
   let packing := canonicalWindowPacking data object
   let support := object.remainderSupport packing
   let piece := object.pieceSupport support component
@@ -46,7 +61,7 @@ theorem route8SmallCoreCollapse (data : Parameters) (object : FiniteObject.{u})
   have minimal : Graph.Route8.TraceBasin.TargetCompleteMinimal
       object piece data.threshold data.LengthOK receiver load
         basin :=
-    (trueResidual.2 component componentMem).2 receiver receiverMem |>.2.2
+    (trueResidual component componentMem).2 receiver receiverMem |>.2.2
       load loadMem |>.2.1
   have loadRouted : load ∈ object.routedLoads piece
       data.threshold receiver := by
@@ -88,8 +103,18 @@ theorem route8SmallCoreCollapse (data : Parameters) (object : FiniteObject.{u})
             receiver load basin :=
     Or.inr (Or.inl (route8Entry_smallCoreQuotient data object piece receiver load
       (Finset.mem_filter.mp receiverMem).1 loadRouted minimal.1 parity alphaSmall))
-  refine ⟨component, componentMem, receiver, receiverMem, load, loadMem,
-    alphaSmall, alternatives⟩
+  exact alternatives
+
+/-- **Node `[116]` at `ι₁`**: the small-core entry fixed by node `[115]`
+realizes one of the trace-basin alternatives of exits `(4)`--`(7)`. -/
+theorem route8SmallCoreCollapse (data : Parameters) (object : FiniteObject.{u})
+    (trueResidual : Route8TrueResidual data object)
+    (small : Route8SmallCoreEntry data object)
+    (cutParity : Route8CarrierCutParity data object) :
+    Route8SmallCoreCollapse data object := by
+  obtain ⟨entry, pin, spec⟩ := canonicalRoute8SmallCoreEntry_spec data object
+    ((route8SmallCoreEntry_iff_exists_spec data object).mp small)
+  exact ⟨entry, pin, smallCoreCollapse_at data object trueResidual cutParity spec⟩
 
 /-- **Node `[116]`**: each collapse alternative is excluded by the
 target-complete minimality the true route-`8` residual records for that entry
@@ -99,10 +124,11 @@ theorem route8TrueResidual_smallCoreCollapse_false (data : Parameters)
     (trueResidual : Route8TrueResidual data object)
     (collapse : Route8SmallCoreCollapse data object) : False := by
   classical
-  obtain ⟨component, componentMem, receiver, receiverMem, load, loadMem,
-    _alphaSmall, alternatives⟩ := collapse
+  obtain ⟨⟨component, receiver, load⟩, pin, alternatives⟩ := collapse
+  obtain ⟨componentMem, receiverMem, loadMem, _alphaSmall⟩ :=
+    canonicalRoute8SmallCoreEntry_spec_of_eq_some data object pin
   have minimal :=
-    (trueResidual.2 component componentMem).2 receiver receiverMem |>.2.2
+    (trueResidual component componentMem).2 receiver receiverMem |>.2.2
       load loadMem |>.2.1
   rcases alternatives with localDefect | compression | delocalization |
       separator

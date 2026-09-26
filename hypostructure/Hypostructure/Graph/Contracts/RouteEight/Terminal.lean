@@ -38,7 +38,7 @@ essential incidences in `Ξ(𝒳)`, then deleting any essential incidence is a
 target-defective quotient with a declared forgotten coordinate, so it is the
 Q5 member of the canonical family `𝒬₄(w)` and the load `u` has its canonical
 exit-`(4)` witness at the empty peeling. -/
-theorem twoCarrier_exitFour (LengthOK : Nat → Prop)
+theorem exitFour_of_deletionWitnesses (LengthOK : Nat → Prop)
     (object : FiniteObject.{u}) (packing : Finset (Finset object.Vertex))
     (components : Finset (SupportComponents.Connected.Component object
       (object.remainderSupport packing)))
@@ -55,8 +55,11 @@ theorem twoCarrier_exitFour (LengthOK : Nat → Prop)
     {index : Route8Census.Index object}
     (indexMem : index ∈ Route8Census.entriesOfComponents object packing
       components threshold scale)
-    (twoCarrier : letI := Route8.vertexDecEq object
-      Route8.IndexedTwoCarrierCore
+    (deletion : letI := Route8.vertexDecEq object
+      let entry := (Route8Census.presented object threshold LengthOK
+        index).toEntry (HasCycleWithLength LengthOK)
+      Route8.TwoCarrierDeletionWitnesses (Target := HasCycleWithLength LengthOK)
+        entry.carriers entry.coordinates entry.car entry.state
         (Route8Census.entriesOfComponents object packing components threshold
           scale)
         (Route8Census.core object threshold LengthOK) (threshold - 1) index)
@@ -71,6 +74,7 @@ theorem twoCarrier_exitFour (LengthOK : Nat → Prop)
   classical
   letI : DecidableEq object.Vertex := Route8.vertexDecEq object
   obtain ⟨piece, receiver, load⟩ := index
+  have twoCarrier := deletion.1
   let entries := Route8Census.entriesOfComponents object packing components
     threshold scale
   let index : Route8Census.Index object := (piece, receiver, load)
@@ -86,10 +90,7 @@ theorem twoCarrier_exitFour (LengthOK : Nat → Prop)
     change 2 ≤ entry.essentialCore.card at alphaAtLeast
     omega
   obtain ⟨carrier, carrierMem⟩ := coreNonempty
-  have deletionWitnesses := Route8.twoCarrierDeletionWitnesses
-    (Target := HasCycleWithLength LengthOK) entry.carriers
-    entry.coordinates entry.car entry.car_subset entry.state entries
-    (Route8Census.core object threshold LengthOK) twoCarrier rfl
+  have deletionWitnesses := deletion
   obtain ⟨targetDefect, coordinate, coordinateMem, coordinateCore,
     carrierCoordinate⟩ := deletionWitnesses.2 carrier carrierMem
   have loadRouted : load ∈ object.routedLoads piece threshold receiver :=
@@ -127,6 +128,77 @@ theorem twoCarrier_exitFour (LengthOK : Nat → Prop)
       · change entry.car coordinate ⊆ entry.essentialCore
         exact coordinateCore
   exact ⟨ExitFour.Witness.ofCarrierDeletion unpeeled q5, rfl⟩
+
+/-- **`lem:typeA-essential-deletion-witness` and
+`lem:typeA-deletion-witness-declared`** on a census entry: a two-support entry
+carries the declared carrier-deletion witnesses of its canonical essential
+core (clause (T5) of `def:typeA-terminal-two-carrier`). -/
+theorem twoCarrier_deletionWitnesses (LengthOK : Nat → Prop)
+    (object : FiniteObject.{u}) (packing : Finset (Finset object.Vertex))
+    (components : Finset (SupportComponents.Connected.Component object
+      (object.remainderSupport packing)))
+    (threshold scale : Nat)
+    {index : Route8Census.Index object}
+    (twoCarrier : letI := Route8.vertexDecEq object
+      Route8.IndexedTwoCarrierCore
+        (Route8Census.entriesOfComponents object packing components threshold
+          scale)
+        (Route8Census.core object threshold LengthOK) (threshold - 1) index) :
+    letI := Route8.vertexDecEq object
+    let entry := (Route8Census.presented object threshold LengthOK
+      index).toEntry (HasCycleWithLength LengthOK)
+    Route8.TwoCarrierDeletionWitnesses (Target := HasCycleWithLength LengthOK)
+      entry.carriers entry.coordinates entry.car entry.state
+      (Route8Census.entriesOfComponents object packing components threshold
+        scale)
+      (Route8Census.core object threshold LengthOK) (threshold - 1) index := by
+  letI : DecidableEq object.Vertex := Route8.vertexDecEq object
+  obtain ⟨piece, receiver, load⟩ := index
+  let entry := (Route8Census.presented object threshold LengthOK
+    (piece, receiver, load)).toEntry (HasCycleWithLength LengthOK)
+  exact Route8.twoCarrierDeletionWitnesses
+    (Target := HasCycleWithLength LengthOK) entry.carriers
+    entry.coordinates entry.car entry.car_subset entry.state _
+    (Route8Census.core object threshold LengthOK) twoCarrier rfl
+
+/-- **Node `[124]`, `lem:typeA-carrier-deletion-exit`**: a two-support entry of
+a canonical negative zero-surplus collection with selected basin and `α ≥ 2`
+carries its canonical exit-`(4)` witness, through its deletion witnesses. -/
+theorem twoCarrier_exitFour (LengthOK : Nat → Prop)
+    (object : FiniteObject.{u}) (packing : Finset (Finset object.Vertex))
+    (components : Finset (SupportComponents.Connected.Component object
+      (object.remainderSupport packing)))
+    (threshold scale : Nat)
+    (canonical : components ⊆
+      object.canonicalPieces (object.remainderSupport packing))
+    (negative : ∀ component ∈ components,
+      object.NegativeNetCharge
+          (object.pieceSupport (object.remainderSupport packing) component)
+          threshold scale ∧
+        object.ambientSurplus
+          (object.pieceSupport (object.remainderSupport packing) component)
+          threshold = 0)
+    {index : Route8Census.Index object}
+    (indexMem : index ∈ Route8Census.entriesOfComponents object packing
+      components threshold scale)
+    (twoCarrier : letI := Route8.vertexDecEq object
+      Route8.IndexedTwoCarrierCore
+        (Route8Census.entriesOfComponents object packing components threshold
+          scale)
+        (Route8Census.core object threshold LengthOK) (threshold - 1) index)
+    (selected : Route8.TraceBasin.select? object index.1 threshold index.2.1
+        index.2.2 = some (Route8Census.basin object threshold index))
+    (alphaAtLeast : letI := Route8.vertexDecEq object
+      2 ≤ ((Route8Census.presented object threshold LengthOK index).toEntry
+        (HasCycleWithLength LengthOK)).alpha) :
+    ∃ witness : ExitFour.Witness (HasCycleWithLength LengthOK) index.1
+        threshold scale index.2.1 ∅,
+      witness.load = index.2.2 :=
+  exitFour_of_deletionWitnesses LengthOK object packing components threshold
+    scale canonical negative indexMem
+    (twoCarrier_deletionWitnesses LengthOK object packing components threshold
+      scale twoCarrier)
+    selected alphaAtLeast
 
 /-- The unified collection is a canonical collection of negative zero-surplus
 components (`def:typeA-unified-negative`). -/
@@ -176,22 +248,21 @@ theorem route8SurvivorComponents_canonical (data : Parameters)
   have survives := (Finset.mem_filter.mp member).2
   exact ⟨survives.1, survives.2.1⟩
 
-/-- **Node `[124]` on the unified collection.**  The unified entry census
-(`lem:typeA-unified-carriers`) supplies the selected basin and `α ≥ 2` of every
-unified entry, so every two-support unified entry carries its canonical
-exit-`(4)` witness. -/
+/-- **Node `[124]` on the unified collection, at the terminal entry `ξ`.**
+`thm:typeA-two-carrier-nogo` applies `lem:typeA-carrier-deletion-exit` to the
+terminal two-support entry itself: its (T1)--(T4) clauses (a unified entry,
+two-support, selected basin, `α ≥ 2`) give its canonical exit-`(4)` witness. -/
 theorem route8UnifiedTwoCarrierExit (data : Parameters)
     (object : FiniteObject.{u})
-    (census : Route8UnifiedEntryCensusFact data object) :
-    Route8TwoCarrierExitStatement data object
-      (route8UnifiedComponents data object) := by
-  intro index indexMem twoCarrier
-  have facts := census index indexMem
+    (trueEntry : Route8UnifiedTrueTwoCarrierEntryStatement data object) :
+    Route8UnifiedTwoCarrierExitStatement data object := by
+  obtain ⟨index, pin, indexMem, twoCarrier, facts, _minimal, _noExit⟩ :=
+    trueEntry
   obtain ⟨canonical, negative⟩ := route8UnifiedComponents_canonical data object
-  exact twoCarrier_exitFour data.LengthOK object
+  exact ⟨index, pin, twoCarrier_exitFour data.LengthOK object
     (canonicalWindowPacking data object) (route8UnifiedComponents data object)
     data.threshold data.dischargeScale canonical negative indexMem twoCarrier
-    facts.1 facts.2.1
+    facts.1 facts.2.1⟩
 
 /-- On a silent-first zero-surplus piece every excess load of a saturated
 receiver is a silent excess load (`lem:typeA-silent-excess-count`), because the
@@ -222,7 +293,7 @@ theorem route8Survivor_silentExcess (data : Parameters)
   letI : DecidableEq object.Vertex := object.vertices.decEq
   let support := object.remainderSupport (canonicalWindowPacking data object)
   have survives := (Finset.mem_filter.mp componentMem).2
-  have trueFacts := trueResidual.2 component componentMem
+  have trueFacts := trueResidual component componentMem
   have receiverFacts := trueFacts.2 receiver receiverMem
   have exactDegree : ∀ vertex ∈ object.pieceSupport support component,
       object.degree vertex = data.threshold := by
@@ -240,20 +311,24 @@ theorem route8Survivor_silentExcess (data : Parameters)
     (fun saturated => trueFacts.1 receiver receiverFacts.1 saturated)]
   exact loadMem
 
-/-- **Node `[124]` on the route-`8` collection `𝒳_A`.**  The true route-`8`
-residual supplies the selected basin of every silent entry, the node-`[115]`
-no-arm supplies `α ≥ 2`, and on `𝒳_A` every excess load is silent; hence every
-two-support entry of `Ξ(𝒳_A)` carries its canonical exit-`(4)` witness. -/
+/-- **Node `[124]` on the route-`8` collection `𝒳_A`, at `ι₂`.**  The true
+route-`8` residual supplies the selected basin of the silent entry `ι₂`, the
+node-`[115]` no-arm supplies `α ≥ 2`, and its declared deletion witnesses
+(T5) make the deletion quotient the Q5 member of `𝒬₄(w)`: `ι₂` carries its
+canonical exit-`(4)` witness. -/
 theorem route8SurvivorTwoCarrierExit (data : Parameters)
     (object : FiniteObject.{u})
     (baseline : data.threshold ≤ object.minDegree)
     (dischargePos : 0 < data.dischargeScale)
     (trueResidual : Route8TrueResidual data object)
-    (noSmall : Route8NoSmallCoreEntry data object) :
-    Route8TwoCarrierExitStatement data object
-      (route8SurvivorComponents data object) := by
+    (noSmall : Route8NoSmallCoreEntry data object)
+    (deletion : Route8CarrierDeletionWitnesses data object) :
+    Route8SurvivorTwoCarrierExitStatement data object := by
   classical
-  intro index indexMem twoCarrier
+  obtain ⟨index, pin, witnesses⟩ := deletion
+  have indexMem :=
+    (canonicalRoute8TwoCarrierIndex_spec_of_eq_some data object pin).1
+  refine ⟨index, pin, ?_⟩
   obtain ⟨component, componentMem, pieceEq, receiverMem, loadMem⟩ :=
     mem_entriesOfComponents.mp indexMem
   obtain ⟨piece, receiver, load⟩ := index
@@ -262,40 +337,42 @@ theorem route8SurvivorTwoCarrierExit (data : Parameters)
   have silent := route8Survivor_silentExcess data object baseline dischargePos
     trueResidual componentMem receiverMem loadMem
   have entryFacts :=
-    ((trueResidual.2 component componentMem).2 receiver receiverMem).2.2 load
+    ((trueResidual component componentMem).2 receiver receiverMem).2.2 load
       silent
   have notSmall := noSmall component componentMem receiver receiverMem load
     silent
   obtain ⟨canonical, negative⟩ := route8SurvivorComponents_canonical data object
-  exact twoCarrier_exitFour data.LengthOK object
+  exact exitFour_of_deletionWitnesses data.LengthOK object
     (canonicalWindowPacking data object) (route8SurvivorComponents data object)
-    data.threshold data.dischargeScale canonical negative indexMem twoCarrier
+    data.threshold data.dischargeScale canonical negative indexMem witnesses
     entryFacts.1 (by
       change ¬ _ ≤ 1 at notSmall
       omega)
 
 /-- **`thm:typeA-two-carrier-nogo` on the unified collection** (node `[124]`):
-the terminal two-support entry has no exit-`(4)` witness, while node `[124]`
-supplies one. -/
+the terminal two-support entry `ξ` has no exit-`(4)` witness, while node
+`[124]` supplies one at the same `ξ`. -/
 theorem route8UnifiedTrueTwoCarrierEntry_false (data : Parameters)
     (object : FiniteObject.{u})
     (trueEntry : Route8UnifiedTrueTwoCarrierEntryStatement data object)
-    (exit : Route8TwoCarrierExitStatement data object
-      (route8UnifiedComponents data object)) : False := by
-  obtain ⟨index, indexMem, twoCarrier, _entryFacts, _minimal, noExitFour⟩ :=
-    Classical.choice trueEntry
-  exact noExitFour (exit index indexMem twoCarrier)
+    (exit : Route8UnifiedTwoCarrierExitStatement data object) : False := by
+  obtain ⟨index, pin, _indexMem, _two, _facts, _minimal, noExitFour⟩ :=
+    trueEntry
+  obtain ⟨index', pin', witness⟩ := exit
+  obtain rfl : index' = index := Option.some.inj (pin'.symm.trans pin)
+  exact noExitFour witness
 
 /-- **`thm:typeA-two-carrier-nogo` on `𝒳_A`** (nodes `[118]`, `[124]`): the
-selected true two-support entry has no exit-`(4)` witness, while node `[124]`
-supplies one. -/
+two-support entry `ι₂` has no exit-`(4)` witness, while node `[124]` supplies
+one at the same `ι₂`. -/
 theorem route8TrueTwoCarrierEntry_false (data : Parameters)
     (object : FiniteObject.{u})
     (trueEntry : Route8TrueTwoCarrierEntryStatement data object)
-    (exit : Route8TwoCarrierExitStatement data object
-      (route8SurvivorComponents data object)) : False := by
-  obtain ⟨index, indexMem, twoCarrier, noExitFour⟩ := trueEntry
-  exact noExitFour (exit index indexMem twoCarrier)
+    (exit : Route8SurvivorTwoCarrierExitStatement data object) : False := by
+  obtain ⟨index, pin, noExitFour⟩ := trueEntry
+  obtain ⟨index', pin', witness⟩ := exit
+  obtain rfl : index' = index := Option.some.inj (pin'.symm.trans pin)
+  exact noExitFour witness
 
 /-- **Nodes `[119]`--`[120]`** (`prop:typeA-route8-carrier-reduction`): when
 no entry of `Ξ(𝒳_A)` is two-support, every entry holds at least `δ` private

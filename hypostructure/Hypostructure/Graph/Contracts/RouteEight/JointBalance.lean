@@ -24,7 +24,6 @@ theorem route8JointBalance (data : Parameters) (object : FiniteObject.{u})
     (visibleResidual : Route8UnifiedVisibleResidualStatement data object)
     (descent : Route8PeelingDescentStatement data object)
     (failed : Route8StageRateFailedFact data object)
-    (ledger : Route8DemandLedgerStatement data object)
     (absorption : Route8DemandAbsorptionStatement data object)
     (unifiedDeficit : Route8UnifiedDeficitFact data object)
     (unitCount : Route8DemandUnitCountStatement data object) :
@@ -181,69 +180,58 @@ theorem route8JointBalance (data : Parameters) (object : FiniteObject.{u})
       exact loadSilent (excessVisible load
         (Finset.mem_sdiff.mpr ⟨loadMem, loadUnpaid⟩))
   let chain := route8DescentChain data object
-  obtain ⟨chainValid, accounting, _ends⟩ := descent
+  obtain ⟨_chainValid, accounting, _ends⟩ := descent
   have rateFailed := failed
-  obtain ⟨record⟩ := ledger
-  obtain ⟨A, dep, absorbedUnits, absorberSupplied,
-      absorberSameSupport, depUnits, depDisjoint, depEmpty, maximalA,
-      display⟩ :=
-    absorption record.partition record.pinned record.maximal
-      record.rawNoOvercount record.defectNoOvercount
-  subst dep
+  obtain ⟨P, pin, ⟨A, dep⟩, absorptionPin, absorptionSpec⟩ := absorption
+  obtain ⟨absorbedUnits, absorberSupplied, _absorberSameSupport, _depUnits,
+      _depDisjoint, depEmpty, _maximalA, _display⟩ := absorptionSpec
+  dsimp only at depEmpty
+  subst depEmpty
   have supplied : ∀ index ∈
-      record.partition.three ∪ record.partition.two,
-      record.partition.assigned index ⊆ supply := by
+      P.three ∪ P.two,
+      P.assigned index ⊆ supply := by
     intro index memUnion
     have memEntries : index ∈
         Graph.Route8Census.entriesOfComponents object
           packing components data.threshold data.dischargeScale := by
       have memUnified : index ∈ entries := by
         rcases Finset.mem_union.mp memUnion with mem | mem
-        · exact record.partition.three_subset_entries mem
-        · exact record.partition.two_subset_entries mem
+        · exact P.three_subset_entries mem
+        · exact P.two_subset_entries mem
       simpa only [entries, route8UnifiedEntries] using memUnified
-    exact (record.partition.assigned_available index memUnion).trans
+    exact (P.assigned_available index memUnion).trans
       (Graph.Route8Census.core_subset_supply_ofComponents
         object packing components data.threshold
         data.dischargeScale data.LengthOK index memEntries)
-  have maximalEmpty : ∀ B : Graph.DemandPartition.Absorption
-        record.partition
-        (Graph.Route8Census.Index object × Nat),
-      B.absorbed ⊆ record.partition.demandUnits →
-        (∀ unit ∈ B.absorbed, B.absorber unit ∈ supply) →
-        (∀ unit ∈ B.absorbed,
-          B.absorber unit ∈ Graph.Route8.cutEdges
-            object unit.1.1) →
-        B.absorbed.card ≤ A.absorbed.card := by
-    intro B units suppliedB sameSupportB
-    exact maximalA B units suppliedB sameSupportB (by simp)
   have rawCapacity :=
     A.three_mul_add_two_mul_add_card_le supply supplied
       absorberSupplied
-  have classes := record.partition.card_entries_eq
-  change entries.card = record.partition.three.card +
-    record.partition.two.card + record.partition.residual.card at classes
-  have unitsCard := unitCount record.partition
-  change record.partition.demandUnits.card =
-    record.partition.two.card +
-      3 * record.partition.residual.card at unitsCard
+  have classes := P.card_entries_eq
+  change entries.card = P.three.card +
+    P.two.card + P.residual.card at classes
+  obtain ⟨P', pin', unitsCard'⟩ := unitCount
+  have sameP : P' = P := Option.some.inj (pin'.symm.trans pin)
+  have unitsCard : P.demandUnits.card = P.externalDefect := sameP ▸ unitsCard'
+  change P.demandUnits.card =
+    P.two.card +
+      3 * P.residual.card at unitsCard
   have entryDemandIdentity : 3 * entries.card =
-      (3 * record.partition.three.card +
-        2 * record.partition.two.card) +
-        record.partition.demandUnits.card := by
+      (3 * P.three.card +
+        2 * P.two.card) +
+        P.demandUnits.card := by
     omega
-  let openUnits := record.partition.demandUnits \ A.absorbed
+  let openUnits := P.demandUnits \ A.absorbed
   have unitSplitRaw :=
     Finset.card_sdiff_add_card_eq_card absorbedUnits
-  have unitSplit : record.partition.demandUnits.card =
+  have unitSplit : P.demandUnits.card =
       A.absorbed.card + openUnits.card := by
     dsimp only [openUnits]
     calc
-      record.partition.demandUnits.card =
-          (record.partition.demandUnits \ A.absorbed).card +
+      P.demandUnits.card =
+          (P.demandUnits \ A.absorbed).card +
             A.absorbed.card := unitSplitRaw.symm
       _ = A.absorbed.card +
-          (record.partition.demandUnits \ A.absorbed).card :=
+          (P.demandUnits \ A.absorbed).card :=
         Nat.add_comm _ _
   have pressureBalance : 3 * entries.card ≤
       supply.card + openUnits.card := by
@@ -254,7 +242,6 @@ theorem route8JointBalance (data : Parameters) (object : FiniteObject.{u})
   let deficit := Graph.TypeBEnvelopeCharge.route8Deficit
     object support data.threshold data.dischargeScale
       components
-  have accountingOut := accounting
   change peeled ⊆ entries ∧
       entries = reduced ∪ peeled ∧
       Disjoint reduced peeled ∧
@@ -333,17 +320,9 @@ theorem route8JointBalance (data : Parameters) (object : FiniteObject.{u})
   show Route8JointBalanceStatement data object
   unfold Route8JointBalanceStatement
   refine ⟨overload, allSaturatedVisible, noSilentTerminal,
-    chain, ?_, ?_,
-    record.partition, ?_, ?_, A,
-    absorbedUnits, ?_, absorberSameSupport, maximalEmpty, unused, ?_⟩
-  · exact chainValid
-  · exact accountingOut
-  · exact record.pinned
-  · exact record.maximal
-  · exact absorberSupplied
-  · exact ⟨peeledLe, deficitLeEntries, entriesSplit, ambientBalance,
-      pressureBalance, jointPressureBalance, failedRateBalance,
-      entryDemandIdentity,
-      unitSplit, rawCapacity⟩
+    P, pin, (A, ∅), absorptionPin, unused, ?_⟩
+  exact ⟨peeledLe, deficitLeEntries, entriesSplit, ambientBalance,
+    pressureBalance, jointPressureBalance, failedRateBalance,
+    entryDemandIdentity, unitSplit, rawCapacity⟩
 
 end Hypostructure.Graph.Contracts.RouteEight

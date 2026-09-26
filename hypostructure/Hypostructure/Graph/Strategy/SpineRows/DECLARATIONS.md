@@ -110,7 +110,6 @@ Public names remain in `Hypostructure.Graph.Strategy.Spine`.
 | `typeAExitSevenHandoffRow` | 8100 | [TypeAExitSevenHandoff.lean:34](TypeAExitSevenHandoff.lean#L34) |
 | `typeBDecoratedAssignedSupportRow` | 8129 | [TypeBDecoratedAssignedSupport.lean:20](TypeBDecoratedAssignedSupport.lean#L20) |
 | `route8ResidualProfileRow` | 8222 | [Route8ResidualProfile.lean:20](Route8ResidualProfile.lean#L20) |
-| `route8GlobalSqueezeRow` | 8253 | [Route8GlobalSqueeze.lean:20](Route8GlobalSqueeze.lean#L20) |
 | `route8BasinBurdenRow` | 8289 | [Route8BasinBurden.lean:20](Route8BasinBurden.lean#L20) |
 | `route8LargeBudgetDeficitRow` | 8478 | [Route8LargeBudgetDeficit.lean:20](Route8LargeBudgetDeficit.lean#L20) |
 | `route8CarrierCoreRow` | 8512 | [Route8CarrierCore.lean:20](Route8CarrierCore.lean#L20) |

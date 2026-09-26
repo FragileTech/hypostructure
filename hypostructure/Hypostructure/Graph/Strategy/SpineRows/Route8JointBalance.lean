@@ -40,7 +40,6 @@ universe u v
           (inputs.get (K .route8UnifiedVisibleResidual)).down
           (inputs.get (K .route8PeelingDescent)).down
           (inputs.get (K .route8StageRateFailed)).down
-          (inputs.get (K .route8DemandLedger)).down
           (inputs.get (K .route8DemandAbsorption)).down
           (inputs.get (K .route8UnifiedDeficit)).down
           (inputs.get (K .route8DemandUnitCount)).down⟩ .nil)
