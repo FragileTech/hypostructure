@@ -178,6 +178,28 @@ plumbing already written directly in `StrategyDag.lean`.
    classification of every split on the path. Collect fresh evidence for each
    item.
 
+### Refactor, never reinvent; the ledger grows monotonically about G
+
+A refactor carries the SAME argument into a new structure. It never changes
+the proof:
+
+- Every fact is about G, the single selected counterexample (`K .selection`),
+  and about objects of G already fixed on the ledger. Each new fact is
+  computed from the incoming residual and appended.
+- The `ExactLedger` only grows. Nothing fixed upstream is ever re-chosen,
+  reset, or restated away.
+- Keep the argument path: each node consumes the same facts and splits on the
+  same witness as before (the paper's path). A refactor must never:
+  - merge per-candidate decisions into "some candidate / every candidate"
+    forms;
+  - replace per-lane or per-object facts by families over all objects of G;
+  - substitute a different argument.
+- A witness that an upstream fact only asserts with ∃ becomes a canonical
+  object of G: `Classical.choose` of that upstream statement at G. Downstream
+  facts then speak about exactly the object the upstream fact asserted.
+- Every changed declaration must be justified against its pre-refactor
+  counterpart: same argument path, now stated about G.
+
 ### Every fact is about the incoming residual
 
 This is the purpose of Hypostructure and the `ExactLedger`, and it is not a
