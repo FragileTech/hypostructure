@@ -41,7 +41,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       let cubic := (inputs.get (K .cubicBaseline)).down.1
       .cons (key := K .gadgetClosure) ⟨by
         classical
-        dsimp only [Holds]
+        dsimp only [Holds, GadgetClosureStatement]
         let avoids (piece : Graph.FiniteObject.{u}) :=
           ¬ Graph.HasCycleWithLength data.LengthOK piece
         let cubicPiece (piece : Graph.FiniteObject.{u}) (x y : piece.Vertex) :=

@@ -17,8 +17,9 @@ universe u w
 
 -- EG-NODE none (establishes no manuscript DAG node)
 noncomputable abbrev EGProblem :=
-  Graph.Strategy.Spine.problem BranchState
-    Graph.ReceiverLoad.LoadCapacityProfile erdosReceiverLoadProfile spineData
+  Graph.Strategy.Spine.problem BranchState.{u}
+    Graph.ReceiverLoad.LoadCapacityProfile erdosReceiverLoadProfile
+    spineData.{u}.toParameters
 
 -- EG-NODE none (establishes no manuscript DAG node)
 noncomputable def EGTarget : Core.Target EGProblem :=

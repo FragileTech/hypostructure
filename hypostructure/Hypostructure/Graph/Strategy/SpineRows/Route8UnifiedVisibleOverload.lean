@@ -49,12 +49,12 @@ set_option maxHeartbeats 1000000 in
       let visible := (inputs.get (K .route8UnifiedVisibleResidual)).down
       let peeledResidual :=
         (inputs.get (K .route8PeeledDemandResidual)).down
-      have overloadStatement : Route8UnifiedVisibleOverloadStatement data
+      have overloadStatement : Route8UnifiedVisibleOverloadStatement data.toParameters
           inputs.current.object := by
           classical
           letI : DecidableEq inputs.current.object.Vertex :=
             inputs.current.object.vertices.decEq
-          let entries := route8UnifiedEntries data inputs.current.object
+          let entries := route8UnifiedEntries data.toParameters inputs.current.object
           have overloaded : ∀ index ∈ entries,
               Graph.ExitFour.VisibleFourUnpeeledAt index.1 data.threshold
                 data.dischargeScale index.2.1 ∅ := by
@@ -67,7 +67,7 @@ set_option maxHeartbeats 1000000 in
               loadMem, rfl, rfl, rfl⟩ := indexSpec
             let piece := inputs.current.object.pieceSupport
               (inputs.current.object.remainderSupport
-                (canonicalWindowPacking data inputs.current.object)) component
+                (canonicalWindowPacking data.toParameters inputs.current.object)) component
             have selected := (Finset.mem_filter.mp componentMem).2
             have zeroSurplus : inputs.current.object.ambientSurplus piece
                 data.threshold = 0 := selected.1
@@ -156,7 +156,7 @@ set_option maxHeartbeats 1000000 in
                 inputs.current.object piece data.threshold data.dischargeScale
                 receiver paid loadVisible
             exact (Finset.mem_sdiff.mp loadMem).2 paidVisible
-          show Route8UnifiedVisibleOverloadStatement data
+          show Route8UnifiedVisibleOverloadStatement data.toParameters
             inputs.current.object
           unfold Route8UnifiedVisibleOverloadStatement
           refine ⟨?_, ?_⟩

@@ -43,7 +43,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     (fun inputs =>
       let normal := (inputs.get (K .highCentreNormalForm)).down
       .cons (key := K .triangularShoulderCompletion) ⟨by
-        change TriangularShoulderCompletionStatement data inputs.current.object
+        change TriangularShoulderCompletionStatement data.toParameters inputs.current.object
         classical
         intro centre centreHeavy endpoint endpointMem
         have centreEndpoint :=

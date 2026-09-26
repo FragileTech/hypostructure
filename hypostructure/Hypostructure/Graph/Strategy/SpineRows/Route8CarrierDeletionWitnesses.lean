@@ -43,10 +43,10 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           letI : DecidableEq inputs.current.object.Vertex :=
             inputs.current.object.vertices.decEq
           obtain ⟨index, indexMem, two⟩ := selected.down
-          let packing := canonicalWindowPacking data inputs.current.object
+          let packing := canonicalWindowPacking data.toParameters inputs.current.object
           let support := inputs.current.object.remainderSupport packing
           let routeEight := (inputs.current.object.canonicalPieces support).filter
-            (Route8Survives data inputs.current.object packing)
+            (Route8Survives data.toParameters inputs.current.object packing)
           let entries := Graph.Route8Census.entriesOfComponents
             inputs.current.object packing routeEight data.threshold
               data.dischargeScale

@@ -52,19 +52,19 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           ⟨by
             intro packing valid cardinality _large
             have canonicalCard :
-                (canonicalWindowPacking data inputs.current.object).card =
+                (canonicalWindowPacking data.toParameters inputs.current.object).card =
                   inputs.current.object.windowPackingNumber data.windowOrder :=
               (Classical.choose_spec
                 (inputs.current.object.exists_windowPacking_card_eq data.windowOrder)).2
             change data.dischargeScale *
                 (data.threshold * (data.windowOrder *
-                  (canonicalWindowPacking data inputs.current.object).card) +
+                  (canonicalWindowPacking data.toParameters inputs.current.object).card) +
                   data.spineScale * Core.ceilSqrt inputs.current.object.vertexCount) <
               data.dischargeScale *
                   (2 * (data.windowOrder - 1) *
-                    (canonicalWindowPacking data inputs.current.object).card) +
+                    (canonicalWindowPacking data.toParameters inputs.current.object).card) +
                 (inputs.current.object.vertexCount - data.windowOrder *
-                  (canonicalWindowPacking data inputs.current.object).card) at below
+                  (canonicalWindowPacking data.toParameters inputs.current.object).card) at below
             rw [canonicalCard, ← cardinality] at below
             have cardinality' :
                 data.windowOrder * packing.card +

@@ -42,7 +42,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
         (inputs.get (K .fanClosedPortTypeBRouting)).down
       .cons (key := K .triangularPortTypeBRouting) ⟨by
         classical
-        change TriangularPortTypeBRoutingStatement data inputs.current.object
+        change TriangularPortTypeBRoutingStatement data.toParameters inputs.current.object
         intro profile ledger normal scale ports triangular cardPorts degreeFive
           remainder assigned
         have fanClosed : ∀ endpoint ∈ ports,

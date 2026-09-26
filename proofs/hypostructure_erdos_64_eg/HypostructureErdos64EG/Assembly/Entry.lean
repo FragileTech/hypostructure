@@ -178,8 +178,8 @@ noncomputable def selectedSurplusDichotomy
       (selectedEntryPrefix history) :=
   Decision.run (selectedEntryPrefix history) (K .surplusAbove) (K .surplusAtOrBelow)
     `HypostructureErdos64EG.selectedSurplusDichotomy
-    (if above : spineData.surplusThreshold selected.object.vertexCount <
-        selected.object.degreeSurplus spineData.threshold then
+    (if above : spineData.{u}.surplusThreshold selected.object.vertexCount <
+        selected.object.degreeSurplus spineData.{u}.threshold then
       .inl ⟨above⟩
     else
       .inr ⟨Nat.le_of_not_lt above⟩)
@@ -263,7 +263,7 @@ noncomputable def openSelectedCounterexample
     instFactSystem
   exact openMinimalCounterexampleScope EGTarget
     (Graph.Strategy.Spine.refinedProgress BranchState
-      Graph.ReceiverLoad.LoadCapacityProfile erdosReceiverLoadProfile spineData)
+      Graph.ReceiverLoad.LoadCapacityProfile erdosReceiverLoadProfile spineData.{u}.toParameters)
     (fun _ => ())
     EGSelectionKey
     (fun context =>
@@ -276,10 +276,10 @@ noncomputable def openSelectedCounterexample
           have refinedLt :
               (Graph.Strategy.Spine.refinedProgress BranchState
                 Graph.ReceiverLoad.LoadCapacityProfile erdosReceiverLoadProfile
-                spineData).Smaller smaller context.G := by
+                spineData.{u}.toParameters).Smaller smaller context.G := by
             exact Graph.Strategy.Spine.refinedProgress_smaller_of_size_smaller
               BranchState Graph.ReceiverLoad.LoadCapacityProfile
-              erdosReceiverLoadProfile spineData smallerLt
+              erdosReceiverLoadProfile spineData.{u}.toParameters smallerLt
           simpa [EGTarget, Graph.minimumDegreeCycleTarget, Target, spineData]
             using context.minimal smaller refinedLt baseline
         refinedMinimal := by

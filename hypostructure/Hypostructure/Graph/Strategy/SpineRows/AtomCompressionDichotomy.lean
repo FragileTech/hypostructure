@@ -104,7 +104,7 @@ noncomputable def atomCompressionDichotomy
           (Input BranchState Presentation presentation data) _
           (factSystem BranchState Presentation presentation data)
           current known previous (K .maximalPacking)).down.1
-      have complete : TargetCompleteAt data quotient := by
+      have complete : TargetCompleteAt data.toParameters quotient := by
         intro left right identified
         have targetComplete : Graph.Response.TargetComplete
             Graph.BoundaryPiece.boundaryDegreeProfile
@@ -150,7 +150,7 @@ noncomputable def atomCompressionDichotomy
           replacement⟩⟩
       · exact .inr ⟨⟨packing, valid, quotient,
           ⟨test, determiners, supportData, certified⟩, complete, inside,
-          remainderSupport_ssubset_delocalizationSupport data quotient
+          remainderSupport_ssubset_delocalizationSupport data.toParameters quotient
             inside⟩⟩)
     compressionFresh delocalizedFresh
 

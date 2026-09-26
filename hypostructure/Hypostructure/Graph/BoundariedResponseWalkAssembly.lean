@@ -1,4 +1,4 @@
-import Hypostructure.Graph.Strategy.InterfaceReplacement
+import Hypostructure.Graph.InterfaceReplacement
 import Hypostructure.Graph.WindowInternalMass
 
 namespace Hypostructure.Graph.BoundariedResponseWalkAssembly

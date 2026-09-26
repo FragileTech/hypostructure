@@ -65,7 +65,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
             .windowPackageSeparated inputs.current from
           ⟨by
             classical
-            simp only [Holds]
+            simp only [Holds, WindowPackageSeparatedStatement]
             let noReplacement := (inputs.get (K .replacementExclusion)).down
             let selected := (inputs.get (K .selection)).down
             obtain ⟨_positive, packing, valid, maximum, maximal⟩ :=
@@ -79,7 +79,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
               barrier.table
             let flat := Core.Finite.CertifiedTableAggregation.flatProduct
               barrier.table
-            let bits := windowPackageBits data inputs.current.object
+            let bits := windowPackageBits data.toParameters inputs.current.object
             have bitsEq : bits = Nat.log2 ((safe ^ scales - 1) / flat ^ scales) := rfl
             -- `|ℐ_win| ≥ (c₁₃ − o(1)) log₂ n` per window: the registered rate,
             -- floored once per scale, is dominated by the compounded floor.

@@ -138,7 +138,7 @@ literal conditional-fibre overlap system. -/
         refine ⟨failedFamilyNonempty, ?_⟩
         rintro ⟨order, realizes⟩
         let coordinateResponse : Skeleton →
-            Fin failedFamily.card → PairResponseState data :=
+            Fin failedFamily.card → PairResponseState data.toParameters :=
           fun member index =>
             model.response (LengthOK := data.LengthOK) member (order index).1
         have branching : ∀ (index : Fin failedFamily.card)
@@ -195,11 +195,11 @@ literal conditional-fibre overlap system. -/
           letI : Fintype Baseline := Fintype.ofFinite Baseline
           let signature (length : Nat) (bound : length ≤ failedFamily.card)
               (member : Skeleton) :
-              Baseline × (Fin length → PairResponseState data) :=
+              Baseline × (Fin length → PairResponseState data.toParameters) :=
             (baselineState member, fun index =>
               coordinateResponse member (Fin.castLE bound index))
           let prefixes (length : Nat) (bound : length ≤ failedFamily.card) :
-              Finset (Baseline × (Fin length → PairResponseState data)) :=
+              Finset (Baseline × (Fin length → PairResponseState data.toParameters)) :=
             Finset.univ.image (signature length bound)
           have baselineSurjective : Function.Surjective baselineState := by
             intro assignment
@@ -240,8 +240,8 @@ literal conditional-fibre overlap system. -/
             let currentPrefixes := prefixes length lengthBound
             let nextPrefixes := prefixes (length + 1) successorBound
             let project :
-                Baseline × (Fin (length + 1) → PairResponseState data) →
-                  Baseline × (Fin length → PairResponseState data) :=
+                Baseline × (Fin (length + 1) → PairResponseState data.toParameters) →
+                  Baseline × (Fin length → PairResponseState data.toParameters) :=
               fun state => (state.1, fun index => state.2 index.castSucc)
             have mapsTo : Set.MapsTo project ↑nextPrefixes
                 ↑currentPrefixes := by
@@ -325,7 +325,7 @@ literal conditional-fibre overlap system. -/
                 exact leftResponse.symm.trans
                   (responseEqual.trans rightResponse)
               let chosen : Finset
-                  (Baseline × (Fin (length + 1) → PairResponseState data)) :=
+                  (Baseline × (Fin (length + 1) → PairResponseState data.toParameters)) :=
                 {leftSignature, rightSignature}
               have chosenSubset : chosen ⊆
                   {next ∈ nextPrefixes |
@@ -397,7 +397,7 @@ literal conditional-fibre overlap system. -/
             rw [baselineCard, failedFamilyCard]
           _ ≤ Nat.card Skeleton := lower
           _ = Graph.skeletonBudget object := skeletonCard
-      let system : PairOverlapSystem data object :=
+      let system : PairOverlapSystem data.toParameters object :=
         { first := first
           responseSupport := responseSupport
           responseSupport_selected := responseSupportSelected

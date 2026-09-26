@@ -46,14 +46,14 @@ set_option maxHeartbeats 1000000 in
           classical
           letI : DecidableEq inputs.current.object.Vertex :=
             inputs.current.object.vertices.decEq
-          show Route8WindowBlockersStatement data inputs.current.object
+          show Route8WindowBlockersStatement data.toParameters inputs.current.object
           unfold Route8WindowBlockersStatement
           refine fun P _pinnedP _maximalP _raw _defect A dep _absorbedUnits
             _absorberSupplied _depUnits _depDisjoint => ?_
-          let packing := canonicalWindowPacking data inputs.current.object
+          let packing := canonicalWindowPacking data.toParameters inputs.current.object
           let remainder := inputs.current.object.remainderSupport packing
-          let entries := route8UnifiedEntries data inputs.current.object
-          let core := route8DemandCore data inputs.current.object
+          let entries := route8UnifiedEntries data.toParameters inputs.current.object
+          let core := route8DemandCore data.toParameters inputs.current.object
           let openUnits := P.demandUnits \ (A.absorbed ∪ dep)
           have blockerAt : ∀ υ :
               Graph.Route8Census.Index inputs.current.object × Nat,
@@ -86,14 +86,14 @@ set_option maxHeartbeats 1000000 in
               have entryMem' : υ.1 ∈
                   Graph.Route8Census.entriesOfComponents
                     inputs.current.object packing
-                    (route8UnifiedComponents data inputs.current.object)
+                    (route8UnifiedComponents data.toParameters inputs.current.object)
                     data.threshold data.dischargeScale := by
                 simpa only [entries, route8UnifiedEntries] using entryMem
               have carrierSupply : carrier ∈
                   Graph.Route8Census.supply inputs.current.object packing :=
                 Graph.Route8Census.core_subset_supply_ofComponents
                   inputs.current.object packing
-                  (route8UnifiedComponents data inputs.current.object)
+                  (route8UnifiedComponents data.toParameters inputs.current.object)
                   data.threshold data.dischargeScale data.LengthOK υ.1
                   entryMem' carrierMem
               change carrier ∈ Graph.Route8.cutEdges inputs.current.object

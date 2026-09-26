@@ -58,11 +58,11 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           have packingSpec := Classical.choose_spec
             (inputs.current.object.exists_windowPacking_card_eq data.windowOrder)
           have valid : inputs.current.object.IsWindowPacking data.windowOrder
-              (canonicalWindowPacking data inputs.current.object) :=
+              (canonicalWindowPacking data.toParameters inputs.current.object) :=
             packingSpec.1
           have maximal : ∀ window : Finset inputs.current.object.Vertex,
               inputs.current.object.InducesWindow data.windowOrder window →
-              ∃ member ∈ canonicalWindowPacking data inputs.current.object,
+              ∃ member ∈ canonicalWindowPacking data.toParameters inputs.current.object,
                 ¬ Disjoint window member := fun window induces =>
             inputs.current.object.exists_mem_not_disjoint_of_card_eq
               data.windowOrder_pos valid packingSpec.2 induces
@@ -71,11 +71,11 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           · -- `thm:branch-kill`(a): the `[86]` trichotomy at this exact piece,
             -- the support-general exclusion instantiated at the canonical one.
             intro zeroSurplus
-            exact (exclusion (canonicalWindowPacking data inputs.current.object)
+            exact (exclusion (canonicalWindowPacking data.toParameters inputs.current.object)
               valid maximal
               (inputs.current.object.pieceSupport
                 (inputs.current.object.remainderSupport
-                  (canonicalWindowPacking data inputs.current.object)) piece)
+                  (canonicalWindowPacking data.toParameters inputs.current.object)) piece)
               (inputs.current.object.pieceSupport_subset _ piece)
               (Graph.SupportComponents.Connected.connectedOn_of_mem_order
                 inputs.current.object _
@@ -84,7 +84,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           · -- `thm:branch-kill`(b): the bridge-residual dichotomy at this
             -- exact piece, with the hygiene clauses left on their own key.
             intro positiveSurplus
-            rcases bridge (canonicalWindowPacking data inputs.current.object)
+            rcases bridge (canonicalWindowPacking data.toParameters inputs.current.object)
                 valid maximal ⟨piece, pieceMem⟩ negative positiveSurplus with
               ⟨ledger, exactRefinement, notClean, _postLedger, _grouped⟩ |
                 obstruction

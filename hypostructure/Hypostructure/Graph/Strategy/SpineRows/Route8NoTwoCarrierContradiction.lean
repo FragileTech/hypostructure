@@ -43,11 +43,11 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           classical
           letI : DecidableEq inputs.current.object.Vertex :=
             inputs.current.object.vertices.decEq
-          let packing := canonicalWindowPacking data inputs.current.object
+          let packing := canonicalWindowPacking data.toParameters inputs.current.object
           let support := inputs.current.object.remainderSupport packing
           let routeEight :=
             (inputs.current.object.canonicalPieces support).filter
-              (Route8Survives data inputs.current.object packing)
+              (Route8Survives data.toParameters inputs.current.object packing)
           let entries := Graph.Route8Census.entriesOfComponents
             inputs.current.object packing routeEight data.threshold
               data.dischargeScale
@@ -58,7 +58,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
             thresholdPos census.down.1 census.down.2
           have budget' : (data.threshold - 1 + 1) * entries.card ≤ supply.card := by
             have budgetFact := budget.down
-            change Route8PrivateCarrierBudget data inputs.current.object at budgetFact
+            change Route8PrivateCarrierBudget data.toParameters inputs.current.object at budgetFact
             dsimp only [Route8PrivateCarrierBudget] at budgetFact
             simpa [Nat.sub_add_cancel thresholdPos] using budgetFact
           change False

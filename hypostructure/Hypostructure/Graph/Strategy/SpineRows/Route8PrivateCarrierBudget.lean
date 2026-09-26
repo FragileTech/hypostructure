@@ -42,11 +42,11 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           classical
           letI : DecidableEq inputs.current.object.Vertex :=
             inputs.current.object.vertices.decEq
-          let packing := canonicalWindowPacking data inputs.current.object
+          let packing := canonicalWindowPacking data.toParameters inputs.current.object
           let support := inputs.current.object.remainderSupport packing
           let routeEight :=
             (inputs.current.object.canonicalPieces support).filter
-              (Route8Survives data inputs.current.object packing)
+              (Route8Survives data.toParameters inputs.current.object packing)
           let entries := Graph.Route8Census.entriesOfComponents
             inputs.current.object packing routeEight data.threshold
               data.dischargeScale
@@ -69,7 +69,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
             entries core supply coresSubset noTwo.down
           have thresholdPos : 1 ≤ data.threshold :=
             le_trans (by norm_num) data.three_le_threshold
-          change Route8PrivateCarrierBudget data inputs.current.object
+          change Route8PrivateCarrierBudget data.toParameters inputs.current.object
           dsimp only [Route8PrivateCarrierBudget]
           simpa [Nat.sub_add_cancel thresholdPos] using budget⟩ .nil)
     0 0

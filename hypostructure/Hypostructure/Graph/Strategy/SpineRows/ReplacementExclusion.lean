@@ -57,9 +57,9 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       let fact := inputs.get (K .selection)
       let context :
           Core.MinimalCounterexampleContext
-            (problem BranchState Presentation presentation data)
+            (problem BranchState Presentation presentation data.toParameters)
             (Graph.HasCycleWithLength data.LengthOK)
-            (progress BranchState Presentation presentation data) :=
+            (progress BranchState Presentation presentation data.toParameters) :=
         { G := inputs.current.object
           baseline := inputs.current.baseline
           state := inputs.current.branchState

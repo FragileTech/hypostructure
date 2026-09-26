@@ -40,13 +40,13 @@ residual and retain the manuscript's (F5) conclusion. -/
       -- The routing argument is stated over the abstract current object, so
       -- the nested `Classical.choose` projections of the retained occurrence
       -- are compared without unfolding the executor's input record.
-      let surviving : ColdSurvivingFirstFailureStatement data
+      let surviving : ColdSurvivingFirstFailureStatement data.toParameters
           inputs.current.object :=
         (fun (object : Graph.FiniteObject.{u})
-            (occurrence : ColdFirstFailureOccurrenceStatement data object)
-            (failureCycle : ColdFailureCycleStatement data object)
-            (failureDefectRoute : ColdFailureDefectRoutesStatement data object)
-            (failureCompression : ColdFailureCompressionStatement data object)
+            (occurrence : ColdFirstFailureOccurrenceStatement data.toParameters object)
+            (failureCycle : ColdFailureCycleStatement data.toParameters object)
+            (failureDefectRoute : ColdFailureDefectRoutesStatement data.toParameters object)
+            (failureCompression : ColdFailureCompressionStatement data.toParameters object)
             (failureHandoff : ∀ (windows component : Finset object.Vertex)
               (corridor : Graph.ColdCorridor.Corridor object windows component)
               (Handoff : Finset object.Vertex → Prop)
@@ -59,7 +59,7 @@ residual and retain the manuscript's (F5) conclusion. -/
               (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object) =>
           let occurrenceData := Classical.choice occurrence
           (Classical.choice (show Nonempty
-              (ColdSurvivingFirstFailureStatement data object) from
+              (ColdSurvivingFirstFailureStatement data.toParameters object) from
             by
               refine ⟨⟨⟨occurrenceData, ?_⟩⟩⟩
               intro epsilon

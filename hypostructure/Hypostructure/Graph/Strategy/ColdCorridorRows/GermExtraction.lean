@@ -32,7 +32,7 @@ linear arm, not to this finite extraction theorem. -/
       producesNonempty := by simp }
     (fun inputs =>
       let routing := (inputs.get (K .coldFailureRouting)).down
-      let exchange : ColdExchangeBoundStatement data inputs.current.object :=
+      let exchange : ColdExchangeBoundStatement data.toParameters inputs.current.object :=
         ⟨routing, fun windows component corridor terminal =>
           corridor.exchange_card_le terminal⟩
       .cons (key := K .coldExchangeBound)

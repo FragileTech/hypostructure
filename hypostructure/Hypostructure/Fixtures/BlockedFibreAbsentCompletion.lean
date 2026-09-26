@@ -35,39 +35,39 @@ example {n order left right scale : Nat} (H : Graph.LabelledOn n)
   simp [Graph.BarrierSystem.barrierState, absent]
 
 example (data : Data) (object : Graph.FiniteObject)
-    (coordinate : blockedCoordinate data object)
-    (member₀ : blockedClassAt data object)
+    (coordinate : blockedCoordinate data.toParameters object)
+    (member₀ : blockedClassAt data.toParameters object)
     (tooShort : 2 ^ coordinate.1.2.val <
       data.windowBarrier.table.counts.leftLength coordinate.2 +
         data.windowBarrier.table.counts.rightLength coordinate.2)
-    (strictSaving : blockedSurvivingCountAt data coordinate.2 <
-      blockedAprioriCountAt data coordinate.2) :
-    ¬ BlockedRelativeFibreBoundAt data object coordinate := by
+    (strictSaving : blockedSurvivingCountAt data.toParameters coordinate.2 <
+      blockedAprioriCountAt data.toParameters coordinate.2) :
+    ¬ BlockedRelativeFibreBoundAt data.toParameters object coordinate := by
   classical
-  have allNone : ∀ member : blockedAprioriClassAt data object,
-      (blockedAprioriBarrierCode data object member).2 coordinate = none := by
+  have allNone : ∀ member : blockedAprioriClassAt data.toParameters object,
+      (blockedAprioriBarrierCode data.toParameters object member).2 coordinate = none := by
     intro member
     change Graph.BarrierSystem.barrierState data.windowOrder member.1.1
-      ((blockedWindowLabels data object).biUnion id)
-      (barrierLegs data coordinate.2).1 (barrierLegs data coordinate.2).2
+      ((blockedWindowLabels data.toParameters object).biUnion id)
+      (barrierLegs data.toParameters coordinate.2).1 (barrierLegs data.toParameters coordinate.2).2
       (2 ^ coordinate.1.2.val) coordinate.1.1 = none
     have absent : ¬ Nonempty (Graph.BarrierSystem.CompletionSupport
-        data.windowOrder member.1.1 ((blockedWindowLabels data object).biUnion id)
-        coordinate.1.1 (barrierLegs data coordinate.2).1
-        (barrierLegs data coordinate.2).2 (2 ^ coordinate.1.2.val)) := by
+        data.windowOrder member.1.1 ((blockedWindowLabels data.toParameters object).biUnion id)
+        coordinate.1.1 (barrierLegs data.toParameters coordinate.2).1
+        (barrierLegs data.toParameters coordinate.2).2 (2 ^ coordinate.1.2.val)) := by
       rintro ⟨support⟩
       have length := support.completion_length
       simp only [barrierLegs] at length
       omega
     simp [Graph.BarrierSystem.barrierState, absent]
-  have equalFibres : BlockedSurvivingConditionalFibre data object member₀ coordinate =
-      BlockedAprioriConditionalFibre data object member₀ coordinate := by
+  have equalFibres : BlockedSurvivingConditionalFibre data.toParameters object member₀ coordinate =
+      BlockedAprioriConditionalFibre data.toParameters object member₀ coordinate := by
     ext member
     simp [BlockedSurvivingConditionalFibre, allNone, IsBlockedSurvivingState]
-  have inhabited : Nonempty (BlockedAprioriConditionalFibre data object member₀ coordinate) :=
+  have inhabited : Nonempty (BlockedAprioriConditionalFibre data.toParameters object member₀ coordinate) :=
     ⟨⟨member₀.1, rfl, fun _ _ => rfl⟩⟩
   letI := inhabited
-  have positive : 0 < Nat.card (BlockedAprioriConditionalFibre data object member₀ coordinate) :=
+  have positive : 0 < Nat.card (BlockedAprioriConditionalFibre data.toParameters object member₀ coordinate) :=
     Nat.card_pos
   intro relative
   have bound := relative member₀

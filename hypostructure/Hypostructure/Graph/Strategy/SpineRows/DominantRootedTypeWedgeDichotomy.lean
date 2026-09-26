@@ -62,7 +62,7 @@ noncomputable def dominantRootedTypeWedgeDichotomy
       have payload := Classical.choose_spec dominantSubsetSpec
       have count := payload.1
       have sameType := payload.2.1
-      let subcubic := remainderSubcubicSupport data current.object packing
+      let subcubic := remainderSubcubicSupport data.toParameters current.object packing
       by_cases wedge : DominantRootWedgeClause current.object subcubic root
       · exact .inl ⟨packing, valid, maximal, rankEq, dominant, root,
           dominantSubset, rootMem, count, sameType, wedge⟩

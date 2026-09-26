@@ -86,10 +86,10 @@ noncomputable def directCycleDichotomy
                   (Graph.MinimumDegreeAtLeast data.threshold)
                   (Graph.HasCycleWithLength data.LengthOK) current.object)
                 (centre : current.object.Vertex),
-              AbsorbedGermFanEnvelopeWitness data current.object germ centre ∧
+              AbsorbedGermFanEnvelopeWitness data.toParameters current.object germ centre ∧
                 Graph.TypeBDirectCycle.DirectCycleConfiguration current.object
                   data.windowOrder data.LengthOK
-                  (canonicalWindowPacking data current.object) centre
+                  (canonicalWindowPacking data.toParameters current.object) centre
         · exact ⟨.inl ⟨Or.inr (Or.inl ⟨absorbed, configuration⟩)⟩⟩
         · exact ⟨.inr ⟨Or.inr (Or.inl ⟨absorbed,
             fun germ centre witness present =>

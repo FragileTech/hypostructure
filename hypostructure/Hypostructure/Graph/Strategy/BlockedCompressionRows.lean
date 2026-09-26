@@ -44,9 +44,9 @@ noncomputable def scaleAdditivityDichotomy
   classical
   let _blocked := (previous.get (K .blockedClassMember)).down
   have safeOfMemberConnector :
-      ∀ (member : blockedClassAt data current.object)
+      ∀ (member : blockedClassAt data.toParameters current.object)
         (window : Finset (Fin current.object.vertexCount))
-        (windowMem : window ∈ blockedWindowLabels data current.object)
+        (windowMem : window ∈ blockedWindowLabels data.toParameters current.object)
         (presentation : Graph.TypeBDirectCycle.Presentation
           member.1.1.1.toFiniteObject data.windowOrder)
         (supportEq : presentation.support = window)
@@ -123,10 +123,10 @@ noncomputable def scaleAdditivityDichotomy
       exact presentation.covers _ sourceBound
     · exact certificate.isCycle.rotate coordinateMem
     · exact rotatedLength.symm ▸ certificate.length_ok
-  have stateSurvives : ∀ (member : blockedClassAt data current.object)
-      (coordinate : blockedCoordinate data current.object),
-      IsBlockedSurvivingState data coordinate.2
-        ((blockedBarrierCode data current.object member).2 coordinate) := by
+  have stateSurvives : ∀ (member : blockedClassAt data.toParameters current.object)
+      (coordinate : blockedCoordinate data.toParameters current.object),
+      IsBlockedSurvivingState data.toParameters coordinate.2
+        ((blockedBarrierCode data.toParameters current.object member).2 coordinate) := by
     intro member coordinate
     simp only [blockedBarrierCode, blockedAprioriBarrierCode,
       Graph.BarrierSystem.code]
@@ -221,23 +221,23 @@ noncomputable def scaleAdditivityDichotomy
           support.secondArm_length] at safeComposed
         simpa [barrierLegs, support] using safeComposed
     next supportMissing => simp [IsBlockedSurvivingState]
-  have graphFibreMonotone : ∀ coordinate : blockedCoordinate data current.object,
-      BlockedGraphFibreMonotonicityAt data current.object coordinate := by
+  have graphFibreMonotone : ∀ coordinate : blockedCoordinate data.toParameters current.object,
+      BlockedGraphFibreMonotonicityAt data.toParameters current.object coordinate := by
     intro coordinate member₀
     exact Nat.card_le_card_of_injective
-      (fun member : BlockedSurvivingConditionalFibre data current.object
+      (fun member : BlockedSurvivingConditionalFibre data.toParameters current.object
           member₀ coordinate ↦
         (⟨member.1, member.2.1⟩ :
-          BlockedAprioriConditionalFibre data current.object member₀ coordinate))
+          BlockedAprioriConditionalFibre data.toParameters current.object member₀ coordinate))
       (by
         intro left right equal
         apply Subtype.ext
         apply Subtype.ext
         exact congrArg (fun member :
-          BlockedAprioriConditionalFibre data current.object member₀ coordinate ↦
+          BlockedAprioriConditionalFibre data.toParameters current.object member₀ coordinate ↦
             member.1.1) equal)
-  have stateFibreBound : ∀ coordinate : blockedCoordinate data current.object,
-      BlockedStateFibreBoundAt data current.object coordinate := by
+  have stateFibreBound : ∀ coordinate : blockedCoordinate data.toParameters current.object,
+      BlockedStateFibreBoundAt data.toParameters current.object coordinate := by
     intro coordinate member₀
     let labelEmbedding : Fin data.windowBarrier.size →
         {label // label ∈ Graph.WindowCurvature.Labels data.windowOrder} :=
@@ -254,10 +254,10 @@ noncomputable def scaleAdditivityDichotomy
         exact ⟨index, Subtype.ext equal⟩
     let labelEquiv := Equiv.ofBijective labelEmbedding labelEmbeddingBijective
     let fibre := Graph.BarrierSystem.ConditionalFibre
-      (blockedBarrierCode data current.object)
-      (blockedEncodingRank data current.object) member₀ coordinate
+      (blockedBarrierCode data.toParameters current.object)
+      (blockedEncodingRank data.toParameters current.object) member₀ coordinate
     have fibreSurvives : ∀ state : fibre,
-        IsBlockedSurvivingState data coordinate.2 state.1 := by
+        IsBlockedSurvivingState data.toParameters coordinate.2 state.1 := by
       intro state
       obtain ⟨member, _outside, _prefix, equal⟩ := state.2
       exact equal ▸ stateSurvives member coordinate
@@ -266,7 +266,7 @@ noncomputable def scaleAdditivityDichotomy
         (data.windowBarrier.table.counts.leftLength coordinate.2)
         (data.windowBarrier.table.counts.rightLength coordinate.2)}
     let encodeState : ∀ state,
-        IsBlockedSurvivingState data coordinate.2 state → target :=
+        IsBlockedSurvivingState data.toParameters coordinate.2 state → target :=
       fun state survives ↦ by
       cases state with
       | none => exact none
@@ -371,11 +371,11 @@ noncomputable def scaleAdditivityDichotomy
         rw [data.windowBarrier.profile.card_flatStates]
         exact congrArg (fun count ↦ count + 1)
           (data.windowBarrier.table.counts.flatExact coordinate.2).symm
-      _ = blockedSurvivingCountAt data coordinate.2 + 1 := rfl
+      _ = blockedSurvivingCountAt data.toParameters coordinate.2 + 1 := rfl
   exact Decision.run previous (K .blockedScaleAdditive) (K .blockedBarrierOverlap)
     `Hypostructure.Graph.Strategy.Spine.scaleAdditivityDichotomy
-    (if additive : ∀ coordinate : blockedCoordinate data current.object,
-        BlockedRelativeFibreBoundAt data current.object coordinate then
+    (if additive : ∀ coordinate : blockedCoordinate data.toParameters current.object,
+        BlockedRelativeFibreBoundAt data.toParameters current.object coordinate then
       .inl ⟨⟨stateSurvives, fun coordinate ↦
         ⟨stateFibreBound coordinate, graphFibreMonotone coordinate,
           additive coordinate⟩⟩⟩
@@ -384,28 +384,28 @@ noncomputable def scaleAdditivityDichotomy
       let someCoordinate := Classical.choose additive
       have someFailure := Classical.choose_spec additive
       have failedRank : ∃ rank : Nat,
-          ∃ coordinate : blockedCoordinate data current.object,
-            blockedEncodingRank data current.object coordinate = rank ∧
-              ¬ BlockedRelativeFibreBoundAt data current.object coordinate :=
-        ⟨blockedEncodingRank data current.object someCoordinate,
+          ∃ coordinate : blockedCoordinate data.toParameters current.object,
+            blockedEncodingRank data.toParameters current.object coordinate = rank ∧
+              ¬ BlockedRelativeFibreBoundAt data.toParameters current.object coordinate :=
+        ⟨blockedEncodingRank data.toParameters current.object someCoordinate,
           someCoordinate, rfl, someFailure⟩
       let firstCoordinateWitness := Nat.find_spec failedRank
       let firstCoordinate := Classical.choose firstCoordinateWitness
       have firstCoordinateData := Classical.choose_spec firstCoordinateWitness
       have firstFailure :
-          ¬ BlockedRelativeFibreBoundAt data current.object firstCoordinate :=
+          ¬ BlockedRelativeFibreBoundAt data.toParameters current.object firstCoordinate :=
         firstCoordinateData.2
-      have failure : BlockedBarrierFailureStatement data current.object := by
+      have failure : BlockedBarrierFailureStatement data.toParameters current.object := by
         refine ⟨fun coordinate ↦
           ⟨stateFibreBound coordinate, graphFibreMonotone coordinate⟩,
           firstCoordinate, ?_, ?_⟩
         · intro earlier earlierRank
           by_contra earlierFailure
           have firstLeEarlier : Nat.find failedRank ≤
-              blockedEncodingRank data current.object earlier :=
+              blockedEncodingRank data.toParameters current.object earlier :=
             Nat.find_min' failedRank ⟨earlier, rfl, earlierFailure⟩
           have firstRank :
-              blockedEncodingRank data current.object firstCoordinate =
+              blockedEncodingRank data.toParameters current.object firstCoordinate =
                 Nat.find failedRank := firstCoordinateData.1
           omega
         · simp only [BlockedRelativeFibreBoundAt] at firstFailure
@@ -438,8 +438,8 @@ display.  The stronger remainder-and-curvature retained code remains solely in
           classical
           by_contra notDense
           have packageLe :
-              2 ^ (windowPackageBits data inputs.current.object *
-                (canonicalWindowPacking data inputs.current.object).card) ≤
+              2 ^ (windowPackageBits data.toParameters inputs.current.object *
+                (canonicalWindowPacking data.toParameters inputs.current.object).card) ≤
                 Graph.skeletonBudget inputs.current.object :=
             Nat.le_of_not_gt notDense
           apply unrealized
@@ -479,30 +479,30 @@ compression inequality and its skeleton-budget consequence. -/
       let additive := (inputs.get (K .blockedScaleAdditive)).down
       classical
       letI := data.windowBarrier.indexFintype
-      let orderAndRank : {order : blockedCoordinate data object ≃
-            Fin (Fintype.card (blockedCoordinate data object)) //
+      let orderAndRank : {order : blockedCoordinate data.toParameters object ≃
+            Fin (Fintype.card (blockedCoordinate data.toParameters object)) //
           ∀ coordinate, (order coordinate).1 =
-            blockedEncodingRank data object coordinate} := by
+            blockedEncodingRank data.toParameters object coordinate} := by
         classical
         letI := data.windowBarrier.indexFintype
-        have coordinateCard : Fintype.card (blockedCoordinate data object) =
+        have coordinateCard : Fintype.card (blockedCoordinate data.toParameters object) =
             (data.separatedScaleCount object.vertexCount *
-              Fintype.card {window // window ∈ blockedWindowLabels data object}) *
+              Fintype.card {window // window ∈ blockedWindowLabels data.toParameters object}) *
                 Fintype.card data.windowBarrier.Index := by
           simp [blockedCoordinate, Graph.BarrierSystem.Coordinate, Nat.mul_comm]
-        have rankBound : ∀ coordinate : blockedCoordinate data object,
-            blockedEncodingRank data object coordinate <
-              Fintype.card (blockedCoordinate data object) := by
+        have rankBound : ∀ coordinate : blockedCoordinate data.toParameters object,
+            blockedEncodingRank data.toParameters object coordinate <
+              Fintype.card (blockedCoordinate data.toParameters object) := by
           intro coordinate
           rw [coordinateCard]
-          exact show blockedEncodingRank data object coordinate <
+          exact show blockedEncodingRank data.toParameters object coordinate <
             (data.separatedScaleCount object.vertexCount *
-              Fintype.card {window // window ∈ blockedWindowLabels data object}) *
+              Fintype.card {window // window ∈ blockedWindowLabels data.toParameters object}) *
                 Fintype.card data.windowBarrier.Index by
             exact (by
               let rowCount := Fintype.card data.windowBarrier.Index
               let windowCount :=
-                Fintype.card {window // window ∈ blockedWindowLabels data object}
+                Fintype.card {window // window ∈ blockedWindowLabels data.toParameters object}
               let scaleCount := data.separatedScaleCount object.vertexCount
               have rowLt : (Fintype.equivFin _ coordinate.2).1 < rowCount :=
                 (Fintype.equivFin _ coordinate.2).2
@@ -531,38 +531,38 @@ compression inequality and its skeleton-budget consequence. -/
                         coordinate.1.2.1 * windowCount) + 1) * rowCount := by ring
                 _ ≤ (scaleCount * windowCount) * rowCount :=
                   Nat.mul_le_mul_right _ (Nat.succ_le_iff.mpr innerLt))
-        let rankFin : blockedCoordinate data object →
-            Fin (Fintype.card (blockedCoordinate data object)) :=
-          fun coordinate ↦ ⟨blockedEncodingRank data object coordinate,
+        let rankFin : blockedCoordinate data.toParameters object →
+            Fin (Fintype.card (blockedCoordinate data.toParameters object)) :=
+          fun coordinate ↦ ⟨blockedEncodingRank data.toParameters object coordinate,
             rankBound coordinate⟩
         have rankFinInjective : Function.Injective rankFin := by
           intro left right equal
-          apply blockedEncodingRank_injective data object
+          apply blockedEncodingRank_injective data.toParameters object
           exact Fin.ext_iff.mp equal
         let order := Equiv.ofBijective rankFin
           ((Fintype.bijective_iff_injective_and_card rankFin).2
             ⟨rankFinInjective, by simp⟩)
         have orderRank : ∀ coordinate, (order coordinate).1 =
-            blockedEncodingRank data object coordinate := by
+            blockedEncodingRank data.toParameters object coordinate := by
           intro coordinate
           rfl
         exact ⟨order, orderRank⟩
       let order := orderAndRank.1
       have orderRank := orderAndRank.2
       have exposure :
-          Nat.card (blockedClassAt data object) *
-                ∏ coordinate : blockedCoordinate data object,
-                  blockedAprioriCountAt data coordinate.2 ≤
-            Nat.card (blockedAprioriClassAt data object) *
-                ∏ coordinate : blockedCoordinate data object,
-                  blockedSurvivingCountAt data coordinate.2 := by
+          Nat.card (blockedClassAt data.toParameters object) *
+                ∏ coordinate : blockedCoordinate data.toParameters object,
+                  blockedAprioriCountAt data.toParameters coordinate.2 ≤
+            Nat.card (blockedAprioriClassAt data.toParameters object) *
+                ∏ coordinate : blockedCoordinate data.toParameters object,
+                  blockedSurvivingCountAt data.toParameters coordinate.2 := by
         classical
         letI := data.windowBarrier.indexFintype
-        letI : Fintype (blockedClassAt data object) := Fintype.ofFinite _
-        letI : Fintype (blockedAprioriClassAt data object) := Fintype.ofFinite _
-        let N := Fintype.card (blockedCoordinate data object)
-        let Apriori := blockedAprioriClassAt data object
-        let Blocked := blockedClassAt data object
+        letI : Fintype (blockedClassAt data.toParameters object) := Fintype.ofFinite _
+        letI : Fintype (blockedAprioriClassAt data.toParameters object) := Fintype.ofFinite _
+        let N := Fintype.card (blockedCoordinate data.toParameters object)
+        let Apriori := blockedAprioriClassAt data.toParameters object
+        let Blocked := blockedClassAt data.toParameters object
         let Outside := Finset (Sym2 (Fin object.vertexCount))
         let BarrierState := Option
           (Graph.WindowCurvature.Label data.windowOrder ×
@@ -572,16 +572,16 @@ compression inequality and its skeleton-budget consequence. -/
         have embed_injective : Function.Injective embed :=
           Subtype.val_injective
         let outside : Apriori → Outside := fun member ↦
-          (blockedAprioriBarrierCode data object member).1
+          (blockedAprioriBarrierCode data.toParameters object member).1
         let state : Apriori → Fin N → BarrierState := fun member coordinate ↦
-          (blockedAprioriBarrierCode data object member).2
+          (blockedAprioriBarrierCode data.toParameters object member).2
             (order.symm coordinate)
         let Survives : Fin N → BarrierState → Prop := fun coordinate value ↦
-          IsBlockedSurvivingState data (order.symm coordinate).2 value
+          IsBlockedSurvivingState data.toParameters (order.symm coordinate).2 value
         let W : Fin N → Nat := fun coordinate ↦
-          blockedAprioriCountAt data (order.symm coordinate).2
+          blockedAprioriCountAt data.toParameters (order.symm coordinate).2
         let F : Fin N → Nat := fun coordinate ↦
-          blockedSurvivingCountAt data (order.symm coordinate).2
+          blockedSurvivingCountAt data.toParameters (order.symm coordinate).2
         have blocked_survives : ∀ member coordinate,
             Survives coordinate (state (embed member) coordinate) := by
           intro member coordinate
@@ -605,20 +605,20 @@ compression inequality and its skeleton-budget consequence. -/
             rcases relative with ⟨_stateBound, _monotone, relative⟩
             have relative := relative member₀
             have rankSymm : ∀ index : Fin N,
-                blockedEncodingRank data object (order.symm index) = index.1 := by
+                blockedEncodingRank data.toParameters object (order.symm index) = index.1 := by
               intro index
               rw [← orderRank (order.symm index)]
               exact congrArg Fin.val (order.apply_symm_apply index)
-            have prefix_iff (candidate : blockedAprioriClassAt data object) :
-                (∀ other : blockedCoordinate data object,
-                  blockedEncodingRank data object other <
-                      blockedEncodingRank data object (order.symm coordinate) →
-                    (blockedAprioriBarrierCode data object candidate).2 other =
-                      (blockedBarrierCode data object member₀).2 other) ↔
+            have prefix_iff (candidate : blockedAprioriClassAt data.toParameters object) :
+                (∀ other : blockedCoordinate data.toParameters object,
+                  blockedEncodingRank data.toParameters object other <
+                      blockedEncodingRank data.toParameters object (order.symm coordinate) →
+                    (blockedAprioriBarrierCode data.toParameters object candidate).2 other =
+                      (blockedBarrierCode data.toParameters object member₀).2 other) ↔
                 (∀ earlier : Fin N, earlier.1 < coordinate.1 →
-                    (blockedAprioriBarrierCode data object candidate).2
+                    (blockedAprioriBarrierCode data.toParameters object candidate).2
                         (order.symm earlier) =
-                      (blockedAprioriBarrierCode data object member₀.1).2
+                      (blockedAprioriBarrierCode data.toParameters object member₀.1).2
                         (order.symm earlier)) := by
               constructor
               · intro original earlier earlierLt
@@ -627,9 +627,9 @@ compression inequality and its skeleton-budget consequence. -/
               · intro indexed other otherLt
                 have earlierLt : (order other).1 < coordinate.1 := by
                   calc
-                    (order other).1 = blockedEncodingRank data object other :=
+                    (order other).1 = blockedEncodingRank data.toParameters object other :=
                       orderRank other
-                    _ < blockedEncodingRank data object
+                    _ < blockedEncodingRank data.toParameters object
                           (order.symm coordinate) := otherLt
                     _ = coordinate.1 := rankSymm coordinate
                 simpa [blockedBarrierCode] using indexed (order other) earlierLt
@@ -867,30 +867,30 @@ compression inequality and its skeleton-budget consequence. -/
             _ ≤ Fintype.card Apriori * ∏ i ∈ Finset.range N, Fn i :=
               Nat.mul_le_mul_right _ reached_zero_le
         have exposed :
-            Fintype.card (blockedClassAt data object) *
+            Fintype.card (blockedClassAt data.toParameters object) *
                   ∏ coordinate : Fin N,
-                    blockedAprioriCountAt data (order.symm coordinate).2 ≤
-              Fintype.card (blockedAprioriClassAt data object) *
+                    blockedAprioriCountAt data.toParameters (order.symm coordinate).2 ≤
+              Fintype.card (blockedAprioriClassAt data.toParameters object) *
                   ∏ coordinate : Fin N,
-                    blockedSurvivingCountAt data (order.symm coordinate).2 := by
+                    blockedSurvivingCountAt data.toParameters (order.symm coordinate).2 := by
           simpa [Blocked, Apriori, W, F] using finiteExposure
         rw [Nat.card_eq_fintype_card, Nat.card_eq_fintype_card]
         have aprioriProd := Fintype.prod_equiv order.symm
           (fun coordinate : Fin N ↦
-            blockedAprioriCountAt data (order.symm coordinate).2)
-          (fun coordinate : blockedCoordinate data object ↦
-            blockedAprioriCountAt data coordinate.2) (by intro; simp)
+            blockedAprioriCountAt data.toParameters (order.symm coordinate).2)
+          (fun coordinate : blockedCoordinate data.toParameters object ↦
+            blockedAprioriCountAt data.toParameters coordinate.2) (by intro; simp)
         have survivingProd := Fintype.prod_equiv order.symm
           (fun coordinate : Fin N ↦
-            blockedSurvivingCountAt data (order.symm coordinate).2)
-          (fun coordinate : blockedCoordinate data object ↦
-            blockedSurvivingCountAt data coordinate.2) (by intro; simp)
+            blockedSurvivingCountAt data.toParameters (order.symm coordinate).2)
+          (fun coordinate : blockedCoordinate data.toParameters object ↦
+            blockedSurvivingCountAt data.toParameters coordinate.2) (by intro; simp)
         rwa [aprioriProd, survivingProd] at exposed
       have compressionBound :
-          Nat.card (blockedClassAt data object) *
-              2 ^ (windowPackageBits data object *
-                (canonicalWindowPacking data object).card) ≤
-            Nat.card (blockedAprioriClassAt data object) := by
+          Nat.card (blockedClassAt data.toParameters object) *
+              2 ^ (windowPackageBits data.toParameters object *
+                (canonicalWindowPacking data.toParameters object).card) ≤
+            Nat.card (blockedAprioriClassAt data.toParameters object) := by
         classical
         letI := data.windowBarrier.indexFintype
         let safe := Core.Finite.CertifiedTableAggregation.safeProduct
@@ -898,25 +898,25 @@ compression inequality and its skeleton-budget consequence. -/
         let flat := Core.Finite.CertifiedTableAggregation.flatProduct
           data.windowBarrier.table
         let scales := data.separatedScaleCount object.vertexCount
-        let windows := (canonicalWindowPacking data object).card
-        let bits := windowPackageBits data object
-        have windowLabelsCard : (blockedWindowLabels data object).card = windows := by
+        let windows := (canonicalWindowPacking data.toParameters object).card
+        let bits := windowPackageBits data.toParameters object
+        have windowLabelsCard : (blockedWindowLabels data.toParameters object).card = windows := by
           rw [blockedWindowLabels, Graph.BlockedClass.windowLabels,
             Finset.card_image_iff.mpr]
           intro left _ right _ equal
           exact Finset.map_injective _ equal
         have aprioriProduct :
-            (∏ coordinate : blockedCoordinate data object,
-              blockedAprioriCountAt data coordinate.2) =
+            (∏ coordinate : blockedCoordinate data.toParameters object,
+              blockedAprioriCountAt data.toParameters coordinate.2) =
               safe ^ (scales * windows) := by
           simpa [safe, scales, windows] using
             (show
-              (∏ coordinate : blockedCoordinate data object,
-                blockedAprioriCountAt data coordinate.2) =
+              (∏ coordinate : blockedCoordinate data.toParameters object,
+                blockedAprioriCountAt data.toParameters coordinate.2) =
                 Core.Finite.CertifiedTableAggregation.safeProduct
                     data.windowBarrier.table ^
                   (data.separatedScaleCount object.vertexCount *
-                    (canonicalWindowPacking data object).card) by
+                    (canonicalWindowPacking data.toParameters object).card) by
               rw [Fintype.prod_prod_type]
               simp only [blockedAprioriCountAt,
                 Core.Finite.CertifiedTableAggregation.safeProduct,
@@ -925,17 +925,17 @@ compression inequality and its skeleton-budget consequence. -/
               simp [Graph.BarrierSystem.Coordinate, Nat.mul_comm,
                 windowLabelsCard, windows])
         have survivingProduct :
-            (∏ coordinate : blockedCoordinate data object,
-              blockedSurvivingCountAt data coordinate.2) =
+            (∏ coordinate : blockedCoordinate data.toParameters object,
+              blockedSurvivingCountAt data.toParameters coordinate.2) =
               flat ^ (scales * windows) := by
           simpa [flat, scales, windows] using
             (show
-              (∏ coordinate : blockedCoordinate data object,
-                blockedSurvivingCountAt data coordinate.2) =
+              (∏ coordinate : blockedCoordinate data.toParameters object,
+                blockedSurvivingCountAt data.toParameters coordinate.2) =
                 Core.Finite.CertifiedTableAggregation.flatProduct
                     data.windowBarrier.table ^
                   (data.separatedScaleCount object.vertexCount *
-                    (canonicalWindowPacking data object).card) by
+                    (canonicalWindowPacking data.toParameters object).card) by
               rw [Fintype.prod_prod_type]
               simp only [blockedSurvivingCountAt,
                 Core.Finite.CertifiedTableAggregation.flatProduct,
@@ -971,36 +971,36 @@ compression inequality and its skeleton-budget consequence. -/
           pow_pos (pow_pos data.windowBarrier.flatPositive scales) windows
         rw [aprioriProduct, survivingProduct, pow_mul, pow_mul] at exposure
         have multiplied :
-            (Nat.card (blockedClassAt data object) * 2 ^ (bits * windows)) *
+            (Nat.card (blockedClassAt data.toParameters object) * 2 ^ (bits * windows)) *
                 (flat ^ scales) ^ windows ≤
-              Nat.card (blockedAprioriClassAt data object) *
+              Nat.card (blockedAprioriClassAt data.toParameters object) *
                 (flat ^ scales) ^ windows := by
           calc
-            (Nat.card (blockedClassAt data object) * 2 ^ (bits * windows)) *
+            (Nat.card (blockedClassAt data.toParameters object) * 2 ^ (bits * windows)) *
                   (flat ^ scales) ^ windows =
-                Nat.card (blockedClassAt data object) *
+                Nat.card (blockedClassAt data.toParameters object) *
                   (2 ^ (bits * windows) * (flat ^ scales) ^ windows) := by ac_rfl
-            _ ≤ Nat.card (blockedClassAt data object) *
+            _ ≤ Nat.card (blockedClassAt data.toParameters object) *
                   (safe ^ scales) ^ windows := Nat.mul_le_mul_left _ rateProduct
-            _ ≤ Nat.card (blockedAprioriClassAt data object) *
+            _ ≤ Nat.card (blockedAprioriClassAt data.toParameters object) *
                   (flat ^ scales) ^ windows := exposure
         have cancelled := Nat.le_of_mul_le_mul_right multiplied flatProductPos
         simpa [bits, windows] using cancelled
       obtain ⟨minDegree, isBlocked, _cardLe⟩ := blocked
-      have member : blockedClassAt data object :=
+      have member : blockedClassAt data.toParameters object :=
         ⟨⟨Graph.BlockedClass.objectSkeletonMember object, minDegree⟩, isBlocked⟩
-      have positive : 0 < Nat.card (blockedClassAt data object) :=
+      have positive : 0 < Nat.card (blockedClassAt data.toParameters object) :=
         Nat.pos_of_ne_zero fun zero =>
           (Nat.card_eq_zero.1 zero).elim (fun empty => empty.false member)
             fun infinite => (not_infinite_iff_finite.2 inferInstance) infinite
       have one := Nat.le_mul_of_pos_left
-        (2 ^ (windowPackageBits data object *
-          (canonicalWindowPacking data object).card)) positive
+        (2 ^ (windowPackageBits data.toParameters object *
+          (canonicalWindowPacking data.toParameters object).card)) positive
       have nearCubic := Graph.BlockedClass.card_nearCubicSkeleton_le
         object.vertexCount object.edgeCount data.threshold
       have compressionCap :
-          2 ^ (windowPackageBits data object *
-              (canonicalWindowPacking data object).card) ≤
+          2 ^ (windowPackageBits data.toParameters object *
+              (canonicalWindowPacking data.toParameters object).card) ≤
             Graph.skeletonBudget object :=
         le_trans (le_trans one compressionBound) nearCubic
       exact .cons (key := K .blockedCompressionBound) ⟨compressionBound⟩

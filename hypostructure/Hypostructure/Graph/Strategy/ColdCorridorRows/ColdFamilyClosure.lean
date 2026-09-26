@@ -39,7 +39,7 @@ noncomputable def coldFamilyDichotomy
   let _split := (previous.get (K .hotColdPartition)).down
   exact Decision.run previous (K .coldFamilyPositive) (K .coldFamilyEmpty)
     `Hypostructure.Graph.Strategy.Spine.coldFamilyDichotomy
-    (if positive : 0 < (canonicalColdWindows data current.object).card then
+    (if positive : 0 < (canonicalColdWindows data.toParameters current.object).card then
       .inl ⟨positive⟩
     else
       .inr ⟨Nat.eq_zero_of_not_pos positive⟩)
@@ -98,9 +98,9 @@ density cap with its exact `o(1)`. -/
         ⟨by
           classical
           let object := inputs.current.object
-          let packing := canonicalWindowPacking data object
-          let cold := canonicalColdWindows data object
-          let perWindow := coldInteriorBranchExcess data
+          let packing := canonicalWindowPacking data.toParameters object
+          let cold := canonicalColdWindows data.toParameters object
+          let perWindow := coldInteriorBranchExcess data.toParameters
           have perWindowPos : 0 < perWindow := by
             have order := data.five_le_windowOrder
             simp only [perWindow, coldInteriorBranchExcess,
@@ -123,7 +123,7 @@ density cap with its exact `o(1)`. -/
             exact Nat.le_of_mul_le_mul_left this perWindowPos
           have surplusBound : object.degreeSurplus data.threshold ≤
               data.surplusThreshold object.vertexCount := by
-            change (cold.card ≤ (cold.filter (AmbientCubicWindow data object)).card +
+            change (cold.card ≤ (cold.filter (AmbientCubicWindow data.toParameters object)).card +
               object.degreeSurplus data.threshold) ∧
               object.degreeSurplus data.threshold ≤
                 data.surplusThreshold object.vertexCount at cubic
@@ -131,9 +131,9 @@ density cap with its exact `o(1)`. -/
           have packingCard : packing.card = object.windowPackingNumber data.windowOrder := by
             rcases split with ⟨_, attains, _, _, _, _, _⟩
             exact attains
-          change coldWindowBitRate data object * packing.card ≤
-            coldWindowBitRate data object * cold.card +
-              coldSkeletonAllowance data object at mass
+          change coldWindowBitRate data.toParameters object * packing.card ≤
+            coldWindowBitRate data.toParameters object * cold.card +
+              coldSkeletonAllowance data.toParameters object at mass
           change 2 * (data.windowRate * data.separatedScaleCount object.vertexCount *
               object.windowPackingNumber data.windowOrder) ≤
             (Graph.dyadicScaleCount object + 1) *
@@ -154,7 +154,7 @@ density cap with its exact `o(1)`. -/
                     (Nat.mul_le_mul_left (1 + highLoss) surplusBound))
               _ = data.densitySlack * (data.windowRate * data.separatedScaleCount object.vertexCount) *
                     data.surplusThreshold object.vertexCount := by
-                  simp only [Data.densitySlack, highLoss, overlap]; ring
+                  simp only [Parameters.densitySlack, highLoss, overlap]; ring
           simp only [coldWindowBitRate, coldSkeletonAllowance] at mass
           have key := le_trans mass (Nat.add_le_add_right coldTerm _)
           calc 2 * (data.windowRate * data.separatedScaleCount object.vertexCount *

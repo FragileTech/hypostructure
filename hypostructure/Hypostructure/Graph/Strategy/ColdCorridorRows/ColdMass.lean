@@ -33,12 +33,12 @@ The density cap is available after the cold branch closes. -/
       .cons (key := K .coldMass)
         ⟨by
           classical
-          let packing := canonicalWindowPacking data inputs.current.object
-          let hot := canonicalHotWindows data inputs.current.object
-          let cold := canonicalColdWindows data inputs.current.object
+          let packing := canonicalWindowPacking data.toParameters inputs.current.object
+          let hot := canonicalHotWindows data.toParameters inputs.current.object
+          let cold := canonicalColdWindows data.toParameters inputs.current.object
           let _partition := split
-          change coldWindowBitRate data inputs.current.object * hot.card ≤
-            coldSkeletonAllowance data inputs.current.object at hotBound
+          change coldWindowBitRate data.toParameters inputs.current.object * hot.card ≤
+            coldSkeletonAllowance data.toParameters inputs.current.object at hotBound
           have hotSubset : hot ⊆ packing := by
             rcases split with ⟨_, _, _, hotFacts, _, _, _⟩
             exact hotFacts.1
@@ -46,11 +46,11 @@ The density cap is available after the cold branch closes. -/
             have := (Finset.card_sdiff_add_card_eq_card hotSubset).symm
             rw [Nat.add_comm] at this
             exact this
-          change ColdMassStatement data inputs.current.object
+          change ColdMassStatement data.toParameters inputs.current.object
           simpa [ColdMassStatement] using
             Graph.ColdCorridor.hotFailure_coldMass
-              (coldWindowBitRate data inputs.current.object) 0 0
-              (coldSkeletonAllowance data inputs.current.object)
+              (coldWindowBitRate data.toParameters inputs.current.object) 0 0
+              (coldSkeletonAllowance data.toParameters inputs.current.object)
               hot.card cold.card packing.card count (by simpa using hotBound)⟩
         .nil)
 
@@ -74,21 +74,21 @@ positive-surplus vertex of the current object. -/
           classical
           rcases split with
             ⟨valid, _attains, _maximal, _hotIff, coldIff, _disjoint, _cover⟩
-          have coldSubset : canonicalColdWindows data inputs.current.object ⊆
-              canonicalWindowPacking data inputs.current.object := by
+          have coldSubset : canonicalColdWindows data.toParameters inputs.current.object ⊆
+              canonicalWindowPacking data.toParameters inputs.current.object := by
             intro window member
             exact (coldIff window).mp member |>.1
-          change ColdAmbientCubicStatement data inputs.current.object
+          change ColdAmbientCubicStatement data.toParameters inputs.current.object
           refine ⟨?_, nearCubic⟩
           let object := inputs.current.object
-          let packing := canonicalWindowPacking data object
-          let cold := canonicalColdWindows data object
+          let packing := canonicalWindowPacking data.toParameters object
+          let cold := canonicalColdWindows data.toParameters object
           letI : FinEnum object.Vertex := object.vertices
           letI : Fintype object.Vertex := inferInstance
           let ambient : Finset object.Vertex := Finset.univ.filter fun vertex =>
             data.threshold < object.degree vertex
           let bad : Finset (Finset object.Vertex) := cold.filter fun window =>
-            ¬ AmbientCubicWindow data object window
+            ¬ AmbientCubicWindow data.toParameters object window
           have baselineDegree : ∀ vertex : object.Vertex,
               data.threshold ≤ object.degree vertex := fun vertex =>
             le_trans inputs.current.baseline
@@ -141,13 +141,13 @@ positive-surplus vertex of the current object. -/
           have badBound : bad.card ≤ object.degreeSurplus data.threshold :=
             badCard.trans ambientCard
           have splitCard := cold.card_filter_add_card_filter_not
-            (AmbientCubicWindow data object)
+            (AmbientCubicWindow data.toParameters object)
           change cold.card ≤
-            (cold.filter (AmbientCubicWindow data object)).card +
+            (cold.filter (AmbientCubicWindow data.toParameters object)).card +
               object.degreeSurplus data.threshold
           rw [← splitCard]
           convert Nat.add_le_add_left badBound
-            (cold.filter (AmbientCubicWindow data object)).card using 1
+            (cold.filter (AmbientCubicWindow data.toParameters object)).card using 1
           ⟩
         .nil)
 
@@ -164,13 +164,13 @@ positive-surplus vertex of the current object. -/
     (fun inputs =>
       let split := (inputs.get (K .hotColdPartition)).down
       let cubic := (inputs.get (K .coldAmbientCubic)).down
-      let exactStubs : ColdAmbientCubicStubExcessStatement data
+      let exactStubs : ColdAmbientCubicStubExcessStatement data.toParameters
           inputs.current.object := by
         classical
         let object := inputs.current.object
-        let packing := canonicalWindowPacking data object
-        let cold := canonicalColdWindows data object
-        let cubicWindows := cold.filter (AmbientCubicWindow data object)
+        let packing := canonicalWindowPacking data.toParameters object
+        let cold := canonicalColdWindows data.toParameters object
+        let cubicWindows := cold.filter (AmbientCubicWindow data.toParameters object)
         rcases split with
           ⟨valid, _attains, _maximal, _hotFacts, coldIff, _hotCold, _cover⟩
         intro window member
@@ -186,9 +186,9 @@ positive-surplus vertex of the current object. -/
         ⟨by
           classical
           let object := inputs.current.object
-          let packing := canonicalWindowPacking data object
-          let cold := canonicalColdWindows data object
-          let cubicWindows := cold.filter (AmbientCubicWindow data object)
+          let packing := canonicalWindowPacking data.toParameters object
+          let cold := canonicalColdWindows data.toParameters object
+          let cubicWindows := cold.filter (AmbientCubicWindow data.toParameters object)
           rcases split with
             ⟨valid, _attains, _maximal, _hotFacts, coldIff, _hotCold, _cover⟩
           have cubicSubset : cubicWindows ⊆ packing := by
@@ -198,7 +198,7 @@ positive-surplus vertex of the current object. -/
               left ≠ right → Disjoint left right := by
             intro left leftMem right rightMem different
             exact valid.2 left (cubicSubset leftMem) right (cubicSubset rightMem) different
-          change ColdSelectedBranchExcessStatement data object
+          change ColdSelectedBranchExcessStatement data.toParameters object
           refine ⟨?_, ?_⟩
           · rw [Graph.ColdCorridor.card_allSelectedStubs object cubicWindows
                 cubicDisjoint]
@@ -206,7 +206,7 @@ positive-surplus vertex of the current object. -/
               ∑ window ∈ cubicWindows,
                     ((Graph.ColdCorridor.interiorStubList object window).length - 2) =
                   ∑ _window ∈ cubicWindows,
-                    coldInteriorBranchExcess data := by
+                    coldInteriorBranchExcess data.toParameters := by
                 refine Finset.sum_congr rfl fun window member => ?_
                 have packingMem : window ∈ packing :=
                   (coldIff window).mp (Finset.mem_filter.mp member).1 |>.1
@@ -253,7 +253,7 @@ positive-surplus vertex of the current object. -/
                     _ = data.windowOrder - 2 := by rw [induces.2, endsCard]
                 rw [interiorLength]
                 rfl
-              _ = coldInteriorBranchExcess data * cubicWindows.card := by
+              _ = coldInteriorBranchExcess data.toParameters * cubicWindows.card := by
                 simp [Nat.mul_comm]
           · intro stub stubMem
             have represented : ∃ window ∈ cubicWindows,
@@ -276,13 +276,13 @@ positive-surplus vertex of the current object. -/
           (.cons (key := K .coldStubExcess)
             ⟨by
               classical
-              change ColdStubExcessStatement data inputs.current.object
+              change ColdStubExcessStatement data.toParameters inputs.current.object
               simpa [ColdStubExcessStatement, ColdAmbientCubicStatement] using
                 Graph.ColdCorridor.branchExcess_ge_of_cubic
-                  (coldInteriorBranchExcess data)
-                  ((canonicalColdWindows data inputs.current.object).filter
-                    (AmbientCubicWindow data inputs.current.object)).card
-                  (canonicalColdWindows data inputs.current.object).card
+                  (coldInteriorBranchExcess data.toParameters)
+                  ((canonicalColdWindows data.toParameters inputs.current.object).filter
+                    (AmbientCubicWindow data.toParameters inputs.current.object)).card
+                  (canonicalColdWindows data.toParameters inputs.current.object).card
                   (inputs.current.object.degreeSurplus data.threshold) cubic.1⟩
             .nil)))
 
@@ -312,19 +312,19 @@ noncomputable def coldMassDichotomy
   let _stubs := (previous.get (K .coldStubExcess)).down
   exact Decision.run previous (K .coldMassLinear) (K .coldMassBounded)
     `Hypostructure.Graph.Strategy.Spine.coldMassDichotomy
-    (if linear : ColdMassLinearStatement data current.object then
+    (if linear : ColdMassLinearStatement data.toParameters current.object then
       .inl ⟨linear⟩
     else
       .inr ⟨by
-        change ¬ ((coldInteriorBranchExcess data +
+        change ¬ ((coldInteriorBranchExcess data.toParameters +
             (data.threshold + 1) *
               Graph.ColdCorridor.overlapBound data.threshold data.coldSignature) *
           current.object.degreeSurplus data.threshold <
-            coldInteriorBranchExcess data *
-              (canonicalColdWindows data current.object).card) at linear
-        change coldInteriorBranchExcess data *
-            (canonicalColdWindows data current.object).card ≤
-          (coldInteriorBranchExcess data +
+            coldInteriorBranchExcess data.toParameters *
+              (canonicalColdWindows data.toParameters current.object).card) at linear
+        change coldInteriorBranchExcess data.toParameters *
+            (canonicalColdWindows data.toParameters current.object).card ≤
+          (coldInteriorBranchExcess data.toParameters +
             (data.threshold + 1) *
               Graph.ColdCorridor.overlapBound data.threshold data.coldSignature) *
             current.object.degreeSurplus data.threshold

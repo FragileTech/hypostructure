@@ -39,7 +39,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     (fun inputs =>
       let fanClosedDefinition := (inputs.get (K .fanClosedPort)).down
       .cons (key := K .fanClosedPortTypeBRouting) ⟨by
-        change FanClosedPortTypeBRoutingStatement data inputs.current.object
+        change FanClosedPortTypeBRoutingStatement data.toParameters inputs.current.object
         intro profile ledger normal scale ports fanClosed two
         apply Graph.TypeBFanClosedPorts.fanClosedPortTypeBRouting
           profile ledger normal scale

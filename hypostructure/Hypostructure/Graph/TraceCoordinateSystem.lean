@@ -2,7 +2,7 @@ import Hypostructure.Graph.DeclaredCoordinateSignature
 import Hypostructure.Graph.CurvatureTargetRank
 import Hypostructure.Graph.InducedPathMaximalPacking
 import Hypostructure.Graph.RootedReturn
-import Hypostructure.Graph.Strategy.InterfaceReplacement
+import Hypostructure.Graph.InterfaceReplacement
 import Hypostructure.Graph.VisibleReceiverEntry
 
 /-!

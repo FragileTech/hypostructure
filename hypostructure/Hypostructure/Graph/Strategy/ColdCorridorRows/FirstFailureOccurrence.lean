@@ -34,13 +34,13 @@ variable {data : Data.{u}}
       -- The occurrence is constructed over the abstract current object, so
       -- the retained state's `Classical.choose` projections are compared
       -- without unfolding the executor's input record.
-      let occurrence : ColdFirstFailureOccurrenceStatement data
+      let occurrence : ColdFirstFailureOccurrenceStatement data.toParameters
           inputs.current.object :=
         (fun (object : Graph.FiniteObject.{u})
-            (state : ColdCorridorStateStatement data object)
+            (state : ColdCorridorStateStatement data.toParameters object)
             (Handoff : Finset object.Vertex → Prop)
             (handoffAbsent : ∀ support, ¬ Handoff support) =>
-          (show ColdFirstFailureOccurrenceStatement data object from by
+          (show ColdFirstFailureOccurrenceStatement data.toParameters object from by
             classical
             letI : FinEnum object.Vertex := object.vertices
             refine ⟨⟨Handoff, handoffAbsent, state, ?_⟩⟩
@@ -52,7 +52,7 @@ variable {data : Data.{u}}
             let corridor := corridorAt epsilon
             let presentation := presentationAt epsilon
             let index := indexAt epsilon
-            let packing := canonicalWindowPacking data object
+            let packing := canonicalWindowPacking data.toParameters object
             let cycleAt : corridor.Segment → Prop := fun segment =>
               ∃ windowSupport ∈ packing,
                 ∃ window : Graph.ColdCorridor.Window object data.windowOrder,
@@ -98,7 +98,7 @@ variable {data : Data.{u}}
                 germ.record = corridor.recordAt presentation index right ∧
                 segment = right
             let failureAt : corridor.Segment → Prop := fun segment =>
-              ColdFirstFailureEvent data object corridor presentation index germ
+              ColdFirstFailureEvent data.toParameters object corridor presentation index germ
                 Handoff segment
             change ∃ first : corridor.Segment,
               failureAt first ∧

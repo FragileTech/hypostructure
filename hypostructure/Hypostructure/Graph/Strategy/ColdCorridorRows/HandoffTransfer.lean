@@ -73,7 +73,7 @@ theorem coldFirstHighOfNotBounded
 /-- The first-high handoff conclusion obtained from the retained corridor
 state.  This is the manuscript's bounded-prefix/high-degree dichotomy. -/
 theorem coldHandoffTransferFact
-    {data : Data.{u}} {object : Graph.FiniteObject.{u}}
+    {data : Parameters} {object : Graph.FiniteObject.{u}}
     (state : ColdCorridorStateStatement data object) :
     ColdFirstHighHandoffStatement data object := by
   classical

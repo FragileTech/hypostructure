@@ -172,7 +172,7 @@ import Hypostructure.Core.Contract
 
 -- Finite path selection and the canonical interface-replacement machinery.
 import Hypostructure.Graph.FinitePathSelection
-import Hypostructure.Graph.Strategy.InterfaceReplacement
+import Hypostructure.Graph.InterfaceReplacement
 
 -- Core routing modules included in the root build closure.
 import Hypostructure.Core.DependentOwnerGlueCapacity

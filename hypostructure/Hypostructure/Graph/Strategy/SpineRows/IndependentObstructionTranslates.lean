@@ -63,7 +63,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           let radius := 2
           refine ⟨packing, valid, maximal, radius, by simp [radius], ?_⟩
           let support := inputs.current.object.remainderSupport packing
-          let subcubic := remainderSubcubicSupport data inputs.current.object packing
+          let subcubic := remainderSubcubicSupport data.toParameters inputs.current.object packing
           have subcubicSubsetSupport : subcubic ⊆ support := by
             intro vertex member
             exact (Finset.mem_filter.mp member).1
@@ -74,7 +74,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           change support.card ≤
             (1 + data.threshold *
                 ((data.threshold - 1) ^ (2 * radius) - 1)) *
-              remainderCurvatureTargetRank data inputs.current.object packing +
+              remainderCurvatureTargetRank data.toParameters inputs.current.object packing +
                 2 * data.surplusThreshold inputs.current.object.vertexCount
           have rootedWedges : ∀ vertex ∈ dominant,
               ∃ wedge : inputs.current.object.InternalWedge support,
@@ -306,18 +306,18 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
             intro wedge wedgeMem
             obtain ⟨vertex, _vertexMem, rfl⟩ := Finset.mem_image.mp wedgeMem
             exact (wedgeAtSpec vertex).2
-          have rankEq' : remainderCurvatureTargetRank data inputs.current.object packing =
+          have rankEq' : remainderCurvatureTargetRank data.toParameters inputs.current.object packing =
               inputs.current.object.internalWedgeCount support := by
             simpa only [support, remainderWedgeSupply] using rankEq
           have selectedLeRank : selected.card ≤
-              remainderCurvatureTargetRank data inputs.current.object packing := by
+              remainderCurvatureTargetRank data.toParameters inputs.current.object packing := by
             rw [← translatesCard, rankEq',
               ← inputs.current.object.internalWedgeFamily_card support]
             exact Finset.card_le_card translatesSubset
           have dominantLeRank : dominant.card ≤
               (1 + data.threshold *
                   ((data.threshold - 1) ^ (2 * radius) - 1)) *
-                remainderCurvatureTargetRank data inputs.current.object packing :=
+                remainderCurvatureTargetRank data.toParameters inputs.current.object packing :=
             dominantLe.trans (Nat.mul_le_mul_left _ selectedLeRank)
           omega⟩)
         .nil)

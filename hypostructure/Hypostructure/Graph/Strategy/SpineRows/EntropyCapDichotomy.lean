@@ -53,7 +53,7 @@ noncomputable def entropyCapDichotomy
           (factSystem BranchState Presentation presentation data)
           current known previous (K .entropyPackageDemand)).down
       by_cases active :
-          Graph.skeletonBudget current.object < jointPackageDemand data current.object
+          Graph.skeletonBudget current.object < jointPackageDemand data.toParameters current.object
       · exact .inl ⟨active⟩
       · exact .inr ⟨Or.inl (Nat.le_of_not_lt active)⟩)
     activeFresh largeFresh

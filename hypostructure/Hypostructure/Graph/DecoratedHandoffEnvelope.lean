@@ -1,6 +1,6 @@
 import Hypostructure.Graph.CommonPortReturnCycle
 import Hypostructure.Graph.Response
-import Hypostructure.Graph.Strategy.InterfaceReplacement
+import Hypostructure.Graph.InterfaceReplacement
 
 /-!
 # Connector germs, surviving separators, and the decorated handoff fan envelope

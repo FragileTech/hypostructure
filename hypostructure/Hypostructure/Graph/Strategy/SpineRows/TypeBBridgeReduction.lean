@@ -102,7 +102,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
             have targetSafe : Graph.TypeAB.ContextuallyDyadicSafe
                 data.typeABPresentation inputs.current.object := by
               simpa [Graph.TypeAB.ContextuallyDyadicSafe,
-                Data.typeABPresentation] using avoids
+                Parameters.typeABPresentation] using avoids
             have hereditary : Graph.TypeAB.HereditarilyTargetUncompressible
                 data.typeABPresentation inputs.current.object
                   canonicalPiece.vertices :=
@@ -136,15 +136,15 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                           components,
                       Graph.TypeBMaximalCompletion.ComponentExitSeven ledger
                         component.1 data.LengthOK
-                        (handoffHighDegree data inputs.current.object)
-                        (handoffAbsorbing data inputs.current.object packing),
+                        (handoffHighDegree data.toParameters inputs.current.object)
+                        (handoffAbsorbing data.toParameters inputs.current.object packing),
                       ∃ grouped :
                         Graph.DecoratedHandoff.GroupedEnvelopes
                           inputs.current.object data.LengthOK
-                          (handoffUncompressible data inputs.current.object)
-                          (handoffWindowFree data inputs.current.object)
-                          (handoffHighDegree data inputs.current.object)
-                          (handoffAbsorbing data inputs.current.object packing)
+                          (handoffUncompressible data.toParameters inputs.current.object)
+                          (handoffWindowFree data.toParameters inputs.current.object)
+                          (handoffHighDegree data.toParameters inputs.current.object)
+                          (handoffAbsorbing data.toParameters inputs.current.object packing)
                           (Graph.TypeBMaximalCompletion.SelectedComponent ledger
                             components),
                         (∀ component :
@@ -163,7 +163,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                                   (production component).separation.separator := by
               intro components componentsSubset production
               have windowFree : ∀ component, component ∈ components →
-                  handoffWindowFree data inputs.current.object
+                  handoffWindowFree data.toParameters inputs.current.object
                     (Graph.SupportComponents.Connected.vertices
                       inputs.current.object ledger.remainingCore component) := by
                 intro component componentMember

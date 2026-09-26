@@ -1,7 +1,7 @@
 import Hypostructure.Graph.CurvatureTargetRank
 import Hypostructure.Graph.DeclaredRankQuotient
 import Hypostructure.Graph.SimultaneousTightVertexSuppression
-import Hypostructure.Graph.Strategy.InterfaceReplacement
+import Hypostructure.Graph.InterfaceReplacement
 import Hypostructure.Graph.SparsePortActivation
 import Hypostructure.Graph.ExcessPortFamily
 

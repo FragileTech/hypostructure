@@ -44,29 +44,29 @@ set_option maxHeartbeats 4000000 in
           letI : FinEnum object.Vertex := object.vertices
           letI : DecidableEq object.Vertex := object.vertices.decEq
           letI : DecidableRel object.graph.Adj := object.decideAdj
-          let cold := canonicalColdWindows data object
-          let cubic := cold.filter (AmbientCubicWindow data object)
-          let windows := coldCorridorWindows data object
-          let Eligible := ColdEligibleHalfEdge data object
-          let Cross := ColdCrossWindowHalfEdge data object
-          let Occurrence := ColdGermOccurrence data object
-          let Selected := ColdSelectedHalfEdge data object
-          change ColdFailureRoutingStatement data object at routing
-          let classified := coldRoutedClassified data object routing
+          let cold := canonicalColdWindows data.toParameters object
+          let cubic := cold.filter (AmbientCubicWindow data.toParameters object)
+          let windows := coldCorridorWindows data.toParameters object
+          let Eligible := ColdEligibleHalfEdge data.toParameters object
+          let Cross := ColdCrossWindowHalfEdge data.toParameters object
+          let Occurrence := ColdGermOccurrence data.toParameters object
+          let Selected := ColdSelectedHalfEdge data.toParameters object
+          change ColdFailureRoutingStatement data.toParameters object at routing
+          let classified := coldRoutedClassified data.toParameters object routing
           let classification := Classical.choose_spec routing.surviving.holds
           let state := classified.state
-          change ColdCorridorStateStatement data object at state
+          change ColdCorridorStateStatement data.toParameters object at state
           let outsideIncidence : Eligible →
               Graph.ColdCorridor.BoundedGerm data.coldSignature
                 (Graph.MinimumDegreeAtLeast data.threshold)
                 (Graph.HasCycleWithLength data.LengthOK) object :=
-            coldOccurrenceIncidence data object classified
-          let corridorAt := coldOccurrenceCorridorAt data object classified
+            coldOccurrenceIncidence data.toParameters object classified
+          let corridorAt := coldOccurrenceCorridorAt data.toParameters object classified
           let presentationAt :=
-            coldOccurrencePresentationAt data object classified
-          let indexAt := coldOccurrenceIndexAt data object classified
-          let stateFacts := coldOccurrenceStateFacts data object classified
-          let traceEnd := coldRoutedTraceEnd data object routing
+            coldOccurrencePresentationAt data.toParameters object classified
+          let indexAt := coldOccurrenceIndexAt data.toParameters object classified
+          let stateFacts := coldOccurrenceStateFacts data.toParameters object classified
+          let traceEnd := coldRoutedTraceEnd data.toParameters object routing
           let traceFacts := fun epsilon : Eligible => Classical.choose_spec
             (Graph.ColdCorridor.Corridor.FirstFailureGermWitness.exists_traceEnd
               (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
@@ -74,18 +74,18 @@ set_option maxHeartbeats 4000000 in
               (corridorAt epsilon) (presentationAt epsilon) (indexAt epsilon)
               (outsideIncidence epsilon) (stateFacts epsilon).2.2.2)
           let firstFailureGerm :=
-            ColdFirstFailureGermOccurrence data object classified
+            ColdFirstFailureGermOccurrence data.toParameters object classified
           let firstFailureHandoff :=
-            ColdFirstFailureHandoffOccurrence data object classified
+            ColdFirstFailureHandoffOccurrence data.toParameters object classified
           let stateOne := Classical.choose_spec state
           let stateTwo := Classical.choose_spec (Classical.choose_spec stateOne)
           let stateBundle := Classical.choose_spec (Classical.choose_spec stateTwo)
-          let crossIncidence := coldRoutedCrossIncidence data object routing
+          let crossIncidence := coldRoutedCrossIncidence data.toParameters object routing
           let crossFacts := Classical.choose_spec stateBundle.2.2.2.2.2
-          let incidence := coldRoutedOccurrenceIncidence data object routing
-          let candidates := coldRoutedCandidates data object routing
+          let incidence := coldRoutedOccurrenceIncidence data.toParameters object routing
+          let candidates := coldRoutedCandidates data.toParameters object routing
           have occurrenceStubInjective : Function.Injective
-              (@ColdGermOccurrence.stub data object) := by
+              (@ColdGermOccurrence.stub data.toParameters object) := by
             intro left right same
             cases left with
             | inl left =>
@@ -104,7 +104,7 @@ set_option maxHeartbeats 4000000 in
                     exact right.property.2 (targetSame.symm ▸ left.property.2)
                 | inr right =>
                     exact congrArg Sum.inr (Subtype.ext same)
-          change ColdExchangeBoundStatement data object ∧
+          change ColdExchangeBoundStatement data.toParameters object ∧
             Graph.ColdCorridor.ColdGermOccurrenceExtractionLocal data.coldSignature
               data.threshold (Graph.MinimumDegreeAtLeast data.threshold)
               (Graph.HasCycleWithLength data.LengthOK) object at extraction
@@ -133,7 +133,7 @@ set_option maxHeartbeats 4000000 in
                   (object.incidences.filter fun pair : object.Vertex × object.Vertex =>
                     pair.1 ∈ sourceRegion).card := by
                 exact Finset.card_le_card_of_injOn
-                  (@ColdGermOccurrence.stub data object)
+                  (@ColdGermOccurrence.stub data.toParameters object)
                   (by
                     intro occurrence occurrenceMem
                     have occurrenceCandidate :=
@@ -433,7 +433,7 @@ set_option maxHeartbeats 4000000 in
                     object.Vertex × object.Vertex =>
                   incidencePair.1 ∈ sourceRegion).card := by
               exact Finset.card_le_card_of_injOn
-                (@ColdGermOccurrence.stub data object)
+                (@ColdGermOccurrence.stub data.toParameters object)
                 (by
                   intro occurrence occurrenceMem
                   have sourceReach := (Finset.mem_filter.1 occurrenceMem).2
@@ -575,7 +575,7 @@ set_option maxHeartbeats 4000000 in
                   corridorLoss := by
             have cover := extracted.2.2
             omega
-          change ColdGermCandidatesStatement data object
+          change ColdGermCandidatesStatement data.toParameters object
           simp only [ColdGermCandidatesStatement]
           refine ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
             ?_⟩

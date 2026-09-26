@@ -39,9 +39,9 @@ contradiction belongs to node `[166]`.
       .cons (key := K .coldCanonicalReplacementSwap)
         ⟨by
           classical
-          change CanonicalNeutralConfigurationStatement data
+          change CanonicalNeutralConfigurationStatement data.toParameters
             inputs.current.object at canonical
-          change CanonicalReplacementSwapStatement data inputs.current.object
+          change CanonicalReplacementSwapStatement data.toParameters inputs.current.object
           obtain ⟨_markedGerm, _markedRepresentative, _markedConfiguration,
             _notRealized⟩ := canonical
           intro germ representative configuration different
@@ -113,8 +113,8 @@ contradiction belongs to node `[166]`.
       .cons (key := K .coldCanonicalReplacementTrivial)
         ⟨by
           classical
-          change CanonicalReplacementSwapStatement data inputs.current.object at swap
-          change CanonicalReplacementTrivialStatement data inputs.current.object
+          change CanonicalReplacementSwapStatement data.toParameters inputs.current.object at swap
+          change CanonicalReplacementTrivialStatement data.toParameters inputs.current.object
           intro germ representative configuration
           by_contra different
           let swapped := Graph.glue representative.toPiece germ.atom.outside
@@ -122,9 +122,9 @@ contradiction belongs to node `[166]`.
               _precedes, refinedDecrease⟩ :=
             swap germ representative configuration different
           have smaller :
-              (refinedProgress BranchState Presentation presentation data).Smaller
+              (refinedProgress BranchState Presentation presentation data.toParameters).Smaller
                 swapped inputs.current.object :=
-            (refinedProgress_smaller_iff BranchState Presentation presentation data).2
+            (refinedProgress_smaller_iff BranchState Presentation presentation data.toParameters).2
               refinedDecrease
           exact avoids
             (selected.2.refinedMinimal swapped smaller baseline)⟩
@@ -154,7 +154,7 @@ noncomputable def canonicalSwapSizeDichotomy
           (Graph.MinimumDegreeAtLeast data.threshold)
           (Graph.HasCycleWithLength data.LengthOK) current.object,
         germ.Neutral ∧
-          (germCanonicalRepresentative data germ).size < germ.piece.internalVertexCount then
+          (germCanonicalRepresentative data.toParameters germ).size < germ.piece.internalVertexCount then
       .inl ⟨smaller⟩
     else
       .inr ⟨by

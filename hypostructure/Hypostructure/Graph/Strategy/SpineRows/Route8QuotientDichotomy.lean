@@ -61,7 +61,7 @@ noncomputable def route8QuotientDichotomy
     `Hypostructure.Graph.Strategy.Spine.route8QuotientDichotomy
     (by
       classical
-      exact if free : Route8QuotientFreeStatement data current.object then
+      exact if free : Route8QuotientFreeStatement data.toParameters current.object then
         .inl ⟨free⟩
       else
         .inr ⟨free⟩)

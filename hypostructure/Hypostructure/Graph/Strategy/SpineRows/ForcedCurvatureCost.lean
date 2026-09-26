@@ -59,14 +59,14 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           -- `W₂(R) ≤ r_Ω(R)`, from the exact full-rank ledger fact.
           have supply :
               remainderWedgeSupply inputs.current.object packing ≤
-                remainderCurvatureTargetRank data inputs.current.object packing :=
+                remainderCurvatureTargetRank data.toParameters inputs.current.object packing :=
             rankEq.ge
           calc data.curvatureCost *
                 (data.threshold *
                     (inputs.current.object.remainderSupport packing).card +
                   2 * (2 * (data.windowOrder - 1) * packing.card))
               ≤ data.curvatureCost *
-                  (remainderCurvatureTargetRank data inputs.current.object
+                  (remainderCurvatureTargetRank data.toParameters inputs.current.object
                         packing +
                     2 * (data.threshold * (data.windowOrder * packing.card) +
                       data.surplusThreshold inputs.current.object.vertexCount)) :=

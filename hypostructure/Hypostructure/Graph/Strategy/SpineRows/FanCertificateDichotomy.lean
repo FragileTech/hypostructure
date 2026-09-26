@@ -84,7 +84,7 @@ noncomputable def fanCertificateDichotomy
           obtain ⟨centre, member, unmarked⟩ := marked
           exact ⟨.inr ⟨.inl ⟨packing, valid, maximal, component, present, centres,
             assigned, centre, member,
-            TypeBAssignedCentres.high data current.object assigned centre member,
+            TypeBAssignedCentres.high data.toParameters current.object assigned centre member,
             unmarked⟩⟩⟩
       · obtain ⟨envelopes, cap⟩ := absorbed
         by_cases marked :
@@ -92,7 +92,7 @@ noncomputable def fanCertificateDichotomy
                   (Graph.MinimumDegreeAtLeast data.threshold)
                   (Graph.HasCycleWithLength data.LengthOK) current.object)
                 (centre : current.object.Vertex),
-              AbsorbedGermFanEnvelopeWitness data current.object germ centre →
+              AbsorbedGermFanEnvelopeWitness data.toParameters current.object germ centre →
                 Nonempty (Graph.FanCertificateLabelling current.object
                   data.windowOrder centre)
         · exact ⟨.inl ⟨Or.inr (Or.inl ⟨envelopes,

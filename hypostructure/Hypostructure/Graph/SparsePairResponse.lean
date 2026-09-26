@@ -1,7 +1,7 @@
 import Hypostructure.Graph.CanonicalSupportSelection
 import Hypostructure.Graph.DeclaredCoordinateSignature
 import Hypostructure.Graph.SurplusBlockers
-import Hypostructure.Graph.Strategy.InterfaceReplacement
+import Hypostructure.Graph.InterfaceReplacement
 
 /-!
 # `def:sparse-pair-response`: the pair support `X_π`, its boundary and `r_π`

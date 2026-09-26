@@ -52,18 +52,18 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           ⟨by
             intro packing valid cardinality _large
             have canonicalCard :
-                (canonicalWindowPacking data inputs.current.object).card =
+                (canonicalWindowPacking data.toParameters inputs.current.object).card =
                   inputs.current.object.windowPackingNumber data.windowOrder :=
               (Classical.choose_spec
                 (inputs.current.object.exists_windowPacking_card_eq data.windowOrder)).2
             change (data.threshold * data.dischargeScale + 1) *
-                (coldExternalStubCount data *
-                  (canonicalWindowPacking data inputs.current.object).card +
+                (coldExternalStubCount data.toParameters *
+                  (canonicalWindowPacking data.toParameters inputs.current.object).card +
                   data.surplusThreshold inputs.current.object.vertexCount) +
                 data.threshold * (data.bridgeMassFactor * data.dischargeScale *
                   data.surplusThreshold inputs.current.object.vertexCount) <
               data.threshold * (inputs.current.object.vertexCount -
-                data.windowOrder * (canonicalWindowPacking data inputs.current.object).card)
+                data.windowOrder * (canonicalWindowPacking data.toParameters inputs.current.object).card)
               at below
             rw [canonicalCard, ← cardinality] at below
             have cardinality' :
@@ -75,7 +75,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                 data.windowOrder * packing.card =
                 (inputs.current.object.remainderSupport packing).card := by omega
             have three := data.threshold_eq_three
-            simp only [coldExternalStubCount, Data.surplusThreshold] at below ⊢
+            simp only [coldExternalStubCount, Parameters.surplusThreshold] at below ⊢
             rw [three, remEq] at below
             rw [three]
             obtain ⟨o, ho⟩ : ∃ o, data.windowOrder = o + 1 :=

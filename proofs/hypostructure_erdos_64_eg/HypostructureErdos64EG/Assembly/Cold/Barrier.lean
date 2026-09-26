@@ -40,7 +40,7 @@ noncomputable def selectedBarrierDichotomy
     (if overflow : Graph.skeletonBudget selected.object <
         2 ^ (spineData.{u}.windowRate *
           spineData.{u}.separatedScaleCount selected.object.vertexCount *
-          (canonicalHotWindows spineData.{u} selected.object).card) then
+          (canonicalHotWindows spineData.{u}.toParameters selected.object).card) then
       .inr ⟨overflow⟩
     else
       .inl ⟨Nat.le_of_not_lt overflow⟩)

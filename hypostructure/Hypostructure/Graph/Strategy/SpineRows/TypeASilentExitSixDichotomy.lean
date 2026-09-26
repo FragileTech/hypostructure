@@ -49,7 +49,7 @@ noncomputable def typeASilentExitSixDichotomy
       let piece := current.object.pieceSupport
         (current.object.remainderSupport packing) component
       by_cases delocalizes :
-          ExitSixDelocalizes data current.object piece receiver peeled
+          ExitSixDelocalizes data.toParameters current.object piece receiver peeled
       · exact ⟨.inl ⟨⟨packing, canonical, valid, maximal, component, present,
           negative, zero, receiver, isReceiver, peeled, peeledSubset, saturated,
           noExitFour, noCompression, delocalizes⟩⟩⟩

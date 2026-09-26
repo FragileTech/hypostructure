@@ -56,7 +56,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
             exact inside (by simpa [piece, coreEq] using member)
           have normalized := (inputs.get (K .remainderNormalized)).down
           have windowFree :
-              handoffWindowFree data inputs.current.object envelope.core := by
+              handoffWindowFree data.toParameters inputs.current.object envelope.core := by
             constructor
             · intro window subset windowInduces
               exact (normalized packing valid maximal window
@@ -66,8 +66,8 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                 (subset.trans coreInside)).2
           have admissible :
               Graph.DecoratedHandoff.Admissible inputs.current.object
-                data.LengthOK (handoffUncompressible data inputs.current.object)
-                (handoffWindowFree data inputs.current.object) envelope :=
+                data.LengthOK (handoffUncompressible data.toParameters inputs.current.object)
+                (handoffWindowFree data.toParameters inputs.current.object) envelope :=
             { dyadicSafe := (inputs.get (K .selection)).down.1
               coreWindowFree := windowFree
               uncompressible := (inputs.get (K .uncompressible)).down

@@ -46,7 +46,7 @@ noncomputable def route8RateDichotomy
         (factSystem BranchState Presentation presentation data)
         current known previous (K .selection)).down
       exact if rate : Graph.Route8Census.Rate current.object
-          (canonicalWindowPacking data current.object) data.threshold data.dischargeScale
+          (canonicalWindowPacking data.toParameters current.object) data.threshold data.dischargeScale
           (data.bridgeMassFactor * data.dischargeScale *
             data.surplusThreshold current.object.vertexCount) then
         .inl ⟨rate⟩

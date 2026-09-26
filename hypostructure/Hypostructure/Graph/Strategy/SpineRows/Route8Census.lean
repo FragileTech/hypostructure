@@ -47,11 +47,11 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           classical
           letI : DecidableEq inputs.current.object.Vertex :=
             inputs.current.object.vertices.decEq
-          let packing := canonicalWindowPacking data inputs.current.object
+          let packing := canonicalWindowPacking data.toParameters inputs.current.object
           let support := inputs.current.object.remainderSupport packing
           let routeEight :=
             (inputs.current.object.canonicalPieces support).filter
-              (Route8Survives data inputs.current.object packing)
+              (Route8Survives data.toParameters inputs.current.object packing)
           obtain ⟨basinCount, basinCountEq, scaledDeficit,
             scaledDeficitEq, burdenBound⟩ := burden
           have canonical : routeEight ⊆

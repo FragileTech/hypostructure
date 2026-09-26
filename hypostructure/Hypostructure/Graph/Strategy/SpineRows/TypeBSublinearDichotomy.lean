@@ -49,7 +49,7 @@ noncomputable def typeBSublinearDichotomy
     `Hypostructure.Graph.Strategy.Spine.typeBSublinearDichotomy
     (by
       classical
-      exact if hypotheses : TypeBSublinearHypotheses data current.object then
+      exact if hypotheses : TypeBSublinearHypotheses data.toParameters current.object then
         .inl ⟨hypotheses⟩
       else
         .inr ⟨hypotheses⟩)

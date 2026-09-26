@@ -49,7 +49,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
         (show Value BranchState Presentation presentation data
             .triangularFanCore inputs.current from
           ⟨by
-            change TriangularFanCoreStatement data inputs.current.object
+            change TriangularFanCoreStatement data.toParameters inputs.current.object
             intro centre centreHeavy ports portsNonempty triangular
             classical
             let shoulders : inputs.current.object.Vertex →

@@ -149,13 +149,13 @@ noncomputable def selectedTypeBNearCubicCertificateAfterPortRouting
       · obtain ⟨_packing, _valid, _maximal, canonicalPiece,
           _centres, assigned, nonnegative⟩ := canonical
         have negative : selected.object.NegativeNetCharge
-            canonicalPiece.vertices spineData.threshold
-            spineData.dischargeScale := by
+            canonicalPiece.vertices spineData.{u}.threshold
+            spineData.{u}.dischargeScale := by
           rcases assigned with ⟨negative, _, _⟩ | ⟨negative, _, _⟩ <;>
             exact negative
         exact ((selected.object.not_negativeNetCharge_iff
-          canonicalPiece.vertices spineData.threshold
-            spineData.dischargeScale).mpr nonnegative negative).elim
+          canonicalPiece.vertices spineData.{u}.threshold
+            spineData.{u}.dischargeScale).mpr nonnegative negative).elim
       · exact selectedTypeBRoute8Continuation paid
           (bridgeMassFresh := by key_fresh)
           (bridgeSublinearFresh := by key_fresh)

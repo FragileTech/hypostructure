@@ -163,11 +163,11 @@ noncomputable def Assembly.Internal.selectedTypeBCertificateBoundaryAfterPortRou
                   valid directCycle)
             · obtain ⟨_marked, _germ, _centre, _witness, directCycle⟩ :=
                 absorbed
-              have valid : selected.object.IsWindowPacking spineData.windowOrder
-                  (canonicalWindowPacking spineData selected.object) :=
+              have valid : selected.object.IsWindowPacking spineData.{u}.windowOrder
+                  (canonicalWindowPacking spineData.{u}.toParameters selected.object) :=
                 (Classical.choose_spec
                   (selected.object.exists_windowPacking_card_eq
-                    spineData.windowOrder)).1
+                    spineData.{u}.windowOrder)).1
               exact (cycleHistory.get (K .selection)).down.1
                 (Graph.TypeBDirectCycle.hasCycleWithLength_of_directCycleConfiguration
                   valid directCycle)

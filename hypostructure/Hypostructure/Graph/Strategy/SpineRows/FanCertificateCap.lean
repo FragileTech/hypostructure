@@ -62,7 +62,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
         (show Value BranchState Presentation presentation data
             .fanCertificateCap inputs.current from
           ⟨by
-            change TypeBFanCertificateCapStatement data inputs.current.object
+            change TypeBFanCertificateCapStatement data.toParameters inputs.current.object
             unfold TypeBFanCertificateCapStatement
             rcases entry with canonical | absorbed | sameToken
             · apply Or.inl

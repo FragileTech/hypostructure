@@ -45,7 +45,7 @@ response support `X_π`. -/
               (inputs.get (K .freePairCodeUnrealized)).down
             let realization := Classical.choice realizationExists
             let firstFailure := Classical.choice firstFailureExists
-            exact ⟨PairOverlapFirstFailure.of data inputs.current.object active
+            exact ⟨PairOverlapFirstFailure.of data.toParameters inputs.current.object active
               Coordinate family coordinateSupport realization
               (inputs.current.object.portPairSchedule data.threshold)
               pairSetNonempty (by intro pair member; exact member)
@@ -152,7 +152,7 @@ response support `X_π`. -/
                     obstruction, coordinate]
                 exact (recorded.exists_blocks_iff_blockers_nonempty pair).mp
                   ⟨.targetResponse, recorded.blocks_targetResponse member⟩
-            exact ⟨PairOverlapFirstFailure.of data inputs.current.object active
+            exact ⟨PairOverlapFirstFailure.of data.toParameters inputs.current.object active
               Coordinate family coordinateSupport realization pairSet
               pairSetNonempty (by
                 intro pair member

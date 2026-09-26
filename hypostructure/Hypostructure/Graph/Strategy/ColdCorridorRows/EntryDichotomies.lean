@@ -29,7 +29,7 @@ noncomputable def coldRoute8Dichotomy
   let _split := (previous.get (K .hotColdPartition)).down
   exact Decision.run previous (K .coldRoute8Below) (K .coldRoute8AtOrAbove)
     `Hypostructure.Graph.Strategy.Spine.coldRoute8Dichotomy
-    (if below : ColdRoute8BelowStatement data current.object then
+    (if below : ColdRoute8BelowStatement data.toParameters current.object then
       .inl ⟨below⟩
     else
       .inr ⟨below⟩)
@@ -49,7 +49,7 @@ noncomputable def coldHotEntropyDichotomy
   let _split := (previous.get (K .hotColdPartition)).down
   exact Decision.run previous (K .coldHotEntropyOverflow) (K .coldHotEntropyCap)
     `Hypostructure.Graph.Strategy.Spine.coldHotEntropyDichotomy
-    (if overflow : ColdHotEntropyOverflowStatement data current.object then
+    (if overflow : ColdHotEntropyOverflowStatement data.toParameters current.object then
       .inl ⟨overflow⟩
     else
       .inr ⟨Nat.le_of_not_lt overflow⟩)

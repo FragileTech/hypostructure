@@ -46,7 +46,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       let _fanCore := (inputs.get (K .triangularFanCore)).down
       let _firstLanding := (inputs.get (K .triangularFirstLanding)).down
       .cons (key := K .triangularCrossShoulder) ⟨by
-        change TriangularCrossShoulderStatement data inputs.current.object
+        change TriangularCrossShoulderStatement data.toParameters inputs.current.object
         classical
         intro centre centreHeavy ports portsNonempty portsSubset shoulders
           crossTriangular shoulderSpec crossSpec first firstMem second secondMem

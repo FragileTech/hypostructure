@@ -69,7 +69,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                 obstruction
                 (by
                   simpa [Graph.TypeAB.ContextuallyDyadicSafe,
-                    Data.typeABPresentation] using avoids)
+                    Parameters.typeABPresentation] using avoids)
                 (fun hub hubMem => normalForms hub
                   (obstruction.demands_high hub hubMem))
                 directFree

@@ -48,7 +48,7 @@ noncomputable def typeBFanDegreeDichotomy
       classical
       apply Classical.choice
       have entry := (ExactLedger.get previous (K .typeBFanEntry)).down
-      change TypeBFanEntryStatement data current.object at entry
+      change TypeBFanEntryStatement data.toParameters current.object at entry
       rcases entry with canonical | absorbed | sameToken
       · obtain ⟨packing, valid, maximal, component, present, centres, assigned,
           _nonempty, high⟩ := canonical
@@ -69,7 +69,7 @@ noncomputable def typeBFanDegreeDichotomy
                   (Graph.MinimumDegreeAtLeast data.threshold)
                   (Graph.HasCycleWithLength data.LengthOK) current.object)
                 (centre : current.object.Vertex),
-              AbsorbedGermFanEnvelopeWitness data current.object germ centre ∧
+              AbsorbedGermFanEnvelopeWitness data.toParameters current.object germ centre ∧
                 data.threshold + 1 < current.object.degree centre
         · exact ⟨.inl ⟨Or.inr (Or.inl ⟨absorbed, heavy⟩)⟩⟩
         · refine ⟨.inr ⟨Or.inr (Or.inl ⟨absorbed, ?_⟩)⟩⟩

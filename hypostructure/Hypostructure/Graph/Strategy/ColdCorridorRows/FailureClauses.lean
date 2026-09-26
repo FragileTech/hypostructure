@@ -18,7 +18,7 @@ variable {data : Data.{u}}
 /-- The concrete sparse-exit route supplied by (F2). -/
 theorem coldFailureDefectRoutes
     (data : Data.{u}) (object : Graph.FiniteObject.{u}) :
-    ColdFailureDefectRoutesStatement data object := by
+    ColdFailureDefectRoutesStatement data.toParameters object := by
       intro windows component corridor presentation index left right
       intro failure
       classical
@@ -74,7 +74,7 @@ theorem coldFailureDefectRoutes
 /-- The F2-free context-equivalence conclusion on the same two prefixes. -/
 theorem coldFailureDefectEquivalent
     (data : Data.{u}) (object : Graph.FiniteObject.{u}) :
-    ColdFailureDefectEquivalentStatement data object := by
+    ColdFailureDefectEquivalentStatement data.toParameters object := by
       intro windows component corridor presentation index left right
         excluded same
       classical
@@ -86,7 +86,7 @@ theorem coldFailureDefectEquivalent
 before it is packaged in the dependent exact-ledger output. -/
 theorem coldFailureDefectFact
     (data : Data.{u}) (object : Graph.FiniteObject.{u}) :
-    ColdFailureDefectStatement data object :=
+    ColdFailureDefectStatement data.toParameters object :=
   { routes := coldFailureDefectRoutes data object
     equivalent := coldFailureDefectEquivalent data object }
 

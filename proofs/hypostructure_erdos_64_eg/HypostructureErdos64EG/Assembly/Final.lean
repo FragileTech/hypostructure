@@ -82,12 +82,12 @@ theorem node20a_nearCubicTargetDefect_disjoint
     (strict : Node20aOutcome selected)
     (near : NearCubicTargetDefectOutcome selected) : False := by
   have above :
-      spineData.surplusThreshold selected.object.vertexCount <
-        selected.object.degreeSurplus spineData.threshold :=
+      spineData.{u}.surplusThreshold selected.object.vertexCount <
+        selected.object.degreeSurplus spineData.{u}.threshold :=
     strict.2.2.2
   have atOrBelow :
-      selected.object.degreeSurplus spineData.threshold ≤
-        spineData.surplusThreshold selected.object.vertexCount :=
+      selected.object.degreeSurplus spineData.{u}.threshold ≤
+        spineData.{u}.surplusThreshold selected.object.vertexCount :=
     near.2.2
   exact Nat.not_lt_of_ge atOrBelow above
 

@@ -58,7 +58,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
             let object := inputs.current.object
             change 2 ^ (data.windowRate *
                 data.separatedScaleCount object.vertexCount *
-                (canonicalHotWindows data object).card) ≤
+                (canonicalHotWindows data.toParameters object).card) ≤
               Graph.skeletonBudget object
             have split := (inputs.get (K .hotColdPartition)).down
             have dominates := (inputs.get (K .skeletonDominates)).down
@@ -71,9 +71,9 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
               _packageCard, _packagesDisjoint, _familyCard, rateLe, _⟩ := package
             have exponentLe :
                 data.windowRate * data.separatedScaleCount object.vertexCount *
-                    (canonicalHotWindows data object).card ≤
-                  windowPackageBits data object *
-                    (canonicalHotWindows data object).card :=
+                    (canonicalHotWindows data.toParameters object).card ≤
+                  windowPackageBits data.toParameters object *
+                    (canonicalHotWindows data.toParameters object).card :=
               Nat.mul_le_mul_right _ rateLe
             rcases retained with
               ⟨State, stateOf, packageStates, _retainedCode⟩ |

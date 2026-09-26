@@ -51,23 +51,23 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           ⟨by
             classical
             let object := inputs.current.object
-            let packing := canonicalWindowPacking data object
+            let packing := canonicalWindowPacking data.toParameters object
             have packingFacts :
                 object.IsWindowPacking data.windowOrder packing ∧
                   packing.card = object.windowPackingNumber data.windowOrder :=
               Classical.choose_spec
                 (object.exists_windowPacking_card_eq data.windowOrder)
-            let hot := canonicalHotWindows data object
-            let cold := canonicalColdWindows data object
+            let hot := canonicalHotWindows data.toParameters object
+            let cold := canonicalColdWindows data.toParameters object
             have hotFacts :
                 hot ⊆ packing ∧
-                  (WindowFamilyRealized data object hot ∨
-                    (hot = ∅ ∧ ¬ WindowFamilyRealized data object ∅)) ∧
+                  (WindowFamilyRealized data.toParameters object hot ∨
+                    (hot = ∅ ∧ ¬ WindowFamilyRealized data.toParameters object ∅)) ∧
                   ∀ other : Finset (Finset object.Vertex), other ⊆ packing →
-                    WindowFamilyRealized data object other →
+                    WindowFamilyRealized data.toParameters object other →
                       other.card ≤ hot.card :=
-              Classical.choose_spec (exists_maximal_windowFamilyRealized data object)
-            show IsHotColdWindowPartition data object packing hot cold
+              Classical.choose_spec (exists_maximal_windowFamilyRealized data.toParameters object)
+            show IsHotColdWindowPartition data.toParameters object packing hot cold
             refine ⟨packingFacts.1, packingFacts.2, ?_, hotFacts, ?_, ?_, ?_⟩
             · intro support window
               exact object.exists_mem_not_disjoint_of_card_eq

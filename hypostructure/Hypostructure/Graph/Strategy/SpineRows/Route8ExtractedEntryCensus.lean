@@ -68,8 +68,8 @@ set_option maxHeartbeats 1600000 in
           rcases index with ⟨piece, receiver, load⟩
           have indexSpec :
               (piece, receiver, load) ∈
-                  route8ExtractedEntries data inputs.current.object ↔
-                ∃ core ∈ route8ExtractedCores data inputs.current.object,
+                  route8ExtractedEntries data.toParameters inputs.current.object ↔
+                ∃ core ∈ route8ExtractedCores data.toParameters inputs.current.object,
                   piece = core ∧
                     receiver ∈ inputs.current.object.receivers core
                       data.threshold ∧

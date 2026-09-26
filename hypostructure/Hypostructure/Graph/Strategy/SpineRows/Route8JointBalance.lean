@@ -55,11 +55,11 @@ set_option maxHeartbeats 2000000 in
           classical
           letI : DecidableEq inputs.current.object.Vertex :=
             inputs.current.object.vertices.decEq
-          let packing := canonicalWindowPacking data inputs.current.object
+          let packing := canonicalWindowPacking data.toParameters inputs.current.object
           let support := inputs.current.object.remainderSupport packing
-          let entries := route8UnifiedEntries data inputs.current.object
-          let components := route8UnifiedComponents data inputs.current.object
-          let core := route8DemandCore data inputs.current.object
+          let entries := route8UnifiedEntries data.toParameters inputs.current.object
+          let components := route8UnifiedComponents data.toParameters inputs.current.object
+          let core := route8DemandCore data.toParameters inputs.current.object
           let supply := Graph.Route8Census.supply inputs.current.object packing
           let bridgeAllowance := data.bridgeMassFactor * data.dischargeScale *
             data.surplusThreshold inputs.current.object.vertexCount
@@ -69,7 +69,7 @@ set_option maxHeartbeats 2000000 in
           have visibleEntries : ∀ index ∈ entries,
               index.2.2 ∈ Graph.VisibleEntry.visibleLoads
                 inputs.current.object index.1 data.threshold index.2.1 :=
-            (show Route8UnifiedVisibleResidualStatement data
+            (show Route8UnifiedVisibleResidualStatement data.toParameters
                 inputs.current.object from visibleResidual.down).1
           have allSaturatedVisible :
               ∀ component ∈ components,
@@ -203,7 +203,7 @@ set_option maxHeartbeats 2000000 in
                 fun paid => loadSilent (payableVisible paid)
               exact loadSilent (excessVisible load
                 (Finset.mem_sdiff.mpr ⟨loadMem, loadUnpaid⟩))
-          have residualFact : Route8PeeledDemandResidualStatement data
+          have residualFact : Route8PeeledDemandResidualStatement data.toParameters
               inputs.current.object := residual.down
           obtain ⟨stage, ledger, absorption, _blockers⟩ := residualFact
           obtain ⟨chain, chainValid, accounting, rateFailed⟩ := stage
@@ -300,7 +300,7 @@ set_option maxHeartbeats 2000000 in
           have entriesSplit : entries.card = deficit + unused := by
             dsimp only [unused]
             omega
-          have ambientRaw : Route8UnifiedDeficitFact data
+          have ambientRaw : Route8UnifiedDeficitFact data.toParameters
               inputs.current.object := unifiedDeficit.down
           have ambientBalance : support.card ≤
               deficit + data.dischargeScale * supply.card +
@@ -354,7 +354,7 @@ set_option maxHeartbeats 2000000 in
             exact silentMem.2
               (allSaturatedVisible component componentMem receiver receiverMem
                 routed)
-          show Route8JointBalanceStatement data inputs.current.object
+          show Route8JointBalanceStatement data.toParameters inputs.current.object
           unfold Route8JointBalanceStatement
           refine ⟨overload.down, allSaturatedVisible, noSilentTerminal,
             chain, ?_, ?_,

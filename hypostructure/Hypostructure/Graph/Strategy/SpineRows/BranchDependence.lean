@@ -56,7 +56,7 @@ appends exactly that fact before node `[36]` tests the same certificate. -/
               intro coordinate coordinateMember
               exact declared.carries coordinate coordinateMember
             have certified :
-                DeterminationCertificate data inputs.current.object packing test
+                DeterminationCertificate data.toParameters inputs.current.object packing test
                   determiners declared supportData :=
               ⟨testMember, determinersSubset, finite, proper, functional,
                 reducing, determines, rfl, supportDataCarried⟩
@@ -68,17 +68,17 @@ appends exactly that fact before node `[36]` tests the same certificate. -/
                   ∃ basis candidate,
                     candidate.support = candidateSupport ∧
                       ∃ candidateSupportData,
-                        DeterminationCertificate data inputs.current.object
+                        DeterminationCertificate data.toParameters inputs.current.object
                           packing test basis candidate candidateSupportData
             change ∃ selectedDeterminers selectedQuotient selectedSupportData,
-              DeterminationCertificate data inputs.current.object packing test
+              DeterminationCertificate data.toParameters inputs.current.object packing test
                     selectedDeterminers selectedQuotient selectedSupportData ∧
                 ∀ smaller : Finset inputs.current.object.Vertex,
                   smaller ⊂ selectedQuotient.support →
-                    ∀ narrower : remainderQuotient data inputs.current.object packing,
+                    ∀ narrower : remainderQuotient data.toParameters inputs.current.object packing,
                       narrower.support = smaller →
                         ∀ narrowerDeterminers narrowerSupportData,
-                          ¬ DeterminationCertificate data inputs.current.object
+                          ¬ DeterminationCertificate data.toParameters inputs.current.object
                             packing test narrowerDeterminers narrower
                               narrowerSupportData
             have inhabited : declared.support ∈ Supports := by

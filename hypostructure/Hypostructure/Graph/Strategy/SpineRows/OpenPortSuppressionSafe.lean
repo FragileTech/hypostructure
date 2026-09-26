@@ -44,7 +44,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .openPortSuppressionSafe) ⟨by
-        change OpenPortSuppressionSafeStatement data inputs.current.object
+        change OpenPortSuppressionSafeStatement data.toParameters inputs.current.object
         classical
         intro family highCentres paperCapacity vertex
         have suppressionDefinition :=

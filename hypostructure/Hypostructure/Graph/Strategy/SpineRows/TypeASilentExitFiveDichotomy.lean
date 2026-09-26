@@ -48,7 +48,7 @@ noncomputable def typeASilentExitFiveDichotomy
           current known previous (K .typeASilentExitFourFree)).down
       let piece := current.object.pieceSupport
         (current.object.remainderSupport packing) component
-      by_cases compression : ExitFiveAt data current.object piece receiver peeled
+      by_cases compression : ExitFiveAt data.toParameters current.object piece receiver peeled
       · exact ⟨.inl ⟨⟨packing, canonical, valid, maximal, component, present,
           negative, zero, receiver, isReceiver, peeled, peeledSubset, saturated,
           compression⟩⟩⟩

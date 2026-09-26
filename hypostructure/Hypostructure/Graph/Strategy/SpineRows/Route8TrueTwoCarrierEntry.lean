@@ -55,22 +55,22 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           have indexSpec :
               (piece, receiver, load) ∈
                   Graph.Route8Census.entriesOfComponents inputs.current.object
-                    (canonicalWindowPacking data inputs.current.object)
+                    (canonicalWindowPacking data.toParameters inputs.current.object)
                     ((inputs.current.object.canonicalPieces
                       (inputs.current.object.remainderSupport
-                        (canonicalWindowPacking data inputs.current.object))).filter
-                      (Route8Survives data inputs.current.object
-                        (canonicalWindowPacking data inputs.current.object)))
+                        (canonicalWindowPacking data.toParameters inputs.current.object))).filter
+                      (Route8Survives data.toParameters inputs.current.object
+                        (canonicalWindowPacking data.toParameters inputs.current.object)))
                     data.threshold data.dischargeScale ↔
                 ∃ component ∈
                     ((inputs.current.object.canonicalPieces
                       (inputs.current.object.remainderSupport
-                        (canonicalWindowPacking data inputs.current.object))).filter
-                      (Route8Survives data inputs.current.object
-                        (canonicalWindowPacking data inputs.current.object))),
+                        (canonicalWindowPacking data.toParameters inputs.current.object))).filter
+                      (Route8Survives data.toParameters inputs.current.object
+                        (canonicalWindowPacking data.toParameters inputs.current.object))),
                   piece = inputs.current.object.pieceSupport
                     (inputs.current.object.remainderSupport
-                      (canonicalWindowPacking data inputs.current.object)) component ∧
+                      (canonicalWindowPacking data.toParameters inputs.current.object)) component ∧
                     receiver ∈ Graph.VisibleEntry.saturatedReceivers
                       inputs.current.object piece data.threshold data.dischargeScale ∧
                     load ∈ Graph.VisibleEntry.excessBasin inputs.current.object piece
@@ -89,14 +89,14 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
             indexSpec.mp indexMem
           change piece = inputs.current.object.pieceSupport
             (inputs.current.object.remainderSupport
-              (canonicalWindowPacking data inputs.current.object)) component at pieceEq
+              (canonicalWindowPacking data.toParameters inputs.current.object)) component at pieceEq
           subst piece
           have survives := (Finset.mem_filter.mp componentMem).2
           have componentFacts := trueResidual.down.2 component componentMem
           have receiverFacts := componentFacts.2 receiver receiverMem
           have exactDegree : ∀ vertex ∈ inputs.current.object.pieceSupport
               (inputs.current.object.remainderSupport
-                (canonicalWindowPacking data inputs.current.object)) component,
+                (canonicalWindowPacking data.toParameters inputs.current.object)) component,
               inputs.current.object.degree vertex = data.threshold := by
             intro vertex vertexMem
             have nonneg := le_trans inputs.current.baseline
@@ -113,7 +113,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
               inputs.current.object
               (inputs.current.object.pieceSupport
                 (inputs.current.object.remainderSupport
-                  (canonicalWindowPacking data inputs.current.object)) component)
+                  (canonicalWindowPacking data.toParameters inputs.current.object)) component)
               data.threshold data.dischargeScale receiver := by
             rw [Graph.VisibleEntry.silentExcess_eq_excessBasin
               inputs.current.object _ data.threshold data.dischargeScale

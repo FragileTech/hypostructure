@@ -48,11 +48,11 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           obtain ⟨index, indexMem, twoCarrier, deletionWitnesses⟩ :=
             witnessPackage.down
           rcases index with ⟨piece, receiver, load⟩
-          let packing := canonicalWindowPacking data inputs.current.object
+          let packing := canonicalWindowPacking data.toParameters inputs.current.object
           let support := inputs.current.object.remainderSupport packing
           let routeEight :=
             (inputs.current.object.canonicalPieces support).filter
-              (Route8Survives data inputs.current.object packing)
+              (Route8Survives data.toParameters inputs.current.object packing)
           have indexSpec :
               (piece, receiver, load) ∈
                   Graph.Route8Census.entriesOfComponents inputs.current.object
@@ -77,7 +77,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
             indexSpec.mp indexMem
           change piece = inputs.current.object.pieceSupport
             (inputs.current.object.remainderSupport
-              (canonicalWindowPacking data inputs.current.object)) component at pieceEq
+              (canonicalWindowPacking data.toParameters inputs.current.object)) component at pieceEq
           subst piece
           let piece := inputs.current.object.pieceSupport support component
           let index : Graph.Route8Census.Index inputs.current.object :=

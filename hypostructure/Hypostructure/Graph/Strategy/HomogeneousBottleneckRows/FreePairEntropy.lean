@@ -131,7 +131,7 @@ noncomputable def freePairEntropyDichotomy
                 rw [pow_add, Nat.mul_assoc]
         exact Nat.le_of_mul_le_mul_left chain
           (Nat.two_pow_pos family.card)
-      let result : FreePairEntropySandwichStatement data current.object :=
+      let result : FreePairEntropySandwichStatement data.toParameters current.object :=
         ⟨Coordinate, family, coordinateSupport, survives, realization, demand,
           deficitBound, count, sandwich⟩
       .inl ⟨result⟩
@@ -157,7 +157,7 @@ noncomputable def freePairEntropyDichotomy
       let firstWitness :
           FirstFailedPairExtension current.object family pairs :=
         firstFailedPairExtensionOf baselineRealization countFailureOnSchedule
-      let result : FreePairCodeUnrealizedStatement data current.object :=
+      let result : FreePairCodeUnrealizedStatement data.toParameters current.object :=
         ⟨active, Coordinate, family, coordinateSupport, pairBlockerFree,
           survives, realization, demand, deficitBound, scheduleCard,
           countFailureOnSchedule, pairsNonempty, ⟨firstWitness⟩⟩

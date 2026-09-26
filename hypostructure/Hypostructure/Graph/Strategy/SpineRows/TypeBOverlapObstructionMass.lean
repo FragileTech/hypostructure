@@ -46,7 +46,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           exact Or.inl ⟨packing, valid, maximal, canonicalPiece, centres, assigned,
             ⟨obstruction⟩, fun centre member envelope =>
               Graph.TypeBEnvelopeCharge.envelopeNegativePart_le envelope
-                (TypeBAssignedCentres.high data inputs.current.object assigned
+                (TypeBAssignedCentres.high data.toParameters inputs.current.object assigned
                   centre member)
                 data.bridgeMassSlack⟩
         · obtain ⟨directFree, germ, centre, witness, obstruction⟩ := absorbed

@@ -406,7 +406,7 @@ set_option maxHeartbeats 6000000 in
             · exact (Finset.mem_sdiff.mp outsideT).2
 
           have allVisible :
-              ∀ index ∈ route8UnifiedEntries data inputs.current.object,
+              ∀ index ∈ route8UnifiedEntries data.toParameters inputs.current.object,
                 index.2.2 ∈ Graph.VisibleEntry.visibleLoads
                   inputs.current.object index.1 data.threshold index.2.1 := by
             intro index indexMem
@@ -424,13 +424,13 @@ set_option maxHeartbeats 6000000 in
             have surplusZero : inputs.current.object.ambientSurplus
                 (inputs.current.object.pieceSupport
                   (inputs.current.object.remainderSupport
-                    (canonicalWindowPacking data inputs.current.object))
+                    (canonicalWindowPacking data.toParameters inputs.current.object))
                   component)
                 data.threshold = 0 :=
               ((Finset.mem_filter.1 componentMem).2).1
             let piece := inputs.current.object.pieceSupport
               (inputs.current.object.remainderSupport
-                (canonicalWindowPacking data inputs.current.object)) component
+                (canonicalWindowPacking data.toParameters inputs.current.object)) component
             have routed : load' ∈ inputs.current.object.routedLoads piece
                 data.threshold receiver' :=
               (Finset.mem_sdiff.mp excessMem).1
@@ -567,7 +567,7 @@ set_option maxHeartbeats 6000000 in
               data.threshold data.LengthOK entryIndex
             let entry := presented.toEntry
               (Graph.HasCycleWithLength data.LengthOK)
-            change Route8UnifiedEntryFacts data inputs.current.object
+            change Route8UnifiedEntryFacts data.toParameters inputs.current.object
               entryIndex at censusAt
             change
               Graph.Route8.TraceBasin.select? inputs.current.object piece
@@ -635,7 +635,7 @@ set_option maxHeartbeats 6000000 in
               rw [coreCard, minimumZero]
             omega
 
-          show Route8UnifiedVisibleResidualStatement data
+          show Route8UnifiedVisibleResidualStatement data.toParameters
             inputs.current.object
           unfold Route8UnifiedVisibleResidualStatement
           refine ⟨allVisible, ?_⟩

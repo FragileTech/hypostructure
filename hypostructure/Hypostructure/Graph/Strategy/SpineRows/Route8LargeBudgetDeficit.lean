@@ -36,10 +36,10 @@ noncomputable def route8LargeBudgetDeficitRow
     (by
       classical
       letI : DecidableEq current.object.Vertex := current.object.vertices.decEq
-      let packing := canonicalWindowPacking data current.object
+      let packing := canonicalWindowPacking data.toParameters current.object
       let support := current.object.remainderSupport packing
       let routeEight := (current.object.canonicalPieces support).filter
-        (Route8Survives data current.object packing)
+        (Route8Survives data.toParameters current.object packing)
       by_cases lower : support.card ≤
           Graph.TypeBEnvelopeCharge.route8Deficit current.object support
               data.threshold data.dischargeScale routeEight +

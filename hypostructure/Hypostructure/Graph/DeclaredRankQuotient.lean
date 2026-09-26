@@ -1,6 +1,6 @@
 import Hypostructure.Core.TargetRank
 import Hypostructure.Graph.SupportComponents
-import Hypostructure.Graph.Strategy.InterfaceReplacement
+import Hypostructure.Graph.InterfaceReplacement
 
 /-!
 # `def:admissible-rank-quotient` at an arbitrary declared coordinate family

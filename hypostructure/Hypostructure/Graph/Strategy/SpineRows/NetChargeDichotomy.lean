@@ -51,7 +51,7 @@ noncomputable def netChargeDichotomy
         (@ExactLedger.get (Input BranchState Presentation presentation data) _
           (factSystem BranchState Presentation presentation data)
           current known previous (K .maximalPacking)).down
-      let packing := canonicalWindowPacking data current.object
+      let packing := canonicalWindowPacking data.toParameters current.object
       have packingSpec := Classical.choose_spec
         (current.object.exists_windowPacking_card_eq data.windowOrder)
       have valid := packingSpec.1

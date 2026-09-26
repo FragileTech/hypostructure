@@ -36,8 +36,8 @@ consumed by `[168]`. -/
       .cons (key := K .coldTwoStrandSurvivor)
         ⟨by
           classical
-          change GenuineSecondStrandStatement data inputs.current.object at genuine
-          change TwoStrandSurvivorStatement data inputs.current.object
+          change GenuineSecondStrandStatement data.toParameters inputs.current.object at genuine
+          change TwoStrandSurvivorStatement data.toParameters inputs.current.object
           obtain ⟨germ, representative, config, neutral, realized⟩ := genuine
           obtain ⟨witness⟩ := realized
           refine ⟨germ, representative, config, neutral, ⟨witness⟩, ?_⟩
@@ -90,14 +90,14 @@ consumed by `[168]`. -/
       .cons (key := K .coldSymmetricPairExcluded)
         ⟨by
           classical
-          change TwoStrandSurvivorStatement data inputs.current.object at incoming
-          change ¬ TwoStrandSurvivorStatement data inputs.current.object
+          change TwoStrandSurvivorStatement data.toParameters inputs.current.object at incoming
+          change ¬ TwoStrandSurvivorStatement data.toParameters inputs.current.object
           intro survivor
           obtain ⟨germ, representative, config, neutral, realized, survives⟩ := survivor
           obtain ⟨witness⟩ := realized
           have windowMember : witness.window ∈
-              (canonicalColdWindows data inputs.current.object).filter
-                (AmbientCubicWindow data inputs.current.object) :=
+              (canonicalColdWindows data.toParameters inputs.current.object).filter
+                (AmbientCubicWindow data.toParameters inputs.current.object) :=
             Finset.mem_filter.2 ⟨witness.window_mem, witness.window_cubic⟩
           obtain ⟨ends, _endsSubset, _endsCard, interior, endpoints,
               _interiorCount⟩ := stubStructure witness.window windowMember

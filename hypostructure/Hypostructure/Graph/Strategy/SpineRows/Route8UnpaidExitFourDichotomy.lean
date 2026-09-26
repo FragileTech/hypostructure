@@ -60,14 +60,14 @@ noncomputable def route8UnpaidExitFourDichotomy
     factSystem BranchState Presentation presentation data
   let alternatives :
       Sum
-        (PLift (Route8UnifiedTrueTwoCarrierEntryStatement data current.object))
-        (PLift (Route8UnpaidExitFourResidualStatement data current.object)) := by
+        (PLift (Route8UnifiedTrueTwoCarrierEntryStatement data.toParameters current.object))
+        (PLift (Route8UnpaidExitFourResidualStatement data.toParameters current.object)) := by
       classical
       apply Classical.choice
       letI : DecidableEq current.object.Vertex :=
         Graph.Route8.vertexDecEq current.object
-      let entries := route8UnifiedEntries data current.object
-      let core := route8DemandCore data current.object
+      let entries := route8UnifiedEntries data.toParameters current.object
+      let core := route8DemandCore data.toParameters current.object
       have node181 :=
         (@ExactLedger.get (Input BranchState Presentation presentation data) _
           (factSystem BranchState Presentation presentation data)
@@ -76,7 +76,7 @@ noncomputable def route8UnpaidExitFourDichotomy
         (@ExactLedger.get (Input BranchState Presentation presentation data) _
           (factSystem BranchState Presentation presentation data)
           current known previous (K .route8UnifiedEntryCensus)).down
-      have demand : Route8DemandLedgerStatement data current.object :=
+      have demand : Route8DemandLedgerStatement data.toParameters current.object :=
         node181.2.1
       obtain ⟨P, pinnedP, maximalP, _raw, _defect, _records⟩ :=
         Classical.choice demand

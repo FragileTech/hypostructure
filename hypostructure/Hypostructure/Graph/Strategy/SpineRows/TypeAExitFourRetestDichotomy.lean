@@ -81,7 +81,7 @@ noncomputable def typeAExitFourRetestDichotomy
         (Terminal := fun state =>
           Graph.ExitFour.SaturatedAfter piece data.threshold data.dischargeScale
               receiver state ∧
-            ExitFourFreeAt data current.object piece receiver state)
+            ExitFourFreeAt data.toParameters current.object piece receiver state)
         nextSubset
         (Graph.ExitFour.peeledByWitnesses_nextPeeled witnessed witness)
         (by

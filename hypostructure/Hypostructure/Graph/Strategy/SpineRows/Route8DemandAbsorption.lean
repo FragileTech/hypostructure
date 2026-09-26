@@ -59,7 +59,7 @@ set_option maxHeartbeats 1000000 in
           classical
           letI : DecidableEq inputs.current.object.Vertex :=
             inputs.current.object.vertices.decEq
-          show Route8DemandAbsorptionStatement data inputs.current.object
+          show Route8DemandAbsorptionStatement data.toParameters inputs.current.object
           unfold Route8DemandAbsorptionStatement
           refine fun P _pinnedP _maximalP _raw _defect => ?_
           obtain ⟨A, absorbedUnits, absorberSupplied, absorberSameSupport,
@@ -67,7 +67,7 @@ set_option maxHeartbeats 1000000 in
             Graph.DemandPartition.Partition.exists_maximal_absorption
               (P := P) P.demandUnits
               (Graph.Route8Census.supply inputs.current.object
-                (canonicalWindowPacking data inputs.current.object))
+                (canonicalWindowPacking data.toParameters inputs.current.object))
               (∅ : Finset
                 (Graph.Route8Census.Index inputs.current.object × Nat))
               (fun υ => s(υ.1.2.1, υ.1.2.1))
@@ -76,15 +76,15 @@ set_option maxHeartbeats 1000000 in
           have supplied : ∀ index ∈ P.three ∪ P.two,
               P.assigned index ⊆
                 Graph.Route8Census.supply inputs.current.object
-                  (canonicalWindowPacking data inputs.current.object) := by
+                  (canonicalWindowPacking data.toParameters inputs.current.object) := by
             intro index memUnion
             have memEntries : index ∈
                 Graph.Route8Census.entriesOfComponents inputs.current.object
-                  (canonicalWindowPacking data inputs.current.object)
-                  (route8UnifiedComponents data inputs.current.object)
+                  (canonicalWindowPacking data.toParameters inputs.current.object)
+                  (route8UnifiedComponents data.toParameters inputs.current.object)
                   data.threshold data.dischargeScale := by
               have memUnified : index ∈
-                  route8UnifiedEntries data inputs.current.object := by
+                  route8UnifiedEntries data.toParameters inputs.current.object := by
                 rcases Finset.mem_union.mp memUnion with mem | mem
                 · exact P.three_subset_entries mem
                 · exact P.two_subset_entries mem
@@ -92,14 +92,14 @@ set_option maxHeartbeats 1000000 in
             exact (P.assigned_available index memUnion).trans
               (Graph.Route8Census.core_subset_supply_ofComponents
                 inputs.current.object
-                (canonicalWindowPacking data inputs.current.object)
-                (route8UnifiedComponents data inputs.current.object)
+                (canonicalWindowPacking data.toParameters inputs.current.object)
+                (route8UnifiedComponents data.toParameters inputs.current.object)
                 data.threshold data.dischargeScale data.LengthOK index
                 memEntries)
           have display :=
             Graph.DemandPartition.Partition.three_mul_card_le_of_absorption
               (Graph.Route8Census.supply inputs.current.object
-                (canonicalWindowPacking data inputs.current.object))
+                (canonicalWindowPacking data.toParameters inputs.current.object))
               supplied A absorbedUnits absorberSupplied
               (∅ : Finset
                 (Graph.Route8Census.Index inputs.current.object × Nat))

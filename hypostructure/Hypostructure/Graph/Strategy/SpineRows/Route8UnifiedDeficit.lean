@@ -46,11 +46,11 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           have packingSpec := Classical.choose_spec
             (inputs.current.object.exists_windowPacking_card_eq data.windowOrder)
           have valid : inputs.current.object.IsWindowPacking data.windowOrder
-              (canonicalWindowPacking data inputs.current.object) :=
+              (canonicalWindowPacking data.toParameters inputs.current.object) :=
             packingSpec.1
           have maximal : ∀ window : Finset inputs.current.object.Vertex,
               inputs.current.object.InducesWindow data.windowOrder window →
-              ∃ member ∈ canonicalWindowPacking data inputs.current.object,
+              ∃ member ∈ canonicalWindowPacking data.toParameters inputs.current.object,
                 ¬ Disjoint window member := fun window induces =>
             inputs.current.object.exists_mem_not_disjoint_of_card_eq
               data.windowOrder_pos valid packingSpec.2 induces
@@ -61,112 +61,112 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                 (inputs.current.object.minDegree_le_degree vertex)
           obtain ⟨pairAt, handoffPieces, handoffChar, centres, high,
             fanEnvelope, absorbedAt, perPiece, covered⟩ :=
-            sublinear (canonicalWindowPacking data inputs.current.object)
+            sublinear (canonicalWindowPacking data.toParameters inputs.current.object)
               valid maximal
           -- names
           have supportEq : inputs.current.object.remainderSupport
-              (canonicalWindowPacking data inputs.current.object) =
+              (canonicalWindowPacking data.toParameters inputs.current.object) =
               inputs.current.object.remainderSupport
-                (canonicalWindowPacking data inputs.current.object) := rfl
+                (canonicalWindowPacking data.toParameters inputs.current.object) := rfl
           -- the per-piece cleared mass
           have pointwiseCard : ∀ component ∈ inputs.current.object.canonicalPieces
               (inputs.current.object.remainderSupport
-                (canonicalWindowPacking data inputs.current.object)),
+                (canonicalWindowPacking data.toParameters inputs.current.object)),
               (inputs.current.object.pieceSupport
                 (inputs.current.object.remainderSupport
-                  (canonicalWindowPacking data inputs.current.object))
+                  (canonicalWindowPacking data.toParameters inputs.current.object))
                 component).card ≤
                 data.dischargeScale * inputs.current.object.positiveDeficiency
                   (inputs.current.object.pieceSupport
                     (inputs.current.object.remainderSupport
-                      (canonicalWindowPacking data inputs.current.object))
+                      (canonicalWindowPacking data.toParameters inputs.current.object))
                     component) data.threshold +
                 ((inputs.current.object.pieceSupport
                     (inputs.current.object.remainderSupport
-                      (canonicalWindowPacking data inputs.current.object))
+                      (canonicalWindowPacking data.toParameters inputs.current.object))
                     component).card -
                   data.dischargeScale * inputs.current.object.positiveDeficiency
                     (inputs.current.object.pieceSupport
                       (inputs.current.object.remainderSupport
-                        (canonicalWindowPacking data inputs.current.object))
+                        (canonicalWindowPacking data.toParameters inputs.current.object))
                       component) data.threshold) := by
             intro component _member
             omega
           -- |R| = Σ pieces |piece|
           have cardSum : (∑ component ∈ inputs.current.object.canonicalPieces
               (inputs.current.object.remainderSupport
-                (canonicalWindowPacking data inputs.current.object)),
+                (canonicalWindowPacking data.toParameters inputs.current.object)),
               (inputs.current.object.pieceSupport
                 (inputs.current.object.remainderSupport
-                  (canonicalWindowPacking data inputs.current.object))
+                  (canonicalWindowPacking data.toParameters inputs.current.object))
                 component).card) =
               (inputs.current.object.remainderSupport
-                (canonicalWindowPacking data inputs.current.object)).card := by
+                (canonicalWindowPacking data.toParameters inputs.current.object)).card := by
             have base := inputs.current.object.sum_canonicalPieces
               (inputs.current.object.remainderSupport
-                (canonicalWindowPacking data inputs.current.object))
+                (canonicalWindowPacking data.toParameters inputs.current.object))
               (fun _ => 1)
             calc (∑ component ∈ inputs.current.object.canonicalPieces
                 (inputs.current.object.remainderSupport
-                  (canonicalWindowPacking data inputs.current.object)),
+                  (canonicalWindowPacking data.toParameters inputs.current.object)),
                 (inputs.current.object.pieceSupport
                   (inputs.current.object.remainderSupport
-                    (canonicalWindowPacking data inputs.current.object))
+                    (canonicalWindowPacking data.toParameters inputs.current.object))
                   component).card)
                 = ∑ component ∈ inputs.current.object.canonicalPieces
                     (inputs.current.object.remainderSupport
-                      (canonicalWindowPacking data inputs.current.object)),
+                      (canonicalWindowPacking data.toParameters inputs.current.object)),
                     ∑ _vertex ∈ inputs.current.object.pieceSupport
                       (inputs.current.object.remainderSupport
-                        (canonicalWindowPacking data inputs.current.object))
+                        (canonicalWindowPacking data.toParameters inputs.current.object))
                       component, 1 :=
                   Finset.sum_congr rfl fun component _ =>
                     Finset.card_eq_sum_ones _
               _ = ∑ _vertex ∈ inputs.current.object.remainderSupport
-                    (canonicalWindowPacking data inputs.current.object), 1 :=
+                    (canonicalWindowPacking data.toParameters inputs.current.object), 1 :=
                   base
               _ = (inputs.current.object.remainderSupport
-                    (canonicalWindowPacking data inputs.current.object)).card :=
+                    (canonicalWindowPacking data.toParameters inputs.current.object)).card :=
                   (Finset.card_eq_sum_ones _).symm
           -- Σ pieces s·def⁺ = s·def⁺(R) ≤ s·|supply|
           have deficiencySum : (∑ component ∈
               inputs.current.object.canonicalPieces
                 (inputs.current.object.remainderSupport
-                  (canonicalWindowPacking data inputs.current.object)),
+                  (canonicalWindowPacking data.toParameters inputs.current.object)),
               data.dischargeScale * inputs.current.object.positiveDeficiency
                 (inputs.current.object.pieceSupport
                   (inputs.current.object.remainderSupport
-                    (canonicalWindowPacking data inputs.current.object))
+                    (canonicalWindowPacking data.toParameters inputs.current.object))
                   component) data.threshold) =
               data.dischargeScale * inputs.current.object.positiveDeficiency
                 (inputs.current.object.remainderSupport
-                  (canonicalWindowPacking data inputs.current.object))
+                  (canonicalWindowPacking data.toParameters inputs.current.object))
                 data.threshold := by
             rw [← Finset.mul_sum,
               Graph.FiniteObject.sum_positiveDeficiency_canonicalPieces]
           have supplyBound : data.dischargeScale *
               inputs.current.object.positiveDeficiency
                 (inputs.current.object.remainderSupport
-                  (canonicalWindowPacking data inputs.current.object))
+                  (canonicalWindowPacking data.toParameters inputs.current.object))
                 data.threshold ≤
               data.dischargeScale *
                 (Graph.Route8Census.supply inputs.current.object
-                  (canonicalWindowPacking data inputs.current.object)).card := by
+                  (canonicalWindowPacking data.toParameters inputs.current.object)).card := by
             rw [Graph.Route8Census.card_supply]
             exact Nat.mul_le_mul_left _
               (inputs.current.object.positiveDeficiency_le_boundaryIncidence
                 _ data.threshold baseline)
           -- class partition of the mass sum
-          have unifiedSubset : route8UnifiedComponents data inputs.current.object ⊆
+          have unifiedSubset : route8UnifiedComponents data.toParameters inputs.current.object ⊆
               inputs.current.object.canonicalPieces
                 (inputs.current.object.remainderSupport
-                  (canonicalWindowPacking data inputs.current.object)) :=
+                  (canonicalWindowPacking data.toParameters inputs.current.object)) :=
             Finset.filter_subset _ _
           have handoffSubset : handoffPieces ⊆
               (inputs.current.object.canonicalPieces
                 (inputs.current.object.remainderSupport
-                  (canonicalWindowPacking data inputs.current.object))) \
-                route8UnifiedComponents data inputs.current.object := by
+                  (canonicalWindowPacking data.toParameters inputs.current.object))) \
+                route8UnifiedComponents data.toParameters inputs.current.object := by
             intro component member
             obtain ⟨present, negative, zero, handoff⟩ :=
               (handoffChar component).mp member
@@ -177,12 +177,12 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           have handoffBound : (∑ component ∈ handoffPieces,
               ((inputs.current.object.pieceSupport
                   (inputs.current.object.remainderSupport
-                    (canonicalWindowPacking data inputs.current.object))
+                    (canonicalWindowPacking data.toParameters inputs.current.object))
                   component).card -
                 data.dischargeScale * inputs.current.object.positiveDeficiency
                   (inputs.current.object.pieceSupport
                     (inputs.current.object.remainderSupport
-                      (canonicalWindowPacking data inputs.current.object))
+                      (canonicalWindowPacking data.toParameters inputs.current.object))
                     component) data.threshold)) ≤
               data.bridgeMassFactor * data.dischargeScale *
                 inputs.current.object.degreeSurplus data.threshold := by
@@ -190,12 +190,12 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
               inputs.current.object handoffPieces
               (fun component => inputs.current.object.pieceSupport
                 (inputs.current.object.remainderSupport
-                  (canonicalWindowPacking data inputs.current.object))
+                  (canonicalWindowPacking data.toParameters inputs.current.object))
                 component)
               (fun component => absorbedAt
                 (inputs.current.object.pieceSupport
                   (inputs.current.object.remainderSupport
-                    (canonicalWindowPacking data inputs.current.object))
+                    (canonicalWindowPacking data.toParameters inputs.current.object))
                   component))
               centres fanEnvelope data.bridgeMassSlack baseline high
               (fun component member => (perPiece component member).1)
@@ -209,12 +209,12 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           have handoffRaw : (∑ component ∈ handoffPieces,
               ((inputs.current.object.pieceSupport
                   (inputs.current.object.remainderSupport
-                    (canonicalWindowPacking data inputs.current.object))
+                    (canonicalWindowPacking data.toParameters inputs.current.object))
                   component).card -
                 data.dischargeScale * inputs.current.object.positiveDeficiency
                   (inputs.current.object.pieceSupport
                     (inputs.current.object.remainderSupport
-                      (canonicalWindowPacking data inputs.current.object))
+                      (canonicalWindowPacking data.toParameters inputs.current.object))
                     component) data.threshold)) ≤
               ∑ centre ∈ centres,
                 Graph.TypeBFanIncidence.closedCount inputs.current.object
@@ -222,18 +222,18 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
             have pointwise : ∀ component ∈ handoffPieces,
                 ((inputs.current.object.pieceSupport
                     (inputs.current.object.remainderSupport
-                      (canonicalWindowPacking data inputs.current.object))
+                      (canonicalWindowPacking data.toParameters inputs.current.object))
                     component).card -
                   data.dischargeScale *
                     inputs.current.object.positiveDeficiency
                       (inputs.current.object.pieceSupport
                         (inputs.current.object.remainderSupport
-                          (canonicalWindowPacking data inputs.current.object))
+                          (canonicalWindowPacking data.toParameters inputs.current.object))
                         component) data.threshold) ≤
                 (absorbedAt
                   (inputs.current.object.pieceSupport
                     (inputs.current.object.remainderSupport
-                      (canonicalWindowPacking data inputs.current.object))
+                      (canonicalWindowPacking data.toParameters inputs.current.object))
                     component)).card := by
               intro component member
               have discharged :=
@@ -241,12 +241,12 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                   inputs.current.object
                   (inputs.current.object.pieceSupport
                     (inputs.current.object.remainderSupport
-                      (canonicalWindowPacking data inputs.current.object))
+                      (canonicalWindowPacking data.toParameters inputs.current.object))
                     component)
                   (absorbedAt
                     (inputs.current.object.pieceSupport
                       (inputs.current.object.remainderSupport
-                        (canonicalWindowPacking data inputs.current.object))
+                        (canonicalWindowPacking data.toParameters inputs.current.object))
                       component))
                   data.threshold data.dischargeScale
                   (perPiece component member).1
@@ -260,23 +260,23 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           have restBound : ∀ component ∈
               ((inputs.current.object.canonicalPieces
                 (inputs.current.object.remainderSupport
-                  (canonicalWindowPacking data inputs.current.object))) \
-                route8UnifiedComponents data inputs.current.object) \
+                  (canonicalWindowPacking data.toParameters inputs.current.object))) \
+                route8UnifiedComponents data.toParameters inputs.current.object) \
                 handoffPieces,
               ((inputs.current.object.pieceSupport
                   (inputs.current.object.remainderSupport
-                    (canonicalWindowPacking data inputs.current.object))
+                    (canonicalWindowPacking data.toParameters inputs.current.object))
                   component).card -
                 data.dischargeScale * inputs.current.object.positiveDeficiency
                   (inputs.current.object.pieceSupport
                     (inputs.current.object.remainderSupport
-                      (canonicalWindowPacking data inputs.current.object))
+                      (canonicalWindowPacking data.toParameters inputs.current.object))
                     component) data.threshold) ≤
               data.bridgeMassFactor * data.dischargeScale *
                 inputs.current.object.ambientSurplus
                   (inputs.current.object.pieceSupport
                     (inputs.current.object.remainderSupport
-                      (canonicalWindowPacking data inputs.current.object))
+                      (canonicalWindowPacking data.toParameters inputs.current.object))
                     component) data.threshold := by
             intro component memberRest
             have memberSdiff := Finset.mem_sdiff.mp memberRest
@@ -286,21 +286,21 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
             by_cases negative : inputs.current.object.NegativeNetCharge
                 (inputs.current.object.pieceSupport
                   (inputs.current.object.remainderSupport
-                    (canonicalWindowPacking data inputs.current.object))
+                    (canonicalWindowPacking data.toParameters inputs.current.object))
                   component) data.threshold data.dischargeScale
             · by_cases zero : inputs.current.object.ambientSurplus
                   (inputs.current.object.pieceSupport
                     (inputs.current.object.remainderSupport
-                      (canonicalWindowPacking data inputs.current.object))
+                      (canonicalWindowPacking data.toParameters inputs.current.object))
                     component) data.threshold = 0
               · -- negative zero-surplus outside the unified collection is a
                 -- handoff piece, excluded here
                 exfalso
-                have handoff : HandoffProduced data inputs.current.object
-                    (canonicalWindowPacking data inputs.current.object)
+                have handoff : HandoffProduced data.toParameters inputs.current.object
+                    (canonicalWindowPacking data.toParameters inputs.current.object)
                     (inputs.current.object.pieceSupport
                       (inputs.current.object.remainderSupport
-                        (canonicalWindowPacking data inputs.current.object))
+                        (canonicalWindowPacking data.toParameters inputs.current.object))
                       component) := by
                   by_contra noHandoff
                   exact notUnified (Finset.mem_filter.mpr
@@ -314,7 +314,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                   inputs.current.object
                   (inputs.current.object.pieceSupport
                     (inputs.current.object.remainderSupport
-                      (canonicalWindowPacking data inputs.current.object))
+                      (canonicalWindowPacking data.toParameters inputs.current.object))
                     component)
                   data.bridgeMassSlack baseline pair.1 pair.2
                 omega
@@ -329,23 +329,23 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           have restExactBound : ∀ component ∈
               ((inputs.current.object.canonicalPieces
                 (inputs.current.object.remainderSupport
-                  (canonicalWindowPacking data inputs.current.object))) \
-                route8UnifiedComponents data inputs.current.object) \
+                  (canonicalWindowPacking data.toParameters inputs.current.object))) \
+                route8UnifiedComponents data.toParameters inputs.current.object) \
                 handoffPieces,
               ((inputs.current.object.pieceSupport
                   (inputs.current.object.remainderSupport
-                    (canonicalWindowPacking data inputs.current.object))
+                    (canonicalWindowPacking data.toParameters inputs.current.object))
                   component).card -
                 data.dischargeScale * inputs.current.object.positiveDeficiency
                   (inputs.current.object.pieceSupport
                     (inputs.current.object.remainderSupport
-                      (canonicalWindowPacking data inputs.current.object))
+                      (canonicalWindowPacking data.toParameters inputs.current.object))
                     component) data.threshold) ≤
               ∑ centre ∈ Graph.TypeBRefinedSupport.centres
                   inputs.current.object data.threshold
                   (inputs.current.object.pieceSupport
                     (inputs.current.object.remainderSupport
-                      (canonicalWindowPacking data inputs.current.object))
+                      (canonicalWindowPacking data.toParameters inputs.current.object))
                     component),
                 (data.dischargeScale *
                     (inputs.current.object.degree centre - data.threshold) + 1) := by
@@ -356,7 +356,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
             have notHandoff := memberSdiff.2
             let piece := inputs.current.object.pieceSupport
               (inputs.current.object.remainderSupport
-                (canonicalWindowPacking data inputs.current.object)) component
+                (canonicalWindowPacking data.toParameters inputs.current.object)) component
             let pieceCentres := Graph.TypeBRefinedSupport.centres
               inputs.current.object data.threshold piece
             by_cases negative : inputs.current.object.NegativeNetCharge piece
@@ -364,8 +364,8 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
             · by_cases zero : inputs.current.object.ambientSurplus piece
                   data.threshold = 0
               · exfalso
-                have handoff : HandoffProduced data inputs.current.object
-                    (canonicalWindowPacking data inputs.current.object) piece := by
+                have handoff : HandoffProduced data.toParameters inputs.current.object
+                    (canonicalWindowPacking data.toParameters inputs.current.object) piece := by
                   by_contra noHandoff
                   exact notUnified (Finset.mem_filter.mpr
                     ⟨memberPieces, zero, negative, noHandoff⟩)
@@ -451,56 +451,56 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           have restSum : (∑ component ∈
               ((inputs.current.object.canonicalPieces
                 (inputs.current.object.remainderSupport
-                  (canonicalWindowPacking data inputs.current.object))) \
-                route8UnifiedComponents data inputs.current.object) \
+                  (canonicalWindowPacking data.toParameters inputs.current.object))) \
+                route8UnifiedComponents data.toParameters inputs.current.object) \
                 handoffPieces,
               ((inputs.current.object.pieceSupport
                   (inputs.current.object.remainderSupport
-                    (canonicalWindowPacking data inputs.current.object))
+                    (canonicalWindowPacking data.toParameters inputs.current.object))
                   component).card -
                 data.dischargeScale * inputs.current.object.positiveDeficiency
                   (inputs.current.object.pieceSupport
                     (inputs.current.object.remainderSupport
-                      (canonicalWindowPacking data inputs.current.object))
+                      (canonicalWindowPacking data.toParameters inputs.current.object))
                     component) data.threshold)) ≤
               data.bridgeMassFactor * data.dischargeScale *
                 inputs.current.object.degreeSurplus data.threshold := by
             calc (∑ component ∈
                 ((inputs.current.object.canonicalPieces
                   (inputs.current.object.remainderSupport
-                    (canonicalWindowPacking data inputs.current.object))) \
-                  route8UnifiedComponents data inputs.current.object) \
+                    (canonicalWindowPacking data.toParameters inputs.current.object))) \
+                  route8UnifiedComponents data.toParameters inputs.current.object) \
                   handoffPieces,
                 ((inputs.current.object.pieceSupport
                     (inputs.current.object.remainderSupport
-                      (canonicalWindowPacking data inputs.current.object))
+                      (canonicalWindowPacking data.toParameters inputs.current.object))
                     component).card -
                   data.dischargeScale * inputs.current.object.positiveDeficiency
                     (inputs.current.object.pieceSupport
                       (inputs.current.object.remainderSupport
-                        (canonicalWindowPacking data inputs.current.object))
+                        (canonicalWindowPacking data.toParameters inputs.current.object))
                       component) data.threshold)) ≤
                 ∑ component ∈
                   ((inputs.current.object.canonicalPieces
                     (inputs.current.object.remainderSupport
-                      (canonicalWindowPacking data inputs.current.object))) \
-                    route8UnifiedComponents data inputs.current.object) \
+                      (canonicalWindowPacking data.toParameters inputs.current.object))) \
+                    route8UnifiedComponents data.toParameters inputs.current.object) \
                     handoffPieces,
                   data.bridgeMassFactor * data.dischargeScale *
                     inputs.current.object.ambientSurplus
                       (inputs.current.object.pieceSupport
                         (inputs.current.object.remainderSupport
-                          (canonicalWindowPacking data inputs.current.object))
+                          (canonicalWindowPacking data.toParameters inputs.current.object))
                         component) data.threshold :=
                 Finset.sum_le_sum restBound
               _ ≤ ∑ component ∈ inputs.current.object.canonicalPieces
                     (inputs.current.object.remainderSupport
-                      (canonicalWindowPacking data inputs.current.object)),
+                      (canonicalWindowPacking data.toParameters inputs.current.object)),
                   data.bridgeMassFactor * data.dischargeScale *
                     inputs.current.object.ambientSurplus
                       (inputs.current.object.pieceSupport
                         (inputs.current.object.remainderSupport
-                          (canonicalWindowPacking data inputs.current.object))
+                          (canonicalWindowPacking data.toParameters inputs.current.object))
                         component) data.threshold := by
                 refine Finset.sum_le_sum_of_subset ?_
                 intro component member
@@ -509,7 +509,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
               _ = data.bridgeMassFactor * data.dischargeScale *
                   inputs.current.object.ambientSurplus
                     (inputs.current.object.remainderSupport
-                      (canonicalWindowPacking data inputs.current.object))
+                      (canonicalWindowPacking data.toParameters inputs.current.object))
                     data.threshold := by
                 rw [← Finset.mul_sum,
                   Graph.FiniteObject.sum_ambientSurplus_canonicalPieces]
@@ -527,9 +527,9 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           -- ordinary and handoff centres, deliberately give every centre both
           -- exact costs.  The registered slack pays even that larger sum once.
           let support := inputs.current.object.remainderSupport
-            (canonicalWindowPacking data inputs.current.object)
+            (canonicalWindowPacking data.toParameters inputs.current.object)
           let rest := ((inputs.current.object.canonicalPieces support) \
-              route8UnifiedComponents data inputs.current.object) \
+              route8UnifiedComponents data.toParameters inputs.current.object) \
               handoffPieces
           let restMass := fun component :
               Graph.SupportComponents.Connected.Component
@@ -676,40 +676,40 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           have massSplitOuter := Finset.sum_sdiff (f := fun component =>
               (inputs.current.object.pieceSupport
                   (inputs.current.object.remainderSupport
-                    (canonicalWindowPacking data inputs.current.object))
+                    (canonicalWindowPacking data.toParameters inputs.current.object))
                   component).card -
                 data.dischargeScale * inputs.current.object.positiveDeficiency
                   (inputs.current.object.pieceSupport
                     (inputs.current.object.remainderSupport
-                      (canonicalWindowPacking data inputs.current.object))
+                      (canonicalWindowPacking data.toParameters inputs.current.object))
                     component) data.threshold) unifiedSubset
           have massSplitInner := Finset.sum_sdiff (f := fun component =>
               (inputs.current.object.pieceSupport
                   (inputs.current.object.remainderSupport
-                    (canonicalWindowPacking data inputs.current.object))
+                    (canonicalWindowPacking data.toParameters inputs.current.object))
                   component).card -
                 data.dischargeScale * inputs.current.object.positiveDeficiency
                   (inputs.current.object.pieceSupport
                     (inputs.current.object.remainderSupport
-                      (canonicalWindowPacking data inputs.current.object))
+                      (canonicalWindowPacking data.toParameters inputs.current.object))
                     component) data.threshold) handoffSubset
           -- the unified sum is the cleared deficit itself
           have unifiedEq : (∑ component ∈
-              route8UnifiedComponents data inputs.current.object,
+              route8UnifiedComponents data.toParameters inputs.current.object,
               ((inputs.current.object.pieceSupport
                   (inputs.current.object.remainderSupport
-                    (canonicalWindowPacking data inputs.current.object))
+                    (canonicalWindowPacking data.toParameters inputs.current.object))
                   component).card -
                 data.dischargeScale * inputs.current.object.positiveDeficiency
                   (inputs.current.object.pieceSupport
                     (inputs.current.object.remainderSupport
-                      (canonicalWindowPacking data inputs.current.object))
+                      (canonicalWindowPacking data.toParameters inputs.current.object))
                     component) data.threshold)) =
               Graph.TypeBEnvelopeCharge.route8Deficit inputs.current.object
                 (inputs.current.object.remainderSupport
-                  (canonicalWindowPacking data inputs.current.object))
+                  (canonicalWindowPacking data.toParameters inputs.current.object))
                 data.threshold data.dischargeScale
-                (route8UnifiedComponents data inputs.current.object) := rfl
+                (route8UnifiedComponents data.toParameters inputs.current.object) := rfl
           -- the near-cubic conversion of both surplus roles
           have surplusRole : data.bridgeMassFactor * data.dischargeScale *
               inputs.current.object.degreeSurplus data.threshold ≤
@@ -718,38 +718,38 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
             Nat.mul_le_mul_left _ surplusCap
           -- total
           show (inputs.current.object.remainderSupport
-              (canonicalWindowPacking data inputs.current.object)).card ≤
+              (canonicalWindowPacking data.toParameters inputs.current.object)).card ≤
             Graph.TypeBEnvelopeCharge.route8Deficit inputs.current.object
                 (inputs.current.object.remainderSupport
-                  (canonicalWindowPacking data inputs.current.object))
+                  (canonicalWindowPacking data.toParameters inputs.current.object))
                 data.threshold data.dischargeScale
-                (route8UnifiedComponents data inputs.current.object) +
+                (route8UnifiedComponents data.toParameters inputs.current.object) +
               data.dischargeScale *
                 (Graph.Route8Census.supply inputs.current.object
-                  (canonicalWindowPacking data inputs.current.object)).card +
+                  (canonicalWindowPacking data.toParameters inputs.current.object)).card +
               data.bridgeMassFactor * data.dischargeScale *
                 data.surplusThreshold inputs.current.object.vertexCount
           have totalCard : (inputs.current.object.remainderSupport
-              (canonicalWindowPacking data inputs.current.object)).card ≤
+              (canonicalWindowPacking data.toParameters inputs.current.object)).card ≤
               (∑ component ∈ inputs.current.object.canonicalPieces
                 (inputs.current.object.remainderSupport
-                  (canonicalWindowPacking data inputs.current.object)),
+                  (canonicalWindowPacking data.toParameters inputs.current.object)),
                 data.dischargeScale * inputs.current.object.positiveDeficiency
                   (inputs.current.object.pieceSupport
                     (inputs.current.object.remainderSupport
-                      (canonicalWindowPacking data inputs.current.object))
+                      (canonicalWindowPacking data.toParameters inputs.current.object))
                     component) data.threshold) +
               ∑ component ∈ inputs.current.object.canonicalPieces
                 (inputs.current.object.remainderSupport
-                  (canonicalWindowPacking data inputs.current.object)),
+                  (canonicalWindowPacking data.toParameters inputs.current.object)),
                 ((inputs.current.object.pieceSupport
                     (inputs.current.object.remainderSupport
-                      (canonicalWindowPacking data inputs.current.object))
+                      (canonicalWindowPacking data.toParameters inputs.current.object))
                     component).card -
                   data.dischargeScale * inputs.current.object.positiveDeficiency
                     (inputs.current.object.pieceSupport
                       (inputs.current.object.remainderSupport
-                        (canonicalWindowPacking data inputs.current.object))
+                        (canonicalWindowPacking data.toParameters inputs.current.object))
                       component) data.threshold) := by
             rw [← cardSum, ← Finset.sum_add_distrib]
             exact Finset.sum_le_sum pointwiseCard

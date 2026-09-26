@@ -59,7 +59,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           classical
           letI : DecidableEq inputs.current.object.Vertex :=
             inputs.current.object.vertices.decEq
-          let packing := canonicalWindowPacking data inputs.current.object
+          let packing := canonicalWindowPacking data.toParameters inputs.current.object
           let support := inputs.current.object.remainderSupport packing
           let unified := (inputs.current.object.canonicalPieces support).filter
             fun component =>
@@ -67,7 +67,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
               inputs.current.object.ambientSurplus piece data.threshold = 0 ∧
                 inputs.current.object.NegativeNetCharge piece data.threshold
                   data.dischargeScale ∧
-                ¬ HandoffProduced data inputs.current.object packing piece
+                ¬ HandoffProduced data.toParameters inputs.current.object packing piece
           let collection := unified.image
             (inputs.current.object.pieceSupport support)
           refine ⟨collection, rfl, ?_,

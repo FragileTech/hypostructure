@@ -55,14 +55,14 @@ noncomputable instance typeASilentExitSevenFreeVisibleClosed :
       _noExitFour, _noExitFive, _noExitSix, origin, noHandoff⟩ :=
       silentOrigin.down
     subst packing
-    let packing := canonicalWindowPacking data input.object
+    let packing := canonicalWindowPacking data.toParameters input.object
     let piece := input.object.pieceSupport
       (input.object.remainderSupport packing) component
     obtain ⟨_noVisibleFour, originalSaturated, silentAtOrigin, _count⟩ := origin
     obtain ⟨_portBound, nonemptyExcess, silentSubset⟩ := silentAtOrigin
     obtain ⟨load, loadExcess⟩ := nonemptyExcess
     have componentUnified : component ∈
-        route8UnifiedComponents data input.object := by
+        route8UnifiedComponents data.toParameters input.object := by
       unfold route8UnifiedComponents
       dsimp only
       exact Finset.mem_filter.mpr ⟨present, zero, negative, noHandoff⟩
@@ -78,7 +78,7 @@ noncomputable instance typeASilentExitSevenFreeVisibleClosed :
       Graph.ExitFour.unpeeledExcess_subset_excessBasin piece data.threshold
         data.dischargeScale receiver ∅ loadExcess
     have entryMem : (piece, receiver, load) ∈
-        route8UnifiedEntries data input.object := by
+        route8UnifiedEntries data.toParameters input.object := by
       unfold route8UnifiedEntries Graph.Route8Census.entriesOfComponents
       apply Finset.mem_biUnion.mpr
       refine ⟨component, componentUnified, ?_⟩

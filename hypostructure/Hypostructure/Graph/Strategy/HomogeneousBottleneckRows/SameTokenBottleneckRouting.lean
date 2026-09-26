@@ -59,7 +59,7 @@ No selector, callback, route record, or side carrier is postulated. -/
             (Graph.SparseSurplusExit (Graph.MinimumDegreeAtLeast data.threshold)
                 (Graph.HasCycleWithLength data.LengthOK) data.LengthOK
                 inputs.current.object ∨
-              SameTokenTypeBHandoffStatement data inputs.current.object) := by
+              SameTokenTypeBHandoffStatement data.toParameters inputs.current.object) := by
           classical
           -- Read every paper hypothesis through the sealed ledger.  These are
           -- intentionally not repackaged into a route or callback record.  The
@@ -104,8 +104,8 @@ No selector, callback, route record, or side carrier is postulated. -/
               Graph.SparseSurplusExit (Graph.MinimumDegreeAtLeast data.threshold)
                   (Graph.HasCycleWithLength data.LengthOK) data.LengthOK
                   object ∨
-                (SameTokenTypeBHandoffEnvelopeStatement data object ∧
-                  SameTokenTypeBHandoffStatement data object)) =>
+                (SameTokenTypeBHandoffEnvelopeStatement data.toParameters object ∧
+                  SameTokenTypeBHandoffStatement data.toParameters object)) =>
             ⟨⟨active, capacity, activationEq, concretePattern,
                 Or.imp_right And.left outcome⟩,
               Or.imp_right And.right outcome⟩) ?_
@@ -259,11 +259,11 @@ No selector, callback, route record, or side carrier is postulated. -/
           have handoff_of_envelope
               (core : Finset object.Vertex)
               (envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-                (handoffHighDegree data object)
-                (handoffAbsorbing data object capacity.packing))
+                (handoffHighDegree data.toParameters object)
+                (handoffAbsorbing data.toParameters object capacity.packing))
               (envelopeCore : envelope.core = core)
               (decorated : envelope.decorations.Nonempty) :
-              SameTokenTypeBHandoffEnvelopeStatement data object := by
+              SameTokenTypeBHandoffEnvelopeStatement data.toParameters object := by
             refine ⟨capacity.packing, capacity.packingValid,
               capacity.packingMaximal, core, envelope, envelopeCore,
               decorated⟩
@@ -300,7 +300,7 @@ No selector, callback, route record, or side carrier is postulated. -/
               (pair : Finset (object.Vertex × object.Vertex)) (pairMem : pair ∈ pattern)
               (pairCard : pair.card = 2)
               (demand : object.Vertex × object.Vertex) (demandMem : demand ∈ pair) :
-              sameTokenActualRoutingLabel data object active cubic capacity certified
+              sameTokenActualRoutingLabel data.toParameters object active cubic capacity certified
                   token role pattern patternSubset pair pairMem demand demandMem =
                 routingLabel pair pairCard demand := by
             have fibreMem := patternSubset pairMem
@@ -499,8 +499,8 @@ No selector, callback, route record, or side carrier is postulated. -/
                     (Graph.MinimumDegreeAtLeast data.threshold)
                     (Graph.HasCycleWithLength data.LengthOK) data.LengthOK
                     object ∨
-                (SameTokenTypeBHandoffEnvelopeStatement data object ∧
-                  SameTokenTypeBHandoffStatement data object) := by
+                (SameTokenTypeBHandoffEnvelopeStatement data.toParameters object ∧
+                  SameTokenTypeBHandoffStatement data.toParameters object) := by
             obtain ⟨pattern, patternSubset, patternShape, large, configurations,
                 pairs, first, second, different, left, right, leftMem, rightMem,
                 demandsDifferent, routingLabelsEqual⟩ :
@@ -1439,7 +1439,7 @@ No selector, callback, route record, or side carrier is postulated. -/
                   intro cubicDegree
                   exact noSparseExit (cubicSeparatorRoutes cubicDegree)
                 have separatorHigh :
-                    handoffHighDegree data object separator := by
+                    handoffHighDegree data.toParameters object separator := by
                   exact lt_of_le_of_ne separatorMinimumDegree
                     (Ne.symm separatorNotCubic)
                 have separatorNormalForm :
@@ -1452,7 +1452,7 @@ No selector, callback, route record, or side carrier is postulated. -/
                     object.degree nextRight = data.threshold :=
                   separatorNormalForm.neighbourTight separatorNextRightAdj
                 have denied : ∀ centre firstNeighbour secondNeighbour,
-                    ¬ handoffAbsorbing data object capacity.packing centre
+                    ¬ handoffAbsorbing data.toParameters object capacity.packing centre
                       firstNeighbour secondNeighbour :=
                   fun _ _ _ collision => avoids
                     (Graph.WindowLabelCollision.hasCycleWithLength_of_labelCollision

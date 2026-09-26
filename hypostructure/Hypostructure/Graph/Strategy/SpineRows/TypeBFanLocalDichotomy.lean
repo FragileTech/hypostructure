@@ -82,7 +82,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
         (show Value BranchState Presentation presentation data
             .typeBFanLocalDichotomy inputs.current from
           ⟨by
-            change TypeBFanLocalDichotomyStatement data inputs.current.object
+            change TypeBFanLocalDichotomyStatement data.toParameters inputs.current.object
             unfold TypeBFanLocalDichotomyStatement
             rcases heavy with canonical | absorbed | sameToken
             · apply Or.inl
@@ -91,7 +91,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
               refine ⟨packing, valid, maximal, component, present, centres, assigned, ?_⟩
               intro centre member centreHeavy
               have highCentre :=
-                TypeBAssignedCentres.high data inputs.current.object assigned centre member
+                TypeBAssignedCentres.high data.toParameters inputs.current.object assigned centre member
               rcases localAt centre highCentre with
                 compatible | triangular
               · exact Or.inl compatible

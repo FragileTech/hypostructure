@@ -26,25 +26,25 @@ theorem dominantRootedType_of_repetitive
       ∃ packing : Finset (Finset object.Vertex),
         object.IsWindowPacking data.windowOrder packing ∧
           packing.card = object.windowPackingNumber data.windowOrder ∧
-          remainderCurvatureTargetRank data object packing =
+          remainderCurvatureTargetRank data.toParameters object packing =
             remainderWedgeSupply object packing ∧
-          RemainderTypeCoordinateRepetitive data object packing)
+          RemainderTypeCoordinateRepetitive data.toParameters object packing)
     (nearCubic : object.degreeSurplus data.threshold ≤
       data.surplusThreshold object.vertexCount) :
-    DominantRootedTypeStatement data object fun _subcubic _root => True := by
+    DominantRootedTypeStatement data.toParameters object fun _subcubic _root => True := by
   classical
   obtain ⟨packing, valid, maximal, rankEq, repetitive⟩ := repetitiveInput
   letI : FinEnum object.Vertex := object.vertices
   letI : Fintype object.Vertex := inferInstance
   letI : DecidableEq object.Vertex := Classical.decEq object.Vertex
   let support := object.remainderSupport packing
-  let subcubic := remainderSubcubicSupport data object packing
+  let subcubic := remainderSubcubicSupport data.toParameters object packing
   have repetitive' :=
-    (remainderTypeCoordinateRepetitive_iff data object packing).mp repetitive
+    (remainderTypeCoordinateRepetitive_iff data.toParameters object packing).mp repetitive
   obtain ⟨root, fibreCount⟩ :=
     Graph.RootedLocalType.exists_dominant_of_structurallyRepetitive
       (object.rootedLocalTypeCode
-        (remainderSubcubicSupport data object packing) 2)
+        (remainderSubcubicSupport data.toParameters object packing) 2)
       (data.surplusThreshold object.vertexCount) repetitive'
   let code := object.rootedLocalTypeCode subcubic 2
   let fibre := Graph.RootedLocalType.typeFibre code root

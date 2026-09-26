@@ -54,7 +54,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
             .route8Rate inputs.current from
           ⟨by
             set object := inputs.current.object with hobj
-            set packing := canonicalWindowPacking data object with hpack
+            set packing := canonicalWindowPacking data.toParameters object with hpack
             have valid : object.IsWindowPacking data.windowOrder packing :=
               (Classical.choose_spec
                 (object.exists_windowPacking_card_eq data.windowOrder)).1
@@ -72,7 +72,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
             have supplyEq := Graph.Route8Census.card_supply object packing
             have remainder := object.remainderSupport_card_add_eq valid
             change (data.threshold * data.dischargeScale + 1) *
-                (coldExternalStubCount data * packing.card +
+                (coldExternalStubCount data.toParameters * packing.card +
                   data.surplusThreshold object.vertexCount) +
                 data.threshold * (data.bridgeMassFactor * data.dischargeScale *
                   data.surplusThreshold object.vertexCount) <
@@ -90,7 +90,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
               have := data.three_le_threshold
               have := Nat.mul_le_mul_right data.windowOrder this
               omega
-            have prod : coldExternalStubCount data * packing.card =
+            have prod : coldExternalStubCount data.toParameters * packing.card =
                 data.threshold * (data.windowOrder * packing.card) -
                   2 * (data.windowOrder - 1) * packing.card := by
               simp only [coldExternalStubCount]
@@ -101,7 +101,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
               rw [Nat.mul_assoc data.threshold] at this
               exact this
             have supplyLe : object.boundaryIncidence (object.remainderSupport packing) ≤
-                coldExternalStubCount data * packing.card +
+                coldExternalStubCount data.toParameters * packing.card +
                   data.surplusThreshold object.vertexCount := by
               rw [prod]
               omega

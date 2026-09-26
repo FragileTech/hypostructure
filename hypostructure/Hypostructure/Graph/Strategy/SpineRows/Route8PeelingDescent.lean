@@ -46,10 +46,10 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
             classical
             letI : DecidableEq inputs.current.object.Vertex :=
               inputs.current.object.vertices.decEq
-            let packing := canonicalWindowPacking data inputs.current.object
+            let packing := canonicalWindowPacking data.toParameters inputs.current.object
             let support := inputs.current.object.remainderSupport packing
-            let components := route8UnifiedComponents data inputs.current.object
-            let entries := route8UnifiedEntries data inputs.current.object
+            let components := route8UnifiedComponents data.toParameters inputs.current.object
+            let entries := route8UnifiedEntries data.toParameters inputs.current.object
             let scaledDeficit := Graph.TypeBEnvelopeCharge.route8Deficit
               inputs.current.object support data.threshold data.dischargeScale
                 components
@@ -112,7 +112,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                 scaledDeficit + data.dischargeScale *
                     (Graph.Route8Census.supply inputs.current.object packing).card +
                   slack := by
-              have raw : Route8UnifiedDeficitFact data inputs.current.object :=
+              have raw : Route8UnifiedDeficitFact data.toParameters inputs.current.object :=
                 census.down
               have strong : support.card ≤
                   scaledDeficit + data.dischargeScale *

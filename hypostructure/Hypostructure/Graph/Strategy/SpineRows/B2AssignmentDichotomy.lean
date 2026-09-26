@@ -78,23 +78,23 @@ noncomputable def b2AssignmentDichotomy
         let canonicalPiece :
             Graph.TypeBRefinedSupport.CanonicalPiece current.object packing :=
           ⟨component, componentMem⟩
-        have assigned' : TypeBAssignedCentres data current.object packing
+        have assigned' : TypeBAssignedCentres data.toParameters current.object packing
             canonicalPiece.vertices centres := assigned
         rcases Graph.TypeBRefinedSupport.b2_or_overlap current.object
             data.threshold data.dischargeScale packing canonicalPiece.vertices
-            centres (TypeBAssignedCentres.high data current.object assigned') with
+            centres (TypeBAssignedCentres.high data.toParameters current.object assigned') with
           choice | obstruction
         · exact ⟨.inl ⟨.inl ⟨packing, valid, maximal, canonicalPiece, centres,
               assigned', choice⟩⟩⟩
         · exact ⟨.inr ⟨.inl ⟨packing, valid, maximal, canonicalPiece, centres,
               assigned', obstruction⟩⟩⟩
-      · let packing := canonicalWindowPacking data current.object
+      · let packing := canonicalWindowPacking data.toParameters current.object
         by_cases choices :
             ∀ (germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
                   (Graph.MinimumDegreeAtLeast data.threshold)
                   (Graph.HasCycleWithLength data.LengthOK) current.object)
                 (centre : current.object.Vertex),
-              AbsorbedGermFanEnvelopeWitness data current.object germ centre →
+              AbsorbedGermFanEnvelopeWitness data.toParameters current.object germ centre →
                 Graph.TypeBRefinedSupport.HasDisjointChoice current.object
                   data.threshold data.dischargeScale packing
                   germ.support {centre} {centre}

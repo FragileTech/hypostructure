@@ -35,7 +35,7 @@ noncomputable instance instIncompatibleSurplusAboveSpineSurplusEstimate :
         data.spineScale * Core.ceilSqrt current.object.vertexCount :=
       estimate.down
     exact Nat.not_lt_of_ge (by
-      simpa [Data.surplusThreshold] using upper) lower
+      simpa [Parameters.surplusThreshold] using upper) lower
 
 /-- The registered `C_sp` absorbs the safety coefficient of the generic
 quadratic estimate: the homogeneous cap already does (`L_geom ≥ 2`), and

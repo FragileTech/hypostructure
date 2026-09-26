@@ -55,7 +55,7 @@ noncomputable def route8DemandLedgerDichotomy
       letI : DecidableEq current.object.Vertex :=
         Graph.Route8.vertexDecEq current.object
       by_cases survivor :
-          Route8UnifiedTrueTwoCarrierEntryStatement data current.object
+          Route8UnifiedTrueTwoCarrierEntryStatement data.toParameters current.object
       · exact ⟨.inl ⟨survivor⟩⟩
       ·
         have avoids : ¬ Graph.HasCycleWithLength data.LengthOK
@@ -65,22 +65,22 @@ noncomputable def route8DemandLedgerDichotomy
             current known previous (K .selection)).down.1
         obtain ⟨P, pinnedP, maximalP⟩ :=
           Graph.Route8Census.exists_maximal_demandLedger current.object
-            (route8UnifiedEntries data current.object) data.threshold
+            (route8UnifiedEntries data.toParameters current.object) data.threshold
             data.LengthOK
-            (route8DemandPinned data current.object)
+            (route8DemandPinned data.toParameters current.object)
             (by
               intro index memPinned
-              exact (mem_route8DemandPinned data current.object index).mp
+              exact (mem_route8DemandPinned data.toParameters current.object index).mp
                 memPinned |>.1)
             (fun index memPinned => by
               have bound :=
-                ((mem_route8DemandPinned data current.object index).mp
+                ((mem_route8DemandPinned data.toParameters current.object index).mp
                   memPinned).2.2
               unfold Graph.Route8.indexedPrivateCoreCount at bound
               exact le_trans data.three_le_threshold bound)
         have counts := Graph.Route8Census.demandLedger_no_overcount
-          current.object (canonicalWindowPacking data current.object)
-          (route8UnifiedComponents data current.object)
+          current.object (canonicalWindowPacking data.toParameters current.object)
+          (route8UnifiedComponents data.toParameters current.object)
           data.threshold data.dischargeScale data.LengthOK P
         refine ⟨.inr ⟨⟨⟨P, pinnedP, maximalP, counts.1, counts.2, ?_⟩⟩⟩⟩
         intro index _memUnion defect

@@ -50,7 +50,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
         (show Value BranchState Presentation presentation data
             .barrierEnumeration inputs.current from
           ⟨by
-            change BarrierEnumerationStatement data
+            change BarrierEnumerationStatement data.toParameters
             let barrier := data.windowBarrier
             letI := barrier.indexFintype
             let row := data.curvatureBarrierRow

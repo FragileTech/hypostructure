@@ -43,7 +43,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
         (inputs.get (K .fanClosedPortTypeBRouting)).down
       .cons (key := K .compatiblePairTypeBRouting) ⟨by
         classical
-        change CompatiblePairTypeBRoutingStatement data inputs.current.object
+        change CompatiblePairTypeBRoutingStatement data.toParameters inputs.current.object
         intro profile ledger normal scale left right compatible leftRemainder
           rightRemainder leftAssigned rightAssigned
         obtain ⟨leftClosed, rightClosed, distinct⟩ :=

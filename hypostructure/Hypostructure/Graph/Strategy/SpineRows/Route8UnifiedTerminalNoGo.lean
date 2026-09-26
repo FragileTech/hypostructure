@@ -55,10 +55,10 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           have selected := entryFacts.1
           have alphaAtLeast := entryFacts.2.1
           rcases index with ⟨piece, receiver, load⟩
-          let packing := canonicalWindowPacking data inputs.current.object
+          let packing := canonicalWindowPacking data.toParameters inputs.current.object
           let support := inputs.current.object.remainderSupport packing
-          let components := route8UnifiedComponents data inputs.current.object
-          let entries := route8UnifiedEntries data inputs.current.object
+          let components := route8UnifiedComponents data.toParameters inputs.current.object
+          let entries := route8UnifiedEntries data.toParameters inputs.current.object
           let index : Graph.Route8Census.Index inputs.current.object :=
             (piece, receiver, load)
           let basin := Graph.Route8Census.basin inputs.current.object

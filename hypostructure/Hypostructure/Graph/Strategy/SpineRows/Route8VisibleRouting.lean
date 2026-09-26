@@ -56,14 +56,14 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
             .route8VisibleExitFourRouting inputs.current from
           ⟨by
             classical
-            dsimp only [Holds]
+            dsimp only [Holds, Route8VisibleExitFourRoutingStatement]
             letI : DecidableEq inputs.current.object.Vertex :=
               inputs.current.object.vertices.decEq
             intro component componentMem receiver _receiverMem peeled
               _peeledSubset outside _portMem _overCard
             set piece := inputs.current.object.pieceSupport
               (inputs.current.object.remainderSupport
-                (canonicalWindowPacking data inputs.current.object)) component
+                (canonicalWindowPacking data.toParameters inputs.current.object)) component
               with pieceDef
             have avoids :
                 ¬ Graph.HasCycleWithLength data.LengthOK
@@ -77,7 +77,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
             have componentPiece : component ∈
                 inputs.current.object.canonicalPieces
                   (inputs.current.object.remainderSupport
-                    (canonicalWindowPacking data inputs.current.object)) :=
+                    (canonicalWindowPacking data.toParameters inputs.current.object)) :=
               (Finset.mem_filter.1 componentMem).1
             have connected :
                 Graph.SupportComponents.Connected.ConnectedOn
@@ -85,8 +85,8 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
               Graph.SupportComponents.Connected.connectedOn_of_mem_order
                 inputs.current.object _
                 ((Graph.FiniteObject.mem_canonicalPieces _ _).1 componentPiece)
-            have noHandoff : ¬ HandoffProduced data inputs.current.object
-                (canonicalWindowPacking data inputs.current.object) piece :=
+            have noHandoff : ¬ HandoffProduced data.toParameters inputs.current.object
+                (canonicalWindowPacking data.toParameters inputs.current.object) piece :=
               ((Finset.mem_filter.1 componentMem).2).2.2
             by_cases witnessed : ∃ witness : Graph.ExitFour.Witness
                 (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
@@ -127,10 +127,10 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
               refine absurd ?_ noHandoff
               obtain ⟨envelope, coreEq, decorated⟩ :=
                 Graph.Route8.TraceBasin.exists_envelope_of_traceSurvivingSeparator
-                  (HighDegree := handoffHighDegree data inputs.current.object)
+                  (HighDegree := handoffHighDegree data.toParameters inputs.current.object)
                   (Absorbing :=
-                    handoffAbsorbing data inputs.current.object
-                      (canonicalWindowPacking data inputs.current.object))
+                    handoffAbsorbing data.toParameters inputs.current.object
+                      (canonicalWindowPacking data.toParameters inputs.current.object))
                   separator avoids
                   (fun vertex high => by
                     show data.threshold < inputs.current.object.degree vertex

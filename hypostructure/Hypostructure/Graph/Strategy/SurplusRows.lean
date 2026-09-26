@@ -82,7 +82,7 @@ residual rather than from a fact. -/
         (show Value BranchState Presentation presentation data
             .sparseSlackSurplus inputs.current from
           ⟨by
-            simp only [Holds]
+            simp only [Holds, SparseSlackSurplusStatement]
             unfold Graph.FiniteObject.degreeSurplus
             omega⟩)
         .nil)
@@ -242,7 +242,7 @@ deficit is bounded linearly using the registered coefficient inequality. -/
             .baselineSpineDemand inputs.current from
           ⟨by
             classical
-            simp only [Holds]
+            simp only [Holds, BaselineSpineDemandStatement]
             let object := inputs.current.object
             let active := (inputs.get (K .activeSurplusDemands)).down
             let survivor := (inputs.get (K .sparseSurplusSurvivor)).down

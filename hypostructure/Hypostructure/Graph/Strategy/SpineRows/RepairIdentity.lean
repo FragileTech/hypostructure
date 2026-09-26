@@ -43,7 +43,7 @@ places the quotient in the closed rather than proper-support clause. -/
         (show Value BranchState Presentation presentation data
             .repairIdentity inputs.current from
           ⟨by
-            dsimp only [Holds]
+            dsimp only [Holds, RepairIdentityStatement]
             intro component _componentOnActiveSupport
             have handshake :
                 (3 : Int) * component.internal.card + component.surplus +

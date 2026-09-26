@@ -60,11 +60,11 @@ set_option maxHeartbeats 8000000 in
           letI : Fintype object.Vertex := inferInstance
           letI : DecidableRel object.graph.Adj :=
             object.decideAdj
-          change TypeBFanEntryStatement data object
+          change TypeBFanEntryStatement data.toParameters object
           apply Or.inr
           apply Or.inl
           simp only [AbsorbedGermDecoratedAssignedSupportStatement]
-          change AbsorbedGermFanDataStatement data object at fanData
+          change AbsorbedGermFanDataStatement data.toParameters object at fanData
           simp only [AbsorbedGermFanDataStatement] at fanData
           obtain ⟨routing, _incidence, _candidates, _disjointFamily,
               _corridorLoss, _familyWitness, fanData⟩ := fanData
@@ -72,7 +72,7 @@ set_option maxHeartbeats 8000000 in
           intro epsilon notCandidate
           obtain ⟨firstIndex, firstBound, high, earlierBound,
               neighboursCubic⟩ := fanData epsilon notCandidate
-          let classified := coldRoutedClassified data object routing
+          let classified := coldRoutedClassified data.toParameters object routing
           let state := classified.state
           let stateOne := Classical.choose_spec state
           let componentAt := Classical.choose stateOne
@@ -83,7 +83,7 @@ set_option maxHeartbeats 8000000 in
           let stateFour := Classical.choose_spec stateThree
           let indexAt := Classical.choose stateFour
           let stateBundle := Classical.choose_spec stateFour
-          let routed : ColdEligibleHalfEdge data object := epsilon
+          let routed : ColdEligibleHalfEdge data.toParameters object := epsilon
           let component := componentAt routed
           let corridor := corridorAt routed
           let _presentation := presentationAt routed
@@ -95,7 +95,7 @@ set_option maxHeartbeats 8000000 in
               object.degree neighbour = data.threshold) at neighboursCubic
           refine ⟨centre, ⟨routing, epsilon, rfl, firstIndex, rfl,
             firstBound, high, earlierBound, neighboursCubic, ?_⟩⟩
-          let traceEnd := coldRoutedTraceEnd data object routing epsilon
+          let traceEnd := coldRoutedTraceEnd data.toParameters object routing epsilon
           change firstIndex.1 ≤ traceEnd at firstBound
           let core := corridor.prefixSupport traceEnd
           have centreCore : centre ∈ core := by
@@ -106,14 +106,14 @@ set_option maxHeartbeats 8000000 in
             simpa only [SimpleGraph.Walk.take_getVert,
               Nat.min_eq_right firstBound] using member
           have coreInside : core ⊆ object.remainderSupport
-              (canonicalWindowPacking data object) := by
+              (canonicalWindowPacking data.toParameters object) := by
             exact (corridor.prefixSupport_subset_component traceEnd).trans
               (stateBundle.2.2.2.1 routed)
           have avoids : ¬ Graph.HasCycleWithLength data.LengthOK
               object := selected.1
           have denied : ∀ c a b,
-              ¬ handoffAbsorbing data object
-                (canonicalWindowPacking data object) c a b :=
+              ¬ handoffAbsorbing data.toParameters object
+                (canonicalWindowPacking data.toParameters object) c a b :=
             fun _ _ _ collision => avoids
               (Graph.WindowLabelCollision.hasCycleWithLength_of_labelCollision
                 data.degenerateClosureRejected collision)
@@ -121,9 +121,9 @@ set_option maxHeartbeats 8000000 in
           let arm := fun next : object.Vertex =>
             if next ∈ core then [next] else [next, centre]
           let envelope : Graph.DecoratedHandoff.Envelope object
-              data.LengthOK (handoffHighDegree data object)
-              (handoffAbsorbing data object
-                (canonicalWindowPacking data object)) :=
+              data.LengthOK (handoffHighDegree data.toParameters object)
+              (handoffAbsorbing data.toParameters object
+                (canonicalWindowPacking data.toParameters object)) :=
             { core := core
               decorations := {centre}
               decorations_high := by
@@ -210,25 +210,25 @@ set_option maxHeartbeats 8000000 in
             (object.exists_windowPacking_card_eq data.windowOrder)
           have packingMaximal : ∀ window : Finset object.Vertex,
               object.InducesWindow data.windowOrder window →
-                ∃ member ∈ canonicalWindowPacking data object,
+                ∃ member ∈ canonicalWindowPacking data.toParameters object,
                   ¬ Disjoint window member := by
             intro window induced
             exact object.exists_mem_not_disjoint_of_card_eq
               data.windowOrder_pos packingSpec.1 packingSpec.2 induced
-          have coreSafe : handoffWindowFree data object core := by
+          have coreSafe : handoffWindowFree data.toParameters object core := by
             constructor
             · intro window subset induced
-              exact (normalized (canonicalWindowPacking data object)
+              exact (normalized (canonicalWindowPacking data.toParameters object)
                 packingSpec.1 packingMaximal window
                   (subset.trans coreInside)).1 induced
             · intro internal subset
-              exact (normalized (canonicalWindowPacking data object)
+              exact (normalized (canonicalWindowPacking data.toParameters object)
                 packingSpec.1 packingMaximal internal
                   (subset.trans coreInside)).2
           have admissible : Graph.DecoratedHandoff.Admissible
               object data.LengthOK
-              (handoffUncompressible data object)
-              (handoffWindowFree data object) envelope :=
+              (handoffUncompressible data.toParameters object)
+              (handoffWindowFree data.toParameters object) envelope :=
             Graph.DecoratedHandoff.admissible_of_envelope avoids coreSafe
               uncompressible
           have assignedTwo : 1 < assigned.card := by

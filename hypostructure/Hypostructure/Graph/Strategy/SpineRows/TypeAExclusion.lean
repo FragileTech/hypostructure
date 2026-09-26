@@ -71,7 +71,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
             .typeAExclusion inputs.current from
           ⟨by
             classical
-            dsimp only [Holds]
+            dsimp only [Holds, TypeAExclusionStatement]
             letI : DecidableEq inputs.current.object.Vertex :=
               inputs.current.object.vertices.decEq
             intro packing valid maximal piece _subset connected negative
@@ -110,7 +110,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                       Graph.Route8.TraceBasin.TraceSurvivingSeparator
                         inputs.current.object piece data.threshold
                         data.LengthOK receiver load basin) ∧
-                    HandoffProduced data inputs.current.object packing
+                    HandoffProduced data.toParameters inputs.current.object packing
                       piece) := by
               intro receiver load routed
               by_cases quotient : ∃ basin : Finset inputs.current.object.Vertex,
@@ -129,9 +129,9 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                 obtain ⟨basin, separator⟩ := separated
                 obtain ⟨envelope, coreEq, decorated⟩ :=
                   Graph.Route8.TraceBasin.exists_envelope_of_traceSurvivingSeparator
-                    (HighDegree := handoffHighDegree data inputs.current.object)
+                    (HighDegree := handoffHighDegree data.toParameters inputs.current.object)
                     (Absorbing :=
-                      handoffAbsorbing data inputs.current.object packing)
+                      handoffAbsorbing data.toParameters inputs.current.object packing)
                     separator avoids
                     (fun vertex high => by
                       show data.threshold < inputs.current.object.degree vertex
@@ -188,7 +188,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                       data.threshold data.dischargeScale receiver ∅)
               · exact Or.inl witnessed
               by_cases handoff :
-                  HandoffProduced data inputs.current.object packing piece
+                  HandoffProduced data.toParameters inputs.current.object packing piece
               · exact Or.inr (Or.inr handoff)
               refine Or.inr (Or.inl ?_)
               intro receiver receiverMem

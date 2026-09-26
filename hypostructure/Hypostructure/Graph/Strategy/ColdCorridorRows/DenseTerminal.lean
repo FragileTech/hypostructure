@@ -41,11 +41,11 @@ induced-`P_windowOrder`-free remainder therefore bounds its length by
           classical
           let object := inputs.current.object
           letI : FinEnum object.Vertex := object.vertices
-          change HotColdWindowStatement data object at split
-          change ColdCorridorStateStatement data object at state
+          change HotColdWindowStatement data.toParameters object at split
+          change ColdCorridorStateStatement data.toParameters object at state
           obtain ⟨validPacking, _attains, maximal, _hot,
             _coldIff, _disjoint, _cover⟩ := split
-          change DenseColdCorridorsTerminalStatement data object
+          change DenseColdCorridorsTerminalStatement data.toParameters object
           refine ⟨state, ?_⟩
           let stateOne := Classical.choose_spec state
           let componentAt := Classical.choose stateOne
@@ -56,7 +56,7 @@ induced-`P_windowOrder`-free remainder therefore bounds its length by
           let stateBundle := Classical.choose_spec
             (Classical.choose_spec stateTail)
           have componentInR := stateBundle.2.2.2.1
-          change ∀ epsilon : ColdEligibleHalfEdge data object,
+          change ∀ epsilon : ColdEligibleHalfEdge data.toParameters object,
             Graph.ColdCorridor.Corridor.TerminalCorridor
               (corridorAt epsilon) data.coldSignature
           intro epsilon
@@ -66,7 +66,7 @@ induced-`P_windowOrder`-free remainder therefore bounds its length by
               data.windowOrder :=
             object.inducedPathFree_induce_of_forall
               (fun support inside =>
-                (normalized (canonicalWindowPacking data object) validPacking
+                (normalized (canonicalWindowPacking data.toParameters object) validPacking
                   maximal support
                   (inside.trans (componentInR epsilon))).1)
           obtain ⟨shortest, shortestPath, shortestLength⟩ :=

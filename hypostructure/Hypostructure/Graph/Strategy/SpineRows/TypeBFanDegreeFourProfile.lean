@@ -54,7 +54,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
         (show Value BranchState Presentation presentation data
             .typeBFanDegreeFourProfile inputs.current from
           ⟨by
-            change TypeBFanDegreeFourProfileStatement data inputs.current.object
+            change TypeBFanDegreeFourProfileStatement data.toParameters inputs.current.object
             unfold TypeBFanDegreeFourProfileStatement
             rcases degreeFour with canonical | absorbed | sameToken
             · apply Or.inl
@@ -63,7 +63,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
               refine ⟨packing, valid, maximal, component, present, centres, assigned, ?_⟩
               intro centre member
               have high :=
-                TypeBAssignedCentres.high data inputs.current.object assigned centre member
+                TypeBAssignedCentres.high data.toParameters inputs.current.object assigned centre member
               have degree := degrees centre member
               refine ⟨degree, ?_, ?_, ?_⟩
               · rcases Graph.heavyCentreLocalDichotomy (normal centre high) with

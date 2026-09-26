@@ -59,7 +59,7 @@ noncomputable def typeASilentExitFourTerminalDichotomy
           current known previous (K .typeAVisibleFirstExcess)).down
       let piece := current.object.pieceSupport
         (current.object.remainderSupport packing) component
-      let origin : SilentExitOriginAt data current.object piece receiver :=
+      let origin : SilentExitOriginAt data.toParameters current.object piece receiver :=
         ⟨noVisible, originalSaturated, silent, count⟩
       let start : Finset current.object.Vertex := ∅
       have startInside : start ⊆
@@ -91,7 +91,7 @@ noncomputable def typeASilentExitFourTerminalDichotomy
         (Terminal := fun state =>
           Graph.ExitFour.SaturatedAfter piece data.threshold
               data.dischargeScale receiver state ∧
-            ExitFourFreeAt data current.object piece receiver state)
+            ExitFourFreeAt data.toParameters current.object piece receiver state)
         startInside startWitnessed
         (by
           intro state stateInside stateWitnessed stateSaturated

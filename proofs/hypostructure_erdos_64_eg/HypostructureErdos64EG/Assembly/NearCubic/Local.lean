@@ -85,8 +85,8 @@ noncomputable def selectedWindowPackageRealizationDichotomy
     `HypostructureErdos64EG.selectedWindowPackageRealizationDichotomy
     (by
       classical
-      exact if realized : WindowPackageRealized spineData.{u} selected.object
-          (canonicalWindowPacking spineData.{u} selected.object) then
+      exact if realized : WindowPackageRealized spineData.{u}.toParameters selected.object
+          (canonicalWindowPacking spineData.{u}.toParameters selected.object) then
         .inl ⟨realized⟩
       else
         .inr ⟨realized⟩)
@@ -110,7 +110,7 @@ noncomputable def selectedDenseDeficiencyDichotomy
     `HypostructureErdos64EG.selectedDenseDeficiencyDichotomy
     (by
       classical
-      exact if below : DenseDeficiencyBelowStatement spineData.{u} selected.object then
+      exact if below : DenseDeficiencyBelowStatement spineData.{u}.toParameters selected.object then
         .inl ⟨below⟩
       else
         .inr ⟨below⟩)
@@ -134,7 +134,7 @@ noncomputable def selectedColdGermRealizationDichotomy
       exact if hit : ∃ germ : Graph.ColdCorridor.BoundedGerm spineData.{u}.coldSignature
           (Graph.MinimumDegreeAtLeast spineData.{u}.threshold)
           (Graph.HasCycleWithLength spineData.{u}.LengthOK) selected.object,
-          ActiveColdGermStatement spineData.{u} selected.object germ ∧ germ.Realizing then
+          ActiveColdGermStatement spineData.{u}.toParameters selected.object germ ∧ germ.Realizing then
         .inl ⟨hit⟩
       else
         .inr ⟨hit⟩)
@@ -160,7 +160,7 @@ noncomputable def selectedColdGermDistinctionDichotomy
       exact if hit : ∃ germ : Graph.ColdCorridor.BoundedGerm spineData.{u}.coldSignature
           (Graph.MinimumDegreeAtLeast spineData.{u}.threshold)
           (Graph.HasCycleWithLength spineData.{u}.LengthOK) selected.object,
-          ActiveColdGermStatement spineData.{u} selected.object germ ∧
+          ActiveColdGermStatement spineData.{u}.toParameters selected.object germ ∧
             germ.Distinguishing then
         .inl ⟨hit⟩
       else

@@ -41,12 +41,12 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           classical
           letI : DecidableEq inputs.current.object.Vertex :=
             inputs.current.object.vertices.decEq
-          change Route8CarrierCore data inputs.current.object
+          change Route8CarrierCore data.toParameters inputs.current.object
           dsimp only [Route8CarrierCore]
           intro component _componentMem
           intro receiver _receiverMem
           intro load _loadMem
-          let packing := canonicalWindowPacking data inputs.current.object
+          let packing := canonicalWindowPacking data.toParameters inputs.current.object
           let support := inputs.current.object.remainderSupport packing
           let piece := inputs.current.object.pieceSupport support component
           let index : Graph.Route8Census.Index inputs.current.object :=

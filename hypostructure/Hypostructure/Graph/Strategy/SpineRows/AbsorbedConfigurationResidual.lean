@@ -67,21 +67,21 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
             obtain ⟨_, canonicalCard, _, _, _, disjoint, cover⟩ := split
             -- `p = |𝒫_hot| + |𝒫_cold|`: the fixed packing is the disjoint union.
             have union :
-                canonicalWindowPacking data inputs.current.object =
-                  canonicalHotWindows data inputs.current.object ∪
-                    canonicalColdWindows data inputs.current.object := by
+                canonicalWindowPacking data.toParameters inputs.current.object =
+                  canonicalHotWindows data.toParameters inputs.current.object ∪
+                    canonicalColdWindows data.toParameters inputs.current.object := by
               ext window
               simp only [Finset.mem_union]
               exact cover window
             have countEq :
                 packing.card =
-                  (canonicalHotWindows data inputs.current.object).card +
-                    (canonicalColdWindows data inputs.current.object).card := by
+                  (canonicalHotWindows data.toParameters inputs.current.object).card +
+                    (canonicalColdWindows data.toParameters inputs.current.object).card := by
               rw [cardinality, ← canonicalCard, union,
                 Finset.card_union_of_disjoint disjoint]
             rw [← countEq]
             unfold Graph.FiniteObject.NonNegativeNetCharge at nonneg
-            unfold Data.netChargeCoefficient
+            unfold Parameters.netChargeCoefficient
             -- `e(R,W) ≤ (δ·order − 2(order−1))·p + σ_W`, in both truncation cases.
             have assoc :
                 data.threshold * data.windowOrder * packing.card =

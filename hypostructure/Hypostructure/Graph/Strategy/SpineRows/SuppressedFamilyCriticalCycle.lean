@@ -44,7 +44,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       let selection := (inputs.get (K .selection)).down
       let suppressionSafe := (inputs.get (K .openPortSuppressionSafe)).down
       .cons (key := K .suppressedFamilyCriticalCycle) ⟨by
-        change SuppressedFamilyCriticalCycleStatement data inputs.current.object
+        change SuppressedFamilyCriticalCycleStatement data.toParameters inputs.current.object
         classical
         letI : DecidableEq inputs.current.object.Vertex :=
           inputs.current.object.vertices.decEq

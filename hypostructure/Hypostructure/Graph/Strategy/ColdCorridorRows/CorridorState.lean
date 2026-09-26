@@ -49,35 +49,35 @@ set_option maxHeartbeats 1600000 in
     (fun inputs =>
       let corridors := (inputs.get (K .coldReturnCorridors)).down
       let split := (inputs.get (K .hotColdPartition)).down
-      let state : ColdCorridorStateStatement data inputs.current.object := by
+      let state : ColdCorridorStateStatement data.toParameters inputs.current.object := by
           classical
           let object := inputs.current.object
           letI : FinEnum object.Vertex := object.vertices
-          let cubic := (canonicalColdWindows data object).filter
-            (AmbientCubicWindow data object)
-          let packing := canonicalWindowPacking data object
-          let windows := coldCorridorWindows data object
+          let cubic := (canonicalColdWindows data.toParameters object).filter
+            (AmbientCubicWindow data.toParameters object)
+          let packing := canonicalWindowPacking data.toParameters object
+          let windows := coldCorridorWindows data.toParameters object
           let Selected := {stub : object.Vertex × object.Vertex //
             stub ∈ Graph.ColdCorridor.allSelectedStubs object cubic}
-          change HotColdWindowStatement data object at split
+          change HotColdWindowStatement data.toParameters object at split
           obtain ⟨validPacking, _attains, _maximal, _hot,
             coldIff, _disjoint, _cover⟩ := split
           have cubicWindow : ∀ window ∈ cubic,
               object.InducesWindow data.windowOrder window := by
             intro window member
-            have coldMember : window ∈ canonicalColdWindows data object :=
+            have coldMember : window ∈ canonicalColdWindows data.toParameters object :=
               (Finset.mem_filter.mp member).1
-            have packingMember : window ∈ canonicalWindowPacking data object :=
+            have packingMember : window ∈ canonicalWindowPacking data.toParameters object :=
               (coldIff window).mp coldMember |>.1
             exact validPacking.1 window packingMember
           have packingWindow : ∀ window ∈ packing,
               object.InducesWindow data.windowOrder window := by
             intro window member
             exact validPacking.1 window member
-          change ColdReturnCorridorsStatement data object at corridors
+          change ColdReturnCorridorsStatement data.toParameters object at corridors
           simp only [ColdReturnCorridorsStatement] at corridors
           obtain ⟨_componentwise, partition, _cardinality⟩ := corridors
-          have corridorExists : ∀ epsilon : ColdEligibleHalfEdge data object,
+          have corridorExists : ∀ epsilon : ColdEligibleHalfEdge data.toParameters object,
               ∃ (component : Finset object.Vertex)
                 (corridor : Graph.ColdCorridor.Corridor object windows component),
                 Graph.ColdCorridor.IsOutsideComponent object windows component ∧
@@ -89,13 +89,13 @@ set_option maxHeartbeats 1600000 in
                   entry⟩ := outside
               exact ⟨component, corridor, outsideComponent, entry⟩
             · exact (epsilon.property.2 crossWindow).elim
-          let componentAt : ColdEligibleHalfEdge data object → Finset object.Vertex :=
+          let componentAt : ColdEligibleHalfEdge data.toParameters object → Finset object.Vertex :=
             fun epsilon => Classical.choose (corridorExists epsilon)
-          let corridorAt : (epsilon : ColdEligibleHalfEdge data object) →
+          let corridorAt : (epsilon : ColdEligibleHalfEdge data.toParameters object) →
               Graph.ColdCorridor.Corridor object windows (componentAt epsilon) :=
             fun epsilon => Classical.choose (Classical.choose_spec
               (corridorExists epsilon))
-          have corridorFacts : ∀ epsilon : ColdEligibleHalfEdge data object,
+          have corridorFacts : ∀ epsilon : ColdEligibleHalfEdge data.toParameters object,
               Graph.ColdCorridor.IsOutsideComponent object windows
                   (componentAt epsilon) ∧
                 (corridorAt epsilon).entryStub =
@@ -103,14 +103,14 @@ set_option maxHeartbeats 1600000 in
             intro epsilon
             exact Classical.choose_spec (Classical.choose_spec
               (corridorExists epsilon))
-          let entryWindowAt : ColdEligibleHalfEdge data object →
+          let entryWindowAt : ColdEligibleHalfEdge data.toParameters object →
               Finset object.Vertex := fun epsilon =>
             Classical.choose
               ((Graph.ColdCorridor.mem_windowsOf object cubic epsilon.1.1).1
                 (Graph.ColdCorridor.selected_facts object cubic
                   (⟨epsilon.1, epsilon.2.1⟩ :
-                    ColdSelectedHalfEdge data object)).1)
-          let successorWindowAt : (epsilon : ColdEligibleHalfEdge data object) →
+                    ColdSelectedHalfEdge data.toParameters object)).1)
+          let successorWindowAt : (epsilon : ColdEligibleHalfEdge data.toParameters object) →
               Finset object.Vertex := fun epsilon => by
             have boundaryMember : (corridorAt epsilon).successorStub ∈
                 Graph.ColdCorridor.boundaryStubs object windows
@@ -121,7 +121,7 @@ set_option maxHeartbeats 1600000 in
             exact Classical.choose
               ((Graph.ColdCorridor.mem_windowsOf object packing
                 (corridorAt epsilon).successorStub.2).1 inWindows)
-          let activeAt := fun (epsilon : ColdEligibleHalfEdge data object)
+          let activeAt := fun (epsilon : ColdEligibleHalfEdge data.toParameters object)
               (segment : (corridorAt epsilon).Segment) =>
             entryWindowAt epsilon ∪ successorWindowAt epsilon ∪
               ({(corridorAt epsilon).entryStub.1,
@@ -202,20 +202,20 @@ set_option maxHeartbeats 1600000 in
             change Graph.ColdCorridor.EmbeddedCoordinateValue width clause generator
             exact (supportPositions, incidences,
               ⟨labelNeighbors.card, Nat.lt_succ_of_le labelDegreeBound⟩)
-          let supportAt := fun (epsilon : ColdEligibleHalfEdge data object)
+          let supportAt := fun (epsilon : ColdEligibleHalfEdge data.toParameters object)
               (segment : (corridorAt epsilon).Segment) =>
             supportOn (activeAt epsilon segment)
-          let valueAt : (epsilon : ColdEligibleHalfEdge data object) →
+          let valueAt : (epsilon : ColdEligibleHalfEdge data.toParameters object) →
               (corridorAt epsilon).Segment →
               (clause : data.coldSignature.Clause) →
               (generator : data.coldSignature.Generator clause) →
               data.coldSignature.Value clause generator :=
             fun epsilon segment => valueOn (activeAt epsilon segment)
-          let presentationAt : ColdEligibleHalfEdge data object →
+          let presentationAt : ColdEligibleHalfEdge data.toParameters object →
               Graph.ColdCorridor.Presentation data.coldSignature object :=
             fun epsilon => (corridorAt epsilon).presentation data.coldSignature
               (activeAt epsilon) offsetAt (supportAt epsilon) (valueAt epsilon)
-          let indexAt : (epsilon : ColdEligibleHalfEdge data object) →
+          let indexAt : (epsilon : ColdEligibleHalfEdge data.toParameters object) →
               (corridorAt epsilon).Segment → (presentationAt epsilon).Segment :=
             fun _epsilon segment => ULift.up segment
           let makeGerm : (support : Finset object.Vertex) →
@@ -298,7 +298,7 @@ set_option maxHeartbeats 1600000 in
                   sameProfile := selectedReading.1
                   baseline := selectedReading.2 atom.outside sourceBaseline
                   record := record }
-          have germExists : ∀ epsilon : ColdEligibleHalfEdge data object,
+          have germExists : ∀ epsilon : ColdEligibleHalfEdge data.toParameters object,
               ∃ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
                   (Graph.MinimumDegreeAtLeast data.threshold)
                   (Graph.HasCycleWithLength data.LengthOK) object,
@@ -384,7 +384,7 @@ set_option maxHeartbeats 1600000 in
                 exact corridor.intervalSupport_subset_inside left right vertex member
           let outsideIncidence := fun epsilon =>
             Classical.choose (germExists epsilon)
-          have crossGermExists : ∀ epsilon : ColdCrossWindowHalfEdge data object,
+          have crossGermExists : ∀ epsilon : ColdCrossWindowHalfEdge data.toParameters object,
               ∃ germ : Graph.ColdCorridor.BoundedGerm data.coldSignature
                   (Graph.MinimumDegreeAtLeast data.threshold)
                   (Graph.HasCycleWithLength data.LengthOK) object,
@@ -477,7 +477,7 @@ set_option maxHeartbeats 1600000 in
             exact ⟨germ, rfl⟩
           let crossIncidence := fun epsilon =>
             Classical.choose (crossGermExists epsilon)
-          have componentInR : ∀ epsilon : ColdEligibleHalfEdge data object,
+          have componentInR : ∀ epsilon : ColdEligibleHalfEdge data.toParameters object,
               componentAt epsilon ⊆ object.remainderSupport packing := by
             intro epsilon vertex vertexMember
             apply Finset.mem_sdiff.2
@@ -500,7 +500,7 @@ set_option maxHeartbeats 1600000 in
               ((Graph.ColdCorridor.mem_windowsOf object cubic epsilon.1.1).1
                 (Graph.ColdCorridor.selected_facts object cubic
                   (⟨epsilon.1, epsilon.2.1⟩ :
-                    ColdSelectedHalfEdge data object)).1)
+                    ColdSelectedHalfEdge data.toParameters object)).1)
             have entryCard : (entryWindowAt epsilon).card = data.windowOrder :=
               (cubicWindow (entryWindowAt epsilon) entryFacts.1).2
             have boundaryMember : (corridorAt epsilon).successorStub ∈

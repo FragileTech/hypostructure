@@ -39,14 +39,14 @@ ledger; the connection is the component's own. -/
           classical
           let object := inputs.current.object
           letI : FinEnum object.Vertex := object.vertices
-          let cubic := (canonicalColdWindows data object).filter
-            (AmbientCubicWindow data object)
-          let packing := canonicalWindowPacking data object
-          let windows := coldCorridorWindows data object
-          change HotColdWindowStatement data object at split
+          let cubic := (canonicalColdWindows data.toParameters object).filter
+            (AmbientCubicWindow data.toParameters object)
+          let packing := canonicalWindowPacking data.toParameters object
+          let windows := coldCorridorWindows data.toParameters object
+          change HotColdWindowStatement data.toParameters object at split
           obtain ⟨_validPacking, _attains, _maximal, _hot,
             coldIff, _disjoint, _cover⟩ := split
-          change ColdReturnCorridorsStatement data object
+          change ColdReturnCorridorsStatement data.toParameters object
           simp only [ColdReturnCorridorsStatement]
           refine ⟨?_, ?_, ?_⟩
           · intro component outside entry

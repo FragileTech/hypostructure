@@ -58,8 +58,8 @@ noncomputable def route8StageOutcomeDichotomy
           current known previous (K .route8PeelingDescent)).down
       rcases ends with ⟨_rate, index, isTrue⟩ | rateFails
       · have transported := Graph.Route8Pressure.trueEntry_transport
-          current.object (canonicalWindowPacking data current.object)
-          (route8UnifiedEntries data current.object) data.threshold
+          current.object (canonicalWindowPacking data.toParameters current.object)
+          (route8UnifiedEntries data.toParameters current.object) data.threshold
           data.dischargeScale data.LengthOK final.toFinset isTrue
         have entryFacts :=
           (@ExactLedger.get (Input BranchState Presentation presentation data) _

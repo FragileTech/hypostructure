@@ -38,13 +38,13 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     (fun inputs =>
       let global := inputs.get (K .route8GlobalSqueeze)
       let routing := inputs.get (K .typeAReceiverRouting)
-      let burden : Route8BasinBurden data inputs.current.object := by
+      let burden : Route8BasinBurden data.toParameters inputs.current.object := by
         classical
         letI : DecidableEq inputs.current.object.Vertex :=
           inputs.current.object.vertices.decEq
         obtain ⟨_collection, _collection_eq, scaledDeficit,
           scaledDeficit_eq⟩ := global.down
-        let packing := canonicalWindowPacking data inputs.current.object
+        let packing := canonicalWindowPacking data.toParameters inputs.current.object
         have packingSpec := Classical.choose_spec
           (inputs.current.object.exists_windowPacking_card_eq data.windowOrder)
         have valid : inputs.current.object.IsWindowPacking data.windowOrder
@@ -57,7 +57,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
               data.windowOrder_pos valid packingSpec.2 induces
         let support := inputs.current.object.remainderSupport packing
         let routeEight := (inputs.current.object.canonicalPieces support).filter
-          (Route8Survives data inputs.current.object packing)
+          (Route8Survives data.toParameters inputs.current.object packing)
         let basinCount :=
           ∑ component ∈ routeEight,
             ∑ receiver ∈ Graph.VisibleEntry.saturatedReceivers

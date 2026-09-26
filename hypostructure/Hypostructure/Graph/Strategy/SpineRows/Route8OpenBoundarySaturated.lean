@@ -27,7 +27,7 @@ assignment and contradicts its retained maximality. -/
           classical
           letI : DecidableEq inputs.current.object.Vertex :=
             inputs.current.object.vertices.decEq
-          show Route8OpenBoundarySaturatedStatement data inputs.current.object
+          show Route8OpenBoundarySaturatedStatement data.toParameters inputs.current.object
           unfold Route8OpenBoundarySaturatedStatement
           refine fun P pinnedP maximalP raw defect => ?_
           obtain ⟨A, dep, absorbedUnits, supplied, sameSupport, depUnits,
@@ -39,15 +39,15 @@ assignment and contradicts its retained maximality. -/
           intro unit openUnit carrier inSupport ledgerUnused
           by_contra notAssigned
           have unitMem := (Finset.mem_sdiff.mp openUnit).1
-          have entryMem : unit.1 ∈ route8UnifiedEntries data inputs.current.object := by
+          have entryMem : unit.1 ∈ route8UnifiedEntries data.toParameters inputs.current.object := by
             have unpaid :=
               Graph.DemandPartition.Partition.fst_mem_of_mem_demandUnits unitMem
             rcases Finset.mem_union.mp unpaid with inTwo | inResidual
             · exact P.two_subset_entries inTwo
             · exact P.residual_subset_entries inResidual
           change unit.1 ∈ Graph.Route8Census.entriesOfComponents
-            inputs.current.object (canonicalWindowPacking data inputs.current.object)
-            (route8UnifiedComponents data inputs.current.object)
+            inputs.current.object (canonicalWindowPacking data.toParameters inputs.current.object)
+            (route8UnifiedComponents data.toParameters inputs.current.object)
             data.threshold data.dischargeScale at entryMem
           simp only [Graph.Route8Census.entriesOfComponents,
             Finset.mem_biUnion, Finset.mem_image] at entryMem
@@ -55,12 +55,12 @@ assignment and contradicts its retained maximality. -/
             load, _loadMem, indexEq⟩ := entryMem
           have pieceEq : unit.1.1 = inputs.current.object.pieceSupport
               (inputs.current.object.remainderSupport
-                (canonicalWindowPacking data inputs.current.object)) component := by
+                (canonicalWindowPacking data.toParameters inputs.current.object)) component := by
             rw [← indexEq]
           have inSupply : carrier ∈ Graph.Route8Census.supply inputs.current.object
-              (canonicalWindowPacking data inputs.current.object) := by
+              (canonicalWindowPacking data.toParameters inputs.current.object) := by
             apply Graph.Route8Census.cutEdges_piece_subset inputs.current.object
-              (canonicalWindowPacking data inputs.current.object) component
+              (canonicalWindowPacking data.toParameters inputs.current.object) component
             simpa only [← pieceEq] using inSupport
           have unitOutside := (Finset.mem_sdiff.mp openUnit).2
           have notAbsorbed : unit ∉ A.absorbed := fun h =>
@@ -102,7 +102,7 @@ assignment and contradicts its retained maximality. -/
             Finset.insert_subset unitMem absorbedUnits
           have suppliedB : ∀ other ∈ B.absorbed, B.absorber other ∈
               Graph.Route8Census.supply inputs.current.object
-                (canonicalWindowPacking data inputs.current.object) := by
+                (canonicalWindowPacking data.toParameters inputs.current.object) := by
             intro other member
             by_cases same : other = unit
             · subst other

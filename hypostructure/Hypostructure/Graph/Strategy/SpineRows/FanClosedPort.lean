@@ -42,7 +42,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .fanClosedPort) ⟨by
-        change FanClosedPortStatement data inputs.current.object
+        change FanClosedPortStatement data.toParameters inputs.current.object
         intro profile endpoint
         constructor
         · intro closed

@@ -305,15 +305,15 @@ noncomputable def selectedSpineSurplusEstimateCloses
     [FactKeys.Has (K .spineSurplusEstimate) known]
     [FactKeys.Has (K .surplusAbove) known] : False := by
   have lower :
-      spineData.surplusThreshold selected.object.vertexCount <
-        selected.object.degreeSurplus spineData.threshold :=
+      spineData.{u}.surplusThreshold selected.object.vertexCount <
+        selected.object.degreeSurplus spineData.{u}.threshold :=
     (history.get (K .surplusAbove)).down
   have upper :
-      selected.object.degreeSurplus spineData.threshold ≤
-        spineData.spineScale * Core.ceilSqrt selected.object.vertexCount :=
+      selected.object.degreeSurplus spineData.{u}.threshold ≤
+        spineData.{u}.spineScale * Core.ceilSqrt selected.object.vertexCount :=
     (history.get (K .spineSurplusEstimate)).down
   exact Nat.not_lt_of_ge (by
-    simpa [Graph.Strategy.Spine.Data.surplusThreshold] using upper) lower
+    simpa [Graph.Strategy.Spine.Parameters.surplusThreshold] using upper) lower
 
 /-- **Node `[144]`, handoff arm.**  Run the paper's routing lemma on the
 literal pattern-arm ledger of the `[144]` decision.  Sparse exits are

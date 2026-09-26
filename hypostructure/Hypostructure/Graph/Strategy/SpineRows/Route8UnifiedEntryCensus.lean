@@ -64,13 +64,13 @@ set_option maxHeartbeats 1600000 in
           have indexSpec :
               (piece, receiver, load) ∈
                   Graph.Route8Census.entriesOfComponents inputs.current.object
-                    (canonicalWindowPacking data inputs.current.object)
-                    (route8UnifiedComponents data inputs.current.object)
+                    (canonicalWindowPacking data.toParameters inputs.current.object)
+                    (route8UnifiedComponents data.toParameters inputs.current.object)
                     data.threshold data.dischargeScale ↔
-                ∃ component ∈ route8UnifiedComponents data inputs.current.object,
+                ∃ component ∈ route8UnifiedComponents data.toParameters inputs.current.object,
                   piece = inputs.current.object.pieceSupport
                     (inputs.current.object.remainderSupport
-                      (canonicalWindowPacking data inputs.current.object)) component ∧
+                      (canonicalWindowPacking data.toParameters inputs.current.object)) component ∧
                     receiver ∈ Graph.VisibleEntry.saturatedReceivers
                       inputs.current.object piece data.threshold data.dischargeScale ∧
                     load ∈ Graph.VisibleEntry.excessBasin inputs.current.object piece
@@ -89,11 +89,11 @@ set_option maxHeartbeats 1600000 in
             indexSpec.mp indexMem
           change piece = inputs.current.object.pieceSupport
             (inputs.current.object.remainderSupport
-              (canonicalWindowPacking data inputs.current.object)) component at pieceEq
+              (canonicalWindowPacking data.toParameters inputs.current.object)) component at pieceEq
           subst piece
           set piece := inputs.current.object.pieceSupport
             (inputs.current.object.remainderSupport
-              (canonicalWindowPacking data inputs.current.object)) component with pieceDef
+              (canonicalWindowPacking data.toParameters inputs.current.object)) component with pieceDef
           have componentFilter := (Finset.mem_filter.mp componentMem).2
           obtain ⟨zeroSurplus, negative, noHandoff⟩ := componentFilter
           have componentPieces := (Finset.mem_filter.mp componentMem).1

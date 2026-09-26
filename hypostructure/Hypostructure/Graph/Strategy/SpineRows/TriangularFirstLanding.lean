@@ -47,7 +47,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
         (inputs.get (K .triangularShoulderCompletion)).down
       let portReturns := (inputs.get (K .triangularPortReturn)).down
       .cons (key := K .triangularFirstLanding) ⟨by
-        change TriangularFirstLandingStatement data inputs.current.object
+        change TriangularFirstLandingStatement data.toParameters inputs.current.object
         classical
         intro centre centreHeavy ports portsNonempty portsSubset shoulders core
           completion central crossTriangular outside shoulderSpec coreSpec

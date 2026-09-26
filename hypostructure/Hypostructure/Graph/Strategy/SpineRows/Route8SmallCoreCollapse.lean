@@ -44,10 +44,10 @@ noncomputable def route8SmallCoreCollapseRow
         (factSystem BranchState Presentation presentation data)
         current known previous (K .route8CarrierCore)).down
       letI : DecidableEq current.object.Vertex := current.object.vertices.decEq
-      let packing := canonicalWindowPacking data current.object
+      let packing := canonicalWindowPacking data.toParameters current.object
       let support := current.object.remainderSupport packing
       let routeEight := (current.object.canonicalPieces support).filter
-        (Route8Survives data current.object packing)
+        (Route8Survives data.toParameters current.object packing)
       by_cases small : ∃ component ∈ routeEight,
           let piece := current.object.pieceSupport support component
           ∃ receiver ∈ Graph.VisibleEntry.saturatedReceivers current.object piece

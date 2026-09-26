@@ -35,10 +35,10 @@ noncomputable def route8CarrierDichotomy
     `Hypostructure.Graph.Strategy.Spine.route8CarrierDichotomy
     (by
       classical
-      let packing := canonicalWindowPacking data current.object
+      let packing := canonicalWindowPacking data.toParameters current.object
       let support := current.object.remainderSupport packing
       let routeEight := (current.object.canonicalPieces support).filter
-        (Route8Survives data current.object packing)
+        (Route8Survives data.toParameters current.object packing)
       exact if twoCarrier : ∃ index ∈
             Graph.Route8Census.entriesOfComponents current.object packing
               routeEight data.threshold data.dischargeScale,

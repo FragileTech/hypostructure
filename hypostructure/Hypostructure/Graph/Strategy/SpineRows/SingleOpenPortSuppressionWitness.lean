@@ -45,7 +45,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     (fun inputs =>
       let selection := (inputs.get (K .selection)).down
       .cons (key := K .singleOpenPortSuppressionWitness) ⟨by
-        change SingleOpenPortSuppressionWitnessStatement data
+        change SingleOpenPortSuppressionWitnessStatement data.toParameters
           inputs.current.object
         classical
         intro configuration centreHigh

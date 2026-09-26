@@ -95,7 +95,7 @@ against `K .entropyCapActive`. -/
             .entropyCapBound inputs.current from
           ⟨by
             let object := inputs.current.object
-            change jointPackageDemand data object ≤ Graph.skeletonBudget object
+            change jointPackageDemand data.toParameters object ≤ Graph.skeletonBudget object
             have split := (inputs.get (K .hotColdPartition)).down
             have package := (inputs.get (K .windowPackageSeparated)).down
             have dominates := (inputs.get (K .skeletonDominates)).down
@@ -105,34 +105,34 @@ against `K .entropyCapActive`. -/
               _packageCard, _packagesDisjoint, _familyCard, rateLe, _⟩ := package
             rcases hotFacts.2.1 with retained | allCold
             · obtain ⟨State, stateOf, _packageStates, retainedCodeLe⟩ := retained
-              have demandLe : jointPackageDemand data object ≤
-                  retainedCode data object (canonicalHotWindows data object) := by
+              have demandLe : jointPackageDemand data.toParameters object ≤
+                  retainedCode data.toParameters object (canonicalHotWindows data.toParameters object) := by
                 unfold jointPackageDemand retainedCode
                 calc
                   2 ^ (data.windowRate *
                         data.separatedScaleCount object.vertexCount *
-                        (canonicalHotWindows data object).card) *
-                      remainderStates data object
-                        (canonicalWindowPacking data object)
-                      ≤ 2 ^ (windowPackageBits data object *
-                            (canonicalHotWindows data object).card) *
-                          remainderStates data object
-                            (canonicalWindowPacking data object) :=
+                        (canonicalHotWindows data.toParameters object).card) *
+                      remainderStates data.toParameters object
+                        (canonicalWindowPacking data.toParameters object)
+                      ≤ 2 ^ (windowPackageBits data.toParameters object *
+                            (canonicalHotWindows data.toParameters object).card) *
+                          remainderStates data.toParameters object
+                            (canonicalWindowPacking data.toParameters object) :=
                         Nat.mul_le_mul_right _
                           (Nat.pow_le_pow_right (by omega)
                             (Nat.mul_le_mul_right _ rateLe))
-                  _ = 2 ^ (windowPackageBits data object *
-                            (canonicalHotWindows data object).card) *
-                          remainderStates data object
-                            (canonicalWindowPacking data object) * 1 := by
+                  _ = 2 ^ (windowPackageBits data.toParameters object *
+                            (canonicalHotWindows data.toParameters object).card) *
+                          remainderStates data.toParameters object
+                            (canonicalWindowPacking data.toParameters object) * 1 := by
                         rw [Nat.mul_one]
-                  _ ≤ 2 ^ (windowPackageBits data object *
-                            (canonicalHotWindows data object).card) *
-                          remainderStates data object
-                            (canonicalWindowPacking data object) *
+                  _ ≤ 2 ^ (windowPackageBits data.toParameters object *
+                            (canonicalHotWindows data.toParameters object).card) *
+                          remainderStates data.toParameters object
+                            (canonicalWindowPacking data.toParameters object) *
                           2 ^ (data.curvatureCost *
-                            remainderCurvatureTargetRank data object
-                              (canonicalWindowPacking data object)) :=
+                            remainderCurvatureTargetRank data.toParameters object
+                              (canonicalWindowPacking data.toParameters object)) :=
                         Nat.mul_le_mul_left _ Nat.one_le_two_pow
               exact demandLe.trans
                 (retainedCodeLe.trans (dominates.2 State stateOf))

@@ -41,13 +41,13 @@ the exact marked configuration read from the incoming `ExactLedger`. -/
           classical
           let object := inputs.current.object
           letI : FinEnum object.Vertex := object.vertices
-          change ColdGermFamilyPositiveStatement data object at positive
+          change ColdGermFamilyPositiveStatement data.toParameters object at positive
           rcases positive with
             ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
               familyWitness, positiveCard⟩
           obtain ⟨epsilon, epsilonMem⟩ := Finset.card_pos.mp positiveCard
           let germ := incidence epsilon
-          have active : ActiveColdGermStatement data object germ := by
+          have active : ActiveColdGermStatement data.toParameters object germ := by
             refine ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
               familyWitness, ?_⟩
             exact ⟨epsilon, epsilonMem, rfl⟩
@@ -171,7 +171,7 @@ the exact marked configuration read from the incoming `ExactLedger`. -/
                   decrease⟩
             · exact Or.inl rfl
           refine ⟨terminal, germ, representative, ?_⟩
-          change ActiveColdGermStatement data object germ ∧
+          change ActiveColdGermStatement data.toParameters object germ ∧
             (Graph.CanonicalPiece.CutStateReading
                 (Graph.MinimumDegreeAtLeast data.threshold)
                 (Graph.HasCycleWithLength data.LengthOK)
@@ -212,7 +212,7 @@ noncomputable def neutralGermSymmetryDichotomy
     (K .coldGenuineSecondStrand)
     `Hypostructure.Graph.Strategy.Spine.neutralGermSymmetryDichotomy
     (if realized : ∃ config : Graph.TwoStrand.Configuration,
-        GenuineSecondStrandConfiguration data current.object germ representative config then
+        GenuineSecondStrandConfiguration data.toParameters current.object germ representative config then
       let config := Classical.choose realized
       .inr ⟨germ, representative, config, configuration,
         Classical.choose_spec realized⟩

@@ -438,8 +438,8 @@ noncomputable def selectedNetChargeContinuation
             have negative :=
               (nonNegHistory.get (K .netChargeCap)).down packing valid cardinality
             exact ((selected.object.not_negativeNetCharge_iff
-              (selected.object.remainderSupport packing) spineData.threshold
-              spineData.dischargeScale).mpr nonnegative) negative
+              (selected.object.remainderSupport packing) spineData.{u}.threshold
+              spineData.{u}.dischargeScale).mpr nonnegative) negative
           exact impossible.elim
       | .right negativeHistory =>
           -- `[61]`: select the connected negative support.

@@ -71,12 +71,12 @@ noncomputable def selectedColdHotEntropyCloses
   have bound := Graph.two_mul_exponent_le_scale_mul_edgeBudget selected.object
     (spineData.{u}.windowRate *
       spineData.{u}.separatedScaleCount selected.object.vertexCount *
-      (canonicalHotWindows spineData.{u} selected.object).card)
+      (canonicalHotWindows spineData.{u}.toParameters selected.object).card)
     spineData.{u}.threshold (spineData.{u}.surplusThreshold selected.object.vertexCount)
     cap spine spineData.{u}.three_le_threshold nearCubic
-  change coldSkeletonAllowance spineData.{u} selected.object <
-    coldWindowBitRate spineData.{u} selected.object *
-      (canonicalHotWindows spineData.{u} selected.object).card at overflow
+  change coldSkeletonAllowance spineData.{u}.toParameters selected.object <
+    coldWindowBitRate spineData.{u}.toParameters selected.object *
+      (canonicalHotWindows spineData.{u}.toParameters selected.object).card at overflow
   simp only [coldSkeletonAllowance, coldWindowBitRate] at overflow
   rw [Nat.mul_assoc] at overflow
   exact absurd bound (Nat.not_le_of_lt overflow)

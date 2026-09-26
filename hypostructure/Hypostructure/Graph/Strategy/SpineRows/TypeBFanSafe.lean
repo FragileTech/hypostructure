@@ -43,7 +43,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .typeBFanSafe) ⟨by
-        change TypeBFanSafeStatement data inputs.current.object
+        change TypeBFanSafeStatement data.toParameters inputs.current.object
         simp [TypeBFanSafeStatement, Graph.DecoratedHandoff.FanSafe]
       ⟩ .nil)
     0 0

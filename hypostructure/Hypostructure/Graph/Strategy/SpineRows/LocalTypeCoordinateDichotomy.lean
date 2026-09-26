@@ -63,7 +63,7 @@ noncomputable def localTypeCoordinateDichotomy
       have maximal := fullRankSpec.2.1
       have rankEq := fullRankSpec.2.2
       by_cases repetitive :
-          RemainderTypeCoordinateRepetitive data current.object packing
+          RemainderTypeCoordinateRepetitive data.toParameters current.object packing
       · exact .inl ⟨packing, valid, maximal, rankEq, repetitive⟩
       · exact .inr ⟨packing, valid, maximal, rankEq, repetitive⟩)
     repetitiveFresh nonrepetitiveFresh

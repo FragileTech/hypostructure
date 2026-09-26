@@ -39,7 +39,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     (fun inputs =>
       let fanClosedDefinition := (inputs.get (K .fanClosedPort)).down
       .cons (key := K .compatiblePairFanClosure) ⟨by
-        change CompatiblePairFanClosureStatement data inputs.current.object
+        change CompatiblePairFanClosureStatement data.toParameters inputs.current.object
         intro profile left right compatible leftRemainder rightRemainder
           leftAssigned rightAssigned
         have closed := Graph.TypeBFanClosedPorts.compatiblePairFanClosure

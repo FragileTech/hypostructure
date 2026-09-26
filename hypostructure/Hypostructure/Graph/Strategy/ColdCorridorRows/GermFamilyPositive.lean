@@ -40,14 +40,14 @@ and hence its greedy disjoint subfamily, nonempty. -/
           classical
           let object := inputs.current.object
           letI : FinEnum object.Vertex := object.vertices
-          let cold := canonicalColdWindows data object
-          let cubic := cold.filter (AmbientCubicWindow data object)
+          let cold := canonicalColdWindows data.toParameters object
+          let cubic := cold.filter (AmbientCubicWindow data.toParameters object)
           let selected := Graph.ColdCorridor.allSelectedStubs object cubic
-          let perWindow := coldInteriorBranchExcess data
-          change ColdGermCandidatesStatement data object at family
-          change ColdMassLinearStatement data object at linear
-          change ColdSelectedBranchExcessStatement data object at selectedExcess
-          change ColdStubExcessStatement data object at stubExcess
+          let perWindow := coldInteriorBranchExcess data.toParameters
+          change ColdGermCandidatesStatement data.toParameters object at family
+          change ColdMassLinearStatement data.toParameters object at linear
+          change ColdSelectedBranchExcessStatement data.toParameters object at selectedExcess
+          change ColdStubExcessStatement data.toParameters object at stubExcess
           rcases family with
             ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
               familyWitness⟩
@@ -77,7 +77,7 @@ and hence its greedy disjoint subfamily, nonempty. -/
             omega
           have disjointPositive : 0 < disjointFamily.card :=
             Graph.ColdCorridor.coldGerm_nonempty extracted.2.2 candidatePositive
-          change ColdGermFamilyPositiveStatement data object
+          change ColdGermFamilyPositiveStatement data.toParameters object
           simp only [ColdGermFamilyPositiveStatement]
           exact ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
             by

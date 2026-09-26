@@ -28,14 +28,14 @@ def contextOfSelection
     (input : Input BranchState Presentation presentation data)
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK input.object)
     (minimal : ∀ smaller : Graph.FiniteObject.{u},
-      (progress BranchState Presentation presentation data).Smaller
+      (progress BranchState Presentation presentation data.toParameters).Smaller
         smaller input.object →
       Graph.MinimumDegreeAtLeast data.threshold smaller →
       Graph.HasCycleWithLength data.LengthOK smaller) :
     Core.MinimalCounterexampleContext
-      (problem BranchState Presentation presentation data)
+      (problem BranchState Presentation presentation data.toParameters)
       (Graph.HasCycleWithLength data.LengthOK)
-      (progress BranchState Presentation presentation data) where
+      (progress BranchState Presentation presentation data.toParameters) where
   G := input.object
   baseline := input.baseline
   state := input.branchState

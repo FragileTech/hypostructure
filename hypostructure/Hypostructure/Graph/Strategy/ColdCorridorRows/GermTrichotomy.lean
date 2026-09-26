@@ -144,7 +144,7 @@ single-stub attachments. -/
         ⟨by
           classical
           intro window member
-          have windowMem : window ∈ canonicalWindowPacking data inputs.current.object :=
+          have windowMem : window ∈ canonicalWindowPacking data.toParameters inputs.current.object :=
             Finset.sdiff_subset (Finset.mem_filter.1 member).1
           have cubic : ∀ vertex ∈ window, inputs.current.object.degree vertex = data.threshold :=
             (Finset.mem_filter.1 member).2
@@ -187,7 +187,7 @@ class is dominated by the skeleton budget (`lem:skeleton-dominates`,
         ⟨Graph.BlockedClass.minDegree_objectSkeleton inputs.current.object data.threshold
             inputs.current.baseline,
           Graph.BlockedClass.objectSkeleton_blocked inputs.current.object data.windowOrder
-            data.LengthOK (canonicalWindowPacking data inputs.current.object) split.1 avoids,
+            data.LengthOK (canonicalWindowPacking data.toParameters inputs.current.object) split.1 avoids,
           Graph.BlockedClass.card_blocked_le_skeletonBudget inputs.current.object
             data.threshold data.windowOrder data.LengthOK _⟩
         .nil)

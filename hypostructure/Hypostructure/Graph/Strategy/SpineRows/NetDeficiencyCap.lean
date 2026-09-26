@@ -72,7 +72,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                     Core.ceilSqrt inputs.current.object.vertexCount) := by
               rw [data.separatedScaleCount_eq_log2, Graph.dyadicScaleCount,
                 ← cardinality] at density
-              simpa [Data.surplusThreshold] using density
+              simpa [Parameters.surplusThreshold] using density
             have cardinality' :
                 data.windowOrder * packing.card +
                     (inputs.current.object.remainderSupport packing).card =

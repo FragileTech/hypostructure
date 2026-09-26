@@ -49,7 +49,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           refine ⟨smallFact.down, ?_⟩
           obtain ⟨_componentCore, component, componentMem, receiver,
             receiverMem, load, loadMem, alphaSmall⟩ := smallFact.down
-          let packing := canonicalWindowPacking data inputs.current.object
+          let packing := canonicalWindowPacking data.toParameters inputs.current.object
           let support := inputs.current.object.remainderSupport packing
           let piece := inputs.current.object.pieceSupport support component
           let index : Graph.Route8Census.Index inputs.current.object :=

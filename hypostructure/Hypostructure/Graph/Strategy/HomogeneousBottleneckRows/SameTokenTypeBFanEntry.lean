@@ -46,10 +46,10 @@ carrier. -/
           have envelopeOf :
               ∀ envelope : Graph.DecoratedHandoff.Envelope
                   object data.LengthOK
-                  (handoffHighDegree data object)
-                  (handoffAbsorbing data object capacity.packing),
+                  (handoffHighDegree data.toParameters object)
+                  (handoffAbsorbing data.toParameters object capacity.packing),
                 envelope.decorations.Nonempty →
-                  SameTokenTypeBHandoffEnvelopeStatement data
+                  SameTokenTypeBHandoffEnvelopeStatement data.toParameters
                     object :=
             fun envelope decorated =>
               ⟨capacity.packing, capacity.packingValid, capacity.packingMaximal,

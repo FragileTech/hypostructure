@@ -54,7 +54,7 @@ noncomputable def typeAExitSevenDichotomy
           current known previous (K .typeAExitSixFree)).down
       let piece := current.object.pieceSupport
         (current.object.remainderSupport packing) component
-      by_cases produced : HandoffProduced data current.object packing piece
+      by_cases produced : HandoffProduced data.toParameters current.object packing piece
       · exact ⟨.inl ⟨⟨packing, canonical, valid, maximal, component, present, negative, zero,
           receiver, isReceiver, peeled, peeledSubset, saturated, noExitFour,
           noCompression, noDelocalization, produced⟩⟩⟩

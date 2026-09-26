@@ -43,17 +43,17 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
           classical
           letI : DecidableEq inputs.current.object.Vertex :=
             inputs.current.object.vertices.decEq
-          let packing := canonicalWindowPacking data inputs.current.object
+          let packing := canonicalWindowPacking data.toParameters inputs.current.object
           let support := inputs.current.object.remainderSupport packing
           let routeEight :=
             (inputs.current.object.canonicalPieces support).filter
-              (Route8Survives data inputs.current.object packing)
-          change Route8TrueResidual data inputs.current.object
+              (Route8Survives data.toParameters inputs.current.object packing)
+          change Route8TrueResidual data.toParameters inputs.current.object
           refine ⟨profile.down, ?_⟩
           intro component componentMem
           let piece := inputs.current.object.pieceSupport support component
           have survives :
-              Route8Survives data inputs.current.object packing component :=
+              Route8Survives data.toParameters inputs.current.object packing component :=
             (Finset.mem_filter.mp componentMem).2
           obtain ⟨_negative, _zero, silentFirst, entries⟩ := survives
           refine ⟨silentFirst, ?_⟩

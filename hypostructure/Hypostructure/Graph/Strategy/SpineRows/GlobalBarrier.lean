@@ -30,7 +30,7 @@ variable [FactSystem (Input BranchState Presentation presentation data)]
         (show Value BranchState Presentation presentation data
             .globalBarrier inputs.current from
           ⟨by
-            dsimp only [Holds]
+            dsimp only [Holds, GlobalBarrierStatement]
             obtain ⟨packing, _valid, quotient, certificate, _complete, _outside,
               covers⟩ := (inputs.get (K .globalDelocalization)).down
             obtain ⟨_test, _determiners, _supportData, certified⟩ := certificate

@@ -48,7 +48,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       let normal := (inputs.get (K .highCentreNormalForm)).down
       let completion := (inputs.get (K .triangularShoulderCompletion)).down
       .cons (key := K .triangularPortReturn) ⟨by
-        change TriangularPortReturnStatement data inputs.current.object
+        change TriangularPortReturnStatement data.toParameters inputs.current.object
         classical
         intro centre centreHeavy endpoint endpointMem
         obtain ⟨left, right, leftShoulder, rightShoulder, leftNeRight,

@@ -57,17 +57,17 @@ set_option maxHeartbeats 4000000 in
           intro family handoff independent baseline
           letI : FinEnum object.Vertex := object.vertices
           letI : Fintype object.Vertex := @FinEnum.instFintype _ object.vertices
-          letI : Fintype (ColdEligibleHalfEdge data object) :=
-            coldEligibleHalfEdgeFintype data object
-          change ColdGermCandidatesStatement data object at family
+          letI : Fintype (ColdEligibleHalfEdge data.toParameters object) :=
+            coldEligibleHalfEdgeFintype data.toParameters object
+          change ColdGermCandidatesStatement data.toParameters object at family
           rcases family with
             ⟨routing, _incidence, _candidates, _disjointFamily, _corridorLoss,
               _familyWitness⟩
-          change AbsorbedGermSplitStatement data object
+          change AbsorbedGermSplitStatement data.toParameters object
           simp only [AbsorbedGermSplitStatement]
           refine ⟨routing, ?_⟩
           intro epsilon
-          let classified := coldRoutedClassified data object routing
+          let classified := coldRoutedClassified data.toParameters object routing
           let state := classified.state
           rcases handoff state epsilon with subcubic | high
           · apply Or.inl
@@ -82,7 +82,7 @@ set_option maxHeartbeats 4000000 in
             apply le_antisymm
             · by_contra above
               push Not at above
-              exact independent ((coldOccurrenceCorridorAt data object classified
+              exact independent ((coldOccurrenceCorridorAt data.toParameters object classified
                 epsilon).head first) neighbour firstHigh above adjacent
             · exact le_trans baseline (object.minDegree_le_degree neighbour)⟩
         .nil)
@@ -111,27 +111,27 @@ noncomputable def absorbedGermDichotomy
   let split := (previous.get (K .absorbedGermSplit)).down
   let object := current.object
   letI : FinEnum object.Vertex := object.vertices
-  change AbsorbedGermSplitStatement data object at split
+  change AbsorbedGermSplitStatement data.toParameters object at split
   simp only [AbsorbedGermSplitStatement] at split
   let routing := Classical.choose split
   let alternatives := Classical.choose_spec split
-  let routedCandidates := coldRoutedCandidates data object routing
+  let routedCandidates := coldRoutedCandidates data.toParameters object routing
   exact Decision.run previous (K .coldPositiveGerm) (K .absorbedGermFanData)
     `Hypostructure.Graph.Strategy.Spine.absorbedGermDichotomy
     (if positive : 0 < routedCandidates.card then
       .inl ⟨by
-        change ColdPositiveGermStatement data object
+        change ColdPositiveGermStatement data.toParameters object
         exact ⟨routing, positive⟩⟩
     else
       .inr ⟨by
         let family := (previous.get (K .coldGermCandidates)).down
-        change ColdGermCandidatesStatement data object at family
+        change ColdGermCandidatesStatement data.toParameters object at family
         rcases family with
           ⟨familyRouting, incidence, candidates, disjointFamily, corridorLoss,
             familyWitness⟩
         have routingEq : familyRouting = routing := Subsingleton.elim _ _
         subst familyRouting
-        change AbsorbedGermFanDataStatement data object
+        change AbsorbedGermFanDataStatement data.toParameters object
         simp only [AbsorbedGermFanDataStatement]
         refine ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
           familyWitness, ?_⟩
@@ -163,15 +163,15 @@ complete case-(ii) accounting without re-proving node `[153]`. -/
           classical
           let object := inputs.current.object
           letI : FinEnum object.Vertex := object.vertices
-          change AbsorbedGermSplitStatement data object at split
-          change ColdGermCandidatesStatement data object at family
+          change AbsorbedGermSplitStatement data.toParameters object at split
+          change ColdGermCandidatesStatement data.toParameters object at family
           simp only [AbsorbedGermSplitStatement] at split
           obtain ⟨splitRouting, alternatives⟩ := split
           obtain ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
               familyWitness⟩ := family
           have routingEq : splitRouting = routing := Subsingleton.elim _ _
           subst splitRouting
-          change AbsorbedGermFanDataStatement data object
+          change AbsorbedGermFanDataStatement data.toParameters object
           simp only [AbsorbedGermFanDataStatement]
           refine ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
             familyWitness, ?_⟩
@@ -200,8 +200,8 @@ greedy extraction theorem makes that same disjoint family nonempty. -/
           classical
           let object := inputs.current.object
           letI : FinEnum object.Vertex := object.vertices
-          change ColdPositiveGermStatement data object at positive
-          change ColdGermCandidatesStatement data object at family
+          change ColdPositiveGermStatement data.toParameters object at positive
+          change ColdGermCandidatesStatement data.toParameters object at family
           rcases positive with ⟨positiveRouting, positiveCard⟩
           rcases family with
             ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
@@ -218,7 +218,7 @@ greedy extraction theorem makes that same disjoint family nonempty. -/
             exact positiveCard
           have disjointPositive : 0 < disjointFamily.card :=
             Graph.ColdCorridor.coldGerm_nonempty extracted.2.2 candidatePositive
-          change ColdGermFamilyPositiveStatement data object
+          change ColdGermFamilyPositiveStatement data.toParameters object
           refine ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
             ?_, disjointPositive⟩
           simp only [ColdGermFamilyWitness]

@@ -59,11 +59,11 @@ this row; it remains at node `[182]`. -/
       producesNonempty := by simp }
     (fun inputs =>
       -- The minimal overlap is selected over the abstract current object.
-      let overlap : PairFailureOverlap data inputs.current.object :=
+      let overlap : PairFailureOverlap data.toParameters inputs.current.object :=
         (fun (object : Graph.FiniteObject.{u})
             (factorizationHolds : Holds BranchState Presentation presentation
               data .pairConditionalFactorization object) =>
-          (show PairFailureOverlap data object from by
+          (show PairFailureOverlap data.toParameters object from by
             classical
             let factorizationFact := Classical.choice factorizationHolds
             let system := factorizationFact.1
