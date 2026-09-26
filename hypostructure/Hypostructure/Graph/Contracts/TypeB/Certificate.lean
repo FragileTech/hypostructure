@@ -1,4 +1,4 @@
-import Hypostructure.Graph.Contracts.TypeB.Support
+import Hypostructure.Graph.Contracts.TypeB.Ledger
 
 /-!
 # Contracts: the Type B certificate, B1 and B2 ledger
@@ -200,62 +200,9 @@ theorem typeBDisjointLedger
       ⟨Classical.choice (choice packing piece.vertices centres support),
         TypeBAssignedCentres.high assigned,
         TypeBAssignedCentres.centres_subset assigned⟩
-    have noBaselineSubsupport : ∀ subset : Finset object.Vertex,
-        subset ⊆ object.remainderSupport packing →
-          ¬ Graph.MinimumDegreeAtLeast data.threshold (object.induce subset) :=
-      fun subset inside => (normalized packing valid maximal subset inside).2
-    have pieceFree : Graph.InducedPathFree (object.induce piece.vertices)
-        data.windowOrder :=
-      Graph.FiniteObject.inducedPathFree_induce_of_forall object
-        (fun subset inside =>
-          (normalized packing valid maximal subset
-            (inside.trans piece.vertices_subset_remainder)).1)
-    have emptyInternal : Graph.TypeAB.EmptyInternalThreeCore
-        data.typeABPresentation object piece.vertices :=
-      Graph.TypeBPostLedgerCore.emptyInternalThreeCore_of_noBaselineSubsupport
-        (threshold := data.threshold) rfl
-        (fun subset inside =>
-          noBaselineSubsupport subset
-            (inside.trans piece.vertices_subset_remainder))
-    have targetSafe : Graph.TypeAB.ContextuallyDyadicSafe
-        data.typeABPresentation object := by
-      simpa [Graph.TypeAB.ContextuallyDyadicSafe,
-        Parameters.typeABPresentation] using avoids
-    have hereditary : Graph.TypeAB.HereditarilyTargetUncompressible
-        data.typeABPresentation object piece.vertices :=
-      Graph.TypeAB.hereditarilyTargetUncompressible_of_emptyInternalThreeCore
-        emptyInternal
-    have components : PostLedgerComponents data object ledger :=
-      fun component member =>
-        Graph.TypeBPostLedgerCore.postLedgerCoreHygiene
-          data.typeABPresentation ledger component member rfl
-          noBaselineSubsupport pieceFree targetSafe hereditary baseline
-    refine ⟨ledger, ledger.exactAugmentedLedgerRefinement, components, ?_⟩
-    intro selectedComponents subset production
-    have windowFree : ∀ component, component ∈ selectedComponents →
-        handoffWindowFree data object
-          (Graph.SupportComponents.Connected.vertices object
-            ledger.remainingCore component) := by
-      intro component member
-      have componentData := components component (subset component member)
-      constructor
-      · intro window windowSubset induces
-        exact (normalized packing valid maximal window
-          (windowSubset.trans componentData.containedInRemainder)).1 induces
-      · intro internal internalSubset
-        exact (normalized packing valid maximal internal
-          (internalSubset.trans componentData.containedInRemainder)).2
-    refine ⟨Graph.TypeBMaximalCompletion.groupedOfComponentExitSeven
-      ledger selectedComponents production avoids windowFree uncompressible,
-      ?_, ?_⟩
-    · intro component
-      exact Graph.TypeBMaximalCompletion.Grouped.envelope_core
-        ledger selectedComponents production avoids windowFree uncompressible
-        component
-    · intro centre
-      exact Graph.TypeBMaximalCompletion.Grouped.mem_centres_iff
-        ledger selectedComponents production avoids windowFree uncompressible
-        centre
+    obtain ⟨components, grouped⟩ := disjointLedgerCoreClosure avoids baseline
+      uncompressible normalized valid maximal ledger
+    exact ⟨ledger, ledger.exactAugmentedLedgerRefinement, components, grouped⟩
 
 /-- `prop:typeB-bridge-reduction`: the exact augmented refinement of a B2
 disjoint ledger pays every selected entry, so a nonnegative remaining core
