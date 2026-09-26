@@ -1,16 +1,4 @@
-import Hypostructure.Graph.Strategy.SpineRows.FanCertificateCap
-import Hypostructure.Graph.Strategy.SpineRows.HighCentreNormalForm
-import Hypostructure.Graph.Strategy.SpineRows.SameCenterOpenPortCompatibility
-import Hypostructure.Graph.Strategy.SpineRows.TriangularCrossShoulder
-import Hypostructure.Graph.Strategy.SpineRows.TriangularFanCore
-import Hypostructure.Graph.Strategy.SpineRows.TriangularFirstLanding
-import Hypostructure.Graph.Strategy.SpineRows.TriangularPortReturn
-import Hypostructure.Graph.Strategy.SpineRows.TriangularPortTypeBRouting
-import Hypostructure.Graph.Strategy.SpineRows.TriangularShoulderCompletion
-import Hypostructure.Graph.Strategy.SpineRows.TypeBFanDegreeDichotomy
-import Hypostructure.Graph.Strategy.SpineRows.TypeBFanDegreeFourProfile
-import Hypostructure.Graph.Strategy.SpineRows.TypeBFanLocalDichotomy
-import HypostructureErdos64EG.Assembly.TypeB.NearCubicCertificate
+import HypostructureErdos64EG.Assembly.TypeB.Continuation
 
 /-!
 # Assembly: TypeB / DecoratedContinuation
@@ -27,22 +15,9 @@ open Hypostructure.Graph.Strategy.Spine
 
 universe u w
 
-/-- **Type B `[67]`--`[70]` on the decorated envelope** (`def:decorated-fan-envelope`,
-`def:typeB-assigned-ledger`), on the `[108]`/`[65]` decorated residual
-(index-polymorphic).  `[67]` `lem:heavy-neighbourhood-normal-form` and the
-registered cubic baseline (object-level rows), `[68]` the single degree split at
-the common assigned centres (`typeBFanDegreeDichotomy`), heavy → `[69]`
-`cor:heavy-center-local-dichotomy` (`typeBFanLocalDichotomyRow`),
-degree-four → `[78]`--`[79]` `cor:degree-four-local-activation`
-(`typeBFanDegreeFourProfileRow`); both arms then read `[70]` `lem:fan-certificate`
-(`fanCertificateCapRow`); both arms then enter `[71]`/`[80]` on the common
-Type B fan support. -/
--- EG-NODE [67] high-degree centers independent; fan neighbours cubic
--- EG-NODE [68] some center has \(d_G(h)>4\)?
--- EG-NODE [69] degree \(>4\) local dichotomy: fan-compatible open pair or \(k-2\) triangular ports gives fan-closed ports
--- EG-NODE [70] fan-safe graph, \(P_{13}\) certificate graph, and certificate-marked cap \(d_G(h)\le8\)
--- EG-NODE [78] degree-\(4\) branch: \(d_G(h)=4\)
--- EG-NODE [79] degree-\(4\) fan profile: center surplus \(1\), \(0\le c\le4\), \(D_B=c-\frac74\)
+/-- **Type B `[67]`--`[85]` on the decorated envelope** (`def:decorated-fan-envelope`,
+`def:typeB-assigned-ledger`), on the `[108]`/`[66]` → `[65]` decorated residual:
+the common continuation runs on this literal ledger. -/
 noncomputable def selectedTypeBDecoratedContinuation
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -124,188 +99,9 @@ noncomputable def selectedTypeBDecoratedContinuation
     (crossShoulderFresh : K .triangularCrossShoulder ∉ known := by key_fresh)
     (triangularRoutingFresh : K .triangularPortTypeBRouting ∉ known := by key_fresh)
     (decoratedGlobalLocalBridgeFresh : K .typeBGlobalLocalBridge ∉ known)
+    (closureFresh : closed ∉ known := by key_fresh)
    :
     SelectedRouteEightBoundary selected := by
-  -- `[67]`
-  let normalForm :=
-    (highCentreNormalFormRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by key_fresh)
-  -- `[68]` at the decorated envelope's assigned centres.
-  match typeBFanDegreeDichotomy (data := spineData) normalForm
-      (by key_fresh)
-      (by key_fresh) with
-  | .left heavyHistory =>
-      -- `[69]`: the compatibility lemma is a first-class ledger fact consumed
-      -- by the heavy-centre dichotomy on this same decorated envelope.
-      let compatibleHistory :=
-        (sameCenterOpenPortCompatibilityRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          heavyHistory
-            (by key_fresh)
-      let localDichotomy :=
-        (typeBFanLocalDichotomyRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          compatibleHistory (by key_fresh)
-      let portRouted := Assembly.Internal.selectedTypeBPortRoutingPrefix localDichotomy
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-      -- `[70]`
-      let capped :=
-        (fanCertificateCapRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          portRouted (by key_fresh)
-      exact selectedTypeBNearCubicCertificateAfterPortRouting capped
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (typeAExclusionFresh := by key_fresh)
-        (typeBBridgeReductionFresh := by
-          key_fresh)
-        (piecesClassifiedFresh := by key_fresh)
-        (sublinearLedgerFresh := by key_fresh)
-        (sublinearResidualFresh := by key_fresh)
-        (unifiedDeficitFresh := by key_fresh)
-        (quotientFreeFresh := by key_fresh)
-        (quotientResidualFresh := by key_fresh)
-        (unifiedCensusFresh := by key_fresh)
-        (extractedCensusFresh := by key_fresh)
-        (unifiedTrueFresh := by key_fresh)
-        (peelingFresh := by key_fresh)
-        (stageFailedFresh := by key_fresh)
-        (demandLedgerFresh := by key_fresh)
-        (demandAbsorptionFresh := by key_fresh)
-        (openBoundarySaturatedFresh := by key_fresh)
-        (demandUnitCountFresh := by key_fresh)
-        (windowBlockersFresh := by key_fresh)
-        (windowShadowSignatureFresh := by key_fresh)
-        (windowShadowTailFresh := by key_fresh)
-        (windowShadowCycleFresh := by key_fresh)
-        (windowShadowExcludedFresh := by key_fresh)
-        (demandResidualFresh := by key_fresh)
-        (unpaidExitFourFresh := by key_fresh)
-        (unifiedVisibleFresh := by key_fresh)
-        (unifiedVisibleOverloadFresh := by
-          key_fresh)
-        (jointBalanceFresh := by key_fresh)
-        (unifiedTerminalFresh := by key_fresh)
-        (globalLocalBridgeFresh := by
-          key_fresh)
-  | .right degreeFourHistory =>
-      -- `[78]`--`[79]`
-      let profile :=
-        (typeBFanDegreeFourProfileRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          degreeFourHistory (by key_fresh)
-      let triangularCore :=
-        (triangularFanCoreRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          profile (by key_fresh)
-      let completed :=
-        (triangularShoulderCompletionRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          triangularCore (by key_fresh)
-      let returned :=
-        (triangularPortReturnRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          completed (by key_fresh)
-      let firstLanded :=
-        (triangularFirstLandingRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          returned (by key_fresh)
-      let crossShouldered :=
-        (triangularCrossShoulderRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          firstLanded (by key_fresh)
-      let portRouted := Assembly.Internal.selectedTypeBPortRoutingPrefix crossShouldered
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-      let triangularRouted :=
-        (triangularPortTypeBRoutingRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          portRouted (by key_fresh)
-      -- `[70]`/`[80]`
-      let capped :=
-        (fanCertificateCapRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          triangularRouted (by key_fresh)
-      exact selectedTypeBNearCubicCertificateAfterPortRouting capped
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (typeAExclusionFresh := by key_fresh)
-        (typeBBridgeReductionFresh := by
-          key_fresh)
-        (piecesClassifiedFresh := by key_fresh)
-        (sublinearLedgerFresh := by key_fresh)
-        (sublinearResidualFresh := by key_fresh)
-        (unifiedDeficitFresh := by key_fresh)
-        (quotientFreeFresh := by key_fresh)
-        (quotientResidualFresh := by key_fresh)
-        (unifiedCensusFresh := by key_fresh)
-        (extractedCensusFresh := by key_fresh)
-        (unifiedTrueFresh := by key_fresh)
-        (peelingFresh := by key_fresh)
-        (stageFailedFresh := by key_fresh)
-        (demandLedgerFresh := by key_fresh)
-        (demandAbsorptionFresh := by key_fresh)
-        (openBoundarySaturatedFresh := by key_fresh)
-        (demandUnitCountFresh := by key_fresh)
-        (windowBlockersFresh := by key_fresh)
-        (windowShadowSignatureFresh := by key_fresh)
-        (windowShadowTailFresh := by key_fresh)
-        (windowShadowCycleFresh := by key_fresh)
-        (windowShadowExcludedFresh := by key_fresh)
-        (demandResidualFresh := by key_fresh)
-        (unpaidExitFourFresh := by key_fresh)
-        (unifiedVisibleFresh := by key_fresh)
-        (unifiedVisibleOverloadFresh := by
-          key_fresh)
-        (jointBalanceFresh := by key_fresh)
-        (unifiedTerminalFresh := by key_fresh)
-        (globalLocalBridgeFresh := by
-          key_fresh)
+  exact Assembly.Internal.selectedTypeBFanContinuation history
 
 end HypostructureErdos64EG

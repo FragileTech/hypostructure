@@ -50,7 +50,6 @@ import Hypostructure.Graph.Strategy.SpineContinuationRun
 import Hypostructure.Graph.Strategy.ColdCorridorRows
 import Hypostructure.Graph.Strategy.BranchDClosure
 import Hypostructure.Graph.Strategy.EntropyClosure
-import Hypostructure.Graph.Strategy.TypeBClosure
 import Hypostructure.Graph.ColdCorridor
 import Hypostructure.Graph.ColdFirstFailure
 import Hypostructure.Graph.SerialSystemArithmetic

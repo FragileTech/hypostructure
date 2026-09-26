@@ -1,23 +1,20 @@
 import Hypostructure.Graph.Strategy.SpineRows.B2AssignmentDichotomy
-import Hypostructure.Graph.Strategy.SpineRows.CompatiblePairFanClosure
-import Hypostructure.Graph.Strategy.SpineRows.CompatiblePairTypeBRouting
 import Hypostructure.Graph.Strategy.SpineRows.DirectCycleDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.DisjointPostLedgerComponents
+import Hypostructure.Graph.Strategy.SpineRows.FanCertificateCap
 import Hypostructure.Graph.Strategy.SpineRows.FanCertificateDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.FanCertificateResidualMass
-import Hypostructure.Graph.Strategy.SpineRows.FanClosedPort
-import Hypostructure.Graph.Strategy.SpineRows.FanClosedPortTypeBRouting
 import Hypostructure.Graph.Strategy.SpineRows.HybridEntry
-import Hypostructure.Graph.Strategy.SpineRows.TypeBExclusionDichotomy
+import Hypostructure.Graph.Strategy.SpineRows.TypeBExclusion
 import Hypostructure.Graph.Strategy.SpineRows.TypeBExclusionResidualMass
 import Hypostructure.Graph.Strategy.SpineRows.TypeBGlobalLocalBridge
 import Hypostructure.Graph.Strategy.SpineRows.TypeBOverlapObstructionMass
-import HypostructureErdos64EG.Assembly.Basic
+import HypostructureErdos64EG.Assembly.RouteEight.TypeBContinuation
 
 /-!
 # Assembly: TypeB / Internal / Certificate
 
-Part of the dependency-separated Erdős–Gyárfás assembly.
+Nodes `[70]`--`[77]` and `[80]`--`[85]` on the common Type B support family.
 -/
 
 namespace HypostructureErdos64EG
@@ -29,200 +26,158 @@ open Hypostructure.Graph.Strategy.Spine
 
 universe u w
 
-/- The four non-closing outputs of the common Type B certificate calculation.
-They are exactly the paper's two local-payment and two fan-mass boundaries:
-certificate failure `[75]/[84]`, successful B2 `[74]/[82]`, the surviving
-canonical post-ledger core, and B2 overlap `[73]/[83]`.  No quantitative fact
-from the incoming branch is included in this type. -/
-abbrev Assembly.Internal.TypeBCertificateBoundary
-    (selected : EGInput.{u}) (known : FactKeys EGInput.{u}) :=
-  Sum
-    (ExactLedger EGInput.{u} selected
-      ([K .fanCertificateResidualMass, K .fanCertificateResidual] ++ known))
-    (Sum
-      (ExactLedger EGInput.{u} selected
-        ([K .typeBExcluded, K .typeBDisjointLedger, K .typeBB2Choice,
-          K .typeBHybridEntry, K .typeBDirectCycleFree,
-          K .fanCertificateMarked] ++ known))
-      (Sum
-        (ExactLedger EGInput.{u} selected
-          ([K .typeBExclusionResidualMass, K .typeBExclusionResidual,
-            K .typeBDisjointLedger, K .typeBB2Choice,
-            K .typeBHybridEntry, K .typeBDirectCycleFree,
-            K .fanCertificateMarked] ++ known))
-        (ExactLedger EGInput.{u} selected
-          ([K .typeBOverlapObstructionMass, K .typeBGlobalLocalBridge,
-            K .typeBOverlapObstruction,
-            K .typeBHybridEntry, K .typeBDirectCycleFree,
-            K .fanCertificateMarked] ++ known))))
+/-- **The common Type B certificate walk `[70]`--`[77]` / `[80]`--`[85]`.**
 
-/-- The paper's common `[72]` port-routing prefix.  Each fact is published by
-its registered producer exactly once; later local alternatives retrieve these
-facts from the resulting ExactLedger. -/
-noncomputable def Assembly.Internal.selectedTypeBPortRoutingPrefix
-    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected known)
-    (fanClosedFresh : K .fanClosedPort ∉ known)
-    (compatibleClosureFresh : K .compatiblePairFanClosure ∉ known)
-    (fanClosedRoutingFresh : K .fanClosedPortTypeBRouting ∉ known)
-    (compatibleRoutingFresh : K .compatiblePairTypeBRouting ∉ known) :
-    ExactLedger EGInput selected
-      ([K .compatiblePairTypeBRouting, K .fanClosedPortTypeBRouting,
-        K .compatiblePairFanClosure, K .fanClosedPort] ++ known) := by
-  let fanClosed :=
-    (fanClosedPortRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by key_fresh)
-  let compatibleClosure :=
-    (compatiblePairFanClosureRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      fanClosed (by key_fresh)
-  let fanClosedRouting :=
-    (fanClosedPortTypeBRoutingRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      compatibleClosure (by key_fresh)
-  exact
-    (compatiblePairTypeBRoutingRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      fanClosedRouting (by key_fresh)
-
-/-- **The common Type B core `[71]`--`[75]` / `[80]`--`[84]`.**
-
-This function consumes only the facts named by those nodes.  Direct cycles and
-the canonical B2-paid negative support close locally.  Every other arm returns
-its literal paper residual.  In particular it does not assume the ordinary
-`[64]` negative support, a route-8 rate, or a near-cubic surplus estimate; the
-enclosing branch decides how `[76]`/`[85]` spends the returned mass. -/
+`[70]` publishes the fan-safe graph and the certificate cap.  `[71]`/`[80]`
+decides the certificate labelling; its residual arm is charged to the fan mass
+`[75]`/`[84]`.  On the marked arm `[72]`/`[81]` first decides the direct
+fan-window configurations, whose arm closes against the selection, then
+publishes the local B1 ledger and decides B2.  B2 success is the bridge
+reduction `[74]`/`[82]` and the negative post-ledger residual `[76]`/`[85]`;
+B2 failure is the minimal overlap obstruction `[73]`/`[83]`, reflected and
+charged to the fan mass `[75]`/`[84]`.  Every open arm continues to the route-8
+cores `[77]` on its own ledger. -/
+-- EG-NODE [70] fan-safe graph, \(P_{13}\) certificate graph, and certificate-marked cap \(d_G(h)\le8\)
 -- EG-NODE [71] certificate labelling present?
+-- EG-NODE [72] local fan-window ledger complete; B2 disjointness holds?
+-- EG-NODE [73] B2 disjointness fails: minimal Type B overlap obstruction
+-- EG-NODE [74] B2 holds: bridge reduction gives \(\No(X)\ge0\) outside route 8
 -- EG-NODE [75] bridge fan-mass: fan-certificate centers and B2 failures charged to assigned surplus
+-- EG-NODE [76] Type B cannot carry the linear deficit outside two-support route 8
 -- EG-NODE [80] certificate labelling present?
+-- EG-NODE [81] \(c\le1\), or \(c\ge2\) with B2 disjoint ledger?
+-- EG-NODE [82] yes: certificate-closed or B2-paid; \(\No(X)\ge0\) outside route 8
+-- EG-NODE [83] no: \(c\ge2\) and B2 fails; minimal Type B overlap obstruction
 -- EG-NODE [84] fan-mass route: certificate failures and B2 failures charged to assigned surplus
-noncomputable def Assembly.Internal.selectedTypeBCertificateBoundaryAfterPortRouting
+-- EG-NODE [85] degree-\(4\) Type B cannot carry linear deficit outside route 8 once the fan-mass residual is sublinear
+noncomputable def Assembly.Internal.selectedTypeBCertificateContinuation
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .typeBFanEntry) known]
-    [FactKeys.Has (K .fanCertificateCap) known]
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
-    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .highCentreNormalForm) known]
-    [FactKeys.Has (K .fanClosedPort) known]
-    [FactKeys.Has (K .compatiblePairFanClosure) known]
-    [FactKeys.Has (K .fanClosedPortTypeBRouting) known]
-    [FactKeys.Has (K .compatiblePairTypeBRouting) known]
+    [FactKeys.Has (K .surplusAtOrBelow) known]
+    [FactKeys.Has (K .typeAReceiverRouting) known]
+    [FactKeys.Has (K .replacementExclusion) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
+    [FactKeys.Has (K .cubicBaseline) known]
+    (closureFresh : closed ∉ known := by key_fresh)
+    (capFresh : K .fanCertificateCap ∉ known := by key_fresh)
     (markedFresh : K .fanCertificateMarked ∉ known := by key_fresh)
     (residualFresh : K .fanCertificateResidual ∉ known := by key_fresh)
     (certificateMassFresh : K .fanCertificateResidualMass ∉ known := by
       key_fresh)
     (cycleFresh : K .typeBDirectCycle ∉ known := by key_fresh)
     (freeFresh : K .typeBDirectCycleFree ∉ known := by key_fresh)
+    (hybridFresh : K .typeBHybridEntry ∉ known := by key_fresh)
     (choiceFresh : K .typeBB2Choice ∉ known := by key_fresh)
     (obstructionFresh : K .typeBOverlapObstruction ∉ known := by key_fresh)
-    (hybridFresh : K .typeBHybridEntry ∉ known := by key_fresh)
     (ledgerFresh : K .typeBDisjointLedger ∉ known := by key_fresh)
     (excludedFresh : K .typeBExcluded ∉ known := by key_fresh)
     (exclusionResidualFresh : K .typeBExclusionResidual ∉ known := by key_fresh)
     (exclusionMassFresh : K .typeBExclusionResidualMass ∉ known := by key_fresh)
-    (obstructionMassFresh : K .typeBOverlapObstructionMass ∉ known := by
-      key_fresh)
     (globalLocalBridgeFresh : K .typeBGlobalLocalBridge ∉ known := by
       key_fresh)
-    :
-    Assembly.Internal.TypeBCertificateBoundary selected known := by
-  -- `[71]`/`[80]`: certificate labelling present at every assigned centre?
-  match fanCertificateDichotomy (data := spineData) history
+    (obstructionMassFresh : K .typeBOverlapObstructionMass ∉ known := by
+      key_fresh)
+    (bridgeMassFresh : K .typeBBridgeMass ∉ known := by key_fresh)
+    (bridgeSublinearFresh : K .typeBBridgeSublinear ∉ known := by key_fresh)
+    (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known := by key_fresh)
+    (typeAExclusionFresh : K .typeAExclusion ∉ known := by key_fresh)
+    (typeBBridgeReductionFresh : K .typeBBridgeReduction ∉ known := by
+      key_fresh)
+    (piecesClassifiedFresh : K .route8PiecesClassified ∉ known := by
+      key_fresh)
+    (sublinearLedgerFresh : K .typeBSublinearLedger ∉ known := by key_fresh)
+    (sublinearResidualFresh : K .typeBSublinearResidual ∉ known := by
+      key_fresh)
+    (unifiedDeficitFresh : K .route8UnifiedDeficit ∉ known := by key_fresh)
+    (quotientFreeFresh : K .route8QuotientFree ∉ known := by key_fresh)
+    (quotientResidualFresh : K .route8QuotientResidual ∉ known := by
+      key_fresh)
+    (unifiedCensusFresh : K .route8UnifiedEntryCensus ∉ known := by
+      key_fresh)
+    (extractedCensusFresh : K .route8ExtractedEntryCensus ∉ known := by
+      key_fresh)
+    (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known := by
+      key_fresh)
+    (peelingFresh : K .route8PeelingDescent ∉ known := by key_fresh)
+    (stageFailedFresh : K .route8StageRateFailed ∉ known := by key_fresh)
+    (demandLedgerFresh : K .route8DemandLedger ∉ known := by key_fresh)
+    (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known := by
+      key_fresh)
+    (openBoundarySaturatedFresh : K .route8OpenBoundarySaturated ∉ known := by
+      key_fresh)
+    (demandUnitCountFresh : K .route8DemandUnitCount ∉ known := by key_fresh)
+    (windowBlockersFresh : K .route8WindowBlockers ∉ known := by key_fresh)
+    (windowShadowSignatureFresh : K .windowShadowSignature ∉ known := by
+      key_fresh)
+    (windowShadowTailFresh : K .windowShadowSingletonTail ∉ known := by
+      key_fresh)
+    (windowShadowCycleFresh : K .windowShadowHitCycle ∉ known := by
+      key_fresh)
+    (windowShadowExcludedFresh : K .windowShadowHitExcluded ∉ known := by
+      key_fresh)
+    (demandResidualFresh : K .route8PeeledDemandResidual ∉ known := by
+      key_fresh)
+    (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known := by
+      key_fresh)
+    (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known := by
+      key_fresh)
+    (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known := by
+      key_fresh)
+    (jointBalanceFresh : K .route8JointBalance ∉ known := by key_fresh)
+    (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known := by key_fresh) :
+    SelectedRouteEightBoundary selected := by
+  -- `[70]`: the fan-safe graph and the certificate-marked cap.
+  let capped := (fanCertificateCapRow (data := spineData)).run history
+    (by key_fresh)
+  -- `[71]`/`[80]`: certificate labelling present?
+  match fanCertificateDichotomy (data := spineData) capped
       (by key_fresh) (by key_fresh) with
   | .right residualHistory =>
-      -- `[75]`/`[84]`: the residual centre is charged to the bridge fan mass.
-      let mass :=
-        (fanCertificateResidualMassRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          residualHistory (by key_fresh)
-      exact Sum.inl mass
+      -- `[75]`/`[84]`: the fan-certificate residual centre is charged to the
+      -- bridge fan mass, then `[76]` → `[77]`.
+      let mass := (fanCertificateResidualMassRow (data := spineData)).run
+        residualHistory (by key_fresh)
+      exact selectedTypeBRoute8Continuation mass
   | .left markedHistory =>
-      -- `[72]`--`[85]` on the common Type B carrier: the direct fan-window
-      -- cycle test and the hybrid B1 reading preserve either the canonical
-      -- assigned support or the indexed absorbed witness.  B2 is the next
-      -- boundary: it may proceed only once its own literal carrier is present.
+      -- `[72]`/`[81]`, first half: the local fan-window ledger is complete
+      -- exactly when no direct configuration occurs; a direct configuration
+      -- is an accepted cycle.
       match directCycleDichotomy (data := spineData) markedHistory
           (by key_fresh) (by key_fresh) with
       | .left cycleHistory =>
-          have impossible : False := by
-            rcases (cycleHistory.get (K .typeBDirectCycle)).down with
-              canonical | absorbed | sameToken
-            · obtain ⟨packing, valid, _maximal, _component, _present, _centres,
-                _assigned, _centre, _member, _high, directCycle⟩ := canonical
-              exact (cycleHistory.get (K .selection)).down.1
-                (Graph.TypeBDirectCycle.hasCycleWithLength_of_directCycleConfiguration
-                  valid directCycle)
-            · obtain ⟨_marked, _germ, _centre, _witness, directCycle⟩ :=
-                absorbed
-              have valid : selected.object.IsWindowPacking spineData.{u}.windowOrder
-                  (canonicalWindowPacking spineData.{u}.toParameters selected.object) :=
-                (Classical.choose_spec
-                  (selected.object.exists_windowPacking_card_eq
-                    spineData.{u}.windowOrder)).1
-              exact (cycleHistory.get (K .selection)).down.1
-                (Graph.TypeBDirectCycle.hasCycleWithLength_of_directCycleConfiguration
-                  valid directCycle)
-            · obtain ⟨packing, valid, _maximal, _core, _envelope, _coreEq,
-                  _nonempty, _marked, _centre, _member, _high, directCycle⟩ :=
-                sameToken
-              exact (cycleHistory.get (K .selection)).down.1
-                (Graph.TypeBDirectCycle.hasCycleWithLength_of_directCycleConfiguration
-                  valid directCycle)
-          exact impossible.elim
+          exact ((closeIncompatible cycleHistory (K .selection)
+            (K .typeBDirectCycle) (by key_fresh)).elimClosed
+              (by infer_instance)).elim
       | .right freeHistory =>
-          -- B1 is a fact of every direct-cycle-free marked fan, independently
-          -- of whether B2 succeeds.  Publish it before the B2 split so both
-          -- resulting exact ledgers retain the same local incidence proof.
-          let hybrid :=
-            (hybridEntryRow (BranchState := BranchState)
-              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              freeHistory (by key_fresh)
+          -- The local B1 ledger of every marked centre.
+          let hybrid := (hybridEntryRow (data := spineData)).run freeHistory
+            (by key_fresh)
+          -- `[72]`/`[81]`, second half: B2 disjointness holds?
           match b2AssignmentDichotomy (data := spineData) hybrid
-              (by key_fresh)
-              (by key_fresh) with
+              (by key_fresh) (by key_fresh) with
           | .left choiceHistory =>
-              let ledger :=
-                (disjointPostLedgerComponentsRow (BranchState := BranchState)
-                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                  choiceHistory (by key_fresh)
-              match typeBExclusionDichotomy (data := spineData) ledger
-                  (by key_fresh)
-                  (by key_fresh) with
-              | .left excludedHistory =>
-                  -- The exact paid ledger is returned without inspecting its
-                  -- carrier.  Ordinary `[64]` closes its canonical alternative;
-                  -- `[144]` and `[177]` retain their own handoff alternative.
-                  exact Sum.inr (Sum.inl excludedHistory)
-              | .right residualHistory =>
-                  let mass :=
-                    (typeBExclusionResidualMassRow (BranchState := BranchState)
-                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                      residualHistory (by key_fresh)
-                  exact Sum.inr (Sum.inr (Sum.inl mass))
+              -- `[74]`/`[82]`: the B2 refinement and the bridge reduction;
+              -- `[76]`/`[85]`: the negative post-ledger residual.
+              let ledger := (disjointPostLedgerComponentsRow (data := spineData)).run
+                choiceHistory (by key_fresh)
+              let excluded := (typeBExcludedRow (data := spineData)).run ledger
+                (by key_fresh)
+              let residual := (typeBExclusionResidualRow (data := spineData)).run
+                excluded (by key_fresh)
+              let mass := (typeBExclusionResidualMassRow (data := spineData)).run
+                residual (by key_fresh)
+              exact selectedTypeBRoute8Continuation mass
           | .right obstructionHistory =>
-              let reflected :=
-                (typeBGlobalLocalBridgeRow (BranchState := BranchState)
-                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                  obstructionHistory
-                    (by key_fresh)
-              let mass :=
-                (typeBOverlapObstructionMassRow (BranchState := BranchState)
-                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-                  (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                  reflected (by key_fresh)
-              exact Sum.inr (Sum.inr (Sum.inr mass))
+              -- `[73]`/`[83]`: the minimal overlap obstruction and its
+              -- global-to-local reflection, charged to `[75]`/`[84]`.
+              let reflected := (typeBGlobalLocalBridgeRow (data := spineData)).run
+                obstructionHistory (by key_fresh)
+              let mass := (typeBOverlapObstructionMassRow (data := spineData)).run
+                reflected (by key_fresh)
+              exact selectedTypeBRoute8Continuation mass
 
 end HypostructureErdos64EG

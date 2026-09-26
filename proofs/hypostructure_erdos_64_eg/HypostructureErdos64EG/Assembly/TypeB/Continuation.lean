@@ -1,4 +1,7 @@
-import Hypostructure.Graph.Strategy.SpineRows.FanCertificateCap
+import Hypostructure.Graph.Strategy.SpineRows.CompatiblePairFanClosure
+import Hypostructure.Graph.Strategy.SpineRows.CompatiblePairTypeBRouting
+import Hypostructure.Graph.Strategy.SpineRows.FanClosedPort
+import Hypostructure.Graph.Strategy.SpineRows.FanClosedPortTypeBRouting
 import Hypostructure.Graph.Strategy.SpineRows.HighCentreNormalForm
 import Hypostructure.Graph.Strategy.SpineRows.SameCenterOpenPortCompatibility
 import Hypostructure.Graph.Strategy.SpineRows.TriangularCrossShoulder
@@ -10,13 +13,12 @@ import Hypostructure.Graph.Strategy.SpineRows.TriangularShoulderCompletion
 import Hypostructure.Graph.Strategy.SpineRows.TypeBFanDegreeDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.TypeBFanDegreeFourProfile
 import Hypostructure.Graph.Strategy.SpineRows.TypeBFanLocalDichotomy
-import Hypostructure.Graph.Strategy.SpineRows.TypeBFanSafe
 import HypostructureErdos64EG.Assembly.TypeB.Internal.Certificate
 
 /-!
 # Assembly: TypeB / Continuation
 
-Part of the dependency-separated Erdős–Gyárfás assembly.
+The one composition of Parts VI--VII, generic over the incoming ledger.
 -/
 
 namespace HypostructureErdos64EG
@@ -28,259 +30,41 @@ open Hypostructure.Graph.Strategy.Spine
 
 universe u w
 
-/- The complete carrier-neutral output of nodes `[67]`--`[85]`.  The outer
-sum remembers the literal degree arm of `[68]`; the inner boundary remembers
-the first Type B ledger edge that still needs the enclosing branch's global
-accounting.  Both indices contain every fact actually proved on that arm. -/
-private abbrev TypeBContinuationBoundary
-    (selected : EGInput.{u}) (known : FactKeys EGInput.{u}) :=
-  Sum
-    (Assembly.Internal.TypeBCertificateBoundary selected
-      ([K .fanCertificateCap, K .compatiblePairTypeBRouting,
-        K .fanClosedPortTypeBRouting, K .compatiblePairFanClosure,
-        K .fanClosedPort, K .typeBFanLocalDichotomy,
-        K .sameCenterOpenPortCompatibility, K .typeBFanHeavyCentre,
-        K .typeBFanSafe, K .highCentreNormalForm] ++ known))
-    (Assembly.Internal.TypeBCertificateBoundary selected
-      ([K .fanCertificateCap, K .triangularPortTypeBRouting,
-        K .compatiblePairTypeBRouting, K .fanClosedPortTypeBRouting,
-        K .compatiblePairFanClosure, K .fanClosedPort,
-        K .triangularCrossShoulder,
-        K .triangularFirstLanding,
-        K .triangularPortReturn,
-        K .triangularShoulderCompletion,
-        K .triangularFanCore,
-        K .typeBFanDegreeFourProfile, K .typeBFanDegreeFourCentres,
-        K .typeBFanSafe, K .highCentreNormalForm] ++ known))
-
-/- The same boundary when node `[67]` is already present on the incoming
-ledger.  This is the literal situation at `[144]`: the bottleneck audit needs
-the object-wide normal form before it constructs the same-token handoff, so
-the common Type B continuation must resume at `[68]` without appending a
-duplicate key. -/
-abbrev TypeBAfterNormalFormBoundary
-    (selected : EGInput.{u}) (known : FactKeys EGInput.{u}) :=
-  Sum
-    (Assembly.Internal.TypeBCertificateBoundary selected
-      ([K .fanCertificateCap, K .compatiblePairTypeBRouting,
-        K .fanClosedPortTypeBRouting, K .compatiblePairFanClosure,
-        K .fanClosedPort, K .typeBFanLocalDichotomy,
-        K .sameCenterOpenPortCompatibility, K .typeBFanHeavyCentre,
-        K .typeBFanSafe] ++ known))
-    (Assembly.Internal.TypeBCertificateBoundary selected
-      ([K .fanCertificateCap, K .triangularPortTypeBRouting,
-        K .compatiblePairTypeBRouting, K .fanClosedPortTypeBRouting,
-        K .compatiblePairFanClosure, K .fanClosedPort,
-        K .triangularCrossShoulder,
-        K .triangularFirstLanding,
-        K .triangularPortReturn,
-        K .triangularShoulderCompletion,
-        K .triangularFanCore,
-        K .typeBFanDegreeFourProfile, K .typeBFanDegreeFourCentres,
-        K .typeBFanSafe] ++ known))
-
-/-- The common Type B continuation after `[67]` has already been published on
-the same exact ledger.  No fact is reconstructed: `[68]` and every subsequent
-owner read their inputs from `history`. -/
-noncomputable def selectedTypeBAfterNormalFormContinuation
-    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .typeBFanEntry) known]
-    [FactKeys.Has (K .highCentreNormalForm) known]
-    [FactKeys.Has (K .selection) known]
-    [FactKeys.Has (K .bridgeless) known]
-    [FactKeys.Has (K .replacementExclusion) known]
-    [FactKeys.Has (K .tightEndpoint) known]
-    [FactKeys.Has (K .uncompressible) known]
-    [FactKeys.Has (K .remainderNormalized) known]
-    [FactKeys.Has (K .remainderRelabelingEntropy) known]
-    (heavyFresh : K .typeBFanHeavyCentre ∉ known)
-    (degreeFourFresh : K .typeBFanDegreeFourCentres ∉ known)
-    (compatibilityFresh : K .sameCenterOpenPortCompatibility ∉ known)
-    (localFresh : K .typeBFanLocalDichotomy ∉ known)
-    (profileFresh : K .typeBFanDegreeFourProfile ∉ known)
-    (triangularCoreFresh : K .triangularFanCore ∉ known)
-    (capFresh : K .fanCertificateCap ∉ known)
-    (markedFresh : K .fanCertificateMarked ∉ known)
-    (residualFresh : K .fanCertificateResidual ∉ known)
-    (certificateMassFresh : K .fanCertificateResidualMass ∉ known)
-    (cycleFresh : K .typeBDirectCycle ∉ known)
-    (freeFresh : K .typeBDirectCycleFree ∉ known)
-    (choiceFresh : K .typeBB2Choice ∉ known)
-    (obstructionFresh : K .typeBOverlapObstruction ∉ known)
-    (hybridFresh : K .typeBHybridEntry ∉ known)
-    (ledgerFresh : K .typeBDisjointLedger ∉ known)
-    (excludedFresh : K .typeBExcluded ∉ known)
-    (exclusionResidualFresh : K .typeBExclusionResidual ∉ known)
-    (exclusionMassFresh : K .typeBExclusionResidualMass ∉ known)
-    (obstructionMassFresh : K .typeBOverlapObstructionMass ∉ known)
-    (fanClosedFresh : K .fanClosedPort ∉ known := by key_fresh)
-    (compatibleClosureFresh : K .compatiblePairFanClosure ∉ known := by
-      key_fresh)
-    (fanClosedRoutingFresh : K .fanClosedPortTypeBRouting ∉ known := by
-      key_fresh)
-    (compatibleRoutingFresh : K .compatiblePairTypeBRouting ∉ known := by
-      key_fresh)
-    (triangularRoutingFresh : K .triangularPortTypeBRouting ∉ known := by
-      key_fresh)
-    (shoulderCompletionFresh : K .triangularShoulderCompletion ∉ known := by
-      key_fresh)
-    (portReturnFresh : K .triangularPortReturn ∉ known := by
-      key_fresh)
-    (firstLandingFresh : K .triangularFirstLanding ∉ known := by
-      key_fresh)
-    (crossShoulderFresh : K .triangularCrossShoulder ∉ known := by
-      key_fresh)
-    (fanSafeFresh : K .typeBFanSafe ∉ known := by key_fresh)
-    (globalLocalBridgeFresh : K .typeBGlobalLocalBridge ∉ known := by
-      key_fresh) :
-    TypeBAfterNormalFormBoundary selected known := by
-  let fanSafe :=
-    (typeBFanSafeRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by key_fresh)
-  match typeBFanDegreeDichotomy (data := spineData) fanSafe
-      (by key_fresh)
-      (by key_fresh) with
-  | .left heavyHistory =>
-      let compatible :=
-        (sameCenterOpenPortCompatibilityRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          heavyHistory (by key_fresh)
-      let localHistory :=
-        (typeBFanLocalDichotomyRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          compatible (by key_fresh)
-      let portRouted := Assembly.Internal.selectedTypeBPortRoutingPrefix localHistory
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-      let capped :=
-        (fanCertificateCapRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          portRouted (by key_fresh)
-      exact Sum.inl (Assembly.Internal.selectedTypeBCertificateBoundaryAfterPortRouting capped
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (globalLocalBridgeFresh := by key_fresh))
-  | .right degreeFourHistory =>
-      let profile :=
-        (typeBFanDegreeFourProfileRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          degreeFourHistory (by key_fresh)
-      let triangular :=
-        (triangularFanCoreRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          profile (by key_fresh)
-      let completed :=
-        (triangularShoulderCompletionRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          triangular (by key_fresh)
-      let returned :=
-        (triangularPortReturnRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          completed (by key_fresh)
-      let firstLanded :=
-        (triangularFirstLandingRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          returned (by key_fresh)
-      let crossShouldered :=
-        (triangularCrossShoulderRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          firstLanded (by key_fresh)
-      let portRouted := Assembly.Internal.selectedTypeBPortRoutingPrefix crossShouldered
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-      let triangularRouted :=
-        (triangularPortTypeBRoutingRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          portRouted (by key_fresh)
-      let capped :=
-        (fanCertificateCapRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-          triangularRouted (by key_fresh)
-      exact Sum.inr (Assembly.Internal.selectedTypeBCertificateBoundaryAfterPortRouting capped
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (globalLocalBridgeFresh := by key_fresh))
-
 /-- **The common Type B continuation `[67]`--`[85]`.**
 
-This is the literal continuation run from the absorbed-germ `[177]` entry at
-node `[65]` (`Absorbed/FanCharge.lean`).  The same-token `[144a]` leaf does not
-run it: the manuscript stops that endpoint at the fan entry.  It reads only the
-paper facts used by these nodes.  In particular it does not manufacture a
-`cubicBaseline`, canonical negative support, route-8 rate, or near-cubic bridge
-estimate for carriers that do not have those facts. -/
-noncomputable def selectedTypeBContinuation
+It is run after node `[65]` on every entry: the ordinary support `[64]`, the
+decorated handoff `[66]`/`[108]`, and the absorbed-germ fan data `[177]`.  It
+reads only facts of the literal incoming ledger.  `[67]` is the normal form;
+`[68]` decides whether some assigned centre is heavy.  The heavy arm is `[69]`:
+the same-centre compatibility lemma, the fan-closed port routing, and the routed
+local dichotomy (fan-compatible pair or `k - 2` triangular ports, each giving
+fan-closed ports).  The degree-four arm is `[78]`--`[79]`: the degree-four
+profile, the triangular fan core and its landing lemmas, and the fan-closed port
+routing of `cor:degree-four-local-activation`.  Both arms enter `[70]`. -/
+-- EG-NODE [67] high-degree centers independent; fan neighbours cubic
+-- EG-NODE [68] some center has \(d_G(h)>4\)?
+-- EG-NODE [69] degree \(>4\) local dichotomy: fan-compatible open pair or \(k-2\) triangular ports gives fan-closed ports
+-- EG-NODE [78] degree-\(4\) branch: \(d_G(h)=4\)
+-- EG-NODE [79] degree-\(4\) fan profile: center surplus \(1\), \(0\le c\le4\), \(D_B=c-\frac74\)
+noncomputable def Assembly.Internal.selectedTypeBFanContinuation
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
-    [fanEntryHas : FactKeys.Has (K .typeBFanEntry) known]
-    [selectionHas : FactKeys.Has (K .selection) known]
-    [bridgelessHas : FactKeys.Has (K .bridgeless) known]
-    [replacementHas : FactKeys.Has (K .replacementExclusion) known]
-    [tightHas : FactKeys.Has (K .tightEndpoint) known]
-    [uncompressibleHas : FactKeys.Has (K .uncompressible) known]
-    [remainderHas : FactKeys.Has (K .remainderNormalized) known]
-    [relabelingEntropyHas : FactKeys.Has (K .remainderRelabelingEntropy) known]
-    (normalFormFresh : K .highCentreNormalForm ∉ known)
-    (heavyFresh : K .typeBFanHeavyCentre ∉ known)
-    (degreeFourFresh : K .typeBFanDegreeFourCentres ∉ known)
-    (compatibilityFresh : K .sameCenterOpenPortCompatibility ∉ known)
-    (localFresh : K .typeBFanLocalDichotomy ∉ known)
-    (profileFresh : K .typeBFanDegreeFourProfile ∉ known)
-    (triangularCoreFresh : K .triangularFanCore ∉ known)
-    (capFresh : K .fanCertificateCap ∉ known)
-    (markedFresh : K .fanCertificateMarked ∉ known)
-    (residualFresh : K .fanCertificateResidual ∉ known)
-    (certificateMassFresh : K .fanCertificateResidualMass ∉ known)
-    (cycleFresh : K .typeBDirectCycle ∉ known)
-    (freeFresh : K .typeBDirectCycleFree ∉ known)
-    (choiceFresh : K .typeBB2Choice ∉ known)
-    (obstructionFresh : K .typeBOverlapObstruction ∉ known)
-    (hybridFresh : K .typeBHybridEntry ∉ known)
-    (ledgerFresh : K .typeBDisjointLedger ∉ known)
-    (excludedFresh : K .typeBExcluded ∉ known)
-    (exclusionResidualFresh : K .typeBExclusionResidual ∉ known)
-    (exclusionMassFresh : K .typeBExclusionResidualMass ∉ known)
-    (obstructionMassFresh : K .typeBOverlapObstructionMass ∉ known)
+    [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .tightEndpoint) known]
+    [FactKeys.Has (K .bridgeless) known]
+    [FactKeys.Has (K .uncompressible) known]
+    [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .surplusAtOrBelow) known]
+    [FactKeys.Has (K .typeAReceiverRouting) known]
+    [FactKeys.Has (K .replacementExclusion) known]
+    [FactKeys.Has (K .remainderRelabelingEntropy) known]
+    [FactKeys.Has (K .cubicBaseline) known]
+    (closureFresh : closed ∉ known := by key_fresh)
+    (normalFormFresh : K .highCentreNormalForm ∉ known := by key_fresh)
+    (heavyFresh : K .typeBFanHeavyCentre ∉ known := by key_fresh)
+    (degreeFourFresh : K .typeBFanDegreeFourCentres ∉ known := by key_fresh)
+    (compatibilityFresh : K .sameCenterOpenPortCompatibility ∉ known := by
+      key_fresh)
     (fanClosedFresh : K .fanClosedPort ∉ known := by key_fresh)
     (compatibleClosureFresh : K .compatiblePairFanClosure ∉ known := by
       key_fresh)
@@ -290,81 +74,130 @@ noncomputable def selectedTypeBContinuation
       key_fresh)
     (triangularRoutingFresh : K .triangularPortTypeBRouting ∉ known := by
       key_fresh)
+    (localFresh : K .typeBFanLocalDichotomy ∉ known := by key_fresh)
+    (profileFresh : K .typeBFanDegreeFourProfile ∉ known := by key_fresh)
+    (triangularCoreFresh : K .triangularFanCore ∉ known := by key_fresh)
     (shoulderCompletionFresh : K .triangularShoulderCompletion ∉ known := by
       key_fresh)
-    (portReturnFresh : K .triangularPortReturn ∉ known := by
+    (portReturnFresh : K .triangularPortReturn ∉ known := by key_fresh)
+    (firstLandingFresh : K .triangularFirstLanding ∉ known := by key_fresh)
+    (crossShoulderFresh : K .triangularCrossShoulder ∉ known := by key_fresh)
+    (capFresh : K .fanCertificateCap ∉ known := by key_fresh)
+    (markedFresh : K .fanCertificateMarked ∉ known := by key_fresh)
+    (residualFresh : K .fanCertificateResidual ∉ known := by key_fresh)
+    (certificateMassFresh : K .fanCertificateResidualMass ∉ known := by
       key_fresh)
-    (firstLandingFresh : K .triangularFirstLanding ∉ known := by
-      key_fresh)
-    (crossShoulderFresh : K .triangularCrossShoulder ∉ known := by
-      key_fresh)
-    (fanSafeFresh : K .typeBFanSafe ∉ known := by key_fresh)
+    (cycleFresh : K .typeBDirectCycle ∉ known := by key_fresh)
+    (freeFresh : K .typeBDirectCycleFree ∉ known := by key_fresh)
+    (hybridFresh : K .typeBHybridEntry ∉ known := by key_fresh)
+    (choiceFresh : K .typeBB2Choice ∉ known := by key_fresh)
+    (obstructionFresh : K .typeBOverlapObstruction ∉ known := by key_fresh)
+    (ledgerFresh : K .typeBDisjointLedger ∉ known := by key_fresh)
+    (excludedFresh : K .typeBExcluded ∉ known := by key_fresh)
+    (exclusionResidualFresh : K .typeBExclusionResidual ∉ known := by key_fresh)
+    (exclusionMassFresh : K .typeBExclusionResidualMass ∉ known := by key_fresh)
     (globalLocalBridgeFresh : K .typeBGlobalLocalBridge ∉ known := by
-      key_fresh) :
-    TypeBContinuationBoundary selected known := by
-  -- `[67]`, `lem:heavy-neighbourhood-normal-form`, is already object-wide and
-  -- uses exactly the selection and tight-endpoint facts in its manifest.
-  let normal :=
-    (highCentreNormalFormRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by key_fresh)
-  letI : FactKeys.Has (K .typeBFanEntry)
-      ([K .highCentreNormalForm] ++ known) :=
-    ⟨.tail fanEntryHas.member⟩
-  letI : FactKeys.Has (K .selection)
-      ([K .highCentreNormalForm] ++ known) :=
-    ⟨.tail selectionHas.member⟩
-  letI : FactKeys.Has (K .bridgeless)
-      ([K .highCentreNormalForm] ++ known) :=
-    ⟨.tail bridgelessHas.member⟩
-  letI : FactKeys.Has (K .replacementExclusion)
-      ([K .highCentreNormalForm] ++ known) :=
-    ⟨.tail replacementHas.member⟩
-  letI : FactKeys.Has (K .tightEndpoint)
-      ([K .highCentreNormalForm] ++ known) :=
-    ⟨.tail tightHas.member⟩
-  letI : FactKeys.Has (K .uncompressible)
-      ([K .highCentreNormalForm] ++ known) :=
-    ⟨.tail uncompressibleHas.member⟩
-  letI : FactKeys.Has (K .remainderNormalized)
-      ([K .highCentreNormalForm] ++ known) :=
-    ⟨.tail remainderHas.member⟩
-  letI : FactKeys.Has (K .remainderRelabelingEntropy)
-      ([K .highCentreNormalForm] ++ known) :=
-    ⟨.tail relabelingEntropyHas.member⟩
-  exact selectedTypeBAfterNormalFormContinuation
-      (known := [K .highCentreNormalForm] ++ known) normal
+      key_fresh)
+    (obstructionMassFresh : K .typeBOverlapObstructionMass ∉ known := by
+      key_fresh)
+    (bridgeMassFresh : K .typeBBridgeMass ∉ known := by key_fresh)
+    (bridgeSublinearFresh : K .typeBBridgeSublinear ∉ known := by key_fresh)
+    (unifiedNegativeFresh : K .route8UnifiedNegative ∉ known := by key_fresh)
+    (typeAExclusionFresh : K .typeAExclusion ∉ known := by key_fresh)
+    (typeBBridgeReductionFresh : K .typeBBridgeReduction ∉ known := by
+      key_fresh)
+    (piecesClassifiedFresh : K .route8PiecesClassified ∉ known := by
+      key_fresh)
+    (sublinearLedgerFresh : K .typeBSublinearLedger ∉ known := by key_fresh)
+    (sublinearResidualFresh : K .typeBSublinearResidual ∉ known := by
+      key_fresh)
+    (unifiedDeficitFresh : K .route8UnifiedDeficit ∉ known := by key_fresh)
+    (quotientFreeFresh : K .route8QuotientFree ∉ known := by key_fresh)
+    (quotientResidualFresh : K .route8QuotientResidual ∉ known := by
+      key_fresh)
+    (unifiedCensusFresh : K .route8UnifiedEntryCensus ∉ known := by
+      key_fresh)
+    (extractedCensusFresh : K .route8ExtractedEntryCensus ∉ known := by
+      key_fresh)
+    (unifiedTrueFresh : K .route8UnifiedTrueTwoCarrierEntry ∉ known := by
+      key_fresh)
+    (peelingFresh : K .route8PeelingDescent ∉ known := by key_fresh)
+    (stageFailedFresh : K .route8StageRateFailed ∉ known := by key_fresh)
+    (demandLedgerFresh : K .route8DemandLedger ∉ known := by key_fresh)
+    (demandAbsorptionFresh : K .route8DemandAbsorption ∉ known := by
+      key_fresh)
+    (openBoundarySaturatedFresh : K .route8OpenBoundarySaturated ∉ known := by
+      key_fresh)
+    (demandUnitCountFresh : K .route8DemandUnitCount ∉ known := by key_fresh)
+    (windowBlockersFresh : K .route8WindowBlockers ∉ known := by key_fresh)
+    (windowShadowSignatureFresh : K .windowShadowSignature ∉ known := by
+      key_fresh)
+    (windowShadowTailFresh : K .windowShadowSingletonTail ∉ known := by
+      key_fresh)
+    (windowShadowCycleFresh : K .windowShadowHitCycle ∉ known := by
+      key_fresh)
+    (windowShadowExcludedFresh : K .windowShadowHitExcluded ∉ known := by
+      key_fresh)
+    (demandResidualFresh : K .route8PeeledDemandResidual ∉ known := by
+      key_fresh)
+    (unpaidExitFourFresh : K .route8UnpaidExitFourResidual ∉ known := by
+      key_fresh)
+    (unifiedVisibleFresh : K .route8UnifiedVisibleResidual ∉ known := by
+      key_fresh)
+    (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known := by
+      key_fresh)
+    (jointBalanceFresh : K .route8JointBalance ∉ known := by key_fresh)
+    (unifiedTerminalFresh : K .route8TerminalNoGo ∉ known := by key_fresh) :
+    SelectedRouteEightBoundary selected := by
+  -- `[67]`: `lem:heavy-neighbourhood-normal-form`.
+  let normal := (highCentreNormalFormRow (data := spineData)).run history
     (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (by key_fresh)
-    (fanClosedFresh := by key_fresh)
-    (compatibleClosureFresh := by key_fresh)
-    (fanClosedRoutingFresh := by key_fresh)
-    (compatibleRoutingFresh := by key_fresh)
-    (triangularRoutingFresh := by key_fresh)
-    (shoulderCompletionFresh := by key_fresh)
-    (portReturnFresh := by key_fresh)
-    (firstLandingFresh := by key_fresh)
-    (crossShoulderFresh := by key_fresh)
-    (fanSafeFresh := by key_fresh)
-    (globalLocalBridgeFresh := by key_fresh)
+  -- `[68]`: some assigned centre heavy?
+  match typeBFanDegreeDichotomy (data := spineData) normal
+      (by key_fresh) (by key_fresh) with
+  | .left heavyHistory =>
+      -- `[69]`: `lem:same-center-open-port-compatibility`, the fan-closed port
+      -- routing, and the routed heavy-centre local dichotomy.
+      let compatible := (sameCenterOpenPortCompatibilityRow (data := spineData)).run
+        heavyHistory (by key_fresh)
+      let fanClosed := (fanClosedPortRow (data := spineData)).run compatible
+        (by key_fresh)
+      let pairClosure := (compatiblePairFanClosureRow (data := spineData)).run
+        fanClosed (by key_fresh)
+      let fanClosedRouting := (fanClosedPortTypeBRoutingRow (data := spineData)).run
+        pairClosure (by key_fresh)
+      let pairRouting := (compatiblePairTypeBRoutingRow (data := spineData)).run
+        fanClosedRouting (by key_fresh)
+      let triangularRouting :=
+        (triangularPortTypeBRoutingRow (data := spineData)).run pairRouting
+          (by key_fresh)
+      let localDichotomy := (typeBFanLocalDichotomyRow (data := spineData)).run
+        triangularRouting (by key_fresh)
+      exact Assembly.Internal.selectedTypeBCertificateContinuation localDichotomy
+  | .right degreeFourHistory =>
+      -- `[78]`--`[79]`: the degree-four fan profile, the triangular fan core and
+      -- its landing lemmas, and the fan-closed port routing of
+      -- `cor:degree-four-local-activation`.
+      let profile := (typeBFanDegreeFourProfileRow (data := spineData)).run
+        degreeFourHistory (by key_fresh)
+      let core := (triangularFanCoreRow (data := spineData)).run profile
+        (by key_fresh)
+      let completed := (triangularShoulderCompletionRow (data := spineData)).run
+        core (by key_fresh)
+      let returned := (triangularPortReturnRow (data := spineData)).run completed
+        (by key_fresh)
+      let landed := (triangularFirstLandingRow (data := spineData)).run returned
+        (by key_fresh)
+      let crossed := (triangularCrossShoulderRow (data := spineData)).run landed
+        (by key_fresh)
+      let fanClosed := (fanClosedPortRow (data := spineData)).run crossed
+        (by key_fresh)
+      let pairClosure := (compatiblePairFanClosureRow (data := spineData)).run
+        fanClosed (by key_fresh)
+      let fanClosedRouting := (fanClosedPortTypeBRoutingRow (data := spineData)).run
+        pairClosure (by key_fresh)
+      let pairRouting := (compatiblePairTypeBRoutingRow (data := spineData)).run
+        fanClosedRouting (by key_fresh)
+      exact Assembly.Internal.selectedTypeBCertificateContinuation pairRouting
 
 end HypostructureErdos64EG

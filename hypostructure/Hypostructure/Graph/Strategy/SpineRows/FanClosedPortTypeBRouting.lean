@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Contracts.TypeB.Local
 
 /-! Independently compiled spine row declarations. -/
 
@@ -14,40 +15,18 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
-variable [FactSystem (Input BranchState Presentation presentation data)]
-
-/-! ## Node `[72]`: fan-closed ports enter the positive Type-B ledger -/
-omit [FactSystem (Input BranchState Presentation presentation data)] in
+/-- Node `[69]`, `prop:fan-closed-port-typeB-routing` (a)--(b). -/
 @[reducible] noncomputable def fanClosedPortTypeBRoutingRow :
-    @AtomicStrategy (Input BranchState Presentation presentation data) _
-      (instFactSystem (BranchState := BranchState)
-        (Presentation := Presentation) (presentation := presentation)
-        (data := data)) :=
-  letI : FactSystem (Input BranchState Presentation presentation data) :=
-    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
-      (presentation := presentation) (data := data)
-  @factOnly (Input BranchState Presentation presentation data) _
-    (instFactSystem (BranchState := BranchState)
-      (Presentation := Presentation) (presentation := presentation)
-      (data := data))
-    `Hypostructure.Graph.Strategy.Spine.fanClosedPortTypeBRouting
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.fanClosedPortTypeBRouting
     { Requires := [K .fanClosedPort]
       Produces := [K .fanClosedPortTypeBRouting]
       requiresUnique := by simp
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let fanClosedDefinition := (inputs.get (K .fanClosedPort)).down
-      .cons (key := K .fanClosedPortTypeBRouting) ⟨by
-        change FanClosedPortTypeBRoutingStatement data.toParameters inputs.current.object
-        intro profile ledger normal scale ports fanClosed two
-        apply Graph.TypeBFanClosedPorts.fanClosedPortTypeBRouting
-          profile ledger normal scale
-        · intro vertex member
-          exact (fanClosedDefinition profile vertex).2
-            ((fanClosedDefinition profile vertex).1 (fanClosed vertex member))
-        · exact two
-      ⟩ .nil)
-    0 0
+      .cons (key := K .fanClosedPortTypeBRouting)
+        ⟨Contracts.TypeB.fanClosedPortTypeBRouting (data := data.toParameters) (inputs.get (K .fanClosedPort)).down⟩
+        .nil)
 
 end Hypostructure.Graph.Strategy.Spine
