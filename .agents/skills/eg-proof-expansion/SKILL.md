@@ -323,8 +323,11 @@ do not substitute a different argument or definition, and do not widen an
 outcome. Report it in `audits/erdos-64-red-team/lean-vs-paper-discrepancies.md`
 under "Paper errors" with: the node, the tex line, the paper's exact claim,
 the faithful formal statement, why it fails, and a Lean-checked counterexample
-where feasible. The user decides how an unprovable paper step is represented
-in Lean.
+where feasible. An unprovable paper step is represented as follows (user decision): state the
+paper's claim exactly at its node, and make its proof `sorry` tagged
+`-- PAPER-ERROR [node] tex:<line>`, pointing to the report. Use a PAPER-ERROR
+sorry only for a genuine paper error, never as a placeholder for unfinished
+work. `#print axioms` on the root then shows `sorryAx` exactly for these.
 
 
 ## Enforce the proof-specific boundary
