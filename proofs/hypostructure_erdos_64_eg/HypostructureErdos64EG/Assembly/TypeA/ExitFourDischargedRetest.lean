@@ -61,13 +61,12 @@ noncomputable abbrev typeADischargedRetestKeys : FactKeys EGInput.{u} :=
     K .route8UnifiedVisibleOverload,
     K .route8JointBalance]
 
-/-- **`[102]` → `[89]`, the retest of the peeled receiver.**  `K
-.typeAExitFourReceiverDischarged` records the outcome of the recompute-`L₄`
-loop: a witnessed peeling set `P₄(w)` at which the receiver is unsaturated
-(`lem:typeA-exit4-peeling-charge`: the remaining receiver charge
-`q(w) − ¼ − ¼L₄(w)` is nonnegative).  Its peeled loads and their remaining
-negative mass enter node `[123]`'s unified target-defect/route-8 pressure
-ledger, where `lem:typeA-pressure-is-exit4-peel` reads the witnesses. -/
+/-- **`[102]` → `[89]` → `[123]`, the discharged receiver.**  On the no arm of
+the recompute-`L₄` retest the peeled receiver is unsaturated with nonnegative
+remaining charge (`K .typeAExitFourReceiverDischarged`,
+`lem:typeA-exit4-peeling-charge`), and its peeled target-defect loads enter
+node `[123]`'s unified target-defect/route-`8` pressure ledger.  The chain from
+`[123]` below repeats the `[113]`-fails arm of `selectedRouteEightResidual`. -/
 -- EG-NODE none (establishes no manuscript DAG node)
 noncomputable def selectedTypeAExitFourDischargedRetest
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
