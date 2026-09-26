@@ -1,6 +1,6 @@
 {
  "status": "exact selected-root reduction to [20a], [144a], [172a], [182], [186], and [187]",
- "updated_at": "2026-09-25",
+ "updated_at": "2026-09-26",
  "aggregate_validation": "Full HypostructureErdos64EG package build passed on the working tree at ae44b9b plus the removal of Assembly/Surplus/TypeBContinuation.lean and TypeBCertificateOutcome, the [132] exit/blocker decision, the single [140]/[142]/[143] audit row `homogeneousBottleneckAuditRow`, and the [144] caps-fail/caps-hold decision (9029 jobs); every node entry re-derived on 2026-09-25 from the live Lean producers and the manuscript. Kernel axiom audit (web/tools/lean_axiom_audit.py): 153 assembly declarations, all clean, no frontier stubs.",
  "nodes": {
   "1": {
@@ -1154,13 +1154,12 @@
    "on_probed_closed_arm": false
   },
   "116": {
-   "producer": "`route8SmallCoreExitRow` (SpineRows/Route8SmallCoreExit.lean:21)",
+   "producer": "`route8SmallCoreExitRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8SmallCoreExit.lean) over `route8SmallCoreCollapse` (hypostructure/Hypostructure/Graph/Contracts/RouteEight/SmallCore.lean); closure `instIncompatibleRoute8TrueResidualSmallCoreCollapse` via runAndCloseIncompatible (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/RouteEight/Residual.lean)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`K .route8SmallCoreCollapse` derives, for the selected alpha ≤ 1 entry, the ordered alternatives TraceLocalTargetDefect / TraceResponseQuotient / TraceDelocalization / TraceSurvivingSeparator (exits (4)--(7)). It uses `smallCoreCollapseFacts`, [114] cut parity and the nontrivial trace-incidence quotient (`lem:typeA-one-terminal-collapse`).",
+   "fidelity_note": "`K .route8SmallCoreCollapse` publishes the zero/one-core entry and its exit-(4)--(7) trace-basin alternative (lem:typeA-one-terminal-collapse); the terminal is the framework closure against the target-complete minimality of `K .route8TrueResidual`.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "Reads `K .route8TrueResidual`, `K .route8SmallCoreEntry` and `K .route8CarrierCutParity`. Assembly contradicts each alternative with the same entry's `TargetCompleteMinimal` clauses from the true-residual fact.",
    "on_probed_closed_arm": false
   },
   "117": {
@@ -1214,33 +1213,30 @@
    "on_probed_closed_arm": false
   },
   "122": {
-   "producer": "`route8NoTwoCarrierContradictionRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8NoTwoCarrierContradiction.lean:20); `Route8.privateCarrierCensus_contradiction` (hypostructure/Hypostructure/Graph/Route8CarrierCore.lean:444); call site proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/RouteEight/Residual.lean:205",
+   "producer": "`route8PrivateCarrierBudgetRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8PrivateCarrierBudget.lean) with `instIncompatibleRoute8CensusPrivateCarrierBudget` over `route8Census_privateCarrierBudget_false` (hypostructure/Hypostructure/Graph/Contracts/RouteEight/Terminal.lean); runAndCloseIncompatible in proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/RouteEight/Residual.lean",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "Reads `K .route8Census` and `K .route8PrivateCarrierBudget` (delta*|entries| <= |supply|) and publishes `K .route8NoTwoCarrierContradiction` whose Holds is `False`, via the integer squeeze with floor = delta; at delta=3, s=4 this is exactly tau >= 12(1/4 - tau) against tau < 3/13.",
+   "fidelity_note": "No False-valued key: the private budget of [119]-[120] is Incompatible with the census deficit/rate readings (rem:route8-carrier-margin).",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "None of substance: the paper's constants 3/13 and 12 appear as the general delta/(delta s+1) rate with delta = threshold, s = dischargeScale. The Assembly eliminates the False fact right away (Residual.lean:210-211).",
    "on_probed_closed_arm": false
   },
   "123": {
-   "producer": "`selectedLargeBudgetPressureCensus` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/RouteEight/Local.lean:166) -> `selectedRouteEightCensus` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/RouteEight/Local.lean:43); `route8PeelingDescentRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8PeelingDescent.lean:21); `route8StageOutcomeDichotomy` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8StageOutcomeDichotomy.lean:25); `route8DemandLedgerDichotomy` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8DemandLedgerDichotomy.lean:31)",
+   "producer": "`selectedRouteEightDescent` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/RouteEight/Local.lean); `route8PeelingDescentRow` over `route8PeelingDescent` (hypostructure/Hypostructure/Graph/Contracts/RouteEight/Descent.lean); decision `route8StageOutcomeDichotomy` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8StageOutcomeDichotomy.lean)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`K .route8PeelingDescent` holds a finite peel list with its `Route8Pressure.StageOutcome` (chain, exact stage accounting, and terminal) on the unified entries at the fixed maximal packing. `route8StageOutcomeDichotomy` then splits into `K .route8UnifiedTrueTwoCarrierEntry` (true route 8, to [124]) or `K .route8StageRateFailed` (failed reduced rate, which gets the demand, absorption, and window-blocker ledgers and goes to [181]). This matches the node's exhaustive terminal test.",
+   "fidelity_note": "The descent pins its terminal stage `route8DescentChain`; the decision is the reduced-rate test `route8StageRate` versus its exact negation `route8StageRateFailed` at that stage. Yes -> [124]; no -> demand, absorption, window-blocker ledgers -> [181].",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "Adds a second [124] entry: on the failed-rate arm, `route8DemandLedgerDichotomy`'s L1 true-entry outcome also closes through `route8UnifiedTerminalNoGoRow` (Local.lean:100-108). The node's wrapper also runs the demand-ledger, absorption, open-boundary, and window-blocker rows that the paper attaches to the [123] -> [181] edge.",
    "on_probed_closed_arm": false
   },
   "124": {
-   "producer": "`route8TerminalNoGoRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8TerminalNoGo.lean:20; call proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/RouteEight/Residual.lean:230); `route8UnifiedTerminalNoGoRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8UnifiedTerminalNoGo.lean:28; calls proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/RouteEight/Local.lean:91,104,260)",
+   "producer": "`route8TwoCarrierExitRow` / `route8UnifiedTwoCarrierExitRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8TwoCarrierExit.lean) over `twoCarrier_exitFour` (hypostructure/Hypostructure/Graph/Contracts/RouteEight/Terminal.lean); closures `instIncompatibleRoute8TrueTwoCarrierEntryTwoCarrierExit` and `instIncompatibleRoute8UnifiedTrueTwoCarrierEntryUnifiedTwoCarrierExit`",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`K .route8TerminalNoGo` holds `False` (SpineVocabulary.lean:7090). Each executor reads the selected two-support entry and its deletion witnesses / true-entry package from the ledger (`route8TrueResidual`, `route8NoSmallCoreEntry`, `route8CarrierDeletionWitnesses`, or `route8UnifiedTrueTwoCarrierEntry`), builds the canonical Q5 exit-(4) witness locally, and contradicts the same entry's no-exit-(4) clause. This is thm:typeA-two-carrier-nogo.",
+   "fidelity_note": "thm:typeA-two-carrier-nogo: lem:typeA-carrier-deletion-exit is published as `K .route8TwoCarrierExit` / `K .route8UnifiedTwoCarrierExit` and is Incompatible with the terminal true two-support entry's absent exit (4). No False-valued key.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "Two producers of the same key, one for the pure route-8 arm of [117]/[118] and one for the unified arm of [123]/[181]. Both append exactly `K .route8TerminalNoGo`, and the Assembly eliminates it immediately.",
    "on_probed_closed_arm": false
   },
   "125": {
@@ -1804,13 +1800,12 @@
    "on_probed_closed_arm": false
   },
   "181": {
-   "producer": "`route8PeeledDemandResidualRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8PeeledDemandResidual.lean:28); `route8UnpaidExitFourDichotomy` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8UnpaidExitFourDichotomy.lean:30); `selectedRouteEightUnpaidExitFourReduction` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/RouteEight/Local.lean:237)",
+   "producer": "`selectedRouteEightUnpaidReduction` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/RouteEight/Local.lean); `route8UnpaidTwoCarrierRow`, `route8UnpaidExitFourDichotomy`, `route8UnpaidTrueEntryRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8UnpaidExitFourDichotomy.lean) over hypostructure/Hypostructure/Graph/Contracts/RouteEight/DemandLedger.lean",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`K .route8PeeledDemandResidual` bundles the failed stage, the maximal demand ledger, the absorption and the window blockers. The [181] `Decision` then yields either `K .route8UnifiedTrueTwoCarrierEntry` (a witness-free entry, closed by the existing [124] `route8UnifiedTerminalNoGoRow`) or `K .route8UnpaidExitFourResidual` (every unpaid entry has two or fewer private carriers and a canonical exit-(4) witness).",
+   "fidelity_note": "(168.1) is its own fact; the decision is outcome (i) `route8UnpaidWitnessFree` against its exact negation `route8UnpaidExitFourResidual`; outcome (i) is the terminal input of thm:typeA-two-carrier-nogo and closes at [124].",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "None. All inherited keys stay in the ExactLedger index on the surviving arm.",
    "on_probed_closed_arm": false
   },
   "182": {
@@ -1824,13 +1819,12 @@
    "on_probed_closed_arm": false
   },
   "183": {
-   "producer": "`route8UnpaidExitFourDichotomy` .right arm (hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8UnpaidExitFourDichotomy.lean:30); `route8UnifiedVisibleResidualRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8UnifiedVisibleResidual.lean:28); `selectedRouteEightVisibleResidual` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/RouteEight/Local.lean:277)",
+   "producer": "`route8UnpaidExitFourDichotomy` no arm (hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8UnpaidExitFourDichotomy.lean)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "On the `K .route8UnpaidExitFourResidual` survivor, `route8UnifiedVisibleResidualRow` uses the shortest-trace boundary-support argument to publish `K .route8UnifiedVisibleResidual`: every retained unified entry is visible, so the silent-entry count is zero (lem:typeA-unified-visible-ownership).",
+   "fidelity_note": "`K .route8UnpaidExitFourResidual`: every unpaid entry of every maximal ledger carries its canonical exit-(4) witness (168.2).",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "None. The entry family and ledger continue unchanged to [184]. The Lean doc comments number these nodes one higher than the tex ('Node [184]: shortest-trace' on the [183] test).",
    "on_probed_closed_arm": false
   },
   "184": {
