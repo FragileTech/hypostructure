@@ -86,3 +86,4 @@ Hypostructure.PDE.Strategy.Official.TotalExecutionBoundary
 # Paper repairs quarantined by user decision (2026-09-26): reference only.
 Hypostructure.Quarantine.PaperRepairs.Node144Gap
 Hypostructure.Quarantine.PaperRepairs.ColdF4Charge
+Hypostructure.Quarantine.PaperRepairs.ColdF2Refutation

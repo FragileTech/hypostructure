@@ -1166,38 +1166,36 @@ def SeparatorHandoffAt (data : Parameters) (object : Graph.FiniteObject.{u})
       Graph.Route8.TraceBasin.TraceSurvivingSeparator object piece data.threshold
         data.LengthOK receiver load piece
 
-/-- **The (F4) registry** of `def:cold-corridor-first-failure` (tex 7234:
-"the corridor first enters a declared Type B handoff envelope or the route-8
-response support already recorded in the branch state"): the canonical pieces
-of `R(P₀)` that produce a decorated Type B handoff at a surviving separator
-(`SeparatorHandoffAt`, the declared envelope core of
-`lem:typeA-high-degree-handoff`), or that carry a route-8 response support. -/
-noncomputable def ColdDeclaredHandoffSupport (data : Parameters)
-    (object : Graph.FiniteObject.{u}) (support : Finset object.Vertex) : Prop := by
-  classical
-  let packing := canonicalWindowPacking data object
-  let remainder := object.remainderSupport packing
-  exact
-    (∃ component ∈ object.canonicalPieces remainder,
-      object.pieceSupport remainder component = support ∧
-        SeparatorHandoffAt data object support) ∨
-    ∃ component ∈ object.canonicalPieces remainder,
-      object.pieceSupport remainder component = support ∧
-        object.NegativeNetCharge support data.threshold data.dischargeScale ∧
-        object.ambientSurplus support data.threshold = 0 ∧
-        Graph.Route8Deficit.SilentFirst object support data.threshold
-          data.dischargeScale ∧
-        ∀ receiver : object.Vertex,
-          receiver ∈ Graph.VisibleEntry.saturatedReceivers object support
-              data.threshold data.dischargeScale →
-            ∀ load ∈ Graph.VisibleEntry.silentExcess object support
-                data.threshold data.dischargeScale receiver,
-              Graph.Route8.TraceBasin.Route8Entry object support data.threshold
-                  data.LengthOK receiver load ∧
-                ¬ ∃ witness : Graph.ExitFour.Witness
-                    (Graph.HasCycleWithLength data.LengthOK) support
-                    data.threshold data.dischargeScale receiver ∅,
-                  witness.load = load
+/-- **The (F4) registry** of `def:cold-corridor-first-failure`: the heavy
+handoff centres of G, the singletons `{z}` with `d_G(z) > δ`.
+
+User-approved repair (2026-09-26; `lean-vs-paper-discrepancies.md`, "(F4)
+registry: the heavy handoff centres").  The paper's (F4) (tex 7234) reads "the
+corridor first enters a declared Type B handoff envelope or the route-8
+response support already recorded in the branch state".  Its uses fix what
+"enters" means:
+
+* `lem:cold-germ-extraction` (tex 7297; proof tex 7326-7329): "If a candidate
+  support contains a vertex of degree at least 4, then the corresponding
+  corridor first enters the high-degree handoff ledger and was already
+  removed";
+* `lem:absorbed-germ-fan-data` (ii) (tex 7926-7930): the corridor enters a
+  vertex `z` of degree at least `4`, "`z` is a heavy centre" and `ε` is
+  decorated handoff fan data at `z` -- the declared interface of a decorated
+  envelope is its centre (`def:decorated-fan-envelope`, `H ⊆ V_{≥4}(G)`;
+  `lem:typeA-high-degree-handoff`);
+* the route-8 response support contributes nothing on this branch:
+  `def:surviving-cold-branch` (v) (tex 6982) leaves no terminal true route-8
+  entry.
+
+So the declared handoff interfaces reached by a corridor are exactly G's heavy
+centres.  (The whole-support reading of tex 7234 makes (F4) fire at segment 0
+on a subcubic support, which the paper neither bounds nor excludes;
+`Quarantine/PaperRepairs/ColdF4Charge.lean`.) -/
+def ColdDeclaredHandoffSupport (data : Parameters)
+    (object : Graph.FiniteObject.{u}) (support : Finset object.Vertex) : Prop :=
+  ∃ centre : object.Vertex, support = {centre} ∧
+    data.threshold < object.degree centre
 
 set_option maxHeartbeats 800000 in
 /-- Clause (F1) at one segment of the retained cold corridor. -/
@@ -1310,7 +1308,8 @@ The retained state supplies the actual corridor, presentation, and structural
 F5 germ.  At each corridor segment the five predicates below are exactly the
 paper's F1--F5 alternatives: a completion through a placed packed window, a
 same-state target-response defect, a proper target-complete compression, entry
-into a declared Type B or route-8 support, or the terminal/least-repeat germ
+into a declared handoff interface of G (`ColdDeclaredHandoffSupport`: G's heavy
+handoff centres), or the terminal/least-repeat germ
 endpoint.  The published segment satisfies one alternative and no strictly
 earlier segment satisfies any alternative. -/
 structure ColdFirstFailureOccurrenceData (data : Parameters)
@@ -1483,7 +1482,8 @@ failure of every selected half-edge.  (F1) is a target cycle and (F3) a
 target-complete compression, both excluded by their ledger facts, and (F2) is
 a sparse exit excluded on the surviving branch (tex 7265-7270).  What remains
 is exactly the lemma's two routes: (F5) a cold bounded configuration, or (F4)
-an already named Type B or route-8 handoff of the declared registry. -/
+an already named handoff of the declared registry `ColdDeclaredHandoffSupport`
+(G's heavy handoff centres). -/
 structure ColdSurvivingFirstFailureStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop where
   holds : ∃ occurrence : ColdFirstFailureOccurrenceData data object,

@@ -458,6 +458,89 @@ theorem foot_mem_prefixSupport (corridor : Corridor object windows component)
   refine (corridor.mem_prefixSupport n _).2 ⟨_, SimpleGraph.Walk.start_mem_support _, ?_⟩
   simp [stubFoot, Corridor.entryStub]
 
+/-- A head lies in the prefix of length `n` exactly when its index is `≤ n`
+(the corridor is a simple path). -/
+theorem head_mem_prefixSupport_iff
+    (corridor : Corridor object windows component)
+    (s : corridor.Segment) (n : Nat) :
+    corridor.head s ∈ corridor.prefixSupport n ↔ s.1 ≤ n := by
+  classical
+  constructor
+  · intro mem
+    obtain ⟨inner, innerMem, innerEq⟩ := (corridor.mem_prefixSupport n _).1 mem
+    obtain ⟨i, hi, hiLe⟩ := SimpleGraph.Walk.mem_support_iff_exists_getVert.mp innerMem
+    rw [SimpleGraph.Walk.take_getVert] at hi
+    have takeLen := SimpleGraph.Walk.take_length corridor.inside.1 n
+    have eq : corridor.inside.1.getVert (min n i) = corridor.inside.1.getVert s.1 := by
+      apply Subtype.ext
+      rw [hi]
+      exact innerEq
+    have inj := corridor.inside.2.getVert_injOn
+      (show min n i ∈ {j | j ≤ corridor.inside.1.length} by
+        simp only [Set.mem_setOf_eq]; omega)
+      (show s.1 ∈ {j | j ≤ corridor.inside.1.length} by
+        simp only [Set.mem_setOf_eq]; omega) eq
+    omega
+  · intro le
+    refine (corridor.mem_prefixSupport n _).2
+      ⟨(corridor.inside.1.take n).getVert s.1, ?_, ?_⟩
+    · exact SimpleGraph.Walk.getVert_mem_support _ _
+    · rw [SimpleGraph.Walk.take_getVert, Nat.min_eq_right le]
+      rfl
+
+/-- The last head of a repeated-state interval lies in the interval support. -/
+theorem head_right_mem_intervalSupport
+    (corridor : Corridor object windows component)
+    (left right : corridor.Segment) (le : left.1 ≤ right.1) :
+    corridor.head right ∈ corridor.intervalSupport left right := by
+  classical
+  refine (corridor.mem_intervalSupport left right _).2
+    ⟨((corridor.inside.1.drop left.1).take (right.1 - left.1)).getVert
+      (right.1 - left.1), SimpleGraph.Walk.getVert_mem_support _ _, ?_⟩
+  rw [SimpleGraph.Walk.take_getVert, SimpleGraph.Walk.drop_getVert]
+  have : left.1 + min (right.1 - left.1) (right.1 - left.1) = right.1 := by omega
+  rw [this]
+  rfl
+
+/-- The head of the terminal segment lies in the terminal support. -/
+theorem head_terminal_mem_prefixSupport_statesRead
+    (corridor : Corridor object windows component) :
+    corridor.head ⟨corridor.inside.1.length, Nat.lt_succ_self _⟩ ∈
+      corridor.prefixSupport corridor.statesRead :=
+  (head_mem_prefixSupport_iff corridor _ _).2 (by
+    unfold Corridor.statesRead; omega)
+
+/-- **A registry of heavy supports.**  Every vertex of every registered
+support has degree above `threshold`. -/
+def RegistryHigh (threshold : Nat) (Handoff : Finset object.Vertex → Prop) :
+    Prop :=
+  ∀ support, Handoff support → ∀ vertex ∈ support,
+    threshold < object.degree vertex
+
+/-- **The (F4) handoff precedes the germ, so the trace is not subcubic.**
+If the corridor first enters a support of a heavy registry at `first`, and
+`first` is not after a segment `g` whose head lies in a germ support covered by
+the trace prefix `traceEnd`, then that trace prefix contains a vertex of degree above `threshold`. -/
+theorem handoff_before_germ_not_subcubic
+    (corridor : Corridor object windows component)
+    (threshold traceEnd : Nat) (germSupport : Finset object.Vertex)
+    (cover : germSupport ⊆ corridor.prefixSupport traceEnd)
+    (g : corridor.Segment) (gMem : corridor.head g ∈ germSupport)
+    {Handoff : Finset object.Vertex → Prop}
+    (high : RegistryHigh threshold Handoff)
+    (first : corridor.Segment) (firstLe : first.1 ≤ g.1)
+    (handoff : FirstFailureHandoff corridor Handoff first) :
+    ¬ ∀ vertex ∈ corridor.prefixSupport traceEnd,
+      object.degree vertex ≤ threshold := by
+  intro subcubic
+  obtain ⟨support, registered, mem⟩ := handoff.1
+  have gLe := (head_mem_prefixSupport_iff corridor g traceEnd).1 (cover gMem)
+  have firstIn :=
+    (head_mem_prefixSupport_iff corridor first traceEnd).2 (by omega)
+  have lowFirst := subcubic _ firstIn
+  have highFirst := high support registered _ mem
+  omega
+
 end Corridor
 
 namespace Corridor

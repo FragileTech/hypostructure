@@ -68,8 +68,9 @@ representative on the current residual. -/
           (inputs.get (K .uncompressible)).down⟩
         .nil)
 
-/-- Node `[153]`, (F4): a declared Type-B/route-8 support is returned to
-the already-declared handoff ledger. -/
+/-- Node `[153]`, (F4): a declared handoff interface (a heavy handoff centre of
+G, `ColdDeclaredHandoffSupport`) is returned to the already-declared handoff
+ledger. -/
 @[reducible] noncomputable def coldFailureHandoffRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldFailureHandoff

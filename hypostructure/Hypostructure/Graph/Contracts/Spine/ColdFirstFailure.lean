@@ -187,31 +187,56 @@ theorem coldFirstFailureOccurrence_of_state
   exact (Nat.not_lt_of_ge firstLeEarlier) earlierBefore
 
 /-- **`lem:cold-corridor-first-failure` (ii), the paper's claim** (tex
-7265-7270): on the surviving cold branch an (F2) first failure does not occur,
-because the (F2) pair is a target-defective quotient, i.e. a sparse surplus
-exit, excluded by `K .sparseSurplusSurvivor`.  Recorded as a paper error: the
-(F2) pair compares two corridor prefixes through their cut-state interface, not
-two declared coordinates of G's sparse family, so it is not a sparse exit of
-`def:named-surplus-exits` and the survivor fact does not refute it
-(`lean-vs-paper-discrepancies.md#paper-errors`). -/
+7265-7270), at G's retained occurrence: on the surviving cold branch, the first
+failure of a selected half-edge `ε` of G -- read on the corridor, presentation
+and segment index that G's classified data retains for `ε`
+(`coldOccurrenceCorridorAt` / `coldOccurrencePresentationAt` /
+`coldOccurrenceIndexAt`) -- is not (F2), because the (F2) pair is a
+target-defective quotient, i.e. a sparse surplus exit, excluded by
+`K .sparseSurplusSurvivor`.
+
+Recorded as a paper error (`lean-vs-paper-discrepancies.md#paper-errors`): the
+(F2) pair compares two corridor prefixes through their cut-state interface,
+not two declared coordinates of G's sparse family, so it is not a sparse exit
+of `def:named-surplus-exits` and the survivor fact does not refute it
+(`Quarantine/PaperRepairs/ColdF2Refutation.lean`,
+`coldF2_not_clauseB`).
+
+The statement is quantified only over G's retained objects: the earlier
+all-presentations/all-indices form is false
+(`ColdF2Refutation.coldFailureDefect_excluded_is_false`, with a constant
+index), while the retained index is injective and its states are G's
+chosen ones. -/
 theorem coldFailureDefect_excluded (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (_survivor : DeclaredSparseSurvivor data object)
-    {windows component : Finset object.Vertex}
-    (corridor : Graph.ColdCorridor.Corridor object windows component)
-    (presentation : Graph.ColdCorridor.Presentation data.coldSignature object)
-    (index : corridor.Segment → presentation.Segment)
-    (segment : corridor.Segment) :
-    ¬ ColdFirstFailureDefectAt data object corridor presentation index segment := by
+    (occurrence : ColdFirstFailureOccurrenceData data object)
+    (epsilon : ColdEligibleHalfEdge data object)
+    (first : (coldOccurrenceCorridorAt data object occurrence epsilon).Segment)
+    (_minimal : ∀ earlier :
+        (coldOccurrenceCorridorAt data object occurrence epsilon).Segment,
+      earlier.1 < first.1 →
+        ¬ ColdFirstFailureEvent data object
+          (coldOccurrenceCorridorAt data object occurrence epsilon)
+          (coldOccurrencePresentationAt data object occurrence epsilon)
+          (coldOccurrenceIndexAt data object occurrence epsilon)
+          (coldOccurrenceIncidence data object occurrence epsilon)
+          (ColdDeclaredHandoffSupport data object) earlier) :
+    ¬ ColdFirstFailureDefectAt data object
+      (coldOccurrenceCorridorAt data object occurrence epsilon)
+      (coldOccurrencePresentationAt data object occurrence epsilon)
+      (coldOccurrenceIndexAt data object occurrence epsilon) first := by
   -- PAPER-ERROR [153] tex:7268 — see lean-vs-paper-discrepancies.md#paper-errors
   sorry
 
 /-- **`lem:cold-corridor-first-failure`, the routing** (tex 7234-7295): (F1)
 is a target cycle and (F3) a target-complete compression, both excluded by the
-ledger; (F2) is a sparse exit excluded by the node-`[125]` survivor; every
-other first failure is routed as the lemma states -- (F5) a cold bounded
-configuration or (F4) an already named Type B or route-8 handoff of the
-declared registry. -/
+ledger; (F2) is a sparse exit excluded by the node-`[125]` survivor
+(`coldFailureDefect_excluded`, applied at G's retained occurrence and first
+failure; PAPER-ERROR [153] tex:7268); every other first failure is routed as
+the lemma states -- (F5) a cold bounded configuration or (F4) an already named
+handoff of the declared registry `ColdDeclaredHandoffSupport` (G's heavy
+handoff centres). -/
 theorem coldFailureRouting_of_failures
     (data : Parameters) (object : Graph.FiniteObject.{u})
     (occurrence : ColdFirstFailureOccurrenceStatement data object)
@@ -229,7 +254,8 @@ theorem coldFailureRouting_of_failures
         (Classical.choose_spec
           (Classical.choose_spec cycle).2).2).elim
   | defect defect =>
-      exact (coldFailureDefect_excluded data object survivor _ _ _ _ defect).elim
+      exact (coldFailureDefect_excluded data object survivor occurrenceData epsilon
+        first minimal defect).elim
   | compression compression =>
       exact (failureCompression _ _ _ _ _ _
         ⟨Classical.choose compression⟩).elim

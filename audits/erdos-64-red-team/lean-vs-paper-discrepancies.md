@@ -617,8 +617,10 @@ where the user decided so, a residual carried by the node's open leaf.
 - **Paper claim.** An (F2) first failure is "a target-defective quotient ...
   exactly the sparse exits ... excluded in `def:surviving-cold-branch`".
 - **Faithful Lean statement.** `Contracts.Spine.coldFailureDefect_excluded`:
-  on the survivor (`K .sparseSurplusSurvivor`), no (F2) event occurs.  The row
-  reads the survivor key, as at d2ded0e.
+  on the survivor (`K .sparseSurplusSurvivor`), the first failure of a selected
+  half-edge `ε` of G, read on G's retained occurrence (corridor, presentation
+  and index of the classified data), is not (F2) (restated 2026-09-26, see the
+  addendum).  The row reads the survivor key, as at d2ded0e.
 - **Why it fails.** The (F2) pair compares two corridor prefixes through their
   cut-state interface (tex 7187-7197).  It is not an identification of two
   declared coordinates of G's sparse family: demands, pairs and spine
@@ -629,6 +631,47 @@ where the user decided so, a residual carried by the node's open leaf.
   does not refute it.
 - **Tag.** `sorry`, `PAPER-ERROR [153] tex:7268`, in
   `Graph/Contracts/Spine/ColdFirstFailure.lean`.
+- **Addendum (2026-09-26): the evidence, and the hook restated.**
+  `Quarantine/PaperRepairs/ColdF2Refutation.lean` (Lean-checked, no `sorry`,
+  standard axioms):
+  - `prefix_zero_profile_ne`, `not_residualTargetDefect_prefixPair_zero`: for
+    every corridor of G in an outside component and every `right > 0`, the
+    readings `retainedPiece(J_right, J_0)` and `retainedPiece(J_right,
+    J_right)` have different `d_∂` (the entry foot is on `∂J_right` and loses
+    its corridor edge to `head 1`), so the prefix coordinates `{J_0, J_right}`
+    carry no clause-(b) defect for any target predicate
+    (`prefixPair_residualTargetDefect_profile`: clause (b) on the prefix pair
+    is read at `Z = select?(J_l ∪ J_r) = J_r` and forces equal `d_∂`).
+  - `coldFirstFailureDefectAt_one_iff`, `coldF2_not_clauseB`: on an object of
+    minimum degree `≥ 2` with `4 ∈ LengthOK`, the Lean (F2) at segment 1 of
+    every corridor of length `≥ 1` is exactly "states 0 and 1 agree" (the
+    length-3 path context from the foot to `head 1` closes a 4-cycle with
+    `J_1` and none with the edgeless `J_0`), while `{J_0, J_1}` is never a
+    clause-(b) exit.  So (F2) ⇏ sparse exit.
+  - `edge_twoPath_sameFibre_targetDefect`: reading prefixes instead through
+    their two-label cut-state interface `T(J) = {foot, head}` (tex 7187-7197)
+    puts `J_1` (an edge) and `J_2` (a two-edge path) in the same `d_∂ = (1,1)`
+    fibre and separates them by a context, so such a clause (b) would fire on
+    every corridor of length `≥ 2` and make the surviving branch vacuous.
+    Neither reading makes the paper's step valid.
+  - `coldFailureDefect_excluded_is_false`: the previously committed statement
+    of `Contracts.Spine.coldFailureDefect_excluded` quantified over every
+    corridor, presentation, index and segment, and is **false** (constant
+    index: states agree, (F2) fires at segment 1).  A `sorry` of a false
+    statement proves anything about G, which is forbidden.  It is therefore
+    restated, without changing the paper claim, at exactly the objects where
+    its only consumer `coldFailureRouting_of_failures` applies it: G's retained
+    occurrence (`coldOccurrenceCorridorAt` / `coldOccurrencePresentationAt` /
+    `coldOccurrenceIndexAt` of the classified data), at a segment that is the
+    first failure (no earlier (F1)--(F5) event): "the first failure of `ε` is
+    not (F2)".  The refutation does not apply there: the retained index is
+    injective (`coldOccurrenceStateFacts … .2.2.1`), so a constant index is
+    excluded as soon as segment 1 exists (checked in Lean), and the states are
+    G's chosen ones.  The restated claim is still not proved -- it fails at a
+    G whose retained presentation has equal states at segments 0 and 1 with
+    no event at segment 0 -- but whether G's retained presentation is such is
+    not determined, so the statement is not refutable.  The tag stays
+    `sorry -- PAPER-ERROR [153] tex:7268`.
 
 ### [153]/[175] full charge of a subcubic cold half-edge, `lem:absorbed-germ-fan-data` (i) (tex 7920-7922) with `lem:cold-germ-extraction` (tex 7318-7322)
 
@@ -644,10 +687,58 @@ where the user decided so, a residual carried by the node's open leaf.
   is subcubic (`Quarantine/PaperRepairs/ColdF4Charge.lean`,
   `coldF4_of_foot_declared`).  The paper neither bounds nor excludes these
   half-edges.
-- **Tag.** `sorry`, `PAPER-ERROR [153] tex:7920`, in
-  `Graph/Contracts/Spine/ColdSubcubicCharge.lean`.
+- **Tag (historical).** `sorry`, `PAPER-ERROR [153] tex:7920`, in
+  `Graph/Contracts/Spine/ColdSubcubicCharge.lean`.  **Resolved 2026-09-26** by
+  the user-approved (F4) repair below: the sorry is replaced by a proof, with
+  the statement unchanged.
 - **Inconsistency.** Tex 7926-7934 (`lem:absorbed-germ-fan-data` (ii)) reads a
   handoff as reaching a vertex of degree ≥ 4 (the heavy-centre reading).
   Tex 7234 declares whole supports.  Lean implements the (F4) definition as
   stated at its node (tex 7234).  The heavy-centre reading is quarantined in
   `Quarantine/PaperRepairs/ColdF4Charge.lean`.
+
+## User-approved repairs
+
+### [153]/[175] (F4) registry: the heavy handoff centres (user-approved, 2026-09-26)
+
+- **Paper.** (F4) (`def:cold-corridor-first-failure`, tex 7234): "the corridor
+  first enters a declared Type B handoff envelope or the route-8 response
+  support already recorded in the branch state".  Its uses read "enters" at a
+  heavy vertex: `lem:cold-germ-extraction` (tex 7297, proof tex 7326-7329: "If
+  a candidate support contains a vertex of degree at least 4, then the
+  corresponding corridor first enters the high-degree handoff ledger and was
+  already removed"); `lem:absorbed-germ-fan-data` (ii) (tex 7926-7930: the
+  corridor enters `z` with `d(z) ≥ 4`, "`z` is a heavy centre", `ε` is
+  decorated handoff fan data at `z`; the declared interface of a decorated
+  envelope is its centre, `def:decorated-fan-envelope`, `H ⊆ V_{≥4}(G)`,
+  `lem:typeA-high-degree-handoff`).  The route-8 response support contributes
+  nothing on this branch: `def:surviving-cold-branch` (v) (tex 6982) leaves no
+  terminal true route-8 entry.  The whole-support reading of tex 7234 fires
+  (F4) at segment 0 on a subcubic support, and the paper neither bounds nor
+  excludes those half-edges (entry "full charge of a subcubic cold half-edge"
+  above; `Quarantine/PaperRepairs/ColdF4Charge.lean`).
+- **Lean (live).**
+  - `Statements/Spine.lean`, `ColdDeclaredHandoffSupport data G support :=
+    ∃ centre, support = {centre} ∧ δ < d_G(centre)` -- G's heavy handoff
+    centres.
+  - Library (`Graph/ColdGermFamily.lean`, namespace `ColdCorridor.Corridor`):
+    `head_mem_prefixSupport_iff`, `head_right_mem_intervalSupport`,
+    `head_terminal_mem_prefixSupport_statesRead`, `RegistryHigh`,
+    `handoff_before_germ_not_subcubic` (a first entry into a heavy registry
+    that precedes a germ segment covered by the trace prefix puts a vertex of
+    degree `> δ` in that prefix).
+  - Contracts at G (`Contracts/Spine/ColdSubcubicCharge.lean`):
+    `coldDeclaredHandoffSupport_registryHigh`, `coldGermAt_exists_head_mem`,
+    `coldHandoffOccurrence_not_subcubic` (at the retained classification of
+    `K .coldFailureRouting`), and the proof of
+    `coldSubcubicFirstFailureGerm` (statement unchanged), which was the
+    `PAPER-ERROR [153] tex:7920` sorry.
+  - `Contracts/Spine/ColdHandoff.lean`: `coldHandoffOccurrence_not_candidate`,
+    `coldF4_card_le_corridorLoss`: on the node-`[153]` witness of
+    `K .coldGermCandidates`, `#{ε : first failure (F4)} ≤ #{ε eligible : ε ∉
+    candidates} ≤ corridorLoss ≤ (δ+1)·B_cold·σ(G)` -- the (F4) half-edges are
+    inside the existing first-high loss, with no new term and no `o(n)`.
+- **Why this is the paper's reading.** Every consumer of (F4) in the paper
+  (tex 7326-7329, 7926-7930) uses exactly "the corridor reaches a vertex of
+  degree ≥ 4"; with this registry the paper's charge argument goes through as
+  written.

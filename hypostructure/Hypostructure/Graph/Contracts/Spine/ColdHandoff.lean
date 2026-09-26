@@ -1,6 +1,7 @@
 import Hypostructure.Graph.Statements.Spine
 import Hypostructure.Graph.ColdIncrementArithmetic
 import Hypostructure.Graph.ColdGermFamily
+import Hypostructure.Graph.Contracts.Spine.ColdSubcubicCharge
 
 /-!
 # Contracts: the first-high handoff of `lem:cold-germ-extraction` `[153]`
@@ -272,5 +273,76 @@ theorem coldHandoffTransfer_of_state
             simpa [SimpleGraph.Walk.not_nil_iff_lt_length] using nonnil)
         exact firstAdjacent.ne
           (by simpa [SimpleGraph.Walk.getVert_zero, same])
+
+/-- **An (F4)-routed half-edge is not a germ candidate.** -/
+theorem coldHandoffOccurrence_not_candidate (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (routing : ColdFailureRoutingStatement data object)
+    (epsilon : ColdEligibleHalfEdge data object)
+    (handoff : ColdFirstFailureHandoffOccurrence data object
+      (coldRoutedClassified data object routing) epsilon) :
+    (Sum.inl epsilon : ColdGermOccurrence data object) ∉
+      coldRoutedCandidates data object routing := by
+  classical
+  intro member
+  have facts := (Finset.mem_filter.1 member).2
+  exact coldHandoffOccurrence_not_subcubic data object routing epsilon
+    handoff facts.2
+
+open Classical in
+/-- **The (F4) count is inside the corridor loss** (`lem:cold-germ-extraction`,
+tex 7318-7329, with G's heavy-centre (F4) registry).  On the node-`[153]`
+witness published by `K .coldGermCandidates`, the (F4)-routed half-edges
+together with every other non-candidate eligible half-edge (the (F5) ones whose
+trace is not subcubic) are counted by the existing first-high loss:
+
+`#{ε eligible : ε ∉ candidates} ≤ corridorLoss ≤ (δ+1)·B_cold·σ(G)`,
+
+and `#{ε : first failure (F4)} ≤ #{ε eligible : ε ∉ candidates}`.  No new
+term, no `o(n)`. -/
+theorem coldF4_card_le_corridorLoss (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (routing : ColdFailureRoutingStatement data object)
+    (incidence : ColdGermOccurrence data object →
+      Graph.ColdCorridor.BoundedGerm data.coldSignature
+        (Graph.MinimumDegreeAtLeast data.threshold)
+        (Graph.HasCycleWithLength data.LengthOK) object)
+    (candidates disjointFamily : Finset (ColdGermOccurrence data object))
+    (corridorLoss : Nat)
+    (witness : ColdGermFamilyWitness data object routing incidence candidates
+      disjointFamily corridorLoss) :
+    (Finset.univ.filter (ColdFirstFailureHandoffOccurrence data object
+        (coldRoutedClassified data object routing))).card ≤
+      (Finset.univ.filter (fun epsilon : ColdEligibleHalfEdge data object =>
+        (Sum.inl epsilon : ColdGermOccurrence data object) ∉ candidates)).card ∧
+    (Finset.univ.filter (fun epsilon : ColdEligibleHalfEdge data object =>
+        (Sum.inl epsilon : ColdGermOccurrence data object) ∉ candidates)).card ≤
+      corridorLoss ∧
+    corridorLoss ≤ (data.threshold + 1) *
+      Graph.ColdCorridor.overlapBound data.threshold data.coldSignature *
+        object.degreeSurplus data.threshold := by
+  obtain ⟨_incidenceEq, candidatesEq, _family, _extracted, _charged, total,
+    _selected, lossBound, _extraction⟩ := witness
+  refine ⟨?_, ?_, lossBound⟩
+  · apply Finset.card_le_card
+    intro epsilon member
+    refine Finset.mem_filter.2 ⟨Finset.mem_univ _, ?_⟩
+    rw [candidatesEq]
+    exact coldHandoffOccurrence_not_candidate data object routing epsilon
+      (Finset.mem_filter.1 member).2
+  · -- the eligible non-candidates inject into the non-candidate occurrences
+    have outsideCard : ((Finset.univ : Finset (ColdGermOccurrence data object)) \
+        candidates).card = corridorLoss := by
+      have := Finset.card_sdiff_add_card_inter
+        (Finset.univ : Finset (ColdGermOccurrence data object)) candidates
+      rw [Finset.univ_inter] at this
+      omega
+    rw [← outsideCard]
+    refine Finset.card_le_card_of_injOn (fun epsilon => Sum.inl epsilon) ?_ ?_
+    · intro epsilon member
+      simp only [Finset.mem_coe, Finset.mem_filter, Finset.mem_univ, true_and] at member
+      exact Finset.mem_sdiff.2 ⟨Finset.mem_univ _, member⟩
+    · intro left _ right _ equal
+      exact Sum.inl_injective equal
 
 end Hypostructure.Graph.Contracts.Spine
