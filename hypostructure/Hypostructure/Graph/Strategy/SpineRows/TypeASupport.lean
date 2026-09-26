@@ -22,15 +22,14 @@ variable {data : Data.{u}}
 @[reducible] noncomputable def typeASupportRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.typeASupport
-    { Requires := [K .negativeSupport, K .typeALowSurplus]
+    { Requires := [K .typeALowSurplus]
       Produces := [K .typeASupport]
-      requiresUnique := by key_fresh
+      requiresUnique := by simp
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .typeASupport)
         ⟨Graph.Contracts.TypeA.typeASupport data.toParameters inputs.current.object
-          (inputs.get (K .negativeSupport)).down
           (inputs.get (K .typeALowSurplus)).down⟩
         .nil)
 

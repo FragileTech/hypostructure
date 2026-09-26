@@ -6,7 +6,7 @@ import Hypostructure.Graph.Contracts.TypeA.Support
 On the visible lane, after exits `(1)`--`(3)` have failed, the saturated
 receiver of the node-`[93]` package enters the shared exit segment at the
 empty peeling set (`lem:typeA-unpeeled-visible-routing`).  Thin adapter of
-`Contracts.TypeA.typeASaturatedExitEntry_of_visibleEntry`. -/
+`Contracts.TypeA.typeASaturatedExitEntry_of_exitThreeFree`. -/
 
 namespace Hypostructure.Graph.Strategy.Spine
 
@@ -23,16 +23,16 @@ variable {data : Data.{u}}
 @[reducible] noncomputable def typeAVisibleExitEntryRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.typeAVisibleExitEntry
-    { Requires := [K .typeAVisibleEntry]
+    { Requires := [K .typeAExitThreeFree]
       Produces := [K .typeASaturatedExitEntry]
       requiresUnique := by simp
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .typeASaturatedExitEntry)
-        ⟨Graph.Contracts.TypeA.typeASaturatedExitEntry_of_visibleEntry
+        ⟨Graph.Contracts.TypeA.typeASaturatedExitEntry_of_exitThreeFree
           data.toParameters inputs.current.object
-          (inputs.get (K .typeAVisibleEntry)).down⟩
+          (inputs.get (K .typeAExitThreeFree)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

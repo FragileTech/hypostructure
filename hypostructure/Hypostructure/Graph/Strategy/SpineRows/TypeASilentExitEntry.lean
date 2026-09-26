@@ -22,16 +22,17 @@ variable {data : Data.{u}}
 @[reducible] noncomputable def typeASilentExitEntryRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.typeASilentExitEntry
-    { Requires := [K .typeAVisibleFirstExcess]
+    { Requires := [K .typeAVisibleFirstExcess, K .typeANoVisibleEntry]
       Produces := [K .typeASaturatedExitEntry]
-      requiresUnique := by simp
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .typeASaturatedExitEntry)
         ⟨Graph.Contracts.TypeA.typeASaturatedExitEntry_of_visibleFirstExcess
           data.toParameters inputs.current.object
-          (inputs.get (K .typeAVisibleFirstExcess)).down⟩
+          (inputs.get (K .typeAVisibleFirstExcess)).down
+          (inputs.get (K .typeANoVisibleEntry)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

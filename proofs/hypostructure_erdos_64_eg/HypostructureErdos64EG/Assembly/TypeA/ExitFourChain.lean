@@ -28,7 +28,6 @@ noncomputable abbrev typeAExitSegmentKeys : FactKeys EGInput.{u} :=
     K .typeAExitFourAbsent,
     K .typeAExitFourPeeled,
     K .typeASaturatedHandoffExitFourFree,
-    K .typeAExitFourExhausted,
     K .typeAExitFourReceiverDischarged,
     K .typeAExitFive,
     K .typeAExitFiveFree,
@@ -39,7 +38,6 @@ noncomputable abbrev typeAExitSegmentKeys : FactKeys EGInput.{u} :=
     K .typeAExitSixProper,
     K .typeAExitSixGlobal,
     K .typeAExitSevenHandoff,
-    K .typeAExitSevenAbsent,
     K .typeAExitSevenFree,
     K .typeASilentExitSevenFree,
     K .typeAExitEightNotSilent,
@@ -155,6 +153,7 @@ noncomputable def selectedTypeAExitSegment
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .negativeSupport) known]
+    [FactKeys.Has (K .typeALowSurplus) known]
     [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .typeAReceiverRouting) known]
@@ -191,12 +190,7 @@ noncomputable def selectedTypeAExitSegment
           (by key_fresh) (by key_fresh) with
       | .left exitFree =>
           exact selectedTypeAExitFiveToEight exitFree
-      | .right exhaustedHistory =>
-          let discharged :=
-            (typeAExitFourDischargedRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-              exhaustedHistory (by key_fresh)
-          exact selectedTypeAExitFourDischargedRetest discharged
+      | .right dischargedHistory =>
+          exact selectedTypeAExitFourDischargedRetest dischargedHistory
 
 end HypostructureErdos64EG

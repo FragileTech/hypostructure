@@ -26,7 +26,8 @@ variable {data : Data.{u}}
 @[reducible] noncomputable def typeABoundedSupportRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.typeABoundedSupport
-    { Requires := [K .cubicBaseline, K .remainderNormalized, K .typeASupport]
+    { Requires := [K .cubicBaseline, K .negativeSupport, K .remainderNormalized,
+        K .typeALowSurplus]
       Produces := [K .typeABoundedSupport]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -36,8 +37,9 @@ variable {data : Data.{u}}
         ⟨Graph.Contracts.TypeA.typeABoundedSupport data.toParameters
           inputs.current.object (inputs.get (K .cubicBaseline)).down.1
           data.three_le_windowOrder inputs.current.baseline
+          (inputs.get (K .negativeSupport)).down
           (inputs.get (K .remainderNormalized)).down
-          (inputs.get (K .typeASupport)).down⟩
+          (inputs.get (K .typeALowSurplus)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

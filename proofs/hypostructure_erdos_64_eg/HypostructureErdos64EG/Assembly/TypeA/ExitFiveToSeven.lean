@@ -33,7 +33,6 @@ noncomputable abbrev typeAExitFiveToEightKeys : FactKeys EGInput.{u} :=
     K .typeAExitSixProper,
     K .typeAExitSixGlobal,
     K .typeAExitSevenHandoff,
-    K .typeAExitSevenAbsent,
     K .typeAExitSevenFree,
     K .typeASilentExitSevenFree,
     K .typeAExitEightNotSilent,
@@ -154,6 +153,7 @@ noncomputable def selectedTypeAExitFiveToEight
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .negativeSupport) known]
+    [FactKeys.Has (K .typeALowSurplus) known]
     [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .typeAReceiverRouting) known]
@@ -200,13 +200,8 @@ noncomputable def selectedTypeAExitFiveToEight
           | .left handoffHistory =>
               -- `[108]` → Type B `[65]`.
               exact selectedTypeADecoratedHandoff handoffHistory
-          | .right absentHistory =>
+          | .right residual =>
               -- `[109]`: the route-`8` residual state.
-              let residual :=
-                (typeAExitSevenFreeRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                  absentHistory (by key_fresh)
               match typeASilentExitSevenDichotomy (data := spineData) residual
                   (by key_fresh) (by key_fresh) with
               | .left silentHistory =>

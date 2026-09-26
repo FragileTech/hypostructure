@@ -33,7 +33,6 @@ noncomputable abbrev typeAVisibleExitKeys : FactKeys EGInput.{u} :=
     K .typeAExitFourAbsent,
     K .typeAExitFourPeeled,
     K .typeASaturatedHandoffExitFourFree,
-    K .typeAExitFourExhausted,
     K .typeAExitFourReceiverDischarged,
     K .typeAExitFive,
     K .typeAExitFiveFree,
@@ -44,7 +43,6 @@ noncomputable abbrev typeAVisibleExitKeys : FactKeys EGInput.{u} :=
     K .typeAExitSixProper,
     K .typeAExitSixGlobal,
     K .typeAExitSevenHandoff,
-    K .typeAExitSevenAbsent,
     K .typeAExitSevenFree,
     K .typeASilentExitSevenFree,
     K .typeAExitEightNotSilent,
@@ -161,6 +159,7 @@ noncomputable def selectedTypeAVisibleExitChain
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .negativeSupport) known]
+    [FactKeys.Has (K .typeALowSurplus) known]
     [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .typeAReceiverRouting) known]
