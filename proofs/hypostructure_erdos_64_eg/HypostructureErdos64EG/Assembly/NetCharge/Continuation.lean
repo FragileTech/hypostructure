@@ -93,7 +93,9 @@ noncomputable abbrev netChargeContinuationKeys : FactKeys EGInput.{u} :=
     K .triangularPortReturn, K .triangularFirstLanding,
     K .triangularCrossShoulder, K .typeBFanSafe, K .typeASilentExitFourFree,
     K .typeASilentExitFiveFree, K .typeASilentExitSixFree,
-    K .typeASilentExitSevenFree]
+    K .typeASilentExitSevenFree, K .coldNoPositiveGerm, K .coldGermSomeRealizing,
+    K .coldGermNoneRealizing, K .coldGermSomeDistinguishing,
+    K .coldGermNoneDistinguishing]
 
 /-- **Nodes `[57]`--`[64]`: the large-budget net-charge split**, on the `[56]`
 residual of either spine arm.  `[57]` enters the asymptotic order regime and
@@ -157,112 +159,9 @@ noncomputable def selectedNetChargeContinuation
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           failsHistory (by key_fresh)
       let prepared := selectedAbsorbedGermPrerequisites absorbed
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
       -- `[175]`--`[177]`, `lem:absorbed-germ-fan-data`: the absorbed-germ
       -- residual (`selectedAbsorbedGermResidual`).
-      exact Or.inr (selectedAbsorbedGermResidual prepared
-        (by key_fresh)
-        (absorbedPositiveFresh := by key_fresh)
-        (absorbedFamilyPositiveFresh := by
-          key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by key_fresh) (by key_fresh)
-        (by key_fresh) (by key_fresh)
-        (by key_fresh) (by key_fresh)
-        (absorbedNeutralFresh := by key_fresh)
-        (absorbedCanonicalFresh := by key_fresh)
-        (absorbedGenuineFresh := by key_fresh)
-        (absorbedReplacementSwapFresh := by
-          key_fresh)
-        (absorbedReplacementTrivialFresh := by
-          key_fresh)
-        (absorbedTwoStrandSurvivorFresh := by
-          key_fresh)
-        (absorbedWindowStubFresh := by key_fresh)
-        (absorbedPairExcludedFresh := by key_fresh)
-        (absorbedTerminalFresh := by key_fresh)
-        (by key_fresh)
-        (by key_fresh)
-        (by infer_instance)
-        (by key_fresh)
-        (absorbedGlobalLocalBridgeFresh := by key_fresh)
-        (absorbedFanClosedFresh := by key_fresh)
-        (absorbedCompatibleClosureFresh := by key_fresh)
-        (absorbedFanClosedRoutingFresh := by key_fresh)
-        (absorbedCompatibleRoutingFresh := by key_fresh)
-        (absorbedTriangularRoutingFresh := by key_fresh)
-        (absorbedShoulderCompletionFresh := by key_fresh)
-        (absorbedPortReturnFresh := by key_fresh)
-        (absorbedFirstLandingFresh := by key_fresh)
-        (absorbedCrossShoulderFresh := by key_fresh)
-        (absorbedFanSafeFresh := by key_fresh)
-        (absorbedRoutingFresh := by key_fresh)
-        (absorbedUnifiedNegativeFresh := by key_fresh)
-        (absorbedTypeAExclusionFresh := by key_fresh)
-        (absorbedTypeBBridgeReductionFresh := by
-          key_fresh)
-        (absorbedPiecesClassifiedFresh := by key_fresh)
-        (absorbedSublinearLedgerFresh := by key_fresh)
-        (absorbedSublinearResidualFresh := by key_fresh)
-        (absorbedUnifiedDeficitFresh := by key_fresh)
-        (absorbedQuotientFreeFresh := by key_fresh)
-        (absorbedQuotientResidualFresh := by key_fresh)
-        (absorbedUnifiedCensusFresh := by key_fresh)
-        (absorbedUnifiedTrueFresh := by key_fresh)
-        (absorbedPeelingFresh := by key_fresh)
-        (absorbedStageFailedFresh := by key_fresh)
-        (absorbedDemandLedgerFresh := by key_fresh)
-        (absorbedDemandAbsorptionFresh := by key_fresh)
-        (absorbedOpenBoundarySaturatedFresh := by key_fresh)
-        (absorbedDemandUnitCountFresh := by key_fresh)
-        (absorbedWindowBlockersFresh := by key_fresh)
-        (absorbedWindowShadowSignatureFresh := by key_fresh)
-        (absorbedWindowShadowTailFresh := by key_fresh)
-        (absorbedWindowShadowCycleFresh := by key_fresh)
-        (absorbedWindowShadowExcludedFresh := by key_fresh)
-        (absorbedDemandResidualFresh := by key_fresh)
-        (absorbedUnpaidExitFourFresh := by key_fresh)
-        (absorbedUnifiedVisibleFresh := by key_fresh)
-        (absorbedUnifiedVisibleOverloadFresh := by
-          key_fresh)
-        (absorbedJointBalanceFresh := by key_fresh)
-        (absorbedUnifiedTerminalFresh := by key_fresh))
+      exact Or.inr (selectedAbsorbedGermResidual prepared)
   | .left capped =>
       -- `[58]`: `lem:netcharge-superadd` localizes negative charge to a piece.
       let localized :=

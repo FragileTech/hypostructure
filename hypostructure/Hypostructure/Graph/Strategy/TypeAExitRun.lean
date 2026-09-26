@@ -357,7 +357,8 @@ noncomputable instance typeAExitFiveClosed :
         (Graph.Route8.PresentedEntry.retainedBaseCoordinates _input.object
           piece retained), ?_, baseline, smaller, ?_⟩
     · exact complete.profile_eq
-    · exact complete.contextEquivalent
+    · exact fun outside replacementTarget =>
+        (complete.contextEquivalent outside).mp replacementTarget
 
 /-- **Node `[106]`, proper scope**: `lem:proper-smearing`'s replacement of the
 enlarging support against `lem:replacement`. -/

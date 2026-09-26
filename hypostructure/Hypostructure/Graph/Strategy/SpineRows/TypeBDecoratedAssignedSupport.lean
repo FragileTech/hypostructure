@@ -70,7 +70,9 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
                 (handoffWindowFree data.toParameters inputs.current.object) envelope :=
             { dyadicSafe := (inputs.get (K .selection)).down.1
               coreWindowFree := windowFree
-              uncompressible := (inputs.get (K .uncompressible)).down
+              uncompressible := (fun support compressible => (inputs.get (K .uncompressible)).down support
+        (Graph.Strategy.InterfaceReplacement.replacementSupportOfCompressibleSupport _ _ _ _
+          compressible))
               fanReturnSafe := fun centre centreMember first firstMember second
                   secondMember different =>
                 (envelope.fanSafe centre centreMember first firstMember second

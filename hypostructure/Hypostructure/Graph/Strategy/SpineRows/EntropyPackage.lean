@@ -47,11 +47,8 @@ the budget side is node `[53]`'s comparison. -/
             .entropyPackageDemand inputs.current from
           ⟨by
             simp only [Holds, EntropyPackageDemandStatement]
-            have packingSpec := Classical.choose_spec
-              (inputs.current.object.exists_windowPacking_card_eq data.windowOrder)
-            have high :=
+            obtain ⟨_packing, rfl, _valid, high⟩ :=
               (inputs.get (K .remainderEntropyHigh)).down
-                (canonicalWindowPacking data.toParameters inputs.current.object) packingSpec.1
             rw [jointPackageDemand, mul_pow]
             exact Nat.mul_le_mul (le_refl _) high⟩)
         .nil)

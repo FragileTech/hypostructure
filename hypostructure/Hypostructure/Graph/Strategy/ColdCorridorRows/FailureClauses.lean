@@ -137,7 +137,9 @@ representative on the current residual. -/
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      let uncompressible := (inputs.get (K .uncompressible)).down
+      let uncompressible := (fun support compressible => (inputs.get (K .uncompressible)).down support
+        (Graph.Strategy.InterfaceReplacement.replacementSupportOfCompressibleSupport _ _ _ _
+          compressible))
       .cons (key := K .coldFailureCompression)
         ⟨by
           intro windows component corridor presentation index support

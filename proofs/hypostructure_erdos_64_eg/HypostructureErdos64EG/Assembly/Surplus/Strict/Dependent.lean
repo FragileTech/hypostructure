@@ -227,7 +227,7 @@ noncomputable def Assembly.Internal.strictSurplusDependent
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile) (data := spineData)).run
               fibres (by key_fresh)
-          match selectedCoupledExcessDichotomy pressure
+          match coupledExcessDichotomy (data := spineData) pressure
               (by key_fresh) (by key_fresh) with
           | .left nearCubicHistory =>
               -- `[138]`: `σ(G) ≤ R_L(n) ≤ C_sp ⌈√n⌉` against `[19]`.

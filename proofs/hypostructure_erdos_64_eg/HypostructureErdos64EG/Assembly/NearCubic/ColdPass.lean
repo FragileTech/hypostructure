@@ -116,36 +116,76 @@ noncomputable def nearCubicColdStubs
       (coldStubExcessRow (data := spineData)).run cubic (by key_fresh)
 
 /-- **Node `[153]`, linear arm: the return corridors and their states.**
-`lem:bridgeless`, the cold return corridors of `def:cold-corridor-first-failure`,
-the declared handoff interfaces, and the cold corridor states. -/
+The cold return corridors of `def:cold-corridor-first-failure` (which exist by
+`lem:bridgeless`), the declared handoff interfaces, and the cold corridor
+states. -/
 -- EG-NODE [153] linear first-failure extraction? \(N_{\rm conf}\ge9C/D_{\rm cold}-o(n)\)
 noncomputable def nearCubicColdCorridorState
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .hotColdPartition) known]
     (fresh : List.Disjoint
-      [K .bridgeless, K .coldReturnCorridors, K .coldDeclaredHandoffLedger,
+      [K .coldReturnCorridors, K .coldDeclaredHandoffLedger,
         K .coldCorridorState] known := by key_fresh) :
     ExactLedger EGInput.{u} selected
       (K .coldCorridorState :: K .coldDeclaredHandoffLedger ::
-        K .coldReturnCorridors :: K .bridgeless :: known) :=
-  let bridgeless :=
-    (bridgelessRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by key_fresh)
+        K .coldReturnCorridors :: known) :=
   let corridors :=
-    (coldReturnCorridorRow (data := spineData)).run bridgeless (by key_fresh)
+    (coldReturnCorridorRow (data := spineData)).run history (by key_fresh)
   let declared :=
     (coldDeclaredHandoffLedgerRow (data := spineData)).run corridors
       (by key_fresh)
   (coldCorridorStateRow (data := spineData)).run declared (by key_fresh)
 
-/-- **Node `[153]`, linear arm: first failures and the extracted family.**
+/-- **Node `[153]`, linear arm: first failures and the candidate family.**
 `lem:cold-corridor-first-failure`: the first failure of every corridor and its
-routing (F1)--(F5); `lem:cold-germ-extraction`: the exchange bound, the
-vertex-disjoint candidate family, and its positivity. -/
+routing (F1)--(F5); `lem:cold-germ-extraction`: the exchange bound and the
+vertex-disjoint candidate family. -/
+noncomputable def nearCubicColdCandidates
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .uncompressible) known]
+    [FactKeys.Has (K .sparseSurplusSurvivor) known]
+    [FactKeys.Has (K .coldCorridorState) known]
+    [FactKeys.Has (K .coldDeclaredHandoffLedger) known]
+    (fresh : List.Disjoint
+      [K .coldFirstFailureOccurrence, K .coldFailureCycle, K .coldFailureDefect,
+        K .coldFailureDefectRoute, K .coldFailureCompression,
+        K .coldFailureHandoff, K .coldHandoffTransfer, K .coldFailureRouting,
+        K .coldExchangeBound, K .coldGermExtraction, K .coldGermCandidates]
+      known := by key_fresh) :
+    ExactLedger EGInput.{u} selected
+      (K .coldGermCandidates :: K .coldExchangeBound :: K .coldGermExtraction ::
+        K .coldFailureRouting :: K .coldHandoffTransfer :: K .coldFailureHandoff ::
+        K .coldFailureCompression :: K .coldFailureDefect ::
+        K .coldFailureDefectRoute :: K .coldFailureCycle ::
+        K .coldFirstFailureOccurrence :: known) :=
+  let occurrence :=
+    (coldFirstFailureOccurrenceRow (data := spineData)).run history (by key_fresh)
+  let failureCycle :=
+    (coldFailureCycleRow (data := spineData)).run occurrence (by key_fresh)
+  let failureDefect :=
+    (coldFailureDefectRow (data := spineData)).run failureCycle (by key_fresh)
+  let failureCompression :=
+    (coldFailureCompressionRow (data := spineData)).run failureDefect
+      (by key_fresh)
+  let failureHandoff :=
+    (coldFailureHandoffRow (data := spineData)).run failureCompression
+      (by key_fresh)
+  let handoffTransfer :=
+    (coldHandoffTransferRow (data := spineData)).run failureHandoff
+      (by key_fresh)
+  let routed :=
+    (coldFirstFailureRoutingRow (data := spineData)).run handoffTransfer
+      (by key_fresh)
+  let extracted :=
+    (coldGermExtractionRow (data := spineData)).run routed (by key_fresh)
+  (coldGermCandidatesRow (data := spineData)).run extracted (by key_fresh)
+
+/-- **Node `[153]`, linear arm: the extracted family is positive**
+(`lem:cold-germ-extraction` on the linear arm). -/
 noncomputable def nearCubicColdGermFamily
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -170,29 +210,8 @@ noncomputable def nearCubicColdGermFamily
         K .coldFailureCompression :: K .coldFailureDefect ::
         K .coldFailureDefectRoute :: K .coldFailureCycle ::
         K .coldFirstFailureOccurrence :: known) :=
-  let occurrence :=
-    (coldFirstFailureOccurrenceRow (data := spineData)).run history (by key_fresh)
-  let failureCycle :=
-    (coldFailureCycleRow (data := spineData)).run occurrence (by key_fresh)
-  let failureDefect :=
-    (coldFailureDefectRow (data := spineData)).run failureCycle (by key_fresh)
-  let failureCompression :=
-    (coldFailureCompressionRow (data := spineData)).run failureDefect
-      (by key_fresh)
-  let failureHandoff :=
-    (coldFailureHandoffRow (data := spineData)).run failureCompression
-      (by key_fresh)
-  let handoffTransfer :=
-    (coldHandoffTransferRow (data := spineData)).run failureHandoff
-      (by key_fresh)
-  let routed :=
-    (coldFirstFailureRoutingRow (data := spineData)).run handoffTransfer
-      (by key_fresh)
-  let extracted :=
-    (coldGermExtractionRow (data := spineData)).run routed (by key_fresh)
-  let candidates :=
-    (coldGermCandidatesRow (data := spineData)).run extracted (by key_fresh)
-  (coldGermFamilyPositiveRow (data := spineData)).run candidates (by key_fresh)
+  (coldGermFamilyPositiveRow (data := spineData)).run
+    (nearCubicColdCandidates history) (by key_fresh)
 
 /-- **Node `[154]`, first test, and its terminal `[155]`.**  G1, a hit-realized
 configuration, is a power-of-two cycle and closes against the counterexample

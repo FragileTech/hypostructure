@@ -59,13 +59,14 @@ noncomputable def localTypeCoordinateDichotomy
       classical
       let packing := Classical.choose fullRank
       have fullRankSpec := Classical.choose_spec fullRank
-      have valid := fullRankSpec.1
-      have maximal := fullRankSpec.2.1
-      have rankEq := fullRankSpec.2.2
+      have canonical := fullRankSpec.1
+      have valid := fullRankSpec.2.1
+      have maximal := fullRankSpec.2.2.1
+      have rankEq := fullRankSpec.2.2.2
       by_cases repetitive :
           RemainderTypeCoordinateRepetitive data.toParameters current.object packing
-      · exact .inl ⟨packing, valid, maximal, rankEq, repetitive⟩
-      · exact .inr ⟨packing, valid, maximal, rankEq, repetitive⟩)
+      · exact .inl ⟨packing, canonical, valid, maximal, rankEq, repetitive⟩
+      · exact .inr ⟨packing, canonical, valid, maximal, rankEq, repetitive⟩)
     repetitiveFresh nonrepetitiveFresh
 
 end Hypostructure.Graph.Strategy.Spine

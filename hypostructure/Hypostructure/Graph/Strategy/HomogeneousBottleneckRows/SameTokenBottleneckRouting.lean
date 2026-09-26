@@ -79,7 +79,9 @@ No selector, callback, route record, or side carrier is postulated. -/
           have contextRead :=
             (inputs.get (K .targetCompleteContextUniversality)).down
           have replacementRead := (inputs.get (K .replacementExclusion)).down
-          have uncompressibleRead := (inputs.get (K .uncompressible)).down
+          have uncompressibleRead := (fun support compressible => (inputs.get (K .uncompressible)).down support
+        (Graph.Strategy.InterfaceReplacement.replacementSupportOfCompressibleSupport _ _ _ _
+          compressible))
           have baselineRead :
               Graph.MinimumDegreeAtLeast data.threshold inputs.current.object :=
             inputs.current.baseline

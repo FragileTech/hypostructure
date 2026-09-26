@@ -338,7 +338,14 @@ noncomputable def nearCubicLargeBudgetColdRate
             (data := spineData)).runAndCloseIncompatible activeHistory
               (K .entropyCapActive) (K .entropyCapBound)
               (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
-      | .right largeHistory => exact Or.inl (selectedNetChargeContinuation
+      | .right boundHistory =>
+          -- `[55]`: Residual C on the high-entropy arm.
+          let largeHistory :=
+            (highEntropyLargeBudgetRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              boundHistory (by key_fresh)
+          exact Or.inl (selectedNetChargeContinuation
                 ((routeEightNetDeficiencyCapRow (BranchState := BranchState)
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
@@ -450,7 +457,14 @@ noncomputable def nearCubicLargeBudgetDenseRate
             (data := spineData)).runAndCloseIncompatible activeHistory
               (K .entropyCapActive) (K .entropyCapBound)
               (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
-      | .right largeHistory => exact Or.inl (selectedNetChargeContinuation
+      | .right boundHistory =>
+          -- `[55]`: Residual C on the high-entropy arm.
+          let largeHistory :=
+            (highEntropyLargeBudgetRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              boundHistory (by key_fresh)
+          exact Or.inl (selectedNetChargeContinuation
                 ((denseNetDeficiencyCapRow (BranchState := BranchState)
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
@@ -565,7 +579,14 @@ noncomputable def nearCubicLargeBudgetDensityCap
             (data := spineData)).runAndCloseIncompatible activeHistory
               (K .entropyCapActive) (K .entropyCapBound)
               (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
-      | .right largeHistory => exact nearCubicRouteEightEntry ((netDeficiencyCapRow (BranchState := BranchState)
+      | .right boundHistory =>
+          -- `[55]`: Residual C on the high-entropy arm.
+          let largeHistory :=
+            (highEntropyLargeBudgetRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              boundHistory (by key_fresh)
+          exact nearCubicRouteEightEntry ((netDeficiencyCapRow (BranchState := BranchState)
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                   largeHistory (by key_fresh))
@@ -674,7 +695,14 @@ noncomputable def nearCubicLargeBudgetRateFailed
             (data := spineData)).runAndCloseIncompatible activeHistory
               (K .entropyCapActive) (K .entropyCapBound)
               (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
-      | .right largeHistory => exact nearCubicRateFailedExit ((netDeficiencyCapRow (BranchState := BranchState)
+      | .right boundHistory =>
+          -- `[55]`: Residual C on the high-entropy arm.
+          let largeHistory :=
+            (highEntropyLargeBudgetRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              boundHistory (by key_fresh)
+          exact nearCubicRateFailedExit ((netDeficiencyCapRow (BranchState := BranchState)
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                   largeHistory (by key_fresh))

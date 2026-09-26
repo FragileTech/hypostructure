@@ -24,6 +24,7 @@ theorem dominantRootedType_of_repetitive
     (baseline : data.threshold ≤ object.minDegree)
     (repetitiveInput :
       ∃ packing : Finset (Finset object.Vertex),
+        packing = canonicalWindowPacking data.toParameters object ∧
         object.IsWindowPacking data.windowOrder packing ∧
           packing.card = object.windowPackingNumber data.windowOrder ∧
           remainderCurvatureTargetRank data.toParameters object packing =
@@ -33,7 +34,7 @@ theorem dominantRootedType_of_repetitive
       data.surplusThreshold object.vertexCount) :
     DominantRootedTypeStatement data.toParameters object fun _subcubic _root => True := by
   classical
-  obtain ⟨packing, valid, maximal, rankEq, repetitive⟩ := repetitiveInput
+  obtain ⟨packing, _canonical, valid, maximal, rankEq, repetitive⟩ := repetitiveInput
   letI : FinEnum object.Vertex := object.vertices
   letI : Fintype object.Vertex := inferInstance
   letI : DecidableEq object.Vertex := Classical.decEq object.Vertex

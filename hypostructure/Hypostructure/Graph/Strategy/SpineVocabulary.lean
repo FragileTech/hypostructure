@@ -1604,6 +1604,10 @@ inductive Key where
   skeleton budget, and every canonical state map realizes at most that many
   states. -/
   | skeletonDominates
+  -- F5 keys
+  /-- Node `[175]`, no arm: every selected corridor meets a high-degree
+  vertex. -/
+  | coldNoPositiveGerm
   deriving DecidableEq
 
 /-- The value schema of each spine fact, stated of the *object* alone.
@@ -2359,6 +2363,9 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       RemainderRelabelingEntropyStatement data.toParameters object
   | .relabelingDensityCap, object =>
       RelabelingDensityCapStatement data.toParameters object
+  -- F5 keys
+  | .coldNoPositiveGerm, object =>
+      ColdNoPositiveGermStatement data.toParameters object
 
 /-- Audit labels.  They are diagnostics; every routing and lookup decision
 compares exact keys. -/
@@ -2679,6 +2686,8 @@ def label : Key → String
   | .exactCubicBaselineBudget => "exactCubicBaselineBudget"
   | .incrementalSkeletonRoom => "incrementalSkeletonRoom"
   | .skeletonDominates => "skeletonDominates"
+  -- F5 keys
+  | .coldNoPositiveGerm => "coldNoPositiveGerm"
 
 /-! ### Label pins
 
@@ -3019,6 +3028,8 @@ example : label .skeletonDominates = "skeletonDominates" := rfl
 example : label .exactResponseProfile = "exactResponseProfile" := rfl
 example : label .admissibleRankQuotient = "admissibleRankQuotient" := rfl
 example : label .barrierEnumeration = "barrierEnumeration" := rfl
+-- F5 keys
+example : label .coldNoPositiveGerm = "coldNoPositiveGerm" := rfl
 end LabelPins
 
 /-- The value schema at a residual: the object-level statement, read at the
@@ -3348,6 +3359,8 @@ def idx : Key → Nat
   | .targetRankCircuit => 210
   | .remainderRelabelingEntropy => 501
   | .relabelingDensityCap => 502
+  -- F5 keys
+  | .coldNoPositiveGerm => 1800
 
 /-- Left inverse of `idx`.  Writing it out is also what checks the numbering:
 two keys sharing an index would make `ofIdx_idx` unprovable. -/
@@ -3666,6 +3679,8 @@ def ofIdx : Nat → Key
   | 208 => .admissibleRankQuotient
   | 210 => .targetRankCircuit
   | 211 => .barrierEnumeration
+  -- F5 keys
+  | 1800 => .coldNoPositiveGerm
   | _ => .selection
 
 theorem ofIdx_idx (k : Key) : ofIdx (idx k) = k := by
@@ -4433,6 +4448,9 @@ def name : Key → Lean.Name
         "remainderRelabelingEntropy") 501
   | .relabelingDensityCap =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "relabelingDensityCap") 502
+  -- F5 keys
+  | .coldNoPositiveGerm =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldNoPositiveGerm") 1800
 
 /-- The written-out names agree with `label` and `idx`.  `name` is spelled out
 so that reducing it in a downstream audit proof costs one unfolding rather

@@ -44,7 +44,7 @@ appends exactly that fact before node `[36]` tests the same certificate. -/
             letI : Fintype inputs.current.object.Vertex :=
               @FinEnum.instFintype _ inputs.current.object.vertices
             rcases inherited with
-              ⟨packing, valid, packingCard, below, test, testMember,
+              ⟨packing, _canonical, valid, packingCard, below, test, testMember,
                 determiners, determinersSubset, finite, proper, declared,
                 functional, reducing, determines⟩
             let support := inputs.current.object.remainderSupport packing

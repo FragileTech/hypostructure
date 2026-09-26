@@ -8,6 +8,7 @@ import Hypostructure.Graph.Strategy.SpineRows.WindowPackage
 import Hypostructure.Graph.Strategy.BranchDClosure
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.FibrePressure
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SparseSurplusExit
+import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SparseTargetDefectStructure
 import Hypostructure.Graph.Strategy.SurplusRows
 import HypostructureErdos64EG.Assembly.Basic
 
@@ -67,20 +68,30 @@ noncomputable def selectedNearCubicNode21
 functions.  Their arguments and results are exact-ledger indices, so the
 strict and near-cubic cursors cannot be accidentally exchanged. -/
 
-/-- Node `[137]`, the manuscript's literal coupled-excess test on the
-post-pressure residual.  The decision consumes every quantitative fact its two
-arms use through `ExactLedger` and preserves the complete ancestry on either
-result. -/
--- EG-NODE [137] coupled excess \(D_{\rm all}>0\)?
-noncomputable def selectedCoupledExcessDichotomy
+/-- **The named sparse exit of `[20]`** (`def:named-surplus-exits`): the exit
+arm of the enclosing sparse-exit classification routes the literal exit forms
+to the attempted-quotient target-defect payload and its structure.  Written
+once for the strict arm and the at-or-below arm. -/
+noncomputable def selectedSparseTargetDefectExit
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .fibrePressure) known]
-    [FactKeys.Has (K .surplusAbove) known]
-    (nearCubicFresh : K .sparsePressureNearCubic ∉ known)
-    (overloadFresh : K .sparsePressureOverload ∉ known) :
-    Decision (K .sparsePressureNearCubic) (K .sparsePressureOverload) history :=
-  coupledExcessDichotomy (data := spineData) history nearCubicFresh overloadFresh
+    [FactKeys.Has (K .sparsePairExit) known]
+    [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .replacementExclusion) known]
+    (fresh : List.Disjoint
+      [K .sparseTargetDefectResidual, K .sparseTargetDefectStructure] known := by
+        key_fresh) :
+    ExactLedger EGInput.{u} selected
+      (K .sparseTargetDefectStructure :: K .sparseTargetDefectResidual :: known) :=
+  let targetDefect :=
+    (sparseSurplusExitRoutingRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      history (by key_fresh)
+  (sparseTargetDefectStructureRow (BranchState := BranchState)
+    (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+    (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+    targetDefect (by key_fresh)
 
 /-! Node `[20]`, the strict (non-near-cubic) surplus branch, run node by node
 along the Part X/XI diagram on the literal `K .surplusAbove` ledger:
@@ -97,11 +108,9 @@ along the Part X/XI diagram on the literal `K .surplusAbove` ledger:
 * `[130]` no: `[132]` blocked-pair routing — exit → `[133]` closes; blocker →
   `[134]` canonical pair ledger → `[135]` exact window-join pressure → `[136]`
   capacity-token ledger → `[137]` free-side count, exact role-fibre
-  partition, and coupled-excess decision (`selectedCoupledExcessDichotomy`:
+  partition, and coupled-excess decision (`coupledExcessDichotomy`:
   no → `[138]`; yes → `[139]`/`[141]` class tests → `[140]`/`[142]`/`[143]`
-  audits → `[144]`).
-
-`selectedCoupledExcessDichotomy` is the next producer of this branch. -/
+  audits → `[144]`). -/
 -- EG-NODE [20] surplus-pair accounting branch
 -- EG-NODE [131] free-pair entropy sandwich: \(|\Pi_{\rm free}|\le E_{\rm spine}+(\sigma/2+1)\log_2 n\)
 -- EG-NODE [137] coupled excess \(D_{\rm all}>0\)?

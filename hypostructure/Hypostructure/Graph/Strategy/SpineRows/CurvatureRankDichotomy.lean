@@ -75,7 +75,7 @@ noncomputable def curvatureRankDichotomy
       by_cases below :
           remainderCurvatureTargetRank data.toParameters current.object packing <
             remainderWedgeSupply current.object packing
-      · refine .inl ⟨⟨packing, valid, packingCard, below, ?_⟩⟩
+      · refine .inl ⟨⟨packing, rfl, valid, packingCard, below, ?_⟩⟩
         have outside : ∃ test ∈
             current.object.internalWedgeFamily
               (current.object.remainderSupport packing),
@@ -99,7 +99,7 @@ noncomputable def curvatureRankDichotomy
         exact ⟨test, testMember, determiners,
           determinersSubset.trans independentSubset, finite, proper,
           declared, functional, reducing, determines⟩
-      · refine .inr ⟨⟨packing, valid, packingCard, ?_⟩⟩
+      · refine .inr ⟨⟨packing, rfl, valid, packingCard, ?_⟩⟩
         apply Nat.le_antisymm
         · change
             current.object.curvatureTargetRank

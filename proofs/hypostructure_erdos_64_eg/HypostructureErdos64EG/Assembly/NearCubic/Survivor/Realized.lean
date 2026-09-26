@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Strategy.ColdCorridorRows.ColdFamilyClosure
+import Hypostructure.Graph.Strategy.SpineRows.Bridgeless
 import Hypostructure.Graph.Strategy.SpineRows.Route8RateFromColdBelow
 import HypostructureErdos64EG.Assembly.NearCubic.ColdPass
 import HypostructureErdos64EG.Assembly.NearCubic.Spine
@@ -66,8 +67,13 @@ noncomputable def Assembly.Internal.nearCubicRealized
               (by key_fresh)
           exact nearCubicLargeBudgetDensityCap (nearCubicFullRank density)
       | .left linearHistory =>
+          let bridgeless :=
+            (bridgelessRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              linearHistory (by key_fresh)
           let family :=
-            nearCubicColdGermFamily (nearCubicColdCorridorState linearHistory)
+            nearCubicColdGermFamily (nearCubicColdCorridorState bridgeless)
           let unhit := nearCubicColdNoHit family
           match coldGermDistinctionDichotomy (data := spineData) unhit
               (by key_fresh) (by key_fresh) with

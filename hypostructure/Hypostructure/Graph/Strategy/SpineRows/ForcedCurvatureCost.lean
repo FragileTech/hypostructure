@@ -53,7 +53,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       .cons (key := K .forcedCurvatureCost)
         (show Value BranchState Presentation presentation data
             .forcedCurvatureCost inputs.current from ⟨by
-          rcases rank with ⟨packing, valid, maximal, rankEq⟩
+          rcases rank with ⟨packing, _canonical, valid, maximal, rankEq⟩
           refine ⟨packing, valid, maximal, ?_⟩
           have demand := floor packing valid
           -- `W₂(R) ≤ r_Ω(R)`, from the exact full-rank ledger fact.

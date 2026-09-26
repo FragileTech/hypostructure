@@ -1,6 +1,6 @@
 import Hypostructure.Graph.Strategy.ColdCorridorRows
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows
-import Hypostructure.Graph.Strategy.SurplusRun
+import Hypostructure.Graph.Strategy.SurplusRows
 
 /-!
 # Spine continuation surface

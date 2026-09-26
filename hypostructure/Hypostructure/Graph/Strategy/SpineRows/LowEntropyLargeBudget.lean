@@ -49,4 +49,34 @@ is a separate subsequent fact and is not published here. -/
         .nil)
     0 0
 
+omit [FactSystem (Input BranchState Presentation presentation data)] in
+/-- **Node `[55]`, Residual C on the high-entropy arm.**  The no-arm of `[53]`
+(the joint package fits the skeleton budget, `K .entropyCapBound`) is the first
+alternative of the paper's Residual C statement. -/
+@[reducible] noncomputable def highEntropyLargeBudgetRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.highEntropyLargeBudget
+    { Requires := [K .entropyCapBound]
+      Produces := [K .largeBudgetResidual]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .largeBudgetResidual)
+        (show Value BranchState Presentation presentation data
+            .largeBudgetResidual inputs.current from
+          ⟨Or.inl (inputs.get (K .entropyCapBound)).down⟩)
+        .nil)
+    0 0
+
 end Hypostructure.Graph.Strategy.Spine

@@ -41,7 +41,9 @@ set_option maxHeartbeats 8000000 in
       producesNonempty := by simp }
     (fun inputs =>
       let selected := (inputs.get (K .selection)).down
-      let uncompressible := (inputs.get (K .uncompressible)).down
+      let uncompressible := (fun support compressible => (inputs.get (K .uncompressible)).down support
+        (Graph.Strategy.InterfaceReplacement.replacementSupportOfCompressibleSupport _ _ _ _
+          compressible))
       let normalized := (inputs.get (K .remainderNormalized)).down
       let fanData := (inputs.get (K .absorbedGermFanData)).down
       .cons (key := K .typeBFanEntry)

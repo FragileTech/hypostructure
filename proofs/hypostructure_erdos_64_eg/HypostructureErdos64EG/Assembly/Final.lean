@@ -36,19 +36,7 @@ noncomputable def selectedNearCubicBranch
       (data := spineData) history
       (by key_fresh) (by key_fresh) with
   | .left exitHistory =>
-      let targetDefect :=
-        (sparseSurplusExitRoutingRow
-          (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile)
-          (data := spineData)).run exitHistory
-          (by key_fresh)
-      let structured :=
-        (sparseTargetDefectStructureRow
-          (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile)
-          (data := spineData)).run targetDefect (by key_fresh)
+      let structured := selectedSparseTargetDefectExit exitHistory
       exact Or.inl ⟨
         (structured.get (K .sparseTargetDefectResidual)).down,
         (structured.get (K .sparseTargetDefectStructure)).down⟩

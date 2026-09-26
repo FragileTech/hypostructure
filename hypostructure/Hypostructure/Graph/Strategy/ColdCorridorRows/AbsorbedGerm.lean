@@ -89,57 +89,32 @@ set_option maxHeartbeats 4000000 in
 
 /-! ## Nodes `[174]`--`[177]`, `lem:absorbed-germ-fan-data`: the absorbed-germ split
 
-On the absorbed-germ residual (`[173]`'s no arm), node `[175]` tests whether
-the literal case-(i) occurrence class is nonempty.  The yes arm records only
-that exact predicate as `K .coldPositiveGerm`; node `[176]` obtains the
-candidate extraction from its existing node-`[153]` owner.  Independently of
-that test, `absorbedGermSplitRow` retains the case-(ii) witness for every
-occurrence outside the candidate set, so mixed families continue through both
-paper routes without losing either subfamily.  On the no arm the same
-complement is the whole selected family. -/
+On the absorbed-germ residual (`[173]`'s no arm), node `[175]` asks whether a
+selected corridor avoids the high-degree vertices, i.e. whether the literal
+case-(i) occurrence class is nonempty.  The yes arm records exactly that
+predicate as `K .coldPositiveGerm`; the no arm is its exact negation
+`K .coldNoPositiveGerm`: every selected corridor meets a high-degree vertex.
+Independently of the test, `absorbedGermSplitRow` retains the per-half-edge
+case-(i)/(ii) dichotomy, and `absorbedGermFanDataRow` publishes the case-(ii)
+fan data for every occurrence outside the candidate set on both arms, so mixed
+families continue through both paper routes. -/
 noncomputable def absorbedGermDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger
       (Input BranchState Presentation presentation data) current known)
     [FactKeys.Has (K .absorbedGermSplit) known]
-    [FactKeys.Has (K .coldGermCandidates) known]
     (positiveFresh : K .coldPositiveGerm ∉ known)
-    (absorbedFresh : K .absorbedGermFanData ∉ known) :
-    Decision (K .coldPositiveGerm) (K .absorbedGermFanData) previous := by
+    (emptyFresh : K .coldNoPositiveGerm ∉ known) :
+    Decision (K .coldPositiveGerm) (K .coldNoPositiveGerm) previous := by
   classical
-  let split := (previous.get (K .absorbedGermSplit)).down
-  let object := current.object
-  letI : FinEnum object.Vertex := object.vertices
-  change AbsorbedGermSplitStatement data.toParameters object at split
-  simp only [AbsorbedGermSplitStatement] at split
-  let routing := Classical.choose split
-  let alternatives := Classical.choose_spec split
-  let routedCandidates := coldRoutedCandidates data.toParameters object routing
-  exact Decision.run previous (K .coldPositiveGerm) (K .absorbedGermFanData)
+  exact Decision.run previous (K .coldPositiveGerm) (K .coldNoPositiveGerm)
     `Hypostructure.Graph.Strategy.Spine.absorbedGermDichotomy
-    (if positive : 0 < routedCandidates.card then
-      .inl ⟨by
-        change ColdPositiveGermStatement data.toParameters object
-        exact ⟨routing, positive⟩⟩
+    (if positive : ColdPositiveGermStatement data.toParameters current.object then
+      .inl ⟨positive⟩
     else
-      .inr ⟨by
-        let family := (previous.get (K .coldGermCandidates)).down
-        change ColdGermCandidatesStatement data.toParameters object at family
-        rcases family with
-          ⟨familyRouting, incidence, candidates, disjointFamily, corridorLoss,
-            familyWitness⟩
-        have routingEq : familyRouting = routing := Subsingleton.elim _ _
-        subst familyRouting
-        change AbsorbedGermFanDataStatement data.toParameters object
-        simp only [AbsorbedGermFanDataStatement]
-        refine ⟨routing, incidence, candidates, disjointFamily, corridorLoss,
-          familyWitness, ?_⟩
-        intro epsilon _notCandidate
-        rcases alternatives epsilon with candidate | high
-        · exact (positive (Finset.card_pos.2 ⟨_, candidate⟩)).elim
-        · exact high⟩)
-    positiveFresh absorbedFresh
+      .inr ⟨positive⟩)
+    positiveFresh emptyFresh
 
 /-- Node `[177]` on `[175]`'s positive arm.  The node-`[153]` package already
 contains the exact candidate/loss identity and the `B_cold·σ(G)` loss bound;

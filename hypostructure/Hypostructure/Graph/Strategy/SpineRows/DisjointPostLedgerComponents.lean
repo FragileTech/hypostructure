@@ -51,7 +51,9 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     (fun inputs =>
       let choiceFact := (inputs.get (K .typeBB2Choice)).down
       let avoids := (inputs.get (K .selection)).down.1
-      let uncompressibleFact := (inputs.get (K .uncompressible)).down
+      let uncompressibleFact := (fun support compressible => (inputs.get (K .uncompressible)).down support
+        (Graph.Strategy.InterfaceReplacement.replacementSupportOfCompressibleSupport _ _ _ _
+          compressible))
       let normalized := (inputs.get (K .remainderNormalized)).down
       .cons (key := K .typeBDisjointLedger)
         (⟨by

@@ -3,6 +3,7 @@ import Hypostructure.Graph.Strategy.ColdCorridorRows.ColdFamilyClosure
 import Hypostructure.Graph.Strategy.ColdCorridorRows.DenseTerminal
 import Hypostructure.Graph.Strategy.ColdCorridorRows.NeutralTerminal
 import Hypostructure.Graph.Strategy.ColdCorridorRows.TwoStrand
+import Hypostructure.Graph.Strategy.SpineRows.Bridgeless
 import Hypostructure.Graph.Strategy.SpineRows.RemainderNormalization
 import Hypostructure.Graph.Strategy.SpineRows.RemainderRelabelingEntropy
 import HypostructureErdos64EG.Assembly.NearCubic.Boundary
@@ -84,7 +85,12 @@ noncomputable def nearCubicDenseLinear
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       normalized (by key_fresh)
-  let state := nearCubicColdCorridorState relabelingEntropy
+  let bridgeless :=
+    (bridgelessRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      relabelingEntropy (by key_fresh)
+  let state := nearCubicColdCorridorState bridgeless
   let terminal :=
     (denseColdCorridorsTerminalRow (data := spineData)).run state (by key_fresh)
   let family := nearCubicColdGermFamily terminal

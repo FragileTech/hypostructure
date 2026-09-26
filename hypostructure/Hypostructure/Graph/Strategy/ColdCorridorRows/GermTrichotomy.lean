@@ -37,7 +37,9 @@ G2 for every surviving length-changing germ. -/
     (fun inputs =>
       let candidates := (inputs.get (K .coldGermCandidates)).down
       let selected := (inputs.get (K .selection)).down
-      let uncompressible := (inputs.get (K .uncompressible)).down
+      let uncompressible := (fun support compressible => (inputs.get (K .uncompressible)).down support
+        (Graph.Strategy.InterfaceReplacement.replacementSupportOfCompressibleSupport _ _ _ _
+          compressible))
       let targetInvariant : Graph.FiniteObject.IsomorphismInvariant
           (Graph.HasCycleWithLength data.LengthOK) :=
         (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant
@@ -103,7 +105,9 @@ survive their smear and are routed the same way; and the table is finite. -/
     (fun inputs =>
       let candidates := (inputs.get (K .coldGermCandidates)).down
       let selected := (inputs.get (K .selection)).down
-      let uncompressible := (inputs.get (K .uncompressible)).down
+      let uncompressible := (fun support compressible => (inputs.get (K .uncompressible)).down support
+        (Graph.Strategy.InterfaceReplacement.replacementSupportOfCompressibleSupport _ _ _ _
+          compressible))
       let targetInvariant : Graph.FiniteObject.IsomorphismInvariant
           (Graph.HasCycleWithLength data.LengthOK) :=
         (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant
