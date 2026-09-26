@@ -2,6 +2,7 @@ import Hypostructure.Fixtures.ResidualLocality
 import Hypostructure.Graph.Contracts.Spine.ColdSubcubicCharge
 import Hypostructure.Graph.Statements.CanonicalSurplus
 import Hypostructure.Graph.Statements.CanonicalSurplusCapacity
+import Hypostructure.Graph.Statements.CanonicalSameToken
 import Hypostructure.Graph.Statements.CanonicalTypeA
 import Hypostructure.Graph.Statements.CanonicalTypeB
 import Hypostructure.Graph.Statements.CanonicalRouteEight
