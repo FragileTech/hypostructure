@@ -80,14 +80,26 @@ and why the Lean is at least as strong.
   closed at `[124]` exactly as outcome (i).  The two keys are literal
   negations of each other, so the split is exact without choosing a ledger.
 
-## [186]: the silent lane reaches the joint balance
+## [184]: the silent Type A lane closes at the visibility reduction
 
-- **Paper** (tex:1145, node `[186]` "joint balance and silent-terminal
-  exclusion"; `lem:typeA-unified-silent-terminal-exclusion` tex:17480).
-- **Lean.** Both Type A lanes run the one composition
-  `selectedRouteEightUnifiedResidual` to `[186]`; the silent-terminal exclusion
-  (168.22) is a conjunct of `Route8JointBalanceStatement`.  The former
-  Lean-only closure of the silent lane at `[184]`, selected by an `Option`
-  argument of `selectedRouteEightResidual`, is removed.
-- **Status.** This is the paper topology; it is recorded because it changes
-  the previous Lean behaviour.
+- **Paper** (tex:1143--1145; `lem:typeA-unified-visible-ownership`,
+  `lem:typeA-unified-silent-terminal-exclusion` tex:17480). Both Type A lanes
+  run `[183]`--`[186]`; the silent terminal is excluded as a conjunct of the
+  open node `[186]` ((168.22)).
+- **Lean.** The silent lane (the silent arm of F1's
+  `typeASilentExitSevenDichotomy`, carrying `K .typeASilentExitSevenFree`)
+  enters `selectedRouteEightResidualSilent`
+  (`Assembly/RouteEight/Residual.lean`), which shares every stage with the
+  visible entry (`selectedRouteEightProfile`,
+  `selectedRouteEightCollectionCloses`, `selectedRouteEightBridgePrefix`,
+  `selectedRouteEightDescent`, `selectedRouteEightUnpaidReduction`) and
+  differs only after `[183]`: `route8UnifiedVisibleResidualRow` is run with
+  `runAndCloseIncompatible` against `K .typeASilentExitSevenFree`
+  (instance `typeASilentExitSevenFreeVisibleClosed`, `TypeAExitRun.lean`).
+  The former `Option` argument of `selectedRouteEightResidual` is removed.
+- **Why the Lean prevails.** The lane's selected silent excess load is itself a
+  unified entry; `[184]` (the paper's own lemma) makes every unified entry
+  visible, so the lane is closed by the fact the paper proves at `[184]`,
+  before the joint balance.  The paper's `[186]` exclusion (168.22) is the same
+  contradiction stated one node later.  Kernel-checked; the visible lane still
+  reaches the open node `[186]`.

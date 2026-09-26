@@ -256,6 +256,6 @@ noncomputable def selectedTypeAExitFiveToSevenSilent
                   (presentation := erdosReceiverLoadProfile)
                   (data := spineData)).run sharedRoute8
                     (by key_fresh)
-              exact selectedRouteEightResidual normal
+              exact selectedRouteEightResidualSilent normal
 
 end HypostructureErdos64EG
