@@ -20,9 +20,12 @@ universe u w
 charge node `[153]`'s bounded arm discarded.  Their return corridors
 (`lem:bridgeless`), states, first failures and candidate family are published
 by the registered node-`[153]` owners on this literal residual; `[175]` only
-queries them.  Node `[162]`'s terminality is not run here: the paper states it
-only on the dense-packing residual (`lem:dense-cold-pass`), and node `[176]`
-does not use it (`lem:absorbed-germ-fan-data` (i)). -/
+queries them.  Node `[153]`'s exact (★) decision is taken here as on the
+spine: its ¬(★) arm returns the explicitly constructed residual
+`K .coldRepeatedStateResidual`.  Node `[162]`'s terminality is not run here:
+the paper states it only on the dense-packing residual
+(`lem:dense-cold-pass`), and node `[176]` does not use it
+(`lem:absorbed-germ-fan-data` (i)). -/
 noncomputable def selectedAbsorbedGermPrerequisites
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -35,19 +38,26 @@ noncomputable def selectedAbsorbedGermPrerequisites
     [FactKeys.Has (K .cubicBaseline) known]
     (fresh : List.Disjoint
       [K .coldReturnCorridors, K .coldCorridorState,
-        K .coldFirstFailureOccurrence,
+        K .coldFirstFailureOccurrence, K .coldCutStatesDistinct,
+        K .coldRepeatedStateResidual,
         K .coldFailureCycle, K .coldFailureDefectRoute,
         K .coldFailureCompression, K .coldHandoffTransfer,
         K .coldFailureRouting, K .coldExchangeBound,
         K .coldGermCandidates] known := by key_fresh) :
-    ExactLedger EGInput.{u} selected
-      (K .coldGermCandidates :: K .coldExchangeBound ::
-        K .coldFailureRouting :: K .coldHandoffTransfer ::
-        K .coldFailureCompression ::
-        K .coldFailureDefectRoute :: K .coldFailureCycle ::
-        K .coldFirstFailureOccurrence ::
-        K .coldCorridorState :: K .coldReturnCorridors :: known) :=
+    PSum
+      (ExactLedger EGInput.{u} selected
+        (K .coldGermCandidates :: K .coldExchangeBound ::
+          K .coldFailureRouting :: K .coldHandoffTransfer ::
+          K .coldFailureCompression ::
+          K .coldFailureDefectRoute :: K .coldFailureCycle ::
+          K .coldCutStatesDistinct :: K .coldFirstFailureOccurrence ::
+          K .coldCorridorState :: K .coldReturnCorridors :: known))
+      (Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+        erdosReceiverLoadProfile spineData .coldRepeatedStateResidual
+          selected.object) :=
   let state := nearCubicColdCorridorState history
-  nearCubicColdCandidates state
+  match nearCubicColdOccurrence state with
+  | .inl distinct => .inl (nearCubicColdCandidates distinct)
+  | .inr repeated => .inr repeated
 
 end HypostructureErdos64EG

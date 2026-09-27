@@ -30,6 +30,8 @@ noncomputable abbrev denseLinearKeys : FactKeys EGInput.{u} :=
   [K .remainderNormalized, K .bridgeless,
     K .coldReturnCorridors, K .coldCorridorState,
     K .denseColdCorridorsTerminal, K .coldFirstFailureOccurrence,
+    K .coldCutStatesDistinct, K .coldRepeatedStateResidual,
+    K .coldHeavyEntryTerminal, K .coldDenseHeavyEntryResidual,
     K .coldFailureCycle, K .coldFailureDefectRoute,
     K .coldFailureCompression, K .coldHandoffTransfer,
     K .coldFailureRouting, K .coldExchangeBound,
@@ -87,38 +89,52 @@ noncomputable def nearCubicDenseLinear
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       normalized (by key_fresh)
   let state := nearCubicColdCorridorState bridgeless
-  let terminal :=
-    (denseColdCorridorsTerminalRow (data := spineData)).run state (by key_fresh)
-  let family := nearCubicColdGermFamily terminal
-  let unhit := nearCubicColdNoHit family
-  match coldGermDistinctionDichotomy (data := spineData) unhit
-      (by key_fresh) (by key_fresh) with
-  | .left distinguishedHistory =>
-      exact Or.inr (Or.inr (Or.inr
-        ((nearCubicColdTable distinguishedHistory).get (K .coldBranchClosed)).down))
-  | .right silentHistory =>
-      let neutralConfiguration :=
-        (neutralEqualLengthTerminalRow (data := spineData)).run silentHistory
-          (by key_fresh)
-      let closed := nearCubicColdTable neutralConfiguration
-      match neutralGermSymmetryDichotomy (data := spineData) closed
+  -- `[153]`: the first failures and the exact (★) decision; ¬(★) returns G's
+  -- first equal-state pair.
+  match nearCubicColdOccurrence state with
+  | .inr repeated => exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inl repeated))))
+  | .inl distinct =>
+      -- `[162]` on the (★) arm: the heavy-entry test; its failure returns the long
+      -- corridor of G through a heavy centre.
+      match coldHeavyEntryDichotomy (data := spineData) distinct
           (by key_fresh) (by key_fresh) with
-      | .left canonicalHistory =>
-          let swapped :=
-            (canonicalReplacementSwapRow (data := spineData)).run
-              canonicalHistory (by key_fresh)
-          exact Or.inr (Or.inr (Or.inl
-            (selectedCanonicalReplacementContinuation swapped)))
-      | .right genuineHistory =>
-          let survivor :=
-            (twoStrandSurvivorRow (data := spineData)).run genuineHistory
+      | .right heavyHistory =>
+          exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl
+            (heavyHistory.get (K .coldDenseHeavyEntryResidual)).down)))))
+      | .left heavyTerminal =>
+          let terminal :=
+            (denseColdCorridorsTerminalRow (data := spineData)).run heavyTerminal
               (by key_fresh)
-          let stubbed :=
-            (coldWindowStubStructureRow (data := spineData)).run survivor
-              (by key_fresh)
-          exact ((symmetricPairEndpointExclusionRow
-            (data := spineData)).runAndCloseIncompatible stubbed
-              (K .coldTwoStrandSurvivor) (K .coldSymmetricPairExcluded)
-              (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
+          let family := nearCubicColdGermFamily terminal
+          let unhit := nearCubicColdNoHit family
+          match coldGermDistinctionDichotomy (data := spineData) unhit
+              (by key_fresh) (by key_fresh) with
+          | .left distinguishedHistory =>
+              exact Or.inr (Or.inr (Or.inr (Or.inl
+                ((nearCubicColdTable distinguishedHistory).get (K .coldBranchClosed)).down)))
+          | .right silentHistory =>
+              let neutralConfiguration :=
+                (neutralEqualLengthTerminalRow (data := spineData)).run silentHistory
+                  (by key_fresh)
+              let closed := nearCubicColdTable neutralConfiguration
+              match neutralGermSymmetryDichotomy (data := spineData) closed
+                  (by key_fresh) (by key_fresh) with
+              | .left canonicalHistory =>
+                  let swapped :=
+                    (canonicalReplacementSwapRow (data := spineData)).run
+                      canonicalHistory (by key_fresh)
+                  exact Or.inr (Or.inr (Or.inl
+                    (selectedCanonicalReplacementContinuation swapped)))
+              | .right genuineHistory =>
+                  let survivor :=
+                    (twoStrandSurvivorRow (data := spineData)).run genuineHistory
+                      (by key_fresh)
+                  let stubbed :=
+                    (coldWindowStubStructureRow (data := spineData)).run survivor
+                      (by key_fresh)
+                  exact ((symmetricPairEndpointExclusionRow
+                    (data := spineData)).runAndCloseIncompatible stubbed
+                      (K .coldTwoStrandSurvivor) (K .coldSymmetricPairExcluded)
+                      (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
 
 end HypostructureErdos64EG

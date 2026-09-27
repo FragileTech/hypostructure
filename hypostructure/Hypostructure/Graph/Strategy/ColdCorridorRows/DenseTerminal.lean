@@ -18,30 +18,31 @@ variable {data : Data.{u}}
 
 /-! ## Node `[162]`, `lem:dense-cold-pass`: terminality of the return corridors
 
-The row reads G's retained corridor state, node `[27]`'s normalization and the
-hot/cold split, and publishes the paper's claim that every return corridor is
-terminal (`Contracts.Spine.denseColdCorridorsTerminal_of_state`).  The paper's
-reason -- the pieces of `R` have bounded diameter -- does not reach corridors
-of `G − X_cold` that cross hot or non-ambient-cubic cold windows: OPEN-CONSTRUCTION
-[162] tex:7694 (`lean-vs-paper-discrepancies.md#open-constructions`). -/
+The row reads G's retained first-failure occurrence, (★) (`[153]`'s
+distinct-states arm), `[162]`'s decided heavy-entry test, target avoidance and
+uncompressibility, and proves that every retained return corridor of G is
+terminal (`Contracts.Spine.denseColdCorridorsTerminal_of_distinct`).  The
+paper's reason -- the pieces of `R` have bounded diameter -- is not used: it
+does not reach corridors of `G − X_cold` that cross hot or non-ambient-cubic
+cold windows. -/
 @[reducible] noncomputable def denseColdCorridorsTerminalRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.denseColdCorridorsTerminal
-    { Requires := [K .coldCorridorState, K .remainderNormalized,
-        K .hotColdPartition, K .cubicBaseline]
+    { Requires := [K .coldFirstFailureOccurrence, K .coldCutStatesDistinct,
+        K .coldHeavyEntryTerminal, K .selection, K .uncompressible]
       Produces := [K .denseColdCorridorsTerminal]
       requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .denseColdCorridorsTerminal)
-        ⟨Contracts.Spine.denseColdCorridorsTerminal_of_state data.toParameters
+        ⟨Contracts.Spine.denseColdCorridorsTerminal_of_distinct data.toParameters
           inputs.current.object
-          (three_le_windowOrder_of_census data.toParameters
-            (inputs.get (K .cubicBaseline)).down.1.2.2.2.2.1)
-          (inputs.get (K .coldCorridorState)).down
-          (inputs.get (K .remainderNormalized)).down
-          (inputs.get (K .hotColdPartition)).down⟩
+          (inputs.get (K .coldFirstFailureOccurrence)).down
+          (inputs.get (K .selection)).down.1
+          (inputs.get (K .uncompressible)).down
+          (inputs.get (K .coldCutStatesDistinct)).down
+          (inputs.get (K .coldHeavyEntryTerminal)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

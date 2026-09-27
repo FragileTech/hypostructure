@@ -71,18 +71,22 @@ noncomputable def Assembly.Internal.nearCubicRealized
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile) (data := spineData)).run
               linearHistory (by key_fresh)
-          let family :=
-            nearCubicColdGermFamily (nearCubicColdCorridorState bridgeless)
-          let unhit := nearCubicColdNoHit family
-          match coldGermDistinctionDichotomy (data := spineData) unhit
-              (by key_fresh) (by key_fresh) with
-          | .left distinguishedHistory =>
-              exact Or.inr (Or.inr (Or.inr
-                ((nearCubicColdTable distinguishedHistory).get
-                  (K .coldBranchClosed)).down))
-          | .right silentHistory =>
-              exact Or.inr (Or.inr (Or.inr
-                ((nearCubicColdTable silentHistory).get
-                  (K .coldBranchClosed)).down))
+          match nearCubicColdOccurrence (nearCubicColdCorridorState bridgeless) with
+          | .inr repeated =>
+              -- `[153]`, ¬(★): G's first equal-state pair, returned.
+              exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inl repeated))))
+          | .inl distinct =>
+              let family := nearCubicColdGermFamily distinct
+              let unhit := nearCubicColdNoHit family
+              match coldGermDistinctionDichotomy (data := spineData) unhit
+                  (by key_fresh) (by key_fresh) with
+              | .left distinguishedHistory =>
+                  exact Or.inr (Or.inr (Or.inr (Or.inl
+                    ((nearCubicColdTable distinguishedHistory).get
+                      (K .coldBranchClosed)).down)))
+              | .right silentHistory =>
+                  exact Or.inr (Or.inr (Or.inr (Or.inl
+                    ((nearCubicColdTable silentHistory).get
+                      (K .coldBranchClosed)).down)))
 
 end HypostructureErdos64EG

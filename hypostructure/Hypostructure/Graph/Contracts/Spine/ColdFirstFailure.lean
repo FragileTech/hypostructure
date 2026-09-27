@@ -2,6 +2,7 @@ import Hypostructure.Graph.Statements.Spine
 import Hypostructure.Graph.Statements.CanonicalSurplus
 import Hypostructure.Graph.ColdIncrementArithmetic
 import Hypostructure.Graph.ColdGermFamily
+import Hypostructure.Graph.Statements.ColdResiduals
 
 /-!
 # Contracts: the cold-corridor first failure `[153]`
@@ -145,47 +146,55 @@ theorem coldFirstFailureOccurrence_of_state
   have firstLeEarlier := Finset.min'_le failures earlier earlierMember
   exact (Nat.not_lt_of_ge firstLeEarlier) earlierBefore
 
-/-- **`lem:cold-corridor-first-failure` (ii), the paper's claim** (tex
-7265-7270), at G's retained occurrence: on the surviving cold branch, the first
-failure of a selected half-edge `ε` of G -- read on the corridor, presentation
-and segment index that G's classified data retains for `ε`
-(`coldOccurrenceCorridorAt` / `coldOccurrencePresentationAt` /
-`coldOccurrenceIndexAt`) -- is not (F2), because the (F2) pair is a
-target-defective quotient, i.e. a sparse surplus exit, excluded by
-`K .sparseSurplusSurvivor`.
+/-- The target of G accepts every dyadic length `2^k`, `k ≥ 2`, read from the
+presentation identity `LengthOK ↔ PowerOfTwoLength` (`K .cubicBaseline`). -/
+theorem lengthOK_twoPow (data : Parameters)
+    (dyadic : ∀ length, data.LengthOK length ↔
+      Core.DyadicLength.PowerOfTwoLength length) :
+    ∀ k, 2 ≤ k → data.LengthOK (2 ^ k) := fun k two =>
+  (dyadic _).2 ⟨⟨k, by have := Nat.lt_two_pow_self (n := k); omega⟩, two, rfl⟩
 
-Recorded as an open construction (`lean-vs-paper-discrepancies.md#open-constructions`): the
-(F2) pair compares two corridor prefixes through their cut-state interface,
-not two declared coordinates of G's sparse family, so it is not a sparse exit
-of `def:named-surplus-exits` and the survivor fact does not refute it
-(`Quarantine/PaperRepairs/ColdF2Refutation.lean`,
-`coldF2_not_clauseB`).
+/-- **At G, (F2) at a segment is exactly an earlier equal cut state**
+(`lem:cold-corridor-first-failure` (ii), tex 7192-7195): the forward direction
+is the clause's state equality; conversely, for `left < right` with equal
+states, the path context `ColdEqualStates.prefixContext` separates
+`retainedPiece J_right J_left` from `piece J_right`, because G has no accepted
+cycle. -/
+theorem coldFirstFailureDefectAt_iff (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (accept : ∀ k, 2 ≤ k → data.LengthOK (2 ^ k))
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    {windows component : Finset object.Vertex}
+    (outside : Graph.ColdCorridor.IsOutsideComponent object windows component)
+    (corridor : Graph.ColdCorridor.Corridor object windows component)
+    (presentation : Graph.ColdCorridor.Presentation data.coldSignature object)
+    (index : corridor.Segment → presentation.Segment)
+    (right : corridor.Segment) :
+    ColdFirstFailureDefectAt data object corridor presentation index right ↔
+      ∃ left : corridor.Segment, left.1 < right.1 ∧
+        presentation.state (index left) = presentation.state (index right) := by
+  constructor
+  · rintro ⟨left, lt, same, _⟩
+    exact ⟨left, lt, same⟩
+  · rintro ⟨left, lt, same⟩
+    exact ⟨left, lt, same,
+      Graph.ColdEqualStates.prefix_targetDefect data.LengthOK accept avoids outside
+        corridor left right lt⟩
 
-The statement is quantified only over G's retained objects: the earlier
-all-presentations/all-indices form is false
-(`ColdF2Refutation.coldFailureDefect_excluded_is_false`, with a constant
-index).  The retained presentation is G's own cut-state presentation
-`coldCutStatePresentation` with the identity index (pinned by
-`ColdCorridorStateStatement`); there the states of segments `0` and `1` differ
-(their active interfaces have different sizes), so that construction does not
-apply.
-
-The exact obstruction at G (`ColdF2Refutation`, Part 4): since G has no target
-cycle, the (F2) clause at a segment holds iff an earlier segment has the same
-cut state (`EqualStates.coldFirstFailureDefectAt_iff`, path context of length
-`2^(right+2) − right` from the head to the foot), and every such pair is a
-`d_∂` separation, never a clause-(b) exit
-(`EqualStates.not_residualTargetDefect_prefixPair`).  So this claim at G is
-exactly "G's cut states along each retained corridor are pairwise distinct up
-to its first failure", which forces that failure within `Q_cold` states
-(`EqualStates.first_lt_stateBound`).  No ledger fact of G decides it. -/
+/-- **`lem:cold-corridor-first-failure` (ii) on the distinct-states arm of
+`[153]`** (tex 7265-7270): when G's pinned cut states along every retained
+corridor are pairwise distinct up to the first failure
+(`ColdCutStatesDistinctStatement`, the arm where the paper's claim holds), the
+first failure of a selected half-edge `ε` of G, read on G's retained
+occurrence, is not (F2): an (F2) clause at `first` carries an earlier segment
+with the same state. -/
 theorem coldFailureDefect_excluded (data : Parameters)
     (object : Graph.FiniteObject.{u})
-    (_survivor : DeclaredSparseSurvivor data object)
+    (distinct : ColdCutStatesDistinctStatement data object)
     (occurrence : ColdFirstFailureOccurrenceData data object)
     (epsilon : ColdEligibleHalfEdge data object)
     (first : (coldOccurrenceCorridorAt data object occurrence epsilon).Segment)
-    (_minimal : ∀ earlier :
+    (minimal : ∀ earlier :
         (coldOccurrenceCorridorAt data object occurrence epsilon).Segment,
       earlier.1 < first.1 →
         ¬ ColdFirstFailureEvent data object
@@ -198,21 +207,120 @@ theorem coldFailureDefect_excluded (data : Parameters)
       (coldOccurrenceCorridorAt data object occurrence epsilon)
       (coldOccurrencePresentationAt data object occurrence epsilon)
       (coldOccurrenceIndexAt data object occurrence epsilon) first := by
-  -- OPEN-CONSTRUCTION [153] tex:7268 — see lean-vs-paper-discrepancies.md#open-constructions
-  sorry
+  rintro ⟨left, lt, same, _⟩
+  exact distinct occurrence epsilon first minimal left first lt le_rfl same
 
 /-- **Node `[153]`, `lem:cold-corridor-first-failure` (ii)** (tex 7240,
-7265-7270), at G's retained occurrence: an (F2) first failure of G's retained
-corridor is a named sparse surplus exit of G.  On the surviving branch it is
-discharged by the paper's exclusion claim `coldFailureDefect_excluded`
-(OPEN-CONSTRUCTION [153] tex:7268), which makes the (F2) arm empty. -/
-theorem coldFailureDefectRoutes_of_survivor (data : Parameters)
+7265-7270), at G's retained occurrence, on the distinct-states arm: an (F2)
+first failure of G's retained corridor is a named sparse surplus exit of G --
+vacuously, since on this arm no first failure of G is (F2)
+(`coldFailureDefect_excluded`). -/
+theorem coldFailureDefectRoutes_of_distinct (data : Parameters)
     (object : Graph.FiniteObject.{u})
-    (survivor : DeclaredSparseSurvivor data object) :
+    (distinct : ColdCutStatesDistinctStatement data object) :
     ColdFailureDefectRoutesStatement data object :=
   fun occurrence epsilon first minimal defect =>
-    (coldFailureDefect_excluded data object survivor occurrence epsilon first
+    (coldFailureDefect_excluded data object distinct occurrence epsilon first
       minimal defect).elim
+
+/-- **The pinned cut state reads G's degree at the head.**  On a presentation
+pinned to `coldCutStatePresentation` (the `Sigma` equation of `[30]`), the head
+entry of the boundary-degree profile of segment `s` is `min (d_G(head s)) D`. -/
+theorem pinned_headBoundaryDegree (data : Parameters) (object : Graph.FiniteObject.{u})
+    {component : Finset object.Vertex}
+    (corridor : Graph.ColdCorridor.Corridor object (coldCorridorWindows data object)
+      component)
+    (presentation : Graph.ColdCorridor.Presentation data.coldSignature object)
+    (index : corridor.Segment → presentation.Segment)
+    (pin : (⟨presentation, index⟩ : Σ p : Graph.ColdCorridor.Presentation
+        data.coldSignature object, corridor.Segment → p.Segment) =
+      ⟨coldCutStatePresentation data object corridor, fun segment => ULift.up segment⟩)
+    (segment : corridor.Segment) :
+    ((presentation.state (index segment)).boundaryDegrees 1).1 =
+      min (object.degree (corridor.head segment)) data.coldSignature.degreeBound := by
+  cases pin
+  rfl
+
+set_option maxHeartbeats 1600000 in
+/-- **The residual of `[153]`, constructed at G.**  If (★) fails at G, some
+retained corridor of G has two equal pinned states at segments up to a segment
+with no earlier event.  Take the least `right` carrying an earlier equal state
+and such a `left`: `(left, right)` is G's first equal-state pair, no event
+precedes `right`, the (F2) clause holds at `right` through the path context
+(`coldFirstFailureDefectAt_iff`), the context closes an accepted cycle with
+`piece J_right` and none with the `J_left` reading, the two readings are
+profile-separated (`ColdEqualStates.prefix_profile_ne`), and the glue vertices
+`head left`, `head right` carry the same capped G-degree (through the `[30]`
+pin, `pinned_headBoundaryDegree`).  The residual is read at G's canonical
+witness `coldRepeatWitness?`. -/
+theorem coldRepeatedStateResidual_of_not_distinct (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (accept : ∀ k, 2 ≤ k → data.LengthOK (2 ^ k))
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (repeated : ¬ ColdCutStatesDistinctStatement data object) :
+    ColdRepeatedStateResidualStatement data object := by
+  classical
+  unfold ColdCutStatesDistinctStatement at repeated
+  push Not at repeated
+  obtain ⟨occurrence, epsilon, first, minimal, left₀, right₀, lt₀, le₀, same₀⟩ :=
+    repeated
+  let corridor := coldOccurrenceCorridorAt data object occurrence epsilon
+  let presentation := coldOccurrencePresentationAt data object occurrence epsilon
+  let index := coldOccurrenceIndexAt data object occurrence epsilon
+  let repeats : Finset corridor.Segment := Finset.univ.filter fun right =>
+    ∃ left : corridor.Segment, left.1 < right.1 ∧
+      presentation.state (index left) = presentation.state (index right)
+  have nonempty : repeats.Nonempty :=
+    ⟨right₀, Finset.mem_filter.2 ⟨Finset.mem_univ _, left₀, lt₀, same₀⟩⟩
+  let right := repeats.min' nonempty
+  have rightMem := (Finset.mem_filter.1 (repeats.min'_mem nonempty)).2
+  obtain ⟨left, lt, same⟩ := rightMem
+  have rightLe : right ≤ right₀ :=
+    repeats.min'_le right₀ (Finset.mem_filter.2 ⟨Finset.mem_univ _, left₀, lt₀, same₀⟩)
+  have rightLeFirst : right.1 ≤ first.1 := le_trans (Fin.le_def.1 rightLe) le₀
+  have outside :=
+    (coldOccurrenceStateFacts data object occurrence epsilon).1
+  have noEvent : ∀ earlier : corridor.Segment, earlier.1 < right.1 →
+      ¬ ColdFirstFailureEvent data object corridor presentation index
+        (coldOccurrenceIncidence data object occurrence epsilon)
+        (ColdDeclaredHandoffSupport data object) earlier :=
+    fun earlier before => minimal earlier (by omega)
+  have spec : ColdRepeatedStateSpecAt data object occurrence epsilon left right := by
+    refine ⟨outside, lt, same, ?_, noEvent, ?_, ?_, ?_, ?_, ?_, ?_⟩
+    · intro earlierLeft earlierRight earlierLt earlierBefore earlierSame
+      have before : earlierRight.1 < right.1 := earlierBefore
+      have member : earlierRight ∈ repeats :=
+        Finset.mem_filter.2 ⟨Finset.mem_univ _, earlierLeft, earlierLt, earlierSame⟩
+      have := repeats.min'_le earlierRight member
+      exact absurd (Fin.le_def.1 this) (by omega)
+    · exact (coldFirstFailureDefectAt_iff data object accept avoids outside corridor
+        presentation index right).2 ⟨left, lt, same⟩
+    · exact Graph.ColdEqualStates.prefixContext_piece_cycle data.LengthOK accept outside
+        corridor right (by omega)
+    · exact Graph.ColdEqualStates.prefixContext_retained_noCycle data.LengthOK avoids
+        outside corridor left right lt
+    · exact Graph.ColdEqualStates.prefix_profile_ne outside corridor left right lt
+    · exact congrArg Graph.ColdCorridor.CutState.boundaryDegrees same
+    · have pin := ((coldOccurrenceStateFacts data object occurrence epsilon).2.2.1).2
+      have degrees := congrArg
+        (fun state : Graph.ColdCorridor.CutState data.coldSignature =>
+          (state.boundaryDegrees 1).1) same
+      exact (pinned_headBoundaryDegree data object _ _ _ pin left).symm.trans
+        (degrees.trans (pinned_headBoundaryDegree data object _ _ _ pin right))
+  obtain ⟨witness, pinned⟩ := coldRepeatWitness?_eq_some
+    ⟨⟨occurrence, epsilon, left, right⟩, spec⟩
+  exact ⟨witness, pinned, coldRepeatWitness?_spec pinned⟩
+
+/-- **The `[153]` residual refutes (★).**  Its witness carries an equal-state
+pair `left < right` with no event before `right`. -/
+theorem not_distinct_of_coldRepeatedStateResidual (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (residual : ColdRepeatedStateResidualStatement data object) :
+    ¬ ColdCutStatesDistinctStatement data object := by
+  intro distinct
+  obtain ⟨witness, _, outside, lt, same, _, noEvent, _⟩ := residual
+  exact distinct witness.occurrence witness.epsilon witness.right noEvent
+    witness.left witness.right lt le_rfl same
 
 /-- **`lem:cold-corridor-first-failure`, the routing** (tex 7234-7295): (F1)
 is a target cycle and (F3) a target-complete compression, both excluded by the

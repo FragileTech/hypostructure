@@ -33,6 +33,8 @@ noncomputable abbrev netChargeContinuationKeys : FactKeys EGInput.{u} :=
     K .absorbedGermSplit, K .bridgeless, K .coldReturnCorridors,
     K .coldCorridorState,
     K .denseColdCorridorsTerminal, K .coldFirstFailureOccurrence,
+    K .coldCutStatesDistinct, K .coldRepeatedStateResidual,
+    K .coldHeavyEntryTerminal, K .coldDenseHeavyEntryResidual,
     K .coldFailureRouting, K .coldFailureCycle,
     K .coldFailureDefectRoute, K .coldFailureCompression,
     K .coldHandoffTransfer, K .coldExchangeBound,
@@ -178,10 +180,14 @@ noncomputable def selectedNetChargeContinuation
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           failsHistory (by key_fresh)
-      let prepared := selectedAbsorbedGermPrerequisites absorbed
-      -- `[175]`--`[177]`, `lem:absorbed-germ-fan-data`: the absorbed-germ
-      -- residual (`selectedAbsorbedGermResidual`).
-      exact Or.inr (selectedAbsorbedGermResidual prepared)
+      match selectedAbsorbedGermPrerequisites absorbed with
+      | .inl prepared =>
+          -- `[175]`--`[177]`, `lem:absorbed-germ-fan-data`: the absorbed-germ
+          -- residual (`selectedAbsorbedGermResidual`).
+          exact Or.inr (Or.inl (selectedAbsorbedGermResidual prepared))
+      | .inr repeated =>
+          -- `[153]`, ¬(★): G's first equal-state pair, returned.
+          exact Or.inr (Or.inr repeated)
   | .left capped =>
       -- `[58]`: `lem:netcharge-superadd` localizes negative charge to a piece.
       let localized :=

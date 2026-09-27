@@ -2,6 +2,7 @@ import Hypostructure.Graph.Strategy.ColdCorridorRows.Basic
 import Hypostructure.Graph.Strategy.ColdCorridorRows.ColdFamilyClosure
 import Hypostructure.Graph.Strategy.ColdCorridorRows.ColdMass
 import Hypostructure.Graph.Strategy.ColdCorridorRows.CorridorState
+import Hypostructure.Graph.Strategy.ColdCorridorRows.CutStates
 import Hypostructure.Graph.Strategy.ColdCorridorRows.EntryDichotomies
 import Hypostructure.Graph.Strategy.ColdCorridorRows.FailureClauses
 import Hypostructure.Graph.Strategy.ColdCorridorRows.FirstFailureOccurrence
@@ -135,10 +136,42 @@ noncomputable def nearCubicColdCorridorState
     (coldReturnCorridorRow (data := spineData)).run history (by key_fresh)
   (coldCorridorStateRow (data := spineData)).run corridors (by key_fresh)
 
-/-- **Node `[153]`, linear arm: first failures and the candidate family.**
-`lem:cold-corridor-first-failure`: the first failure of every corridor and its
-routing (F1)--(F5); `lem:cold-germ-extraction`: the exchange bound and the
-vertex-disjoint candidate family. -/
+/-- **Node `[153]`, linear arm: the first failures and the exact (★)
+decision.**  `lem:cold-corridor-first-failure`: every retained corridor of G has
+a first failure (`K .coldFirstFailureOccurrence`).  The paper's (ii) (tex
+7265-7270) is, at G, the statement (★) that G's pinned cut states along each
+retained corridor are pairwise distinct up to the first failure; the decision
+`coldCutStatesDichotomy` splits it.  The (★) arm is returned as a ledger on
+which routing continues; the ¬(★) arm returns the explicitly constructed
+residual `K .coldRepeatedStateResidual` (G's first equal-state pair, its
+separating path context and its profile separation). -/
+noncomputable def nearCubicColdOccurrence
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .coldCorridorState) known]
+    (fresh : List.Disjoint
+      [K .coldFirstFailureOccurrence, K .coldCutStatesDistinct,
+        K .coldRepeatedStateResidual] known := by key_fresh) :
+    PSum
+      (ExactLedger EGInput.{u} selected
+        (K .coldCutStatesDistinct :: K .coldFirstFailureOccurrence :: known))
+      (Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+        erdosReceiverLoadProfile spineData .coldRepeatedStateResidual
+          selected.object) :=
+  let occurrence :=
+    (coldFirstFailureOccurrenceRow (data := spineData)).run history (by key_fresh)
+  match coldCutStatesDichotomy (data := spineData) occurrence
+      (by key_fresh) (by key_fresh) with
+  | .left distinctHistory => .inl distinctHistory
+  | .right repeatedHistory =>
+      .inr (repeatedHistory.get (K .coldRepeatedStateResidual)).down
+
+/-- **Node `[153]`, linear arm: the routing and the candidate family**, on the
+(★) arm.  `lem:cold-corridor-first-failure`: the routing (F1)--(F5) of the
+first failures, with (F2) excluded by (★); `lem:cold-germ-extraction`: the
+exchange bound and the vertex-disjoint candidate family. -/
 noncomputable def nearCubicColdCandidates
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -147,8 +180,10 @@ noncomputable def nearCubicColdCandidates
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .coldCorridorState) known]
+    [FactKeys.Has (K .coldFirstFailureOccurrence) known]
+    [FactKeys.Has (K .coldCutStatesDistinct) known]
     (fresh : List.Disjoint
-      [K .coldFirstFailureOccurrence, K .coldFailureCycle,
+      [K .coldFailureCycle,
         K .coldFailureDefectRoute, K .coldFailureCompression,
         K .coldHandoffTransfer, K .coldFailureRouting,
         K .coldExchangeBound, K .coldGermCandidates]
@@ -157,12 +192,9 @@ noncomputable def nearCubicColdCandidates
       (K .coldGermCandidates :: K .coldExchangeBound ::
         K .coldFailureRouting :: K .coldHandoffTransfer ::
         K .coldFailureCompression ::
-        K .coldFailureDefectRoute :: K .coldFailureCycle ::
-        K .coldFirstFailureOccurrence :: known) :=
-  let occurrence :=
-    (coldFirstFailureOccurrenceRow (data := spineData)).run history (by key_fresh)
+        K .coldFailureDefectRoute :: K .coldFailureCycle :: known) :=
   let failureCycle :=
-    (coldFailureCycleRow (data := spineData)).run occurrence (by key_fresh)
+    (coldFailureCycleRow (data := spineData)).run history (by key_fresh)
   let failureDefect :=
     (coldFailureDefectRow (data := spineData)).run failureCycle (by key_fresh)
   let failureCompression :=
@@ -188,11 +220,13 @@ noncomputable def nearCubicColdGermFamily
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .coldCorridorState) known]
+    [FactKeys.Has (K .coldFirstFailureOccurrence) known]
+    [FactKeys.Has (K .coldCutStatesDistinct) known]
     [FactKeys.Has (K .coldMassLinear) known]
     [FactKeys.Has (K .coldSelectedBranchExcess) known]
     [FactKeys.Has (K .coldStubExcess) known]
     (fresh : List.Disjoint
-      [K .coldFirstFailureOccurrence, K .coldFailureCycle,
+      [K .coldFailureCycle,
         K .coldFailureDefectRoute, K .coldFailureCompression,
         K .coldHandoffTransfer, K .coldFailureRouting,
         K .coldExchangeBound, K .coldGermCandidates,
@@ -202,8 +236,7 @@ noncomputable def nearCubicColdGermFamily
         K .coldExchangeBound :: K .coldFailureRouting ::
         K .coldHandoffTransfer ::
         K .coldFailureCompression ::
-        K .coldFailureDefectRoute :: K .coldFailureCycle ::
-        K .coldFirstFailureOccurrence :: known) :=
+        K .coldFailureDefectRoute :: K .coldFailureCycle :: known) :=
   (coldGermFamilyPositiveRow (data := spineData)).run
     (nearCubicColdCandidates history) (by key_fresh)
 
