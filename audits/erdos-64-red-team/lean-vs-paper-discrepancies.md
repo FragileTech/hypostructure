@@ -1489,6 +1489,51 @@ disjunct `ContextEquivalent ρ₁ ρ₂`.
   3. *[144a].*  The disjunct carries `ContextEquivalent` (full target, all
      contexts), i.e. already linkage equality.  That is consistent at G
      (configuration `X₁ = X₂`).
+- **Follow-up (user): routes 1 and 2 at the configuration `X₁ = X₂`.**
+  *Configuration at G.*
+  - `canonicalSameTokenRouting G = some routing`, with pattern edges
+    `π₁ = routing.demands.first ≠ π₂ = routing.demands.second` in the
+    canonical homogeneous pattern (matching or star, `HomogeneousPatternSpec`).
+  - `Xᵢ = (canonicalPairActivation.pairSupport πᵢ).getD ∅`, i.e. `select?`
+    of the seed `pairSeed πᵢ = ⋃_{d ∈ πᵢ} (T(d) ∪ Γ(d))`, with `X₁ = X₂`.
+  - The coordinates `pairCoordinate πᵢ Xᵢ` differ only in their label `πᵢ`.
+
+  *Route 1, incompatible structure.  Fails; nothing G constructs separates
+  the two supports.*
+  - **Distinct endpoints and ports.**  `SameTokenDemandsSpec` asks
+    `π₁ ≠ π₂` and equal actual routing labels.  In the matching case the
+    pattern edges are disjoint as demand sets (`IsMatching`), but nothing
+    makes the declared supports `T(d) ∪ Γ(d)` of distinct demands disjoint or
+    distinct.  In the star case the two edges share the centre demand, so the
+    seeds share `T(c) ∪ Γ(c)`.  Either way both seeds may lie in one minimum
+    connected set.
+  - **Activation injectivity.**  `DemandActivation` (`SurplusBlockers.lean:142`)
+    has no injectivity field.  `declaredSupport` is a function of the
+    demand, so it can repeat.
+  - **Canonical support selection.**  `select?` returns the lexicographically
+    first minimum-cardinality connected superset of the seed.  It is not
+    injective on seeds (`select? S = X` only gives `S ⊆ X`), so equal outputs
+    from distinct seeds are allowed.
+  - **Maximal routes and first separator.**  The routes run from the token
+    root to the demand endpoints `dᵢ.2`.  `SameTokenRoutesSpec` and the
+    separator never read `Xᵢ`, so `X₁ = X₂` gives no information on them.
+    Conversely, a trivial separator (e.g. equal demands `d₁ = d₂` at a star
+    centre) does not force or exclude `X₁ = X₂`.  The [144a] statement pins
+    the routing, not the separator, so no closed parallel case absorbs the
+    configuration.
+  - **Target and minimality.**  `X₁ = X₂` gives equal readings.  Neither is a
+    replacement of G's piece (subgraph lemmas above), so there is nothing to
+    contradict.
+
+  *Route 2, bound overload.  Fails; no counted quantity reads the supports.*
+  The token load and role fibre count pattern edges (Finsets of demands),
+  and `Q_geom` / `patternBound` counts routing labels.  Two pattern edges
+  with one support are still two edges with two labels, so no count
+  doubles.  The only cap in play, `patternBound ≤ pattern.card`, is a lower
+  bound that the configuration keeps.
+
+  *Route 3* is as in the compression analysis above.  So the configuration is
+  not refuted at G, and [144a]'s context-equivalence disjunct stays open.
 - **Status.**  OPEN CONSTRUCTION, unchanged; [144a] keeps the disjunct.
 
 ## User-approved repairs
