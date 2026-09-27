@@ -90,6 +90,12 @@ noncomputable def Assembly.Internal.strictSurplusIndependent
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           unrealizedHistory (by key_fresh)
-      exact selectedPairCodeChain firstFailure
+      -- `[135]`'s sparse upper envelope is a fact of G on this side too.
+      let enveloped :=
+        (exactWindowJoinPressureRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          firstFailure (by key_fresh)
+      exact selectedPairCodeChain enveloped
 
 end HypostructureErdos64EG

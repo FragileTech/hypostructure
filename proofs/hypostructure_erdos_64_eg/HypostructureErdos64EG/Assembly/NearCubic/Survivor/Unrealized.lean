@@ -92,7 +92,10 @@ noncomputable def Assembly.Internal.nearCubicDensePassAtOrAbove
             (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
             (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           belowHistory (by key_fresh)
-      exact nearCubicLargeBudgetColdRate (nearCubicFullRank rated)
+      -- `[149]`--`[152]` as facts of G on the `[147]` arm (see the realized
+      -- package arm).
+      let stubbed := nearCubicColdStubFacts rated
+      exact nearCubicLargeBudgetColdRate (nearCubicFullRank stubbed)
   | .right atOrAboveHistory =>
       let stubs := nearCubicColdStubs atOrAboveHistory
       match coldMassDichotomy (data := spineData) stubs
@@ -143,6 +146,15 @@ noncomputable def Assembly.Internal.nearCubicUnrealized
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile) (data := spineData)).run
               ratedHistory (by key_fresh)
-          exact nearCubicLargeBudgetDenseRate (nearCubicFullRank partitioned)
+          -- `[22]`'s live-hot cap and `[149]`--`[152]` are facts of G on the
+          -- `[161]` arm too: `liveHotBarrierCapRow` publishes the cap from the
+          -- partition and `[21]`'s skeleton bound.
+          let capped :=
+            (liveHotBarrierCapRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+              partitioned (by key_fresh)
+          let stubbed := nearCubicColdStubFacts capped
+          exact nearCubicLargeBudgetDenseRate (nearCubicFullRank stubbed)
 
 end HypostructureErdos64EG

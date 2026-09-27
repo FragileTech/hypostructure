@@ -22,8 +22,6 @@ configurations `[176]` run `[154]`--`[157]`, `[165]`--`[168]`: the G2 outcome
 is subcubic, are the local cold exclusion `K .coldBranchClosed` retained at
 `[187]`. -/
 abbrev SelectedAbsorbedGermBoundary (selected : EGInput.{u}) :=
-  SelectedRouteEightBoundary selected ∨
-    Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldBranchClosed selected.object
+  SelectedRouteEightBoundary selected ∨ ColdBranchClosedOutcome selected
 
 end HypostructureErdos64EG

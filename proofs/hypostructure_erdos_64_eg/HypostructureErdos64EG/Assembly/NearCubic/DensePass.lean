@@ -8,6 +8,7 @@ import Hypostructure.Graph.Strategy.SpineRows.RemainderNormalization
 import HypostructureErdos64EG.Assembly.NearCubic.Boundary
 import HypostructureErdos64EG.Assembly.NearCubic.ColdPass
 import HypostructureErdos64EG.Assembly.NearCubic.Replacement
+import HypostructureErdos64EG.Assembly.NearCubic.Spine
 
 /-!
 # Assembly: NearCubic / DensePass
@@ -27,7 +28,15 @@ universe u w
 
 /-- Every key committed on the linear arm of the dense pass. -/
 noncomputable abbrev denseLinearKeys : FactKeys EGInput.{u} :=
-  [K .remainderNormalized, K .bridgeless,
+  [K .remainderNormalized, K .boundaryDemand,
+    K .stubSupply, K .wedgeSupply, K .exactResponseProfile,
+    K .curvatureTargetRank, K .targetRankCircuit,
+    K .curvatureRankDrop, K .curvatureFullRank, K .branchDependence,
+    K .contextDefect, K .contextUniversal,
+    K .atomCompression, K .delocalizedSupport, K .properDelocalization,
+    K .globalDelocalization, K .repairIdentity, K .globalBarrier,
+    K .forcedCurvatureCost, K .netChargeLocalization, K .bridgeless,
+    K .absorbedGermSplit, K .absorbedGermFanData,
     K .coldReturnCorridors, K .coldCorridorState,
     K .denseColdCorridorsTerminal, K .coldFirstFailureOccurrence,
     K .coldCutStatesDistinct, K .coldRepeatedStateResidual,
@@ -47,6 +56,7 @@ noncomputable abbrev denseLinearKeys : FactKeys EGInput.{u} :=
     K .coldTwoStrandSurvivor, K .coldWindowStubStructure,
     K .coldSymmetricPairExcluded, closed]
 
+set_option maxHeartbeats 8000000 in
 /-- **The linear arm of `[153]` in the dense pass `[162]`**
 (`lem:dense-cold-pass`).  The pass reads the remainder `R` (`[25]`'s
 normalization) because every return corridor of the dense residual is terminal:
@@ -75,19 +85,49 @@ noncomputable def nearCubicDenseLinear
     [FactKeys.Has (K .coldMassLinear) known]
     [FactKeys.Has (K .coldSelectedBranchExcess) known]
     [FactKeys.Has (K .coldStubExcess) known]
-    [FactKeys.Has (K .cubicBaseline) known]
-    (fresh : List.Disjoint denseLinearKeys.{u} known := by key_fresh) :
+    [FactKeys.Has (K .surplusAtOrBelow) known]
+    [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .replacementExclusion) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .slackIndependent) known]
+    (fresh : List.Disjoint denseLinearKeys.{u} known := by key_fresh)
+    [FactKeys.Has (K .barrierCap) known]
+    [FactKeys.Has (K .barrierEnumeration) known]
+    [FactKeys.Has (K .coldAmbientCubic) known]
+    [FactKeys.Has (K .coldAmbientCubicStubExcess) known]
+    [FactKeys.Has (K .coldHotEntropyCap) known]
+    [FactKeys.Has (K .coldMass) known]
+    [FactKeys.Has (K .coldRoute8AtOrAbove) known]
+    [FactKeys.Has (K .cycleRankConstraint) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .noProperBaseline) known]
+    [FactKeys.Has (K .returnAvoidance) known]
+    [FactKeys.Has (K .skeletonDominates) known]
+    [FactKeys.Has (K .tightEndpoint) known]
+    [FactKeys.Has (K .windowPackageSeparated) known]
+    [FactKeys.Has (K .windowPresent) known] :
     SelectedNearCubicSurvivorBoundary selected := by
+  -- `[25]`--`[34]` and `[48]` on the dense linear arm: the remainder
+  -- normalization the pass reads, and the spine facts of G that follow from it
+  -- (the rank-drop arm is Branch D, closed).
+  let spine := nearCubicFullRank history
   let normalized :=
-    (remainderNormalizationRow (BranchState := BranchState)
+    (forcedCurvatureCostRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by key_fresh)
+      spine (by key_fresh)
+  -- `[58]`'s net-charge localization is a fact of G here too.
+  let localized :=
+    (netChargeLocalizationRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) spineData).run
+      normalized (by key_fresh)
   let bridgeless :=
     (bridgelessRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      normalized (by key_fresh)
+      localized (by key_fresh)
   let state := nearCubicColdCorridorState bridgeless
   -- `[153]`: the first failures and the exact (★) decision; ¬(★) returns G's
   -- first equal-state pair.
@@ -100,18 +140,26 @@ noncomputable def nearCubicDenseLinear
           (by key_fresh) (by key_fresh) with
       | .right heavyHistory =>
           exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl
-            (heavyHistory.get (K .coldDenseHeavyEntryResidual)).down)))))
+            (node162Return heavyHistory))))))
       | .left heavyTerminal =>
           let terminal :=
             (denseColdCorridorsTerminalRow (data := spineData)).run heavyTerminal
               (by key_fresh)
-          let family := nearCubicColdGermFamily terminal
+          let familyOnly := nearCubicColdGermFamily terminal
+          -- `[175]`'s per-half-edge split and `[177]`'s fan data are facts of
+          -- G on the extracted family here too.
+          let split :=
+            (absorbedGermSplitRow (data := spineData)).run familyOnly
+              (by key_fresh)
+          let family :=
+            (absorbedGermFanDataRow (data := spineData)).run split
+              (by key_fresh)
           let unhit := nearCubicColdNoHit family
           match coldGermDistinctionDichotomy (data := spineData) unhit
               (by key_fresh) (by key_fresh) with
           | .left distinguishedHistory =>
               exact Or.inr (Or.inr (Or.inr (Or.inl
-                ((nearCubicColdTable distinguishedHistory).get (K .coldBranchClosed)).down)))
+                (coldBranchClosedReturn (nearCubicColdTable distinguishedHistory)))))
           | .right silentHistory =>
               let neutralConfiguration :=
                 (neutralEqualLengthTerminalRow (data := spineData)).run silentHistory

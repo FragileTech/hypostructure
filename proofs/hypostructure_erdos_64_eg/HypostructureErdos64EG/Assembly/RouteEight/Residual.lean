@@ -68,6 +68,7 @@ noncomputable def selectedRouteEightProfile
   -- target-defect supports may still carry negative mass.
   burdened
 
+set_option maxHeartbeats 8000000 in
 /-- **Nodes `[114]`--`[124]` on the positive arm of `[113]`.**
 
 `[114]` publishes the carrier cores, the true residual and the cut parity;
@@ -159,7 +160,52 @@ noncomputable def selectedRouteEightCollection
     (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known := by
       key_fresh)
     (jointBalanceFresh : K .route8JointBalance ∉ known := by key_fresh)
-    (closureFresh : closed ∉ known := by key_fresh) :
+    (closureFresh : closed ∉ known := by key_fresh)
+    [FactKeys.Has (K .barrierCap) known]
+    [FactKeys.Has (K .barrierEnumeration) known]
+    [FactKeys.Has (K .boundaryDemand) known]
+    [FactKeys.Has (K .bridgeless) known]
+    [FactKeys.Has (K .coldAmbientCubic) known]
+    [FactKeys.Has (K .coldAmbientCubicStubExcess) known]
+    [FactKeys.Has (K .coldCorridorState) known]
+    [FactKeys.Has (K .coldFailureCompression) known]
+    [FactKeys.Has (K .coldFailureCycle) known]
+    [FactKeys.Has (K .coldFirstFailureOccurrence) known]
+    [FactKeys.Has (K .coldHandoffTransfer) known]
+    [FactKeys.Has (K .coldHotEntropyCap) known]
+    [FactKeys.Has (K .coldMass) known]
+    [FactKeys.Has (K .coldReturnCorridors) known]
+    [FactKeys.Has (K .coldSelectedBranchExcess) known]
+    [FactKeys.Has (K .coldStubExcess) known]
+    [FactKeys.Has (K .curvatureFullRank) known]
+    [FactKeys.Has (K .curvatureTargetRank) known]
+    [FactKeys.Has (K .cycleRankConstraint) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .exactResponseProfile) known]
+    [FactKeys.Has (K .forcedCurvatureCost) known]
+    [FactKeys.Has (K .highCentreNormalForm) known]
+    [FactKeys.Has (K .hotColdPartition) known]
+    [FactKeys.Has (K .largeBudgetResidual) known]
+    [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .netChargeLocalization) known]
+    [FactKeys.Has (K .netDeficiencyCap) known]
+    [FactKeys.Has (K .noProperBaseline) known]
+    [FactKeys.Has (K .returnAvoidance) known]
+    [FactKeys.Has (K .sameCenterOpenPortCompatibility) known]
+    [FactKeys.Has (K .skeletonDominates) known]
+    [FactKeys.Has (K .slackIndependent) known]
+    [FactKeys.Has (K .sparseSurplusSurvivor) known]
+    [FactKeys.Has (K .stubSupply) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .targetRankCircuit) known]
+    [FactKeys.Has (K .tightEndpoint) known]
+    [FactKeys.Has (K .triangularPortReturn) known]
+    [FactKeys.Has (K .triangularShoulderCompletion) known]
+    [FactKeys.Has (K .typeBAbsorbedCharge) known]
+    [FactKeys.Has (K .wedgeSupply) known]
+    [FactKeys.Has (K .windowPackageSeparated) known]
+    [FactKeys.Has (K .windowPresent) known] :
     SelectedRouteEightBoundary selected := by
   -- `[114]`
   let cored :=
@@ -217,6 +263,7 @@ noncomputable def selectedRouteEightCollection
           -- arm closes at `[124]`, its no arm reaches `[181]`, `[183]`--`[186]`.
           exact selectedTypeBRoute8Continuation twoCarrier
 
+set_option maxHeartbeats 8000000 in
 /-- **Part IX: the route-`8` residual of exit `(8)`** (node `[109]` → `[110]`).
 
 Nodes `[110]`--`[112]`, then the large-budget deficit test `[113]`: its
@@ -300,13 +347,65 @@ noncomputable def selectedRouteEightResidual
       key_fresh)
     (unifiedVisibleOverloadFresh : K .route8UnifiedVisibleOverload ∉ known := by
       key_fresh)
-    (jointBalanceFresh : K .route8JointBalance ∉ known := by key_fresh) :
+    (jointBalanceFresh : K .route8JointBalance ∉ known := by key_fresh)
+    [FactKeys.Has (K .barrierCap) known]
+    [FactKeys.Has (K .barrierEnumeration) known]
+    [FactKeys.Has (K .boundaryDemand) known]
+    [FactKeys.Has (K .bridgeless) known]
+    [FactKeys.Has (K .coldAmbientCubic) known]
+    [FactKeys.Has (K .coldAmbientCubicStubExcess) known]
+    [FactKeys.Has (K .coldCorridorState) known]
+    [FactKeys.Has (K .coldFailureCompression) known]
+    [FactKeys.Has (K .coldFailureCycle) known]
+    [FactKeys.Has (K .coldFirstFailureOccurrence) known]
+    [FactKeys.Has (K .coldHandoffTransfer) known]
+    [FactKeys.Has (K .coldHotEntropyCap) known]
+    [FactKeys.Has (K .coldMass) known]
+    [FactKeys.Has (K .coldReturnCorridors) known]
+    [FactKeys.Has (K .coldSelectedBranchExcess) known]
+    [FactKeys.Has (K .coldStubExcess) known]
+    [FactKeys.Has (K .curvatureFullRank) known]
+    [FactKeys.Has (K .curvatureTargetRank) known]
+    [FactKeys.Has (K .cycleRankConstraint) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .exactResponseProfile) known]
+    [FactKeys.Has (K .forcedCurvatureCost) known]
+    [FactKeys.Has (K .highCentreNormalForm) known]
+    [FactKeys.Has (K .hotColdPartition) known]
+    [FactKeys.Has (K .largeBudgetResidual) known]
+    [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .netChargeLocalization) known]
+    [FactKeys.Has (K .netDeficiencyCap) known]
+    [FactKeys.Has (K .noProperBaseline) known]
+    [FactKeys.Has (K .returnAvoidance) known]
+    [FactKeys.Has (K .sameCenterOpenPortCompatibility) known]
+    [FactKeys.Has (K .skeletonDominates) known]
+    [FactKeys.Has (K .slackIndependent) known]
+    [FactKeys.Has (K .sparseSurplusSurvivor) known]
+    [FactKeys.Has (K .stubSupply) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .targetRankCircuit) known]
+    [FactKeys.Has (K .tightEndpoint) known]
+    [FactKeys.Has (K .triangularPortReturn) known]
+    [FactKeys.Has (K .triangularShoulderCompletion) known]
+    [FactKeys.Has (K .typeBAbsorbedCharge) known]
+    [FactKeys.Has (K .wedgeSupply) known]
+    [FactKeys.Has (K .windowPackageSeparated) known]
+    [FactKeys.Has (K .windowPresent) known] :
     SelectedRouteEightBoundary selected := by
   let burdened := selectedRouteEightProfile history
   -- `[113]`: the route-8-only lower bound is tested (`rem:why-unified`).
   match route8LargeBudgetDeficitRow (data := spineData) burdened
       (by key_fresh) (by key_fresh) with
   | .left deficit => exact selectedRouteEightCollection deficit
-  | .right deficitFails => exact selectedTypeBRoute8Continuation deficitFails
+  | .right deficitFails =>
+      -- The carrier cores `[114]` are a fact of G on this arm too.
+      let cored :=
+        (route8CarrierCoreRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          deficitFails (by key_fresh)
+      exact selectedTypeBRoute8Continuation cored
 
 end HypostructureErdos64EG

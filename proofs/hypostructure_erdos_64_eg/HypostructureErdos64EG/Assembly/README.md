@@ -26,6 +26,10 @@ command needs a clean build for ordinary proof changes.
 ## Dependency structure
 
 - `Basic` contains the problem/input/target aliases.
+- `Residuals` states every returned residual of the root boundary as the
+  explicit conjunction of every fact on its maximal ledger, with one return
+  theorem per residual (per arm of its own decision) that reads each fact with
+  one `ExactLedger.get`; every return site calls it.
 - `Boundary` modules contain shared result types and import no branch proofs.
 - `Entry`, `Surplus/Local`, `Cold/*`, `NearCubic/Local`, and `RouteEight/Local`
   contain independently reusable steps.

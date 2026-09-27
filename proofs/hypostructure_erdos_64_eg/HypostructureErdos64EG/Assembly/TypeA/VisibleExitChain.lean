@@ -139,8 +139,10 @@ noncomputable abbrev typeAVisibleExitKeys : FactKeys EGInput.{u} :=
     K .typeAPeeledExitThreeCollision,
     K .typeAPeeledExitThreeFree,
     K .typeAExitThreeCycle,
-    K .typeAExitSevenEnvelope]
+    K .typeAExitSevenEnvelope,
+    K .typeBAbsorbedCharge]
 
+set_option maxHeartbeats 8000000 in
 /-- **Nodes `[95]`--`[100]`: exits `(1)`--`(3)`** on node `[93]`'s visible arm
 (index-polymorphic).  `def:typeA-saturated-exits`, `lem:typeA-exits-discharged`:
 exit `(1)` — a Mersenne anchored return — closes at `[96]` against the
@@ -175,7 +177,43 @@ noncomputable def selectedTypeAVisibleExitChain
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .typeAReceiverRouting) known]
     [FactKeys.Has (K .route8Rate) known]
-    (fresh : List.Disjoint typeAVisibleExitKeys known := by key_fresh) :
+    (fresh : List.Disjoint typeAVisibleExitKeys known := by key_fresh)
+    [FactKeys.Has (K .barrierCap) known]
+    [FactKeys.Has (K .barrierEnumeration) known]
+    [FactKeys.Has (K .boundaryDemand) known]
+    [FactKeys.Has (K .coldAmbientCubic) known]
+    [FactKeys.Has (K .coldAmbientCubicStubExcess) known]
+    [FactKeys.Has (K .coldCorridorState) known]
+    [FactKeys.Has (K .coldFailureCompression) known]
+    [FactKeys.Has (K .coldFailureCycle) known]
+    [FactKeys.Has (K .coldFirstFailureOccurrence) known]
+    [FactKeys.Has (K .coldHandoffTransfer) known]
+    [FactKeys.Has (K .coldHotEntropyCap) known]
+    [FactKeys.Has (K .coldMass) known]
+    [FactKeys.Has (K .coldReturnCorridors) known]
+    [FactKeys.Has (K .coldSelectedBranchExcess) known]
+    [FactKeys.Has (K .coldStubExcess) known]
+    [FactKeys.Has (K .curvatureFullRank) known]
+    [FactKeys.Has (K .curvatureTargetRank) known]
+    [FactKeys.Has (K .cycleRankConstraint) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .exactResponseProfile) known]
+    [FactKeys.Has (K .forcedCurvatureCost) known]
+    [FactKeys.Has (K .hotColdPartition) known]
+    [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .netChargeLocalization) known]
+    [FactKeys.Has (K .netDeficiencyCap) known]
+    [FactKeys.Has (K .noProperBaseline) known]
+    [FactKeys.Has (K .skeletonDominates) known]
+    [FactKeys.Has (K .slackIndependent) known]
+    [FactKeys.Has (K .sparseSurplusSurvivor) known]
+    [FactKeys.Has (K .stubSupply) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .targetRankCircuit) known]
+    [FactKeys.Has (K .wedgeSupply) known]
+    [FactKeys.Has (K .windowPackageSeparated) known]
+    [FactKeys.Has (K .windowPresent) known] :
     SelectedRouteEightBoundary selected := by
   have fresh' := fresh
   repeat (rw [List.disjoint_cons_left] at fresh'; obtain ⟨_fresh, fresh'⟩ := fresh')

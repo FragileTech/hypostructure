@@ -11,6 +11,13 @@ import Hypostructure.Graph.Strategy.SpineRows.TypeBBridgeSublinear
 import Hypostructure.Graph.Strategy.SpineRows.TypeBSublinearDichotomy
 import HypostructureErdos64EG.Assembly.RouteEight.Boundary
 import HypostructureErdos64EG.Assembly.RouteEight.Local
+import Hypostructure.Graph.Strategy.SpineRows.HighCentreNormalForm
+import Hypostructure.Graph.Strategy.SpineRows.SameCenterOpenPortCompatibility
+import Hypostructure.Graph.Strategy.SpineRows.TriangularShoulderCompletion
+import Hypostructure.Graph.Strategy.SpineRows.TriangularPortReturn
+import Hypostructure.Graph.Strategy.ColdCorridorRows.AbsorbedGermFanEnvelope
+import Hypostructure.Graph.Strategy.SpineRows.Route8BasinBurden
+import Hypostructure.Graph.Strategy.SpineRows.Route8CarrierCore
 
 /-!
 # Assembly: TypeA / ExitFourDischargedRetest
@@ -60,8 +67,16 @@ noncomputable abbrev typeADischargedRetestKeys : FactKeys EGInput.{u} :=
     K .route8UnifiedTwoCarrierExit,
     K .route8StageRate,
     K .route8UnpaidTwoCarrier,
-    K .route8UnpaidWitnessFree]
+    K .route8UnpaidWitnessFree,
+    K .highCentreNormalForm,
+    K .sameCenterOpenPortCompatibility,
+    K .triangularShoulderCompletion,
+    K .triangularPortReturn,
+    K .typeBAbsorbedCharge,
+    K .route8BasinBurden,
+    K .route8CarrierCore]
 
+set_option maxHeartbeats 8000000 in
 /-- **`[102]` → `[89]` no → `[90]`--`[91]` → `[123]`, the peeled supports.**  On
 the no arm of the recompute-`L₄` retest every receiver of `X₀` is unsaturated
 after peeling (`K .typeAExitFourReceiverDischarged`, node `[90]` with `L₄`),
@@ -86,7 +101,47 @@ noncomputable def selectedTypeAExitFourDischargedRetest
     [FactKeys.Has (K .remainderNormalized) known]
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
-    (fresh : List.Disjoint typeADischargedRetestKeys known := by key_fresh) :
+    [FactKeys.Has (K .bridgeless) known]
+    [FactKeys.Has (K .tightEndpoint) known]
+    (fresh : List.Disjoint typeADischargedRetestKeys known := by key_fresh)
+    [FactKeys.Has (K .barrierCap) known]
+    [FactKeys.Has (K .barrierEnumeration) known]
+    [FactKeys.Has (K .boundaryDemand) known]
+    [FactKeys.Has (K .coldAmbientCubic) known]
+    [FactKeys.Has (K .coldAmbientCubicStubExcess) known]
+    [FactKeys.Has (K .coldCorridorState) known]
+    [FactKeys.Has (K .coldFailureCompression) known]
+    [FactKeys.Has (K .coldFailureCycle) known]
+    [FactKeys.Has (K .coldFirstFailureOccurrence) known]
+    [FactKeys.Has (K .coldHandoffTransfer) known]
+    [FactKeys.Has (K .coldHotEntropyCap) known]
+    [FactKeys.Has (K .coldMass) known]
+    [FactKeys.Has (K .coldReturnCorridors) known]
+    [FactKeys.Has (K .coldSelectedBranchExcess) known]
+    [FactKeys.Has (K .coldStubExcess) known]
+    [FactKeys.Has (K .curvatureFullRank) known]
+    [FactKeys.Has (K .curvatureTargetRank) known]
+    [FactKeys.Has (K .cycleRankConstraint) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .exactResponseProfile) known]
+    [FactKeys.Has (K .forcedCurvatureCost) known]
+    [FactKeys.Has (K .hotColdPartition) known]
+    [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .netChargeLocalization) known]
+    [FactKeys.Has (K .netDeficiencyCap) known]
+    [FactKeys.Has (K .noProperBaseline) known]
+    [FactKeys.Has (K .returnAvoidance) known]
+    [FactKeys.Has (K .route8Rate) known]
+    [FactKeys.Has (K .skeletonDominates) known]
+    [FactKeys.Has (K .slackIndependent) known]
+    [FactKeys.Has (K .sparseSurplusSurvivor) known]
+    [FactKeys.Has (K .stubSupply) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .targetRankCircuit) known]
+    [FactKeys.Has (K .wedgeSupply) known]
+    [FactKeys.Has (K .windowPackageSeparated) known]
+    [FactKeys.Has (K .windowPresent) known] :
     SelectedRouteEightBoundary selected := by
   have fresh' := fresh
   repeat (rw [List.disjoint_cons_left] at fresh'; obtain ⟨_fresh, fresh'⟩ := fresh')
@@ -126,6 +181,33 @@ noncomputable def selectedTypeAExitFourDischargedRetest
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       bridgeMass (by key_fresh)
-  exact selectedRouteEightUnifiedResidual bridgeSublinear
+  -- Facts of G that the other lanes into `[123]` carry, published on this lane
+  -- from its own ledger: the heavy-neighbourhood normal form `[67]`, the
+  -- same-centre and triangular landing lemmas of `[69]`, the absorbed Type B
+  -- charge of `[177]`, the route-8 burden `[112]` and the carrier cores `[114]`.
+  let normal :=
+    (highCentreNormalFormRow (data := spineData)).run bridgeSublinear
+      (by key_fresh)
+  let compatible :=
+    (sameCenterOpenPortCompatibilityRow (data := spineData)).run normal
+      (by key_fresh)
+  let completed :=
+    (triangularShoulderCompletionRow (data := spineData)).run compatible
+      (by key_fresh)
+  let returned :=
+    (triangularPortReturnRow (data := spineData)).run completed (by key_fresh)
+  let charged :=
+    (typeBAbsorbedChargeRow (data := spineData)).run returned (by key_fresh)
+  let burdened :=
+    (route8BasinBurdenRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      charged (by key_fresh)
+  let cored :=
+    (route8CarrierCoreRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      burdened (by key_fresh)
+  exact selectedRouteEightUnifiedResidual cored
 
 end HypostructureErdos64EG

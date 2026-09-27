@@ -10,6 +10,9 @@ import HypostructureErdos64EG.Assembly.Absorbed.Residual
 import HypostructureErdos64EG.Assembly.NetCharge.Boundary
 import HypostructureErdos64EG.Assembly.TypeA.LowSurplusContinuation
 import HypostructureErdos64EG.Assembly.TypeB.HighSurplusContinuation
+import Hypostructure.Graph.Strategy.ColdCorridorRows.FirstFailureOccurrence
+import Hypostructure.Graph.Strategy.ColdCorridorRows.FailureClauses
+import Hypostructure.Graph.Strategy.ColdCorridorRows.HandoffTransfer
 
 /-!
 # Assembly: NetCharge / Continuation
@@ -120,6 +123,7 @@ noncomputable abbrev netChargeContinuationKeys : FactKeys EGInput.{u} :=
     K .typeAExitThreeCycle,
     K .typeAExitSevenEnvelope]
 
+set_option maxHeartbeats 8000000 in
 /-- **Nodes `[57]`--`[64]`: the large-budget net-charge split**, on the `[56]`
 residual of either spine arm.  `[57]` enters the asymptotic order regime and
 reads the large-budget net cap; `[58]` localizes the charge; `[59]` splits on the
@@ -161,7 +165,28 @@ noncomputable def selectedNetChargeContinuation
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .tightEndpoint) known]
     [FactKeys.Has (K .cubicBaseline) known]
-    (fresh : List.Disjoint netChargeContinuationKeys.{u} known := by key_fresh) :
+    (fresh : List.Disjoint netChargeContinuationKeys.{u} known := by key_fresh)
+    [FactKeys.Has (K .barrierCap) known]
+    [FactKeys.Has (K .barrierEnumeration) known]
+    [FactKeys.Has (K .coldAmbientCubic) known]
+    [FactKeys.Has (K .coldAmbientCubicStubExcess) known]
+    [FactKeys.Has (K .coldHotEntropyCap) known]
+    [FactKeys.Has (K .coldMass) known]
+    [FactKeys.Has (K .coldSelectedBranchExcess) known]
+    [FactKeys.Has (K .coldStubExcess) known]
+    [FactKeys.Has (K .curvatureFullRank) known]
+    [FactKeys.Has (K .curvatureTargetRank) known]
+    [FactKeys.Has (K .cycleRankConstraint) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .exactResponseProfile) known]
+    [FactKeys.Has (K .forcedCurvatureCost) known]
+    [FactKeys.Has (K .noProperBaseline) known]
+    [FactKeys.Has (K .skeletonDominates) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .targetRankCircuit) known]
+    [FactKeys.Has (K .wedgeSupply) known]
+    [FactKeys.Has (K .windowPackageSeparated) known]
+    [FactKeys.Has (K .windowPresent) known] :
     SelectedNetChargeBoundary selected := by
   -- `[57]` = `[173]`, `lem:exact-collision-test`: node `[56]`'s collision decided
   -- exactly on the current object (`K .netChargeCap`), with no condition on `n`.
@@ -180,7 +205,13 @@ noncomputable def selectedNetChargeContinuation
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           failsHistory (by key_fresh)
-      match selectedAbsorbedGermPrerequisites absorbed with
+      -- `[58]`'s localization of the net charge is a fact of G on this arm too.
+      let localizedAbsorbed :=
+        (netChargeLocalizationRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) spineData).run
+          absorbed (by key_fresh)
+      match selectedAbsorbedGermPrerequisites localizedAbsorbed with
       | .inl prepared =>
           -- `[175]`--`[177]`, `lem:absorbed-germ-fan-data`: the absorbed-germ
           -- residual (`selectedAbsorbedGermResidual`).
@@ -189,12 +220,27 @@ noncomputable def selectedNetChargeContinuation
           -- `[153]`, ¬(★): G's first equal-state pair, returned.
           exact Or.inr (Or.inr repeated)
   | .left capped =>
+      -- The cold return corridors of G, their states, first failures, failure
+      -- cycles, compression reading and handoff transfer are facts of G on
+      -- this arm too (the absorbed arm publishes them at `[174]`): each row
+      -- reads only `lem:bridgeless`, the partition and the selection.
+      let corridors := nearCubicColdCorridorState capped
+      let occurred :=
+        (coldFirstFailureOccurrenceRow (data := spineData)).run corridors
+          (by key_fresh)
+      let cycled :=
+        (coldFailureCycleRow (data := spineData)).run occurred (by key_fresh)
+      let compressed :=
+        (coldFailureCompressionRow (data := spineData)).run cycled (by key_fresh)
+      let transferred :=
+        (coldHandoffTransferRow (data := spineData)).run compressed
+          (by key_fresh)
       -- `[58]`: `lem:netcharge-superadd` localizes negative charge to a piece.
       let localized :=
         (netChargeLocalizationRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) spineData).run
-          capped (by key_fresh)
+          transferred (by key_fresh)
       -- `[59]`: `N₀(R) ≥ 0?`
       match netChargeDichotomy (data := spineData) localized
           (by key_fresh) (by key_fresh) with
