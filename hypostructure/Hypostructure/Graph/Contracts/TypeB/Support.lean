@@ -205,6 +205,32 @@ theorem TypeBLaneMember.high {core centres : Finset object.Vertex}
   · exact TypeBDecoratedLane.high lane
   · exact TypeBAbsorbedLane.high lane
 
+/-- The core of the Type B support lies in the remainder `R(P₀)` of the fixed
+packing: on the ordinary and decorated lanes it is the canonical piece `X₀`, and
+on the absorbed lane it is the retained first-failure prefix, which node
+`[177]` places inside the canonical remainder. -/
+theorem TypeBLaneMember.core_subset_remainder {core centres : Finset object.Vertex}
+    (member : TypeBLaneMember data object core centres) :
+    core ⊆ object.remainderSupport (canonicalWindowPacking data object) := by
+  rcases member with lane | lane | lane
+  · obtain ⟨component, _componentEq, _member, pieceEq, _negative, _subset⟩ :=
+      TypeBOrdinaryLane.canonical lane
+    rw [← pieceEq]
+    exact object.pieceSupport_subset _ component
+  · obtain ⟨component, _componentEq, _member, pieceEq, _negative, _subset⟩ :=
+      TypeBDecoratedLane.canonical lane
+    rw [← pieceEq]
+    exact object.pieceSupport_subset _ component
+  · obtain ⟨_fails, _fanData, support⟩ := lane
+    obtain ⟨epsilon, _edgeEq, supportAt⟩ := absorbedSupport_eq_some support
+    obtain ⟨routing, centre, centreEq, _centresEq, coreEq⟩ :=
+      absorbedSupportAt_eq_some supportAt
+    obtain ⟨_routing', handoff⟩ := canonicalAbsorbedCentre_spec_of_eq_some centreEq
+    obtain ⟨_firstIndex, _centreEq', _indexLe, _high, _earlier, _cubic,
+      _connected, inside, _envelope⟩ := handoff
+    rw [coreEq]
+    exact inside
+
 /-! ## Exclusivity of the lanes -/
 
 /-- The net-cap arm and the failed-collision arm of `[57]`/`[173]` are exact

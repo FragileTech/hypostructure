@@ -101,6 +101,7 @@ noncomputable def selectedTypeBHighSurplusContinuation
     (exclusionResidualFresh : K .typeBExclusionResidual ∉ known := by key_fresh)
     (degreeFourLedgerFresh : K .typeBDegreeFourLedger ∉ known := by key_fresh)
     (degreeFourOverlapFresh : K .typeBDegreeFourOverlap ∉ known := by key_fresh)
+    (degreeFourClosedFresh : K .typeBDegreeFourClosed ∉ known := by key_fresh)
     (obstructionMassFresh : K .typeBOverlapObstructionMass ∉ known := by key_fresh)
     (certificateMassFresh : K .fanCertificateResidualMass ∉ known := by key_fresh)
     (degreeFourProfileFresh : K .typeBFanDegreeFourProfile ∉ known := by key_fresh)

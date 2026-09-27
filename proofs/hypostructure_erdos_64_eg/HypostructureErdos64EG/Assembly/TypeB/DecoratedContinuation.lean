@@ -91,6 +91,7 @@ noncomputable def selectedTypeBDecoratedContinuation
     (decoratedExclusionResidualFresh : K .typeBExclusionResidual ∉ known)
     (decoratedDegreeFourLedgerFresh : K .typeBDegreeFourLedger ∉ known)
     (decoratedDegreeFourOverlapFresh : K .typeBDegreeFourOverlap ∉ known)
+    (decoratedDegreeFourClosedFresh : K .typeBDegreeFourClosed ∉ known)
     (decoratedObstructionMassFresh : K .typeBOverlapObstructionMass ∉ known)
     (fanClosedFresh : K .fanClosedPort ∉ known := by key_fresh)
     (compatibleClosureFresh : K .compatiblePairFanClosure ∉ known := by key_fresh)

@@ -242,7 +242,14 @@ negation on the remainder of the fixed maximum packing
     the core).  The lane is nonempty exactly on the [175] yes arm: the [177]
     entry reads `K .typeBAbsorbedHalfEdge` ("some selected corridor meets a
     high-degree vertex", decided by `typeBAbsorbedHalfEdgeDichotomy` from
-    `K .absorbedGermFanData`).
+    `K .absorbedGermFanData`).  On its no arm every selected corridor is
+    subcubic: the configurations are the genuine (F5) configurations of
+    [176], closed by [154]--[157] and [165]--[168] (on the
+    `K .coldPositiveGerm` arm these rows have run; on the
+    `K .coldNoPositiveGerm` arm the family is empty and [156]--[157] are run
+    on it), and the local cold-terminal exclusion `K .coldBranchClosed` is
+    returned at [187], as for every other cold configuration
+    (`SelectedAbsorbedGermBoundary`).
   - Every Type B key is `TypeBLaneAt P = ∃ Y H, TypeBLaneMember Y H ∧ P Y H`.
     The lanes are mutually exclusive and each has one support
     (`Contracts.TypeB.TypeBLaneMember.unique`, from
@@ -263,6 +270,22 @@ negation on the remainder of the fixed maximum packing
     minimal overlap obstruction (`K .typeBDegreeFourOverlap`, [83]);
     `c` is the closed count at the canonical fan envelope.  The heavy arm
     keeps [72]'s B2 test.
+  - [82] publishes `lem:typeB-exclusion` Step 1 (`K .typeBDegreeFourClosed`):
+    at `c ≤ 1` every assigned centre's marked fan is certificate-closed
+    (`s·D_B ≤ 0`), or the support is B2-paid.
+  - The fan envelope at a centre `h` of the support `(Y, H)` is the assigned
+    envelope `typeBFanEnvelope Y H h = {h} ∪ Y ∪ H`: a fan neighbour is
+    cubic-closed exactly when its two non-`h` incidences are assigned to the
+    support (`def:marked-typeB-fan`, `E_h` of `def:typeB-residual-mass`).  The
+    B1 entry, the degree-four profile, the `[81]` count `c`, the residual mass
+    and the assigned profiles of `def:fan-closed-port` and its routings are all
+    at that envelope.
+  - The global-local reflection, B2(a)--(d) hygiene and the [76] B2-paid
+    residual are stated at the lane's own core `Y_X` (a connected support
+    inside `R(P₀)`, `TypeBLaneMember.core_subset_remainder`), not only when
+    `Y_X` is a canonical piece; the library (`TypeBPostLedgerCore`,
+    `TypeBGlobalLocalReflection`, `TypeBMaximalCompletion`) is stated for any
+    core inside the remainder.
   - The window union is `W₀ = windowSupport P₀`, and the bridge statements
     are at `P₀` and at G's canonical piece collections.  The presentation
     facts (accepted quadrilateral, dyadic target, fan-cap, deficit and
@@ -551,36 +574,6 @@ canonical homogeneous pattern at that token
   contradiction stated one node later.  Kernel-checked; the visible lane still
   reaches the open node `[186]`.
 
-## Remaining divergences (not admitted under the exception), family F2
-
-- **[175] no, read at [177].** When no selected half-edge lies outside node
-  [153]'s subcubic candidates (`K .typeBAbsorbedHalfEdgeAbsent`), the paper's
-  [175] no arm is [176] (closed by [154]--[157], [165]--[168]).  The Lean
-  cannot close it here: the [176] closures are F5's facts on the
-  `K .coldPositiveGerm` arm, and on the `K .coldNoPositiveGerm` arm this case
-  means that there is no selected half-edge at all.  The ledger continues to
-  the open route-8 boundary (`selectedTypeBRoute8Continuation`) without
-  entering Type B; it no longer enters [65] with an empty absorbed family.
-- **[82], the `c ≤ 1` case.** "Certificate-closed; `N₀(X) ≥ 0`"
-  (`lem:typeB-exclusion`, Step 1: the closed fan neighbourhood carries
-  nonnegative charge) is not published.  On the [81] yes arm the B2 ledger
-  facts are published whenever B2 holds (`TypeBDisjointLedgerStatement` is
-  conditional on the disjoint choice), and [85] is the same
-  `K .typeBExclusionResidual` fact as on the other arms.
-- **[73]/[74]/[76] on the absorbed lane.** The global-local reflection,
-  B2(a)--(d) hygiene and the [76] B2-paid residual are stated for a core that
-  is a canonical piece of `P₀` (`∀ piece, piece.vertices = Y → …`).  On the
-  absorbed lane the core is a first-failure prefix, not a canonical piece,
-  so those clauses are vacuous there.  The paper states them for any connected
-  assigned support.  Same as d2ded0e.
-- **The fan envelope.** Every lane evaluates the B1 entry, the degree-four
-  profile and the residual mass at `canonicalEnvelope G h`, the closed 2-ball
-  of the centre.  On the decorated and absorbed lanes the paper's assigned fan
-  envelope is the handoff envelope's assigned set.  The B1 and mass
-  inequalities used are proved for every envelope, so they hold at the 2-ball;
-  the closed count `c` at the 2-ball can exceed the count at the handoff
-  envelope.
-
 ## Remaining divergences (not admitted under the exception), family F5
 
 - **[49]** `Graph.RemainderClass` drops the paper's subcubicity on the
@@ -722,6 +715,30 @@ where the user decided so, a residual carried by the node's open leaf.
   Tex 7234 declares whole supports.  Lean implements the (F4) definition as
   stated at its node (tex 7234).  The heavy-centre reading is quarantined in
   `Quarantine/PaperRepairs/ColdF4Charge.lean`.
+
+### [82] `c ≤ 1` without B2: "`N₀(X) ≥ 0`" (tex 1020, `lem:typeB-exclusion` tex 14349, `rem:typeB-status`)
+
+- **Paper claim.** Node [82]: "yes: certificate-closed or B2-paid;
+  `N₀(X) ≥ 0` outside route 8", on the [81] yes arm "`c ≤ 1`, or `c ≥ 2` with
+  B2".
+- **Faithful Lean statement.** `K .typeBDegreeFourClosed`
+  (`TypeBDegreeFourClosedStatement`): at `c ≤ 1` every marked fan is
+  certificate-closed, so its closed fan neighbourhood has charge `−D_B ≥ 0`
+  (`lem:typeB-exclusion` Step 1); otherwise B2 holds.  `N₀(X) ≥ 0` is then
+  published on the B2-paid support only (`K .typeBExcluded`, conditional on the
+  canonical B2 ledger).
+- **Why the paper does not give `N₀(X) ≥ 0` at `c ≤ 1` without B2.**
+  `lem:typeB-exclusion` assumes that `X` admits B2; Step 1 is "a local
+  calculation at a single fan center.  It does not identify disjoint paying
+  ledger items for different centers.  The required disjointness is exactly the
+  refined support ledger B2" (tex 14435-14437), and `rem:typeB-status` repeats
+  that outside the residuals "the exclusion requires the refined support ledger
+  B2".  So on the `c ≤ 1`, B2-fails case the paper states `N₀(X) ≥ 0` at [82]
+  with no argument.  On the ordinary and decorated lanes `X₀` is negative
+  (`TypeBCanonicalLane`), so the claim cannot be published as a proved fact
+  there.  No `sorry` is used: the node's proved content (Step 1 and the B2-paid
+  bridge reduction) is on the ledger, and the continuation [85] is the same
+  `K .typeBExclusionResidual` fact as on the other arms.
 
 ## User-approved repairs
 

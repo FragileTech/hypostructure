@@ -19,7 +19,7 @@ universe u
 variable {object : FiniteObject.{u}}
 variable {threshold dischargeScale : Nat}
 variable {packing : Finset (Finset object.Vertex)}
-variable {piece : TypeBRefinedSupport.CanonicalPiece object packing}
+variable {core : Finset object.Vertex}
 variable {demands : Finset object.Vertex}
 variable {LengthOK : Nat -> Prop}
 variable {Uncompressible WindowFree : Finset object.Vertex -> Prop}
@@ -29,7 +29,7 @@ variable {Absorbing : object.Vertex -> object.Vertex -> object.Vertex -> Prop}
 noncomputable section
 
 variable (ledger : TypeBRefinedSupport.DisjointLedger object threshold
-  dischargeScale packing piece.vertices demands)
+  dischargeScale packing core demands)
 variable (components : Finset (RemainingComponent ledger))
 variable (production : ∀ component : SelectedComponent ledger components,
   ComponentExitSeven ledger component.1 LengthOK HighDegree Absorbing)

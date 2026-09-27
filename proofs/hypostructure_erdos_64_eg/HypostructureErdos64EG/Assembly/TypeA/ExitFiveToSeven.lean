@@ -89,6 +89,7 @@ noncomputable abbrev typeAExitFiveToEightKeys : FactKeys EGInput.{u} :=
     K .typeBExclusionResidual,
     K .typeBDegreeFourLedger,
     K .typeBDegreeFourOverlap,
+    K .typeBDegreeFourClosed,
     K .typeBOverlapObstructionMass,
     K .fanClosedPort,
     K .compatiblePairFanClosure,

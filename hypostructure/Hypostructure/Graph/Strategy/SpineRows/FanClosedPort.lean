@@ -19,14 +19,15 @@ variable {data : Data.{u}}
 @[reducible] noncomputable def fanClosedPortRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.fanClosedPort
-    { Requires := []
+    { Requires := [K .typeBFanEntry, K .surplusAtOrBelow]
       Produces := [K .fanClosedPort]
-      requiresUnique := by simp
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .fanClosedPort)
-        ⟨Contracts.TypeB.fanClosedPort (data := data.toParameters)⟩
+        ⟨Contracts.TypeB.fanClosedPort (inputs.get (K .typeBFanEntry)).down
+          (inputs.get (K .surplusAtOrBelow)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

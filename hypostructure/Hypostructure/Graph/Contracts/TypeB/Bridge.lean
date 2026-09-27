@@ -42,7 +42,7 @@ theorem typeBBridgeReduction
       ⟨choice, Graph.TypeBRefinedSupport.centres_high object data.threshold
         canonicalPiece.vertices, Finset.Subset.refl _⟩
     obtain ⟨components, grouped⟩ := disjointLedgerCoreClosure avoids baseline
-      uncompressible normalized ledger
+      uncompressible normalized canonicalPiece.vertices_subset_remainder ledger
     have notClean : ¬ 0 ≤ RemainingCoreCharge data object ledger := by
       intro clean
       exact (object.not_negativeNetCharge_iff canonicalPiece.vertices

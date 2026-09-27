@@ -164,17 +164,29 @@ def TriangularPortsRoute (data : Parameters) (object : Graph.FiniteObject.{u})
         profile.closedNeighbourDeficit (typeBDischargeProfile data) ∧
       0 < profile.closedNeighbourDeficit (typeBDischargeProfile data)
 
-/-- **A Type B fan-window profile of `G` at the fixed packing**
+/-- **The assigned fan envelope at a centre of a Type B support `(Y, H)`**
+(`def:marked-typeB-fan`, `def:typeB-assigned-ledger`, the envelope `E_h` of
+`def:typeB-residual-mass`): the centre together with the assigned support
+`Y ∪ H`.  A fan neighbour `u` of `h` is cubic-closed exactly when its two
+non-`h` incidences are assigned to that support, i.e. `u` has internal degree
+`3` in the assigned fan envelope. -/
+noncomputable def typeBFanEnvelope {object : Graph.FiniteObject.{u}}
+    (core centres : Finset object.Vertex) (centre : object.Vertex) :
+    Finset object.Vertex := by
+  classical
+  exact insert centre (core ∪ centres)
+
+/-- **The assigned Type B fan-window profile of the support `(Y, H)`**
 (`def:typeB-window-incidence-profile`, `def:fan-closed-port`): its recorded
 window is the packed-window union `W₀ = windowSupport P₀` of the canonical
-maximal packing, and its envelope is the canonical fan envelope of its centre.
-Only the certificate labelling of the marked fan is left free. -/
+maximal packing, and its envelope is the assigned fan envelope of its centre
+in `(Y, H)`.  Only the certificate labelling of the marked fan is left free. -/
 def IsFixedTypeBProfile (data : Parameters) (object : Graph.FiniteObject.{u})
+    (core centres : Finset object.Vertex)
     (profile : Graph.TypeBFanClosedPorts.Profile object) : Prop :=
   profile.window =
       Graph.FiniteObject.windowSupport (canonicalWindowPacking data object) ∧
-    profile.envelope =
-      Graph.TypeBProfileSchedule.canonicalEnvelope object profile.marked.fan.hub
+    profile.envelope = typeBFanEnvelope core centres profile.marked.fan.hub
 
 /-- The two routed alternatives of node `[69]` at one heavy centre:
 `cor:heavy-center-local-dichotomy` with each alternative carried to fan-closed
@@ -182,17 +194,18 @@ ports in every fixed profile at the centre --- a fan-compatible open pair
 by `cor:compatible-pair-typeB-routing`, or a family of `d_G(h) - 2` triangular
 ports (in particular three) by `prop:triangular-port-typeB-routing`. -/
 def HeavyCentreRoutedAlternative (data : Parameters)
-    (object : Graph.FiniteObject.{u}) (centre : object.Vertex) : Prop :=
+    (object : Graph.FiniteObject.{u}) (core centres : Finset object.Vertex)
+    (centre : object.Vertex) : Prop :=
   (∃ left right : object.Vertex,
       Graph.FanCompatible object centre left right ∧
         ∀ profile : Graph.TypeBFanClosedPorts.Profile object,
-          IsFixedTypeBProfile data object profile →
+          IsFixedTypeBProfile data object core centres profile →
           profile.marked.fan.hub = centre →
             CompatiblePairRoutes data object profile left right) ∨
     (∃ ports ⊆ Graph.triangularEndpoints object centre,
       ports.card = object.degree centre - 2 ∧ 3 ≤ ports.card ∧
         ∀ profile : Graph.TypeBFanClosedPorts.Profile object,
-          IsFixedTypeBProfile data object profile →
+          IsFixedTypeBProfile data object core centres profile →
           profile.marked.fan.hub = centre →
             TriangularPortsRoute data object profile ports)
 
@@ -213,25 +226,25 @@ def SameCenterOpenPortCompatibilityStatement (data : Parameters)
         Graph.FanCompatible object centre left right
 
 /-- The degree-four fan profile of `cor:degree-four-local-activation` at one
-centre: degree `δ + 1`, a fan-compatible open pair or `δ - 1` triangular ports,
-centre surplus `1`, and the registered-scale closed-neighbour profile of the
-canonical fan envelope of the centre. -/
+centre of the support `(Y, H)`: degree `δ + 1`, a fan-compatible open pair or
+`δ - 1` triangular ports, centre surplus `1`, and the registered-scale
+closed-neighbour profile of the assigned fan envelope of the centre. -/
 def DegreeFourFanProfile (data : Parameters) (object : Graph.FiniteObject.{u})
-    (centre : object.Vertex) : Prop :=
+    (core centres : Finset object.Vertex) (centre : object.Vertex) : Prop :=
   object.degree centre = data.threshold + 1 ∧
     ((∃ left right : object.Vertex,
         Graph.FanCompatible object centre left right) ∨
       data.threshold - 1 ≤ (Graph.triangularEndpoints object centre).card) ∧
     object.degree centre - data.threshold = 1 ∧
     Graph.TypeBFanIncidence.closedCount object data.threshold
-        (Graph.TypeBProfileSchedule.canonicalEnvelope object centre) centre ≤
+        (typeBFanEnvelope core centres centre) centre ≤
       data.threshold + 1 ∧
     Graph.TypeBFanIncidence.scaledDeficit object data.threshold
         data.dischargeScale
-        (Graph.TypeBProfileSchedule.canonicalEnvelope object centre) centre =
+        (typeBFanEnvelope core centres centre) centre =
       (data.dischargeScale : Int) *
           (Graph.TypeBFanIncidence.closedCount object data.threshold
-            (Graph.TypeBProfileSchedule.canonicalEnvelope object centre)
+            (typeBFanEnvelope core centres centre)
             centre : Int) -
         (data.dischargeScale : Int) * (data.threshold : Int) +
         ((data.threshold : Int) + 2)
@@ -563,14 +576,14 @@ def FanSafeAt (data : Parameters) (object : Graph.FiniteObject.{u})
       ∀ return' : Graph.DecoratedHandoff.FanReturn object centre first second,
         ¬ data.LengthOK (return'.walk.length + 2)
 
-/-- `def:fan-closed-port`, using the canonical upstream assigned Type-B
-profile.  The equivalence exposes clauses (a)--(c) of the manuscript; clause
+/-- `def:fan-closed-port` at the assigned Type-B profiles of the support
+`(Y, H)`.  The equivalence exposes clauses (a)--(c) of the manuscript; clause
 (c) is the derived incidence classification proved by
 `TypeBFanClosedPorts.IsFanClosed.incidence_classified`. -/
-def FanClosedPortStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
+def FanClosedPortAt (data : Parameters)
+    (object : Graph.FiniteObject.{u}) (core centres : Finset object.Vertex) : Prop :=
   ∀ profile : Graph.TypeBFanClosedPorts.Profile object,
-    IsFixedTypeBProfile data object profile →
+    IsFixedTypeBProfile data object core centres profile →
     ∀ endpoint : object.Vertex,
     profile.IsFanClosed endpoint ↔
       endpoint ∈ profile.remainder ∧
@@ -583,10 +596,10 @@ def FanClosedPortStatement (data : Parameters)
             profile.IsNonWindowIncidence endpoint shoulder)
 
 /-- `lem:compatible-pair-fan-closure`, in the exact canonical upstream form. -/
-def CompatiblePairFanClosureStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
+def CompatiblePairFanClosureAt (data : Parameters)
+    (object : Graph.FiniteObject.{u}) (core centres : Finset object.Vertex) : Prop :=
   ∀ profile : Graph.TypeBFanClosedPorts.Profile object,
-    IsFixedTypeBProfile data object profile →
+    IsFixedTypeBProfile data object core centres profile →
     ∀ left right : object.Vertex,
     Graph.FanCompatible object profile.marked.fan.hub left right →
     left ∈ profile.remainder →
@@ -599,13 +612,13 @@ def CompatiblePairFanClosureStatement (data : Parameters)
         shoulder ∈ profile.envelope) →
     profile.IsFanClosed left ∧ profile.IsFanClosed right ∧ left ≠ right
 
-/-- `prop:fan-closed-port-typeB-routing`, in the canonical upstream form, at
+/-- `prop:fan-closed-port-typeB-routing`, at the assigned profiles of the support `(Y, H)`, at
 the registered discharge rate `α = 1/s`: `r ≥ 2` fan-closed ports give
 `D_B(𝔉_h) ≥ r - (δ - (k+1)α) ≥ (k+1)α - 1 > 0`. -/
-def FanClosedPortTypeBRoutingStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
+def FanClosedPortTypeBRoutingAt (data : Parameters)
+    (object : Graph.FiniteObject.{u}) (core centres : Finset object.Vertex) : Prop :=
   ∀ profile : Graph.TypeBFanClosedPorts.Profile object,
-    IsFixedTypeBProfile data object profile →
+    IsFixedTypeBProfile data object core centres profile →
     Graph.NormalForm object data.threshold profile.marked.fan.hub →
     ∀ ports : Finset object.Vertex,
       (∀ vertex ∈ ports, profile.IsFanClosed vertex) →
@@ -621,22 +634,22 @@ def FanClosedPortTypeBRoutingStatement (data : Parameters)
           ≤ profile.closedNeighbourDeficit (typeBDischargeProfile data) ∧
         0 < profile.closedNeighbourDeficit (typeBDischargeProfile data)
 
-/-- `cor:compatible-pair-typeB-routing`, in the canonical upstream form. -/
-def CompatiblePairTypeBRoutingStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
+/-- `cor:compatible-pair-typeB-routing`, at the assigned profiles of the support `(Y, H)`. -/
+def CompatiblePairTypeBRoutingAt (data : Parameters)
+    (object : Graph.FiniteObject.{u}) (core centres : Finset object.Vertex) : Prop :=
   ∀ profile : Graph.TypeBFanClosedPorts.Profile object,
-    IsFixedTypeBProfile data object profile →
+    IsFixedTypeBProfile data object core centres profile →
     ∀ left right : object.Vertex,
     CompatiblePairRoutes data object profile left right
 
-/-- `prop:triangular-port-typeB-routing`, in the canonical upstream form.
+/-- `prop:triangular-port-typeB-routing`, at the assigned profiles of the support `(Y, H)`.
 The family has the manuscript's exact size `k - 2`; every endpoint is recorded
 on the remainder side and both of its triangular shoulder incidences are
 assigned to the fan envelope. -/
-def TriangularPortTypeBRoutingStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
+def TriangularPortTypeBRoutingAt (data : Parameters)
+    (object : Graph.FiniteObject.{u}) (core centres : Finset object.Vertex) : Prop :=
   ∀ profile : Graph.TypeBFanClosedPorts.Profile object,
-    IsFixedTypeBProfile data object profile →
+    IsFixedTypeBProfile data object core centres profile →
     ∀ ports : Finset object.Vertex,
     TriangularPortsRoute data object profile ports
 
@@ -680,12 +693,13 @@ noncomputable def HybridB1Entry (data : Parameters)
       data.dischargeScale envelope centre)
 
 /-- The envelope residual charge bound of `def:typeB-residual-mass` at one
-assigned centre, on the canonical fan envelope of the centre. -/
+assigned centre of the support `(Y, H)`, on its assigned fan envelope `E_h`. -/
 noncomputable def CentreBridgeMassBound (data : Parameters)
-    (object : Graph.FiniteObject.{u}) (centre : object.Vertex) : Prop :=
+    (object : Graph.FiniteObject.{u}) (core centres : Finset object.Vertex)
+    (centre : object.Vertex) : Prop :=
   Graph.TypeBEnvelopeCharge.envelopeNegativePart object data.threshold
       data.dischargeScale
-      (Graph.TypeBProfileSchedule.canonicalEnvelope object centre) centre ≤
+      (typeBFanEnvelope core centres centre) centre ≤
     data.bridgeMassFactor * data.dischargeScale *
       (object.degree centre - data.threshold)
 
@@ -721,10 +735,10 @@ Type A hygiene of `lem:typeB-postledger-core-hygiene`. -/
 noncomputable def PostLedgerComponents (data : Parameters)
     (object : Graph.FiniteObject.{u})
     {packing : Finset (Finset object.Vertex)}
-    {piece : Graph.TypeBRefinedSupport.CanonicalPiece object packing}
+    {core : Finset object.Vertex}
     {centres : Finset object.Vertex}
     (ledger : Graph.TypeBRefinedSupport.DisjointLedger object data.threshold
-      data.dischargeScale packing piece.vertices centres) : Prop :=
+      data.dischargeScale packing core centres) : Prop :=
   ∀ component : Graph.SupportComponents.Connected.Component
         object ledger.remainingCore,
     component ∈ Graph.SupportComponents.Connected.order object
@@ -738,10 +752,10 @@ components. -/
 noncomputable def GroupedEnvelopeCoverage (data : Parameters)
     (object : Graph.FiniteObject.{u})
     {packing : Finset (Finset object.Vertex)}
-    {piece : Graph.TypeBRefinedSupport.CanonicalPiece object packing}
+    {core : Finset object.Vertex}
     {centres : Finset object.Vertex}
     (ledger : Graph.TypeBRefinedSupport.DisjointLedger object data.threshold
-      data.dischargeScale packing piece.vertices centres) : Prop :=
+      data.dischargeScale packing core centres) : Prop :=
   ∀ components :
       Finset (Graph.TypeBMaximalCompletion.RemainingComponent ledger),
     (∀ component ∈ components,

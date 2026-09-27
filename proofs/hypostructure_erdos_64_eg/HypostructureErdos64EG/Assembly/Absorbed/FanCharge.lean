@@ -54,6 +54,7 @@ noncomputable def Assembly.Internal.selectedAbsorbedFanChargeContinuation
     (exclusionResidualFresh : K .typeBExclusionResidual ∉ known)
     (degreeFourLedgerFresh : K .typeBDegreeFourLedger ∉ known)
     (degreeFourOverlapFresh : K .typeBDegreeFourOverlap ∉ known)
+    (degreeFourClosedFresh : K .typeBDegreeFourClosed ∉ known)
     (obstructionMassFresh : K .typeBOverlapObstructionMass ∉ known)
     (fanClosedFresh : K .fanClosedPort ∉ known)
     (compatibleClosureFresh : K .compatiblePairFanClosure ∉ known)

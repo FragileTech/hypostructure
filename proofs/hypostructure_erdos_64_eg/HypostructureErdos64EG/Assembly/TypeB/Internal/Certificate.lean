@@ -35,10 +35,10 @@ fan mass `[75]`/`[84]` and then `[76]`/`[85]`.  On the marked arm the direct
 fan-window configurations are decided first (their arm closes against the
 selection), then the local B1 ledger is published.
 
-* Heavy arm (`degreeFour = false`), `[72]`: B2 disjointness holds?  B2 success
+* Heavy arm (`degreeFour = none`), `[72]`: B2 disjointness holds?  B2 success
   is the bridge reduction `[74]` and `[76]`; B2 failure is the minimal overlap
   obstruction `[73]`, reflected and charged to the fan mass `[75]`, then `[76]`.
-* Degree-four arm (`degreeFour = true`), `[81]`: `c ≤ 1`, or `c ≥ 2` with B2?
+* Degree-four arm (`degreeFour` carries the `[78]` fact), `[81]`: `c ≤ 1`, or `c ≥ 2` with B2?
   The yes arm is `[82]` (the B2 ledger whenever B2 holds, and the bridge
   reduction) and `[85]`; the no arm is `[83]`, reflected and charged to the fan
   mass `[84]`, then `[85]`.
@@ -60,7 +60,7 @@ Every open arm continues to the route-8 cores `[77]` on its own ledger. -/
 noncomputable def Assembly.Internal.selectedTypeBCertificateContinuation
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
-    (degreeFour : Bool)
+    (degreeFour : Option (FactKeys.Has (K .typeBFanDegreeFourCentres) known))
     [FactKeys.Has (K .typeBFanEntry) known]
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .uncompressible) known]
@@ -87,6 +87,7 @@ noncomputable def Assembly.Internal.selectedTypeBCertificateContinuation
     (exclusionResidualFresh : K .typeBExclusionResidual ∉ known := by key_fresh)
     (degreeFourLedgerFresh : K .typeBDegreeFourLedger ∉ known := by key_fresh)
     (degreeFourOverlapFresh : K .typeBDegreeFourOverlap ∉ known := by key_fresh)
+    (degreeFourClosedFresh : K .typeBDegreeFourClosed ∉ known := by key_fresh)
     (globalLocalBridgeFresh : K .typeBGlobalLocalBridge ∉ known := by
       key_fresh)
     (obstructionMassFresh : K .typeBOverlapObstructionMass ∉ known := by
@@ -170,7 +171,7 @@ noncomputable def Assembly.Internal.selectedTypeBCertificateContinuation
           let hybrid := (hybridEntryRow (data := spineData)).run freeHistory
             (by key_fresh)
           cases degreeFour with
-          | false =>
+          | none =>
               -- `[72]`: B2 disjointness holds?
               match b2AssignmentDichotomy (data := spineData) hybrid
                   (by key_fresh) (by key_fresh) with
@@ -200,16 +201,21 @@ noncomputable def Assembly.Internal.selectedTypeBCertificateContinuation
                     (typeBObstructionMassExclusionRow (data := spineData)).run
                       mass (by key_fresh)
                   exact selectedTypeBRoute8Continuation closedMass
-          | true =>
+          | some degreeFourCentres =>
+              letI := degreeFourCentres
               -- `[81]`: `c ≤ 1`, or `c ≥ 2` with B2 disjoint ledger?
               match degreeFourLedgerDichotomy (data := spineData) hybrid
                   (by key_fresh) (by key_fresh) with
               | .left ledgerHistory =>
-                  -- `[82]`: certificate-closed or B2-paid (the B2 ledger
-                  -- whenever B2 holds, and the bridge reduction); `[85]`.
+                  -- `[82]`: certificate-closed (`lem:typeB-exclusion` Step 1)
+                  -- or B2-paid (the B2 ledger whenever B2 holds, and the
+                  -- bridge reduction); `[85]`.
+                  let closedHistory :=
+                    (typeBDegreeFourClosedRow (data := spineData)).run
+                      ledgerHistory (by key_fresh)
                   let ledger :=
                     (degreeFourDisjointLedgerRow (data := spineData)).run
-                      ledgerHistory (by key_fresh)
+                      closedHistory (by key_fresh)
                   let excluded := (typeBExcludedRow (data := spineData)).run
                     ledger (by key_fresh)
                   let residual :=

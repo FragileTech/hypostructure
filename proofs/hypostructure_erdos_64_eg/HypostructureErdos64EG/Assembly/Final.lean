@@ -160,7 +160,10 @@ noncomputable def selectedLedgerBoundary
                 exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inl joint))))
           match survivor with
           | .inl (.inl route) => exact liftRoute route
-          | .inl (.inr absorbed) => exact liftRoute absorbed
+          | .inl (.inr (.inl absorbed)) => exact liftRoute absorbed
+          | .inl (.inr (.inr cold)) =>
+              exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
+                (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr ⟨cold, (nearCubicHistory.get (K .surplusAtOrBelow)).down⟩)))))))))
           | .inr (.inl rate) =>
               exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
                 (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl ⟨rate, (nearCubicHistory.get (K .surplusAtOrBelow)).down⟩)))))))))

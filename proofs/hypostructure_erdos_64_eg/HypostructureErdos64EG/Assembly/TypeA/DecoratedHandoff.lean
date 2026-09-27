@@ -70,6 +70,7 @@ noncomputable abbrev typeADecoratedHandoffKeys : FactKeys EGInput.{u} :=
     K .typeBExclusionResidual,
     K .typeBDegreeFourLedger,
     K .typeBDegreeFourOverlap,
+    K .typeBDegreeFourClosed,
     K .typeBOverlapObstructionMass,
     K .fanClosedPort,
     K .compatiblePairFanClosure,
@@ -175,6 +176,7 @@ noncomputable def selectedTypeADecoratedHandoff
     (decoratedExclusionResidualFresh := by key_fresh)
     (decoratedDegreeFourLedgerFresh := by key_fresh)
     (decoratedDegreeFourOverlapFresh := by key_fresh)
+    (decoratedDegreeFourClosedFresh := by key_fresh)
     (decoratedObstructionMassFresh := by key_fresh)
     (fanClosedFresh := by key_fresh)
     (compatibleClosureFresh := by key_fresh)

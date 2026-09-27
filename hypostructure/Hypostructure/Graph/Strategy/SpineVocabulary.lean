@@ -1096,6 +1096,9 @@ inductive Key where
   /-- Node `[81]`, no → `[83]`: some assigned centre has `c ≥ 2` and B2 fails;
   minimal Type B overlap obstruction. -/
   | typeBDegreeFourOverlap
+  /-- Node `[82]`: certificate-closed (`c ≤ 1`, `lem:typeB-exclusion` Step 1)
+  or B2-paid, at the degree-four Type B support. -/
+  | typeBDegreeFourClosed
   /-- Nodes `[73]`/`[75]` and `[83]`/`[84]`: the Type B residual fan-mass facts
   for certificate residuals, overlap obstructions, and grouped decorated
   envelope residuals. -/
@@ -2055,6 +2058,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       TypeBDegreeFourLedgerStatement data.toParameters object
   | .typeBDegreeFourOverlap, object =>
       TypeBDegreeFourOverlapStatement data.toParameters object
+  | .typeBDegreeFourClosed, object =>
+      TypeBDegreeFourClosedStatement data.toParameters object
   | .typeBBridgeMass, object =>
       TypeBBridgeMassStatement data.toParameters object
   | .typeBBridgeSublinear, object =>
@@ -2544,6 +2549,7 @@ def label : Key → String
   | .typeBAbsorbedHalfEdgeAbsent => "typeBAbsorbedHalfEdgeAbsent"
   | .typeBDegreeFourLedger => "typeBDegreeFourLedger"
   | .typeBDegreeFourOverlap => "typeBDegreeFourOverlap"
+  | .typeBDegreeFourClosed => "typeBDegreeFourClosed"
   | .typeBBridgeMass => "typeBBridgeMass"
   | .typeBBridgeSublinear => "typeBBridgeSublinear"
   | .typeBExcluded => "typeBExcluded"
@@ -2875,6 +2881,7 @@ example : label .typeBAbsorbedHalfEdge = "typeBAbsorbedHalfEdge" := rfl
 example : label .typeBAbsorbedHalfEdgeAbsent = "typeBAbsorbedHalfEdgeAbsent" := rfl
 example : label .typeBDegreeFourLedger = "typeBDegreeFourLedger" := rfl
 example : label .typeBDegreeFourOverlap = "typeBDegreeFourOverlap" := rfl
+example : label .typeBDegreeFourClosed = "typeBDegreeFourClosed" := rfl
 example : label .typeBBridgeMass = "typeBBridgeMass" := rfl
 example : label .typeBBridgeSublinear = "typeBBridgeSublinear" := rfl
 example : label .typeBExcluded = "typeBExcluded" := rfl
@@ -3224,6 +3231,7 @@ def idx : Key → Nat
   | .typeBAbsorbedHalfEdgeAbsent => 2101
   | .typeBDegreeFourLedger => 2102
   | .typeBDegreeFourOverlap => 2103
+  | .typeBDegreeFourClosed => 2104
   | .typeBBridgeMass => 85
   | .typeBBridgeSublinear => 189
   | .typeBExcluded => 166
@@ -3545,6 +3553,7 @@ def ofIdx : Nat → Key
   | 2101 => .typeBAbsorbedHalfEdgeAbsent
   | 2102 => .typeBDegreeFourLedger
   | 2103 => .typeBDegreeFourOverlap
+  | 2104 => .typeBDegreeFourClosed
   | 85 => .typeBBridgeMass
   | 189 => .typeBBridgeSublinear
   | 166 => .typeBExcluded
@@ -4137,6 +4146,9 @@ def name : Key → Lean.Name
   | .typeBDegreeFourOverlap =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "typeBDegreeFourOverlap") 2103
+  | .typeBDegreeFourClosed =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "typeBDegreeFourClosed") 2104
   | .typeBBridgeMass =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeBBridgeMass") 85
   | .typeBBridgeSublinear =>

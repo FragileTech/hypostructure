@@ -71,6 +71,7 @@ noncomputable abbrev netChargeContinuationKeys : FactKeys EGInput.{u} :=
     K .typeBDisjointLedger, K .typeBBridgeMass, K .typeBBridgeSublinear,
     K .typeBExcluded, K .typeBExclusionResidual, K .typeBDegreeFourLedger,
     K .typeBDegreeFourOverlap,
+    K .typeBDegreeFourClosed,
     K .typeBOverlapObstructionMass, K .typeBFanDegreeFourProfile,
     K .triangularFanCore, K .typeBDecoratedAssignedSupport,
     K .route8ResidualProfile, K .route8BasinBurden,
