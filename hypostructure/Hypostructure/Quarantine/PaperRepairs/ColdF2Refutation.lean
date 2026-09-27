@@ -27,6 +27,9 @@ error at node `[153]`, `lem:cold-corridor-first-failure` (ii), tex 7265-7270
 
 Part 0 (below, through `targetDefect_of_size`) is the stopped `mathf2` analysis
 `F2PathContext.lean`, copied verbatim (namespace renamed).  Parts 1-3 are new.
+Part 4 (group F2, 2026-09-27) proves that at G the Lean (F2) at a segment is
+exactly an earlier equal cut state, and that every (F2) pair is a `d_∂`
+separation.
 
 Part 0 original header: a path context between two boundary labels, and the
 cycles it closes.  The one context used to separate two readings of corridor
@@ -1090,8 +1093,378 @@ end TwoLabel
 
 end Hypostructure.Graph.ColdRepairF2
 
+/-! ## Part 4: at G, (F2) is exactly an earlier equal state (group F2, 2026-09-27)
+
+* `prefix_profile_ne`, `not_residualTargetDefect_prefixPair`: for **every** pair
+  `left < right` of a corridor of G in an outside component, the two (F2)
+  readings lie in different `d_∂` fibres (`head right` is on `∂J_right` and
+  loses its edge to `head (right-1)`), so no prefix pair is a clause-(b) exit.
+* `prefix_targetDefect`, `coldFirstFailureDefectAt_iff`: on an object with no
+  accepted cycle whose target accepts every `2^k`, `k ≥ 2`, the Lean (F2) at
+  `right` holds iff some earlier segment carries the same state, for every
+  corridor, presentation and index.  The separating context is the path of
+  length `2^(right+2) − right` from `head right` to the foot; in the `J_left`
+  reading `head right` is isolated, so the gluing's cycles are the object's.
+* `first_lt_stateBound`: states pairwise distinct up to `first` force
+  `first < Q_cold`.
+
+So `Contracts.Spine.coldFailureDefect_excluded` at G is equivalent to: G's cut
+states along each retained corridor are pairwise distinct up to its first
+failure (a terminal or (F4) event), and then that failure is read within
+`Q_cold` states. -/
+
+namespace Hypostructure.Graph.ColdRepairF2.EqualStates
+
+open Hypostructure Hypostructure.Graph
+open Hypostructure.Graph.Strategy.InterfaceReplacement
+open Hypostructure.Graph.ColdRepairF2
+
+universe v
+
+variable {object : FiniteObject.{v}} {windows component : Finset object.Vertex}
+
+/-- The head of an initial segment is on the cut boundary of its own prefix:
+before the terminal segment its successor on the inside path is outside the
+prefix; at the terminal segment it is the successor foot, whose window
+endpoint is outside the component. -/
+theorem head_mem_cutBoundary
+    (outside : ColdCorridor.IsOutsideComponent object windows component)
+    (corridor : ColdCorridor.Corridor object windows component)
+    (right : corridor.Segment) :
+    corridor.head right ∈
+      SupportAtom.cutBoundary object (corridor.prefixSupport right.1) := by
+  rw [SupportAtom.mem_cutBoundary_iff]
+  refine ⟨(head_mem_prefixSupport_iff corridor right right.1).2 le_rfl, ?_⟩
+  by_cases terminal : right.1 < corridor.inside.1.length
+  · refine ⟨corridor.head ⟨right.1 + 1, by omega⟩, ?_, ?_⟩
+    · exact head_adj_succ corridor right.1 terminal
+    · rw [head_mem_prefixSupport_iff]; simp
+  · have eq : right.1 = corridor.inside.1.length := by have := right.2; omega
+    have stub := (ColdCorridor.mem_boundaryStubs_iff object windows component _).1
+      (List.get_mem _ (ColdCorridor.successorIndex corridor.positive corridor.entry))
+    have headEq : corridor.head right =
+        ((ColdCorridor.boundaryStubs object windows component).get
+          (ColdCorridor.successorIndex corridor.positive corridor.entry)).1 := by
+      unfold ColdCorridor.Corridor.head
+      rw [eq, SimpleGraph.Walk.getVert_length]
+      rfl
+    rw [headEq]
+    refine ⟨_, stub.2.2, fun inside => ?_⟩
+    exact Finset.disjoint_left.mp outside.1
+      (prefixSupport_subset_component corridor right.1 inside) stub.2.1
+
+/-- **Every (F2) pair is a boundary-degree separation.**  For `left < right`,
+`head right` is on the cut boundary of `J_right` and loses its corridor edge to
+`head (right-1)` in the `J_left` reading. -/
+theorem prefix_profile_ne
+    (outside : ColdCorridor.IsOutsideComponent object windows component)
+    (corridor : ColdCorridor.Corridor object windows component)
+    (left right : corridor.Segment) (lt : left.1 < right.1) :
+    (SupportAtom.retainedPiece object (corridor.prefixSupport right.1)
+        (corridor.prefixSupport left.1)).boundaryDegreeProfile ≠
+      (SupportAtom.retainedPiece object (corridor.prefixSupport right.1)
+        (corridor.prefixSupport right.1)).boundaryDegreeProfile := by
+  intro same
+  let previous : corridor.Segment := ⟨right.1 - 1, by omega⟩
+  have adj : object.graph.Adj (corridor.head right) (corridor.head previous) := by
+    have := head_adj_succ corridor (right.1 - 1) (by have := right.2; omega)
+    have e : (⟨right.1 - 1 + 1, by omega⟩ : corridor.Segment) = right :=
+      Fin.ext (by simp; omega)
+    rw [e] at this
+    exact this.symm
+  have prevIn : corridor.head previous ∈ corridor.prefixSupport right.1 :=
+    (head_mem_prefixSupport_iff corridor previous right.1).2 (by simp [previous])
+  have := retained_profile_eq_imp _ _ same (corridor.head right)
+    (head_mem_cutBoundary outside corridor right) (corridor.head previous) prevIn adj
+  have out := (head_mem_prefixSupport_iff corridor right left.1).1 this.1
+  omega
+
+/-- **No (F2) pair is a clause-(b) exit**, at every pair `left < right`
+(generalizing `not_residualTargetDefect_prefixPair_zero`). -/
+theorem not_residualTargetDefect_prefixPair
+    (Target : FiniteObject.{v} → Prop)
+    (outside : ColdCorridor.IsOutsideComponent object windows component)
+    (corridor : ColdCorridor.Corridor object windows component)
+    (left right : corridor.Segment) (lt : left.1 < right.1) :
+    ¬ ResidualTargetDefect Target object (Finset.univ : Finset Bool)
+      (prefixPairSupport corridor left.1 right.1) := fun defect =>
+  prefix_profile_ne outside corridor left right lt
+    (prefixPair_residualTargetDefect_profile Target corridor left.1 right.1
+      lt.le defect)
+
+/-! ## The separating context at every pair `left < right` -/
+
+/-- The inside-path vertex at position `i`. -/
+noncomputable def pt (corridor : ColdCorridor.Corridor object windows component)
+    (i : Nat) : object.Vertex :=
+  (corridor.inside.1.getVert i).1
+
+theorem pt_mem (corridor : ColdCorridor.Corridor object windows component)
+    {i n : Nat} (hi : i ≤ n) (hn : n ≤ corridor.inside.1.length) :
+    pt corridor i ∈ corridor.prefixSupport n :=
+  (head_mem_prefixSupport_iff corridor ⟨i, by omega⟩ n).2 hi
+
+theorem pt_injOn (corridor : ColdCorridor.Corridor object windows component)
+    {i j : Nat} (hi : i ≤ corridor.inside.1.length) (hj : j ≤ corridor.inside.1.length)
+    (e : pt corridor i = pt corridor j) : i = j :=
+  corridor.inside.2.getVert_injOn (by simpa using hi) (by simpa using hj)
+    (Subtype.ext e)
+
+theorem decode_injective (Z : Finset object.Vertex) :
+    Function.Injective (SupportAtom.pieceDecode object Z) := by
+  intro a b e
+  rcases a with a | a <;> rcases b with b | b
+  · exact congrArg Sum.inl (Subtype.ext e)
+  · have : a.1 = b.1 := e
+    exact absurd (this ▸ a.2) b.2.2
+  · have : b.1 = a.1 := e.symm
+    exact absurd (this ▸ b.2) a.2.2
+  · exact congrArg Sum.inr (Subtype.ext e)
+
+/-- The piece-side vertex of position `i` of `J_n`. -/
+noncomputable def V (corridor : ColdCorridor.Corridor object windows component)
+    (n : Nat) (hn : n ≤ corridor.inside.1.length) (i : Nat) (hi : i ≤ n) :
+    (SupportAtom.boundary object (corridor.prefixSupport n)).Vertex ⊕
+      SupportAtom.PieceInternal object (corridor.prefixSupport n) :=
+  enc (corridor.prefixSupport n) (pt corridor i) (pt_mem corridor hi hn)
+
+/-- The prefix walk inside `piece J_n`, from position `0` to position `k`. -/
+noncomputable def prefixPieceWalk
+    (corridor : ColdCorridor.Corridor object windows component)
+    (n : Nat) (hn : n ≤ corridor.inside.1.length) :
+    (k : Nat) → (hk : k ≤ n) →
+      (SupportAtom.piece object (corridor.prefixSupport n)).graph.Walk
+        (V corridor n hn 0 (Nat.zero_le _)) (V corridor n hn k hk)
+  | 0, _ => .nil
+  | k + 1, hk =>
+      (prefixPieceWalk corridor n hn k (by omega)).concat (by
+        change object.graph.Adj
+          (SupportAtom.pieceDecode object _ (V corridor n hn k (by omega)))
+          (SupportAtom.pieceDecode object _ (V corridor n hn (k + 1) hk))
+        simp only [V, pieceDecode_enc]
+        exact head_adj_succ corridor k (by omega))
+
+theorem prefixPieceWalk_length
+    (corridor : ColdCorridor.Corridor object windows component)
+    (n : Nat) (hn : n ≤ corridor.inside.1.length) :
+    ∀ k (hk : k ≤ n), (prefixPieceWalk corridor n hn k hk).length = k
+  | 0, _ => rfl
+  | k + 1, hk => by
+      simp [prefixPieceWalk, SimpleGraph.Walk.length_concat,
+        prefixPieceWalk_length corridor n hn k]
+
+theorem decode_V (corridor : ColdCorridor.Corridor object windows component)
+    (n : Nat) (hn : n ≤ corridor.inside.1.length) (i : Nat) (hi : i ≤ n) :
+    SupportAtom.pieceDecode object (corridor.prefixSupport n) (V corridor n hn i hi) =
+      pt corridor i :=
+  pieceDecode_enc _ _ _
+
+theorem prefixPieceWalk_decode_support
+    (corridor : ColdCorridor.Corridor object windows component)
+    (n : Nat) (hn : n ≤ corridor.inside.1.length) :
+    ∀ k (hk : k ≤ n),
+      (prefixPieceWalk corridor n hn k hk).support.map
+          (SupportAtom.pieceDecode object (corridor.prefixSupport n)) =
+        (List.range (k + 1)).map (pt corridor)
+  | 0, _ => by
+      erw [prefixPieceWalk, SimpleGraph.Walk.support_nil, List.map_cons, List.map_nil,
+        decode_V]
+      rfl
+  | k + 1, hk => by
+      erw [prefixPieceWalk, SimpleGraph.Walk.support_concat,
+        List.map_append, prefixPieceWalk_decode_support corridor n hn k,
+        List.map_cons, List.map_nil, decode_V, List.range_succ (n := k + 1),
+        List.map_append, List.map_cons, List.map_nil]
+
+theorem prefixPieceWalk_isPath
+    (corridor : ColdCorridor.Corridor object windows component)
+    (n : Nat) (hn : n ≤ corridor.inside.1.length) (k : Nat) (hk : k ≤ n) :
+    (prefixPieceWalk corridor n hn k hk).IsPath := by
+  rw [SimpleGraph.Walk.isPath_def]
+  apply List.Nodup.of_map (SupportAtom.pieceDecode object (corridor.prefixSupport n))
+  rw [prefixPieceWalk_decode_support]
+  refine List.Nodup.map_on ?_ List.nodup_range
+  intro i hi j hj e
+  simp only [List.mem_range] at hi hj
+  exact pt_injOn corridor (by omega) (by omega) e
+
+/-- **The (F2) separation at every pair `left < right` of G's corridor.**  The
+path context of length `2^(right+2) − right` from `head right` to the foot
+closes a cycle of length `2^(right+2)` with `piece J_right`; in the `J_left`
+reading `head right` is isolated, so every cycle of that gluing lies in the
+reading, i.e. is a cycle of G. -/
+theorem prefix_targetDefect (LengthOK : ℕ → Prop)
+    (accept : ∀ k, 2 ≤ k → LengthOK (2 ^ k))
+    (avoids : ¬ HasCycleWithLength LengthOK object)
+    (outside : ColdCorridor.IsOutsideComponent object windows component)
+    (corridor : ColdCorridor.Corridor object windows component)
+    (left right : corridor.Segment) (lt : left.1 < right.1) :
+    Response.TargetDefect (HasCycleWithLength LengthOK)
+      (SupportAtom.retainedPiece object (corridor.prefixSupport right.1)
+        (corridor.prefixSupport left.1))
+      (SupportAtom.piece object (corridor.prefixSupport right.1)) := by
+  classical
+  set n := right.1 with hn
+  have hnLen : n ≤ corridor.inside.1.length := by have := right.2; omega
+  set Z := corridor.prefixSupport n
+  have headB : pt corridor n ∈ SupportAtom.cutBoundary object Z :=
+    head_mem_cutBoundary outside corridor right
+  have footB : pt corridor 0 ∈ SupportAtom.cutBoundary object Z := by
+    have := foot_mem_cutBoundary outside corridor n
+    rw [← head_zero corridor] at this
+    exact this
+  let x : (SupportAtom.boundary object Z).Vertex := ⟨pt corridor n, headB⟩
+  let y : (SupportAtom.boundary object Z).Vertex := ⟨pt corridor 0, footB⟩
+  have hxy : x ≠ y := by
+    intro e
+    have := pt_injOn corridor hnLen (Nat.zero_le _)
+      (show pt corridor n = pt corridor 0 from
+        congrArg (fun z : (SupportAtom.boundary object Z).Vertex => z.1) e)
+    omega
+  have Vx : V corridor n hnLen n le_rfl = .inl x := by
+    unfold V enc; rw [dif_pos headB]
+  have Vy : V corridor n hnLen 0 (Nat.zero_le _) = .inl y := by
+    unfold V enc; rw [dif_pos footB]
+  let Rwalk : (SupportAtom.piece object Z).graph.Walk (.inl x) (.inl y) :=
+    ((prefixPieceWalk corridor n hnLen n le_rfl).reverse).copy Vx Vy
+  have Rpath : Rwalk.IsPath :=
+    (SimpleGraph.Walk.isPath_copy _ _ _).2
+      (prefixPieceWalk_isPath corridor n hnLen n le_rfl).reverse
+  have Rlen : Rwalk.length = n := by
+    change (((prefixPieceWalk corridor n hnLen n le_rfl).reverse).copy Vx Vy).length = n
+    rw [SimpleGraph.Walk.length_copy, SimpleGraph.Walk.length_reverse,
+      prefixPieceWalk_length]
+  set m := 2 ^ (n + 2) - n with hm
+  have pow : n + 4 ≤ 2 ^ (n + 2) := by
+    have := Nat.lt_two_pow_self (n := n)
+    rw [pow_add]; omega
+  have hm2 : 2 ≤ m := by omega
+  refine ⟨pathContext x y m, fun equivalent => ?_⟩
+  have positive : HasCycleWithLength LengthOK
+      (glue (SupportAtom.piece object Z) (pathContext x y m)) := by
+    refine hasCycleWithLength_glue_of_crossing _ (pathContext x y m) Rwalk
+      (contextWalk x y m hxy (by omega)) Rpath
+      (contextWalk_isPath x y m hxy (by omega))
+      (contextWalk_labels x y m hxy (by omega))
+      (Or.inr (by rw [contextWalk_length]; omega)) ?_
+    rw [contextWalk_length, Rlen, show n + m = 2 ^ (n + 2) by omega]
+    exact accept _ (by omega)
+  have negative := equivalent.mpr positive
+  -- `x = head right` is isolated in the `J_left` reading
+  let L := SupportAtom.retainedPiece object Z (corridor.prefixSupport left.1)
+  have isolated : ∀ b, ¬ L.graph.Adj (.inl x) b := by
+    intro b h
+    rw [retained_adj_iff] at h
+    have := (head_mem_prefixSupport_iff corridor right left.1).1 h.2.1
+    omega
+  obtain ⟨certificate⟩ := negative
+  have hc := certificate.isCycle
+  rcases GluedCycleSides.cycle_pieceLift_or_contextInternal_or_labelDart
+      (piece := L) (outside := pathContext x y m) hc with
+    ⟨pb, lifted, liftedCycle, liftedLength⟩ | ⟨inner, hmem⟩ |
+      ⟨a, a', ne, _, _, adj, _⟩
+  · -- a cycle of the reading is a cycle of G
+    apply avoids
+    let decodeHom : L.graph →g object.graph :=
+      ⟨SupportAtom.pieceDecode object Z, fun h => by
+        rw [retained_adj_iff] at h; exact h.1⟩
+    exact ⟨⟨_, lifted.map decodeHom,
+      liftedCycle.map (decode_injective Z),
+      by rw [SimpleGraph.Walk.length_map, liftedLength]; exact certificate.length_ok⟩⟩
+  · have hi := inner.down.isLt
+    have hat : gat L x y m (inner.down.val + 1) = Sum.inr (Sum.inr inner) := by
+      unfold gat at_
+      rw [dif_neg (by omega), dif_pos (by omega)]
+      rfl
+    have all := cycle_contains_path (P := L) hxy (by omega) hc
+      (p₀ := inner.down.val + 1) (by omega) (by omega) (hat ▸ hmem)
+    have zeroMem := all 0 (Nat.zero_le _)
+    obtain ⟨w₁, w₂, different, a₁, a₂, _, _⟩ := cycle_two_neighbours hc zeroMem
+    have only : ∀ w, (glueGraph L (pathContext x y m)).Adj (gat L x y m 0) w →
+        w = gat L x y m 1 := by
+      intro w h
+      rcases (glueGraph_adj_iff _ _ _ _).mp h with owns | owns
+      · obtain ⟨pa, pb, padj, ha, _⟩ := owns
+        have g0 : gat L x y m 0 = Sum.inl x := by
+          simp [gat, at_zero, contextEmbedding]
+        rw [g0] at ha
+        rcases pa with pa | pa
+        · have : pa = x := by simpa [pieceEmbedding] using ha
+          subst this
+          exact (isolated _ padj).elim
+        · simp [pieceEmbedding] at ha
+      · obtain ⟨ca, cb, cadj, ha, hb⟩ := owns
+        have ha' : ca = at_ x y m 0 := (contextEmbedding L _).injective ha
+        subst ha'
+        obtain ⟨p, q, hp, hq, rel⟩ := pathContext_adj_pos cadj
+        rw [pos_at x y m hxy (by omega) (Nat.zero_le _)] at hp
+        cases hp
+        obtain ⟨_, hbq⟩ := at_of_pos x y m (by omega) hq
+        subst hbq
+        rcases rel with rfl | h
+        · exact hb.symm
+        · omega
+    exact different ((only _ a₁).trans (only _ a₂).symm)
+  · obtain ⟨p, q, hp, hq, rel⟩ := pathContext_adj_pos adj
+    rcases pos_inl hp with rfl | rfl <;> rcases pos_inl hq with rfl | rfl <;> omega
+
+open Hypostructure.Graph.Strategy.Spine in
+/-- **At G, (F2) at `right` is exactly an earlier equal cut state.** -/
+theorem coldFirstFailureDefectAt_iff (data : Parameters)
+    (accept : ∀ k, 2 ≤ k → data.LengthOK (2 ^ k))
+    (avoids : ¬ HasCycleWithLength data.LengthOK object)
+    (outside : ColdCorridor.IsOutsideComponent object windows component)
+    (corridor : ColdCorridor.Corridor object windows component)
+    (presentation : ColdCorridor.Presentation data.coldSignature object)
+    (index : corridor.Segment → presentation.Segment)
+    (right : corridor.Segment) :
+    ColdFirstFailureDefectAt data object corridor presentation index right ↔
+      ∃ left : corridor.Segment, left.1 < right.1 ∧
+        presentation.state (index left) = presentation.state (index right) := by
+  constructor
+  · rintro ⟨left, lt, same, _⟩
+    exact ⟨left, lt, same⟩
+  · rintro ⟨left, lt, same⟩
+    exact ⟨left, lt, same,
+      prefix_targetDefect data.LengthOK accept avoids outside corridor left right lt⟩
+
+/-- **The hook forces short corridors.**  If no segment up to `first` repeats an
+earlier state, then `first < Q_cold`: the `first + 1` states read are distinct
+elements of the `Q_cold`-element state type. -/
+theorem first_lt_stateBound {S : ColdCorridor.DeclaredSignature}
+    (corridor : ColdCorridor.Corridor object windows component)
+    (presentation : ColdCorridor.Presentation S object)
+    (index : corridor.Segment → presentation.Segment)
+    (first : corridor.Segment)
+    (distinct : ∀ left right : corridor.Segment, left.1 < right.1 →
+      right.1 ≤ first.1 →
+        presentation.state (index left) ≠ presentation.state (index right)) :
+    first.1 < ColdCorridor.stateBound S := by
+  classical
+  let f : Fin (first.1 + 1) → ColdCorridor.CutState S :=
+    fun i => presentation.state (index ⟨i.1, by have := first.2; have := i.2; omega⟩)
+  have inj : Function.Injective f := by
+    intro i j e
+    by_contra ne
+    rcases Nat.lt_or_gt_of_ne (fun h => ne (Fin.ext h)) with h | h
+    · exact distinct ⟨i.1, by have := first.2; have := i.2; omega⟩
+        ⟨j.1, by have := first.2; have := j.2; omega⟩ h
+        (by have := j.2; simp only; omega) e
+    · exact distinct ⟨j.1, by have := first.2; have := j.2; omega⟩
+        ⟨i.1, by have := first.2; have := i.2; omega⟩ h
+        (by have := i.2; simp only; omega) e.symm
+  have := Fintype.card_le_of_injective f inj
+  simp only [Fintype.card_fin] at this
+  unfold ColdCorridor.stateBound
+  omega
+
+end Hypostructure.Graph.ColdRepairF2.EqualStates
+
 #print axioms Hypostructure.Graph.ColdRepairF2.coldF2_not_clauseB
 #print axioms Hypostructure.Graph.ColdRepairF2.coldFailureDefect_excluded_is_false
 #print axioms Hypostructure.Graph.ColdRepairF2.prefixPair_residualTargetDefect_profile
 #print axioms Hypostructure.Graph.ColdRepairF2.retained_profile_eq_imp
 #print axioms Hypostructure.Graph.ColdRepairF2.edge_twoPath_sameFibre_targetDefect
+#print axioms Hypostructure.Graph.ColdRepairF2.EqualStates.coldFirstFailureDefectAt_iff
+#print axioms Hypostructure.Graph.ColdRepairF2.EqualStates.not_residualTargetDefect_prefixPair
+#print axioms Hypostructure.Graph.ColdRepairF2.EqualStates.first_lt_stateBound

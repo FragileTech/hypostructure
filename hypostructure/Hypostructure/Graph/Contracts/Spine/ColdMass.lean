@@ -347,7 +347,12 @@ induced-`P₁₃`-free and subcubic, [so] they have bounded diameter".  But the
 corridors of `def:cold-corridor-first-failure` live in `G − X_cold`, which
 keeps the hot and non-ambient-cubic cold windows of `P₀`; a corridor may run
 through them, where `R`'s `P₁₃`-freeness says nothing, and no ledger fact
-bounds its length by `Q_cold`. -/
+bounds its length by `Q_cold`.  The missing fact at G is that the corridor path
+of every eligible `ε` lies in `R(P₀)`.  It is the same missing fact about G's
+corridors as the one behind the `[153]` (F2) hook: that hook at G is
+"pairwise distinct cut states up to the first failure", which bounds the first
+failure by `Q_cold` (`ColdF2Refutation.EqualStates.first_lt_stateBound`) but
+not a corridor that first meets a heavy centre. -/
 theorem denseColdCorridorsTerminal_of_state (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (_threeLeOrder : 3 ≤ data.windowOrder)
