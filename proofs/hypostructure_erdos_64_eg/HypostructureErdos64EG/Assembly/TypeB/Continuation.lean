@@ -43,7 +43,9 @@ heavy centre), the fan-closed port routing, and the routed local dichotomy
 (fan-compatible pair or `k - 2` triangular ports, each giving fan-closed ports).
 The degree-four arm is `[78]`--`[79]`: the degree-four profile and the
 fan-closed port routing of `cor:degree-four-local-activation`.  Both arms enter
-`[70]`. -/
+`[70]`.
+
+`arm` names the arms fixed before the chain; each fan arm adds its block. -/
 -- EG-NODE [67] high-degree centers independent; fan neighbours cubic
 -- EG-NODE [68] some center has \(d_G(h)>4\)?
 -- EG-NODE [69] degree \(>4\) local dichotomy: fan-compatible open pair or \(k-2\) triangular ports gives fan-closed ports
@@ -53,6 +55,7 @@ fan-closed port routing of `cor:degree-four-local-activation`.  Both arms enter
 noncomputable def Assembly.Internal.selectedTypeBFanContinuation
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
+    (arm : BChainArms selected)
     [FactKeys.Has (K .typeBFanEntry) known]
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .tightEndpoint) known]
@@ -234,7 +237,7 @@ noncomputable def Assembly.Internal.selectedTypeBFanContinuation
       let capped := (fanCertificateCapRow (data := spineData)).run
         localDichotomy (by key_fresh)
       exact Assembly.Internal.selectedTypeBCertificateContinuation capped
-        none
+        ⟨arm, Or.inr (BChainFanBlock_heavyCentre.ret capped)⟩ none
   | .right degreeFourHistory =>
       -- `[78]`--`[79]`: the degree-four fan profile and the fan-closed port
       -- routing of `cor:degree-four-local-activation` (tex 2336): alternative
@@ -261,6 +264,6 @@ noncomputable def Assembly.Internal.selectedTypeBFanContinuation
       let capped := (degreeFourFanCertificateCapRow (data := spineData)).run
         pairRouting (by key_fresh)
       exact Assembly.Internal.selectedTypeBCertificateContinuation capped
-        (some inferInstance)
+        ⟨arm, Or.inl (BChainFanBlock_degreeFour.ret capped)⟩ (some inferInstance)
 
 end HypostructureErdos64EG

@@ -132,7 +132,10 @@ sign; the nonnegative arm is the `[60]` net-cap contradiction (cap gives
 negative support `[61]` and `[62]` routes it to Type A `[63]` or Type B `[64]`.
 The small-order complement `[57]`, and the Type A / Type B continuations, are the
 next loud producers.  It is index-polymorphic over the arm's ledger, so both the
-density-cap and route-8 arms use the same definition. -/
+density-cap and route-8 arms use the same definition.
+
+`arm` names the near-cubic prefix and the entropy arm of the path; every lane
+passes it on, extended by its own arm blocks. -/
 -- EG-NODE [57] large-budget net cap
 -- EG-NODE [58] net charge \(\No\)
 -- EG-NODE [59] \(\No(R)\ge0\)?
@@ -147,6 +150,7 @@ density-cap and route-8 arms use the same definition. -/
 noncomputable def selectedNetChargeContinuation
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
+    (arm : NetChargeArms selected)
     [FactKeys.Has (K .route8Rate) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .netDeficiencyCap) known]
@@ -211,11 +215,11 @@ noncomputable def selectedNetChargeContinuation
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) spineData).run
           absorbed (by key_fresh)
-      match selectedAbsorbedGermPrerequisites localizedAbsorbed with
+      match selectedAbsorbedGermPrerequisites localizedAbsorbed arm with
       | .inl prepared =>
           -- `[175]`--`[177]`, `lem:absorbed-germ-fan-data`: the absorbed-germ
           -- residual (`selectedAbsorbedGermResidual`).
-          exact Or.inr (Or.inl (selectedAbsorbedGermResidual prepared))
+          exact Or.inr (Or.inl (selectedAbsorbedGermResidual prepared arm))
       | .inr repeated =>
           -- `[153]`, ¬(★): G's first equal-state pair, returned.
           exact Or.inr (Or.inr repeated)
@@ -261,8 +265,8 @@ noncomputable def selectedNetChargeContinuation
           match typeSplitDichotomy (data := spineData) support
               (by key_fresh) (by key_fresh) with
           | .left typeAHistory =>
-              exact Or.inl (selectedTypeALowSurplusContinuation typeAHistory)
+              exact Or.inl (selectedTypeALowSurplusContinuation typeAHistory arm)
           | .right typeBHistory =>
-              exact Or.inl (selectedTypeBHighSurplusContinuation typeBHistory)
+              exact Or.inl (selectedTypeBHighSurplusContinuation typeBHistory arm)
 
 end HypostructureErdos64EG

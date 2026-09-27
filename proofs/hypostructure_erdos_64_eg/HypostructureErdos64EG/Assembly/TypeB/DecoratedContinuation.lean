@@ -19,10 +19,19 @@ universe u w
 set_option maxHeartbeats 8000000 in
 /-- **Type B `[67]`--`[85]` on the decorated envelope** (`def:decorated-fan-envelope`,
 `def:typeB-assigned-ledger`), on the `[108]`/`[66]` → `[65]` decorated residual:
-the common continuation runs on this literal ledger. -/
+the common continuation runs on this literal ledger.
+
+`arm` names the Type A lane arms; the decorated-handoff block is added before
+the Type B chain. -/
 noncomputable def selectedTypeBDecoratedContinuation
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
+    (arm : TypeAExitFourArms selected)
+    [FactKeys.Has (K .typeAExitFiveFree) known]
+    [FactKeys.Has (K .typeAExitSevenEnvelope) known]
+    [FactKeys.Has (K .typeAExitSevenHandoff) known]
+    [FactKeys.Has (K .typeAExitSixFree) known]
+    [FactKeys.Has (K .typeASaturatedHandoffExitFourFree) known]
     [FactKeys.Has (K .typeBDecoratedAssignedSupport) known]
     [FactKeys.Has (K .typeBFanEntry) known]
     [FactKeys.Has (K .selection) known]
@@ -148,5 +157,6 @@ noncomputable def selectedTypeBDecoratedContinuation
   let charged := (typeBAbsorbedChargeRow (data := spineData)).run history
     (by key_fresh)
   exact Assembly.Internal.selectedTypeBFanContinuation charged
+    (arm.decorated (TypeAArmBlock_decorated.ret charged))
 
 end HypostructureErdos64EG

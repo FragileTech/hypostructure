@@ -101,10 +101,13 @@ The Type B bridge mass and its sublinear reading are published, then
 census; the branch then continues through the unified residual
 (`selectedRouteEightUnifiedResidual`).  Every caller that reaches this ledger
 -- the negative arm of node `[113]` and the Type B certificate lanes -- runs
-this one composition on its own literal residual. -/
+this one composition on its own literal residual.
+
+`arm` names the path's prefix, entropy arm and net-charge continuation. -/
 noncomputable def selectedTypeBRoute8Continuation
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
+    (arm : Route8Arms selected)
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .replacementExclusion) known]
@@ -206,7 +209,7 @@ noncomputable def selectedTypeBRoute8Continuation
     [FactKeys.Has (K .windowPackageSeparated) known]
     [FactKeys.Has (K .windowPresent) known] :
     SelectedRouteEightBoundary selected :=
-  selectedRouteEightUnifiedResidual (selectedRouteEightBridgePrefix history)
+  selectedRouteEightUnifiedResidual (selectedRouteEightBridgePrefix history) arm
 
 set_option maxHeartbeats 8000000 in
 /-- **Node `[77]`, the Type B entry into route `8`** (tex 979: "route-8 cores
@@ -214,11 +217,20 @@ continue in Part IX").  It reads the `[76]`/`[85]` fact of the Type B support
 (`K .typeBExclusionResidual`) and publishes its route-8 cores: a negative Type B
 support hands the negative remaining core of its canonical B2 ledger to route
 `8`, or is a bridge residual charged to its surplus.  The branch then continues
-through the route-`8` census of Part IX on the same ledger. -/
+through the route-`8` census of Part IX on the same ledger.
+
+`arm` names the arms fixed before the chain with the fan and certificate
+blocks; the chain's entry block completes the net-charge continuation. -/
 -- EG-NODE [77] route-8 cores continue in Part IX
 noncomputable def selectedTypeBRoute8Entry
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
+    (arm : BChainArms selected ∧ BChainFan selected ∧ BChainCertificate selected)
+    [FactKeys.Has (K .compatiblePairFanClosure) known]
+    [FactKeys.Has (K .compatiblePairTypeBRouting) known]
+    [FactKeys.Has (K .fanCertificateCap) known]
+    [FactKeys.Has (K .fanClosedPortTypeBRouting) known]
+    [FactKeys.Has (K .typeBFanEntry) known]
     [FactKeys.Has (K .typeBExclusionResidual) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .selection) known]
@@ -340,5 +352,6 @@ noncomputable def selectedTypeBRoute8Entry
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       burdened (by key_fresh)
   selectedTypeBRoute8Continuation cored
+    (arm.1.route8 ⟨BChainEntryBlock.ret entry, arm.2.1, arm.2.2⟩)
 
 end HypostructureErdos64EG

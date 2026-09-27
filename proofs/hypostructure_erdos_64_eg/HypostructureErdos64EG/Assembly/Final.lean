@@ -44,22 +44,47 @@ noncomputable def selectedNearCubicBranch
       exact Or.inr (selectedNearCubicSurvivorBranch survivorHistory)
 
 /-- Node `[187]` collects only the other literal selected-root outcomes, each
-with every fact of its maximal ledger (`Assembly/Residuals.lean`).  The
-pair-system entry retains its own source key and is not `[144a]`. -/
+with every fact of its ledger at its return (`Assembly/Residuals/`): the
+near-cubic target defect, the four pair Type B subtypes, the Type B sublinear
+failure and the route-`8` quotient failure `[348]` as products of their arm
+blocks, the twelve private-carrier rate failure subtypes, and the local
+cold-terminal exclusion as its absorbed-germ product and four linear-arm
+singletons.  The pair-system entry retains its own source key and is not
+`[144a]`. -/
 abbrev OtherReturnedOutcome (selected : EGInput.{u}) :=
   NearCubicTargetDefectOutcome selected ∨
   (PairTypeBOutcome_independentSystem selected ∨
     PairTypeBOutcome_independentIncrement selected ∨
     PairTypeBOutcome_dependentSystem selected ∨
     PairTypeBOutcome_dependentIncrement selected) ∨
-  TypeBSublinearOutcome selected ∨
-  Route8QuotientOutcome selected ∨
-  Route8RateFailsOutcome selected ∨
-  ColdBranchClosedOutcome selected
+  TypeBSublinearOutcome_product selected ∨
+  Route8QuotientOutcome_product selected ∨
+  (Route8RateFailsOutcome_realized_highEntropy selected ∨
+    Route8RateFailsOutcome_realized_lowNonrepetitive selected ∨
+    Route8RateFailsOutcome_realized_lowWedgeFree selected ∨
+    Route8RateFailsOutcome_realized_lowWedge selected ∨
+    Route8RateFailsOutcome_denseAtOrAbove_highEntropy selected ∨
+    Route8RateFailsOutcome_denseAtOrAbove_lowNonrepetitive selected ∨
+    Route8RateFailsOutcome_denseAtOrAbove_lowWedgeFree selected ∨
+    Route8RateFailsOutcome_denseAtOrAbove_lowWedge selected ∨
+    Route8RateFailsOutcome_denseBelow_highEntropy selected ∨
+    Route8RateFailsOutcome_denseBelow_lowNonrepetitive selected ∨
+    Route8RateFailsOutcome_denseBelow_lowWedgeFree selected ∨
+    Route8RateFailsOutcome_denseBelow_lowWedge selected) ∨
+  (ColdBranchClosedOutcome_product selected ∨
+    ColdBranchClosedOutcome_linearDenseAtOrAbove selected ∨
+    ColdBranchClosedOutcome_linearDenseRateFailed selected ∨
+    ColdBranchClosedOutcome_linearRealizedDistinguished selected ∨
+    ColdBranchClosedOutcome_linearRealizedSilent selected)
 
-/-- Exact selected-root reduction: five individually identified residuals,
-the explicit remaining disjunction at `[187]`, and the three residuals returned
-by the structural exhaustion at `[153]`, `[162]` and `[54]`. -/
+/-- Exact selected-root reduction.  Every returned residual carries every fact
+of the single ledger at its return, one `get` per fact; paths with different
+fact sets are different residuals, stated as subtypes of the generic residual
+or, where the paths form a full product, as the product of their arm blocks:
+`[20a]`; the six `[144a]` subtypes; the two `[172a]` subtypes; the six `[182]`
+subtypes; the `[186]` joint balance product; the remaining `[187]` outcomes;
+and the structural exhaustion residuals `[153]` (23 subtypes), `[162]`
+(2 subtypes) and `[54]` (6 subtypes). -/
 abbrev SelectedLedgerBoundaryResult (selected : EGInput.{u}) :=
   Node20aOutcome selected ∨
   (Node144aOutcome_windowHandoff selected ∨ Node144aOutcome_windowFails selected ∨
@@ -67,18 +92,47 @@ abbrev SelectedLedgerBoundaryResult (selected : EGInput.{u}) :=
     Node144aOutcome_remainderFails selected ∨
     Node144aOutcome_primitiveHandoff selected ∨
     Node144aOutcome_primitiveFails selected) ∨
-  BlockedBarrierOverlapOutcome selected ∨
+  (BlockedBarrierOverlapOutcome_DeficiencyAtOrAbove selected ∨
+    BlockedBarrierOverlapOutcome_DeficiencyBelowRateFails selected) ∨
   (PairConditionalFactorizationOutcome_freeFactorizationFails selected ∨
     PairConditionalFactorizationOutcome_freeRealizabilityFails selected ∨
     PairConditionalFactorizationOutcome_freeIncrementFails selected ∨
     PairConditionalFactorizationOutcome_blockedFactorizationFails selected ∨
     PairConditionalFactorizationOutcome_blockedRealizabilityFails selected ∨
     PairConditionalFactorizationOutcome_blockedIncrementFails selected) ∨
-  Route8JointBalanceOutcome selected ∨
+  Route8JointBalanceOutcome_product selected ∨
   OtherReturnedOutcome selected ∨
-  Node153ResidualOutcome selected ∨
-  Node162ResidualOutcome selected ∨
-  Node54ResidualOutcome selected
+  (Node153ResidualOutcome_denseAtOrAbove_coldBelow_absorbed_high selected ∨
+    Node153ResidualOutcome_denseAtOrAbove_coldBelow_absorbed_lowNonrep selected ∨
+    Node153ResidualOutcome_denseAtOrAbove_coldBelow_absorbed_lowWedgeFree selected ∨
+    Node153ResidualOutcome_denseAtOrAbove_coldBelow_absorbed_lowWedge selected ∨
+    Node153ResidualOutcome_denseAtOrAbove_linear selected ∨
+    Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_high selected ∨
+    Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_lowNonrep selected ∨
+    Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_lowWedgeFree selected ∨
+    Node153ResidualOutcome_denseAtOrAbove_bounded_absorbed_lowWedge selected ∨
+    Node153ResidualOutcome_denseRateFails_linear selected ∨
+    Node153ResidualOutcome_denseRate_absorbed_high selected ∨
+    Node153ResidualOutcome_denseRate_absorbed_lowNonrep selected ∨
+    Node153ResidualOutcome_denseRate_absorbed_lowWedgeFree selected ∨
+    Node153ResidualOutcome_denseRate_absorbed_lowWedge selected ∨
+    Node153ResidualOutcome_realized_coldBelow_absorbed_high selected ∨
+    Node153ResidualOutcome_realized_coldBelow_absorbed_lowNonrep selected ∨
+    Node153ResidualOutcome_realized_coldBelow_absorbed_lowWedgeFree selected ∨
+    Node153ResidualOutcome_realized_coldBelow_absorbed_lowWedge selected ∨
+    Node153ResidualOutcome_realized_bounded_absorbed_high selected ∨
+    Node153ResidualOutcome_realized_bounded_absorbed_lowNonrep selected ∨
+    Node153ResidualOutcome_realized_bounded_absorbed_lowWedgeFree selected ∨
+    Node153ResidualOutcome_realized_bounded_absorbed_lowWedge selected ∨
+    Node153ResidualOutcome_realized_linear selected) ∨
+  (Node162ResidualOutcome_tauAtOrAbove selected ∨
+    Node162ResidualOutcome_tauBelowRateFails selected) ∨
+  (Node54ResidualOutcome_realizedColdBelow selected ∨
+    Node54ResidualOutcome_realizedBounded selected ∨
+    Node54ResidualOutcome_unrealizedTauHighColdBelow selected ∨
+    Node54ResidualOutcome_unrealizedTauHighBounded selected ∨
+    Node54ResidualOutcome_unrealizedRateFailsBounded selected ∨
+    Node54ResidualOutcome_unrealizedBothRates selected)
 
 noncomputable def selectedLedgerBoundary
     {selected : EGInput.{u}}
@@ -132,7 +186,7 @@ noncomputable def selectedLedgerBoundary
                 exact other (Or.inr (Or.inr (Or.inr (Or.inl quotient))))
             | .inr (.inr joint) =>
                 exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inl joint))))
-          have repeatedOut : Node153ResidualOutcome selected →
+          have repeatedOut : Node153ResidualSubtypes selected →
               SelectedLedgerBoundaryResult selected :=
             fun repeated => Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
               (Or.inl repeated))))))
@@ -140,14 +194,14 @@ noncomputable def selectedLedgerBoundary
           | .inl (.inl route) => exact liftRoute route
           | .inl (.inr (.inl (.inl absorbed))) => exact liftRoute absorbed
           | .inl (.inr (.inl (.inr cold))) =>
-              exact other (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr cold)))))
+              exact other (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl cold))))))
           | .inl (.inr (.inr repeated)) => exact repeatedOut repeated
           | .inr (.inl rate) =>
               exact other (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl rate)))))
           | .inr (.inr (.inl blocked)) =>
               exact Or.inr (Or.inr (Or.inl blocked))
           | .inr (.inr (.inr (.inl cold))) =>
-              exact other (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr cold)))))
+              exact other (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr cold))))))
           | .inr (.inr (.inr (.inr (.inl repeated)))) => exact repeatedOut repeated
           | .inr (.inr (.inr (.inr (.inr (.inl heavy))))) =>
               exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
@@ -156,8 +210,8 @@ noncomputable def selectedLedgerBoundary
               exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
                 (Or.inr entropy)))))))
 
-/-- The selected minimal counterexample has one of the nine exact boundary
-outcomes, with each source fact read from its producer's retained ledger. -/
+/-- The selected minimal counterexample has one of the exact boundary
+outcomes, each with every fact of the single ledger at its return. -/
 theorem selectedCounterexample_reaches_exactBoundary
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected [EGSelectionKey]) :
@@ -165,7 +219,7 @@ theorem selectedCounterexample_reaches_exactBoundary
   selectedLedgerBoundary history
 
 /-- Every counterexample to the public finite-graph statement reaches one of
-the nine displayed boundary alternatives through the selected ledger. -/
+the displayed boundary alternatives through the selected ledger. -/
 theorem officialCounterexample_reaches_selectedLedgerBoundary
     (counterexample : ¬ OfficialStatement.{u}) :
     ∃ selected : EGInput.{u}, SelectedLedgerBoundaryResult selected := by

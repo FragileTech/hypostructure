@@ -1,4 +1,5 @@
 import HypostructureErdos64EG.Assembly.Absorbed.Boundary
+import HypostructureErdos64EG.Assembly.Residuals.Node153ResidualOutcome
 
 /-!
 # Assembly: NetCharge / Boundary
@@ -21,6 +22,6 @@ own ledger owners, or the returned residual of node `[153]` on the absorbed
 lane (G's first equal-state pair, `K .coldRepeatedStateResidual`). -/
 abbrev SelectedNetChargeBoundary (selected : EGInput.{u}) :=
   SelectedRouteEightBoundary selected ∨ SelectedAbsorbedGermBoundary selected ∨
-    Node153ResidualOutcome selected
+    Node153ResidualSubtypes selected
 
 end HypostructureErdos64EG

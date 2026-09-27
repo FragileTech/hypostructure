@@ -77,7 +77,10 @@ residual; `[117]` decides the two-support entry: its no arm publishes the
 private-support budget `[119]`--`[120]`, closed at `[121]`--`[122]` against the
 census, and its yes arm `[118]` enters the descent decision `[123]` of
 `thm:large-budget-route8-only` on the unified ledger (tex 1134), whose yes arm
-closes at `[124]` and whose no arm reaches `[181]`, `[183]`--`[186]`. -/
+closes at `[124]` and whose no arm reaches `[181]`, `[183]`--`[186]`.
+
+`arm` names the Type A lane arms with the route-8 residual block; the deficit
+block is added at the two-support entry. -/
 -- EG-NODE [114] each entry passes to its canonical minimal target-complete response-support core inside the declared $u$-supported response algebra
 -- EG-NODE [115] some entry has $\alpha_{\mathcal X}(\xi)\le1$?
 -- EG-NODE [116] exits (4)--(7) occur
@@ -90,6 +93,7 @@ closes at `[124]` and whose no arm reaches `[181]`, `[183]`--`[186]`. -/
 noncomputable def selectedRouteEightCollection
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (deficit : ExactLedger EGInput.{u} selected known)
+    (arm : TypeAExitFourArms selected ∧ TypeAArmBlock_route8Residual selected)
     [FactKeys.Has (K .route8ResidualProfile) known]
     [FactKeys.Has (K .route8BasinBurden) known]
     [FactKeys.Has (K .route8LargeBudgetDeficit) known]
@@ -262,6 +266,8 @@ noncomputable def selectedRouteEightCollection
           -- edge `(residual)--(pressure)`), run on the unified ledger; its yes
           -- arm closes at `[124]`, its no arm reaches `[181]`, `[183]`--`[186]`.
           exact selectedTypeBRoute8Continuation twoCarrier
+            (arm.1.route8Residual arm.2
+              (Or.inl (Route8DeficitBlock_holds.ret twoCarrier)))
 
 set_option maxHeartbeats 8000000 in
 /-- **Part IX: the route-`8` residual of exit `(8)`** (node `[109]` → `[110]`).
@@ -269,11 +275,18 @@ set_option maxHeartbeats 8000000 in
 Nodes `[110]`--`[112]`, then the large-budget deficit test `[113]`: its
 positive arm runs `[114]`--`[122]` and sends `[118]` to `[123]` (`selectedRouteEightCollection`);
 its negative arm enters the unified target-defect/route-`8` ledger required by
-`rem:why-unified` and reaches `[123]`, `[181]`, `[183]`--`[186]`. -/
+`rem:why-unified` and reaches `[123]`, `[181]`, `[183]`--`[186]`.
+
+`arm` names the Type A lane arms; the route-8 residual block and the `[113]`
+deficit block complete the net-charge continuation. -/
 -- EG-NODE [113] large-budget deficit: $D_A(\mathcal X_A)\ge(1/4-\tau_{\rm win})|R|-o(|R|)$
 noncomputable def selectedRouteEightResidual
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
+    (arm : TypeAExitFourArms selected)
+    [FactKeys.Has (K .typeAExitFiveFree) known]
+    [FactKeys.Has (K .typeAExitSixFree) known]
+    [FactKeys.Has (K .typeASaturatedHandoffExitFourFree) known]
     [FactKeys.Has (K .typeAExitSevenFree) known]
     [FactKeys.Has (K .route8Rate) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
@@ -398,7 +411,9 @@ noncomputable def selectedRouteEightResidual
   -- `[113]`: the route-8-only lower bound is tested (`rem:why-unified`).
   match route8LargeBudgetDeficitRow (data := spineData) burdened
       (by key_fresh) (by key_fresh) with
-  | .left deficit => exact selectedRouteEightCollection deficit
+  | .left deficit =>
+      exact selectedRouteEightCollection deficit
+        ⟨arm, TypeAArmBlock_route8Residual.ret burdened⟩
   | .right deficitFails =>
       -- The carrier cores `[114]` are a fact of G on this arm too.
       let cored :=
@@ -407,5 +422,7 @@ noncomputable def selectedRouteEightResidual
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           deficitFails (by key_fresh)
       exact selectedTypeBRoute8Continuation cored
+        (arm.route8Residual (TypeAArmBlock_route8Residual.ret burdened)
+          (Or.inr (Route8DeficitBlock_fails.ret deficitFails)))
 
 end HypostructureErdos64EG

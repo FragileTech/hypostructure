@@ -156,12 +156,21 @@ receiver is unsaturated after peeling, node `[90]` holds with `L₄` and node
 `[91]` gives the charge bound on the unpeeled loads; the peeled loads left the
 pure Type A charge through exit `(4)`, and the support enters Part IX at node
 `[123]` (`rem:typeA-exit4-peeling-use`, alternative (iii) of
-`lem:density-mersenne`). -/
+`lem:density-mersenne`).
+
+`arm` names the prefix, entropy and visible-entry arms; the Type A lane block
+and each exit-`(4)` arm's block are added here. -/
 -- EG-NODE [101] exit 4? target-defective quotient
 -- EG-NODE [102] target-defect peels one load
 noncomputable def selectedTypeAExitSegment
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
+    (arm : TypeAEntryArms selected)
+    [FactKeys.Has (K .netChargeNegative) known]
+    [FactKeys.Has (K .typeABoundedSupport) known]
+    [FactKeys.Has (K .typeAPortReturn) known]
+    [FactKeys.Has (K .typeASaturatedReceiver) known]
+    [FactKeys.Has (K .typeASupport) known]
     [FactKeys.Has (K .typeASaturatedExitEntry) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .uncompressible) known]
@@ -224,6 +233,8 @@ noncomputable def selectedTypeAExitSegment
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       history (by key_fresh)
+  have lane : TypeALaneArms selected :=
+    ⟨arm, NetChargeLaneBlock_typeALowSurplus.ret descended⟩
   -- `[101]`
   match typeAExitFourDichotomy (data := spineData) descended
       (by key_fresh) (by key_fresh) with
@@ -234,6 +245,7 @@ noncomputable def selectedTypeAExitSegment
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           absentHistory (by key_fresh)
       exact selectedTypeAExitFiveToEight exitFree
+        ⟨lane, Or.inl (TypeAExitFourBlock_absent.ret exitFree)⟩
   | .left exitFourHistory =>
       -- `[102]`
       let peeled :=
@@ -289,6 +301,8 @@ noncomputable def selectedTypeAExitSegment
                               (presentation := erdosReceiverLoadProfile)
                               (data := spineData)).run threeFree (by key_fresh)
                           exact selectedTypeAExitFiveToEight exitFree
+                            ⟨lane, Or.inr (Or.inl
+                              (TypeAExitFourBlock_peeledVisible.ret exitFree))⟩
           | .right silentHistory =>
               -- `[94]` after peeling: the residual excess `E₄(w)`.
               let excess :=
@@ -303,6 +317,8 @@ noncomputable def selectedTypeAExitSegment
                   (presentation := erdosReceiverLoadProfile)
                   (data := spineData)).run excess (by key_fresh)
               exact selectedTypeAExitFiveToEight exitFree
+                ⟨lane, Or.inr (Or.inr
+                  (TypeAExitFourBlock_peeledNoVisible.ret exitFree))⟩
       | .right dischargedHistory =>
           -- `[90]` after peeling; `[91]`: the charge bound on the unpeeled
           -- loads (`lem:typeA-exit4-peeling-charge`).
@@ -311,6 +327,6 @@ noncomputable def selectedTypeAExitSegment
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
               (data := spineData)).run dischargedHistory (by key_fresh)
-          exact selectedTypeAExitFourDischargedRetest discharged
+          exact selectedTypeAExitFourDischargedRetest discharged lane
 
 end HypostructureErdos64EG

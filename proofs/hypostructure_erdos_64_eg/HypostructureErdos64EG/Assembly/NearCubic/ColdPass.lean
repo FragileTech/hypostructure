@@ -17,7 +17,7 @@ import Hypostructure.Graph.Strategy.EntropyClosure
 import Hypostructure.Graph.Strategy.SpineRows.Bridgeless
 import Hypostructure.Graph.Strategy.SpineRows.HotColdPartition
 import Hypostructure.Graph.Strategy.SpineRows.LiveHotBarrierCap
-import HypostructureErdos64EG.Assembly.Residuals
+import HypostructureErdos64EG.Assembly.Residuals.Node153ResidualOutcome
 
 /-!
 # Assembly: NearCubic / ColdPass
@@ -176,10 +176,15 @@ retained corridor are pairwise distinct up to the first failure; the decision
 `coldCutStatesDichotomy` splits it.  The (★) arm is returned as a ledger on
 which routing continues; the ¬(★) arm returns the explicitly constructed
 residual `K .coldRepeatedStateResidual` (G's first equal-state pair, its
-separating path context and its profile separation). -/
+separating path context and its profile separation).
+
+`arm` names the path into `[153]` (the absorbed lane with its prefix and
+entropy arm, or one of the three linear arms); the ¬(★) return is that path's
+subtype. -/
 noncomputable def nearCubicColdOccurrence
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
+    (arm : Node153Arm selected)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .coldCorridorState) known]
@@ -226,14 +231,14 @@ noncomputable def nearCubicColdOccurrence
     PSum
       (ExactLedger EGInput.{u} selected
         (K .coldCutStatesDistinct :: K .coldFirstFailureOccurrence :: known))
-      (Node153ResidualOutcome selected) :=
+      (Node153ResidualSubtypes selected) :=
   let occurrence :=
     (coldFirstFailureOccurrenceRow (data := spineData)).run history (by key_fresh)
   match coldCutStatesDichotomy (data := spineData) occurrence
       (by key_fresh) (by key_fresh) with
   | .left distinctHistory => .inl distinctHistory
   | .right repeatedHistory =>
-      .inr (node153Return repeatedHistory)
+      .inr (node153SubtypesReturn repeatedHistory arm)
 
 /-- **Node `[153]`, linear arm: the routing and the candidate family**, on the
 (★) arm.  `lem:cold-corridor-first-failure`: the routing (F1)--(F5) of the

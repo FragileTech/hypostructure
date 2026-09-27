@@ -151,7 +151,10 @@ common-port theta, read from `[95]`'s no arm — closes at `[98]` against the
 selection; exit `(3)` — two returns through the port failing `C_s` at a common
 packed window, read from `[97]`'s no arm — closes an accepted cycle at `[100]`,
 against the selection.  The exit-`(3)`-free arm enters the shared exit segment
-at `[101]`. -/
+at `[101]`.
+
+`arm` names the prefix and entropy arm; the visible-entry block is added at
+the exit segment. -/
 -- EG-NODE [95] exit 1? Mersenne return
 -- EG-NODE [96] target cycle
 -- EG-NODE [97] exit 2? power-of-two theta
@@ -161,6 +164,12 @@ at `[101]`. -/
 noncomputable def selectedTypeAVisibleExitChain
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
+    (arm : NetChargeArms selected)
+    [FactKeys.Has (K .netChargeNegative) known]
+    [FactKeys.Has (K .typeABoundedSupport) known]
+    [FactKeys.Has (K .typeAPortReturn) known]
+    [FactKeys.Has (K .typeASaturatedReceiver) known]
+    [FactKeys.Has (K .typeASupport) known]
     [FactKeys.Has (K .typeAVisibleEntry) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .uncompressible) known]
@@ -256,5 +265,6 @@ noncomputable def selectedTypeAVisibleExitChain
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                   threeFree (by key_fresh)
               exact selectedTypeAExitSegment entered
+                ⟨arm, Or.inl (TypeAEntryBlock_visible.ret entered)⟩
 
 end HypostructureErdos64EG

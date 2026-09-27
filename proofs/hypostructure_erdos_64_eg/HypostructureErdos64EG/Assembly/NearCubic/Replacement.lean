@@ -1,7 +1,7 @@
 import Hypostructure.Graph.Strategy.BlockedCompressionRows
 import Hypostructure.Graph.Strategy.ColdCorridorRows.CanonicalReplacement
 import Hypostructure.Graph.Strategy.ColdCorridorRows.GermTrichotomy
-import HypostructureErdos64EG.Assembly.Residuals
+import HypostructureErdos64EG.Assembly.Residuals.BlockedBarrierOverlapOutcome
 
 /-!
 # Assembly: NearCubic / Replacement
@@ -57,7 +57,10 @@ same-scale barrier overlap obstruction with connected overlap support; the
 uncrossing of `lem:window-system-realizability` (i)--(v) turns it into a
 scale-spanning serial window system, `lem:serial-system-sumset` fills its
 spectrum, and `lem:system-increment-arithmetic` closes it.  That uncrossing is
-the next producer. -/
+the next producer.
+
+`tau` names the `[160]` arm of the dense pass; `[172a]` is returned as that
+arm's subtype. -/
 -- EG-NODE [166] refined lexicographic minimality: \(Q=E\)
 -- EG-NODE [169] trivial neutral-configuration residual: dense packing, every corridor terminal and neutral, \(Q=E\); every window is blocked at every dyadic scale
 -- EG-NODE [170] all conditional graph-count bounds hold?
@@ -65,6 +68,7 @@ the next producer. -/
 noncomputable def selectedCanonicalReplacementContinuation
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
+    (tau : DenseTauArm selected)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .coldCanonicalReplacementSwap) known]
     [FactKeys.Has (K .hotColdPartition) known]
@@ -138,7 +142,7 @@ noncomputable def selectedCanonicalReplacementContinuation
     [FactKeys.Has (K .wedgeSupply) known]
     [FactKeys.Has (K .windowPackageSeparated) known]
     [FactKeys.Has (K .windowPresent) known] :
-    BlockedBarrierOverlapOutcome selected := by
+    BlockedBarrierOverlapSubtypes selected := by
   let trivial :=
     (canonicalReplacementTrivialRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -160,6 +164,6 @@ noncomputable def selectedCanonicalReplacementContinuation
           (K .windowPackageUnrealized) (K .blockedCompressionCap)
           (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
   | .right overlapHistory =>
-      exact blockedBarrierOverlapReturn overlapHistory
+      exact blockedBarrierOverlapSubtypesReturn overlapHistory tau
 
 end HypostructureErdos64EG

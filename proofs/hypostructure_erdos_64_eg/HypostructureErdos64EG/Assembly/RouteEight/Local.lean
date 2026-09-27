@@ -198,13 +198,16 @@ quotient-freeness test of the unified census.  Its failure `[348]` is the
 route-`8` quotient residual, returned at `[187]` as `thm:main` returns it; on
 the free arm the unified entry census is published and
 the branch runs node `[123]`, node `[181]`, and the reductions `[183]`--`[185]`
-to the joint balance at node `[186]`. -/
+to the joint balance at node `[186]`.  `arm` names the path's prefix, entropy
+arm and net-charge continuation; each residual is returned as the product of
+its generic facts with those blocks. -/
 -- EG-NODE [184] visible-first prefix test on the unchanged all-visible entries
 -- EG-NODE [185] canonical actual visible-four packages; non-overloaded count zero
 -- EG-NODE [186] OPEN: joint balance and silent-terminal exclusion; visible-entry history retained
 noncomputable def selectedRouteEightUnifiedResidual
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
+    (arm : Route8Arms selected)
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .remainderNormalized) known]
     [FactKeys.Has (K .selection) known]
@@ -306,7 +309,7 @@ noncomputable def selectedRouteEightUnifiedResidual
   match typeBSublinearDichotomy (data := spineData) history
       (by key_fresh) (by key_fresh) with
   | .right residualHistory =>
-      exact Or.inl (typeBSublinearReturn residualHistory)
+      exact Or.inl (typeBSublinearProductReturn residualHistory arm.1 arm.2.1 arm.2.2)
   | .left sublinearHistory =>
       let unifiedDeficit :=
         (route8UnifiedDeficitRow (BranchState := BranchState)
@@ -318,7 +321,8 @@ noncomputable def selectedRouteEightUnifiedResidual
       | .right residualHistory =>
           -- `[348]` → `[187]`: `thm:main` returns the failure of route-8
           -- quotient freeness as an open outcome (tex 369-372, 388-390).
-          exact Or.inr (Or.inl (route8QuotientReturn residualHistory))
+          exact Or.inr (Or.inl
+            (route8QuotientProductReturn residualHistory arm.1 arm.2.1 arm.2.2))
       | .left quotientFreeHistory =>
           let census :=
             (route8UnifiedEntryCensusRow (BranchState := BranchState)
@@ -345,6 +349,7 @@ noncomputable def selectedRouteEightUnifiedResidual
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
               (data := spineData)).run visibleOverload (by key_fresh)
-          exact Or.inr (Or.inr (route8JointBalanceReturn jointBalance))
+          exact Or.inr (Or.inr
+            (route8JointBalanceProductReturn jointBalance arm.1 arm.2.1 arm.2.2))
 
 end HypostructureErdos64EG

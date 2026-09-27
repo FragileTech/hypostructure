@@ -88,11 +88,19 @@ closure does not follow (see `lean-vs-paper-discrepancies.md`, Paper errors,
 `rem:typeA-exit4-peeling-use` sends a support with an exit-`(4)` witness through
 alternative (iii) of `lem:density-mersenne` to the unified target-defect/route-`8`
 ledger of node `[123]`, the one shared composition
-`selectedRouteEightUnifiedResidual`. -/
+`selectedRouteEightUnifiedResidual`.
+
+`arm` names the Type A lane arms; the retest block completes the net-charge
+continuation. -/
 -- EG-NODE none (the second pass of [90]--[91]; [92] recorded as a paper error)
 noncomputable def selectedTypeAExitFourDischargedRetest
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
+    (arm : TypeALaneArms selected)
+    [FactKeys.Has (K .typeAExitFourPeeled) known]
+    [FactKeys.Has (K .typeAExitFourReceiverDischarged) known]
+    [FactKeys.Has (K .typeAPeeledUnsaturatedDischarge) known]
+    [FactKeys.Has (K .typeASaturatedHandoffExitFour) known]
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .negativeSupport) known]
     [FactKeys.Has (K .selection) known]
@@ -209,5 +217,6 @@ noncomputable def selectedTypeAExitFourDischargedRetest
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       burdened (by key_fresh)
   exact selectedRouteEightUnifiedResidual cored
+    (arm.dischargedRetest (TypeAArmBlock_dischargedRetest.ret cored))
 
 end HypostructureErdos64EG

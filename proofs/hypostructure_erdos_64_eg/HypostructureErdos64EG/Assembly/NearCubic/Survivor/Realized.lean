@@ -60,6 +60,7 @@ noncomputable def Assembly.Internal.nearCubicRealized
       -- carries them.
       let stubbed := nearCubicColdStubFacts rated
       exact nearCubicLargeBudgetColdRate (nearCubicFullRank stubbed)
+        (Or.inl (Route8LanePrefixBlock_realizedColdBelow.ret stubbed))
   | .right atOrAboveHistory =>
       let stubs := nearCubicColdStubs atOrAboveHistory
       match coldMassDichotomy (data := spineData) stubs
@@ -69,6 +70,7 @@ noncomputable def Assembly.Internal.nearCubicRealized
             (densityBudgetRow (data := spineData)).run boundedHistory
               (by key_fresh)
           exact nearCubicLargeBudgetDensityCap (nearCubicFullRank density)
+            (Or.inl (Route8LanePrefixBlock_realizedColdAtOrAbove.ret density))
       | .left linearHistory =>
           -- `[25]`--`[34]` and `[48]` are facts of G on the linear arm too:
           -- the remainder normalization, the external-incidence and wedge
@@ -91,7 +93,8 @@ noncomputable def Assembly.Internal.nearCubicRealized
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile) (data := spineData)).run
               localized (by key_fresh)
-          match nearCubicColdOccurrence (nearCubicColdCorridorState bridgeless) with
+          match nearCubicColdOccurrence (nearCubicColdCorridorState bridgeless)
+              (Or.inr (Or.inr (Or.inr (Node153LinearBlock_realized.ret bridgeless)))) with
           | .inr repeated =>
               -- `[153]`, ¬(★): G's first equal-state pair, returned.
               exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inl repeated))))
@@ -110,10 +113,13 @@ noncomputable def Assembly.Internal.nearCubicRealized
                   (by key_fresh) (by key_fresh) with
               | .left distinguishedHistory =>
                   exact Or.inr (Or.inr (Or.inr (Or.inl
-                    (coldBranchClosedReturn
-                      (nearCubicColdTable distinguishedHistory)))))
+                    (Or.inr (Or.inr (Or.inl
+                      (coldBranchClosed_linearRealizedDistinguishedReturn
+                        (nearCubicColdTable distinguishedHistory))))))))
               | .right silentHistory =>
                   exact Or.inr (Or.inr (Or.inr (Or.inl
-                    (coldBranchClosedReturn (nearCubicColdTable silentHistory)))))
+                    (Or.inr (Or.inr (Or.inr
+                      (coldBranchClosed_linearRealizedSilentReturn
+                        (nearCubicColdTable silentHistory))))))))
 
 end HypostructureErdos64EG

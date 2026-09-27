@@ -132,7 +132,9 @@ equality closes at `[106]` — proper scope by `lem:proper-smearing` against
 `lem:replacement`, whole-graph scope by `lem:no-silent-global-smearing` against
 the selection's minimality.  `[107]` exit `(7)`: the decorated handoff fan
 envelope, built at node `[108]`, returns to Type B at `[65]`.  Its absence is
-`[109]`, the route-`8` residual continued in Part IX. -/
+`[109]`, the route-`8` residual continued in Part IX.
+
+`arm` names the Type A lane arms with the exit-`(4)` block. -/
 -- EG-NODE [103] exit 5? target-complete response compression
 -- EG-NODE [104] uncompressibility contradiction
 -- EG-NODE [105] exit 6? proper/whole-graph support dependence
@@ -144,6 +146,7 @@ envelope, built at node `[108]`, returns to Type B at `[65]`.  Its absence is
 noncomputable def selectedTypeAExitFiveToEight
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
+    (arm : TypeAExitFourArms selected)
     [FactKeys.Has (K .typeASaturatedHandoffExitFourFree) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .replacementExclusion) known]
@@ -242,7 +245,7 @@ noncomputable def selectedTypeAExitFiveToEight
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile)
                   (data := spineData)).run handoffHistory (by key_fresh)
-              exact selectedTypeADecoratedHandoff envelope
+              exact selectedTypeADecoratedHandoff envelope arm
           | .right residual =>
               -- `[109]`: the route-`8` residual, continued in Part IX.
               let normal :=
@@ -264,6 +267,6 @@ noncomputable def selectedTypeAExitFiveToEight
               let charged :=
                 (typeBAbsorbedChargeRow (data := spineData)).run returned
                   (by key_fresh)
-              exact selectedRouteEightResidual charged
+              exact selectedRouteEightResidual charged arm
 
 end HypostructureErdos64EG

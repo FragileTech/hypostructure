@@ -96,11 +96,18 @@ branch at `[65]`.  There `typeBDecoratedAssignedSupportRow` reads the inherited
 selection, normalization, and uncompressibility facts, proves
 `lem:decorated-fan-admissibility`, and commits the envelope's assigned support.
 Then `[67]`--`[70]` run on that decorated envelope
-(`selectedTypeBDecoratedContinuation`). -/
+(`selectedTypeBDecoratedContinuation`).
+
+`arm` names the Type A lane arms with the exit-`(4)` block. -/
 -- EG-NODE [65] Type B assigned support: high-degree fan centers and decorated handoff data
 noncomputable def selectedTypeADecoratedHandoff
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
+    (arm : TypeAExitFourArms selected)
+    [FactKeys.Has (K .typeAExitFiveFree) known]
+    [FactKeys.Has (K .typeAExitSevenHandoff) known]
+    [FactKeys.Has (K .typeAExitSixFree) known]
+    [FactKeys.Has (K .typeASaturatedHandoffExitFourFree) known]
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .netChargeCap) known]
     [FactKeys.Has (K .uncompressible) known]
@@ -167,7 +174,7 @@ noncomputable def selectedTypeADecoratedHandoff
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       assigned (by key_fresh)
-  exact selectedTypeBDecoratedContinuation entry
+  exact selectedTypeBDecoratedContinuation entry arm
     (normalFormFresh := by key_fresh)
     (decoratedHeavyFresh := by key_fresh)
     (decoratedDegreeFourFresh := by key_fresh)

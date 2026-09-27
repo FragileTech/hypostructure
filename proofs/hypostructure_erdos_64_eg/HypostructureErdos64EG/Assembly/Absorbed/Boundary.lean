@@ -1,4 +1,5 @@
 import HypostructureErdos64EG.Assembly.RouteEight.Boundary
+import HypostructureErdos64EG.Assembly.Residuals.ColdBranchClosedOutcome
 
 /-!
 # Assembly: Absorbed / Boundary
@@ -20,8 +21,9 @@ fan data continues through Type B to the route-8 residuals, and its genuine
 configurations `[176]` run `[154]`--`[157]`, `[165]`--`[168]`: the G2 outcome
 `[156]`, and the arm of `[175]` read at `[177]` on which every selected corridor
 is subcubic, are the local cold exclusion `K .coldBranchClosed` retained at
-`[187]`. -/
+`[187]`, as the product of its generic facts with the path's entropy,
+window and exit blocks. -/
 abbrev SelectedAbsorbedGermBoundary (selected : EGInput.{u}) :=
-  SelectedRouteEightBoundary selected ∨ ColdBranchClosedOutcome selected
+  SelectedRouteEightBoundary selected ∨ ColdBranchClosedOutcome_product selected
 
 end HypostructureErdos64EG

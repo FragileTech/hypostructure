@@ -1,5 +1,8 @@
 import HypostructureErdos64EG.Assembly.NetCharge.Boundary
 import HypostructureErdos64EG.Assembly.Residuals.Node54ResidualOutcome
+import HypostructureErdos64EG.Assembly.Residuals.Node162ResidualOutcome
+import HypostructureErdos64EG.Assembly.Residuals.BlockedBarrierOverlapOutcome
+import HypostructureErdos64EG.Assembly.Residuals.Route8RateFailsOutcome
 
 /-!
 # Assembly: NearCubic / Boundary
@@ -23,15 +26,17 @@ residual `[172a]`, the local cold-terminal exclusion of the realized
 package's silent cold configurations (`[157]`, retained at `[187]`), and the
 three returned residuals of the structural exhaustion at `[153]` (G's first
 equal-state pair), `[162]` (a long corridor of G through a heavy centre) and
-`[54]` (the configuration at G where the joint realization fails). -/
+`[54]` (the configuration at G where the joint realization fails).  Each
+residual is stated as the disjunction of its subtypes, one per distinct fact
+set of the ledger at its return. -/
 abbrev SelectedNearCubicSurvivorBoundary (selected : EGInput.{u}) :=
   SelectedNetChargeBoundary selected ∨
-    Route8RateFailsOutcome selected ∨
-      BlockedBarrierOverlapOutcome selected ∨
-        ColdBranchClosedOutcome selected ∨
-        Node153ResidualOutcome selected ∨
-        Node162ResidualOutcome selected ∨
-        Node54ResidualOutcome selected
+    Route8RateFailsSubtypes selected ∨
+      BlockedBarrierOverlapSubtypes selected ∨
+        ColdBranchClosedLinearSubtypes selected ∨
+        Node153ResidualSubtypes selected ∨
+        Node162ResidualSubtypes selected ∨
+        Node54ResidualSubtypes selected
 
 /-- The near-cubic branch either leaves through the paper's named
 target-defect exit or, after all sparse exits have been excluded, follows the

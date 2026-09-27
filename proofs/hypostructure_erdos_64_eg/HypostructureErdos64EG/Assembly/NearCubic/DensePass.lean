@@ -68,7 +68,10 @@ arm `[157]` the only outcome not refuted by a ledger fact is the neutral
 equal-length terminal configuration `[163]`, a symmetry
 (`lem:neutral-germ-symmetry`): its canonical-replacement arm `[165]`--`[166]`
 enters the blocked class `[169]`, and its genuine symmetric strand pair
-`[167]`/`[168]` closes against the window stub structure. -/
+`[167]`/`[168]` closes against the window stub structure.
+
+`tau` names the `[160]` arm the pass runs on; the `[153]`, `[162]`, `[172a]`
+and `[187]` returns state the subtype of that arm. -/
 -- EG-NODE [162] dense hot/cold pass: run [22]--[24] and [145]--[157] on the dense residual; [23], [149], [155], [156], [157] close as before; bounded arm of [153] and [146]/[160] arms return to [25]
 -- EG-NODE [163] neutral equal-length terminal configuration: second strand graph-realized?
 -- EG-NODE [165] canonical replacement \(E\ne Q\): swap \(Q\to E\) gives a same-size counterexample
@@ -77,6 +80,7 @@ enters the blocked class `[169]`, and its genuine symmetric strand pair
 noncomputable def nearCubicDenseLinear
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
+    (tau : DenseTauArm selected)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .uncompressible) known]
@@ -132,7 +136,7 @@ noncomputable def nearCubicDenseLinear
   let state := nearCubicColdCorridorState bridgeless
   -- `[153]`: the first failures and the exact (★) decision; ¬(★) returns G's
   -- first equal-state pair.
-  match nearCubicColdOccurrence state with
+  match nearCubicColdOccurrence state (tau.node153Arm state) with
   | .inr repeated => exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inl repeated))))
   | .inl distinct =>
       -- `[162]` on the (★) arm: the heavy-entry test; its failure returns the long
@@ -141,7 +145,7 @@ noncomputable def nearCubicDenseLinear
           (by key_fresh) (by key_fresh) with
       | .right heavyHistory =>
           exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl
-            (node162Return heavyHistory))))))
+            (node162SubtypesReturn heavyHistory tau))))))
       | .left heavyTerminal =>
           let terminal :=
             (denseColdCorridorsTerminalRow (data := spineData)).run heavyTerminal
@@ -160,7 +164,8 @@ noncomputable def nearCubicDenseLinear
               (by key_fresh) (by key_fresh) with
           | .left distinguishedHistory =>
               exact Or.inr (Or.inr (Or.inr (Or.inl
-                (coldBranchClosedReturn (nearCubicColdTable distinguishedHistory)))))
+                (coldBranchClosedLinearDenseReturn
+                  (nearCubicColdTable distinguishedHistory) tau))))
           | .right silentHistory =>
               let neutralConfiguration :=
                 (neutralEqualLengthTerminalRow (data := spineData)).run silentHistory
@@ -173,7 +178,7 @@ noncomputable def nearCubicDenseLinear
                     (canonicalReplacementSwapRow (data := spineData)).run
                       canonicalHistory (by key_fresh)
                   exact Or.inr (Or.inr (Or.inl
-                    (selectedCanonicalReplacementContinuation swapped)))
+                    (selectedCanonicalReplacementContinuation swapped tau)))
               | .right genuineHistory =>
                   let survivor :=
                     (twoStrandSurvivorRow (data := spineData)).run genuineHistory

@@ -109,11 +109,15 @@ set_option maxHeartbeats 8000000 in
 /-- **Node `[177]`, yes**: on the `[175]` yes arm with a counted remainder core
 at the heavy centre (`K .absorbedHandoffCore`), the decorated handoff fan data
 at the first high centre of `G`'s canonical absorbed half-edge enters Type B at
-`[65]`, followed by the common registered charge tail. -/
+`[65]`, followed by the common registered charge tail.
+
+`arm` names the arms fixed before the Type B chain (prefix, entropy, the
+absorbed lane and its cold-germ arm). -/
 -- EG-NODE [177] decorated handoff fan data at the heavy centre \(z\): continue at Type B [65]
 noncomputable def selectedAbsorbedFanData
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
+    (arm : BChainArms selected)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .replacementExclusion) known]
@@ -180,7 +184,7 @@ noncomputable def selectedAbsorbedFanData
   let fanEntry :=
     (absorbedGermFanEnvelopeRow (data := spineData)).run charged
       (by key_fresh)
-  exact Or.inl <| Assembly.Internal.selectedAbsorbedFanChargeContinuation fanEntry
+  exact Or.inl <| Assembly.Internal.selectedAbsorbedFanChargeContinuation fanEntry arm
         (by key_fresh)
         (by key_fresh)
         (by key_fresh)
@@ -257,12 +261,17 @@ neutral configuration `[163]` is split: its genuine second strand
 closes at `[167]`/`[168]` and whose canonical replacement is published with
 `Q = E` (`[165]`--`[166]`); the case-(ii) complement of a mixed family then
 continues at `[177]`.  On its no arm every selected corridor is `[177]` fan
-data. -/
+data.
+
+`arm` names the prefix and entropy arm; the local cold-terminal exclusion is
+returned as the product of its generic facts with the path's entropy, window
+and exit blocks. -/
 -- EG-NODE [175] selected corridor meets a high-degree vertex?
 -- EG-NODE [176] graph-realized (F5) configuration: closed by [154]--[157], [165]--[168]
 noncomputable def selectedAbsorbedGermResidual
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
+    (arm : NetChargeArms selected)
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .replacementExclusion) known]
@@ -347,7 +356,10 @@ noncomputable def selectedAbsorbedGermResidual
           -- `[177]`: does a counted remainder core exist at the heavy centre?
           match absorbedHandoffCoreDichotomy (data := spineData) outsideHistory
               (by key_fresh) (by key_fresh) with
-          | .left coreHistory => exact selectedAbsorbedFanData coreHistory
+          | .left coreHistory =>
+              exact selectedAbsorbedFanData coreHistory
+                (arm.absorbed (NetChargeLaneBlock_absorbedGerm.ret coreHistory)
+                  (Or.inr (AbsorbedGermBlock_none.ret coreHistory)))
           | .right noCoreHistory =>
               -- `[177]` no: the half-edge is charged by the exact (F4) count to
               -- node `[219]`'s corridor loss (user-approved (F4) repair
@@ -357,7 +369,9 @@ noncomputable def selectedAbsorbedGermResidual
                 (absorbedF4ChargeRow (data := spineData)).run noCoreHistory
                   (by key_fresh)
               let closedHistory := nearCubicColdTable charged
-              exact Or.inr (coldBranchClosedReturn closedHistory)
+              exact Or.inr (coldBranchClosedProductReturn closedHistory
+                arm.2.toColdBranchClosedEntropyArm arm.1.toColdBranchClosedWindowArm
+                (coldBranchClosedExitNoGermChargedReturn closedHistory))
       | .right subcubicHistory =>
           -- `[176]` on this arm: no candidate and no absorbed half-edge, so
           -- G's selected family is empty and G has no ambient-cubic cold
@@ -367,7 +381,9 @@ noncomputable def selectedAbsorbedGermResidual
             (coldSelectedFamilyEmptyRow (data := spineData)).run subcubicHistory
               (by key_fresh)
           let closedHistory := nearCubicColdTable emptyHistory
-          exact Or.inr (coldBranchClosedReturn closedHistory)
+          exact Or.inr (coldBranchClosedProductReturn closedHistory
+            arm.2.toColdBranchClosedEntropyArm arm.1.toColdBranchClosedWindowArm
+            (coldBranchClosedExitNoGermSubcubicReturn closedHistory))
   | .left positiveHistory =>
       let positiveFamily :=
         (absorbedGermFamilyPositiveRow (data := spineData)).run positiveHistory
@@ -385,7 +401,10 @@ noncomputable def selectedAbsorbedGermResidual
           let fanData :=
             (absorbedGermFanDataRow (data := spineData)).run
               distinguishedHistory (by key_fresh)
-          exact Or.inr (coldBranchClosedReturn (nearCubicColdTable fanData))
+          let closedHistory := nearCubicColdTable fanData
+          exact Or.inr (coldBranchClosedProductReturn closedHistory
+            arm.2.toColdBranchClosedEntropyArm arm.1.toColdBranchClosedWindowArm
+            (coldBranchClosedExitGermDistinguishedReturn closedHistory))
       | .right silentHistory =>
           -- `[176]` on the absorbed residual: the silent family's neutral
           -- (F5) configuration, without the dense-residual terminality of
@@ -428,7 +447,10 @@ noncomputable def selectedAbsorbedGermResidual
                   -- heavy centre?
                   match absorbedHandoffCoreDichotomy (data := spineData)
                       outsideHistory (by key_fresh) (by key_fresh) with
-                  | .left coreHistory => exact selectedAbsorbedFanData coreHistory
+                  | .left coreHistory =>
+                      exact selectedAbsorbedFanData coreHistory
+                        (arm.absorbed (NetChargeLaneBlock_absorbedGerm.ret coreHistory)
+                          (Or.inl (AbsorbedGermBlock_positive.ret coreHistory)))
                   | .right noCoreHistory =>
                       -- `[177]` no: the (F4) charge to node `[219]`'s corridor
                       -- loss; the local cold-terminal exclusion was retained
@@ -436,12 +458,16 @@ noncomputable def selectedAbsorbedGermResidual
                       let charged :=
                         (absorbedF4ChargeRow (data := spineData)).run
                           noCoreHistory (by key_fresh)
-                      exact Or.inr (coldBranchClosedReturn charged)
+                      exact Or.inr (coldBranchClosedProductReturn charged
+                        arm.2.toColdBranchClosedEntropyArm arm.1.toColdBranchClosedWindowArm
+                        (coldBranchClosedExitGermCanonicalChargedReturn charged))
               | .right subcubicHistory =>
                   -- `[176]`: every selected corridor is a genuine (F5)
                   -- configuration, closed above by `[154]`--`[157]` and
                   -- `[165]`--`[168]`; the local cold-terminal exclusion is
                   -- retained at `[187]`.
-                  exact Or.inr (coldBranchClosedReturn subcubicHistory)
+                  exact Or.inr (coldBranchClosedProductReturn subcubicHistory
+                    arm.2.toColdBranchClosedEntropyArm arm.1.toColdBranchClosedWindowArm
+                    (coldBranchClosedExitGermCanonicalSubcubicReturn subcubicHistory))
 
 end HypostructureErdos64EG

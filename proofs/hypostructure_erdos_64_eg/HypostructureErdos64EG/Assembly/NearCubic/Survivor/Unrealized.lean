@@ -57,7 +57,9 @@ noncomputable def Assembly.Internal.nearCubicDensePassRateFailed
       let stubs := nearCubicColdStubs atOrAboveHistory
       match coldMassDichotomy (data := spineData) stubs
           (by key_fresh) (by key_fresh) with
-      | .left linearHistory => exact nearCubicDenseLinear linearHistory
+      | .left linearHistory =>
+          exact nearCubicDenseLinear linearHistory
+            (Or.inr (DenseTauBlock_belowRateFails.ret linearHistory))
       | .right boundedHistory =>
           let density :=
             (densityBudgetRow (data := spineData)).run boundedHistory
@@ -96,16 +98,21 @@ noncomputable def Assembly.Internal.nearCubicDensePassAtOrAbove
       -- package arm).
       let stubbed := nearCubicColdStubFacts rated
       exact nearCubicLargeBudgetColdRate (nearCubicFullRank stubbed)
+        (Or.inr (Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdBelow.ret stubbed))
   | .right atOrAboveHistory =>
       let stubs := nearCubicColdStubs atOrAboveHistory
       match coldMassDichotomy (data := spineData) stubs
           (by key_fresh) (by key_fresh) with
-      | .left linearHistory => exact nearCubicDenseLinear linearHistory
+      | .left linearHistory =>
+          exact nearCubicDenseLinear linearHistory
+            (Or.inl (DenseTauBlock_atOrAbove.ret linearHistory))
       | .right boundedHistory =>
           let density :=
             (densityBudgetRow (data := spineData)).run boundedHistory
               (by key_fresh)
           exact nearCubicLargeBudgetDensityCap (nearCubicFullRank density)
+            (Or.inr
+              (Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove.ret density))
 
 set_option maxHeartbeats 8000000 in
 /-- **The dense-packing residual, the no-arm of `[158]`.**  `[159]`: the exact

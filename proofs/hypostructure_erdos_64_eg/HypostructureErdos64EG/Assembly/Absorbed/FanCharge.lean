@@ -20,10 +20,13 @@ set_option maxHeartbeats 8000000 in
 /-- The `[177]` → `[65]` entry of the absorbed case-(ii) family.  The literal
 `[177]` ledger, possibly already carrying `[176]`'s closure for the case-(i)
 subfamily, receives the object-wide receiver routing of `[88]` read by the
-common Part IX census, and the common continuation runs `[67]`--`[85]` on it. -/
+common Part IX census, and the common continuation runs `[67]`--`[85]` on it.
+
+`arm` names the arms fixed before the Type B chain. -/
 noncomputable def Assembly.Internal.selectedAbsorbedFanChargeContinuation
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
+    (arm : BChainArms selected)
     [FactKeys.Has (K .typeBFanEntry) known]
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .bridgeless) known]
@@ -149,6 +152,6 @@ noncomputable def Assembly.Internal.selectedAbsorbedFanChargeContinuation
    :
     SelectedRouteEightBoundary selected := by
   letI := cubicFresh
-  exact Assembly.Internal.selectedTypeBFanContinuation history
+  exact Assembly.Internal.selectedTypeBFanContinuation history arm
 
 end HypostructureErdos64EG

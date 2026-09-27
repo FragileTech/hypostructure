@@ -169,7 +169,9 @@ the threshold algebra.  `[89]`: is some receiver saturated?  No: `[90]`
 `[86]`.  `[89]` reads `[88]`.  Yes: `lem:typeA-port-return`, then `[93]`: does a saturated receiver
 see `s` visible receiver-entry returns at one port?  Yes → exits `[95]`--`[100]`
 and the shared exit segment; no → `[94]` `S_sil^exc(X) ≥ s·D_A(X)` and the same
-exit segment from `[101]`. -/
+exit segment from `[101]`.
+
+`arm` names the prefix and entropy arm; each visible-entry arm adds its block. -/
 -- EG-NODE [86] Type A: $\sigma(X)=0$, hence $\defp(X)<|X|/4$
 -- EG-NODE [87] $P_{13}$-free; subcubic case has $\diam(X)\le11$ and $|X|\le6142$
 -- EG-NODE [88] raw thresholds $H_0\le4$, $H_1\le8$, $H_2\le12$
@@ -182,6 +184,8 @@ exit segment from `[101]`. -/
 noncomputable def selectedTypeALowSurplusContinuation
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
+    (arm : NetChargeArms selected)
+    [FactKeys.Has (K .netChargeNegative) known]
     [FactKeys.Has (K .negativeSupport) known]
     [FactKeys.Has (K .typeALowSurplus) known]
     [FactKeys.Has (K .cubicBaseline) known]
@@ -277,7 +281,7 @@ noncomputable def selectedTypeALowSurplusContinuation
           (by key_fresh) (by key_fresh) with
       | .left visibleHistory =>
           -- `[95]`--`[109]` on the visible lane.
-          exact selectedTypeAVisibleExitChain visibleHistory
+          exact selectedTypeAVisibleExitChain visibleHistory arm
       | .right noVisibleHistory =>
           -- `[94]`
           let excess :=
@@ -292,5 +296,6 @@ noncomputable def selectedTypeALowSurplusContinuation
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
               excess (by key_fresh)
           exact selectedTypeAExitSegment entered
+            ⟨arm, Or.inr (TypeAEntryBlock_noVisible.ret entered)⟩
 
 end HypostructureErdos64EG

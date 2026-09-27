@@ -26,10 +26,19 @@ spine: its ¬(★) arm returns the explicitly constructed residual
 `K .coldRepeatedStateResidual`.  Node `[162]`'s terminality is not run here:
 the paper states it only on the dense-packing residual
 (`lem:dense-cold-pass`), and node `[176]` does not use it
-(`lem:absorbed-germ-fan-data` (i)). -/
+(`lem:absorbed-germ-fan-data` (i)).
+
+`arm` names the prefix and entropy arm; `[153]` is returned as the absorbed-
+lane subtype of that path. -/
 noncomputable def selectedAbsorbedGermPrerequisites
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
+    (arm : NetChargeArms selected)
+    [FactKeys.Has (K .absorbedConfigurationResidual) known]
+    [FactKeys.Has (K .exactCollisionFails) known]
+    [FactKeys.Has (K .largeBudgetResidual) known]
+    [FactKeys.Has (K .netDeficiencyCap) known]
+    [FactKeys.Has (K .route8Rate) known]
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .hotColdPartition) known]
@@ -84,9 +93,10 @@ noncomputable def selectedAbsorbedGermPrerequisites
           K .coldFailureDefectRoute :: K .coldFailureCycle ::
           K .coldCutStatesDistinct :: K .coldFirstFailureOccurrence ::
           K .coldCorridorState :: K .coldReturnCorridors :: known))
-      (Node153ResidualOutcome selected) :=
+      (Node153ResidualSubtypes selected) :=
   let state := nearCubicColdCorridorState history
-  match nearCubicColdOccurrence state with
+  match nearCubicColdOccurrence state
+      (Or.inl ⟨coldBranchClosedAbsorbedCommonReturn history, arm.1, arm.2⟩) with
   | .inl distinct => .inl (nearCubicColdCandidates distinct)
   | .inr repeated => .inr repeated
 

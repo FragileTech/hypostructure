@@ -23,11 +23,16 @@ set_option maxHeartbeats 8000000 in
 arm.  The object-wide receiver routing of `[88]`, read by the common Part IX
 census, is published on this literal residual; `[65]`
 (`typeBAssignedSupportRow`, `def:canonical-decomp`) publishes the ordinary
-assigned support, and the common continuation runs `[67]`--`[85]`. -/
+assigned support, and the common continuation runs `[67]`--`[85]`.
+
+`arm` names the prefix and entropy arm; the Type B high-surplus lane block is
+added before the Type B chain. -/
 -- EG-NODE [65] Type B assigned support: high-degree fan centers and decorated handoff data
 noncomputable def selectedTypeBHighSurplusContinuation
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
+    (arm : NetChargeArms selected)
+    [FactKeys.Has (K .netChargeNegative) known]
     [FactKeys.Has (K .typeBHighSurplus) known]
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .netChargeCap) known]
@@ -169,5 +174,6 @@ noncomputable def selectedTypeBHighSurplusContinuation
   let charged := (typeBAbsorbedChargeRow (data := spineData)).run entry
     (by key_fresh)
   exact Assembly.Internal.selectedTypeBFanContinuation charged
+    (arm.typeBHighSurplus (NetChargeLaneBlock_typeBHighSurplus.ret charged))
 
 end HypostructureErdos64EG
