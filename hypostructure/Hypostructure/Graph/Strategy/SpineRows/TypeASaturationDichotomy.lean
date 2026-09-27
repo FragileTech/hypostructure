@@ -3,8 +3,8 @@ import Hypostructure.Graph.Contracts.TypeA.Support
 
 /-! # Node `[89]`: is some receiver of `X₀` saturated?
 
-`L(w) ≥ s·q(w)?`, asked of the Type A support `X₀` read from
-`K .typeALowSurplus`.  The yes arm (`K .typeASaturatedReceiver`) is node
+`L(w) ≥ s·q(w)?`, asked of the Type A support `X₀` whose routing and threshold
+algebra node `[88]` published (`K .typeAReceiverRouting`).  The yes arm (`K .typeASaturatedReceiver`) is node
 `[93]`'s entry; the no arm (`K .typeAUnsaturatedReceivers`) is node `[90]`,
 `L(w) ≤ s·q(w) − 1` at every receiver of `X₀`, written subtraction-free. -/
 
@@ -27,7 +27,7 @@ noncomputable def typeASaturationDichotomy
     (previous :
       ExactLedger (Input BranchState Presentation presentation data) current
         known)
-    [FactKeys.Has (K .typeALowSurplus) known]
+    [FactKeys.Has (K .typeAReceiverRouting) known]
     (saturatedFresh : K .typeASaturatedReceiver ∉ known)
     (unsaturatedFresh : K .typeAUnsaturatedReceivers ∉ known) :
     Decision (K .typeASaturatedReceiver) (K .typeAUnsaturatedReceivers) previous :=
@@ -36,7 +36,8 @@ noncomputable def typeASaturationDichotomy
     (Classical.choice (show Nonempty
         ((K .typeASaturatedReceiver).At current ⊕ (K .typeAUnsaturatedReceivers).At current) from by
       classical
-      obtain ⟨piece, pinned, _⟩ := (previous.get (K .typeALowSurplus)).down
+      obtain ⟨piece, pinned, _routing⟩ :=
+        (previous.get (K .typeAReceiverRouting)).down
       by_cases saturated :
           ∃ receiver, SaturatedReceiverSpec data.toParameters current.object piece receiver
       · exact ⟨.inl ⟨⟨piece, pinned, saturated⟩⟩⟩

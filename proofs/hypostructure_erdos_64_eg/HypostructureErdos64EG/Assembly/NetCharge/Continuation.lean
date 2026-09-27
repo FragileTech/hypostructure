@@ -60,7 +60,7 @@ noncomputable abbrev netChargeContinuationKeys : FactKeys EGInput.{u} :=
     K .typeASupport, K .typeANoVisibleEntry, K .typeAExitFourAbsent,
     K .typeAExitSixProperScope,
     K .typeAExitSixGlobalScope,
-    K .typeAExitEightNotSilent, K .typeBAssignedSupport,
+    K .typeBAssignedSupport,
     K .highCentreNormalForm, K .typeBFanHeavyCentre,
     K .typeBFanDegreeFourCentres, K .typeBFanLocalDichotomy,
     K .sameCenterOpenPortCompatibility, K .fanCertificateCap,
@@ -85,8 +85,7 @@ noncomputable abbrev netChargeContinuationKeys : FactKeys EGInput.{u} :=
     K .route8ExtractedEntryCensus, K .route8UnifiedTrueTwoCarrierEntry,
     K .route8PeelingDescent, K .route8StageRateFailed, K .route8DemandLedger,
     K .route8DemandAbsorption, K .route8OpenBoundarySaturated,
-    K .route8DemandUnitCount, K .route8WindowBlockers, K .windowShadowSignature,
-    K .windowShadowSingletonTail, K .windowShadowHitCycle,
+    K .route8DemandUnitCount, K .route8WindowBlockers, K .windowShadowHitCycle,
     K .windowShadowHitExcluded, K .route8UnpaidExitFourResidual,
     K .route8UnifiedVisibleResidual, K .route8UnifiedVisibleOverload,
     K .route8JointBalance, K .route8TwoCarrierExit,
@@ -96,9 +95,22 @@ noncomputable abbrev netChargeContinuationKeys : FactKeys EGInput.{u} :=
     K .fanClosedPortTypeBRouting, K .compatiblePairTypeBRouting,
     K .triangularPortTypeBRouting, K .triangularShoulderCompletion,
     K .triangularPortReturn, K .triangularFirstLanding,
-    K .triangularCrossShoulder, K .typeASilentExitSevenFree,
-    K .coldNoPositiveGerm, K .coldGermSomeRealizing, K .coldGermNoneRealizing,
-    K .coldGermSomeDistinguishing, K .coldGermNoneDistinguishing]
+    K .triangularCrossShoulder, K .coldNoPositiveGerm, K .coldGermSomeRealizing, K .coldGermNoneRealizing,
+    K .coldGermSomeDistinguishing, K .coldGermNoneDistinguishing,
+    K .typeAPeeledSaturatedReceiver,
+    K .typeAPeeledUnsaturatedDischarge,
+    K .typeAPeeledVisibleEntry,
+    K .typeAPeeledNoVisibleEntry,
+    K .typeAPeeledSilentExcess,
+    K .typeAPeeledExitOneReturn,
+    K .typeAPeeledExitOneFree,
+    K .typeAPeeledExitTwoTheta,
+    K .typeAPeeledExitTwoFree,
+    K .typeAPeeledExitThreeCollision,
+    K .typeAPeeledExitThreeFree,
+    K .typeAExitThreeCycle,
+    K .typeAExitSevenEnvelope,
+    K .route8GlobalSqueeze]
 
 /-- **Nodes `[57]`--`[64]`: the large-budget net-charge split**, on the `[56]`
 residual of either spine arm.  `[57]` enters the asymptotic order regime and
@@ -129,6 +141,7 @@ noncomputable def selectedNetChargeContinuation
     [FactKeys.Has (K .stubSupply) known]
     [FactKeys.Has (K .boundaryDemand) known]
     [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .localAlgebra) known]
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .hotColdPartition) known]
     [FactKeys.Has (K .slackIndependent) known]

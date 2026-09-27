@@ -15,8 +15,7 @@ absorption `A₀`: the canonical window blocker `b₀`. -/
     {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.route8WindowBlockers
-    { Requires := [K .route8UnifiedEntryCensus, K .route8DemandAbsorption,
-        K .route8DemandLedger]
+    { Requires := [K .route8UnifiedEntryCensus, K .route8DemandAbsorption]
       Produces := [K .route8WindowBlockers]
       requiresUnique := by key_fresh
       producesUnique := by simp

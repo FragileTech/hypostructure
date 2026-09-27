@@ -27,7 +27,7 @@ universe u v
         K .route8UnifiedVisibleResidual, K .route8PeelingDescent,
         K .route8StageRateFailed, K .route8DemandLedger,
         K .route8DemandAbsorption, K .route8UnifiedDeficit,
-        K .route8DemandUnitCount]
+        K .route8DemandUnitCount, K .cubicBaseline]
       Produces := [K .route8JointBalance]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -35,7 +35,7 @@ universe u v
     (fun inputs =>
       .cons (key := K .route8JointBalance)
         ⟨Graph.Contracts.RouteEight.route8JointBalance data.toParameters
-          inputs.current.object
+          inputs.current.object (inputs.get (K .cubicBaseline)).down.1
           (inputs.get (K .route8UnifiedVisibleOverload)).down
           (inputs.get (K .route8UnifiedVisibleResidual)).down
           (inputs.get (K .route8PeelingDescent)).down

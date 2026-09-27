@@ -33,7 +33,6 @@ noncomputable def selectedTypeBDecoratedContinuation
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
-    [FactKeys.Has (K .typeAReceiverRouting) known]
     (normalFormFresh : K .highCentreNormalForm ∉ known)
     (decoratedHeavyFresh : K .typeBFanHeavyCentre ∉ known)
     (decoratedDegreeFourFresh : K .typeBFanDegreeFourCentres ∉ known)
@@ -73,8 +72,6 @@ noncomputable def selectedTypeBDecoratedContinuation
     (openBoundarySaturatedFresh : K .route8OpenBoundarySaturated ∉ known)
     (demandUnitCountFresh : K .route8DemandUnitCount ∉ known)
     (windowBlockersFresh : K .route8WindowBlockers ∉ known)
-    (windowShadowSignatureFresh : K .windowShadowSignature ∉ known)
-    (windowShadowTailFresh : K .windowShadowSingletonTail ∉ known)
     (windowShadowCycleFresh : K .windowShadowHitCycle ∉ known)
     (windowShadowExcludedFresh : K .windowShadowHitExcluded ∉ known)
     (demandResidualFresh : K .route8StageRate ∉ known)

@@ -113,6 +113,25 @@ theorem typeASupport (low : TypeALowSurplusStatement data object) :
   rw [zero] at charge
   simpa using charge
 
+/-- The registered legal-label census `|𝓛| = 399` of node `[18]`
+(`lem:labels`) forces the window order to be at least three: the legal labels
+of a path on `order` vertices are among its `2^order` subsets. -/
+theorem three_le_windowOrder_of_labelCount
+    (labels : (Graph.WindowCurvature.Labels data.windowOrder).card = 399) :
+    3 ≤ data.windowOrder := by
+  by_contra small
+  have le : (Graph.WindowCurvature.Labels data.windowOrder).card ≤
+      2 ^ data.windowOrder := by
+    calc (Graph.WindowCurvature.Labels data.windowOrder).card
+        ≤ (Finset.univ :
+            Finset (Graph.WindowCurvature.Label data.windowOrder)).card :=
+          Finset.card_le_univ _
+      _ = 2 ^ data.windowOrder := by simp [Graph.WindowCurvature.Label]
+  rw [labels] at le
+  have : data.windowOrder ≤ 2 := by omega
+  have : 2 ^ data.windowOrder ≤ 2 ^ 2 := Nat.pow_le_pow_right (by norm_num) this
+  omega
+
 /-! ## Node `[87]`: the bounded Type A support -/
 
 /-- `P₁₃`-freeness, diameter and cardinality of `X₀`: shortest internal paths
@@ -204,13 +223,16 @@ theorem typeABoundedSupport
 
 /-! ## Node `[88]`: receiver routing and the threshold algebra -/
 
-/-- `lem:typeA-receiver-loads` and `lem:typeA-threshold-algebra` at every
-zero-surplus subregion of the remainder `R₀` of G's fixed packing `P₀`. -/
-theorem typeAReceiverRouting
-    (normalized : RemainderNormalizedStatement data object) :
-    TypeAReceiverRoutingStatement data object := by
+/-- `lem:typeA-receiver-loads` and `lem:typeA-threshold-algebra` at one
+zero-surplus subregion of the remainder `R₀` of G's fixed packing `P₀`, from
+node `[13]`'s empty internal baseline core of `R₀`. -/
+theorem zeroSurplusRoutingAt_of_normalized
+    (normalized : RemainderNormalizedStatement data object)
+    {piece : Finset object.Vertex}
+    (inside : piece ⊆ object.remainderSupport (canonicalWindowPacking data object))
+    (_surplus : object.ambientSurplus piece data.threshold = 0) :
+    ZeroSurplusRoutingAt data object piece := by
   classical
-  intro piece inside surplus
   have noCore : ∀ inner : Finset object.Vertex, inner ⊆ piece →
       ¬ Graph.MinimumDegreeAtLeast data.threshold (object.induce inner) :=
     fun inner contained =>
@@ -229,24 +251,32 @@ theorem typeAReceiverRouting
       object.saturationThreshold_le piece data.threshold data.dischargeScale
         receiver⟩
 
+/-- Node `[88]` at `X₀`: `σ(X₀) = 0` (node `[63]`) and `X₀ ⊆ R₀`, so node
+`[13]`'s routing applies to it. -/
+theorem typeAReceiverRouting
+    (normalized : RemainderNormalizedStatement data object)
+    (low : TypeALowSurplusStatement data object) :
+    TypeAReceiverRoutingStatement data object := by
+  obtain ⟨piece, pinned, zero⟩ := low
+  obtain ⟨_, _, _, inside, _, _⟩ := canonicalNegativePiece_facts data object pinned
+  exact ⟨piece, pinned, zeroSurplusRoutingAt_of_normalized data object normalized
+    inside zero⟩
+
 /-- The routing fact at `X₀`: every vertex of internal degree `δ` of `X₀` is
 routed to a receiver. -/
 theorem typeAReceiverRouting_at
-    (negativeSupport : NegativeSupportStatement data object)
     (routing : TypeAReceiverRoutingStatement data object)
     {piece : Finset object.Vertex}
-    (pinned : canonicalNegativePiece data object = some piece)
-    (zero : object.ambientSurplus piece data.threshold = 0) :
+    (pinned : canonicalNegativePiece data object = some piece) :
     ∀ vertex ∈ piece,
       object.internalDegree piece vertex = data.threshold →
       ∃ receiver : object.Vertex,
         object.traceReceiver? piece data.threshold vertex = some receiver ∧
           object.IsReceiver piece data.threshold receiver := by
-  obtain ⟨valid, maximal⟩ :=
-    canonicalWindowPacking_valid_maximal_of_negativeSupport data object
-      negativeSupport
-  obtain ⟨_, _, _, inside, _, _⟩ := canonicalNegativePiece_facts data object pinned
-  exact (routing piece inside zero).1
+  obtain ⟨piece', pinned', routed⟩ := routing
+  rw [pinned] at pinned'
+  cases pinned'
+  exact routed.1
 
 /-! ## Node `[89]`: the saturation split -/
 
@@ -268,7 +298,6 @@ theorem unsaturated_of_not_saturated {piece : Finset object.Vertex}
 /-- `lem:typeA-unsaturated-discharge` at `X₀`: when every receiver of `X₀` is
 unsaturated, `|V(X₀)| ≤ s·def⁺(X₀)`. -/
 theorem typeAUnsaturatedDischarge
-    (negativeSupport : NegativeSupportStatement data object)
     (routing : TypeAReceiverRoutingStatement data object)
     (low : TypeALowSurplusStatement data object)
     (unsaturated : TypeAUnsaturatedReceiversStatement data object) :
@@ -279,7 +308,7 @@ theorem typeAUnsaturatedDischarge
       data.dischargeScale
       (Graph.DecoratedAbsorption.capped_of_ambientSurplus_zero object piece
         data.threshold surplus)
-      (typeAReceiverRouting_at data object negativeSupport routing pinned surplus)
+      (typeAReceiverRouting_at data object routing pinned)
       bound⟩
 
 /-- Node `[92]`: the unsaturated discharge `|V(X₀)| ≤ s·def⁺(X₀)` contradicts
@@ -360,7 +389,6 @@ and silent. -/
 theorem typeAVisibleFirstExcess
     (scalePos : 0 < data.dischargeScale)
     (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
-    (negativeSupport : NegativeSupportStatement data object)
     (routing : TypeAReceiverRoutingStatement data object)
     (low : TypeALowSurplusStatement data object)
     (saturated : TypeASaturatedReceiverStatement data object)
@@ -373,7 +401,7 @@ theorem typeAVisibleFirstExcess
   obtain ⟨selectedReceiver, chosen, selectedIsReceiver, selectedSaturated⟩ :=
     canonicalSaturatedReceiverAt_spec exists_
   have routed :=
-    typeAReceiverRouting_at data object negativeSupport routing pinned zero
+    typeAReceiverRouting_at data object routing pinned
   have exactDegree : ∀ vertex ∈ piece, object.degree vertex = data.threshold :=
     degree_eq_threshold_of_ambientSurplus_eq_zero object baseline zero
   have capped : ∀ vertex ∈ piece,

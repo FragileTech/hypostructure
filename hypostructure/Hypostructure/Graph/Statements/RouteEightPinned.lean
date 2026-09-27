@@ -77,6 +77,61 @@ def Route8WindowBlockersStatement : Prop :=
       ∃ y, canonicalRoute8WindowBlocker data object P x.1 x.2 = some y ∧
         Route8WindowBlockerSpec data object P x.1 x.2 y.1 y.2
 
+/-- **`def:typeA-recorded-window-shadow-hit` with
+`lem:typeA-window-shadow-hit-routes`, certificate (O1)** at the open demand
+units of `(P₀, A₀)` and their canonical window blockers `b₀`: for two distinct
+open units on the same packed window `P`, at any presentation of `P` as an
+induced path, whose canonical boundary incidences are the distinct edges
+`x p_a` and `y p_b`, a `P`-avoiding simple corridor `Q` from `x` to `y` with
+`b ∈ Sh_{s(Q)}(a)` closes the simple cycle `x Q y p_b P p_a x` of accepted
+length `s(Q) + 2 + |a − b|`. -/
+def WindowShadowHitCycleStatement : Prop :=
+  ∃ P, canonicalRoute8Partition data object = some P ∧
+    ∃ x, canonicalRoute8Absorption data object P = some x ∧
+      ∃ y, canonicalRoute8WindowBlocker data object P x.1 x.2 = some y ∧
+        ∀ υ ∈ P.demandUnits \ (x.1.absorbed ∪ x.2),
+          ∀ υ' ∈ P.demandUnits \ (x.1.absorbed ∪ x.2),
+            υ ≠ υ' → y.2 υ = y.2 υ' →
+            ∀ window : SimpleGraph.pathGraph data.windowOrder ↪g object.graph,
+              (∀ vertex, vertex ∈ y.2 υ ↔ ∃ i, window i = vertex) →
+              ∀ (first second : object.Vertex) (a b : Fin data.windowOrder),
+                y.1 υ = s(first, window a) → y.1 υ' = s(second, window b) →
+                ∀ corridor : object.graph.Walk first second,
+                  corridor.IsPath →
+                  (∀ i : Fin data.windowOrder, window i ∉ corridor.support) →
+                  object.graph.Adj (window a) first →
+                  object.graph.Adj second (window b) →
+                  s(first, window a) ≠ s(second, window b) →
+                  b.1 ∈ Graph.WindowAttachmentShadow.shadow data.LengthOK
+                    data.windowOrder corridor.length a.1 →
+                  ∃ cycle : object.graph.Walk (window a) (window a),
+                    cycle.IsCycle ∧
+                      cycle.length = corridor.length + 2 + Nat.dist a.1 b.1 ∧
+                      data.LengthOK cycle.length
+
+/-- **`lem:typeA-window-shadow-hit-routes`** on the selected object: no two
+open demand units of `(P₀, A₀)` on the same packed window have a recorded
+window-signature hit. -/
+def WindowShadowHitExcludedStatement : Prop :=
+  ∃ P, canonicalRoute8Partition data object = some P ∧
+    ∃ x, canonicalRoute8Absorption data object P = some x ∧
+      ∃ y, canonicalRoute8WindowBlocker data object P x.1 x.2 = some y ∧
+        ∀ υ ∈ P.demandUnits \ (x.1.absorbed ∪ x.2),
+          ∀ υ' ∈ P.demandUnits \ (x.1.absorbed ∪ x.2),
+            υ ≠ υ' → y.2 υ = y.2 υ' →
+            ∀ window : SimpleGraph.pathGraph data.windowOrder ↪g object.graph,
+              (∀ vertex, vertex ∈ y.2 υ ↔ ∃ i, window i = vertex) →
+              ∀ (first second : object.Vertex) (a b : Fin data.windowOrder),
+                y.1 υ = s(first, window a) → y.1 υ' = s(second, window b) →
+                ∀ corridor : object.graph.Walk first second,
+                  corridor.IsPath →
+                  (∀ i : Fin data.windowOrder, window i ∉ corridor.support) →
+                  object.graph.Adj (window a) first →
+                  object.graph.Adj second (window b) →
+                  s(first, window a) ≠ s(second, window b) →
+                  b.1 ∉ Graph.WindowAttachmentShadow.shadow data.LengthOK
+                    data.windowOrder corridor.length a.1
+
 /-- **(168.1) of `thm:typeA-unpaid-exit4-reduction`** (node `[181]`) at the
 committed ledger `P₀`: every unpaid entry `ξ ∈ Ξ₂(P₀) ∪ Ξ_res(P₀)` has at most
 `δ − 1` (the manuscript's two) private essential incidences. -/
@@ -197,11 +252,22 @@ def Route8SmallCoreCollapse : Prop :=
 
 /-! ## Node `[186]` -/
 
+/-- The peeling set recorded for the receiver `w` of the support `X` at one
+stage of the node-`[123]` descent: the loads of the chain entries at `(X, w)`. -/
+def route8RecordedPeeled (stage : List (Graph.Route8Census.Index object))
+    (piece : Finset object.Vertex) (receiver : object.Vertex) :
+    Finset object.Vertex :=
+  (stage.toFinset.filter fun index => index.1 = piece ∧ index.2.1 = receiver).image
+    fun index => index.2.2
+
 /-- **`lem:typeA-unified-joint-balance`** (node `[186]`) on the ledger fixed
 at node `[181]`: the peel chain is `route8DescentChain`, the partition is
 `P₀`, the absorption is `A₀`; `unused` is determined by `N = D + unused`.
-With the node-`[185]` fact, universal saturated-load visibility and the
-silent-terminal exclusion (168.22). -/
+With universal saturated-load visibility and the silent-terminal exclusion
+(168.22) at every recorded peeling set of the descent.  The node-`[185]` fact
+stays on the ledger and is not republished.  The demand weights are the
+registered baseline `δ` (an entry of `Ξ₃` holds `δ` private incidences, an entry
+of `Ξ₂` holds `δ − 1`), and the stub multiplier is `δ`. -/
 def Route8JointBalanceStatement : Prop :=
   let packing := canonicalWindowPacking data object
   let support := object.remainderSupport packing
@@ -210,8 +276,7 @@ def Route8JointBalanceStatement : Prop :=
   let supply := Graph.Route8Census.supply object packing
   let bridgeAllowance := data.bridgeMassFactor * data.dischargeScale *
     data.surplusThreshold object.vertexCount
-  Route8UnifiedVisibleOverloadStatement data object ∧
-    (∀ component ∈ components,
+  (∀ component ∈ components,
       let piece := object.pieceSupport support component
       ∀ receiver ∈ Graph.VisibleEntry.saturatedReceivers object piece
           data.threshold data.dischargeScale,
@@ -221,9 +286,10 @@ def Route8JointBalanceStatement : Prop :=
       let piece := object.pieceSupport support component
       ∀ receiver ∈ Graph.VisibleEntry.saturatedReceivers object piece
           data.threshold data.dischargeScale,
-        ∀ peeled : Finset object.Vertex,
+        ∀ stage ∈ (route8DescentChain data object).inits,
           ¬ Graph.ExitFour.SilentUnpeeledExcessAt piece data.threshold
-            data.dischargeScale receiver peeled) ∧
+            data.dischargeScale receiver
+            (route8RecordedPeeled object stage piece receiver)) ∧
     ∃ P, canonicalRoute8Partition data object = some P ∧
       ∃ x, canonicalRoute8Absorption data object P = some x ∧
         ∃ unused : Nat,
@@ -236,18 +302,20 @@ def Route8JointBalanceStatement : Prop :=
             entries.card = deficit + unused ∧
             support.card ≤ deficit +
               data.dischargeScale * supply.card + bridgeAllowance ∧
-            3 * entries.card ≤ supply.card + openUnits.card ∧
-            3 * support.card ≤
-              (3 * data.dischargeScale + 1) * supply.card +
-                3 * bridgeAllowance + openUnits.card ∧
+            data.threshold * entries.card ≤ supply.card + openUnits.card ∧
+            data.threshold * support.card ≤
+              (data.threshold * data.dischargeScale + 1) * supply.card +
+                data.threshold * bridgeAllowance + openUnits.card ∧
             data.threshold * support.card ≤
               (data.threshold * data.dischargeScale + 1) * supply.card +
                 data.threshold * (2 * bridgeAllowance) +
                 data.threshold * peeled.card ∧
-            3 * entries.card =
-              (3 * P.three.card + 2 * P.two.card) + P.demandUnits.card ∧
+            data.threshold * entries.card =
+              (data.threshold * P.three.card +
+                (data.threshold - 1) * P.two.card) + P.demandUnits.card ∧
             P.demandUnits.card = x.1.absorbed.card + openUnits.card ∧
-            3 * P.three.card + 2 * P.two.card + x.1.absorbed.card ≤
+            data.threshold * P.three.card + (data.threshold - 1) * P.two.card +
+                x.1.absorbed.card ≤
               supply.card
 
 end Route8Pinned

@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Contracts.RouteEight.Basic
+import Hypostructure.Graph.Contracts.TypeA.Support
 
 /-!
 # Contracts: node `[123]`, the exact large-budget descent
@@ -31,7 +32,7 @@ theorem exists_route8StageOutcome (data : Parameters)
     (baseline : data.threshold ≤ object.minDegree)
     (thresholdPos : 1 ≤ data.threshold)
     (dischargePos : 1 ≤ data.dischargeScale)
-    (routing : TypeAReceiverRoutingStatement data object)
+    (normalized : RemainderNormalizedStatement data object)
     (deficit : Route8UnifiedDeficitFact data object) :
     ∃ final : List (Route8Census.Index object),
       Route8Pressure.StageOutcome object (canonicalWindowPacking data object)
@@ -65,7 +66,9 @@ theorem exists_route8StageOutcome (data : Parameters)
         ∃ receiver : object.Vertex,
           object.traceReceiver? piece data.threshold vertex = some receiver ∧
             object.IsReceiver piece data.threshold receiver :=
-    fun piece sub zero => (routing piece sub zero).1
+    fun piece sub zero =>
+      (Contracts.TypeA.zeroSurplusRoutingAt_of_normalized data object normalized
+        sub zero).1
   have entriesSubset : entries ⊆
       Route8Census.entries object packing data.threshold data.dischargeScale :=
     route8UnifiedEntries_subset_entries data object
@@ -204,12 +207,12 @@ theorem route8PeelingDescent (data : Parameters) (object : FiniteObject.{u})
     (baseline : data.threshold ≤ object.minDegree)
     (thresholdPos : 1 ≤ data.threshold)
     (dischargePos : 1 ≤ data.dischargeScale)
-    (routing : TypeAReceiverRoutingStatement data object)
+    (normalized : RemainderNormalizedStatement data object)
     (deficit : Route8UnifiedDeficitFact data object) :
     Route8PeelingDescentStatement data object :=
   Classical.epsilon_spec
     (exists_route8StageOutcome data object baseline thresholdPos dischargePos
-      routing deficit)
+      normalized deficit)
 
 /-- **`thm:large-budget-route8-only`, the true entry of a stage**: a true
 entry of the terminal stage is not target-defective at that stage, so by the

@@ -58,7 +58,6 @@ noncomputable def Assembly.Internal.selectedTypeBFanContinuation
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
-    [FactKeys.Has (K .typeAReceiverRouting) known]
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .cubicBaseline) known]
     (closureFresh : closed ∉ known := by key_fresh)
@@ -132,10 +131,6 @@ noncomputable def Assembly.Internal.selectedTypeBFanContinuation
       key_fresh)
     (demandUnitCountFresh : K .route8DemandUnitCount ∉ known := by key_fresh)
     (windowBlockersFresh : K .route8WindowBlockers ∉ known := by key_fresh)
-    (windowShadowSignatureFresh : K .windowShadowSignature ∉ known := by
-      key_fresh)
-    (windowShadowTailFresh : K .windowShadowSingletonTail ∉ known := by
-      key_fresh)
     (windowShadowCycleFresh : K .windowShadowHitCycle ∉ known := by
       key_fresh)
     (windowShadowExcludedFresh : K .windowShadowHitExcluded ∉ known := by

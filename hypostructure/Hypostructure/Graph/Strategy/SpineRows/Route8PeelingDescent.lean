@@ -22,7 +22,7 @@ chain and exact stage accounting. -/
     {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.route8PeelingDescent
-    { Requires := [K .route8UnifiedDeficit, K .typeAReceiverRouting]
+    { Requires := [K .route8UnifiedDeficit, K .remainderNormalized, K .cubicBaseline]
       Produces := [K .route8PeelingDescent]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -31,9 +31,9 @@ chain and exact stage accounting. -/
       .cons (key := K .route8PeelingDescent)
         ⟨Graph.Contracts.RouteEight.route8PeelingDescent data.toParameters
           inputs.current.object inputs.current.baseline
-          (le_trans (by norm_num) data.three_le_threshold)
-          data.dischargeScale_pos
-          (inputs.get (K .typeAReceiverRouting)).down
+          (by have := (inputs.get (K .cubicBaseline)).down.1; omega)
+          (by have := (inputs.get (K .cubicBaseline)).down.2.1; omega)
+          (inputs.get (K .remainderNormalized)).down
           (inputs.get (K .route8UnifiedDeficit)).down⟩ .nil)
     0 0
 

@@ -2,12 +2,11 @@ import Hypostructure.Graph.Contracts.TypeA.Exits
 import Hypostructure.Graph.Statements.RouteEight
 
 /-!
-# Contracts: the Type A exclusion lemma and the silent-origin residual
+# Contracts: the Type A exclusion lemma
 
-`lem:typeA-exclusion` (via `lem:density-mersenne`) at the paper's generality —
-every connected admissible sub-support of a maximal packing's remainder — and
-the incompatibility of the node-`[94]` silent-excess origin with the
-all-visible unified entry family of `lem:typeA-unified-visible-ownership`.
+`lem:typeA-exclusion` (via `lem:density-mersenne`) at one connected negative
+zero-surplus support, instantiated at the canonical pieces of `G`'s fixed
+packing `P₀`.
 -/
 
 namespace Hypostructure.Graph.Contracts.TypeA
@@ -19,26 +18,24 @@ universe u
 
 variable (data : Parameters) (object : Graph.FiniteObject.{u})
 
-/-- `lem:typeA-exclusion`: a negative zero-surplus connected sub-support of a
-maximal packing's remainder leaves through the target-defect exit, the
-silent-core residual profile, or the decorated handoff, and every unpaid silent
-load and every selected visible unpeeled load of a saturated receiver realizes
-the four-way split of `lem:typeA-reduced-silent-residual` with the exit-`(7)`
-routing of `lem:typeA-exits-discharged`. -/
-theorem typeAExclusion
-    (cubic : data.threshold = 3)
-    (degenerate : ¬ data.LengthOK 2)
+/-- `lem:typeA-exclusion` at one connected support: it leaves through the
+target-defect exit, the silent-core residual profile, or the decorated
+handoff.  Each unpaid silent load and each selected visible unpeeled load of a
+saturated receiver realizes the four-way split of
+`lem:typeA-reduced-silent-residual` with the exit-`(7)` routing of
+`lem:typeA-exits-discharged`, and the three alternatives collect that split. -/
+theorem typeAExclusionTrichotomy_of_connected
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (minimality : ∀ representative : Graph.FiniteObject.{u},
       representative.LexicographicallySmaller object →
       Graph.MinimumDegreeAtLeast data.threshold representative →
       Graph.HasCycleWithLength data.LengthOK representative)
-    (exclusion : ReplacementExclusionStatement data object) :
-    TypeAExclusionStatement data object := by
+    (exclusion : ReplacementExclusionStatement data object)
+    {piece : Finset object.Vertex}
+    (connected : Graph.SupportComponents.Connected.ConnectedOn object piece) :
+    TypeAExclusionTrichotomy data object piece := by
   classical
-  dsimp only [TypeAExclusionStatement]
   letI : DecidableEq object.Vertex := object.vertices.decEq
-  intro packing valid maximal piece _subset connected negative _zeroSurplus
   have perLoad : ∀ receiver ∈ Graph.VisibleEntry.saturatedReceivers object piece
         data.threshold data.dischargeScale,
       ∀ load ∈ object.routedLoads piece data.threshold receiver,
@@ -103,95 +100,55 @@ theorem typeAExclusion
       (Finset.mem_inter.1 member).2
     rw [Graph.ExitFour.mem_unpeeledLoads] at unpeeled
     exact unpeeled.1
-  refine ⟨?_, ?_⟩
-  · by_cases witnessed : ∃ receiver : object.Vertex,
-        object.IsReceiver piece data.threshold receiver ∧
-          Nonempty (Graph.ExitFour.Witness
-            (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
-            data.dischargeScale receiver ∅)
-    · exact Or.inl witnessed
-    by_cases handoff : SeparatorHandoffAt data object piece
-    · exact Or.inr (Or.inr handoff)
-    refine Or.inr (Or.inl ?_)
-    intro receiver receiverMem
-    have isReceiver : object.IsReceiver piece data.threshold receiver :=
-      Graph.FiniteObject.mem_receivers.mp (Finset.mem_filter.1 receiverMem).1
-    have collapse : ∀ load ∈ object.routedLoads piece data.threshold receiver,
-        Graph.Route8.TraceBasin.Route8Entry object piece data.threshold
-            data.LengthOK receiver load ∨
-          ∃ basin : Finset object.Vertex,
-            Graph.Route8.TraceBasin.select? object piece data.threshold
-                receiver load = some basin ∧
-              ∃ retained,
-                Graph.Route8.TraceBasin.TraceResponseQuotient object piece
-                  data.threshold data.LengthOK receiver load basin retained := by
-      intro load routed
-      rcases perLoad receiver receiverMem load routed with
-        ⟨witness, _⟩ | entry | quotient | ⟨_, produced⟩
-      · exact absurd ⟨receiver, isReceiver, ⟨witness⟩⟩ witnessed
-      · exact Or.inl entry
-      · exact Or.inr quotient
-      · exact absurd produced handoff
-    constructor
-    · intro load loadMem
-      exact collapse load (silentRouted receiver load loadMem)
-    · intro outside _portMem _overloaded load loadMem
-      exact collapse load (selectedRouted receiver outside load loadMem)
-  · intro receiver receiverMem
-    constructor
-    · intro load loadMem
-      exact perLoad receiver receiverMem load (silentRouted receiver load loadMem)
-    · intro outside _portMem _overloaded load loadMem
-      exact perLoad receiver receiverMem load
-        (selectedRouted receiver outside load loadMem)
+  by_cases witnessed : ∃ receiver : object.Vertex,
+      object.IsReceiver piece data.threshold receiver ∧
+        Nonempty (Graph.ExitFour.Witness
+          (Graph.HasCycleWithLength data.LengthOK) piece data.threshold
+          data.dischargeScale receiver ∅)
+  · exact Or.inl witnessed
+  by_cases handoff : SeparatorHandoffAt data object piece
+  · exact Or.inr (Or.inr handoff)
+  refine Or.inr (Or.inl ?_)
+  intro receiver receiverMem
+  have isReceiver : object.IsReceiver piece data.threshold receiver :=
+    Graph.FiniteObject.mem_receivers.mp (Finset.mem_filter.1 receiverMem).1
+  have collapse : ∀ load ∈ object.routedLoads piece data.threshold receiver,
+      Graph.Route8.TraceBasin.Route8Entry object piece data.threshold
+          data.LengthOK receiver load ∨
+        ∃ basin : Finset object.Vertex,
+          Graph.Route8.TraceBasin.select? object piece data.threshold
+              receiver load = some basin ∧
+            ∃ retained,
+              Graph.Route8.TraceBasin.TraceResponseQuotient object piece
+                data.threshold data.LengthOK receiver load basin retained := by
+    intro load routed
+    rcases perLoad receiver receiverMem load routed with
+      ⟨witness, _⟩ | entry | quotient | ⟨_, produced⟩
+    · exact absurd ⟨receiver, isReceiver, ⟨witness⟩⟩ witnessed
+    · exact Or.inl entry
+    · exact Or.inr quotient
+    · exact absurd produced handoff
+  constructor
+  · intro load loadMem
+    exact collapse load (silentRouted receiver load loadMem)
+  · intro outside _portMem _overloaded load loadMem
+    exact collapse load (selectedRouted receiver outside load loadMem)
 
-/-- The node-`[94]` silent-excess origin of a route-`8` residual state is
-incompatible with `lem:typeA-unified-visible-ownership`: its selected excess
-load is a member of the unified entry family, which is all visible, while the
-origin makes it silent. -/
-theorem selectedSilentExitSevenFree_unifiedVisibleResidual_contradiction
-    (silent : SelectedSilentExitSevenFree data object)
-    (visible : Route8UnifiedVisibleResidualStatement data object) : False := by
-  classical
-  letI : DecidableEq object.Vertex := object.vertices.decEq
-  obtain ⟨piece, pinned, receiver, chosen, zero, _state, noHandoff, origin⟩ :=
-    silent
-  have isReceiver := (canonicalExitReceiverAt_spec_of_eq_some chosen).1
-  obtain ⟨component, eq, rfl⟩ := (canonicalNegativePiece_eq_some_iff).mp pinned
-  obtain ⟨present, negative⟩ := canonicalNegativeComponent_spec_of_eq_some eq
-  obtain ⟨_noVisibleFour, originalSaturated, silentAtOrigin, _count⟩ := origin
-  obtain ⟨_portBound, nonemptyExcess, silentSubset⟩ := silentAtOrigin
-  obtain ⟨load, loadExcess⟩ := nonemptyExcess
-  have componentUnified : component ∈ route8UnifiedComponents data object := by
-    unfold route8UnifiedComponents
-    dsimp only
-    exact Finset.mem_filter.mpr ⟨present, zero, negative, noHandoff⟩
-  have receiverUnified : receiver ∈
-      Graph.VisibleEntry.saturatedReceivers object
-        (object.pieceSupport (canonicalRemainder data object) component)
-        data.threshold data.dischargeScale := by
-    unfold Graph.VisibleEntry.saturatedReceivers
-    exact Finset.mem_filter.mpr ⟨object.mem_receivers.mpr isReceiver,
-      originalSaturated⟩
-  have loadBasin : load ∈
-      Graph.VisibleEntry.excessBasin object
-        (object.pieceSupport (canonicalRemainder data object) component)
-        data.threshold data.dischargeScale receiver :=
-    Graph.ExitFour.unpeeledExcess_subset_excessBasin _ data.threshold
-      data.dischargeScale receiver ∅ loadExcess
-  have entryMem :
-      (object.pieceSupport (canonicalRemainder data object) component, receiver,
-        load) ∈ route8UnifiedEntries data object := by
-    unfold route8UnifiedEntries Graph.Route8Census.entriesOfComponents
-    apply Finset.mem_biUnion.mpr
-    refine ⟨component, componentUnified, ?_⟩
-    dsimp only
-    apply Finset.mem_biUnion.mpr
-    refine ⟨receiver, receiverUnified, ?_⟩
-    apply Finset.mem_image.mpr
-    exact ⟨load, loadBasin, rfl⟩
-  have isVisible := visible.1 _ entryMem
-  have notVisible := (Finset.mem_sdiff.mp (silentSubset loadExcess)).2
-  exact notVisible isVisible
+/-- `lem:typeA-exclusion` at the canonical pieces of `P₀`: every canonical piece
+of `R(P₀)` is connected, so a negative zero-surplus one realizes the
+trichotomy. -/
+theorem typeAExclusion
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (minimality : ∀ representative : Graph.FiniteObject.{u},
+      representative.LexicographicallySmaller object →
+      Graph.MinimumDegreeAtLeast data.threshold representative →
+      Graph.HasCycleWithLength data.LengthOK representative)
+    (exclusion : ReplacementExclusionStatement data object) :
+    TypeAExclusionStatement data object := by
+  intro component componentMem _negative _zeroSurplus
+  exact typeAExclusionTrichotomy_of_connected data object avoids minimality
+    exclusion
+    (Graph.SupportComponents.Connected.connectedOn_of_mem_order object _
+      ((Graph.FiniteObject.mem_canonicalPieces _ _).1 componentMem))
 
 end Hypostructure.Graph.Contracts.TypeA

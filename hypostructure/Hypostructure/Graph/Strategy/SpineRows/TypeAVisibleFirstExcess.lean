@@ -25,7 +25,7 @@ variable {data : Data.{u}}
 @[reducible] noncomputable def typeAVisibleFirstExcessRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.typeAVisibleFirstExcess
-    { Requires := [K .cubicBaseline, K .negativeSupport, K .typeAReceiverRouting,
+    { Requires := [K .cubicBaseline, K .typeAReceiverRouting,
         K .typeALowSurplus, K .typeASaturatedReceiver, K .typeANoVisibleEntry]
       Produces := [K .typeAVisibleFirstExcess]
       requiresUnique := by key_fresh
@@ -36,7 +36,7 @@ variable {data : Data.{u}}
         ⟨Graph.Contracts.TypeA.typeAVisibleFirstExcess data.toParameters
           inputs.current.object
           (by have := (inputs.get (K .cubicBaseline)).down.2.1; omega)
-          inputs.current.baseline (inputs.get (K .negativeSupport)).down
+          inputs.current.baseline
           (inputs.get (K .typeAReceiverRouting)).down
           (inputs.get (K .typeALowSurplus)).down
           (inputs.get (K .typeASaturatedReceiver)).down

@@ -1,6 +1,4 @@
 import Hypostructure.Graph.Strategy.SpineRows.Route8OpenBoundarySaturated
-import Hypostructure.Graph.Strategy.SpineRows.WindowShadowSignature
-import Hypostructure.Graph.Strategy.SpineRows.WindowShadowSingletonTail
 import Hypostructure.Graph.Strategy.SpineRows.WindowShadowHitCycle
 import Hypostructure.Graph.Strategy.SpineRows.WindowShadowHitExcluded
 import Hypostructure.Graph.Strategy.SpineRows.AbsorbedConfigurationResidual
@@ -61,6 +59,7 @@ import Hypostructure.Graph.Strategy.SpineRows.RemainderNormalization
 import Hypostructure.Graph.Strategy.SpineRows.RepairIdentity
 import Hypostructure.Graph.Strategy.SpineRows.ReplacementExclusion
 import Hypostructure.Graph.Strategy.SpineRows.ReturnAvoidance
+import Hypostructure.Graph.Strategy.SpineRows.Route8GlobalSqueeze
 import Hypostructure.Graph.Strategy.SpineRows.Route8BasinBurden
 import Hypostructure.Graph.Strategy.SpineRows.Route8CarrierCore
 import Hypostructure.Graph.Strategy.SpineRows.Route8CarrierCutParity
@@ -121,7 +120,7 @@ import Hypostructure.Graph.Strategy.SpineRows.TypeAReceiverRouting
 import Hypostructure.Graph.Strategy.SpineRows.TypeASaturationDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.TypeASilentExitEntry
 import Hypostructure.Graph.Strategy.SpineRows.TypeASupport
-import Hypostructure.Graph.Strategy.SpineRows.TypeASilentExitSevenDichotomy
+import Hypostructure.Graph.Strategy.SpineRows.TypeAPeeledExits
 import Hypostructure.Graph.Strategy.SpineRows.TypeAUnsaturatedDischarge
 import Hypostructure.Graph.Strategy.SpineRows.TypeAVisibleEntryDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.TypeAVisibleExitEntry

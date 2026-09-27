@@ -22,7 +22,7 @@ Type B entry. -/
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.typeBDecoratedAssignedSupport
     { Requires := [K .selection, K .uncompressible, K .remainderNormalized,
-        K .netChargeCap, K .typeAExitSevenHandoff, K .cubicBaseline]
+        K .netChargeCap, K .typeAExitSevenEnvelope, K .cubicBaseline]
       Produces := [K .typeBDecoratedAssignedSupport, K .typeBFanEntry]
       requiresUnique := by key_fresh
       producesUnique := by key_fresh
@@ -34,13 +34,13 @@ Type B entry. -/
           (inputs.get (K .cubicBaseline)).down.1
             (inputs.get (K .cubicBaseline)).down.2.2.1
           (inputs.get (K .uncompressible)).down (inputs.get (K .remainderNormalized)).down
-          (inputs.get (K .typeAExitSevenHandoff)).down⟩
+          (inputs.get (K .typeAExitSevenEnvelope)).down⟩
         (.cons (key := K .typeBFanEntry)
           ⟨Contracts.TypeB.typeBFanEntry_of_decoratedHandoff
             (inputs.get (K .netChargeCap)).down (inputs.get (K .selection)).down.1
             (inputs.get (K .cubicBaseline)).down.1
             (inputs.get (K .cubicBaseline)).down.2.2.1
-            (inputs.get (K .typeAExitSevenHandoff)).down⟩
+            (inputs.get (K .typeAExitSevenEnvelope)).down⟩
           .nil))
 
 end Hypostructure.Graph.Strategy.Spine

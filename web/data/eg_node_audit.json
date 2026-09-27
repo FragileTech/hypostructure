@@ -1,6 +1,6 @@
 {
  "status": "exact selected-root reduction to [20a], [144a], [172a], [182], [186], and [187]",
- "updated_at": "2026-09-27",
+ "updated_at": "2026-09-27T09:15:15.412370+00:00",
  "aggregate_validation": "Full HypostructureErdos64EG package build passed on the working tree at ae44b9b plus the removal of Assembly/Surplus/TypeBContinuation.lean and TypeBCertificateOutcome, the [132] exit/blocker decision, the single [140]/[142]/[143] audit row `homogeneousBottleneckAuditRow`, and the [144] caps-fail/caps-hold decision (9029 jobs); every node entry re-derived on 2026-09-25 from the live Lean producers and the manuscript. Kernel axiom audit (web/tools/lean_axiom_audit.py): 153 assembly declarations, all clean, no frontier stubs.",
  "nodes": {
   "1": {
@@ -874,23 +874,23 @@
    "on_probed_closed_arm": false
   },
   "88": {
-   "producer": "`typeAReceiverRoutingRow` (SpineRows/TypeAReceiverRouting.lean:45)",
-   "fidelity": "FAITHFUL-TRIVIAL",
-   "fidelity_note": "`K .typeAReceiverRouting` gives routing totality to a receiver (`lem:typeA-receiver-loads`) and s*q(w) = s*(delta-1-d_X(w)+1) <= s*delta. That is H_j = s(j+1), i.e. H0 = 4, H1 = 8, H2 = 12 at s=4, delta=3. The threshold half is a re-indexing of the saturation definition, as in the manuscript.",
+   "producer": "`typeAReceiverRoutingRow` (SpineRows/TypeAReceiverRouting.lean)",
+   "fidelity": "FAITHFUL",
+   "fidelity_note": "`ZeroSurplusRoutingAt` pinned at X₀, from [13] and [63].",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "Stated at every zero-surplus sub-support of every maximal-packing remainder of the current object, not only the selected [86] piece. The row's contentful half is routing totality, which [91] and [93] consume.",
+   "difference": "None",
    "on_probed_closed_arm": false
   },
   "89": {
-   "producer": "`typeASaturationDichotomy` (SpineRows/TypeASaturationDichotomy.lean:35)",
+   "producer": "`typeASaturationDichotomy` (SpineRows/TypeASaturationDichotomy.lean)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "Decision by `by_cases` on the existence of a receiver of the selected piece with `Saturated` (s*missingPorts <= routedLoad, i.e. L(w) >= 4q(w)). The yes arm is `K .typeASaturatedReceiver`.",
+   "fidelity_note": "Reads [88]; ∃ saturated receiver of X₀ vs its negation.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "None.",
+   "difference": "None",
    "on_probed_closed_arm": false
   },
   "90": {
@@ -904,23 +904,23 @@
    "on_probed_closed_arm": false
   },
   "91": {
-   "producer": "`typeAUnsaturatedDischargeRow` (SpineRows/TypeAUnsaturatedDischarge.lean:27)",
+   "producer": "`typeAUnsaturatedDischargeRow`; after peeling `typeAPeeledUnsaturatedDischargeRow`",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`K .typeAUnsaturatedDischarge` gives |V(X)| <= s*def+(X) on the same piece. It is proved by `FiniteObject.unsaturatedDischarge` from routing totality ([88]) and the unsaturated bounds ([90]); both Requires are read.",
+   "fidelity_note": "First pass |V(X₀)| ≤ s·def⁺(X₀); after peeling |V(X₀)| ≤ s·def⁺(X₀) + Σ|P₄(w)|.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "None.",
+   "difference": "None",
    "on_probed_closed_arm": false
   },
   "92": {
-   "producer": "`selectedTypeALowSurplusContinuation` (Assembly/TypeA/LowSurplusContinuation.lean:53), unsaturated arm (closing `omega` at :244)",
-   "fidelity": "FAITHFUL",
-   "fidelity_note": "One destructured `typeAUnsaturatedDischarge` value gives |X| <= s*def+(X) and `NegativeNetCharge` with sigma(X) = 0 on the same piece. `omega` closes the contradiction.",
+   "producer": "`typeAUnsaturatedDischargeClosed`",
+   "fidelity": "DIVERGENT",
+   "fidelity_note": "First pass closes; after a peel the closure does not follow (Paper errors, [92]); routed to [123] per rem:typeA-exit4-peeling-use.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "Closes by inline `omega` on one fact value rather than through `closeIncompatible`/`closeImpossible`.",
+   "difference": "Paper error on the peeled arm",
    "on_probed_closed_arm": false
   },
   "93": {
@@ -964,13 +964,13 @@
    "on_probed_closed_arm": false
   },
   "97": {
-   "producer": "`typeAExitTwoDichotomy` (SpineRows/TypeAExitTwoDichotomy.lean:51)",
+   "producer": "`typeAExitTwoDichotomy`",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`K .typeAExitTwoTheta` publishes `Graph.VisibleEntry.ExitTwoThrough` at the [93] receiver's selected port: two receiver-entry returns, internally disjoint, accepted total length -- `def:typeA-saturated-exits` (2). `K .typeAExitTwoFree` carries its negation with the same configuration (packing pinned to `canonicalWindowPacking`).",
+   "fidelity_note": "Reads [95]-no; exit (2) at the pinned port.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "The port is the one fixed by [93]'s `VisibleFourUnpeeledPackage` rather than an arbitrary completion port of w, as at [95].",
+   "difference": "None",
    "on_probed_closed_arm": false
   },
   "98": {
@@ -984,19 +984,19 @@
    "on_probed_closed_arm": false
   },
   "99": {
-   "producer": "`typeAExitThreeDichotomy` (SpineRows/TypeAExitThreeDichotomy.lean:60)",
+   "producer": "`typeAExitThreeDichotomy`",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`K .typeAExitThreeCollision` publishes `Graph.WindowLabelCollision.LabelCollision` on the configuration's own packing: two attachments to one packed window, a connector avoiding it, accepted closing length (= failure of C_s by `labelCollision_iff_not_safe`); the no arm carries `LabelCollisionFree`.",
+   "fidelity_note": "Reads [97]-no; `ExitThreeThrough`: two returns through the pinned port fail C_s at a packed window of P₀.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "The collision is a property of the whole packing conjoined with the receiver configuration, not tied to the receiver's port. `labelCollision_iff_not_safe` (Graph/WindowLabelCollision.lean:248) is stated only for the power-of-two predicate.",
+   "difference": "None",
    "on_probed_closed_arm": false
   },
   "100": {
-   "producer": "`typeAExitThreeCollisionClosed` (TypeAExitRun.lean:315)",
+   "producer": "`typeAExitThreeCycleRow` + `typeAExitThreeCycleClosed` (TypeAExitRun.lean)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`Incompatible (K .selection) (K .typeAExitThreeCollision)`: `hasCycleWithLength_of_labelCollision` builds the cycle of length s+2+|i-j| (using only `data.degenerateClosureRejected`), contradicting the selection.",
+   "fidelity_note": "The collision closes an accepted cycle (¬LengthOK 2 read from K .cubicBaseline), against the selection.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
@@ -1014,13 +1014,13 @@
    "on_probed_closed_arm": false
   },
   "102": {
-   "producer": "`typeAExitFourPeelingStepRow` (SpineRows/TypeAExitFourPeelingStep.lean:27)",
-   "fidelity": "FAITHFUL",
-   "fidelity_note": "`K .typeAExitFourPeeled` publishes the [101] witness, `nextPeeled ⊆ routedLoads` and `residualLoad(nextPeeled) + 1 = residualLoad(peeled)`: `lem:typeA-exit4-discharge` / `lem:typeA-exit4-peeling-charge` in integral form.",
+   "producer": "`typeAExitFourPeelingStepRow`, `typeAExitFourRetestDichotomy`, `TypeAPeeledExits.lean`",
+   "fidelity": "STRONGER",
+   "fidelity_note": "Retest [89] over all receivers at their terminal sets; yes arm re-asks [93]–[101] at P₄(w).",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "The return to [89] is `typeAExitFourRetestDichotomy`, a single decision containing the remaining finite descent. On the silent lane no separate [102] row runs (folded into `typeASilentExitFourTerminalDichotomy`).",
+   "difference": "Intermediate peel states are collapsed to the terminal set",
    "on_probed_closed_arm": false
   },
   "103": {
@@ -1054,43 +1054,43 @@
    "on_probed_closed_arm": false
   },
   "106": {
-   "producer": "`typeAExitSixScopeDichotomy` (SpineRows/TypeAExitSixScopeDichotomy.lean:23); `typeAExitSixProperClosed` (TypeAExitRun.lean:364); `typeAExitSixGlobalClosed` (TypeAExitRun.lean:374)",
+   "producer": "`typeAExitSixScopeDichotomy`, `typeAExitSixGlobalRow`",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`Delocalization.localize` splits into `K .typeAExitSixProper` (a `ReplacementSupport`, closed against `K .replacementExclusion`) or `K .typeAExitSixGlobal` (a lexicographically smaller baseline representative with target transfer, closed against `K .selection`).",
+   "fidelity_note": "Global scope pinned at the canonical delocalization of the terminal state.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "The proper/global facts drop the delocalization witness itself (it stays under `K .typeAExitSix`). The global arm's `(HCWL rep -> HCWL object)` collapses on-branch to target avoidance of the representative.",
+   "difference": "None",
    "on_probed_closed_arm": false
   },
   "107": {
-   "producer": "`typeAExitSevenDichotomy` (SpineRows/TypeAExitSevenDichotomy.lean:27); silent lane `typeASilentExitSevenDichotomy` (SpineRows/TypeASilentExitSevenDichotomy.lean:21)",
+   "producer": "`typeAExitSevenDichotomy`",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "Reads the literal `typeAExitSixFree` residual and tests `HandoffProduced` (a `DecoratedHandoff.Envelope` with core = the selected piece and nonempty high-degree decorations) -- `def:typeA-saturated-exits` (7). Both arms keep the no-exit-(4)/(5)/(6) ancestry (`SelectedNoExitSixWith`).",
+   "fidelity_note": "`ExitSevenAt` at the terminal receiver and eligible loads.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "The manuscript's connector-configuration routing (`lem:typeA-continuation-routing`, `lem:typeA-cubic-switch-absorption`, `lem:typeA-high-degree-handoff`) is not run as a derivation; exhaustiveness is by excluded middle on `HandoffProduced`.",
+   "difference": "None",
    "on_probed_closed_arm": false
   },
   "108": {
-   "producer": "`typeAExitSevenHandoffRow` (SpineRows/TypeAExitSevenHandoff.lean:34)",
-   "fidelity": "FAITHFUL-TRIVIAL",
-   "fidelity_note": "Requires `K .typeAExitSevenProduced` and republishes the same proposition under `K .typeAExitSevenHandoff`; the reclassification to Type B is the whole manuscript step, and the admissibility clauses are proved at [65].",
+   "producer": "`typeAExitSevenEnvelopeRow` (SpineRows/TypeAExitSevenDichotomy.lean)",
+   "fidelity": "FAITHFUL",
+   "fidelity_note": "Canonical separation of X₀ at the terminal state and its decorated envelope; read by Type B.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "None; the next consumer is `selectedTypeADecoratedHandoff` ([65]).",
+   "difference": "None",
    "on_probed_closed_arm": false
   },
   "109": {
-   "producer": "`typeAExitSevenDichotomy` (SpineRows/TypeAExitSevenDichotomy.lean:27), right arm; silent lane `typeASilentExitSevenDichotomy` (SpineRows/TypeASilentExitSevenDichotomy.lean:21), right arm, then `typeASilentExitSevenRoute8Row` (SpineRows/TypeASilentExitSevenRoute8.lean:22)",
+   "producer": "`typeAExitSevenDichotomy` no arm → `selectedRouteEightResidual`",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`K .typeAExitSevenFree` is `SelectedNoExitSixWith ... ¬ HandoffProduced`: the selected saturated residual with no exit (4)--(7). Exit (8) is the complement by definition; the trace-basin and response-algebra vocabulary of `def:typeA-silent-core-residual` lives in `Graph.Route8`.",
+   "fidelity_note": "No provenance split; continues to [110] on every lane.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "Both lanes now route the right-arm ledger to `selectedRouteEightResidual` ([110]); `highCentreNormalFormRow` is run in between. The silent lane forgets its origin clause via `typeASilentExitSevenRoute8Row` while the stronger fact stays on the ledger. No connector-band fact (`lem:typeA-spectral-pressure`) is published.",
+   "difference": "None",
    "on_probed_closed_arm": false
   },
   "110": {
@@ -1104,13 +1104,13 @@
    "on_probed_closed_arm": false
   },
   "111": {
-   "producer": "Definitional object `route8SurvivorComponents` (hypostructure/Hypostructure/Graph/Statements/RouteEight.lean); read by `route8BasinBurdenRow` ([112]) onward. The tautological key `route8GlobalSqueeze` was deleted.",
-   "fidelity": "FAITHFUL-TRIVIAL",
-   "fidelity_note": "X_A is the canonical collection `route8SurvivorComponents G` (canonical pieces passing `Route8Survives`) and s·D_A is `route8Deficit` on it. Both are functions of G, so no fact is published for them; [112]/[113] state their bounds on this object.",
+   "producer": "`route8GlobalSqueezeRow` (SpineRows/Route8GlobalSqueeze.lean)",
+   "fidelity": "FAITHFUL",
+   "fidelity_note": "Each member of 𝒳_A has σ=0 and s·def⁺ < |V|; |𝒳_A| ≤ s·D_A(𝒳_A).",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "The row does not read the [110] residual (`_profile` unused) and does not show that the selected [109] support belongs to X_A, so X_A may be empty. The old unclassified-piece dichotomy (`route8PieceClassificationDichotomy` / `selectedRouteEightUnclassifiedPiece`) no longer exists.",
+   "difference": "None",
    "on_probed_closed_arm": false
   },
   "112": {
@@ -1203,13 +1203,13 @@
    "on_probed_closed_arm": false
   },
   "121": {
-   "producer": "`route8CensusRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8Census.lean:22), run at `selectedRouteEightResidual` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/RouteEight/Residual.lean:47, call at :188)",
+   "producer": "`route8CensusRow`",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`K .route8Census` holds `Route8Census.CollectionDeficit` (|R| <= N_basin + s|dR| + slack on the exact route-8 collection) and `Route8Census.Rate` ((delta s+1)|dR| + delta slack < delta|R|), derived in the executor from the ledger's `route8BasinBurden`, `route8LargeBudgetDeficit`, `route8Rate`; this is the cleared burden-plus-deficit inequality of [121] with the o(|R|) allowance explicit.",
+   "fidelity_note": "Runs after [119]–[120] on the [117]-no arm; [122] closes census vs budget.",
    "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "Order: the census is published once at the input of the [117] carrier decision (Residual.lean:188), so it sits on both the two-support and no-two-support arms, instead of being derived after [120] on the no-two arm only. Content otherwise matches.",
+   "difference": "None",
    "on_probed_closed_arm": false
   },
   "122": {
@@ -1848,13 +1848,13 @@
    "on_probed_closed_arm": false
   },
   "186": {
-   "producer": "`route8JointBalanceRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8JointBalance.lean:28); `selectedRouteEightJointBalance` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/RouteEight/Local.lean:320); `SelectedRouteEightBoundary` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/RouteEight/Boundary.lean:62); `selectedLedgerBoundary` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:129)",
+   "producer": "`route8JointBalanceRow`",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`Route8JointBalanceStatement`: [185]'s fact, universal saturated-load visibility, silent-terminal exclusion (168.22), and (168.15)-(168.20) at the node-[181] objects: the peel chain `route8DescentChain G`, `P₀ = canonicalRoute8Partition G` and `A₀ = canonicalRoute8Absorption G P₀` (pinned, no re-chosen chain, partition or absorption). `unused` is determined by `N = D + unused`. The leaf stays OPEN.",
-   "complete": "YES: exact routing; endpoint remains open",
+   "fidelity_note": "(168.22) at recorded peeling sets of the descent; [185] not republished; demand weights δ, δ−1.",
+   "complete": "YES",
    "local": "YES",
    "api": "OK",
-   "difference": "The root result carries only the Holds for `route8JointBalance`. It does not add `surplusAtOrBelow`, although this leaf is reached only on the near-cubic arm.",
+   "difference": "None",
    "on_probed_closed_arm": false
   },
   "20a": {

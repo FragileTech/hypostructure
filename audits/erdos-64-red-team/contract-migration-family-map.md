@@ -85,7 +85,6 @@ A new key takes the next unused index of its family's range; existing indices
 | 158 | `typeAExitSevenProduced` | `TypeAExitSevenProducedStatement` | TypeA |
 | 328 | `typeABoundedSupport` | `TypeABoundedSupportStatement` | TypeA |
 | 343 | `typeAExclusion` | `TypeAExclusionStatement` | TypeA |
-| 440 | `portPowerReturn` | `PortPowerReturnStatement` | TypeA |
 | 508 | `typeASilentExitFourFree` | `SelectedSilentExitFourFree` | TypeA |
 | 509 | `typeASilentExitFiveFree` | `SelectedSilentExitFiveFree` | TypeA |
 | 510 | `typeASilentExitSixFree` | `SelectedSilentExitSixFree` | TypeA |
@@ -93,7 +92,6 @@ A new key takes the next unused index of its family's range; existing indices
 
 ### Row and decision modules (29)
 
-- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/PortPowerReturn.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeABoundedSupport.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeAExclusion.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeAExitFiveDichotomy.lean`

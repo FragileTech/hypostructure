@@ -45,7 +45,7 @@ noncomputable abbrev netChargeFanDataKeys : FactKeys EGInput.{u} :=
     K .typeASupport, K .typeANoVisibleEntry, K .typeAExitFourAbsent,
     K .typeAExitSixProperScope,
     K .typeAExitSixGlobalScope,
-    K .typeAExitEightNotSilent, K .typeBAssignedSupport,
+    K .typeBAssignedSupport,
     K .highCentreNormalForm, K .typeBFanHeavyCentre,
     K .typeBFanDegreeFourCentres, K .typeBFanLocalDichotomy,
     K .sameCenterOpenPortCompatibility, K .fanCertificateCap,
@@ -70,8 +70,7 @@ noncomputable abbrev netChargeFanDataKeys : FactKeys EGInput.{u} :=
     K .route8ExtractedEntryCensus, K .route8UnifiedTrueTwoCarrierEntry,
     K .route8PeelingDescent, K .route8StageRateFailed, K .route8DemandLedger,
     K .route8DemandAbsorption, K .route8OpenBoundarySaturated,
-    K .route8DemandUnitCount, K .route8WindowBlockers, K .windowShadowSignature,
-    K .windowShadowSingletonTail, K .windowShadowHitCycle,
+    K .route8DemandUnitCount, K .route8WindowBlockers, K .windowShadowHitCycle,
     K .windowShadowHitExcluded, K .route8UnpaidExitFourResidual,
     K .route8UnifiedVisibleResidual, K .route8UnifiedVisibleOverload,
     K .route8JointBalance, K .route8TwoCarrierExit,
@@ -81,7 +80,21 @@ noncomputable abbrev netChargeFanDataKeys : FactKeys EGInput.{u} :=
     K .fanClosedPortTypeBRouting, K .compatiblePairTypeBRouting,
     K .triangularPortTypeBRouting, K .triangularShoulderCompletion,
     K .triangularPortReturn, K .triangularFirstLanding,
-    K .triangularCrossShoulder, K .typeASilentExitSevenFree]
+    K .triangularCrossShoulder,
+    K .typeAPeeledSaturatedReceiver,
+    K .typeAPeeledUnsaturatedDischarge,
+    K .typeAPeeledVisibleEntry,
+    K .typeAPeeledNoVisibleEntry,
+    K .typeAPeeledSilentExcess,
+    K .typeAPeeledExitOneReturn,
+    K .typeAPeeledExitOneFree,
+    K .typeAPeeledExitTwoTheta,
+    K .typeAPeeledExitTwoFree,
+    K .typeAPeeledExitThreeCollision,
+    K .typeAPeeledExitThreeFree,
+    K .typeAExitThreeCycle,
+    K .typeAExitSevenEnvelope,
+    K .route8GlobalSqueeze]
 
 /-- **Node `[177]`**: decorated handoff fan data at the heavy centres of the
 selected corridors outside the candidate class, entering Type B at `[65]`, and
@@ -149,7 +162,6 @@ noncomputable def selectedAbsorbedFanData
         (by key_fresh)
         (by infer_instance)
         (by key_fresh)
-        (routingFresh := by key_fresh)
         (unifiedNegativeFresh := by key_fresh)
         (typeAExclusionFresh := by key_fresh)
         (typeBBridgeReductionFresh := by
@@ -169,8 +181,6 @@ noncomputable def selectedAbsorbedFanData
         (openBoundarySaturatedFresh := by key_fresh)
         (demandUnitCountFresh := by key_fresh)
         (windowBlockersFresh := by key_fresh)
-        (windowShadowSignatureFresh := by key_fresh)
-        (windowShadowTailFresh := by key_fresh)
         (windowShadowCycleFresh := by key_fresh)
         (windowShadowExcludedFresh := by key_fresh)
         (demandResidualFresh := by key_fresh)

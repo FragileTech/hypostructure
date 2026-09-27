@@ -14,7 +14,7 @@ entry. -/
     {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.route8TrueTwoCarrierEntry
-    { Requires := [K .route8TwoCarrierEntry, K .route8TrueResidual]
+    { Requires := [K .route8TwoCarrierEntry, K .route8TrueResidual, K .cubicBaseline]
       Produces := [K .route8TrueTwoCarrierEntry]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -25,7 +25,7 @@ entry. -/
           (inputs.get (K .route8TwoCarrierEntry)).down
           (inputs.get (K .route8TrueResidual)).down
           inputs.current.baseline
-          data.dischargeScale_pos⟩ .nil)
+          (by have := (inputs.get (K .cubicBaseline)).down.2.1; omega)⟩ .nil)
     0 0
 
 end Hypostructure.Graph.Strategy.Spine

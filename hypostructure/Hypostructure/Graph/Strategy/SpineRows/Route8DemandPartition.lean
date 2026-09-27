@@ -23,15 +23,16 @@ and the canonical demand records of the unpaid target-defect entries. -/
     {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.route8DemandLedger
-    { Requires := [K .selection]
+    { Requires := [K .selection, K .cubicBaseline]
       Produces := [K .route8DemandLedger]
-      requiresUnique := by simp
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .route8DemandLedger)
         ⟨Graph.Contracts.RouteEight.route8DemandLedger data.toParameters
-          inputs.current.object data.three_le_threshold
+          inputs.current.object
+          (by have := (inputs.get (K .cubicBaseline)).down.1; omega)
           (inputs.get (K .selection)).down.1⟩ .nil)
     0 0
 

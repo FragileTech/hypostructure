@@ -323,17 +323,10 @@ theorem route8PiecesClassified (data : Parameters) (object : FiniteObject.{u})
     (bridge : TypeBBridgeReductionStatement data object) :
     Route8PiecesClassifiedStatement data object := by
   classical
-  obtain ⟨valid, -, maximal⟩ := canonicalWindowPacking_spec data object
   intro piece pieceMem negative
   refine ⟨fun zeroSurplus => ?_, fun positiveSurplus => ?_⟩
   · -- `thm:branch-kill`(a): the `[86]` trichotomy at this exact piece.
-    exact (exclusion (canonicalWindowPacking data object) valid maximal
-      (object.pieceSupport
-        (object.remainderSupport (canonicalWindowPacking data object)) piece)
-      (object.pieceSupport_subset _ piece)
-      (Graph.SupportComponents.Connected.connectedOn_of_mem_order object _
-        ((Graph.FiniteObject.mem_canonicalPieces _ _).1 pieceMem))
-      negative zeroSurplus).1
+    exact exclusion piece pieceMem negative zeroSurplus
   · -- `thm:branch-kill`(b): the bridge-residual dichotomy at this piece.
     rcases bridge ⟨piece, pieceMem⟩ negative positiveSurplus with
       ⟨ledger, ledgerEq, exactRefinement, notClean, _postLedger, _grouped⟩ |

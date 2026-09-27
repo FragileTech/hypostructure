@@ -15,15 +15,14 @@ open Hypostructure
 
 universe u v
 
-/-- The selected silent-core residual profile at exit `(8)`.  It exposes the
-same selected saturated residual state as `[109]`, with the selected receiver
-and current peeling set in scope for later semantic facts, and asserts that no
-decorated handoff fan is produced. -/
+/-- The selected silent-core residual profile at exit `(8)` (node `[110]`,
+`def:typeA-silent-core-residual`): the terminal state `(X₀, w, P₄(w))` of
+`[109]`, where exits `(4)`--`(7)` fail at its eligible loads, with the selected
+receiver and peeling set in scope for later semantic facts. -/
 abbrev SilentCoreResidualProfile (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   SelectedNoExitSixReceiverWith data object
-    (fun packing piece _receiver _peeled =>
-      ¬ SeparatorHandoffAt data object piece)
+    (fun piece receiver peeled => ¬ ExitSevenAt data object piece receiver peeled)
 
 /-- The exact component predicate used by node `[111]` to form `𝒳_A`.
 
@@ -818,63 +817,6 @@ noncomputable abbrev Route8RateFailsStatement
     (data.bridgeMassFactor * data.dischargeScale *
       data.surplusThreshold object.vertexCount)
 
-/-- The actual corridor/window cycle witnessing a recorded shadow hit. -/
-noncomputable abbrev WindowShadowHitCycleStatement
-    (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  ∀ (window : SimpleGraph.pathGraph data.windowOrder ↪g object.graph)
-    (x y : object.Vertex) (a b : Fin data.windowOrder)
-    (corridor : object.graph.Walk x y),
-    corridor.IsPath →
-    (∀ i : Fin data.windowOrder, window i ∉ corridor.support) →
-    object.graph.Adj (window a) x → object.graph.Adj y (window b) →
-    s(x, window a) ≠ s(y, window b) →
-    b.1 ∈ Graph.WindowAttachmentShadow.shadow data.LengthOK
-      data.windowOrder corridor.length a.1 →
-    ∃ cycle : object.graph.Walk (window a) (window a),
-      cycle.IsCycle ∧
-        cycle.length = corridor.length + 2 + Nat.dist a.1 b.1 ∧
-        data.LengthOK cycle.length
-
-/-- Selection excludes every recorded shadow hit on the same object. -/
-noncomputable abbrev WindowShadowHitExcludedStatement
-    (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  ∀ (window : SimpleGraph.pathGraph data.windowOrder ↪g object.graph)
-    (x y : object.Vertex) (a b : Fin data.windowOrder)
-    (corridor : object.graph.Walk x y),
-    corridor.IsPath →
-    (∀ i : Fin data.windowOrder, window i ∉ corridor.support) →
-    object.graph.Adj (window a) x → object.graph.Adj y (window b) →
-    s(x, window a) ≠ s(y, window b) →
-    b.1 ∉ Graph.WindowAttachmentShadow.shadow data.LengthOK
-      data.windowOrder corridor.length a.1
-
-/-- Exact singleton-label safety interpretation of an attachment signature. -/
-noncomputable abbrev WindowShadowSignatureStatement
-    (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  ∀ support : Finset object.Vertex,
-    object.InducesWindow data.windowOrder support →
-    ∀ (s : Nat) (a b : Fin data.windowOrder),
-      b.1 ∈ Graph.WindowAttachmentShadow.shadow data.LengthOK
-          data.windowOrder s a.1 ↔
-        ¬ Graph.WindowCurvature.Safe s {a} {b}
-
-/-- The singleton forbidden-distance tail of the window attachment table. -/
-noncomputable abbrev WindowShadowSingletonTailStatement
-    (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  ∀ support : Finset object.Vertex,
-    object.InducesWindow data.windowOrder support →
-    ∀ s : Nat, data.windowOrder + 5 ≤ s →
-      (Graph.WindowAttachmentShadow.forbiddenDistances
-        data.LengthOK data.windowOrder s).card ≤ 1
-
 /-- Node `[117]`, yes: some indexed route-8 entry of `𝒳_A` has at most `δ`
 private essential carriers (`prop:typeA-route8-carrier-reduction`). -/
 noncomputable abbrev Route8TwoCarrierEntryStatement
@@ -937,5 +879,30 @@ noncomputable def route8SurvivorComponents (data : Parameters)
   exact (object.canonicalPieces
       (object.remainderSupport (canonicalWindowPacking data object))).filter
     (Route8Survives data object (canonicalWindowPacking data object))
+
+/-- Node `[111]`: the global squeeze extracts the route-`8` Type A collection
+`𝒳_A = route8SurvivorComponents` carrying `D_A(𝒳_A)` (tex 1127; `def:typeA-large-budget-deficit`,
+tex 11919): every member of `𝒳_A` is a Type A support, `σ(X) = 0`, carrying a
+strictly positive share of the deficit, `s·δ(X) = |V(X)| − s·def⁺(X) > 0`
+(its net charge is negative), so the cleared deficit
+`s·D_A(𝒳_A) = Σ_{X ∈ 𝒳_A} s·δ(X)` is at least the number of members. -/
+noncomputable abbrev Route8GlobalSqueezeStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  (∀ component ∈ route8SurvivorComponents data object,
+      object.ambientSurplus
+          (object.pieceSupport
+            (object.remainderSupport (canonicalWindowPacking data object))
+            component) data.threshold = 0 ∧
+        data.dischargeScale * object.positiveDeficiency
+            (object.pieceSupport
+              (object.remainderSupport (canonicalWindowPacking data object))
+              component) data.threshold <
+          (object.pieceSupport
+            (object.remainderSupport (canonicalWindowPacking data object))
+            component).card) ∧
+    (route8SurvivorComponents data object).card ≤
+      Graph.TypeBEnvelopeCharge.route8Deficit object
+        (object.remainderSupport (canonicalWindowPacking data object))
+        data.threshold data.dischargeScale (route8SurvivorComponents data object)
 
 end Hypostructure.Graph.Strategy.Spine

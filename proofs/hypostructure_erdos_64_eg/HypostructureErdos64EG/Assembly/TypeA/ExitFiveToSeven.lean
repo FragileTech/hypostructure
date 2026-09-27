@@ -3,7 +3,6 @@ import Hypostructure.Graph.Strategy.SpineRows.TypeAExitFiveDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.TypeAExitSevenDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.TypeAExitSixDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.TypeAExitSixScopeDichotomy
-import Hypostructure.Graph.Strategy.SpineRows.TypeASilentExitSevenDichotomy
 import HypostructureErdos64EG.Assembly.RouteEight.Residual
 import HypostructureErdos64EG.Assembly.TypeA.DecoratedHandoff
 
@@ -34,8 +33,6 @@ noncomputable abbrev typeAExitFiveToEightKeys : FactKeys EGInput.{u} :=
     K .typeAExitSixGlobal,
     K .typeAExitSevenHandoff,
     K .typeAExitSevenFree,
-    K .typeASilentExitSevenFree,
-    K .typeAExitEightNotSilent,
     K .highCentreNormalForm,
     closed,
     K .typeBDecoratedAssignedSupport,
@@ -77,8 +74,6 @@ noncomputable abbrev typeAExitFiveToEightKeys : FactKeys EGInput.{u} :=
     K .route8OpenBoundarySaturated,
     K .route8DemandUnitCount,
     K .route8WindowBlockers,
-    K .windowShadowSignature,
-    K .windowShadowSingletonTail,
     K .windowShadowHitCycle,
     K .windowShadowHitExcluded,
     K .route8UnpaidExitFourResidual,
@@ -119,7 +114,9 @@ noncomputable abbrev typeAExitFiveToEightKeys : FactKeys EGInput.{u} :=
     K .route8UnifiedTwoCarrierExit,
     K .route8StageRate,
     K .route8UnpaidTwoCarrier,
-    K .route8UnpaidWitnessFree]
+    K .route8UnpaidWitnessFree,
+    K .typeAExitSevenEnvelope,
+    K .route8GlobalSqueeze]
 
 /-- **Nodes `[103]`--`[109]`: exits `(5)`--`(7)` and the route-`8` residual**, on
 a saturated exit-`(4)`-free state of the exit segment (index-polymorphic).
@@ -128,9 +125,8 @@ against `cor:uncompressible`.  `[105]` exit `(6)`: a delocalizing response
 equality closes at `[106]` — proper scope by `lem:proper-smearing` against
 `lem:replacement`, whole-graph scope by `lem:no-silent-global-smearing` against
 the selection's minimality.  `[107]` exit `(7)`: the decorated handoff fan
-envelope is node `[108]` and returns to Type B at `[65]`.  Its absence is
-`[109]`, the route-`8` residual continued in Part IX; a residual with the
-node-`[94]` silent-excess origin is closed at `[184]`. -/
+envelope, built at node `[108]`, returns to Type B at `[65]`.  Its absence is
+`[109]`, the route-`8` residual continued in Part IX. -/
 -- EG-NODE [103] exit 5? target-complete response compression
 -- EG-NODE [104] uncompressibility contradiction
 -- EG-NODE [105] exit 6? proper/whole-graph support dependence
@@ -197,25 +193,20 @@ noncomputable def selectedTypeAExitFiveToEight
           match typeAExitSevenDichotomy (data := spineData) sixFree
               (by key_fresh) (by key_fresh) with
           | .left handoffHistory =>
-              -- `[108]` → Type B `[65]`.
-              exact selectedTypeADecoratedHandoff handoffHistory
+              -- `[108]`: the decorated handoff fan envelope, then Type B.
+              let envelope :=
+                (typeAExitSevenEnvelopeRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run handoffHistory (by key_fresh)
+              exact selectedTypeADecoratedHandoff envelope
           | .right residual =>
-              -- `[109]`: the route-`8` residual state.
-              match typeASilentExitSevenDichotomy (data := spineData) residual
-                  (by key_fresh) (by key_fresh) with
-              | .left silentHistory =>
-                  let normal :=
-                    (highCentreNormalFormRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                      silentHistory (by key_fresh)
-                  exact selectedRouteEightResidualSilent normal
-              | .right visibleHistory =>
-                  let normal :=
-                    (highCentreNormalFormRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-                      visibleHistory (by key_fresh)
-                  exact selectedRouteEightResidual normal
+              -- `[109]`: the route-`8` residual, continued in Part IX.
+              let normal :=
+                (highCentreNormalFormRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run residual (by key_fresh)
+              exact selectedRouteEightResidual normal
 
 end HypostructureErdos64EG

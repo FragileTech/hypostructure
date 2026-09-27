@@ -3,15 +3,16 @@ import Hypostructure.Graph.Contracts.TypeA.Exits
 
 /-! # Node `[102]` → `[89]`: recompute `L₄`
 
-After the exit-`(4)` peel of node `[102]` (`K .typeAExitFourPeeled`) the
-canonical witnessed peeling sequence of the exit-chain receiver runs to its
-terminal set `P₄(w)` (`lem:typeA-saturated-handoff`), and the saturation test
-is asked there.  The yes arm (`K .typeASaturatedHandoffExitFourFree`): the
-receiver is still saturated at `P₄(w)`, which is then exit-`(4)`-free, and
-exits `(5)`--`(8)` are asked there.  The no arm
-(`K .typeAExitFourReceiverDischarged`): it is unsaturated at `P₄(w)`, with
-nonnegative remaining charge (`lem:typeA-exit4-peeling-charge`).  These are
-d2ded0e's two arms of the same retest. -/
+After the exit-`(4)` peel of node `[102]` (`K .typeAExitFourPeeled`) node `[89]`
+is asked again with the residual loads (tex 1095, "recompute `L₄`";
+`lem:typeA-saturated-handoff`): is some receiver of `X₀` still saturated,
+`L₄(w) ≥ s·q(w)`, after its canonical witnessed peeling sequence has stopped?
+The yes arm (`K .typeAPeeledSaturatedReceiver`) is the terminal receiver `w`
+at its terminal set `P₄(w)`, which re-enters node `[93]`.  The no arm
+(`K .typeAExitFourReceiverDischarged`) is node `[90]` with `L₄`: every receiver
+of `X₀` is unsaturated after peeling; node `[91]`
+(`K .typeAPeeledUnsaturatedDischarge`) is the charge bound on the unpeeled
+loads (`lem:typeA-exit4-peeling-charge`). -/
 
 namespace Hypostructure.Graph.Strategy.Spine
 
@@ -25,35 +26,55 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
-/-- Node `[102]` → `[89]`, decided at the terminal state of the canonical sequence. -/
+/-- Node `[102]` → `[89]`, decided over the receivers of `X₀` at their terminal
+sets. -/
 noncomputable def typeAExitFourRetestDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous :
       ExactLedger (Input BranchState Presentation presentation data) current
         known)
-    [FactKeys.Has (K .typeALowSurplus) known]
     [FactKeys.Has (K .typeAExitFourPeeled) known]
-    (freeFresh : K .typeASaturatedHandoffExitFourFree ∉ known)
+    (saturatedFresh : K .typeAPeeledSaturatedReceiver ∉ known)
     (dischargedFresh : K .typeAExitFourReceiverDischarged ∉ known) :
-    Decision (K .typeASaturatedHandoffExitFourFree) (K .typeAExitFourReceiverDischarged) previous :=
-  Decision.run previous (K .typeASaturatedHandoffExitFourFree) (K .typeAExitFourReceiverDischarged)
+    Decision (K .typeAPeeledSaturatedReceiver)
+      (K .typeAExitFourReceiverDischarged) previous :=
+  Decision.run previous (K .typeAPeeledSaturatedReceiver)
+    (K .typeAExitFourReceiverDischarged)
     `Hypostructure.Graph.Strategy.Spine.typeAExitFourRetestDichotomy
     (Classical.choice (show Nonempty
-        ((K .typeASaturatedHandoffExitFourFree).At current ⊕ (K .typeAExitFourReceiverDischarged).At current) from by
+        ((K .typeAPeeledSaturatedReceiver).At current ⊕
+          (K .typeAExitFourReceiverDischarged).At current) from by
       classical
-      obtain ⟨piece, pinned, zero, receiver, chosen, _⟩ :=
-        canonicalPin_merge (previous.get (K .typeALowSurplus)).down
-          (previous.get (K .typeAExitFourPeeled)).down
-      by_cases saturated : Graph.ExitFour.SaturatedAfter piece data.threshold
-          data.dischargeScale receiver
-          (canonicalTerminalPeeled data.toParameters current.object piece receiver)
-      · exact ⟨.inl ⟨⟨piece, pinned, receiver, chosen, saturated,
-          Graph.Contracts.TypeA.exitFourFreeAt_terminal data.toParameters current.object
-            current.baseline zero chosen saturated⟩⟩⟩
-      · exact ⟨.inr ⟨⟨piece, pinned, receiver, chosen, saturated,
-          Graph.Contracts.TypeA.receiverDischarged_of_not_saturated
+      obtain ⟨piece, pinned, _peeled⟩ :=
+        (previous.get (K .typeAExitFourPeeled)).down
+      by_cases saturated :
+          ∃ receiver, TerminalSaturatedSpec data.toParameters current.object piece
+            receiver
+      · obtain ⟨receiver, chosen, spec⟩ := canonicalTerminalReceiverAt_spec saturated
+        exact ⟨.inl ⟨⟨piece, pinned, receiver, chosen, spec.2⟩⟩⟩
+      · exact ⟨.inr ⟨⟨piece, pinned,
+          Graph.Contracts.TypeA.receiverDischarged_of_not_terminalSaturated
             data.toParameters current.object saturated⟩⟩⟩))
-    freeFresh dischargedFresh
+    saturatedFresh dischargedFresh
+
+/-- Node `[91]` after peeling: `|V(X₀)| ≤ s·def⁺(X₀) + Σ_w |P₄(w)|`. -/
+@[reducible] noncomputable def typeAPeeledUnsaturatedDischargeRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.typeAPeeledUnsaturatedDischarge
+    { Requires := [K .typeAReceiverRouting, K .typeALowSurplus,
+        K .typeAExitFourReceiverDischarged]
+      Produces := [K .typeAPeeledUnsaturatedDischarge]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .typeAPeeledUnsaturatedDischarge)
+        ⟨Graph.Contracts.TypeA.typeAPeeledUnsaturatedDischarge data.toParameters
+          inputs.current.object
+          (inputs.get (K .typeAReceiverRouting)).down
+          (inputs.get (K .typeALowSurplus)).down
+          (inputs.get (K .typeAExitFourReceiverDischarged)).down⟩
+        .nil)
 
 end Hypostructure.Graph.Strategy.Spine

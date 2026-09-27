@@ -837,9 +837,6 @@ inductive Key where
   the saturated exit list continues at exit `(8)`, the route-8 residual of
   `def:typeA-silent-core-residual`. -/
   | typeAExitSevenFree
-  /-- Node `[109]` on the node-`[94]` lane, with the original silent support
-  and receiver still identified after exit `(7)` also fails. -/
-  | typeASilentExitSevenFree
   | coldFailureCycle
   /-- `lem:cold-corridor-first-failure` (ii): an (F2) pair of prefixes of one
   of G's corridors is a target-defective quotient. -/
@@ -1231,10 +1228,6 @@ inductive Key where
   incidence of its component support, and the open demand is exactly the
   window-blocker load partition `𝖯_open = Σ_P B_open(P)`. -/
   | route8WindowBlockers
-  /-- The singleton forbidden-distance tail of the window attachment table. -/
-  | windowShadowSingletonTail
-  /-- Exact singleton-label safety interpretation of an attachment signature. -/
-  | windowShadowSignature
   /-- The actual corridor/window cycle witnessing a recorded shadow hit. -/
   | windowShadowHitCycle
   /-- Selection excludes every recorded shadow hit on the same object. -/
@@ -1562,8 +1555,6 @@ inductive Key where
   | typeAExitSixProperScope
   /-- Node `[106]`, whole-graph scope: the canonical exit-`(6)` delocalization adjoins all of `G`. -/
   | typeAExitSixGlobalScope
-  /-- Node `[109]`, visible origin: the route-`8` residual state does not carry the node-`[94]` silent origin. -/
-  | typeAExitEightNotSilent
   -- F3 keys
   /-- Node `[124]`, `lem:typeA-carrier-deletion-exit` on the route-`8` collection `𝒳_A`:
   every two-support entry of `Ξ(𝒳_A)` carries its canonical exit-`(4)` witness. -/
@@ -1600,6 +1591,35 @@ inductive Key where
   /-- Node `[16]`, `thm:p13free` on the window-free arm: G has an accepted
   cycle. -/
   | hssTargetCycle
+  -- TA keys
+  /-- Node `[102]` → `[89]`, yes arm: the terminal receiver of `X₀` is saturated at its terminal peeling set. -/
+  | typeAPeeledSaturatedReceiver
+  /-- Node `[91]` after peeling: `|V(X₀)| ≤ s·def⁺(X₀) + Σ_w |P₄(w)|`. -/
+  | typeAPeeledUnsaturatedDischarge
+  /-- Node `[93]` after peeling, yes arm: the terminal state has an overloaded port. -/
+  | typeAPeeledVisibleEntry
+  /-- Node `[93]` after peeling, no arm: the terminal state has no overloaded port. -/
+  | typeAPeeledNoVisibleEntry
+  /-- Node `[94]` after peeling: the residual excess `E₄(w)` is nonempty and silent. -/
+  | typeAPeeledSilentExcess
+  /-- Node `[95]` after peeling, yes arm: exit `(1)` at the terminal overloaded port. -/
+  | typeAPeeledExitOneReturn
+  /-- Node `[95]` after peeling, no arm. -/
+  | typeAPeeledExitOneFree
+  /-- Node `[97]` after peeling, yes arm: exit `(2)` at the terminal overloaded port. -/
+  | typeAPeeledExitTwoTheta
+  /-- Node `[97]` after peeling, no arm. -/
+  | typeAPeeledExitTwoFree
+  /-- Node `[99]` after peeling, yes arm: exit `(3)` at the terminal overloaded port. -/
+  | typeAPeeledExitThreeCollision
+  /-- Node `[99]` after peeling, no arm. -/
+  | typeAPeeledExitThreeFree
+  /-- Node `[100]`: the exit-`(3)` label collision closes an accepted cycle of `G`. -/
+  | typeAExitThreeCycle
+  /-- Node `[108]`: the canonical exit-`(7)` separation and envelope of `X₀` at the terminal state. -/
+  | typeAExitSevenEnvelope
+  /-- Node `[111]`: the global squeeze extracts `𝒳_A`, each member carrying positive deficit. -/
+  | route8GlobalSqueeze
   deriving DecidableEq
 
 /-- The value schema of each spine fact, stated of the *object* alone.
@@ -1990,8 +2010,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       TypeBDecoratedAssignedSupportStatement data.toParameters object
   | .typeAExitSevenFree, object =>
       TypeAExitSevenFreeStatement data.toParameters object
-  | .typeASilentExitSevenFree, object =>
-      SelectedSilentExitSevenFree data.toParameters object
   | .highCentreNormalForm, object =>
       HighCentreNormalFormStatement data.toParameters object
   | .fanCertificateCap, object =>
@@ -2156,10 +2174,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       WindowShadowHitCycleStatement data.toParameters object
   | .windowShadowHitExcluded, object =>
       WindowShadowHitExcludedStatement data.toParameters object
-  | .windowShadowSignature, object =>
-      WindowShadowSignatureStatement data.toParameters object
-  | .windowShadowSingletonTail, object =>
-      WindowShadowSingletonTailStatement data.toParameters object
   | .route8WindowBlockers, object =>
       Route8WindowBlockersStatement data.toParameters object
   | .route8UnpaidExitFourResidual, object =>
@@ -2325,8 +2339,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       TypeAExitSixProperScopeStatement data.toParameters object
   | .typeAExitSixGlobalScope, object =>
       TypeAExitSixGlobalScopeStatement data.toParameters object
-  | .typeAExitEightNotSilent, object =>
-      TypeAExitEightNotSilentStatement data.toParameters object
   -- F3 keys
   | .route8TwoCarrierExit, object =>
       Route8SurvivorTwoCarrierExitStatement data.toParameters object
@@ -2350,16 +2362,43 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       SpinePresentationLawsStatement data.toParameters data.windowBarrierLabel object
   | .hssTargetCycle, object =>
       HssTargetCycleStatement data.toParameters object
+  -- TA keys
+  | .typeAPeeledSaturatedReceiver, object =>
+      TypeAPeeledSaturatedReceiverStatement data.toParameters object
+  | .typeAPeeledUnsaturatedDischarge, object =>
+      TypeAPeeledUnsaturatedDischargeStatement data.toParameters object
+  | .typeAPeeledVisibleEntry, object =>
+      TypeAPeeledVisibleEntryStatement data.toParameters object
+  | .typeAPeeledNoVisibleEntry, object =>
+      TypeAPeeledNoVisibleEntryStatement data.toParameters object
+  | .typeAPeeledSilentExcess, object =>
+      TypeAPeeledSilentExcessStatement data.toParameters object
+  | .typeAPeeledExitOneReturn, object =>
+      TypeAPeeledExitOneReturnStatement data.toParameters object
+  | .typeAPeeledExitOneFree, object =>
+      TypeAPeeledExitOneFreeStatement data.toParameters object
+  | .typeAPeeledExitTwoTheta, object =>
+      TypeAPeeledExitTwoThetaStatement data.toParameters object
+  | .typeAPeeledExitTwoFree, object =>
+      TypeAPeeledExitTwoFreeStatement data.toParameters object
+  | .typeAPeeledExitThreeCollision, object =>
+      TypeAPeeledExitThreeCollisionStatement data.toParameters object
+  | .typeAPeeledExitThreeFree, object =>
+      TypeAPeeledExitThreeFreeStatement data.toParameters object
+  | .typeAExitThreeCycle, object =>
+      TypeAExitThreeCycleStatement data.toParameters object
+  | .typeAExitSevenEnvelope, object =>
+      TypeAExitSevenEnvelopeStatement data.toParameters object
+  | .route8GlobalSqueeze, object =>
+      Route8GlobalSqueezeStatement data.toParameters object
 
 /-- Audit labels.  They are diagnostics; every routing and lookup decision
 compares exact keys. -/
 def label : Key → String
   | .route8DemandUnitCount => "route8DemandUnitCount"
   | .route8OpenBoundarySaturated => "route8OpenBoundarySaturated"
-  | .windowShadowSignature => "windowShadowSignature"
   | .windowShadowHitExcluded => "windowShadowHitExcluded"
   | .windowShadowHitCycle => "windowShadowHitCycle"
-  | .windowShadowSingletonTail => "windowShadowSingletonTail"
   | .selection => "selection"
   | .cubicBaseline => "cubicBaseline"
   | .returnAvoidance => "returnAvoidance"
@@ -2474,7 +2513,6 @@ def label : Key → String
   | .typeAExitSevenHandoff => "typeAExitSevenHandoff"
   | .typeBDecoratedAssignedSupport => "typeBDecoratedAssignedSupport"
   | .typeAExitSevenFree => "typeAExitSevenFree"
-  | .typeASilentExitSevenFree => "typeASilentExitSevenFree"
   | .coldFailureCycle => "coldFailureCycle"
   | .coldFailureDefectRoute => "coldFailureDefectRoute"
   | .coldFailureCompression => "coldFailureCompression"
@@ -2663,7 +2701,6 @@ def label : Key → String
   | .typeAExitFourAbsent => "typeAExitFourAbsent"
   | .typeAExitSixProperScope => "typeAExitSixProperScope"
   | .typeAExitSixGlobalScope => "typeAExitSixGlobalScope"
-  | .typeAExitEightNotSilent => "typeAExitEightNotSilent"
   -- F3 keys
   | .route8TwoCarrierExit => "route8TwoCarrierExit"
   | .route8UnifiedTwoCarrierExit => "route8UnifiedTwoCarrierExit"
@@ -2677,6 +2714,21 @@ def label : Key → String
   | .targetCompleteContextUniversality => "targetCompleteContextUniversality"
   | .spinePresentationLaws => "spinePresentationLaws"
   | .hssTargetCycle => "hssTargetCycle"
+  -- TA keys
+  | .typeAPeeledSaturatedReceiver => "typeAPeeledSaturatedReceiver"
+  | .typeAPeeledUnsaturatedDischarge => "typeAPeeledUnsaturatedDischarge"
+  | .typeAPeeledVisibleEntry => "typeAPeeledVisibleEntry"
+  | .typeAPeeledNoVisibleEntry => "typeAPeeledNoVisibleEntry"
+  | .typeAPeeledSilentExcess => "typeAPeeledSilentExcess"
+  | .typeAPeeledExitOneReturn => "typeAPeeledExitOneReturn"
+  | .typeAPeeledExitOneFree => "typeAPeeledExitOneFree"
+  | .typeAPeeledExitTwoTheta => "typeAPeeledExitTwoTheta"
+  | .typeAPeeledExitTwoFree => "typeAPeeledExitTwoFree"
+  | .typeAPeeledExitThreeCollision => "typeAPeeledExitThreeCollision"
+  | .typeAPeeledExitThreeFree => "typeAPeeledExitThreeFree"
+  | .typeAExitThreeCycle => "typeAExitThreeCycle"
+  | .typeAExitSevenEnvelope => "typeAExitSevenEnvelope"
+  | .route8GlobalSqueeze => "route8GlobalSqueeze"
 
 /-! ### Label pins
 
@@ -2689,10 +2741,8 @@ label. -/
 section LabelPins
 example : label .route8DemandUnitCount = "route8DemandUnitCount" := rfl
 example : label .route8OpenBoundarySaturated = "route8OpenBoundarySaturated" := rfl
-example : label .windowShadowSignature = "windowShadowSignature" := rfl
 example : label .windowShadowHitExcluded = "windowShadowHitExcluded" := rfl
 example : label .windowShadowHitCycle = "windowShadowHitCycle" := rfl
-example : label .windowShadowSingletonTail = "windowShadowSingletonTail" := rfl
 example : label .selection = "selection" := rfl
 example : label .returnAvoidance = "returnAvoidance" := rfl
 example : label .noProperBaseline = "noProperBaseline" := rfl
@@ -2816,7 +2866,6 @@ example : label .typeAExitTwoFree = "typeAExitTwoFree" := rfl
 example : label .typeAExitThreeCollision = "typeAExitThreeCollision" := rfl
 example : label .typeAExitThreeFree = "typeAExitThreeFree" := rfl
 example : label .typeASaturatedExitEntry = "typeASaturatedExitEntry" := rfl
-example : label .typeASilentExitSevenFree = "typeASilentExitSevenFree" := rfl
 example : label .typeAExitSevenHandoff = "typeAExitSevenHandoff" := rfl
 example : label .typeAExitSevenFree = "typeAExitSevenFree" := rfl
 example : label .coldFailureCycle = "coldFailureCycle" := rfl
@@ -3011,7 +3060,6 @@ example : label .typeANoVisibleEntry = "typeANoVisibleEntry" := rfl
 example : label .typeAExitFourAbsent = "typeAExitFourAbsent" := rfl
 example : label .typeAExitSixProperScope = "typeAExitSixProperScope" := rfl
 example : label .typeAExitSixGlobalScope = "typeAExitSixGlobalScope" := rfl
-example : label .typeAExitEightNotSilent = "typeAExitEightNotSilent" := rfl
 -- F3 keys
 example : label .route8TwoCarrierExit = "route8TwoCarrierExit" := rfl
 example : label .route8UnifiedTwoCarrierExit = "route8UnifiedTwoCarrierExit" := rfl
@@ -3025,6 +3073,20 @@ example : label .degreeProfileFibres = "degreeProfileFibres" := rfl
 example : label .targetCompleteContextUniversality = "targetCompleteContextUniversality" := rfl
 example : label .spinePresentationLaws = "spinePresentationLaws" := rfl
 example : label .hssTargetCycle = "hssTargetCycle" := rfl
+example : label .typeAPeeledSaturatedReceiver = "typeAPeeledSaturatedReceiver" := rfl
+example : label .typeAPeeledUnsaturatedDischarge = "typeAPeeledUnsaturatedDischarge" := rfl
+example : label .typeAPeeledVisibleEntry = "typeAPeeledVisibleEntry" := rfl
+example : label .typeAPeeledNoVisibleEntry = "typeAPeeledNoVisibleEntry" := rfl
+example : label .typeAPeeledSilentExcess = "typeAPeeledSilentExcess" := rfl
+example : label .typeAPeeledExitOneReturn = "typeAPeeledExitOneReturn" := rfl
+example : label .typeAPeeledExitOneFree = "typeAPeeledExitOneFree" := rfl
+example : label .typeAPeeledExitTwoTheta = "typeAPeeledExitTwoTheta" := rfl
+example : label .typeAPeeledExitTwoFree = "typeAPeeledExitTwoFree" := rfl
+example : label .typeAPeeledExitThreeCollision = "typeAPeeledExitThreeCollision" := rfl
+example : label .typeAPeeledExitThreeFree = "typeAPeeledExitThreeFree" := rfl
+example : label .typeAExitThreeCycle = "typeAExitThreeCycle" := rfl
+example : label .typeAExitSevenEnvelope = "typeAExitSevenEnvelope" := rfl
+example : label .route8GlobalSqueeze = "route8GlobalSqueeze" := rfl
 end LabelPins
 
 /-- The value schema at a residual: the object-level statement, read at the
@@ -3042,10 +3104,8 @@ renumber the audit names an earlier run emitted. -/
 def idx : Key → Nat
   | .route8DemandUnitCount => 518
   | .route8OpenBoundarySaturated => 517
-  | .windowShadowSignature => 516
   | .windowShadowHitExcluded => 515
   | .windowShadowHitCycle => 514
-  | .windowShadowSingletonTail => 513
   | .selection => 0
   | .cubicBaseline => 221
   | .returnAvoidance => 1
@@ -3266,7 +3326,6 @@ def idx : Key → Nat
   | .route8UnifiedVisibleResidual => 504
   | .route8UnifiedVisibleOverload => 505
   | .route8JointBalance => 506
-  | .typeASilentExitSevenFree => 511
   | .route8TwoCarrierEntry => 261
   | .route8NoTwoCarrierEntry => 262
   | .route8TrueTwoCarrierEntry => 280
@@ -3347,7 +3406,6 @@ def idx : Key → Nat
   | .typeAExitFourAbsent => 1002
   | .typeAExitSixProperScope => 1004
   | .typeAExitSixGlobalScope => 1005
-  | .typeAExitEightNotSilent => 1007
   -- F3 keys
   | .route8TwoCarrierExit => 1400
   | .route8UnifiedTwoCarrierExit => 1401
@@ -3361,16 +3419,29 @@ def idx : Key → Nat
   | .targetCompleteContextUniversality => 2301
   | .spinePresentationLaws => 2302
   | .hssTargetCycle => 2303
+  -- TA keys
+  | .typeAPeeledSaturatedReceiver => 2000
+  | .typeAPeeledUnsaturatedDischarge => 2001
+  | .typeAPeeledVisibleEntry => 2002
+  | .typeAPeeledNoVisibleEntry => 2003
+  | .typeAPeeledSilentExcess => 2004
+  | .typeAPeeledExitOneReturn => 2005
+  | .typeAPeeledExitOneFree => 2006
+  | .typeAPeeledExitTwoTheta => 2007
+  | .typeAPeeledExitTwoFree => 2008
+  | .typeAPeeledExitThreeCollision => 2009
+  | .typeAPeeledExitThreeFree => 2010
+  | .typeAExitThreeCycle => 2011
+  | .typeAExitSevenEnvelope => 2012
+  | .route8GlobalSqueeze => 160
 
 /-- Left inverse of `idx`.  Writing it out is also what checks the numbering:
 two keys sharing an index would make `ofIdx_idx` unprovable. -/
 def ofIdx : Nat → Key
   | 518 => .route8DemandUnitCount
   | 517 => .route8OpenBoundarySaturated
-  | 516 => .windowShadowSignature
   | 515 => .windowShadowHitExcluded
   | 514 => .windowShadowHitCycle
-  | 513 => .windowShadowSingletonTail
   | 0 => .selection
   | 221 => .cubicBaseline
   | 1 => .returnAvoidance
@@ -3585,7 +3656,6 @@ def ofIdx : Nat → Key
   | 504 => .route8UnifiedVisibleResidual
   | 505 => .route8UnifiedVisibleOverload
   | 506 => .route8JointBalance
-  | 511 => .typeASilentExitSevenFree
   | 261 => .route8TwoCarrierEntry
   | 262 => .route8NoTwoCarrierEntry
   | 280 => .route8TrueTwoCarrierEntry
@@ -3672,7 +3742,6 @@ def ofIdx : Nat → Key
   | 1002 => .typeAExitFourAbsent
   | 1004 => .typeAExitSixProperScope
   | 1005 => .typeAExitSixGlobalScope
-  | 1007 => .typeAExitEightNotSilent
   -- F3 keys
   | 1400 => .route8TwoCarrierExit
   | 1401 => .route8UnifiedTwoCarrierExit
@@ -3686,6 +3755,21 @@ def ofIdx : Nat → Key
   | 2301 => .targetCompleteContextUniversality
   | 2302 => .spinePresentationLaws
   | 2303 => .hssTargetCycle
+  -- TA keys
+  | 2000 => .typeAPeeledSaturatedReceiver
+  | 2001 => .typeAPeeledUnsaturatedDischarge
+  | 2002 => .typeAPeeledVisibleEntry
+  | 2003 => .typeAPeeledNoVisibleEntry
+  | 2004 => .typeAPeeledSilentExcess
+  | 2005 => .typeAPeeledExitOneReturn
+  | 2006 => .typeAPeeledExitOneFree
+  | 2007 => .typeAPeeledExitTwoTheta
+  | 2008 => .typeAPeeledExitTwoFree
+  | 2009 => .typeAPeeledExitThreeCollision
+  | 2010 => .typeAPeeledExitThreeFree
+  | 2011 => .typeAExitThreeCycle
+  | 2012 => .typeAExitSevenEnvelope
+  | 160 => .route8GlobalSqueeze
   | _ => .selection
 
 theorem ofIdx_idx (k : Key) : ofIdx (idx k) = k := by
@@ -3703,14 +3787,10 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8DemandUnitCount") 518
   | .route8OpenBoundarySaturated =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8OpenBoundarySaturated") 517
-  | .windowShadowSignature =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "windowShadowSignature") 516
   | .windowShadowHitExcluded =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "windowShadowHitExcluded") 515
   | .windowShadowHitCycle =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "windowShadowHitCycle") 514
-  | .windowShadowSingletonTail =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "windowShadowSingletonTail") 513
   | .selection => .num (.str `Hypostructure.Graph.Strategy.Spine "selection") 0
   | .cubicBaseline =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "cubicBaseline") 221
@@ -4033,9 +4113,6 @@ def name : Key → Lean.Name
         "typeBDecoratedAssignedSupport") 220
   | .typeAExitSevenFree =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitSevenFree") 125
-  | .typeASilentExitSevenFree =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine
-        "typeASilentExitSevenFree") 511
   | .coldFailureCycle =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldFailureCycle") 64
   | .coldFailureDefectRoute =>
@@ -4424,8 +4501,6 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitSixProperScope") 1004
   | .typeAExitSixGlobalScope =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitSixGlobalScope") 1005
-  | .typeAExitEightNotSilent =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitEightNotSilent") 1007
   -- F3 keys
   | .route8TwoCarrierExit =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8TwoCarrierExit") 1400
@@ -4449,6 +4524,35 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "spinePresentationLaws") 2302
   | .hssTargetCycle =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "hssTargetCycle") 2303
+  -- TA keys
+  | .typeAPeeledSaturatedReceiver =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledSaturatedReceiver") 2000
+  | .typeAPeeledUnsaturatedDischarge =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledUnsaturatedDischarge") 2001
+  | .typeAPeeledVisibleEntry =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledVisibleEntry") 2002
+  | .typeAPeeledNoVisibleEntry =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledNoVisibleEntry") 2003
+  | .typeAPeeledSilentExcess =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledSilentExcess") 2004
+  | .typeAPeeledExitOneReturn =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledExitOneReturn") 2005
+  | .typeAPeeledExitOneFree =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledExitOneFree") 2006
+  | .typeAPeeledExitTwoTheta =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledExitTwoTheta") 2007
+  | .typeAPeeledExitTwoFree =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledExitTwoFree") 2008
+  | .typeAPeeledExitThreeCollision =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledExitThreeCollision") 2009
+  | .typeAPeeledExitThreeFree =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledExitThreeFree") 2010
+  | .typeAExitThreeCycle =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitThreeCycle") 2011
+  | .typeAExitSevenEnvelope =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitSevenEnvelope") 2012
+  | .route8GlobalSqueeze =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "route8GlobalSqueeze") 160
 
 /-- The written-out names agree with `label` and `idx`.  `name` is spelled out
 so that reducing it in a downstream audit proof costs one unfolding rather

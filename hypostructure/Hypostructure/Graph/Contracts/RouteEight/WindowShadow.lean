@@ -6,7 +6,9 @@ import Hypostructure.Graph.WindowShadowHit
 
 `def:typeA-window-attachment-shadow`, `lem:typeA-singleton-shadow-table`,
 `def:typeA-recorded-window-shadow-hit` and `lem:typeA-window-shadow-hit-routes`
-on the selected object.
+on the selected object: the two signature lemmas are parameter arithmetic of the
+registered dyadic target, and the recorded hits are stated at the open demand
+units of the committed ledger.
 -/
 
 namespace Hypostructure.Graph.Contracts.RouteEight
@@ -19,12 +21,15 @@ universe u
 
 /-- **`def:typeA-window-attachment-shadow`**: the signature test is exactly the
 failure of the singleton window-label safety relation, for a dyadic target. -/
-theorem windowShadowSignature (data : Parameters) (object : FiniteObject.{u})
+theorem windowShadowSignature (data : Parameters)
     (lengthOK_iff : ∀ length,
       data.LengthOK length ↔ Core.DyadicLength.PowerOfTwoLength length) :
-    WindowShadowSignatureStatement data object := by
+    ∀ (s : Nat) (a b : Fin data.windowOrder),
+      b.1 ∈ Graph.WindowAttachmentShadow.shadow data.LengthOK
+          data.windowOrder s a.1 ↔
+        ¬ Graph.WindowCurvature.Safe s {a} {b} := by
   classical
-  intro support window s a b
+  intro s a b
   have distance : Nat.dist a.1 b.1 < data.windowOrder := by
     rcases Nat.le_total a.1 b.1 with hab | hba
     · rw [Nat.dist_eq_sub_of_le hab]
@@ -40,11 +45,13 @@ theorem windowShadowSignature (data : Parameters) (object : FiniteObject.{u})
 /-- **The tail of `lem:typeA-singleton-shadow-table`**: beyond window order
 plus five, two distinct dyadic lengths cannot both fall in one attachment
 interval, so at most one forbidden distance remains. -/
-theorem windowShadowSingletonTail (data : Parameters) (object : FiniteObject.{u})
+theorem windowShadowSingletonTail (data : Parameters)
     (lengthOK_iff : ∀ length,
       data.LengthOK length ↔ Core.DyadicLength.PowerOfTwoLength length) :
-    WindowShadowSingletonTailStatement data object := by
-  intro support window s tail
+    ∀ s : Nat, data.windowOrder + 5 ≤ s →
+      (Graph.WindowAttachmentShadow.forbiddenDistances
+        data.LengthOK data.windowOrder s).card ≤ 1 := by
+  intro s tail
   apply Graph.WindowAttachmentShadow.card_forbiddenDistances_le_one
   intro d₁ bound₁ d₂ bound₂ accepted₁ accepted₂
   obtain ⟨q₁, _lower₁, length₁⟩ :=
@@ -65,14 +72,25 @@ theorem windowShadowSingletonTail (data : Parameters) (object : FiniteObject.{u}
       exact Nat.pow_le_pow_right (by decide) after
     omega
 
-/-- **`def:typeA-recorded-window-shadow-hit`, certificate (O1)**: a recorded
-hit closes an actual simple cycle of accepted length through the corridor and
-the window arc. -/
-theorem windowShadowHitCycle (data : Parameters) (object : FiniteObject.{u}) :
-    WindowShadowHitCycleStatement data object := by
+/-- **`def:typeA-recorded-window-shadow-hit`, certificate (O1)**, at one
+presented window: a hit closes an actual simple cycle of accepted length
+through the corridor and the window arc. -/
+theorem windowShadowHitCycle_at (data : Parameters) (object : FiniteObject.{u})
+    (window : SimpleGraph.pathGraph data.windowOrder ↪g object.graph)
+    (x y : object.Vertex) (a b : Fin data.windowOrder)
+    (corridor : object.graph.Walk x y)
+    (corridorPath : corridor.IsPath)
+    (corridorAvoids : ∀ i : Fin data.windowOrder, window i ∉ corridor.support)
+    (attachA : object.graph.Adj (window a) x)
+    (attachB : object.graph.Adj y (window b))
+    (edgesDistinct : s(x, window a) ≠ s(y, window b))
+    (hit : b.1 ∈ Graph.WindowAttachmentShadow.shadow data.LengthOK
+      data.windowOrder corridor.length a.1) :
+    ∃ cycle : object.graph.Walk (window a) (window a),
+      cycle.IsCycle ∧
+        cycle.length = corridor.length + 2 + Nat.dist a.1 b.1 ∧
+        data.LengthOK cycle.length := by
   classical
-  intro window x y a b corridor corridorPath corridorAvoids
-    attachA attachB edgesDistinct hit
   obtain ⟨arc, arcPath, arcLength, arcWindow⟩ :=
     Graph.WindowShadowHit.exists_window_arc window a b
   let tail := corridor.append (SimpleGraph.Walk.cons attachB arc)
@@ -113,17 +131,33 @@ theorem windowShadowHitCycle (data : Parameters) (object : FiniteObject.{u}) :
   rw [length]
   exact Graph.WindowAttachmentShadow.accepted_of_mem_shadow hit
 
+/-- **`def:typeA-recorded-window-shadow-hit`, certificate (O1)**, at the open
+demand units of `(P₀, A₀)` and their canonical window blockers `b₀`, read from
+node `[352]`. -/
+theorem windowShadowHitCycle (data : Parameters) (object : FiniteObject.{u})
+    (blockers : Route8WindowBlockersStatement data object) :
+    WindowShadowHitCycleStatement data object := by
+  obtain ⟨P, pin, x, absorption, y, blocker, _spec⟩ := blockers
+  exact ⟨P, pin, x, absorption, y, blocker,
+    fun _υ _ _υ' _ _ _ window _ first second a b _ _ corridor path avoids
+        attachA attachB distinct hit =>
+      windowShadowHitCycle_at data object window first second a b corridor path
+        avoids attachA attachB distinct hit⟩
+
 /-- **`lem:typeA-window-shadow-hit-routes`**: the selected object has no
-target cycle, so it has no recorded shadow hit. -/
+target cycle, so no two open units of `(P₀, A₀)` on one packed window have a
+recorded shadow hit. -/
 theorem windowShadowHitExcluded (data : Parameters) (object : FiniteObject.{u})
     (noTarget : ¬ HasCycleWithLength data.LengthOK object)
     (hitCycle : WindowShadowHitCycleStatement data object) :
     WindowShadowHitExcludedStatement data object := by
-  intro window x y a b corridor path avoids attachA attachB distinct hit
+  obtain ⟨P, pin, x, absorption, y, blocker, cycles⟩ := hitCycle
+  refine ⟨P, pin, x, absorption, y, blocker, ?_⟩
+  intro υ υMem υ' υ'Mem distinctUnits sameWindow window presented first second
+    a b carrierA carrierB corridor path avoids attachA attachB distinct hit
   obtain ⟨cycle, isCycle, _length, accepted⟩ :=
-    hitCycle
-      window x y a b corridor path avoids attachA attachB distinct hit
-  exact noTarget
-    ⟨⟨window a, cycle, isCycle, accepted⟩⟩
+    cycles υ υMem υ' υ'Mem distinctUnits sameWindow window presented first second
+      a b carrierA carrierB corridor path avoids attachA attachB distinct hit
+  exact noTarget ⟨⟨window a, cycle, isCycle, accepted⟩⟩
 
 end Hypostructure.Graph.Contracts.RouteEight

@@ -27,15 +27,16 @@ ledger is two-support. -/
     {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.route8UnpaidTwoCarrier
-    { Requires := [K .route8DemandLedger]
+    { Requires := [K .route8DemandLedger, K .cubicBaseline]
       Produces := [K .route8UnpaidTwoCarrier]
-      requiresUnique := by simp
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .route8UnpaidTwoCarrier)
         ⟨Graph.Contracts.RouteEight.route8UnpaidTwoCarrier data.toParameters
-          inputs.current.object data.three_le_threshold
+          inputs.current.object
+          (by have := (inputs.get (K .cubicBaseline)).down.1; omega)
           (inputs.get (K .route8DemandLedger)).down⟩ .nil)
     0 0
 

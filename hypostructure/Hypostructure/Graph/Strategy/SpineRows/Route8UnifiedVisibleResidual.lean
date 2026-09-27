@@ -14,9 +14,9 @@ coordinate of the unchanged unified entries is zero. -/
     {Presentation : Type} {presentation : Presentation} {data : Data.{u}} :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.route8UnifiedVisibleResidual
-    { Requires := [K .route8UnifiedEntryCensus]
+    { Requires := [K .route8UnifiedEntryCensus, K .cubicBaseline]
       Produces := [K .route8UnifiedVisibleResidual]
-      requiresUnique := by simp
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
@@ -24,7 +24,7 @@ coordinate of the unchanged unified entries is zero. -/
         ⟨Graph.Contracts.RouteEight.route8UnifiedVisibleResidual data.toParameters inputs.current.object
           (inputs.get (K .route8UnifiedEntryCensus)).down
           inputs.current.baseline
-          data.three_le_threshold⟩ .nil)
+          (by have := (inputs.get (K .cubicBaseline)).down.1; omega)⟩ .nil)
     0 0
 
 end Hypostructure.Graph.Strategy.Spine

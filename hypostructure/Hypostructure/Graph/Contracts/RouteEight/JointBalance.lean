@@ -20,7 +20,8 @@ universe u
 
 /-- **Node `[186]`, `lem:typeA-unified-joint-balance`.** -/
 theorem route8JointBalance (data : Parameters) (object : FiniteObject.{u})
-    (overload : Route8UnifiedVisibleOverloadStatement data object)
+    (cubic : data.threshold = 3)
+    (_overload : Route8UnifiedVisibleOverloadStatement data object)
     (visibleResidual : Route8UnifiedVisibleResidualStatement data object)
     (descent : Route8PeelingDescentStatement data object)
     (failed : Route8StageRateFailedFact data object)
@@ -317,12 +318,28 @@ theorem route8JointBalance (data : Parameters) (object : FiniteObject.{u})
     exact silentMem.2
       (allSaturatedVisible component componentMem receiver receiverMem
         routed)
+  have pressureBalance' : data.threshold * entries.card ≤
+      supply.card + openUnits.card := by
+    rw [cubic]; exact pressureBalance
+  have jointPressureBalance' : data.threshold * support.card ≤
+      (data.threshold * data.dischargeScale + 1) * supply.card +
+        data.threshold * bridgeAllowance + openUnits.card := by
+    rw [cubic]; exact jointPressureBalance
+  have entryDemandIdentity' : data.threshold * entries.card =
+      (data.threshold * P.three.card + (data.threshold - 1) * P.two.card) +
+        P.demandUnits.card := by
+    rw [cubic]; exact entryDemandIdentity
+  have rawCapacity' : data.threshold * P.three.card +
+      (data.threshold - 1) * P.two.card + A.absorbed.card ≤ supply.card := by
+    rw [cubic]; exact rawCapacity
   show Route8JointBalanceStatement data object
   unfold Route8JointBalanceStatement
-  refine ⟨overload, allSaturatedVisible, noSilentTerminal,
+  refine ⟨allSaturatedVisible,
+    fun component componentMem receiver receiverMem _stage _stageMem =>
+      noSilentTerminal component componentMem receiver receiverMem _,
     P, pin, (A, ∅), absorptionPin, unused, ?_⟩
   exact ⟨peeledLe, deficitLeEntries, entriesSplit, ambientBalance,
-    pressureBalance, jointPressureBalance, failedRateBalance,
-    entryDemandIdentity, unitSplit, rawCapacity⟩
+    pressureBalance', jointPressureBalance', failedRateBalance,
+    entryDemandIdentity', unitSplit, rawCapacity'⟩
 
 end Hypostructure.Graph.Contracts.RouteEight
