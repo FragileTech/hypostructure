@@ -1715,7 +1715,7 @@ free side.
 ### Node [186] (thm:main (v), tex 364-368)
 
 - **Configuration at G.** The visible-entry route-8 residual after [181], [183]-[185], with the joint balances of lem:typeA-unified-joint-balance.
-- **Lean.** `Route8JointBalanceOutcome` (`Assembly/Residuals.lean`); return theorem `route8JointBalanceReturn`; reached by 2080 paths (distinct ledger histories from the root).
+- **Lean.** `Route8JointBalanceOutcome` (`Assembly/Residuals.lean`, the generic residual: the 79 keys common to every path); return theorem `route8JointBalanceReturn`, called once, at `Assembly/RouteEight/Local.lean` (`selectedRouteEightUnifiedResidual`, the quotient-free arm after `[123]`, `[181]`, `[183]`--`[185]`). The 2080 paths from `selectedLedgerBoundary` carry 2080 distinct fact sets (probe of the elaborated `known` at every call site, R06, 2026-09-27), and form an exact product of arm blocks: `Route8JointBalanceOutcome_product := Route8JointBalanceOutcome ∧ Route8LanePrefix ∧ EntropyArm ∧ NetChargeContinuation` (`Assembly/Residuals/Route8JointBalanceOutcome.lean`; `.toGeneric`; return theorem `route8JointBalanceProductReturn`, parameterised by the arm blocks, each built by its block's `.ret` with one `get` per key). The factors are those of `Route8QuotientOutcome` (same composition, same incoming ledgers); the blocks are shared (`Assembly/Residuals/Route8Blocks.lean`). Every path is the 79 common keys plus exactly one block per factor, and every one of the `5 × 4 × 104 = 2080` combinations occurs. Totals: 99 to 136 facts. Not yet wired: the return site still calls `route8JointBalanceReturn`.
 - **Facts carried (79).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
@@ -1796,63 +1796,201 @@ free side.
   77. `K .route8UnifiedVisibleResidual`: Node `[184]`, `lem:typeA-unified-visible-ownership`: on the exact post-`[181]` unified entry family, every retained load is visibly owned by an actual receiver-entry return.
   78. `K .route8UnifiedVisibleOverload`: Node `[185]`, `lem:typeA-unified-visible-overload`: every retained visible excess entry lies at a receiver with an actually overloaded completion port.
   79. `K .route8JointBalance`: Node `[186]`, `lem:typeA-unified-joint-balance`: the failed peel rate, unified deficit, committed maximal demand ledger, and maximal type-(A1) absorption are read simultaneously.
-- **On some paths only, not carried (118).** Gated by an arm of:
-  - [153] (★) (its other arm is the [153] residual): `absorbedGermFanData`, `absorbedGermSplit`, `coldBranchClosed`, `coldCutStatesDistinct`, `coldExchangeBound`, `coldFailureDefectRoute`, `coldFailureRouting`, `coldGermCandidates`, `coldGermDistinguished`, `coldGermRealized`, `coldGermRouted`, `coldGermSilent`, `coldSameInterfaceTable`.
-  - [107] exit (7): `route8CarrierCutParity`, `route8ResidualProfile`, `route8TrueResidual`, `typeAExitSevenEnvelope`, `typeAExitSevenFree`, `typeAExitSevenHandoff`.
-  - [68] heavy centre / degree four: `triangularCrossShoulder`, `triangularFanCore`, `triangularFirstLanding`, `typeBFanDegreeFourCentres`, `typeBFanDegreeFourProfile`, `typeBFanHeavyCentre`.
-  - [177] counted core; [153] (★) (its other arm is the [153] residual); [57]/[173] exact collision; [180] early outcome; [179] early outcome; [144] handoff / no handoff; [107] exit (7); [62] Type A / Type B: `compatiblePairFanClosure`, `compatiblePairTypeBRouting`, `fanClosedPortTypeBRouting`, `triangularPortTypeBRouting`, `typeBFanEntry`.
-  - [71]/[80] certificate labelling: `fanCertificateMarked`, `fanCertificateResidual`, `fanCertificateResidualMass`, `typeBDirectCycleFree`, `typeBHybridEntry`.
-  - [62] Type A / Type B: `typeALowSurplus`, `typeAReceiverRouting`, `typeASupport`, `typeBHighSurplus`.
-  - [72] B2 disjointness: `typeBB2Choice`, `typeBDisjointLedger`, `typeBExcluded`, `typeBOverlapObstruction`.
-  - [57]/[173] exact collision: `absorbedConfigurationResidual`, `exactCollisionFails`, `netChargeCap`.
-  - [163] on the absorbed residual; [163] neutral configuration: `coldCanonicalNeutralConfiguration`, `coldCanonicalReplacementSwap`, `coldCanonicalReplacementTrivial`.
-  - [50] low arm, local-type coordinate (lem:dominant-type): `dominantRootedType`, `localTypeCoordinateNonrepetitive`, `localTypeCoordinateRepetitive`.
-  - [50] remainder entropy: `entropyPackageDemand`, `remainderEntropyHigh`, `remainderEntropyLow`.
-  - [153] linear / bounded cold mass: `coldMassBounded`, `densityCap`.
-  - [175] positive germ: `coldNoPositiveGerm`, `coldPositiveGerm`.
-  - [146] theta < 1/78: `coldRoute8AtOrAbove`, `coldRoute8Below`.
-  - [160] first test (tau < 1/4): `denseDeficiencyAtOrAbove`, `denseDeficiencyBelow`.
-  - [50] low arm, root-wedge split (lem:dominant-type): `dominantRootedTypeWedgeFree`, `dominantRootedWedgeType`.
-  - [177] counted core; [153] (★) (its other arm is the [153] residual); [57]/[173] exact collision; [180] early outcome; [179] early outcome; [144] handoff / no handoff; [107] exit (7); [68] heavy centre / degree four; [62] Type A / Type B: `fanCertificateCap`, `typeBFanLocalDichotomy`.
-  - [59] net charge (its nonnegative arm closes only against [57]'s cap): `negativeSupport`, `netChargeNegative`.
-  - [113] large-budget deficit: `route8LargeBudgetDeficit`, `route8LargeBudgetDeficitFails`.
-  - [101] exit (4): `typeAExitFourAbsent`, `typeASaturatedHandoffExitFour`.
-  - [99] exit (3); [88] saturated receiver; [93] visible entry; [62] Type A / Type B: `typeAExitFourFiniteDescent`, `typeASaturatedExitEntry`.
-  - [102] recompute-L4 retest: `typeAExitFourReceiverDischarged`, `typeAPeeledSaturatedReceiver`.
-  - [93] visible entry: `typeANoVisibleEntry`, `typeAVisibleEntry`.
-  - [89] peeled visible entry: `typeAPeeledNoVisibleEntry`, `typeAPeeledVisibleEntry`.
-  - [88] saturated receiver: `typeAPortReturn`, `typeASaturatedReceiver`.
-  - [81] degree-four ledger: `typeBDegreeFourLedger`, `typeBDegreeFourOverlap`.
-  - [72] B2 disjointness; [81] degree-four ledger; [71]/[80] certificate labelling; [68] heavy centre / degree four: `typeBExclusionResidual`, `typeBRoute8Entry`.
-  - [72] B2 disjointness; [81] degree-four ledger: `typeBGlobalLocalBridge`, `typeBOverlapObstructionMass`.
-  - [158] window package realized: `windowPackageRealized`, `windowPackageUnrealized`.
-  - [177] counted core: `absorbedHandoffCore`.
-  - [175] positive germ; [153] (★) (its other arm is the [153] residual); [154] G2 test; [153] linear / bounded cold mass: `coldAbsorbedNeutralConfiguration`.
-  - [175] positive germ; [153] (★) (its other arm is the [153] residual); [153] linear / bounded cold mass: `coldGermFamilyPositive`.
-  - [154] G2 test: `coldGermNoneDistinguishing`.
-  - [154] G1 test: `coldGermNoneRealizing`.
-  - [53] entropy cap: `entropyCapBound`.
-  - [50] low arm, root-wedge split (lem:dominant-type); [50] low arm, local-type coordinate (lem:dominant-type): `independentObstructionTranslates`.
-  - [115] small core: `route8NoSmallCoreEntry`.
-  - [117] two-support entry: `route8TwoCarrierEntry`.
-  - [59] net charge (its nonnegative arm closes only against [57]'s cap); [62] Type A / Type B: `typeABoundedSupport`.
-  - [103] exit (5): `typeAExitFiveFree`.
-  - [101] exit (4); [99] exit (3); [88] saturated receiver; [93] visible entry; [62] Type A / Type B: `typeAExitFourPeeled`.
-  - [95] exit (1): `typeAExitOneFree`.
-  - [105] exit (6): `typeAExitSixFree`.
-  - [99] exit (3): `typeAExitThreeFree`.
-  - [97] exit (2): `typeAExitTwoFree`.
-  - [95] peeled exit (1): `typeAPeeledExitOneFree`.
-  - [99] peeled exit (3): `typeAPeeledExitThreeFree`.
-  - [97] peeled exit (2): `typeAPeeledExitTwoFree`.
-  - [89] peeled visible entry; [62] Type A / Type B: `typeAPeeledSilentExcess`.
-  - [102] recompute-L4 retest; [62] Type A / Type B: `typeAPeeledUnsaturatedDischarge`.
-  - [101] exit (4); [99] exit (3); [99] peeled exit (3); [89] peeled visible entry; [88] saturated receiver; [93] visible entry; [62] Type A / Type B: `typeASaturatedHandoffExitFourFree`.
-  - [88] saturated receiver; [93] visible entry; [62] Type A / Type B: `typeAVisibleFirstExcess`.
-  - [175] read at [177]: `typeBAbsorbedHalfEdge`.
-  - [57]/[173] exact collision; [62] Type A / Type B: `typeBAssignedSupport`.
-  - [57]/[173] exact collision; [107] exit (7): `typeBDecoratedAssignedSupport`.
-  - [81] degree-four ledger; [68] heavy centre / degree four: `typeBDegreeFourClosed`.
+- **Product of arm blocks (keys beyond the 79 common facts).**
+  Structure: `5 prefix × 4 entropy × NetChargeContinuation`; `NetChargeContinuation = TypeALane ∨ AbsorbedLane ∨ TypeBHighSurplusLane` (104 = 2·37 + 20 + 10); `TypeALane = NetChargeLaneBlock_typeALowSurplus ∧ TypeAEntry (2) ∧ TypeAArm (37)`; `TypeAArm = (TypeAArmBlock_decorated ∧ TypeAExitFour (3) ∧ BChain) ∨ (TypeAArmBlock_route8Residual ∧ TypeAExitFour (3) ∧ Route8Deficit (2)) ∨ TypeAArmBlock_dischargedRetest`; `AbsorbedLane = NetChargeLaneBlock_absorbedGerm ∧ AbsorbedGerm (2) ∧ BChain`; `TypeBHighSurplusLane = NetChargeLaneBlock_typeBHighSurplus ∧ BChain`; `BChain = BChainEntryBlock ∧ BChainFan (2) ∧ BChainCertificate (5)`.
+  - Prefix factor `Route8LanePrefix` (one of 5):
+    - `Route8LanePrefixBlock_realizedColdBelow` (2): window package realized; cold route-8 rate below (`nearCubicRealized` → `nearCubicLargeBudgetColdRate`)
+      - `K .coldRoute8Below`
+      - `K .windowPackageRealized`
+    - `Route8LanePrefixBlock_realizedColdAtOrAbove` (4): window package realized; cold route-8 rate at or above, density cap (`nearCubicRealized` → `nearCubicLargeBudgetDensityCap` → `nearCubicRouteEightEntry`)
+      - `K .coldMassBounded`
+      - `K .coldRoute8AtOrAbove`
+      - `K .densityCap`
+      - `K .windowPackageRealized`
+    - `Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdBelow` (3): window package unrealized; dense deficiency at or above; cold route-8 rate below (`nearCubicUnrealized` → `nearCubicDensePassAtOrAbove` → `nearCubicLargeBudgetColdRate`)
+      - `K .coldRoute8Below`
+      - `K .denseDeficiencyAtOrAbove`
+      - `K .windowPackageUnrealized`
+    - `Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove` (5): window package unrealized; dense deficiency at or above; cold route-8 rate at or above, density cap (`nearCubicUnrealized` → `nearCubicDensePassAtOrAbove` → `nearCubicLargeBudgetDensityCap` → `nearCubicRouteEightEntry`)
+      - `K .coldMassBounded`
+      - `K .coldRoute8AtOrAbove`
+      - `K .denseDeficiencyAtOrAbove`
+      - `K .densityCap`
+      - `K .windowPackageUnrealized`
+    - `Route8LanePrefixBlock_unrealizedDenseBelow` (2): window package unrealized; dense deficiency below (`nearCubicUnrealized` → `nearCubicLargeBudgetDenseRate`)
+      - `K .denseDeficiencyBelow`
+      - `K .windowPackageUnrealized`
+  - Entropy factor `EntropyArm` (one of 4):
+    - `EntropyArmBlock_high` (3): remainder entropy high
+      - `K .entropyCapBound`
+      - `K .entropyPackageDemand`
+      - `K .remainderEntropyHigh`
+    - `EntropyArmBlock_lowNonrepetitive` (2): remainder entropy low; local type coordinate non-repetitive
+      - `K .localTypeCoordinateNonrepetitive`
+      - `K .remainderEntropyLow`
+    - `EntropyArmBlock_lowRepetitiveWedgeFree` (4): remainder entropy low; local type coordinate repetitive; dominant rooted type wedge-free
+      - `K .dominantRootedType`
+      - `K .dominantRootedTypeWedgeFree`
+      - `K .localTypeCoordinateRepetitive`
+      - `K .remainderEntropyLow`
+    - `EntropyArmBlock_lowRepetitiveWedge` (5): remainder entropy low; local type coordinate repetitive; dominant rooted wedge type
+      - `K .dominantRootedType`
+      - `K .dominantRootedWedgeType`
+      - `K .independentObstructionTranslates`
+      - `K .localTypeCoordinateRepetitive`
+      - `K .remainderEntropyLow`
+  - Continuation lanes:
+    - `NetChargeLaneBlock_typeALowSurplus` (11): Type A low-surplus lane
+      - `K .negativeSupport`
+      - `K .netChargeCap`
+      - `K .netChargeNegative`
+      - `K .typeABoundedSupport`
+      - `K .typeAExitFourFiniteDescent`
+      - `K .typeALowSurplus`
+      - `K .typeAPortReturn`
+      - `K .typeAReceiverRouting`
+      - `K .typeASaturatedExitEntry`
+      - `K .typeASaturatedReceiver`
+      - `K .typeASupport`
+    - `NetChargeLaneBlock_absorbedGerm` (11): absorbed-germ lane
+      - `K .absorbedConfigurationResidual`
+      - `K .absorbedGermFanData`
+      - `K .absorbedGermSplit`
+      - `K .absorbedHandoffCore`
+      - `K .coldCutStatesDistinct`
+      - `K .coldExchangeBound`
+      - `K .coldFailureDefectRoute`
+      - `K .coldFailureRouting`
+      - `K .coldGermCandidates`
+      - `K .exactCollisionFails`
+      - `K .typeBAbsorbedHalfEdge`
+    - `NetChargeLaneBlock_typeBHighSurplus` (5): Type B high-surplus lane
+      - `K .negativeSupport`
+      - `K .netChargeCap`
+      - `K .netChargeNegative`
+      - `K .typeBAssignedSupport`
+      - `K .typeBHighSurplus`
+  - Type A entry `TypeAEntry` (one of 2):
+    - `TypeAEntryBlock_visible` (4): visible entry
+      - `K .typeAExitOneFree`
+      - `K .typeAExitThreeFree`
+      - `K .typeAExitTwoFree`
+      - `K .typeAVisibleEntry`
+    - `TypeAEntryBlock_noVisible` (2): no visible entry
+      - `K .typeANoVisibleEntry`
+      - `K .typeAVisibleFirstExcess`
+  - Type A continuation arm (one of 3 kinds):
+    - `TypeAArmBlock_decorated` (6): decorated handoff, then `TypeAExitFour` and `BChain`
+      - `K .typeAExitFiveFree`
+      - `K .typeAExitSevenEnvelope`
+      - `K .typeAExitSevenHandoff`
+      - `K .typeAExitSixFree`
+      - `K .typeASaturatedHandoffExitFourFree`
+      - `K .typeBDecoratedAssignedSupport`
+    - `TypeAArmBlock_route8Residual` (5): route-8 residual, then `TypeAExitFour` and `Route8Deficit`
+      - `K .route8ResidualProfile`
+      - `K .typeAExitFiveFree`
+      - `K .typeAExitSevenFree`
+      - `K .typeAExitSixFree`
+      - `K .typeASaturatedHandoffExitFourFree`
+    - `TypeAArmBlock_dischargedRetest` (4): exit-four discharged retest
+      - `K .typeAExitFourPeeled`
+      - `K .typeAExitFourReceiverDischarged`
+      - `K .typeAPeeledUnsaturatedDischarge`
+      - `K .typeASaturatedHandoffExitFour`
+  - Type A exit four `TypeAExitFour` (one of 3):
+    - `TypeAExitFourBlock_absent` (1): absent
+      - `K .typeAExitFourAbsent`
+    - `TypeAExitFourBlock_peeledVisible` (7): peeledVisible
+      - `K .typeAExitFourPeeled`
+      - `K .typeAPeeledExitOneFree`
+      - `K .typeAPeeledExitThreeFree`
+      - `K .typeAPeeledExitTwoFree`
+      - `K .typeAPeeledSaturatedReceiver`
+      - `K .typeAPeeledVisibleEntry`
+      - `K .typeASaturatedHandoffExitFour`
+    - `TypeAExitFourBlock_peeledNoVisible` (5): peeledNoVisible
+      - `K .typeAExitFourPeeled`
+      - `K .typeAPeeledNoVisibleEntry`
+      - `K .typeAPeeledSaturatedReceiver`
+      - `K .typeAPeeledSilentExcess`
+      - `K .typeASaturatedHandoffExitFour`
+  - Route-8 deficit `Route8Deficit` (one of 2):
+    - `Route8DeficitBlock_holds` (5): deficit holds
+      - `K .route8CarrierCutParity`
+      - `K .route8LargeBudgetDeficit`
+      - `K .route8NoSmallCoreEntry`
+      - `K .route8TrueResidual`
+      - `K .route8TwoCarrierEntry`
+    - `Route8DeficitBlock_fails` (1): deficit fails
+      - `K .route8LargeBudgetDeficitFails`
+  - Absorbed cold germ `AbsorbedGerm` (one of 2):
+    - `AbsorbedGermBlock_positive` (14): positive germ
+      - `K .coldAbsorbedNeutralConfiguration`
+      - `K .coldBranchClosed`
+      - `K .coldCanonicalNeutralConfiguration`
+      - `K .coldCanonicalReplacementSwap`
+      - `K .coldCanonicalReplacementTrivial`
+      - `K .coldGermDistinguished`
+      - `K .coldGermFamilyPositive`
+      - `K .coldGermNoneDistinguishing`
+      - `K .coldGermNoneRealizing`
+      - `K .coldGermRealized`
+      - `K .coldGermRouted`
+      - `K .coldGermSilent`
+      - `K .coldPositiveGerm`
+      - `K .coldSameInterfaceTable`
+    - `AbsorbedGermBlock_none` (1): no positive germ
+      - `K .coldNoPositiveGerm`
+  - B-chain `BChain`:
+    - `BChainEntryBlock` (7): carried on every B-chain arm
+      - `K .compatiblePairFanClosure`
+      - `K .compatiblePairTypeBRouting`
+      - `K .fanCertificateCap`
+      - `K .fanClosedPortTypeBRouting`
+      - `K .typeBExclusionResidual`
+      - `K .typeBFanEntry`
+      - `K .typeBRoute8Entry`
+    - `BChainFanBlock_degreeFour` (2): fan arm (one of 2)
+      - `K .typeBFanDegreeFourCentres`
+      - `K .typeBFanDegreeFourProfile`
+    - `BChainFanBlock_heavyCentre` (6): fan arm (one of 2)
+      - `K .triangularCrossShoulder`
+      - `K .triangularFanCore`
+      - `K .triangularFirstLanding`
+      - `K .triangularPortTypeBRouting`
+      - `K .typeBFanHeavyCentre`
+      - `K .typeBFanLocalDichotomy`
+    - `BChainCertificateBlock_residual` (2): certificate arm (one of 5)
+      - `K .fanCertificateResidual`
+      - `K .fanCertificateResidualMass`
+    - `BChainCertificateBlock_b2Choice` (6): certificate arm (one of 5)
+      - `K .fanCertificateMarked`
+      - `K .typeBB2Choice`
+      - `K .typeBDirectCycleFree`
+      - `K .typeBDisjointLedger`
+      - `K .typeBExcluded`
+      - `K .typeBHybridEntry`
+    - `BChainCertificateBlock_degreeFourClosed` (5): certificate arm (one of 5)
+      - `K .fanCertificateMarked`
+      - `K .typeBDegreeFourClosed`
+      - `K .typeBDegreeFourLedger`
+      - `K .typeBDirectCycleFree`
+      - `K .typeBHybridEntry`
+    - `BChainCertificateBlock_degreeFourOverlap` (6): certificate arm (one of 5)
+      - `K .fanCertificateMarked`
+      - `K .typeBDegreeFourOverlap`
+      - `K .typeBDirectCycleFree`
+      - `K .typeBGlobalLocalBridge`
+      - `K .typeBHybridEntry`
+      - `K .typeBOverlapObstructionMass`
+    - `BChainCertificateBlock_overlapObstruction` (6): certificate arm (one of 5)
+      - `K .fanCertificateMarked`
+      - `K .typeBDirectCycleFree`
+      - `K .typeBGlobalLocalBridge`
+      - `K .typeBHybridEntry`
+      - `K .typeBOverlapObstruction`
+      - `K .typeBOverlapObstructionMass`
 
 <a id="residual-187-pair-type-b"></a>
 
