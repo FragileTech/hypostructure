@@ -8,7 +8,7 @@ neither excludes an endpoint.
 
 | Endpoint | Literal producer | Exposed facts |
 | --- | --- | --- |
-| [20a] | `selectedSparseSurplusExitContinuation`, followed by `selectedSparseTargetDefectStructureContinuation` on the strict left arm of [20] | `sparseTargetDefectResidual`, `sparseTargetDefectStructure`, `sparsePairExit`, `surplusAbove` |
+| [20a] | `sparseSurplusExitRoutingRow`, followed by `sparseTargetDefectStructureRow`, run in `selectedLedgerBoundary` on the exit arm of `sparseSurplusSurvivorDichotomy` (strict left arm of [20]) | `sparseTargetDefectResidual`, `sparseTargetDefectStructure`, `sparsePairExit`, `surplusAbove` |
 | [144a] | `selectedBottleneckDischarge` on the caps-fail arm of `homogeneousBottleneckDichotomy` ([144]), after the audit row `homogeneousBottleneckAuditRow` at any of the three strict token classes; `Node144aOutcome` is read from the routed ledger | `typeBHandoff`, `typeBFanEntry`, `bottleneckRouting`, `homogeneousBottleneckPattern`, `sparsePressureOverload`, `capacityTokenLedger`, `surplusAbove`, `sparseSurplusSurvivor` |
 | [172a] | blocked barrier failure after the negative [170] decision | `blockedBarrierOverlap` at its previously proved strength |
 | [182] | first uncovered pair-system implication | `pairConditionalFactorizationResidual` at its previously proved strength |
@@ -74,9 +74,10 @@ presentation, homogeneous source pattern, maximal packing, core, and
 decorated envelope. It does not imply a homogeneous cap. The [179]/[180]
 Type B entries have their own source keys; the near-cubic sparse exit has
 `surplusAtOrBelow`. These producer histories are kept apart before
-projection to the common semantic facts. The Lean theorem
-`node20a_nearCubicTargetDefect_disjoint` proves the two surplus
-ancestries incompatible; [144a] includes `typeBHandoff` explicitly,
+projection to the common semantic facts: the strict arm carries
+`surplusAbove` and the near-cubic arm `surplusAtOrBelow`. (The former
+Lean theorem `node20a_nearCubicTargetDefect_disjoint`, which proved the two
+surplus ancestries incompatible, was removed as dead code.) [144a] includes `typeBHandoff` explicitly,
 whereas the pair-system return type supplies only its [179]/[180] source
 key and `typeBFanEntry`.
 

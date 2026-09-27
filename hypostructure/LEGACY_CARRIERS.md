@@ -1,14 +1,13 @@
 # Illegal data carriers in Core and Graph
 
 **Some are back in the build.**  `scripts/check_quarantine.py` (wired into
-`make lint`) currently fails with 15 violations:
+`make lint`) currently fails with 13 violations:
 
-- eight quarantined modules are imported by live code again:
+- six quarantined modules are imported by live code again:
   `Graph.TypeBFanClosedPorts` and `Graph.TypeBPostLedgerCore` (from
-  `Graph.Strategy.SpineVocabulary`), `Graph.TypeABCertificate` (from
-  `Graph.TypeBGlobalLocalReflection`), `Graph.TypeBProfileSchedule` (from
-  `Graph.TypeBCanonicalB2`), and, through them, `Graph.DecoratedFan`,
-  `Graph.ReceiverExhaustion`, `Graph.TypeBHybridLedger` and
+  `Graph.Statements.Parameters`), `Graph.TypeABCertificate` (from
+  `Graph.TypeBGlobalLocalReflection` and `Graph.TypeBPostLedgerCore`), and,
+  through them, `Graph.DecoratedFan`, `Graph.ReceiverExhaustion` and
   `Graph.TypeBMarkedFan`;
 - `Core/Strategy/ExactExecution.lean:191` declares into the canonical
   `Core.Residual.ExactLedger` namespace;
@@ -40,8 +39,8 @@ spine's import closure clean, the whole legacy-ledger cone -- 226 live modules
 at that point -- could leave the build without touching it.
 
 The quarantined modules still on disk are the porting reference for the rows
-that have not been rewritten yet.  See `quarantine.txt`: 73 of its 82 entries
-are on disk; the other nine have since been deleted.
+that have not been rewritten yet.  See `quarantine.txt`: all 78 of its entries
+are on disk (entries for modules since deleted have been removed).
 
 **Deleted outright, once their rows had exactly one implementation.**  Block A's
 legacy layer is no longer quarantined beside the spine -- it is gone.  Twenty-two
@@ -66,15 +65,15 @@ the `.localAlgebra` fact statement repeats `399` and the size distribution.
 
 | | |
 |---|---|
-| live modules in the build | 410 |
-| quarantined (`quarantine.txt` entries) | 82 |
-| `Graph.Strategy.SpineVocabulary` import closure | 187 modules |
-| quarantined modules reachable from the spine | 8 |
+| live modules in the build | 511 |
+| quarantined (`quarantine.txt` entries) | 78 |
+| `Graph.Strategy.SpineVocabulary` import closure | 214 modules |
+| quarantined modules reachable from the spine | 6 |
 | legacy `Core.Residual.Ledger` / `Ledger.Extension` in the build | none |
-| gate violations | 15 |
+| gate violations | 13 |
 
 The spine reaches no legacy `Core.Residual.Ledger` or `Ledger.Extension`, but
-its import closure includes the eight quarantined modules and the ledger-named
+its import closure includes the six quarantined modules and the ledger-named
 carriers listed above.
 
 ## Scope note
