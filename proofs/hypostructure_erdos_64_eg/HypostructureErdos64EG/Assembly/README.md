@@ -26,10 +26,16 @@ command needs a clean build for ordinary proof changes.
 ## Dependency structure
 
 - `Basic` contains the problem/input/target aliases.
-- `Residuals` states every returned residual of the root boundary as the
-  explicit conjunction of every fact on its maximal ledger, with one return
-  theorem per residual (per arm of its own decision) that reads each fact with
-  one `ExactLedger.get`; every return site calls it.
+- `Residuals` states the generic part of every returned residual (the facts
+  common to all its paths), with a return theorem reading each fact with one
+  `ExactLedger.get`.  `Residuals/*` state each residual per distinct fact set
+  of its paths: subtypes of the generic residual, or products of arm blocks
+  where the paths form a full product (`Residuals/Route8Blocks`).  Every
+  return site calls its subtype or product return theorem.
+- `Residuals/ArmBlocks` holds the arm evidence a shared function reached from
+  several upstream arms takes as one argument: a proof of a `Prop` about G
+  assembled from arm blocks, each built by its `.ret` (one `get` per key on the
+  single ledger) where the arm's keys are in scope.
 - `Boundary` modules contain shared result types and import no branch proofs.
 - `Entry`, `Surplus/Local`, `NearCubic/Local`, and `RouteEight/Local` contain
   independently reusable steps; `NearCubic/{Spine,ColdPass,DensePass}` hold the

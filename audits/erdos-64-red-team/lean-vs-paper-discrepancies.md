@@ -1438,22 +1438,51 @@ absorbed charge, `[112]`'s burden and `[114]`'s cores on every lane into
 domination on the blocked side of the pair chain; `[135]`'s envelope on its
 free side.
 
-| Residual (abbrev) | Node | Paths | Facts |
-|---|---|---:|---:|
-| `Node20aOutcome` | [20a] | 1 | 18 |
-| `NearCubicTargetDefectOutcome` | [187] (near-cubic target defect) | 1 | 18 |
-| `Node144aOutcome` (6 subtypes) | [144a] | 6 | 44 common; subtypes 47, 48, 48, 49, 49, 50 |
-| `BlockedBarrierOverlapOutcome` | [172a] | 2 | 71 |
-| `PairConditionalFactorizationOutcome` | [182] | 6 | 33 |
-| `Route8JointBalanceOutcome` | [186] | 2080 | 79 |
-| `PairTypeBOutcome` | [187] ([179]/[180] Type B entry) | 4 | 42 |
-| `TypeBSublinearOutcome` | [187] (Type B sublinear failure) | 2080 | 62 |
-| `Route8QuotientOutcome` | [187] ([348], route-8 quotient failure) | 2080 | 64 |
-| `Route8RateFailsOutcome` | [187] (private-carrier rate failure) | 12 | 42 |
-| `ColdBranchClosedOutcome` | [187] (local cold-terminal exclusion) | 104 | 57 generic; product 100 paths (69–83), 4 singletons (63–67) |
-| `Node153ResidualOutcome` | [153] | 23 | 42 |
-| `Node162ResidualOutcome` | [162] | 2 | 46 |
-| `Node54ResidualOutcome` | [54] | 6 | 40 |
+| Residual (abbrev) | Node | Form | Paths | Facts |
+|---|---|---|---:|---:|
+| `Node20aOutcome` | [20a] | single | 1 | 18 |
+| `NearCubicTargetDefectOutcome` | [187] (near-cubic target defect) | single | 1 | 18 |
+| `Node144aOutcome_*` | [144a] | 6 subtypes | 6 | 44 generic; 47, 48, 48, 49, 49, 50 |
+| `BlockedBarrierOverlapOutcome_*` | [172a] | 2 subtypes (`[160]` arm) | 2 | 71 generic; 72, 73 |
+| `PairConditionalFactorizationOutcome_*` | [182] | 6 subtypes | 6 | 33 generic; 37, 40, 43, 45, 48, 51 |
+| `Route8JointBalanceOutcome_product` | [186] | product: prefix (5) × entropy (4) × continuation (68) | 1360 | 79 generic; 99–136 |
+| `PairTypeBOutcome_*` | [187] ([179]/[180] Type B entry) | 4 subtypes | 4 | 42 generic; 46, 49, 54, 57 |
+| `TypeBSublinearOutcome_product` | [187] (Type B sublinear failure) | product: prefix (5) × entropy (4) × continuation (68) | 1360 | 62 generic; 82–119 |
+| `Route8QuotientOutcome_product` | [187] ([348], route-8 quotient failure) | product: prefix (5) × entropy (4) × continuation (68) | 1360 | 64 generic; 84–121 |
+| `Route8RateFailsOutcome_*` | [187] (private-carrier rate failure) | 12 subtypes | 12 | 42 generic; 45–49 |
+| `ColdBranchClosedOutcome_product`, `ColdBranchClosedOutcome_linear*` | [187] (local cold-terminal exclusion) | product: entropy (4) × window (5) × exit (5), plus 4 singletons | 104 | 57 generic; product 69–83, singletons 63, 63, 66, 67 |
+| `Node153ResidualOutcome_*` | [153] | 23 subtypes | 23 | 42 generic; 45, 46, 47 (linear arms), 51–57 (absorbed lane) |
+| `Node162ResidualOutcome_*` | [162] | 2 subtypes (`[160]` arm) | 2 | 46 generic; 47, 48 |
+| `Node54ResidualOutcome_*` | [54] | 6 subtypes | 6 | 40 generic; 43, 43, 44, 44, 45, 46 |
+
+Every return site calls its subtype or product return theorem, and
+`SelectedLedgerBoundaryResult` lists the subtypes and products themselves (the
+generic abbrevs remain as the common conjunct of each subtype and product,
+read by the generic return theorem each subtype and product return calls).
+
+**Arm threading (integration pass).**  A shared function reached from several
+upstream arms takes one explicit arm argument, a proof of a `Prop` about G
+assembled from arm blocks, each built at the call site where the arm's keys
+are in scope by the block's `.ret` (one `get` per key on the single ledger);
+a function reached from one arm takes that arm's `FactKeys.Has` instances.
+The arm props are in `Assembly/Residuals/ArmBlocks.lean`:
+`DenseTauArm` (`[160]` arm of the dense pass: `nearCubicDenseLinear`,
+`selectedCanonicalReplacementContinuation`), `Node153Arm`
+(`nearCubicColdOccurrence`), `ColdRateArm` / `DensityCapArm`
+(`nearCubicLargeBudgetColdRate` / `DensityCap`; with `EntropyArm` on
+`nearCubicRouteEightEntry`; `EntropyArm` alone on `nearCubicRateFailedExit`),
+`NetChargeArms` (prefix ∧ entropy: `selectedNetChargeContinuation` and every
+lane), the Type A lane arms (`TypeAEntryArms`, `TypeALaneArms`,
+`TypeAExitFourArms`), `BChainArms` (the lane before the Type B chain) with
+`BChainFanFor` on the certificate walk, and `Route8Arms` (prefix ∧ entropy ∧
+continuation) on `selectedTypeBRoute8Continuation` and
+`selectedRouteEightUnifiedResidual`.  No history is merged and no other carrier
+is introduced.  The B-chain factor of `Route8Blocks.lean` lists only its 6
+realized fan/certificate arms (the B2 test `[72]` runs only after a heavy-centre
+fan and `[81]` only after a degree-four fan), so the net-charge continuation
+has 68 arms and the route-8 products 1360 paths (the earlier count 2 × 5 fan ×
+certificate combinations, 104 arms and 2080 paths, included 4 unrealized
+fan/certificate pairs).
 
 <a id="open-constructions"></a>
 <a id="residual-20a"></a>
@@ -1601,7 +1630,7 @@ free side.
 ### Node [172a] (thm:main (iii), tex 354-358)
 
 - **Configuration at G.** The first failed conditional graph-count inequality of lem:scale-additivity on the dense-packing branch, with its minimal same-scale barrier overlap.
-- **Lean.** Generic residual `BlockedBarrierOverlapOutcome` (`Assembly/Residuals.lean`), the facts common to both paths; return theorem `blockedBarrierOverlapReturn`; reached by 2 paths (distinct ledger histories from the root), with 2 distinct fact sets, each its own subtype in `Assembly/Residuals/BlockedBarrierOverlapOutcome.lean` (below).
+- **Lean.** Generic residual `BlockedBarrierOverlapOutcome` (`Assembly/Residuals.lean`), the facts common to both paths; return theorem `blockedBarrierOverlapReturn`; reached by 2 paths (distinct ledger histories from the root), with 2 distinct fact sets, each its own subtype in `Assembly/Residuals/BlockedBarrierOverlapOutcome.lean` (below). Wired: `selectedCanonicalReplacementContinuation` takes the `[160]` arm (`DenseTauArm`) and returns `blockedBarrierOverlapSubtypesReturn`.
 - **Common facts (71).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
@@ -1802,7 +1831,7 @@ free side.
 ### Node [186] (thm:main (v), tex 364-368)
 
 - **Configuration at G.** The visible-entry route-8 residual after [181], [183]-[185], with the joint balances of lem:typeA-unified-joint-balance.
-- **Lean.** `Route8JointBalanceOutcome` (`Assembly/Residuals.lean`, the generic residual: the 79 keys common to every path); return theorem `route8JointBalanceReturn`, called once, at `Assembly/RouteEight/Local.lean` (`selectedRouteEightUnifiedResidual`, the quotient-free arm after `[123]`, `[181]`, `[183]`--`[185]`). The 2080 paths from `selectedLedgerBoundary` carry 2080 distinct fact sets (probe of the elaborated `known` at every call site, R06, 2026-09-27), and form an exact product of arm blocks: `Route8JointBalanceOutcome_product := Route8JointBalanceOutcome ∧ Route8LanePrefix ∧ EntropyArm ∧ NetChargeContinuation` (`Assembly/Residuals/Route8JointBalanceOutcome.lean`; `.toGeneric`; return theorem `route8JointBalanceProductReturn`, parameterised by the arm blocks, each built by its block's `.ret` with one `get` per key). The factors are those of `Route8QuotientOutcome` (same composition, same incoming ledgers); the blocks are shared (`Assembly/Residuals/Route8Blocks.lean`). Every path is the 79 common keys plus exactly one block per factor, and every one of the `5 × 4 × 104 = 2080` combinations occurs. Totals: 99 to 136 facts. Not yet wired: the return site still calls `route8JointBalanceReturn`.
+- **Lean.** `Route8JointBalanceOutcome` (`Assembly/Residuals.lean`, the generic residual: the 79 keys common to every path); return theorem `route8JointBalanceReturn`, called once, at `Assembly/RouteEight/Local.lean` (`selectedRouteEightUnifiedResidual`, the quotient-free arm after `[123]`, `[181]`, `[183]`--`[185]`). The 1360 paths from `selectedLedgerBoundary` carry 1360 distinct fact sets (probe of the elaborated `known` at every call site, R06, 2026-09-27; B-chain count corrected at integration), and form an exact product of arm blocks: `Route8JointBalanceOutcome_product := Route8JointBalanceOutcome ∧ Route8LanePrefix ∧ EntropyArm ∧ NetChargeContinuation` (`Assembly/Residuals/Route8JointBalanceOutcome.lean`; `.toGeneric`; return theorem `route8JointBalanceProductReturn`, parameterised by the arm blocks, each built by its block's `.ret` with one `get` per key). The factors are those of `Route8QuotientOutcome` (same composition, same incoming ledgers); the blocks are shared (`Assembly/Residuals/Route8Blocks.lean`). Every path is the 79 common keys plus exactly one block per factor, and every one of the `5 × 4 × 68 = 1360` combinations occurs. Totals: 99 to 136 facts. Wired: the return site calls `route8JointBalanceProductReturn` with its `Route8Arms` argument.
 - **Facts carried (79).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
@@ -1884,7 +1913,7 @@ free side.
   78. `K .route8UnifiedVisibleOverload`: Node `[185]`, `lem:typeA-unified-visible-overload`: every retained visible excess entry lies at a receiver with an actually overloaded completion port.
   79. `K .route8JointBalance`: Node `[186]`, `lem:typeA-unified-joint-balance`: the failed peel rate, unified deficit, committed maximal demand ledger, and maximal type-(A1) absorption are read simultaneously.
 - **Product of arm blocks (keys beyond the 79 common facts).**
-  Structure: `5 prefix × 4 entropy × NetChargeContinuation`; `NetChargeContinuation = TypeALane ∨ AbsorbedLane ∨ TypeBHighSurplusLane` (104 = 2·37 + 20 + 10); `TypeALane = NetChargeLaneBlock_typeALowSurplus ∧ TypeAEntry (2) ∧ TypeAArm (37)`; `TypeAArm = (TypeAArmBlock_decorated ∧ TypeAExitFour (3) ∧ BChain) ∨ (TypeAArmBlock_route8Residual ∧ TypeAExitFour (3) ∧ Route8Deficit (2)) ∨ TypeAArmBlock_dischargedRetest`; `AbsorbedLane = NetChargeLaneBlock_absorbedGerm ∧ AbsorbedGerm (2) ∧ BChain`; `TypeBHighSurplusLane = NetChargeLaneBlock_typeBHighSurplus ∧ BChain`; `BChain = BChainEntryBlock ∧ BChainFan (2) ∧ BChainCertificate (5)`.
+  Structure: `5 prefix × 4 entropy × NetChargeContinuation`; `NetChargeContinuation = TypeALane ∨ AbsorbedLane ∨ TypeBHighSurplusLane` (68 = 2·25 + 12 + 6); `TypeALane = NetChargeLaneBlock_typeALowSurplus ∧ TypeAEntry (2) ∧ TypeAArm (25)`; `TypeAArm = (TypeAArmBlock_decorated ∧ TypeAExitFour (3) ∧ BChain) ∨ (TypeAArmBlock_route8Residual ∧ TypeAExitFour (3) ∧ Route8Deficit (2)) ∨ TypeAArmBlock_dischargedRetest`; `AbsorbedLane = NetChargeLaneBlock_absorbedGerm ∧ AbsorbedGerm (2) ∧ BChain`; `TypeBHighSurplusLane = NetChargeLaneBlock_typeBHighSurplus ∧ BChain`; `BChain = BChainEntryBlock ∧ BChainFanCertificate (6)`, `BChainFanCertificate = (BChainFanBlock_heavyCentre ∧ (residual ∨ b2Choice ∨ overlapObstruction)) ∨ (BChainFanBlock_degreeFour ∧ (residual ∨ degreeFourClosed ∨ degreeFourOverlap))`.
   - Prefix factor `Route8LanePrefix` (one of 5):
     - `Route8LanePrefixBlock_realizedColdBelow` (2): window package realized; cold route-8 rate below (`nearCubicRealized` → `nearCubicLargeBudgetColdRate`)
       - `K .coldRoute8Below`
@@ -2174,7 +2203,7 @@ free side.
 ### Node [187] (Type B sublinear failure) (thm:main (vi), tex 369-378)
 
 - **Configuration at G.** Failure of the Type B sublinear hypothesis package on the unified route-8 ledger.
-- **Lean.** Generic residual `TypeBSublinearOutcome` (`Assembly/Residuals.lean`), return theorem `typeBSublinearReturn`: the 62 facts common to all paths. It is returned at one Lean site (`Assembly/RouteEight/Local.lean`, the negative arm of `typeBSublinearDichotomy` in `selectedRouteEightUnifiedResidual`), which 2080 paths from the root reach with 2080 distinct fact sets. Product form: `TypeBSublinearOutcome_product` (`Assembly/Residuals/TypeBSublinearOutcome.lean`), below.
+- **Lean.** Generic residual `TypeBSublinearOutcome` (`Assembly/Residuals.lean`), return theorem `typeBSublinearReturn`: the 62 facts common to all paths. It is returned at one Lean site (`Assembly/RouteEight/Local.lean`, the negative arm of `typeBSublinearDichotomy` in `selectedRouteEightUnifiedResidual`), which 1360 paths from the root reach with 1360 distinct fact sets. Product form: `TypeBSublinearOutcome_product` (`Assembly/Residuals/TypeBSublinearOutcome.lean`), below; wired: the return site calls `typeBSublinearProductReturn` with its `Route8Arms` argument.
 - **Facts carried (62).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
@@ -2238,13 +2267,13 @@ free side.
   60. `K .route8PiecesClassified`: `thm:branch-kill`'s all-pieces classification: every negative piece of the canonical decomposition is silent-first when it has no ambient surplus, and is a Type B bridge component when it has positive surplus.
   61. `K .route8ExtractedEntryCensus`: `def:typeA-unified-entries` with `lem:typeA-unified-carriers` at the extracted route-8 cores of the Type B bridge pieces (node `[123]`): the exact per-entry census of `lem:typeB-bridge-with-route8-core`'s collection `𝒜_X`.
   62. `K .typeBSublinearResidual`: The exact negation of the sublinear hypotheses, retained as the tested residual state (the manuscript's Part IX bridge-residual continuation).
-- **Product of arm blocks (user ruling).** The 2080 paths hold 2080 distinct fact sets. Each is exactly the 62 generic facts above together with the keys of one block choice in each factor below. The chosen blocks are pairwise key-disjoint, and every combination occurs on exactly one path, so the product is full: 2080 = 5 (prefix) × 4 (entropy) × 104 (continuation), with 104 = 74 (Type A lane) + 20 (absorbed lane) + 10 (Type B high-surplus lane). The check was made path by path against the elaborated ledgers.
+- **Product of arm blocks (user ruling).** The 1360 paths hold 1360 distinct fact sets. Each is exactly the 62 generic facts above together with the keys of one block choice in each factor below. The chosen blocks are pairwise key-disjoint, and every combination occurs on exactly one path, so the product is full: 1360 = 5 (prefix) × 4 (entropy) × 68 (continuation), with 68 = 50 (Type A lane) + 12 (absorbed lane) + 6 (Type B high-surplus lane). The check was made path by path against the elaborated ledgers.
   - Lean: `TypeBSublinearOutcome_product := TypeBSublinearOutcome ∧ Route8LanePrefix ∧ EntropyArm ∧ NetChargeContinuation` (`Assembly/Residuals/TypeBSublinearOutcome.lean`), with `.toGeneric` and return theorem `typeBSublinearProductReturn`. The blocks are the shared route-8 blocks of `Assembly/Residuals/Route8Blocks.lean`, the same ones `Route8QuotientOutcome` uses; each has a `.ret` theorem with one `get` per key.
   - `NetChargeContinuation = TypeALane ∨ AbsorbedLane ∨ TypeBHighSurplusLane`.
   - `TypeALane = NetChargeLaneBlock_typeALowSurplus ∧ TypeAEntry ∧ TypeAArm`, where `TypeAArm = (TypeAArmBlock_decorated ∧ TypeAExitFour ∧ BChain) ∨ (TypeAArmBlock_route8Residual ∧ TypeAExitFour ∧ Route8Deficit) ∨ TypeAArmBlock_dischargedRetest`.
   - `AbsorbedLane = NetChargeLaneBlock_absorbedGerm ∧ AbsorbedGerm ∧ BChain`.
   - `TypeBHighSurplusLane = NetChargeLaneBlock_typeBHighSurplus ∧ BChain`.
-  - `BChain = BChainEntryBlock ∧ BChainFan ∧ BChainCertificate` (2 fan blocks × 5 certificate blocks).
+  - `BChain = BChainEntryBlock ∧ BChainFanCertificate` (6 fan/certificate arms: the heavy-centre fan with the residual, B2-choice and overlap-obstruction certificates; the degree-four fan with the residual, degree-four-closed and degree-four-overlap certificates).
   - Total facts per path: 62 + the chosen blocks, from 82 to 119.
 - **Arm blocks (each with its arms, the number of paths it is on, and its keys).**
   - **Prefix factor `Route8LanePrefix` (5 blocks).**
@@ -2444,7 +2473,7 @@ free side.
 
 - **Configuration at G.** Failure of route-8 quotient freeness of the unified census.
 - **The paper step it carries.** `thm:main` (tex 369-372, 388-390) returns the failure of route-8 quotient freeness at `[187]`; the proof of `lem:typeA-unified-carriers` (tex 15360-15364) instead dismisses alternative (b) as exit (5), which needs a smaller connected realization of G's quotient that the paper does not supply (see "Paper findings", [348]).
-- **Lean.** `Route8QuotientOutcome` (`Assembly/Residuals.lean`, the generic residual: the 64 keys common to every path); return theorem `route8QuotientReturn`, called once, at `Assembly/RouteEight/Local.lean` (`selectedRouteEightUnifiedResidual`, arm `[348]`). The 2080 paths from `selectedLedgerBoundary` carry 2080 distinct fact sets (probe of the elaborated `known` at every call site, R09, 2026-09-27), and form an exact product of arm blocks: `Route8QuotientOutcome_product := Route8QuotientOutcome ∧ Route8LanePrefix ∧ EntropyArm ∧ NetChargeContinuation` (`Assembly/Residuals/Route8QuotientOutcome.lean`; `.toGeneric`; return theorem `route8QuotientProductReturn`, parameterised by the arm blocks, each built by its block's `.ret` with one `get` per key). The blocks are shared (`Assembly/Residuals/Route8Blocks.lean`). Every path is the 64 common keys plus exactly one block per factor, and every one of the `5 × 4 × 104 = 2080` combinations occurs. Totals: 84 to 121 facts. Not yet wired: the return site still calls `route8QuotientReturn`.
+- **Lean.** `Route8QuotientOutcome` (`Assembly/Residuals.lean`, the generic residual: the 64 keys common to every path); return theorem `route8QuotientReturn`, called once, at `Assembly/RouteEight/Local.lean` (`selectedRouteEightUnifiedResidual`, arm `[348]`). The 1360 paths from `selectedLedgerBoundary` carry 1360 distinct fact sets (probe of the elaborated `known` at every call site, R09, 2026-09-27; B-chain count corrected at integration), and form an exact product of arm blocks: `Route8QuotientOutcome_product := Route8QuotientOutcome ∧ Route8LanePrefix ∧ EntropyArm ∧ NetChargeContinuation` (`Assembly/Residuals/Route8QuotientOutcome.lean`; `.toGeneric`; return theorem `route8QuotientProductReturn`, parameterised by the arm blocks, each built by its block's `.ret` with one `get` per key). The blocks are shared (`Assembly/Residuals/Route8Blocks.lean`). Every path is the 64 common keys plus exactly one block per factor, and every one of the `5 × 4 × 68 = 1360` combinations occurs. Totals: 84 to 121 facts. Wired: the return site calls `route8QuotientProductReturn` with its `Route8Arms` argument.
 - **Facts carried (64).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
@@ -2511,7 +2540,7 @@ free side.
   63. `K .route8UnifiedDeficit`: Node `[123]`, `lem:typeA-unified-deficit`: the unified collection carries the whole large-budget deficit — `|R| ≤ s·D̃_A + s·|∂R| + 2F·s·T(n)`.
   64. `K .route8QuotientResidual`: The exact negation: some unified entry realizes alternative (b).
 - **Product of arm blocks (keys beyond the 64 common facts).**
-  Structure: `5 prefix × 4 entropy × NetChargeContinuation`; `NetChargeContinuation = TypeALane ∨ AbsorbedLane ∨ TypeBHighSurplusLane` (104 = 2·37 + 20 + 10); `TypeALane = NetChargeLaneBlock_typeALowSurplus ∧ TypeAEntry (2) ∧ TypeAArm (37)`; `TypeAArm = (TypeAArmBlock_decorated ∧ TypeAExitFour (3) ∧ BChain) ∨ (TypeAArmBlock_route8Residual ∧ TypeAExitFour (3) ∧ Route8Deficit (2)) ∨ TypeAArmBlock_dischargedRetest`; `AbsorbedLane = NetChargeLaneBlock_absorbedGerm ∧ AbsorbedGerm (2) ∧ BChain`; `TypeBHighSurplusLane = NetChargeLaneBlock_typeBHighSurplus ∧ BChain`; `BChain = BChainEntryBlock ∧ BChainFan (2) ∧ BChainCertificate (5)`.
+  Structure: `5 prefix × 4 entropy × NetChargeContinuation`; `NetChargeContinuation = TypeALane ∨ AbsorbedLane ∨ TypeBHighSurplusLane` (68 = 2·25 + 12 + 6); `TypeALane = NetChargeLaneBlock_typeALowSurplus ∧ TypeAEntry (2) ∧ TypeAArm (25)`; `TypeAArm = (TypeAArmBlock_decorated ∧ TypeAExitFour (3) ∧ BChain) ∨ (TypeAArmBlock_route8Residual ∧ TypeAExitFour (3) ∧ Route8Deficit (2)) ∨ TypeAArmBlock_dischargedRetest`; `AbsorbedLane = NetChargeLaneBlock_absorbedGerm ∧ AbsorbedGerm (2) ∧ BChain`; `TypeBHighSurplusLane = NetChargeLaneBlock_typeBHighSurplus ∧ BChain`; `BChain = BChainEntryBlock ∧ BChainFanCertificate (6)`, `BChainFanCertificate = (BChainFanBlock_heavyCentre ∧ (residual ∨ b2Choice ∨ overlapObstruction)) ∨ (BChainFanBlock_degreeFour ∧ (residual ∨ degreeFourClosed ∨ degreeFourOverlap))`.
   - Prefix factor `Route8LanePrefix` (one of 5):
     - `Route8LanePrefixBlock_realizedColdBelow` (2): window package realized; cold route-8 rate below (`nearCubicRealized` → `nearCubicLargeBudgetColdRate`)
       - `K .coldRoute8Below`
@@ -2711,7 +2740,7 @@ free side.
 ### Node [187] (private-carrier rate failure) (thm:main (vi), tex 369-378)
 
 - **Configuration at G.** Failure of the exact private-carrier rate at the entry of the route-8 continuation.
-- **Lean.** Generic residual `Route8RateFailsOutcome` (`Assembly/Residuals.lean`), the facts common to all 12 paths (distinct ledger histories from the root); return theorem `route8RateFailsReturn`.  The 12 paths hold 12 distinct fact sets, each its own subtype in `Assembly/Residuals/Route8RateFailsOutcome.lean` (`<Subtype> := Route8RateFailsOutcome ∧ extra facts`, projection `<Subtype>.toGeneric`, return theorem `route8RateFailsReturn_<label>`).  The subtypes are not yet wired into the return sites or `SelectedLedgerBoundaryResult`: that needs signature changes to shared functions (`nearCubicLargeBudgetDensityCap`, `nearCubicRouteEightEntry`, `nearCubicLargeBudgetRateFailed`), left to the integration pass.
+- **Lean.** Generic residual `Route8RateFailsOutcome` (`Assembly/Residuals.lean`), the facts common to all 12 paths (distinct ledger histories from the root); return theorem `route8RateFailsReturn`.  The 12 paths hold 12 distinct fact sets, each its own subtype in `Assembly/Residuals/Route8RateFailsOutcome.lean` (`<Subtype> := Route8RateFailsOutcome ∧ extra facts`, projection `<Subtype>.toGeneric`, return theorem `route8RateFailsReturn_<label>`).  Wired: `nearCubicRouteEightEntry` takes `DensityCapArm ∧ EntropyArm` and returns `route8RateFailsSubtypesReturn_routeEightEntry` (8 subtypes); `nearCubicRateFailedExit` takes `EntropyArm` and returns `route8RateFailsSubtypesReturn_rateFailedExit` (4 subtypes). The upstream-arm facts of each subtype are read from the prefix and entropy blocks.
 - **Common facts carried by the generic residual (42).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
@@ -2836,7 +2865,7 @@ free side.
 ### Node [187] (local cold-terminal exclusion) (thm:main (vi), tex 369-378)
 
 - **Configuration at G.** The local cold-terminal exclusion of thm:cold-branch-quantitative-closure without a global terminal contradiction.
-- **Lean.** Generic residual `ColdBranchClosedOutcome` (`Assembly/Residuals.lean`, return theorem `coldBranchClosedReturn`): the facts common to all 104 paths. The 104 paths (distinct ledger histories from the root) have 104 distinct fact sets, split in `Assembly/Residuals/ColdBranchClosedOutcome.lean` into the absorbed-germ product `ColdBranchClosedOutcome_product` (100 paths, an exact 4 × 5 × 5 product of arm blocks) and 4 linear-cold-mass singletons.
+- **Lean.** Generic residual `ColdBranchClosedOutcome` (`Assembly/Residuals.lean`, return theorem `coldBranchClosedReturn`): the facts common to all 104 paths. The 104 paths (distinct ledger histories from the root) have 104 distinct fact sets, split in `Assembly/Residuals/ColdBranchClosedOutcome.lean` into the absorbed-germ product `ColdBranchClosedOutcome_product` (100 paths, an exact 4 × 5 × 5 product of arm blocks) and 4 linear-cold-mass singletons. Wired: the five absorbed-germ exits of `selectedAbsorbedGermResidual` return `coldBranchClosedProductReturn` with the path's `EntropyArm` and `Route8LanePrefix` (read as `E1`--`E4`, `W1`--`W5`) and the exit block; the dense linear pass returns `coldBranchClosedLinearDenseReturn` on its `[160]` arm; the realized linear arm returns its two singletons. The entropy and window factors are built by the shared `Route8Blocks` `.ret` theorems (the `coldBranchClosed{Entropy,Window}*Return` builders listed below were removed).
 - **Generic facts, carried on every path (57).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
@@ -2903,44 +2932,44 @@ free side.
     - `K .netDeficiencyCap`: Node `[56]`: exact cleared finite form of the large-budget net-deficiency cap.
     - `K .route8Rate`: Node `[120]`: the private-carrier rate reading of the census alone, `((δ+1)s+1)·|∂R| + (δ+1)·F·s·T(n) < (δ+1)·|R|` (`τ < 3/13` with the `o(|R|)` allowance, `rem:route8-carrier-margin`), read from the arm's density fact.
   - **Family `ColdBranchClosedEntropyArm`**: the entropy-side arm ([50], [53]).
-    - **E1 `ColdBranchClosedEntropyHighCap`** (3 facts; return `coldBranchClosedEntropyHighCapReturn`): [50] remainder entropy high, with the [53] entropy cap.
+    - **E1 `ColdBranchClosedEntropyHighCap`** (3 facts; the matching `Route8Blocks` block, built by its `.ret`): [50] remainder entropy high, with the [53] entropy cap.
       - `K .entropyCapBound`: Node `[54]`: the independently realized window/remainder code fits in the labelled skeleton class. This is the exact bound contradicted by the active arm of `eq:entropy-cap`.
       - `K .entropyPackageDemand`: Node `[52]`: the window package and the remainder accounting, joined. `eq:feasibility`'s left-hand side in exact integer form — the joint window/remainder/curvature coordinate family realizes at least `2^{rate·p}·n^{|R|/d}·2^{c_Ω·r_Ω(R)}` states.
       - `K .remainderEntropyHigh`: Node `[50]`, yes arm — node `[51]`, the high-entropy remainder branch: `η(R) ≥ (1/d)·log₂ n`, i.e. the remainder's realized target-complete states number at least `n^{|R|/d}` (`prop:two-budget` (a)).
-    - **E2 `ColdBranchClosedEntropyLowNonrepetitive`** (2 facts; return `coldBranchClosedEntropyLowNonrepetitiveReturn`): [50] remainder entropy low, local-type coordinate non-repetitive.
+    - **E2 `ColdBranchClosedEntropyLowNonrepetitive`** (2 facts; the matching `Route8Blocks` block, built by its `.ret`): [50] remainder entropy low, local-type coordinate non-repetitive.
       - `K .localTypeCoordinateNonrepetitive`: `prop:two-budget` (c): the same literal coordinate is not structurally repetitive. This arm passes unchanged to the large-budget analysis.
       - `K .remainderEntropyLow`: Node `[50]`, no arm: `η(R) < (1/d)·log₂ n`, the low-entropy branch `prop:two-budget` (b) and (c) share.
-    - **E3 `ColdBranchClosedEntropyLowWedgeFree`** (4 facts; return `coldBranchClosedEntropyLowWedgeFreeReturn`): [50] remainder entropy low, local-type coordinate repetitive, dominant rooted type wedge-free.
+    - **E3 `ColdBranchClosedEntropyLowWedgeFree`** (4 facts; the matching `Route8Blocks` block, built by its `.ret`): [50] remainder entropy low, local-type coordinate repetitive, dominant rooted type wedge-free.
       - `K .dominantRootedType`: `lem:dominant-type`: the repetitive coordinate has a single rooted radius-two type outside only the registered finite `o(n)` allowance.
       - `K .dominantRootedTypeWedgeFree`: The wedge-free subarm after `lem:dominant-type`; the manuscript makes no translate-rank claim and passes this arm to the large-budget analysis.
       - `K .localTypeCoordinateRepetitive`: `prop:two-budget` (b): on the low-entropy residual, the radius-two rooted-type coordinate lies below the exact finite relabelling threshold.
       - `K .remainderEntropyLow`: Node `[50]`, no arm: `η(R) < (1/d)·log₂ n`, the low-entropy branch `prop:two-budget` (b) and (c) share.
-    - **E4 `ColdBranchClosedEntropyLowWedgeType`** (5 facts; return `coldBranchClosedEntropyLowWedgeTypeReturn`): [50] remainder entropy low, local-type coordinate repetitive, dominant rooted wedge type.
+    - **E4 `ColdBranchClosedEntropyLowWedgeType`** (5 facts; the matching `Route8Blocks` block, built by its `.ret`): [50] remainder entropy low, local-type coordinate repetitive, dominant rooted wedge type.
       - `K .dominantRootedType`: `lem:dominant-type`: the repetitive coordinate has a single rooted radius-two type outside only the registered finite `o(n)` allowance.
       - `K .dominantRootedWedgeType`: The literal incoming wedge subarm of `lem:translates-independent`: the preceding executor proved the dominant rooted type and the decision found an internal root wedge in that same type.
       - `K .independentObstructionTranslates`: Nodes `[51]`--`[52]`, `lem:translates-independent`: a dominant rooted radius-`r` type with an internal root wedge admits a maximal `2r`-separated family of translates. Its radius-`r` balls are disjoint, the radius-`2r` balls cover the dominant centres, and full obstruction rank gives the exact finite inequality whose asymptotic form is `r_Ω(R) ≥ c_r|R| - o(|R|)`.
       - `K .localTypeCoordinateRepetitive`: `prop:two-budget` (b): on the low-entropy residual, the radius-two rooted-type coordinate lies below the exact finite relabelling threshold.
       - `K .remainderEntropyLow`: Node `[50]`, no arm: `η(R) < (1/d)·log₂ n`, the low-entropy branch `prop:two-budget` (b) and (c) share.
   - **Family `ColdBranchClosedWindowArm`**: the window/test arm ([158], [160], [146], [153]).
-    - **W1 `ColdBranchClosedWindowRealizedThetaAtOrAbove`** (4 facts; return `coldBranchClosedWindowRealizedThetaAtOrAboveReturn`): [158] window package realized, [146] theta at or above 1/78 (with [153] bounded cold mass and its density cap).
+    - **W1 `ColdBranchClosedWindowRealizedThetaAtOrAbove`** (4 facts; the matching `Route8Blocks` block, built by its `.ret`): [158] window package realized, [146] theta at or above 1/78 (with [153] bounded cold mass and its density cap).
       - `K .coldMassBounded`: Node `[153]`, complementary arm: the cold mass is within the two branch-excess slacks; the spine continues to `[24]`'s density cap.
       - `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
       - `K .densityCap`: Nodes `[22]`--`[24]`: `prop:p13-density`, the linear cap on the packing in the object's own dyadic scale.
       - `K .windowPackageRealized`: Node `[21]`, `lem:p13-window-package` with `def:target-rank` and the realization sentence used in `lem:p13-window-package` and `prop:p13-density`, "all target-complete window states are realized by labelled near-cubic skeletons": the canonical multi-scale package of the fixed maximal packing is a family of independently target-testable coordinates, i.e. its full package code is realized canonically by the labelled skeletons of the current object's class `𝒢_{n,m}`.
-    - **W2 `ColdBranchClosedWindowRealizedThetaBelow`** (2 facts; return `coldBranchClosedWindowRealizedThetaBelowReturn`): [158] window package realized, [146] theta below 1/78.
+    - **W2 `ColdBranchClosedWindowRealizedThetaBelow`** (2 facts; the matching `Route8Blocks` block, built by its `.ret`): [158] window package realized, [146] theta below 1/78.
       - `K .coldRoute8Below`: Node `[146]`, yes: the canonical packing lies below the route-8 private-carrier threshold.
       - `K .windowPackageRealized`: Node `[21]`, `lem:p13-window-package` with `def:target-rank` and the realization sentence used in `lem:p13-window-package` and `prop:p13-density`, "all target-complete window states are realized by labelled near-cubic skeletons": the canonical multi-scale package of the fixed maximal packing is a family of independently target-testable coordinates, i.e. its full package code is realized canonically by the labelled skeletons of the current object's class `𝒢_{n,m}`.
-    - **W3 `ColdBranchClosedWindowUnrealizedTauAtOrAboveThetaAtOrAbove`** (5 facts; return `coldBranchClosedWindowUnrealizedTauAtOrAboveThetaAtOrAboveReturn`): [158] window package unrealized, [160] tau at or above 1/4, [146] theta at or above 1/78 (with [153] bounded cold mass and its density cap).
+    - **W3 `ColdBranchClosedWindowUnrealizedTauAtOrAboveThetaAtOrAbove`** (5 facts; the matching `Route8Blocks` block, built by its `.ret`): [158] window package unrealized, [160] tau at or above 1/4, [146] theta at or above 1/78 (with [153] bounded cold mass and its density cap).
       - `K .coldMassBounded`: Node `[153]`, complementary arm: the cold mass is within the two branch-excess slacks; the spine continues to `[24]`'s density cap.
       - `K .coldRoute8AtOrAbove`: Node `[146]`, no: the same canonical packing is not below that threshold.
       - `K .denseDeficiencyAtOrAbove`: Its exact complement: the dense residual, `τ(θ) ≥ 1/4` up to the exact allowance, on which the net-charge collision does not fire.
       - `K .densityCap`: Nodes `[22]`--`[24]`: `prop:p13-density`, the linear cap on the packing in the object's own dyadic scale.
       - `K .windowPackageUnrealized`: The complementary arm of the `[21]` realization decision: the fixed maximal packing's full package code is *not* realized canonically by the labelled skeletons of the current object's class — the residual on which the manuscript's `[21]` sentence fails, carried as a branch of its own.
-    - **W4 `ColdBranchClosedWindowUnrealizedTauAtOrAboveThetaBelow`** (3 facts; return `coldBranchClosedWindowUnrealizedTauAtOrAboveThetaBelowReturn`): [158] window package unrealized, [160] tau at or above 1/4, [146] theta below 1/78.
+    - **W4 `ColdBranchClosedWindowUnrealizedTauAtOrAboveThetaBelow`** (3 facts; the matching `Route8Blocks` block, built by its `.ret`): [158] window package unrealized, [160] tau at or above 1/4, [146] theta below 1/78.
       - `K .coldRoute8Below`: Node `[146]`, yes: the canonical packing lies below the route-8 private-carrier threshold.
       - `K .denseDeficiencyAtOrAbove`: Its exact complement: the dense residual, `τ(θ) ≥ 1/4` up to the exact allowance, on which the net-charge collision does not fire.
       - `K .windowPackageUnrealized`: The complementary arm of the `[21]` realization decision: the fixed maximal packing's full package code is *not* realized canonically by the labelled skeletons of the current object's class — the residual on which the manuscript's `[21]` sentence fails, carried as a branch of its own.
-    - **W5 `ColdBranchClosedWindowUnrealizedTauBelow`** (2 facts; return `coldBranchClosedWindowUnrealizedTauBelowReturn`): [158] window package unrealized, [160] tau below 1/4.
+    - **W5 `ColdBranchClosedWindowUnrealizedTauBelow`** (2 facts; the matching `Route8Blocks` block, built by its `.ret`): [158] window package unrealized, [160] tau below 1/4.
       - `K .denseDeficiencyBelow`: On the `[21]` unrealized residual: `prop:negative-net-charge`'s exact large-budget net-deficiency comparison holds at the fixed maximal packing — the manuscript's `τ(θ) < 1/4` deficiency reading with the exact `√n` allowance, i.e. the inequality node `[56]` supplies to `[57]`--`[62]`.
       - `K .windowPackageUnrealized`: The complementary arm of the `[21]` realization decision: the fixed maximal packing's full package code is *not* realized canonically by the labelled skeletons of the current object's class — the residual on which the manuscript's `[21]` sentence fails, carried as a branch of its own.
   - **Family `ColdBranchClosedExitArm`**: the absorbed-germ exit ([175], [154], [163], [177]).
@@ -3022,7 +3051,7 @@ free side.
 ### Node [153] (lem:cold-corridor-first-failure (ii), tex 7265-7270)
 
 - **Configuration at G.** G's first equal-state pair on a retained cold corridor, with its separating path context and profile separation; at G's canonical witness `coldRepeatWitness? = some ⟨occurrence, ε, left, right⟩` (`ColdRepeatedStateSpecAt`): the retained corridor `C_ε` of G in its outside component of `G − X_cold`; `left < right` with equal pinned states and no two equal states before `right` (the first equal-state pair); no (F1)--(F5) event before `right` and the (F2) clause at `right`; the separating path context `ColdEqualStates.prefixContext right` (accepted cycle through `piece J_right`, none through `retainedPiece J_right J_left`); the boundary-degree profiles of the two pieces differ; the glue vertices `head left`, `head right` have equal boundary-degree entries.
-- **Lean.** Generic residual `Node153ResidualOutcome` (`Assembly/Residuals.lean`), return theorem `node153Return`: the 42 facts common to all 23 paths (distinct ledger histories from the root). The 23 paths hold 23 distinct fact sets; each is its own open node, a subtype `Node153ResidualOutcome_<label>` (`Assembly/Residuals/Node153ResidualOutcome.lean`) := the generic residual ∧ every extra fact of that path's ledger, with projection `.toGeneric`, return theorem `node153Return_<label>` (one `get` per fact), and their disjunction `Node153ResidualSubtypes`. **Not yet wired:** the only return site, `nearCubicColdOccurrence`, is index-polymorphic, and every path reaches it through index-polymorphic shared functions (`selectedAbsorbedGermPrerequisites`, `selectedNetChargeContinuation`, `nearCubicRouteEightEntry`, `nearCubicLargeBudgetColdRate`/`DenseRate`/`DensityCap`, `nearCubicDenseLinear`) that do not hold the arm keys; routing each path to its subtype needs their signatures changed, so `SelectedLedgerBoundaryResult` still carries the generic disjunct.
+- **Lean.** Generic residual `Node153ResidualOutcome` (`Assembly/Residuals.lean`), return theorem `node153Return`: the 42 facts common to all 23 paths (distinct ledger histories from the root). The 23 paths hold 23 distinct fact sets; each is its own open node, a subtype `Node153ResidualOutcome_<label>` (`Assembly/Residuals/Node153ResidualOutcome.lean`) := the generic residual ∧ every extra fact of that path's ledger, with projection `.toGeneric`, return theorem `node153Return_<label>` (one `get` per fact), and their disjunction `Node153ResidualSubtypes`. Wired: the return site `nearCubicColdOccurrence` takes `Node153Arm` (the absorbed lane: `ColdBranchClosedAbsorbedCommon ∧ Route8LanePrefix ∧ EntropyArm`, built in `selectedAbsorbedGermPrerequisites`; or one of the three linear blocks `Node153LinearBlock_*`) and returns `node153SubtypesReturn`, which calls each subtype's return theorem.
 - **Facts carried (42).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
@@ -3409,19 +3438,16 @@ free side.
   - `K .denseDeficiencyBelow`
   - `K .route8RateFails`
   Total: 48 facts.
-- **Wiring pending.** The return site sits in the shared
-  `nearCubicDenseLinear`, which is generic in `known` and carries no
-  `FactKeys.Has` for the `[160]` keys; calling the subtype return theorems
-  there needs a signature change of that shared function, so the return site
-  and the `SelectedLedgerBoundaryResult` / `SelectedNearCubicSurvivorBoundary`
-  disjunct still use the generic `Node162ResidualOutcome`.
+- **Wired.** `nearCubicDenseLinear` takes the `[160]` arm (`DenseTauArm`),
+  built by its two callers, and returns `node162SubtypesReturn`; the boundary
+  carries the two subtypes.
 
 <a id="residual-54"></a>
 
 ### Node [54] (prop:entropy-high-theta, tex 9921)
 
 - **Configuration at G.** The configuration at G where the joint realization inequality RS(R0)*2^(rate*s*p13)*2^F <= B fails; at G's `P₀ = canonicalWindowPacking` and `R₀ = R(P₀)` (`AllColdEntropyResidualStatement`): `¬ WindowFamilyRealized P₀`; the remainder glue `RS(R₀)·room ≤ B` with `room = C(C(n,2) − C(|R₀|,2), m − e(G[R₀]))`; `F ≤ c_Ω·r_Ω(R₀)`; `room < 2^{rate·s·p₁₃}·2^F`; `[53]` active, `B < 2^{rate·s·p₁₃}·RS(R₀)·2^F`; and `¬ RS(R₀)·2^{rate·s·p₁₃}·2^F ≤ B`.
-- **Lean.** Generic residual `Node54ResidualOutcome` (`Assembly/Residuals.lean`), return theorem `node54Return`: the facts common to all paths. Reached by 6 paths (distinct ledger histories from the root), whose ledgers hold 6 distinct fact sets; each is its own open node, a subtype of the generic residual, in `Assembly/Residuals/Node54ResidualOutcome.lean` (`Node54ResidualOutcome_<label>`, `.toGeneric`, return theorem `node54Return_<label>`). The subtypes are not yet wired: the four return sites sit in the shared spine functions `nearCubicLargeBudget{ColdRate,DensityCap,RateFailed,DenseRate}` (`Assembly/NearCubic/Spine.lean`), whose signatures do not carry the distinguishing keys, so the boundary still carries the generic disjunct.
+- **Lean.** Generic residual `Node54ResidualOutcome` (`Assembly/Residuals.lean`), return theorem `node54Return`: the facts common to all paths. Reached by 6 paths (distinct ledger histories from the root), whose ledgers hold 6 distinct fact sets; each is its own open node, a subtype of the generic residual, in `Assembly/Residuals/Node54ResidualOutcome.lean` (`Node54ResidualOutcome_<label>`, `.toGeneric`, return theorem `node54Return_<label>`). Wired: `nearCubicLargeBudgetColdRate` / `DensityCap` take `ColdRateArm` / `DensityCapArm` and return `node54SubtypesReturn_coldRate` / `_densityCap`; `DenseRate` and `RateFailed`, each reached from one arm, carry that arm's `FactKeys.Has` and call `node54Return_unrealizedBothRates` / `node54Return_unrealizedRateFailsBounded`.
 - **Generic residual: facts common to every path (40).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
