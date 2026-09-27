@@ -1,15 +1,15 @@
-import Hypostructure.Graph.Strategy.SpineRows.ContractionCritical
 import Hypostructure.Graph.Strategy.SpineRows.CubicBaseline
 import Hypostructure.Graph.Strategy.SpineRows.CycleRankConstraint
+import Hypostructure.Graph.Strategy.SpineRows.DegreeProfileFibres
 import Hypostructure.Graph.Strategy.SpineRows.DeletionCriticality
-import Hypostructure.Graph.Strategy.SpineRows.GadgetClosure
 import Hypostructure.Graph.Strategy.SpineRows.InterfaceReplacement
 import Hypostructure.Graph.Strategy.SpineRows.LocalAlgebra
 import Hypostructure.Graph.Strategy.SpineRows.NoProperBaseline
 import Hypostructure.Graph.Strategy.SpineRows.ObstructionPacking
-import Hypostructure.Graph.Strategy.SpineRows.RelabelingDensityCap
 import Hypostructure.Graph.Strategy.SpineRows.ReplacementExclusion
 import Hypostructure.Graph.Strategy.SpineRows.ReturnAvoidance
+import Hypostructure.Graph.Strategy.SpineRows.SpinePresentationLaws
+import Hypostructure.Graph.Strategy.SpineRows.TargetCompleteContextUniversality
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SparseSurplusExit
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SparseTargetDefectStructure
 import HypostructureErdos64EG.Assembly.Basic
@@ -35,6 +35,8 @@ universe u w
 -- EG-NODE [8] no proper subgraph with minimum degree $3$
 -- EG-NODE [9] edge deletion critical; every edge touches a degree-$3$ vertex
 -- EG-NODE [10] $V_{\ge4}(G)$ independent
+-- EG-NODE [11] boundaried pieces; boundary degree profile $\mathbf d_\partial$
+-- EG-NODE [12] context-universality for target-complete identifications
 -- EG-NODE [13] replacement lemma
 -- EG-NODE [14] hereditary target-uncompressibility of proper supports
 -- EG-NODE [15] $G$ is $P_{13}$-free?
@@ -47,40 +49,29 @@ noncomputable def selectedEntryPrefix
     (history : ExactLedger EGInput.{u} selected [EGSelectionKey]) :
     ExactLedger EGInput.{u} selected
       [K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
-        K .replacementExclusion,
+        K .replacementExclusion, K .targetCompleteContextUniversality,
+        K .degreeProfileFibres,
         K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline,
-        K .returnAvoidance, K .contractionCritical, K .gadgetClosure,
-        K .relabelingDensityCap,
+        K .returnAvoidance, K .spinePresentationLaws,
         K .cubicBaseline, K .selection] := by
   let hCubic :=
     (cubicBaselineRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       history (by key_fresh)
-  let hDensity :=
-    (relabelingDensityCapRow (BranchState := BranchState)
+  -- The presentation laws the spine reads, published once on the ledger.
+  let hLaws :=
+    (spinePresentationLawsRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       hCubic (by
-        key_fresh)
-  let hGadget :=
-    (gadgetClosureRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      hDensity (by
-        key_fresh)
-  let hCritical :=
-    (contractionCriticalRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      hGadget (by
         key_fresh)
   -- `[6]`: Mersenne return exists?
   match returnAvoidanceDichotomy (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)
-      hCritical (by
+      hLaws (by
         key_fresh)
       (by
         key_fresh) with
@@ -108,10 +99,24 @@ noncomputable def selectedEntryPrefix
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           h3 (by
             key_fresh)
+      -- `[11]`: boundaried pieces and the boundary degree profile.
+      let h11 :=
+        (degreeProfileFibresRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          hRank (by
+            key_fresh)
+      -- `[12]`: context-universality for target-complete identifications.
+      let h12 :=
+        (targetCompleteContextUniversalityRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          h11 (by
+            key_fresh)
       let h13 :=
         (replacementExclusionRow (BranchState := BranchState)
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile) (data := spineData)).run hRank (by
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run h12 (by
             key_fresh)
       let h4 :=
         (interfaceReplacementRow (BranchState := BranchState)
@@ -128,8 +133,12 @@ noncomputable def selectedEntryPrefix
             key_fresh) with
       | .left freeHistory =>
           -- `[16]`: the HSS theorem gives a target cycle.
-          exact ((closeIncompatible freeHistory (K .selection) (K .windowFree)
-            (by key_fresh)).elimClosed (by infer_instance)).elim
+          exact (((hssTargetCycleRow (BranchState := BranchState)
+            (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+            (presentation := erdosReceiverLoadProfile)
+            (data := spineData)).runAndCloseIncompatible freeHistory
+              (K .selection) (K .hssTargetCycle)
+              (by key_fresh) (by key_fresh)).elimClosed (by infer_instance)).elim
       | .right h15 =>
           let h5 :=
             (obstructionPackingRow (BranchState := BranchState)

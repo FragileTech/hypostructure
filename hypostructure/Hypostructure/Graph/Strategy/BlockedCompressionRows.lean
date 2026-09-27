@@ -39,27 +39,33 @@ noncomputable def scaleAdditivityDichotomy
     (previous : ExactLedger
       (Input BranchState Presentation presentation data) current known)
     [FactKeys.Has (K .blockedClassMember) known]
+    [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .spinePresentationLaws) known]
     (additiveFresh : K .blockedScaleAdditive ∉ known)
     (overlapFresh : K .blockedBarrierOverlap ∉ known) :
     Decision (K .blockedScaleAdditive) (K .blockedBarrierOverlap) previous := by
   classical
+  -- The presentation laws the two arms use are ledger facts: the rejected
+  -- degenerate closure (`K .cubicBaseline`), the dyadic target and the barrier
+  -- table's label semantics (`K .spinePresentationLaws`).
+  have _member := (previous.get (K .blockedClassMember)).down
+  have degenerate := (previous.get (K .cubicBaseline)).down.2.2.1
+  obtain ⟨-, -, dyadic, -, -, labelMem, labelInjective, labelSurjective,
+    leftSemantic, rightSemantic, sumSemantic⟩ :=
+    (previous.get (K .spinePresentationLaws)).down
   exact Decision.run previous (K .blockedScaleAdditive) (K .blockedBarrierOverlap)
     `Hypostructure.Graph.Strategy.Spine.scaleAdditivityDichotomy
     (if additive : ∀ coordinate : blockedCoordinate data.toParameters current.object,
         BlockedRelativeFibreBoundAt data.toParameters current.object coordinate then
       .inl ⟨Contracts.Spine.blockedScaleAdditive_of_relative data.toParameters
-        current.object data.lengthOK_iff_powerOfTwo data.degenerateClosureRejected
-        data.windowBarrierLabel data.windowBarrierLabel_mem
-        data.windowBarrierLabel_injective data.windowBarrierLabel_surjective
-        data.windowBarrier_left_semantic data.windowBarrier_right_semantic
-        data.windowBarrier_sum_semantic additive⟩
+        current.object dyadic degenerate
+        data.windowBarrierLabel labelMem labelInjective labelSurjective
+        leftSemantic rightSemantic sumSemantic additive⟩
     else
       .inr ⟨Contracts.Spine.blockedBarrierFailure_of_not_relative data.toParameters
-        current.object data.lengthOK_iff_powerOfTwo data.degenerateClosureRejected
-        data.windowBarrierLabel data.windowBarrierLabel_mem
-        data.windowBarrierLabel_injective data.windowBarrierLabel_surjective
-        data.windowBarrier_left_semantic data.windowBarrier_right_semantic
-        data.windowBarrier_sum_semantic additive⟩)
+        current.object dyadic degenerate
+        data.windowBarrierLabel labelMem labelInjective labelSurjective
+        leftSemantic rightSemantic sumSemantic additive⟩)
     additiveFresh overlapFresh
 
 /-! ## Node `[171]`: `lem:blocked-graphs-compress` -/

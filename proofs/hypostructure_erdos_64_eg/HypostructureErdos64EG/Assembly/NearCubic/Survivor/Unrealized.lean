@@ -38,9 +38,10 @@ noncomputable def Assembly.Internal.nearCubicDensePassRateFailed
        K .windowPackageUnrealized, K .skeletonDominates, K .windowPackageSeparated,
        K .barrierEnumeration, K .sparseSurplusSurvivor, K .surplusAtOrBelow, K .localAlgebra,
        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion,
+       K .targetCompleteContextUniversality, K .degreeProfileFibres,
        K .cycleRankConstraint,
        K .tightEndpoint, K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-       K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
+       K .spinePresentationLaws, K .cubicBaseline,
        K .selection]) :
     SelectedNearCubicSurvivorBoundary selected := by
   let cap := nearCubicHotColdCap rateFails
@@ -76,9 +77,10 @@ noncomputable def Assembly.Internal.nearCubicDensePassAtOrAbove
        K .windowPackageUnrealized, K .skeletonDominates, K .windowPackageSeparated,
        K .barrierEnumeration, K .sparseSurplusSurvivor, K .surplusAtOrBelow, K .localAlgebra,
        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion,
+       K .targetCompleteContextUniversality, K .degreeProfileFibres,
        K .cycleRankConstraint,
        K .tightEndpoint, K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-       K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
+       K .spinePresentationLaws, K .cubicBaseline,
        K .selection]) :
     SelectedNearCubicSurvivorBoundary selected := by
   let cap := nearCubicHotColdCap denseHistory
@@ -120,9 +122,10 @@ noncomputable def Assembly.Internal.nearCubicUnrealized
       [K .windowPackageUnrealized, K .skeletonDominates, K .windowPackageSeparated,
        K .barrierEnumeration, K .sparseSurplusSurvivor, K .surplusAtOrBelow, K .localAlgebra,
        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion,
+       K .targetCompleteContextUniversality, K .degreeProfileFibres,
        K .cycleRankConstraint,
        K .tightEndpoint, K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-       K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
+       K .spinePresentationLaws, K .cubicBaseline,
        K .selection]) :
     SelectedNearCubicSurvivorBoundary selected := by
   match denseDeficiencyDichotomy (data := spineData) unrealizedHistory

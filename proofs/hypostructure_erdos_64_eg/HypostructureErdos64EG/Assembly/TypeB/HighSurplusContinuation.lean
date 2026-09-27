@@ -48,7 +48,6 @@ noncomputable def selectedTypeBHighSurplusContinuation
     -- `[72]`--`[85]` continue on this same exact ledger.
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
-    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .negativeSupport) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]

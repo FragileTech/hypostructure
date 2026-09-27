@@ -15,7 +15,6 @@ import Hypostructure.Graph.Strategy.SpineRows.LowEntropyLargeBudget
 import Hypostructure.Graph.Strategy.SpineRows.NetDeficiencyCap
 import Hypostructure.Graph.Strategy.SpineRows.RemainderEntropyDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.RemainderNormalization
-import Hypostructure.Graph.Strategy.SpineRows.RemainderRelabelingEntropy
 import Hypostructure.Graph.Strategy.SpineRows.Route8RateDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.RouteEightNetDeficiencyCap
 import Hypostructure.Graph.Strategy.SpineRows.StubSupply
@@ -57,7 +56,7 @@ universe u w
 
 /-- Every key committed from `[25]` through Branch D's closure `[46]`. -/
 noncomputable abbrev nearCubicResidualAKeys : FactKeys EGInput.{u} :=
-  [K .remainderNormalized, K .remainderRelabelingEntropy, K .boundaryDemand,
+  [K .remainderNormalized, K .boundaryDemand,
     K .stubSupply, K .wedgeSupply, K .exactResponseProfile,
     K .curvatureTargetRank, K .targetRankCircuit,
     K .curvatureRankDrop, K .curvatureFullRank, K .branchDependence,
@@ -95,13 +94,12 @@ Every terminal is a framework closure over the ledger of its arm. -/
 -- EG-NODE [44] $1$--$3$ repair identity $s=p-2+2\beta-\sigma$
 -- EG-NODE [45] target / replacement / global profile barrier
 -- EG-NODE [46] rank-drop branch closed
--- EG-NODE [11] boundaried pieces; boundary degree profile $\mathbf d_\partial$
--- EG-NODE [12] context-universality for target-complete identifications
 theorem nearCubicRankDropCloses
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .branchDependence) known]
-    [FactKeys.Has (K .uncompressible) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .selection) known]
@@ -113,16 +111,17 @@ theorem nearCubicRankDropCloses
   match contextValidityDichotomy (data := spineData) history
       (by key_fresh) (by key_fresh) with
   | .left defectHistory =>
-      -- `[37]`: target-defective quotient — uninhabited (`lem:context-universality`).
-      exact (closeImpossible defectHistory (K .contextDefect)
-        (by key_fresh)).elimClosed (by infer_instance)
+      -- `[37]`: target-defective quotient, closed against node `[12]`
+      -- (`lem:context-universality`; `lem:full-rank`, tex 9388).
+      exact (closeIncompatible defectHistory (K .targetCompleteContextUniversality)
+        (K .contextDefect) (by key_fresh)).elimClosed (by infer_instance)
   | .right universalHistory =>
       -- `[38]`: target-complete with a smaller proper representative?
       match atomCompressionDichotomy (data := spineData) universalHistory
           (by key_fresh) (by key_fresh) with
       | .left compressionHistory =>
-          -- `[39]`: proper atom compression, forbidden by `cor:uncompressible`.
-          exact (closeIncompatible compressionHistory (K .selection)
+          -- `[39]`: proper atom compression, forbidden by `lem:replacement` `[13]`.
+          exact (closeIncompatible compressionHistory (K .replacementExclusion)
             (K .atomCompression) (by key_fresh)).elimClosed
             (by infer_instance)
       | .right delocalizedHistory =>
@@ -131,7 +130,7 @@ theorem nearCubicRankDropCloses
               (by key_fresh) (by key_fresh) with
           | .left properHistory =>
               -- `[42]`: proper-support smearing closure (`lem:proper-smearing`).
-              exact (closeIncompatible properHistory (K .selection)
+              exact (closeIncompatible properHistory (K .replacementExclusion)
                 (K .properDelocalization) (by key_fresh)).elimClosed
                 (by infer_instance)
           | .right globalHistory =>
@@ -174,28 +173,26 @@ noncomputable def nearCubicFullRank
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .uncompressible) known]
+    [FactKeys.Has (K .replacementExclusion) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .spinePresentationLaws) known]
     [FactKeys.Has (K .cubicBaseline) known]
     (fresh : List.Disjoint nearCubicResidualAKeys.{u} known := by key_fresh) :
     ExactLedger EGInput.{u} selected
       (K .curvatureFullRank :: K .targetRankCircuit :: K .exactResponseProfile ::
         K .curvatureTargetRank :: K .wedgeSupply ::
-        K .stubSupply :: K .boundaryDemand :: K .remainderRelabelingEntropy ::
+        K .stubSupply :: K .boundaryDemand ::
         K .remainderNormalized :: known) :=
   let remainder :=
     (remainderNormalizationRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       history (by key_fresh)
-  let relabelingEntropy :=
-    (remainderRelabelingEntropyRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      remainder (by key_fresh)
   let boundary :=
     (boundaryDemandRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      relabelingEntropy (by key_fresh)
+      remainder (by key_fresh)
   let stubSupply :=
     (stubSupplyRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -241,12 +238,10 @@ noncomputable def nearCubicRouteEightEntry
     [FactKeys.Has (K .boundaryDemand) known]
     [FactKeys.Has (K .maximalPacking) known]
     [FactKeys.Has (K .largeBudgetResidual) known]
-    [FactKeys.Has (K .contractionCritical) known]
     [FactKeys.Has (K .hotColdPartition) known]
     [FactKeys.Has (K .slackIndependent) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .remainderNormalized) known]
-    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .uncompressible) known]
@@ -307,11 +302,9 @@ noncomputable def nearCubicLargeBudgetColdRate
     [FactKeys.Has (K .stubSupply) known]
     [FactKeys.Has (K .boundaryDemand) known]
     [FactKeys.Has (K .maximalPacking) known]
-    [FactKeys.Has (K .contractionCritical) known]
     [FactKeys.Has (K .slackIndependent) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .remainderNormalized) known]
-    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .replacementExclusion) known]
@@ -426,11 +419,9 @@ noncomputable def nearCubicLargeBudgetDenseRate
     [FactKeys.Has (K .stubSupply) known]
     [FactKeys.Has (K .boundaryDemand) known]
     [FactKeys.Has (K .maximalPacking) known]
-    [FactKeys.Has (K .contractionCritical) known]
     [FactKeys.Has (K .slackIndependent) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .remainderNormalized) known]
-    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .replacementExclusion) known]
@@ -546,15 +537,14 @@ noncomputable def nearCubicLargeBudgetDensityCap
     [FactKeys.Has (K .stubSupply) known]
     [FactKeys.Has (K .boundaryDemand) known]
     [FactKeys.Has (K .maximalPacking) known]
-    [FactKeys.Has (K .contractionCritical) known]
     [FactKeys.Has (K .slackIndependent) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .remainderNormalized) known]
-    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .tightEndpoint) known]
+    [FactKeys.Has (K .spinePresentationLaws) known]
     [FactKeys.Has (K .cubicBaseline) known]
     (fresh : List.Disjoint
       (K .route8Rate :: K .route8RateFails :: nearCubicResidualBKeys.{u}) known := by
@@ -664,15 +654,14 @@ noncomputable def nearCubicLargeBudgetRateFailed
     [FactKeys.Has (K .stubSupply) known]
     [FactKeys.Has (K .boundaryDemand) known]
     [FactKeys.Has (K .maximalPacking) known]
-    [FactKeys.Has (K .contractionCritical) known]
     [FactKeys.Has (K .slackIndependent) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .remainderNormalized) known]
-    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .returnAvoidance) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .tightEndpoint) known]
+    [FactKeys.Has (K .spinePresentationLaws) known]
     [FactKeys.Has (K .cubicBaseline) known]
     (fresh : List.Disjoint nearCubicResidualBKeys.{u} known := by key_fresh) :
     SelectedNearCubicSurvivorBoundary selected := by

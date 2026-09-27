@@ -36,6 +36,10 @@ noncomputable def curvatureRankDichotomy
     [@Core.Residual.FactKeys.Has
       (Input BranchState Presentation presentation data) _
       (factSystem BranchState Presentation presentation data)
+      (K .curvatureTargetRank) known]
+    [@Core.Residual.FactKeys.Has
+      (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data)
       (K .targetRankCircuit) known]
     (dropFresh : K .curvatureRankDrop ∉ known)
     (fullFresh : K .curvatureFullRank ∉ known) :
@@ -53,12 +57,17 @@ noncomputable def curvatureRankDichotomy
         (Input BranchState Presentation presentation data) _
         (factSystem BranchState Presentation presentation data)
         current known previous (K .targetRankCircuit)).down
+      -- Node `[31]`'s surviving family `𝓘₀` (`canonicalSurvivingFamily?`).
+      let rankFact := (@ExactLedger.get
+        (Input BranchState Presentation presentation data) _
+        (factSystem BranchState Presentation presentation data)
+        current known previous (K .curvatureTargetRank)).down
       let packing := canonicalWindowPacking data.toParameters current.object
       by_cases below :
           remainderCurvatureTargetRank data.toParameters current.object packing <
             remainderWedgeSupply current.object packing
       · exact .inl ⟨Contracts.Spine.curvatureRankDrop_of_rankBelow data.toParameters
-          current.object circuit below⟩
+          current.object rankFact circuit below⟩
       · exact .inr ⟨Contracts.Spine.curvatureFullRank_of_not_rankBelow
           data.toParameters current.object below⟩)
     dropFresh fullFresh

@@ -493,6 +493,21 @@ noncomputable def jointPackageDemand (data : Parameters)
         (canonicalHotWindows data object).card) *
     remainderStates data object (canonicalWindowPacking data object)
 
+/-- **`K|R| − o(|R|)`, the forced obstruction bits of node `[48]`**
+(`cor:forced-curvature-cost`), in the exact finite form node `[48]` publishes at
+`P₀`: `c_Ω·(δ|R₀| + 2·2(order−1)p) − c_Ω·2(δ·order·p + T(n))`.  Node `[48]`
+bounds it by the full-rank cost `c_Ω·r_Ω(R₀)`; node `[53]` compares it with the
+remaining non-obstruction budget. -/
+noncomputable def forcedObstructionBits (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Nat :=
+  let packing := canonicalWindowPacking data object
+  data.curvatureCost *
+      (data.threshold * (object.remainderSupport packing).card +
+        2 * (2 * (data.windowOrder - 1) * packing.card)) -
+    data.curvatureCost *
+      (2 * (data.threshold * (data.windowOrder * packing.card) +
+        data.surplusThreshold object.vertexCount))
+
 /-- The hot/cold partition created at node `[22]`, `def:cold-window-ledger`:
 `hot` is a maximal retained subfamily of the fixed maximal packing and `cold`
 is its complement.  The equivalences prevent a consumer from substituting an
@@ -1996,20 +2011,20 @@ abbrev handoffAbsorbing (data : Parameters) (object : Graph.FiniteObject.{u})
 
 /-- Residual C, node `[55]`: `prop:two-budget`'s "in every case the surviving
 residual is subsequently passed to the large-budget net-charge analysis" — the
-`[53]`-no arm (the joint package fits the skeleton budget) and the low-entropy
-arm; the `[53]`-yes arm is the terminal `[54]` on every residual. -/
+`[53]`-no arm (the joint package with the forced obstruction bits fits the
+skeleton budget) and the low-entropy arm; the `[53]`-yes arm is the terminal
+`[54]` on every residual. -/
 abbrev LargeBudgetResidual (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  (jointPackageDemand data object ≤ Graph.skeletonBudget object ∨
-    ∃ packing : Finset (Finset object.Vertex),
-      packing = canonicalWindowPacking data object ∧
-      object.IsWindowPacking data.windowOrder packing ∧
-        Graph.BelowEntropyRate object.vertexCount data.entropyDenominator
-          data.windowOrder data.threshold
-          (object.positiveDeficiency (object.remainderSupport packing)
-            data.threshold)
-          (object.internalEdgeCount (object.remainderSupport packing))
-          (object.remainderSupport packing).card)
+  (jointPackageDemand data object * 2 ^ forcedObstructionBits data object ≤
+      Graph.skeletonBudget object ∨
+    let packing := canonicalWindowPacking data object;
+      Graph.BelowEntropyRate object.vertexCount data.entropyDenominator
+        data.windowOrder data.threshold
+        (object.positiveDeficiency (object.remainderSupport packing)
+          data.threshold)
+        (object.internalEdgeCount (object.remainderSupport packing))
+        (object.remainderSupport packing).card)
 
 /-- A failed extension of an actually realized baseline code has a nonempty
 extension side. -/
@@ -2216,69 +2231,68 @@ noncomputable abbrev CubicBaselineStatement (data : Parameters) : Prop :=
   data.threshold = 3 ∧ data.dischargeScale = 4 ∧ ¬ data.LengthOK 2 ∧
     data.windowRate = data.windowBarrier.binaryRateFloor
 
-/-- A two-terminal closure lemma with every piece condition bound internally.
-The manuscript has no such lemma and no label for it. -/
-noncomputable abbrev GadgetClosureStatement
-    (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  let avoids (piece : Graph.FiniteObject.{u}) :=
-    ¬ Graph.HasCycleWithLength data.LengthOK piece
-  let cubicPiece (piece : Graph.FiniteObject.{u}) (x y : piece.Vertex) :=
-    x ≠ y ∧ piece.degree x = 2 ∧ piece.degree y = 2 ∧
-      ∀ vertex, vertex ≠ x → vertex ≠ y → piece.degree vertex = 3
-  (∀ (left right : Graph.FiniteObject.{u})
-      (a b : left.Vertex) (c d : right.Vertex),
-    cubicPiece left a b → cubicPiece right c d →
-    avoids left → avoids right →
-    left.vertexCount + right.vertexCount < object.vertexCount →
-    3 ≤ (Graph.TwoTerminalClosure.close left right a b c d).minDegree →
-    ∃ leftPath : left.graph.Walk a b, ∃ rightPath : right.graph.Walk c d,
-      leftPath.IsPath ∧ rightPath.IsPath ∧
-      Core.DyadicLength.PowerOfTwoLength
-        (leftPath.length + rightPath.length + 2)) ∧
-  (∀ (piece : Graph.FiniteObject.{u}) (a b : piece.Vertex),
-    piece.vertexCount < object.vertexCount → cubicPiece piece a b →
-    avoids piece → 3 ≤ (piece.addEdge a b).minDegree →
-    ∃ path : piece.graph.Walk a b, ∃ exponent : Nat,
-      path.IsPath ∧ 1 ≤ exponent ∧ path.length = 2 ^ exponent - 1) ∧
-  (∀ (piece : Graph.FiniteObject.{u}) (a b : piece.Vertex),
-    2 * piece.vertexCount < object.vertexCount → cubicPiece piece a b →
-    avoids piece →
-    3 ≤ (Graph.TwoTerminalClosure.close piece piece a b a b).minDegree →
-    ∃ first second : piece.graph.Walk a b, ∃ exponent : Nat,
-      first.IsPath ∧ second.IsPath ∧
-        first.length + second.length = 2 ^ exponent - 2) ∧
-  (∀ (support complementSupport : Finset object.Vertex),
-    let piece := object.induce support
-    let complement := object.induce complementSupport
-    ∀ (t1 t2 : piece.Vertex) (u1 u2 : complement.Vertex),
-      (∀ vertex, vertex ∈ complementSupport ↔ vertex ∉ support) →
-      cubicPiece piece t1 t2 → avoids piece → avoids complement →
-      u1 ≠ u2 → ¬ complement.graph.Adj u1 u2 →
-      (∀ z : piece.Vertex, ∀ u : complement.Vertex,
-        object.graph.Adj z.1 u.1 ↔
-          (z = t1 ∧ u = u1) ∨ (z = t2 ∧ u = u2)) →
-      (complement.addEdge u1 u2).LexicographicallySmaller object →
-      3 ≤ (complement.addEdge u1 u2).minDegree →
-      ∃ path : complement.graph.Walk u1 u2, ∃ exponent : Nat,
-        path.IsPath ∧ 1 ≤ exponent ∧ path.length = 2 ^ exponent - 1)
+/-- **The presentation laws the spine reads, published once at the entry.**
 
-/-- Contracting an edge with no common cubic neighbour exposes a
-power-of-two return through that edge.  The manuscript has no such lemma and
-no label for it. -/
-noncomputable abbrev ContractionCriticalStatement
-    (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  ∀ contraction : Graph.EdgeContraction object,
-    (∀ common : object.Vertex,
-      object.graph.Adj contraction.tail common →
-      object.graph.Adj contraction.head common →
-      object.degree common ≠ data.threshold) →
-    ∃ path : contraction.severed.Path contraction.tail contraction.head,
-      ∃ exponent : Nat,
-        2 ≤ exponent ∧ path.1.length = 2 ^ exponent
+The registered problem presentation certifies these laws once; every spine,
+Branch D and near-cubic row that needs one reads it from this ledger fact
+(`inputs.get`), never from the presentation's spelling.  Each law is stated at
+`G` and at `G`'s own induced subgraphs, the only objects the rows apply it to:
+
+* `thm:p13free` (the cited HSS closure law, node `[16]`, tex 6573): `G`, and
+  every induced subgraph `G[S]`, that meets the baseline and has no induced
+  window of the registered order has an accepted cycle;
+* the paper's target is exactly the dyadic lengths;
+* the full dyadic scale family (`separatedScaleCount n = log₂ n`);
+* the finite form of `τ_win < 1/4` (`netCapRateSlack`);
+* the certified barrier table's row labels are exactly the legal attachment
+  labels, with the manuscript's safety relations as row semantics
+  (`lem:p13-window-package`). -/
+noncomputable abbrev SpinePresentationLawsStatement (data : Parameters)
+    (label : Fin data.windowBarrier.size →
+      Graph.WindowCurvature.Label data.windowOrder)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  (Graph.MinimumDegreeAtLeast data.threshold object →
+      Graph.InducedPathFree object data.windowOrder →
+      Graph.HasCycleWithLength data.LengthOK object) ∧
+    (∀ support : Finset object.Vertex,
+      Graph.MinimumDegreeAtLeast data.threshold (object.induce support) →
+      Graph.InducedPathFree (object.induce support) data.windowOrder →
+      Graph.HasCycleWithLength data.LengthOK (object.induce support)) ∧
+    (∀ length, data.LengthOK length ↔ Core.DyadicLength.PowerOfTwoLength length) ∧
+    (∀ size : Nat, data.separatedScaleCount size = Nat.log2 size) ∧
+    Graph.FiniteObject.netCapWindowCost data.threshold data.dischargeScale
+        data.windowOrder * data.threshold < 2 * data.windowRate ∧
+    (∀ index, label index ∈ Graph.WindowCurvature.Labels data.windowOrder) ∧
+    Function.Injective label ∧
+    (∀ entry ∈ Graph.WindowCurvature.Labels data.windowOrder,
+      ∃ index, label index = entry) ∧
+    (∀ row source target,
+      (data.windowBarrier.profile.row
+        (data.windowBarrier.table.counts.leftLength row) source).getLsb target =
+        decide (Graph.WindowCurvature.Safe
+          (data.windowBarrier.table.counts.leftLength row)
+          (label source) (label target))) ∧
+    (∀ row source target,
+      (data.windowBarrier.profile.row
+        (data.windowBarrier.table.counts.rightLength row) source).getLsb target =
+        decide (Graph.WindowCurvature.Safe
+          (data.windowBarrier.table.counts.rightLength row)
+          (label source) (label target))) ∧
+    (∀ row source target,
+      (data.windowBarrier.profile.row
+        (data.windowBarrier.table.counts.leftLength row +
+          data.windowBarrier.table.counts.rightLength row) source).getLsb target =
+        decide (Graph.WindowCurvature.Safe
+          (data.windowBarrier.table.counts.leftLength row +
+            data.windowBarrier.table.counts.rightLength row)
+          (label source) (label target)))
+
+/-- Node `[16]`, `thm:p13free` (the HSS theorem, tex 6573) on the yes arm of
+node `[15]`: the selected `G`, which meets the baseline and is window-free, has
+an accepted cycle. -/
+noncomputable abbrev HssTargetCycleStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  Graph.HasCycleWithLength data.LengthOK object
 
 /-- Nodes `[5]`--`[7]`: the return-length set is disjoint from the shifted
 accepted set at every oriented edge.  This is the return-set form of target
@@ -2338,6 +2352,84 @@ division-free form of `β(G) ≥ n/2 + 1`. -/
 noncomputable abbrev CycleRankConstraintStatement (object : Graph.FiniteObject.{u}) : Prop :=
   object.vertexCount + 2 ≤
     2 * (object.edgeCount + 1 - object.vertexCount)
+
+/-- **Two realizations a quotient of G's region identifies.**  An admissible
+rank quotient of the declared raw curvature coordinates of a region `X ⊆ V(G)`
+(`Graph.CurvatureQuotient`, the quotient system `r_Ω` is computed from,
+`def:admissible-rank-quotient`) identifies two `T`-boundaried realizations of its
+support when it gives them the same value at every declared coordinate. -/
+def QuotientIdentifies {data : Parameters} {object : Graph.FiniteObject.{u}}
+    {region : Finset object.Vertex}
+    (quotient : Graph.CurvatureQuotient (Graph.MinimumDegreeAtLeast data.threshold)
+      (Graph.HasCycleWithLength data.LengthOK) object region)
+    (left right : Graph.BoundaryPiece
+      (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary object
+        quotient.support)) : Prop :=
+  ∀ test ∈ object.internalWedgeFamily region,
+    quotient.value left (quotient.label test) =
+      quotient.value right (quotient.label test)
+
+/-- Node `[11]`, `lem:degree-profile-fibres` (tex 6088), at G's own boundaried
+pieces: "if `𝐝_∂(X₁) ≠ 𝐝_∂(X₂)`, then no target-complete quotient identifies
+`X₁` and `X₂`".  For every region `X ⊆ V(G)`, every admissible rank quotient of
+`X`'s declared coordinates on G, and every two `T`-boundaried realizations of
+its support `Z ⊆ G` (`T = ∂Z` in G): realizations in different boundary-degree
+fibres are not identified. -/
+noncomputable abbrev DegreeProfileFibresStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop :=
+  ∀ (region : Finset object.Vertex)
+    (quotient : Graph.CurvatureQuotient
+      (Graph.MinimumDegreeAtLeast data.threshold)
+      (Graph.HasCycleWithLength data.LengthOK) object region)
+    (left right : Graph.BoundaryPiece
+      (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary object
+        quotient.support)),
+    left.boundaryDegreeProfile ≠ right.boundaryDegreeProfile →
+      ¬ QuotientIdentifies quotient left right
+
+/-- Node `[12]`, `lem:context-universality` (tex 6106), at G's own boundaried
+pieces.
+
+* "Suppose that two coordinates are identified in a target-complete quotient of
+  `X`.  Then [they] have the same target response against every `T`-boundaried
+  context `Y`": for every region `X ⊆ V(G)` and every admissible rank quotient of
+  its declared coordinates on G, two realizations of the quotient's support
+  `Z ⊆ G` that it identifies are target-completely identified -- one
+  boundary-degree fibre (node `[11]`) and the same power-of-two-cycle response
+  after gluing to every `∂Z`-boundaried context.
+* "Consequently any identification valid only for the actual outside context
+  `G − X`, but not for all `T`-boundaried contexts, is target-defective": two
+  realizations of a support `X ⊆ V(G)` with the same response at G's own outside
+  context `G − X` that some `∂X`-boundaried context separates carry a concrete
+  distinguishing context and are not target-completely identified. -/
+noncomputable abbrev TargetCompleteContextUniversalityStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop :=
+  (∀ (region : Finset object.Vertex)
+    (quotient : Graph.CurvatureQuotient
+      (Graph.MinimumDegreeAtLeast data.threshold)
+      (Graph.HasCycleWithLength data.LengthOK) object region)
+    (left right : Graph.BoundaryPiece
+      (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary object
+        quotient.support)),
+    QuotientIdentifies quotient left right →
+      Graph.Response.TargetComplete Graph.BoundaryPiece.boundaryDegreeProfile
+        (Graph.HasCycleWithLength data.LengthOK) left right) ∧
+  (∀ (support : Finset object.Vertex)
+    (left right : Graph.BoundaryPiece
+      (Graph.Strategy.InterfaceReplacement.SupportAtom.boundary object support)),
+    (Graph.HasCycleWithLength data.LengthOK (Graph.glue left
+        (Graph.Strategy.InterfaceReplacement.SupportAtom.outside object support)) ↔
+      Graph.HasCycleWithLength data.LengthOK (Graph.glue right
+        (Graph.Strategy.InterfaceReplacement.SupportAtom.outside object support))) →
+    ¬ Graph.Response.ContextEquivalent (Graph.HasCycleWithLength data.LengthOK)
+      left right →
+    Graph.Response.TargetDefect (Graph.HasCycleWithLength data.LengthOK) left right ∧
+      ¬ Graph.Response.TargetComplete Graph.BoundaryPiece.boundaryDegreeProfile
+        (Graph.HasCycleWithLength data.LengthOK) left right)
 
 /-- Node `[13]`, `lem:replacement`: no proper atom admits a strictly smaller
 boundary-signature-preserving replacement with one-way obstruction
@@ -2560,6 +2652,55 @@ noncomputable abbrev CurvatureTargetRankStatement
           (object.remainderSupport packing) candidate →
         candidate.card ≤ remainderCurvatureTargetRank data object packing)
 
+/-- The `∃ independent`-body of node `[31]` (`CurvatureTargetRankStatement`) at
+`P₀`: a subfamily of `𝒲₂(R₀)` that survives every functional admissible rank
+quotient and attains `r_Ω(R₀)` (tex 9195, "a maximal independently
+target-testable subfamily"). -/
+def SurvivingFamilySpec (data : Parameters) (object : Graph.FiniteObject.{u})
+    (independent : Finset (object.InternalWedge
+      (object.remainderSupport (canonicalWindowPacking data object)))) : Prop :=
+  independent ⊆ remainderCurvatureTests object (canonicalWindowPacking data object) ∧
+    Graph.FiniteObject.SurvivesCurvatureSystem
+      (Graph.MinimumDegreeAtLeast data.threshold)
+      (Graph.HasCycleWithLength data.LengthOK) object
+      (object.remainderSupport (canonicalWindowPacking data object)) independent ∧
+    independent.card =
+      remainderCurvatureTargetRank data object (canonicalWindowPacking data object)
+
+/-- **`𝓘₀`, the maximal surviving family node `[31]` fixes**: `Classical.choose`
+of `CurvatureTargetRankStatement`'s `∃ independent` at `P₀`.  Node `[32]`'s
+dropped test lies outside it and is determined by a finite part of it. -/
+noncomputable def canonicalSurvivingFamily? (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Option (Finset (object.InternalWedge
+      (object.remainderSupport (canonicalWindowPacking data object)))) := by
+  classical
+  exact if h : ∃ independent, SurvivingFamilySpec data object independent then
+    some (Classical.choose h) else none
+
+theorem canonicalSurvivingFamily?_spec (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (h : ∃ independent, SurvivingFamilySpec data object independent) :
+    ∃ independent, canonicalSurvivingFamily? data object = some independent ∧
+      SurvivingFamilySpec data object independent := by
+  classical
+  refine ⟨Classical.choose h, ?_, Classical.choose_spec h⟩
+  simp [canonicalSurvivingFamily?, h]
+
+theorem canonicalSurvivingFamily?_spec_of_eq_some (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    {independent : Finset (object.InternalWedge
+      (object.remainderSupport (canonicalWindowPacking data object)))}
+    (eq : canonicalSurvivingFamily? data object = some independent) :
+    SurvivingFamilySpec data object independent := by
+  classical
+  unfold canonicalSurvivingFamily? at eq
+  split at eq
+  · next h =>
+      cases eq
+      exact Classical.choose_spec h
+  · cases eq
+
 /-- `lem:target-rank-circuit` at the remainder of the fixed maximum packing `P₀`:
 every raw test outside a maximal surviving family carries a proper finite
 target-dependence, and absence of proper dependences is full survival. -/
@@ -2608,28 +2749,27 @@ noncomputable abbrev CurvatureRankDropStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- Any strict loss of raw curvature rank supplies the proper
-  -- target-dependence routed by Branch D.
-  (∃ packing : Finset (Finset object.Vertex),
-    packing = canonicalWindowPacking data object ∧
-    object.IsWindowPacking data.windowOrder packing ∧
-      packing.card = object.windowPackingNumber data.windowOrder ∧
-      remainderCurvatureTargetRank data object packing <
-          remainderWedgeSupply object packing ∧
-        let support := object.remainderSupport packing
-        let family := object.internalWedgeFamily support
-        ∃ test ∈ family,
-          ∃ determiners : Set (object.InternalWedge support),
-            determiners ⊆ ↑family ∧ determiners.Finite ∧
-              test ∉ determiners ∧
-                ∃ declared : Graph.DeclaredQuotient
-                  (Graph.MinimumDegreeAtLeast data.threshold)
-                  (Graph.HasCycleWithLength data.LengthOK) object family
-                  (Graph.FiniteObject.internalWedgeSupport
-                    (region := support)),
-                  declared.toRankQuotient.FunctionalOn ↑family ∧
-                    declared.toRankQuotient.RankReducingOn ↑family ∧
-                      declared.toRankQuotient.Determines test determiners)
+  -- At `P₀`: a strict loss of raw curvature rank, and a raw test outside node
+  -- `[31]`'s surviving family `𝓘₀` that a functional rank-reducing admissible
+  -- quotient determines from a finite part of `𝓘₀` (tex 9195-9204).
+  let packing := canonicalWindowPacking data object
+  let support := object.remainderSupport packing
+  let family := object.internalWedgeFamily support
+  remainderCurvatureTargetRank data object packing <
+      remainderWedgeSupply object packing ∧
+    ∃ independent, canonicalSurvivingFamily? data object = some independent ∧
+      ∃ test ∈ family, test ∉ independent ∧
+        ∃ determiners : Set (object.InternalWedge support),
+          determiners ⊆ ↑independent ∧ determiners.Finite ∧
+            test ∉ determiners ∧
+              ∃ declared : Graph.DeclaredQuotient
+                (Graph.MinimumDegreeAtLeast data.threshold)
+                (Graph.HasCycleWithLength data.LengthOK) object family
+                (Graph.FiniteObject.internalWedgeSupport
+                  (region := support)),
+                declared.toRankQuotient.FunctionalOn ↑family ∧
+                  declared.toRankQuotient.RankReducingOn ↑family ∧
+                    declared.toRankQuotient.Determines test determiners
 
 /-- Node `[32]`, no arm: `r_Ω(R) ≥ W₂(R) − o(W₂)` against every admissible
 quotient system.  This is node `[34]`, Residual B. -/
@@ -2637,13 +2777,11 @@ noncomputable abbrev CurvatureFullRankStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- This is the equality proved in the last paragraph of `lem:full-rank`.
-  (∃ packing : Finset (Finset object.Vertex),
-    packing = canonicalWindowPacking data object ∧
-    object.IsWindowPacking data.windowOrder packing ∧
-      packing.card = object.windowPackingNumber data.windowOrder ∧
-        remainderCurvatureTargetRank data object packing =
-          remainderWedgeSupply object packing)
+  -- This is the equality proved in the last paragraph of `lem:full-rank`,
+  -- at the remainder `R₀` of the fixed maximum packing `P₀`.
+  (let packing := canonicalWindowPacking data object;
+    remainderCurvatureTargetRank data object packing =
+      remainderWedgeSupply object packing)
 
 /-- The statement published under the `coldSameInterfaceTable` key. -/
 noncomputable abbrev ColdSameInterfaceTableStatement
@@ -3143,9 +3281,7 @@ noncomputable abbrev RemainderEntropyHighStatement
   -- by `d·|R|`: the remainder's realized states number at least
   -- `n^{|R|/d}`, which is `prop:two-budget` (a)'s own display.
   -- It is tested on the remainder `R` of the fixed maximum packing.
-  (∃ packing : Finset (Finset object.Vertex),
-    packing = canonicalWindowPacking data object ∧
-    object.IsWindowPacking data.windowOrder packing ∧
+  (let packing := canonicalWindowPacking data object;
     Graph.AtLeastEntropyRate object.vertexCount data.entropyDenominator
       data.windowOrder data.threshold
       (object.positiveDeficiency (object.remainderSupport packing)
@@ -3160,15 +3296,13 @@ noncomputable abbrev RemainderEntropyLowStatement
     (object : Graph.FiniteObject.{u}) :
     Prop :=
   -- Node `[50]`, no.  The exact negation at the same fixed maximum packing.
-  (∃ packing : Finset (Finset object.Vertex),
-    packing = canonicalWindowPacking data object ∧
-    object.IsWindowPacking data.windowOrder packing ∧
-      Graph.BelowEntropyRate object.vertexCount data.entropyDenominator
-        data.windowOrder data.threshold
-        (object.positiveDeficiency (object.remainderSupport packing)
-          data.threshold)
-        (object.internalEdgeCount (object.remainderSupport packing))
-        (object.remainderSupport packing).card)
+  (let packing := canonicalWindowPacking data object;
+    Graph.BelowEntropyRate object.vertexCount data.entropyDenominator
+      data.windowOrder data.threshold
+      (object.positiveDeficiency (object.remainderSupport packing)
+        data.threshold)
+      (object.internalEdgeCount (object.remainderSupport packing))
+      (object.remainderSupport packing).card)
 
 /-- `prop:two-budget` (b): on the low-entropy residual, the radius-two
 rooted-type coordinate lies below the exact finite relabelling threshold. -/
@@ -3178,13 +3312,10 @@ noncomputable abbrev LocalTypeCoordinateRepetitiveStatement
     Prop :=
   -- The literal maximum-packing coordinate selected from the full-rank
   -- residual lies below the finite relabelling threshold.
-  ∃ packing : Finset (Finset object.Vertex),
-    packing = canonicalWindowPacking data object ∧
-    object.IsWindowPacking data.windowOrder packing ∧
-      packing.card = object.windowPackingNumber data.windowOrder ∧
-      remainderCurvatureTargetRank data object packing =
-        remainderWedgeSupply object packing ∧
-      RemainderTypeCoordinateRepetitive data object packing
+  let packing := canonicalWindowPacking data object
+  remainderCurvatureTargetRank data object packing =
+      remainderWedgeSupply object packing ∧
+    RemainderTypeCoordinateRepetitive data object packing
 
 /-- `prop:two-budget` (c): the same literal coordinate is not structurally
 repetitive.  This arm passes unchanged to the large-budget analysis. -/
@@ -3193,13 +3324,10 @@ noncomputable abbrev LocalTypeCoordinateNonrepetitiveStatement
     (object : Graph.FiniteObject.{u}) :
     Prop :=
   -- Exact complementary arm of the same coordinate decision.
-  ∃ packing : Finset (Finset object.Vertex),
-    packing = canonicalWindowPacking data object ∧
-    object.IsWindowPacking data.windowOrder packing ∧
-      packing.card = object.windowPackingNumber data.windowOrder ∧
-      remainderCurvatureTargetRank data object packing =
-        remainderWedgeSupply object packing ∧
-      ¬ RemainderTypeCoordinateRepetitive data object packing
+  let packing := canonicalWindowPacking data object
+  remainderCurvatureTargetRank data object packing =
+      remainderWedgeSupply object packing ∧
+    ¬ RemainderTypeCoordinateRepetitive data object packing
 
 /-- Node `[52]`: the window package and the remainder accounting, joined.
 `eq:feasibility`'s left-hand side in exact integer form — the joint
@@ -3233,7 +3361,8 @@ noncomputable abbrev EntropyCapActiveStatement
   -- remaining non-curvature budget is strictly smaller than the forced
   -- curvature cost, i.e. the joint package strictly overflows the labelled
   -- skeleton budget of `lem:near-cubic-budget`.
-  Graph.skeletonBudget object < jointPackageDemand data object
+  Graph.skeletonBudget object <
+    jointPackageDemand data object * 2 ^ forcedObstructionBits data object
 
 /-- Node `[54]`: the independently realized window/remainder code fits in
 the labelled skeleton class.  This is the exact bound contradicted by the
@@ -3245,7 +3374,8 @@ noncomputable abbrev EntropyCapBoundStatement
   -- Node `[54]`: `lem:independent-target-entropy` and
   -- `lem:skeleton-dominates` bound the exact joint code by the labelled
   -- skeleton budget.  `K .entropyCapActive` is its strict negation.
-  jointPackageDemand data object ≤ Graph.skeletonBudget object
+  jointPackageDemand data object * 2 ^ forcedObstructionBits data object ≤
+    Graph.skeletonBudget object
 
 /-- Node `[56]`: exact cleared finite form of the large-budget
 net-deficiency cap. -/
@@ -3296,15 +3426,9 @@ noncomputable abbrev NetChargeNonNegativeStatement
   -- `N₀(R) ≥ 0` for its remainder.  Carrying the packing in the fact keeps
   -- this a test of the paper's fixed `R`, rather than a statement about all
   -- possible maximal packings.
-  (∃ packing : Finset (Finset object.Vertex),
-    packing = canonicalWindowPacking data object ∧
-      object.IsWindowPacking data.windowOrder packing ∧
-      packing.card = object.windowPackingNumber data.windowOrder ∧
-      (∀ window : Finset object.Vertex,
-        object.InducesWindow data.windowOrder window →
-        ∃ member ∈ packing, ¬ Disjoint window member) ∧
-      object.NonNegativeNetCharge (object.remainderSupport packing)
-        data.threshold data.dischargeScale)
+  (let packing := canonicalWindowPacking data object;
+    object.NonNegativeNetCharge (object.remainderSupport packing)
+      data.threshold data.dischargeScale)
 
 /-- Node `[59]`, no arm: `N₀(R) < 0` for that same selected packing. -/
 noncomputable abbrev NetChargeNegativeStatement
@@ -3312,15 +3436,9 @@ noncomputable abbrev NetChargeNegativeStatement
     (object : Graph.FiniteObject.{u}) :
     Prop :=
   -- Node `[59]`, no: the same selected maximum packing and `N₀(R) < 0`.
-  (∃ packing : Finset (Finset object.Vertex),
-    packing = canonicalWindowPacking data object ∧
-      object.IsWindowPacking data.windowOrder packing ∧
-      packing.card = object.windowPackingNumber data.windowOrder ∧
-      (∀ window : Finset object.Vertex,
-        object.InducesWindow data.windowOrder window →
-        ∃ member ∈ packing, ¬ Disjoint window member) ∧
-      object.NegativeNetCharge (object.remainderSupport packing)
-        data.threshold data.dischargeScale)
+  (let packing := canonicalWindowPacking data object;
+    object.NegativeNetCharge (object.remainderSupport packing)
+      data.threshold data.dischargeScale)
 
 /-- Node `[173]`, `lem:exact-collision-test`, no arm: node `[56]`'s
 collision, decided exactly on the current object (tex 7883), fails: the
@@ -3384,66 +3502,14 @@ noncomputable abbrev NegativeSupportStatement
   -- Node `[61]`, `prop:negative-net-charge`.  The support is data, so what
   -- the ledger records is its existence, with the two clauses of
   -- `def:admissible` the decomposition supplies: it is a connected piece of
-  -- the remainder, and its net charge is negative.  The packing is carried
-  -- with its maximality, which is what lets node `[27]` be read on the
-  -- piece: `def:admissible`'s remaining inherited clauses are statements
-  -- about the remainder of a *maximal* packing.
-  (∃ packing : Finset (Finset object.Vertex),
-    packing = canonicalWindowPacking data object ∧
-      object.IsWindowPacking data.windowOrder packing ∧
-      (∀ window : Finset object.Vertex,
-        object.InducesWindow data.windowOrder window →
-        ∃ member ∈ packing, ¬ Disjoint window member) ∧
-      ∃ component ∈ object.canonicalPieces
-          (object.remainderSupport packing),
-        object.NegativeNetCharge
-          (object.pieceSupport (object.remainderSupport packing) component)
-          data.threshold data.dischargeScale)
-
-/-- Exact finite orbit lower bound for every support of the remainder `R₀` of
-the fixed maximum packing `P₀`. -/
-noncomputable abbrev RemainderRelabelingEntropyStatement
-    (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  let packing := canonicalWindowPacking data object;
-    ∀ support : Finset object.Vertex,
-      support ⊆ object.remainderSupport packing →
-      Nat.factorial support.card ≤
-        Graph.remainderStateCount data.windowOrder data.threshold
-            (object.positiveDeficiency support data.threshold)
-            (object.internalEdgeCount support) support.card *
-          Nat.card (MulAction.stabilizer
-            (Equiv.Perm (Fin support.card))
-            (object.labelledInduce support))
-
-/-- Exact finite invariant-state cap under relabellings fixing the windows of
-the fixed maximum packing `P₀`. -/
-noncomputable abbrev RelabelingDensityCapStatement
-    (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  let packing := canonicalWindowPacking data object;
-    ∀ labels : object.Vertex ≃ Fin object.vertexCount,
-      let window : Finset (Fin object.vertexCount) :=
-        (object.windowSupport packing).map labels.toEmbedding
-      let remainder : Finset (Fin object.vertexCount) := Finset.univ \ window
-      ∀ (State : Type u) (_stateDecidable : DecidableEq State)
-          (skeletons : Finset (Graph.LabelledOn object.vertexCount))
-          (state : Graph.LabelledOn object.vertexCount → State)
-          (stabilizerBound : Nat),
-        (∀ permutation : Graph.LabelledRelabeling.FixedSupportPermutations window,
-          ∀ graph ∈ skeletons, permutation • graph ∈ skeletons) →
-        (∀ permutation : Graph.LabelledRelabeling.FixedSupportPermutations window,
-          ∀ graph ∈ skeletons,
-            state (permutation • graph) = state graph) →
-        (∀ graph ∈ skeletons,
-          Nat.card (MulAction.stabilizer
-            (Graph.LabelledRelabeling.FixedSupportPermutations window) graph) ≤
-              stabilizerBound) →
-        (by
-          letI : DecidableEq State := _stateDecidable
-          exact (skeletons.image state).card * Nat.factorial remainder.card ≤
-            skeletons.card * stabilizerBound)
+  -- the remainder `R₀` of the fixed maximum packing `P₀`, and its net charge
+  -- is negative.  `P₀`'s maximality (`canonicalWindowPacking_spec`) is what
+  -- lets node `[27]` be read on the piece.
+  (let packing := canonicalWindowPacking data object;
+    ∃ component ∈ object.canonicalPieces
+        (object.remainderSupport packing),
+      object.NegativeNetCharge
+        (object.pieceSupport (object.remainderSupport packing) component)
+        data.threshold data.dischargeScale)
 
 end Hypostructure.Graph.Strategy.Spine

@@ -5,7 +5,6 @@ import Hypostructure.Graph.Strategy.ColdCorridorRows.NeutralTerminal
 import Hypostructure.Graph.Strategy.ColdCorridorRows.TwoStrand
 import Hypostructure.Graph.Strategy.SpineRows.Bridgeless
 import Hypostructure.Graph.Strategy.SpineRows.RemainderNormalization
-import Hypostructure.Graph.Strategy.SpineRows.RemainderRelabelingEntropy
 import HypostructureErdos64EG.Assembly.NearCubic.Boundary
 import HypostructureErdos64EG.Assembly.NearCubic.ColdPass
 import HypostructureErdos64EG.Assembly.NearCubic.Replacement
@@ -28,7 +27,7 @@ universe u w
 
 /-- Every key committed on the linear arm of the dense pass. -/
 noncomputable abbrev denseLinearKeys : FactKeys EGInput.{u} :=
-  [K .remainderNormalized, K .remainderRelabelingEntropy, K .bridgeless,
+  [K .remainderNormalized, K .bridgeless,
     K .coldReturnCorridors, K .coldCorridorState,
     K .denseColdCorridorsTerminal, K .coldFirstFailureOccurrence,
     K .coldFailureCycle, K .coldFailureDefectRoute,
@@ -73,6 +72,8 @@ noncomputable def nearCubicDenseLinear
     [FactKeys.Has (K .coldMassLinear) known]
     [FactKeys.Has (K .coldSelectedBranchExcess) known]
     [FactKeys.Has (K .coldStubExcess) known]
+    [FactKeys.Has (K .spinePresentationLaws) known]
+    [FactKeys.Has (K .cubicBaseline) known]
     (fresh : List.Disjoint denseLinearKeys.{u} known := by key_fresh) :
     SelectedNearCubicSurvivorBoundary selected := by
   let normalized :=
@@ -80,16 +81,11 @@ noncomputable def nearCubicDenseLinear
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       history (by key_fresh)
-  let relabelingEntropy :=
-    (remainderRelabelingEntropyRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      normalized (by key_fresh)
   let bridgeless :=
     (bridgelessRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      relabelingEntropy (by key_fresh)
+      normalized (by key_fresh)
   let state := nearCubicColdCorridorState bridgeless
   let terminal :=
     (denseColdCorridorsTerminalRow (data := spineData)).run state (by key_fresh)

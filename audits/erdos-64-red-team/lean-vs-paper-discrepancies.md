@@ -25,6 +25,22 @@ F4 Surplus / Homogeneous / Pair, F5 Spine / Cold / NearCubic).
   (`connected_of_noProperBaseline`).  The added conjunct is a proved
   consequence; nothing is weakened.
 
+## [11], [12]: restored at the entry, at G's own boundaried pieces
+
+*Family F5 (Spine / Cold / NearCubic), final pass (group SD).*
+
+- **Lean.** `K .degreeProfileFibres` (idx 2300) and
+  `K .targetCompleteContextUniversality` (idx 2301) are published in
+  `selectedEntryPrefix` between `[10]` and `[13]`
+  (`degreeProfileFibresRow`, `targetCompleteContextUniversalityRow`, which
+  reads `[11]`).  Both are stated about every admissible rank quotient of the
+  declared coordinates of a region of G (`Graph.CurvatureQuotient`) and the
+  `∂Z`-boundaried realizations of its support `Z ⊆ G`; `[12]` also states the
+  "consequently" clause at G's own outside context `G − X`.  Branch D's `[37]`
+  closes against `[12]` (see Paper errors, "[11], [12], [36]/[37]").
+- The former keys 322/323 (deleted by F5 at 4e1a360) were plain projections of
+  `Response.TargetComplete` over arbitrary pieces; they are not restored.
+
 ## [13]: `lem:replacement` without hypothesis (iii)
 
 *Family F5 (Spine / Cold / NearCubic).*
@@ -45,6 +61,37 @@ assertion of `cor:uncompressible` ("exactly `lem:replacement`") under
 two-way `CompressibleSupport` weaken it with
 `replacementSupportOfCompressibleSupport`.
 
+## [24]: the high-entropy clause is not published
+
+*Family F5; recorded in the final pass (group SD).*
+
+- **Paper.** `[24]` "bounded cold-mass return from [153]: `θ ≤ θ_win + o(1)`;
+  high entropy: `θ ≤ 0.01198542083…`".
+- **Lean.** `K .densityCap` publishes only the window-only cap
+  `2·rate·scales·ν ≤ (scales+1)(δn+T) + slack·rate·scales·T`
+  (`θ ≤ θ_win + o(1)`).  The high-entropy sharpening is `def:Theta`'s, which the
+  `[53]` test now carries at `K > 0`; no consumer reads a sharpened `[24]`.
+
+## [36]–[46]: Branch D closures and scope
+
+*Family F5; final pass (group SD).*
+
+- `[39]` and `[42]` close against node `[13]` `K .replacementExclusion`
+  (`lem:replacement`), not by re-deriving it from `K .selection`: the strictly
+  smaller proper representative of `def:proper-quotient-representative` has the
+  one-way profile inclusion (a), which is `lem:replacement`'s hypothesis (i);
+  tex 9226 cites `cor:uncompressible`, which is `lem:replacement` for proper
+  supports.
+- `[40]`/`[41]`: the diagram says `Z ⊋ C`; the Lean's `[40]` records
+  `Z ⊄ C` (and `C ⊊ C ∪ Z`), and `[41]` classifies the certificate's own support
+  `Z`, as `lem:full-rank`'s proof does (tex 9380-9395, `Z` the minimal
+  certificate support).
+- `[45]` is pinned: the whole-graph support, the rank reduction on `𝒲₂(R₀)` and
+  the closed representative are all of the one certificate `branchCertificate?`.
+- `[19]` is pinned at node `[31]`'s surviving family `𝓘₀ =
+  canonicalSurvivingFamily?` (`test ∉ 𝓘₀`, determiners `⊆ 𝓘₀`); the decision
+  reads `[31]`.
+
 ## [34]/[47]: exact full rank
 
 *Family F5 (Spine / Cold / NearCubic).*
@@ -64,38 +111,27 @@ two-way `CompressibleSupport` weaken it with
 negation on the remainder of the fixed maximum packing
 (`packing = canonicalWindowPacking`), decided by `remainderEntropyDichotomy`.
 
-## [53]: the entropy-cap test sits on the high-entropy arm, with `K = 0`
+## [53]: the entropy-cap test sits on the high-entropy arm (`K > 0`, paper-exact test)
 
-*Family F5 (Spine / Cold / NearCubic).*
+*Family F5 (Spine / Cold / NearCubic); `K = 0` removed in the final pass (group SD).*
 
 - **Paper.** Diagram Part IV (tex:878-894) draws `[50]` yes → `[51]` → `[52]`
   → `[54]` unconditionally, and `[53]` "remaining non-obstruction budget
   `< K|R|`?" on `[50]`'s *no* arm.  The text says the opposite:
   `prop:entropy-high-theta` (tex:9919) is stated "in the high-entropy branch of
-  `prop:two-budget`", and `prop:two-budget` (tex:9685) passes the surviving
-  residual of *every* case, including (a), to the large-budget analysis.  The
-  budget accounting of `eq:entropy-cap` (tex:9870-9901) uses the remainder's
-  `(|R|/10)·log₂ n` bits, which only the high arm supplies.
-- **Lean.** `entropyCapDichotomy`
-  (`Graph/Strategy/SpineRows/EntropyCapDichotomy.lean`) decides, on the high
-  arm after `[52]` (`entropyPackageRow`), `K .entropyCapActive`
-  (`budget < demand`) against its exact complement `K .entropyCapBound`
-  (`demand ≤ budget`).  The active arm is `[54]`, closed by
-  `entropyCapBoundRow.runAndCloseIncompatible`; the bound arm is Residual C
-  `[55]` (`highEntropyLargeBudgetRow`).  The low arm reaches `[55]` directly
-  (`lowEntropyLargeBudgetRow`).  Callers: `nearCubicLargeBudget*`
-  (`proofs/.../Assembly/NearCubic/Spine.lean`).
-- **Difference.** The forced-obstruction term `K(1-13θ)` of `eq:entropy-cap` is
-  set to `0`: the test is the joint package against the labelled skeleton
-  budget.
-- **Why the Lean prevails.** It follows the mathematical statements
-  (`prop:two-budget`, `prop:entropy-high-theta`) where the diagram disagrees
-  with them.  Setting `K = 0` needs no value of `c_Ω` or the rank fraction,
-  exactly as `rem:closure-robust` (tex:9936) says the closure outside the
-  explicit residuals does; every case the paper closes at `[54]` with `K > 0`
-  and the Lean does not is routed to `[55]`, which the Lean handles on the same
-  terms as every other `[55]` residual.  The `[24]` high-entropy bound
-  `θ ≤ 0.01198542083 = 1.4/116.808581006` is itself the `K = 0` threshold.
+  `prop:two-budget`", and the budget accounting of `eq:entropy-cap`
+  (tex:9870-9901) uses the remainder's `(|R|/10)·log₂ n` bits, which only the
+  high arm supplies.
+- **Lean.** `entropyCapDichotomy` decides, on the high arm after `[52]`, and
+  reading its predecessors `[48]` (`K .forcedCurvatureCost`) and `[52]`
+  (`K .entropyPackageDemand`), the paper's test at `P₀`:
+  `K .entropyCapActive` = `skeletonBudget < jointPackageDemand ·
+  2^{forcedObstructionBits}` against its exact complement `K .entropyCapBound`,
+  where `forcedObstructionBits` is `K|R| − o(|R|)` in the exact form node `[48]`
+  publishes.  `[54]` (`entropyCapBoundRow.runAndCloseIncompatible`) reads
+  `[22]`, `[48]`, `[51]`, `[52]`; on the all-cold arm of `[22]` its bound is the
+  `PAPER-ERROR [54] tex:9921` hook (see Paper errors).
+- **Difference.** Only the position on the high arm (diagram vs text).
 
 ## [56]: the density input differs by arm (`lem:dense-deficiency-routing`)
 
@@ -110,6 +146,12 @@ negation on the remainder of the fixed maximum packing
   arm), `routeEightNetDeficiencyCapRow` (`[146]`'s `K .coldRoute8Below`, the
   `[147]` arm, `τ(θ) < 3/13 < 1/4`).  The spine `[47]`--`[56]` is one
   composition per input (`nearCubicLargeBudget*`).
+- **[55] is a merge node.** `K .largeBudgetResidual` is the disjunction of the
+  `[53]`-no fact and the low-entropy fact (each producer fills one disjunct).
+  The paper's content of `[55]` ("`θ ≤ θ_win + o(1)`") is carried by the arm's
+  density input above, not by `[55]`; every `[56]` row reads `[55]` as its
+  predecessor (manifest `Requires`, `inputs.get`) but derives the cap from the
+  density input.
 
 ## [57] and [173]: the exact collision test replaces the asymptotic cap
 
@@ -119,8 +161,10 @@ negation on the remainder of the fixed maximum packing
   cap" → `[173]` "exact collision test holds?".  `lem:exact-collision-test`
   (tex:7883) decides `[56]`'s collision exactly on the object;
   `rem:no-sufficient-order` removes the order condition at `[57]`.
-- **Lean.** `exactCollisionDichotomy` decides `K .netChargeCap` (the exact
-  `N₀(R) < 0` at every maximum packing) against `K .exactCollisionFails`;
+- **Lean.** `exactCollisionDichotomy` reads its predecessor `[56]`
+  (`K .netDeficiencyCap`) and decides `K .netChargeCap` (the exact
+  `N₀(R₀) < 0` at the fixed maximum packing `P₀`) against
+  `K .exactCollisionFails`;
   `[57]` has no separate fact.  `bridgelessRow` publishes `lem:bridgeless`
   before the decision because both arms consume it: the absorbed residual's
   corridors, and the Type A / Type B continuations (`[63]`, `[64]`), whose
@@ -566,12 +610,67 @@ canonical homogeneous pattern at that token
   the branch vacuously.  G2 is recorded again and the cold outcome returns to
   `[187]` (`K .coldBranchClosed`), as at `d2ded0e`.
 
+- **Deleted non-paper keys (final pass, group SD).** `gadgetClosure` [500],
+  `contractionCritical` [439], `remainderRelabelingEntropy` [501] and
+  `relabelingDensityCap` [502] had no tex statement and no reader; their keys,
+  rows, contracts (`Contracts/Spine/SpineMinimalClosure.lean`,
+  `relabelingDensityCap_of_orbitCount`,
+  `remainderRelabelingEntropy_of_normalized`) and assembly entries are removed.
+- **Presentation laws on the ledger (final pass, group SD).** The HSS closure
+  law (`thm:p13free`, at G and G's induced subgraphs), the dyadic target, the
+  scale family, the net-cap slack and the barrier label semantics are published
+  once at the entry as `K .spinePresentationLaws` (idx 2302); node `[16]` is the
+  row `hssTargetCycleRow` (`K .hssTargetCycle`, idx 2303) closed against
+  `K .selection`.  `3 ≤ δ` / `δ = 3` are read from `K .cubicBaseline`.
+
 ## Paper errors
 
 Each entry is a claim of the paper that is not established, stated faithfully
 at its node.  In the live Lean tree it is either a `sorry` tagged
 `-- PAPER-ERROR [node] tex:<line>` on the proof of exactly that claim, or,
 where the user decided so, a residual carried by the node's open leaf.
+
+### [11], [12], [36]/[37]: definitional lemmas and an empty terminal (tex 6088, 6106, 9220, 9388)
+
+- **Paper claim.** `lem:degree-profile-fibres` and `lem:context-universality`
+  are proved by "condition (a)" and "this is precisely the meaning of
+  target-completeness".  Case (i) of `lem:curvature-dependence-routing`
+  (node `[37]`, "a target-defective quotient") is a terminal of the decision
+  `[36]`.
+- **Faithful Lean statement.** `[11]`/`[12]` at G's boundaried pieces (see the
+  `[11], [12]` entry above).  `[23]` `ContextDefectStatement`: some pair the
+  certificate's admissible quotient identifies is separated by an outside
+  context.
+- **Why it is empty / trivial.** The certificate's quotient is admissible, and
+  `def:admissible-rank-quotient` (tex 6026) makes every admissible quotient
+  target-complete, so `[11]`/`[12]` hold by the definition and `[23]` never
+  holds; `lem:full-rank` (tex 9388) says so itself: "The first is excluded by
+  the definition of target-completeness".  Lean evidence:
+  `Contracts.Spine.contextDefect_false_of_contextUniversality`
+  (`[12]` ⇒ `¬[23]`); the decision `[36]` is therefore trivial on every G.
+- **Representation.** No `sorry`.  `[37]` closes by
+  `closeIncompatible (K .targetCompleteContextUniversality) (K .contextDefect)`.
+
+### [54] on the all-cold arm of [22], `prop:entropy-high-theta` (tex 9919-9921)
+
+- **Paper claim.** On the active arm of `eq:entropy-cap`, "the window package,
+  the remainder bits, and the forced-obstruction bits ... form one
+  independently target-testable coordinate family", realized within the
+  labelled skeleton budget.
+- **Faithful Lean statement.** `Contracts.Spine.entropyCapBound_allCold`: at
+  the selected G, on the arm of `[22]` where no window family of `P₀` is
+  retained (`canonicalHotWindows = ∅`, `¬ WindowFamilyRealized ∅`), with `[48]`,
+  `[51]`, `[52]`: `remainderStates(R₀) · 2^{K|R|−o(|R|)} ≤ skeletonBudget`.
+- **Why it fails.** On the retained arm the claim is proved
+  (`entropyCapBound_of_hotColdPartition`: the retained code carries the exact
+  curvature code `c_Ω·r_Ω(R₀)`, which bounds the forced bits by `[48]`).  On the
+  all-cold arm the arm's defining fact is that the remainder states together
+  with the full curvature code are *not* realized by the labelled skeletons;
+  the manuscript gives no other realization argument for the forced part, so
+  the independence claim is not established there.  The statement carries the
+  selection hypothesis, so its negation is not derivable.
+- **Tag.** `sorry`, `PAPER-ERROR [54] tex:9921`, in
+  `Graph/Contracts/Spine/RemainderEntropy.lean`.
 
 ### [144] `lem:same-token-bottleneck-routing`, parallel and cubic-first-separator cases (tex 5585-5620)
 

@@ -63,15 +63,15 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       (Presentation := Presentation) (presentation := presentation)
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.wedgeSupply
-    { Requires := [K .stubSupply]
+    { Requires := [K .stubSupply, K .cubicBaseline]
       Produces := [K .wedgeSupply]
-      requiresUnique := by simp
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .wedgeSupply)
         ⟨Contracts.Spine.wedgeSupply_of_stubSupply data.toParameters
-          inputs.current.object data.three_le_threshold
+          inputs.current.object (Nat.le_of_eq (inputs.get (K .cubicBaseline)).down.1.symm)
           (inputs.get (K .stubSupply)).down⟩
         .nil)
     0 0

@@ -30,7 +30,6 @@ noncomputable def Assembly.Internal.selectedAbsorbedFanChargeContinuation
     [FactKeys.Has (K .tightEndpoint) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
-    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
     (normalFormFresh : K .highCentreNormalForm ∉ known)
     (heavyFresh : K .typeBFanHeavyCentre ∉ known)

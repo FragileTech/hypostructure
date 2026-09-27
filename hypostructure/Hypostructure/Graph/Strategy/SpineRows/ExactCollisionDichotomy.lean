@@ -36,6 +36,10 @@ noncomputable def exactCollisionDichotomy
     (previous :
       @ExactLedger (Input BranchState Presentation presentation data)
         _ (factSystem BranchState Presentation presentation data) current known)
+    [@Core.Residual.FactKeys.Has
+      (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data)
+      (K .netDeficiencyCap) known]
     (capFresh : K .netChargeCap ∉ known)
     (failsFresh : K .exactCollisionFails ∉ known) :
     @Decision (Input BranchState Presentation presentation data) _
@@ -47,6 +51,11 @@ noncomputable def exactCollisionDichotomy
     `Hypostructure.Graph.Strategy.Spine.exactCollisionDichotomy
     (by
       classical
+      -- `[56]` → `[57]`/`[173]`: the net-deficiency cap is the predecessor.
+      let _cap := (@ExactLedger.get
+        (Input BranchState Presentation presentation data) _
+        (factSystem BranchState Presentation presentation data)
+        current known previous (K .netDeficiencyCap)).down
       exact if holds : NetChargeCapStatement data.toParameters current.object then
         .inl ⟨holds⟩
       else

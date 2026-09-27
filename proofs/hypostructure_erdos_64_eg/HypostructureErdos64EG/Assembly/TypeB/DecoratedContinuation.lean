@@ -32,7 +32,6 @@ noncomputable def selectedTypeBDecoratedContinuation
     [FactKeys.Has (K .negativeSupport) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
-    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .typeAReceiverRouting) known]
     (normalFormFresh : K .highCentreNormalForm ∉ known)

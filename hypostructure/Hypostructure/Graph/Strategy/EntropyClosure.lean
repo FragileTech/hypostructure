@@ -9,9 +9,9 @@ the certified package-rate inequality, and the canonical state-count bound are
 read from the literal residual by one atomic row; that row publishes the
 opposite cap fact, and the framework closes the resulting cap/overflow pair.
 
-`prop:entropy-high-theta`: on the arm where the remaining non-curvature budget
-is strictly smaller than the forced curvature cost (`K .entropyCapActive`,
-`eq:entropy-cap`), *"the window package of `lem:p13-window-package`, the
+`prop:entropy-high-theta`: on the arm where the remaining non-obstruction
+budget is strictly smaller than the forced obstruction cost `K|R| − o(|R|)` of
+node `[48]` (`K .entropyCapActive`, `eq:entropy-cap`), *"the window package of `lem:p13-window-package`, the
 remainder bits, and the forced obstruction bits together strictly exceed the
 near-cubic skeleton budget.  These bits form one independently target-testable
 coordinate family, so the number of realized target-complete states would
@@ -21,11 +21,12 @@ exceed the number of labelled skeletons, contradicting
 The premise "form one independently target-testable coordinate family" is a
 property of the residual, carried by node `[22]`'s hot/cold split
 (`K .hotColdPartition`).  A sealed fact row reads that split, the package-rate
-inequality, and the skeleton state-count bound.  On the retained arm it proves
-`demand ≤ retainedCode 𝒫_hot ≤ #realized states ≤ budget`; on the complementary
-all-cold arm the demand is the remainder class alone and `RemainderGlue` proves
-the same bound.  The row publishes only `K .entropyCapBound`, the exact
-inequality `demand ≤ budget`.  Core then closes it against
+inequality, the skeleton state-count bound and node `[48]`'s forced cost.  On
+the retained arm it proves
+`demand · 2^{K|R|−o(|R|)} ≤ retainedCode 𝒫_hot ≤ #realized states ≤ budget`; on
+the complementary all-cold arm the paper's independence claim is not established
+(`PAPER-ERROR [54] tex:9921`).  The row publishes only `K .entropyCapBound`, the
+exact inequality `demand · 2^{K|R|−o(|R|)} ≤ budget`.  Core then closes it against
 `K .entropyCapActive`, its strict negation.  No numeral, threshold, rate, or
 out-of-ledger branch witness is supplied here.
 -/
@@ -87,12 +88,15 @@ noncomputable instance instIncompatibleEntropyCapActiveBound :
 
 /-! **The sealed proof row for terminal `[54]`** (`prop:entropy-high-theta`).
 
-The row follows the two alternatives already stored in the active residual's
-`K .hotColdPartition`.  If the hot family is retained, the registered package
-rate puts the joint demand below its retained code, and the realized-code and
-skeleton-dominance clauses put that code below the labelled skeleton budget.
-If no family is retained, the canonical hot family is empty and the remainder
-glue gives the same bound.  Both alternatives therefore produce exactly
+On the active arm of node `[53]` the row reads node `[22]`'s split, the
+package-rate inequality, the skeleton state-count bound, node `[48]`'s forced
+obstruction cost and node `[52]`'s joint account.  If the hot family is
+retained, the registered package rate puts the window part below its retained
+code, node `[48]` puts the forced bits below the curvature code that retained
+code carries, and the realized-code and skeleton-dominance clauses put the code
+below the labelled skeleton budget.  If no family is retained, the bound is the
+paper's independence claim on that arm (`entropyCapBound_allCold`,
+`PAPER-ERROR [54] tex:9921`).  Both alternatives produce exactly
 `K .entropyCapBound`; the terminal itself is Core's incompatibility closure
 against `K .entropyCapActive`. -/
 @[reducible] noncomputable def entropyCapBoundRow :
@@ -109,7 +113,9 @@ against `K .entropyCapActive`. -/
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.entropyCapBound
     { Requires :=
-        [K .hotColdPartition, K .windowPackageSeparated, K .skeletonDominates]
+        [K .selection, K .hotColdPartition, K .windowPackageSeparated,
+          K .skeletonDominates, K .forcedCurvatureCost, K .remainderEntropyHigh,
+          K .entropyPackageDemand]
       Produces := [K .entropyCapBound]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -117,9 +123,13 @@ against `K .entropyCapActive`. -/
     (fun inputs =>
       .cons (key := K .entropyCapBound)
         ⟨Contracts.Spine.entropyCapBound_of_hotColdPartition data.toParameters
-          inputs.current.object (inputs.get (K .hotColdPartition)).down
+          inputs.current.object (inputs.get (K .selection)).down
+          (inputs.get (K .hotColdPartition)).down
           (inputs.get (K .windowPackageSeparated)).down
-          (inputs.get (K .skeletonDominates)).down⟩
+          (inputs.get (K .skeletonDominates)).down
+          (inputs.get (K .forcedCurvatureCost)).down
+          (inputs.get (K .remainderEntropyHigh)).down
+          (inputs.get (K .entropyPackageDemand)).down⟩
         .nil)
     0 0
 

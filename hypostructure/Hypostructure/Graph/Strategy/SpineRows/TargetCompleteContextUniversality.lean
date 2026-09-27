@@ -1,5 +1,5 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
-import Hypostructure.Graph.Contracts.Spine.SpineMinimalClosure
+import Hypostructure.Graph.Contracts.Spine.SpineSelection
 
 /-! Independently compiled spine row declarations. -/
 
@@ -17,16 +17,17 @@ variable {data : Data.{u}}
 
 variable [FactSystem (Input BranchState Presentation presentation data)]
 
-/-! ## Contraction criticality (no manuscript label; not a manuscript statement)
+/-! ## Node `[12]`: context-universality for target-complete identifications
 
-Contract one edge whose common neighbours are not cubic.  Avoidance of the
-accepted quadrilateral makes that common neighbour unique; hence contraction
-preserves the cubic baseline.  Selection minimality supplies an accepted
-cycle of the contraction.  Its two incidences at the contracted vertex either
-lift on one side, contradicting avoidance, or are mixed and splice into a
-power-of-two severed return. -/
+`lem:context-universality` (tex 6106), at G's own boundaried pieces.  The row
+reads node `[11]` (`K .degreeProfileFibres`, the diagram's edge `[11] → [12]`):
+an identification made by an admissible quotient of G's declared coordinates
+stays in one boundary-degree fibre and has the same target response against
+every boundaried context, so it is target-complete; and an identification valid
+only at G's own outside context is target-defective.  Branch D's terminal
+`[37]` closes against this fact. -/
 omit [FactSystem (Input BranchState Presentation presentation data)] in
-@[reducible] noncomputable def contractionCriticalRow :
+@[reducible] noncomputable def targetCompleteContextUniversalityRow :
     @AtomicStrategy (Input BranchState Presentation presentation data) _
       (instFactSystem (BranchState := BranchState)
         (Presentation := Presentation) (presentation := presentation)
@@ -38,18 +39,17 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     (instFactSystem (BranchState := BranchState)
       (Presentation := Presentation) (presentation := presentation)
       (data := data))
-    `Hypostructure.Graph.Strategy.Spine.contractionCritical
-    { Requires := [K .selection, K .cubicBaseline]
-      Produces := [K .contractionCritical]
-      requiresUnique := by key_fresh
+    `Hypostructure.Graph.Strategy.Spine.targetCompleteContextUniversality
+    { Requires := [K .degreeProfileFibres]
+      Produces := [K .targetCompleteContextUniversality]
+      requiresUnique := by simp
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
-      .cons (key := K .contractionCritical)
-        ⟨Contracts.Spine.contractionCritical_of_selection data.toParameters
-          inputs.current.object inputs.current.baseline
-          (inputs.get (K .selection)).down (inputs.get (K .cubicBaseline)).down
-          data.lengthOK_iff_powerOfTwo⟩
+      .cons (key := K .targetCompleteContextUniversality)
+        ⟨Contracts.Spine.targetCompleteContextUniversality_of_degreeProfileFibres
+          data.toParameters inputs.current.object
+          (inputs.get (K .degreeProfileFibres)).down⟩
         .nil)
     0 0
 

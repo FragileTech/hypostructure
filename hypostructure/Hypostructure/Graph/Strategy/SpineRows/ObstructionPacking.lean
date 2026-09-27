@@ -19,10 +19,10 @@ variable {data : Data.{u}}
 
 The yes key is `windowFree` (the object has no induced window of the registered
 order), the no key `windowPresent` (it has one); the two are exact complements
-on the same object.  The yes arm closes at node `[16]`: the registered external
-law `thm:p13free` gives an accepted cycle, which the selection denies
-(`cor:p13-exists`).  The closure is the framework's, read off the two committed
-facts by `Incompatible`. -/
+on the same object.  The yes arm closes at node `[16]`: the cited closure law
+`thm:p13free`, read at G from `K .spinePresentationLaws`, gives G an accepted
+cycle (`K .hssTargetCycle`), which the selection denies (`cor:p13-exists`).  The
+closure is the framework's, `runAndCloseIncompatible` against `K .selection`. -/
 
 /-- **Node `[15]`: `G` is `P₁₃`-free?** -/
 noncomputable def windowFreeDichotomy
@@ -42,14 +42,41 @@ noncomputable def windowFreeDichotomy
       · exact ⟨.inl ⟨present⟩⟩))
     freeFresh presentFresh
 
-/-- **Node `[16]`: the HSS theorem gives a target cycle.**  The registered
-external law `data.freeForcesTarget` (`thm:p13free`) turns the yes arm of node
-`[15]` into an accepted cycle at the baseline, which the selection denies. -/
-noncomputable instance instIncompatibleSelectionWindowFree :
+/-- **Node `[16]`: the HSS theorem gives a target cycle.**  On the yes arm of
+node `[15]` the row reads the cited closure law `thm:p13free` at G
+(`K .spinePresentationLaws`) and G's window-freeness (`K .windowFree`), and
+publishes that G has an accepted cycle. -/
+@[reducible] noncomputable def hssTargetCycleRow :
+    @AtomicStrategy (Input BranchState Presentation presentation data) _
+      (instFactSystem (BranchState := BranchState)
+        (Presentation := Presentation) (presentation := presentation)
+        (data := data)) :=
+  letI : FactSystem (Input BranchState Presentation presentation data) :=
+    instFactSystem (BranchState := BranchState) (Presentation := Presentation)
+      (presentation := presentation) (data := data)
+  @factOnly (Input BranchState Presentation presentation data) _
+    (instFactSystem (BranchState := BranchState)
+      (Presentation := Presentation) (presentation := presentation)
+      (data := data))
+    `Hypostructure.Graph.Strategy.Spine.hssTargetCycle
+    { Requires := [K .spinePresentationLaws, K .windowFree]
+      Produces := [K .hssTargetCycle]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .hssTargetCycle)
+        ⟨(inputs.get (K .spinePresentationLaws)).down.1 inputs.current.baseline
+          (inputs.get (K .windowFree)).down⟩
+        .nil)
+    0 0
+
+/-- **Node `[16]`, the terminal.**  G's accepted cycle contradicts the
+selection's target avoidance. -/
+noncomputable instance instIncompatibleSelectionHssTargetCycle :
     Incompatible (Input BranchState Presentation presentation data)
-      (K .selection) (K .windowFree) where
-  contradiction := fun input selection free =>
-    selection.down.1 (data.freeForcesTarget input.object input.baseline free.down)
+      (K .selection) (K .hssTargetCycle) where
+  contradiction := fun _input selection cycle => selection.down.1 cycle.down
 
 variable [FactSystem (Input BranchState Presentation presentation data)]
 

@@ -80,7 +80,6 @@ noncomputable def selectedTypeAExitFourDischargedRetest
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .remainderNormalized) known]
-    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .typeAReceiverRouting) known]

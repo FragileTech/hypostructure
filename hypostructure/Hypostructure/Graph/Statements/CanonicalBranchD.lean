@@ -48,29 +48,30 @@ open Hypostructure
 universe u
 
 /-- The `∃ test`-body of node `[19]` (`CurvatureRankDropStatement`, tex ~9368
-`lem:full-rank`, rank-drop arm) at the canonical packing it pins. -/
+`lem:full-rank`, rank-drop arm) at the canonical packing and at node `[31]`'s
+surviving family `𝓘₀ = canonicalSurvivingFamily?` it pins: a raw test outside
+`𝓘₀`, determined from a finite part of `𝓘₀`. -/
 def CurvatureRankDropTestSpec (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (test : object.InternalWedge (canonicalRemainder data object)) : Prop :=
   let packing := canonicalWindowPacking data object
   let support := object.remainderSupport packing
   let family := object.internalWedgeFamily support
-  object.IsWindowPacking data.windowOrder packing ∧
-    packing.card = object.windowPackingNumber data.windowOrder ∧
-    remainderCurvatureTargetRank data object packing <
-        remainderWedgeSupply object packing ∧
-    test ∈ family ∧
-      ∃ determiners : Set (object.InternalWedge support),
-        determiners ⊆ ↑family ∧ determiners.Finite ∧
-          test ∉ determiners ∧
-            ∃ declared : Graph.DeclaredQuotient
-              (Graph.MinimumDegreeAtLeast data.threshold)
-              (Graph.HasCycleWithLength data.LengthOK) object family
-              (Graph.FiniteObject.internalWedgeSupport
-                (region := support)),
-              declared.toRankQuotient.FunctionalOn ↑family ∧
-                declared.toRankQuotient.RankReducingOn ↑family ∧
-                  declared.toRankQuotient.Determines test determiners
+  remainderCurvatureTargetRank data object packing <
+      remainderWedgeSupply object packing ∧
+    ∃ independent, canonicalSurvivingFamily? data object = some independent ∧
+      test ∈ family ∧ test ∉ independent ∧
+        ∃ determiners : Set (object.InternalWedge support),
+          determiners ⊆ ↑independent ∧ determiners.Finite ∧
+            test ∉ determiners ∧
+              ∃ declared : Graph.DeclaredQuotient
+                (Graph.MinimumDegreeAtLeast data.threshold)
+                (Graph.HasCycleWithLength data.LengthOK) object family
+                (Graph.FiniteObject.internalWedgeSupport
+                  (region := support)),
+                declared.toRankQuotient.FunctionalOn ↑family ∧
+                  declared.toRankQuotient.RankReducingOn ↑family ∧
+                    declared.toRankQuotient.Determines test determiners
 
 /-- Node `[19]` is literally the existence of its canonical-packing test. -/
 theorem curvatureRankDrop_iff_exists_testSpec (data : Parameters)
@@ -78,10 +79,10 @@ theorem curvatureRankDrop_iff_exists_testSpec (data : Parameters)
     CurvatureRankDropStatement data object ↔
       ∃ test, CurvatureRankDropTestSpec data object test := by
   constructor
-  · rintro ⟨packing, rfl, valid, card, drop, test, member, rest⟩
-    exact ⟨test, valid, card, drop, member, rest⟩
-  · rintro ⟨test, valid, card, drop, member, rest⟩
-    exact ⟨_, rfl, valid, card, drop, test, member, rest⟩
+  · rintro ⟨below, independent, eq, test, member, outside, rest⟩
+    exact ⟨test, below, independent, eq, member, outside, rest⟩
+  · rintro ⟨test, below, independent, eq, member, outside, rest⟩
+    exact ⟨below, independent, eq, test, member, outside, rest⟩
 
 /-- **The determined test of node `[19]`**: `Classical.choose` of node
 `[19]`'s `∃ test` at the canonical packing. -/

@@ -22,52 +22,27 @@ universe u v
 /-- **Nodes `[25]`--`[27]`, `sec:remainder`.**  The remainder `R₀` of G's fixed
 maximum packing `P₀` carries no induced window (it would extend the packing), and no subset
 of it induces a baseline subgraph: that subgraph would be window-free, so the
-cited closure law gives it an accepted cycle, which is a cycle of the
-target-avoiding object. -/
+cited closure law (`thm:p13free`, read at `G[S]` from `K .spinePresentationLaws`)
+gives it an accepted cycle, which is a cycle of the target-avoiding object. -/
 theorem remainderNormalized_of_selection
     {BranchState : Graph.FiniteObject.{u} → Type v}
     {Presentation : Type} {presentation : Presentation}
     (data : Parameters) (object : Graph.FiniteObject.{u})
-    (freeForcesTarget : ∀ other : Graph.FiniteObject.{u},
-      Graph.MinimumDegreeAtLeast data.threshold other →
-      Graph.InducedPathFree other data.windowOrder →
-      Graph.HasCycleWithLength data.LengthOK other)
+    (freeForcesTarget : ∀ support : Finset object.Vertex,
+      Graph.MinimumDegreeAtLeast data.threshold (object.induce support) →
+      Graph.InducedPathFree (object.induce support) data.windowOrder →
+      Graph.HasCycleWithLength data.LengthOK (object.induce support))
     (selection : SelectionStatement BranchState Presentation presentation data object) :
     RemainderNormalizedStatement data object :=
-  fun _support inside =>
+  fun support inside =>
     ⟨object.not_inducesWindow_of_subset_remainderSupport
         (canonicalWindowPacking_spec data object).2.2 inside,
-      object.not_baseline_induce_of_subset_remainderSupport
-        freeForcesTarget selection.1 (canonicalWindowPacking_spec data object).2.2
-        inside⟩
-
-/-- **Remainder relabelling entropy.**  Every support inside a normalized
-remainder is window-free and core-free at every sub-support, so its labelled
-relabelling orbit gives `|S|! ≤ remainderStateCount · |Stab|`. -/
-theorem remainderRelabelingEntropy_of_normalized (data : Parameters)
-    (object : Graph.FiniteObject.{u})
-    (normalized : RemainderNormalizedStatement data object) :
-    RemainderRelabelingEntropyStatement data object :=
-  fun support inside => by
-    have windowFree : ∀ inner : Finset object.Vertex,
-        inner ⊆ support →
-        ¬ object.InducesWindow data.windowOrder inner := by
-      intro inner innerInside
-      exact (normalized inner
-        (innerInside.trans inside)).1
-    have coreFree : ∀ inner : Finset object.Vertex,
-        inner ⊆ support →
-        ¬ Graph.MinimumDegreeAtLeast data.threshold (object.induce inner) := by
-      intro inner innerInside
-      exact (normalized inner
-        (innerInside.trans inside)).2
-    have orbit :=
-      Graph.LabelledRelabeling.factorial_le_remainderStateCount_mul_stabilizer
-        object support data.windowOrder data.threshold windowFree coreFree
-    dsimp only at orbit
-    rw [Graph.FiniteObject.positiveDeficiency_labelledInduce,
-      Graph.FiniteObject.card_edgeSet_labelledInduce] at orbit
-    exact orbit
+      fun baseline => selection.1 (object.hasCycleWithLength_of_induce support
+        (freeForcesTarget support baseline
+          (object.inducedPathFree_induce_of_forall fun _inner contained =>
+            object.not_inducesWindow_of_subset_remainderSupport
+              (canonicalWindowPacking_spec data object).2.2
+              (contained.trans inside))))⟩
 
 /-- **Nodes `[28]`--`[29]`, `lem:surplus-aware-window-stub`.**  On the baseline,
 `def⁺(R) ≤ e(R,W)` pointwise-summed, and the boundary incidences plus the

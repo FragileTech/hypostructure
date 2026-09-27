@@ -336,13 +336,6 @@ inductive Key where
   /-- The registered problem presentation identifies the spine threshold with
   the paper's cubic baseline. -/
   | cubicBaseline
-  /-- A two-terminal closure lemma with every piece condition bound internally.
-  The manuscript has no such lemma and no label for it. -/
-  | gadgetClosure
-  /-- Contracting an edge with no common cubic neighbour exposes a
-  power-of-two return through that edge.  The manuscript has no such lemma and
-  no label for it. -/
-  | contractionCritical
   /-- Nodes `[5]`--`[7]`: the return-length set is disjoint from the shifted
   accepted set at every oriented edge.  This is the return-set form of target
   avoidance, the standing invariant the rest of the spine consumes. -/
@@ -1505,10 +1498,6 @@ inductive Key where
   The witnesses are derived on the incoming residual; they are not supplied as
   routing data. -/
   | hotColdPartition
-  /-- Exact finite orbit lower bound for every normalized remainder support. -/
-  | remainderRelabelingEntropy
-  /-- Exact finite invariant-state cap under relabellings fixing packed windows. -/
-  | relabelingDensityCap
   /-- Node `[130]`, blocked/dependent arm: a concrete `Π`, its declared
   response family `ℛ_Π`, and the rank-reducing attempted quotient consumed by
   node `[132]`. -/
@@ -1586,6 +1575,22 @@ inductive Key where
   /-- Node `[175]`, no arm: every selected corridor meets a high-degree
   vertex. -/
   | coldNoPositiveGerm
+  -- SD keys (final pass)
+  /-- Node `[11]`, `lem:degree-profile-fibres`: an admissible quotient of G's
+  declared coordinates never identifies two realizations in different
+  boundary-degree fibres. -/
+  | degreeProfileFibres
+  /-- Node `[12]`, `lem:context-universality`: identifications of G's admissible
+  quotients are target-complete, and an identification valid only at G's own
+  outside context is target-defective. -/
+  | targetCompleteContextUniversality
+  /-- The presentation laws the spine reads (the HSS closure law at G and its
+  induced subgraphs, the dyadic target, the scale family, the net-cap slack,
+  the barrier-table label semantics), published once at the entry. -/
+  | spinePresentationLaws
+  /-- Node `[16]`, `thm:p13free` on the window-free arm: G has an accepted
+  cycle. -/
+  | hssTargetCycle
   deriving DecidableEq
 
 /-- The value schema of each spine fact, stated of the *object* alone.
@@ -1603,10 +1608,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       SelectionStatement BranchState Presentation presentation data.toParameters object
   | .cubicBaseline, _object =>
       CubicBaselineStatement data.toParameters
-  | .gadgetClosure, object =>
-      GadgetClosureStatement data.toParameters object
-  | .contractionCritical, object =>
-      ContractionCriticalStatement data.toParameters object
   | .returnAvoidance, object =>
       ReturnAvoidanceStatement data.toParameters object
   | .mersenneReturn, object =>
@@ -2282,10 +2283,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       ActiveSurplusDemandsStatement data.toParameters object
   | .hotColdPartition, object =>
       HotColdWindowStatement data.toParameters object
-  | .remainderRelabelingEntropy, object =>
-      RemainderRelabelingEntropyStatement data.toParameters object
-  | .relabelingDensityCap, object =>
-      RelabelingDensityCapStatement data.toParameters object
   -- F4 keys
   | .freePairCountFails, object =>
       FreePairCountFailsStatement data.toParameters object
@@ -2332,6 +2329,15 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
   -- F5 keys
   | .coldNoPositiveGerm, object =>
       ColdNoPositiveGermStatement data.toParameters object
+  -- SD keys (final pass)
+  | .degreeProfileFibres, object =>
+      DegreeProfileFibresStatement data.toParameters object
+  | .targetCompleteContextUniversality, object =>
+      TargetCompleteContextUniversalityStatement data.toParameters object
+  | .spinePresentationLaws, object =>
+      SpinePresentationLawsStatement data.toParameters data.windowBarrierLabel object
+  | .hssTargetCycle, object =>
+      HssTargetCycleStatement data.toParameters object
 
 /-- Audit labels.  They are diagnostics; every routing and lookup decision
 compares exact keys. -/
@@ -2344,8 +2350,6 @@ def label : Key → String
   | .windowShadowSingletonTail => "windowShadowSingletonTail"
   | .selection => "selection"
   | .cubicBaseline => "cubicBaseline"
-  | .gadgetClosure => "gadgetClosure"
-  | .contractionCritical => "contractionCritical"
   | .returnAvoidance => "returnAvoidance"
   | .mersenneReturn => "mersenneReturn"
   | .noProperBaseline => "noProperBaseline"
@@ -2623,8 +2627,6 @@ def label : Key → String
   | .sparseSurplusSurvivor => "sparseSurplusSurvivor"
   | .activeSurplusDemands => "activeSurplusDemands"
   | .hotColdPartition => "hotColdPartition"
-  | .remainderRelabelingEntropy => "remainderRelabelingEntropy"
-  | .relabelingDensityCap => "relabelingDensityCap"
   | .dependentPairFamily => "dependentPairFamily"
   | .independentPairFamily => "independentPairFamily"
   | .mixedSparseSpineDependence => "mixedSparseSpineDependence"
@@ -2656,6 +2658,11 @@ def label : Key → String
   | .route8UnpaidWitnessFree => "route8UnpaidWitnessFree"
   -- F5 keys
   | .coldNoPositiveGerm => "coldNoPositiveGerm"
+  -- SD keys (final pass)
+  | .degreeProfileFibres => "degreeProfileFibres"
+  | .targetCompleteContextUniversality => "targetCompleteContextUniversality"
+  | .spinePresentationLaws => "spinePresentationLaws"
+  | .hssTargetCycle => "hssTargetCycle"
 
 /-! ### Label pins
 
@@ -2673,7 +2680,6 @@ example : label .windowShadowHitExcluded = "windowShadowHitExcluded" := rfl
 example : label .windowShadowHitCycle = "windowShadowHitCycle" := rfl
 example : label .windowShadowSingletonTail = "windowShadowSingletonTail" := rfl
 example : label .selection = "selection" := rfl
-example : label .contractionCritical = "contractionCritical" := rfl
 example : label .returnAvoidance = "returnAvoidance" := rfl
 example : label .noProperBaseline = "noProperBaseline" := rfl
 example : label .tightEndpoint = "tightEndpoint" := rfl
@@ -2998,6 +3004,11 @@ example : label .route8UnpaidTwoCarrier = "route8UnpaidTwoCarrier" := rfl
 example : label .route8UnpaidWitnessFree = "route8UnpaidWitnessFree" := rfl
 -- F5 keys
 example : label .coldNoPositiveGerm = "coldNoPositiveGerm" := rfl
+-- SD keys (final pass)
+example : label .degreeProfileFibres = "degreeProfileFibres" := rfl
+example : label .targetCompleteContextUniversality = "targetCompleteContextUniversality" := rfl
+example : label .spinePresentationLaws = "spinePresentationLaws" := rfl
+example : label .hssTargetCycle = "hssTargetCycle" := rfl
 end LabelPins
 
 /-- The value schema at a residual: the object-level statement, read at the
@@ -3021,8 +3032,6 @@ def idx : Key → Nat
   | .windowShadowSingletonTail => 513
   | .selection => 0
   | .cubicBaseline => 221
-  | .gadgetClosure => 500
-  | .contractionCritical => 439
   | .returnAvoidance => 1
   | .mersenneReturn => 606
   | .windowFree => 607
@@ -3304,8 +3313,6 @@ def idx : Key → Nat
   | .skeletonDominates => 206
   | .exactResponseProfile => 207
   | .targetRankCircuit => 210
-  | .remainderRelabelingEntropy => 501
-  | .relabelingDensityCap => 502
   -- F4 keys
   | .freePairCountFails => 1600
   | .blockedPairCountFails => 1601
@@ -3331,6 +3338,11 @@ def idx : Key → Nat
   | .route8UnpaidWitnessFree => 1404
   -- F5 keys
   | .coldNoPositiveGerm => 1800
+  -- SD keys (final pass)
+  | .degreeProfileFibres => 2300
+  | .targetCompleteContextUniversality => 2301
+  | .spinePresentationLaws => 2302
+  | .hssTargetCycle => 2303
 
 /-- Left inverse of `idx`.  Writing it out is also what checks the numbering:
 two keys sharing an index would make `ofIdx_idx` unprovable. -/
@@ -3343,8 +3355,6 @@ def ofIdx : Nat → Key
   | 513 => .windowShadowSingletonTail
   | 0 => .selection
   | 221 => .cubicBaseline
-  | 500 => .gadgetClosure
-  | 439 => .contractionCritical
   | 1 => .returnAvoidance
   | 606 => .mersenneReturn
   | 607 => .windowFree
@@ -3390,8 +3400,6 @@ def ofIdx : Nat → Key
   | 11 => .barrierOverflow
   | 12 => .densityCap
   | 13 => .remainderNormalized
-  | 501 => .remainderRelabelingEntropy
-  | 502 => .relabelingDensityCap
   | 14 => .boundaryDemand
   | 15 => .stubSupply
   | 16 => .wedgeSupply
@@ -3653,6 +3661,11 @@ def ofIdx : Nat → Key
   | 1404 => .route8UnpaidWitnessFree
   -- F5 keys
   | 1800 => .coldNoPositiveGerm
+  -- SD keys (final pass)
+  | 2300 => .degreeProfileFibres
+  | 2301 => .targetCompleteContextUniversality
+  | 2302 => .spinePresentationLaws
+  | 2303 => .hssTargetCycle
   | _ => .selection
 
 theorem ofIdx_idx (k : Key) : ofIdx (idx k) = k := by
@@ -3681,10 +3694,6 @@ def name : Key → Lean.Name
   | .selection => .num (.str `Hypostructure.Graph.Strategy.Spine "selection") 0
   | .cubicBaseline =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "cubicBaseline") 221
-  | .gadgetClosure =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "gadgetClosure") 500
-  | .contractionCritical =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "contractionCritical") 439
   | .returnAvoidance =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "returnAvoidance") 1
   | .mersenneReturn =>
@@ -4362,11 +4371,6 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "exactResponseProfile") 207
   | .targetRankCircuit =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "targetRankCircuit") 210
-  | .remainderRelabelingEntropy =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine
-        "remainderRelabelingEntropy") 501
-  | .relabelingDensityCap =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "relabelingDensityCap") 502
   -- F4 keys
   | .freePairCountFails =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "freePairCountFails") 1600
@@ -4413,6 +4417,15 @@ def name : Key → Lean.Name
   -- F5 keys
   | .coldNoPositiveGerm =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "coldNoPositiveGerm") 1800
+  -- SD keys (final pass)
+  | .degreeProfileFibres =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "degreeProfileFibres") 2300
+  | .targetCompleteContextUniversality =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "targetCompleteContextUniversality") 2301
+  | .spinePresentationLaws =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "spinePresentationLaws") 2302
+  | .hssTargetCycle =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "hssTargetCycle") 2303
 
 /-- The written-out names agree with `label` and `idx`.  `name` is spelled out
 so that reducing it in a downstream audit proof costs one unfolding rather
