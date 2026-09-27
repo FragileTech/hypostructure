@@ -96,6 +96,6 @@ noncomputable def Assembly.Internal.strictSurplusIndependent
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           firstFailure (by key_fresh)
-      exact selectedPairCodeChain enveloped
+      exact selectedPairCodeChainIndependent enveloped
 
 end HypostructureErdos64EG

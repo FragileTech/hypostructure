@@ -97,9 +97,9 @@ noncomputable def selectedSparseSurplusActivation
         key_fresh)
 
 set_option maxHeartbeats 8000000 in
-/-- Nodes `[178]`--`[180]`, the pair-code chain on any ledger that already
-carries the node-`[178]` first failure `K .pairOverlapFirstFailure` (from the
-free side of `[131]` or of `[137]`).  Each paper test is a `Decision`; each
+/-- Nodes `[178]`--`[180]`, the pair-code chain entered from the free side of `[131]` (node `[130]`'s independent arm): on
+any ledger that carries the node-`[178]` first failure
+`K .pairOverlapFirstFailure` and every key of that entry arm.  Each paper test is a `Decision`; each
 uncovered implication is retained at the open node `[182]`, each covered Type B
 alternative returns with its own `[179]`/`[180]` source key, and the
 full-modulus arithmetic arm closes against node `[1]` through the framework. -/
@@ -107,7 +107,7 @@ full-modulus arithmetic arm closes against node `[1]` through the framework. -/
 -- EG-NODE [179] covered uncrossing: target/sparse-exit/Type B, or a graph-realized serial demand system
 -- EG-NODE [180] covered increment split: periodic sparse-exit/Type B, or full-modulus arithmetic gives an actual power-of-two cycle
 -- EG-NODE [182] OPEN: the exact [178], [179], or [180] implication not supplied by the manuscript
-noncomputable def selectedPairCodeChain
+noncomputable def selectedPairCodeChainIndependent
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .pairOverlapFirstFailure) known]
@@ -159,7 +159,10 @@ noncomputable def selectedPairCodeChain
     [FactKeys.Has (K .targetCompleteContextUniversality) known]
     [FactKeys.Has (K .tightEndpoint) known]
     [FactKeys.Has (K .uncompressible) known]
-    [FactKeys.Has (K .windowPresent) known] :
+    [FactKeys.Has (K .windowPresent) known]
+    [FactKeys.Has (K .independentPairFamily) known]
+    [FactKeys.Has (K .freePairCountFails) known]
+    [FactKeys.Has (K .freePairCodeUnrealized) known] :
     StrictSurplusBoundaryResult selected := by
   let overlapSystem :=
     (pairOverlapSystemRow (BranchState := BranchState)
@@ -204,7 +207,8 @@ noncomputable def selectedPairCodeChain
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile)
                   (data := spineData)).run earlyHistory (by key_fresh)
-              exact Or.inr (Or.inl (pairTypeBSystemReturn typeBHistory))
+              exact Or.inr (Or.inl (Or.inl
+                (pairTypeBIndependentSystemReturn typeBHistory)))
           | .right noEarlyHistory =>
               let serialHistory :=
                 (pairSerialDemandSystemRow (BranchState := BranchState)
@@ -231,7 +235,173 @@ noncomputable def selectedPairCodeChain
                           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                           (presentation := erdosReceiverLoadProfile)
                           (data := spineData)).run earlyHistory (by key_fresh)
-                      exact Or.inr (Or.inl (pairTypeBIncrementReturn typeBHistory))
+                      exact Or.inr (Or.inl (Or.inr (Or.inl
+                        (pairTypeBIndependentIncrementReturn typeBHistory))))
+                  | .right noEarlyHistory =>
+                      let arithmeticHistory :=
+                        (pairSerialArithmeticRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile)
+                          (data := spineData)).run noEarlyHistory (by key_fresh)
+                      let closedHistory :=
+                        (pairPowerOfTwoCycleRow (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile)
+                          (data := spineData)).runAndCloseIncompatible
+                            arithmeticHistory (K .selection)
+                            (K .pairPowerOfTwoCycle) (by key_fresh)
+                            (by key_fresh)
+                      exact (closedHistory.elimClosed (by infer_instance)).elim
+
+set_option maxHeartbeats 8000000 in
+/-- Nodes `[178]`--`[180]`, the pair-code chain entered from the free side of `[137]` (node `[130]`'s dependent arm): on
+any ledger that carries the node-`[178]` first failure
+`K .pairOverlapFirstFailure` and every key of that entry arm.  Each paper test is a `Decision`; each
+uncovered implication is retained at the open node `[182]`, each covered Type B
+alternative returns with its own `[179]`/`[180]` source key, and the
+full-modulus arithmetic arm closes against node `[1]` through the framework. -/
+-- EG-NODE [178] pair-code unrealized residual: conditional factorization gives a minimal connected pair overlap obstruction
+-- EG-NODE [179] covered uncrossing: target/sparse-exit/Type B, or a graph-realized serial demand system
+-- EG-NODE [180] covered increment split: periodic sparse-exit/Type B, or full-modulus arithmetic gives an actual power-of-two cycle
+-- EG-NODE [182] OPEN: the exact [178], [179], or [180] implication not supplied by the manuscript
+noncomputable def selectedPairCodeChainDependent
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .pairOverlapFirstFailure) known]
+    [FactKeys.Has (K .noProperBaseline) known]
+    [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .sparseSurplusSurvivor) known]
+    [FactKeys.Has (K .surplusAbove) known]
+    [FactKeys.Has (K .cubicBaseline) known]
+    (systemFresh : K .pairOverlapSystem ∉ known := by key_fresh)
+    (factorizationFresh : K .pairConditionalFactorization ∉ known := by key_fresh)
+    (factorizationFailsFresh : K .pairFactorizationFails ∉ known := by key_fresh)
+    (residualFresh : K .pairConditionalFactorizationResidual ∉ known := by key_fresh)
+    (overlapFresh : K .pairFailureOverlap ∉ known := by key_fresh)
+    (returnsFresh : K .pairDemandReturns ∉ known := by key_fresh)
+    (realizabilityFresh : K .pairSystemRealizability ∉ known := by key_fresh)
+    (realizabilityFailsFresh : K .pairRealizabilityFails ∉ known := by key_fresh)
+    (systemEarlyFresh : K .pairSystemEarlyOutcome ∉ known := by key_fresh)
+    (systemNoEarlyFresh : K .pairSystemNoEarlyOutcome ∉ known := by key_fresh)
+    (serialFresh : K .pairSerialDemandSystem ∉ known := by key_fresh)
+    (fanEntryFresh : K .typeBFanEntry ∉ known := by key_fresh)
+    (incrementFresh : K .pairIncrementCovered ∉ known := by key_fresh)
+    (incrementFailsFresh : K .pairIncrementFails ∉ known := by key_fresh)
+    (incrementEarlyFresh : K .pairIncrementEarlyOutcome ∉ known := by key_fresh)
+    (incrementNoEarlyFresh : K .pairIncrementNoEarlyOutcome ∉ known := by key_fresh)
+    (arithmeticFresh : K .pairSerialArithmetic ∉ known := by key_fresh)
+    (cycleFresh : K .pairPowerOfTwoCycle ∉ known := by key_fresh)
+    (closedFresh : closed ∉ known := by key_fresh)
+    [FactKeys.Has (K .activeSurplusDemands) known]
+    [FactKeys.Has (K .activeSurplusFamily) known]
+    [FactKeys.Has (K .baselineSpineDemand) known]
+    [FactKeys.Has (K .cycleRankConstraint) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .exactCubicBaselineBudget) known]
+    [FactKeys.Has (K .incrementalSkeletonRoom) known]
+    [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .mixedSparseSpineDependence) known]
+    [FactKeys.Has (K .openPortSuppression) known]
+    [FactKeys.Has (K .openPortSuppressionSafe) known]
+    [FactKeys.Has (K .replacementExclusion) known]
+    [FactKeys.Has (K .returnAvoidance) known]
+    [FactKeys.Has (K .singleOpenPortSuppressionWitness) known]
+    [FactKeys.Has (K .skeletonDominates) known]
+    [FactKeys.Has (K .slackIndependent) known]
+    [FactKeys.Has (K .sparsePortActivation) known]
+    [FactKeys.Has (K .sparseSlackSurplus) known]
+    [FactKeys.Has (K .sparseUpperEnvelope) known]
+    [FactKeys.Has (K .suppressedFamilyCriticalCycle) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .tightEndpoint) known]
+    [FactKeys.Has (K .uncompressible) known]
+    [FactKeys.Has (K .windowPresent) known]
+    [FactKeys.Has (K .dependentPairFamily) known]
+    [FactKeys.Has (K .pairDegreeProfileFibres) known]
+    [FactKeys.Has (K .pairNoProfileObstruction) known]
+    [FactKeys.Has (K .pairNoResponseObstruction) known]
+    [FactKeys.Has (K .blockedPairNoExit) known]
+    [FactKeys.Has (K .canonicalBlockerRoute) known]
+    [FactKeys.Has (K .canonicalPairLedger) known]
+    [FactKeys.Has (K .capacityTokenLedger) known]
+    [FactKeys.Has (K .blockedPairEntropySetup) known]
+    [FactKeys.Has (K .blockedPairCountFails) known]
+    [FactKeys.Has (K .blockedPairCodeUnrealized) known] :
+    StrictSurplusBoundaryResult selected := by
+  let overlapSystem :=
+    (pairOverlapSystemRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      history (by key_fresh)
+  match pairConditionalFactorizationDichotomy (data := spineData)
+      overlapSystem (by key_fresh) (by key_fresh) with
+  | .right failsHistory =>
+      let residualHistory :=
+        (pairFactorizationResidualRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run failsHistory (by key_fresh)
+      exact Or.inr (Or.inr (pairConditionalFactorizationReturn residualHistory))
+  | .left factorizationHistory =>
+      let overlapFailure :=
+        (pairFailureOverlapRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run factorizationHistory (by key_fresh)
+      let demandReturns :=
+        (pairDemandReturnsRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile)
+          (data := spineData)).run overlapFailure (by key_fresh)
+      match pairSystemRealizabilityDichotomy (data := spineData)
+          demandReturns (by key_fresh) (by key_fresh) with
+      | .right failsHistory =>
+          let residualHistory :=
+            (pairRealizabilityResidualRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile)
+              (data := spineData)).run failsHistory (by key_fresh)
+          exact Or.inr (Or.inr (pairConditionalFactorizationReturn residualHistory))
+      | .left coveredHistory =>
+          match pairSystemOutcomeDichotomy (data := spineData)
+              coveredHistory (by key_fresh) (by key_fresh) with
+          | .left earlyHistory =>
+              let typeBHistory :=
+                (pairSystemEarlyTypeBEntryRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run earlyHistory (by key_fresh)
+              exact Or.inr (Or.inl (Or.inr (Or.inr (Or.inl
+                (pairTypeBDependentSystemReturn typeBHistory)))))
+          | .right noEarlyHistory =>
+              let serialHistory :=
+                (pairSerialDemandSystemRow (BranchState := BranchState)
+                  (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                  (presentation := erdosReceiverLoadProfile)
+                  (data := spineData)).run noEarlyHistory (by key_fresh)
+              match pairIncrementCoveredDichotomy (data := spineData)
+                  serialHistory (by key_fresh) (by key_fresh) with
+              | .right failsHistory =>
+                  let residualHistory :=
+                    (pairIncrementResidualRow (BranchState := BranchState)
+                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                      (presentation := erdosReceiverLoadProfile)
+                      (data := spineData)).run failsHistory (by key_fresh)
+                  exact Or.inr (Or.inr
+                    (pairConditionalFactorizationReturn residualHistory))
+              | .left incrementHistory =>
+                  match pairIncrementOutcomeDichotomy (data := spineData)
+                      incrementHistory (by key_fresh) (by key_fresh) with
+                  | .left earlyHistory =>
+                      let typeBHistory :=
+                        (pairIncrementEarlyTypeBEntryRow
+                          (BranchState := BranchState)
+                          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                          (presentation := erdosReceiverLoadProfile)
+                          (data := spineData)).run earlyHistory (by key_fresh)
+                      exact Or.inr (Or.inl (Or.inr (Or.inr (Or.inr
+                        (pairTypeBDependentIncrementReturn typeBHistory)))))
                   | .right noEarlyHistory =>
                       let arithmeticHistory :=
                         (pairSerialArithmeticRow (BranchState := BranchState)

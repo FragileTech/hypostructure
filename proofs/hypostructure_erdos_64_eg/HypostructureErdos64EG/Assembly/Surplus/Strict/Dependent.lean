@@ -137,7 +137,7 @@ noncomputable def Assembly.Internal.strictSurplusDependent
                       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                       (presentation := erdosReceiverLoadProfile)
                       (data := spineData)).run room (by key_fresh)
-                  exact selectedPairCodeChain dominated
+                  exact selectedPairCodeChainDependent dominated
               | .left sandwichHistory =>
                   let fibres :=
                     (roleFibrePartitionRow (BranchState := BranchState)
