@@ -1,4 +1,4 @@
-import HypostructureErdos64EG.Assembly.Residuals
+import HypostructureErdos64EG.Assembly.Residuals.ArmBlocks
 
 /-!
 # Assembly: the `ColdBranchClosedOutcome` residual, split by fact set
@@ -240,120 +240,6 @@ abbrev ColdBranchClosedExitArm (selected : EGInput.{u}) : Prop :=
   ColdBranchClosedExitGermCanonicalCharged selected ∨
   ColdBranchClosedExitGermCanonicalSubcubic selected
 
-/-- Builds the `E1` disjunct of `ColdBranchClosedEntropyArm`: one `get` per fact
-of block `E1`. -/
-theorem coldBranchClosedEntropyHighCapReturn
-    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .entropyCapBound) known]
-    [FactKeys.Has (K .entropyPackageDemand) known]
-    [FactKeys.Has (K .remainderEntropyHigh) known]
-    : ColdBranchClosedEntropyArm selected :=
-  Or.inl ⟨(history.get (K .entropyCapBound)).down,
-    (history.get (K .entropyPackageDemand)).down,
-    (history.get (K .remainderEntropyHigh)).down⟩
-/-- Builds the `E2` disjunct of `ColdBranchClosedEntropyArm`: one `get` per fact
-of block `E2`. -/
-theorem coldBranchClosedEntropyLowNonrepetitiveReturn
-    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .localTypeCoordinateNonrepetitive) known]
-    [FactKeys.Has (K .remainderEntropyLow) known]
-    : ColdBranchClosedEntropyArm selected :=
-  Or.inr (Or.inl ⟨(history.get (K .localTypeCoordinateNonrepetitive)).down,
-    (history.get (K .remainderEntropyLow)).down⟩)
-/-- Builds the `E3` disjunct of `ColdBranchClosedEntropyArm`: one `get` per fact
-of block `E3`. -/
-theorem coldBranchClosedEntropyLowWedgeFreeReturn
-    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .dominantRootedType) known]
-    [FactKeys.Has (K .dominantRootedTypeWedgeFree) known]
-    [FactKeys.Has (K .localTypeCoordinateRepetitive) known]
-    [FactKeys.Has (K .remainderEntropyLow) known]
-    : ColdBranchClosedEntropyArm selected :=
-  Or.inr (Or.inr (Or.inl ⟨(history.get (K .dominantRootedType)).down,
-    (history.get (K .dominantRootedTypeWedgeFree)).down,
-    (history.get (K .localTypeCoordinateRepetitive)).down,
-    (history.get (K .remainderEntropyLow)).down⟩))
-/-- Builds the `E4` disjunct of `ColdBranchClosedEntropyArm`: one `get` per fact
-of block `E4`. -/
-theorem coldBranchClosedEntropyLowWedgeTypeReturn
-    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .dominantRootedType) known]
-    [FactKeys.Has (K .dominantRootedWedgeType) known]
-    [FactKeys.Has (K .independentObstructionTranslates) known]
-    [FactKeys.Has (K .localTypeCoordinateRepetitive) known]
-    [FactKeys.Has (K .remainderEntropyLow) known]
-    : ColdBranchClosedEntropyArm selected :=
-  Or.inr (Or.inr (Or.inr (⟨(history.get (K .dominantRootedType)).down,
-    (history.get (K .dominantRootedWedgeType)).down,
-    (history.get (K .independentObstructionTranslates)).down,
-    (history.get (K .localTypeCoordinateRepetitive)).down,
-    (history.get (K .remainderEntropyLow)).down⟩)))
-/-- Builds the `W1` disjunct of `ColdBranchClosedWindowArm`: one `get` per fact
-of block `W1`. -/
-theorem coldBranchClosedWindowRealizedThetaAtOrAboveReturn
-    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .coldMassBounded) known]
-    [FactKeys.Has (K .coldRoute8AtOrAbove) known]
-    [FactKeys.Has (K .densityCap) known]
-    [FactKeys.Has (K .windowPackageRealized) known]
-    : ColdBranchClosedWindowArm selected :=
-  Or.inl ⟨(history.get (K .coldMassBounded)).down,
-    (history.get (K .coldRoute8AtOrAbove)).down,
-    (history.get (K .densityCap)).down,
-    (history.get (K .windowPackageRealized)).down⟩
-/-- Builds the `W2` disjunct of `ColdBranchClosedWindowArm`: one `get` per fact
-of block `W2`. -/
-theorem coldBranchClosedWindowRealizedThetaBelowReturn
-    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .coldRoute8Below) known]
-    [FactKeys.Has (K .windowPackageRealized) known]
-    : ColdBranchClosedWindowArm selected :=
-  Or.inr (Or.inl ⟨(history.get (K .coldRoute8Below)).down,
-    (history.get (K .windowPackageRealized)).down⟩)
-/-- Builds the `W3` disjunct of `ColdBranchClosedWindowArm`: one `get` per fact
-of block `W3`. -/
-theorem coldBranchClosedWindowUnrealizedTauAtOrAboveThetaAtOrAboveReturn
-    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .coldMassBounded) known]
-    [FactKeys.Has (K .coldRoute8AtOrAbove) known]
-    [FactKeys.Has (K .denseDeficiencyAtOrAbove) known]
-    [FactKeys.Has (K .densityCap) known]
-    [FactKeys.Has (K .windowPackageUnrealized) known]
-    : ColdBranchClosedWindowArm selected :=
-  Or.inr (Or.inr (Or.inl ⟨(history.get (K .coldMassBounded)).down,
-    (history.get (K .coldRoute8AtOrAbove)).down,
-    (history.get (K .denseDeficiencyAtOrAbove)).down,
-    (history.get (K .densityCap)).down,
-    (history.get (K .windowPackageUnrealized)).down⟩))
-/-- Builds the `W4` disjunct of `ColdBranchClosedWindowArm`: one `get` per fact
-of block `W4`. -/
-theorem coldBranchClosedWindowUnrealizedTauAtOrAboveThetaBelowReturn
-    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .coldRoute8Below) known]
-    [FactKeys.Has (K .denseDeficiencyAtOrAbove) known]
-    [FactKeys.Has (K .windowPackageUnrealized) known]
-    : ColdBranchClosedWindowArm selected :=
-  Or.inr (Or.inr (Or.inr (Or.inl ⟨(history.get (K .coldRoute8Below)).down,
-    (history.get (K .denseDeficiencyAtOrAbove)).down,
-    (history.get (K .windowPackageUnrealized)).down⟩)))
-/-- Builds the `W5` disjunct of `ColdBranchClosedWindowArm`: one `get` per fact
-of block `W5`. -/
-theorem coldBranchClosedWindowUnrealizedTauBelowReturn
-    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .denseDeficiencyBelow) known]
-    [FactKeys.Has (K .windowPackageUnrealized) known]
-    : ColdBranchClosedWindowArm selected :=
-  Or.inr (Or.inr (Or.inr (Or.inr (⟨(history.get (K .denseDeficiencyBelow)).down,
-    (history.get (K .windowPackageUnrealized)).down⟩))))
 /-- Builds the `X1` disjunct of `ColdBranchClosedExitArm`: one `get` per fact
 of block `X1`. -/
 theorem coldBranchClosedExitNoGermChargedReturn
@@ -461,8 +347,10 @@ theorem ColdBranchClosedOutcome_product.toGeneric {selected : EGInput.{u}}
   h.1
 
 /-- The return of `ColdBranchClosedOutcome_product`, parameterised by the arm
-of each family: pass `coldBranchClosed<Block>Return history` for the entropy,
-window and exit arm the path took.  With those, one `get` per fact. -/
+of each family: the entropy and window arms are the path's `EntropyArm` and
+`Route8LanePrefix` (read as `E1`--`E4` and `W1`--`W5`), each block built by
+its `Route8Blocks` `.ret` where the arm's keys are in scope, and the exit arm
+is `coldBranchClosed<Exit>Return history`.  With those, one `get` per fact. -/
 theorem coldBranchClosedProductReturn
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -563,7 +451,10 @@ theorem ColdBranchClosedOutcome_linearDenseAtOrAbove.toGeneric {selected : EGInp
     ColdBranchClosedOutcome selected :=
   h.1
 
-/-- The return of `ColdBranchClosedOutcome_linearDenseAtOrAbove`: one `get` per fact. -/
+/-- The return of `ColdBranchClosedOutcome_linearDenseAtOrAbove`: one `get` per
+fact. The facts of the upstream arm are read from its block
+(`DenseTauBlock_atOrAbove`), built by the block's `.ret` with one `get` per key
+on the same ledger. -/
 theorem coldBranchClosed_linearDenseAtOrAboveReturn
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -631,8 +522,8 @@ theorem coldBranchClosed_linearDenseAtOrAboveReturn
     [FactKeys.Has (K .coldMassLinear) known]
     [FactKeys.Has (K .coldRoute8AtOrAbove) known]
     [FactKeys.Has (K .denseColdCorridorsTerminal) known]
-    [FactKeys.Has (K .denseDeficiencyAtOrAbove) known]
     [FactKeys.Has (K .windowPackageUnrealized) known]
+    (tau : DenseTauBlock_atOrAbove selected)
     : ColdBranchClosedOutcome_linearDenseAtOrAbove selected :=
   ⟨coldBranchClosedReturn history,
     (history.get (K .coldGermFamilyPositive)).down,
@@ -642,7 +533,7 @@ theorem coldBranchClosed_linearDenseAtOrAboveReturn
     (history.get (K .coldMassLinear)).down,
     (history.get (K .coldRoute8AtOrAbove)).down,
     (history.get (K .denseColdCorridorsTerminal)).down,
-    (history.get (K .denseDeficiencyAtOrAbove)).down,
+    tau,
     (history.get (K .windowPackageUnrealized)).down⟩
 
 /-- **`[187]` (local cold-terminal exclusion), singleton `linearDenseRateFailed`**
@@ -675,7 +566,10 @@ theorem ColdBranchClosedOutcome_linearDenseRateFailed.toGeneric {selected : EGIn
     ColdBranchClosedOutcome selected :=
   h.1
 
-/-- The return of `ColdBranchClosedOutcome_linearDenseRateFailed`: one `get` per fact. -/
+/-- The return of `ColdBranchClosedOutcome_linearDenseRateFailed`: one `get` per
+fact. The facts of the upstream arm are read from its block
+(`DenseTauBlock_belowRateFails`), built by the block's `.ret` with one `get` per
+key on the same ledger. -/
 theorem coldBranchClosed_linearDenseRateFailedReturn
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -743,9 +637,8 @@ theorem coldBranchClosed_linearDenseRateFailedReturn
     [FactKeys.Has (K .coldMassLinear) known]
     [FactKeys.Has (K .coldRoute8AtOrAbove) known]
     [FactKeys.Has (K .denseColdCorridorsTerminal) known]
-    [FactKeys.Has (K .denseDeficiencyBelow) known]
-    [FactKeys.Has (K .route8RateFails) known]
     [FactKeys.Has (K .windowPackageUnrealized) known]
+    (tau : DenseTauBlock_belowRateFails selected)
     : ColdBranchClosedOutcome_linearDenseRateFailed selected :=
   ⟨coldBranchClosedReturn history,
     (history.get (K .coldGermFamilyPositive)).down,
@@ -755,8 +648,8 @@ theorem coldBranchClosed_linearDenseRateFailedReturn
     (history.get (K .coldMassLinear)).down,
     (history.get (K .coldRoute8AtOrAbove)).down,
     (history.get (K .denseColdCorridorsTerminal)).down,
-    (history.get (K .denseDeficiencyBelow)).down,
-    (history.get (K .route8RateFails)).down,
+    tau.1,
+    tau.2,
     (history.get (K .windowPackageUnrealized)).down⟩
 
 /-- **`[187]` (local cold-terminal exclusion), singleton `linearRealizedDistinguished`**
@@ -954,5 +847,107 @@ theorem coldBranchClosed_linearRealizedSilentReturn
     (history.get (K .coldMassLinear)).down,
     (history.get (K .coldRoute8AtOrAbove)).down,
     (history.get (K .windowPackageRealized)).down⟩
+
+/-- The near-cubic prefix block of a path, read as its window/test block
+(`W1`--`W5` list the same keys as the five `Route8LanePrefix` blocks). -/
+theorem Route8LanePrefix.toColdBranchClosedWindowArm {selected : EGInput.{u}}
+    (lanePrefix : Route8LanePrefix selected) :
+    ColdBranchClosedWindowArm selected := by
+  rcases lanePrefix with p | p | p | p | p
+  · exact Or.inr (Or.inl p)
+  · exact Or.inl p
+  · exact Or.inr (Or.inr (Or.inr (Or.inl p)))
+  · exact Or.inr (Or.inr (Or.inl p))
+  · exact Or.inr (Or.inr (Or.inr (Or.inr p)))
+
+/-- The entropy arm of a path, read as its entropy-side block (`E1`--`E4` are
+the four `EntropyArm` blocks, key for key). -/
+theorem EntropyArm.toColdBranchClosedEntropyArm {selected : EGInput.{u}}
+    (entropy : EntropyArm selected) : ColdBranchClosedEntropyArm selected :=
+  entropy
+
+/-- The four linear-arm singletons of the residual `[187]` (local
+cold-terminal exclusion), returned on the `[153]` linear arm of the near-cubic
+survivor. -/
+abbrev ColdBranchClosedLinearSubtypes (selected : EGInput.{u}) : Prop :=
+  ColdBranchClosedOutcome_linearDenseAtOrAbove selected ∨
+  ColdBranchClosedOutcome_linearDenseRateFailed selected ∨
+  ColdBranchClosedOutcome_linearRealizedDistinguished selected ∨
+  ColdBranchClosedOutcome_linearRealizedSilent selected
+
+/-- The return of the local cold-terminal exclusion on the `[153]` linear arm of the dense pass (`nearCubicDenseLinear`), on the `[160]` arm named by `tau`, through that singleton's return theorem. -/
+theorem coldBranchClosedLinearDenseReturn
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .absorbedGermFanData) known]
+    [FactKeys.Has (K .absorbedGermSplit) known]
+    [FactKeys.Has (K .barrierCap) known]
+    [FactKeys.Has (K .barrierEnumeration) known]
+    [FactKeys.Has (K .boundaryDemand) known]
+    [FactKeys.Has (K .bridgeless) known]
+    [FactKeys.Has (K .coldAmbientCubic) known]
+    [FactKeys.Has (K .coldAmbientCubicStubExcess) known]
+    [FactKeys.Has (K .coldBranchClosed) known]
+    [FactKeys.Has (K .coldCorridorState) known]
+    [FactKeys.Has (K .coldCutStatesDistinct) known]
+    [FactKeys.Has (K .coldExchangeBound) known]
+    [FactKeys.Has (K .coldFailureCompression) known]
+    [FactKeys.Has (K .coldFailureCycle) known]
+    [FactKeys.Has (K .coldFailureDefectRoute) known]
+    [FactKeys.Has (K .coldFailureRouting) known]
+    [FactKeys.Has (K .coldFirstFailureOccurrence) known]
+    [FactKeys.Has (K .coldGermCandidates) known]
+    [FactKeys.Has (K .coldGermDistinguished) known]
+    [FactKeys.Has (K .coldGermRealized) known]
+    [FactKeys.Has (K .coldGermRouted) known]
+    [FactKeys.Has (K .coldGermSilent) known]
+    [FactKeys.Has (K .coldHandoffTransfer) known]
+    [FactKeys.Has (K .coldHotEntropyCap) known]
+    [FactKeys.Has (K .coldMass) known]
+    [FactKeys.Has (K .coldReturnCorridors) known]
+    [FactKeys.Has (K .coldSameInterfaceTable) known]
+    [FactKeys.Has (K .coldSelectedBranchExcess) known]
+    [FactKeys.Has (K .coldStubExcess) known]
+    [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .curvatureFullRank) known]
+    [FactKeys.Has (K .curvatureTargetRank) known]
+    [FactKeys.Has (K .cycleRankConstraint) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .exactResponseProfile) known]
+    [FactKeys.Has (K .forcedCurvatureCost) known]
+    [FactKeys.Has (K .hotColdPartition) known]
+    [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .netChargeLocalization) known]
+    [FactKeys.Has (K .noProperBaseline) known]
+    [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .replacementExclusion) known]
+    [FactKeys.Has (K .returnAvoidance) known]
+    [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .skeletonDominates) known]
+    [FactKeys.Has (K .slackIndependent) known]
+    [FactKeys.Has (K .sparseSurplusSurvivor) known]
+    [FactKeys.Has (K .stubSupply) known]
+    [FactKeys.Has (K .surplusAtOrBelow) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .targetRankCircuit) known]
+    [FactKeys.Has (K .tightEndpoint) known]
+    [FactKeys.Has (K .uncompressible) known]
+    [FactKeys.Has (K .wedgeSupply) known]
+    [FactKeys.Has (K .windowPackageSeparated) known]
+    [FactKeys.Has (K .windowPresent) known]
+    [FactKeys.Has (K .coldGermFamilyPositive) known]
+    [FactKeys.Has (K .coldGermNoneRealizing) known]
+    [FactKeys.Has (K .coldGermSomeDistinguishing) known]
+    [FactKeys.Has (K .coldHeavyEntryTerminal) known]
+    [FactKeys.Has (K .coldMassLinear) known]
+    [FactKeys.Has (K .coldRoute8AtOrAbove) known]
+    [FactKeys.Has (K .denseColdCorridorsTerminal) known]
+    [FactKeys.Has (K .windowPackageUnrealized) known]
+    (tau : DenseTauArm selected) :
+    ColdBranchClosedLinearSubtypes selected := by
+  rcases tau with t | t
+  · exact Or.inl (coldBranchClosed_linearDenseAtOrAboveReturn history t)
+  · exact Or.inr (Or.inl (coldBranchClosed_linearDenseRateFailedReturn history t))
 
 end HypostructureErdos64EG

@@ -1,4 +1,4 @@
-import HypostructureErdos64EG.Assembly.Residuals
+import HypostructureErdos64EG.Assembly.Residuals.ArmBlocks
 
 /-!
 # Assembly: Residuals / Node162ResidualOutcome
@@ -36,7 +36,10 @@ theorem Node162ResidualOutcome_tauAtOrAbove.toGeneric {selected : EGInput.{u}}
     (h : Node162ResidualOutcome_tauAtOrAbove selected) : Node162ResidualOutcome selected :=
   h.1
 
-/-- The return of `Node162ResidualOutcome_tauAtOrAbove`: one `get` per fact of its ledger. -/
+/-- The return of `Node162ResidualOutcome_tauAtOrAbove`: one `get` per fact of
+its ledger. The facts of the upstream arm are read from its block
+(`DenseTauBlock_atOrAbove`), built by the block's `.ret` with one `get` per key
+on the same ledger. -/
 theorem node162Return_tauAtOrAbove
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -86,10 +89,10 @@ theorem node162Return_tauAtOrAbove
     [FactKeys.Has (K .coldFirstFailureOccurrence) known]
     [FactKeys.Has (K .coldCutStatesDistinct) known]
     [FactKeys.Has (K .coldDenseHeavyEntryResidual) known]
-    [FactKeys.Has (K .denseDeficiencyAtOrAbove) known] :
+    (tau : DenseTauBlock_atOrAbove selected) :
     Node162ResidualOutcome_tauAtOrAbove selected :=
   ⟨node162Return history,
-    (history.get (K .denseDeficiencyAtOrAbove)).down⟩
+    tau⟩
 
 /-- **Node `[162]` on `[160]`'s second complement** (`τ(θ) < 1/4`, the
 private-carrier rate `τ(θ) < 3/13` failed).
@@ -106,7 +109,10 @@ theorem Node162ResidualOutcome_tauBelowRateFails.toGeneric {selected : EGInput.{
     (h : Node162ResidualOutcome_tauBelowRateFails selected) : Node162ResidualOutcome selected :=
   h.1
 
-/-- The return of `Node162ResidualOutcome_tauBelowRateFails`: one `get` per fact of its ledger. -/
+/-- The return of `Node162ResidualOutcome_tauBelowRateFails`: one `get` per fact
+of its ledger. The facts of the upstream arm are read from its block
+(`DenseTauBlock_belowRateFails`), built by the block's `.ret` with one `get` per
+key on the same ledger. -/
 theorem node162Return_tauBelowRateFails
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -156,11 +162,71 @@ theorem node162Return_tauBelowRateFails
     [FactKeys.Has (K .coldFirstFailureOccurrence) known]
     [FactKeys.Has (K .coldCutStatesDistinct) known]
     [FactKeys.Has (K .coldDenseHeavyEntryResidual) known]
-    [FactKeys.Has (K .denseDeficiencyBelow) known]
-    [FactKeys.Has (K .route8RateFails) known] :
+    (tau : DenseTauBlock_belowRateFails selected) :
     Node162ResidualOutcome_tauBelowRateFails selected :=
   ⟨node162Return history,
-    (history.get (K .denseDeficiencyBelow)).down,
-    (history.get (K .route8RateFails)).down⟩
+    tau.1,
+    tau.2⟩
+
+/-- The two subtypes of node `[162]`'s residual, one per `[160]` arm of the dense pass. -/
+abbrev Node162ResidualSubtypes (selected : EGInput.{u}) : Prop :=
+  Node162ResidualOutcome_tauAtOrAbove selected ∨
+  Node162ResidualOutcome_tauBelowRateFails selected
+
+/-- The return of node `[162]`'s residual on the `[160]` arm named by `tau`, through that subtype's return theorem. -/
+theorem node162SubtypesReturn
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .returnAvoidance) known]
+    [FactKeys.Has (K .noProperBaseline) known]
+    [FactKeys.Has (K .slackIndependent) known]
+    [FactKeys.Has (K .tightEndpoint) known]
+    [FactKeys.Has (K .cycleRankConstraint) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .replacementExclusion) known]
+    [FactKeys.Has (K .uncompressible) known]
+    [FactKeys.Has (K .windowPresent) known]
+    [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .surplusAtOrBelow) known]
+    [FactKeys.Has (K .sparseSurplusSurvivor) known]
+    [FactKeys.Has (K .barrierEnumeration) known]
+    [FactKeys.Has (K .windowPackageSeparated) known]
+    [FactKeys.Has (K .skeletonDominates) known]
+    [FactKeys.Has (K .windowPackageUnrealized) known]
+    [FactKeys.Has (K .hotColdPartition) known]
+    [FactKeys.Has (K .barrierCap) known]
+    [FactKeys.Has (K .coldRoute8AtOrAbove) known]
+    [FactKeys.Has (K .coldHotEntropyCap) known]
+    [FactKeys.Has (K .coldMass) known]
+    [FactKeys.Has (K .coldAmbientCubic) known]
+    [FactKeys.Has (K .coldStubExcess) known]
+    [FactKeys.Has (K .coldAmbientCubicStubExcess) known]
+    [FactKeys.Has (K .coldSelectedBranchExcess) known]
+    [FactKeys.Has (K .coldMassLinear) known]
+    [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .boundaryDemand) known]
+    [FactKeys.Has (K .stubSupply) known]
+    [FactKeys.Has (K .wedgeSupply) known]
+    [FactKeys.Has (K .curvatureTargetRank) known]
+    [FactKeys.Has (K .exactResponseProfile) known]
+    [FactKeys.Has (K .targetRankCircuit) known]
+    [FactKeys.Has (K .curvatureFullRank) known]
+    [FactKeys.Has (K .forcedCurvatureCost) known]
+    [FactKeys.Has (K .netChargeLocalization) known]
+    [FactKeys.Has (K .bridgeless) known]
+    [FactKeys.Has (K .coldReturnCorridors) known]
+    [FactKeys.Has (K .coldCorridorState) known]
+    [FactKeys.Has (K .coldFirstFailureOccurrence) known]
+    [FactKeys.Has (K .coldCutStatesDistinct) known]
+    [FactKeys.Has (K .coldDenseHeavyEntryResidual) known]
+    (tau : DenseTauArm selected) :
+    Node162ResidualSubtypes selected := by
+  rcases tau with t | t
+  · exact Or.inl (node162Return_tauAtOrAbove history t)
+  · exact Or.inr (node162Return_tauBelowRateFails history t)
 
 end HypostructureErdos64EG

@@ -1,4 +1,4 @@
-import HypostructureErdos64EG.Assembly.Residuals
+import HypostructureErdos64EG.Assembly.Residuals.ArmBlocks
 
 /-!
 # Assembly: Residuals / Route8RateFailsOutcome
@@ -43,8 +43,10 @@ theorem Route8RateFailsOutcome_realized_highEntropy.toGeneric
     Route8RateFailsOutcome selected :=
   outcome.1
 
-/-- The return of `Route8RateFailsOutcome_realized_highEntropy`:
-one `get` per fact of its ledger. -/
+/-- The return of `Route8RateFailsOutcome_realized_highEntropy`: one `get` per
+fact of its ledger. The facts of the upstream arm are read from its blocks
+(`Route8LanePrefixBlock_realizedColdAtOrAbove`, `EntropyArmBlock_high`), built
+by the block's `.ret` with one `get` per key on the same ledger. -/
 theorem route8RateFailsReturn_realized_highEntropy
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -90,16 +92,14 @@ theorem route8RateFailsReturn_realized_highEntropy
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .netDeficiencyCap) known]
     [FactKeys.Has (K .route8RateFails) known]
-    [FactKeys.Has (K .windowPackageRealized) known]
-    [FactKeys.Has (K .remainderEntropyHigh) known]
-    [FactKeys.Has (K .entropyPackageDemand) known]
-    [FactKeys.Has (K .entropyCapBound) known] :
+    (lanePrefix : Route8LanePrefixBlock_realizedColdAtOrAbove selected)
+    (entropy : EntropyArmBlock_high selected) :
     Route8RateFailsOutcome_realized_highEntropy selected :=
   ⟨route8RateFailsReturn history,
-    (history.get (K .windowPackageRealized)).down,
-    (history.get (K .remainderEntropyHigh)).down,
-    (history.get (K .entropyPackageDemand)).down,
-    (history.get (K .entropyCapBound)).down⟩
+    lanePrefix.2.2.2,
+    entropy.2.2,
+    entropy.2.1,
+    entropy.1⟩
 
 /-- **Node `[187]` (private-carrier rate failure)**:
 `[158]` yes (realized package);
@@ -121,8 +121,11 @@ theorem Route8RateFailsOutcome_realized_lowNonrepetitive.toGeneric
     Route8RateFailsOutcome selected :=
   outcome.1
 
-/-- The return of `Route8RateFailsOutcome_realized_lowNonrepetitive`:
-one `get` per fact of its ledger. -/
+/-- The return of `Route8RateFailsOutcome_realized_lowNonrepetitive`: one `get`
+per fact of its ledger. The facts of the upstream arm are read from its blocks
+(`Route8LanePrefixBlock_realizedColdAtOrAbove`,
+`EntropyArmBlock_lowNonrepetitive`), built by the block's `.ret` with one `get`
+per key on the same ledger. -/
 theorem route8RateFailsReturn_realized_lowNonrepetitive
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -168,14 +171,13 @@ theorem route8RateFailsReturn_realized_lowNonrepetitive
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .netDeficiencyCap) known]
     [FactKeys.Has (K .route8RateFails) known]
-    [FactKeys.Has (K .windowPackageRealized) known]
-    [FactKeys.Has (K .remainderEntropyLow) known]
-    [FactKeys.Has (K .localTypeCoordinateNonrepetitive) known] :
+    (lanePrefix : Route8LanePrefixBlock_realizedColdAtOrAbove selected)
+    (entropy : EntropyArmBlock_lowNonrepetitive selected) :
     Route8RateFailsOutcome_realized_lowNonrepetitive selected :=
   ⟨route8RateFailsReturn history,
-    (history.get (K .windowPackageRealized)).down,
-    (history.get (K .remainderEntropyLow)).down,
-    (history.get (K .localTypeCoordinateNonrepetitive)).down⟩
+    lanePrefix.2.2.2,
+    entropy.2,
+    entropy.1⟩
 
 /-- **Node `[187]` (private-carrier rate failure)**:
 `[158]` yes (realized package);
@@ -201,8 +203,11 @@ theorem Route8RateFailsOutcome_realized_lowWedgeFree.toGeneric
     Route8RateFailsOutcome selected :=
   outcome.1
 
-/-- The return of `Route8RateFailsOutcome_realized_lowWedgeFree`:
-one `get` per fact of its ledger. -/
+/-- The return of `Route8RateFailsOutcome_realized_lowWedgeFree`: one `get` per
+fact of its ledger. The facts of the upstream arm are read from its blocks
+(`Route8LanePrefixBlock_realizedColdAtOrAbove`,
+`EntropyArmBlock_lowRepetitiveWedgeFree`), built by the block's `.ret` with one
+`get` per key on the same ledger. -/
 theorem route8RateFailsReturn_realized_lowWedgeFree
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -248,18 +253,15 @@ theorem route8RateFailsReturn_realized_lowWedgeFree
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .netDeficiencyCap) known]
     [FactKeys.Has (K .route8RateFails) known]
-    [FactKeys.Has (K .windowPackageRealized) known]
-    [FactKeys.Has (K .remainderEntropyLow) known]
-    [FactKeys.Has (K .localTypeCoordinateRepetitive) known]
-    [FactKeys.Has (K .dominantRootedType) known]
-    [FactKeys.Has (K .dominantRootedTypeWedgeFree) known] :
+    (lanePrefix : Route8LanePrefixBlock_realizedColdAtOrAbove selected)
+    (entropy : EntropyArmBlock_lowRepetitiveWedgeFree selected) :
     Route8RateFailsOutcome_realized_lowWedgeFree selected :=
   ⟨route8RateFailsReturn history,
-    (history.get (K .windowPackageRealized)).down,
-    (history.get (K .remainderEntropyLow)).down,
-    (history.get (K .localTypeCoordinateRepetitive)).down,
-    (history.get (K .dominantRootedType)).down,
-    (history.get (K .dominantRootedTypeWedgeFree)).down⟩
+    lanePrefix.2.2.2,
+    entropy.2.2.2,
+    entropy.2.2.1,
+    entropy.1,
+    entropy.2.1⟩
 
 /-- **Node `[187]` (private-carrier rate failure)**:
 `[158]` yes (realized package);
@@ -287,8 +289,11 @@ theorem Route8RateFailsOutcome_realized_lowWedge.toGeneric
     Route8RateFailsOutcome selected :=
   outcome.1
 
-/-- The return of `Route8RateFailsOutcome_realized_lowWedge`:
-one `get` per fact of its ledger. -/
+/-- The return of `Route8RateFailsOutcome_realized_lowWedge`: one `get` per fact
+of its ledger. The facts of the upstream arm are read from its blocks
+(`Route8LanePrefixBlock_realizedColdAtOrAbove`,
+`EntropyArmBlock_lowRepetitiveWedge`), built by the block's `.ret` with one
+`get` per key on the same ledger. -/
 theorem route8RateFailsReturn_realized_lowWedge
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -334,20 +339,16 @@ theorem route8RateFailsReturn_realized_lowWedge
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .netDeficiencyCap) known]
     [FactKeys.Has (K .route8RateFails) known]
-    [FactKeys.Has (K .windowPackageRealized) known]
-    [FactKeys.Has (K .remainderEntropyLow) known]
-    [FactKeys.Has (K .localTypeCoordinateRepetitive) known]
-    [FactKeys.Has (K .dominantRootedType) known]
-    [FactKeys.Has (K .dominantRootedWedgeType) known]
-    [FactKeys.Has (K .independentObstructionTranslates) known] :
+    (lanePrefix : Route8LanePrefixBlock_realizedColdAtOrAbove selected)
+    (entropy : EntropyArmBlock_lowRepetitiveWedge selected) :
     Route8RateFailsOutcome_realized_lowWedge selected :=
   ⟨route8RateFailsReturn history,
-    (history.get (K .windowPackageRealized)).down,
-    (history.get (K .remainderEntropyLow)).down,
-    (history.get (K .localTypeCoordinateRepetitive)).down,
-    (history.get (K .dominantRootedType)).down,
-    (history.get (K .dominantRootedWedgeType)).down,
-    (history.get (K .independentObstructionTranslates)).down⟩
+    lanePrefix.2.2.2,
+    entropy.2.2.2.2,
+    entropy.2.2.2.1,
+    entropy.1,
+    entropy.2.1,
+    entropy.2.2.1⟩
 
 /-- **Node `[187]` (private-carrier rate failure)**:
 `[158]` no (unrealized package), `[160]` first test no (`τ(θ) ≥ 1/4`);
@@ -373,8 +374,11 @@ theorem Route8RateFailsOutcome_denseAtOrAbove_highEntropy.toGeneric
     Route8RateFailsOutcome selected :=
   outcome.1
 
-/-- The return of `Route8RateFailsOutcome_denseAtOrAbove_highEntropy`:
-one `get` per fact of its ledger. -/
+/-- The return of `Route8RateFailsOutcome_denseAtOrAbove_highEntropy`: one `get`
+per fact of its ledger. The facts of the upstream arm are read from its blocks
+(`Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove`,
+`EntropyArmBlock_high`), built by the block's `.ret` with one `get` per key on
+the same ledger. -/
 theorem route8RateFailsReturn_denseAtOrAbove_highEntropy
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -420,18 +424,15 @@ theorem route8RateFailsReturn_denseAtOrAbove_highEntropy
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .netDeficiencyCap) known]
     [FactKeys.Has (K .route8RateFails) known]
-    [FactKeys.Has (K .windowPackageUnrealized) known]
-    [FactKeys.Has (K .denseDeficiencyAtOrAbove) known]
-    [FactKeys.Has (K .remainderEntropyHigh) known]
-    [FactKeys.Has (K .entropyPackageDemand) known]
-    [FactKeys.Has (K .entropyCapBound) known] :
+    (lanePrefix : Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove selected)
+    (entropy : EntropyArmBlock_high selected) :
     Route8RateFailsOutcome_denseAtOrAbove_highEntropy selected :=
   ⟨route8RateFailsReturn history,
-    (history.get (K .windowPackageUnrealized)).down,
-    (history.get (K .denseDeficiencyAtOrAbove)).down,
-    (history.get (K .remainderEntropyHigh)).down,
-    (history.get (K .entropyPackageDemand)).down,
-    (history.get (K .entropyCapBound)).down⟩
+    lanePrefix.2.2.2.2,
+    lanePrefix.2.2.1,
+    entropy.2.2,
+    entropy.2.1,
+    entropy.1⟩
 
 /-- **Node `[187]` (private-carrier rate failure)**:
 `[158]` no (unrealized package), `[160]` first test no (`τ(θ) ≥ 1/4`);
@@ -455,8 +456,11 @@ theorem Route8RateFailsOutcome_denseAtOrAbove_lowNonrepetitive.toGeneric
     Route8RateFailsOutcome selected :=
   outcome.1
 
-/-- The return of `Route8RateFailsOutcome_denseAtOrAbove_lowNonrepetitive`:
-one `get` per fact of its ledger. -/
+/-- The return of `Route8RateFailsOutcome_denseAtOrAbove_lowNonrepetitive`: one
+`get` per fact of its ledger. The facts of the upstream arm are read from its
+blocks (`Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove`,
+`EntropyArmBlock_lowNonrepetitive`), built by the block's `.ret` with one `get`
+per key on the same ledger. -/
 theorem route8RateFailsReturn_denseAtOrAbove_lowNonrepetitive
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -502,16 +506,14 @@ theorem route8RateFailsReturn_denseAtOrAbove_lowNonrepetitive
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .netDeficiencyCap) known]
     [FactKeys.Has (K .route8RateFails) known]
-    [FactKeys.Has (K .windowPackageUnrealized) known]
-    [FactKeys.Has (K .denseDeficiencyAtOrAbove) known]
-    [FactKeys.Has (K .remainderEntropyLow) known]
-    [FactKeys.Has (K .localTypeCoordinateNonrepetitive) known] :
+    (lanePrefix : Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove selected)
+    (entropy : EntropyArmBlock_lowNonrepetitive selected) :
     Route8RateFailsOutcome_denseAtOrAbove_lowNonrepetitive selected :=
   ⟨route8RateFailsReturn history,
-    (history.get (K .windowPackageUnrealized)).down,
-    (history.get (K .denseDeficiencyAtOrAbove)).down,
-    (history.get (K .remainderEntropyLow)).down,
-    (history.get (K .localTypeCoordinateNonrepetitive)).down⟩
+    lanePrefix.2.2.2.2,
+    lanePrefix.2.2.1,
+    entropy.2,
+    entropy.1⟩
 
 /-- **Node `[187]` (private-carrier rate failure)**:
 `[158]` no (unrealized package), `[160]` first test no (`τ(θ) ≥ 1/4`);
@@ -539,8 +541,11 @@ theorem Route8RateFailsOutcome_denseAtOrAbove_lowWedgeFree.toGeneric
     Route8RateFailsOutcome selected :=
   outcome.1
 
-/-- The return of `Route8RateFailsOutcome_denseAtOrAbove_lowWedgeFree`:
-one `get` per fact of its ledger. -/
+/-- The return of `Route8RateFailsOutcome_denseAtOrAbove_lowWedgeFree`: one
+`get` per fact of its ledger. The facts of the upstream arm are read from its
+blocks (`Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove`,
+`EntropyArmBlock_lowRepetitiveWedgeFree`), built by the block's `.ret` with one
+`get` per key on the same ledger. -/
 theorem route8RateFailsReturn_denseAtOrAbove_lowWedgeFree
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -586,20 +591,16 @@ theorem route8RateFailsReturn_denseAtOrAbove_lowWedgeFree
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .netDeficiencyCap) known]
     [FactKeys.Has (K .route8RateFails) known]
-    [FactKeys.Has (K .windowPackageUnrealized) known]
-    [FactKeys.Has (K .denseDeficiencyAtOrAbove) known]
-    [FactKeys.Has (K .remainderEntropyLow) known]
-    [FactKeys.Has (K .localTypeCoordinateRepetitive) known]
-    [FactKeys.Has (K .dominantRootedType) known]
-    [FactKeys.Has (K .dominantRootedTypeWedgeFree) known] :
+    (lanePrefix : Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove selected)
+    (entropy : EntropyArmBlock_lowRepetitiveWedgeFree selected) :
     Route8RateFailsOutcome_denseAtOrAbove_lowWedgeFree selected :=
   ⟨route8RateFailsReturn history,
-    (history.get (K .windowPackageUnrealized)).down,
-    (history.get (K .denseDeficiencyAtOrAbove)).down,
-    (history.get (K .remainderEntropyLow)).down,
-    (history.get (K .localTypeCoordinateRepetitive)).down,
-    (history.get (K .dominantRootedType)).down,
-    (history.get (K .dominantRootedTypeWedgeFree)).down⟩
+    lanePrefix.2.2.2.2,
+    lanePrefix.2.2.1,
+    entropy.2.2.2,
+    entropy.2.2.1,
+    entropy.1,
+    entropy.2.1⟩
 
 /-- **Node `[187]` (private-carrier rate failure)**:
 `[158]` no (unrealized package), `[160]` first test no (`τ(θ) ≥ 1/4`);
@@ -629,8 +630,11 @@ theorem Route8RateFailsOutcome_denseAtOrAbove_lowWedge.toGeneric
     Route8RateFailsOutcome selected :=
   outcome.1
 
-/-- The return of `Route8RateFailsOutcome_denseAtOrAbove_lowWedge`:
-one `get` per fact of its ledger. -/
+/-- The return of `Route8RateFailsOutcome_denseAtOrAbove_lowWedge`: one `get`
+per fact of its ledger. The facts of the upstream arm are read from its blocks
+(`Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove`,
+`EntropyArmBlock_lowRepetitiveWedge`), built by the block's `.ret` with one
+`get` per key on the same ledger. -/
 theorem route8RateFailsReturn_denseAtOrAbove_lowWedge
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -676,22 +680,17 @@ theorem route8RateFailsReturn_denseAtOrAbove_lowWedge
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .netDeficiencyCap) known]
     [FactKeys.Has (K .route8RateFails) known]
-    [FactKeys.Has (K .windowPackageUnrealized) known]
-    [FactKeys.Has (K .denseDeficiencyAtOrAbove) known]
-    [FactKeys.Has (K .remainderEntropyLow) known]
-    [FactKeys.Has (K .localTypeCoordinateRepetitive) known]
-    [FactKeys.Has (K .dominantRootedType) known]
-    [FactKeys.Has (K .dominantRootedWedgeType) known]
-    [FactKeys.Has (K .independentObstructionTranslates) known] :
+    (lanePrefix : Route8LanePrefixBlock_unrealizedDenseAtOrAboveColdAtOrAbove selected)
+    (entropy : EntropyArmBlock_lowRepetitiveWedge selected) :
     Route8RateFailsOutcome_denseAtOrAbove_lowWedge selected :=
   ⟨route8RateFailsReturn history,
-    (history.get (K .windowPackageUnrealized)).down,
-    (history.get (K .denseDeficiencyAtOrAbove)).down,
-    (history.get (K .remainderEntropyLow)).down,
-    (history.get (K .localTypeCoordinateRepetitive)).down,
-    (history.get (K .dominantRootedType)).down,
-    (history.get (K .dominantRootedWedgeType)).down,
-    (history.get (K .independentObstructionTranslates)).down⟩
+    lanePrefix.2.2.2.2,
+    lanePrefix.2.2.1,
+    entropy.2.2.2.2,
+    entropy.2.2.2.1,
+    entropy.1,
+    entropy.2.1,
+    entropy.2.2.1⟩
 
 /-- **Node `[187]` (private-carrier rate failure)**:
 `[158]` no (unrealized package), `[160]` first test yes (`τ(θ) < 1/4`), private-carrier rate failed;
@@ -717,8 +716,10 @@ theorem Route8RateFailsOutcome_denseBelow_highEntropy.toGeneric
     Route8RateFailsOutcome selected :=
   outcome.1
 
-/-- The return of `Route8RateFailsOutcome_denseBelow_highEntropy`:
-one `get` per fact of its ledger. -/
+/-- The return of `Route8RateFailsOutcome_denseBelow_highEntropy`: one `get` per
+fact of its ledger. The facts of the upstream arm are read from its block
+(`EntropyArmBlock_high`), built by the block's `.ret` with one `get` per key on
+the same ledger. -/
 theorem route8RateFailsReturn_denseBelow_highEntropy
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -766,16 +767,14 @@ theorem route8RateFailsReturn_denseBelow_highEntropy
     [FactKeys.Has (K .route8RateFails) known]
     [FactKeys.Has (K .windowPackageUnrealized) known]
     [FactKeys.Has (K .denseDeficiencyBelow) known]
-    [FactKeys.Has (K .remainderEntropyHigh) known]
-    [FactKeys.Has (K .entropyPackageDemand) known]
-    [FactKeys.Has (K .entropyCapBound) known] :
+    (entropy : EntropyArmBlock_high selected) :
     Route8RateFailsOutcome_denseBelow_highEntropy selected :=
   ⟨route8RateFailsReturn history,
     (history.get (K .windowPackageUnrealized)).down,
     (history.get (K .denseDeficiencyBelow)).down,
-    (history.get (K .remainderEntropyHigh)).down,
-    (history.get (K .entropyPackageDemand)).down,
-    (history.get (K .entropyCapBound)).down⟩
+    entropy.2.2,
+    entropy.2.1,
+    entropy.1⟩
 
 /-- **Node `[187]` (private-carrier rate failure)**:
 `[158]` no (unrealized package), `[160]` first test yes (`τ(θ) < 1/4`), private-carrier rate failed;
@@ -799,8 +798,10 @@ theorem Route8RateFailsOutcome_denseBelow_lowNonrepetitive.toGeneric
     Route8RateFailsOutcome selected :=
   outcome.1
 
-/-- The return of `Route8RateFailsOutcome_denseBelow_lowNonrepetitive`:
-one `get` per fact of its ledger. -/
+/-- The return of `Route8RateFailsOutcome_denseBelow_lowNonrepetitive`: one
+`get` per fact of its ledger. The facts of the upstream arm are read from its
+block (`EntropyArmBlock_lowNonrepetitive`), built by the block's `.ret` with one
+`get` per key on the same ledger. -/
 theorem route8RateFailsReturn_denseBelow_lowNonrepetitive
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -848,14 +849,13 @@ theorem route8RateFailsReturn_denseBelow_lowNonrepetitive
     [FactKeys.Has (K .route8RateFails) known]
     [FactKeys.Has (K .windowPackageUnrealized) known]
     [FactKeys.Has (K .denseDeficiencyBelow) known]
-    [FactKeys.Has (K .remainderEntropyLow) known]
-    [FactKeys.Has (K .localTypeCoordinateNonrepetitive) known] :
+    (entropy : EntropyArmBlock_lowNonrepetitive selected) :
     Route8RateFailsOutcome_denseBelow_lowNonrepetitive selected :=
   ⟨route8RateFailsReturn history,
     (history.get (K .windowPackageUnrealized)).down,
     (history.get (K .denseDeficiencyBelow)).down,
-    (history.get (K .remainderEntropyLow)).down,
-    (history.get (K .localTypeCoordinateNonrepetitive)).down⟩
+    entropy.2,
+    entropy.1⟩
 
 /-- **Node `[187]` (private-carrier rate failure)**:
 `[158]` no (unrealized package), `[160]` first test yes (`τ(θ) < 1/4`), private-carrier rate failed;
@@ -883,8 +883,10 @@ theorem Route8RateFailsOutcome_denseBelow_lowWedgeFree.toGeneric
     Route8RateFailsOutcome selected :=
   outcome.1
 
-/-- The return of `Route8RateFailsOutcome_denseBelow_lowWedgeFree`:
-one `get` per fact of its ledger. -/
+/-- The return of `Route8RateFailsOutcome_denseBelow_lowWedgeFree`: one `get`
+per fact of its ledger. The facts of the upstream arm are read from its block
+(`EntropyArmBlock_lowRepetitiveWedgeFree`), built by the block's `.ret` with one
+`get` per key on the same ledger. -/
 theorem route8RateFailsReturn_denseBelow_lowWedgeFree
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -932,18 +934,15 @@ theorem route8RateFailsReturn_denseBelow_lowWedgeFree
     [FactKeys.Has (K .route8RateFails) known]
     [FactKeys.Has (K .windowPackageUnrealized) known]
     [FactKeys.Has (K .denseDeficiencyBelow) known]
-    [FactKeys.Has (K .remainderEntropyLow) known]
-    [FactKeys.Has (K .localTypeCoordinateRepetitive) known]
-    [FactKeys.Has (K .dominantRootedType) known]
-    [FactKeys.Has (K .dominantRootedTypeWedgeFree) known] :
+    (entropy : EntropyArmBlock_lowRepetitiveWedgeFree selected) :
     Route8RateFailsOutcome_denseBelow_lowWedgeFree selected :=
   ⟨route8RateFailsReturn history,
     (history.get (K .windowPackageUnrealized)).down,
     (history.get (K .denseDeficiencyBelow)).down,
-    (history.get (K .remainderEntropyLow)).down,
-    (history.get (K .localTypeCoordinateRepetitive)).down,
-    (history.get (K .dominantRootedType)).down,
-    (history.get (K .dominantRootedTypeWedgeFree)).down⟩
+    entropy.2.2.2,
+    entropy.2.2.1,
+    entropy.1,
+    entropy.2.1⟩
 
 /-- **Node `[187]` (private-carrier rate failure)**:
 `[158]` no (unrealized package), `[160]` first test yes (`τ(θ) < 1/4`), private-carrier rate failed;
@@ -973,8 +972,10 @@ theorem Route8RateFailsOutcome_denseBelow_lowWedge.toGeneric
     Route8RateFailsOutcome selected :=
   outcome.1
 
-/-- The return of `Route8RateFailsOutcome_denseBelow_lowWedge`:
-one `get` per fact of its ledger. -/
+/-- The return of `Route8RateFailsOutcome_denseBelow_lowWedge`: one `get` per
+fact of its ledger. The facts of the upstream arm are read from its block
+(`EntropyArmBlock_lowRepetitiveWedge`), built by the block's `.ret` with one
+`get` per key on the same ledger. -/
 theorem route8RateFailsReturn_denseBelow_lowWedge
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
@@ -1022,19 +1023,147 @@ theorem route8RateFailsReturn_denseBelow_lowWedge
     [FactKeys.Has (K .route8RateFails) known]
     [FactKeys.Has (K .windowPackageUnrealized) known]
     [FactKeys.Has (K .denseDeficiencyBelow) known]
-    [FactKeys.Has (K .remainderEntropyLow) known]
-    [FactKeys.Has (K .localTypeCoordinateRepetitive) known]
-    [FactKeys.Has (K .dominantRootedType) known]
-    [FactKeys.Has (K .dominantRootedWedgeType) known]
-    [FactKeys.Has (K .independentObstructionTranslates) known] :
+    (entropy : EntropyArmBlock_lowRepetitiveWedge selected) :
     Route8RateFailsOutcome_denseBelow_lowWedge selected :=
   ⟨route8RateFailsReturn history,
     (history.get (K .windowPackageUnrealized)).down,
     (history.get (K .denseDeficiencyBelow)).down,
-    (history.get (K .remainderEntropyLow)).down,
-    (history.get (K .localTypeCoordinateRepetitive)).down,
-    (history.get (K .dominantRootedType)).down,
-    (history.get (K .dominantRootedWedgeType)).down,
-    (history.get (K .independentObstructionTranslates)).down⟩
+    entropy.2.2.2.2,
+    entropy.2.2.2.1,
+    entropy.1,
+    entropy.2.1,
+    entropy.2.2.1⟩
+
+/-- The twelve subtypes of the private-carrier rate failure `[187]`, one per distinct fact set. -/
+abbrev Route8RateFailsSubtypes (selected : EGInput.{u}) : Prop :=
+  Route8RateFailsOutcome_realized_highEntropy selected ∨
+  Route8RateFailsOutcome_realized_lowNonrepetitive selected ∨
+  Route8RateFailsOutcome_realized_lowWedgeFree selected ∨
+  Route8RateFailsOutcome_realized_lowWedge selected ∨
+  Route8RateFailsOutcome_denseAtOrAbove_highEntropy selected ∨
+  Route8RateFailsOutcome_denseAtOrAbove_lowNonrepetitive selected ∨
+  Route8RateFailsOutcome_denseAtOrAbove_lowWedgeFree selected ∨
+  Route8RateFailsOutcome_denseAtOrAbove_lowWedge selected ∨
+  Route8RateFailsOutcome_denseBelow_highEntropy selected ∨
+  Route8RateFailsOutcome_denseBelow_lowNonrepetitive selected ∨
+  Route8RateFailsOutcome_denseBelow_lowWedgeFree selected ∨
+  Route8RateFailsOutcome_denseBelow_lowWedge selected
+
+/-- The return of the private-carrier rate failure in `nearCubicRouteEightEntry`, on the route named by `lanePrefix` and the entropy arm named by `entropy`, through that subtype's return theorem. -/
+theorem route8RateFailsSubtypesReturn_routeEightEntry
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .returnAvoidance) known]
+    [FactKeys.Has (K .noProperBaseline) known]
+    [FactKeys.Has (K .slackIndependent) known]
+    [FactKeys.Has (K .tightEndpoint) known]
+    [FactKeys.Has (K .cycleRankConstraint) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .replacementExclusion) known]
+    [FactKeys.Has (K .uncompressible) known]
+    [FactKeys.Has (K .windowPresent) known]
+    [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .surplusAtOrBelow) known]
+    [FactKeys.Has (K .sparseSurplusSurvivor) known]
+    [FactKeys.Has (K .barrierEnumeration) known]
+    [FactKeys.Has (K .windowPackageSeparated) known]
+    [FactKeys.Has (K .skeletonDominates) known]
+    [FactKeys.Has (K .hotColdPartition) known]
+    [FactKeys.Has (K .barrierCap) known]
+    [FactKeys.Has (K .coldRoute8AtOrAbove) known]
+    [FactKeys.Has (K .coldHotEntropyCap) known]
+    [FactKeys.Has (K .coldMass) known]
+    [FactKeys.Has (K .coldAmbientCubic) known]
+    [FactKeys.Has (K .coldStubExcess) known]
+    [FactKeys.Has (K .coldAmbientCubicStubExcess) known]
+    [FactKeys.Has (K .coldSelectedBranchExcess) known]
+    [FactKeys.Has (K .coldMassBounded) known]
+    [FactKeys.Has (K .densityCap) known]
+    [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .boundaryDemand) known]
+    [FactKeys.Has (K .stubSupply) known]
+    [FactKeys.Has (K .wedgeSupply) known]
+    [FactKeys.Has (K .curvatureTargetRank) known]
+    [FactKeys.Has (K .exactResponseProfile) known]
+    [FactKeys.Has (K .targetRankCircuit) known]
+    [FactKeys.Has (K .curvatureFullRank) known]
+    [FactKeys.Has (K .forcedCurvatureCost) known]
+    [FactKeys.Has (K .largeBudgetResidual) known]
+    [FactKeys.Has (K .netDeficiencyCap) known]
+    [FactKeys.Has (K .route8RateFails) known]
+    (lanePrefix : DensityCapArm selected)
+    (entropy : EntropyArm selected) :
+    Route8RateFailsSubtypes selected := by
+  rcases lanePrefix with p | p
+  · rcases entropy with e | e | e | e
+    · exact Or.inl (route8RateFailsReturn_realized_highEntropy history p e)
+    · exact Or.inr (Or.inl (route8RateFailsReturn_realized_lowNonrepetitive history p e))
+    · exact Or.inr (Or.inr (Or.inl (route8RateFailsReturn_realized_lowWedgeFree history p e)))
+    · exact Or.inr (Or.inr (Or.inr (Or.inl (route8RateFailsReturn_realized_lowWedge history p e))))
+  · rcases entropy with e | e | e | e
+    · exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inl (route8RateFailsReturn_denseAtOrAbove_highEntropy history p e)))))
+    · exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl (route8RateFailsReturn_denseAtOrAbove_lowNonrepetitive history p e))))))
+    · exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl (route8RateFailsReturn_denseAtOrAbove_lowWedgeFree history p e)))))))
+    · exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl (route8RateFailsReturn_denseAtOrAbove_lowWedge history p e))))))))
+
+/-- The return of the private-carrier rate failure in `nearCubicRateFailedExit`, on the entropy arm named by `entropy`, through that subtype's return theorem. -/
+theorem route8RateFailsSubtypesReturn_rateFailedExit
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .returnAvoidance) known]
+    [FactKeys.Has (K .noProperBaseline) known]
+    [FactKeys.Has (K .slackIndependent) known]
+    [FactKeys.Has (K .tightEndpoint) known]
+    [FactKeys.Has (K .cycleRankConstraint) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .replacementExclusion) known]
+    [FactKeys.Has (K .uncompressible) known]
+    [FactKeys.Has (K .windowPresent) known]
+    [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .surplusAtOrBelow) known]
+    [FactKeys.Has (K .sparseSurplusSurvivor) known]
+    [FactKeys.Has (K .barrierEnumeration) known]
+    [FactKeys.Has (K .windowPackageSeparated) known]
+    [FactKeys.Has (K .skeletonDominates) known]
+    [FactKeys.Has (K .hotColdPartition) known]
+    [FactKeys.Has (K .barrierCap) known]
+    [FactKeys.Has (K .coldRoute8AtOrAbove) known]
+    [FactKeys.Has (K .coldHotEntropyCap) known]
+    [FactKeys.Has (K .coldMass) known]
+    [FactKeys.Has (K .coldAmbientCubic) known]
+    [FactKeys.Has (K .coldStubExcess) known]
+    [FactKeys.Has (K .coldAmbientCubicStubExcess) known]
+    [FactKeys.Has (K .coldSelectedBranchExcess) known]
+    [FactKeys.Has (K .coldMassBounded) known]
+    [FactKeys.Has (K .densityCap) known]
+    [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .boundaryDemand) known]
+    [FactKeys.Has (K .stubSupply) known]
+    [FactKeys.Has (K .wedgeSupply) known]
+    [FactKeys.Has (K .curvatureTargetRank) known]
+    [FactKeys.Has (K .exactResponseProfile) known]
+    [FactKeys.Has (K .targetRankCircuit) known]
+    [FactKeys.Has (K .curvatureFullRank) known]
+    [FactKeys.Has (K .forcedCurvatureCost) known]
+    [FactKeys.Has (K .largeBudgetResidual) known]
+    [FactKeys.Has (K .netDeficiencyCap) known]
+    [FactKeys.Has (K .route8RateFails) known]
+    [FactKeys.Has (K .windowPackageUnrealized) known]
+    [FactKeys.Has (K .denseDeficiencyBelow) known]
+    (entropy : EntropyArm selected) :
+    Route8RateFailsSubtypes selected := by
+  rcases entropy with e | e | e | e
+  · exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl (route8RateFailsReturn_denseBelow_highEntropy history e)))))))))
+  · exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl (route8RateFailsReturn_denseBelow_lowNonrepetitive history e))))))))))
+  · exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl (route8RateFailsReturn_denseBelow_lowWedgeFree history e)))))))))))
+  · exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (route8RateFailsReturn_denseBelow_lowWedge history e)))))))))))
 
 end HypostructureErdos64EG
