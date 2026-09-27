@@ -1,5 +1,5 @@
 import Hypostructure.Graph.Statements.CanonicalTypeB
-import Hypostructure.Graph.Statements.CanonicalSameToken
+import Hypostructure.Graph.Statements.SurplusPairRouting
 
 /-!
 # Statements: the Type B support of the selected counterexample

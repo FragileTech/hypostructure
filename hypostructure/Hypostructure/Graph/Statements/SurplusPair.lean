@@ -1,5 +1,6 @@
 import Hypostructure.Graph.Statements.TypeB
 import Hypostructure.Graph.Statements.CanonicalSurplus
+import Hypostructure.Graph.Statements.CanonicalSurplusCapacity
 
 /-!
 # Statements: SurplusPair
@@ -15,6 +16,60 @@ namespace Hypostructure.Graph.Strategy.Spine
 open Hypostructure
 
 universe u v
+
+/-- G's canonical activation, when it exists, is the pair-response activation
+of the node-`[125]` port data (a proposition, so the activation is unique). -/
+theorem exists_active_of_canonicalPairActivation_eq_some {data : Parameters}
+    {object : Graph.FiniteObject.{u}}
+    {activation : object.DemandActivation object.PairCoordinate
+      (object.Vertex × object.Vertex)}
+    (selected : canonicalPairActivation data object = some activation) :
+    ∃ active : Graph.ActiveSurplusDemands
+        (Graph.MinimumDegreeAtLeast data.threshold)
+        (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
+        data.threshold,
+      activation = Graph.pairResponseActivation active := by
+  by_cases active : Graph.ActiveSurplusDemands
+      (Graph.MinimumDegreeAtLeast data.threshold)
+      (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
+      data.threshold
+  · refine ⟨active, ?_⟩
+    rw [canonicalPairActivation_eq data object active] at selected
+    exact (Option.some.inj selected).symm
+  · rw [(canonicalPairActivation_eq_none_iff data object).2 active] at selected
+    cases selected
+
+/-- A target-defective identification of the two demands of a scheduled pair,
+read on G's own piece at their canonical support (blocker (e) of
+`def:surplus-blockers`), is a clause-(b) exit of G's declared sparse family:
+the demands are declared coordinates of that family with the same supports. -/
+theorem declaredSparseSurplusExit_of_demandDefect {data : Parameters}
+    {object : Graph.FiniteObject.{u}}
+    (active : Graph.ActiveSurplusDemands
+      (Graph.MinimumDegreeAtLeast data.threshold)
+      (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
+      data.threshold)
+    {pair : Finset (object.Vertex × object.Vertex)}
+    (pairSubset : pair ⊆ object.excessPorts data.threshold)
+    (defect : Graph.ResidualTargetDefect (Graph.HasCycleWithLength data.LengthOK)
+      object pair (Graph.pairResponseActivation active).declaredSupport) :
+    DeclaredSparseSurplusExit data object := by
+  classical
+  refine .targetDefect ?_
+  refine Graph.ResidualTargetDefect.map
+    (fun demand => (Sum.inl demand : SparseDeclaredCoordinate data object))
+    ?_ ?_ ?_ defect
+  · intro first _ second _ equal
+    simpa using equal
+  · intro demand member
+    unfold sparseDeclaredFamily
+    rw [canonicalPairActivation_eq data object active]
+    simp only [Finset.mem_union, Finset.mem_image]
+    exact Or.inl ⟨demand, pairSubset member, rfl⟩
+  · intro demand _
+    unfold sparseDeclaredSupport
+    rw [canonicalPairActivation_eq data object active]
+    rfl
 
 /-- The actual seven-coordinate routing label on a pair of the certified
 source pattern. The cubic baseline and the same active shoulder witnesses bound
@@ -128,174 +183,6 @@ noncomputable def sameTokenActualRoutingLabel (data : Parameters)
     (boundaryProfile first firstMem, boundaryProfile second secondMem),
     windowLabel, chordFlag)
 
-/-- The source-bound Type B handoff at node [144]. The certified routed
-pattern, fixed equal-label demands, maximal same-support routes, first separator,
-constructor envelope and physical escape share one nested witness. The cubic
-equality is the retained baseline used by the actual routing label. -/
-noncomputable def SameTokenTypeBHandoffStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop := by
-  classical
-  letI : FinEnum object.Vertex := object.vertices
-  letI : DecidableRel object.graph.Adj := object.decideAdj
-  letI : DecidableEq object.Vertex := object.vertices.decEq
-  let armEdges (path : List object.Vertex) : Finset (Sym2 object.Vertex) :=
-    (path.zip path.tail).toFinset.image (fun pair => s(pair.1, pair.2))
-  let coreEdges (support : Finset object.Vertex) : Finset (Sym2 object.Vertex) :=
-    support.biUnion fun vertex =>
-      (support.filter fun other => object.graph.Adj vertex other).image
-        (fun other => s(vertex, other))
-  let firstEntry (arm suffix : List object.Vertex) (core : Finset object.Vertex) : Prop :=
-    arm <+: suffix ∧ arm.head? = suffix.head? ∧
-      ∃ terminal ∈ core, arm.getLast? = some terminal ∧
-        ∀ vertex ∈ arm, vertex ∈ core → vertex = terminal
-  exact
-    ∃ active : Graph.ActiveSurplusDemands
-        (Graph.MinimumDegreeAtLeast data.threshold)
-        (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object data.threshold,
-      ∃ capacity : Graph.CapacityPresentation object data.threshold data.windowOrder,
-        capacity.activation =
-          Graph.recordSparsePairDEBlockers
-            (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-            (LengthOK := data.LengthOK) (Graph.pairResponseActivation active)
-            (object.portPairSchedule data.threshold) ∧
-        ∃ cubic : data.threshold = 3,
-        ∃ certified : Graph.CertifiedObjectCapacityLedger object data.threshold
-            data.windowOrder data.surplusScale capacity,
-          let ledger := certified.ledger
-          ∃ (token : ledger.presented.Token) (role : Graph.SameTokenBlockerRoles.Role),
-            token ∈ ledger.presented.tokens ∧
-            0 < ledger.presented.coupledExcess ledger.presented.tokenClass
-              (fun _ => Graph.SameTokenBlockerRoles.geometricPatternBound data.routingLabelBound) ∧
-            ledger.presented.coupledExcess ledger.presented.tokenClass
-                (fun _ => Graph.SameTokenBlockerRoles.geometricPatternBound data.routingLabelBound) ≤
-              Graph.SameTokenBlockerRoles.sameTokenRoleBound * ledger.presented.tokens.card *
-                ledger.presented.roleFibreExcess ledger.presented.tokenClass
-                  (fun _ => Graph.SameTokenBlockerRoles.geometricPatternBound data.routingLabelBound) token role ∧
-            ((∃ pattern ⊆ ledger.presented.roleFibre token role,
-                Graph.PatternFamily.IsMatching pattern ∧
-                  Graph.PatternFamily.patternThreshold
-                    (ledger.presented.roleFibre token role).card ≤ pattern.card) ∨
-              (∃ centre, ∃ pattern ⊆ ledger.presented.roleFibre token role,
-                Graph.PatternFamily.IsStar pattern centre ∧
-                  Graph.PatternFamily.patternThreshold
-                    (ledger.presented.roleFibre token role).card ≤ pattern.card)) ∧
-            ∃ sourceClass : Graph.SameTokenBlockerRoles.TokenClass,
-              ledger.presented.tokenClass token = sourceClass ∧
-              ∃ root : object.Vertex,
-                root = Graph.CapacityPresentation.tokenRoot token ∧
-                let configuration (pair : Finset (object.Vertex × object.Vertex))
-                    (demand : object.Vertex × object.Vertex) :=
-                  Graph.SameTokenRoutingGerms.RoutingConfiguration object
-                    (capacity.sameTokenRoutingSupport token pair)
-                    (Graph.CapacityPresentation.tokenSupport token)
-                    (capacity.activation.localBuffer demand)
-                let valid (pair : Finset (object.Vertex × object.Vertex))
-                    (demand : object.Vertex × object.Vertex)
-                    (route : configuration pair demand) : Prop :=
-                  route.path.head? = some root ∧ route.path.getLast? = some demand.2
-                let routed (pattern : Finset (Finset (object.Vertex × object.Vertex))) : Prop :=
-                  Graph.SameTokenRoutingGerms.patternBound
-                    (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
-                      (Graph.WindowCurvature.Label data.windowOrder)) ≤ pattern.card ∧
-                  ∀ pair ∈ pattern, ∃ responseSupport : Finset object.Vertex,
-                    capacity.activation.pairSupport pair = some responseSupport ∧
-                    ∀ demand ∈ pair, ∃ route : configuration pair demand,
-                      valid pair demand route
-                let sourceEnvelope (pattern : Finset (Finset (object.Vertex × object.Vertex)))
-                    (subset : pattern ⊆ ledger.presented.roleFibre token role) : Prop :=
-                  ∃ (p : Finset (object.Vertex × object.Vertex)) (hp : p ∈ pattern),
-                  ∃ (q : Finset (object.Vertex × object.Vertex)) (hq : q ∈ pattern),
-                    p ≠ q ∧
-                    ∃ (dp : object.Vertex × object.Vertex) (hdp : dp ∈ p),
-                    ∃ (dq : object.Vertex × object.Vertex) (hdq : dq ∈ q),
-                      sameTokenActualRoutingLabel data object active cubic capacity certified
-                          token role pattern subset p hp dp hdp =
-                        sameTokenActualRoutingLabel data object active cubic capacity certified
-                          token role pattern subset q hq dq hdq ∧
-                      ∃ (rp : configuration p dp) (rq : configuration q dq),
-                        valid p dp rp ∧ valid q dq rq ∧
-                        (∀ (rp' : configuration p dp) (rq' : configuration q dq),
-                          valid p dp rp' → valid q dq rq' →
-                          Graph.SameTokenRoutingGerms.commonPrefixLength rp'.path rq'.path ≤
-                            Graph.SameTokenRoutingGerms.commonPrefixLength rp.path rq.path) ∧
-                        ∃ (h a b : object.Vertex) (common tailP tailQ : List object.Vertex),
-                          rp.path = common ++ h :: a :: tailP ∧
-                          rq.path = common ++ h :: b :: tailQ ∧
-                          ∃ different : a ≠ b,
-                          ∃ armP armQ : List object.Vertex,
-                            firstEntry armP (a :: tailP) {dp.2, dq.2} ∧
-                            firstEntry armQ (b :: tailQ) {dp.2, dq.2} ∧
-                            ∃ (adjP : object.graph.Adj h a) (adjQ : object.graph.Adj h b)
-                              (issuedP : armP.head? = some a) (issuedQ : armQ.head? = some b)
-                              (chainP : armP.IsChain object.graph.Adj)
-                              (chainQ : armQ.IsChain object.graph.Adj)
-                              (nodupP : armP.Nodup) (nodupQ : armQ.Nodup)
-                              (landsP : ∃ terminal, armP.getLast? = some terminal ∧
-                                terminal ∈ ({dp.2, dq.2} : Finset object.Vertex))
-                              (landsQ : ∃ terminal, armQ.getLast? = some terminal ∧
-                                terminal ∈ ({dp.2, dq.2} : Finset object.Vertex))
-                              (interiorP : ∀ vertex ∈ armP,
-                                vertex ∈ ({dp.2, dq.2} : Finset object.Vertex) ∨ vertex = h →
-                                armP.getLast? = some vertex)
-                              (interiorQ : ∀ vertex ∈ armQ,
-                                vertex ∈ ({dp.2, dq.2} : Finset object.Vertex) ∨ vertex = h →
-                                armQ.getLast? = some vertex)
-                              (high : handoffHighDegree data object h)
-                              (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
-                              (denied : ¬ handoffAbsorbing data object capacity.packing h a b)
-                              (deniedSwap : ¬ handoffAbsorbing data object capacity.packing h b a),
-                            ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-                                (handoffHighDegree data object)
-                                (handoffAbsorbing data object capacity.packing),
-                              envelope = Graph.DecoratedHandoff.envelopeOfFirstSeparator
-                                {dp.2, dq.2} h a b different adjP adjQ armP armQ
-                                issuedP issuedQ chainP chainQ nodupP nodupQ landsP landsQ
-                                interiorP interiorQ high avoids denied deniedSwap ∧
-                              ∃ z ∈ ({a, b} : Finset object.Vertex), ∃ x : object.Vertex,
-                                object.graph.Adj z x ∧ x ≠ h ∧
-                                s(z, x) ∉
-                                  ((armEdges (envelope.arm h a) ∪ armEdges (envelope.arm h b) ∪
-                                    {s(h, a), s(h, b)}) ∪ coreEdges envelope.core)
-                (∃ pattern, ∃ subset : pattern ⊆ ledger.presented.roleFibre token role,
-                  Graph.PatternFamily.IsMatching pattern ∧ routed pattern ∧
-                    sourceEnvelope pattern subset) ∨
-                (∃ centre, ∃ pattern, ∃ subset : pattern ⊆ ledger.presented.roleFibre token role,
-                  Graph.PatternFamily.IsStar pattern centre ∧ routed pattern ∧
-                    sourceEnvelope pattern subset)
-
-/-- **Nodes `[131]`/`[137]`, `prop:sparse-entropy-sandwich-with-blockers`'s
-entropy count, at the full pair schedule** (`prop:sparse-entropy-sandwich`,
-`cor:sparse-pair-entropy-saturation`): the mixed family `ℐ_spine ∪ ℛ_Π` of the
-node-`[129]` baseline spine demand and all `C(σ,2)` pair coordinates realizes
-its full code among the labelled skeletons of the current object,
-`2^{|ℐ_spine| + C(σ,2)} ≤ C(N,m)` (`lem:independent-target-entropy` with
-`lem:skeleton-dominates`).  The spine family is the one `def:baseline-spine-demand`
-names: it survives every functional admissible rank quotient and its deficit
-`E_spine ≤ C_E n` is admissible for the cubic baseline. -/
-def FreePairEntropySandwichStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  ∃ (Coordinate : Type u) (family : Finset Coordinate)
-    (coordinateSupport : Coordinate → Finset object.Vertex),
-    (∀ declared : Graph.DeclaredQuotient
-        (Graph.MinimumDegreeAtLeast data.threshold)
-        (Graph.HasCycleWithLength data.LengthOK) object family
-        coordinateSupport,
-      declared.toRankQuotient.FunctionalOn ↑family →
-        declared.toRankQuotient.LabelInjectiveOn ↑family) ∧
-      Nonempty (Graph.BaselineCodeRealization object family) ∧
-      Graph.cubicBaselineBudget object.vertexCount data.threshold ≤
-        2 ^ (family.card + Graph.spineDeficit object.vertexCount
-          data.threshold family.card) ∧
-      Graph.spineDeficit object.vertexCount data.threshold family.card ≤
-        data.surplusScale * object.vertexCount ∧
-      2 ^ (family.card + (object.degreeSurplus data.threshold).choose 2) ≤
-        Graph.skeletonBudget object ∧
-      2 ^ (object.degreeSurplus data.threshold).choose 2 ≤
-        2 ^ Graph.spineDeficit object.vertexCount data.threshold family.card *
-          object.vertexCount ^
-            (object.edgeCount -
-              Graph.cubicBaselineEdgeCount object.vertexCount data.threshold)
-
 /-- The canonical first failed pair extension of a realized baseline code.
 Every prefix through `index` still fits the current skeleton stratum, while
 adjoining the pair at that index is the first failed extension. -/
@@ -376,190 +263,6 @@ noncomputable def firstFailedPairExtensionOf
       realizedThrough := realizedThrough
       failedNext := failedNext }
 
-/-- The exact count-failure arm paired with node `[131]`'s sandwich.  It keeps
-the baseline family selected from the incoming `[129]` fact, identifies the
-literal full pair schedule, and retains its first failed pair extension. -/
-def FreePairCodeUnrealizedStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  ∃ (active : Graph.ActiveSurplusDemands
-        (Graph.MinimumDegreeAtLeast data.threshold)
-        (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
-        data.threshold)
-    (Coordinate : Type u) (family : Finset Coordinate)
-    (coordinateSupport : Coordinate → Finset object.Vertex),
-    (¬ Graph.HasSparsePairDEBlocker
-        (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-        (LengthOK := data.LengthOK) (Graph.pairResponseActivation active)
-          (object.portPairSchedule data.threshold)) ∧
-      (∀ declared : Graph.DeclaredQuotient
-        (Graph.MinimumDegreeAtLeast data.threshold)
-        (Graph.HasCycleWithLength data.LengthOK) object family
-        coordinateSupport,
-      declared.toRankQuotient.FunctionalOn ↑family →
-        declared.toRankQuotient.LabelInjectiveOn ↑family) ∧
-      Nonempty (Graph.BaselineCodeRealization object family) ∧
-      Graph.cubicBaselineBudget object.vertexCount data.threshold ≤
-        2 ^ (family.card + Graph.spineDeficit object.vertexCount
-          data.threshold family.card) ∧
-      Graph.spineDeficit object.vertexCount data.threshold family.card ≤
-        data.surplusScale * object.vertexCount ∧
-      (object.portPairSchedule data.threshold).card =
-        (object.degreeSurplus data.threshold).choose 2 ∧
-      ¬ 2 ^ (family.card +
-          (object.portPairSchedule data.threshold).card) ≤
-        Graph.skeletonBudget object ∧
-      (object.portPairSchedule data.threshold).Nonempty ∧
-      Nonempty (FirstFailedPairExtension object family
-        (object.portPairSchedule data.threshold))
-
-/-- The exact node-`[137]` input package.  A sealed fact row assembles this
-package from the capacity, pair, and baseline ledger keys before either entropy
-arm is selected. -/
-def BlockedPairEntropySetupStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  ∃ (active : Graph.ActiveSurplusDemands
-        (Graph.MinimumDegreeAtLeast data.threshold)
-        (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
-        data.threshold)
-      (capacity : Graph.CapacityPresentation object data.threshold
-        data.windowOrder),
-    capacity.activation =
-        (Graph.recordSparsePairDEBlockers
-          (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-          (LengthOK := data.LengthOK)
-          (Graph.pairResponseActivation active)
-          (object.portPairSchedule data.threshold)) ∧
-      (object.primitiveCarrier data.threshold).card =
-        object.vertexCount + 2 * object.edgeCount +
-          object.degreeSurplus data.threshold ∧
-      (object.primitiveCarrier data.threshold).card ≤
-        object.primitiveCarrierSupply data.threshold ∧
-      Graph.FiniteObject.ConcreteCapacityTokenLedgerStatement object
-        data.threshold data.windowOrder capacity.activation capacity.carrier
-        capacity.packing ∧
-      (object.portPairSchedule data.threshold).card =
-        (object.degreeSurplus data.threshold).choose 2 ∧
-      ∃ (Coordinate : Type u) (family : Finset Coordinate)
-        (coordinateSupport : Coordinate → Finset object.Vertex),
-        (∀ declared : Graph.DeclaredQuotient
-            (Graph.MinimumDegreeAtLeast data.threshold)
-            (Graph.HasCycleWithLength data.LengthOK) object family
-            coordinateSupport,
-          declared.toRankQuotient.FunctionalOn ↑family →
-            declared.toRankQuotient.LabelInjectiveOn ↑family) ∧
-          Nonempty (Graph.BaselineCodeRealization object family) ∧
-          Graph.cubicBaselineBudget object.vertexCount data.threshold ≤
-            2 ^ (family.card + Graph.spineDeficit object.vertexCount
-              data.threshold family.card) ∧
-          Graph.spineDeficit object.vertexCount data.threshold family.card ≤
-            data.surplusScale * object.vertexCount
-
-/-- **Node `[137]`, `prop:sparse-entropy-sandwich-with-blockers` at the exact
-node-`[136]` presentation.**  The presentation and every accounting identity
-needed to recognize it are copied from the incoming `ExactLedger`; the entropy
-count therefore concerns the free side of that very `Θ_cap`, not an arbitrary
-or empty presentation. -/
-def BlockedPairEntropySandwichStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  ∃ (active : Graph.ActiveSurplusDemands
-        (Graph.MinimumDegreeAtLeast data.threshold)
-        (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
-        data.threshold)
-      (capacity : Graph.CapacityPresentation object data.threshold
-        data.windowOrder),
-    capacity.activation =
-        (Graph.recordSparsePairDEBlockers
-          (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-          (LengthOK := data.LengthOK)
-          (Graph.pairResponseActivation active)
-          (object.portPairSchedule data.threshold)) ∧
-      (object.primitiveCarrier data.threshold).card =
-        object.vertexCount + 2 * object.edgeCount +
-          object.degreeSurplus data.threshold ∧
-      (object.primitiveCarrier data.threshold).card ≤
-        object.primitiveCarrierSupply data.threshold ∧
-      Graph.FiniteObject.ConcreteCapacityTokenLedgerStatement object
-        data.threshold data.windowOrder capacity.activation capacity.carrier
-        capacity.packing ∧
-      (object.portPairSchedule data.threshold).card =
-        (object.degreeSurplus data.threshold).choose 2 ∧
-      ∃ (Coordinate : Type u) (family : Finset Coordinate)
-      (coordinateSupport : Coordinate → Finset object.Vertex),
-      (∀ declared : Graph.DeclaredQuotient
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) object family
-          coordinateSupport,
-        declared.toRankQuotient.FunctionalOn ↑family →
-          declared.toRankQuotient.LabelInjectiveOn ↑family) ∧
-        Nonempty (Graph.BaselineCodeRealization object family) ∧
-        Graph.cubicBaselineBudget object.vertexCount data.threshold ≤
-          2 ^ (family.card + Graph.spineDeficit object.vertexCount
-            data.threshold family.card) ∧
-        Graph.spineDeficit object.vertexCount data.threshold family.card ≤
-          data.surplusScale * object.vertexCount ∧
-        2 ^ (family.card +
-            (Graph.freeSide object.vertexPairDecidableEq
-              (object.portPairSchedule data.threshold)
-            capacity.tokenOrder capacity.Eligible
-            capacity.eligibleDecidable).card) ≤
-          Graph.skeletonBudget object
-
-/-- The paired count-failure arm, retaining the same concrete node-`[136]`
-presentation and node-`[129]` baseline family. -/
-def BlockedPairCodeUnrealizedStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  ∃ (active : Graph.ActiveSurplusDemands
-        (Graph.MinimumDegreeAtLeast data.threshold)
-        (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
-        data.threshold)
-      (capacity : Graph.CapacityPresentation object data.threshold
-        data.windowOrder),
-    capacity.activation =
-        (Graph.recordSparsePairDEBlockers
-          (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-          (LengthOK := data.LengthOK)
-          (Graph.pairResponseActivation active)
-          (object.portPairSchedule data.threshold)) ∧
-      (object.primitiveCarrier data.threshold).card =
-        object.vertexCount + 2 * object.edgeCount +
-          object.degreeSurplus data.threshold ∧
-      (object.primitiveCarrier data.threshold).card ≤
-        object.primitiveCarrierSupply data.threshold ∧
-      Graph.FiniteObject.ConcreteCapacityTokenLedgerStatement object
-        data.threshold data.windowOrder capacity.activation capacity.carrier
-        capacity.packing ∧
-      (object.portPairSchedule data.threshold).card =
-        (object.degreeSurplus data.threshold).choose 2 ∧
-      ∃ (Coordinate : Type u) (family : Finset Coordinate)
-        (coordinateSupport : Coordinate → Finset object.Vertex),
-        (∀ declared : Graph.DeclaredQuotient
-            (Graph.MinimumDegreeAtLeast data.threshold)
-            (Graph.HasCycleWithLength data.LengthOK) object family
-            coordinateSupport,
-          declared.toRankQuotient.FunctionalOn ↑family →
-            declared.toRankQuotient.LabelInjectiveOn ↑family) ∧
-          Nonempty (Graph.BaselineCodeRealization object family) ∧
-          Graph.cubicBaselineBudget object.vertexCount data.threshold ≤
-            2 ^ (family.card + Graph.spineDeficit object.vertexCount
-              data.threshold family.card) ∧
-          Graph.spineDeficit object.vertexCount data.threshold family.card ≤
-            data.surplusScale * object.vertexCount ∧
-          ¬ 2 ^ (family.card +
-            (Graph.freeSide object.vertexPairDecidableEq
-              (object.portPairSchedule data.threshold)
-              capacity.tokenOrder capacity.Eligible
-              capacity.eligibleDecidable).card) ≤
-            Graph.skeletonBudget object ∧
-          (Graph.freeSide object.vertexPairDecidableEq
-            (object.portPairSchedule data.threshold)
-            capacity.tokenOrder capacity.Eligible
-            capacity.eligibleDecidable).Nonempty ∧
-          Nonempty (FirstFailedPairExtension object family
-            (Graph.freeSide object.vertexPairDecidableEq
-              (object.portPairSchedule data.threshold)
-              capacity.tokenOrder capacity.Eligible
-              capacity.eligibleDecidable))
-
 /-- The route-independent first pair-code failure consumed at node `[178]`.
 The pair set is the literal schedule selected by `[131]` or `[137]`; the
 baseline realization and least failed extension are those retained by that
@@ -583,11 +286,11 @@ structure PairOverlapFirstFailure (data : Parameters)
     ¬ Graph.SparsePairDEProfileObstructionAt
         (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
         (LengthOK := data.LengthOK) (Graph.pairResponseActivation active)
-          (object.portPairSchedule data.threshold) pair ∧
+          pair ∧
       ¬ Graph.SparsePairDEResponseObstructionAt
         (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
         (LengthOK := data.LengthOK) (Graph.pairResponseActivation active)
-          (object.portPairSchedule data.threshold) pair
+          pair
   firstFailure : FirstFailedPairExtension object baselineFamily pairSet
   responseSupport : Finset object.Vertex
   responseSupport_selected :
@@ -628,11 +331,11 @@ noncomputable def of
       ¬ Graph.SparsePairDEProfileObstructionAt
           (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
           (LengthOK := data.LengthOK) (Graph.pairResponseActivation active)
-            (object.portPairSchedule data.threshold) pair ∧
+            pair ∧
         ¬ Graph.SparsePairDEResponseObstructionAt
           (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
           (LengthOK := data.LengthOK) (Graph.pairResponseActivation active)
-            (object.portPairSchedule data.threshold) pair)
+            pair)
     (firstFailure : FirstFailedPairExtension object baselineFamily pairSet)
     (connected : object.graph.Connected) :
     PairOverlapFirstFailure data object := by
@@ -741,12 +444,6 @@ theorem failedPairConnector_connectedOn
 
 end PairOverlapFirstFailure
 
-/-- Node `[178]`'s common first-failure package after normalizing the full
-schedule and capacity-free-side routes. -/
-def PairOverlapFirstFailureStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  Nonempty (PairOverlapFirstFailure data object)
-
 /-- The union of the literal port-return supports of all pairs in the current
 first-failure package.  Decidable equality is an execution detail of the
 finite union and is deliberately kept behind this mathematical definition. -/
@@ -824,12 +521,6 @@ def toSkeletonModel {data : Parameters} {object : Graph.FiniteObject.{u}}
   responseSupport_connected := system.responseSupport_connected
 
 end PairOverlapSystem
-
-/-- The exact node-`[178]` pair-overlap system on either normalized count-failure
-route. -/
-def PairOverlapSystemStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  Nonempty (PairOverlapSystem data object)
 
 namespace PairOverlapSystem
 
@@ -955,14 +646,6 @@ abbrev ConditionalFactorization {data : Parameters}
 
 end PairOverlapSystem
 
-/-- The affirmative arm of the node-`[178]` conditional-factorization test.
-The subtype retains the literal system read from `pairOverlapSystem`; it does
-not assert the theorem for arbitrary pair systems. -/
-def PairConditionalFactorizationStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  Nonempty {system : PairOverlapSystem data object //
-    system.ConditionalFactorization}
-
 /-- **`lem:pair-failure-overlap`, node `[178]`.**
 
 The retained numerical first failure is converted into a deficient exact
@@ -979,10 +662,6 @@ structure PairFailureOverlap (data : Parameters)
     left ≠ right ∧ system.toSkeletonModel.Overlaps left right
   connected : Graph.SupportComponents.Connected.ConnectedOn object
     (system.overlapSupport family)
-
-def PairFailureOverlapStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  Nonempty (PairFailureOverlap data object)
 
 /-! ## Node `[179]`: the two canonical closing returns -/
 /-- The two active demands of the selected pair obstruction, together with the
@@ -1269,125 +948,6 @@ noncomputable def toSystem {data : Parameters}
 
 end PairSerialDemandSystem
 
-/-- The already-closed alternatives (i)--(iv) of
-`lem:pair-system-realizability`. -/
-inductive PairSystemEarlyOutcome (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Type (u + 1) where
-  | targetCycle (cycle : Graph.HasCycleWithLength data.LengthOK object)
-  | sparseExit (exit : DeclaredSparseSurplusExit data object)
-  | typeB (handoff : SameTokenTypeBHandoffStatement data object)
-
-/-- The five alternatives of `lem:pair-system-realizability`, tied to the
-literal overlap obstruction read from the ledger. -/
-inductive PairSystemRealizabilityOutcome {data : Parameters}
-    {object : Graph.FiniteObject.{u}}
-    (returns : PairDemandReturns data object) : Type (u + 1) where
-  | early (outcome : PairSystemEarlyOutcome data object)
-  | serial (system : PairSerialDemandSystem data object)
-      (same_returns : system.returns = returns)
-
-def PairSystemRealizabilityStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  Nonempty {returns : PairDemandReturns data object //
-    Nonempty (PairSystemRealizabilityOutcome returns)}
-
-def PairSystemEarlyOutcomeStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  Nonempty (PairSystemEarlyOutcome data object)
-
-def PairSerialDemandSystemStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  Nonempty (PairSerialDemandSystem data object)
-
-/-- The exact arithmetic input of node `[180]`.  Its spectrum is obtained by
-the canonical `SerialSystem.System.spectrum` constructor from the graph-realized
-node-`[179]` system.  Thus the doubling-orbit theorem is applied to actual
-cycles and to its full-modulus/range hypotheses, not to a raw odd projection. -/
-structure PairSerialArithmetic {data : Parameters}
-    {object : Graph.FiniteObject.{u}}
-    (serial : PairSerialDemandSystem data object) : Type (u + 1) where
-  base : Fin serial.cells → Nat
-  base_mem : ∀ index, base index ∈ serial.lengths index
-  modulus : Nat
-  modulus_neZero : NeZero modulus
-  frequent : Finset (Fin serial.cells)
-  increment : ∀ index ∈ frequent,
-    base index + modulus ∈ serial.lengths index
-  smear : Nat
-  offsets : ∀ residue ≤ smear, residue ∈ serial.offsets
-  wide : smear + 1 ≤ modulus
-  criterion : modulus - (smear + 1) < orderOf (2 : ZMod modulus)
-  spanning :
-    let spectrum := (serial.toSystem.spectrum base base_mem modulus frequent
-      increment smear offsets)
-    @Graph.SerialSystem.Spectrum.ScaleSpanning spectrum modulus_neZero
-
-namespace PairSerialArithmetic
-
-noncomputable def spectrum {data : Parameters}
-    {object : Graph.FiniteObject.{u}}
-    {serial : PairSerialDemandSystem data object}
-    (arithmetic : PairSerialArithmetic serial) : Graph.SerialSystem.Spectrum :=
-  serial.toSystem.spectrum arithmetic.base arithmetic.base_mem
-    arithmetic.modulus arithmetic.frequent arithmetic.increment
-    arithmetic.smear arithmetic.offsets
-
-end PairSerialArithmetic
-
-/-- The periodic-response alternatives of node `[180]` that are already
-routed by the paper: a named sparse exit or the same-token Type B handoff of
-`lem:same-token-bottleneck-routing`. -/
-inductive PairIncrementEarlyOutcome (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Type (u + 1) where
-  | sparseExit (exit : DeclaredSparseSurplusExit data object)
-  | typeB (handoff : SameTokenTypeBHandoffStatement data object)
-
-/-- The exhaustive conclusion claimed by
-`lem:pair-system-increment-arithmetic`: either the corrected full-modulus
-arithmetic applies, or the periodic response has one of its two routed forms. -/
-inductive PairIncrementOutcome {data : Parameters}
-    {object : Graph.FiniteObject.{u}}
-    (serial : PairSerialDemandSystem data object) : Type (u + 1) where
-  | arithmetic (input : PairSerialArithmetic serial)
-  | early (outcome : PairIncrementEarlyOutcome data object)
-
-def PairIncrementCoveredStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  Nonempty {serial : PairSerialDemandSystem data object //
-    Nonempty (PairIncrementOutcome serial)}
-
-def PairIncrementEarlyOutcomeStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  Nonempty (PairIncrementEarlyOutcome data object)
-
-def PairSerialArithmeticStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  Nonempty {serial : PairSerialDemandSystem data object //
-    Nonempty (PairSerialArithmetic serial)}
-
-/-- The actual accepted cycle published by node `[180]` before the standard
-incompatibility closure against node `[1]`. -/
-def PairPowerOfTwoCycleStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  Graph.HasCycleWithLength data.LengthOK object
-
-/-- Node `[182]` is the one honest open endpoint for every exact place where
-the paper's `[178]`--`[180]` chain is not exhaustive.  Each constructor retains
-the literal upstream object on which the corresponding claimed implication
-fails; none is relabelled as a blocker, quotient, exit, or Type B witness. -/
-inductive PairUncoveredResidual (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Type (u + 1) where
-  | factorization (system : PairOverlapSystem data object)
-      (failure : ¬ system.ConditionalFactorization)
-  | systemRealizability (returns : PairDemandReturns data object)
-      (failure : ¬ Nonempty (PairSystemRealizabilityOutcome returns))
-  | incrementArithmetic (serial : PairSerialDemandSystem data object)
-      (failure : ¬ Nonempty (PairIncrementOutcome serial))
-
-def PairConditionalFactorizationResidualStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  Nonempty (PairUncoveredResidual data object)
-
 /-! ## Key statements
 
 The statement each vocabulary key of this family publishes, stated over the
@@ -1464,18 +1024,12 @@ noncomputable abbrev BaselineSpineDemandStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- Node `[129]`, exactly `def:baseline-spine-demand`: the already-built
-  -- active family together with one concrete declared, independently
-  -- target-testable spine family, its canonical deficit, and the bound
-  -- `E_spine <= C_E n`.  This has no window-package premise: that package
-  -- belongs exclusively to `[21]`.
-  (Graph.ActiveSurplusDemands
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
-      data.threshold ∧
-    ∃ (Coordinate : Type u) (family : Finset Coordinate)
-      (coordinateSupport : Coordinate → Finset object.Vertex),
-      BaselineSpineFamilySpec data object Coordinate family coordinateSupport)
+  -- Node `[129]`, exactly `def:baseline-spine-demand`, at G's canonical
+  -- spine family: the `Classical.choose` of this node's own `∃`-body, so
+  -- every later key speaks about the family this node exhibits.
+  ∃ spine, canonicalBaselineSpineFamily data object = some spine ∧
+    BaselineSpineFamilySpec data object spine.Coordinate spine.family
+      spine.coordinateSupport
 
 /-- Nodes `[130]`--`[134]`, `def:sparse-pair-response`'s pair schedule with
 `def:canonical-blocker-ledger` and
@@ -1487,18 +1041,13 @@ noncomputable abbrev CanonicalPairLedgerStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  ∃ (active : Graph.ActiveSurplusDemands
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
-      data.threshold)
-    (certificate : Graph.HasSparsePairDEBlocker
+  ∃ activation, canonicalPairActivation data object = some activation ∧
+    Graph.HasSparsePairDEBlocker
       (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-      (LengthOK := data.LengthOK) (Graph.pairResponseActivation active)
-        (object.portPairSchedule data.threshold)),
-    let activation := Graph.pairResponseActivation active
+      (LengthOK := data.LengthOK) activation
+        (object.portPairSchedule data.threshold) ∧
     let pairs := object.portPairSchedule data.threshold
-    pairs = object.portPairSchedule data.threshold ∧
-      pairs.card = (object.degreeSurplus data.threshold).choose 2 ∧
+    pairs.card = (object.degreeSurplus data.threshold).choose 2 ∧
       let recorded := Graph.recordSparsePairDEBlockers
         (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
         (LengthOK := data.LengthOK) activation pairs
@@ -1566,96 +1115,82 @@ noncomputable abbrev CanonicalBlockerRouteStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- Node `[132]`, blocker arm: the exact complement of `.sparsePairExit`
-  -- (no sparse surplus exit of `def:named-surplus-exits` occurs), with
-  -- the blocked pair of `[130]` and its canonical blocker
-  -- `Φ_can(π) = min_≺ Blk(π)` of `def:canonical-blocker-ledger`.
+  -- Node `[132]`, blocker arm: G survives the sparse exits of its declared
+  -- family, and at G's canonical activation the blocked pair of `[130]` has
+  -- its canonical blocker `Φ_can(π) = min_≺ Blk(π)` of
+  -- `def:canonical-blocker-ledger`.
   DeclaredSparseSurvivor data object ∧
-    ∃ (active : Graph.ActiveSurplusDemands
-        (Graph.MinimumDegreeAtLeast data.threshold)
-        (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
-        data.threshold)
-      (_certificate : Graph.HasSparsePairDEBlocker
+    ∃ activation, canonicalPairActivation data object = some activation ∧
+      Graph.HasSparsePairDEBlocker
         (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-        (LengthOK := data.LengthOK) (Graph.pairResponseActivation active)
-          (object.portPairSchedule data.threshold)),
+        (LengthOK := data.LengthOK) activation
+          (object.portPairSchedule data.threshold) ∧
       let recorded := Graph.recordSparsePairDEBlockers
         (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-        (LengthOK := data.LengthOK) (Graph.pairResponseActivation active)
+        (LengthOK := data.LengthOK) activation
         (object.portPairSchedule data.threshold)
       ∃ pair ∈ object.portPairSchedule data.threshold,
         (recorded.blockers pair).Nonempty ∧
           ∃ blocker, Graph.FiniteObject.canonicalBlocker recorded pair =
             some blocker
 
-/-- Node `[130]`, blocked/dependent arm: a concrete `Π`, its declared
-response family `ℛ_Π`, and the rank-reducing attempted quotient consumed by
-node `[132]`. -/
+/-- Node `[130]`, blocked/dependent arm
+(`prop:sparse-pair-independence-dichotomy`, tex 4721): at G's canonical
+pair-response activation (node `[125]`), the full schedule `Π(𝒜₀)` carries a
+clause-(d)/(e) blocker of `def:surplus-blockers`. -/
 noncomputable abbrev DependentPairFamilyStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- Node `[130]`, no: one pair in the full schedule carries a literal
-  -- clause-(d)/(e) obstruction.  Clause (e) includes the manuscript's
-  -- target-defect, compression, and support-dependence events.
-  ∃ active : Graph.ActiveSurplusDemands
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
-      data.threshold,
-    let activation := Graph.pairResponseActivation active
-    let pairs := object.portPairSchedule data.threshold
+  -- Node `[130]`, no: at G's canonical activation, one pair of the full
+  -- schedule carries a literal clause-(d)/(e) obstruction.
+  ∃ activation, canonicalPairActivation data object = some activation ∧
     Graph.HasSparsePairDEBlocker
       (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-      (LengthOK := data.LengthOK) activation pairs
+      (LengthOK := data.LengthOK) activation
+        (object.portPairSchedule data.threshold)
 
-/-- Node `[130]`, independent arm: the exact negation of the dependent arm on
-the same object -- no active family's full pair schedule carries a clause-(d)/(e)
-obstruction.  The active family is a proposition, so this is the paper's
-"blocker-free" for the one concrete full response family. -/
+/-- Node `[130]`, independent arm: at the same canonical activation of G, the
+full schedule carries no clause-(d)/(e) blocker -- the exact complement of the
+dependent arm about the one pair-response family `ℛ_Π` of G. -/
 noncomputable abbrev IndependentPairFamilyStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- Node `[130]`, yes: the literal complement of the no-arm above.
-  ¬ DependentPairFamilyStatement data object
+  -- Node `[130]`, yes: the same activation, and no blocker on the schedule.
+  ∃ activation, canonicalPairActivation data object = some activation ∧
+    ¬ Graph.HasSparsePairDEBlocker
+      (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+      (LengthOK := data.LengthOK) activation
+        (object.portPairSchedule data.threshold)
 
-/-- Node `[131]`, `lem:mixed-sparse-spine-dependence` on the concrete
-baseline spine family and full pair-response schedule. -/
+/-- Node `[131]`, `lem:mixed-sparse-spine-dependence` (tex 4872), on G's
+canonical baseline spine family (node `[129]`) and G's full pair-response
+schedule at its canonical activation (node `[125]`). -/
 noncomputable abbrev MixedSparseSpineDependenceStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
-    Prop := by
+    Prop :=
+  by
   classical
-  exact ∃ (active : Graph.ActiveSurplusDemands
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
-      data.threshold)
-    (Coordinate : Type u) (family : Finset Coordinate)
-    (coordinateSupport : Coordinate → Finset object.Vertex),
-    (∀ declared : Graph.DeclaredQuotient
-        (Graph.MinimumDegreeAtLeast data.threshold)
-        (Graph.HasCycleWithLength data.LengthOK) object family
-        coordinateSupport,
-      declared.toRankQuotient.FunctionalOn ↑family →
-        declared.toRankQuotient.LabelInjectiveOn ↑family) ∧
-      Graph.cubicBaselineBudget object.vertexCount data.threshold ≤
-        2 ^ (family.card + Graph.spineDeficit object.vertexCount
-          data.threshold family.card) ∧
-      Graph.spineDeficit object.vertexCount data.threshold family.card ≤
-        data.surplusScale * object.vertexCount ∧
-      let activation := Graph.pairResponseActivation active
+  exact ∃ activation, canonicalPairActivation data object = some activation ∧
+    ∃ spine, canonicalBaselineSpineFamily data object = some spine ∧
       let pairs := object.portPairSchedule data.threshold
       let pairFamily := activation.pairFamily pairs
-      let mixedFamily : Finset (Sum Coordinate object.PairCoordinate) :=
-        family.image Sum.inl ∪ pairFamily.image Sum.inr
-      let mixedSupport : Sum Coordinate object.PairCoordinate →
+      let mixedFamily : Finset (Sum spine.Coordinate object.PairCoordinate) :=
+        spine.family.image Sum.inl ∪ pairFamily.image Sum.inr
+      let mixedSupport : Sum spine.Coordinate object.PairCoordinate →
           Finset object.Vertex :=
-        Sum.elim coordinateSupport (by
+        Sum.elim spine.coordinateSupport (by
           letI := object.vertices.decEq
           exact Graph.DeclaredSignature.Coordinate.support)
-      -- `lem:mixed-sparse-spine-dependence`: the union does not survive the
-      -- admissible quotient system — some functional admissible rank
-      -- quotient of the mixed family is rank-reducing.
+      -- `lem:mixed-sparse-spine-dependence`: if the union of G's spine
+      -- family and G's pair-response family does not survive the admissible
+      -- quotient system, a sparse exit of G's declared family occurs, or a
+      -- scheduled pair carries a blocker of type (d)/(e): two of the mixed
+      -- coordinates read on G's own piece at their canonical support are
+      -- profile-separated or target-defective, or the attempted
+      -- determination's support admits a target-complete replacement.
       (¬ ∀ declared : Graph.DeclaredQuotient
           (Graph.MinimumDegreeAtLeast data.threshold)
           (Graph.HasCycleWithLength data.LengthOK) object
@@ -1668,12 +1203,10 @@ noncomputable abbrev MixedSparseSpineDependenceStatement
                 (Graph.MinimumDegreeAtLeast data.threshold)
                 (Graph.HasCycleWithLength data.LengthOK) object
                 mixedFamily mixedSupport,
-              ((∃ left right, attempt.Identifies left right ∧
-                  left.boundaryDegreeProfile ≠
-                    right.boundaryDegreeProfile) ∨
-                (∃ left right, attempt.Identifies left right ∧
-                  Graph.Response.TargetDefect
-                    (Graph.HasCycleWithLength data.LengthOK) left right) ∨
+              (Graph.ResidualProfileSeparation object mixedFamily mixedSupport ∨
+                Graph.ResidualTargetDefect
+                  (Graph.HasCycleWithLength data.LengthOK) object
+                  mixedFamily mixedSupport ∨
                 Graph.Strategy.InterfaceReplacement.ReplacementSupport
                   (Graph.MinimumDegreeAtLeast data.threshold)
                   (Graph.HasCycleWithLength data.LengthOK) object
@@ -1733,15 +1266,20 @@ noncomputable abbrev SparseUpperEnvelopeStatement
     (object : Graph.FiniteObject.{u}) :
     Prop :=
   (object.edgeCount + 2 ≤ (data.threshold - 1) * object.vertexCount) ∧
-    ∃ packing : Finset (Finset object.Vertex),
-      object.IsWindowPacking data.windowOrder packing ∧
-        packing.card = object.windowPackingNumber data.windowOrder ∧
-        (object.windowRemainderIncidences packing).card +
-            (2 * (data.windowOrder - 1) * packing.card +
-              (object.crossWindowIncidences packing).card) =
-          data.threshold * (data.windowOrder * packing.card) +
-            object.ambientSurplus (object.windowSupport packing)
-              data.threshold
+    let packing := canonicalWindowPacking data object
+    (object.windowRemainderIncidences packing).card +
+        (2 * (data.windowOrder - 1) * packing.card +
+          (object.crossWindowIncidences packing).card) =
+      data.threshold * (data.windowOrder * packing.card) +
+        object.ambientSurplus (object.windowSupport packing) data.threshold
+
+/-- `D_all` of a certified capacity-token ledger at the geometric caps
+(`prop:single-graph-sparse-pressure-routing`). -/
+noncomputable abbrev sparseCoupledExcess (data : Parameters)
+    {object : Graph.FiniteObject.{u}} {capacity : SurplusCapacity data object}
+    (certified : SurplusCertified data object capacity) : Nat :=
+  certified.ledger.presented.coupledExcess certified.ledger.presented.tokenClass
+    fun _ => Graph.SameTokenBlockerRoles.geometricPatternBound data.routingLabelBound
 
 /-- Nodes `[134]`--`[136]`, `def:primitive-sparse-blocker-carrier` with
 `lem:primitive-carrier-supply`, `def:capacity-token-ledger` with
@@ -1759,30 +1297,10 @@ noncomputable abbrev CapacityTokenLedgerStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- The one concrete activation/carrier/packing presentation constructed
-  -- at `[136]`, together with every accounting identity proved there.
-  ∃ active : Graph.ActiveSurplusDemands
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
-      data.threshold,
-    ∃ capacity : Graph.CapacityPresentation object data.threshold
-      data.windowOrder,
-    capacity.activation =
-        (Graph.recordSparsePairDEBlockers
-          (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-          (LengthOK := data.LengthOK)
-          (Graph.pairResponseActivation active)
-          (object.portPairSchedule data.threshold)) ∧
-      (object.primitiveCarrier data.threshold).card =
-        object.vertexCount + 2 * object.edgeCount +
-          object.degreeSurplus data.threshold ∧
-      (object.primitiveCarrier data.threshold).card ≤
-        object.primitiveCarrierSupply data.threshold ∧
-      Graph.FiniteObject.ConcreteCapacityTokenLedgerStatement object
-        data.threshold data.windowOrder capacity.activation capacity.carrier
-        capacity.packing ∧
-      Graph.SupportComponents.Connected.ConnectedOn object
-        object.vertexFinset
+  -- The node-`[136]` presentation `𝔗_cap` of G: activation, carrier and the
+  -- node-`[19]` packing, with every accounting identity proved there.
+  ∃ capacity, canonicalCapacity data object = some capacity ∧
+    CapacityLedgerSpec data object capacity
 
 /-- Node `[137]`, `lem:exact-surplus-pair-charge-partition` with
 `thm:sharp-classwise-homogeneous-token-budget` (a)--(c) and
@@ -1796,21 +1314,11 @@ noncomputable abbrev RoleFibrePartitionSchema
     (object : Graph.FiniteObject.{u}) :
     Prop :=
   -- `lem:exact-surplus-pair-charge-partition` with the classwise and
-  -- subtype budgets, at the object's own capacity-token ledger.
-  ∃ active : Graph.ActiveSurplusDemands
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
-      data.threshold,
-    ∃ capacity : Graph.CapacityPresentation object data.threshold
-        data.windowOrder,
-      capacity.activation =
-          (Graph.recordSparsePairDEBlockers
-            (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-            (LengthOK := data.LengthOK)
-            (Graph.pairResponseActivation active)
-            (object.portPairSchedule data.threshold)) ∧
-        Graph.RoleFibrePartitionStatement object data.threshold
-          data.windowOrder data.surplusScale capacity
+  -- subtype budgets, at G's canonical certified capacity-token ledger.
+  ∃ (capacity : SurplusCapacity data object)
+      (certified : SurplusCertified data object capacity),
+    canonicalCertifiedCapacityData data object = some ⟨capacity, certified⟩ ∧
+    CertifiedLedgerSpec data object capacity certified
 
 /-- Nodes `[137]`--`[143]`, `lem:capacity-token-high-load` with
 `cor:forced-homogeneous-same-token-scale`,
@@ -1824,24 +1332,11 @@ noncomputable abbrev FibrePressureSchema
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- `lem:capacity-token-high-load` with
-  -- `cor:forced-homogeneous-same-token-scale` and the two sharp budgets,
-  -- existential in the object's own capacity-token ledger at every declared
-  -- presentation.
-  ∃ active : Graph.ActiveSurplusDemands
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
-      data.threshold,
-    ∃ capacity : Graph.CapacityPresentation object data.threshold
-        data.windowOrder,
-      capacity.activation =
-          (Graph.recordSparsePairDEBlockers
-            (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-            (LengthOK := data.LengthOK)
-            (Graph.pairResponseActivation active)
-            (object.portPairSchedule data.threshold)) ∧
-        Graph.FibrePressureStatement object data.threshold data.windowOrder
-          data.surplusScale capacity
+  -- `lem:capacity-token-high-load` at G's canonical certified ledger.
+  ∃ (capacity : SurplusCapacity data object)
+      (certified : SurplusCertified data object capacity),
+    canonicalCertifiedCapacityData data object = some ⟨capacity, certified⟩ ∧
+    Graph.FibrePressureAt certified
 
 /-- Node `[137]`, `cor:spine-lower-bound-surplus-estimates`: a lower-bound
 package of `def:spine-lower-bound-deficits` that bounds the pair schedule
@@ -1856,271 +1351,128 @@ noncomputable abbrev SpineSurplusEstimateStatement
   object.degreeSurplus data.threshold ≤
     data.spineScale * Core.ceilSqrt object.vertexCount
 
-/-- Node `[137]`, overload arm of
-`prop:single-graph-sparse-pressure-routing` (b) with
-`cor:coupled-single-graph-overload-budget` and
-`cor:quantified-homogeneous-class-overload`: some capacity-token ledger of the
-object has `D_all > 0`, and a role fibre absorbing its share over the
-`Q_st|𝔗_cap|` slots carries a role-homogeneous same-token matching or star.
-`class(t)` routes to `[140]`, `[142]` or `[143]`. -/
+/-- Node `[137]`, overload arm of `prop:single-graph-sparse-pressure-routing`
+(b): at G's canonical certified capacity-token ledger the coupled excess
+`D_all` at the geometric caps is positive.  The overloading token and role are
+then the canonical ones (`canonicalOverloadTokenAt`), which `[139]`--`[143]`
+read. -/
 noncomputable abbrev SparsePressureOverloadSchema
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- `prop:single-graph-sparse-pressure-routing` (b) with
-  -- `cor:coupled-single-graph-overload-budget`.
-  ∃ active : Graph.ActiveSurplusDemands
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
-      data.threshold,
-    ∃ capacity : Graph.CapacityPresentation object data.threshold
-        data.windowOrder,
-      capacity.activation =
-          (Graph.recordSparsePairDEBlockers
-            (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-            (LengthOK := data.LengthOK)
-            (Graph.pairResponseActivation active)
-            (object.portPairSchedule data.threshold)) ∧
-        Graph.SparsePressureOverloadStatement object data.threshold
-          data.windowOrder data.surplusScale data.routingLabelBound capacity
+  -- `prop:single-graph-sparse-pressure-routing` (b): `D_all > 0` at G's
+  -- canonical certified ledger.
+  ∃ (capacity : SurplusCapacity data object)
+      (certified : SurplusCertified data object capacity),
+    canonicalCertifiedCapacityData data object = some ⟨capacity, certified⟩ ∧
+    0 < sparseCoupledExcess data certified
 
 /-- Node `[137]`, no arm of the coupled test `D_all > 0?`
 (`prop:single-graph-sparse-pressure-routing` (a)): the exact negation of the
-overload arm on the same object -- no capacity-token ledger of the object has
-positive coupled excess.  Node `[138]` derives `σ(G) ≤ C_sp ⌈√n⌉` from it. -/
+overload arm -- G's canonical certified capacity-token ledger does not have
+positive coupled excess.  Node `[138]` derives `σ(G) ≤ C_sp ⌈√n⌉` from it at
+that ledger. -/
 noncomputable abbrev SparsePressureNearCubicStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  ¬ SparsePressureOverloadSchema data object
+  -- `prop:single-graph-sparse-pressure-routing` (a): `D_all = 0` at G's
+  -- canonical certified ledger -- the literal complement of the overload arm.
+  ∀ (capacity : SurplusCapacity data object)
+      (certified : SurplusCertified data object capacity),
+    canonicalCertifiedCapacityData data object = some ⟨capacity, certified⟩ →
+      ¬ 0 < sparseCoupledExcess data certified
 
-/-- Node `[179]`: the two literal demands of the failed pair, their
-canonical port returns, the connected `X_π ∪ R_p ∪ R_q` connector, and the
-graph-derived return-length bound used in `D_sp`. -/
-noncomputable abbrev PairDemandReturnsStatement
-    (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  Nonempty (PairDemandReturns data object)
-
-/-- Node `[139]`, yes arm: the overloading token of node `[137]` lies in
-`𝔗_W`, so the branch enters the window-incidence audit `[140]`. -/
+/-- Node `[139]`, yes arm: the overloading token of node `[137]` (the canonical
+overload of G) lies in `𝔗_W`, so the branch enters the window-incidence audit
+`[140]`. -/
 noncomputable abbrev WindowClassOverloadStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- Node `[139]`, yes: the overload occurs at a window-incidence token.
-  ∃ active : Graph.ActiveSurplusDemands
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
-      data.threshold,
-    ∃ capacity : Graph.CapacityPresentation object data.threshold
-        data.windowOrder,
-      capacity.activation =
-          (Graph.recordSparsePairDEBlockers
-            (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-            (LengthOK := data.LengthOK)
-            (Graph.pairResponseActivation active)
-            (object.portPairSchedule data.threshold)) ∧
-        Graph.SparsePressureOverloadInClass object data.threshold
-          data.windowOrder data.surplusScale data.routingLabelBound capacity
-            .windowIncidence
+  canonicalOverloadClass data object = some .windowIncidence
 
-/-- Node `[139]`, no arm: the exact negation of the yes arm on the same object
--- no overload witness of the object has its token in `𝔗_W`. -/
+/-- Node `[139]`, no arm: the same overloading token of G lies outside `𝔗_W`. -/
 noncomputable abbrev WindowClassAbsentStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- Node `[139]`, no.
-  ¬ WindowClassOverloadStatement data object
+  ∃ value, canonicalOverloadClass data object = some value ∧
+    value ≠ .windowIncidence
 
-/-- Node `[141]`, yes arm: the overloading token lies in `𝔗_R`, so the branch
-enters the remainder-surplus audit `[142]`. -/
+/-- Node `[141]`, yes arm: the overloading token of G lies in `𝔗_R`, so the
+branch enters the remainder-surplus audit `[142]`. -/
 noncomputable abbrev RemainderClassOverloadStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- Node `[141]`, yes: the overload occurs at a remainder-surplus token.
-  ∃ active : Graph.ActiveSurplusDemands
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
-      data.threshold,
-    ∃ capacity : Graph.CapacityPresentation object data.threshold
-        data.windowOrder,
-      capacity.activation =
-          (Graph.recordSparsePairDEBlockers
-            (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-            (LengthOK := data.LengthOK)
-            (Graph.pairResponseActivation active)
-            (object.portPairSchedule data.threshold)) ∧
-        Graph.SparsePressureOverloadInClass object data.threshold
-          data.windowOrder data.surplusScale data.routingLabelBound capacity
-            .remainderSurplus
+  canonicalOverloadClass data object = some .remainderSurplus
 
-/-- Node `[141]`, no arm: the exact negation of the yes arm on the same object
--- no overload witness of the object has its token in `𝔗_R`. -/
+/-- Node `[141]`, no arm: the same overloading token of G lies outside `𝔗_R`. -/
 noncomputable abbrev RemainderClassAbsentStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- Node `[141]`, no.
-  ¬ RemainderClassOverloadStatement data object
+  ∃ value, canonicalOverloadClass data object = some value ∧
+    value ≠ .remainderSurplus
 
 /-- Node `[143]`'s entry: on the no arms of `[139]` and `[141]` the overloading
-token lies in the primitive class `𝔗_prim`. -/
+token of G lies in the primitive class `𝔗_prim`. -/
 noncomputable abbrev PrimitiveClassOverloadStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  ∃ active : Graph.ActiveSurplusDemands
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
-      data.threshold,
-    ∃ capacity : Graph.CapacityPresentation object data.threshold
-        data.windowOrder,
-      capacity.activation =
-          (Graph.recordSparsePairDEBlockers
-            (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-            (LengthOK := data.LengthOK)
-            (Graph.pairResponseActivation active)
-            (object.portPairSchedule data.threshold)) ∧
-        Graph.SparsePressureOverloadInClass object data.threshold
-          data.windowOrder data.surplusScale data.routingLabelBound capacity
-            .primitiveCarrier
+  canonicalOverloadClass data object = some .primitiveCarrier
 
 /-- Node `[144]`, the tested half of
-`thm:homogeneous-overload-geometric-closure`: no capacity token of the object
-supports a role-homogeneous same-token `L_geom`-matching or `L_geom`-star, at
-the counted routing-label alphabet.  This is the subbranch the manuscript's
-fixed caps `L_W = L_R = L_P = L_geom` hold on. -/
+`thm:homogeneous-overload-geometric-closure`: at G's canonical certified
+capacity-token ledger no token supports a role-homogeneous same-token
+`L_geom`-matching or `L_geom`-star, at the counted routing-label alphabet. -/
 noncomputable abbrev HomogeneousCapsHoldStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- The subbranch hypothesis of
-  -- `thm:homogeneous-overload-geometric-closure`.
-  Graph.HomogeneousCapsHold object data.threshold data.windowOrder
-    (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+  -- The subbranch hypothesis of `thm:homogeneous-overload-geometric-closure`
+  -- at G's canonical certified ledger.
+  ∃ (capacity : SurplusCapacity data object)
+      (certified : SurplusCertified data object capacity),
+    canonicalCertifiedCapacityData data object = some ⟨capacity, certified⟩ ∧
+    Graph.HomogeneousCapsHoldAt certified.ledger
+      (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
       (Graph.WindowCurvature.Label data.windowOrder))
 
-/-- Node `[144]`, the other arm: the exact complement of the fixed caps.
-Some capacity presentation and ledger of the object has a token supporting a
-role-homogeneous same-token `L_geom`-matching or `L_geom`-star. -/
+/-- Node `[144]`, the other arm: the exact complement of the fixed caps at the
+same canonical ledger of G. -/
 noncomputable abbrev HomogeneousCapsFailStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- Node `[144]`: the exact complement of `.homogeneousCapsHold`.
-  ¬ Graph.HomogeneousCapsHold object data.threshold data.windowOrder
-    (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+  ∃ (capacity : SurplusCapacity data object)
+      (certified : SurplusCertified data object capacity),
+    canonicalCertifiedCapacityData data object = some ⟨capacity, certified⟩ ∧
+    ¬ Graph.HomogeneousCapsHoldAt certified.ledger
+      (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
       (Graph.WindowCurvature.Label data.windowOrder))
 
-/-- Nodes `[140]`, `[142]`, `[143]`, the geometric audit of the selected
-overload: its token supports a role-homogeneous same-token `L_geom`-matching
-or `L_geom`-star, with every declared same-root connector configuration.
-`lem:same-token-bottleneck-routing` reads it as a sparse surplus exit or as
-decorated Type B handoff fan data. -/
+/-- Nodes `[140]`, `[142]`, `[143]`, the geometric audit of the overloading
+token of G: its role fibre carries the canonical role-homogeneous same-token
+`L_geom`-matching or `L_geom`-star, with every declared same-root connector
+configuration.  `lem:same-token-bottleneck-routing` routes exactly this
+pattern. -/
 noncomputable abbrev HomogeneousBottleneckPatternSchema
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- Nodes `[140]`, `[142]`, `[143]`: the positive same-token bottleneck
-  -- pattern of the selected overload witness, routed at node `[144]`.
-  ∃ active : Graph.ActiveSurplusDemands
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
-      data.threshold,
-    ∃ capacity : Graph.CapacityPresentation object data.threshold
-        data.windowOrder,
-      capacity.activation =
-          (Graph.recordSparsePairDEBlockers
-            (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-            (LengthOK := data.LengthOK)
-            (Graph.pairResponseActivation active)
-            (object.portPairSchedule data.threshold)) ∧
-        Graph.HomogeneousBottleneckPatternStatement object data.threshold
-          data.windowOrder data.surplusScale data.routingLabelBound capacity
-          (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
-            (Graph.WindowCurvature.Label data.windowOrder))
-
-/-- **Node `[144a]`, the residual of the paper error at `[144]`**
-(`lem:same-token-bottleneck-routing`, parallel and cubic-first-separator cases,
-tex 5585-5620; see `lean-vs-paper-discrepancies.md#paper-errors`).  Two
-distinct scheduled pair response coordinates of G whose target-defective
-alternative (b) failed, read on G's piece at the canonical support `Z` of
-their supports: the readings lie in different boundary-degree fibres, or they
-are context-equivalent (target-complete).  The paper claims both cases are
-sparse exits (tex 5589, 5594); neither is established, and the pair is carried
-by the open leaf `[144a]`. -/
-noncomputable abbrev SameTokenPatternPairUnresolvedStatement
-    (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Prop := by
-  letI : DecidableEq object.Vertex := object.vertices.decEq
-  exact ∃ active : Graph.ActiveSurplusDemands
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
-      data.threshold,
-    ∃ first ∈ (Graph.pairResponseActivation active).pairFamily
-        (object.portPairSchedule data.threshold),
-    ∃ second ∈ (Graph.pairResponseActivation active).pairFamily
-        (object.portPairSchedule data.threshold),
-      first ≠ second ∧
-      ∃ support : Finset object.Vertex,
-        Graph.CanonicalSupport.select? object
-            (Graph.DeclaredSignature.Coordinate.support first ∪
-              Graph.DeclaredSignature.Coordinate.support second) = some support ∧
-        ((Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
-              support (Graph.DeclaredSignature.Coordinate.support first)).boundaryDegreeProfile ≠
-            (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
-              support (Graph.DeclaredSignature.Coordinate.support second)).boundaryDegreeProfile ∨
-          Graph.Response.ContextEquivalent (Graph.HasCycleWithLength data.LengthOK)
-            (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
-              support (Graph.DeclaredSignature.Coordinate.support first))
-            (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
-              support (Graph.DeclaredSignature.Coordinate.support second)))
-
-/-- Node `[144]`, `lem:same-token-bottleneck-routing` itself: the concrete
-homogeneous pattern in the current object's canonical capacity presentation
-yields a sparse-surplus exit or the common Type B fan-ledger entry. -/
-noncomputable abbrev BottleneckRoutingStatement
-    (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  -- `lem:same-token-bottleneck-routing`, on the actual active family and
-  -- capacity presentation.  No caller-supplied route, separator, reading,
-  -- profile map, or callback is part of the proposition.
-  ∃ active : Graph.ActiveSurplusDemands
-        (Graph.MinimumDegreeAtLeast data.threshold)
-        (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
-        data.threshold,
-    ∃ capacity : Graph.CapacityPresentation object data.threshold
-        data.windowOrder,
-      capacity.activation =
-        (Graph.recordSparsePairDEBlockers
-          (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-          (LengthOK := data.LengthOK)
-          (Graph.pairResponseActivation active)
-          (object.portPairSchedule data.threshold)) ∧
-      Graph.HomogeneousBottleneckPatternStatement object data.threshold
-          data.windowOrder data.surplusScale data.routingLabelBound capacity
-          (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
-            (Graph.WindowCurvature.Label data.windowOrder)) ∧
-      (DeclaredSparseSurplusExit data object ∨
-          SameTokenTypeBHandoffEnvelopeStatement data object ∨
-          SameTokenPatternPairUnresolvedStatement data object)
-
-/-- Node `[144]`, the exact complement of the same-token handoff: the routed
-pattern does not produce the decorated same-token Type B handoff. -/
-noncomputable abbrev TypeBHandoffFailsStatement
-    (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  ¬ SameTokenTypeBHandoffStatement data object
+  -- Nodes `[140]`, `[142]`, `[143]`: the canonical homogeneous pattern at the
+  -- canonical overloading token and role of G.
+  ∃ overload pattern, canonicalOverload data object = some overload ∧
+    canonicalHomogeneousPatternAt data object overload.1.2 overload.2.1
+      overload.2.2 = some pattern ∧
+    HomogeneousPatternSpec data object overload.1.2 overload.2.1 overload.2.2
+      pattern
 
 /-- Node `[144]`, `cor:homogeneous-same-token-caps-close` at the counted
-`L_geom` and the ledger's own token supply: every token load is at most
+`L_geom` and at G's canonical certified ledger: every token load is at most
 `M₀ = Cap_hom(L_geom)`, hence `|Π_blk| ≤ M₀|𝔗_cap|`,
 `σ(G) ≤ 1 + 2M₀ + √(2E + 2M₀·scale)`, and the edge-count half
 `m = (3/2)n + O(√n)`. -/
@@ -2128,10 +1480,12 @@ noncomputable abbrev HomogeneousBottleneckStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- `cor:homogeneous-same-token-caps-close` at the counted `L_geom`, with
-  -- `thm:homogeneous-overload-geometric-closure`'s edge-count half.
-  Graph.HomogeneousCapsCloseStatement object data.threshold data.windowOrder
-    (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
+  -- `cor:homogeneous-same-token-caps-close` at G's canonical ledger.
+  ∃ (capacity : SurplusCapacity data object)
+      (certified : SurplusCertified data object capacity),
+    canonicalCertifiedCapacityData data object = some ⟨capacity, certified⟩ ∧
+    Graph.HomogeneousCapsCloseAt certified.ledger
+      (Graph.SameTokenRoutingGerms.RoutingLabel data.BoundaryProfile
       (Graph.WindowCurvature.Label data.windowOrder))
 
 /-- Node `[125]`, `def:named-surplus-exits`: the selected object survives the
@@ -2162,63 +1516,11 @@ noncomputable abbrev ActiveSurplusDemandsStatement
 Each no-arm of a paper test is the literal negation of its yes-arm on the same
 object.  What the paper derives on that arm is published by a separate row. -/
 
-/-- Node `[131]`, count fails: the negation of the free-pair entropy count. -/
-noncomputable abbrev FreePairCountFailsStatement
-    (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  ¬ FreePairEntropySandwichStatement data object
-
-/-- Node `[137]`, count fails on the free side of the capacity charge. -/
-noncomputable abbrev BlockedPairCountFailsStatement
-    (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  ¬ BlockedPairEntropySandwichStatement data object
-
 /-- Node `[132]`, blocker arm: no sparse surplus exit settles the dependence. -/
 noncomputable abbrev BlockedPairNoExitStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
   ¬ SparsePairExitStatement data object
-
-/-- Node `[178]`, no factorization: the negation of the conditional
-factorization test. -/
-noncomputable abbrev PairFactorizationFailsStatement
-    (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  ¬ PairConditionalFactorizationStatement data object
-
-/-- Node `[179]`, no exhaustive uncrossing: the negation of the
-`lem:pair-system-realizability` coverage test. -/
-noncomputable abbrev PairRealizabilityFailsStatement
-    (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  ¬ PairSystemRealizabilityStatement data object
-
-/-- Node `[179]`, serial arm: none of the routed alternatives (i)--(iv) holds. -/
-noncomputable abbrev PairSystemNoEarlyOutcomeStatement
-    (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  ¬ PairSystemEarlyOutcomeStatement data object
-
-/-- Node `[180]`, uncovered increment response: the negation of the
-`lem:pair-system-increment-arithmetic` coverage test. -/
-noncomputable abbrev PairIncrementFailsStatement
-    (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  ¬ PairIncrementCoveredStatement data object
-
-/-- Node `[180]`, arithmetic arm: neither periodic routed alternative holds. -/
-noncomputable abbrev PairIncrementNoEarlyOutcomeStatement
-    (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  ¬ PairIncrementEarlyOutcomeStatement data object
 
 end Hypostructure.Graph.Strategy.Spine

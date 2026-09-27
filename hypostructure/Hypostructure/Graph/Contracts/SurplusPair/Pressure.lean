@@ -1,4 +1,4 @@
-import Hypostructure.Graph.Statements.SurplusPair
+import Hypostructure.Graph.Statements.SurplusPairCode
 import Hypostructure.Graph.NamedSurplusExits
 import Hypostructure.Graph.SparsePressureLedger
 import Hypostructure.Graph.GluedCrossingCycle
@@ -22,23 +22,30 @@ variable {data : Parameters} {object : Graph.FiniteObject.{u}}
 
 /-- Node `[137]`, `lem:exact-surplus-pair-charge-partition` with
 `thm:sharp-classwise-homogeneous-token-budget` (a)--(c) and
-`thm:sharp-surplus-overload-audit` (b)--(c): the free-side entropy count at the
-node-`[136]` presentation certifies the object's capacity-token ledger, whose
-pair schedule decomposes exactly into the free side and the class/token/role
-fibres, with the classwise budgets. -/
+`thm:sharp-surplus-overload-audit` (b)--(c): the free-side entropy count of
+`[137]` at G's canonical presentation `𝔗_cap` and G's canonical spine family
+certifies a capacity-token ledger of G on that presentation, whose pair
+schedule decomposes exactly into the free side and the class/token/role
+fibres, with the classwise budgets.  The node publishes the canonical certified
+ledger of G, which that construction shows to exist. -/
 theorem roleFibrePartition_of_sandwich
     (sandwich : BlockedPairEntropySandwichStatement data object)
+    (pairLedger : CanonicalPairLedgerStatement data object)
     (slackFact : SparseSlackSurplusStatement data object)
     (aboveFact : data.surplusThreshold object.vertexCount <
       object.degreeSurplus data.threshold)
     (threeLe : 3 ≤ data.threshold) :
     RoleFibrePartitionSchema data object := by
   classical
-  obtain ⟨active, capacity, activationEq, _primitiveEq,
-      _primitiveLe, concrete,
-      scheduleCard, Coordinate, family, coordinateSupport,
-      _survives, _realization, demand, deficitLe, entropy⟩ :=
+  obtain ⟨capacity, capacitySelected, spine, spineSelected, entropy⟩ :=
     sandwich
+  obtain ⟨⟨_active, _activationEq⟩, _primitiveEq, _primitiveLe, concrete,
+      _connected, _packingEq⟩ :=
+    canonicalCapacity_spec_of_eq_some data object capacitySelected
+  obtain ⟨_independent, _realization, demand, deficitLe⟩ :=
+    canonicalBaselineSpineFamily_spec_of_eq_some data object spineSelected
+  obtain ⟨_activation, _selected, _certificate, scheduleCard, _rest⟩ :=
+    pairLedger
   have slack : 2 * object.edgeCount =
       data.threshold * object.vertexCount +
         object.degreeSurplus data.threshold :=
@@ -67,38 +74,41 @@ theorem roleFibrePartition_of_sandwich
       data.threshold data.windowOrder data.surplusScale capacity :=
     Graph.certifiedLedger_of_sandwich capacity
       (le_trans (by norm_num) threeLe) aboveEdges
-      family.card
-      (Graph.spineDeficit object.vertexCount data.threshold family.card)
+      spine.family.card
+      (Graph.spineDeficit object.vertexCount data.threshold spine.family.card)
       demand deficitLe slackLe entropy scheduleCard
       (object.capacityTokens_nonempty data.threshold capacity.packing vertex)
       concrete.2.1
   let ledger := certified.ledger
-  refine ⟨active, capacity, activationEq, certified, ?_⟩
-  refine ⟨ledger.presented.choose_two_eq_free_add_sum_roleFibre
-      ledger.presented.tokenClass,
-    fun token => ledger.presented.load_eq_sum_roleFibre token,
-    ledger.presented.classwise_split.1.1,
-    ledger.presented.classwise_split.1.2,
-    ledger.presented.classwise_split.2,
-    ledger.presented.subtype_split.1.1,
-    ledger.presented.subtype_split.2, ?_⟩
-  intro patternBound positive value noMatching noStar
-  exact ledger.presented.grainLoad_le_of_no_homogeneous
-    ledger.presented.tokenClass value patternBound positive
-    noMatching noStar
+  have spec : CertifiedLedgerSpec data object capacity certified := by
+    refine ⟨ledger.presented.choose_two_eq_free_add_sum_roleFibre
+        ledger.presented.tokenClass,
+      fun token => ledger.presented.load_eq_sum_roleFibre token,
+      ledger.presented.classwise_split.1.1,
+      ledger.presented.classwise_split.1.2,
+      ledger.presented.classwise_split.2,
+      ledger.presented.subtype_split.1.1,
+      ledger.presented.subtype_split.2, ?_⟩
+    intro patternBound positive value noMatching noStar
+    exact ledger.presented.grainLoad_le_of_no_homogeneous
+      ledger.presented.tokenClass value patternBound positive
+      noMatching noStar
+  obtain ⟨chosen, chosenSelected, chosenSpec⟩ :=
+    canonicalCertifiedCapacityDataAt_spec data object capacity ⟨certified, spec⟩
+  exact ⟨capacity, chosen,
+    (canonicalCertifiedCapacityData_eq_some_iff data object capacity chosen).2
+      ⟨capacitySelected, chosenSelected⟩,
+    chosenSpec⟩
 
 /-- Node `[137]`, `lem:capacity-token-high-load` with
-`cor:forced-homogeneous-same-token-scale`: at the certified ledger of the role
-fibre partition, some role fibre carries at least a `Q_st`-th of the load and
-all of the forced demand up to the token supply, and contains a matching or a
-star of its own count. -/
+`cor:forced-homogeneous-same-token-scale`: at G's canonical certified ledger,
+some role fibre carries at least a `Q_st`-th of the load and all of the forced
+demand up to the token supply, and contains a matching or a star of its own
+count. -/
 theorem fibrePressure_of_partition
     (partition : RoleFibrePartitionSchema data object) :
     FibrePressureSchema data object := by
-  obtain ⟨active, presentation, activationEq, certified, _partition⟩ := partition
-  obtain ⟨token, tokenMem, role, display, roleBound, forced, pattern⟩ :=
-    certified.ledger.presented.exists_forced_pattern
-  exact ⟨active, presentation, activationEq, certified, token, role,
-    tokenMem, display, roleBound, forced, pattern⟩
+  obtain ⟨capacity, certified, selected, _spec⟩ := partition
+  exact ⟨capacity, certified, selected, Graph.fibrePressureAt certified⟩
 
 end Hypostructure.Graph.Contracts.SurplusPair

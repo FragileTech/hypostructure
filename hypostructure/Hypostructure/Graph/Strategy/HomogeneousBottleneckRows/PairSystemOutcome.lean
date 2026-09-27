@@ -38,13 +38,15 @@ returns and graph-derived `ℓ_ret` bound on the same monotone ledger. -/
         ⟨Graph.Contracts.SurplusPair.pairDemandReturns_of_failureOverlap (inputs.get (K .pairFailureOverlap)).down⟩
         .nil)
 
-/-- Node `[179]`: test `lem:pair-system-realizability`'s coverage by exact case
-analysis on its predicate.  The negative arm is its literal negation. -/
+/-- Node `[179]`: test `lem:pair-system-realizability`'s coverage on G's
+canonical return system, read from `K .pairDemandReturns`.  The negative arm is
+its literal negation. -/
 noncomputable def pairSystemRealizabilityDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger (Input BranchState Presentation presentation data)
       current known)
+    [FactKeys.Has (K .pairDemandReturns) known]
     (coveredFresh : K .pairSystemRealizability ∉ known)
     (failsFresh : K .pairRealizabilityFails ∉ known) :
     Decision (K .pairSystemRealizability) (K .pairRealizabilityFails)
@@ -53,11 +55,16 @@ noncomputable def pairSystemRealizabilityDichotomy
   exact Decision.run previous (K .pairSystemRealizability)
     (K .pairRealizabilityFails)
     `Hypostructure.Graph.Strategy.Spine.pairSystemRealizabilityDichotomy
-    (if covered : Holds BranchState Presentation presentation data
-        .pairSystemRealizability current.object then
-      .inl ⟨covered⟩
-    else
-      .inr ⟨covered⟩)
+    (Classical.choice (show Nonempty
+        ((K .pairSystemRealizability).At current ⊕
+          (K .pairRealizabilityFails).At current) from by
+      obtain ⟨returns, selected⟩ := (previous.get (K .pairDemandReturns)).down
+      by_cases covered : Nonempty (PairSystemRealizabilityOutcome returns)
+      · exact ⟨.inl ⟨⟨returns, selected, covered⟩⟩⟩
+      · refine ⟨.inr ⟨?_⟩⟩
+        rintro ⟨returns', selected', covered'⟩
+        obtain rfl := Option.some.inj (selected'.symm.trans selected)
+        exact covered covered'))
     coveredFresh failsFresh
 
 /-- Node `[182]` from `[179]`: the failed coverage test retains the literal
@@ -77,13 +84,15 @@ canonical demand returns as the uncovered pair-code residual. -/
           (inputs.get (K .pairRealizabilityFails)).down⟩
         .nil)
 
-/-- Node `[179]`: do alternatives (i)--(iv) hold?  Exact case analysis on
-their predicate; the negative arm is its literal negation. -/
+/-- Node `[179]`: is the canonical outcome of G's covered canonical return
+system (read from `K .pairSystemRealizability`) one of alternatives (i)--(iv)?
+The split is on that one outcome; the negative arm is its literal negation. -/
 noncomputable def pairSystemOutcomeDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger (Input BranchState Presentation presentation data)
       current known)
+    [FactKeys.Has (K .pairSystemRealizability) known]
     (earlyFresh : K .pairSystemEarlyOutcome ∉ known)
     (noEarlyFresh : K .pairSystemNoEarlyOutcome ∉ known) :
     Decision (K .pairSystemEarlyOutcome) (K .pairSystemNoEarlyOutcome)
@@ -92,11 +101,22 @@ noncomputable def pairSystemOutcomeDichotomy
   exact Decision.run previous (K .pairSystemEarlyOutcome)
     (K .pairSystemNoEarlyOutcome)
     `Hypostructure.Graph.Strategy.Spine.pairSystemOutcomeDichotomy
-    (if early : Holds BranchState Presentation presentation data
-        .pairSystemEarlyOutcome current.object then
-      .inl ⟨early⟩
-    else
-      .inr ⟨early⟩)
+    (Classical.choice (show Nonempty
+        ((K .pairSystemEarlyOutcome).At current ⊕
+          (K .pairSystemNoEarlyOutcome).At current) from by
+      obtain ⟨returns, returnsSelected, covered⟩ :=
+        (previous.get (K .pairSystemRealizability)).down
+      obtain ⟨outcome, outcomeSelected⟩ :=
+        canonicalRealizabilityOutcome_spec data.toParameters current.object
+          returns covered
+      cases outcome with
+      | early early =>
+          exact ⟨.inl ⟨⟨returns, early, returnsSelected, outcomeSelected⟩⟩⟩
+      | serial serial same =>
+          refine ⟨.inr ⟨?_⟩⟩
+          rintro ⟨returns', early', returnsSelected', outcomeSelected'⟩
+          obtain rfl := Option.some.inj (returnsSelected'.symm.trans returnsSelected)
+          cases outcomeSelected'.symm.trans outcomeSelected))
     earlyFresh noEarlyFresh
 
 /-- Node `[179]`, serial arm: with coverage and none of (i)--(iv),
@@ -138,14 +158,15 @@ Type B entry remains. -/
             (inputs.get (K .sparseSurplusSurvivor)).down)⟩
         .nil)
 
-/-- Node `[180]`: test `lem:pair-system-increment-arithmetic`'s coverage by
-exact case analysis on its predicate.  The negative arm is its literal
-negation. -/
+/-- Node `[180]`: test `lem:pair-system-increment-arithmetic`'s coverage on G's
+canonical serial system, read from `K .pairSerialDemandSystem`.  The negative
+arm is its literal negation. -/
 noncomputable def pairIncrementCoveredDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger (Input BranchState Presentation presentation data)
       current known)
+    [FactKeys.Has (K .pairSerialDemandSystem) known]
     (coveredFresh : K .pairIncrementCovered ∉ known)
     (failsFresh : K .pairIncrementFails ∉ known) :
     Decision (K .pairIncrementCovered) (K .pairIncrementFails) previous := by
@@ -153,11 +174,16 @@ noncomputable def pairIncrementCoveredDichotomy
   exact Decision.run previous (K .pairIncrementCovered)
     (K .pairIncrementFails)
     `Hypostructure.Graph.Strategy.Spine.pairIncrementCoveredDichotomy
-    (if covered : Holds BranchState Presentation presentation data
-        .pairIncrementCovered current.object then
-      .inl ⟨covered⟩
-    else
-      .inr ⟨covered⟩)
+    (Classical.choice (show Nonempty
+        ((K .pairIncrementCovered).At current ⊕
+          (K .pairIncrementFails).At current) from by
+      obtain ⟨serial, selected⟩ := (previous.get (K .pairSerialDemandSystem)).down
+      by_cases covered : Nonempty (PairIncrementOutcome serial)
+      · exact ⟨.inl ⟨⟨serial, selected, covered⟩⟩⟩
+      · refine ⟨.inr ⟨?_⟩⟩
+        rintro ⟨serial', selected', covered'⟩
+        obtain rfl := Option.some.inj (selected'.symm.trans selected)
+        exact covered covered'))
     coveredFresh failsFresh
 
 /-- Node `[182]` from `[180]`: the failed coverage test retains the literal
@@ -177,13 +203,15 @@ serial demand system as the uncovered pair-code residual. -/
           (inputs.get (K .pairIncrementFails)).down⟩
         .nil)
 
-/-- Node `[180]`: does a periodic routed alternative hold?  Exact case
-analysis on its predicate; the negative arm is its literal negation. -/
+/-- Node `[180]`: is the canonical outcome of G's covered canonical serial
+system (read from `K .pairIncrementCovered`) a periodic routed alternative?
+The split is on that one outcome; the negative arm is its literal negation. -/
 noncomputable def pairIncrementOutcomeDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger (Input BranchState Presentation presentation data)
       current known)
+    [FactKeys.Has (K .pairIncrementCovered) known]
     (earlyFresh : K .pairIncrementEarlyOutcome ∉ known)
     (noEarlyFresh : K .pairIncrementNoEarlyOutcome ∉ known) :
     Decision (K .pairIncrementEarlyOutcome) (K .pairIncrementNoEarlyOutcome)
@@ -192,11 +220,22 @@ noncomputable def pairIncrementOutcomeDichotomy
   exact Decision.run previous (K .pairIncrementEarlyOutcome)
     (K .pairIncrementNoEarlyOutcome)
     `Hypostructure.Graph.Strategy.Spine.pairIncrementOutcomeDichotomy
-    (if early : Holds BranchState Presentation presentation data
-        .pairIncrementEarlyOutcome current.object then
-      .inl ⟨early⟩
-    else
-      .inr ⟨early⟩)
+    (Classical.choice (show Nonempty
+        ((K .pairIncrementEarlyOutcome).At current ⊕
+          (K .pairIncrementNoEarlyOutcome).At current) from by
+      obtain ⟨serial, serialSelected, covered⟩ :=
+        (previous.get (K .pairIncrementCovered)).down
+      obtain ⟨outcome, outcomeSelected⟩ :=
+        canonicalIncrementOutcome_spec data.toParameters current.object
+          serial covered
+      cases outcome with
+      | early early =>
+          exact ⟨.inl ⟨⟨serial, early, serialSelected, outcomeSelected⟩⟩⟩
+      | arithmetic arithmetic =>
+          refine ⟨.inr ⟨?_⟩⟩
+          rintro ⟨serial', early', serialSelected', outcomeSelected'⟩
+          obtain rfl := Option.some.inj (serialSelected'.symm.trans serialSelected)
+          cases outcomeSelected'.symm.trans outcomeSelected))
     earlyFresh noEarlyFresh
 
 /-- Node `[180]`, arithmetic arm: with coverage and no periodic route, the

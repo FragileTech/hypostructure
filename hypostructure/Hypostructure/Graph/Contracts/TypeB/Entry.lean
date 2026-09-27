@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Contracts.TypeB.Support
+import Hypostructure.Graph.Statements.SurplusPairRouting
 
 /-!
 # Contracts: the Type B entries

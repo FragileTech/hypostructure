@@ -25,7 +25,8 @@ free-side entropy count already written to the incoming ledger. -/
 @[reducible] noncomputable def roleFibrePartitionRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.roleFibrePartition
-    { Requires := [K .blockedPairEntropySandwich, K .sparseSlackSurplus, K .surplusAbove]
+    { Requires := [K .blockedPairEntropySandwich, K .canonicalPairLedger,
+        K .sparseSlackSurplus, K .surplusAbove]
       Produces := [K .roleFibrePartition]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -34,6 +35,7 @@ free-side entropy count already written to the incoming ledger. -/
       .cons (key := K .roleFibrePartition)
         ⟨Graph.Contracts.SurplusPair.roleFibrePartition_of_sandwich
           (inputs.get (K .blockedPairEntropySandwich)).down
+          (inputs.get (K .canonicalPairLedger)).down
           (inputs.get (K .sparseSlackSurplus)).down
           (inputs.get (K .surplusAbove)).down
           data.three_le_threshold⟩

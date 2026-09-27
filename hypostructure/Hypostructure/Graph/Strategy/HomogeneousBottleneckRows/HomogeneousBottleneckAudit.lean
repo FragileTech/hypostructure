@@ -16,8 +16,8 @@ variable {data : Data.{u}}
 
 /-! ## Nodes `[140]`, `[142]`, `[143]`: the geometric audits
 
-One audit argument (`homogeneousBottleneckPattern_of_overloadAtClass`), run
-on the overload witness of the class selected by `[139]`/`[141]`: its role
+One audit argument (`homogeneousBottleneckPattern_of_class`), run
+on G's canonical overloading token, whose class `[139]`/`[141]` decided: its role
 fibre carries a role-homogeneous same-token `L_geom`-matching or `L_geom`-star
 with every declared same-root connector configuration.  This is the only
 derivation of the bottleneck pattern consumed by `[144]`. -/
@@ -33,7 +33,7 @@ derivation of the bottleneck pattern consumed by `[144]`. -/
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .homogeneousBottleneckPattern)
-        ⟨Graph.Contracts.SurplusPair.homogeneousBottleneckPattern_of_overloadAtClass
+        ⟨Graph.Contracts.SurplusPair.homogeneousBottleneckPattern_of_class
           (inputs.get (K .windowClassOverload)).down
           (inputs.get (K .capacityTokenLedger)).down
           data.routingLabelBound_eq⟩
@@ -50,7 +50,7 @@ derivation of the bottleneck pattern consumed by `[144]`. -/
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .homogeneousBottleneckPattern)
-        ⟨Graph.Contracts.SurplusPair.homogeneousBottleneckPattern_of_overloadAtClass
+        ⟨Graph.Contracts.SurplusPair.homogeneousBottleneckPattern_of_class
           (inputs.get (K .remainderClassOverload)).down
           (inputs.get (K .capacityTokenLedger)).down
           data.routingLabelBound_eq⟩
@@ -67,7 +67,7 @@ derivation of the bottleneck pattern consumed by `[144]`. -/
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .homogeneousBottleneckPattern)
-        ⟨Graph.Contracts.SurplusPair.homogeneousBottleneckPattern_of_overloadAtClass
+        ⟨Graph.Contracts.SurplusPair.homogeneousBottleneckPattern_of_class
           (inputs.get (K .primitiveClassOverload)).down
           (inputs.get (K .capacityTokenLedger)).down
           data.routingLabelBound_eq⟩

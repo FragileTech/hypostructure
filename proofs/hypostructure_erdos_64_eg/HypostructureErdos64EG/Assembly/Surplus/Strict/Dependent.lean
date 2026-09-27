@@ -71,8 +71,14 @@ noncomputable def Assembly.Internal.strictSurplusDependent
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile) (data := spineData)).run
           joined (by key_fresh)
-      -- `[137]`: the entropy count on the free side of the capacity charge.
-      match blockedPairEntropyDichotomy (data := spineData) tokens
+      -- `[137]`: the entropy setup at G's `𝔗_cap` and spine family, then
+      -- the entropy count on the free side of the capacity charge.
+      let setup :=
+        (blockedPairEntropySetupRow (BranchState := BranchState)
+          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+          (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+          tokens (by key_fresh)
+      match blockedPairEntropyDichotomy (data := spineData) setup
           (by key_fresh) (by key_fresh) with
       | .right failsHistory =>
           -- The count fails on the free side: continue at `[178]`.

@@ -442,47 +442,55 @@ def RoleFibrePartitionStatement (object : FiniteObject.{u})
           homogeneousCapCharge patternBound *
             (ledger.presented.classTokens value).card)
 
-/-- **Node `[137]`, second production**: `lem:capacity-token-high-load` with
-`cor:forced-homogeneous-same-token-scale`,
+/-- **Node `[137]`, second production, at one certified ledger**:
+`lem:capacity-token-high-load` with `cor:forced-homogeneous-same-token-scale`,
 `thm:sharp-classwise-homogeneous-token-budget` (e) and
-`thm:sharp-surplus-overload-audit` (d).
+`thm:sharp-surplus-overload-audit` (d).  Some token and role of the ledger
+realize the coupled high-load display, carry at least a `Q_st`-th of the load
+and the forced demand up to the token supply, and contain a matching or a star
+of `ψ` of the fibre count. -/
+def FibrePressureAt {object : FiniteObject.{u}} {threshold order deficitScale : Nat}
+    {data : CapacityPresentation.{u} object threshold order}
+    (certified : CertifiedObjectCapacityLedger object threshold order
+      deficitScale data) : Prop :=
+  let ledger := certified.ledger
+  ∃ (token : ledger.presented.Token) (role : Role),
+    token ∈ ledger.presented.tokens ∧
+    -- `lem:capacity-token-high-load`
+    ((object.degreeSurplus threshold).choose 2 ≤
+      ledger.entropyBudget +
+        ledger.presented.tokens.card *
+          ledger.presented.load token) ∧
+    -- `cor:forced-homogeneous-same-token-scale`
+    (ledger.presented.load token ≤
+      sameTokenRoleBound *
+        (ledger.presented.roleFibre token role).card) ∧
+    -- `thm:sharp-classwise-homogeneous-token-budget` (e) and
+    -- `thm:sharp-surplus-overload-audit` (d)
+    (ledger.presented.forcedDemand ≤
+      sameTokenRoleBound * ledger.presented.tokens.card *
+        (ledger.presented.roleFibre token role).card) ∧
+    ((∃ pattern ⊆ ledger.presented.roleFibre token role,
+        PatternFamily.IsMatching pattern ∧
+          PatternFamily.patternThreshold
+              (ledger.presented.roleFibre token role).card ≤
+            pattern.card) ∨
+      (∃ centre, ∃ pattern ⊆ ledger.presented.roleFibre token role,
+        PatternFamily.IsStar pattern centre ∧
+          PatternFamily.patternThreshold
+              (ledger.presented.roleFibre token role).card ≤
+            pattern.card))
 
-The statement is existential in the ledger: it says the object's *own*
-capacity-token ledger realizes the high-load display, so it is not provable
-without node `[136]`'s commitment that such a ledger exists.  That commitment is
-read by exact key and supplied by the executor, not assumed here. -/
-def FibrePressureStatement (object : FiniteObject.{u})
-    (threshold order deficitScale : Nat)
-    (data : CapacityPresentation.{u} object threshold order) : Prop :=
-  ∃ (certified : CertifiedObjectCapacityLedger object threshold order
-        deficitScale data),
-      let ledger := certified.ledger
-      ∃ (token : ledger.presented.Token) (role : Role),
-        token ∈ ledger.presented.tokens ∧
-        -- `lem:capacity-token-high-load`
-        ((object.degreeSurplus threshold).choose 2 ≤
-          ledger.entropyBudget +
-            ledger.presented.tokens.card *
-              ledger.presented.load token) ∧
-        -- `cor:forced-homogeneous-same-token-scale`
-        (ledger.presented.load token ≤
-          sameTokenRoleBound *
-            (ledger.presented.roleFibre token role).card) ∧
-        -- `thm:sharp-classwise-homogeneous-token-budget` (e) and
-        -- `thm:sharp-surplus-overload-audit` (d)
-        (ledger.presented.forcedDemand ≤
-          sameTokenRoleBound * ledger.presented.tokens.card *
-            (ledger.presented.roleFibre token role).card) ∧
-        ((∃ pattern ⊆ ledger.presented.roleFibre token role,
-            PatternFamily.IsMatching pattern ∧
-              PatternFamily.patternThreshold
-                  (ledger.presented.roleFibre token role).card ≤
-                pattern.card) ∨
-          (∃ centre, ∃ pattern ⊆ ledger.presented.roleFibre token role,
-            PatternFamily.IsStar pattern centre ∧
-              PatternFamily.patternThreshold
-                  (ledger.presented.roleFibre token role).card ≤
-                pattern.card))
+/-- `lem:capacity-token-high-load` at a certified ledger, proved. -/
+theorem fibrePressureAt {object : FiniteObject.{u}}
+    {threshold order deficitScale : Nat}
+    {data : CapacityPresentation.{u} object threshold order}
+    (certified : CertifiedObjectCapacityLedger object threshold order
+      deficitScale data) :
+    FibrePressureAt certified := by
+  obtain ⟨token, tokenMem, role, display, roleBound, forced, pattern⟩ :=
+    certified.ledger.presented.exists_forced_pattern
+  exact ⟨token, role, tokenMem, display, roleBound, forced, pattern⟩
 
 /-- **`prop:single-graph-sparse-pressure-routing` (a), at the exact ledger.** -/
 def SparsePressureCappedAt {object : FiniteObject.{u}} {threshold order deficitScale : Nat}
@@ -493,270 +501,66 @@ def SparsePressureCappedAt {object : FiniteObject.{u}} {threshold order deficitS
     CapacityTokenLedger.sparsePressureBound certified.ledger.entropyBudget
       (homogeneousTokenCap routingLabelBound) (object.capacityTokenSupply threshold)
 
-/-- **Node `[137]`, overload arm**: `prop:single-graph-sparse-pressure-routing`
-(b) with `cor:coupled-single-graph-overload-budget` (a)--(c) and
-`cor:quantified-homogeneous-class-overload`.
-
-Some capacity-token ledger of the object has positive coupled excess `D_all` at
-the geometric caps, and some role fibre absorbs its average share over the
-`Q_st|𝔗_cap|` slots, hence carries a role-homogeneous same-token matching or
-star.  `class(t)` of that token is the one datum nodes `[140]`, `[142]`, `[143]`
-dispatch on, and it is read off the token rather than carried beside it. -/
-def OverloadAtClass (object : FiniteObject.{u}) (threshold order deficitScale : Nat)
-    (routingLabelBound : Nat)
-    (data : CapacityPresentation.{u} object threshold order)
-    (Selects : TokenClass → Prop) : Prop :=
-  ∃ (certified : CertifiedObjectCapacityLedger object threshold order
-      deficitScale data),
-    let ledger := certified.ledger
-    ∃ (token : ledger.presented.Token) (role : Role),
-      token ∈ ledger.presented.tokens ∧
-        Selects (ledger.presented.tokenClass token) ∧
-        (0 < ledger.presented.coupledExcess
-          ledger.presented.tokenClass
-          fun _ => geometricPatternBound routingLabelBound) ∧
-        (ledger.presented.coupledExcess
-            ledger.presented.tokenClass
-            (fun _ => geometricPatternBound routingLabelBound) ≤
-          sameTokenRoleBound * ledger.presented.tokens.card *
-            ledger.presented.roleFibreExcess
-              ledger.presented.tokenClass
-              (fun _ => geometricPatternBound routingLabelBound) token role) ∧
-        ((∃ pattern ⊆ ledger.presented.roleFibre token role,
-            PatternFamily.IsMatching pattern ∧
-              PatternFamily.patternThreshold
-                  (ledger.presented.roleFibre token role).card ≤
-                pattern.card) ∨
-          (∃ centre, ∃ pattern ⊆ ledger.presented.roleFibre token role,
-            PatternFamily.IsStar pattern centre ∧
-              PatternFamily.patternThreshold
-                  (ledger.presented.roleFibre token role).card ≤
-                pattern.card))
-
-/-- **Node `[137]`, overload arm**, with no class selected: the overload occurs
-somewhere. -/
-def SparsePressureOverloadStatement (object : FiniteObject.{u})
-    (threshold order deficitScale routingLabelBound : Nat)
-    (data : CapacityPresentation.{u} object threshold order) : Prop :=
-  OverloadAtClass object threshold order deficitScale routingLabelBound data
-    fun _ => True
-
-/-- **Nodes `[139]` and `[141]`, the two class tests.**
-
-`[139]` asks whether the overloading token lies in `𝔗_W` and `[141]` whether it
-lies in `𝔗_R`; `class(t)` is read off the token by `tokenClass`, not carried
-beside it, so a token cannot be routed to an audit of a class it is not in. -/
-def SparsePressureOverloadInClass (object : FiniteObject.{u})
-    (threshold order deficitScale routingLabelBound : Nat)
-    (data : CapacityPresentation.{u} object threshold order)
-    (value : TokenClass) : Prop :=
-  OverloadAtClass object threshold order deficitScale routingLabelBound data
-    fun class' => class' = value
-
-/-- The concrete overload witness selected upstream has a token outside the
-given class.  This is the negative residual of the paper's class test; it is
-not the stronger assertion that no overload witness exists in that class. -/
-def SparsePressureOverloadOutsideClass (object : FiniteObject.{u})
-    (threshold order deficitScale routingLabelBound : Nat)
-    (data : CapacityPresentation.{u} object threshold order)
-    (value : TokenClass) : Prop :=
-  OverloadAtClass object threshold order deficitScale routingLabelBound data
-    fun class' => class' ≠ value
-
-/-- **`cor:quantitative-homogeneous-overload` at the object.**
-
-  `K_hom(G) ≥ ψ( N_*(G) / (Q_st(8n + σ(G))) )`,
-
-cleared of division: a share the `Q_st|𝔗_cap|` slots must absorb is realized by
-some role fibre, and the pattern it carries has at least `ψ` of that share many
-edges.  The denominator is the manuscript's because
-`lem:capacity-token-supply` bounds `|𝔗_cap|` by
-`capacityTokenSupply + σ(G)`, which the ledger carries. -/
-def QuantitativeOverloadStatement (object : FiniteObject.{u})
-    (threshold order : Nat) : Prop :=
-  ∀ (data : CapacityPresentation.{u} object threshold order)
-    (ledger : ObjectCapacityLedger.{u} object threshold order data) (share : Nat),
-    0 < sameTokenRoleBound * ledger.presented.tokens.card →
-    share * (sameTokenRoleBound *
-        (object.capacityTokenSupply threshold + object.degreeSurplus threshold)) ≤
-      ledger.presented.forcedDemand →
-    ∃ token ∈ ledger.presented.tokens, ∃ role : Role,
-      (∃ pattern ⊆ ledger.presented.roleFibre token role,
-          PatternFamily.IsMatching pattern ∧
-            PatternFamily.patternThreshold share ≤ pattern.card) ∨
-        (∃ centre, ∃ pattern ⊆ ledger.presented.roleFibre token role,
-          PatternFamily.IsStar pattern centre ∧
-            PatternFamily.patternThreshold share ≤ pattern.card)
-
-/-- **The subbranch hypothesis of
-`thm:homogeneous-overload-geometric-closure`.**
-
-*"On the subbranch in which sparse surplus exits are absent and all decorated
-Type B handoff data have been routed into the Type B fan ledger, the three fixed
-homogeneous caps `L_W = L_R = L_P = L_geom` hold."*  Read at the object: no
-capacity token, at any declared presentation, supports a role-homogeneous
-same-token `L_geom`-matching or `L_geom`-star.  `L_geom = Q_geom + 1` is the
-counted routing-label alphabet of `def:same-token-routing-germs`, so the three
-caps are one number and it is derived. -/
-def HomogeneousCapsHold (object : FiniteObject.{u}) (threshold order : Nat)
+/-- **The fixed homogeneous caps `L_W = L_R = L_P = L_geom` at one ledger**
+(the subbranch hypothesis of `thm:homogeneous-overload-geometric-closure`): no
+token of the ledger supports a role-homogeneous same-token `L_geom`-matching or
+`L_geom`-star.  `L_geom = Q_geom + 1` is the counted routing-label alphabet of
+`def:same-token-routing-germs`. -/
+def HomogeneousCapsHoldAt {object : FiniteObject.{u}} {threshold order : Nat}
+    {data : CapacityPresentation.{u} object threshold order}
+    (ledger : ObjectCapacityLedger.{u} object threshold order data)
     (Label : Type) [Fintype Label] : Prop :=
-  ∀ (data : CapacityPresentation.{u} object threshold order)
-    (ledger : ObjectCapacityLedger.{u} object threshold order data),
-    (∀ token ∈ ledger.presented.tokens, ∀ role : Role,
-      ¬ ∃ pattern ⊆ ledger.presented.roleFibre token role,
-        PatternFamily.IsMatching pattern ∧
-          SameTokenRoutingGerms.patternBound Label ≤ pattern.card) ∧
-    (∀ token ∈ ledger.presented.tokens, ∀ role : Role,
-      ¬ ∃ centre, ∃ pattern ⊆ ledger.presented.roleFibre token role,
-        PatternFamily.IsStar pattern centre ∧
-          SameTokenRoutingGerms.patternBound Label ≤ pattern.card)
+  (∀ token ∈ ledger.presented.tokens, ∀ role : Role,
+    ¬ ∃ pattern ⊆ ledger.presented.roleFibre token role,
+      PatternFamily.IsMatching pattern ∧
+        SameTokenRoutingGerms.patternBound Label ≤ pattern.card) ∧
+  (∀ token ∈ ledger.presented.tokens, ∀ role : Role,
+    ¬ ∃ centre, ∃ pattern ⊆ ledger.presented.roleFibre token role,
+      PatternFamily.IsStar pattern centre ∧
+        SameTokenRoutingGerms.patternBound Label ≤ pattern.card)
 
-/-- **Node `[144]`, the bottleneck-pattern arm.**
-
-The literal complement of the fixed homogeneous caps, normalized to the
-positive pattern statement the paper routes: some certified capacity-token
-ledger has a token and role supporting a role-homogeneous same-token
-`L_geom`-matching or `L_geom`-star.  The same fact also registers the paper's
-declared connector configurations for every endpoint of every pattern edge.
-All configurations start at the canonical root of the shared token; this is
-the same-root datum consumed by `lem:same-token-bottleneck-routing`. -/
-def HomogeneousBottleneckPatternStatement (object : FiniteObject.{u})
-    (threshold order deficitScale routingLabelBound : Nat)
-    (data : CapacityPresentation.{u} object threshold order)
+/-- **`cor:homogeneous-same-token-caps-close` at one ledger**, at the counted
+`L_geom`, with `thm:homogeneous-overload-geometric-closure`'s edge-count half.
+`M₀ = Cap_hom(L_geom)` and the token supply are both derived, so neither is a
+parameter.  The fourth conjunct is `m = (3/2)n + O(√n)`. -/
+def HomogeneousCapsCloseAt {object : FiniteObject.{u}} {threshold order : Nat}
+    {data : CapacityPresentation.{u} object threshold order}
+    (ledger : ObjectCapacityLedger.{u} object threshold order data)
     (Label : Type) [Fintype Label] : Prop :=
-  ∃ (certified : CertifiedObjectCapacityLedger object threshold order
-      deficitScale data),
-    let ledger := certified.ledger
-    ∃ (token : ledger.presented.Token) (role : Role),
-      token ∈ ledger.presented.tokens ∧
-        0 < ledger.presented.coupledExcess ledger.presented.tokenClass
-          (fun _ => geometricPatternBound routingLabelBound) ∧
-        ledger.presented.coupledExcess ledger.presented.tokenClass
-            (fun _ => geometricPatternBound routingLabelBound) ≤
-          sameTokenRoleBound * ledger.presented.tokens.card *
-            ledger.presented.roleFibreExcess ledger.presented.tokenClass
-              (fun _ => geometricPatternBound routingLabelBound) token role ∧
-        ((∃ pattern ⊆ ledger.presented.roleFibre token role,
-            PatternFamily.IsMatching pattern ∧
-              PatternFamily.patternThreshold
-                  (ledger.presented.roleFibre token role).card ≤ pattern.card) ∨
-          (∃ centre, ∃ pattern ⊆ ledger.presented.roleFibre token role,
-            PatternFamily.IsStar pattern centre ∧
-              PatternFamily.patternThreshold
-                  (ledger.presented.roleFibre token role).card ≤ pattern.card)) ∧
-        ∃ (sourceClass : TokenClass),
-          ledger.presented.tokenClass token = sourceClass ∧
-          ∃ (root : object.Vertex),
-          root = CapacityPresentation.tokenRoot token ∧
-          ((∃ pattern ⊆ ledger.presented.roleFibre token role,
-              PatternFamily.IsMatching pattern ∧
-                SameTokenRoutingGerms.patternBound Label ≤ pattern.card ∧
-                ∀ pair ∈ pattern,
-                  ∃ responseSupport : Finset object.Vertex,
-                    data.activation.pairSupport pair = some responseSupport ∧
-                      ∀ demand ∈ pair,
-                        ∃ configuration :
-                            SameTokenRoutingGerms.RoutingConfiguration
-                              object (data.sameTokenRoutingSupport token pair)
-                                (CapacityPresentation.tokenSupport token)
-                                (data.activation.localBuffer demand),
-                          configuration.path.head? = some root ∧
-                            configuration.path.getLast? = some demand.2) ∨
-            (∃ centre, ∃ pattern ⊆ ledger.presented.roleFibre token role,
-              PatternFamily.IsStar pattern centre ∧
-                SameTokenRoutingGerms.patternBound Label ≤ pattern.card ∧
-                ∀ pair ∈ pattern,
-                  ∃ responseSupport : Finset object.Vertex,
-                    data.activation.pairSupport pair = some responseSupport ∧
-                      ∀ demand ∈ pair,
-                        ∃ configuration :
-                            SameTokenRoutingGerms.RoutingConfiguration
-                              object (data.sameTokenRoutingSupport token pair)
-                                (CapacityPresentation.tokenSupport token)
-                                (data.activation.localBuffer demand),
-                          configuration.path.head? = some root ∧
-                            configuration.path.getLast? = some demand.2))
-
-/-- **Node `[144]`, the near-cubic outcome**:
-`cor:homogeneous-same-token-caps-close` at the counted `L_geom`, together with
-`thm:homogeneous-overload-geometric-closure`'s edge-count half.
-
-`M₀ = Cap_hom(L_geom)` and the token supply are both derived -- the first from
-the counted routing-label alphabet, the second from
-`lem:capacity-token-supply`, which the ledger carries -- so neither is a
-parameter.  The fourth conjunct is `m = (3/2)n + O(√n)`, which is the surplus
-bound spent against `lem:sparse-slack-surplus`'s `2m = δn + σ(G)`. -/
-def HomogeneousCapsCloseStatement (object : FiniteObject.{u})
-    (threshold order : Nat) (Label : Type) [Fintype Label] : Prop :=
-  ∀ (data : CapacityPresentation.{u} object threshold order)
-    (ledger : ObjectCapacityLedger.{u} object threshold order data),
-    (∀ token ∈ ledger.presented.tokens,
-      ledger.presented.load token ≤
-        homogeneousCapCharge (SameTokenRoutingGerms.patternBound Label)) ∧
-    (ledger.presented.blocked.card ≤
-      homogeneousCapCharge (SameTokenRoutingGerms.patternBound Label) * ledger.presented.tokens.card) ∧
-    (object.degreeSurplus threshold ≤
-      1 + 2 * homogeneousCapCharge (SameTokenRoutingGerms.patternBound Label) +
+  (∀ token ∈ ledger.presented.tokens,
+    ledger.presented.load token ≤
+      homogeneousCapCharge (SameTokenRoutingGerms.patternBound Label)) ∧
+  (ledger.presented.blocked.card ≤
+    homogeneousCapCharge (SameTokenRoutingGerms.patternBound Label) * ledger.presented.tokens.card) ∧
+  (object.degreeSurplus threshold ≤
+    1 + 2 * homogeneousCapCharge (SameTokenRoutingGerms.patternBound Label) +
+      Nat.sqrt (2 * ledger.entropyBudget +
+        2 * (homogeneousCapCharge (SameTokenRoutingGerms.patternBound Label) *
+          object.capacityTokenSupply threshold))) ∧
+  (2 * object.edgeCount ≤
+    threshold * object.vertexCount +
+      (1 + 2 * homogeneousCapCharge (SameTokenRoutingGerms.patternBound Label) +
         Nat.sqrt (2 * ledger.entropyBudget +
           2 * (homogeneousCapCharge (SameTokenRoutingGerms.patternBound Label) *
-            object.capacityTokenSupply threshold))) ∧
-    (2 * object.edgeCount ≤
-      threshold * object.vertexCount +
-        (1 + 2 * homogeneousCapCharge (SameTokenRoutingGerms.patternBound Label) +
-          Nat.sqrt (2 * ledger.entropyBudget +
-            2 * (homogeneousCapCharge (SameTokenRoutingGerms.patternBound Label) *
-              object.capacityTokenSupply threshold))))
+            object.capacityTokenSupply threshold))))
 
 /-! ## The statements, proved -/
 
-/-- **`cor:quantitative-homogeneous-overload` at the object, proved.** -/
-theorem quantitativeOverloadStatement (object : FiniteObject.{u})
-    (threshold order : Nat) :
-    QuantitativeOverloadStatement object threshold order := by
-  intro data ledger share slots absorbs
-  refine ledger.presented.exists_homogeneous_pattern_of_share share slots ?_
-  refine le_trans (Nat.mul_le_mul_left share ?_) absorbs
-  exact Nat.mul_le_mul_left _ ledger.tokens_card_le
+/-- **`cor:homogeneous-same-token-caps-close` at one ledger, proved.**
 
-/-- After node `[139]` records that its concrete overload token is not a window
-token, that same witness lies either in the remainder or primitive class. -/
-theorem overloadClassExhaustive (object : FiniteObject.{u})
-    (threshold order deficitScale routingLabelBound : Nat)
-    (data : CapacityPresentation.{u} object threshold order)
-    (notWindow : SparsePressureOverloadOutsideClass object threshold order
-      deficitScale routingLabelBound data .windowIncidence) :
-    SparsePressureOverloadInClass object threshold order deficitScale
-        routingLabelBound data .remainderSurplus ∨
-      SparsePressureOverloadInClass object threshold order deficitScale
-        routingLabelBound data .primitiveCarrier := by
-  obtain ⟨certified, token, role, tokenMem,
-    outsideWindow, rest⟩ := notWindow
-  let ledger := certified.ledger
-  cases classified : ledger.presented.tokenClass token with
-  | windowIncidence =>
-      exact absurd classified outsideWindow
-  | remainderSurplus =>
-      exact Or.inl ⟨certified, token, role, tokenMem,
-        classified, rest⟩
-  | primitiveCarrier =>
-      exact Or.inr ⟨certified, token, role, tokenMem,
-        classified, rest⟩
-
-/-- **Node `[144]`, proved.**
-
-`cor:homogeneous-same-token-caps-close` is `caps_close_at_geometricBound` at the
-object's own ledger, with the token supply supplied by the ledger's own
-`lem:capacity-token-supply` rather than by a parameter, and the caps discharged
-by the subbranch hypothesis rather than assumed clause by clause.  The
-edge-count half is that bound spent against `lem:sparse-slack-surplus`. -/
-theorem homogeneousCapsCloseStatement (object : FiniteObject.{u})
+It is `caps_close_at_geometricBound` at that ledger, with the token supply
+supplied by the ledger's own `lem:capacity-token-supply` and the caps
+discharged by the subbranch hypothesis at the same ledger.  The edge-count half
+is that bound spent against `lem:sparse-slack-surplus`. -/
+theorem homogeneousCapsCloseAt {object : FiniteObject.{u}}
     {threshold order : Nat} {Label : Type} [Fintype Label]
-    (caps : HomogeneousCapsHold object threshold order Label)
+    {data : CapacityPresentation.{u} object threshold order}
+    (ledger : ObjectCapacityLedger.{u} object threshold order data)
+    (caps : HomogeneousCapsHoldAt ledger Label)
     (slack : 2 * object.edgeCount =
       threshold * object.vertexCount + object.degreeSurplus threshold) :
-    HomogeneousCapsCloseStatement object threshold order Label := by
-  intro data ledger
-  obtain ⟨noMatching, noStar⟩ := caps data ledger
+    HomogeneousCapsCloseAt ledger Label := by
+  obtain ⟨noMatching, noStar⟩ := caps
   obtain ⟨loads, blocked, surplus⟩ :=
     ledger.presented.caps_close_at_geometricBound Label
       (object.capacityTokenSupply threshold) ledger.tokens_card_le noMatching

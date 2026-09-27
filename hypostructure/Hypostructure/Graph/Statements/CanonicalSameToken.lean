@@ -173,6 +173,34 @@ def canonicalSameTokenRouting : Option (SameTokenRouting data object) :=
             demands := demands
             routes := routes }
 
+/-- The canonical overload of G is its canonical certified ledger together with
+the canonical overloading token and role at that ledger. -/
+theorem canonicalOverload_eq_some_iff
+    {capacity : SurplusCapacity data object}
+    {certified : SurplusCertified data object capacity}
+    {token : certified.ledger.presented.Token}
+    {role : Graph.SameTokenBlockerRoles.Role} :
+    canonicalOverload data object = some ⟨⟨capacity, certified⟩, (token, role)⟩ ↔
+      canonicalCertifiedCapacityData data object = some ⟨capacity, certified⟩ ∧
+        canonicalOverloadTokenAt data object certified = some (token, role) := by
+  unfold canonicalOverload
+  constructor
+  · intro selected
+    cases hLedger : canonicalCertifiedCapacityData data object with
+    | none => simp [hLedger] at selected
+    | some ledger =>
+      rw [hLedger, Option.bind_some] at selected
+      cases hToken : canonicalOverloadTokenAt data object ledger.2 with
+      | none => simp [hToken] at selected
+      | some choice =>
+        rw [hToken, Option.map_some, Option.some.injEq] at selected
+        cases selected
+        exact ⟨rfl, hToken⟩
+  · rintro ⟨hLedger, hToken⟩
+    rw [hLedger, Option.bind_some]
+    simp only
+    rw [hToken, Option.map_some]
+
 /-- Everything the canonical routing stage satisfies. -/
 def SameTokenRoutingSpec (routing : SameTokenRouting data object) : Prop :=
   canonicalOverload data object =
@@ -309,6 +337,16 @@ theorem canonicalSameTokenSeparator_spec_of_eq_some
       obtain ⟨rfl, rfl⟩ := selected
       exact ⟨rfl, canonicalChoice_spec_of_eq_some hSplit⟩
 
+theorem canonicalSameTokenSeparator_eq_some
+    {routing : SameTokenRouting data object}
+    {split : SameTokenFirstSeparator object}
+    (routingEq : canonicalSameTokenRouting data object = some routing)
+    (splitEq : canonicalChoice (SameTokenSeparatorSpec data object routing) =
+      some split) :
+    canonicalSameTokenSeparator data object = some (routing, split) := by
+  unfold canonicalSameTokenSeparator
+  rw [routingEq, Option.bind_some, splitEq, Option.map_some]
+
 /-! ## The handoff envelope and support -/
 
 /-- The handoff conditions at a first separator
@@ -365,6 +403,7 @@ edges, other than towards `h`. -/
 def SameTokenEscape (split : SameTokenFirstSeparator object)
     (envelope : SameTokenEnvelope data object) : Prop := by
   classical
+  letI : DecidableRel object.graph.Adj := object.decideAdj
   letI : DecidableEq object.Vertex := object.vertices.decEq
   let armEdges (path : List object.Vertex) : Finset (Sym2 object.Vertex) :=
     (path.zip path.tail).toFinset.image (fun pair => s(pair.1, pair.2))

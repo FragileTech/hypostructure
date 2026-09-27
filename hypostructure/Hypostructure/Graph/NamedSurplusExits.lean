@@ -91,6 +91,17 @@ theorem not_target_retainedGlue {LengthOK : Nat → Prop}
   obtain ⟨hom, injective⟩ := retainedGlue_hom object support retained
   exact avoids (hasCycleWithLength_of_hom hom injective cycle)
 
+/-- **The canonical response of a declared coordinate of G at a support `Z`**
+(`def:declared-coordinate-signature`, `val_X(r)`): the coordinate read on G's
+own piece at `Z` restricted to its declared support (`retainedPiece`), on the
+unchanged boundary `∂Z`, tested against every `∂Z`-boundaried context.  It is
+the only response a blocker or an exit may read: no caller-chosen label or
+value enters. -/
+def canonicalCoordinateResponse (Target : FiniteObject.{u} → Prop)
+    (object : FiniteObject.{u}) (support carried : Finset object.Vertex) :
+    OutsideContext (SupportAtom.boundary object support) → Prop :=
+  fun outside => Target (glue (SupportAtom.retainedPiece object support carried) outside)
+
 /-- **Clause (b) at G's declared family** (`lem:context-universality`,
 tex 6106-6112; `def:target-complete-compression`, tex 6138): two distinct
 declared coordinates of the family, read on G's own piece at the canonical
@@ -110,13 +121,15 @@ def ResidualTargetDefect (Target : FiniteObject.{u} → Prop)
           (coordinateSupport first)).boundaryDegreeProfile =
         (SupportAtom.retainedPiece object support
           (coordinateSupport second)).boundaryDegreeProfile ∧
-      (Target (glue (SupportAtom.retainedPiece object support
-            (coordinateSupport first)) (SupportAtom.outside object support)) ↔
-        Target (glue (SupportAtom.retainedPiece object support
-            (coordinateSupport second)) (SupportAtom.outside object support))) ∧
-      Response.TargetDefect Target
-        (SupportAtom.retainedPiece object support (coordinateSupport first))
-        (SupportAtom.retainedPiece object support (coordinateSupport second))
+      (canonicalCoordinateResponse Target object support (coordinateSupport first)
+          (SupportAtom.outside object support) ↔
+        canonicalCoordinateResponse Target object support (coordinateSupport second)
+          (SupportAtom.outside object support)) ∧
+      ∃ outside : OutsideContext (SupportAtom.boundary object support),
+        ¬ (canonicalCoordinateResponse Target object support
+              (coordinateSupport first) outside ↔
+            canonicalCoordinateResponse Target object support
+              (coordinateSupport second) outside)
 
 /-- The boundary-profile companion of clause (b) (`lem:degree-profile-fibres`,
 tex 6088): two distinct declared coordinates of the family whose readings on

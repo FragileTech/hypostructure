@@ -464,32 +464,19 @@ This entry supersedes the `freePairCoupledExcessDichotomy` entry of
   entropy budget and E_spine that the paper does not state.  The contradiction
   uses only [131], [126] and [19], is kernel-checked, and closes the arm.
 
-## [139], [141], [143]: the class tests are on the existence of an overload witness in the class
+## [139], [141], [143]: now paper-exact at the overloading token of G
 
 *Family F4 (Surplus / Homogeneous / Pair).*
 
-- **Paper** (diagram tex:1204-1208, 1240-1244). [139] asks whether "the
-  overloading token" of [137] lies in 𝔗_W, [141] whether it lies in 𝔗_R, and
-  the no-no arm is the primitive audit [143].
-- **Lean.** `windowOverloadClassDichotomy` and `remainderOverloadClassDichotomy`
-  (`HomogeneousBottleneckRows/WindowOverloadClass.lean`) decide, by exact case
-  analysis, whether some overload witness of the object has its token in 𝔗_W
-  (resp. 𝔗_R); the no arms `K .windowClassAbsent`, `K .remainderClassAbsent`
-  are the literal negations.  `primitiveClassOverloadRow` (contract lemma
-  `Graph.Contracts.SurplusPair.primitiveClassOverload_of_classesAbsent`) then
-  shows that the [137] overload witness is primitive.  Each audit
-  ([140] `windowBottleneckAuditRow`, [142] `remainderBottleneckAuditRow`, [143]
-  `primitiveBottleneckAuditRow`, all through the one contract lemma
-  `homogeneousBottleneckPattern_of_overloadAtClass`) reads the witness of its
-  own class.
-- **Difference.** The earlier Lean tested the class of one witness chosen
-  inside the decision, and its two keys were two existentials over separately
-  chosen witnesses (not complements).  The Lean now tests the class predicate
-  itself.
-- **Why the Lean prevails.** The three audits apply to every overload witness
-  with no further hypothesis, so choosing a 𝔗_W (then 𝔗_R) witness whenever one
-  exists routes every object to an audit of a class its overload actually
-  has; the keys are exact complements on the object, and no arm is lost.
+The class tests ask about *the* overloading token of `[137]`
+(`canonicalOverloadClass`, the class of the canonical token of G's canonical
+certified ledger).  `windowOverloadClassDichotomy` reads `[137]`'s overload arm
+and splits `class(t) = 𝔗_W` against `class(t) ≠ 𝔗_W`;
+`remainderOverloadClassDichotomy` reads `[139]`'s no arm and splits
+`class(t) = 𝔗_R` against its negation; the no-no arm is `class(t) = 𝔗_prim`
+(`primitiveClassOverloadRow`).  The audits `[140]`/`[142]`/`[143]` publish the
+canonical homogeneous pattern at that token
+(`homogeneousBottleneckPattern_of_class`).
 
 ## [181]/[183]: quantification over maximal ledgers
 

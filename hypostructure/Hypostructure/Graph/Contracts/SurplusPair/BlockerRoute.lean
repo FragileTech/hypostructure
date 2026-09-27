@@ -23,17 +23,16 @@ theorem canonicalBlockerRoute_of_noExit
     (dependent : DependentPairFamilyStatement data object) :
     CanonicalBlockerRouteStatement data object := by
   classical
-  obtain ⟨active, certificate⟩ := dependent
+  obtain ⟨activation, selected, certificate⟩ := dependent
   let pairs := object.portPairSchedule data.threshold
   let recorded := Graph.recordSparsePairDEBlockers
     (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-    (LengthOK := data.LengthOK) (Graph.pairResponseActivation active) pairs
+    (LengthOK := data.LengthOK) activation pairs
   obtain ⟨pair, pairMem, blocked⟩ :=
-    Graph.recordedSparsePairDEBlocker_nonempty
-      (Graph.pairResponseActivation active) pairs certificate
+    Graph.recordedSparsePairDEBlocker_nonempty activation pairs certificate
   obtain ⟨blocker, canonical⟩ := Option.isSome_iff_exists.mp
     (Graph.FiniteObject.isSome_canonicalBlocker recorded blocked)
-  exact ⟨noExit, active, certificate, pair, pairMem, blocked, blocker,
-    canonical⟩
+  exact ⟨noExit, activation, selected, certificate, pair, pairMem, blocked,
+    blocker, canonical⟩
 
 end Hypostructure.Graph.Contracts.SurplusPair

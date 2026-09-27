@@ -298,9 +298,8 @@ theorem canonicalCertifiedCapacityData_eq_none_iff :
 (node `[137]` overload arm, `prop:single-graph-sparse-pressure-routing` (b)
 with `cor:coupled-single-graph-overload-budget` and
 `cor:quantified-homogeneous-class-overload`, tex ~4361--4545): the
-`∃ token role`-body of `Graph.OverloadAtClass` with no class selected, i.e. of
-`Graph.SparsePressureOverloadStatement` (key `.sparsePressureOverload`,
-idx 128). -/
+overload witness `(t, r)` of `exists_overloaded_roleFibre` at that ledger
+(the `[137]` overload arm, key `.sparsePressureOverload`, idx 128). -/
 def OverloadTokenSpec {capacity : SurplusCapacity data object}
     (certified : SurplusCertified data object capacity)
     (token : certified.ledger.presented.Token)
@@ -325,20 +324,6 @@ def OverloadTokenSpec {capacity : SurplusCapacity data object}
         Graph.PatternFamily.IsStar pattern centre ∧
           Graph.PatternFamily.patternThreshold
               (ledger.presented.roleFibre token role).card ≤ pattern.card))
-
-/-- The node-`[137]` overload predicate at a certified ledger is exactly the
-existential over this `Spec` (with the class selector `fun _ => True`). -/
-theorem overloadAtClass_true_iff_exists (capacity : SurplusCapacity data object) :
-    Graph.SparsePressureOverloadStatement object data.threshold data.windowOrder
-        data.surplusScale data.routingLabelBound capacity ↔
-      ∃ certified : SurplusCertified data object capacity,
-        ∃ token role, OverloadTokenSpec data object certified token role := by
-  unfold Graph.SparsePressureOverloadStatement Graph.OverloadAtClass
-  constructor
-  · rintro ⟨certified, token, role, mem, -, rest⟩
-    exact ⟨certified, token, role, mem, rest⟩
-  · rintro ⟨certified, token, role, mem, rest⟩
-    exact ⟨certified, token, role, mem, trivial, rest⟩
 
 /-- **The canonical overloading token and role at a certified ledger**: the
 token `t` and role `r` of node `[137]`'s overload witness.  At `d2ded0e` this
@@ -453,8 +438,7 @@ def PatternConfigured {capacity : SurplusCapacity data object}
 /-- **Spec of the canonical homogeneous pattern** at the overloading token and
 role (nodes `[140]`/`[142]`/`[143]`, `lem:same-token-bottleneck-routing`
 input, tex ~5565): the pattern `∃`-body of
-`Graph.HomogeneousBottleneckPatternStatement` (key
-`.homogeneousBottleneckPattern`, idx 141) — a role-homogeneous same-token
+the geometric audit (key `.homogeneousBottleneckPattern`, idx 141) — a role-homogeneous same-token
 matching or star of `L_geom` edges inside the role fibre `H_{t,r}`, with its
 declared same-root connector configurations.  The paper's
 "matching ∨ star" disjunction is kept inside the `Spec` so the pattern itself
@@ -524,8 +508,7 @@ theorem canonicalHomogeneousPatternAt_eq_none_iff {capacity : SurplusCapacity da
   unfold canonicalHomogeneousPatternAt
   split <;> simp_all
 
-/-- The configured pattern disjunction of `HomogeneousBottleneckPatternStatement`
-is exactly the existential over `HomogeneousPatternSpec`. -/
+/-- The configured matching-or-star disjunction of the geometric audit is exactly the existential over `HomogeneousPatternSpec`. -/
 theorem homogeneousPatternDisjunction_iff_exists
     {capacity : SurplusCapacity data object}
     (certified : SurplusCertified data object capacity)

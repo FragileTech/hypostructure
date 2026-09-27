@@ -52,7 +52,7 @@ No selector, callback, route record, or side carrier is postulated. -/
         (inputs.get (K .bridgeless)).down
         (inputs.get (K .highCentreNormalForm)).down
         inputs.current.baseline data.three_le_threshold
-        data.quadrilateralAccepted data.degenerateClosureRejected
+        data.degenerateClosureRejected
         (inputs.get (K .selection)).down.1
         (inputs.get (K .sparseSurplusSurvivor)).down
       .cons (key := K .bottleneckRouting) ⟨routed.1⟩ .nil)
@@ -104,7 +104,7 @@ unresolved pair that the paper error at `[144]` leaves to the open leaf
         (inputs.get (K .bridgeless)).down
         (inputs.get (K .highCentreNormalForm)).down
         inputs.current.baseline data.three_le_threshold
-        data.quadrilateralAccepted data.degenerateClosureRejected
+        data.degenerateClosureRejected
         (inputs.get (K .selection)).down.1
         (inputs.get (K .sparseSurplusSurvivor)).down
       .cons (key := K .sameTokenPatternUnresolved)

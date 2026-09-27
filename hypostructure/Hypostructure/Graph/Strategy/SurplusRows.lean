@@ -145,7 +145,7 @@ they close the suppression.  Its first edge after `x(p)` is a shoulder. -/
 @[reducible] noncomputable def activeSurplusDemandsRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.activeSurplusDemands
-    { Requires := [K .sparseSurplusSurvivor, K .activeSurplusFamily, K .sparsePortActivation]
+    { Requires := [K .activeSurplusFamily, K .sparsePortActivation]
       Produces := [K .activeSurplusDemands]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -175,7 +175,7 @@ deficit is bounded linearly using the registered coefficient inequality. -/
 @[reducible] noncomputable def baselineSpineDemandRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.baselineSpineDemand
-    { Requires := [K .activeSurplusDemands, K .sparseSurplusSurvivor, K .surplusAbove, K .noProperBaseline, K .tightEndpoint]
+    { Requires := [K .sparseSurplusSurvivor, K .surplusAbove, K .noProperBaseline, K .tightEndpoint]
       Produces := [K .baselineSpineDemand]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -183,7 +183,6 @@ deficit is bounded linearly using the registered coefficient inequality. -/
     (fun inputs =>
       .cons (key := K .baselineSpineDemand)
         ⟨Graph.Contracts.SurplusPair.baselineSpineDemand_of_survivor inputs.current.baseline
-          (inputs.get (K .activeSurplusDemands)).down
           (inputs.get (K .sparseSurplusSurvivor)).down
           (inputs.get (K .surplusAbove)).down
           (inputs.get (K .noProperBaseline)).down
@@ -193,24 +192,34 @@ deficit is bounded linearly using the registered coefficient inequality. -/
 
 /-! ## Node `[132]`: route the dependent pair family -/
 
-/-- Node `[130]`, canonical pair split "blocker-free?": exact case analysis on
-the dependent predicate.  The independent arm is its literal negation. -/
+/-- Node `[130]`, canonical pair split "blocker-free?": read the node-`[125]`
+active family on the literal ledger, form G's canonical pair-response
+activation from it, and decide whether its full schedule carries a
+clause-(d)/(e) blocker.  Both arms are about that one activation. -/
 noncomputable def pairResponseIndependenceDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger (Input BranchState Presentation presentation data)
       current known)
+    [FactKeys.Has (K .activeSurplusDemands) known]
     (independentFresh : K .independentPairFamily ∉ known)
     (dependentFresh : K .dependentPairFamily ∉ known) :
-    Decision (K .independentPairFamily) (K .dependentPairFamily) previous := by
-  classical
-  exact Decision.run previous (K .independentPairFamily) (K .dependentPairFamily)
+    Decision (K .independentPairFamily) (K .dependentPairFamily) previous :=
+  Decision.run previous (K .independentPairFamily) (K .dependentPairFamily)
     `Hypostructure.Graph.Strategy.Spine.pairResponseIndependenceDichotomy
-    (if blocked : Holds BranchState Presentation presentation data
-        .dependentPairFamily current.object then
-      .inr ⟨blocked⟩
-    else
-      .inl ⟨blocked⟩)
+    (Classical.choice (show Nonempty
+        ((K .independentPairFamily).At current ⊕
+          (K .dependentPairFamily).At current) from by
+      let active := (previous.get (K .activeSurplusDemands)).down
+      let activation := Graph.pairResponseActivation active
+      let pairs := current.object.portPairSchedule data.threshold
+      have selected := canonicalPairActivation_eq data.toParameters
+        current.object active
+      by_cases blocked : Graph.HasSparsePairDEBlocker
+          (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+          (LengthOK := data.LengthOK) activation pairs
+      · exact ⟨.inr ⟨activation, selected, blocked⟩⟩
+      · exact ⟨.inl ⟨activation, selected, blocked⟩⟩))
     independentFresh dependentFresh
 
 /-! ## Node `[131]`: mixed sparse-spine dependence -/
@@ -222,14 +231,15 @@ semantic fact. -/
 @[reducible] noncomputable def mixedSparseSpineDependenceRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.mixedSparseSpineDependence
-    { Requires := [K .baselineSpineDemand]
+    { Requires := [K .activeSurplusDemands, K .baselineSpineDemand]
       Produces := [K .mixedSparseSpineDependence]
-      requiresUnique := by simp
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .mixedSparseSpineDependence)
         ⟨Graph.Contracts.SurplusPair.mixedSparseSpineDependence_of_baseline
+          (inputs.get (K .activeSurplusDemands)).down
           (inputs.get (K .baselineSpineDemand)).down⟩
         .nil)
 
@@ -290,6 +300,7 @@ noncomputable def blockedPairRoutingDichotomy
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger (Input BranchState Presentation presentation data)
       current known)
+    [FactKeys.Has (K .dependentPairFamily) known]
     (exitFresh : K .sparsePairExit ∉ known)
     (noExitFresh : K .blockedPairNoExit ∉ known) :
     Decision (K .sparsePairExit) (K .blockedPairNoExit) previous := by
@@ -348,7 +359,7 @@ canonical-fibre no-overcount identities. -/
 @[reducible] noncomputable def exactWindowJoinPressureRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.exactWindowJoinPressure
-    { Requires := [K .maximalPacking, K .noProperBaseline, K .tightEndpoint, K .surplusAbove]
+    { Requires := [K .noProperBaseline, K .tightEndpoint, K .surplusAbove]
       Produces := [K .sparseUpperEnvelope]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -356,7 +367,6 @@ canonical-fibre no-overcount identities. -/
     (fun inputs =>
       .cons (key := K .sparseUpperEnvelope)
         ⟨Graph.Contracts.SurplusPair.sparseUpperEnvelope_of_packing inputs.current.baseline
-          (inputs.get (K .maximalPacking)).down
           (inputs.get (K .noProperBaseline)).down
           (inputs.get (K .tightEndpoint)).down
           (inputs.get (K .surplusAbove)).down

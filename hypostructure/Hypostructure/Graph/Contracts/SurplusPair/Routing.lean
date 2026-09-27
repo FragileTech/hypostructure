@@ -1,4 +1,4 @@
-import Hypostructure.Graph.Statements.SurplusPair
+import Hypostructure.Graph.Statements.SurplusPairRouting
 import Hypostructure.Graph.NamedSurplusExits
 import Hypostructure.Graph.SparsePressureLedger
 import Hypostructure.Graph.GluedCrossingCycle
@@ -36,7 +36,6 @@ theorem sameTokenBottleneckRouting_of_pattern
     (highCentreNormalForm : HighCentreNormalFormStatement data object)
     (objectBaseline : Graph.MinimumDegreeAtLeast data.threshold object)
     (threeLe : 3 ≤ data.threshold)
-    (quadrilateralAccepted : data.LengthOK 4)
     (degenerateClosureRejected : ¬ data.LengthOK 2)
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (survivor : DeclaredSparseSurvivor data object) :
@@ -45,23 +44,38 @@ theorem sameTokenBottleneckRouting_of_pattern
         SameTokenTypeBHandoffStatement data object ∨
         SameTokenPatternPairUnresolvedStatement data object) := by
   classical
-  obtain ⟨patternActive, capacity, activationEq, concretePattern⟩ :=
-    patternFact
-  have activeEq : patternActive = active := Subsingleton.elim _ _
-  subst patternActive
-  have activationFacts := active.activated
-  have cubic := cubicFact.1
-  obtain ⟨_ledgerActive, _ledgerCapacity, _ledgerActivationEq,
-      _primitiveCarrierCard, _primitiveCarrierBound,
-      _concreteCapacityLedger, objectConnected⟩ := capacityLedger
   refine (fun (outcome :
       DeclaredSparseSurplusExit data object ∨
-        (SameTokenTypeBHandoffEnvelopeStatement data object ∧
-          SameTokenTypeBHandoffStatement data object) ∨
+        SameTokenTypeBHandoffStatement data object ∨
         SameTokenPatternPairUnresolvedStatement data object) =>
-    ⟨⟨active, capacity, activationEq, concretePattern,
-        Or.imp_right (Or.imp_left And.left) outcome⟩,
-      Or.imp_right (Or.imp_left And.right) outcome⟩) ?_
+    ⟨⟨patternFact, outcome⟩, outcome⟩) ?_
+  -- The canonical overload of G (node `[137]`) and the canonical pattern of
+  -- the geometric audit (`[140]`/`[142]`/`[143]`), read from node `[141]`.
+  obtain ⟨⟨⟨capacity, certified⟩, token, role⟩, pattern, overloadEq,
+      patternEq, patternSpec⟩ := patternFact
+  obtain ⟨ledgerEq, tokenEq⟩ :=
+    (canonicalOverload_eq_some_iff data object).1 overloadEq
+  obtain ⟨capacityEq, _certifiedEq⟩ :=
+    (canonicalCertifiedCapacityData_eq_some_iff data object capacity
+      certified).1 ledgerEq
+  obtain ⟨⟨patternActive, activationEq⟩, _primitiveCarrierCard,
+      _primitiveCarrierBound, _concreteCapacityLedger, _capacityConnected,
+      _capacityPacking⟩ :=
+    canonicalCapacity_spec_of_eq_some data object capacityEq
+  have activeEq : patternActive = active := Subsingleton.elim _ _
+  subst patternActive
+  obtain ⟨tokenMem, _positiveCoupledExcess, _multiplicityBound,
+      _quantitativePattern⟩ :=
+    canonicalOverloadTokenAt_spec_of_eq_some data object tokenEq
+  obtain ⟨patternSubset, patternShape, large, configurations⟩ := patternSpec
+  have activationFacts := active.activated
+  have cubic := cubicFact.1
+  -- Connectedness of G, from node `[136]`'s presentation of G (the same
+  -- canonical presentation).
+  obtain ⟨ledgerCapacity, ledgerCapacityEq, ledgerSpec⟩ := capacityLedger
+  have objectConnected :
+      Graph.SupportComponents.Connected.ConnectedOn object object.vertexFinset :=
+    ledgerSpec.2.2.2.2.1
   let activation := capacity.activation
   letI : FinEnum object.Vertex := object.vertices
   letI : DecidableRel object.graph.Adj := object.decideAdj
@@ -78,15 +92,9 @@ theorem sameTokenBottleneckRouting_of_pattern
     support.biUnion fun vertex =>
       ((support.filter fun other => object.graph.Adj vertex other).image
         fun other => s(vertex, other))
-  -- Fact-sized projections used by the two routing cases.  Each comes
-  -- directly from a hypothesis or the capacity presentation
-  -- sealed in the homogeneous-pattern entry.
   have noSparseExit := survivor
-  have packingValid := capacity.packingValid
-  have packingMaximal := capacity.packingMaximal
-  obtain ⟨certified, token, role, tokenMem, _positiveCoupledExcess,
-      _multiplicityBound, _quantitativePattern, _sourceClass,
-      _sourceClassEq, root, rootEq, structured⟩ := concretePattern
+  let root := Graph.CapacityPresentation.tokenRoot token
+  have rootEq : root = Graph.CapacityPresentation.tokenRoot token := rfl
   let ledger := certified.ledger
   letI : Nonempty object.Vertex := ⟨root⟩
 
@@ -203,22 +211,6 @@ theorem sameTokenBottleneckRouting_of_pattern
     | some (.arithmeticChordSet _) => true
     | _ => false
 
-  -- Once the separated configurations have produced the paper's
-  -- decorated envelope, publish exactly that produced handoff.  Its
-  -- remainder admissibility is the downstream Type B lane's theorem,
-  -- just as for the existing Type-A exit-`(7)` handoff.
-  have handoff_of_envelope
-      (core : Finset object.Vertex)
-      (envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-        (handoffHighDegree data object)
-        (handoffAbsorbing data object capacity.packing))
-      (envelopeCore : envelope.core = core)
-      (decorated : envelope.decorations.Nonempty) :
-      SameTokenTypeBHandoffEnvelopeStatement data object := by
-    refine ⟨capacity.packing, capacity.packingValid,
-      capacity.packingMaximal, core, envelope, envelopeCore,
-      decorated⟩
-
   -- `ρ_t(π)`, in the seven coordinates and order fixed by
   -- `def:same-token-routing-germs`.  The cardinality proof is part of
   -- the local call, so there is no off-pattern fallback label.  The
@@ -313,14 +305,15 @@ theorem sameTokenBottleneckRouting_of_pattern
         exact card
       · exact absurd (pairFacts.1 (Finset.mem_toList.mp (List.get_mem _ _))) hu
 
-  -- Every recorded type-(e) obstruction already carries the exact
-  -- failed-response quotient obtained at `[132]`.  Read that retained
-  -- obstruction from the activation instead of constructing another
-  -- quotient at `[144]`: its final disjunction is literally sparse
-  -- exit (b) or sparse exit (c).  This applies even when an earlier
-  -- blocker clause (a)--(d) is the pair's canonical capacity charge.
+  -- Every recorded type-(e) obstruction of a scheduled pair is a
+  -- target-defective identification of the pair's two demands on G's own
+  -- piece, or a target-complete compression of the pair's canonical support
+  -- `X_π` (`def:surplus-blockers` (e)): literally sparse exit (b) or (c) of
+  -- G.  This applies even when an earlier blocker clause (a)--(d) is the
+  -- pair's canonical capacity charge.
   have responseObstructionRoutes
       (pair : Finset (object.Vertex × object.Vertex))
+      (pairSchedule : pair ∈ object.portPairSchedule data.threshold)
       (coordinate : Graph.FiniteObject.PairCoordinate object)
       (obstructs : coordinate ∈
         capacity.activation.responseObstructions pair) :
@@ -339,29 +332,25 @@ theorem sameTokenBottleneckRouting_of_pattern
           (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
           (LengthOK := data.LengthOK)
           (Graph.pairResponseActivation active)
-          (object.portPairSchedule data.threshold) pair := by
+          pair := by
       simp only [Graph.recordSparsePairDEBlockers] at recordedObstructs
       split at recordedObstructs
       next present => exact present
       next absent => simp at recordedObstructs
-    obtain ⟨attempt, _functional, _reducing, determiners, coordinateMem,
-        determinersSubset, _outside, _determines, _minimal,
-        defect | replacement⟩ := obstruction
-    · -- Clause (e) is a target-defective identification among G's own pair
-      -- coordinates `r_π ∪ determiners`: sparse exit (b) of G's declared
-      -- family.
-      classical
-      refine declaredSparseSurplusExit_of_pairDefect data object active ?_ defect
-      intro member memberIn
-      rcases Finset.mem_insert.mp memberIn with rfl | inDeterminers
-      · exact coordinateMem
-      · exact determinersSubset inDeterminers
-    · exact .compression attempt.support replacement
+    rcases obstruction with defect | ⟨support, _supportEq, replacement⟩
+    · -- A target-defective identification of the pair's two demands on G's
+      -- own piece: sparse exit (b) of G's declared family.
+      exact declaredSparseSurplusExit_of_demandDefect active
+        (object.subset_excessPorts_of_mem_portPairSchedule data.threshold
+          pairSchedule) defect
+    · -- A target-complete compression of `X_π`: sparse exit (c).
+      exact .compression support replacement
 
   -- If type (e) is the canonical role, canonical-blocker membership
   -- supplies the recorded response coordinate consumed above.
   have targetResponseRoleRoutes
       (pair : Finset (object.Vertex × object.Vertex))
+      (pairSchedule : pair ∈ object.portPairSchedule data.threshold)
       (assigned : capacity.role pair = role)
       (targetRole : role.blocker =
         Graph.SameTokenBlockerRoles.BlockerKind.targetResponse) :
@@ -396,56 +385,24 @@ theorem sameTokenBottleneckRouting_of_pattern
                 capacity.activation.responseObstructions pair := by
               simpa [Graph.FiniteObject.DemandActivation.blockers] using
                 blockerMem
-            exact responseObstructionRoutes pair coordinate obstructs
+            exact responseObstructionRoutes pair pairSchedule coordinate obstructs
 
   have routedOutcome :
       DeclaredSparseSurplusExit data object ∨
-        (SameTokenTypeBHandoffEnvelopeStatement data object ∧
-          SameTokenTypeBHandoffStatement data object) ∨
+        SameTokenTypeBHandoffStatement data object ∨
         SameTokenPatternPairUnresolvedStatement data object := by
-    obtain ⟨pattern, patternSubset, patternShape, large, configurations,
-        pairs, first, second, different, left, right, leftMem, rightMem,
-        demandsDifferent, routingLabelsEqual⟩ :
-        ∃ pattern,
-        ∃ patternSubset : pattern ⊆ ledger.presented.roleFibre token role,
-          (Graph.PatternFamily.IsMatching pattern ∨
-            ∃ centre, Graph.PatternFamily.IsStar pattern centre) ∧
-          Graph.SameTokenRoutingGerms.patternBound
-              (Graph.SameTokenRoutingGerms.RoutingLabel
-                data.BoundaryProfile
-                (Graph.WindowCurvature.Label data.windowOrder)) ≤
-            pattern.card ∧
-          (∀ pair ∈ pattern,
-            ∃ responseSupport : Finset object.Vertex,
-              capacity.activation.pairSupport pair =
-                  some responseSupport ∧
-                ∀ demand ∈ pair,
-                  ∃ configuration :
-                      Graph.SameTokenRoutingGerms.RoutingConfiguration
-                        object (capacity.sameTokenRoutingSupport token pair)
-                        (Graph.CapacityPresentation.tokenSupport token)
-                        (capacity.activation.localBuffer demand),
-                    configuration.path.head? = some root ∧
-                      configuration.path.getLast? = some demand.2) ∧
-          ∃ pairs : ∀ edge ∈ pattern, edge.card = 2,
-          ∃ first second : {edge // edge ∈ pattern}, first ≠ second ∧
-          ∃ left right : object.Vertex × object.Vertex,
-          ∃ _leftMem : left ∈ first.1, ∃ _rightMem : right ∈ second.1,
-            left ≠ right ∧
-              routingLabel first.1 (pairs first.1 first.2) left =
-                routingLabel second.1 (pairs second.1 second.2) right := by
-      -- The matching and star arms differ only in how the two
-      -- equal-label demands are read from their pattern edges; the
-      -- routing paragraph below is common to both.
-      rcases structured with
-          ⟨pattern, patternSubset, patternShape, large, configurations⟩ |
-          ⟨centre, pattern, patternSubset, patternShape, large,
-            configurations⟩
-      · have pairs : ∀ edge ∈ pattern, edge.card = 2 := by
-          intro edge edgeMem
-          exact ledger.presented.pairs_roleFibre token role edge
-            (patternSubset edgeMem)
-        let attached := pattern.attach
+    -- `lem:same-token-bottleneck-routing`, pigeonhole over `L_geom`
+    -- (tex 5570-5580): the canonical pattern carries two distinct edges with
+    -- endpoint demands of equal routing label.  The matching and star arms
+    -- differ only in how the demands are read from their edges.
+    have pairs : ∀ edge ∈ pattern, edge.card = 2 := by
+      intro edge edgeMem
+      exact ledger.presented.pairs_roleFibre token role edge
+        (patternSubset edgeMem)
+    have demandsExist : ∃ demands,
+        SameTokenDemandsSpec data object certified token role pattern demands := by
+      rcases patternShape with patternShape | ⟨centre, patternShape⟩
+      · let attached := pattern.attach
         let chosenDemand (edge : {edge // edge ∈ pattern}) :
             object.Vertex × object.Vertex :=
           edge.1.toList.get ⟨0, by
@@ -473,22 +430,18 @@ theorem sameTokenBottleneckRouting_of_pattern
             (List.get_mem second.1.toList ⟨0, by
               rw [Finset.length_toList, pairs second.1 second.2]
               omega⟩)
-        have demandsDifferent : left ≠ right := by
-          intro equal
-          have edgeDifferent : first.1 ≠ second.1 := by
-            intro edgeEqual
-            exact different (Subtype.ext edgeEqual)
-          exact patternShape first.1 firstPattern second.1 secondPattern
-            edgeDifferent left leftMem (equal ▸ rightMem)
-        exact ⟨pattern, patternSubset, Or.inl patternShape, large,
-          configurations, pairs, first, second, different, left, right,
-          leftMem, rightMem, demandsDifferent,
-          by simpa only [attachedLabel] using sameLabel⟩
-      · have pairs : ∀ edge ∈ pattern, edge.card = 2 := by
-          intro edge edgeMem
-          exact ledger.presented.pairs_roleFibre token role edge
-            (patternSubset edgeMem)
-        let attached := pattern.attach
+        exact ⟨⟨first.1, second.1, left, right⟩,
+          fun edgeEqual => different (Subtype.ext edgeEqual), active, cubic,
+          patternSubset, firstPattern, secondPattern, leftMem, rightMem,
+          (actualRoutingLabel_eq pattern patternSubset first.1 firstPattern
+              (pairs first.1 firstPattern) left leftMem).trans
+            ((show routingLabel first.1 (pairs first.1 firstPattern) left =
+                routingLabel second.1 (pairs second.1 secondPattern) right by
+              simpa only [attachedLabel] using sameLabel).trans
+              (actualRoutingLabel_eq pattern patternSubset second.1
+                secondPattern (pairs second.1 secondPattern) right
+                rightMem).symm)⟩
+      · let attached := pattern.attach
         let chosenDemand (edge : {edge // edge ∈ pattern}) :
             object.Vertex × object.Vertex :=
           (edge.1.erase centre).toList.get ⟨0, by
@@ -529,30 +482,37 @@ theorem sameTokenBottleneckRouting_of_pattern
         have leftMem : left ∈ first.1 := (Finset.mem_erase.mp leftErase).2
         have rightMem : right ∈ second.1 :=
           (Finset.mem_erase.mp rightErase).2
-        have edgeEq : ∀ edge ∈ pattern, ∀ other,
-            other ≠ centre → other ∈ edge → edge = {centre, other} := by
-          intro edge edgeMem other otherNe otherMem
-          have centreMem := patternShape edge edgeMem
-          refine (Finset.eq_of_subset_of_card_le ?_ ?_).symm
-          · intro item inside
-            rcases Finset.mem_insert.mp inside with rfl | inside
-            · exact centreMem
-            · rw [Finset.mem_singleton.mp inside]
-              exact otherMem
-          · rw [pairs edge edgeMem, Finset.card_insert_of_notMem
-                (by simp [Ne.symm otherNe]),
-              Finset.card_singleton]
-        have firstEq := edgeEq first.1 firstPattern left leftNe leftMem
-        have secondEq := edgeEq second.1 secondPattern right rightNe rightMem
-        have demandsDifferent : left ≠ right := by
-          intro equal
-          apply different
-          apply Subtype.ext
-          rw [firstEq, secondEq, equal]
-        exact ⟨pattern, patternSubset, Or.inr ⟨centre, patternShape⟩, large,
-          configurations, pairs, first, second, different, left, right,
-          leftMem, rightMem, demandsDifferent,
-          by simpa only [attachedLabel] using sameLabel⟩
+        exact ⟨⟨first.1, second.1, left, right⟩,
+          fun edgeEqual => different (Subtype.ext edgeEqual), active, cubic,
+          patternSubset, firstPattern, secondPattern, leftMem, rightMem,
+          (actualRoutingLabel_eq pattern patternSubset first.1 firstPattern
+              (pairs first.1 firstPattern) left leftMem).trans
+            ((show routingLabel first.1 (pairs first.1 firstPattern) left =
+                routingLabel second.1 (pairs second.1 secondPattern) right by
+              simpa only [attachedLabel] using sameLabel).trans
+              (actualRoutingLabel_eq pattern patternSubset second.1
+                secondPattern (pairs second.1 secondPattern) right
+                rightMem).symm)⟩
+    -- The canonical equal-label demands of G's pattern.
+    obtain ⟨⟨firstEdge, secondEdge, left, right⟩, demandsEq, demandsSpec⟩ :=
+      canonicalChoice_spec demandsExist
+    obtain ⟨edgesDifferent, _labelActive, _labelCubic, _labelSubset,
+        firstEdgeMem, secondEdgeMem, leftMem, rightMem, canonicalLabel⟩ :=
+      demandsSpec
+    obtain ⟨first, rfl⟩ : ∃ first : {edge // edge ∈ pattern},
+        first.1 = firstEdge := ⟨⟨firstEdge, firstEdgeMem⟩, rfl⟩
+    obtain ⟨second, rfl⟩ : ∃ second : {edge // edge ∈ pattern},
+        second.1 = secondEdge := ⟨⟨secondEdge, secondEdgeMem⟩, rfl⟩
+    have different : first ≠ second :=
+      fun equal => edgesDifferent (congrArg Subtype.val equal)
+    have routingLabelsEqual :
+        routingLabel first.1 (pairs first.1 first.2) left =
+          routingLabel second.1 (pairs second.1 second.2) right :=
+      (actualRoutingLabel_eq pattern patternSubset first.1 first.2
+          (pairs first.1 first.2) left leftMem).symm.trans
+        (canonicalLabel.trans
+          (actualRoutingLabel_eq pattern patternSubset second.1 second.2
+            (pairs second.1 second.2) right rightMem))
     have firstPattern : first.1 ∈ pattern := first.2
     have secondPattern : second.1 ∈ pattern := second.2
     have firstRoleFibre : first.1 ∈
@@ -659,42 +619,62 @@ theorem sameTokenBottleneckRouting_of_pattern
           configuration.path.head? = some root ∧
             configuration.path.getLast? = some right.2 :=
       secondConfigurations right rightMem
-    obtain ⟨firstConfiguration, secondConfiguration,
-        firstValid, secondValid, maximalPrefix⟩ :=
+    -- The canonical maximal routes of G to the canonical demands
+    -- (`lem:same-token-bottleneck-routing`, tex 5580-5584).
+    have routesExist : ∃ routes : SameTokenRoutes data object capacity token
+        ⟨first.1, second.1, left, right⟩,
+        SameTokenRoutesSpec data object routes := by
+      obtain ⟨firstConfiguration, secondConfiguration,
+          firstValid, secondValid, maximalPrefix⟩ :=
       Graph.SameTokenRoutingArms.exists_maximal_commonPrefix
-        (fun (configuration :
-            Graph.SameTokenRoutingGerms.RoutingConfiguration object
-              (capacity.sameTokenRoutingSupport token first.1)
-              (Graph.CapacityPresentation.tokenSupport token)
-              (capacity.activation.localBuffer left)) =>
-          configuration.path)
-        (fun (configuration :
-            Graph.SameTokenRoutingGerms.RoutingConfiguration object
-              (capacity.sameTokenRoutingSupport token second.1)
-              (Graph.CapacityPresentation.tokenSupport token)
-              (capacity.activation.localBuffer right)) =>
-          configuration.path)
-        (fun (configuration :
-            Graph.SameTokenRoutingGerms.RoutingConfiguration object
-              (capacity.sameTokenRoutingSupport token first.1)
-              (Graph.CapacityPresentation.tokenSupport token)
-              (capacity.activation.localBuffer left)) =>
-          configuration.path.head? = some root ∧
-            configuration.path.getLast? = some left.2)
-        (fun (configuration :
-            Graph.SameTokenRoutingGerms.RoutingConfiguration object
-              (capacity.sameTokenRoutingSupport token second.1)
-              (Graph.CapacityPresentation.tokenSupport token)
-              (capacity.activation.localBuffer right)) =>
-          configuration.path.head? = some root ∧
-            configuration.path.getLast? = some right.2)
-        (fun (configuration :
-            Graph.SameTokenRoutingGerms.RoutingConfiguration object
-              (capacity.sameTokenRoutingSupport token first.1)
-              (Graph.CapacityPresentation.tokenSupport token)
-              (capacity.activation.localBuffer left)) _ =>
-          configuration.nodup)
-        firstConfigurationExists secondConfigurationExists
+          (fun (configuration :
+              Graph.SameTokenRoutingGerms.RoutingConfiguration object
+                (capacity.sameTokenRoutingSupport token first.1)
+                (Graph.CapacityPresentation.tokenSupport token)
+                (capacity.activation.localBuffer left)) =>
+            configuration.path)
+          (fun (configuration :
+              Graph.SameTokenRoutingGerms.RoutingConfiguration object
+                (capacity.sameTokenRoutingSupport token second.1)
+                (Graph.CapacityPresentation.tokenSupport token)
+                (capacity.activation.localBuffer right)) =>
+            configuration.path)
+          (fun (configuration :
+              Graph.SameTokenRoutingGerms.RoutingConfiguration object
+                (capacity.sameTokenRoutingSupport token first.1)
+                (Graph.CapacityPresentation.tokenSupport token)
+                (capacity.activation.localBuffer left)) =>
+            configuration.path.head? = some root ∧
+              configuration.path.getLast? = some left.2)
+          (fun (configuration :
+              Graph.SameTokenRoutingGerms.RoutingConfiguration object
+                (capacity.sameTokenRoutingSupport token second.1)
+                (Graph.CapacityPresentation.tokenSupport token)
+                (capacity.activation.localBuffer right)) =>
+            configuration.path.head? = some root ∧
+              configuration.path.getLast? = some right.2)
+          (fun (configuration :
+              Graph.SameTokenRoutingGerms.RoutingConfiguration object
+                (capacity.sameTokenRoutingSupport token first.1)
+                (Graph.CapacityPresentation.tokenSupport token)
+                (capacity.activation.localBuffer left)) _ =>
+            configuration.nodup)
+          firstConfigurationExists secondConfigurationExists
+      exact ⟨⟨firstConfiguration, secondConfiguration⟩, firstValid, secondValid,
+        maximalPrefix⟩
+    obtain ⟨⟨firstConfiguration, secondConfiguration⟩, routesEq, firstValid,
+        secondValid, maximalPrefix⟩ := canonicalChoice_spec routesExist
+    let routing : SameTokenRouting data object :=
+      { capacity := capacity
+        certified := certified
+        token := token
+        role := role
+        pattern := pattern
+        demands := ⟨first.1, second.1, left, right⟩
+        routes := ⟨firstConfiguration, secondConfiguration⟩ }
+    have routingEq : canonicalSameTokenRouting data object = some routing :=
+      canonicalSameTokenRouting_eq_some_of_spec data object
+        ⟨overloadEq, patternEq, demandsEq, routesEq⟩
     obtain ⟨firstRoot, firstTerminalEndpoint⟩ := firstValid
     obtain ⟨secondRoot, secondTerminalEndpoint⟩ := secondValid
     have firstConnectorChain := firstConfiguration.chain
@@ -733,11 +713,11 @@ theorem sameTokenBottleneckRouting_of_pattern
     have firstConfigurationCanonicalRoot :
         firstConfiguration.path.head? =
           some (Graph.CapacityPresentation.tokenRoot token) := by
-      rw [firstRoot, rootIsCanonical]
+      exact firstRoot
     have secondConfigurationCanonicalRoot :
         secondConfiguration.path.head? =
           some (Graph.CapacityPresentation.tokenRoot token) := by
-      rw [secondRoot, rootIsCanonical]
+      exact secondRoot
     let firstResponseCoordinate : object.PairCoordinate :=
       Graph.FiniteObject.DemandActivation.pairCoordinate first.1
         firstResponseSupport
@@ -832,6 +812,38 @@ theorem sameTokenBottleneckRouting_of_pattern
     -- tex 5589; target-complete readings, tex 5594) are sparse exits; that
     -- claim is a paper error (`lean-vs-paper-discrepancies.md#paper-errors`),
     -- and the unresolved pair is carried by the open leaf `[144a]`.
+    -- The pair coordinates of the canonical routing are `r_p`, `r_q`.
+    have firstCoordinateEq :
+        sameTokenPairCoordinate capacity first.1 = firstResponseCoordinate := by
+      simp [sameTokenPairCoordinate, firstResponseCoordinate,
+        firstResponseSupportEq]
+    have secondCoordinateEq :
+        sameTokenPairCoordinate capacity second.1 = secondResponseCoordinate := by
+      simp [sameTokenPairCoordinate, secondResponseCoordinate,
+        secondResponseSupportEq]
+    have unresolvedOf :
+        ∀ canonical : Finset object.Vertex,
+          Graph.CanonicalSupport.select? object
+              (responseCoordinateSupport firstResponseCoordinate ∪
+                responseCoordinateSupport secondResponseCoordinate) =
+            some canonical →
+          ((Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
+                canonical (responseCoordinateSupport
+                  firstResponseCoordinate)).boundaryDegreeProfile ≠
+              (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
+                canonical (responseCoordinateSupport
+                  secondResponseCoordinate)).boundaryDegreeProfile ∨
+            Graph.Response.ContextEquivalent (Graph.HasCycleWithLength data.LengthOK)
+              (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
+                canonical (responseCoordinateSupport firstResponseCoordinate))
+              (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
+                canonical (responseCoordinateSupport secondResponseCoordinate))) →
+          SameTokenPatternPairUnresolvedStatement data object := by
+      intro canonical selected alternative
+      refine ⟨routing, routingEq, ?_⟩
+      dsimp only [routing]
+      rw [firstCoordinateEq, secondCoordinateEq]
+      exact ⟨responseCoordinatesDifferent, canonical, selected, alternative⟩
     have supportRoutes :
         ∀ support : Finset object.Vertex,
           Graph.SupportComponents.Connected.ConnectedOn object support →
@@ -866,9 +878,7 @@ theorem sameTokenBottleneckRouting_of_pattern
             firstReading.boundaryDegreeProfile = secondReading.boundaryDegreeProfile
         · by_cases equivalent : Graph.Response.ContextEquivalent
               (Graph.HasCycleWithLength data.LengthOK) firstReading secondReading
-          · exact Or.inr ⟨active, firstResponseCoordinate, firstResponseInBaseFamily,
-              secondResponseCoordinate, secondResponseInBaseFamily,
-              responseCoordinatesDifferent, canonical, selected, Or.inr equivalent⟩
+          · exact Or.inr (unresolvedOf canonical selected (Or.inr equivalent))
           · apply Or.inl
             refine declaredSparseSurplusExit_of_pairDefect data object active
               responseFamily_subset_base ?_
@@ -881,20 +891,19 @@ theorem sameTokenBottleneckRouting_of_pattern
             exact iff_of_false
               (Graph.not_target_retainedGlue avoids canonical _)
               (Graph.not_target_retainedGlue avoids canonical _)
-        · exact Or.inr ⟨active, firstResponseCoordinate, firstResponseInBaseFamily,
-            secondResponseCoordinate, secondResponseInBaseFamily,
-            responseCoordinatesDifferent, canonical, selected, Or.inl profileEq⟩
+        · exact Or.inr (unresolvedOf canonical selected (Or.inl profileEq))
       by_cases firstResponded : ∃ coordinate, coordinate ∈
           capacity.activation.responseObstructions first.1
       · obtain ⟨coordinate, obstructs⟩ := firstResponded
-        exact Or.inl (responseObstructionRoutes first.1 coordinate obstructs)
+        exact Or.inl (responseObstructionRoutes first.1 firstSchedule coordinate obstructs)
       · by_cases secondResponded : ∃ coordinate, coordinate ∈
             capacity.activation.responseObstructions second.1
         · obtain ⟨coordinate, obstructs⟩ := secondResponded
-          exact Or.inl (responseObstructionRoutes second.1 coordinate obstructs)
+          exact Or.inl (responseObstructionRoutes second.1 secondSchedule coordinate
+            obstructs)
         · by_cases targetRole : role.blocker =
               Graph.SameTokenBlockerRoles.BlockerKind.targetResponse
-          · exact Or.inl (targetResponseRoleRoutes first.1 firstAssignedRole
+          · exact Or.inl (targetResponseRoleRoutes first.1 firstSchedule firstAssignedRole
               targetRole)
           · exact supportDependenceExit
     let commonSelectedSupport : Finset object.Vertex :=
@@ -1042,87 +1051,165 @@ theorem sameTokenBottleneckRouting_of_pattern
           responseFamily_subset_base sameBoundedPortProfileData
           routingLabelsEqual).elim Or.inl (fun unresolved => Or.inr (Or.inr unresolved))
     · exact by
-        obtain ⟨common, nextLeft, nextRight, tailLeft, tailRight,
-            leftDecomposition, rightDecomposition, nextDifferent⟩ :=
-          separatesAt
-        have separatorNextLeftAdj :
-            object.graph.Adj separator nextLeft := by
-          have chain := firstConnectorChain
-          rw [leftDecomposition] at chain
-          obtain ⟨_, rest, _⟩ := List.isChain_append.mp chain
-          exact (List.isChain_cons.mp rest).1 nextLeft (by simp)
-        have separatorNextRightAdj :
-            object.graph.Adj separator nextRight := by
-          have chain := secondConnectorChain
-          rw [rightDecomposition] at chain
-          obtain ⟨_, rest, _⟩ := List.isChain_append.mp chain
-          exact (List.isChain_cons.mp rest).1 nextRight (by simp)
+        -- The first separator of the canonical routes, with its two
+        -- first-entry arms into the core `{d_p, d_q}` (tex 5596-5612).
+        have splitExists : ∃ split,
+            SameTokenSeparatorSpec data object routing split := by
+          obtain ⟨common, nextLeft, nextRight, tailLeft, tailRight,
+              leftDecomposition, rightDecomposition, nextDifferent⟩ :=
+            separatesAt
+          have separatorNextLeftAdj :
+              object.graph.Adj separator nextLeft := by
+            have chain := firstConnectorChain
+            rw [leftDecomposition] at chain
+            obtain ⟨_, rest, _⟩ := List.isChain_append.mp chain
+            exact (List.isChain_cons.mp rest).1 nextLeft (by simp)
+          have separatorNextRightAdj :
+              object.graph.Adj separator nextRight := by
+            have chain := secondConnectorChain
+            rw [rightDecomposition] at chain
+            obtain ⟨_, rest, _⟩ := List.isChain_append.mp chain
+            exact (List.isChain_cons.mp rest).1 nextRight (by simp)
+          have separatorMinimumDegree :
+              data.threshold ≤ object.degree separator :=
+            objectBaseline.trans (object.minDegree_le_degree separator)
+          -- The handoff tails end in the two selected demands.  Trim
+          -- each registered tail at its first entry into that literal
+          -- two-endpoint core; this is the manuscript's first-entry
+          -- operation, not an assumed remainder connector.
+          let core : Finset object.Vertex := {left.2, right.2}
+          have leftEndpointInside : left.2 ∈ core := by
+            simp [core]
+          have rightEndpointInside : right.2 ∈ core := by
+            simp [core]
+          have rawArmLeftChain :
+              (nextLeft :: tailLeft).IsChain object.graph.Adj := by
+            have chain := firstConnectorChain
+            rw [leftDecomposition] at chain
+            exact (List.isChain_cons.mp
+              (List.isChain_append.mp chain).2.1).2
+          have rawArmRightChain :
+              (nextRight :: tailRight).IsChain object.graph.Adj := by
+            have chain := secondConnectorChain
+            rw [rightDecomposition] at chain
+            exact (List.isChain_cons.mp
+              (List.isChain_append.mp chain).2.1).2
+          have rawArmLeftNodup : (nextLeft :: tailLeft).Nodup := by
+            have nodup := firstConnectorSimple
+            rw [leftDecomposition] at nodup
+            exact (List.nodup_cons.mp
+              (List.nodup_append.mp nodup).2.1).2
+          have rawArmRightNodup : (nextRight :: tailRight).Nodup := by
+            have nodup := secondConnectorSimple
+            rw [rightDecomposition] at nodup
+            exact (List.nodup_cons.mp
+              (List.nodup_append.mp nodup).2.1).2
+          have rawArmLeftLast :
+              (nextLeft :: tailLeft).getLast? = some left.2 := by
+            have last := firstTerminalEndpoint
+            rw [leftDecomposition] at last
+            simpa using last
+          have rawArmRightLast :
+              (nextRight :: tailRight).getLast? = some right.2 := by
+            have last := secondTerminalEndpoint
+            rw [rightDecomposition] at last
+            simpa using last
+          obtain ⟨firstTerminal, armLeft, armLeftPrefix,
+              armLeftHead, armLeftLast, firstTerminalInside,
+              armLeftFirstEntry⟩ :=
+            Graph.SameTokenRoutingArms.exists_firstEntryPrefix (nextLeft :: tailLeft) core
+              ⟨left.2, rawArmLeftLast, leftEndpointInside⟩
+          obtain ⟨secondTerminal, armRight, armRightPrefix,
+              armRightHead, armRightLast, secondTerminalInside,
+              armRightFirstEntry⟩ :=
+            Graph.SameTokenRoutingArms.exists_firstEntryPrefix (nextRight :: tailRight) core
+              ⟨right.2, rawArmRightLast, rightEndpointInside⟩
+          have armLeftIssued : armLeft.head? = some nextLeft := by
+            simpa using armLeftHead
+          have armRightIssued : armRight.head? = some nextRight := by
+            simpa using armRightHead
+          have armLeftChain : armLeft.IsChain object.graph.Adj := by
+            exact rawArmLeftChain.prefix armLeftPrefix
+          have armRightChain : armRight.IsChain object.graph.Adj := by
+            exact rawArmRightChain.prefix armRightPrefix
+          have armLeftNodup : armLeft.Nodup :=
+            armLeftPrefix.nodup rawArmLeftNodup
+          have armRightNodup : armRight.Nodup :=
+            armRightPrefix.nodup rawArmRightNodup
+          have armLeftSingletonOfStartCore :
+              nextLeft ∈ core → armLeft = [nextLeft] := by
+            intro startCore
+            have startArm : nextLeft ∈ armLeft :=
+              List.mem_of_mem_head? (by simp [armLeftIssued])
+            have startTerminal : nextLeft = firstTerminal :=
+              armLeftFirstEntry nextLeft startArm startCore
+            have lastStart : armLeft.getLast? = some nextLeft := by
+              simpa [startTerminal] using armLeftLast
+            exact Graph.SameTokenRoutingArms.eq_singleton_of_head_last_nodup armLeft nextLeft
+              armLeftIssued lastStart armLeftNodup
+          have separatorNotMemRawLeft :
+              separator ∉ nextLeft :: tailLeft := by
+            have nodup := firstConnectorSimple
+            rw [leftDecomposition] at nodup
+            exact (List.nodup_cons.mp
+              (List.nodup_append.mp nodup).2.1).1
+          have separatorNotMemRawRight :
+              separator ∉ nextRight :: tailRight := by
+            have nodup := secondConnectorSimple
+            rw [rightDecomposition] at nodup
+            exact (List.nodup_cons.mp
+              (List.nodup_append.mp nodup).2.1).1
+          have armLeftInterior :
+              ∀ vertex ∈ armLeft,
+                vertex ∈ core ∨ vertex = separator →
+                  armLeft.getLast? = some vertex := by
+            intro vertex member alternatives
+            rcases alternatives with inside | rfl
+            · rw [armLeftFirstEntry vertex member inside]
+              exact armLeftLast
+            · exact False.elim
+                (separatorNotMemRawLeft (armLeftPrefix.subset member))
+          have armRightInterior :
+              ∀ vertex ∈ armRight,
+                vertex ∈ core ∨ vertex = separator →
+                  armRight.getLast? = some vertex := by
+            intro vertex member alternatives
+            rcases alternatives with inside | rfl
+            · rw [armRightFirstEntry vertex member inside]
+              exact armRightLast
+            · exact False.elim
+                (separatorNotMemRawRight (armRightPrefix.subset member))
+          exact ⟨⟨common, separator, nextLeft, nextRight, tailLeft, tailRight,
+              armLeft, armRight⟩, leftDecomposition, rightDecomposition,
+            nextDifferent,
+            ⟨armLeftPrefix, armLeftHead, firstTerminal, firstTerminalInside,
+              armLeftLast, armLeftFirstEntry⟩,
+            ⟨armRightPrefix, armRightHead, secondTerminal, secondTerminalInside,
+              armRightLast, armRightFirstEntry⟩,
+            separatorNextLeftAdj, separatorNextRightAdj, armLeftIssued,
+            armRightIssued, armLeftChain, armRightChain, armLeftNodup,
+            armRightNodup, ⟨firstTerminal, armLeftLast, firstTerminalInside⟩,
+            ⟨secondTerminal, armRightLast, secondTerminalInside⟩,
+            armLeftInterior, armRightInterior⟩
+        -- The canonical first separator of G.
+        obtain ⟨⟨common, separator, nextLeft, nextRight, tailLeft, tailRight,
+            armLeft, armRight⟩, splitEq, splitSpec⟩ :=
+          canonicalChoice_spec splitExists
+        have separatorEq := canonicalSameTokenSeparator_eq_some data object
+          routingEq splitEq
+        obtain ⟨leftDecomposition, rightDecomposition, nextDifferent,
+            ⟨armLeftPrefix, armLeftHead, firstTerminal, firstTerminalInside,
+              armLeftLast, armLeftFirstEntry⟩,
+            ⟨armRightPrefix, armRightHead, secondTerminal, secondTerminalInside,
+              armRightLast, armRightFirstEntry⟩,
+            separatorNextLeftAdj, separatorNextRightAdj, armLeftIssued,
+            armRightIssued, armLeftChain, armRightChain, armLeftNodup,
+            armRightNodup, _armLeftLands, _armRightLands, armLeftInterior,
+            armRightInterior⟩ := id splitSpec
+        let core : Finset object.Vertex := {left.2, right.2}
         have separatorMinimumDegree :
             data.threshold ≤ object.degree separator :=
           objectBaseline.trans (object.minDegree_le_degree separator)
-        -- The handoff tails end in the two selected demands.  Trim
-        -- each registered tail at its first entry into that literal
-        -- two-endpoint core; this is the manuscript's first-entry
-        -- operation, not an assumed remainder connector.
-        let core : Finset object.Vertex := {left.2, right.2}
-        have leftEndpointInside : left.2 ∈ core := by
-          simp [core]
-        have rightEndpointInside : right.2 ∈ core := by
-          simp [core]
-        have rawArmLeftChain :
-            (nextLeft :: tailLeft).IsChain object.graph.Adj := by
-          have chain := firstConnectorChain
-          rw [leftDecomposition] at chain
-          exact (List.isChain_cons.mp
-            (List.isChain_append.mp chain).2.1).2
-        have rawArmRightChain :
-            (nextRight :: tailRight).IsChain object.graph.Adj := by
-          have chain := secondConnectorChain
-          rw [rightDecomposition] at chain
-          exact (List.isChain_cons.mp
-            (List.isChain_append.mp chain).2.1).2
-        have rawArmLeftNodup : (nextLeft :: tailLeft).Nodup := by
-          have nodup := firstConnectorSimple
-          rw [leftDecomposition] at nodup
-          exact (List.nodup_cons.mp
-            (List.nodup_append.mp nodup).2.1).2
-        have rawArmRightNodup : (nextRight :: tailRight).Nodup := by
-          have nodup := secondConnectorSimple
-          rw [rightDecomposition] at nodup
-          exact (List.nodup_cons.mp
-            (List.nodup_append.mp nodup).2.1).2
-        have rawArmLeftLast :
-            (nextLeft :: tailLeft).getLast? = some left.2 := by
-          have last := firstTerminalEndpoint
-          rw [leftDecomposition] at last
-          simpa using last
-        have rawArmRightLast :
-            (nextRight :: tailRight).getLast? = some right.2 := by
-          have last := secondTerminalEndpoint
-          rw [rightDecomposition] at last
-          simpa using last
-        obtain ⟨firstTerminal, armLeft, armLeftPrefix,
-            armLeftHead, armLeftLast, firstTerminalInside,
-            armLeftFirstEntry⟩ :=
-          Graph.SameTokenRoutingArms.exists_firstEntryPrefix (nextLeft :: tailLeft) core
-            ⟨left.2, rawArmLeftLast, leftEndpointInside⟩
-        obtain ⟨secondTerminal, armRight, armRightPrefix,
-            armRightHead, armRightLast, secondTerminalInside,
-            armRightFirstEntry⟩ :=
-          Graph.SameTokenRoutingArms.exists_firstEntryPrefix (nextRight :: tailRight) core
-            ⟨right.2, rawArmRightLast, rightEndpointInside⟩
-        have armLeftIssued : armLeft.head? = some nextLeft := by
-          simpa using armLeftHead
-        have armRightIssued : armRight.head? = some nextRight := by
-          simpa using armRightHead
-        have armLeftChain : armLeft.IsChain object.graph.Adj := by
-          exact rawArmLeftChain.prefix armLeftPrefix
-        have armRightChain : armRight.IsChain object.graph.Adj := by
-          exact rawArmRightChain.prefix armRightPrefix
-        have armLeftNodup : armLeft.Nodup :=
-          armLeftPrefix.nodup rawArmLeftNodup
-        have armRightNodup : armRight.Nodup :=
-          armRightPrefix.nodup rawArmRightNodup
         have armLeftSingletonOfStartCore :
             nextLeft ∈ core → armLeft = [nextLeft] := by
           intro startCore
@@ -1134,38 +1221,6 @@ theorem sameTokenBottleneckRouting_of_pattern
             simpa [startTerminal] using armLeftLast
           exact Graph.SameTokenRoutingArms.eq_singleton_of_head_last_nodup armLeft nextLeft
             armLeftIssued lastStart armLeftNodup
-        have separatorNotMemRawLeft :
-            separator ∉ nextLeft :: tailLeft := by
-          have nodup := firstConnectorSimple
-          rw [leftDecomposition] at nodup
-          exact (List.nodup_cons.mp
-            (List.nodup_append.mp nodup).2.1).1
-        have separatorNotMemRawRight :
-            separator ∉ nextRight :: tailRight := by
-          have nodup := secondConnectorSimple
-          rw [rightDecomposition] at nodup
-          exact (List.nodup_cons.mp
-            (List.nodup_append.mp nodup).2.1).1
-        have armLeftInterior :
-            ∀ vertex ∈ armLeft,
-              vertex ∈ core ∨ vertex = separator →
-                armLeft.getLast? = some vertex := by
-          intro vertex member alternatives
-          rcases alternatives with inside | rfl
-          · rw [armLeftFirstEntry vertex member inside]
-            exact armLeftLast
-          · exact False.elim
-              (separatorNotMemRawLeft (armLeftPrefix.subset member))
-        have armRightInterior :
-            ∀ vertex ∈ armRight,
-              vertex ∈ core ∨ vertex = separator →
-                armRight.getLast? = some vertex := by
-          intro vertex member alternatives
-          rcases alternatives with inside | rfl
-          · rw [armRightFirstEntry vertex member inside]
-            exact armRightLast
-          · exact False.elim
-              (separatorNotMemRawRight (armRightPrefix.subset member))
 
         -- `S_z` is the framework's canonical minimum connected
         -- support carrying precisely the two connector lists and
@@ -1373,22 +1428,22 @@ theorem sameTokenBottleneckRouting_of_pattern
             object.degree nextRight = data.threshold :=
           separatorNormalForm.neighbourTight separatorNextRightAdj
         have denied : ∀ centre firstNeighbour secondNeighbour,
-            ¬ handoffAbsorbing data object capacity.packing centre
-              firstNeighbour secondNeighbour :=
+            ¬ handoffAbsorbing data object (canonicalWindowPacking data object)
+              centre firstNeighbour secondNeighbour :=
           fun _ _ _ collision => avoids
             (Graph.WindowLabelCollision.hasCycleWithLength_of_labelCollision
               degenerateClosureRejected collision)
-        let envelope :=
-          Graph.DecoratedHandoff.envelopeOfFirstSeparator core
-            separator nextLeft nextRight nextDifferent
-            separatorNextLeftAdj separatorNextRightAdj
-            armLeft armRight armLeftIssued armRightIssued
-            armLeftChain armRightChain
-            armLeftNodup armRightNodup
-            ⟨firstTerminal, armLeftLast, firstTerminalInside⟩
-            ⟨secondTerminal, armRightLast, secondTerminalInside⟩
-            armLeftInterior armRightInterior separatorHigh avoids
-            (denied _ _ _) (denied _ _ _)
+        -- The handoff conditions at the canonical separator, and its
+        -- canonical envelope (`envelopeOfFirstSeparator` on `{d_p, d_q}`).
+        have conditions : SameTokenHandoffConditions data object
+            ⟨common, separator, nextLeft, nextRight, tailLeft, tailRight,
+              armLeft, armRight⟩ :=
+          ⟨separatorHigh, avoids, denied _ _ _, denied _ _ _⟩
+        let envelope := sameTokenEnvelopeOf data object routing _ splitSpec
+          conditions
+        have envelopeEq : canonicalSameTokenEnvelope data object = some envelope :=
+          (canonicalSameTokenEnvelope_eq_some_iff data object).2
+            ⟨routing, _, separatorEq, splitSpec, conditions, rfl⟩
         let skeleton : Finset (Sym2 object.Vertex) :=
           (armEdgeSet (envelope.arm separator nextLeft) ∪
             armEdgeSet (envelope.arm separator nextRight) ∪
@@ -1398,8 +1453,8 @@ theorem sameTokenBottleneckRouting_of_pattern
             (armEdgeSet armLeft ∪ armEdgeSet armRight ∪
               {s(separator, nextLeft), s(separator, nextRight)}) ∪
               coreEdgeSet core := by
-          simp [skeleton, envelope,
-            Graph.DecoratedHandoff.envelopeOfFirstSeparator,
+          simp [skeleton, envelope, sameTokenEnvelopeOf, sameTokenCore, core,
+            routing, Graph.DecoratedHandoff.envelopeOfFirstSeparator,
             nextDifferent.symm]
         have saturatedLeftForcesCrossing :
             (∀ edge ∈ object.graph.incidenceFinset nextLeft,
@@ -1462,7 +1517,11 @@ theorem sameTokenBottleneckRouting_of_pattern
                 shortcut.path.getLast? = some right.2 :=
             ⟨shortcutHead.trans secondRoot,
               shortcutLast.trans secondTerminalEndpoint⟩
-          have maximalComparison :=
+          have maximalComparison :
+              Graph.SameTokenRoutingGerms.commonPrefixLength
+                  firstConfiguration.path shortcut.path ≤
+                Graph.SameTokenRoutingGerms.commonPrefixLength
+                  firstConfiguration.path secondConfiguration.path :=
             maximalPrefix firstConfiguration shortcut
               ⟨firstRoot, firstTerminalEndpoint⟩ shortcutValid
           have prefixBounds :=
@@ -1559,59 +1618,12 @@ theorem sameTokenBottleneckRouting_of_pattern
             outsideSkeletonNeighbour
           exact ⟨neighbour, adjacent, outside,
             bridgeless ⟨nextLeft, neighbour, adjacent⟩⟩
-        have envelopeCore : envelope.core = core := rfl
-        have decorated : envelope.decorations.Nonempty := by
-          simp [envelope,
-            Graph.DecoratedHandoff.envelopeOfFirstSeparator]
-        exact Or.inr (Or.inl ⟨handoff_of_envelope core envelope envelopeCore
-            decorated, by
-          obtain ⟨neighbour, adjacent, outside, notCentre, _location⟩ :=
-            outsideSkeletonLocation
-          have labelEq :=
-            (actualRoutingLabel_eq pattern patternSubset first.1
-              firstPattern (pairs first.1 firstPattern) left
-              leftMem).trans
-            (routingLabelsEqual.trans
-              (actualRoutingLabel_eq pattern patternSubset second.1
-                secondPattern (pairs second.1 secondPattern) right
-                rightMem).symm)
-          unfold SameTokenTypeBHandoffStatement
-          intro armEdges coreEdges firstEntry
-          refine ⟨active, capacity, activationEq, cubic, certified, ?_⟩
-          intro sourceLedger
-          refine ⟨token, role, tokenMem, _positiveCoupledExcess,
-            _multiplicityBound, _quantitativePattern, _sourceClass,
-            _sourceClassEq, root, rootEq, ?_⟩
-          intro configuration valid routed sourceEnvelope
-          have source : routed pattern ∧
-              sourceEnvelope pattern patternSubset :=
-            ⟨⟨large, configurations⟩,
-            first.1, firstPattern, second.1, secondPattern,
-            fun edgeEqual => different (Subtype.ext edgeEqual),
-            left, leftMem, right, rightMem, labelEq,
-            firstConfiguration, secondConfiguration,
-            ⟨firstRoot, firstTerminalEndpoint⟩,
-            ⟨secondRoot, secondTerminalEndpoint⟩, maximalPrefix,
-            separator, nextLeft, nextRight, common, tailLeft,
-            tailRight, leftDecomposition, rightDecomposition,
-            nextDifferent, armLeft, armRight,
-            ⟨armLeftPrefix, armLeftHead, firstTerminal,
-              firstTerminalInside, armLeftLast, armLeftFirstEntry⟩,
-            ⟨armRightPrefix, armRightHead, secondTerminal,
-              secondTerminalInside, armRightLast,
-              armRightFirstEntry⟩,
-            separatorNextLeftAdj, separatorNextRightAdj,
-            armLeftIssued, armRightIssued, armLeftChain,
-            armRightChain, armLeftNodup, armRightNodup,
-            ⟨firstTerminal, armLeftLast, firstTerminalInside⟩,
-            ⟨secondTerminal, armRightLast, secondTerminalInside⟩,
-            armLeftInterior, armRightInterior, separatorHigh, avoids,
-            denied _ _ _, denied _ _ _, envelope, rfl,
-            nextLeft, by simp, neighbour, adjacent, notCentre,
-            outside⟩
-          rcases patternShape with matching | ⟨centre, star⟩
-          · exact Or.inl ⟨pattern, patternSubset, matching, source⟩
-          · exact Or.inr ⟨centre, pattern, patternSubset, star, source⟩⟩)
+        obtain ⟨neighbour, adjacent, outside, notCentre, _location⟩ :=
+          outsideSkeletonLocation
+        exact Or.inr (Or.inl ⟨envelope.core, envelope.decorations, routing, _,
+          envelope, separatorEq, envelopeEq,
+          ⟨nextLeft, by simp, neighbour, adjacent, notCentre, outside⟩,
+          rfl, rfl⟩)
   exact routedOutcome
 
 /-- Node `[144]`, handoff arm: on the node-`[125]` survivor of the sparse exits
@@ -1628,7 +1640,6 @@ theorem sameTokenTypeBHandoff_of_pattern
     (highCentreNormalForm : HighCentreNormalFormStatement data object)
     (objectBaseline : Graph.MinimumDegreeAtLeast data.threshold object)
     (threeLe : 3 ≤ data.threshold)
-    (quadrilateralAccepted : data.LengthOK 4)
     (degenerateClosureRejected : ¬ data.LengthOK 2)
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (survivor : DeclaredSparseSurvivor data object) :
@@ -1637,7 +1648,7 @@ theorem sameTokenTypeBHandoff_of_pattern
         SameTokenPatternPairUnresolvedStatement data object) := by
   obtain ⟨routing, outcome⟩ := sameTokenBottleneckRouting_of_pattern
     patternFact active cubicFact capacityLedger bridgeless
-    highCentreNormalForm objectBaseline threeLe quadrilateralAccepted
+    highCentreNormalForm objectBaseline threeLe
     degenerateClosureRejected avoids survivor
   exact ⟨routing, outcome.resolve_left survivor⟩
 
