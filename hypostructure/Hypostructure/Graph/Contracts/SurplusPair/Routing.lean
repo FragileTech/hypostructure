@@ -803,7 +803,7 @@ theorem sameTokenBottleneckRouting_of_pattern
     -- canonical support: a separating context with equal profiles is sparse
     -- exit (b).  The paper claims the two remaining cases (different fibres,
     -- tex 5589; target-complete readings, tex 5594) are sparse exits; that
-    -- claim is a paper error (`lean-vs-paper-discrepancies.md#paper-errors`),
+    -- claim is an open construction (`lean-vs-paper-discrepancies.md#open-constructions`),
     -- and the unresolved pair is carried by the open leaf `[144a]`.
     -- The pair coordinates of the canonical routing are `r_p`, `r_q`.
     have firstCoordinateEq :

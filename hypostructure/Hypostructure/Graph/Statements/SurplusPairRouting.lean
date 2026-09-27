@@ -43,9 +43,9 @@ noncomputable abbrev TypeBHandoffFailsStatement
     Prop :=
   ¬ SameTokenTypeBHandoffStatement data object
 
-/-- **Node `[144a]`, the residual of the paper error at `[144]`**
+/-- **Node `[144a]`, the residual of the open construction at `[144]`**
 (`lem:same-token-bottleneck-routing`, parallel and cubic-first-separator cases,
-tex 5585-5620; see `lean-vs-paper-discrepancies.md#paper-errors`).  The
+tex 5585-5620; see `lean-vs-paper-discrepancies.md#open-constructions`).  The
 response coordinates `r_p ≠ r_q` of the two equal-label pattern edges of G's
 canonical routing, read on G's piece at the canonical support `Z` of their
 supports: the readings lie in different boundary-degree fibres, or they are
