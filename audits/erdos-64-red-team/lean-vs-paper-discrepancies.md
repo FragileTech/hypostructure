@@ -1488,6 +1488,7 @@ free side.
 
 - **Configuration at G.** The sparse target-defect exit of [20] on the at-or-below-surplus arm of [19].
 - **Lean.** `NearCubicTargetDefectOutcome` (`Assembly/Residuals.lean`); return theorem `nearCubicTargetDefectReturn`; reached by 1 path (distinct ledger histories from the root).
+- **Distinct fact sets.** One: the single return site (`selectedNearCubicBranch`, exit arm of `sparseSurplusSurvivorDichotomy`, then `selectedSparseTargetDefectExit`) carries exactly the 18 keys below, so the generic residual is the only node and has no subtypes.
 - **Facts carried (18).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
