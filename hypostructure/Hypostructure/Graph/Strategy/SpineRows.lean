@@ -57,7 +57,6 @@ import Hypostructure.Graph.Strategy.SpineRows.RemainderNormalization
 import Hypostructure.Graph.Strategy.SpineRows.RepairIdentity
 import Hypostructure.Graph.Strategy.SpineRows.ReplacementExclusion
 import Hypostructure.Graph.Strategy.SpineRows.ReturnAvoidance
-import Hypostructure.Graph.Strategy.SpineRows.Route8GlobalSqueeze
 import Hypostructure.Graph.Strategy.SpineRows.Route8BasinBurden
 import Hypostructure.Graph.Strategy.SpineRows.Route8CarrierCore
 import Hypostructure.Graph.Strategy.SpineRows.Route8CarrierCutParity

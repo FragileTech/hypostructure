@@ -125,7 +125,6 @@ noncomputable abbrev typeAExitSegmentKeys : FactKeys EGInput.{u} :=
     K .route8UnpaidTwoCarrier,
     K .route8UnpaidWitnessFree,
     K .typeAExitSevenEnvelope,
-    K .route8GlobalSqueeze,
     K .typeAPeeledSaturatedReceiver,
     K .typeAPeeledUnsaturatedDischarge,
     K .typeAPeeledVisibleEntry,

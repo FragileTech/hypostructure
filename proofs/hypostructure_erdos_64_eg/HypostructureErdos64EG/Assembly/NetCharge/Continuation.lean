@@ -115,8 +115,7 @@ noncomputable abbrev netChargeContinuationKeys : FactKeys EGInput.{u} :=
     K .typeAPeeledExitThreeCollision,
     K .typeAPeeledExitThreeFree,
     K .typeAExitThreeCycle,
-    K .typeAExitSevenEnvelope,
-    K .route8GlobalSqueeze]
+    K .typeAExitSevenEnvelope]
 
 /-- **Nodes `[57]`--`[64]`: the large-budget net-charge split**, on the `[56]`
 residual of either spine arm.  `[57]` enters the asymptotic order regime and

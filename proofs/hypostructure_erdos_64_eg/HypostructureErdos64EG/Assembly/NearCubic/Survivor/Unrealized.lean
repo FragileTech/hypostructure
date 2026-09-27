@@ -134,7 +134,7 @@ noncomputable def Assembly.Internal.nearCubicUnrealized
       exact Assembly.Internal.nearCubicDensePassAtOrAbove denseHistory
   | .left belowHistory =>
       match route8RateDichotomy (data := spineData) belowHistory
-          (by key_fresh) (by key_fresh) with
+          .denseDeficiencyBelow (Or.inr rfl) (by key_fresh) (by key_fresh) with
       | .right rateFails =>
           exact Assembly.Internal.nearCubicDensePassRateFailed rateFails
       | .left ratedHistory =>

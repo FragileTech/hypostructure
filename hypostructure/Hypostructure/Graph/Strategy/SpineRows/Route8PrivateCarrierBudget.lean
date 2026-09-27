@@ -7,7 +7,9 @@ import Hypostructure.Graph.Contracts.RouteEight.Terminal
 Node `[117]`'s no-arm gives every entry of `Ξ(𝒳_A)` at least `δ` private
 essential incidences; nodes `[119]`--`[120]` publish the resulting budget
 `δ·|Ξ(𝒳_A)| ≤ |∂R|`.  Nodes `[121]`--`[122]` are the framework's closure: the
-budget is `Incompatible` with the census deficit and rate readings.
+budget is `Incompatible` with the census deficit and rate readings; the budget
+fact carries `1 ≤ δ` from the entry fact, so the closure reads no presentation
+law.
 -/
 
 namespace Hypostructure.Graph.Strategy.Spine
@@ -30,7 +32,8 @@ arm of node `[117]`. -/
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .route8PrivateCarrierBudget)
-        ⟨Graph.Contracts.RouteEight.route8PrivateCarrierBudget_of_noTwoCarrier
+        ⟨(by have := (inputs.get (K .cubicBaseline)).down.1.1; omega),
+          Graph.Contracts.RouteEight.route8PrivateCarrierBudget_of_noTwoCarrier
           data.toParameters inputs.current.object
           (by have := (inputs.get (K .cubicBaseline)).down.1.1; omega)
           (inputs.get (K .route8NoTwoCarrierEntry)).down⟩ .nil)
@@ -47,7 +50,6 @@ noncomputable instance instIncompatibleRoute8CensusPrivateCarrierBudget :
       (K .route8Census) (K .route8PrivateCarrierBudget) where
   contradiction := fun input census budget =>
     Graph.Contracts.RouteEight.route8Census_privateCarrierBudget_false
-      data.toParameters input.object
-      (le_trans (by norm_num) data.three_le_threshold) census.down budget.down
+      data.toParameters input.object budget.down.1 census.down budget.down.2
 
 end Hypostructure.Graph.Strategy.Spine

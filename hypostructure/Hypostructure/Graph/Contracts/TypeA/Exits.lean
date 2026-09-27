@@ -147,9 +147,7 @@ theorem typeAExitFourFiniteDescent
   exact ⟨piece, pinned, receiver, chosen,
     canonicalTerminalPeeled_step data object piece receiver,
     canonicalPeel_subset_routedLoads data object piece receiver _,
-    canonicalPeel_peeledByWitnesses data object piece receiver _,
-    fun receiver' _ step => canonicalPeel_retest_of_ne_terminal data object piece
-      receiver' step⟩
+    canonicalPeel_peeledByWitnesses data object piece receiver _⟩
 
 /-! ## Exit `(4)`, node `[101]` -/
 
@@ -463,8 +461,8 @@ theorem typeAExitSixGlobal_of_scope
     TypeAExitSixGlobalStatement data object := by
   obtain ⟨piece, pinned, receiver, chosen, delocalization, found, covers⟩ :=
     global
-  exact ⟨piece, pinned, receiver, chosen, delocalization, found,
-    delocalization.2.closedRepresentative covers⟩
+  exact ⟨piece, pinned, receiver, chosen, delocalization, found, covers,
+    Classical.choose_spec (delocalization.2.closedRepresentative covers)⟩
 
 /-- Node `[106]`, proper scope: the replacement contradicts `lem:replacement`. -/
 theorem typeAExitSixProper_contradiction
@@ -484,8 +482,8 @@ theorem typeAExitSixGlobal_contradiction
       Graph.HasCycleWithLength data.LengthOK smaller)
     (exit : TypeAExitSixGlobalStatement data object) : False := by
   obtain ⟨_piece, _pinned, _receiver, _chosen, _delocalization, _found,
-    representative, smaller, representativeBaseline, transfer⟩ := exit
-  exact avoids (transfer (minimal representative smaller representativeBaseline))
+    _covers, smaller, representativeBaseline, transfer⟩ := exit
+  exact avoids (transfer (minimal _ smaller representativeBaseline))
 
 /-! ## Node `[108]`: the decorated handoff envelope of exit `(7)` -/
 

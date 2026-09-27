@@ -139,10 +139,10 @@ theorem windowShadowHitCycle (data : Parameters) (object : FiniteObject.{u})
     WindowShadowHitCycleStatement data object := by
   obtain ⟨P, pin, x, absorption, y, blocker, _spec⟩ := blockers
   exact ⟨P, pin, x, absorption, y, blocker,
-    fun _υ _ _υ' _ _ _ window _ first second a b _ _ corridor path avoids
-        attachA attachB distinct hit =>
-      windowShadowHitCycle_at data object window first second a b corridor path
-        avoids attachA attachB distinct hit⟩
+    fun _υ _ _υ' _ _ _ window _ first second a b _ _ corridor recorded hit =>
+      have spec := recordedCorridorSpec_of_eq_some object recorded
+      windowShadowHitCycle_at data object window first second a b corridor
+        spec.1 spec.2.1 spec.2.2.1 spec.2.2.2.1 spec.2.2.2.2 hit⟩
 
 /-- **`lem:typeA-window-shadow-hit-routes`**: the selected object has no
 target cycle, so no two open units of `(P₀, A₀)` on one packed window have a
@@ -154,10 +154,10 @@ theorem windowShadowHitExcluded (data : Parameters) (object : FiniteObject.{u})
   obtain ⟨P, pin, x, absorption, y, blocker, cycles⟩ := hitCycle
   refine ⟨P, pin, x, absorption, y, blocker, ?_⟩
   intro υ υMem υ' υ'Mem distinctUnits sameWindow window presented first second
-    a b carrierA carrierB corridor path avoids attachA attachB distinct hit
+    a b carrierA carrierB corridor recorded hit
   obtain ⟨cycle, isCycle, _length, accepted⟩ :=
     cycles υ υMem υ' υ'Mem distinctUnits sameWindow window presented first second
-      a b carrierA carrierB corridor path avoids attachA attachB distinct hit
+      a b carrierA carrierB corridor recorded hit
   exact noTarget ⟨⟨window a, cycle, isCycle, accepted⟩⟩
 
 end Hypostructure.Graph.Contracts.RouteEight

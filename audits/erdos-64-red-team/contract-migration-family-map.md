@@ -50,13 +50,14 @@ A new key takes the next unused index of its family's range; existing indices
 (0-608) are never renumbered.
 
 Final-pass allocations: TA 2000-2012 (plus `route8GlobalSqueeze` restored at its
-old idx 160), TB 2100-2104 (TB also reused the vocabulary entries of the deleted
+old idx 160, deleted again in round 2), TB 2100-2104 (TB also reused the vocabulary entries of the deleted
 key 188), SD 2300, 2301, 2303; CO added no key.  Two final-pass keys were
 deleted by the presentation-law unification: `surplusPresentation` (2200) and
 `spinePresentationLaws` (2302).  Their laws are components of the one entry fact
 `K .cubicBaseline` (`PresentationLawsStatement`), and their indices are not
 reused.  Keys deleted in the final pass: 439, 500, 501, 502 (SD); 511, 513, 516,
-1007 (TA); 188 (TB); 2200, 2302 (unification).
+1007 (TA); 188 (TB); 2200, 2302 (unification).  Round 2 (fix2): TR deleted
+`route8GlobalSqueeze` (160) again.
 
 ## F1: Type A
 
@@ -117,7 +118,7 @@ reused.  Keys deleted in the final pass: 439, 500, 501, 502 (SD); 511, 513, 516,
 | 2011 | `typeAExitThreeCycle` | `TypeAExitThreeCycleStatement` | TypeA |
 | 2012 | `typeAExitSevenEnvelope` | `TypeAExitSevenEnvelopeStatement` | TypeA |
 
-### Row and decision modules (29)
+### Row and decision modules (28)
 
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeABoundedSupport.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/TypeAExclusion.lean`
@@ -282,7 +283,6 @@ reused.  Keys deleted in the final pass: 439, 500, 501, 502 (SD); 511, 513, 516,
 | idx | Key | Statement | Statement module |
 |---|---|---|---|
 | 159 | `route8ResidualProfile` | `SilentCoreResidualProfile` | RouteEight |
-| 160 | `route8GlobalSqueeze` | `Route8GlobalSqueeze` | RouteEight |
 | 161 | `route8BasinBurden` | `Route8BasinBurden` | RouteEight |
 | 162 | `route8LargeBudgetDeficit` | `Route8LargeBudgetDeficit` | RouteEight |
 | 163 | `route8CarrierCore` | `Route8CarrierCore` | RouteEight |
@@ -327,7 +327,7 @@ reused.  Keys deleted in the final pass: 439, 500, 501, 502 (SD); 511, 513, 516,
 | 1403 | `route8UnpaidTwoCarrier` | `Route8UnpaidTwoCarrierStatement` | RouteEightPinned |
 | 1404 | `route8UnpaidWitnessFree` | `Route8UnpaidWitnessFreeStatement` | RouteEightPinned |
 
-### Row and decision modules (41)
+### Row and decision modules (40)
 
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8BasinBurden.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8CarrierCore.lean`
@@ -338,7 +338,6 @@ reused.  Keys deleted in the final pass: 439, 500, 501, 502 (SD); 511, 513, 516,
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8DemandAbsorption.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8DemandLedgerDichotomy.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8ExtractedEntryCensus.lean`
-- `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8GlobalSqueeze.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8JointBalance.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8LargeBudgetDeficit.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8NoTwoCarrierContradiction.lean`

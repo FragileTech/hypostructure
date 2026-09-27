@@ -254,8 +254,8 @@ noncomputable def nearCubicRouteEightEntry
       (K .route8Rate :: K .route8RateFails :: netChargeContinuationKeys.{u}) known := by
         key_fresh) :
     SelectedNearCubicSurvivorBoundary selected :=
-  match route8RateDichotomy (data := spineData) history
-      (by key_fresh) (by key_fresh) with
+  match route8RateDichotomy (data := spineData) history .netDeficiencyCap
+      (Or.inl rfl) (by key_fresh) (by key_fresh) with
   | .left rated => Or.inl (selectedNetChargeContinuation rated)
   | .right rateFails => Or.inr (Or.inl (rateFails.get (K .route8RateFails)).down)
 

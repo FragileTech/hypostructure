@@ -193,10 +193,9 @@ from the Type B sublinear-bridge decision to node `[186]`.
 
 The negative Type B bridge arm is the Type B residual; the sublinear arm
 publishes the unified deficit (`lem:typeA-unified-deficit`) and asks the
-quotient-freeness test of the unified census.  Its failure `[348]` is exit `(5)`
-at a unified entry, closed as the paper closes it -- a standing-invariant
-contradiction (`lem:typeA-unified-carriers`, `cor:uncompressible`; recorded
-under Paper errors, [348]); on the free arm the unified entry census is published and
+quotient-freeness test of the unified census.  Its failure `[348]` is the
+route-`8` quotient residual, returned at `[187]` as `thm:main` returns it; on
+the free arm the unified entry census is published and
 the branch runs node `[123]`, node `[181]`, and the reductions `[183]`--`[185]`
 to the joint balance at node `[186]`. -/
 -- EG-NODE [184] visible-first prefix test on the unchanged all-visible entries
@@ -261,12 +260,10 @@ noncomputable def selectedRouteEightUnifiedResidual
       match route8QuotientDichotomy (data := spineData) unifiedDeficit
           (by key_fresh) (by key_fresh) with
       | .right residualHistory =>
-          -- `[348]`: alternative (b) at a unified entry is exit (5), a
-          -- standing-invariant contradiction (`lem:typeA-unified-carriers`,
-          -- `cor:uncompressible`; PAPER-ERROR [348], see
-          -- `instIncompatibleRoute8QuotientResidualSelection`).
-          exact ((closeIncompatible residualHistory (K .route8QuotientResidual)
-            (K .selection) (by key_fresh)).elimClosed (by infer_instance)).elim
+          -- `[348]` → `[187]`: `thm:main` returns the failure of route-8
+          -- quotient freeness as an open outcome (tex 369-372, 388-390).
+          exact Or.inr (Or.inl
+            (residualHistory.get (K .route8QuotientResidual)).down)
       | .left quotientFreeHistory =>
           let census :=
             (route8UnifiedEntryCensusRow (BranchState := BranchState)
@@ -293,7 +290,7 @@ noncomputable def selectedRouteEightUnifiedResidual
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
               (data := spineData)).run visibleOverload (by key_fresh)
-          exact Or.inr
-            (jointBalance.get (K .route8JointBalance)).down
+          exact Or.inr (Or.inr
+            (jointBalance.get (K .route8JointBalance)).down)
 
 end HypostructureErdos64EG

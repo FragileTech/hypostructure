@@ -40,7 +40,7 @@ noncomputable def typeASaturationDichotomy
         (previous.get (K .typeAReceiverRouting)).down
       by_cases saturated :
           ∃ receiver, SaturatedReceiverSpec data.toParameters current.object piece receiver
-      · exact ⟨.inl ⟨⟨piece, pinned, saturated⟩⟩⟩
+      · exact ⟨.inl ⟨⟨piece, pinned, canonicalSaturatedReceiverAt_spec saturated⟩⟩⟩
       · exact ⟨.inr ⟨⟨piece, pinned,
           Graph.Contracts.TypeA.unsaturated_of_not_saturated data.toParameters current.object
             saturated⟩⟩⟩))

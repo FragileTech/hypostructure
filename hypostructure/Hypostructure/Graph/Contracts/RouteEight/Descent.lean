@@ -21,24 +21,23 @@ universe u
 
 /-- **`thm:large-budget-route8-only`, the procedure**, with
 `lem:typeA-peeling-stage-accounting`, `lem:typeA-peeling-reduced-reduction`,
-`lem:typeA-pressure-is-exit4-peel` and `lem:typeA-exit4-finite-descent`: from
-the empty peeling, each target-defect two-support entry is peeled by one
-recorded exit-`(4)` step; the number of unpeeled entries strictly decreases,
-so the procedure reaches a stage that either fails the reduced-rate test or
-passes it with a true two-support entry.  Every stage carries the exact
-reduced/peeled accounting. -/
-theorem exists_route8StageOutcome (data : Parameters)
+`lem:typeA-pressure-is-exit4-peel` and `lem:typeA-exit4-finite-descent`: the
+deterministic procedure `route8DescentStep` (lexicographically first
+two-support entry, peeled when target-defect) is run from the empty peeling;
+every stage carries the exact reduced/peeled accounting, every peel is fresh,
+so after `|\tilde\Xi|` steps it has stopped, at a stage that either fails the
+reduced-rate test or passes it with a true two-support entry. -/
+theorem route8DescentChain_stageOutcome (data : Parameters)
     (object : FiniteObject.{u})
     (baseline : data.threshold ≤ object.minDegree)
     (thresholdPos : 1 ≤ data.threshold)
     (dischargePos : 1 ≤ data.dischargeScale)
     (normalized : RemainderNormalizedStatement data object)
     (deficit : Route8UnifiedDeficitFact data object) :
-    ∃ final : List (Route8Census.Index object),
-      Route8Pressure.StageOutcome object (canonicalWindowPacking data object)
-        (route8UnifiedEntries data object) (route8UnifiedComponents data object)
-        data.threshold data.dischargeScale (route8StageSlack data object)
-        data.LengthOK final := by
+    Route8Pressure.StageOutcome object (canonicalWindowPacking data object)
+      (route8UnifiedEntries data object) (route8UnifiedComponents data object)
+      data.threshold data.dischargeScale (route8StageSlack data object)
+      data.LengthOK (route8DescentChain data object) := by
   classical
   letI : DecidableEq object.Vertex := object.vertices.decEq
   let packing := canonicalWindowPacking data object
@@ -84,20 +83,18 @@ theorem exists_route8StageOutcome (data : Parameters)
         using deficit
     simp only [slack, route8StageSlack]
     omega
-  suffices key : ∀ n : Nat,
-      ∀ chain : List (Route8Census.Index object),
-        Route8Pressure.PeelChain object packing entries data.threshold
-            data.dischargeScale slack data.LengthOK chain →
-          chain.toFinset ⊆ entries →
-          (entries \ chain.toFinset).card = n →
-          ∃ final,
-            Route8Pressure.StageOutcome object packing entries components
-              data.threshold data.dischargeScale slack data.LengthOK final from
-    key _ [] Route8Pressure.PeelChain.nil (by simp) rfl
-  intro n
-  induction n using Nat.strong_induction_on with
-  | _ n ih =>
-    intro chain valid' chainSub cardEq
+  have accountingOf : ∀ chain : List (Route8Census.Index object),
+      Route8Pressure.PeelChain object packing entries data.threshold
+          data.dischargeScale slack data.LengthOK chain →
+        chain.toFinset ⊆ entries →
+        Route8Pressure.StageAccounting object packing entries components
+            data.threshold data.dischargeScale slack chain ∧
+          support.card ≤
+            (Route8Pressure.peeledEntries object entries chain.toFinset).card +
+              chain.toFinset.card +
+              data.dischargeScale * (Route8Census.supply object packing).card +
+              slack := by
+    intro chain valid' chainSub
     -- The stage-local four-class accounting is independent of the rate test;
     -- in particular it remains available on the failed arm routed to `[181]`.
     have burden := Route8Pressure.stage_burden object packing components
@@ -167,37 +164,111 @@ theorem exists_route8StageOutcome (data : Parameters)
         components data.threshold data.dischargeScale slack chain :=
       ⟨chainSub, partition, reducedDisjoint, peeledLeDeficit, exactReduced,
         burden', reducedBurden, stageDeficit⟩
+    exact ⟨accounting, stageDeficit⟩
+  -- One stage of the deterministic procedure either stops or peels one fresh
+  -- target-defect two-support entry of the current ledger.
+  have stepSpec : ∀ chain : List (Route8Census.Index object),
+      Route8Pressure.PeelChain object packing entries data.threshold
+          data.dischargeScale slack data.LengthOK chain →
+        route8DescentStep data object chain = chain ∨
+          ∃ index, route8DescentStep data object chain = index :: chain ∧
+            index ∈ Route8Pressure.peeledEntries object entries chain.toFinset ∧
+            Route8Pressure.PeelChain object packing entries data.threshold
+              data.dischargeScale slack data.LengthOK (index :: chain) := by
+    intro chain valid'
+    unfold route8DescentStep
     by_cases rate : Route8Pressure.StageRate object packing data.threshold
         data.dischargeScale slack chain.toFinset
-    · obtain ⟨index, member, two⟩ :=
-        Route8Pressure.exists_twoCarrierEntry_staged object packing entries
-          data.threshold data.dischargeScale slack data.LengthOK thresholdPos
-          entriesSubset chain.toFinset stageDeficit rate
-      by_cases targetDefect : Route8Pressure.TargetDefectAt object
-          data.threshold data.dischargeScale (HasCycleWithLength data.LengthOK)
-          chain.toFinset index
-      · have valid'' := Route8Pressure.PeelChain.cons (object := object)
-          valid' rate member two targetDefect
-        have fresh : index ∉ chain.toFinset := (Finset.mem_sdiff.1 member).2
-        have idxAll : index ∈ entries :=
-          Route8Pressure.peeledEntries_subset object entries chain.toFinset
-            member
-        have smaller : (entries \ (index :: chain).toFinset).card < n := by
-          rw [← cardEq]
-          apply Finset.card_lt_card
-          rw [Finset.ssubset_iff_of_subset]
-          · refine ⟨index, Finset.mem_sdiff.2 ⟨idxAll, fresh⟩, ?_⟩
-            simp [List.toFinset_cons]
-          · intro other otherMem
-            simp only [List.toFinset_cons, Finset.mem_sdiff, Finset.mem_insert,
-              not_or] at otherMem ⊢
-            exact ⟨otherMem.1, otherMem.2.2⟩
-        refine ih _ smaller (index :: chain) valid'' ?_ rfl
-        rw [List.toFinset_cons]
-        exact Finset.insert_subset idxAll chainSub
-      · exact ⟨chain, valid', accounting,
-          Or.inl ⟨rate, index, member, two, targetDefect⟩⟩
-    · exact ⟨chain, valid', accounting, Or.inr rate⟩
+    · simp only [packing, slack] at rate
+      rw [if_pos rate]
+      rcases hpick : route8LexFirst object
+          ((Route8Pressure.peeledEntries object (route8UnifiedEntries data object)
+            chain.toFinset).filter fun index =>
+            Route8Pressure.TwoCarrierAt object (canonicalWindowPacking data object)
+              (route8UnifiedEntries data object) data.threshold data.LengthOK
+              chain.toFinset index) with _ | index
+      · exact Or.inl rfl
+      · have picked := (Finset.mem_filter.mp (route8LexFirst_spec hpick).1)
+        by_cases defect : Route8Pressure.TargetDefectAt object data.threshold
+            data.dischargeScale (HasCycleWithLength data.LengthOK) chain.toFinset
+            index
+        · refine Or.inr ⟨index, by simp only [if_pos defect], picked.1, ?_⟩
+          exact Route8Pressure.PeelChain.cons valid' rate picked.1 picked.2 defect
+        · exact Or.inl (by simp only [if_neg defect])
+    · simp only [packing, slack] at rate
+      rw [if_neg rate]
+      exact Or.inl rfl
+  let stage := fun k : Nat => (route8DescentStep data object)^[k] []
+  have invariant : ∀ k : Nat,
+      Route8Pressure.PeelChain object packing entries data.threshold
+          data.dischargeScale slack data.LengthOK (stage k) ∧
+        (stage k).toFinset ⊆ entries ∧
+        ((stage k).toFinset.card = k ∨
+          route8DescentStep data object (stage k) = stage k) := by
+    intro k
+    induction k with
+    | zero => exact ⟨Route8Pressure.PeelChain.nil, by simp [stage], Or.inl (by simp [stage])⟩
+    | succ k ih =>
+        obtain ⟨valid', sub, count⟩ := ih
+        have succEq : stage (k + 1) = route8DescentStep data object (stage k) :=
+          Function.iterate_succ_apply' _ _ _
+        rcases stepSpec (stage k) valid' with fixed | ⟨index, stepEq, member, valid''⟩
+        · rw [succEq, fixed]
+          exact ⟨valid', sub, Or.inr fixed⟩
+        · have fresh : index ∉ (stage k).toFinset := (Finset.mem_sdiff.1 member).2
+          have idxAll : index ∈ entries :=
+            Route8Pressure.peeledEntries_subset object entries _ member
+          rw [succEq, stepEq]
+          refine ⟨valid'', ?_, ?_⟩
+          · rw [List.toFinset_cons]
+            exact Finset.insert_subset idxAll sub
+          · rcases count with card | fixed
+            · left
+              rw [List.toFinset_cons, Finset.card_insert_of_notMem fresh, card]
+            · exact absurd (stepEq.symm.trans fixed) (List.cons_ne_self _ _)
+  let final := stage entries.card
+  obtain ⟨valid', sub, count⟩ := invariant entries.card
+  have fixed : route8DescentStep data object final = final := by
+    rcases count with card | fixed
+    · rcases stepSpec final valid' with fixed | ⟨index, _, member, _⟩
+      · exact fixed
+      · have full : final.toFinset = entries :=
+          Finset.eq_of_subset_of_card_le sub (by rw [card])
+        have empty : Route8Pressure.peeledEntries object entries final.toFinset = ∅ := by
+          simp [Route8Pressure.peeledEntries, full]
+        rw [empty] at member
+        exact absurd member (Finset.notMem_empty _)
+    · exact fixed
+  obtain ⟨accounting, stageDeficit⟩ := accountingOf final valid' sub
+  have finalEq : route8DescentChain data object = final := rfl
+  rw [finalEq]
+  refine ⟨valid', accounting, ?_⟩
+  by_cases rate : Route8Pressure.StageRate object packing data.threshold
+      data.dischargeScale slack final.toFinset
+  · obtain ⟨index₀, member₀, two₀⟩ :=
+      Route8Pressure.exists_twoCarrierEntry_staged object packing entries
+        data.threshold data.dischargeScale slack data.LengthOK thresholdPos
+        entriesSubset final.toFinset stageDeficit rate
+    obtain ⟨index, hpick⟩ := route8LexFirst_isSome (object := object)
+      (family := (Route8Pressure.peeledEntries object entries final.toFinset).filter
+        fun index => Route8Pressure.TwoCarrierAt object packing entries
+          data.threshold data.LengthOK final.toFinset index)
+      ⟨index₀, Finset.mem_filter.mpr ⟨member₀, two₀⟩⟩
+    have picked := Finset.mem_filter.mp (route8LexFirst_spec hpick).1
+    have notDefect : ¬ Route8Pressure.TargetDefectAt object data.threshold
+        data.dischargeScale (HasCycleWithLength data.LengthOK) final.toFinset
+        index := by
+      intro defect
+      have stepEq : route8DescentStep data object final = index :: final := by
+        unfold route8DescentStep
+        simp only [packing, slack] at rate
+        rw [if_pos rate]
+        simp only [packing, entries] at hpick
+        rw [hpick]
+        simp only [if_pos defect]
+      exact List.cons_ne_self _ _ (stepEq.symm.trans fixed)
+    exact Or.inl ⟨rate, index, picked.1, picked.2, notDefect⟩
+  · exact Or.inr rate
 
 /-- **Node `[123]`, the descent fact**: the terminal stage
 `route8DescentChain` of the procedure is a recorded peel chain with exact stage
@@ -210,9 +281,8 @@ theorem route8PeelingDescent (data : Parameters) (object : FiniteObject.{u})
     (normalized : RemainderNormalizedStatement data object)
     (deficit : Route8UnifiedDeficitFact data object) :
     Route8PeelingDescentStatement data object :=
-  Classical.epsilon_spec
-    (exists_route8StageOutcome data object baseline thresholdPos dischargePos
-      normalized deficit)
+  route8DescentChain_stageOutcome data object baseline thresholdPos dischargePos
+    normalized deficit
 
 /-- **`thm:large-budget-route8-only`, the true entry of a stage**: a true
 entry of the terminal stage is not target-defective at that stage, so by the

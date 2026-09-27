@@ -95,8 +95,7 @@ noncomputable abbrev netChargeFanEntryKeys : FactKeys EGInput.{u} :=
     K .typeAPeeledExitThreeCollision,
     K .typeAPeeledExitThreeFree,
     K .typeAExitThreeCycle,
-    K .typeAExitSevenEnvelope,
-    K .route8GlobalSqueeze]
+    K .typeAExitSevenEnvelope]
 
 /-- Every key committed from `[177]` on: the fan data, its Type B entry, and the
 Type B / route-8 charge tail. -/

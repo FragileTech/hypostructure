@@ -22,9 +22,10 @@ so no witness is re-chosen.  Objects that depend on an earlier canonical object
 (absorption at the ledger, blocker at the absorption) take that object as an
 argument and are instantiated at its canonical value.
 
-`Classical.choose` is the paper's "choose once and for all" (e.g. the
-lexicographically first ledger, tex 15538): a fixed choice of G, the same at
-every key that names it.
+`Classical.choose` is a fixed choice of G, the same at every key that names it;
+where the paper fixes the lexicographically first object (the ledger `P₀`, tex
+15537; the descent's two-support entry, tex 6419) the choice is the minimum of
+an explicit lexicographic key.
 
 This module imports no strategy, row, or vocabulary module.
 -/
@@ -46,16 +47,71 @@ attribute [local instance 10] Classical.propDecidable
 
 /-! ## `P₀`: the committed maximal demand ledger (node `[181]`) -/
 
+/-- The code of a carrier edge `{a, b}`: its two vertex codes, smaller first. -/
+def route8CarrierKey (edge : Sym2 object.Vertex) : Lex (ℕ × ℕ) :=
+  letI : FinEnum object.Vertex := object.vertices
+  Sym2.lift ⟨fun a b =>
+      toLex (min ((FinEnum.equiv a : Fin _) : ℕ) ((FinEnum.equiv b : Fin _) : ℕ),
+        max ((FinEnum.equiv a : Fin _) : ℕ) ((FinEnum.equiv b : Fin _) : ℕ)),
+    fun a b => by simp only [min_comm, max_comm]⟩ edge
+
+/-- **The lexicographic key of a 2/3-demand ledger** (tex 15537, 6419): its
+classes `Ξ₃`, `Ξ₂`, `Ξ_res` as sorted lists of entry keys (`route8IndexKey`),
+then its assignment `A(ξ)` on `Ξ₃ ∪ Ξ₂`, entry by entry in key order, each as
+the sorted list of its carrier-edge codes. -/
+def route8LedgerKey (ledger : Route8DemandLedgerRecord data object) :
+    Lex (List (Lex (List ℕ × Lex (ℕ × ℕ))) ×
+      Lex (List (Lex (List ℕ × Lex (ℕ × ℕ))) ×
+        Lex (List (Lex (List ℕ × Lex (ℕ × ℕ))) ×
+          List (Lex (Lex (List ℕ × Lex (ℕ × ℕ)) × List (Lex (ℕ × ℕ))))))) :=
+  let P := ledger.partition
+  toLex ((P.three.image (route8IndexKey object)).sort (· ≤ ·),
+    toLex ((P.two.image (route8IndexKey object)).sort (· ≤ ·),
+      toLex ((P.residual.image (route8IndexKey object)).sort (· ≤ ·),
+        ((P.three ∪ P.two).image fun index =>
+          toLex (route8IndexKey object index,
+            ((P.assigned index).image (route8CarrierKey object)).sort
+              (· ≤ ·))).sort (· ≤ ·))))
+
+/-- A ledger record is determined by its four data fields; the record type is
+finite. -/
+instance route8DemandLedgerRecord_finite :
+    Finite (Route8DemandLedgerRecord data object) := by
+  letI : FinEnum object.Vertex := object.vertices
+  refine Finite.of_injective
+    (fun ledger : Route8DemandLedgerRecord data object =>
+      (ledger.partition.three, ledger.partition.two, ledger.partition.residual,
+        ledger.partition.assigned)) ?_
+  rintro ⟨⟨t, w, r, _, _, _, _, a, _, _, _, _⟩, _, _, _, _, _⟩
+    ⟨⟨t', w', r', _, _, _, _, a', _, _, _, _⟩, _, _, _, _, _⟩ h
+  simp only [Prod.mk.injEq] at h
+  obtain ⟨rfl, rfl, rfl, rfl⟩ := h
+  rfl
+
 /-- **`P₀`, the committed 2/3-demand ledger** of `def:typeA-pressure-ledger`
-(tex 15512--15538: "choose once and for all the lexicographically first
-ledger").  It is the witness of node `[349]` `route8DemandLedger`
-(`Route8DemandLedgerStatement = Nonempty Route8DemandLedgerRecord`), exactly the
-record the d2ded0e decision `route8UnpaidExitFourDichotomy`
-(`SpineRows/Route8UnpaidExitFourDichotomy.lean`) opened with
-`Classical.choice demand` and split on. -/
+(tex 15537: "choose once and for all the lexicographically first ledger
+maximizing first `|Ξ₃|`, then `|Ξ₂|`"): among the node-`[349]` records
+(`Route8DemandLedgerStatement`, the maximizing ledgers), the one whose
+`route8LedgerKey` is least. -/
 def canonicalRoute8DemandRecord : Option (Route8DemandLedgerRecord data object) :=
-  if h : Route8DemandLedgerStatement data object then some (Classical.choice h)
+  if h : Route8DemandLedgerStatement data object then
+    some (Classical.choose (Set.exists_min_image Set.univ
+      (route8LedgerKey data object) Set.finite_univ
+      ⟨Classical.choice h, Set.mem_univ _⟩))
   else none
+
+/-- `P₀` is the lexicographically first maximizing ledger. -/
+theorem canonicalRoute8DemandRecord_lexFirst
+    {ledger : Route8DemandLedgerRecord data object}
+    (h : canonicalRoute8DemandRecord data object = some ledger) :
+    ∀ other : Route8DemandLedgerRecord data object,
+      route8LedgerKey data object ledger ≤ route8LedgerKey data object other := by
+  unfold canonicalRoute8DemandRecord at h
+  split_ifs at h with present
+  cases h
+  exact fun other => (Classical.choose_spec (Set.exists_min_image Set.univ
+    (route8LedgerKey data object) Set.finite_univ
+    ⟨Classical.choice present, Set.mem_univ _⟩)).2 other (Set.mem_univ _)
 
 theorem canonicalRoute8DemandRecord_spec
     (h : Route8DemandLedgerStatement data object) :

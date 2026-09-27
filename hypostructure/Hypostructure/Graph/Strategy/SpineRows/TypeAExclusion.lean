@@ -24,7 +24,7 @@ variable {data : Data.{u}}
 @[reducible] noncomputable def typeAExclusionRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.typeAExclusion
-    { Requires := [K .selection, K .replacementExclusion]
+    { Requires := [K .selection, K .replacementExclusion, K .remainderNormalized]
       Produces := [K .typeAExclusion]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -34,7 +34,8 @@ variable {data : Data.{u}}
       .cons (key := K .typeAExclusion)
         ⟨Graph.Contracts.TypeA.typeAExclusion data.toParameters
           inputs.current.object selection.1 selection.2
-          (inputs.get (K .replacementExclusion)).down⟩
+          (inputs.get (K .replacementExclusion)).down
+          (inputs.get (K .remainderNormalized)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

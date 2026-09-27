@@ -722,15 +722,14 @@ inductive Key where
   /-- The exact negation of the sublinear hypotheses, retained as the tested
   residual state (the manuscript's Part IX bridge-residual continuation). -/
   | typeBSublinearResidual
-  /-- The `[113]`-tested quotient-freeness of the unified census: no entry's
-  selected basin carries the plain trace-response quotient (the cased
-  exit-`(5)` state).  The yes arm makes every unified entry route-8 or
-  alternative-(a); the no arm is exit `(5)` at a unified entry. -/
+  /-- The quotient-freeness of the unified census (tex 15360-15364): no
+  entry's selected basin carries a nontrivial target-complete response
+  quotient.  The yes arm makes every unified entry route-8 or alternative-(a);
+  the no arm is alternative (b) at a unified entry. -/
   | route8QuotientFree
-  /-- The exact negation: some unified entry realizes alternative (b).  The
-  paper declares it a standing-invariant contradiction
-  (`lem:typeA-unified-carriers`, `cor:uncompressible`); it is closed against
-  `K .selection` (PAPER-ERROR [348]). -/
+  /-- The exact negation: some unified entry realizes alternative (b).
+  `thm:main` returns it at `[187]` as the failure of route-8 quotient freeness
+  (tex 369-372, 388-390). -/
   | route8QuotientResidual
   /-- `def:typeA-pressure-ledger` at the failed-rate stage: the maximal pinned
   2/3-demand ledger over the unified collection, with its no-overcount counts
@@ -1659,8 +1658,6 @@ inductive Key where
   | typeAExitThreeCycle
   /-- Node `[108]`: the canonical exit-`(7)` separation and envelope of `X₀` at the terminal state. -/
   | typeAExitSevenEnvelope
-  /-- Node `[111]`: the global squeeze extracts `𝒳_A`, each member carrying positive deficit. -/
-  | route8GlobalSqueeze
   -- SC keys
   /-- Node `[176]` on the absorbed-configuration residual
   (`lem:absorbed-germ-fan-data` (i)): on the G2-silent arm, the neutral
@@ -2053,7 +2050,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
   | .route8QuotientResidual, object =>
       Route8QuotientResidualStatement data.toParameters object
   | .route8DemandLedger, object =>
-      Route8DemandLedgerStatement data.toParameters object
+      Route8DemandLedgerPinnedStatement data.toParameters object
   | .route8ExtractedEntryCensus, object =>
       Route8ExtractedEntryCensusFact data.toParameters object
   | .typeAPortReturn, object =>
@@ -2220,7 +2217,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
   | .route8PrivateCarrierBudget, object =>
       -- Nodes `[119]`--`[120]`: no two-carrier entry gives the
       -- private-carrier budget on the selected route-8 residual.
-      Route8PrivateCarrierBudget data.toParameters object
+      Route8PrivateCarrierBudgetStatement data.toParameters object
   | .route8Census, object =>
       Route8CensusStatement data.toParameters object
   | .route8Rate, object =>
@@ -2472,8 +2469,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       TypeAExitThreeCycleStatement data.toParameters object
   | .typeAExitSevenEnvelope, object =>
       TypeAExitSevenEnvelopeStatement data.toParameters object
-  | .route8GlobalSqueeze, object =>
-      Route8GlobalSqueezeStatement data.toParameters object
   | .coldAbsorbedNeutralConfiguration, object =>
       NeutralConfigurationStatement data.toParameters object
   | .coldSelectedFamilyEmpty, object =>
@@ -2824,7 +2819,6 @@ def label : Key → String
   | .typeAPeeledExitThreeFree => "typeAPeeledExitThreeFree"
   | .typeAExitThreeCycle => "typeAExitThreeCycle"
   | .typeAExitSevenEnvelope => "typeAExitSevenEnvelope"
-  | .route8GlobalSqueeze => "route8GlobalSqueeze"
   | .coldAbsorbedNeutralConfiguration => "coldAbsorbedNeutralConfiguration"
   | .coldSelectedFamilyEmpty => "coldSelectedFamilyEmpty"
 
@@ -3193,7 +3187,6 @@ example : label .typeAPeeledExitThreeCollision = "typeAPeeledExitThreeCollision"
 example : label .typeAPeeledExitThreeFree = "typeAPeeledExitThreeFree" := rfl
 example : label .typeAExitThreeCycle = "typeAExitThreeCycle" := rfl
 example : label .typeAExitSevenEnvelope = "typeAExitSevenEnvelope" := rfl
-example : label .route8GlobalSqueeze = "route8GlobalSqueeze" := rfl
 example : label .coldAbsorbedNeutralConfiguration =
     "coldAbsorbedNeutralConfiguration" := rfl
 example : label .coldSelectedFamilyEmpty = "coldSelectedFamilyEmpty" := rfl
@@ -3552,7 +3545,6 @@ def idx : Key → Nat
   | .typeAPeeledExitThreeFree => 2010
   | .typeAExitThreeCycle => 2011
   | .typeAExitSevenEnvelope => 2012
-  | .route8GlobalSqueeze => 160
   | .coldAbsorbedNeutralConfiguration => 2700
   | .coldSelectedFamilyEmpty => 2701
 
@@ -3899,7 +3891,6 @@ def ofIdx : Nat → Key
   | 2010 => .typeAPeeledExitThreeFree
   | 2011 => .typeAExitThreeCycle
   | 2012 => .typeAExitSevenEnvelope
-  | 160 => .route8GlobalSqueeze
   | 2700 => .coldAbsorbedNeutralConfiguration
   | 2701 => .coldSelectedFamilyEmpty
   | _ => .selection
@@ -4706,8 +4697,6 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitThreeCycle") 2011
   | .typeAExitSevenEnvelope =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitSevenEnvelope") 2012
-  | .route8GlobalSqueeze =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "route8GlobalSqueeze") 160
   | .coldAbsorbedNeutralConfiguration =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "coldAbsorbedNeutralConfiguration") 2700
