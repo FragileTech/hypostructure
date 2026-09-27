@@ -1601,8 +1601,8 @@ free side.
 ### Node [172a] (thm:main (iii), tex 354-358)
 
 - **Configuration at G.** The first failed conditional graph-count inequality of lem:scale-additivity on the dense-packing branch, with its minimal same-scale barrier overlap.
-- **Lean.** `BlockedBarrierOverlapOutcome` (`Assembly/Residuals.lean`); return theorem `blockedBarrierOverlapReturn`; reached by 2 paths (distinct ledger histories from the root).
-- **Facts carried (71).**
+- **Lean.** Generic residual `BlockedBarrierOverlapOutcome` (`Assembly/Residuals.lean`), the facts common to both paths; return theorem `blockedBarrierOverlapReturn`; reached by 2 paths (distinct ledger histories from the root), with 2 distinct fact sets, each its own subtype in `Assembly/Residuals/BlockedBarrierOverlapOutcome.lean` (below).
+- **Common facts (71).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
   3. `K .returnAvoidance`: Nodes `[5]`--`[7]`: the return-length set is disjoint from the shifted accepted set at every oriented edge.
@@ -1674,9 +1674,14 @@ free side.
   69. `K .coldCanonicalReplacementTrivial`: Node `[166]`: refined minimality forces every neutral configuration's canonical replacement to be the corridor piece itself, `E = Q`.
   70. `K .blockedClassMember`: Node `[169]`, `def:blocked-class`: on the trivial neutral-configuration residual the object's own labelled skeleton lies in the blocked class `𝓑(𝒫)` of the fixed maximal packing (near-cubic, windows present, no accepted cycle through a window), and `card 𝓑(𝒫) ≤ skeletonBudget`.
   71. `K .blockedBarrierOverlap`: Node `[170]`, the exact complement (`lem:barrier-failure-overlap`): the conditional saving fails at a specific window, scale, and barrier row; the retained value is the actual oversized conditional fibre, before the overlap lemma constructs its support.
-- **On some paths only, not carried (3).** Gated by an arm of:
-  - [160] first test (tau < 1/4): `denseDeficiencyAtOrAbove`, `denseDeficiencyBelow`.
-  - [160] second test / route-8 entry rate: `route8RateFails`.
+- **Subtypes** (one per distinct fact set; the two paths differ only by the arm of the `[160]` rate split through which the dense-packing residual enters the dense hot/cold pass `[162]`; each subtype implies the generic residual by `.toGeneric`).
+  - `BlockedBarrierOverlapOutcome_DeficiencyAtOrAbove`, `[160]` first test no (`τ(θ) ≥ 1/4`); return theorem `blockedBarrierOverlapReturn_DeficiencyAtOrAbove`. Extra facts:
+    72. `K .denseDeficiencyAtOrAbove`: Node `[160]`, first test, no arm: the dense residual, `τ(θ) ≥ 1/4` up to the exact allowance, on which the net-charge collision does not fire.
+    - Total: 72 facts.
+  - `BlockedBarrierOverlapOutcome_DeficiencyBelowRateFails`, `[160]` first test yes (`τ(θ) < 1/4`), second test no (private-carrier rate fails); return theorem `blockedBarrierOverlapReturn_DeficiencyBelowRateFails`. Extra facts:
+    72. `K .denseDeficiencyBelow`: Node `[160]`, first test, yes arm: `prop:negative-net-charge`'s exact large-budget net-deficiency comparison, the `τ(θ) < 1/4` deficiency reading with the exact `√n` allowance.
+    73. `K .route8RateFails`: Node `[160]`, second test, no arm: the complement of the private-carrier rate reading (`3/13 ≤ τ`), the manuscript's delicate density interval, carried as its own branch.
+    - Total: 73 facts.
 
 <a id="residual-182"></a>
 
