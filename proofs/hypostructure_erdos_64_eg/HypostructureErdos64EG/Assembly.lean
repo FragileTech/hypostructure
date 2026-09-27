@@ -18,6 +18,7 @@ import HypostructureErdos64EG.Assembly.RouteEight.TypeBContinuation
 import HypostructureErdos64EG.Assembly.Residuals.Route8Blocks
 import HypostructureErdos64EG.Assembly.Residuals.Route8JointBalanceOutcome
 import HypostructureErdos64EG.Assembly.Residuals.TypeBSublinearOutcome
+import HypostructureErdos64EG.Assembly.Residuals.Route8QuotientOutcome
 import HypostructureErdos64EG.Assembly.Surplus.Boundary
 import HypostructureErdos64EG.Assembly.Surplus.Local
 import HypostructureErdos64EG.Assembly.Surplus.Strict
