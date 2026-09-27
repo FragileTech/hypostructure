@@ -1234,35 +1234,54 @@ and argument path; no `sorry` is involved.
   deleted.  No `sorry`.  The census of `lem:typeA-unified-carriers` still gets
   `α(ξ) ≥ 2` on the free arm (`route8EntryFacts`), from G's own
   quotient-freeness.
-- **User-approved construction attempt (fix2-TR step 2): fails at the
-  response clause.**  Evidence: `audits/erdos-64-red-team/fix2-TR/Step2Evidence348.lean`
-  (compiles; axioms propext, Classical.choice, Quot.sound).  At an entry
-  `ξ = (X, w, u, B_u)` of G's unified set with (b), take `S := B_u` and the
-  explicit smaller representative `R :=` the interior fold
-  `identifyInternal keep remove` of `B_u`'s piece (a realization of the
-  quotient, with the fold map as label-fixing placement, when no retained
-  declared support contains `keep`/`remove`).  Clauses of
-  `CompressibleSupport G S` (`InterfaceReplacement.lean:415`):
-  connected (holds: `B_u` is connected), proper (holds), boundary degree
-  profile (holds, `fold_clauses`), baseline `δ(R ⊕ Y) ≥ 3` (holds,
-  `foldRealization_baseline_and_smaller`), strictly smaller (holds, same
-  lemma); **response-preserving `∀ Y, Target(R ⊕ Y) ↔ Target(B_u ⊕ Y)`
-  fails.**  Precisely: at G's own context `Y_G`, *every* smaller baseline
-  representative `R` has an accepted cycle in `R ⊕ Y_G` (G's minimality)
-  while `B_u ⊕ Y_G ≅ G` has none (`response_clause_fails_at_G_context`); for
-  the fold, `K .uncompressible` refutes full-target completeness outright
-  (`fold_not_fullTarget_complete`).  Alternative (b) supplies only
-  equivalence on the declared `u`-supported algebra (`declaredAlgebra`), and
-  at `Y_G` that algebra is false on both sides
-  (`declaredAlgebra_false_at_G_context`), so (b) is consistent with the
-  identification creating a power-of-two cycle through `Y_G`.  **Missing
-  fact about G:** "every accepted cycle of `R ⊕ Y_G` passes through a boundary
-  label of `∂B_u` lying on the event walk of a core-retained crossing
-  coordinate of `ξ`" (i.e. `R`'s cycle is visible to the declared algebra),
-  together with the existence of a fold pair `keep ≠ remove` in
-  `B_u - ∂B_u`, off every retained declared support, with no common
-  neighbour.  Neither is on G's ledger at `[348]`.  So the Step-1 routing is
-  kept and `[348]` stays a returned outcome at `[187]`.
+- **User-approved construction attempt (fix2-TR steps 2 and 2b).**  Evidence:
+  `audits/erdos-64-red-team/fix2-TR/Step2Evidence348.lean` (compiles; axioms
+  propext, Classical.choice, Quot.sound).  At an entry `ξ = (X, w, u, B_u)` of
+  G's unified set with (b), with `S := B_u`, `Y_G :=` the outside of `B_u` in G,
+  and the explicit smaller representative `R :=` the interior fold
+  `identifyInternal keep remove` of `B_u` (a realization of the quotient, fold
+  map as label-fixing placement, when no kept declared support contains
+  `keep`/`remove`):
+  - Clauses of `CompressibleSupport G S` (`InterfaceReplacement.lean:415`):
+    connected, proper, boundary degree profile, baseline `δ(R ⊕ Y) ≥ 3`,
+    strictly smaller all hold (`fold_clauses`,
+    `foldRealization_baseline_and_smaller`).  The response clause is the only
+    open one, and at `Y_G` it is equivalent to `¬ Target(R ⊕ Y_G)`, i.e. to
+    the closure itself (minimality forces `Target(R ⊕ Y_G)`,
+    `response_clause_fails_at_G_context`).  So the question is whether G's
+    facts force `R` to respond like `B_u` at `Y_G`.
+  - What (b) gives at `Y_G`: `Y_G` is profile-compatible
+    (`profileCompatible_G_context`), so (b) yields
+    `¬ declaredAlgebra R Y_G` (`b_at_G_context`).
+  - **Conditional closure** (`closes_of_visibility`): (b) + a fold pair off
+    the kept declared supports with no common neighbour + `Visibility` ⇒ `False`
+    against G's minimality.  **Missing implication, as a formula about G**:
+    `Visibility(R) := Target(R ⊕ Y_G) → declaredAlgebra R Y_G` -- every
+    accepted cycle of `R ⊕ Y_G` passes through a label of `∂B_u` lying on the
+    event walk of a core-retained crossing declared coordinate of `ξ` -- plus
+    the existence of the fold pair.
+  - **Inventory (completeness check)** of what the paper constructs on G on the
+    path to tex 15362 that could turn declared-algebra equivalence into
+    response equality at `Y_G`:
+
+    | paper object / fact | tex | Lean key / object | at `[348]` | gives `Visibility`? |
+    |---|---|---|---|---|
+    | `lem:degree-profile-fibres` [11] | 6088 | `K .degreeProfileFibres` (2300), `Statements/Spine.lean:2606` | on ledger (entry prefix) | no: separates fibres only; the fold with no common label stays in `B_u`'s fibre |
+    | `lem:context-universality` [12] | 6106 | `K .targetCompleteContextUniversality` (2301), `Statements/Spine.lean:2635` | on ledger | no: part 1 needs a full-target, all-context identification of an admissible rank quotient (not supplied by (b)); "consequently" concludes target-DEFECT from a separating context, never equality at `Y_G` |
+    | `def:admissible-rank-quotient` | 6026-6035 | `Graph.CurvatureQuotient` | definitional | no: requires target-completeness against all `T`-contexts; tex 6031-6035: a correlation with no smaller representative "is not an admissible rank reduction" |
+    | `lem:replacement`, `cor:uncompressible` [13]/[14] | 6116, 6142 | `K .replacementExclusion` (223), `K .uncompressible` (5) | on ledger | no: refute a representative that is already full-target complete |
+    | declared family `R_u(B_u)`, declared algebra | 10733-10743 | `traceCoordinates`, `declaredAlgebra` (`Route8Residual.lean`) | definitional | no: completeness is stated for declared `u`-supported events only |
+    | (b) response quotient, realization, compatible context | 10744-10775 | `ResponseQuotient`, `QuotientRealization`, `ProfileCompatible`, `TraceResponseQuotient` | tested at `[347]`/`[348]` | gives `¬ declaredAlgebra R Y_G` only |
+    | trace-completeness / basin selection | 10718-10731 | `TraceComplete`, `select?` | definitional | no (about the trace path) |
+    | target-complete-minimality of route-8 basins | 10760-10790 | `TargetCompleteMinimal`, census `K .route8UnifiedEntryCensus` (340) | after `[348]` (free arm only) | no: its (b)-clause is the negation of what is tested |
+    | exit (5) smaller representative | 10773-10775, 10824-10826, 11677-11682 | `TraceTargetCompleteCompression` | never constructed by the paper (always "when realized by a smaller ... piece") | -- |
+    | `\tilde{\mathcal X}`, `\tilde\Xi`, deficit | 15236, 15301, 15260 | `K .route8UnifiedNegative` (336), `route8UnifiedEntries`, `K .route8UnifiedDeficit` (339) | on ledger | no (counting facts) |
+    | Type A exclusion | 11890-11919 | `K .typeAExclusion` (343) | on ledger | no: keeps (b) as an open alternative |
+    | selection, minimality, baseline | [4] | `K .selection` (0), `K .cubicBaseline` | on ledger | used: gives `Target(R ⊕ Y_G)` |
+
+    Nothing the paper constructs is missing from G's ledger at `[348]`; the
+    paper never supplies `Visibility` nor the fold pair.  So the Step-1 routing
+    is kept: `[348]` is a returned outcome at `[187]`.
 - **Scope of `[347]`.**  The former second conjunct of
   `Route8QuotientFreeStatement` (every negative no-handoff core of a deleted
   region, any `σ`, every receiver, `excessBasinReduced` loads) went beyond
@@ -1273,6 +1292,51 @@ and argument path; no `sorry` is involved.
   boundary-degree fibre "whose image under the quotient map is the given
   quotient"; nontriviality is a forgotten coordinate whose declared support
   meets `B_u - ∂B_u` or contains an edge of `B_u`.
+
+## Open constructions
+
+Each entry is a step the paper asserts about G without constructing it, where
+the negation was assumed at G, its witness built explicitly, and all three
+contradiction routes (incompatible structure, bound overload, compressibility)
+were run and failed at a concrete configuration of G.
+
+### [348] (b) at a unified entry: the fold does not respond like `B_u` at G's own context (tex 15362)
+
+*fix2-TR steps 2/2b; evidence `audits/erdos-64-red-team/fix2-TR/Step2Evidence348.lean`.*
+
+- **Assertion X (tex 15362).**  At an entry `ξ = (X, w, u, B_u)` of G's
+  unified set, alternative (b) is exit (5), a contradiction with
+  `cor:uncompressible`: the quotient's smaller representative responds like
+  `B_u` in every context, in particular in G's own context `Y_G`.
+- **¬X built at G.**  With (b) at `ξ` (the `[348]` arm) and a fold pair
+  `keep ≠ remove` of `B_u - ∂B_u` off the kept declared supports with no common
+  neighbour, the fold `R = identifyInternal keep remove` is a realization of the
+  quotient in `B_u`'s fibre, `δ(R ⊕ Y_G) ≥ 3`, `R ⊕ Y_G < G`
+  (`fold_clauses`).  `invisibleCycle_of_b` proves at G: `R ⊕ Y_G` has an
+  accepted cycle `C` (G's minimality) and `¬ declaredAlgebra R Y_G` ((b) at the
+  profile-compatible context `Y_G`, `b_at_G_context`).  So the ¬X witness is
+  the explicit accepted cycle `C` of `R ⊕ Y_G` through the merged vertex, not
+  visible to the declared `u`-supported algebra.
+- **Route (1), incompatible structure.**  `C` is not a cycle of G (unmerging
+  turns it into a `keep`-`remove` path of G), so target avoidance is not
+  contradicted.  [12] (key 2301) part 1 applies only to a `DeclaredQuotient`,
+  whose `contextUniversal` field IS the full-target equivalence being sought;
+  its "consequently" part concludes that the fold identification is
+  target-defective, which is consistent with `C`.  (b) itself would be
+  contradicted exactly when `C` is declared-visible (`closes_of_visibility`);
+  `invisibleCycle_of_b` shows it is not.
+- **Route (2), bound overload.**  The census bounds at `[123]`
+  (`α(ξ) ≥ 2`, `K .route8UnifiedEntryCensus` 340; the deficit `K .route8UnifiedDeficit`
+  339) count declared essential carriers and entries; an undeclared accepted
+  cycle of a glued realization enters none of them.
+- **Route (3), compressibility.**  The smaller representatives available at
+  `B_u` are the folds and the retained readings; each glued to `Y_G` carries an
+  accepted cycle by minimality (`response_clause_fails_at_G_context`), so
+  none is a `CompressibleSupport` without the same visibility fact.
+- **Open construction.**  `Visibility(R) : Target(R ⊕ Y_G) → declaredAlgebra R Y_G`
+  at the fold of a (b)-entry of G, together with the fold pair.  Until it is
+  constructed, `[348]` is routed as `thm:main` routes it: a returned outcome at
+  `[187]` (no `sorry`).
 
 ## User-approved repairs
 
