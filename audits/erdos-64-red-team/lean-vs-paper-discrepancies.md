@@ -2178,8 +2178,8 @@ free side.
 ### Node [187] (private-carrier rate failure) (thm:main (vi), tex 369-378)
 
 - **Configuration at G.** Failure of the exact private-carrier rate at the entry of the route-8 continuation.
-- **Lean.** `Route8RateFailsOutcome` (`Assembly/Residuals.lean`); return theorem `route8RateFailsReturn`; reached by 12 paths (distinct ledger histories from the root).
-- **Facts carried (42).**
+- **Lean.** Generic residual `Route8RateFailsOutcome` (`Assembly/Residuals.lean`), the facts common to all 12 paths (distinct ledger histories from the root); return theorem `route8RateFailsReturn`.  The 12 paths hold 12 distinct fact sets, each its own subtype in `Assembly/Residuals/Route8RateFailsOutcome.lean` (`<Subtype> := Route8RateFailsOutcome ∧ extra facts`, projection `<Subtype>.toGeneric`, return theorem `route8RateFailsReturn_<label>`).  The subtypes are not yet wired into the return sites or `SelectedLedgerBoundaryResult`: that needs signature changes to shared functions (`nearCubicLargeBudgetDensityCap`, `nearCubicRouteEightEntry`, `nearCubicLargeBudgetRateFailed`), left to the integration pass.
+- **Common facts carried by the generic residual (42).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
   3. `K .returnAvoidance`: Nodes `[5]`--`[7]`: the return-length set is disjoint from the shifted accepted set at every oriented edge.
@@ -2222,14 +2222,81 @@ free side.
   40. `K .largeBudgetResidual`: Node `[53]`, no arm — node `[55]`, Residual C: the joint package still fits the skeleton budget, and the branch is the large-budget residual.
   41. `K .netDeficiencyCap`: Node `[56]`: exact cleared finite form of the large-budget net-deficiency cap.
   42. `K .route8RateFails`: The complement of the rate reading on an arm whose density fact does not decide it (`3/13 ≤ τ`): the manuscript's delicate density interval (row 2 of the cold-branch ledger), carried as its own branch.
-- **On some paths only, not carried (14).** Gated by an arm of:
-  - [50] low arm, local-type coordinate (lem:dominant-type): `dominantRootedType`, `localTypeCoordinateNonrepetitive`, `localTypeCoordinateRepetitive`.
-  - [50] remainder entropy: `entropyPackageDemand`, `remainderEntropyHigh`, `remainderEntropyLow`.
-  - [160] first test (tau < 1/4): `denseDeficiencyAtOrAbove`, `denseDeficiencyBelow`.
-  - [50] low arm, root-wedge split (lem:dominant-type): `dominantRootedTypeWedgeFree`, `dominantRootedWedgeType`.
-  - [158] window package realized: `windowPackageRealized`, `windowPackageUnrealized`.
-  - [53] entropy cap: `entropyCapBound`.
-  - [50] low arm, root-wedge split (lem:dominant-type); [50] low arm, local-type coordinate (lem:dominant-type): `independentObstructionTranslates`.
+- **Subtypes (12), one per distinct fact set.**
+  - `Route8RateFailsOutcome_realized_highEntropy` ([158] yes (realized package); [50] high; [53] bound, Residual C [55]): 46 facts, the 42 common facts and
+    - `K .windowPackageRealized`
+    - `K .remainderEntropyHigh`
+    - `K .entropyPackageDemand`
+    - `K .entropyCapBound`
+  - `Route8RateFailsOutcome_realized_lowNonrepetitive` ([158] yes (realized package); [50] low; local-type coordinate nonrepetitive (lem:dominant-type)): 45 facts, the 42 common facts and
+    - `K .windowPackageRealized`
+    - `K .remainderEntropyLow`
+    - `K .localTypeCoordinateNonrepetitive`
+  - `Route8RateFailsOutcome_realized_lowWedgeFree` ([158] yes (realized package); [50] low; local-type coordinate repetitive; dominant rooted type wedge-free): 47 facts, the 42 common facts and
+    - `K .windowPackageRealized`
+    - `K .remainderEntropyLow`
+    - `K .localTypeCoordinateRepetitive`
+    - `K .dominantRootedType`
+    - `K .dominantRootedTypeWedgeFree`
+  - `Route8RateFailsOutcome_realized_lowWedge` ([158] yes (realized package); [50] low; local-type coordinate repetitive; dominant rooted wedge type): 48 facts, the 42 common facts and
+    - `K .windowPackageRealized`
+    - `K .remainderEntropyLow`
+    - `K .localTypeCoordinateRepetitive`
+    - `K .dominantRootedType`
+    - `K .dominantRootedWedgeType`
+    - `K .independentObstructionTranslates`
+  - `Route8RateFailsOutcome_denseAtOrAbove_highEntropy` ([158] no (unrealized package); [160] first test no (τ(θ) ≥ 1/4); [50] high; [53] bound, Residual C [55]): 47 facts, the 42 common facts and
+    - `K .windowPackageUnrealized`
+    - `K .denseDeficiencyAtOrAbove`
+    - `K .remainderEntropyHigh`
+    - `K .entropyPackageDemand`
+    - `K .entropyCapBound`
+  - `Route8RateFailsOutcome_denseAtOrAbove_lowNonrepetitive` ([158] no (unrealized package); [160] first test no (τ(θ) ≥ 1/4); [50] low; local-type coordinate nonrepetitive (lem:dominant-type)): 46 facts, the 42 common facts and
+    - `K .windowPackageUnrealized`
+    - `K .denseDeficiencyAtOrAbove`
+    - `K .remainderEntropyLow`
+    - `K .localTypeCoordinateNonrepetitive`
+  - `Route8RateFailsOutcome_denseAtOrAbove_lowWedgeFree` ([158] no (unrealized package); [160] first test no (τ(θ) ≥ 1/4); [50] low; local-type coordinate repetitive; dominant rooted type wedge-free): 48 facts, the 42 common facts and
+    - `K .windowPackageUnrealized`
+    - `K .denseDeficiencyAtOrAbove`
+    - `K .remainderEntropyLow`
+    - `K .localTypeCoordinateRepetitive`
+    - `K .dominantRootedType`
+    - `K .dominantRootedTypeWedgeFree`
+  - `Route8RateFailsOutcome_denseAtOrAbove_lowWedge` ([158] no (unrealized package); [160] first test no (τ(θ) ≥ 1/4); [50] low; local-type coordinate repetitive; dominant rooted wedge type): 49 facts, the 42 common facts and
+    - `K .windowPackageUnrealized`
+    - `K .denseDeficiencyAtOrAbove`
+    - `K .remainderEntropyLow`
+    - `K .localTypeCoordinateRepetitive`
+    - `K .dominantRootedType`
+    - `K .dominantRootedWedgeType`
+    - `K .independentObstructionTranslates`
+  - `Route8RateFailsOutcome_denseBelow_highEntropy` ([158] no (unrealized package); [160] first test yes (τ(θ) < 1/4), private-carrier rate failed there; [50] high; [53] bound, Residual C [55]): 47 facts, the 42 common facts and
+    - `K .windowPackageUnrealized`
+    - `K .denseDeficiencyBelow`
+    - `K .remainderEntropyHigh`
+    - `K .entropyPackageDemand`
+    - `K .entropyCapBound`
+  - `Route8RateFailsOutcome_denseBelow_lowNonrepetitive` ([158] no (unrealized package); [160] first test yes (τ(θ) < 1/4), private-carrier rate failed there; [50] low; local-type coordinate nonrepetitive (lem:dominant-type)): 46 facts, the 42 common facts and
+    - `K .windowPackageUnrealized`
+    - `K .denseDeficiencyBelow`
+    - `K .remainderEntropyLow`
+    - `K .localTypeCoordinateNonrepetitive`
+  - `Route8RateFailsOutcome_denseBelow_lowWedgeFree` ([158] no (unrealized package); [160] first test yes (τ(θ) < 1/4), private-carrier rate failed there; [50] low; local-type coordinate repetitive; dominant rooted type wedge-free): 48 facts, the 42 common facts and
+    - `K .windowPackageUnrealized`
+    - `K .denseDeficiencyBelow`
+    - `K .remainderEntropyLow`
+    - `K .localTypeCoordinateRepetitive`
+    - `K .dominantRootedType`
+    - `K .dominantRootedTypeWedgeFree`
+  - `Route8RateFailsOutcome_denseBelow_lowWedge` ([158] no (unrealized package); [160] first test yes (τ(θ) < 1/4), private-carrier rate failed there; [50] low; local-type coordinate repetitive; dominant rooted wedge type): 49 facts, the 42 common facts and
+    - `K .windowPackageUnrealized`
+    - `K .denseDeficiencyBelow`
+    - `K .remainderEntropyLow`
+    - `K .localTypeCoordinateRepetitive`
+    - `K .dominantRootedType`
+    - `K .dominantRootedWedgeType`
+    - `K .independentObstructionTranslates`
 
 <a id="residual-187-cold-terminal"></a>
 

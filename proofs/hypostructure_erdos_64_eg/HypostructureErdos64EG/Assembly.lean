@@ -15,6 +15,7 @@ import HypostructureErdos64EG.Assembly.RouteEight.Boundary
 import HypostructureErdos64EG.Assembly.RouteEight.Local
 import HypostructureErdos64EG.Assembly.RouteEight.Residual
 import HypostructureErdos64EG.Assembly.RouteEight.TypeBContinuation
+import HypostructureErdos64EG.Assembly.Residuals.Route8RateFailsOutcome
 import HypostructureErdos64EG.Assembly.Surplus.Boundary
 import HypostructureErdos64EG.Assembly.Surplus.Local
 import HypostructureErdos64EG.Assembly.Surplus.Strict
