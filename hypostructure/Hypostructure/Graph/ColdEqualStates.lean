@@ -909,4 +909,5 @@ theorem first_lt_stateBound {object : FiniteObject.{v}}
   unfold ColdCorridor.stateBound
   omega
 
+
 end Hypostructure.Graph.ColdEqualStates

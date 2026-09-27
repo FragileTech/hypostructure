@@ -2144,8 +2144,10 @@ index that G's retained occurrence carries for `ε` (`coldOccurrenceCorridorAt` 
 `coldOccurrencePresentationAt` / `coldOccurrenceIndexAt`), with no earlier
 (F1)--(F5) event -- is (F2), then G has a named sparse surplus exit of its
 declared sparse family (`DeclaredSparseSurplusExit`, `def:named-surplus-exits`).
-The paper's routing is recorded as an open construction
-(`lean-vs-paper-discrepancies.md#open-constructions`, [153] tex:7268). -/
+At G this holds on the distinct-states arm of node `[153]`'s exact decision
+(`ColdCutStatesDistinctStatement`); the other arm is the returned residual
+`ColdRepeatedStateResidualStatement` (`lean-vs-paper-discrepancies.md`,
+"Returned residuals"). -/
 noncomputable def ColdFailureDefectRoutesStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∀ (occurrence : ColdFirstFailureOccurrenceData data object)

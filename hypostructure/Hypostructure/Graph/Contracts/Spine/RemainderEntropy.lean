@@ -107,7 +107,7 @@ On that arm the empty window family is not retained
 (`K .skeletonDominates`, `.1`), this says exactly that the remainder states of
 `R₀` together with the full curvature code `2^{c_Ω·r_Ω(R₀)}` exceed the labelled
 skeleton budget.  This is the Lean evidence recorded for
-`OPEN-CONSTRUCTION [54] tex:9921`: on this arm the joint realization
+`[54]`'s returned residual (`AllColdEntropyResidualStatement`): on this arm the joint realization
 `prop:entropy-high-theta` asserts is false for the full code, and only its
 smaller forced part `K|R| − o(|R|) ≤ c_Ω·r_Ω(R₀)` remains undecided. -/
 theorem allCold_code_overflow (data : Parameters) (object : Graph.FiniteObject.{u})
@@ -139,7 +139,7 @@ arm `𝒫_hot ≠ P₀`, including the all-cold arm), reading the skeletons them
 as states (`K .skeletonDominates`, `.1`) shows that the full package of `P₀`, or
 its retained code with the remainder states and the full curvature code
 `2^{c_Ω·r_Ω(R₀)}`, exceeds the labelled skeleton budget.  Lean evidence for
-`OPEN-CONSTRUCTION [54] tex:9921`. -/
+`[54]`'s returned residual. -/
 theorem unretained_package_overflow (data : Parameters) (object : Graph.FiniteObject.{u})
     (dominates : SkeletonDominatesStatement object)
     (unretained : ¬ WindowFamilyRealized data object (canonicalWindowPacking data object)) :
@@ -329,5 +329,12 @@ theorem allColdEntropyResidual_of_not_jointRealization (data : Parameters)
   · change ¬ (jointPackageDemand data object * 2 ^ forcedObstructionBits data object ≤
       Graph.skeletonBudget object) at notBound
     exact Nat.lt_of_not_le notBound
+
+/-- **The `[54]` residual refutes the joint realization inequality.** -/
+theorem not_jointRealization_of_residual (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (residual : AllColdEntropyResidualStatement data object) :
+    ¬ EntropyJointRealizationStatement data object :=
+  residual.2.2.2.2.2.2
 
 end Hypostructure.Graph.Contracts.Spine

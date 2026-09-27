@@ -402,7 +402,8 @@ theorem denseColdCorridorsTerminal_of_distinct (data : Parameters)
 fails, some retained corridor of G has its first failure at an (F4) heavy
 centre `z = head first` of G (`d_G(z) > δ`) strictly before its terminal
 segment, and is not terminal.  On the distinct-states arm its states up to
-`first` are pairwise distinct, so `first < Q_cold ≤ |C_ε|`. -/
+`first` are pairwise distinct, so `first < Q_cold ≤ |C_ε|`.  The residual is
+read at G's canonical witness `coldHeavyEntryWitness?`. -/
 theorem coldDenseHeavyEntryResidual_of_not_terminal (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (distinct : ColdCutStatesDistinctStatement data object)
@@ -417,11 +418,26 @@ theorem coldDenseHeavyEntryResidual_of_not_terminal (data : Parameters)
   have states := distinct occurrence epsilon first minimal
   have short : first.1 < Graph.ColdCorridor.stateBound data.coldSignature :=
     Graph.ColdEqualStates.first_lt_stateBound _ _ _ first states
-  refine ⟨occurrence, epsilon, first, centre, member, heavyCentre, handoff, minimal,
-    states, short, before, ?_, long⟩
-  unfold Graph.ColdCorridor.Corridor.TerminalCorridor
-    Graph.ColdCorridor.Corridor.statesRead at long
-  omega
+  have spec : ColdDenseHeavyEntrySpecAt data object occurrence epsilon first centre := by
+    refine ⟨member, heavyCentre, handoff, minimal, states, short, before, ?_, long⟩
+    unfold Graph.ColdCorridor.Corridor.TerminalCorridor
+      Graph.ColdCorridor.Corridor.statesRead at long
+    omega
+  obtain ⟨witness, pinned⟩ := coldHeavyEntryWitness?_eq_some
+    ⟨⟨occurrence, epsilon, first, centre⟩, spec⟩
+  exact ⟨witness, pinned, coldHeavyEntryWitness?_spec pinned⟩
+
+/-- **The `[162]` residual refutes the heavy-entry test.**  Its witness is a
+non-terminal corridor whose first failure is a heavy centre before its terminal
+segment. -/
+theorem not_heavyEntryTerminal_of_residual (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (residual : ColdDenseHeavyEntryResidualStatement data object) :
+    ¬ ColdHeavyEntryTerminalStatement data object := by
+  intro terminal
+  obtain ⟨witness, _, _, _, handoff, minimal, _, _, before, _, long⟩ := residual
+  exact long (terminal witness.occurrence witness.epsilon witness.first minimal handoff
+    before)
 
 /-- **`thm:cold-branch-quantitative-closure`: no terminal cold residual.**
 With the germs extracted and routed and the same-interface table closed, no

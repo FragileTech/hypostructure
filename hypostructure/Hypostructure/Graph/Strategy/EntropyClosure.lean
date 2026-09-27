@@ -88,6 +88,15 @@ noncomputable instance instIncompatibleEntropyCapActiveBound :
   contradiction := fun _residual active bound =>
     (Nat.not_lt_of_ge bound.down) active.down
 
+/-- `[54]`'s returned residual and the joint realization inequality cannot
+coexist (`Contracts.Spine.not_jointRealization_of_residual`). -/
+noncomputable instance instIncompatibleAllColdEntropyJoint :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K .allColdEntropyResidual) (K .entropyJointRealization) where
+  contradiction := fun _residual residual joint =>
+    Contracts.Spine.not_jointRealization_of_residual data.toParameters _
+      residual.down joint.down
+
 /-- **Node `[54]`, the exact decision** (`prop:entropy-high-theta`, tex 9921):
 on `[53]`'s active arm (`K .entropyCapActive`, read here), does the paper's
 joint realization inequality `RS(R₀)·2^{rate·s·p₁₃}·2^F ≤ B` hold at G

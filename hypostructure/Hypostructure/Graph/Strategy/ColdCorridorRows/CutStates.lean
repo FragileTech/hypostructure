@@ -15,6 +15,25 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
+/-- `[153]`'s returned residual and (★) cannot coexist
+(`Contracts.Spine.not_distinct_of_coldRepeatedStateResidual`): a later row that
+proves (★) on the residual arm closes it through Core's closure boundary. -/
+noncomputable instance instIncompatibleColdRepeatedStateDistinct :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K .coldRepeatedStateResidual) (K .coldCutStatesDistinct) where
+  contradiction := fun _residual residual distinct =>
+    Contracts.Spine.not_distinct_of_coldRepeatedStateResidual data.toParameters _
+      residual.down distinct.down
+
+/-- `[162]`'s returned residual and the heavy-entry test cannot coexist
+(`Contracts.Spine.not_heavyEntryTerminal_of_residual`). -/
+noncomputable instance instIncompatibleColdHeavyEntryTerminal :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K .coldDenseHeavyEntryResidual) (K .coldHeavyEntryTerminal) where
+  contradiction := fun _residual residual terminal =>
+    Contracts.Spine.not_heavyEntryTerminal_of_residual data.toParameters _
+      residual.down terminal.down
+
 /-! ## Node `[153]`: the exact decision behind `lem:cold-corridor-first-failure` (ii)
 
 At G the paper's exclusion of (F2) (tex 7265-7270) is equivalent to (★): G's

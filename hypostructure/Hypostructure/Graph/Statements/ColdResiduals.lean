@@ -65,33 +65,65 @@ def ColdCutStatesDistinctStatement (data : Parameters)
           (coldOccurrencePresentationAt data object occurrence epsilon).state
             (coldOccurrenceIndexAt data object occurrence epsilon right)
 
-/-- **The residual of `[153]`: G's first equal-state pair, constructed.**
+/-- The pinned objects of `[153]`'s residual: an occurrence of G's retained
+first-failure data (a subsingleton), an eligible half-edge `ε` of G, and two
+segments of G's retained corridor of `ε`. -/
+abbrev ColdRepeatWitness (data : Parameters) (object : Graph.FiniteObject.{u}) :=
+  Σ' occurrence : ColdFirstFailureOccurrenceData data object,
+    Σ' epsilon : ColdEligibleHalfEdge data object,
+      (coldOccurrenceCorridorAt data object occurrence epsilon).Segment ×
+        (coldOccurrenceCorridorAt data object occurrence epsilon).Segment
 
-For one eligible half-edge `ε` of G, on G's retained corridor `C_ε`
-(`coldOccurrenceCorridorAt`, in its outside component of `G − X_cold`), with
-G's pinned cut states:
+/-- The occurrence of a `[153]` witness. -/
+abbrev ColdRepeatWitness.occurrence {data : Parameters} {object : Graph.FiniteObject.{u}}
+    (witness : ColdRepeatWitness data object) : ColdFirstFailureOccurrenceData data object :=
+  witness.1
 
-* segments `left < right` with equal states, and no equal pair before `right`
-  (the first equal-state pair);
-* no (F1)--(F5) event at any segment before `right` -- in particular no
-  terminal (F5) and no heavy-centre (F4) event;
+/-- The half-edge `ε` of a `[153]` witness. -/
+abbrev ColdRepeatWitness.epsilon {data : Parameters} {object : Graph.FiniteObject.{u}}
+    (witness : ColdRepeatWitness data object) : ColdEligibleHalfEdge data object :=
+  witness.2.1
+
+/-- The earlier segment of the first equal-state pair. -/
+abbrev ColdRepeatWitness.left {data : Parameters} {object : Graph.FiniteObject.{u}}
+    (witness : ColdRepeatWitness data object) :
+    (coldOccurrenceCorridorAt data object witness.occurrence witness.epsilon).Segment :=
+  witness.2.2.1
+
+/-- The later segment of the first equal-state pair. -/
+abbrev ColdRepeatWitness.right {data : Parameters} {object : Graph.FiniteObject.{u}}
+    (witness : ColdRepeatWitness data object) :
+    (coldOccurrenceCorridorAt data object witness.occurrence witness.epsilon).Segment :=
+  witness.2.2.2
+
+/-- **The configuration of `[153]`'s residual at a witness.**
+
+On G's retained corridor `C_ε` (`coldOccurrenceCorridorAt`, in its outside
+component of `G − X_cold`, length `|C_ε| = inside.length`), with G's pinned cut
+states (`coldCutStateSequence`):
+
+* `left < right` with equal states, and no equal pair before `right` (the
+  first equal-state pair);
+* no (F1)--(F5) event at any segment before `right`;
 * the (F2) clause at `right` (so `right` is `ε`'s first failure, and it is
   (F2));
-* the separating context `prefixContext` (a path of `2^(right+2) − right`
+* the separating context `prefixContext right` (a path of `2^(right+2) − right`
   edges with fresh interior, glued at `head right` and at the entry foot): with
-  `piece J_right` it closes an accepted cycle, with the `J_left` reading
-  `retainedPiece J_right J_left` it closes none;
-* the two readings have different boundary-degree profiles on `∂J_right`
-  (`head right` loses its corridor edge), so the pair is a profile separation
-  and not a same-fibre defect of any declared coordinate. -/
-def ColdRepeatedStateResidualStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  ∃ (occurrence : ColdFirstFailureOccurrenceData data object)
+  `piece J_right` it closes an accepted cycle, with `retainedPiece J_right
+  J_left` it closes none, and the two readings have different boundary-degree
+  profiles on `∂J_right`;
+* the excision data of the pair: the glue vertices `head left` and
+  `head right` carry the same boundary-degree entry of the cut state, i.e. the
+  same G-degree capped at the signature bound `D`; the excised replacement of
+  `piece J_right` is `retainedPiece J_right J_left`, the reading above. -/
+def ColdRepeatedStateSpecAt (data : Parameters) (object : Graph.FiniteObject.{u})
+    (occurrence : ColdFirstFailureOccurrenceData data object)
     (epsilon : ColdEligibleHalfEdge data object)
-    (outside : Graph.ColdCorridor.IsOutsideComponent object
+    (left right : (coldOccurrenceCorridorAt data object occurrence epsilon).Segment) :
+    Prop :=
+  ∃ outside : Graph.ColdCorridor.IsOutsideComponent object
       (coldCorridorWindows data object)
-      (coldOccurrenceComponentAt data object occurrence epsilon))
-    (left right : (coldOccurrenceCorridorAt data object occurrence epsilon).Segment),
+      (coldOccurrenceComponentAt data object occurrence epsilon),
     left.1 < right.1 ∧
     (coldOccurrencePresentationAt data object occurrence epsilon).state
         (coldOccurrenceIndexAt data object occurrence epsilon left) =
@@ -141,7 +173,57 @@ def ColdRepeatedStateResidualStatement (data : Parameters)
         ((coldOccurrenceCorridorAt data object occurrence epsilon).prefixSupport
           right.1)
         ((coldOccurrenceCorridorAt data object occurrence epsilon).prefixSupport
-          right.1)).boundaryDegreeProfile
+          right.1)).boundaryDegreeProfile ∧
+    ((coldOccurrencePresentationAt data object occurrence epsilon).state
+        (coldOccurrenceIndexAt data object occurrence epsilon left)).boundaryDegrees =
+      ((coldOccurrencePresentationAt data object occurrence epsilon).state
+        (coldOccurrenceIndexAt data object occurrence epsilon right)).boundaryDegrees ∧
+    min (object.degree
+        ((coldOccurrenceCorridorAt data object occurrence epsilon).head left))
+        data.coldSignature.degreeBound =
+      min (object.degree
+        ((coldOccurrenceCorridorAt data object occurrence epsilon).head right))
+        data.coldSignature.degreeBound
+
+/-- The configuration of `[153]`'s residual at a witness
+(`ColdRepeatedStateSpecAt` at its pinned objects). -/
+def ColdRepeatedStateSpec (data : Parameters) (object : Graph.FiniteObject.{u})
+    (witness : ColdRepeatWitness data object) : Prop :=
+  ColdRepeatedStateSpecAt data object witness.occurrence witness.epsilon witness.left
+    witness.right
+
+/-- **G's canonical `[153]` residual witness**: `some` witness satisfying
+`ColdRepeatedStateSpec` (a canonical choice among them), or `none`. -/
+noncomputable def coldRepeatWitness? (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Option (ColdRepeatWitness data object) := by
+  classical
+  exact if exists_ : ∃ witness, ColdRepeatedStateSpec data object witness then
+    some (Classical.choose exists_) else none
+
+theorem coldRepeatWitness?_spec {data : Parameters} {object : Graph.FiniteObject.{u}}
+    {witness : ColdRepeatWitness data object}
+    (pinned : coldRepeatWitness? data object = some witness) :
+    ColdRepeatedStateSpec data object witness := by
+  classical
+  unfold coldRepeatWitness? at pinned
+  split at pinned
+  · cases pinned; exact Classical.choose_spec ‹_›
+  · cases pinned
+
+theorem coldRepeatWitness?_eq_some {data : Parameters} {object : Graph.FiniteObject.{u}}
+    (exists_ : ∃ witness, ColdRepeatedStateSpec data object witness) :
+    ∃ witness, coldRepeatWitness? data object = some witness := by
+  classical
+  unfold coldRepeatWitness?
+  rw [dif_pos exists_]
+  exact ⟨_, rfl⟩
+
+/-- **The residual of `[153]`: G's first equal-state pair with its excision
+data, constructed**, read at G's canonical witness `coldRepeatWitness?`. -/
+def ColdRepeatedStateResidualStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ witness, coldRepeatWitness? data object = some witness ∧
+    ColdRepeatedStateSpec data object witness
 
 /-! ## `[162]`: heavy entries before the terminal segment -/
 
@@ -168,26 +250,54 @@ def ColdHeavyEntryTerminalStatement (data : Parameters)
     (coldOccurrenceCorridorAt data object occurrence epsilon).TerminalCorridor
       data.coldSignature
 
-/-- **The residual of `[162]`: a long corridor of G through a heavy centre,
-constructed.**
+/-- The pinned objects of `[162]`'s residual: an occurrence of G's retained
+first-failure data, an eligible half-edge `ε` of G, a segment of G's retained
+corridor of `ε`, and a vertex of G. -/
+abbrev ColdHeavyEntryWitness (data : Parameters) (object : Graph.FiniteObject.{u}) :=
+  Σ' occurrence : ColdFirstFailureOccurrenceData data object,
+    Σ' epsilon : ColdEligibleHalfEdge data object,
+      (coldOccurrenceCorridorAt data object occurrence epsilon).Segment × object.Vertex
 
-For one eligible half-edge `ε` of G, on G's retained corridor `C_ε` with G's
-pinned cut states:
+/-- The occurrence of a `[162]` witness. -/
+abbrev ColdHeavyEntryWitness.occurrence {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (witness : ColdHeavyEntryWitness data object) :
+    ColdFirstFailureOccurrenceData data object :=
+  witness.1
 
-* the first failure is the segment `first`, an (F4) event: `head first` is a
-  vertex `z` of G with `d_G(z) > δ` (a heavy handoff centre of G), and no
-  earlier segment has any (F1)--(F5) event;
+/-- The half-edge `ε` of a `[162]` witness. -/
+abbrev ColdHeavyEntryWitness.epsilon {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (witness : ColdHeavyEntryWitness data object) :
+    ColdEligibleHalfEdge data object :=
+  witness.2.1
+
+/-- The (F4) first-failure segment of a `[162]` witness. -/
+abbrev ColdHeavyEntryWitness.first {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (witness : ColdHeavyEntryWitness data object) :
+    (coldOccurrenceCorridorAt data object witness.occurrence witness.epsilon).Segment :=
+  witness.2.2.1
+
+/-- The heavy centre of G of a `[162]` witness. -/
+abbrev ColdHeavyEntryWitness.centre {data : Parameters}
+    {object : Graph.FiniteObject.{u}} (witness : ColdHeavyEntryWitness data object) :
+    object.Vertex :=
+  witness.2.2.2
+
+/-- **The configuration of `[162]`'s residual at a witness.**  On G's retained
+corridor `C_ε` with G's pinned cut states:
+
+* the first failure is the segment `first`, an (F4) event: `head first` is the
+  vertex `centre` of G with `d_G(centre) > δ` (a heavy handoff centre of G), and
+  no earlier segment has any (F1)--(F5) event;
 * the pinned cut states of the segments up to `first` are pairwise distinct,
   so `first < Q_cold`;
 * `first` is strictly before the terminal segment, and the corridor is not
-  terminal: it reads more than `Q_cold` states (`Q_cold ≤ |C_ε|`). -/
-def ColdDenseHeavyEntryResidualStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  ∃ (occurrence : ColdFirstFailureOccurrenceData data object)
+  terminal: `Q_cold ≤ |C_ε|`. -/
+def ColdDenseHeavyEntrySpecAt (data : Parameters) (object : Graph.FiniteObject.{u})
+    (occurrence : ColdFirstFailureOccurrenceData data object)
     (epsilon : ColdEligibleHalfEdge data object)
     (first : (coldOccurrenceCorridorAt data object occurrence epsilon).Segment)
-    (centre : object.Vertex),
-    (coldOccurrenceCorridorAt data object occurrence epsilon).head first = centre ∧
+    (centre : object.Vertex) : Prop :=
+  (coldOccurrenceCorridorAt data object occurrence epsilon).head first = centre ∧
     data.threshold < object.degree centre ∧
     ColdFirstFailureHandoffAt object
       (coldOccurrenceCorridorAt data object occurrence epsilon)
@@ -212,6 +322,47 @@ def ColdDenseHeavyEntryResidualStatement (data : Parameters)
       (coldOccurrenceCorridorAt data object occurrence epsilon).inside.1.length ∧
     ¬ (coldOccurrenceCorridorAt data object occurrence epsilon).TerminalCorridor
       data.coldSignature
+
+/-- The configuration of `[162]`'s residual at a witness
+(`ColdDenseHeavyEntrySpecAt` at its pinned objects). -/
+def ColdDenseHeavyEntrySpec (data : Parameters) (object : Graph.FiniteObject.{u})
+    (witness : ColdHeavyEntryWitness data object) : Prop :=
+  ColdDenseHeavyEntrySpecAt data object witness.occurrence witness.epsilon witness.first
+    witness.centre
+
+/-- **G's canonical `[162]` residual witness**. -/
+noncomputable def coldHeavyEntryWitness? (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Option (ColdHeavyEntryWitness data object) := by
+  classical
+  exact if exists_ : ∃ witness, ColdDenseHeavyEntrySpec data object witness then
+    some (Classical.choose exists_) else none
+
+theorem coldHeavyEntryWitness?_spec {data : Parameters} {object : Graph.FiniteObject.{u}}
+    {witness : ColdHeavyEntryWitness data object}
+    (pinned : coldHeavyEntryWitness? data object = some witness) :
+    ColdDenseHeavyEntrySpec data object witness := by
+  classical
+  unfold coldHeavyEntryWitness? at pinned
+  split at pinned
+  · cases pinned; exact Classical.choose_spec ‹_›
+  · cases pinned
+
+theorem coldHeavyEntryWitness?_eq_some {data : Parameters}
+    {object : Graph.FiniteObject.{u}}
+    (exists_ : ∃ witness, ColdDenseHeavyEntrySpec data object witness) :
+    ∃ witness, coldHeavyEntryWitness? data object = some witness := by
+  classical
+  unfold coldHeavyEntryWitness?
+  rw [dif_pos exists_]
+  exact ⟨_, rfl⟩
+
+/-- **The residual of `[162]`: a non-terminal corridor of G whose first failure
+is a heavy centre, constructed**, read at G's canonical
+witness `coldHeavyEntryWitness?`. -/
+def ColdDenseHeavyEntryResidualStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ witness, coldHeavyEntryWitness? data object = some witness ∧
+    ColdDenseHeavyEntrySpec data object witness
 
 /-! ## `[54]`: the joint realization inequality -/
 

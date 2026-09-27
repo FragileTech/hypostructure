@@ -223,6 +223,24 @@ theorem coldFailureDefectRoutes_of_distinct (data : Parameters)
     (coldFailureDefect_excluded data object distinct occurrence epsilon first
       minimal defect).elim
 
+/-- **The pinned cut state reads G's degree at the head.**  On a presentation
+pinned to `coldCutStatePresentation` (the `Sigma` equation of `[30]`), the head
+entry of the boundary-degree profile of segment `s` is `min (d_G(head s)) D`. -/
+theorem pinned_headBoundaryDegree (data : Parameters) (object : Graph.FiniteObject.{u})
+    {component : Finset object.Vertex}
+    (corridor : Graph.ColdCorridor.Corridor object (coldCorridorWindows data object)
+      component)
+    (presentation : Graph.ColdCorridor.Presentation data.coldSignature object)
+    (index : corridor.Segment → presentation.Segment)
+    (pin : (⟨presentation, index⟩ : Σ p : Graph.ColdCorridor.Presentation
+        data.coldSignature object, corridor.Segment → p.Segment) =
+      ⟨coldCutStatePresentation data object corridor, fun segment => ULift.up segment⟩)
+    (segment : corridor.Segment) :
+    ((presentation.state (index segment)).boundaryDegrees 1).1 =
+      min (object.degree (corridor.head segment)) data.coldSignature.degreeBound := by
+  cases pin
+  rfl
+
 set_option maxHeartbeats 1600000 in
 /-- **The residual of `[153]`, constructed at G.**  If (★) fails at G, some
 retained corridor of G has two equal pinned states at segments up to a segment
@@ -230,8 +248,11 @@ with no earlier event.  Take the least `right` carrying an earlier equal state
 and such a `left`: `(left, right)` is G's first equal-state pair, no event
 precedes `right`, the (F2) clause holds at `right` through the path context
 (`coldFirstFailureDefectAt_iff`), the context closes an accepted cycle with
-`piece J_right` and none with the `J_left` reading, and the two readings are
-profile-separated (`ColdEqualStates.prefix_profile_ne`). -/
+`piece J_right` and none with the `J_left` reading, the two readings are
+profile-separated (`ColdEqualStates.prefix_profile_ne`), and the glue vertices
+`head left`, `head right` carry the same capped G-degree (through the `[30]`
+pin, `pinned_headBoundaryDegree`).  The residual is read at G's canonical
+witness `coldRepeatWitness?`. -/
 theorem coldRepeatedStateResidual_of_not_distinct (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (accept : ∀ k, 2 ≤ k → data.LengthOK (2 ^ k))
@@ -259,21 +280,47 @@ theorem coldRepeatedStateResidual_of_not_distinct (data : Parameters)
   have rightLeFirst : right.1 ≤ first.1 := le_trans (Fin.le_def.1 rightLe) le₀
   have outside :=
     (coldOccurrenceStateFacts data object occurrence epsilon).1
-  refine ⟨occurrence, epsilon, outside, left, right, lt, same, ?_, ?_, ?_, ?_, ?_, ?_⟩
-  · intro earlierLeft earlierRight earlierLt earlierBefore earlierSame
-    have member : earlierRight ∈ repeats :=
-      Finset.mem_filter.2 ⟨Finset.mem_univ _, earlierLeft, earlierLt, earlierSame⟩
-    have := repeats.min'_le earlierRight member
-    exact absurd (Fin.le_def.1 this) (by omega)
-  · intro earlier before
-    exact minimal earlier (by omega)
-  · exact (coldFirstFailureDefectAt_iff data object accept avoids outside corridor
-      presentation index right).2 ⟨left, lt, same⟩
-  · exact Graph.ColdEqualStates.prefixContext_piece_cycle data.LengthOK accept outside
-      corridor right (by omega)
-  · exact Graph.ColdEqualStates.prefixContext_retained_noCycle data.LengthOK avoids
-      outside corridor left right lt
-  · exact Graph.ColdEqualStates.prefix_profile_ne outside corridor left right lt
+  have noEvent : ∀ earlier : corridor.Segment, earlier.1 < right.1 →
+      ¬ ColdFirstFailureEvent data object corridor presentation index
+        (coldOccurrenceIncidence data object occurrence epsilon)
+        (ColdDeclaredHandoffSupport data object) earlier :=
+    fun earlier before => minimal earlier (by omega)
+  have spec : ColdRepeatedStateSpecAt data object occurrence epsilon left right := by
+    refine ⟨outside, lt, same, ?_, noEvent, ?_, ?_, ?_, ?_, ?_, ?_⟩
+    · intro earlierLeft earlierRight earlierLt earlierBefore earlierSame
+      have before : earlierRight.1 < right.1 := earlierBefore
+      have member : earlierRight ∈ repeats :=
+        Finset.mem_filter.2 ⟨Finset.mem_univ _, earlierLeft, earlierLt, earlierSame⟩
+      have := repeats.min'_le earlierRight member
+      exact absurd (Fin.le_def.1 this) (by omega)
+    · exact (coldFirstFailureDefectAt_iff data object accept avoids outside corridor
+        presentation index right).2 ⟨left, lt, same⟩
+    · exact Graph.ColdEqualStates.prefixContext_piece_cycle data.LengthOK accept outside
+        corridor right (by omega)
+    · exact Graph.ColdEqualStates.prefixContext_retained_noCycle data.LengthOK avoids
+        outside corridor left right lt
+    · exact Graph.ColdEqualStates.prefix_profile_ne outside corridor left right lt
+    · exact congrArg Graph.ColdCorridor.CutState.boundaryDegrees same
+    · have pin := ((coldOccurrenceStateFacts data object occurrence epsilon).2.2.1).2
+      have degrees := congrArg
+        (fun state : Graph.ColdCorridor.CutState data.coldSignature =>
+          (state.boundaryDegrees 1).1) same
+      exact (pinned_headBoundaryDegree data object _ _ _ pin left).symm.trans
+        (degrees.trans (pinned_headBoundaryDegree data object _ _ _ pin right))
+  obtain ⟨witness, pinned⟩ := coldRepeatWitness?_eq_some
+    ⟨⟨occurrence, epsilon, left, right⟩, spec⟩
+  exact ⟨witness, pinned, coldRepeatWitness?_spec pinned⟩
+
+/-- **The `[153]` residual refutes (★).**  Its witness carries an equal-state
+pair `left < right` with no event before `right`. -/
+theorem not_distinct_of_coldRepeatedStateResidual (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (residual : ColdRepeatedStateResidualStatement data object) :
+    ¬ ColdCutStatesDistinctStatement data object := by
+  intro distinct
+  obtain ⟨witness, _, outside, lt, same, _, noEvent, _⟩ := residual
+  exact distinct witness.occurrence witness.epsilon witness.right noEvent
+    witness.left witness.right lt le_rfl same
 
 /-- **`lem:cold-corridor-first-failure`, the routing** (tex 7234-7295): (F1)
 is a target cycle and (F3) a target-complete compression, both excluded by the
