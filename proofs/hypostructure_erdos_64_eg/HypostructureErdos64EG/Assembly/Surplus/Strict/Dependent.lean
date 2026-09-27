@@ -184,7 +184,11 @@ noncomputable def Assembly.Internal.strictSurplusDependent
                               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                               (presentation := erdosReceiverLoadProfile)
                               (data := spineData)).run windowHistory (by key_fresh)
-                          exact selectedBottleneckDischarge audited
+                          match selectedBottleneckDischarge audited with
+                          | .inl entered =>
+                              exact Or.inl (Or.inl (node144aWindowHandoffReturn entered))
+                          | .inr unresolved =>
+                              exact Or.inl (Or.inr (Or.inl (node144aWindowFailsReturn unresolved)))
                       | .right windowAbsent =>
                           match remainderOverloadClassDichotomy (data := spineData)
                               windowAbsent (by key_fresh) (by key_fresh) with
@@ -196,7 +200,11 @@ noncomputable def Assembly.Internal.strictSurplusDependent
                                   (presentation := erdosReceiverLoadProfile)
                                   (data := spineData)).run remainderHistory
                                     (by key_fresh)
-                              exact selectedBottleneckDischarge audited
+                              match selectedBottleneckDischarge audited with
+                              | .inl entered =>
+                                  exact Or.inl (Or.inr (Or.inr (Or.inl (node144aRemainderHandoffReturn entered))))
+                              | .inr unresolved =>
+                                  exact Or.inl (Or.inr (Or.inr (Or.inr (Or.inl (node144aRemainderFailsReturn unresolved)))))
                           | .right remainderAbsent =>
                               -- EG-NODE [143] primitive blocker-support geometric audit: homogeneous matching/star
                               let primitive :=
@@ -210,6 +218,10 @@ noncomputable def Assembly.Internal.strictSurplusDependent
                                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                                   (presentation := erdosReceiverLoadProfile)
                                   (data := spineData)).run primitive (by key_fresh)
-                              exact selectedBottleneckDischarge audited
+                              match selectedBottleneckDischarge audited with
+                              | .inl entered =>
+                                  exact Or.inl (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl (node144aPrimitiveHandoffReturn entered))))))
+                              | .inr unresolved =>
+                                  exact Or.inl (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (node144aPrimitiveFailsReturn unresolved))))))
 
 end HypostructureErdos64EG

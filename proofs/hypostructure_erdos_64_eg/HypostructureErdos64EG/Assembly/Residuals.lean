@@ -194,9 +194,10 @@ theorem nearCubicTargetDefectReturn
 
 /-- **Node `[144a]`** (thm:main (ii), tex 347-353): the same-token Type B
 handoff of [144] on the strict-surplus survivor, or (the paper error at
-[144]) the unresolved same-label pattern pair.  The explicit conjunction of
-every fact on its maximal ledger (44 common facts, then the arms of the
-residual's own decision: handoff 2; fails 3). -/
+[144]) the unresolved same-label pattern pair.  The generic residual: the
+explicit conjunction of the 44 facts common to every path.  Its six distinct
+fact sets (the class arm of [139]/[141] times the arm of [144]'s handoff
+decision) are its subtypes in `Assembly/Residuals/Node144aOutcome.lean`. -/
 abbrev Node144aOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .selection selected.object ∧
@@ -285,21 +286,11 @@ abbrev Node144aOutcome (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .homogeneousCapsFail selected.object ∧
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .bottleneckRouting selected.object ∧
-  ((Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .typeBHandoff selected.object ∧
-    Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .typeBFanEntry selected.object) ∨
-    (Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .typeBHandoffFails selected.object ∧
-    Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .sameTokenPatternUnresolved selected.object ∧
-    Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .sameTokenReadingsNotReplacement selected.object))
+      erdosReceiverLoadProfile spineData .bottleneckRouting selected.object
 
-/-- The return of `Node144aOutcome` (arm `handoff`): one `get` per fact of
-its maximal ledger. -/
-theorem node144aHandoffReturn
+/-- The return of the generic `Node144aOutcome`: one `get` per common fact.
+The subtypes' return theorems extend it with one `get` per extra fact. -/
+theorem node144aReturn
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
@@ -345,9 +336,7 @@ theorem node144aHandoffReturn
     [FactKeys.Has (K .highCentreNormalForm) known]
     [FactKeys.Has (K .homogeneousBottleneckPattern) known]
     [FactKeys.Has (K .homogeneousCapsFail) known]
-    [FactKeys.Has (K .bottleneckRouting) known]
-    [FactKeys.Has (K .typeBHandoff) known]
-    [FactKeys.Has (K .typeBFanEntry) known] :
+    [FactKeys.Has (K .bottleneckRouting) known] :
     Node144aOutcome selected :=
   ⟨(history.get (K .selection)).down,
     (history.get (K .cubicBaseline)).down,
@@ -392,110 +381,7 @@ theorem node144aHandoffReturn
     (history.get (K .highCentreNormalForm)).down,
     (history.get (K .homogeneousBottleneckPattern)).down,
     (history.get (K .homogeneousCapsFail)).down,
-    (history.get (K .bottleneckRouting)).down,
-    Or.inl ⟨(history.get (K .typeBHandoff)).down,
-    (history.get (K .typeBFanEntry)).down⟩⟩
-
-/-- The return of `Node144aOutcome` (arm `fails`): one `get` per fact of
-its maximal ledger. -/
-theorem node144aFailsReturn
-    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
-    (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .selection) known]
-    [FactKeys.Has (K .cubicBaseline) known]
-    [FactKeys.Has (K .returnAvoidance) known]
-    [FactKeys.Has (K .noProperBaseline) known]
-    [FactKeys.Has (K .slackIndependent) known]
-    [FactKeys.Has (K .tightEndpoint) known]
-    [FactKeys.Has (K .cycleRankConstraint) known]
-    [FactKeys.Has (K .degreeProfileFibres) known]
-    [FactKeys.Has (K .targetCompleteContextUniversality) known]
-    [FactKeys.Has (K .replacementExclusion) known]
-    [FactKeys.Has (K .uncompressible) known]
-    [FactKeys.Has (K .windowPresent) known]
-    [FactKeys.Has (K .maximalPacking) known]
-    [FactKeys.Has (K .localAlgebra) known]
-    [FactKeys.Has (K .surplusAbove) known]
-    [FactKeys.Has (K .sparseSurplusSurvivor) known]
-    [FactKeys.Has (K .openPortSuppression) known]
-    [FactKeys.Has (K .openPortSuppressionSafe) known]
-    [FactKeys.Has (K .singleOpenPortSuppressionWitness) known]
-    [FactKeys.Has (K .suppressedFamilyCriticalCycle) known]
-    [FactKeys.Has (K .sparseSlackSurplus) known]
-    [FactKeys.Has (K .activeSurplusFamily) known]
-    [FactKeys.Has (K .sparsePortActivation) known]
-    [FactKeys.Has (K .activeSurplusDemands) known]
-    [FactKeys.Has (K .baselineSpineDemand) known]
-    [FactKeys.Has (K .dependentPairFamily) known]
-    [FactKeys.Has (K .pairDegreeProfileFibres) known]
-    [FactKeys.Has (K .pairNoProfileObstruction) known]
-    [FactKeys.Has (K .pairNoResponseObstruction) known]
-    [FactKeys.Has (K .blockedPairNoExit) known]
-    [FactKeys.Has (K .canonicalBlockerRoute) known]
-    [FactKeys.Has (K .canonicalPairLedger) known]
-    [FactKeys.Has (K .sparseUpperEnvelope) known]
-    [FactKeys.Has (K .capacityTokenLedger) known]
-    [FactKeys.Has (K .blockedPairEntropySetup) known]
-    [FactKeys.Has (K .blockedPairEntropySandwich) known]
-    [FactKeys.Has (K .roleFibrePartition) known]
-    [FactKeys.Has (K .fibrePressure) known]
-    [FactKeys.Has (K .sparsePressureOverload) known]
-    [FactKeys.Has (K .bridgeless) known]
-    [FactKeys.Has (K .highCentreNormalForm) known]
-    [FactKeys.Has (K .homogeneousBottleneckPattern) known]
-    [FactKeys.Has (K .homogeneousCapsFail) known]
-    [FactKeys.Has (K .bottleneckRouting) known]
-    [FactKeys.Has (K .typeBHandoffFails) known]
-    [FactKeys.Has (K .sameTokenPatternUnresolved) known]
-    [FactKeys.Has (K .sameTokenReadingsNotReplacement) known] :
-    Node144aOutcome selected :=
-  ⟨(history.get (K .selection)).down,
-    (history.get (K .cubicBaseline)).down,
-    (history.get (K .returnAvoidance)).down,
-    (history.get (K .noProperBaseline)).down,
-    (history.get (K .slackIndependent)).down,
-    (history.get (K .tightEndpoint)).down,
-    (history.get (K .cycleRankConstraint)).down,
-    (history.get (K .degreeProfileFibres)).down,
-    (history.get (K .targetCompleteContextUniversality)).down,
-    (history.get (K .replacementExclusion)).down,
-    (history.get (K .uncompressible)).down,
-    (history.get (K .windowPresent)).down,
-    (history.get (K .maximalPacking)).down,
-    (history.get (K .localAlgebra)).down,
-    (history.get (K .surplusAbove)).down,
-    (history.get (K .sparseSurplusSurvivor)).down,
-    (history.get (K .openPortSuppression)).down,
-    (history.get (K .openPortSuppressionSafe)).down,
-    (history.get (K .singleOpenPortSuppressionWitness)).down,
-    (history.get (K .suppressedFamilyCriticalCycle)).down,
-    (history.get (K .sparseSlackSurplus)).down,
-    (history.get (K .activeSurplusFamily)).down,
-    (history.get (K .sparsePortActivation)).down,
-    (history.get (K .activeSurplusDemands)).down,
-    (history.get (K .baselineSpineDemand)).down,
-    (history.get (K .dependentPairFamily)).down,
-    (history.get (K .pairDegreeProfileFibres)).down,
-    (history.get (K .pairNoProfileObstruction)).down,
-    (history.get (K .pairNoResponseObstruction)).down,
-    (history.get (K .blockedPairNoExit)).down,
-    (history.get (K .canonicalBlockerRoute)).down,
-    (history.get (K .canonicalPairLedger)).down,
-    (history.get (K .sparseUpperEnvelope)).down,
-    (history.get (K .capacityTokenLedger)).down,
-    (history.get (K .blockedPairEntropySetup)).down,
-    (history.get (K .blockedPairEntropySandwich)).down,
-    (history.get (K .roleFibrePartition)).down,
-    (history.get (K .fibrePressure)).down,
-    (history.get (K .sparsePressureOverload)).down,
-    (history.get (K .bridgeless)).down,
-    (history.get (K .highCentreNormalForm)).down,
-    (history.get (K .homogeneousBottleneckPattern)).down,
-    (history.get (K .homogeneousCapsFail)).down,
-    (history.get (K .bottleneckRouting)).down,
-    Or.inr ⟨(history.get (K .typeBHandoffFails)).down,
-    (history.get (K .sameTokenPatternUnresolved)).down,
-    (history.get (K .sameTokenReadingsNotReplacement)).down⟩⟩
+    (history.get (K .bottleneckRouting)).down⟩
 
 /-- **Node `[172a]`** (thm:main (iii), tex 354-358): the first failed
 conditional graph-count inequality of lem:scale-additivity on the dense-
