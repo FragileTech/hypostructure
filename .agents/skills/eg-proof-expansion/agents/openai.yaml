@@ -1,4 +1,4 @@
 interface:
   display_name: "EG Proof Expansion"
   short_description: "Implement textbook benchmark nodes through canonical Lean APIs"
-  default_prompt: "Use $eg-proof-expansion to implement the requested EG StrategyDag textbook-reasoning benchmark node exactly as stated in the paper using only the canonical ExactLedger, sealed Strategy/CT API, and programming patterns established by the Type A branch."
+  default_prompt: "Use $eg-proof-expansion to implement the requested EG proof textbook-reasoning benchmark node exactly as stated in the paper using only the canonical ExactLedger, sealed Strategy/CT API, and programming patterns established by the Type A branch."

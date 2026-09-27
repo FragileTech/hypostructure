@@ -104,8 +104,6 @@ FORBIDDEN_DAG_DECLARATION = re.compile(
     r"(?P<name>[A-Za-z_][A-Za-z0-9_']*)"
 )
 
-ALLOWED_DAG_DECLARATIONS = {"strategyDag"}
-
 # The closed presentation surface of `Problem.lean`.  Each entry is either the
 # problem/target registration itself or a registered datum that genuinely
 # cannot be derived from the incoming residual: a presentation parameter, a
@@ -131,8 +129,6 @@ ALLOWED_PROBLEM_DECLARATIONS = {
 PROOF_BOUNDARY_FILES = (
     "proofs/hypostructure_erdos_64_eg/"
     "HypostructureErdos64EG/Problem.lean",
-    "proofs/hypostructure_erdos_64_eg/"
-    "HypostructureErdos64EG/StrategyDag.lean",
     "proofs/hypostructure_erdos_64_eg/"
     "HypostructureErdos64EG/Assembly.lean",
 )
@@ -250,7 +246,7 @@ def validate_root(root: Path) -> Path:
     required = (
         root / "hypostructure/Hypostructure/Canonical/WebExport.lean",
         root / CATALOG_REL,
-        root / "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/StrategyDag.lean",
+        root / "proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean",
         root / "to_formalize/erdos_64_proof.tex",
     )
     missing = [str(path) for path in required if not path.is_file()]
@@ -366,16 +362,7 @@ def check_proof_boundary(root: Path) -> None:
                 f"{path.relative_to(root)}:{line}: unfinished proof"
             )
 
-        if path.name == "StrategyDag.lean":
-            for match in FORBIDDEN_DAG_DECLARATION.finditer(source):
-                if match.group("name") in ALLOWED_DAG_DECLARATIONS:
-                    continue
-                line = source.count("\n", 0, match.start()) + 1
-                violations.append(
-                    f"{path.relative_to(root)}:{line}: "
-                    "application-local helper declaration"
-                )
-        elif path.name == "Problem.lean":
+        if path.name == "Problem.lean":
             for match in FORBIDDEN_DAG_DECLARATION.finditer(source):
                 if match.group("name") in ALLOWED_PROBLEM_DECLARATIONS:
                     continue

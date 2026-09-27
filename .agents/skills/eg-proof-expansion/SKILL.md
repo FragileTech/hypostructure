@@ -1,6 +1,6 @@
 ---
 name: eg-proof-expansion
-description: Implement or review controlled textbook-mathematics benchmark nodes in the Erdős–Gyárfás StrategyDag Lean proof. Use whenever Codex is asked to fix, implement, expand, route, or make compliant a node in proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/StrategyDag.lean or its supporting declarations, while matching the original paper exactly, using only the canonical ExactLedger and sealed Strategy/CT APIs, and removing proof-specific plumbing.
+description: Implement or review controlled textbook-mathematics benchmark nodes in the Erdős–Gyárfás Lean proof. Use whenever Codex is asked to fix, implement, expand, route, or make compliant a node in the EG assembly (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/, rooted at Assembly/Final.lean) or its supporting declarations, while matching the original paper exactly, using only the canonical ExactLedger and sealed Strategy/CT APIs, and removing proof-specific plumbing.
 ---
 
 # EG proof expansion
@@ -9,7 +9,7 @@ This workflow benchmarks structural mathematical reasoning: identifying relevant
 
 Identify the retained objects, match the hypotheses of the relevant textbook result, execute the deduction, and check the requested output. Give routine steps concise, sufficient justification. Reuse accepted prerequisites at their stated types and domains. A review objection identifies a concrete missing hypothesis, invalid inference, domain mismatch, or unmet task contract and its local repair. Preserve the assigned objectives, stage boundaries, mathematical statements, and required checks.
 
-Implement one requested EG StrategyDag row as an exact instance of the paper's
+Implement one requested EG proof row as an exact instance of the paper's
 strategy and of Hypostructure's generic execution model.  Repair the requested
 row completely even when the correction exposes a downstream break.
 
@@ -150,7 +150,8 @@ the label implementation. Do not add an API to make a proposed design legal.
 The catalog is a closed allowlist, not a list of suggestions.  Declarations
 outside it are unavailable for proof plumbing.  Run the
 catalog check before inspecting or editing a row; it also rejects noncanonical
-plumbing already written directly in `StrategyDag.lean`.
+plumbing already written directly in the EG proof tree, including the
+`Assembly/` modules.
 
 ## Audit the requested row before editing
 
@@ -344,15 +345,21 @@ only: never delete them, and never import them.
 
 ## Enforce the proof-specific boundary
 
-Permit problem-specific code in exactly two files:
+Permit problem-specific code in exactly two places:
 
 - `HypostructureErdos64EG/Problem.lean` may define the problem, target, and a
   constant that genuinely cannot be derived from the incoming residual.  Add
   no theorem, lemma, structure, carrier, result, strategy, executor, or router
   there.  Put an unavoidable constant in the problem presentation and project
   it through the residual; never read its global spelling at a node.
-- `HypostructureErdos64EG/StrategyDag.lean` may construct only the paper's DAG
-  topology with framework Strategy combinators.
+- `HypostructureErdos64EG/Assembly.lean` and the `HypostructureErdos64EG/Assembly/`
+  modules may only compose the paper's branch topology from framework rows,
+  Strategy combinators, and canonical `ExactLedger` runs.  The root reduction
+  `officialCounterexample_reaches_selectedLedgerBoundary` is in
+  `Assembly/Final.lean`; `Basic` holds the problem/input aliases, `Boundary`
+  modules hold shared result types, and the branch directories (`Surplus/`,
+  `NearCubic/`, `RouteEight/`, `NetCharge/`, `Absorbed/`, `TypeA/`, `TypeB/`)
+  hold the per-branch compositions.
 
 Add no other proof-specific declaration. Within the selected label, replace
 only the illegal carrier, callback, transport helper, routing helper, or
@@ -468,13 +475,10 @@ Retrieve mathematical facts only with `FactInputs.get` inside an executor or
 `ExactLedger.get` at a framework-owned closure boundary.
 
 The catalog checker scans the entire EG proof tree for every noncanonical
-history, query, carrier, wrapper, routing, and construction path, and applies
-the stricter declaration boundary to the two application-owned files.
-`StrategyDag.lean` may contain only the sealed
-topology syntax/macro, the final `strategyDag` endpoint, and calls from the
-allowlist: it may not declare any helper
-definition, theorem, instance, structure, class, inductive, or opaque
-constant.  `Problem.lean` is checked against its closed presentation-declaration
+history, query, carrier, wrapper, routing, and construction path, rejects
+unfinished proofs in `Problem.lean`, `Assembly.lean` and every `Assembly/`
+module.  The `Assembly/` modules may contain only branch compositions over
+framework rows and calls from the allowlist.  `Problem.lean` is checked against its closed presentation-declaration
 allowlist and remains limited to the problem and target presentation described
 above.  Opening a framework construction namespace is rejected as an
 unqualified-call bypass.  Direct entry projections, key-index inspection,
@@ -487,7 +491,8 @@ non-`ExactLedger` type ending in `Ledger` are rejected.
 
 For implementation shape, the ported Type A receiver-and-exit chain is the
 only precedent.  Copy its patterns from `Graph/Strategy/SpineRows.lean`,
-`Graph/Strategy/TypeAExitRun.lean`, and `Graph/Strategy/SpineAssembly.lean`.
+`Graph/Strategy/TypeAExitRun.lean`, and the Type A compositions in
+`HypostructureErdos64EG/Assembly/TypeA/`.
 The mathematical content still comes only from the manuscript; Type A is an
 authority for program structure, not for theorem statements.
 
