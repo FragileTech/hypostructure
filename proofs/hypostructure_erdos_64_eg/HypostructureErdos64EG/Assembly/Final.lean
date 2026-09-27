@@ -59,7 +59,11 @@ the explicit remaining disjunction at `[187]`, and the three residuals returned
 by the structural exhaustion at `[153]`, `[162]` and `[54]`. -/
 abbrev SelectedLedgerBoundaryResult (selected : EGInput.{u}) :=
   Node20aOutcome selected ∨
-  Node144aOutcome selected ∨
+  (Node144aOutcome_windowHandoff selected ∨ Node144aOutcome_windowFails selected ∨
+    Node144aOutcome_remainderHandoff selected ∨
+    Node144aOutcome_remainderFails selected ∨
+    Node144aOutcome_primitiveHandoff selected ∨
+    Node144aOutcome_primitiveFails selected) ∨
   BlockedBarrierOverlapOutcome selected ∨
   PairConditionalFactorizationOutcome selected ∨
   Route8JointBalanceOutcome selected ∨

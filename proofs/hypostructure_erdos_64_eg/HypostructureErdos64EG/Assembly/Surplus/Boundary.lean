@@ -1,4 +1,5 @@
 import HypostructureErdos64EG.Assembly.Residuals
+import HypostructureErdos64EG.Assembly.Residuals.Node144aOutcome
 
 /-!
 # Assembly: Surplus / Boundary
@@ -19,7 +20,11 @@ universe u w
 reach, as the literal disjunction the root boundary lists: the node-`[144a]`
 handoff, a `[179]`/`[180]` Type B entry, or the open node-`[182]` residual. -/
 abbrev StrictSurplusBoundaryResult (selected : EGInput.{u}) : Prop :=
-  Node144aOutcome selected ∨ PairTypeBOutcome selected ∨
+  (Node144aOutcome_windowHandoff selected ∨ Node144aOutcome_windowFails selected ∨
+    Node144aOutcome_remainderHandoff selected ∨
+    Node144aOutcome_remainderFails selected ∨
+    Node144aOutcome_primitiveHandoff selected ∨
+    Node144aOutcome_primitiveFails selected) ∨ PairTypeBOutcome selected ∨
     PairConditionalFactorizationOutcome selected
 
 end HypostructureErdos64EG

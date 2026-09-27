@@ -1442,7 +1442,7 @@ free side.
 |---|---|---:|---:|
 | `Node20aOutcome` | [20a] | 1 | 18 |
 | `NearCubicTargetDefectOutcome` | [187] (near-cubic target defect) | 1 | 18 |
-| `Node144aOutcome` | [144a] | 6 | 49 |
+| `Node144aOutcome` (6 subtypes) | [144a] | 6 | 44 common; subtypes 47, 48, 48, 49, 49, 50 |
 | `BlockedBarrierOverlapOutcome` | [172a] | 2 | 71 |
 | `PairConditionalFactorizationOutcome` | [182] | 6 | 33 |
 | `Route8JointBalanceOutcome` | [186] | 2080 | 79 |
@@ -1514,8 +1514,8 @@ free side.
 
 - **Configuration at G.** The same-token Type B handoff of [144] on the strict-surplus survivor, or (the paper error at [144]) the unresolved same-label pattern pair.
 - **The paper step it carries.** `lem:same-token-bottleneck-routing` (tex 5585-5620) routes the two equal-label pattern edges of G's canonical routing to a same-token Type B handoff; where no handoff is produced (`K .typeBHandoffFails`), the unresolved same-label pattern pair (`K .sameTokenPatternUnresolved`: readings profile-separated, neither a sparse exit nor target-complete) and the explicit replacement candidates of tex 5594 (`K .sameTokenReadingsNotReplacement`) are carried instead.
-- **Lean.** `Node144aOutcome` (`Assembly/Residuals.lean`); return theorems `node144aHandoffReturn`, `node144aFailsReturn`; reached by 6 paths (distinct ledger histories from the root).
-- **Facts carried (49).** 44 on every path, then the arms of the residual's own decision.
+- **Lean.** Generic residual `Node144aOutcome` (`Assembly/Residuals.lean`), the 44 facts common to every path, return theorem `node144aReturn`; reached by 6 paths (distinct ledger histories from the root), with 6 distinct fact sets, each a subtype `Node144aOutcome_<label>` (`Assembly/Residuals/Node144aOutcome.lean`) of the generic residual (`.toGeneric`), returned by `node144a<Label>Return`. The six subtypes replace the generic disjunct of `SelectedLedgerBoundaryResult` and `StrictSurplusBoundaryResult`.
+- **Generic residual: facts on every path (44).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
   3. `K .returnAvoidance`: Nodes `[5]`--`[7]`: the return-length set is disjoint from the shifted accepted set at every oriented edge.
@@ -1560,17 +1560,40 @@ free side.
   42. `K .homogeneousBottleneckPattern`: Nodes `[140]`, `[142]`, `[143]`, the geometric audit of the selected overload: its token supports a role-homogeneous same-token `L_geom`-matching or `L_geom`-star, with every declared same-root connector configuration.
   43. `K .homogeneousCapsFail`: Node `[144]`, the other arm: the exact complement of the fixed caps.
   44. `K .bottleneckRouting`: Node `[144]`, `lem:same-token-bottleneck-routing` itself: the concrete homogeneous pattern in the current object's canonical capacity presentation yields a sparse-surplus exit or the common Type B fan-ledger entry.
-  - *Arm `handoff`* (one disjunct):
-    45. `K .typeBHandoff`: Node `[144]`, the survivor specialization of the preceding fact: the sparse-exit arm is impossible, so the same current object is entered directly in the Type B fan ledger.
-    46. `K .typeBFanEntry`: Nodes `[65]`/`[66]`: the common Type B fan support entry (`def:typeB-assigned-ledger`): a canonical core with its assigned centres — the ordinary support's own high centres at `[65]`, or the decorations of the handoff envelope at the dashed input `[66]` — nonempty and all high.
-  - *Arm `fails`* (one disjunct):
-    47. `K .typeBHandoffFails`: Node `[144]`, the exact complement of the same-token handoff.
-    48. `K .sameTokenPatternUnresolved`: Node `[144a]`, the residual of the paper error at `[144]`: the unresolved same-label pattern pair.
-    49. `K .sameTokenReadingsNotReplacement`: Node `[144a]`: no reading of G's piece at the pattern support is a replacement representative.
-- **On some paths only, not carried (5).** Gated by an arm of:
-  - [141] token in T_R: `remainderClassAbsent`, `remainderClassOverload`.
-  - [139] token in T_W: `windowClassAbsent`, `windowClassOverload`.
-  - [141] token in T_R; [139] token in T_W: `primitiveClassOverload`.
+- **Subtypes.** Label = class arm of `[139]`/`[141]` times arm of `[144]`'s handoff decision.
+  - *`Node144aOutcome_windowHandoff`* ([139] yes (token in 𝔗_W, audit [140]); [144] handoff): 47 facts, the 44 common facts and:
+    - `K .windowClassOverload`: Node `[139]`, yes arm: the overloading token of node `[137]` lies in `𝔗_W`, so the branch enters the window-incidence audit `[140]`.
+    - `K .typeBHandoff`: Node `[144]`, the survivor specialization of the preceding fact: the sparse-exit arm is impossible, so the same current object is entered directly in the Type B fan ledger.
+    - `K .typeBFanEntry`: Nodes `[65]`/`[66]`: the common Type B fan support entry (`def:typeB-assigned-ledger`): a canonical core with its assigned centres — the ordinary support's own high centres at `[65]`, or the decorations of the handoff envelope at the dashed input `[66]` — nonempty and all high.
+  - *`Node144aOutcome_windowFails`* ([139] yes (token in 𝔗_W, audit [140]); [144] handoff fails): 48 facts, the 44 common facts and:
+    - `K .windowClassOverload`: Node `[139]`, yes arm: the overloading token of node `[137]` lies in `𝔗_W`, so the branch enters the window-incidence audit `[140]`.
+    - `K .typeBHandoffFails`: Node `[144]`, the exact complement of the same-token handoff.
+    - `K .sameTokenPatternUnresolved`: Node `[144a]`, the residual of the paper error at `[144]`: the unresolved same-label pattern pair.
+    - `K .sameTokenReadingsNotReplacement`: Node `[144a]`: no reading of G's piece at the pattern support is a replacement representative.
+  - *`Node144aOutcome_remainderHandoff`* ([139] no, [141] yes (token in 𝔗_R, audit [142]); [144] handoff): 48 facts, the 44 common facts and:
+    - `K .windowClassAbsent`: Node `[139]`, no arm: the selected overloading token does not lie in `𝔗_W`, so that same witness falls through to node `[141]`.
+    - `K .remainderClassOverload`: Node `[141]`, yes arm: the overloading token lies in `𝔗_R`, so the branch enters the remainder-surplus audit `[142]`.
+    - `K .typeBHandoff`: Node `[144]`, the survivor specialization of the preceding fact: the sparse-exit arm is impossible, so the same current object is entered directly in the Type B fan ledger.
+    - `K .typeBFanEntry`: Nodes `[65]`/`[66]`: the common Type B fan support entry (`def:typeB-assigned-ledger`): a canonical core with its assigned centres — the ordinary support's own high centres at `[65]`, or the decorations of the handoff envelope at the dashed input `[66]` — nonempty and all high.
+  - *`Node144aOutcome_remainderFails`* ([139] no, [141] yes (token in 𝔗_R, audit [142]); [144] handoff fails): 49 facts, the 44 common facts and:
+    - `K .windowClassAbsent`: Node `[139]`, no arm: the selected overloading token does not lie in `𝔗_W`, so that same witness falls through to node `[141]`.
+    - `K .remainderClassOverload`: Node `[141]`, yes arm: the overloading token lies in `𝔗_R`, so the branch enters the remainder-surplus audit `[142]`.
+    - `K .typeBHandoffFails`: Node `[144]`, the exact complement of the same-token handoff.
+    - `K .sameTokenPatternUnresolved`: Node `[144a]`, the residual of the paper error at `[144]`: the unresolved same-label pattern pair.
+    - `K .sameTokenReadingsNotReplacement`: Node `[144a]`: no reading of G's piece at the pattern support is a replacement representative.
+  - *`Node144aOutcome_primitiveHandoff`* ([139] no, [141] no (primitive token, audit [143]); [144] handoff): 49 facts, the 44 common facts and:
+    - `K .windowClassAbsent`: Node `[139]`, no arm: the selected overloading token does not lie in `𝔗_W`, so that same witness falls through to node `[141]`.
+    - `K .remainderClassAbsent`: Node `[141]`, no arm: the selected overloading token lies in `𝔗_prim`, so that same witness enters `[143]`.
+    - `K .primitiveClassOverload`: Node `[143]` entry: the overloading token is primitive.
+    - `K .typeBHandoff`: Node `[144]`, the survivor specialization of the preceding fact: the sparse-exit arm is impossible, so the same current object is entered directly in the Type B fan ledger.
+    - `K .typeBFanEntry`: Nodes `[65]`/`[66]`: the common Type B fan support entry (`def:typeB-assigned-ledger`): a canonical core with its assigned centres — the ordinary support's own high centres at `[65]`, or the decorations of the handoff envelope at the dashed input `[66]` — nonempty and all high.
+  - *`Node144aOutcome_primitiveFails`* ([139] no, [141] no (primitive token, audit [143]); [144] handoff fails): 50 facts, the 44 common facts and:
+    - `K .windowClassAbsent`: Node `[139]`, no arm: the selected overloading token does not lie in `𝔗_W`, so that same witness falls through to node `[141]`.
+    - `K .remainderClassAbsent`: Node `[141]`, no arm: the selected overloading token lies in `𝔗_prim`, so that same witness enters `[143]`.
+    - `K .primitiveClassOverload`: Node `[143]` entry: the overloading token is primitive.
+    - `K .typeBHandoffFails`: Node `[144]`, the exact complement of the same-token handoff.
+    - `K .sameTokenPatternUnresolved`: Node `[144a]`, the residual of the paper error at `[144]`: the unresolved same-label pattern pair.
+    - `K .sameTokenReadingsNotReplacement`: Node `[144a]`: no reading of G's piece at the pattern support is a replacement representative.
 
 <a id="residual-172a"></a>
 

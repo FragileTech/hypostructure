@@ -256,7 +256,9 @@ decorated same-token Type B handoff and node `[65]` appends the common Type B
 entry, reaching `[144a]`.  The caps arm is dead at G: it is closed at the node
 with `closeIncompatible` against the audited pattern
 `K .homogeneousBottleneckPattern` on the same ledger, which refutes the caps at
-G's canonical certified ledger. -/
+G's canonical certified ledger.  The two `[144a]` ledgers (handoff; handoff
+fails) are handed back to the caller, whose class arm of `[139]`/`[141]` fixes
+which subtype of `Node144aOutcome` each one returns. -/
 -- EG-NODE [144] same-token bottleneck: Type B handoff or capped route?
 -- EG-NODE [138] no coupled overload: explicit quadratic bound on \(\sigma\); near-cubic spine
 noncomputable def selectedBottleneckDischarge
@@ -313,7 +315,13 @@ noncomputable def selectedBottleneckDischarge
     [FactKeys.Has (K .tightEndpoint) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .windowPresent) known] :
-    StrictSurplusBoundaryResult selected := by
+    ExactLedger EGInput.{u} selected
+        (K .typeBFanEntry :: K .typeBHandoff :: K .bottleneckRouting ::
+          K .homogeneousCapsFail :: known) ⊕
+      ExactLedger EGInput.{u} selected
+        (K .sameTokenReadingsNotReplacement :: K .sameTokenPatternUnresolved ::
+          K .typeBHandoffFails :: K .bottleneckRouting ::
+          K .homogeneousCapsFail :: known) := by
   match homogeneousBottleneckDichotomy (data := spineData) history
       (by key_fresh) (by key_fresh) with
   | .left patternHistory =>
@@ -330,7 +338,7 @@ noncomputable def selectedBottleneckDischarge
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
               (data := spineData)).run handoffHistory (by key_fresh)
-          exact Or.inl (node144aHandoffReturn entered)
+          exact .inl entered
       | .right failsHistory =>
           let unresolvedOnly :=
             (sameTokenPatternUnresolvedRow (BranchState := BranchState)
@@ -344,7 +352,7 @@ noncomputable def selectedBottleneckDischarge
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
               (data := spineData)).run unresolvedOnly (by key_fresh)
-          exact Or.inl (node144aFailsReturn unresolved)
+          exact .inr unresolved
   | .right capsHistory =>
       -- The caps arm, closed at G: the audited pattern at G's overloading
       -- token refutes the caps at the same ledger.
