@@ -1,5 +1,6 @@
 import HypostructureErdos64EG.Assembly.Residuals
 import HypostructureErdos64EG.Assembly.Residuals.PairTypeBOutcome
+import HypostructureErdos64EG.Assembly.Residuals.PairConditionalFactorizationOutcome
 
 /-!
 # Assembly: Surplus / Boundary

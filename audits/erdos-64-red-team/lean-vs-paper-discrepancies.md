@@ -1659,8 +1659,8 @@ free side.
 ### Node [182] (thm:main (iv), tex 359-363)
 
 - **Configuration at G.** The first failed coverage implication of [178], [179] or [180] on the strict-surplus pair-code chain.
-- **Lean.** `PairConditionalFactorizationOutcome` (`Assembly/Residuals.lean`); return theorem `pairConditionalFactorizationReturn`; reached by 6 paths (distinct ledger histories from the root).
-- **Facts carried (33).**
+- **Lean.** `PairConditionalFactorizationOutcome` (`Assembly/Residuals.lean`); return theorem `pairConditionalFactorizationReturn`; reached by 6 paths (distinct ledger histories from the root) with 6 distinct fact sets, one subtype each in `Assembly/Residuals/PairConditionalFactorizationOutcome.lean`.
+- **Generic residual: facts common to all six paths (33).**
   1. `K .selection`: Nodes `[1]`--`[4]`: the selected object avoids the target and every strictly smaller baseline object does not.
   2. `K .cubicBaseline`: The presentation laws of G's registered presentation, published once at the entry (`PresentationLawsStatement`): the cubic baseline identities, the Type B presentation facts (with the dyadic target law), the sparse-surplus presentation identities, and the spine laws at G.
   3. `K .returnAvoidance`: Nodes `[5]`--`[7]`: the return-length set is disjoint from the shifted accepted set at every oriented edge.
@@ -1694,21 +1694,80 @@ free side.
   31. `K .skeletonDominates`: `lem:skeleton-dominates` at the current residual's exact order and edge count: the fixed-edge labelled skeleton class has exactly the registered skeleton budget, and every canonical state map realizes at most that many states.
   32. `K .pairOverlapSystem`: Node `[178]`: the exact pair-response conditional fibre, realized joint states, realizing orders, obstructions, overlaps, and support unions.
   33. `K .pairConditionalFactorizationResidual`: Node `[182]`: the exact retained residual where one of the paper's `[178]`--`[180]` implications is not exhaustive.
-- **On some paths only, not carried (23).** Gated by an arm of:
-  - [132] blocked-pair routing; [130] canonical pair split: `blockedPairEntropySetup`, `canonicalBlockerRoute`, `canonicalPairLedger`, `capacityTokenLedger`.
-  - [178] conditional factorization: `pairConditionalFactorization`, `pairDemandReturns`, `pairFactorizationFails`, `pairFailureOverlap`.
-  - [130] canonical pair split: `dependentPairFamily`, `independentPairFamily`, `pairDegreeProfileFibres`.
-  - [179] realizability: `pairRealizabilityFails`, `pairSystemRealizability`.
-  - [137] blocked-side count; [132] blocked-pair routing; [130] canonical pair split: `blockedPairCodeUnrealized`.
-  - [137] blocked-side count: `blockedPairCountFails`.
-  - [132] blocked-pair routing: `blockedPairNoExit`.
-  - [131] free-pair count; [130] canonical pair split: `freePairCodeUnrealized`.
-  - [131] free-pair count: `freePairCountFails`.
-  - [180] increment covered: `pairIncrementFails`.
-  - [130] blocker (d): `pairNoProfileObstruction`.
-  - [130] blocker (e): `pairNoResponseObstruction`.
-  - [179] early outcome; [179] realizability: `pairSerialDemandSystem`.
-  - [179] early outcome: `pairSystemNoEarlyOutcome`.
+- **Subtypes, one per distinct fact set (6).**  Each is `PairConditionalFactorizationOutcome ∧` its extra facts, with `.toGeneric` and a return theorem `pairConditionalFactorizationReturn_<label>` (one `get` per fact).  The side is the entry into the pair-code chain: free = `[130]` blocker-free arm and `[131]` free-pair count fails; blocked = `[130]` blocked arm with no (d)/(e) blocker, `[132]` no sparse exit, `[134]`--`[136]` token ledger and `[137]` blocked-side count fails.  The arm is the first failed implication: `[178]` factorization, `[179]` realizability, `[180]` increment coverage.
+  - **Wiring pending.** The six return sites are in `selectedPairCodeChain` (`Assembly/Surplus/Local.lean`), which is generic in its entry ledger and shared with `PairTypeBOutcome`.  Building a sided subtype there needs the chain to carry its side's keys, which is a signature change, so it has not been made.  The root boundary still returns the generic residual.
+  - `PairConditionalFactorizationOutcome_freeFactorizationFails` (37 facts): the 33 above, plus
+    - `K .independentPairFamily`
+    - `K .freePairCountFails`
+    - `K .freePairCodeUnrealized`
+    - `K .pairFactorizationFails`
+  - `PairConditionalFactorizationOutcome_freeRealizabilityFails` (40 facts): the 33 above, plus
+    - `K .independentPairFamily`
+    - `K .freePairCountFails`
+    - `K .freePairCodeUnrealized`
+    - `K .pairConditionalFactorization`
+    - `K .pairFailureOverlap`
+    - `K .pairDemandReturns`
+    - `K .pairRealizabilityFails`
+  - `PairConditionalFactorizationOutcome_freeIncrementFails` (43 facts): the 33 above, plus
+    - `K .independentPairFamily`
+    - `K .freePairCountFails`
+    - `K .freePairCodeUnrealized`
+    - `K .pairConditionalFactorization`
+    - `K .pairFailureOverlap`
+    - `K .pairDemandReturns`
+    - `K .pairSystemRealizability`
+    - `K .pairSystemNoEarlyOutcome`
+    - `K .pairSerialDemandSystem`
+    - `K .pairIncrementFails`
+  - `PairConditionalFactorizationOutcome_blockedFactorizationFails` (45 facts): the 33 above, plus
+    - `K .dependentPairFamily`
+    - `K .pairDegreeProfileFibres`
+    - `K .pairNoProfileObstruction`
+    - `K .pairNoResponseObstruction`
+    - `K .blockedPairNoExit`
+    - `K .canonicalBlockerRoute`
+    - `K .canonicalPairLedger`
+    - `K .capacityTokenLedger`
+    - `K .blockedPairEntropySetup`
+    - `K .blockedPairCountFails`
+    - `K .blockedPairCodeUnrealized`
+    - `K .pairFactorizationFails`
+  - `PairConditionalFactorizationOutcome_blockedRealizabilityFails` (48 facts): the 33 above, plus
+    - `K .dependentPairFamily`
+    - `K .pairDegreeProfileFibres`
+    - `K .pairNoProfileObstruction`
+    - `K .pairNoResponseObstruction`
+    - `K .blockedPairNoExit`
+    - `K .canonicalBlockerRoute`
+    - `K .canonicalPairLedger`
+    - `K .capacityTokenLedger`
+    - `K .blockedPairEntropySetup`
+    - `K .blockedPairCountFails`
+    - `K .blockedPairCodeUnrealized`
+    - `K .pairConditionalFactorization`
+    - `K .pairFailureOverlap`
+    - `K .pairDemandReturns`
+    - `K .pairRealizabilityFails`
+  - `PairConditionalFactorizationOutcome_blockedIncrementFails` (51 facts): the 33 above, plus
+    - `K .dependentPairFamily`
+    - `K .pairDegreeProfileFibres`
+    - `K .pairNoProfileObstruction`
+    - `K .pairNoResponseObstruction`
+    - `K .blockedPairNoExit`
+    - `K .canonicalBlockerRoute`
+    - `K .canonicalPairLedger`
+    - `K .capacityTokenLedger`
+    - `K .blockedPairEntropySetup`
+    - `K .blockedPairCountFails`
+    - `K .blockedPairCodeUnrealized`
+    - `K .pairConditionalFactorization`
+    - `K .pairFailureOverlap`
+    - `K .pairDemandReturns`
+    - `K .pairSystemRealizability`
+    - `K .pairSystemNoEarlyOutcome`
+    - `K .pairSerialDemandSystem`
+    - `K .pairIncrementFails`
 
 <a id="residual-186"></a>
 
