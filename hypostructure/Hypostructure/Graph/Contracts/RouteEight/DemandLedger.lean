@@ -161,11 +161,9 @@ theorem route8UnpaidTrueEntry (data : Parameters) (object : FiniteObject.{u})
     (census : Route8UnifiedEntryCensusFact data object)
     (failed : Route8StageRateFailedFact data object) :
     Route8UnifiedTrueTwoCarrierEntryStatement data object := by
-  obtain ⟨P, pin, exists_⟩ := witnessFree
+  obtain ⟨P, pin, index, indexPin, spec⟩ := witnessFree
   obtain ⟨P', pin', two⟩ := twoCarrier
   obtain rfl : P' = P := Option.some.inj (pin'.symm.trans pin)
-  obtain ⟨index, indexPin, spec⟩ :=
-    canonicalRoute8UnpaidEntry_spec data object P' exists_
   refine ⟨index, ?_, unpaidTrueEntry_at data object census two spec⟩
   rw [canonicalRoute8TerminalEntry_eq_of_rateFailed data object failed, pin']
   exact indexPin

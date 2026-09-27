@@ -40,7 +40,7 @@ noncomputable def typeAVisibleEntryDichotomy
       obtain ⟨piece, pinned, _⟩ := (previous.get (K .typeASaturatedReceiver)).down
       by_cases visible :
           ∃ receiver, VisibleReceiverSpec data.toParameters current.object piece receiver
-      · exact ⟨.inl ⟨⟨piece, pinned, visible⟩⟩⟩
+      · exact ⟨.inl ⟨⟨piece, pinned, canonicalVisibleReceiverAt_spec visible⟩⟩⟩
       · exact ⟨.inr ⟨⟨piece, pinned,
           Graph.Contracts.TypeA.noVisible_of_not_visibleReceiver data.toParameters current.object
             visible⟩⟩⟩))

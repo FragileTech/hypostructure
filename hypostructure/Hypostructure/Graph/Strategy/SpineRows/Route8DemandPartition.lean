@@ -30,10 +30,11 @@ and the canonical demand records of the unpaid target-defect entries. -/
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .route8DemandLedger)
-        ⟨Graph.Contracts.RouteEight.route8DemandLedger data.toParameters
-          inputs.current.object
-          (by have := (inputs.get (K .cubicBaseline)).down.1.1; omega)
-          (inputs.get (K .selection)).down.1⟩ .nil)
+        ⟨canonicalRoute8DemandRecord_spec data.toParameters inputs.current.object
+          (Graph.Contracts.RouteEight.route8DemandLedger data.toParameters
+            inputs.current.object
+            (by have := (inputs.get (K .cubicBaseline)).down.1.1; omega)
+            (inputs.get (K .selection)).down.1)⟩ .nil)
     0 0
 
 end Hypostructure.Graph.Strategy.Spine

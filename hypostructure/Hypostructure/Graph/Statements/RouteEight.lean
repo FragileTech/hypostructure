@@ -360,20 +360,84 @@ noncomputable abbrev route8StageSlack (data : Parameters)
   2 * (data.bridgeMassFactor * data.dischargeScale *
     data.surplusThreshold object.vertexCount)
 
+/-- **The lexicographic key of an indexed entry `(X, w, u)`** (tex 6419: "we fix
+throughout the lexicographically first object"): the sorted codes of `X`'s
+vertices, then the code of `w`, then the code of `u`, in G's fixed vertex
+enumeration `object.vertices`. -/
+noncomputable def route8IndexKey (object : Graph.FiniteObject.{u})
+    (index : Graph.Route8Census.Index object) : Lex (List ℕ × Lex (ℕ × ℕ)) :=
+  letI : FinEnum object.Vertex := object.vertices
+  toLex ((index.1.image fun vertex => ((FinEnum.equiv vertex : Fin _) : ℕ)).sort
+      (· ≤ ·),
+    toLex (((FinEnum.equiv index.2.1 : Fin _) : ℕ),
+      ((FinEnum.equiv index.2.2 : Fin _) : ℕ)))
+
+/-- The lexicographically first entry of a finite family (`none` when empty). -/
+noncomputable def route8LexFirst (object : Graph.FiniteObject.{u})
+    (family : Finset (Graph.Route8Census.Index object)) :
+    Option (Graph.Route8Census.Index object) :=
+  if h : family.Nonempty then
+    some (Classical.choose (family.exists_min_image (route8IndexKey object) h))
+  else none
+
+theorem route8LexFirst_spec {object : Graph.FiniteObject.{u}}
+    {family : Finset (Graph.Route8Census.Index object)}
+    {index : Graph.Route8Census.Index object}
+    (h : route8LexFirst object family = some index) :
+    index ∈ family ∧
+      ∀ other ∈ family, route8IndexKey object index ≤ route8IndexKey object other := by
+  unfold route8LexFirst at h
+  split_ifs at h with nonempty
+  cases h
+  exact Classical.choose_spec
+    (family.exists_min_image (route8IndexKey object) nonempty)
+
+theorem route8LexFirst_isSome {object : Graph.FiniteObject.{u}}
+    {family : Finset (Graph.Route8Census.Index object)}
+    (nonempty : family.Nonempty) :
+    ∃ index, route8LexFirst object family = some index := by
+  unfold route8LexFirst
+  exact ⟨_, dif_pos nonempty⟩
+
+/-- **One stage of the deterministic procedure of `thm:large-budget-route8-only`**
+(tex 17095-17135) on the unified census: if the reduced-rate test passes at the
+current peel chain, take the lexicographically first two-support entry of the
+current unpeeled ledger (`lem:typeA-peeling-reduced-reduction`); if it is a
+target-defect entry, peel it (`lem:typeA-pressure-is-exit4-peel`,
+`lem:typeA-exit4-finite-descent`); otherwise, or when the test fails, stop. -/
+noncomputable def route8DescentStep (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (chain : List (Graph.Route8Census.Index object)) :
+    List (Graph.Route8Census.Index object) := by
+  classical
+  exact
+    if Graph.Route8Pressure.StageRate object (canonicalWindowPacking data object)
+        data.threshold data.dischargeScale (route8StageSlack data object)
+        chain.toFinset then
+      match route8LexFirst object
+          ((Graph.Route8Pressure.peeledEntries object (route8UnifiedEntries data object)
+            chain.toFinset).filter fun index =>
+            Graph.Route8Pressure.TwoCarrierAt object (canonicalWindowPacking data object)
+              (route8UnifiedEntries data object) data.threshold data.LengthOK
+              chain.toFinset index) with
+      | some index =>
+          if Graph.Route8Pressure.TargetDefectAt object data.threshold
+              data.dischargeScale (Graph.HasCycleWithLength data.LengthOK)
+              chain.toFinset index then
+            index :: chain
+          else chain
+      | none => chain
+    else chain
+
 /-- The terminal stage of the deterministic procedure of
-`thm:large-budget-route8-only` on the unified census: the recorded peel chain
-at which the procedure stops (a stage where the reduced-rate test fails, or a
-stage passing the test with a true two-support entry).  The manuscript runs one
-deterministic procedure, so its terminal stage is fixed once and for all; node
-`[123]` decides the rate test at exactly this chain. -/
+`thm:large-budget-route8-only` on the unified census, run from the empty
+peeling: every stage peels at most one fresh entry, so after `|\tilde\Xi|` steps
+the procedure has stopped (`route8DescentChain_stageOutcome`).  Node `[123]`
+decides the rate test at exactly this chain. -/
 noncomputable def route8DescentChain (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     List (Graph.Route8Census.Index object) :=
-  Classical.epsilon fun chain =>
-    Graph.Route8Pressure.StageOutcome object (canonicalWindowPacking data object)
-      (route8UnifiedEntries data object) (route8UnifiedComponents data object)
-      data.threshold data.dischargeScale (route8StageSlack data object)
-      data.LengthOK chain
+  (route8DescentStep data object)^[(route8UnifiedEntries data object).card] []
 
 /-- **Node `[123]`, yes**: the reduced-rate test passes at the terminal stage of
 the descent (`thm:large-budget-route8-only`: the stage then carries a true
@@ -702,6 +766,13 @@ abbrev Route8PrivateCarrierBudget (data : Parameters)
     data.threshold data.dischargeScale
   data.threshold * entries.card ≤
     (Graph.Route8Census.supply object packing).card
+
+/-- Nodes `[119]`--`[120]` as published: the private-support budget, carried with
+the positive baseline `1 ≤ δ` read from G's entry fact `K .cubicBaseline`, so
+that the `[121]`--`[122]` closure combines ledger facts only. -/
+abbrev Route8PrivateCarrierBudgetStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  1 ≤ data.threshold ∧ Route8PrivateCarrierBudget data object
 
 /-! ## Key statements
 

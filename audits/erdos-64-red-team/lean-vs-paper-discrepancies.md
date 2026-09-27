@@ -393,26 +393,15 @@ negation on the remainder of the fixed maximum packing
   (`typeAPeeledExit*Dichotomy`), or node `[94]`'s residual excess `E₄(w)`
   (`K .typeAPeeledSilentExcess`); node `[101]` then holds at the terminal set,
   and exits `(5)`--`(8)` are asked there.
-- **Per-peel retest (final fix pass R8).**  The paper asks `[89]` after
-  every peel (`rem:typeA-exit4-peeling-use`, tex 11785-11792; tex 1095).  The
-  canonical step `canonicalPeelStep` advances only when the receiver is
-  saturated at the current set *and* exit `(4)` has a witness there, so
-  `canonicalPeel_retest_of_ne_terminal` (`Statements/CanonicalTypeA.lean`)
-  proves, at G's own peel states (every receiver of G's `X₀`, every stage of
-  G's canonical sequence) other than the terminal
-  set, `[89]` answers saturated, `[101]` answers exit `(4)` with that stage's
-  canonical witness, and `[102]` peels exactly that load.  The terminal set is
-  therefore the first stage at which the per-peel retest is not followed by a
-  peel -- the first unsaturated stage (`[90]`, the no arm) or a saturated
-  exit-`(4)`-free stage (`[93]`--`[109]` again, the yes arm); by
-  monotonicity of `L₄` in the peeling set, "some receiver saturated at its
-  terminal set" is exactly "some receiver saturated at every stage".  The
-  per-peel answers are published on the ledger as the last clause of
-  `K .typeAExitFourFiniteDescent` (`TypeAExitFourFiniteDescentFact`).  Exits
-  `(1)`--`(3)` at an intermediate stage are accepted-cycle contradictions at
-  any peeling set (`[96]`, `[98]`, `[100]`), so not re-asking them there removes
-  no surviving state.  The no arm's node `[92]` is recorded under Paper
-  errors.
+- **Per-peel retest (fix2-TR).**  The per-stage answers before the terminal
+  set (saturated, exit `(4)` with the stage's canonical witness, peel) are the
+  definition of `canonicalPeelStep`; the former last clause of
+  `K .typeAExitFourFiniteDescent` restated that definition and is removed.  The
+  retest is asked on the ledger at each receiver's terminal set
+  (`typeAExitFourRetestDichotomy`, key 2000): the terminal set is the first
+  stage at which the answer is not "saturated with an exit-`(4)` witness".
+  Exits `(1)`--`(3)` are asked again there (keys 2002-2010).  The no arm's node
+  `[92]` is recorded under Paper findings.
 
 ## [106]: the scope of exit `(6)` is an exact decision
 
@@ -439,68 +428,30 @@ The former split of node `[109]` by the node-`[94]` silent provenance
 (tex:1077, 1122).  The closure it fed at node `[184]` is quarantined
 (`Quarantine/PaperRepairs/SilentLaneClosure.lean`).
 
-## [113]: the large-budget deficit is tested, not asserted
+## [118] → [123] → [124]: now paper-exact
 
-*Family F3 (Route 8).*
+*fix2-TR.*  The two-support entry `[118]` (the yes arm of `[117]`) enters the
+descent decision `[123]` (tex 1134, edge `(residual)--(pressure)`): the
+`[117]`-yes ledger continues through `selectedTypeBRoute8Continuation`, the
+unified ledger on which `[123]` is asked; its yes arm closes at `[124]`
+(`K .route8UnifiedTrueTwoCarrierEntry` against `K .route8UnifiedTwoCarrierExit`),
+its no arm reaches `[181]`, `[183]`--`[186]`
+(`Assembly/RouteEight/Residual.lean`, `selectedRouteEightCollection`).  The
+earlier direct closure of `[118]` at `[124]` is no longer used.
 
-- **Paper** (diagram tex:1129, box `[113]` between `[112]` and `[114]`;
-  `rem:why-unified` tex:17529--17560). The diagram draws `[113]` as a box, but
-  `rem:why-unified` states that the route-8-only lower bound
-  `D_A(𝒳_A) ≥ (1/4-τ_win)|R| - o(|R|)` does not follow: the deficit can reside
-  in the target-defect class, which the unified ledger of `[123]` handles.
-- **Lean.** `route8LargeBudgetDeficitRow`
-  (`hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8LargeBudgetDeficit.lean`)
-  decides the exact inequality `Route8LargeBudgetDeficit` against its negation
-  `Route8LargeBudgetDeficitFailsStatement` on the same collection `𝒳_A`.
-  The positive arm continues to `[114]`--`[124]` exactly as in the diagram; the
-  negative arm enters the unified target-defect/route-8 ledger
-  (`selectedTypeBRoute8Continuation`, `Assembly/RouteEight/TypeBContinuation.lean`)
-  and reaches `[123]`, `[181]`, `[183]`--`[186]`.
-  Caller: `selectedRouteEightResidual` (`Assembly/RouteEight/Residual.lean`).
-- **Why the Lean prevails.** It repairs the gap `rem:why-unified` itself
-  identifies: no arm is assumed, the positive arm is the paper's own `[113]`
-  fact, and the negative arm is sent to the unified ledger the paper
-  introduces for exactly this mass.  Kernel-checked.
+## [123]: the deterministic procedure, now paper-exact
 
-## [118] → [124] on the `[113]`-positive arm
-
-*Family F3 (Route 8).*
-
-- **Paper** (tex:1134--1140, edges `(residual)--(pressure)`, `(pressure)--(nogo)`).
-  The two-support entry `[118]` enters the descent decision `[123]`; its yes arm
-  ("terminates in true route 8") is closed at `[124]`.
-- **Lean.** On the `[113]`-positive arm every entry of `Ξ(𝒳_A)` is a true
-  route-8 entry (`Route8TrueResidual`: target-complete-minimal and no exit-(4)
-  witness), so the descent terminates at the empty peeling in true route 8.
-  `route8TrueTwoCarrierEntryRow` publishes the terminal entry, and `[124]`
-  closes it: `route8TwoCarrierExitRow.runAndCloseIncompatible` with
-  `instIncompatibleRoute8TrueTwoCarrierEntryTwoCarrierExit`
-  (contract lemmas `route8SurvivorTwoCarrierExit`,
-  `route8TrueTwoCarrierEntry_false`,
-  `Graph/Contracts/RouteEight/Terminal.lean`).
-- **Why the Lean prevails.** The skipped descent step is the identity on this
-  arm (no target-defect entry exists to peel), the node closed is the paper's
-  `[124]`, and the closure is the paper's own `thm:typeA-two-carrier-nogo`
-  argument (`lem:typeA-carrier-deletion-exit`).  Kernel-checked.
-
-## [123]: the terminal stage is fixed by description
-
-*Family F3 (Route 8).*
-
-- **Paper** (`thm:large-budget-route8-only`, tex:17085--17140). "Run the
-  following deterministic procedure"; the decision `[123]` is asked at its
-  terminal stage.
-- **Lean.** `route8DescentChain` (`Graph/Statements/RouteEight.lean`) is the
-  `Classical.epsilon` choice of a stage satisfying `StageOutcome`; the
-  existence of such a stage is the paper's procedure
-  (`exists_route8StageOutcome`, `Graph/Contracts/RouteEight/Descent.lean`).
-  The decision `route8StageOutcomeDichotomy` asks the reduced-rate test
-  `Route8StageRateStatement` versus its exact negation
-  `Route8StageRateFailedFact` at that one stage.
-- **Why at least as strong.** The pinned stage satisfies every property the
-  paper's terminal stage has (recorded peel chain, exact stage accounting, and
-  either failed rate or passing rate with a true two-support entry); both arms
-  are about the same pinned stage, so the decision is an exact dichotomy.
+*fix2-TR.*  `route8DescentChain` (`Statements/RouteEight.lean`) is the paper's
+deterministic procedure (`thm:large-budget-route8-only`, tex 17095-17135),
+iterated `|\tilde\Xi|` times from the empty peeling: `route8DescentStep` runs
+the reduced-rate test; on a pass it takes the lexicographically first
+two-support entry of the current unpeeled ledger (`route8LexFirst`, key
+`route8IndexKey`: sorted vertex codes of `X`, then `w`, then `u`, in G's fixed
+enumeration, tex 6419) and peels it when it is target-defect; otherwise it
+stops.  `route8DescentChain_stageOutcome` (`Contracts/RouteEight/Descent.lean`)
+proves the terminal stage is a recorded peel chain with exact accounting that
+fails the rate or passes it with a true two-support entry.  The former
+`Classical.epsilon` stage is removed.
 
 ## [131] and [137]: the count-fails arm is the negation of the count
 
@@ -565,24 +516,17 @@ and splits `class(t) = 𝔗_W` against `class(t) ≠ 𝔗_W`;
 canonical homogeneous pattern at that token
 (`homogeneousBottleneckPattern_of_class`).
 
-## [181]/[183]: the committed maximal ledger `P₀`
+## [181]/[183]: the committed maximal ledger `P₀`, now paper-exact
 
-*Family F3 (Route 8).*
-
-- **Paper** (`thm:typeA-unpaid-exit4-reduction`, tex:17142--17220). Fix the
-  lexicographically first maximal ledger `P` of `def:typeA-pressure-ledger`;
-  (168.1) holds for `Ξ_un(P)`; outcome (i) "some `ξ ∈ Ξ_un(P)` has no exit-(4)
-  witness" versus outcome (ii) (168.2).
-- **Lean.** The ledger is `P₀ = canonicalRoute8Partition`
-(`Statements/CanonicalRouteEight.lean`), the `Classical.choice` of the
-  node-`[349]` record `K .route8DemandLedger`: a maximal pinned ledger.
-  (168.1) (`Route8UnpaidTwoCarrierStatement`), node `[181]`'s yes arm
-  (`Route8UnpaidWitnessFreeStatement`) and its exact negation (168.2)
-  (`Route8UnpaidExitFourResidualStatement`) are all stated at `P₀`
-  (`Statements/RouteEightPinned.lean`); the decision reads `[349]`.
-- **Remaining difference.** `P₀` is a maximal ledger chosen by
-  `Classical.choice`, not the paper's lexicographically first one.  The paper
-  uses only properties every maximal ledger has.
+*fix2-TR.*  `P₀ = canonicalRoute8Partition` is the partition of
+`canonicalRoute8DemandRecord`, the lexicographically first maximizing ledger
+(tex 15537: "choose once and for all the lexicographically first ledger
+maximizing first `|Ξ₃|`, then `|Ξ₂|`"): among the node-`[349]` records it
+minimizes `route8LedgerKey` (the classes `Ξ₃`, `Ξ₂`, `Ξ_res` as sorted entry
+keys, then `A(ξ)` entry by entry; `canonicalRoute8DemandRecord_lexFirst`,
+`Statements/CanonicalRouteEight.lean`).  Key 349 now publishes the pinned
+record (`Route8DemandLedgerPinnedStatement`), and node `[181]`'s yes arm names
+G's canonical witness-free entry `ξ*` (`canonicalRoute8UnpaidEntry`).
 
 ## [182]: each pair-code test has its own exact negation
 
@@ -772,6 +716,58 @@ gone.
   once at the entry as `K .spinePresentationLaws` (idx 2302); node `[16]` is the
   row `hssTargetCycleRow` (`K .hssTargetCycle`, idx 2303) closed against
   `K .selection`.  `3 ≤ δ` / `δ = 3` are read from `K .cubicBaseline`.
+
+## fix2-TR: Type A and Route 8 round-2 repairs (paper-exact)
+
+- **[86] (`lem:typeA-exclusion`, key 343).**  Alternative (iv), the admissible
+  silent-core residual profile, is "obtained from a saturated receiver" (def
+  10790): it now asks `∃ receiver ∈ saturatedReceivers X`.  The contract derives
+  it from `N₀(X) < 0`, `σ(X) = 0` and node `[13]`'s routing
+  (`zeroSurplusRoutingAt_of_normalized`) through the unsaturated discharge
+  (`card_le_scaled_deficiency_of_no_saturated`); the row reads
+  `K .remainderNormalized`.  `Route8PiecesClassifiedStatement` follows.
+- **[111] (key 160 removed).**  `[111]` is a definition node:
+  `𝒳_A := route8SurvivorComponents`, `D_A := route8Deficit`
+  (`def:typeA-large-budget-deficit`).  Its "carrying `D_A(𝒳_A)`" is the `[113]`
+  inequality, decided at `[113]`.  The former key published a tautology of the
+  filter and is deleted with its row and contract.
+- **(b) of `def:typeA-trace-basin` (tex 10744-10775).**  A response quotient
+  (`ResponseQuotient`) keeps, identifies or forgets each declared entry:
+  identification is an equivalence on the entry's readings (which placed
+  entries coincide and which are incident on its declared support); forgetting
+  is the total identification.  A realization carries kept entries exactly and
+  identified entries up to the quotient's identification.  Target-completeness
+  is asked only against outside contexts compatible with the boundary profile
+  (`ProfileCompatible`: glued to `\rho_u(B_u)`, every label keeps degree `≥ δ`).
+- **[106] global scope (key 101).**  The smaller representative is the
+  canonical delocalization's own closed representative
+  (`Classical.choose (delocalization.2.closedRepresentative covers)`), not a
+  free graph.
+- **[102] → [89].**  The per-peel clause of `K .typeAExitFourFiniteDescent`
+  was a definitional tautology of `canonicalPeelStep` and is removed; the
+  retest is asked on the ledger at the terminal sets (key 2000).
+- **514/515 (`def:typeA-recorded-window-shadow-hit`, tex 16229).**  Stated at
+  G's recorded corridor `canonicalRecordedCorridor` of the two units, not at
+  every `P`-avoiding path.
+- **[160]/[56] rate test (keys 264/265).**  The decision reads the arm's
+  density fact (`K .netDeficiencyCap` on the `[24]` arm, `K .denseDeficiencyBelow`
+  on the `[56]` arm) as its predecessor.
+- **[186] (key 506).**  The unused `K .route8DemandLedger` requirement is removed.
+- **[121]--[122].**  The budget fact carries `1 ≤ δ` read from
+  `K .cubicBaseline` (`Route8PrivateCarrierBudgetStatement`); the
+  `Incompatible` closure reads no presentation law.
+- **[89]/[93] (keys 54, 57).**  The saturated receiver and the visible-entry
+  receiver are pinned: `∃ w, canonicalSaturatedReceiverAt X₀ = some w ∧ …` and
+  `∃ w, canonicalVisibleReceiverAt X₀ = some w ∧ …`.
+- **Not changed: the `\tilde{\mathcal X}` handoff filter
+  (`SeparatorHandoffAt`, audit item 8).**  Restricting it to saturated
+  receivers and eligible loads at `∅` (exit (7) of the unpeeled state) on the
+  route-8 side alone breaks `lem:typeA-unified-deficit`'s partition in Lean:
+  the Type B sublinear ledger's handoff class (`handoffChar`, TB scope) and the
+  extracted-core census (unsaturated receivers of deleted regions) use the same
+  predicate, so a piece with a separator only at an unsaturated receiver would
+  lie in both the unified class and the handoff class.  The restriction has to
+  be made jointly with the Type B group.
 
 ## Paper errors
 
@@ -1144,33 +1140,6 @@ where the user decided so, a residual carried by the node's open leaf.
 - **Tag.** `sorry`, `PAPER-ERROR [177] tex:7932`, in
   `Graph/Contracts/Spine/ColdSubcubicCharge.lean`.
 
-### [92] after peeling: the unsaturated charge does not close once a load is peeled (tex 1095, 11753, 11785)
-
-*Final fix pass TA.*
-
-- **Paper's claim.**  The diagram returns node `[102]` to `[89]` "with the
-  residual load `L₄`" (tex 1095 and caption), and the no arm of `[89]` closes at
-  `[92]` ("unsaturated Type A charge closes").
-- **Faithful formal statement.**  On the retest's no arm every receiver of
-  `X₀` has `1 + L₄(w) ≤ s·q(w)` at its terminal set
-  (`K .typeAExitFourReceiverDischarged`).  `lem:typeA-exit4-peeling-charge`
-  then gives exactly `|V(X₀)| ≤ s·def⁺(X₀) + Σ_w |P₄(w)|`
-  (`K .typeAPeeledUnsaturatedDischarge`,
-  `Contracts.TypeA.card_le_scaled_deficiency_add_peeled`).
-- **Why it fails.**  `[92]` closes against `[86]`, `s·def⁺(X₀) < |V(X₀)|`.  On
-  this arm node `[102]` has peeled at least one load of the exit-chain
-  receiver (`K .typeAExitFourPeeled`), so `Σ_w |P₄(w)| ≥ 1` and the bound above
-  does not contradict `[86]`.  The statement `|V(X₀)| ≤ s·def⁺(X₀)` cannot be a
-  `PAPER-ERROR` sorry: its negation is `[86]`, which is on this very ledger.
-  The paper itself routes this case elsewhere: `rem:typeA-exit4-peeling-use`
-  (tex 11785-11792) says the charge calculation applies only to the unpeeled
-  loads and a support with an exit-`(4)` witness "is routed by alternative (iii)
-  of `lem:density-mersenne`" (tex 11860-11863).
-- **Lean.**  The arm follows that routing: after `[91]` it enters the unified
-  target-defect/route-`8` ledger of node `[123]`
-  (`selectedTypeAExitFourDischargedRetest`,
-  `Assembly/TypeA/ExitFourDischargedRetest.lean`).  No `sorry`.
-
 ### [82] `c ≤ 1` without B2: "`N₀(X) ≥ 0`" (tex 1020, `lem:typeB-exclusion` tex 14349, `rem:typeB-status`)
 
 - **Paper claim.** Node [82]: "yes: certificate-closed or B2-paid;
@@ -1200,6 +1169,58 @@ where the user decided so, a residual carried by the node's open leaf.
 Each entry is a place where the paper is internally inconsistent or routes a
 case differently from its diagram.  The Lean follows the paper's main theorem
 and argument path; no `sorry` is involved.
+
+### [92] after peeling: the unsaturated charge does not close once a load is peeled (tex 1095, 11753, 11785)
+
+*Final fix pass TA; refiled by fix2-TR (no sorry: a diagram inconsistency).*
+
+- **Paper's claim.**  The diagram returns node `[102]` to `[89]` "with the
+  residual load `L₄`" (tex 1095 and caption), and the no arm of `[89]` closes at
+  `[92]` ("unsaturated Type A charge closes").
+- **Faithful formal statement.**  On the retest's no arm every receiver of
+  `X₀` has `1 + L₄(w) ≤ s·q(w)` at its terminal set
+  (`K .typeAExitFourReceiverDischarged`).  `lem:typeA-exit4-peeling-charge`
+  then gives exactly `|V(X₀)| ≤ s·def⁺(X₀) + Σ_w |P₄(w)|`
+  (`K .typeAPeeledUnsaturatedDischarge`,
+  `Contracts.TypeA.card_le_scaled_deficiency_add_peeled`).
+- **Why it fails.**  `[92]` closes against `[86]`, `s·def⁺(X₀) < |V(X₀)|`.  On
+  this arm node `[102]` has peeled at least one load of the exit-chain
+  receiver (`K .typeAExitFourPeeled`), so `Σ_w |P₄(w)| ≥ 1` and the bound above
+  does not contradict `[86]`.  The statement `|V(X₀)| ≤ s·def⁺(X₀)` cannot be a
+  `PAPER-ERROR` sorry: its negation is `[86]`, which is on this very ledger.
+  The paper itself routes this case elsewhere: `rem:typeA-exit4-peeling-use`
+  (tex 11785-11792) says the charge calculation applies only to the unpeeled
+  loads and a support with an exit-`(4)` witness "is routed by alternative (iii)
+  of `lem:density-mersenne`" (tex 11860-11863).
+- **Lean.**  The arm follows that routing: after `[91]` it enters the unified
+  target-defect/route-`8` ledger of node `[123]`
+  (`selectedTypeAExitFourDischargedRetest`,
+  `Assembly/TypeA/ExitFourDischargedRetest.lean`).  No `sorry`.
+
+### [113] diagram box vs `rem:why-unified`: the large-budget deficit is tested, not asserted
+
+*Family F3 (Route 8).*
+
+- **Paper** (diagram tex:1129, box `[113]` between `[112]` and `[114]`;
+  `rem:why-unified` tex:17529--17560). The diagram draws `[113]` as a box, but
+  `rem:why-unified` states that the route-8-only lower bound
+  `D_A(𝒳_A) ≥ (1/4-τ_win)|R| - o(|R|)` does not follow: the deficit can reside
+  in the target-defect class, which the unified ledger of `[123]` handles.
+- **Lean.** `route8LargeBudgetDeficitRow`
+  (`hypostructure/Hypostructure/Graph/Strategy/SpineRows/Route8LargeBudgetDeficit.lean`)
+  decides the exact inequality `Route8LargeBudgetDeficit` against its negation
+  `Route8LargeBudgetDeficitFailsStatement` on the same collection `𝒳_A`.
+  The positive arm continues to `[114]`--`[122]`, `[118]` → `[123]`; the
+  negative arm enters the unified target-defect/route-8 ledger
+  (`selectedTypeBRoute8Continuation`, `Assembly/RouteEight/TypeBContinuation.lean`)
+  and reaches `[123]`, `[181]`, `[183]`--`[186]`.
+  Caller: `selectedRouteEightResidual` (`Assembly/RouteEight/Residual.lean`).
+- **Why this is a paper finding.**  The paper itself (`rem:why-unified`)
+  retracts the box's deduction and replaces it by the unified procedure of
+  `thm:large-budget-route8-only`, whose stage test is this inequality; the
+  Lean follows the paper's own correction: no arm is assumed, the positive arm
+  is the paper's own `[113]` fact, and the negative arm is sent to the unified
+  ledger the paper introduces for exactly this mass.  Kernel-checked.
 
 ### [348] paper inconsistency: `lem:typeA-unified-carriers` (tex 15362) vs `thm:main` (tex 369-372)
 
@@ -1287,11 +1308,12 @@ and argument path; no `sorry` is involved.
   region, any `σ`, every receiver, `excessBasinReduced` loads) went beyond
   tex 15360-15364 and had no reader; it is removed.  The extracted cores carry
   their own quotient-free clause in `route8ExtractedCores`.
-- **Realization class (unchanged from R8).**  `QuotientRealization`
-  (`Graph/Route8Residual.lean`) is a boundaried state in the basin's
-  boundary-degree fibre "whose image under the quotient map is the given
-  quotient"; nontriviality is a forgotten coordinate whose declared support
-  meets `B_u - ∂B_u` or contains an edge of `B_u`.
+- **Realization class (fix2-TR).**  A response quotient keeps, identifies or
+  forgets each declared entry (`ResponseQuotient`); a realization
+  (`QuotientRealization`) is a boundaried state in the basin's
+  boundary-degree fibre carrying kept entries exactly and identified entries up
+  to the identification, through one label-fixing placement; target-completeness
+  is asked against profile-compatible contexts (`ProfileCompatible`).
 
 ## Open constructions
 

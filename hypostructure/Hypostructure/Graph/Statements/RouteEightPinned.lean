@@ -172,11 +172,24 @@ def Route8UnpaidTwoCarrierStatement : Prop :=
         (route8UnifiedEntries data object) (route8DemandCore data object)
         (data.threshold - 1) index
 
+/-- **Node `[349]`, the committed ledger, pinned**: G's lexicographically first
+maximizing 2/3-demand ledger `canonicalRoute8DemandRecord` exists. -/
+def Route8DemandLedgerPinnedStatement : Prop :=
+  ∃ ledger, canonicalRoute8DemandRecord data object = some ledger
+
+theorem route8DemandLedger_of_pinned
+    (pinned : Route8DemandLedgerPinnedStatement data object) :
+    Route8DemandLedgerStatement data object :=
+  let ⟨ledger, _⟩ := pinned
+  ⟨ledger⟩
+
 /-- **Node `[181]`, yes (outcome (i))**: some unpaid entry of `P₀` has no
-exit-`(4)` witness. -/
+exit-`(4)` witness; it is pinned as G's canonical such entry `ξ*`
+(`canonicalRoute8UnpaidEntry`). -/
 def Route8UnpaidWitnessFreeStatement : Prop :=
   ∃ P, canonicalRoute8Partition data object = some P ∧
-    ∃ index, Route8UnpaidWitnessFreeSpec data object P index
+    ∃ index, canonicalRoute8UnpaidEntry data object P = some index ∧
+      Route8UnpaidWitnessFreeSpec data object P index
 
 /-- **Node `[181]`, no = node `[183]` (outcome (ii), (168.2))**: the exact
 negation at `P₀` -- every unpaid entry of `P₀` carries its canonical

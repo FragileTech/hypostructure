@@ -2025,7 +2025,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
   | .route8QuotientResidual, object =>
       Route8QuotientResidualStatement data.toParameters object
   | .route8DemandLedger, object =>
-      Route8DemandLedgerStatement data.toParameters object
+      Route8DemandLedgerPinnedStatement data.toParameters object
   | .route8ExtractedEntryCensus, object =>
       Route8ExtractedEntryCensusFact data.toParameters object
   | .typeAPortReturn, object =>
@@ -2197,7 +2197,7 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
   | .route8PrivateCarrierBudget, object =>
       -- Nodes `[119]`--`[120]`: no two-carrier entry gives the
       -- private-carrier budget on the selected route-8 residual.
-      Route8PrivateCarrierBudget data.toParameters object
+      Route8PrivateCarrierBudgetStatement data.toParameters object
   | .route8Census, object =>
       Route8CensusStatement data.toParameters object
   | .route8Rate, object =>

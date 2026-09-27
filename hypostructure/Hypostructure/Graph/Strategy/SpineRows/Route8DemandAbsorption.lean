@@ -23,7 +23,9 @@ node `[349]`: the canonical maximal absorption `A₀`. -/
     (fun inputs =>
       .cons (key := K .route8DemandAbsorption)
         ⟨Graph.Contracts.RouteEight.route8DemandAbsorption data.toParameters
-          inputs.current.object (inputs.get (K .route8DemandLedger)).down⟩
+          inputs.current.object
+          (route8DemandLedger_of_pinned data.toParameters inputs.current.object
+            (inputs.get (K .route8DemandLedger)).down)⟩
         .nil)
     0 0
 

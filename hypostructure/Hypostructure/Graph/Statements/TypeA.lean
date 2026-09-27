@@ -443,7 +443,8 @@ noncomputable abbrev TypeAReceiverRoutingStatement
 noncomputable abbrev TypeASaturatedReceiverStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   AtTypeASupport data object fun piece =>
-    ∃ receiver, SaturatedReceiverSpec data object piece receiver
+    ∃ receiver, canonicalSaturatedReceiverAt data object piece = some receiver ∧
+      SaturatedReceiverSpec data object piece receiver
 
 /-- Node `[89]`, no arm — node `[90]`: every receiver of `X₀` is unsaturated,
 `L(w) ≤ s·q(w) − 1`, in the subtraction-free form `1 + L(w) ≤ s·q(w)`. -/
@@ -547,7 +548,8 @@ canonical choice is the visible receiver of `X₀`. -/
 noncomputable abbrev TypeAVisibleEntryStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   AtTypeASupport data object fun piece =>
-    ∃ receiver, VisibleReceiverSpec data object piece receiver
+    ∃ receiver, canonicalVisibleReceiverAt data object piece = some receiver ∧
+      VisibleReceiverSpec data object piece receiver
 
 /-- Node `[93]`, no arm: no saturated receiver of `X₀` has such a port. -/
 noncomputable abbrev TypeANoVisibleEntryStatement (data : Parameters)

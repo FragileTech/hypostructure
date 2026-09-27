@@ -360,9 +360,7 @@ theorem visibleEntry_pins (visible : TypeAVisibleEntryStatement data object) :
       ∃ receiver, canonicalVisibleReceiverAt data object piece = some receiver ∧
         ∃ port, canonicalOverloadedPortAt data object piece receiver ∅ =
           some port := by
-  obtain ⟨piece, pinned, exists_⟩ := visible
-  obtain ⟨receiver, chosen, _, _, ⟨package⟩⟩ :=
-    canonicalVisibleReceiverAt_spec exists_
+  obtain ⟨piece, pinned, receiver, chosen, _, _, ⟨package⟩⟩ := visible
   exact ⟨piece, pinned, receiver, chosen, package.outside,
     VisibleFourUnpeeledPackage.outside_eq_canonicalOverloadedPortAt package⟩
 
@@ -399,7 +397,7 @@ theorem typeAVisibleFirstExcess
   obtain ⟨piece, pinned, zero, exists_, noVisibleAt⟩ :=
     canonicalPin_merge low (canonicalPin_merge saturated noVisible)
   obtain ⟨selectedReceiver, chosen, selectedIsReceiver, selectedSaturated⟩ :=
-    canonicalSaturatedReceiverAt_spec exists_
+    exists_
   have routed :=
     typeAReceiverRouting_at data object routing pinned
   have exactDegree : ∀ vertex ∈ piece, object.degree vertex = data.threshold :=

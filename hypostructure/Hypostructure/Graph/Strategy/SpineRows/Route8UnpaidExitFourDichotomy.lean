@@ -37,7 +37,8 @@ ledger is two-support. -/
         ⟨Graph.Contracts.RouteEight.route8UnpaidTwoCarrier data.toParameters
           inputs.current.object
           (by have := (inputs.get (K .cubicBaseline)).down.1.1; omega)
-          (inputs.get (K .route8DemandLedger)).down⟩ .nil)
+          (route8DemandLedger_of_pinned data.toParameters inputs.current.object
+            (inputs.get (K .route8DemandLedger)).down)⟩ .nil)
     0 0
 
 /-- **Node `[181]`, yes arm → node `[124]`**: on the rate-failed arm the
@@ -88,11 +89,13 @@ noncomputable def route8UnpaidExitFourDichotomy
       obtain ⟨P, pin⟩ :=
         Graph.Contracts.RouteEight.canonicalRoute8Partition_exists
           data.toParameters current.object
-          (previous.get (K .route8DemandLedger)).down
+          (route8DemandLedger_of_pinned data.toParameters current.object
+            (previous.get (K .route8DemandLedger)).down)
       by_cases witnessFree :
           ∃ index, Route8UnpaidWitnessFreeSpec data.toParameters current.object
             P index
-      · exact ⟨.inl ⟨⟨P, pin, witnessFree⟩⟩⟩
+      · exact ⟨.inl ⟨⟨P, pin, canonicalRoute8UnpaidEntry_spec data.toParameters
+          current.object P witnessFree⟩⟩⟩
       · exact ⟨.inr ⟨⟨P, pin,
           Graph.Contracts.RouteEight.unpaidExitFour_of_not_witnessFree
             data.toParameters current.object P witnessFree⟩⟩⟩))
