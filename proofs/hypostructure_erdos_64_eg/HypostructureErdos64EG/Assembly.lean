@@ -5,6 +5,7 @@ import HypostructureErdos64EG.Assembly.Absorbed.Residual
 import HypostructureErdos64EG.Assembly.Basic
 import HypostructureErdos64EG.Assembly.Entry
 import HypostructureErdos64EG.Assembly.Final
+import HypostructureErdos64EG.Assembly.Residuals.ColdBranchClosedOutcome
 import HypostructureErdos64EG.Assembly.NearCubic.Boundary
 import HypostructureErdos64EG.Assembly.NearCubic.Local
 import HypostructureErdos64EG.Assembly.NearCubic.Replacement
