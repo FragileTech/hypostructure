@@ -1401,6 +1401,26 @@ were run and failed at a concrete configuration of G.
   - *Status.*  OPEN CONSTRUCTION, unchanged: `[348]` stays a returned outcome
     at `[187]`.  The missing fact about G is `α(ξ) ≥ 2` at every unified
     target-defect entry (no unified entry with `α ≤ 1`).
+  - *Follow-up (user): is `B_u` at an `α ≤ 1` entry compressible?*  No, and
+    the reason is the same as at [144] step 2 below
+    (`audits/erdos-64-red-team/fix2-348/Obstruction144.lean`; the lemmas are
+    generic in the support, instantiated at `S = B_u`).
+    - The `α ≤ 1` information is the core completeness
+      `ρ|_{C_ess} ~ ρ` (`Entry.essentialCore_complete`, full target, every
+      `∂B_u`-context).  It relates two *readings* of `B_u`, both built from
+      `retainedBasinPiece`.  It does not relate G's piece at `B_u` to a
+      smaller piece.
+    - Candidate `Z' = retainedBasinPiece B_u (retained supports)`.  It keeps
+      every label edge, so the profile holds
+      (`retainedBasinPiece_boundaryDegreeProfile`).  It is a subgraph, so the
+      response clause holds in every context without using `α`
+      (`subgraph_response`).  G refutes `δ ≥ 3 ∧ smaller` for it
+      (`subgraph_not_baseline_and_smaller`).
+    - Any non-subgraph candidate, the fold included, fails the response
+      clause at `Y_G`.
+    - With a single carrier, the path spectra through it only restate the
+      core equivalence.  They feed no clause.
+    So `α ≤ 1` yields no compression of `B_u`.  [348] does not close.
 
 ### [144] step 2 (tex 5594/5614, 6026): the fold analysis of [348] applied (fix2-348)
 
@@ -1433,7 +1453,42 @@ disjunct `ContextEquivalent ρ₁ ρ₂`.
   the identification is label-only, "not an admissible rank reduction"
   (tex 6031-6035).  Visibility is false there; the ledger at [144] has no
   fact on the declared supports of the two pattern coordinates beyond the
-  routing label, so no route closes it.
+  routing label, so no route closes it.  (The two coordinates differ by their
+  label, the demand pair, `pairCoordinate label support`, so `first ≠ second`
+  does not separate their supports: both are the canonical connected
+  superset of their own seeds, and nothing on the ledger makes those
+  differ.)
+- **Follow-up (user): equal spectra as a compression candidate.**
+  1. *Response determinacy.*  Pairwise label-to-label spectra do not
+     determine the response of a target-free piece: a multi-crossing cycle
+     uses a vertex-disjoint system of piece paths.  Two readings can have the
+     same pairwise spectra with `a`-`b` and `c`-`d` paths disjoint in one and
+     meeting in the other; a context with an `b`-`c` and a `d`-`a` path of
+     tuned lengths then separates them.  The data that determine the response
+     are the linkage spectra (vertex-disjoint path systems between labels,
+     with their pairing, lengths and the labels they meet).  This needs no
+     separate theorem here: `ContextEquivalent` quantifies over every context,
+     multi-crossing ones included, so the residual disjunct already IS
+     response equality of `ρ₁` and `ρ₂`, i.e. linkage equality.
+  2. *Compression, clause by clause.*  Every representative `Z'` of `Z` is
+     one of two kinds:
+     - A subgraph of G's piece at `Z`.  This covers "replace `ρ₁` by `ρ₂`",
+       i.e. delete the edges inside `X₁` not inside `X₂`, and every reading.
+       The response clause holds for free in every context
+       (`subgraph_response`), so the equivalence `ρ₁ ~ ρ₂` is not used.
+       G's minimality refutes `δ ≥ 3 ∧ smaller` for it
+       (`subgraph_not_baseline_and_smaller`): a deletion that keeps
+       `δ ≥ 3` would be a smaller target-free graph.  The profile clause
+       additionally fails whenever a deleted edge meets `∂Z`.
+     - Not a subgraph (a fold).  Then the response clause fails at `Y_G`
+       (`representative_not_responsive_at_G`).
+     So no clause of `ReplacementSupport` or `CompressibleSupport` reads the
+     equivalence of the two readings.  That equivalence relates two readings
+     of `Z` to each other, never G's piece to a smaller piece, and equal
+     linkage spectra of `ρ₁`, `ρ₂` build no compression of G.
+  3. *[144a].*  The disjunct carries `ContextEquivalent` (full target, all
+     contexts), i.e. already linkage equality.  That is consistent at G
+     (configuration `X₁ = X₂`).
 - **Status.**  OPEN CONSTRUCTION, unchanged; [144a] keeps the disjunct.
 
 ## User-approved repairs

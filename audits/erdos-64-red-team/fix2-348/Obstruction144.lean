@@ -119,3 +119,75 @@ end F1Obstruction144
 #print axioms F1Obstruction144.representative_not_responsive_at_G
 #print axioms F1Obstruction144.readings_not_contextEquivalent_of_spectra
 #print axioms F1Obstruction144.readings_contextEquivalent_of_support_eq
+
+/-!
+## Follow-up: the compression candidate from equal spectra (both [144] and [348])
+
+Every representative `Z'` of a connected proper support `S` of G is either
+* a SUBGRAPH of G's piece at `S` (same vertices, fewer edges -- e.g. "replace
+  ρ₁ by ρ₂", i.e. delete the edges of `X₁` not in `X₂`; or at [348] the core
+  restriction's `retainedBasinPiece`): then the response clause holds in EVERY
+  context for free (`subgraph_response`), so no equivalence of readings is
+  used, and G itself refutes `baseline ∧ smaller` for it
+  (`subgraph_not_baseline_and_smaller`); or
+* not a subgraph: then (A) refutes the response clause at `Y_G` whenever
+  baseline and smaller hold.
+So no clause of `ReplacementSupport`/`CompressibleSupport` reads the
+context equivalence ρ₁ ~ ρ₂ (or, at [348], the core equivalence
+`ρ|_{C_ess} ~ ρ`): these relate two readings, never G's piece and a smaller
+piece.  Equal path/linkage spectra of two readings build no compression.
+-/
+
+namespace F1Obstruction144
+
+/-- A subgraph of G's piece at `S` passes the response clause against every
+context. -/
+theorem subgraph_response {object : FiniteObject.{u}} {LengthOK : Nat → Prop}
+    (support : Finset object.Vertex)
+    (smaller : SimpleGraph ((SupportAtom.boundary object support).Vertex ⊕
+      (SupportAtom.piece object support).Internal))
+    (decide : DecidableRel smaller.Adj)
+    (le : smaller ≤ (SupportAtom.piece object support).graph)
+    (outside : OutsideContext (SupportAtom.boundary object support))
+    (cycle : HasCycleWithLength LengthOK
+      (glue { SupportAtom.piece object support with
+        graph := smaller, decideAdj := decide } outside)) :
+    HasCycleWithLength LengthOK (glue (SupportAtom.piece object support) outside) :=
+  hasCycleWithLength_of_hom
+    (left := glue { SupportAtom.piece object support with
+      graph := smaller, decideAdj := decide } outside)
+    (right := glue (SupportAtom.piece object support) outside)
+    (SimpleGraph.Hom.ofLE (glueGraph_mono outside smaller decide le))
+    (fun _ _ equal => equal) cycle
+
+/-- At G no subgraph representative of any support keeps the baseline and is
+strictly smaller: minimality would give it an accepted cycle, which maps into
+G. -/
+theorem subgraph_not_baseline_and_smaller {object : FiniteObject.{u}}
+    {threshold : Nat} {LengthOK : Nat → Prop}
+    (avoids : ¬ HasCycleWithLength LengthOK object)
+    (minimality : ∀ representative : FiniteObject.{u},
+      representative.LexicographicallySmaller object →
+      MinimumDegreeAtLeast threshold representative →
+      HasCycleWithLength LengthOK representative)
+    (support : Finset object.Vertex)
+    (smaller : SimpleGraph ((SupportAtom.boundary object support).Vertex ⊕
+      (SupportAtom.piece object support).Internal))
+    (decide : DecidableRel smaller.Adj)
+    (le : smaller ≤ (SupportAtom.piece object support).graph) :
+    let replacement := { SupportAtom.piece object support with
+      graph := smaller, decideAdj := decide }
+    ¬ (MinimumDegreeAtLeast threshold
+          (glue replacement (SupportAtom.outside object support)) ∧
+        (glue replacement (SupportAtom.outside object support)).LexicographicallySmaller
+          object) := by
+  intro replacement ⟨baseline, lex⟩
+  have pieceCycle := subgraph_response support smaller decide le
+    (SupportAtom.outside object support) (minimality _ lex baseline)
+  let iso := (SupportAtom.decomposition object support).reconstructionIso
+  exact avoids (hasCycleWithLength_of_hom iso.toHom iso.injective pieceCycle)
+
+end F1Obstruction144
+
+#print axioms F1Obstruction144.subgraph_response
+#print axioms F1Obstruction144.subgraph_not_baseline_and_smaller
