@@ -1538,11 +1538,11 @@ noncomputable abbrev BlockedPairNoExitStatement
     Prop :=
   ¬ SparsePairExitStatement data object
 
-/-- **The presentation identities the sparse-surplus rows spend**, published
-once on the ledger at node `[125]` (the analogue of `K .cubicBaseline`): the
-node-`[129]` deficit scale covers the binomial loss; the join comparison
-`δ·order + 2 ≤ 4·order` of `lem:capacity-token-supply`; the target is exactly
-the dyadic lengths (node `[180]`); the registered routing-label count is the
+/-- **The presentation identities the sparse-surplus rows spend**, the third
+component of `PresentationLawsStatement` (key `cubicBaseline`), published once
+at the entry: the node-`[129]` deficit scale covers the binomial loss; the join
+comparison `δ·order + 2 ≤ 4·order` of `lem:capacity-token-supply`; the
+registered routing-label count is the
 cardinality of the seven-coordinate label alphabet (nodes `[140]`--`[144]`);
 and the spine scale `C_sp` absorbs the quadratic safety coefficient (node
 `[138]`).  Each is a fact about the registered presentation, never about a
@@ -1550,7 +1550,6 @@ graph; rows read it with `inputs.get` rather than from the ambient record. -/
 noncomputable abbrev SurplusPresentationStatement (data : Parameters) : Prop :=
   Graph.baselineDeficitCoefficient data.threshold ≤ data.surplusScale ∧
     data.threshold * data.windowOrder + 2 ≤ 4 * data.windowOrder ∧
-    (∀ length, data.LengthOK length ↔ Core.DyadicLength.PowerOfTwoLength length) ∧
     data.routingLabelBound = Fintype.card
       (Graph.SameTokenRoutingGerms.RoutingLabel
         (Fin data.threshold → Fin data.threshold)

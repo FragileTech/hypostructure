@@ -153,7 +153,7 @@ they close the suppression.  Its first edge after `x(p)` is a shoulder. -/
     (fun inputs =>
       .cons (key := K .activeSurplusDemands)
         ⟨Graph.Contracts.SurplusPair.activeSurplusDemands_of_activation
-          (inputs.get (K .cubicBaseline)).down.1
+          (inputs.get (K .cubicBaseline)).down.1.1
           (inputs.get (K .activeSurplusFamily)).down
           (inputs.get (K .sparsePortActivation)).down⟩
         .nil)
@@ -177,7 +177,7 @@ deficit is bounded linearly using the registered coefficient inequality. -/
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.baselineSpineDemand
     { Requires := [K .sparseSurplusSurvivor, K .surplusAbove, K .noProperBaseline, K .tightEndpoint,
-        K .cubicBaseline, K .surplusPresentation]
+        K .cubicBaseline]
       Produces := [K .baselineSpineDemand]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -189,8 +189,8 @@ deficit is bounded linearly using the registered coefficient inequality. -/
           (inputs.get (K .surplusAbove)).down
           (inputs.get (K .noProperBaseline)).down
           (inputs.get (K .tightEndpoint)).down
-          (by have := (inputs.get (K .cubicBaseline)).down.1; omega)
-          (inputs.get (K .surplusPresentation)).down.1⟩
+          (by have := (inputs.get (K .cubicBaseline)).down.1.1; omega)
+          (inputs.get (K .cubicBaseline)).down.2.2.1.1⟩
         .nil)
 
 /-! ## Node `[132]`: route the dependent pair family -/
@@ -264,7 +264,7 @@ logarithms cleared, published from the literal `[131]` residual. -/
     (fun inputs =>
       .cons (key := K .exactCubicBaselineBudget)
         ⟨Graph.Contracts.SurplusPair.exactCubicBaselineBudget_of_threshold
-          (by have := (inputs.get (K .cubicBaseline)).down.1; omega)⟩
+          (by have := (inputs.get (K .cubicBaseline)).down.1.1; omega)⟩
         .nil)
 
 /-- `lem:incremental-skeleton-room` at the current object's edge count.  Both
@@ -281,7 +281,7 @@ division cleared. -/
     (fun inputs =>
       .cons (key := K .incrementalSkeletonRoom)
         ⟨Graph.Contracts.SurplusPair.incrementalSkeletonRoom_of_baseline inputs.current.baseline
-          (by have := (inputs.get (K .cubicBaseline)).down.1; omega)⟩
+          (by have := (inputs.get (K .cubicBaseline)).down.1.1; omega)⟩
         .nil)
 
 /-- `lem:skeleton-dominates` at the current residual's exact edge stratum.
@@ -385,7 +385,7 @@ canonical-fibre no-overcount identities. -/
           (inputs.get (K .noProperBaseline)).down
           (inputs.get (K .tightEndpoint)).down
           (inputs.get (K .surplusAbove)).down
-          (by have := (inputs.get (K .cubicBaseline)).down.1; omega)⟩
+          (by have := (inputs.get (K .cubicBaseline)).down.1.1; omega)⟩
         .nil)
 
 /-! ## Node `[136]`: capacity-token ledger -/
@@ -394,7 +394,7 @@ canonical-fibre no-overcount identities. -/
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.capacityTokenLedger
     { Requires := [K .canonicalPairLedger, K .sparseUpperEnvelope, K .noProperBaseline,
-        K .selection, K .cubicBaseline, K .surplusPresentation]
+        K .selection, K .cubicBaseline]
       Produces := [K .capacityTokenLedger]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -406,8 +406,8 @@ canonical-fibre no-overcount identities. -/
           (inputs.get (K .sparseUpperEnvelope)).down
           (inputs.get (K .noProperBaseline)).down
           (inputs.get (K .selection)).down.1
-          (by have := (inputs.get (K .cubicBaseline)).down.1; omega)
-          (inputs.get (K .surplusPresentation)).down.2.1⟩
+          (by have := (inputs.get (K .cubicBaseline)).down.1.1; omega)
+          (inputs.get (K .cubicBaseline)).down.2.2.1.2.1⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

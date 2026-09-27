@@ -35,7 +35,7 @@ variable {data : Data.{u}}
     (fun inputs =>
       .cons (key := K .typeABoundedSupport)
         ⟨Graph.Contracts.TypeA.typeABoundedSupport data.toParameters
-          inputs.current.object (inputs.get (K .cubicBaseline)).down.1
+          inputs.current.object (inputs.get (K .cubicBaseline)).down.1.1
           (Graph.Contracts.TypeA.three_le_windowOrder_of_labelCount data.toParameters
             (inputs.get (K .localAlgebra)).down.1)
           inputs.current.baseline

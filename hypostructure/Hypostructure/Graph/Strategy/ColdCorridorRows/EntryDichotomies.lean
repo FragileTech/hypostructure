@@ -80,7 +80,7 @@ from the literal ledger and publish the exact live-hot entropy cap
       .cons (key := K .coldHotEntropyCap)
         ⟨Contracts.Spine.coldHotEntropyCap_of_barrierCap data.toParameters
           inputs.current.object inputs.current.baseline
-          (by have := (inputs.get (K .cubicBaseline)).down.1; omega)
+          (by have := (inputs.get (K .cubicBaseline)).down.1.1; omega)
           (inputs.get (K .barrierCap)).down
           (inputs.get (K .surplusAtOrBelow)).down⟩
         .nil)

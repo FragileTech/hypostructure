@@ -21,7 +21,7 @@ positive coupled excess, so the object's own certified ledger is capped and
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.pressureSpineSurplusEstimate
     { Requires := [K .sparsePressureNearCubic, K .fibrePressure, K .surplusAbove,
-        K .surplusPresentation]
+        K .cubicBaseline]
       Produces := [K .spineSurplusEstimate]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -32,7 +32,7 @@ positive coupled excess, so the object's own certified ledger is capped and
           (inputs.get (K .sparsePressureNearCubic)).down
           (inputs.get (K .fibrePressure)).down
           (inputs.get (K .surplusAbove)).down
-          (inputs.get (K .surplusPresentation)).down.2.2.2.2⟩
+          (inputs.get (K .cubicBaseline)).down.2.2.1.2.2.2⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

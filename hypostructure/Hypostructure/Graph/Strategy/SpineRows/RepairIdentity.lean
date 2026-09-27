@@ -47,7 +47,7 @@ places the quotient in the closed rather than proper-support clause. -/
       .cons (key := K .repairIdentity)
         ⟨Contracts.Spine.repairIdentity_of_globalDelocalization data.toParameters
           inputs.current.object (inputs.get (K .globalDelocalization)).down
-          inputs.current.baseline (inputs.get (K .cubicBaseline)).down⟩
+          inputs.current.baseline (inputs.get (K .cubicBaseline)).down.1⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

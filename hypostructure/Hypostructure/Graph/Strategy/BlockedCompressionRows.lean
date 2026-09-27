@@ -40,19 +40,19 @@ noncomputable def scaleAdditivityDichotomy
       (Input BranchState Presentation presentation data) current known)
     [FactKeys.Has (K .blockedClassMember) known]
     [FactKeys.Has (K .cubicBaseline) known]
-    [FactKeys.Has (K .spinePresentationLaws) known]
     (additiveFresh : K .blockedScaleAdditive ∉ known)
     (overlapFresh : K .blockedBarrierOverlap ∉ known) :
     Decision (K .blockedScaleAdditive) (K .blockedBarrierOverlap) previous := by
   classical
-  -- The presentation laws the two arms use are ledger facts: the rejected
-  -- degenerate closure (`K .cubicBaseline`), the dyadic target and the barrier
-  -- table's label semantics (`K .spinePresentationLaws`).
+  -- The presentation laws the two arms use are ledger facts, all read from the
+  -- one presentation-law fact `K .cubicBaseline`: the rejected degenerate
+  -- closure, the dyadic target and the barrier table's label semantics.
   have _member := (previous.get (K .blockedClassMember)).down
-  have degenerate := (previous.get (K .cubicBaseline)).down.2.2.1
-  obtain ⟨-, -, dyadic, -, -, labelMem, labelInjective, labelSurjective,
+  have degenerate := (previous.get (K .cubicBaseline)).down.1.2.2.1
+  have dyadic := (previous.get (K .cubicBaseline)).down.2.1.2.1
+  obtain ⟨-, -, -, -, labelMem, labelInjective, labelSurjective,
     leftSemantic, rightSemantic, sumSemantic⟩ :=
-    (previous.get (K .spinePresentationLaws)).down
+    (previous.get (K .cubicBaseline)).down.2.2.2
   exact Decision.run previous (K .blockedScaleAdditive) (K .blockedBarrierOverlap)
     `Hypostructure.Graph.Strategy.Spine.scaleAdditivityDichotomy
     (if additive : ∀ coordinate : blockedCoordinate data.toParameters current.object,

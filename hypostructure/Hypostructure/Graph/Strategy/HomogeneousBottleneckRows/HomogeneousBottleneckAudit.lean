@@ -27,7 +27,7 @@ derivation of the bottleneck pattern consumed by `[144]`. -/
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.windowBottleneckAudit
     { Requires := [K .windowClassOverload, K .capacityTokenLedger,
-        K .surplusPresentation]
+        K .cubicBaseline]
       Produces := [K .homogeneousBottleneckPattern]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -37,7 +37,7 @@ derivation of the bottleneck pattern consumed by `[144]`. -/
         ⟨Graph.Contracts.SurplusPair.homogeneousBottleneckPattern_of_class
           (inputs.get (K .windowClassOverload)).down
           (inputs.get (K .capacityTokenLedger)).down
-          (inputs.get (K .surplusPresentation)).down.2.2.2.1⟩
+          (inputs.get (K .cubicBaseline)).down.2.2.1.2.2.1⟩
         .nil)
 
 /-- Node `[142]`: the remainder-surplus geometric audit. -/
@@ -45,7 +45,7 @@ derivation of the bottleneck pattern consumed by `[144]`. -/
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.remainderBottleneckAudit
     { Requires := [K .remainderClassOverload, K .capacityTokenLedger,
-        K .surplusPresentation]
+        K .cubicBaseline]
       Produces := [K .homogeneousBottleneckPattern]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -55,7 +55,7 @@ derivation of the bottleneck pattern consumed by `[144]`. -/
         ⟨Graph.Contracts.SurplusPair.homogeneousBottleneckPattern_of_class
           (inputs.get (K .remainderClassOverload)).down
           (inputs.get (K .capacityTokenLedger)).down
-          (inputs.get (K .surplusPresentation)).down.2.2.2.1⟩
+          (inputs.get (K .cubicBaseline)).down.2.2.1.2.2.1⟩
         .nil)
 
 /-- Node `[143]`: the primitive blocker-support geometric audit. -/
@@ -63,7 +63,7 @@ derivation of the bottleneck pattern consumed by `[144]`. -/
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.primitiveBottleneckAudit
     { Requires := [K .primitiveClassOverload, K .capacityTokenLedger,
-        K .surplusPresentation]
+        K .cubicBaseline]
       Produces := [K .homogeneousBottleneckPattern]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -73,7 +73,7 @@ derivation of the bottleneck pattern consumed by `[144]`. -/
         ⟨Graph.Contracts.SurplusPair.homogeneousBottleneckPattern_of_class
           (inputs.get (K .primitiveClassOverload)).down
           (inputs.get (K .capacityTokenLedger)).down
-          (inputs.get (K .surplusPresentation)).down.2.2.2.1⟩
+          (inputs.get (K .cubicBaseline)).down.2.2.1.2.2.1⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

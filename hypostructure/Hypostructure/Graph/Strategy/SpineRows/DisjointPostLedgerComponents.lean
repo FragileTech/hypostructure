@@ -48,8 +48,8 @@ is B2-paid. -/
     (fun inputs =>
       .cons (key := K .typeBDegreeFourClosed)
         ⟨Contracts.TypeB.typeBDegreeFourClosed
-          (inputs.get (K .cubicBaseline)).down.1
-          (inputs.get (K .cubicBaseline)).down.2.1
+          (inputs.get (K .cubicBaseline)).down.1.1
+          (inputs.get (K .cubicBaseline)).down.1.2.1
           (inputs.get (K .typeBFanDegreeFourCentres)).down
           (inputs.get (K .typeBDegreeFourLedger)).down⟩
         .nil)

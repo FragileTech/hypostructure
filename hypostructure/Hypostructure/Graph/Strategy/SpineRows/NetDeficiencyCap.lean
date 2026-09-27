@@ -38,8 +38,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       (Presentation := Presentation) (presentation := presentation)
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.netDeficiencyCap
-    { Requires := [K .largeBudgetResidual, K .densityCap, K .cubicBaseline,
-        K .spinePresentationLaws]
+    { Requires := [K .largeBudgetResidual, K .densityCap, K .cubicBaseline]
       Produces := [K .netDeficiencyCap]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -47,12 +46,12 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     (fun inputs =>
       -- `[55]` → `[56]`: the Residual C ledger fact is this node's predecessor.
       let _residualC := (inputs.get (K .largeBudgetResidual)).down
-      let laws := (inputs.get (K .spinePresentationLaws)).down
+      let laws := (inputs.get (K .cubicBaseline)).down.2.2.2
       .cons (key := K .netDeficiencyCap)
         ⟨Contracts.Spine.netDeficiencyCap_of_densityCap data.toParameters
-          inputs.current.object laws.2.2.2.1
-          (Nat.le_of_eq (inputs.get (K .cubicBaseline)).down.1.symm)
-          laws.2.2.2.2.1
+          inputs.current.object laws.2.2.1
+          (Nat.le_of_eq (inputs.get (K .cubicBaseline)).down.1.1.symm)
+          laws.2.2.2.1
           (inputs.get (K .densityCap)).down⟩
         .nil)
     0 0

@@ -32,7 +32,7 @@ and the canonical demand records of the unpaid target-defect entries. -/
       .cons (key := K .route8DemandLedger)
         ⟨Graph.Contracts.RouteEight.route8DemandLedger data.toParameters
           inputs.current.object
-          (by have := (inputs.get (K .cubicBaseline)).down.1; omega)
+          (by have := (inputs.get (K .cubicBaseline)).down.1.1; omega)
           (inputs.get (K .selection)).down.1⟩ .nil)
     0 0
 

@@ -24,7 +24,7 @@ cycle. -/
 @[reducible] noncomputable def pairPowerOfTwoCycleRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.pairPowerOfTwoCycle
-    { Requires := [K .pairSerialArithmetic, K .surplusPresentation]
+    { Requires := [K .pairSerialArithmetic, K .cubicBaseline]
       Produces := [K .pairPowerOfTwoCycle]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -32,7 +32,7 @@ cycle. -/
     (fun inputs =>
       .cons (key := K .pairPowerOfTwoCycle)
         ⟨Graph.Contracts.SurplusPair.pairPowerOfTwoCycle_of_arithmetic (inputs.get (K .pairSerialArithmetic)).down
-          (inputs.get (K .surplusPresentation)).down.2.2.1⟩
+          (inputs.get (K .cubicBaseline)).down.2.1.2.1⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

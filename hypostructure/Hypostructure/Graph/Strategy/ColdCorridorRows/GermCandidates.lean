@@ -36,7 +36,7 @@ unbounded cross-window loss (`Contracts.Spine.coldGermCandidates_of_routing`). -
       .cons (key := K .coldGermCandidates)
         ⟨Contracts.Spine.coldGermCandidates_of_routing data.toParameters
           inputs.current.object inputs.current.baseline
-          (inputs.get (K .cubicBaseline)).down.1
+          (inputs.get (K .cubicBaseline)).down.1.1
           data.three_le_windowOrder (inputs.get (K .coldFailureRouting)).down
           (inputs.get (K .coldHandoffTransfer)).down⟩
         .nil)

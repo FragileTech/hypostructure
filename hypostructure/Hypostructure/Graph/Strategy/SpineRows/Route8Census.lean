@@ -24,7 +24,7 @@ readings. -/
       .cons (key := K .route8Census)
         ⟨Graph.Contracts.RouteEight.route8Census data.toParameters inputs.current.object
           inputs.current.baseline
-          (by have := (inputs.get (K .cubicBaseline)).down.2.1; omega)
+          (by have := (inputs.get (K .cubicBaseline)).down.1.2.1; omega)
           (inputs.get (K .route8BasinBurden)).down
           (inputs.get (K .route8LargeBudgetDeficit)).down
           (inputs.get (K .route8Rate)).down⟩ .nil)

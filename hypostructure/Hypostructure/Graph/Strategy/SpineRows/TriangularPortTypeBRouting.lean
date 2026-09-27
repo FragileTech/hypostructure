@@ -29,7 +29,7 @@ alternative routes to fan-closed ports with
     (fun inputs =>
       .cons (key := K .triangularPortTypeBRouting)
         ⟨Contracts.TypeB.triangularPortTypeBRouting (data := data.toParameters)
-          (inputs.get (K .cubicBaseline)).down.1 (inputs.get (K .cubicBaseline)).down.2.1
+          (inputs.get (K .cubicBaseline)).down.1.1 (inputs.get (K .cubicBaseline)).down.1.2.1
           (inputs.get (K .fanClosedPort)).down
           (inputs.get (K .fanClosedPortTypeBRouting)).down⟩
         .nil)

@@ -19,7 +19,7 @@ variable {data : Data.{u}}
 @[reducible] noncomputable def suppressedFamilyCriticalCycleRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.suppressedFamilyCriticalCycle
-    { Requires := [K .selection, K .openPortSuppressionSafe]
+    { Requires := [K .selection, K .openPortSuppressionSafe, K .cubicBaseline]
       Produces := [K .suppressedFamilyCriticalCycle]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -28,7 +28,7 @@ variable {data : Data.{u}}
       .cons (key := K .suppressedFamilyCriticalCycle)
         ⟨Contracts.TypeB.suppressedFamilyCriticalCycle (inputs.get (K .selection)).down.1
           (inputs.get (K .selection)).down.2.sizeMinimal (inputs.get (K .openPortSuppressionSafe)).down
-          data.threshold_eq_three⟩
+          (inputs.get (K .cubicBaseline)).down.1.1⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

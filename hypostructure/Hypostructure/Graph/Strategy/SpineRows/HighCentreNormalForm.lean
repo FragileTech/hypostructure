@@ -29,7 +29,7 @@ law makes every neighbour cubic. -/
     (fun inputs =>
       .cons (key := K .highCentreNormalForm)
         ⟨Contracts.TypeB.highCentreNormalForm (inputs.get (K .selection)).down.1
-          (inputs.get (K .cubicBaseline)).down.2.2.2.2.1
+          (inputs.get (K .cubicBaseline)).down.2.1.1
           (inputs.get (K .tightEndpoint)).down⟩
         .nil)
 

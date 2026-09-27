@@ -22,7 +22,7 @@ universe u v
 /-- **Nodes `[25]`--`[27]`, `sec:remainder`.**  The remainder `R₀` of G's fixed
 maximum packing `P₀` carries no induced window (it would extend the packing), and no subset
 of it induces a baseline subgraph: that subgraph would be window-free, so the
-cited closure law (`thm:p13free`, read at `G[S]` from `K .spinePresentationLaws`)
+cited closure law (`thm:p13free`, read at `G[S]` from `K .cubicBaseline`)
 gives it an accepted cycle, which is a cycle of the target-avoiding object. -/
 theorem remainderNormalized_of_selection
     {BranchState : Graph.FiniteObject.{u} → Type v}

@@ -33,7 +33,7 @@ either alternative gives fan-closed ports. -/
     (fun inputs =>
       .cons (key := K .typeBFanLocalDichotomy)
         ⟨Contracts.TypeB.typeBFanLocalDichotomy
-          (le_of_eq (inputs.get (K .cubicBaseline)).down.1.symm)
+          (le_of_eq (inputs.get (K .cubicBaseline)).down.1.1.symm)
           (inputs.get (K .highCentreNormalForm)).down
           (inputs.get (K .compatiblePairTypeBRouting)).down
           (inputs.get (K .triangularPortTypeBRouting)).down

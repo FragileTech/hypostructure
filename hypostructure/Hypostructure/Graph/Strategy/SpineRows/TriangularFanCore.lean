@@ -27,7 +27,7 @@ variable {data : Data.{u}}
     (fun inputs =>
       .cons (key := K .triangularFanCore)
         ⟨Contracts.TypeB.triangularFanCore (inputs.get (K .highCentreNormalForm)).down
-          (inputs.get (K .cubicBaseline)).down.1⟩
+          (inputs.get (K .cubicBaseline)).down.1.1⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

@@ -36,10 +36,9 @@ noncomputable def Assembly.Internal.strictSurplusDependent
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .suppressedFamilyCriticalCycle,
         K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
-        K .openPortSuppression, K .surplusPresentation,
-        K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
+        K .openPortSuppression, K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .spinePresentationLaws, K .cubicBaseline,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .cubicBaseline,
         K .selection]) :
     StrictSurplusBoundaryResult selected := by
   match blockedPairRoutingDichotomy (data := spineData) dependentHistory

@@ -28,7 +28,7 @@ to assigned surplus. -/
     (fun inputs =>
       .cons (key := K .fanCertificateResidualMass)
         ⟨Contracts.TypeB.typeBFanCertificateResidualMass
-          (inputs.get (K .cubicBaseline)).down.2.2.2.2.2.2.2.2
+          (inputs.get (K .cubicBaseline)).down.2.1.2.2.2.2
           (inputs.get (K .fanCertificateResidual)).down⟩
         .nil)
 

@@ -31,8 +31,8 @@ chain and exact stage accounting. -/
       .cons (key := K .route8PeelingDescent)
         ⟨Graph.Contracts.RouteEight.route8PeelingDescent data.toParameters
           inputs.current.object inputs.current.baseline
-          (by have := (inputs.get (K .cubicBaseline)).down.1; omega)
-          (by have := (inputs.get (K .cubicBaseline)).down.2.1; omega)
+          (by have := (inputs.get (K .cubicBaseline)).down.1.1; omega)
+          (by have := (inputs.get (K .cubicBaseline)).down.1.2.1; omega)
           (inputs.get (K .remainderNormalized)).down
           (inputs.get (K .route8UnifiedDeficit)).down⟩ .nil)
     0 0

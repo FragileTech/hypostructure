@@ -20,7 +20,7 @@ variable {data : Data.{u}}
 The yes key is `windowFree` (the object has no induced window of the registered
 order), the no key `windowPresent` (it has one); the two are exact complements
 on the same object.  The yes arm closes at node `[16]`: the cited closure law
-`thm:p13free`, read at G from `K .spinePresentationLaws`, gives G an accepted
+`thm:p13free`, read at G from `K .cubicBaseline`, gives G an accepted
 cycle (`K .hssTargetCycle`), which the selection denies (`cor:p13-exists`).  The
 closure is the framework's, `runAndCloseIncompatible` against `K .selection`. -/
 
@@ -44,7 +44,7 @@ noncomputable def windowFreeDichotomy
 
 /-- **Node `[16]`: the HSS theorem gives a target cycle.**  On the yes arm of
 node `[15]` the row reads the cited closure law `thm:p13free` at G
-(`K .spinePresentationLaws`) and G's window-freeness (`K .windowFree`), and
+(`K .cubicBaseline`) and G's window-freeness (`K .windowFree`), and
 publishes that G has an accepted cycle. -/
 @[reducible] noncomputable def hssTargetCycleRow :
     @AtomicStrategy (Input BranchState Presentation presentation data) _
@@ -59,14 +59,14 @@ publishes that G has an accepted cycle. -/
       (Presentation := Presentation) (presentation := presentation)
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.hssTargetCycle
-    { Requires := [K .spinePresentationLaws, K .windowFree]
+    { Requires := [K .cubicBaseline, K .windowFree]
       Produces := [K .hssTargetCycle]
       requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .hssTargetCycle)
-        ⟨(inputs.get (K .spinePresentationLaws)).down.1 inputs.current.baseline
+        ⟨(inputs.get (K .cubicBaseline)).down.2.2.2.1 inputs.current.baseline
           (inputs.get (K .windowFree)).down⟩
         .nil)
     0 0

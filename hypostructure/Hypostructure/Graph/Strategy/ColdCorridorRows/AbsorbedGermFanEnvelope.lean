@@ -65,8 +65,8 @@ the support (first-failure prefix, `{centre}`). -/
             (inputs.get (K .uncompressible)).down
             (inputs.get (K .remainderNormalized)).down
             (inputs.get (K .absorbedGermFanData)).down
-            (le_of_eq (inputs.get (K .cubicBaseline)).down.1.symm)
-            (inputs.get (K .cubicBaseline)).down.2.2.1)
+            (le_of_eq (inputs.get (K .cubicBaseline)).down.1.1.symm)
+            (inputs.get (K .cubicBaseline)).down.1.2.2.1)
           (inputs.get (K .typeBAbsorbedHalfEdge)).down⟩
         .nil)
 

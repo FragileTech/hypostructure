@@ -47,7 +47,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       .cons (key := K .cycleRankConstraint)
         ⟨Contracts.Spine.cycleRankConstraint_of_baseline data.toParameters
           inputs.current.object inputs.current.baseline
-          (Nat.le_of_eq (inputs.get (K .cubicBaseline)).down.1.symm)⟩
+          (Nat.le_of_eq (inputs.get (K .cubicBaseline)).down.1.1.symm)⟩
         .nil)
     0 0
 

@@ -27,7 +27,7 @@ variable {data : Data.{u}}
     (fun inputs =>
       .cons (key := K .typeBOverlapObstructionMass)
         ⟨Contracts.TypeB.typeBOverlapObstructionMass
-          (inputs.get (K .cubicBaseline)).down.2.2.2.2.2.2.2.2
+          (inputs.get (K .cubicBaseline)).down.2.1.2.2.2.2
           (inputs.get (K .typeBGlobalLocalBridge)).down⟩
         .nil)
 

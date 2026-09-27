@@ -35,7 +35,7 @@ universe u v
     (fun inputs =>
       .cons (key := K .route8JointBalance)
         ⟨Graph.Contracts.RouteEight.route8JointBalance data.toParameters
-          inputs.current.object (inputs.get (K .cubicBaseline)).down.1
+          inputs.current.object (inputs.get (K .cubicBaseline)).down.1.1
           (inputs.get (K .route8UnifiedVisibleOverload)).down
           (inputs.get (K .route8UnifiedVisibleResidual)).down
           (inputs.get (K .route8PeelingDescent)).down

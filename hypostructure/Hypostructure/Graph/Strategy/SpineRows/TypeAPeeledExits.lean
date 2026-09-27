@@ -178,7 +178,7 @@ noncomputable def typeAPeeledExitThreeDichotomy
     (fun inputs =>
       .cons (key := K .typeAExitThreeCycle)
         ⟨Graph.Contracts.TypeA.typeAPeeledExitThreeCycle data.toParameters
-          inputs.current.object (inputs.get (K .cubicBaseline)).down.2.2.1
+          inputs.current.object (inputs.get (K .cubicBaseline)).down.1.2.2.1
           (inputs.get (K .typeAPeeledExitThreeCollision)).down⟩
         .nil)
 

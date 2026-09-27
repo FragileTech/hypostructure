@@ -292,6 +292,23 @@ theorem Data.quadraticSafetyScale_le_twiceAdditive (data : Data.{u}) :
   have safety := data.roleSafety
   omega
 
+/-- The registered `C_sp` absorbs the safety coefficient of the generic
+quadratic estimate: the homogeneous cap already does (`L_geom ≥ 2`), and
+`C_sp` adds only nonnegative deficit and token-supply terms to it. -/
+theorem Data.quadraticSafetyScale_le_spineScale (data : Data.{u}) :
+    Graph.TokenLoad.quadraticSafetyScale ≤ data.spineScale := by
+  have registered := data.quadraticSafetyScale_le_twiceAdditive
+  change Graph.TokenLoad.quadraticSafetyScale ≤
+    2 * (1 + 2 * Graph.SameTokenBlockerRoles.homogeneousTokenCap
+      data.routingLabelBound) at registered
+  change Graph.TokenLoad.quadraticSafetyScale ≤
+    2 * (1 + 2 * Graph.SameTokenBlockerRoles.homogeneousTokenCap
+      data.routingLabelBound) +
+      (2 * data.surplusScale +
+        2 * Graph.SameTokenBlockerRoles.homogeneousTokenCap
+          data.routingLabelBound * (3 * (data.threshold - 1) + 2))
+  omega
+
 /-- The registered label count forces the window order to be at least three:
 the legal labels of a path on `order` vertices are among its `2^order` subsets,
 and `399 > 2^2`. -/
@@ -333,8 +350,11 @@ inductive Key where
   /-- Nodes `[1]`--`[4]`: the selected object avoids the target and every
   strictly smaller baseline object does not. -/
   | selection
-  /-- The registered problem presentation identifies the spine threshold with
-  the paper's cubic baseline. -/
+  /-- The presentation laws of G's registered presentation, published once at
+  the entry (`PresentationLawsStatement`): the cubic baseline identities, the
+  Type B presentation facts (with the dyadic target law), the sparse-surplus
+  presentation identities, and the spine laws at G.  Every row reads a
+  presentation law from this one fact with `inputs.get`. -/
   | cubicBaseline
   /-- Nodes `[5]`--`[7]`: the return-length set is disjoint from the shifted
   accepted set at every oriented edge.  This is the return-set form of target
@@ -1553,11 +1573,6 @@ inductive Key where
   /-- Node `[180]`, arithmetic arm: the exact negation of
   `pairIncrementEarlyOutcome`. -/
   | pairIncrementNoEarlyOutcome
-  -- SP keys
-  /-- Node `[125]`: the presentation identities the sparse-surplus rows spend
-  (deficit scale, join slack, dyadic target, routing-label count, spine
-  scale), published once so that rows read them with `inputs.get`. -/
-  | surplusPresentation
   -- F1 keys
   /-- Node `[86]`: the Type A support `X₀`, `s·def⁺(X₀) < |V(X₀)|`. -/
   | typeASupport
@@ -1598,10 +1613,6 @@ inductive Key where
   quotients are target-complete, and an identification valid only at G's own
   outside context is target-defective. -/
   | targetCompleteContextUniversality
-  /-- The presentation laws the spine reads (the HSS closure law at G and its
-  induced subgraphs, the dyadic target, the scale family, the net-cap slack,
-  the barrier-table label semantics), published once at the entry. -/
-  | spinePresentationLaws
   /-- Node `[16]`, `thm:p13free` on the window-free arm: G has an accepted
   cycle. -/
   | hssTargetCycle
@@ -1636,6 +1647,28 @@ inductive Key where
   | route8GlobalSqueeze
   deriving DecidableEq
 
+/-- **The presentation laws of G's registered presentation, published once at
+the entry** under the one key `K .cubicBaseline`.  The four components are
+disjoint: no law appears in two of them, and no other key publishes any of
+them.
+
+1. `CubicBaselineStatement`: `δ = 3`, `s = 4`, `2` is not an accepted length,
+   and the window rate is the barrier table's rate;
+2. `TypeBPresentationStatement`: the quadrilateral is accepted, the accepted
+   lengths are exactly the dyadic ones (the one copy of the target law), and
+   the Type B fan, deficit and bridge-mass slacks;
+3. `SurplusPresentationStatement`: the sparse-surplus presentation identities;
+4. `SpinePresentationLawsStatement`: the HSS closure law at `G` and at `G`'s
+   induced subgraphs, the scale family, the net-cap slack and the barrier
+   table's label semantics, stated at `G`. -/
+noncomputable abbrev PresentationLawsStatement (data : Parameters)
+    (label : Fin data.windowBarrier.size →
+      Graph.WindowCurvature.Label data.windowOrder)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  CubicBaselineStatement data ∧ TypeBPresentationStatement data ∧
+    SurplusPresentationStatement data ∧
+    SpinePresentationLawsStatement data label object
+
 /-- The value schema of each spine fact, stated of the *object* alone.
 
 Every spine fact is a statement about the selected graph, never about a side
@@ -1649,8 +1682,8 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
     Key → Graph.FiniteObject.{u} → Prop
   | .selection, object =>
       SelectionStatement BranchState Presentation presentation data.toParameters object
-  | .cubicBaseline, _object =>
-      CubicBaselineStatement data.toParameters
+  | .cubicBaseline, object =>
+      PresentationLawsStatement data.toParameters data.windowBarrierLabel object
   | .returnAvoidance, object =>
       ReturnAvoidanceStatement data.toParameters object
   | .mersenneReturn, object =>
@@ -2347,9 +2380,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       PairIncrementFailsStatement data.toParameters object
   | .pairIncrementNoEarlyOutcome, object =>
       PairIncrementNoEarlyOutcomeStatement data.toParameters object
-  -- SP keys
-  | .surplusPresentation, _object =>
-      SurplusPresentationStatement data.toParameters
   -- F1 keys
   | .typeASupport, object =>
       TypeASupportStatement data.toParameters object
@@ -2380,8 +2410,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       DegreeProfileFibresStatement data.toParameters object
   | .targetCompleteContextUniversality, object =>
       TargetCompleteContextUniversalityStatement data.toParameters object
-  | .spinePresentationLaws, object =>
-      SpinePresentationLawsStatement data.toParameters data.windowBarrierLabel object
   | .hssTargetCycle, object =>
       HssTargetCycleStatement data.toParameters object
   -- TA keys
@@ -2720,7 +2748,6 @@ def label : Key → String
   | .pairIncrementFails => "pairIncrementFails"
   | .pairIncrementNoEarlyOutcome => "pairIncrementNoEarlyOutcome"
   -- SP keys
-  | .surplusPresentation => "surplusPresentation"
   -- F1 keys
   | .typeASupport => "typeASupport"
   | .typeANoVisibleEntry => "typeANoVisibleEntry"
@@ -2738,7 +2765,6 @@ def label : Key → String
   -- SD keys (final pass)
   | .degreeProfileFibres => "degreeProfileFibres"
   | .targetCompleteContextUniversality => "targetCompleteContextUniversality"
-  | .spinePresentationLaws => "spinePresentationLaws"
   | .hssTargetCycle => "hssTargetCycle"
   -- TA keys
   | .typeAPeeledSaturatedReceiver => "typeAPeeledSaturatedReceiver"
@@ -3083,7 +3109,6 @@ example : label .pairSystemNoEarlyOutcome = "pairSystemNoEarlyOutcome" := rfl
 example : label .pairIncrementFails = "pairIncrementFails" := rfl
 example : label .pairIncrementNoEarlyOutcome = "pairIncrementNoEarlyOutcome" := rfl
 -- SP keys
-example : label .surplusPresentation = "surplusPresentation" := rfl
 -- F1 keys
 example : label .typeASupport = "typeASupport" := rfl
 example : label .typeANoVisibleEntry = "typeANoVisibleEntry" := rfl
@@ -3101,7 +3126,6 @@ example : label .coldNoPositiveGerm = "coldNoPositiveGerm" := rfl
 -- SD keys (final pass)
 example : label .degreeProfileFibres = "degreeProfileFibres" := rfl
 example : label .targetCompleteContextUniversality = "targetCompleteContextUniversality" := rfl
-example : label .spinePresentationLaws = "spinePresentationLaws" := rfl
 example : label .hssTargetCycle = "hssTargetCycle" := rfl
 example : label .typeAPeeledSaturatedReceiver = "typeAPeeledSaturatedReceiver" := rfl
 example : label .typeAPeeledUnsaturatedDischarge = "typeAPeeledUnsaturatedDischarge" := rfl
@@ -3433,7 +3457,6 @@ def idx : Key → Nat
   | .pairIncrementFails => 1607
   | .pairIncrementNoEarlyOutcome => 1608
   -- SP keys
-  | .surplusPresentation => 2200
   -- F1 keys
   | .typeASupport => 1000
   | .typeANoVisibleEntry => 1001
@@ -3451,7 +3474,6 @@ def idx : Key → Nat
   -- SD keys (final pass)
   | .degreeProfileFibres => 2300
   | .targetCompleteContextUniversality => 2301
-  | .spinePresentationLaws => 2302
   | .hssTargetCycle => 2303
   -- TA keys
   | .typeAPeeledSaturatedReceiver => 2000
@@ -3773,7 +3795,6 @@ def ofIdx : Nat → Key
   | 1607 => .pairIncrementFails
   | 1608 => .pairIncrementNoEarlyOutcome
   -- SP keys
-  | 2200 => .surplusPresentation
   -- F1 keys
   | 1000 => .typeASupport
   | 1001 => .typeANoVisibleEntry
@@ -3791,7 +3812,6 @@ def ofIdx : Nat → Key
   -- SD keys (final pass)
   | 2300 => .degreeProfileFibres
   | 2301 => .targetCompleteContextUniversality
-  | 2302 => .spinePresentationLaws
   | 2303 => .hssTargetCycle
   -- TA keys
   | 2000 => .typeAPeeledSaturatedReceiver
@@ -4538,8 +4558,6 @@ def name : Key → Lean.Name
   | .pairIncrementNoEarlyOutcome =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "pairIncrementNoEarlyOutcome") 1608
   -- SP keys
-  | .surplusPresentation =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "surplusPresentation") 2200
   -- F1 keys
   | .typeASupport =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeASupport") 1000
@@ -4570,8 +4588,6 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "degreeProfileFibres") 2300
   | .targetCompleteContextUniversality =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "targetCompleteContextUniversality") 2301
-  | .spinePresentationLaws =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "spinePresentationLaws") 2302
   | .hssTargetCycle =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "hssTargetCycle") 2303
   -- TA keys

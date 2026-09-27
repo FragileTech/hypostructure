@@ -27,8 +27,8 @@ variable {data : Data.{u}}
     (fun inputs =>
       .cons (key := K .triangularShoulderCompletion)
         ⟨Contracts.TypeB.triangularShoulderCompletion (inputs.get (K .highCentreNormalForm)).down
-          (inputs.get (K .cubicBaseline)).down.1
-          (le_of_eq (inputs.get (K .cubicBaseline)).down.1.symm) inputs.current.baseline⟩
+          (inputs.get (K .cubicBaseline)).down.1.1
+          (le_of_eq (inputs.get (K .cubicBaseline)).down.1.1.symm) inputs.current.baseline⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

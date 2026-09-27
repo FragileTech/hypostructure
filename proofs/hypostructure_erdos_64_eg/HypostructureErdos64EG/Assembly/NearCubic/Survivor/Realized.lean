@@ -43,7 +43,7 @@ noncomputable def Assembly.Internal.nearCubicRealized
        K .targetCompleteContextUniversality, K .degreeProfileFibres,
        K .cycleRankConstraint,
        K .tightEndpoint, K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-       K .spinePresentationLaws, K .cubicBaseline,
+       K .cubicBaseline,
        K .selection]) :
     SelectedNearCubicSurvivorBoundary selected := by
   let cap := nearCubicHotColdCap enumerated

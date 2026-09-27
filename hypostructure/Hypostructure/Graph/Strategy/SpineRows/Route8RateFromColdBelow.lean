@@ -30,7 +30,7 @@ universe u v
       .cons (key := K .route8Rate)
         ⟨Graph.Contracts.RouteEight.route8RateFromColdBelow data.toParameters
           inputs.current.object inputs.current.baseline
-          (by have := (inputs.get (K .cubicBaseline)).down.1; omega)
+          (by have := (inputs.get (K .cubicBaseline)).down.1.1; omega)
           (inputs.get (K .coldRoute8Below)).down
           (inputs.get (K .surplusAtOrBelow)).down⟩ .nil)
     0 0

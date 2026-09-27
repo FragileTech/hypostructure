@@ -14,7 +14,6 @@ import Hypostructure.Graph.Strategy.SpineRows.CompatiblePairFanClosure
 import Hypostructure.Graph.Strategy.SpineRows.CompatiblePairTypeBRouting
 import Hypostructure.Graph.Strategy.SpineRows.ContextValidityDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.CubicBaseline
-import Hypostructure.Graph.Strategy.SpineRows.SpinePresentationLaws
 import Hypostructure.Graph.Strategy.SpineRows.TargetCompleteContextUniversality
 import Hypostructure.Graph.Strategy.SpineRows.CurvatureRankDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.CurvatureTargetRank

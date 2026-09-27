@@ -27,8 +27,8 @@ variable {data : Data.{u}}
     (fun inputs =>
       .cons (key := K .triangularCrossShoulder)
         ⟨Contracts.TypeB.triangularCrossShoulder (inputs.get (K .selection)).down.1
-          (inputs.get (K .cubicBaseline)).down.2.2.2.2.1
-          (inputs.get (K .cubicBaseline)).down.1⟩
+          (inputs.get (K .cubicBaseline)).down.2.1.1
+          (inputs.get (K .cubicBaseline)).down.1.1⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

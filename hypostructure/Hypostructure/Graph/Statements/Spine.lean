@@ -2431,8 +2431,9 @@ noncomputable abbrev SelectionStatement
   (¬ Graph.HasCycleWithLength data.LengthOK object ∧
     SelectionMinimality BranchState Presentation presentation data object)
 
-/-- **The registered presentation facts of the Type B fan analysis**, published
-with the cubic baseline: the quadrilateral is an accepted length
+/-- **The registered presentation facts of the Type B fan analysis**, the
+second component of `PresentationLawsStatement` (key `cubicBaseline`), and the
+one place the dyadic target law is published: the quadrilateral is an accepted length
 (`lem:heavy-neighbourhood-normal-form`), the accepted lengths are exactly the
 dyadic ones (`lem:triangular-port-return`), the marked-fan and deficit slacks of
 `lem:typeB-multiclosed-budget` / `prop:fan-closed-port-typeB-routing`, and the
@@ -2451,25 +2452,25 @@ noncomputable abbrev TypeBPresentationStatement (data : Parameters) : Prop :=
 the paper's cubic baseline and the discharge scale with four, rejects the
 degenerate closure (`lem:labels`: a closing length `2` is not a cycle length),
 and certifies the registered window rate as the aggregate rate of the public
-barrier table (`lem:p13-window-package`), together with the Type B
-presentation facts (`TypeBPresentationStatement`).  Nodes read these presentation
-identities from this ledger fact, never from the presentation's spelling. -/
+barrier table (`lem:p13-window-package`).  This is the first component of the
+one presentation-law fact `PresentationLawsStatement` (key `cubicBaseline`),
+published at the entry; nodes read it from the ledger, never from the
+presentation's spelling. -/
 noncomputable abbrev CubicBaselineStatement (data : Parameters) : Prop :=
   data.threshold = 3 ∧ data.dischargeScale = 4 ∧ ¬ data.LengthOK 2 ∧
-    data.windowRate = data.windowBarrier.binaryRateFloor ∧
-    TypeBPresentationStatement data
+    data.windowRate = data.windowBarrier.binaryRateFloor
 
-/-- **The presentation laws the spine reads, published once at the entry.**
+/-- **The presentation laws the spine reads**, the fourth component of
+`PresentationLawsStatement` (key `cubicBaseline`), published once at the entry.
 
 The registered problem presentation certifies these laws once; every spine,
-Branch D and near-cubic row that needs one reads it from this ledger fact
+Branch D and near-cubic row that needs one reads it from that ledger fact
 (`inputs.get`), never from the presentation's spelling.  Each law is stated at
 `G` and at `G`'s own induced subgraphs, the only objects the rows apply it to:
 
 * `thm:p13free` (the cited HSS closure law, node `[16]`, tex 6573): `G`, and
   every induced subgraph `G[S]`, that meets the baseline and has no induced
   window of the registered order has an accepted cycle;
-* the paper's target is exactly the dyadic lengths;
 * the full dyadic scale family (`separatedScaleCount n = log₂ n`);
 * the finite form of `τ_win < 1/4` (`netCapRateSlack`);
 * the certified barrier table's row labels are exactly the legal attachment
@@ -2486,7 +2487,6 @@ noncomputable abbrev SpinePresentationLawsStatement (data : Parameters)
       Graph.MinimumDegreeAtLeast data.threshold (object.induce support) →
       Graph.InducedPathFree (object.induce support) data.windowOrder →
       Graph.HasCycleWithLength data.LengthOK (object.induce support)) ∧
-    (∀ length, data.LengthOK length ↔ Core.DyadicLength.PowerOfTwoLength length) ∧
     (∀ size : Nat, data.separatedScaleCount size = Nat.log2 size) ∧
     Graph.FiniteObject.netCapWindowCost data.threshold data.dischargeScale
         data.windowOrder * data.threshold < 2 * data.windowRate ∧

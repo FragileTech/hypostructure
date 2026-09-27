@@ -73,7 +73,6 @@ noncomputable def nearCubicDenseLinear
     [FactKeys.Has (K .coldMassLinear) known]
     [FactKeys.Has (K .coldSelectedBranchExcess) known]
     [FactKeys.Has (K .coldStubExcess) known]
-    [FactKeys.Has (K .spinePresentationLaws) known]
     [FactKeys.Has (K .cubicBaseline) known]
     (fresh : List.Disjoint denseLinearKeys.{u} known := by key_fresh) :
     SelectedNearCubicSurvivorBoundary selected := by

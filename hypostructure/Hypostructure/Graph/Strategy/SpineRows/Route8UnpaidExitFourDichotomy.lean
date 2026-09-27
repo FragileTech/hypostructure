@@ -36,7 +36,7 @@ ledger is two-support. -/
       .cons (key := K .route8UnpaidTwoCarrier)
         ⟨Graph.Contracts.RouteEight.route8UnpaidTwoCarrier data.toParameters
           inputs.current.object
-          (by have := (inputs.get (K .cubicBaseline)).down.1; omega)
+          (by have := (inputs.get (K .cubicBaseline)).down.1.1; omega)
           (inputs.get (K .route8DemandLedger)).down⟩ .nil)
     0 0
 

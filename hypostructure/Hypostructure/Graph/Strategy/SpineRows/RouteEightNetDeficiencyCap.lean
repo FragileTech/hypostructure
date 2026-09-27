@@ -49,7 +49,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       let _residualC := (inputs.get (K .largeBudgetResidual)).down
       .cons (key := K .netDeficiencyCap)
         ⟨Contracts.Spine.netDeficiencyCap_of_coldRoute8Below data.toParameters
-          inputs.current.object (inputs.get (K .cubicBaseline)).down.1
+          inputs.current.object (inputs.get (K .cubicBaseline)).down.1.1
           (inputs.get (K .coldRoute8Below)).down⟩
         .nil)
     0 0

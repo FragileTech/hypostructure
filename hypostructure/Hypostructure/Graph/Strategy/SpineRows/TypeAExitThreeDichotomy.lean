@@ -62,7 +62,7 @@ of `G`; the registered target rejects the degenerate closure
     (fun inputs =>
       .cons (key := K .typeAExitThreeCycle)
         ⟨Graph.Contracts.TypeA.typeAExitThreeCycle data.toParameters
-          inputs.current.object (inputs.get (K .cubicBaseline)).down.2.2.1
+          inputs.current.object (inputs.get (K .cubicBaseline)).down.1.2.2.1
           (inputs.get (K .typeAExitThreeCollision)).down⟩
         .nil)
 

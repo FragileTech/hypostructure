@@ -68,8 +68,8 @@ avoidance with the degenerate closure rejected). -/
       .cons (key := K .typeAExitSevenEnvelope)
         ⟨Graph.Contracts.TypeA.typeAExitSevenEnvelope data.toParameters
           inputs.current.object (inputs.get (K .selection)).down.1
-          (inputs.get (K .cubicBaseline)).down.1
-          (inputs.get (K .cubicBaseline)).down.2.2.1
+          (inputs.get (K .cubicBaseline)).down.1.1
+          (inputs.get (K .cubicBaseline)).down.1.2.2.1
           (inputs.get (K .typeAExitSevenHandoff)).down⟩
         .nil)
 

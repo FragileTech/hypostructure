@@ -25,7 +25,7 @@ entry. -/
           (inputs.get (K .route8TwoCarrierEntry)).down
           (inputs.get (K .route8TrueResidual)).down
           inputs.current.baseline
-          (by have := (inputs.get (K .cubicBaseline)).down.2.1; omega)⟩ .nil)
+          (by have := (inputs.get (K .cubicBaseline)).down.1.2.1; omega)⟩ .nil)
     0 0
 
 end Hypostructure.Graph.Strategy.Spine

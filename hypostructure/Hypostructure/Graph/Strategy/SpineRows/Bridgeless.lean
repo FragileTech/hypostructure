@@ -48,7 +48,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       .cons (key := K .bridgeless)
         ⟨Contracts.Spine.bridgeless_of_selection BranchState Presentation presentation
           data.toParameters inputs.current.object inputs.current.baseline
-          (Nat.le_of_eq (inputs.get (K .cubicBaseline)).down.1.symm)
+          (Nat.le_of_eq (inputs.get (K .cubicBaseline)).down.1.1.symm)
           (inputs.get (K .selection)).down⟩
         .nil)
     0 0

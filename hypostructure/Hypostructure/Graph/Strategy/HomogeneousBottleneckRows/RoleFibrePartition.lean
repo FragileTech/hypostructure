@@ -38,7 +38,7 @@ free-side entropy count already written to the incoming ledger. -/
           (inputs.get (K .canonicalPairLedger)).down
           (inputs.get (K .sparseSlackSurplus)).down
           (inputs.get (K .surplusAbove)).down
-          (by have := (inputs.get (K .cubicBaseline)).down.1; omega)⟩
+          (by have := (inputs.get (K .cubicBaseline)).down.1.1; omega)⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

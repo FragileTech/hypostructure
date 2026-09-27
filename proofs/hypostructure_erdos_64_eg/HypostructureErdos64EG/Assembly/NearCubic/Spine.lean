@@ -177,7 +177,6 @@ noncomputable def nearCubicFullRank
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .targetCompleteContextUniversality) known]
-    [FactKeys.Has (K .spinePresentationLaws) known]
     [FactKeys.Has (K .cubicBaseline) known]
     (fresh : List.Disjoint nearCubicResidualAKeys.{u} known := by key_fresh) :
     ExactLedger EGInput.{u} selected
@@ -550,7 +549,6 @@ noncomputable def nearCubicLargeBudgetDensityCap
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .tightEndpoint) known]
-    [FactKeys.Has (K .spinePresentationLaws) known]
     [FactKeys.Has (K .cubicBaseline) known]
     (fresh : List.Disjoint
       (K .route8Rate :: K .route8RateFails :: nearCubicResidualBKeys.{u}) known := by
@@ -668,7 +666,6 @@ noncomputable def nearCubicLargeBudgetRateFailed
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .tightEndpoint) known]
-    [FactKeys.Has (K .spinePresentationLaws) known]
     [FactKeys.Has (K .cubicBaseline) known]
     (fresh : List.Disjoint nearCubicResidualBKeys.{u} known := by key_fresh) :
     SelectedNearCubicSurvivorBoundary selected := by

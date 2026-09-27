@@ -22,7 +22,7 @@ of the coupled test. -/
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.freePairSurplusEstimate
     { Requires := [K .freePairEntropySandwich, K .sparseSlackSurplus, K .surplusAbove,
-        K .cubicBaseline, K .surplusPresentation]
+        K .cubicBaseline]
       Produces := [K .spineSurplusEstimate]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -34,8 +34,8 @@ of the coupled test. -/
           (inputs.get (K .freePairEntropySandwich)).down
           (inputs.get (K .sparseSlackSurplus)).down
           (inputs.get (K .surplusAbove)).down
-          (by have := (inputs.get (K .cubicBaseline)).down.1; omega)
-          (inputs.get (K .surplusPresentation)).down.2.2.2.2⟩
+          (by have := (inputs.get (K .cubicBaseline)).down.1.1; omega)
+          (inputs.get (K .cubicBaseline)).down.2.2.1.2.2.2⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

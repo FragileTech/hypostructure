@@ -24,7 +24,7 @@ coordinate of the unchanged unified entries is zero. -/
         ⟨Graph.Contracts.RouteEight.route8UnifiedVisibleResidual data.toParameters inputs.current.object
           (inputs.get (K .route8UnifiedEntryCensus)).down
           inputs.current.baseline
-          (by have := (inputs.get (K .cubicBaseline)).down.1; omega)⟩ .nil)
+          (by have := (inputs.get (K .cubicBaseline)).down.1.1; omega)⟩ .nil)
     0 0
 
 end Hypostructure.Graph.Strategy.Spine

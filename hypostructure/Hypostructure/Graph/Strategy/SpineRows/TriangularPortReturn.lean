@@ -30,8 +30,8 @@ variable {data : Data.{u}}
         ⟨Contracts.TypeB.triangularPortReturn (inputs.get (K .bridgeless)).down
           (inputs.get (K .selection)).down.1 (inputs.get (K .highCentreNormalForm)).down
           (inputs.get (K .triangularShoulderCompletion)).down
-          (inputs.get (K .cubicBaseline)).down.1
-          (inputs.get (K .cubicBaseline)).down.2.2.2.2.2.1⟩
+          (inputs.get (K .cubicBaseline)).down.1.1
+          (inputs.get (K .cubicBaseline)).down.2.1.2.1⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

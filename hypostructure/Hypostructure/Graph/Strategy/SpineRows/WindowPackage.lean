@@ -85,7 +85,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     (fun inputs =>
       .cons (key := K .windowPackageSeparated)
         ⟨Contracts.Spine.windowPackageSeparated_of_maximalPacking data.toParameters
-          inputs.current.object (inputs.get (K .cubicBaseline)).down.2.2.2.1
+          inputs.current.object (inputs.get (K .cubicBaseline)).down.1.2.2.2
           (inputs.get (K .replacementExclusion)).down
           (inputs.get (K .selection)).down⟩
         .nil)

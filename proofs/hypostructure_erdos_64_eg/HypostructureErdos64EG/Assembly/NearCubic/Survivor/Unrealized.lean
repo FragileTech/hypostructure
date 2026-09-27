@@ -41,7 +41,7 @@ noncomputable def Assembly.Internal.nearCubicDensePassRateFailed
        K .targetCompleteContextUniversality, K .degreeProfileFibres,
        K .cycleRankConstraint,
        K .tightEndpoint, K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-       K .spinePresentationLaws, K .cubicBaseline,
+       K .cubicBaseline,
        K .selection]) :
     SelectedNearCubicSurvivorBoundary selected := by
   let cap := nearCubicHotColdCap rateFails
@@ -80,7 +80,7 @@ noncomputable def Assembly.Internal.nearCubicDensePassAtOrAbove
        K .targetCompleteContextUniversality, K .degreeProfileFibres,
        K .cycleRankConstraint,
        K .tightEndpoint, K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-       K .spinePresentationLaws, K .cubicBaseline,
+       K .cubicBaseline,
        K .selection]) :
     SelectedNearCubicSurvivorBoundary selected := by
   let cap := nearCubicHotColdCap denseHistory
@@ -125,7 +125,7 @@ noncomputable def Assembly.Internal.nearCubicUnrealized
        K .targetCompleteContextUniversality, K .degreeProfileFibres,
        K .cycleRankConstraint,
        K .tightEndpoint, K .slackIndependent, K .noProperBaseline, K .returnAvoidance,
-       K .spinePresentationLaws, K .cubicBaseline,
+       K .cubicBaseline,
        K .selection]) :
     SelectedNearCubicSurvivorBoundary selected := by
   match denseDeficiencyDichotomy (data := spineData) unrealizedHistory

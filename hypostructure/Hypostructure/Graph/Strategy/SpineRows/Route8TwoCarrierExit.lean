@@ -38,7 +38,7 @@ its selected basin, the node-`[115]` no-arm supplies `α ≥ 2`. -/
       .cons (key := K .route8TwoCarrierExit)
         ⟨Graph.Contracts.RouteEight.route8SurvivorTwoCarrierExit
           data.toParameters inputs.current.object inputs.current.baseline
-          (by have := (inputs.get (K .cubicBaseline)).down.2.1; omega)
+          (by have := (inputs.get (K .cubicBaseline)).down.1.2.1; omega)
           (inputs.get (K .route8TrueResidual)).down
           (inputs.get (K .route8NoSmallCoreEntry)).down
           (inputs.get (K .route8CarrierDeletionWitnesses)).down⟩ .nil)

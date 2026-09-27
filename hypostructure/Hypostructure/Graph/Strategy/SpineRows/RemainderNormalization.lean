@@ -36,7 +36,7 @@ object, which avoids the target.
 
 The row is stated at the remainder `R₀` of G's fixed packing `P₀`.  It reads
 `selection` (the avoidance half) and the cited closure law at G's induced
-subgraphs from `K .spinePresentationLaws`. -/
+subgraphs from `K .cubicBaseline`. -/
 omit [FactSystem (Input BranchState Presentation presentation data)] in
 @[reducible] noncomputable def remainderNormalizationRow :
     @AtomicStrategy (Input BranchState Presentation presentation data) _
@@ -51,7 +51,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       (Presentation := Presentation) (presentation := presentation)
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.remainderNormalization
-    { Requires := [K .selection, K .spinePresentationLaws]
+    { Requires := [K .selection, K .cubicBaseline]
       Produces := [K .remainderNormalized]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -59,7 +59,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     (fun inputs =>
       .cons (key := K .remainderNormalized)
         ⟨Contracts.Spine.remainderNormalized_of_selection data.toParameters
-          inputs.current.object (inputs.get (K .spinePresentationLaws)).down.2.1
+          inputs.current.object (inputs.get (K .cubicBaseline)).down.2.2.2.2.1
           (inputs.get (K .selection)).down⟩
         .nil)
     0 0

@@ -58,7 +58,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       .cons (key := K .independentObstructionTranslates)
         ⟨Contracts.Spine.independentObstructionTranslates_of_dominantRootedWedgeType
           data.toParameters inputs.current.object
-          (inputs.get (K .cubicBaseline)).down
+          (inputs.get (K .cubicBaseline)).down.1
           (inputs.get (K .dominantRootedType)).down
           (inputs.get (K .dominantRootedWedgeType)).down⟩
         .nil)

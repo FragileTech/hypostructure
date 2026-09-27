@@ -26,7 +26,7 @@ consumed by `[168]`. -/
 @[reducible] noncomputable def twoStrandSurvivorRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.twoStrandSurvivor
-    { Requires := [K .selection, K .coldGenuineSecondStrand]
+    { Requires := [K .selection, K .coldGenuineSecondStrand, K .cubicBaseline]
       Produces := [K .coldTwoStrandSurvivor]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -34,7 +34,7 @@ consumed by `[168]`. -/
     (fun inputs =>
       .cons (key := K .coldTwoStrandSurvivor)
         ⟨Contracts.Spine.twoStrandSurvivor_of_genuine data.toParameters
-          inputs.current.object data.lengthOK_iff_powerOfTwo
+          inputs.current.object (inputs.get (K .cubicBaseline)).down.2.1.2.1
           (inputs.get (K .selection)).down.1
           (inputs.get (K .coldGenuineSecondStrand)).down⟩
         .nil)
@@ -51,7 +51,7 @@ consumed by `[168]`. -/
       .cons (key := K .coldSymmetricPairExcluded)
         ⟨Contracts.Spine.coldSymmetricPairExcluded_of_stubStructure
           data.toParameters inputs.current.object
-          (inputs.get (K .cubicBaseline)).down.1
+          (inputs.get (K .cubicBaseline)).down.1.1
           (inputs.get (K .coldWindowStubStructure)).down⟩
         .nil)
 

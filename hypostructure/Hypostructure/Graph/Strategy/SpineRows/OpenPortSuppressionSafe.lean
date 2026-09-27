@@ -19,15 +19,16 @@ variable {data : Data.{u}}
 @[reducible] noncomputable def openPortSuppressionSafeRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.openPortSuppressionSafe
-    { Requires := [K .openPortSuppression]
+    { Requires := [K .openPortSuppression, K .cubicBaseline]
       Produces := [K .openPortSuppressionSafe]
-      requiresUnique := by simp
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .openPortSuppressionSafe)
         ⟨Contracts.TypeB.openPortSuppressionSafe (inputs.get (K .openPortSuppression)).down
-          data.three_le_threshold inputs.current.baseline⟩
+          (by have := (inputs.get (K .cubicBaseline)).down.1.1; omega)
+          inputs.current.baseline⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

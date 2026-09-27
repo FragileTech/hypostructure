@@ -24,7 +24,7 @@ its supports from node `[13]` (`lem:typeA-receiver-loads`). -/
       .cons (key := K .route8BasinBurden)
         ⟨Graph.Contracts.RouteEight.route8BasinBurden data.toParameters inputs.current.object
           inputs.current.baseline
-          (by have := (inputs.get (K .cubicBaseline)).down.2.1; omega)
+          (by have := (inputs.get (K .cubicBaseline)).down.1.2.1; omega)
           (inputs.get (K .route8GlobalSqueeze)).down
           (inputs.get (K .remainderNormalized)).down⟩ .nil)
     0 0

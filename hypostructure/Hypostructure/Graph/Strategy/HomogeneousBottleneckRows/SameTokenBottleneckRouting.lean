@@ -51,13 +51,13 @@ is postulated. -/
       let routed := Graph.Contracts.SurplusPair.sameTokenTypeBHandoff_of_pattern
         (inputs.get (K .homogeneousBottleneckPattern)).down
         (inputs.get (K .activeSurplusDemands)).down
-        (inputs.get (K .cubicBaseline)).down
+        (inputs.get (K .cubicBaseline)).down.1
         (inputs.get (K .capacityTokenLedger)).down
         (inputs.get (K .bridgeless)).down
         (inputs.get (K .highCentreNormalForm)).down
         inputs.current.baseline
-        (by have := (inputs.get (K .cubicBaseline)).down.1; omega)
-        (inputs.get (K .cubicBaseline)).down.2.2.1
+        (by have := (inputs.get (K .cubicBaseline)).down.1.1; omega)
+        (inputs.get (K .cubicBaseline)).down.1.2.2.1
         (inputs.get (K .selection)).down.1
         (inputs.get (K .sparseSurplusSurvivor)).down
       .cons (key := K .bottleneckRouting) ⟨routed.1⟩ .nil)
@@ -108,13 +108,13 @@ unresolved pair that the paper error at `[144]` leaves to the open leaf
       let routed := Graph.Contracts.SurplusPair.sameTokenTypeBHandoff_of_pattern
         (inputs.get (K .homogeneousBottleneckPattern)).down
         (inputs.get (K .activeSurplusDemands)).down
-        (inputs.get (K .cubicBaseline)).down
+        (inputs.get (K .cubicBaseline)).down.1
         (inputs.get (K .capacityTokenLedger)).down
         (inputs.get (K .bridgeless)).down
         (inputs.get (K .highCentreNormalForm)).down
         inputs.current.baseline
-        (by have := (inputs.get (K .cubicBaseline)).down.1; omega)
-        (inputs.get (K .cubicBaseline)).down.2.2.1
+        (by have := (inputs.get (K .cubicBaseline)).down.1.1; omega)
+        (inputs.get (K .cubicBaseline)).down.1.2.2.1
         (inputs.get (K .selection)).down.1
         (inputs.get (K .sparseSurplusSurvivor)).down
       .cons (key := K .sameTokenPatternUnresolved)

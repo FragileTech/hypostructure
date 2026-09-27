@@ -32,7 +32,7 @@ arm of node `[117]`. -/
       .cons (key := K .route8PrivateCarrierBudget)
         ⟨Graph.Contracts.RouteEight.route8PrivateCarrierBudget_of_noTwoCarrier
           data.toParameters inputs.current.object
-          (by have := (inputs.get (K .cubicBaseline)).down.1; omega)
+          (by have := (inputs.get (K .cubicBaseline)).down.1.1; omega)
           (inputs.get (K .route8NoTwoCarrierEntry)).down⟩ .nil)
     0 0
 

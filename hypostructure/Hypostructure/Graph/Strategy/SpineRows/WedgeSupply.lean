@@ -71,7 +71,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     (fun inputs =>
       .cons (key := K .wedgeSupply)
         ⟨Contracts.Spine.wedgeSupply_of_stubSupply data.toParameters
-          inputs.current.object (Nat.le_of_eq (inputs.get (K .cubicBaseline)).down.1.symm)
+          inputs.current.object (Nat.le_of_eq (inputs.get (K .cubicBaseline)).down.1.1.symm)
           (inputs.get (K .stubSupply)).down⟩
         .nil)
     0 0

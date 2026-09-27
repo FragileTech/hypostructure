@@ -27,7 +27,7 @@ variable {data : Data.{u}}
     (fun inputs =>
       .cons (key := K .fanClosedPortTypeBRouting)
         ⟨Contracts.TypeB.fanClosedPortTypeBRouting (data := data.toParameters)
-          (inputs.get (K .cubicBaseline)).down.1 (inputs.get (K .cubicBaseline)).down.2.1
+          (inputs.get (K .cubicBaseline)).down.1.1 (inputs.get (K .cubicBaseline)).down.1.2.1
           (inputs.get (K .fanClosedPort)).down⟩
         .nil)
 

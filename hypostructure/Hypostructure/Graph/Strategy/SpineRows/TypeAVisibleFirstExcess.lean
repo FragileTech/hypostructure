@@ -35,7 +35,7 @@ variable {data : Data.{u}}
       .cons (key := K .typeAVisibleFirstExcess)
         ⟨Graph.Contracts.TypeA.typeAVisibleFirstExcess data.toParameters
           inputs.current.object
-          (by have := (inputs.get (K .cubicBaseline)).down.2.1; omega)
+          (by have := (inputs.get (K .cubicBaseline)).down.1.2.1; omega)
           inputs.current.baseline
           (inputs.get (K .typeAReceiverRouting)).down
           (inputs.get (K .typeALowSurplus)).down

@@ -8,7 +8,6 @@ import Hypostructure.Graph.Strategy.SpineRows.NoProperBaseline
 import Hypostructure.Graph.Strategy.SpineRows.ObstructionPacking
 import Hypostructure.Graph.Strategy.SpineRows.ReplacementExclusion
 import Hypostructure.Graph.Strategy.SpineRows.ReturnAvoidance
-import Hypostructure.Graph.Strategy.SpineRows.SpinePresentationLaws
 import Hypostructure.Graph.Strategy.SpineRows.TargetCompleteContextUniversality
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SparseSurplusExit
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.SparseTargetDefectStructure
@@ -53,25 +52,18 @@ noncomputable def selectedEntryPrefix
         K .degreeProfileFibres,
         K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
         K .noProperBaseline,
-        K .returnAvoidance, K .spinePresentationLaws,
-        K .cubicBaseline, K .selection] := by
+        K .returnAvoidance, K .cubicBaseline, K .selection] := by
+  -- The presentation laws of G, published once on the ledger.
   let hCubic :=
     (cubicBaselineRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       history (by key_fresh)
-  -- The presentation laws the spine reads, published once on the ledger.
-  let hLaws :=
-    (spinePresentationLawsRow (BranchState := BranchState)
-      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      hCubic (by
-        key_fresh)
   -- `[6]`: Mersenne return exists?
   match returnAvoidanceDichotomy (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)
-      hLaws (by
+      hCubic (by
         key_fresh)
       (by
         key_fresh) with

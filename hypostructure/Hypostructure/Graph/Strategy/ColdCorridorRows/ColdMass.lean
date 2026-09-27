@@ -67,7 +67,7 @@ positive-surplus vertex of the current object. -/
       let split := (inputs.get (K .hotColdPartition)).down
       .cons (key := K .coldSelectedBranchExcess)
         ⟨Contracts.Spine.coldSelectedBranchExcess_of_split data.toParameters
-          inputs.current.object (inputs.get (K .cubicBaseline)).down.1
+          inputs.current.object (inputs.get (K .cubicBaseline)).down.1.1
           data.three_le_windowOrder split⟩
         (.cons (key := K .coldAmbientCubicStubExcess)
           ⟨Contracts.Spine.coldAmbientCubicStubExcess_of_split data.toParameters

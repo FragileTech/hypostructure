@@ -33,7 +33,7 @@ variable {data : Data.{u}}
       .cons (key := K .typeAPortReturn)
         ⟨Graph.Contracts.TypeA.typeAPortReturn data.toParameters
           inputs.current.object
-          (by have := (inputs.get (K .cubicBaseline)).down.1; omega)
+          (by have := (inputs.get (K .cubicBaseline)).down.1.1; omega)
           inputs.current.baseline selection.1 selection.2
           (inputs.get (K .typeASaturatedReceiver)).down⟩
         .nil)

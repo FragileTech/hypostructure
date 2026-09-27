@@ -46,7 +46,7 @@ carries the deficit only through the route-`8` residual `[77]`. -/
     (fun inputs =>
       .cons (key := K .typeBExclusionResidual)
         ⟨Contracts.TypeB.typeBExclusionResidual
-          (inputs.get (K .cubicBaseline)).down.2.2.2.2.2.2.2.2
+          (inputs.get (K .cubicBaseline)).down.2.1.2.2.2.2
           (inputs.get (K .typeBDisjointLedger)).down
           (inputs.get (K .typeBExcluded)).down⟩
         .nil)
@@ -71,7 +71,7 @@ a Type B bridge residual whose assigned centres are charged to their surplus. -/
             (inputs.current.object.minDegree_le_degree vertex))
           (inputs.get (K .uncompressible)).down
           (inputs.get (K .remainderNormalized)).down
-          (inputs.get (K .cubicBaseline)).down.2.2.2.2.2.2.2.2
+          (inputs.get (K .cubicBaseline)).down.2.1.2.2.2.2
           (inputs.get (K .fanCertificateResidualMass)).down⟩
         .nil)
 
@@ -95,7 +95,7 @@ whose assigned centres are charged to their surplus. -/
             (inputs.current.object.minDegree_le_degree vertex))
           (inputs.get (K .uncompressible)).down
           (inputs.get (K .remainderNormalized)).down
-          (inputs.get (K .cubicBaseline)).down.2.2.2.2.2.2.2.2
+          (inputs.get (K .cubicBaseline)).down.2.1.2.2.2.2
           (inputs.get (K .typeBOverlapObstructionMass)).down⟩
         .nil)
 
