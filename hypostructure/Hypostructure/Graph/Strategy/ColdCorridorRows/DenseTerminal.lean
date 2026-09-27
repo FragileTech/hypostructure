@@ -22,13 +22,13 @@ The row reads G's retained corridor state, node `[27]`'s normalization and the
 hot/cold split, and publishes the paper's claim that every return corridor is
 terminal (`Contracts.Spine.denseColdCorridorsTerminal_of_state`).  The paper's
 reason -- the pieces of `R` have bounded diameter -- does not reach corridors
-of `G − X_cold` that cross hot or non-ambient-cubic cold windows: PAPER-ERROR
-[162] tex:7694 (`lean-vs-paper-discrepancies.md#paper-errors`). -/
+of `G − X_cold` that cross hot or non-ambient-cubic cold windows: OPEN-CONSTRUCTION
+[162] tex:7694 (`lean-vs-paper-discrepancies.md#open-constructions`). -/
 @[reducible] noncomputable def denseColdCorridorsTerminalRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.denseColdCorridorsTerminal
     { Requires := [K .coldCorridorState, K .remainderNormalized,
-        K .hotColdPartition]
+        K .hotColdPartition, K .cubicBaseline]
       Produces := [K .denseColdCorridorsTerminal]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -36,7 +36,9 @@ of `G − X_cold` that cross hot or non-ambient-cubic cold windows: PAPER-ERROR
     (fun inputs =>
       .cons (key := K .denseColdCorridorsTerminal)
         ⟨Contracts.Spine.denseColdCorridorsTerminal_of_state data.toParameters
-          inputs.current.object data.three_le_windowOrder
+          inputs.current.object
+          (three_le_windowOrder_of_census data.toParameters
+            (inputs.get (K .cubicBaseline)).down.1.2.2.2.2.1)
           (inputs.get (K .coldCorridorState)).down
           (inputs.get (K .remainderNormalized)).down
           (inputs.get (K .hotColdPartition)).down⟩

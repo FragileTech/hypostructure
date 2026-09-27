@@ -1092,20 +1092,74 @@ theorem activeInterface_card_le {object : FiniteObject.{u}}
   exact le_trans (Finset.card_insert_le _ _)
     (Nat.succ_le_succ (le_of_eq (Finset.card_singleton _)))
 
+/-- **The segment has reached the successor foot**: `J` is the whole inside
+path, so its head interface is the successor stub `hᵢ₊₁`. -/
+def IsTerminalSegment {object : FiniteObject.{u}}
+    {windows component : Finset object.Vertex}
+    (corridor : Corridor object windows component)
+    (segment : corridor.Segment) : Prop :=
+  segment.1 = corridor.inside.1.length
+
+noncomputable instance {object : FiniteObject.{u}} {windows component : Finset object.Vertex}
+    (corridor : Corridor object windows component) (segment : corridor.Segment) :
+    Decidable (corridor.IsTerminalSegment segment) :=
+  inferInstanceAs (Decidable (segment.1 = corridor.inside.1.length))
+
+/-- The vertex following the head of a non-terminal segment on the inside
+path (the head itself at the terminal segment). -/
+noncomputable def nextVertex {object : FiniteObject.{u}}
+    {windows component : Finset object.Vertex}
+    (corridor : Corridor object windows component)
+    (segment : corridor.Segment) : object.Vertex :=
+  (corridor.inside.1.getVert (segment.1 + 1)).1
+
+/-- **The window-side vertex of the head interface**: at the terminal segment
+the corridor has crossed the successor stub, so it is that stub's window
+endpoint; before, it is the head the prefix has reached. -/
+noncomputable def headInterfaceVertex {object : FiniteObject.{u}}
+    {windows component : Finset object.Vertex}
+    (corridor : Corridor object windows component)
+    (segment : corridor.Segment) : object.Vertex :=
+  if corridor.IsTerminalSegment segment then corridor.successorStub.2
+  else corridor.head segment
+
+/-- **The active half-edge at the head interface**, as a bounded label: at the
+terminal segment it is the successor stub `hᵢ₊₁` (its index among the ordered
+stubs of `K`); before, it is the dart from the head to the next corridor vertex
+(the rank of that vertex among the head's neighbours in the object's
+enumeration). -/
+noncomputable def headHalfEdge {object : FiniteObject.{u}}
+    {windows component : Finset object.Vertex}
+    (corridor : Corridor object windows component) (bound : Nat)
+    (segment : corridor.Segment) : Fin (bound + 1) := by
+  classical
+  letI : FinEnum object.Vertex := object.vertices
+  letI : DecidableRel object.graph.Adj := object.decideAdj
+  exact ⟨min (if corridor.IsTerminalSegment segment then
+        (successorIndex corridor.positive corridor.entry).1
+      else
+        (object.vertexFinset.filter fun vertex =>
+          object.graph.Adj (corridor.head segment) vertex ∧
+            (FinEnum.equiv vertex).1 <
+              (FinEnum.equiv (corridor.nextVertex segment)).1).card) bound,
+    Nat.lt_succ_of_le (Nat.min_le_right _ _)⟩
+
 /-- **The corridor's presentation of the declared data.**
 
-Everything the cut-state retains is computed here from the corridor itself: the
-segments are its initial segments, the active interface is `T(J)`, the
-boundary-degree profile is the object's own degree at the two interfaces, the
-half-edges are the two boundary stubs, and the offsets are the cold-window
-offsets the two interfaces meet, read by the packing's own offset map.
+Everything the cut-state retains is computed here from the corridor itself
+(`def:cold-corridor-first-failure`, tex 7187-7197): the segments are its initial
+segments, the active interface is `T(J)`, the boundary-degree profile is the
+object's own degree at the two boundary vertices (the entry foot and the prefix
+head), the two active half-edges are the entry stub `ε` and the half-edge by
+which the corridor leaves the head (`headHalfEdge`), and the offsets are the
+cold-window offsets met at the two interfaces: at the entry stub's window
+endpoint and at the head interface (`headInterfaceVertex`), read by the
+packing's own offset map.  The head-side data move along the corridor.
 
 `supp_X(r)` and `val_X(r)` are supplied by the owner of the clause a coordinate
-belongs to -- a degree, a return length, a Mersenne test, a trace, a fan, a
-surplus port.  That is what a clause *is* in
-`def:declared-coordinate-signature`: the signature fixes which coordinates exist
-and the cut-state fixes what is retained of them, and neither invents what one
-reads. -/
+belongs to.  That is what a clause *is* in `def:declared-coordinate-signature`:
+the signature fixes which coordinates exist and the cut-state fixes what is
+retained of them. -/
 noncomputable def presentation {object : FiniteObject.{u}}
     {windows component : Finset object.Vertex}
     (corridor : Corridor object windows component) (S : DeclaredSignature)
@@ -1124,13 +1178,14 @@ noncomputable def presentation {object : FiniteObject.{u}}
     ⟨min (object.degree (if index = 0 then corridor.entryStub.1
         else corridor.head segment.down)) S.degreeBound,
       Nat.lt_succ_of_le (Nat.min_le_right _ _)⟩
-  halfEdges := fun _segment index =>
-    ⟨min (if index = 0 then corridor.entry.1
-        else (successorIndex corridor.positive corridor.entry).1) S.degreeBound,
-      Nat.lt_succ_of_le (Nat.min_le_right _ _)⟩
-  offsets := fun _segment index =>
+  halfEdges := fun segment index =>
+    if index = 0 then
+      ⟨min corridor.entry.1 S.degreeBound,
+        Nat.lt_succ_of_le (Nat.min_le_right _ _)⟩
+    else corridor.headHalfEdge S.degreeBound segment.down
+  offsets := fun segment index =>
     offsetOf (if index = 0 then corridor.entryStub.2
-      else corridor.successorStub.2)
+      else corridor.headInterfaceVertex segment.down)
 
 @[simp] theorem presentation_activeInterface {object : FiniteObject.{u}}
     {windows component : Finset object.Vertex}

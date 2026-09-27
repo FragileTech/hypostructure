@@ -106,7 +106,7 @@ On that arm the empty window family is not retained
 (`K .skeletonDominates`, `.1`), this says exactly that the remainder states of
 `R₀` together with the full curvature code `2^{c_Ω·r_Ω(R₀)}` exceed the labelled
 skeleton budget.  This is the Lean evidence recorded for
-`PAPER-ERROR [54] tex:9921`: on this arm the joint realization
+`OPEN-CONSTRUCTION [54] tex:9921`: on this arm the joint realization
 `prop:entropy-high-theta` asserts is false for the full code, and only its
 smaller forced part `K|R| − o(|R|) ≤ c_Ω·r_Ω(R₀)` remains undecided. -/
 theorem allCold_code_overflow (data : Parameters) (object : Graph.FiniteObject.{u})
@@ -131,8 +131,34 @@ theorem allCold_code_overflow (data : Parameters) (object : Graph.FiniteObject.{
     | simpa using Nat.succ_le_of_lt (Graph.skeletonBudget_pos object)
     | simpa [retainedCode] using le
 
-/-- **Node `[54]` on the all-cold arm of node `[22]`: `prop:entropy-high-theta`'s
-independence claim.**
+/-- **The unretained arm overflows with the full code.**  When the window
+package of the whole fixed packing `P₀` is not retained
+(`¬ WindowFamilyRealized P₀`, which by node `[22]`'s maximality is exactly the
+arm `𝒫_hot ≠ P₀`, including the all-cold arm), reading the skeletons themselves
+as states (`K .skeletonDominates`, `.1`) shows that the full package of `P₀`, or
+its retained code with the remainder states and the full curvature code
+`2^{c_Ω·r_Ω(R₀)}`, exceeds the labelled skeleton budget.  Lean evidence for
+`OPEN-CONSTRUCTION [54] tex:9921`. -/
+theorem unretained_package_overflow (data : Parameters) (object : Graph.FiniteObject.{u})
+    (dominates : SkeletonDominatesStatement object)
+    (unretained : ¬ WindowFamilyRealized data object (canonicalWindowPacking data object)) :
+    Graph.skeletonBudget object <
+        2 ^ (windowPackageBits data object * (canonicalWindowPacking data object).card) ∨
+      Graph.skeletonBudget object <
+        retainedCode data object (canonicalWindowPacking data object) := by
+  by_contra fits
+  push Not at fits
+  apply unretained
+  have range : Nat.card (Set.range (ULift.up.{u} :
+      Graph.PackedWindowRealization.Skeleton object.vertexCount object.edgeCount → _)) =
+        Graph.skeletonBudget object := by
+    rw [Set.range_eq_univ.mpr (fun x => ⟨x.down, rfl⟩), Nat.card_univ,
+      Nat.card_ulift, dominates.1]
+  exact ⟨ULift.{u} (Graph.PackedWindowRealization.Skeleton object.vertexCount
+    object.edgeCount), ULift.up, range ▸ fits.1, range ▸ fits.2⟩
+
+/-- **Node `[54]`, `prop:entropy-high-theta`'s independence claim, on the arm
+where the window package of `P₀` is not retained.**
 
 The paper's claim (tex 9921): *"the window package of
 `lem:p13-window-package`, the remainder bits, and the forced-obstruction bits
@@ -140,45 +166,42 @@ together strictly exceed the near-cubic skeleton budget.  These bits form one
 independently target-testable coordinate family, so the number of realized
 target-complete states would exceed the number of labelled skeletons,
 contradicting `lem:independent-target-entropy`, `lem:skeleton-dominates`."*
-`lem:independent-target-entropy` needs a family "arising canonically from graphs
-in a labelled graph class"; the paper never proves that the remainder states and
-the forced obstruction bits jointly form such a family -- it asserts it.  On the
-arm of node `[22]` where no window family of `P₀` is retained that is the whole
-family (no window bits), and `allCold_code_overflow` shows the arm's defining
-fact is the failure of that joint realization for the full curvature code.  The
-claim below is the same assertion for the smaller forced part
-`K|R| − o(|R|)` of node `[48]`.  Stated at the selected minimal counterexample
-`G`; the ledger's numeric relations at this point do not decide it either way
-(`Quarantine/PaperRepairs/EntropyCapAllCold.lean`). -/
-theorem entropyCapBound_allCold
+`eq:entropy-cap` counts the package of **all** `p₁₃` packed windows
+(`jointPackageDemand`).  `lem:independent-target-entropy` needs a family
+"arising canonically from graphs in a labelled graph class"; the paper never
+constructs a realization of the window package of `P₀`, the remainder states
+and the forced obstruction bits by one labelled class -- it asserts it.  On
+[54]'s own branch (`[53]` active) the full retained code already exceeds the
+budget, so this arm is the only one reached.  Stated at the selected minimal
+counterexample `G`; its negation does not follow from its hypotheses
+(`lean-vs-paper-discrepancies.md#open-constructions`). -/
+theorem entropyCapBound_unretained
     {BranchState : Graph.FiniteObject.{u} → Type v}
     {Presentation : Type} {presentation : Presentation}
     (data : Parameters) (object : Graph.FiniteObject.{u})
     (_selected : SelectionStatement BranchState Presentation presentation data object)
-    (_allCold : canonicalHotWindows data object = ∅ ∧
-      ¬ WindowFamilyRealized data object ∅)
+    (_unretained : ¬ WindowFamilyRealized data object (canonicalWindowPacking data object))
     (_cost : ForcedCurvatureCostStatement data object)
     (_high : RemainderEntropyHighStatement data object)
     (_package : EntropyPackageDemandStatement data object) :
-    remainderStates data object (canonicalWindowPacking data object) *
-        2 ^ forcedObstructionBits data object ≤
+    jointPackageDemand data object * 2 ^ forcedObstructionBits data object ≤
       Graph.skeletonBudget object := by
-  sorry -- PAPER-ERROR [54] tex:9921 — see lean-vs-paper-discrepancies.md#paper-errors
+  sorry -- OPEN-CONSTRUCTION [54] tex:9921 — see lean-vs-paper-discrepancies.md#open-constructions
 
-/-- **Node `[54]`, `prop:entropy-high-theta`: the joint package with the forced
-obstruction bits fits the labelled skeleton budget.**  If the hot family is
-retained, the package rate puts the window part below its retained code, node
-`[48]` puts the forced bits below the exact curvature code the retained code
-carries, and the realized-code and skeleton-dominance clauses put that code
-below the budget.  If no family is retained, the bound is the paper's
-independence claim on that arm (`entropyCapBound_allCold`). -/
+/-- **Node `[54]`, `prop:entropy-high-theta`: the joint package of all the
+windows of `P₀`, with the remainder states and the forced obstruction bits,
+fits the labelled skeleton budget.**  If the window package of `P₀` is retained,
+the package rate puts the window part below its retained code, node `[48]` puts
+the forced bits below the exact curvature code the retained code carries, and
+the realized-code and skeleton-dominance clauses put that code below the
+budget.  If it is not retained, the bound is the paper's independence claim on
+that arm (`entropyCapBound_unretained`). -/
 theorem entropyCapBound_of_hotColdPartition
     {BranchState : Graph.FiniteObject.{u} → Type v}
     {Presentation : Type} {presentation : Presentation}
     (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (selected : SelectionStatement BranchState Presentation presentation data object)
-    (split : HotColdWindowStatement data object)
     (package : WindowPackageSeparatedStatement data object)
     (dominates : SkeletonDominatesStatement object)
     (cost : ForcedCurvatureCostStatement data object)
@@ -187,23 +210,19 @@ theorem entropyCapBound_of_hotColdPartition
     EntropyCapBoundStatement data object := by
   change jointPackageDemand data object * 2 ^ forcedObstructionBits data object ≤
     Graph.skeletonBudget object
-  obtain ⟨_valid, _attains, _maximal, hotFacts, _coldIff, _disjoint,
-    _cover⟩ := split
   obtain ⟨_packageCard, _packagesDisjoint, _familyCard, rateLe, _⟩ := package
   have forcedLe := forcedObstructionBits_le_cost data object cost
-  rcases hotFacts.2.1 with retained | allCold
+  by_cases retained : WindowFamilyRealized data object (canonicalWindowPacking data object)
   · obtain ⟨State, stateOf, _packageStates, retainedCodeLe⟩ := retained
     have demandLe : jointPackageDemand data object *
           2 ^ forcedObstructionBits data object ≤
-        retainedCode data object (canonicalHotWindows data object) := by
+        retainedCode data object (canonicalWindowPacking data object) := by
       unfold jointPackageDemand retainedCode
       exact Nat.mul_le_mul
         (Nat.mul_le_mul_right _
           (Nat.pow_le_pow_right (by omega) (Nat.mul_le_mul_right _ rateLe)))
         (Nat.pow_le_pow_right (by omega) forcedLe)
     exact demandLe.trans (retainedCodeLe.trans (dominates.2 State stateOf))
-  · unfold jointPackageDemand
-    rw [allCold.1, Finset.card_empty, Nat.mul_zero, pow_zero, Nat.one_mul]
-    exact entropyCapBound_allCold data object selected allCold cost high demand
+  · exact entropyCapBound_unretained data object selected retained cost high demand
 
 end Hypostructure.Graph.Contracts.Spine

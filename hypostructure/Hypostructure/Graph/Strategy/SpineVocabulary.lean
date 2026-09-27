@@ -1645,6 +1645,17 @@ inductive Key where
   | typeAExitSevenEnvelope
   /-- Node `[111]`: the global squeeze extracts `𝒳_A`, each member carrying positive deficit. -/
   | route8GlobalSqueeze
+  -- SC keys
+  /-- Node `[176]` on the absorbed-configuration residual
+  (`lem:absorbed-germ-fan-data` (i)): on the G2-silent arm, the neutral
+  equal-length configuration of G's silent extracted family, an (F5)
+  configuration (terminal or repeated-state); the dense-residual terminality of
+  node `[162]` is not assumed. -/
+  | coldAbsorbedNeutralConfiguration
+  /-- Node `[176]` on the arm with no positive germ and no absorbed half-edge:
+  G's selected cold branch-excess family is empty and G has no ambient-cubic
+  cold window. -/
+  | coldSelectedFamilyEmpty
   deriving DecidableEq
 
 /-- **The presentation laws of G's registered presentation, published once at
@@ -2441,6 +2452,10 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       TypeAExitSevenEnvelopeStatement data.toParameters object
   | .route8GlobalSqueeze, object =>
       Route8GlobalSqueezeStatement data.toParameters object
+  | .coldAbsorbedNeutralConfiguration, object =>
+      NeutralConfigurationStatement data.toParameters object
+  | .coldSelectedFamilyEmpty, object =>
+      ColdSelectedFamilyEmptyStatement data.toParameters object
 
 /-- Audit labels.  They are diagnostics; every routing and lookup decision
 compares exact keys. -/
@@ -2781,6 +2796,8 @@ def label : Key → String
   | .typeAExitThreeCycle => "typeAExitThreeCycle"
   | .typeAExitSevenEnvelope => "typeAExitSevenEnvelope"
   | .route8GlobalSqueeze => "route8GlobalSqueeze"
+  | .coldAbsorbedNeutralConfiguration => "coldAbsorbedNeutralConfiguration"
+  | .coldSelectedFamilyEmpty => "coldSelectedFamilyEmpty"
 
 /-! ### Label pins
 
@@ -3141,6 +3158,9 @@ example : label .typeAPeeledExitThreeFree = "typeAPeeledExitThreeFree" := rfl
 example : label .typeAExitThreeCycle = "typeAExitThreeCycle" := rfl
 example : label .typeAExitSevenEnvelope = "typeAExitSevenEnvelope" := rfl
 example : label .route8GlobalSqueeze = "route8GlobalSqueeze" := rfl
+example : label .coldAbsorbedNeutralConfiguration =
+    "coldAbsorbedNeutralConfiguration" := rfl
+example : label .coldSelectedFamilyEmpty = "coldSelectedFamilyEmpty" := rfl
 end LabelPins
 
 /-- The value schema at a residual: the object-level statement, read at the
@@ -3490,6 +3510,8 @@ def idx : Key → Nat
   | .typeAExitThreeCycle => 2011
   | .typeAExitSevenEnvelope => 2012
   | .route8GlobalSqueeze => 160
+  | .coldAbsorbedNeutralConfiguration => 2700
+  | .coldSelectedFamilyEmpty => 2701
 
 /-- Left inverse of `idx`.  Writing it out is also what checks the numbering:
 two keys sharing an index would make `ofIdx_idx` unprovable. -/
@@ -3828,6 +3850,8 @@ def ofIdx : Nat → Key
   | 2011 => .typeAExitThreeCycle
   | 2012 => .typeAExitSevenEnvelope
   | 160 => .route8GlobalSqueeze
+  | 2700 => .coldAbsorbedNeutralConfiguration
+  | 2701 => .coldSelectedFamilyEmpty
   | _ => .selection
 
 theorem ofIdx_idx (k : Key) : ofIdx (idx k) = k := by
@@ -4619,6 +4643,11 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAExitSevenEnvelope") 2012
   | .route8GlobalSqueeze =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "route8GlobalSqueeze") 160
+  | .coldAbsorbedNeutralConfiguration =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "coldAbsorbedNeutralConfiguration") 2700
+  | .coldSelectedFamilyEmpty =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldSelectedFamilyEmpty") 2701
 
 /-- The written-out names agree with `label` and `idx`.  `name` is spelled out
 so that reducing it in a downstream audit proof costs one unfolding rather

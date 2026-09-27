@@ -37,6 +37,8 @@ noncomputable def coldFamilyDichotomy
     (emptyFresh : K .coldFamilyEmpty ∉ known) :
     Decision (K .coldFamilyPositive) (K .coldFamilyEmpty) previous := by
   classical
+  -- The decision reads its predecessor fact at the one object it splits.
+  have _predecessor := (previous.get (K .hotColdPartition)).down
   exact Decision.run previous (K .coldFamilyPositive) (K .coldFamilyEmpty)
     `Hypostructure.Graph.Strategy.Spine.coldFamilyDichotomy
     (if positive : 0 < (canonicalColdWindows data.toParameters current.object).card then
@@ -79,7 +81,7 @@ density cap with its exact `o(1)`. -/
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.finiteDensityBudget
     { Requires := [K .coldMass, K .coldMassBounded, K .coldAmbientCubic,
-        K .hotColdPartition]
+        K .hotColdPartition, K .cubicBaseline]
       Produces := [K .densityCap]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -87,7 +89,9 @@ density cap with its exact `o(1)`. -/
     (fun inputs =>
       .cons (key := K .densityCap)
         ⟨Contracts.Spine.densityCap_of_coldMassBounded data.toParameters
-          inputs.current.object data.five_le_windowOrder
+          inputs.current.object
+          (five_le_windowOrder_of_labelCount data.toParameters
+            (inputs.get (K .cubicBaseline)).down.1.2.2.2.2.1)
           (inputs.get (K .coldMass)).down
           (inputs.get (K .coldMassBounded)).down
           (inputs.get (K .coldAmbientCubic)).down

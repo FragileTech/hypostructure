@@ -42,15 +42,17 @@ row.  Candidate overlap and mass accounting belong to
 @[reducible] noncomputable def coldCorridorStateRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldCorridorState
-    { Requires := [K .coldReturnCorridors, K .hotColdPartition]
+    { Requires := [K .coldReturnCorridors, K .hotColdPartition, K .cubicBaseline]
       Produces := [K .coldCorridorState]
-      requiresUnique := by simp
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .coldCorridorState)
         ⟨Contracts.Spine.coldCorridorState_of_corridors data.toParameters
-          inputs.current.object inputs.current.baseline data.five_le_windowOrder
+          inputs.current.object inputs.current.baseline
+          (five_le_windowOrder_of_labelCount data.toParameters
+            (inputs.get (K .cubicBaseline)).down.1.2.2.2.2.1)
           (inputs.get (K .coldReturnCorridors)).down
           (inputs.get (K .hotColdPartition)).down⟩
         .nil)

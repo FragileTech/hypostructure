@@ -26,7 +26,7 @@ independent family, and the circuit lemma determines it by a concrete proper
 declared quotient. -/
 theorem curvatureRankDrop_of_rankBelow (data : Parameters)
     (object : Graph.FiniteObject.{u})
-    (rankFact : CurvatureTargetRankStatement data object)
+    (_rankFact : CurvatureTargetRankStatement data object)
     (circuit : TargetRankCircuitStatement data object)
     (below :
       remainderCurvatureTargetRank data object
@@ -35,9 +35,9 @@ theorem curvatureRankDrop_of_rankBelow (data : Parameters)
     CurvatureRankDropStatement data object := by
   classical
   let packing := canonicalWindowPacking data object
-  have extract := circuit.1
-  obtain ⟨independent, independentEq, independentSubset, survives, rank⟩ :=
-    canonicalSurvivingFamily?_spec data object rankFact.1
+  obtain ⟨independent, independentEq, extract⟩ := circuit.1
+  obtain ⟨independentSubset, _survives, rank⟩ :=
+    canonicalSurvivingFamily?_spec_of_eq_some data object independentEq
   refine ⟨below, independent, independentEq, ?_⟩
   have outside : ∃ test ∈
       object.internalWedgeFamily (object.remainderSupport packing),
@@ -56,7 +56,7 @@ theorem curvatureRankDrop_of_rankBelow (data : Parameters)
   obtain ⟨test, testMember, testOutside⟩ := outside
   obtain ⟨determiners, determinersSubset, finite, proper, declared,
     functional, reducing, determines⟩ :=
-    extract independent independentSubset survives rank test testMember testOutside
+    extract test testMember testOutside
   exact ⟨test, testMember, testOutside, determiners, determinersSubset, finite,
     proper, declared, functional, reducing, determines⟩
 

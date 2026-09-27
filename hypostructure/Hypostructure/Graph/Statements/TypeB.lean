@@ -1,5 +1,7 @@
 import Hypostructure.Graph.Statements.TypeA
 import Hypostructure.Graph.TypeBProfileSchedule
+import Hypostructure.Graph.ColdCorridorTails
+import Hypostructure.Graph.DecoratedHandoffTails
 
 /-!
 # Statements: TypeB
@@ -47,22 +49,38 @@ abbrev handoffWindowFree (data : Parameters) (object : Graph.FiniteObject.{u}) :
     ∀ internal : Finset object.Vertex, internal ⊆ support →
       ¬ Graph.MinimumDegreeAtLeast data.threshold (object.induce internal)
 
-/-- The exact case-(ii) handoff of `lem:absorbed-germ-fan-data` at one selected
-branch-excess half-edge `ε`, at node `[153]`'s retained routing.  `centre` is the
-least high vertex of `ε`'s own first-failure prefix (its node-`[10]` neighbours
-sit at the baseline), and that prefix is the counted core of an actual
-`DecoratedHandoff.Envelope` with decoration `{centre}`: connected, inside the
-canonical remainder, admissible, with two distinct assigned first neighbours.
-Everything is read at `ε` itself, so the core is `ε`'s prefix and contains the
-centre. -/
+/-- **`lem:absorbed-germ-fan-data` (ii) at one selected half-edge `ε` of G**
+(tex 7926-7952, with `lem:typeA-high-degree-handoff`, tex 11110-11131, and
+`def:decorated-fan-envelope`, tex 10898-10925), read at node `[153]`'s retained
+routing.  `handoff = (z, Y)`:
+
+* `z` is the least high vertex of `ε`'s first-failure prefix (the heavy
+  centre; its node-`[10]` neighbours sit at the baseline);
+* "the two corridor incidences at `z` are distinct, so the segments of the
+  corridor on either side of `z` are two connector tails separated at `z`,
+  which is the decorated handoff configuration of
+  `lem:typeA-high-degree-handoff`": the envelope has the one decoration
+  `H = {z}`, its assigned first neighbours are the two corridor incidences
+  `a` (entry side) and `b` (exit side), and its arms are the two corridor
+  segments at `z` cut at their first entry into the counted core
+  (`DecoratedHandoff.firstEntryArm`);
+* `Y` is that counted core: a connected remainder core `Y ⊆ R(P₀)` (hence
+  `P₁₃`-free with empty internal `3`-core), with `z ∉ Y` ("the only new
+  vertices counted outside `Y` are the decorations", tex 11155), and every
+  full handoff path `z a A_{z,a}` is simple.
+
+The paper never names `Y` for a cold corridor; this is the envelope its
+sentence asserts. -/
 noncomputable def AbsorbedHandoffAt (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (routing : ColdFailureRoutingStatement data object)
     (epsilon : ColdEligibleHalfEdge data object)
-    (centre : object.Vertex) : Prop := by
+    (handoff : object.Vertex × Finset object.Vertex) : Prop := by
   classical
   letI : FinEnum object.Vertex := object.vertices
   exact
+    let centre := handoff.1
+    let core := handoff.2
     let classified := coldRoutedClassified data object routing
     let corridor := coldOccurrenceCorridorAt data object classified epsilon
     let traceEnd := coldRoutedTraceEnd data object routing epsilon
@@ -74,29 +92,37 @@ noncomputable def AbsorbedHandoffAt (data : Parameters)
           object.degree (corridor.head earlier) ≤ data.threshold) ∧
         (∀ neighbour : object.Vertex, object.graph.Adj centre neighbour →
           object.degree neighbour = data.threshold) ∧
-      let core := corridor.prefixSupport traceEnd
+      let entry := corridor.entryNeighbour firstIndex.1
+      let exit := corridor.exitNeighbour firstIndex.1
       Graph.SupportComponents.Connected.ConnectedOn object core ∧
         core ⊆ object.remainderSupport
           (canonicalWindowPacking data object) ∧
+        centre ∉ core ∧
+        entry ≠ exit ∧
         ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
             (handoffHighDegree data object)
             (handoffAbsorbing data object
               (canonicalWindowPacking data object)),
           envelope.core = core ∧
             envelope.decorations = {centre} ∧
+            envelope.assigned centre = {entry, exit} ∧
+            envelope.arm centre entry =
+              Graph.DecoratedHandoff.firstEntryArm core
+                (corridor.entryTail firstIndex.1) ∧
+            envelope.arm centre exit =
+              Graph.DecoratedHandoff.firstEntryArm core
+                (corridor.exitTail firstIndex.1) ∧
+            (∀ first ∈ envelope.assigned centre,
+              centre ∉ envelope.arm centre first) ∧
             Graph.DecoratedHandoff.Admissible object data.LengthOK
               (handoffUncompressible data object)
-              (handoffWindowFree data object) envelope ∧
-            ∃ first second : object.Vertex,
-              first ≠ second ∧
-                first ∈ envelope.assigned centre ∧
-                second ∈ envelope.assigned centre
+              (handoffWindowFree data object) envelope
 
 /-- Node `[177]`, `lem:absorbed-germ-fan-data` (ii), the decorated handoff fan
-support at the first high centre.  For every selected branch-excess half-edge
-`ε` outside the subcubic candidate set, `ε`'s retained first-failure prefix is a
-connected subset of the canonical remainder and supplies the counted core; the
-least high vertex of that prefix is its decoration (`AbsorbedHandoffAt`). -/
+data at the heavy centre.  For every selected branch-excess half-edge `ε`
+outside the subcubic candidate set, the corridor segments at `ε`'s first heavy
+centre are the arms of an admissible decorated handoff envelope over a
+remainder core (`AbsorbedHandoffAt`). -/
 noncomputable def AbsorbedGermDecoratedAssignedSupportStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
@@ -106,7 +132,7 @@ noncomputable def AbsorbedGermDecoratedAssignedSupportStatement (data : Paramete
     let candidates := coldRoutedCandidates data object routing
     ∀ epsilon : Eligible,
       Sum.inl epsilon ∉ candidates →
-      ∃ centre, AbsorbedHandoffAt data object routing epsilon centre
+      ∃ handoff, AbsorbedHandoffAt data object routing epsilon handoff
 
 /-- **The registered discharge profile of the Type B fan ledger**
 (`def:typeB-multiclosed-residual`): baseline `δ`, discharge rate `α = 1/s` at

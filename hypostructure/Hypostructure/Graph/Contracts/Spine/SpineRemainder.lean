@@ -119,8 +119,8 @@ theorem curvatureTargetRank_attained (data : Parameters)
           (Graph.HasCycleWithLength data.LengthOK) object
           (object.remainderSupport packing) subset survives⟩
 
-/-- **`lem:target-rank-circuit`.**  Adjoining a raw test to a maximal surviving
-subfamily breaks survival, so some functional admissible quotient is injective
+/-- **`lem:target-rank-circuit`**, at node `[31]`'s surviving family `𝓘₀`
+(`canonicalSurvivingFamily?`).  Adjoining a raw test to `𝓘₀` breaks survival, so some functional admissible quotient is injective
 on the family but not on the extension, and its functional clause supplies a
 finite proper determining subfamily; conversely a family with no such
 dependence survives. -/
@@ -131,10 +131,17 @@ theorem targetRankCircuit_of_curvatureTargetRank (data : Parameters)
   by
     classical
     let packing := canonicalWindowPacking data object
-    obtain ⟨_attained, maximal⟩ := rank
-    refine ⟨fun independent subset survives maximum test testMem outside => ?_,
-      fun noDependence => ?_⟩
-    · -- `𝓘 ∪ {a}` does not survive: its size would exceed `r_Ω(R)`.
+    obtain ⟨attained, maximal⟩ := rank
+    obtain ⟨canonical, canonicalEq, canonicalSubset, canonicalSurvives,
+      canonicalCard⟩ := canonicalSurvivingFamily?_spec data object attained
+    refine ⟨⟨canonical, canonicalEq, ?_⟩, fun noDependence => ?_⟩
+    · -- At node `[31]`'s family `𝓘₀`: `𝓘₀ ∪ {a}` does not survive, its size
+      -- would exceed `r_Ω(R)`.
+      intro test testMem outside
+      have subset := canonicalSubset
+      have survives := canonicalSurvives
+      have maximum := canonicalCard
+      generalize canonical = independent at subset survives maximum outside ⊢
       have notSurvive : ¬ Graph.FiniteObject.SurvivesCurvatureSystem
           (Graph.MinimumDegreeAtLeast data.threshold)
           (Graph.HasCycleWithLength data.LengthOK) object

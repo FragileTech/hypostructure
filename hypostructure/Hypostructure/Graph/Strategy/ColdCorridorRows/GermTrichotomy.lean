@@ -88,15 +88,17 @@ single-stub attachments. -/
 @[reducible] noncomputable def coldWindowStubStructureRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldWindowStubStructure
-    { Requires := [K .hotColdPartition]
+    { Requires := [K .hotColdPartition, K .cubicBaseline]
       Produces := [K .coldWindowStubStructure]
-      requiresUnique := by simp
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .coldWindowStubStructure)
         ⟨Contracts.Spine.coldWindowStubStructure_of_split data.toParameters
-          inputs.current.object data.three_le_windowOrder
+          inputs.current.object
+          (three_le_windowOrder_of_census data.toParameters
+            (inputs.get (K .cubicBaseline)).down.1.2.2.2.2.1)
           (inputs.get (K .hotColdPartition)).down⟩
         .nil)
 
@@ -140,6 +142,8 @@ noncomputable def coldGermRealizationDichotomy
     (noneFresh : K .coldGermNoneRealizing ∉ known) :
     Decision (K .coldGermSomeRealizing) (K .coldGermNoneRealizing) previous := by
   classical
+  -- The decision reads its predecessor fact at the one object it splits.
+  have _predecessor := (previous.get (K .coldGermFamilyPositive)).down
   exact Decision.run previous (K .coldGermSomeRealizing) (K .coldGermNoneRealizing)
     `Hypostructure.Graph.Strategy.Spine.coldGermRealizationDichotomy
     (if hit : ColdGermSomeRealizingStatement data.toParameters current.object then
@@ -162,6 +166,8 @@ noncomputable def coldGermDistinctionDichotomy
     Decision (K .coldGermSomeDistinguishing) (K .coldGermNoneDistinguishing)
       previous := by
   classical
+  -- The decision reads its predecessor fact at the one object it splits.
+  have _predecessor := (previous.get (K .coldGermNoneRealizing)).down
   exact Decision.run previous (K .coldGermSomeDistinguishing)
     (K .coldGermNoneDistinguishing)
     `Hypostructure.Graph.Strategy.Spine.coldGermDistinctionDichotomy

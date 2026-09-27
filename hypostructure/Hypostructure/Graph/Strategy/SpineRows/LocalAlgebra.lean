@@ -18,15 +18,13 @@ variable [FactSystem (Input BranchState Presentation presentation data)]
 
 /-! ## Node `[18]`: the exact finite local algebra
 
-For every induced window of the literal active object, the row publishes
-exactly the two assertions of `lem:labels`: the cardinality of the legal-label
-set and its displayed size distribution.  The manuscript's `C_s` and `Ω₂` are
-already the definitions `WindowCurvature.Safe` and
+The row publishes exactly the two assertions of `lem:labels`: the cardinality of
+the legal-label set and its displayed size distribution.  Both are laws of the
+registered presentation, published once at the entry in the presentation-law
+fact `K .cubicBaseline`; the row reads them from that fact.  The manuscript's
+`C_s` and `Ω₂` are already the definitions `WindowCurvature.Safe` and
 `WindowCurvature.curvatureTwo`; they are deliberately not republished as
 reflection theorems outside the registered legal-label schedule.
-
-No predecessor fact is needed: the direct enumeration depends only on the
-registered window order.
 -/
 omit [FactSystem (Input BranchState Presentation presentation data)] in
 @[reducible] noncomputable def localAlgebraRow :
@@ -42,7 +40,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       (Presentation := Presentation) (presentation := presentation)
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.localAlgebra
-    { Requires := []
+    { Requires := [K .cubicBaseline]
       Produces := [K .localAlgebra]
       requiresUnique := by simp
       producesUnique := by simp
@@ -51,7 +49,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       .cons (key := K .localAlgebra)
         (show Value BranchState Presentation presentation data
             .localAlgebra inputs.current from
-          ⟨⟨data.labelCount, data.labelSizeDistribution⟩⟩)
+          ⟨(inputs.get (K .cubicBaseline)).down.1.2.2.2.2⟩)
         .nil)
     0 0
 

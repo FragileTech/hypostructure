@@ -30,10 +30,13 @@ noncomputable def windowFreeDichotomy
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger (Input BranchState Presentation presentation data)
       current known)
+    [FactKeys.Has (K .uncompressible) known]
     (freeFresh : K .windowFree ∉ known)
     (presentFresh : K .windowPresent ∉ known) :
-    Decision (K .windowFree) (K .windowPresent) previous :=
-  Decision.run previous (K .windowFree) (K .windowPresent)
+    Decision (K .windowFree) (K .windowPresent) previous := by
+  -- The decision reads its predecessor, node `[14]`'s uncompressibility.
+  have _predecessor := (previous.get (K .uncompressible)).down
+  exact Decision.run previous (K .windowFree) (K .windowPresent)
     `Hypostructure.Graph.Strategy.Spine.windowFreeDichotomy
     (Classical.choice (show Nonempty
         ((K .windowFree).At current ⊕ (K .windowPresent).At current) from by

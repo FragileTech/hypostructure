@@ -1,5 +1,6 @@
 import Hypostructure.Graph.Strategy.SpineVocabulary
 import Hypostructure.Graph.Contracts.TypeB.Entry
+import Hypostructure.Graph.Contracts.Spine.ColdAbsorbedEmpty
 
 /-! Independently compiled spine row declarations. -/
 
@@ -43,8 +44,9 @@ noncomputable def typeBAbsorbedHalfEdgeDichotomy
 
 /-- Node `[177]` → `[65]`, `lem:absorbed-germ-fan-data` (ii): at `G`'s canonical
 absorbed half-edge (the `[175]` yes arm), the decorated handoff fan data at the
-first high centre of its retained corridor enters the common Type B entry with
-the support (first-failure prefix, `{centre}`). -/
+first high centre `z` of its retained corridor -- the two corridor segments at
+`z` as the arms of an envelope over a counted remainder core `Y` -- enters the
+common Type B entry with the support `(Y, {z})`. -/
 @[reducible] noncomputable def absorbedGermFanEnvelopeRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.absorbedGermFanEnvelope
@@ -65,9 +67,33 @@ the support (first-failure prefix, `{centre}`). -/
             (inputs.get (K .uncompressible)).down
             (inputs.get (K .remainderNormalized)).down
             (inputs.get (K .absorbedGermFanData)).down
-            (le_of_eq (inputs.get (K .cubicBaseline)).down.1.1.symm)
             (inputs.get (K .cubicBaseline)).down.1.2.2.1)
           (inputs.get (K .typeBAbsorbedHalfEdge)).down⟩
+        .nil)
+
+/-- **Node `[176]` on the arm with neither a positive germ (`[175]` no) nor an
+absorbed half-edge (`[177]` absent)**: G's selected cold branch-excess family is
+empty and G has no ambient-cubic cold window
+(`Contracts.Spine.coldSelectedFamilyEmpty_of_absent`). -/
+@[reducible] noncomputable def coldSelectedFamilyEmptyRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.coldSelectedFamilyEmpty
+    { Requires := [K .cubicBaseline, K .hotColdPartition, K .coldFailureRouting,
+        K .coldNoPositiveGerm, K .typeBAbsorbedHalfEdgeAbsent]
+      Produces := [K .coldSelectedFamilyEmpty]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .coldSelectedFamilyEmpty)
+        ⟨Contracts.Spine.coldSelectedFamilyEmpty_of_absent data.toParameters
+          inputs.current.object (inputs.get (K .cubicBaseline)).down.1.1
+          (five_le_windowOrder_of_labelCount data.toParameters
+            (inputs.get (K .cubicBaseline)).down.1.2.2.2.2.1)
+          (inputs.get (K .hotColdPartition)).down
+          (inputs.get (K .coldFailureRouting)).down
+          (inputs.get (K .coldNoPositiveGerm)).down
+          (inputs.get (K .typeBAbsorbedHalfEdgeAbsent)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

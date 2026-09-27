@@ -341,7 +341,7 @@ theorem coldGermFamilyPositive_of_linear (data : Parameters)
 residual every retained cold return corridor of G is terminal in the sense of
 the (F5) terminal subcase.
 
-Recorded as a paper error (`lean-vs-paper-discrepancies.md#paper-errors`,
+Recorded as an open construction (`lean-vs-paper-discrepancies.md#open-constructions`,
 [162] tex:7694).  The paper's reason is that "the boundaried pieces of `R` are
 induced-`P₁₃`-free and subcubic, [so] they have bounded diameter".  But the
 corridors of `def:cold-corridor-first-failure` live in `G − X_cold`, which
@@ -355,7 +355,7 @@ theorem denseColdCorridorsTerminal_of_state (data : Parameters)
     (_normalized : RemainderNormalizedStatement data object)
     (_split : HotColdWindowStatement data object) :
     DenseColdCorridorsTerminalStatement data object := by
-  -- PAPER-ERROR [162] tex:7694 — see lean-vs-paper-discrepancies.md#paper-errors
+  -- OPEN-CONSTRUCTION [162] tex:7694 — see lean-vs-paper-discrepancies.md#open-constructions
   sorry
 
 /-- **`thm:cold-branch-quantitative-closure`: no terminal cold residual.**
@@ -365,25 +365,37 @@ theorem coldBranchClosed_of_routing (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (routed : ColdGermRoutedStatement data object)
     (table : ColdSameInterfaceTableStatement data object) :
-    ColdBranchClosedStatement data object :=
-  Graph.ColdCorridor.noTerminalColdResidual_of_routing
-    (fun germ shorter =>
-      let routedGerm := routed germ shorter
-      ⟨routedGerm.1, routedGerm.2.1⟩)
-    table.1 table.2.1
+    ColdBranchClosedStatement data object := by
+  refine ⟨?_, ?_, ?_⟩
+  · rintro ⟨germ, active, shorter, notDistinguishing⟩
+    exact notDistinguishing (routed germ active shorter).1
+  · rintro ⟨row, notHandoff, notDistinguishing⟩
+    rcases (table.1 row).2 with handoff | distinguishing
+    · exact notHandoff handoff
+    · exact notDistinguishing distinguishing
+  · rintro ⟨self, notHandoff, notDistinguishing⟩
+    rcases (table.2.1 self).2.2 with handoff | distinguishing
+    · exact notHandoff handoff
+    · exact notDistinguishing distinguishing
 
 /-- **Node `[24]`, `prop:p13-density` after the cold branch.**  On the bounded
 arm the cold mass is `C ≤ (1 + (threshold+1)·B_cold)·σ(G)`; with the cleared
 cold-mass inequality and the near-cubic surplus bound `σ(G) ≤ T(n)` this is the
 window-only density cap with its exact `o(1)`. -/
-theorem densityCap_of_coldMassBounded (data : Parameters)
+theorem densityCapLinear_of_coldMassBounded (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (fiveLeOrder : 5 ≤ data.windowOrder)
     (mass : ColdMassStatement data object)
     (bounded : ColdMassBoundedStatement data object)
     (cubic : ColdAmbientCubicStatement data object)
     (split : HotColdWindowStatement data object) :
-    DensityCapStatement data object := by
+    2 * (data.windowRate * data.separatedScaleCount object.vertexCount *
+        object.windowPackingNumber data.windowOrder) ≤
+      (Graph.dyadicScaleCount object + 1) *
+        (data.threshold * object.vertexCount +
+          data.surplusThreshold object.vertexCount) +
+      data.densitySlack * (data.windowRate * data.separatedScaleCount object.vertexCount) *
+        data.surplusThreshold object.vertexCount := by
   classical
   let packing := canonicalWindowPacking data object
   let cold := canonicalColdWindows data object
@@ -458,5 +470,30 @@ theorem densityCap_of_coldMassBounded (data : Parameters)
             data.surplusThreshold object.vertexCount) +
         data.densitySlack * (data.windowRate * data.separatedScaleCount object.vertexCount) *
           data.surplusThreshold object.vertexCount := by ring
+
+/-- **Node `[24]`, `prop:p13-density`**: the window-only linear cap after the
+cold branch, and the high-entropy clause (tex 8491-8495, 8530-8551): a joint
+window/remainder comparison realized by a state map on G's labelled skeleton
+class fits the skeleton budget, since such a map realizes at most
+`|𝒢_{n,m}|` states (`lem:skeleton-dominates`).  Solving the cleared inequality
+is `θ ≤ 0.01198542083… + o(1)`. -/
+theorem densityCap_of_coldMassBounded (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (fiveLeOrder : 5 ≤ data.windowOrder)
+    (mass : ColdMassStatement data object)
+    (bounded : ColdMassBoundedStatement data object)
+    (cubic : ColdAmbientCubicStatement data object)
+    (split : HotColdWindowStatement data object) :
+    DensityCapStatement data object := by
+  refine ⟨densityCapLinear_of_coldMassBounded data object fiveLeOrder mass bounded
+    cubic split, ?_⟩
+  intro State stateOf joint
+  refine joint.trans (Nat.pow_le_pow_left ?_ _)
+  have count : Nat.card (Graph.PackedWindowRealization.Skeleton
+      object.vertexCount object.edgeCount) = Graph.skeletonBudget object := by
+    simpa [Graph.skeletonBudget, Graph.edgeStratumCount] using
+      Graph.PackedWindowRealization.card_skeleton
+        object.vertexCount object.edgeCount
+  exact (Core.FiniteEntropy.card_range_le_card_ambient stateOf).trans_eq count
 
 end Hypostructure.Graph.Contracts.Spine

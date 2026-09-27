@@ -79,36 +79,36 @@ theorem canonicalTypeBDecoratedEnvelope_core {data : Parameters}
 
 /-! ## The absorbed support of node `[177]` -/
 
-/-- The first-high centre of one selected half-edge `ε`: the canonical choice of
-node `[177]`'s `∃ centre` at `ε` itself (`AbsorbedHandoffAt`,
+/-- The absorbed handoff `(z, Y)` of one selected half-edge `ε`: the canonical
+choice of node `[177]`'s `∃ handoff` at `ε` itself (`AbsorbedHandoffAt`,
 `lem:absorbed-germ-fan-data` (ii)), read at the node-`[153]` routing
 (`K .coldFailureRouting`, a proposition, so its classified data is
 canonical). -/
-noncomputable def canonicalAbsorbedCentre (data : Parameters)
+noncomputable def canonicalAbsorbedHandoff (data : Parameters)
     (object : Graph.FiniteObject.{u}) (epsilon : ColdEligibleHalfEdge data object) :
-    Option object.Vertex := by
+    Option (object.Vertex × Finset object.Vertex) := by
   classical
   exact if routing : ColdFailureRoutingStatement data object then
     canonicalChoice (AbsorbedHandoffAt data object routing epsilon)
   else none
 
-theorem canonicalAbsorbedCentre_spec {data : Parameters}
+theorem canonicalAbsorbedHandoff_spec {data : Parameters}
     {object : Graph.FiniteObject.{u}} {epsilon : ColdEligibleHalfEdge data object}
     (routing : ColdFailureRoutingStatement data object)
-    (h : ∃ centre, AbsorbedHandoffAt data object routing epsilon centre) :
-    ∃ centre, canonicalAbsorbedCentre data object epsilon = some centre ∧
-      AbsorbedHandoffAt data object routing epsilon centre := by
+    (h : ∃ handoff, AbsorbedHandoffAt data object routing epsilon handoff) :
+    ∃ handoff, canonicalAbsorbedHandoff data object epsilon = some handoff ∧
+      AbsorbedHandoffAt data object routing epsilon handoff := by
   classical
-  simpa [canonicalAbsorbedCentre, routing] using canonicalChoice_spec h
+  simpa [canonicalAbsorbedHandoff, routing] using canonicalChoice_spec h
 
-theorem canonicalAbsorbedCentre_spec_of_eq_some {data : Parameters}
+theorem canonicalAbsorbedHandoff_spec_of_eq_some {data : Parameters}
     {object : Graph.FiniteObject.{u}} {epsilon : ColdEligibleHalfEdge data object}
-    {centre : object.Vertex}
-    (h : canonicalAbsorbedCentre data object epsilon = some centre) :
+    {handoff : object.Vertex × Finset object.Vertex}
+    (h : canonicalAbsorbedHandoff data object epsilon = some handoff) :
     ∃ routing : ColdFailureRoutingStatement data object,
-      AbsorbedHandoffAt data object routing epsilon centre := by
+      AbsorbedHandoffAt data object routing epsilon handoff := by
   classical
-  unfold canonicalAbsorbedCentre at h
+  unfold canonicalAbsorbedHandoff at h
   split at h
   · next routing => exact ⟨routing, canonicalChoice_spec_of_eq_some h⟩
   · cases h
@@ -128,19 +128,13 @@ noncomputable def canonicalTypeBAbsorbedHalfEdge (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Option (ColdEligibleHalfEdge data object) :=
   canonicalChoice (AbsorbedHalfEdgeOutside data object)
 
-/-- The absorbed Type B support at one selected half-edge `ε`: its retained
-first-failure prefix (the counted core of node `[177]`'s envelope) and its
-first high centre. -/
+/-- The absorbed Type B support at one selected half-edge `ε`: the counted
+core `Y` and the decoration `{z}` of node `[177]`'s envelope. -/
 noncomputable def canonicalTypeBAbsorbedSupportAt (data : Parameters)
     (object : Graph.FiniteObject.{u}) (epsilon : ColdEligibleHalfEdge data object) :
-    Option (Finset object.Vertex × Finset object.Vertex) := by
-  classical
-  exact if routing : ColdFailureRoutingStatement data object then
-    (canonicalAbsorbedCentre data object epsilon).map fun centre =>
-      ((coldOccurrenceCorridorAt data object
-          (coldRoutedClassified data object routing) epsilon).prefixSupport
-        (coldRoutedTraceEnd data object routing epsilon), {centre})
-  else none
+    Option (Finset object.Vertex × Finset object.Vertex) :=
+  (canonicalAbsorbedHandoff data object epsilon).map fun handoff =>
+    (handoff.2, {handoff.1})
 
 /-- **The absorbed Type B support of `G`** (node `[177]` → `[65]`): the support
 `(Y_X, H_X)` of the canonical absorbed half-edge. -/

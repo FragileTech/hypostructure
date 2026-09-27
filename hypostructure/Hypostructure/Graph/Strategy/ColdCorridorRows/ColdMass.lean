@@ -68,7 +68,8 @@ positive-surplus vertex of the current object. -/
       .cons (key := K .coldSelectedBranchExcess)
         ⟨Contracts.Spine.coldSelectedBranchExcess_of_split data.toParameters
           inputs.current.object (inputs.get (K .cubicBaseline)).down.1.1
-          data.three_le_windowOrder split⟩
+          (three_le_windowOrder_of_census data.toParameters
+            (inputs.get (K .cubicBaseline)).down.1.2.2.2.2.1) split⟩
         (.cons (key := K .coldAmbientCubicStubExcess)
           ⟨Contracts.Spine.coldAmbientCubicStubExcess_of_split data.toParameters
             inputs.current.object split⟩
@@ -100,6 +101,8 @@ noncomputable def coldMassDichotomy
     (boundedFresh : K .coldMassBounded ∉ known) :
     Decision (K .coldMassLinear) (K .coldMassBounded) previous := by
   classical
+  -- The decision reads its predecessor fact at the one object it splits.
+  have _predecessor := (previous.get (K .coldStubExcess)).down
   exact Decision.run previous (K .coldMassLinear) (K .coldMassBounded)
     `Hypostructure.Graph.Strategy.Spine.coldMassDichotomy
     (if linear : ColdMassLinearStatement data.toParameters current.object then
