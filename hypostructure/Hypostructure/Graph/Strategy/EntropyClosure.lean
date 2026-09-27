@@ -97,8 +97,11 @@ skeleton state-count bound, node `[48]`'s forced obstruction cost and node
 puts the window part below its retained code, node `[48]` puts the forced bits
 below the curvature code that retained code carries, and the realized-code and
 skeleton-dominance clauses put the code below the labelled skeleton budget.  If
-it is not retained, the bound is the paper's independence claim on that arm
-(`entropyCapBound_unretained`, `OPEN-CONSTRUCTION [54] tex:9921`).  Both alternatives produce exactly
+it is not retained, the glue on disjoint supports realizes the product when the
+window package and the forced bits fit the outer room of `G` at `R₀`
+(`entropyCapBound_of_outerRoom`); otherwise the bound is the paper's
+independence claim (`entropyCapBound_unretained`,
+`OPEN-CONSTRUCTION [54] tex:9921`).  Both alternatives produce exactly
 `K .entropyCapBound`; the terminal itself is Core's incompatibility closure
 against `K .entropyCapActive`. -/
 @[reducible] noncomputable def entropyCapBoundRow :
