@@ -1478,25 +1478,73 @@ only for a claim proved false at G.
   to a cold corridor, and no construction of the paper yields a connected core
   in `R` avoiding `z` that both segments enter.  Even corridor containment in
   `R` would not suffice (`z` may separate the segments' parts of `R`).
-- **The configuration `z` = the entry foot (`i = 0`).**  There the entry-side
-  segment is the stub `ε` itself, `[ε's window endpoint] ⊆ X_cold`, which meets
-  no vertex of `R`, so the claim would fail.  Whether a G reaching `[177]` can
-  have it is not decided: the three routes applied to "`z` is the foot of an
-  eligible `ε`" give nothing -- (1) the foot's window neighbour has degree `3`
-  and `[10]` only forbids heavy-heavy edges, so no incompatible structure;
-  (2) the heavy vertices adjacent to ambient-cubic windows are counted by the
-  surplus `σ(G)` but not excluded; (3) no smaller representative arises.  No
-  G-configuration consistent with all ledger facts at `[177]` is exhibited, so
-  this is an open construction, not a paper error.
-- **Three routes on `¬X`** (X = a connected `Y ⊆ R`, `z ∉ Y`, entered by both
-  segments): (1) incompatible structure -- a segment that reaches its boundary
-  stub without meeting `R \ {z}` crosses only hot / non-ambient-cubic cold
-  windows and `X_cold`, which contradicts no arm (no accepted cycle, no
-  baseline or bridgelessness violation is produced); (2) overload -- no count on
-  the ledger bounds how many segment vertices lie outside `R`; (3)
-  compressibility -- the failure of `X` produces no smaller representative of a
-  support.  The concrete configuration at G is `z` = the entry foot
-  (`i = 0`), whose entry-side segment is `[ε's window endpoint] ⊆ X_cold`.
+- **Construction attempt at G (fix2-177, 2026-09-27).**  The canonical
+  candidate is: follow each corridor segment at `z` to its first vertex of
+  `R(P₀)`, and let `Y` be the component of `G[R(P₀) \ {z}]` containing those
+  entries.  Requirement by requirement at G's objects:
+  - *`Y ⊆ R`, `Y` connected, `z ∉ Y`*: by construction, provided the entries
+    exist.
+  - *Simple paths, admissibility*: already proved from G's facts in
+    `absorbedGermDecoratedAssignedSupport` (`entryTail_nodup`/`exitTail_nodup`,
+    `vertexAt_not_mem_*Tail`, `entryNeighbour_ne_exitNeighbour`, fan-safety from
+    `avoids`, admissibility from `[14]`/`[25]`--`[27]`).
+  - *Each segment reaches `R`*: **fails in general.**  The corridor lives in
+    `G − X_cold` (C2 ruling), so its inside vertices may lie in hot or
+    non-ambient-cubic cold windows of `P₀`, and both segments end at a stub
+    endpoint in `X_cold ⊆ ⋃P₀`.  A segment whose inside vertices all lie in
+    windows meets no vertex of `R`.
+  - *Both entries in one component of `G[R \ {z}]`*: fails in general (the two
+    sides may be joined only through `z` and windows).
+  - *`z ∈ R`?*  Not needed: `H ⊆ V_{≥4}(G)` and the hook only needs `z ∉ Y`;
+    a heavy `z` inside a hot / non-ambient-cubic window is allowed by both the
+    paper and the Lean.
+- **The heavy entry foot, proved at G** (`Contracts.Spine.coldAbsorbedRemainderCore_heavyEntryFoot`,
+  `Graph/Contracts/Spine/ColdSubcubicCharge.lean`; vocabulary-free input
+  `Corridor.entryTail_zero_not_meets`, `Graph/ColdCorridorTails.lean`).  For
+  every eligible selected half-edge `ε` of G whose foot `ε.2` has degree above
+  the baseline: `ε ∉ coldRoutedCandidates` (the foot lies in every prefix
+  support), `firstIndex = 0` satisfies every hypothesis of the hook (within the
+  trace prefix, heavy head, no earlier index), and the hook's conclusion is
+  **false** there: `entryTail 0 = [ε.1]` with `ε.1 ∈ X_cold ⊆ ⋃P₀`, so it meets
+  no subset of `R(P₀)`.  Hence, at G, the hook is equivalent on this
+  configuration to "no selected half-edge of G has a heavy foot".
+- **Three routes on "some selected `ε` of G has a heavy foot `z`"**, run at
+  G's objects: the configuration is `z ∈ V_{≥4}(G)` adjacent to an interior
+  vertex `x` of an ambient-cubic cold window `P ∈ P₀ \ P_hot`, via a selected
+  interior stub.  (1) Structure: `[10]` (independence of `V_{≥4}`) and
+  `lem:deletion-critical` need `d_G(x) = 3`, which ambient-cubicity supplies;
+  `coldWindowStubStructure` says `x` has exactly one external stub, which is
+  `xz`; `P₀` maximality, bridgelessness, minimum degree and target avoidance
+  constrain neither `d_G(z)` nor the stub's other endpoint; the (F4) registry
+  fires at segment `0` (that is the absorbed case itself, not a contradiction).
+  (2) Overload: such `ε` are at most `Σ_{z ∈ V_{≥4}} d_G(z) ≤ (δ+1)σ(G)` (the
+  registry's exact count), which is within every bound on the ledger at
+  `[177]`; one occurrence overloads nothing.  (3) Compressibility: the
+  configuration is a single edge `xz`; it yields no smaller support with the
+  same response, so neither `K .uncompressible` nor `K .selection` is
+  contradicted.  All three fail with the configuration in hand.
+- **Completeness inventory** (root → `[177]`): `R` and `P₀`
+  (`remainderSupport`, `canonicalWindowPacking`), `P_hot`/`P_cold`
+  (`canonicalHotWindows`/`canonicalColdWindows`), `X_cold`
+  (`coldCorridorWindows`), `[10]` (`.slackIndependent`), `[14]`, `[22]`,
+  `[25]`--`[27]` (remainder normalization), ambient cubicity
+  (`K .coldAmbientCubic`), the stub structure (`coldWindowStubStructure`), the
+  cold corridor, its states and first failures (`K .coldCorridorState`,
+  `K .coldFirstFailureOccurrence`, `K .coldFailureRouting`), the (F4) registry
+  (`ColdDeclaredHandoffSupport`), `[153]`'s candidates, the absorbed split and
+  fan data `[175]` (`K .absorbedGermFanData`, including `neighboursCubic`), the
+  canonical pieces of `R` and the Type A supports / exit-(7) envelopes `[108]`.
+  The paper's remaining objects on the path (`def:cold-skeleton-excess`,
+  `def:cold-bounded-germ`, `lem:cold-corridor-first-failure`) are represented
+  by those keys.  None constrains the degree of a selected stub's foot or ties
+  a remainder component to a cold corridor.
+- **Outcome.**  `Y` is not constructible from G's facts at `[177]`: on the
+  heavy-entry-foot configuration it provably does not exist (Lean above), and
+  that configuration is not refuted by any of the three routes.  It is not a
+  PAPER-ERROR because the configuration is not shown to occur in G; it stays
+  an OPEN CONSTRUCTION whose exact content is now "G has no selected half-edge
+  with a heavy foot" (for `i = 0`) together with the hot-window case for
+  `i > 0`.
 - **Tag.** `sorry`, `OPEN-CONSTRUCTION [177] tex:7932`, in
   `Graph/Contracts/Spine/ColdSubcubicCharge.lean` (`coldAbsorbedRemainderCore`).
 

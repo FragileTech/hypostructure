@@ -343,6 +343,25 @@ theorem entryNeighbour_ne_exitNeighbour
       · exact corridor.successorStub_window_not_mem outside
           (same ▸ corridor.vertexAt_mem i)
 
+/-! ### The entry foot
+
+When the vertex is the entry foot (index `0`), the entry-side segment is the
+entry stub's window endpoint alone: "the corridor enters `z` through" `ε`
+itself.  That segment lies in the deleted windows, so it meets no set disjoint
+from them. -/
+
+theorem entryTail_zero : corridor.entryTail 0 = [corridor.entryStub.2] := rfl
+
+/-- At the entry foot, the entry-side segment meets no vertex outside the
+deleted windows. -/
+theorem entryTail_zero_not_meets {core : Finset object.Vertex}
+    (away : Disjoint core windows) :
+    ¬ ∃ vertex ∈ corridor.entryTail 0, vertex ∈ core := by
+  rintro ⟨vertex, member, inCore⟩
+  rw [entryTail_zero, List.mem_singleton] at member
+  subst member
+  exact Finset.disjoint_left.mp away inCore corridor.entryStub_isStub.2.1
+
 end Corridor
 
 end Hypostructure.Graph.ColdCorridor

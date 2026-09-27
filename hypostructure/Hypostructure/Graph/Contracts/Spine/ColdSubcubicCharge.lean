@@ -155,7 +155,9 @@ lie in ambient-cubic cold windows of `P₀`, outside `R`; nothing on G's ledger 
 this node (the routed classification, `[10]`, the remainder normalization)
 provides a connected remainder core avoiding `z` that both segments enter.
 When `z` is the entry foot (`i = 0`) the entry-side segment is the stub `ε`
-itself and enters no vertex of `R` at all. -/
+itself and enters no vertex of `R` at all: `coldAbsorbedRemainderCore_heavyEntryFoot`
+proves, at G, that every selected half-edge with a heavy foot meets all the
+hypotheses below at index `0` and falsifies the conclusion there. -/
 theorem coldAbsorbedRemainderCore (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (routing : ColdFailureRoutingStatement data object)
@@ -186,5 +188,70 @@ theorem coldAbsorbedRemainderCore (data : Parameters)
           vertex ∈ core := by
   -- OPEN-CONSTRUCTION [177] tex:7932 — see lean-vs-paper-discrepancies.md#open-constructions
   sorry
+
+/-- **The obstruction to `[177]`'s core at G: the heavy entry foot.**
+
+At G's retained classification (`K .coldFailureRouting`), let `ε` be a
+selected half-edge of G whose outside endpoint (the foot of its corridor) has
+degree above the baseline.  Then `ε` meets every hypothesis of
+`coldAbsorbedRemainderCore` at `firstIndex = 0` -- it is not one of node
+`[153]`'s subcubic candidates, index `0` is within the trace prefix, its head is
+the heavy foot, and there is no earlier index -- and the hook's conclusion
+fails there: the entry-side corridor segment at the foot is `[ε's window
+endpoint]`, which lies in `X_cold ⊆ ⋃P₀` and so meets no subset of
+`R(P₀)`.  Hence, at G, `coldAbsorbedRemainderCore` holds for such `ε` exactly
+when G has no selected half-edge with a heavy foot; nothing on G's ledger at
+`[177]` excludes one (`lean-vs-paper-discrepancies.md`, [177]). -/
+theorem coldAbsorbedRemainderCore_heavyEntryFoot (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (routing : ColdFailureRoutingStatement data object)
+    (epsilon : ColdEligibleHalfEdge data object)
+    (heavyFoot : data.threshold < object.degree epsilon.1.2) :
+    Sum.inl epsilon ∉ coldRoutedCandidates data object routing ∧
+      ∃ firstIndex : (coldOccurrenceCorridorAt data object
+          (coldRoutedClassified data object routing) epsilon).Segment,
+        firstIndex.1 = 0 ∧
+        firstIndex.1 ≤ coldRoutedTraceEnd data object routing epsilon ∧
+        data.threshold < object.degree
+          ((coldOccurrenceCorridorAt data object
+            (coldRoutedClassified data object routing) epsilon).head firstIndex) ∧
+        (∀ earlier : (coldOccurrenceCorridorAt data object
+            (coldRoutedClassified data object routing) epsilon).Segment,
+          earlier.1 < firstIndex.1 →
+            object.degree ((coldOccurrenceCorridorAt data object
+              (coldRoutedClassified data object routing) epsilon).head earlier) ≤
+              data.threshold) ∧
+        ¬ ∃ core : Finset object.Vertex,
+          core ⊆ object.remainderSupport (canonicalWindowPacking data object) ∧
+            ∃ vertex ∈ (coldOccurrenceCorridorAt data object
+                (coldRoutedClassified data object routing) epsilon).entryTail
+                  firstIndex.1,
+              vertex ∈ core := by
+  classical
+  let classified := coldRoutedClassified data object routing
+  let corridor := coldOccurrenceCorridorAt data object classified epsilon
+  have stubEq : corridor.entryStub = (epsilon.1.2, epsilon.1.1) :=
+    (coldOccurrenceStateFacts data object classified epsilon).2.1
+  have footEq : corridor.head ⟨0, Nat.succ_pos _⟩ = epsilon.1.2 := by
+    rw [← Graph.ColdCorridor.Corridor.vertexAt_eq_head,
+      Graph.ColdCorridor.Corridor.vertexAt_zero, stubEq]
+  refine ⟨?_, ⟨0, Nat.succ_pos _⟩, rfl, Nat.zero_le _, footEq ▸ heavyFoot,
+    fun earlier before => absurd before (Nat.not_lt_zero _), ?_⟩
+  · intro member
+    simp only [coldRoutedCandidates, Finset.mem_filter, Finset.mem_univ,
+      true_and] at member
+    have footIn := Graph.ColdCorridor.Corridor.foot_mem_prefixSupport corridor
+      (coldRoutedTraceEnd data object routing epsilon)
+    rw [stubEq] at footIn
+    exact absurd (member.2 _ footIn) (not_le.mpr heavyFoot)
+  · rintro ⟨core, inside, meets⟩
+    refine Graph.ColdCorridor.Corridor.entryTail_zero_not_meets corridor ?_ meets
+    refine Finset.disjoint_left.mpr fun {vertex} inCore inWindows => ?_
+    have notW := Graph.FiniteObject.notMem_windowSupport_of_mem_remainderSupport (inside inCore)
+    obtain ⟨window, windowMem, vertexMem⟩ :=
+      (Graph.ColdCorridor.mem_windowsOf object _ vertex).1 inWindows
+    have packed : window ∈ canonicalWindowPacking data object :=
+      (Finset.mem_sdiff.mp (Finset.mem_filter.mp windowMem).1).1
+    exact notW (Graph.FiniteObject.mem_windowSupport packed vertexMem)
 
 end Hypostructure.Graph.Contracts.Spine
