@@ -3,8 +3,8 @@
 Serial preparation for the parallel contract-lemma migration.  Every key of
 `Graph.Strategy.Spine.Key` belongs to exactly one family; every file below has
 exactly one owning family.  A family edits only the files it owns, plus its own
-lines in the shared files listed at the end.  Current maximum key index: `608`
-(314 keys).
+lines in the shared files listed at the end.  Current maximum key index: `2303`
+(327 keys).
 
 ## Library statement modules
 
@@ -40,16 +40,30 @@ with that module's owner.  `SurplusPair` sees `TypeB`, `TypeA` and `Spine`;
 | F3 Route 8 | 1400-1599 |
 | F4 Surplus / Homogeneous / Pair | 1600-1799 |
 | F5 Spine / Cold / NearCubic | 1800-1999 |
+| Final pass TA (Type A, Route 8) | 2000-2099 |
+| Final pass TB (Type B) | 2100-2199 |
+| Final pass SP (Surplus / Pair) | 2200-2299 |
+| Final pass SD (Spine / Branch D / NearCubic) | 2300-2399 |
+| Final pass CO (Cold) | 2400-2499 |
 
 A new key takes the next unused index of its family's range; existing indices
 (0-608) are never renumbered.
+
+Final-pass allocations: TA 2000-2012 (plus `route8GlobalSqueeze` restored at its
+old idx 160), TB 2100-2104 (TB also reused the vocabulary entries of the deleted
+key 188), SD 2300, 2301, 2303; CO added no key.  Two final-pass keys were
+deleted by the presentation-law unification: `surplusPresentation` (2200) and
+`spinePresentationLaws` (2302).  Their laws are components of the one entry fact
+`K .cubicBaseline` (`PresentationLawsStatement`), and their indices are not
+reused.  Keys deleted in the final pass: 439, 500, 501, 502 (SD); 511, 513, 516,
+1007 (TA); 188 (TB); 2200, 2302 (unification).
 
 ## F1: Type A
 
 - Library statement module: `hypostructure/Hypostructure/Graph/Statements/TypeA.lean`
 - Reserved new-key range: 1000-1199
 
-### Keys (37)
+### Keys (49)
 
 | idx | Key | Statement | Statement module |
 |---|---|---|---|
@@ -82,13 +96,26 @@ A new key takes the next unused index of its family's range; existing indices
 | 153 | `typeAExitFourFiniteDescent` | `TypeAExitFourFiniteDescentFact` | TypeA |
 | 156 | `typeASaturatedHandoffExitFour` | `TypeASaturatedHandoffExitFourStatement` | TypeA |
 | 157 | `typeASaturatedHandoffExitFourFree` | `TypeASaturatedHandoffExitFourFreeStatement` | TypeA |
-| 158 | `typeAExitSevenProduced` | `TypeAExitSevenProducedStatement` | TypeA |
 | 328 | `typeABoundedSupport` | `TypeABoundedSupportStatement` | TypeA |
 | 343 | `typeAExclusion` | `TypeAExclusionStatement` | TypeA |
-| 508 | `typeASilentExitFourFree` | `SelectedSilentExitFourFree` | TypeA |
-| 509 | `typeASilentExitFiveFree` | `SelectedSilentExitFiveFree` | TypeA |
-| 510 | `typeASilentExitSixFree` | `SelectedSilentExitSixFree` | TypeA |
-| 511 | `typeASilentExitSevenFree` | `SelectedSilentExitSevenFree` | TypeA |
+| 1000 | `typeASupport` | `TypeASupportStatement` | TypeA |
+| 1001 | `typeANoVisibleEntry` | `TypeANoVisibleEntryStatement` | TypeA |
+| 1002 | `typeAExitFourAbsent` | `TypeAExitFourAbsentStatement` | TypeA |
+| 1004 | `typeAExitSixProperScope` | `TypeAExitSixProperScopeStatement` | TypeA |
+| 1005 | `typeAExitSixGlobalScope` | `TypeAExitSixGlobalScopeStatement` | TypeA |
+| 2000 | `typeAPeeledSaturatedReceiver` | `TypeAPeeledSaturatedReceiverStatement` | TypeA |
+| 2001 | `typeAPeeledUnsaturatedDischarge` | `TypeAPeeledUnsaturatedDischargeStatement` | TypeA |
+| 2002 | `typeAPeeledVisibleEntry` | `TypeAPeeledVisibleEntryStatement` | TypeA |
+| 2003 | `typeAPeeledNoVisibleEntry` | `TypeAPeeledNoVisibleEntryStatement` | TypeA |
+| 2004 | `typeAPeeledSilentExcess` | `TypeAPeeledSilentExcessStatement` | TypeA |
+| 2005 | `typeAPeeledExitOneReturn` | `TypeAPeeledExitOneReturnStatement` | TypeA |
+| 2006 | `typeAPeeledExitOneFree` | `TypeAPeeledExitOneFreeStatement` | TypeA |
+| 2007 | `typeAPeeledExitTwoTheta` | `TypeAPeeledExitTwoThetaStatement` | TypeA |
+| 2008 | `typeAPeeledExitTwoFree` | `TypeAPeeledExitTwoFreeStatement` | TypeA |
+| 2009 | `typeAPeeledExitThreeCollision` | `TypeAPeeledExitThreeCollisionStatement` | TypeA |
+| 2010 | `typeAPeeledExitThreeFree` | `TypeAPeeledExitThreeFreeStatement` | TypeA |
+| 2011 | `typeAExitThreeCycle` | `TypeAExitThreeCycleStatement` | TypeA |
+| 2012 | `typeAExitSevenEnvelope` | `TypeAExitSevenEnvelopeStatement` | TypeA |
 
 ### Row and decision modules (29)
 
@@ -139,7 +166,7 @@ A new key takes the next unused index of its family's range; existing indices
 - Library statement module: `hypostructure/Hypostructure/Graph/Statements/TypeB.lean`
 - Reserved new-key range: 1200-1399
 
-### Keys (44)
+### Keys (47)
 
 | idx | Key | Statement | Statement module |
 |---|---|---|---|
@@ -158,7 +185,6 @@ A new key takes the next unused index of its family's range; existing indices
 | 167 | `typeBExclusionResidual` | `TypeBExclusionResidualStatement` | TypeB |
 | 186 | `fanCertificateResidualMass` | `TypeBFanCertificateResidualMassStatement` | TypeB |
 | 187 | `typeBOverlapObstructionMass` | `TypeBOverlapObstructionMassStatement` | TypeB |
-| 188 | `typeBExclusionResidualMass` | `TypeBExclusionResidualMassStatement` | TypeB |
 | 189 | `typeBBridgeSublinear` | `TypeBBridgeSublinearStatement` | TypeB |
 | 220 | `typeBDecoratedAssignedSupport` | `TypeBDecoratedAssignedSupportStatement` | TypeB |
 | 250 | `typeBAssignedSupport` | `TypeBAssignedSupportStatement` | TypeB |
@@ -180,13 +206,17 @@ A new key takes the next unused index of its family's range; existing indices
 | 436 | `openPortSuppressionSafe` | `OpenPortSuppressionSafeStatement` | TypeB |
 | 437 | `singleOpenPortSuppressionWitness` | `SingleOpenPortSuppressionWitnessStatement` | TypeB |
 | 438 | `suppressedFamilyCriticalCycle` | `SuppressedFamilyCriticalCycleStatement` | TypeB |
-| 441 | `typeBFanSafe` | `TypeBFanSafeStatement` | TypeB |
 | 442 | `fanClosedPort` | `FanClosedPortStatement` | TypeB |
 | 443 | `compatiblePairFanClosure` | `CompatiblePairFanClosureStatement` | TypeB |
 | 444 | `fanClosedPortTypeBRouting` | `FanClosedPortTypeBRoutingStatement` | TypeB |
 | 445 | `compatiblePairTypeBRouting` | `CompatiblePairTypeBRoutingStatement` | TypeB |
 | 446 | `triangularPortTypeBRouting` | `TriangularPortTypeBRoutingStatement` | TypeB |
 | 447 | `typeBGlobalLocalBridge` | `TypeBGlobalLocalBridgeStatement` | TypeB |
+| 2100 | `typeBAbsorbedHalfEdge` | `TypeBAbsorbedHalfEdgeStatement` | TypeBLanes |
+| 2101 | `typeBAbsorbedHalfEdgeAbsent` | `TypeBAbsorbedHalfEdgeAbsentStatement` | TypeBLanes |
+| 2102 | `typeBDegreeFourLedger` | `TypeBDegreeFourLedgerStatement` | TypeBLanes |
+| 2103 | `typeBDegreeFourOverlap` | `TypeBDegreeFourOverlapStatement` | TypeBLanes |
+| 2104 | `typeBDegreeFourClosed` | `TypeBDegreeFourClosedStatement` | TypeBLanes |
 
 ### Row and decision modules (40)
 
@@ -247,7 +277,7 @@ A new key takes the next unused index of its family's range; existing indices
 - Library statement module: `hypostructure/Hypostructure/Graph/Statements/RouteEight.lean`
 - Reserved new-key range: 1400-1599
 
-### Keys (48)
+### Keys (45)
 
 | idx | Key | Statement | Statement module |
 |---|---|---|---|
@@ -259,12 +289,9 @@ A new key takes the next unused index of its family's range; existing indices
 | 168 | `route8SmallCoreCollapse` | `Route8SmallCoreCollapse` | RouteEight |
 | 170 | `route8CarrierDeletionWitnesses` | `Route8CarrierDeletionWitnesses` | RouteEight |
 | 171 | `route8PrivateCarrierBudget` | `Route8PrivateCarrierBudget` | RouteEight |
-| 172 | `route8NoTwoCarrierContradiction` | `Route8NoTwoCarrierContradiction` | RouteEight |
-| 174 | `route8TerminalNoGo` | `Route8TerminalNoGo` | RouteEight |
 | 260 | `route8Census` | `Route8CensusStatement` | RouteEight |
 | 261 | `route8TwoCarrierEntry` | `Route8TwoCarrierEntryStatement` | RouteEight |
 | 262 | `route8NoTwoCarrierEntry` | `Route8NoTwoCarrierEntryStatement` | RouteEight |
-| 263 | `route8Deficit` | `Route8DeficitStatement` | RouteEight |
 | 264 | `route8Rate` | `Route8RateStatement` | RouteEight |
 | 265 | `route8RateFails` | `Route8RateFailsStatement` | RouteEight |
 | 266 | `route8PiecesClassified` | `Route8PiecesClassifiedStatement` | RouteEight |
@@ -277,7 +304,6 @@ A new key takes the next unused index of its family's range; existing indices
 | 333 | `route8CarrierCutParity` | `Route8CarrierCutParity` | RouteEight |
 | 334 | `route8UnifiedTrueTwoCarrierEntry` | `Route8UnifiedTrueTwoCarrierEntryStatement` | RouteEight |
 | 336 | `route8UnifiedNegative` | `Route8UnifiedNegative` | RouteEight |
-| 338 | `route8VisibleExitFourRouting` | `Route8VisibleExitFourRoutingStatement` | RouteEight |
 | 339 | `route8UnifiedDeficit` | `Route8UnifiedDeficitFact` | RouteEight |
 | 340 | `route8UnifiedEntryCensus` | `Route8UnifiedEntryCensusFact` | RouteEight |
 | 342 | `route8StageRateFailed` | `Route8StageRateFailedFact` | RouteEight |
@@ -287,18 +313,19 @@ A new key takes the next unused index of its family's range; existing indices
 | 350 | `route8ExtractedEntryCensus` | `Route8ExtractedEntryCensusFact` | RouteEight |
 | 351 | `route8DemandAbsorption` | `Route8DemandAbsorptionStatement` | RouteEight |
 | 352 | `route8WindowBlockers` | `Route8WindowBlockersStatement` | RouteEight |
-| 353 | `route8PeeledDemandResidual` | `Route8PeeledDemandResidualStatement` | RouteEight |
 | 503 | `route8UnpaidExitFourResidual` | `Route8UnpaidExitFourResidualStatement` | RouteEight |
 | 504 | `route8UnifiedVisibleResidual` | `Route8UnifiedVisibleResidualStatement` | RouteEight |
 | 505 | `route8UnifiedVisibleOverload` | `Route8UnifiedVisibleOverloadStatement` | RouteEight |
 | 506 | `route8JointBalance` | `Route8JointBalanceStatement` | RouteEight |
-| 512 | `route8UnifiedVisibleHistory` | `Route8UnifiedVisibleHistoryStatement` | RouteEight |
-| 513 | `windowShadowSingletonTail` | `WindowShadowSingletonTailStatement` | RouteEight |
 | 514 | `windowShadowHitCycle` | `WindowShadowHitCycleStatement` | RouteEight |
 | 515 | `windowShadowHitExcluded` | `WindowShadowHitExcludedStatement` | RouteEight |
-| 516 | `windowShadowSignature` | `WindowShadowSignatureStatement` | RouteEight |
 | 517 | `route8OpenBoundarySaturated` | `Route8OpenBoundarySaturatedStatement` | RouteEight |
 | 518 | `route8DemandUnitCount` | `Route8DemandUnitCountStatement` | RouteEight |
+| 1400 | `route8TwoCarrierExit` | `Route8SurvivorTwoCarrierExitStatement` | RouteEightPinned |
+| 1401 | `route8UnifiedTwoCarrierExit` | `Route8UnifiedTwoCarrierExitStatement` | RouteEightPinned |
+| 1402 | `route8StageRate` | `Route8StageRateStatement` | RouteEight |
+| 1403 | `route8UnpaidTwoCarrier` | `Route8UnpaidTwoCarrierStatement` | RouteEightPinned |
+| 1404 | `route8UnpaidWitnessFree` | `Route8UnpaidWitnessFreeStatement` | RouteEightPinned |
 
 ### Row and decision modules (41)
 
@@ -356,7 +383,7 @@ A new key takes the next unused index of its family's range; existing indices
 - Library statement module: `hypostructure/Hypostructure/Graph/Statements/SurplusPair.lean`
 - Reserved new-key range: 1600-1799
 
-### Keys (53)
+### Keys (61)
 
 | idx | Key | Statement | Statement module |
 |---|---|---|---|
@@ -379,7 +406,6 @@ A new key takes the next unused index of its family's range; existing indices
 | 131 | `windowClassAbsent` | `WindowClassAbsentStatement` | SurplusPair |
 | 132 | `remainderClassOverload` | `RemainderClassOverloadStatement` | SurplusPair |
 | 133 | `remainderClassAbsent` | `RemainderClassAbsentStatement` | SurplusPair |
-| 137 | `quantitativeOverload` | `Graph.QuantitativeOverloadStatement` | library predicate |
 | 140 | `homogeneousCapsHold` | `HomogeneousCapsHoldStatement` | SurplusPair |
 | 141 | `homogeneousBottleneckPattern` | `HomogeneousBottleneckPatternSchema` | SurplusPair |
 | 142 | `bottleneckRouting` | `BottleneckRoutingStatement` | SurplusPair |
@@ -413,6 +439,15 @@ A new key takes the next unused index of its family's range; existing indices
 | 420 | `pairPowerOfTwoCycle` | `PairPowerOfTwoCycleStatement` | SurplusPair |
 | 600 | `sparseTargetDefectStructure` | `SparseTargetDefectStructureStatement` | SurplusPair |
 | 601 | `homogeneousCapsFail` | `HomogeneousCapsFailStatement` | SurplusPair |
+| 1600 | `freePairCountFails` | `FreePairCountFailsStatement` | SurplusPairCode |
+| 1601 | `blockedPairCountFails` | `BlockedPairCountFailsStatement` | SurplusPairCode |
+| 1602 | `blockedPairNoExit` | `BlockedPairNoExitStatement` | SurplusPair |
+| 1603 | `primitiveClassOverload` | `PrimitiveClassOverloadStatement` | SurplusPair |
+| 1604 | `pairFactorizationFails` | `PairFactorizationFailsStatement` | SurplusPairCode |
+| 1605 | `pairRealizabilityFails` | `PairRealizabilityFailsStatement` | SurplusPairCode |
+| 1606 | `pairSystemNoEarlyOutcome` | `PairSystemNoEarlyOutcomeStatement` | SurplusPairCode |
+| 1607 | `pairIncrementFails` | `PairIncrementFailsStatement` | SurplusPairCode |
+| 1608 | `pairIncrementNoEarlyOutcome` | `PairIncrementNoEarlyOutcomeStatement` | SurplusPairCode |
 
 ### Row and decision modules (20)
 
@@ -449,7 +484,7 @@ A new key takes the next unused index of its family's range; existing indices
 - Library statement module: `hypostructure/Hypostructure/Graph/Statements/Spine.lean` (and `hypostructure/Hypostructure/Graph/Statements/Parameters.lean`)
 - Reserved new-key range: 1800-1999
 
-### Keys (132)
+### Keys (125)
 
 | idx | Key | Statement | Statement module |
 |---|---|---|---|
@@ -499,12 +534,9 @@ A new key takes the next unused index of its family's range; existing indices
 | 48 | `netChargeNegative` | `NetChargeNegativeStatement` | Spine |
 | 50 | `negativeSupport` | `NegativeSupportStatement` | Spine |
 | 64 | `coldFailureCycle` | `ColdFailureCycleStatement` | Spine |
-| 65 | `coldFailureDefect` | `ColdFailureDefectStatement` | Spine |
 | 66 | `coldFailureCompression` | `ColdFailureCompressionStatement` | Spine |
-| 67 | `coldFailureHandoff` | `ColdFailureHandoffStatement` | Spine |
 | 68 | `coldFailureRouting` | `ColdFailureRoutingStatement` | Spine |
 | 69 | `coldHandoffTransfer` | `ColdFirstHighHandoffStatement` | Spine |
-| 70 | `coldGermExtraction` | `ColdGermExtractionStatement` | Spine |
 | 71 | `coldGermRouted` | `ColdGermRoutedStatement` | Spine |
 | 145 | `netChargeCap` | `NetChargeCapStatement` | Spine |
 | 146 | `exactCollisionFails` | `ExactCollisionFailsStatement` | Spine |
@@ -516,7 +548,6 @@ A new key takes the next unused index of its family's range; existing indices
 | 182 | `coldPositiveGerm` | `ColdPositiveGermStatement` | Spine |
 | 200 | `hotColdPartition` | `HotColdWindowStatement` | Spine |
 | 207 | `exactResponseProfile` | `ExactResponseProfileStatement` | Spine |
-| 208 | `admissibleRankQuotient` | `AdmissibleRankQuotientStatement` | Spine |
 | 210 | `targetRankCircuit` | `TargetRankCircuitStatement` | Spine |
 | 211 | `barrierEnumeration` | `BarrierEnumerationStatement` | Spine |
 | 212 | `coldRoute8Below` | `ColdRoute8BelowStatement` | Spine |
@@ -527,7 +558,7 @@ A new key takes the next unused index of its family's range; existing indices
 | 217 | `coldAmbientCubic` | `ColdAmbientCubicStatement` | Spine |
 | 218 | `coldStubExcess` | `ColdStubExcessStatement` | Spine |
 | 219 | `coldGermCandidates` | `ColdGermCandidatesStatement` | Spine |
-| 221 | `cubicBaseline` | `CubicBaselineStatement` | Spine |
+| 221 | `cubicBaseline` | `PresentationLawsStatement` | SpineVocabulary |
 | 222 | `netDeficiencyCap` | `NetDeficiencyCapStatement` | Spine |
 | 223 | `replacementExclusion` | `ReplacementExclusionStatement` | Spine |
 | 224 | `coldMassLinear` | `ColdMassLinearStatement` | Spine |
@@ -551,15 +582,12 @@ A new key takes the next unused index of its family's range; existing indices
 | 321 | `blockedBarrierOverlap` | `BlockedBarrierFailureStatement` | Spine |
 | 322 | `degreeProfileFibres` | `DegreeProfileFibresStatement` | Spine |
 | 323 | `targetCompleteContextUniversality` | `TargetCompleteContextUniversalityStatement` | Spine |
-| 324 | `separatedTesters` | `SeparatedTestersStatement` | Spine |
 | 325 | `entropyCapBound` | `EntropyCapBoundStatement` | Spine |
 | 326 | `absorbedConfigurationResidual` | `AbsorbedConfigurationResidualStatement` | Spine |
 | 327 | `absorbedGermSplit` | `AbsorbedGermSplitStatement` | Spine |
-| 337 | `densePackingOverflow` | `DensePackingOverflowStatement` | Spine |
 | 403 | `denseColdCorridorsTerminal` | `DenseColdCorridorsTerminalStatement` | Spine |
 | 404 | `coldFirstFailureOccurrence` | `ColdFirstFailureOccurrenceStatement` | Spine |
 | 406 | `coldNeutralEqualLengthTerminal` | `NeutralEqualLengthTerminalConfigurationStatement` | Spine |
-| 407 | `coldDeclaredHandoffLedger` | `ColdDeclaredHandoffLedgerStatement` | Spine |
 | 408 | `coldCanonicalReplacementSwap` | `CanonicalReplacementSwapStatement` | Spine |
 | 409 | `coldCanonicalReplacementTrivial` | `CanonicalReplacementTrivialStatement` | Spine |
 | 410 | `coldTwoStrandSurvivor` | `TwoStrandSurvivorStatement` | Spine |
@@ -574,10 +602,6 @@ A new key takes the next unused index of its family's range; existing indices
 | 430 | `localTypeCoordinateNonrepetitive` | `LocalTypeCoordinateNonrepetitiveStatement` | Spine |
 | 431 | `dominantRootedType` | `DominantRootedTypeSchema` | Spine |
 | 432 | `dominantRootedTypeWedgeFree` | `DominantRootedTypeWedgeFreeStatement` | Spine |
-| 439 | `contractionCritical` | `ContractionCriticalStatement` | Spine |
-| 500 | `gadgetClosure` | `GadgetClosureStatement` | Spine |
-| 501 | `remainderRelabelingEntropy` | `RemainderRelabelingEntropyStatement` | Spine |
-| 502 | `relabelingDensityCap` | `RelabelingDensityCapStatement` | Spine |
 | 602 | `coldGermSomeRealizing` | `ColdGermSomeRealizingStatement` | Spine |
 | 603 | `coldGermNoneRealizing` | `ColdGermNoneRealizingStatement` | Spine |
 | 604 | `coldGermSomeDistinguishing` | `ColdGermSomeDistinguishingStatement` | Spine |
@@ -585,6 +609,10 @@ A new key takes the next unused index of its family's range; existing indices
 | 606 | `mersenneReturn` | `MersenneReturnStatement` | Spine |
 | 607 | `windowFree` | `Graph.InducedPathFree` | library predicate |
 | 608 | `windowPresent` | `Graph.HasInducedPath` | library predicate |
+| 1800 | `coldNoPositiveGerm` | `ColdNoPositiveGermStatement` | Spine |
+| 1801 | `typeBHandoffFails` | `TypeBHandoffFailsStatement` | SurplusPairRouting |
+| 1802 | `sameTokenPatternUnresolved` | `SameTokenPatternPairUnresolvedStatement` | SurplusPairRouting |
+| 2303 | `hssTargetCycle` | `HssTargetCycleStatement` | Spine |
 
 ### Row and decision modules (74)
 

@@ -154,7 +154,7 @@
    "on_probed_closed_arm": true
   },
   "16": {
-   "producer": "`hssTargetCycleRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/ObstructionPacking.lean:49) reading `K .spinePresentationLaws` (published by `spinePresentationLawsRow`, hypostructure/Hypostructure/Graph/Strategy/SpineRows/SpinePresentationLaws.lean:29, from `spineData.freeForcesTarget`), closed by `runAndCloseIncompatible` against `K .selection`; the law is the axiom `p13Free_hasPowerOfTwoCycle` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/WindowAlgebra.lean:45)",
+   "producer": "`hssTargetCycleRow` (hypostructure/Hypostructure/Graph/Strategy/SpineRows/ObstructionPacking.lean:49) reading `K .cubicBaseline` (the presentation-law fact of G, published at the entry by `cubicBaselineRow`, hypostructure/Hypostructure/Graph/Strategy/SpineRows/CubicBaseline.lean:50, from `spineData.freeForcesTarget`), closed by `runAndCloseIncompatible` against `K .selection`; the law is the axiom `p13Free_hasPowerOfTwoCycle` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/WindowAlgebra.lean:45)",
    "fidelity": "FAITHFUL",
    "fidelity_note": "Hypotheses are exactly `3 ≤ minDegree` and `InducedPathFree object 13`; conclusion is a cycle of length 2^k, k≥2, i.e. thm:p13free. Threshold bridge discharged at 3 ≤ 3.",
    "complete": "YES",

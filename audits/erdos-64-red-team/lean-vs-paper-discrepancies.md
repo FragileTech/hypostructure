@@ -720,12 +720,15 @@ gone.
 
 *Group SP (Surplus / Pair / [144]).*
 
-- **Lean.** `K .surplusPresentation` (idx 2200,
-  `SurplusPresentationStatement`) is published once at the start of [125]'s
-  activation (`surplusPresentationRow`); the surplus, pair and [144] rows read
-  the deficit safety, join slack, dyadic target, routing-label count and spine
-  scale from it, and `3 ≤ δ` / `¬ LengthOK 2` from `K .cubicBaseline`, with
-  `inputs.get`.  No surplus/pair/[144] row reads a `Data` field.
+- **Lean.** `SurplusPresentationStatement` (the deficit safety, join slack,
+  routing-label count and spine scale) is the third component of the one
+  presentation-law fact `K .cubicBaseline` (`PresentationLawsStatement`),
+  published at the entry by `cubicBaselineRow`.  The surplus, pair and [144]
+  rows read it, the dyadic target (from its Type B component) and `3 ≤ δ` /
+  `¬ LengthOK 2` (from its cubic component) with `inputs.get`.  No
+  surplus/pair/[144] row reads a `Data` field.  (Integration: the former key
+  `surplusPresentation`, idx 2200, published at [125], was folded into this
+  entry fact and deleted.)
 
 ## Remaining divergences (not admitted under the exception), family F5
 
@@ -769,7 +772,10 @@ gone.
 - **Presentation laws on the ledger (final pass, group SD).** The HSS closure
   law (`thm:p13free`, at G and G's induced subgraphs), the dyadic target, the
   scale family, the net-cap slack and the barrier label semantics are published
-  once at the entry as `K .spinePresentationLaws` (idx 2302); node `[16]` is the
+  once at the entry as the fourth component (`SpinePresentationLawsStatement`)
+  of the one presentation-law fact `K .cubicBaseline`; the dyadic target is read
+  from its Type B component (integration: the former key
+  `spinePresentationLaws`, idx 2302, was folded in and deleted); node `[16]` is the
   row `hssTargetCycleRow` (`K .hssTargetCycle`, idx 2303) closed against
   `K .selection`.  `3 ≤ δ` / `δ = 3` are read from `K .cubicBaseline`.
 
