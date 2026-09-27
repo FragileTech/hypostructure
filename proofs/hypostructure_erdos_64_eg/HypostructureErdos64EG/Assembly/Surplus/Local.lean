@@ -177,7 +177,8 @@ noncomputable def selectedPairCodeChainIndependent
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile)
           (data := spineData)).run failsHistory (by key_fresh)
-      exact Or.inr (Or.inr (pairConditionalFactorizationReturn residualHistory))
+      exact Or.inr (Or.inr
+        (Or.inl (pairConditionalFactorizationReturn_freeFactorizationFails residualHistory)))
   | .left factorizationHistory =>
       let overlapFailure :=
         (pairFailureOverlapRow (BranchState := BranchState)
@@ -197,7 +198,9 @@ noncomputable def selectedPairCodeChainIndependent
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
               (data := spineData)).run failsHistory (by key_fresh)
-          exact Or.inr (Or.inr (pairConditionalFactorizationReturn residualHistory))
+          exact Or.inr (Or.inr
+            (Or.inr (Or.inl
+              (pairConditionalFactorizationReturn_freeRealizabilityFails residualHistory))))
       | .left coveredHistory =>
           match pairSystemOutcomeDichotomy (data := spineData)
               coveredHistory (by key_fresh) (by key_fresh) with
@@ -224,7 +227,8 @@ noncomputable def selectedPairCodeChainIndependent
                       (presentation := erdosReceiverLoadProfile)
                       (data := spineData)).run failsHistory (by key_fresh)
                   exact Or.inr (Or.inr
-                    (pairConditionalFactorizationReturn residualHistory))
+                    (Or.inr (Or.inr (Or.inl
+                      (pairConditionalFactorizationReturn_freeIncrementFails residualHistory)))))
               | .left incrementHistory =>
                   match pairIncrementOutcomeDichotomy (data := spineData)
                       incrementHistory (by key_fresh) (by key_fresh) with
@@ -342,7 +346,9 @@ noncomputable def selectedPairCodeChainDependent
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile)
           (data := spineData)).run failsHistory (by key_fresh)
-      exact Or.inr (Or.inr (pairConditionalFactorizationReturn residualHistory))
+      exact Or.inr (Or.inr
+        (Or.inr (Or.inr (Or.inr (Or.inl
+          (pairConditionalFactorizationReturn_blockedFactorizationFails residualHistory))))))
   | .left factorizationHistory =>
       let overlapFailure :=
         (pairFailureOverlapRow (BranchState := BranchState)
@@ -362,7 +368,9 @@ noncomputable def selectedPairCodeChainDependent
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
               (data := spineData)).run failsHistory (by key_fresh)
-          exact Or.inr (Or.inr (pairConditionalFactorizationReturn residualHistory))
+          exact Or.inr (Or.inr
+            (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl
+              (pairConditionalFactorizationReturn_blockedRealizabilityFails residualHistory)))))))
       | .left coveredHistory =>
           match pairSystemOutcomeDichotomy (data := spineData)
               coveredHistory (by key_fresh) (by key_fresh) with
@@ -389,7 +397,8 @@ noncomputable def selectedPairCodeChainDependent
                       (presentation := erdosReceiverLoadProfile)
                       (data := spineData)).run failsHistory (by key_fresh)
                   exact Or.inr (Or.inr
-                    (pairConditionalFactorizationReturn residualHistory))
+                    (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
+                      (pairConditionalFactorizationReturn_blockedIncrementFails residualHistory)))))))
               | .left incrementHistory =>
                   match pairIncrementOutcomeDichotomy (data := spineData)
                       incrementHistory (by key_fresh) (by key_fresh) with

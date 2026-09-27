@@ -64,7 +64,12 @@ abbrev SelectedLedgerBoundaryResult (selected : EGInput.{u}) :=
   Node20aOutcome selected ∨
   Node144aOutcome selected ∨
   BlockedBarrierOverlapOutcome selected ∨
-  PairConditionalFactorizationOutcome selected ∨
+  (PairConditionalFactorizationOutcome_freeFactorizationFails selected ∨
+    PairConditionalFactorizationOutcome_freeRealizabilityFails selected ∨
+    PairConditionalFactorizationOutcome_freeIncrementFails selected ∨
+    PairConditionalFactorizationOutcome_blockedFactorizationFails selected ∨
+    PairConditionalFactorizationOutcome_blockedRealizabilityFails selected ∨
+    PairConditionalFactorizationOutcome_blockedIncrementFails selected) ∨
   Route8JointBalanceOutcome selected ∨
   OtherReturnedOutcome selected ∨
   Node153ResidualOutcome selected ∨

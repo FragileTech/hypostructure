@@ -26,6 +26,11 @@ abbrev StrictSurplusBoundaryResult (selected : EGInput.{u}) : Prop :=
       PairTypeBOutcome_independentIncrement selected ∨
       PairTypeBOutcome_dependentSystem selected ∨
       PairTypeBOutcome_dependentIncrement selected) ∨
-    PairConditionalFactorizationOutcome selected
+    (PairConditionalFactorizationOutcome_freeFactorizationFails selected ∨
+      PairConditionalFactorizationOutcome_freeRealizabilityFails selected ∨
+      PairConditionalFactorizationOutcome_freeIncrementFails selected ∨
+      PairConditionalFactorizationOutcome_blockedFactorizationFails selected ∨
+      PairConditionalFactorizationOutcome_blockedRealizabilityFails selected ∨
+      PairConditionalFactorizationOutcome_blockedIncrementFails selected)
 
 end HypostructureErdos64EG
