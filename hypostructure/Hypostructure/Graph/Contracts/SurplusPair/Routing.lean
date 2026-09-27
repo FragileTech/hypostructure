@@ -1645,4 +1645,24 @@ theorem sameTokenTypeBHandoff_of_pattern
     degenerateClosureRejected avoids survivor
   exact ⟨routing, outcome.resolve_left survivor⟩
 
+/-- Node `[144a]`, tex 5594 attempted at G: the explicit replacement
+candidates -- the readings of G's piece at the canonical support `Z` of the
+two pattern coordinates -- are not replacement representatives of `Z`, because
+any one that were would be the compression exit (c) of G
+(`replacementSupport_of_retainedReading`), which G's survivor refutes. -/
+theorem sameTokenReadingsNotReplacement_of_unresolved
+    {data : Parameters} {object : Graph.FiniteObject.{u}}
+    (unresolved : SameTokenPatternPairUnresolvedStatement data object)
+    (survivor : SparseSurplusSurvivorStatement data object) :
+    SameTokenReadingsNotReplacementStatement data object := by
+  obtain ⟨routing, routingSelected, _different, support, selected, _cases⟩ :=
+    unresolved
+  refine ⟨routing, routingSelected, support, selected, ?_⟩
+  intro retained proper ⟨profile, baseline, smaller⟩
+  have connected := (Graph.CanonicalSupport.mem_candidates_iff.mp
+    (Graph.CanonicalSupport.select?_mem_candidates selected)).2
+  exact survivor (.compression support
+    (Graph.replacementSupport_of_retainedReading (LengthOK := data.LengthOK)
+      object support retained connected proper profile baseline smaller))
+
 end Hypostructure.Graph.Contracts.SurplusPair

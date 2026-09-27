@@ -26,10 +26,13 @@ of G here, chosen at exactly the object fixed before it:
   `lem:pair-failure-overlap` in that system;
 * `canonicalPairDemandReturns` -- its two demands and canonical returns
   (`PairDemandReturns.of`);
-* `canonicalRealizabilityOutcome`, `canonicalPairSerialSystem` -- the outcome of
-  `lem:pair-system-realizability` for those returns, and its serial system;
-* `canonicalIncrementOutcome` -- the outcome of
-  `lem:pair-system-increment-arithmetic` for that serial system.
+* `canonicalPairSerialSystem` -- a serial demand system of
+  `lem:pair-system-realizability` (v) on exactly those returns.
+
+The outcomes of nodes `[179]` and `[180]` are not chosen objects: each node
+splits the exact property "alternatives (i)--(iv) occur for G's retained return
+system" (resp. "a periodic routed alternative occurs for G's serial system")
+against its negation, in the paper's precedence.
 
 Every object is `Option`-valued; statements pin it with
 `∃ x, obj = some x ∧ Q x`, which is false (never vacuously true) when it does
@@ -217,46 +220,30 @@ canonical obstruction's failed pair with their canonical returns. -/
 def canonicalPairDemandReturns : Option (PairDemandReturns data object) :=
   (canonicalPairFailureOverlap data object).map PairDemandReturns.of
 
-/-! ## The routed outcomes of nodes `[179]` and `[180]` -/
+/-! ## The serial system of node `[179]` -/
 
-/-- **The canonical outcome of `lem:pair-system-realizability`** for a retained
-return system. -/
-def canonicalRealizabilityOutcome (returns : PairDemandReturns data object) :
-    Option (PairSystemRealizabilityOutcome returns) :=
-  canonicalChoice fun _ => True
-
-theorem canonicalRealizabilityOutcome_spec (returns : PairDemandReturns data object)
-    (covered : Nonempty (PairSystemRealizabilityOutcome returns)) :
-    ∃ outcome, canonicalRealizabilityOutcome data object returns = some outcome := by
-  obtain ⟨outcome⟩ := covered
-  obtain ⟨chosen, selected, -⟩ :=
-    canonicalChoice_spec (spec := fun (_ : PairSystemRealizabilityOutcome returns) =>
-      True) ⟨outcome, trivial⟩
-  exact ⟨chosen, selected⟩
-
-/-- **The canonical serial demand system of G** (node `[179]`, alternative (v)):
-the serial system of the canonical outcome of the canonical returns, when that
-outcome is serial. -/
+/-- **The canonical serial demand system of G** (node `[179]`, alternative (v)
+of `lem:pair-system-realizability`): a serial demand system built on exactly
+G's canonical demand returns.  Node `[179]` publishes it only on the arm where
+none of alternatives (i)--(iv) occurs for those returns. -/
 def canonicalPairSerialSystem : Option (PairSerialDemandSystem data object) :=
   (canonicalPairDemandReturns data object).bind fun returns =>
-    match canonicalRealizabilityOutcome data object returns with
-    | some (.serial system _) => some system
-    | _ => none
+    canonicalChoice fun system : PairSerialDemandSystem data object =>
+      system.returns = returns
 
-/-- **The canonical outcome of `lem:pair-system-increment-arithmetic`** for a
-serial demand system (node `[180]`). -/
-def canonicalIncrementOutcome (serial : PairSerialDemandSystem data object) :
-    Option (PairIncrementOutcome serial) :=
-  canonicalChoice fun _ => True
-
-theorem canonicalIncrementOutcome_spec (serial : PairSerialDemandSystem data object)
-    (covered : Nonempty (PairIncrementOutcome serial)) :
-    ∃ outcome, canonicalIncrementOutcome data object serial = some outcome := by
-  obtain ⟨outcome⟩ := covered
-  obtain ⟨chosen, selected, -⟩ :=
-    canonicalChoice_spec (spec := fun (_ : PairIncrementOutcome serial) => True)
-      ⟨outcome, trivial⟩
-  exact ⟨chosen, selected⟩
+theorem canonicalPairSerialSystem_spec
+    {returns : PairDemandReturns data object}
+    (selected : canonicalPairDemandReturns data object = some returns)
+    {system : PairSerialDemandSystem data object}
+    (same : system.returns = returns) :
+    ∃ serial, canonicalPairSerialSystem data object = some serial ∧
+      serial.returns = returns := by
+  obtain ⟨chosen, chosenSelected, chosenSame⟩ :=
+    canonicalChoice_spec (spec := fun system : PairSerialDemandSystem data object =>
+      system.returns = returns) ⟨system, same⟩
+  refine ⟨chosen, ?_, chosenSame⟩
+  rw [canonicalPairSerialSystem, selected, Option.bind_some]
+  exact chosenSelected
 
 end
 

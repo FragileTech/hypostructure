@@ -50,19 +50,53 @@ theorem mixedSparseSpineDependence_of_baseline
     (baselineDemand : BaselineSpineDemandStatement data object) :
     MixedSparseSpineDependenceStatement data object := by
   classical
-  obtain ⟨⟨Coordinate, family, coordinateSupport⟩, spineSelected, _spec⟩ :=
-    baselineDemand
+  obtain ⟨spine, spineSelected, _spec⟩ := baselineDemand
   refine ⟨Graph.pairResponseActivation active,
-    canonicalPairActivation_eq data object active,
-    ⟨Coordinate, family, coordinateSupport⟩, spineSelected, ?_⟩
-  dsimp only
-  intro notIndependent
-  push Not at notIndependent
-  obtain ⟨declared, _functional, reducing⟩ := notIndependent
+    canonicalPairActivation_eq data object active, spine, spineSelected, ?_⟩
+  intro declared selected
+  obtain ⟨_functional, reducing⟩ := canonicalChoice_spec_of_eq_some selected
   rcases declared.localize reducing with replacement |
       ⟨representative, smaller, baseline, transfer⟩
   · exact Or.inl (.compression declared.support replacement)
   · exact Or.inl (.delocalization representative smaller baseline transfer)
+
+/-- Node `[130]`, `lem:degree-profile-fibres` at G's pair family: at G's
+canonical activation (read from the blocked arm's pinned activation), every
+determination identifies only coordinates whose readings lie in one fibre. -/
+theorem pairDegreeProfileFibres_of_activation
+    {activation : object.DemandActivation object.PairCoordinate
+      (object.Vertex × object.Vertex)}
+    (selected : canonicalPairActivation data object = some activation) :
+    PairDegreeProfileFibresStatement data object :=
+  ⟨activation, selected, fun _pair _attempt _determiners determination
+    _first firstMem _second secondMem same =>
+      determination.profile_eq_of_label_eq firstMem secondMem same⟩
+
+/-- Node `[130]`, clause (d) at G: `lem:degree-profile-fibres` at G's pair
+family refutes a type-(d) obstruction at the same canonical activation -- the
+two states the determination identifies would lie in one fibre. -/
+theorem not_pairProfileObstruction_of_fibres
+    (fibres : PairDegreeProfileFibresStatement data object)
+    (obstruction : PairProfileObstructionStatement data object) : False := by
+  obtain ⟨activation, selected, fibres⟩ := fibres
+  obtain ⟨activation', selected', _pair, _member, attempt, determiners,
+    determination, identified, identifiedMem, same, different⟩ := obstruction
+  have equal : activation = activation' :=
+    Option.some.inj (selected.symm.trans selected')
+  subst equal
+  exact different (fibres _ attempt determiners determination _
+    determination.2.2.1 _ (determination.2.2.2.1 identifiedMem) same.symm)
+
+/-- Node `[130]`, clause (e) at G: a type-(e) obstruction of a scheduled pair
+at G's canonical activation is a named sparse surplus exit of G's declared
+family (`declaredSparseSurplusExit_of_responseObstruction`), so G's survivor
+fact refutes it. -/
+theorem not_pairResponseObstruction_of_survivor
+    (survivor : SparseSurplusSurvivorStatement data object)
+    (obstruction : PairResponseObstructionStatement data object) : False := by
+  obtain ⟨activation, selected, _pair, _member, obstruction⟩ := obstruction
+  obtain ⟨active, rfl⟩ := exists_active_of_canonicalPairActivation_eq_some selected
+  exact survivor (declaredSparseSurplusExit_of_responseObstruction active obstruction)
 
 /-- Node `[131]`, `lem:exact-cubic-baseline-budget`, two-sided with
 logarithms cleared. -/

@@ -1618,6 +1618,20 @@ inductive Key where
   /-- Node `[16]`, `thm:p13free` on the window-free arm: G has an accepted
   cycle. -/
   | hssTargetCycle
+  -- SP keys (fix2)
+  /-- Node `[130]`, blocker clause (e) at G's canonical activation: some
+  scheduled pair has a type-(e) obstruction. -/
+  | pairResponseObstruction
+  /-- Node `[130]`, blocker clause (e) absent at G's canonical activation. -/
+  | pairNoResponseObstruction
+  /-- Node `[130]`, `lem:degree-profile-fibres` at G's pair family. -/
+  | pairDegreeProfileFibres
+  /-- Node `[130]`, blocker clause (d) at G's canonical activation: some scheduled pair has a type-(d) obstruction. -/
+  | pairProfileObstruction
+  /-- Node `[130]`, blocker clause (d) absent at G's canonical activation. -/
+  | pairNoProfileObstruction
+  /-- Node `[144a]`: no reading of G's piece at the pattern support is a replacement representative. -/
+  | sameTokenReadingsNotReplacement
   -- TA keys
   /-- Node `[102]` → `[89]`, yes arm: the terminal receiver of `X₀` is saturated at its terminal peeling set. -/
   | typeAPeeledSaturatedReceiver
@@ -2407,6 +2421,19 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       TargetCompleteContextUniversalityStatement data.toParameters object
   | .hssTargetCycle, object =>
       HssTargetCycleStatement data.toParameters object
+  -- SP keys (fix2)
+  | .pairResponseObstruction, object =>
+      PairResponseObstructionStatement data.toParameters object
+  | .pairNoResponseObstruction, object =>
+      PairNoResponseObstructionStatement data.toParameters object
+  | .pairDegreeProfileFibres, object =>
+      PairDegreeProfileFibresStatement data.toParameters object
+  | .pairProfileObstruction, object =>
+      PairProfileObstructionStatement data.toParameters object
+  | .pairNoProfileObstruction, object =>
+      PairNoProfileObstructionStatement data.toParameters object
+  | .sameTokenReadingsNotReplacement, object =>
+      SameTokenReadingsNotReplacementStatement data.toParameters object
   -- TA keys
   | .typeAPeeledSaturatedReceiver, object =>
       TypeAPeeledSaturatedReceiverStatement data.toParameters object
@@ -2761,6 +2788,13 @@ def label : Key → String
   | .degreeProfileFibres => "degreeProfileFibres"
   | .targetCompleteContextUniversality => "targetCompleteContextUniversality"
   | .hssTargetCycle => "hssTargetCycle"
+  -- SP keys (fix2)
+  | .pairResponseObstruction => "pairResponseObstruction"
+  | .pairNoResponseObstruction => "pairNoResponseObstruction"
+  | .pairDegreeProfileFibres => "pairDegreeProfileFibres"
+  | .pairProfileObstruction => "pairProfileObstruction"
+  | .pairNoProfileObstruction => "pairNoProfileObstruction"
+  | .sameTokenReadingsNotReplacement => "sameTokenReadingsNotReplacement"
   -- TA keys
   | .typeAPeeledSaturatedReceiver => "typeAPeeledSaturatedReceiver"
   | .typeAPeeledUnsaturatedDischarge => "typeAPeeledUnsaturatedDischarge"
@@ -3122,6 +3156,13 @@ example : label .coldNoPositiveGerm = "coldNoPositiveGerm" := rfl
 example : label .degreeProfileFibres = "degreeProfileFibres" := rfl
 example : label .targetCompleteContextUniversality = "targetCompleteContextUniversality" := rfl
 example : label .hssTargetCycle = "hssTargetCycle" := rfl
+-- SP keys (fix2)
+example : label .pairResponseObstruction = "pairResponseObstruction" := rfl
+example : label .pairNoResponseObstruction = "pairNoResponseObstruction" := rfl
+example : label .pairDegreeProfileFibres = "pairDegreeProfileFibres" := rfl
+example : label .pairProfileObstruction = "pairProfileObstruction" := rfl
+example : label .pairNoProfileObstruction = "pairNoProfileObstruction" := rfl
+example : label .sameTokenReadingsNotReplacement = "sameTokenReadingsNotReplacement" := rfl
 example : label .typeAPeeledSaturatedReceiver = "typeAPeeledSaturatedReceiver" := rfl
 example : label .typeAPeeledUnsaturatedDischarge = "typeAPeeledUnsaturatedDischarge" := rfl
 example : label .typeAPeeledVisibleEntry = "typeAPeeledVisibleEntry" := rfl
@@ -3470,6 +3511,13 @@ def idx : Key → Nat
   | .degreeProfileFibres => 2300
   | .targetCompleteContextUniversality => 2301
   | .hssTargetCycle => 2303
+  -- SP keys (fix2)
+  | .pairResponseObstruction => 2900
+  | .pairNoResponseObstruction => 2901
+  | .pairDegreeProfileFibres => 2902
+  | .pairProfileObstruction => 2903
+  | .pairNoProfileObstruction => 2904
+  | .sameTokenReadingsNotReplacement => 2905
   -- TA keys
   | .typeAPeeledSaturatedReceiver => 2000
   | .typeAPeeledUnsaturatedDischarge => 2001
@@ -3808,6 +3856,13 @@ def ofIdx : Nat → Key
   | 2300 => .degreeProfileFibres
   | 2301 => .targetCompleteContextUniversality
   | 2303 => .hssTargetCycle
+  -- SP keys (fix2)
+  | 2900 => .pairResponseObstruction
+  | 2901 => .pairNoResponseObstruction
+  | 2902 => .pairDegreeProfileFibres
+  | 2903 => .pairProfileObstruction
+  | 2904 => .pairNoProfileObstruction
+  | 2905 => .sameTokenReadingsNotReplacement
   -- TA keys
   | 2000 => .typeAPeeledSaturatedReceiver
   | 2001 => .typeAPeeledUnsaturatedDischarge
@@ -4587,6 +4642,19 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "targetCompleteContextUniversality") 2301
   | .hssTargetCycle =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "hssTargetCycle") 2303
+  -- SP keys (fix2)
+  | .pairResponseObstruction =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairResponseObstruction") 2900
+  | .pairNoResponseObstruction =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairNoResponseObstruction") 2901
+  | .pairDegreeProfileFibres =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairDegreeProfileFibres") 2902
+  | .pairProfileObstruction =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairProfileObstruction") 2903
+  | .pairNoProfileObstruction =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "pairNoProfileObstruction") 2904
+  | .sameTokenReadingsNotReplacement =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenReadingsNotReplacement") 2905
   -- TA keys
   | .typeAPeeledSaturatedReceiver =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledSaturatedReceiver") 2000

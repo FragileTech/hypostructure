@@ -99,15 +99,16 @@ canonical certified ledger -- the ledger whose overloading token the geometric
 audit `[140]`/`[142]`/`[143]` just read (its predecessor key): either the three
 fixed homogeneous caps `L_W = L_R = L_P = L_geom` fail at that ledger, or they
 hold there.  On the failing arm the audited pattern is read by
-`lem:same-token-bottleneck-routing`; the caps arm goes to `[138]`.
+`lem:same-token-bottleneck-routing`; the paper sends the caps arm to `[138]`.
 
 This is the paper's order (diagram tex 1238-1252: the audits `[140]`/`[142]`/
 `[143]` feed `[144]` "Type B handoff or capped route?", whose capped arm goes to
-`[138]`).  On that order the caps arm is unreachable: the audit's pattern at
-the overloading token refutes the caps at the same ledger
-(`Contracts.SurplusPair.not_homogeneousCapsHold_of_pattern`).  It is a paper
-error, registered in `lean-vs-paper-discrepancies.md#paper-errors`; the arm is
-kept as the paper draws it. -/
+`[138]`).  On that order the caps arm is dead at G: the audit's pattern at
+G's overloading token, on the same ledger, refutes the caps at that ledger.
+The assembly closes the arm at the node with `closeIncompatible` against
+`K .homogeneousBottleneckPattern`
+(`instIncompatibleHomogeneousBottleneckPatternCapsHold`); it is registered in
+`lean-vs-paper-discrepancies.md#closed-from-gs-facts`. -/
 noncomputable def homogeneousBottleneckDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
@@ -135,5 +136,16 @@ noncomputable def homogeneousBottleneckDichotomy
       · exact ⟨.inr ⟨overload.1.1, overload.1.2, ledgerSelected, caps⟩⟩
       · exact ⟨.inl ⟨overload.1.1, overload.1.2, ledgerSelected, caps⟩⟩))
     failFresh capsFresh
+
+/-- Node `[144]`, caps arm closed at G: the audited homogeneous pattern at G's
+overloading token (`K .homogeneousBottleneckPattern`, the decision's own
+predecessor) refutes the fixed caps at the same canonical certified ledger
+(`Contracts.SurplusPair.not_homogeneousCapsHold_of_pattern`). -/
+noncomputable instance instIncompatibleHomogeneousBottleneckPatternCapsHold :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K .homogeneousBottleneckPattern) (K .homogeneousCapsHold) where
+  contradiction := fun _current pattern caps =>
+    Graph.Contracts.SurplusPair.not_homogeneousCapsHold_of_pattern
+      pattern.down caps.down
 
 end Hypostructure.Graph.Strategy.Spine

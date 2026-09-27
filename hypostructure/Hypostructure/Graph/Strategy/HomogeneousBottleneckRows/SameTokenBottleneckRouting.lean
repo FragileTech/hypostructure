@@ -120,4 +120,23 @@ unresolved pair that the paper error at `[144]` leaves to the open leaf
       .cons (key := K .sameTokenPatternUnresolved)
         ⟨routed.2.resolve_left (inputs.get (K .typeBHandoffFails)).down⟩ .nil)
 
+/-- Node `[144a]`: the explicit replacement candidates of tex 5594 at G.  Read
+the unresolved pattern pair (its canonical routing and support `Z`) and the
+survivor: no reading of G's piece at `Z` is a replacement representative of
+`Z`, since one would be G's compression exit (c). -/
+@[reducible] noncomputable def sameTokenReadingsNotReplacementRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.sameTokenReadingsNotReplacement
+    { Requires := [K .sameTokenPatternUnresolved, K .sparseSurplusSurvivor]
+      Produces := [K .sameTokenReadingsNotReplacement]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .sameTokenReadingsNotReplacement)
+        ⟨Graph.Contracts.SurplusPair.sameTokenReadingsNotReplacement_of_unresolved
+          (inputs.get (K .sameTokenPatternUnresolved)).down
+          (inputs.get (K .sparseSurplusSurvivor)).down⟩
+        .nil)
+
 end Hypostructure.Graph.Strategy.Spine

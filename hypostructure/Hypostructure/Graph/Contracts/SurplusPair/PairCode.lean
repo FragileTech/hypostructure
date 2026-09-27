@@ -32,53 +32,56 @@ theorem pairUncovered_of_factorizationFails
 /-- The realizability test failing at G's canonical return system retains
 those returns as the uncovered pair-code residual. -/
 theorem pairUncovered_of_realizabilityFails
-    (returns : PairDemandReturnsStatement data object)
+    (_returns : PairDemandReturnsStatement data object)
     (fails : PairRealizabilityFailsStatement data object) :
     PairConditionalFactorizationResidualStatement data object := by
-  obtain ⟨returns, selected⟩ := returns
-  exact ⟨.systemRealizability returns selected fun covered =>
-    fails ⟨returns, selected, covered⟩⟩
+  obtain ⟨returns, selected, failure⟩ := fails
+  exact ⟨.systemRealizability returns selected failure⟩
 
 /-- The increment test failing at G's canonical serial system retains that
 system as the uncovered pair-code residual. -/
 theorem pairUncovered_of_incrementFails
-    (serial : PairSerialDemandSystemStatement data object)
+    (_serial : PairSerialDemandSystemStatement data object)
     (fails : PairIncrementFailsStatement data object) :
     PairConditionalFactorizationResidualStatement data object := by
-  obtain ⟨serial, selected⟩ := serial
-  exact ⟨.incrementArithmetic serial selected fun covered =>
-    fails ⟨serial, selected, covered⟩⟩
+  obtain ⟨serial, selected, failure⟩ := fails
+  exact ⟨.incrementArithmetic serial selected failure⟩
 
 /-- `lem:pair-system-realizability`, serial alternative: when G's canonical
-return system is covered and its canonical outcome is not one of (i)--(iv),
-that outcome is alternative (v), G's canonical serial demand system. -/
+return system is covered and none of alternatives (i)--(iv) occurs for it, the
+covering outcome is alternative (v), so G's canonical serial demand system on
+those returns exists. -/
 theorem pairSerialDemandSystem_of_noEarlyOutcome
     (covered : PairSystemRealizabilityStatement data object)
     (noEarly : PairSystemNoEarlyOutcomeStatement data object) :
     PairSerialDemandSystemStatement data object := by
-  obtain ⟨returns, returnsSelected, covered⟩ := covered
-  obtain ⟨outcome, outcomeSelected⟩ :=
-    canonicalRealizabilityOutcome_spec data object returns covered
+  obtain ⟨returns, returnsSelected, ⟨outcome⟩⟩ := covered
+  obtain ⟨returns', returnsSelected', noEarly⟩ := noEarly
+  have same : returns = returns' :=
+    Option.some.inj (returnsSelected.symm.trans returnsSelected')
+  subst same
   cases outcome with
-  | early early => exact (noEarly ⟨returns, early, returnsSelected, outcomeSelected⟩).elim
-  | serial serial _same =>
-      exact ⟨serial, by
-        rw [canonicalPairSerialSystem, returnsSelected, Option.bind_some]
-        simp only [outcomeSelected]⟩
+  | early early => exact (noEarly ⟨early⟩).elim
+  | serial system same =>
+      obtain ⟨serial, selected, -⟩ :=
+        canonicalPairSerialSystem_spec data object returnsSelected same
+      exact ⟨serial, selected⟩
 
 /-- `lem:pair-system-increment-arithmetic`, arithmetic alternative: when G's
-canonical serial system is covered and its canonical outcome is not periodic,
-that outcome is the corrected full-modulus arithmetic input. -/
+canonical serial system is covered and no periodic routed alternative occurs
+for it, the covering outcome is the corrected full-modulus arithmetic input. -/
 theorem pairSerialArithmetic_of_noEarlyOutcome
     (covered : PairIncrementCoveredStatement data object)
     (noEarly : PairIncrementNoEarlyOutcomeStatement data object) :
     PairSerialArithmeticStatement data object := by
-  obtain ⟨serial, serialSelected, covered⟩ := covered
-  obtain ⟨outcome, outcomeSelected⟩ :=
-    canonicalIncrementOutcome_spec data object serial covered
+  obtain ⟨serial, serialSelected, ⟨outcome⟩⟩ := covered
+  obtain ⟨serial', serialSelected', noEarly⟩ := noEarly
+  have same : serial = serial' :=
+    Option.some.inj (serialSelected.symm.trans serialSelected')
+  subst same
   cases outcome with
-  | arithmetic arithmetic => exact ⟨serial, arithmetic, serialSelected, outcomeSelected⟩
-  | early early => exact (noEarly ⟨serial, early, serialSelected, outcomeSelected⟩).elim
+  | arithmetic arithmetic => exact ⟨serial, serialSelected, ⟨arithmetic⟩⟩
+  | early early => exact (noEarly ⟨early⟩).elim
 
 /-- The obstruction's response coordinates lie in G's full pair-response family
 at the obstruction's activation. -/
@@ -115,7 +118,7 @@ theorem pairObstructionHandoff_of_pairSystemEarlyOutcome
     (survives : SparseSurplusSurvivorStatement data object) :
     ∃ returns, canonicalPairDemandReturns data object = some returns ∧
       PairObstructionHandoff data object returns := by
-  obtain ⟨returns, early, returnsSelected, -⟩ := early
+  obtain ⟨returns, returnsSelected, ⟨early⟩⟩ := early
   cases early with
   | targetCycle cycle => exact (noCycle cycle).elim
   | targetDefect defect =>
@@ -135,11 +138,7 @@ theorem canonicalPairDemandReturns_of_serial
   | none => simp [hReturns] at selected
   | some returns =>
       rw [hReturns, Option.bind_some] at selected
-      split at selected
-      · next system same _ =>
-          cases selected
-          rw [same]
-      · cases selected
+      rw [canonicalChoice_spec_of_eq_some selected]
 
 /-- The periodic alternatives of `lem:pair-system-increment-arithmetic` for G's
 canonical serial system, on an object surviving the sparse exits of its
@@ -150,7 +149,7 @@ theorem pairObstructionHandoff_of_pairIncrementEarlyOutcome
     (survives : SparseSurplusSurvivorStatement data object) :
     ∃ returns, canonicalPairDemandReturns data object = some returns ∧
       PairObstructionHandoff data object returns := by
-  obtain ⟨serial, early, serialSelected, -⟩ := early
+  obtain ⟨serial, serialSelected, ⟨early⟩⟩ := early
   cases early with
   | targetDefect defect =>
       exact (survives (declaredSparseSurplusExit_of_obstructionDefect

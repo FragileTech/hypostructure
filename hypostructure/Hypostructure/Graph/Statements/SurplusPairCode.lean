@@ -156,26 +156,27 @@ def PairSystemRealizabilityStatement (data : Parameters)
   ∃ returns, canonicalPairDemandReturns data object = some returns ∧
     Nonempty (PairSystemRealizabilityOutcome returns)
 
-/-- Node `[179]`, no exhaustive uncrossing: the negation of the coverage test. -/
-noncomputable abbrev PairRealizabilityFailsStatement
-    (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  ¬ PairSystemRealizabilityStatement data object
+/-- Node `[179]`, no exhaustive uncrossing: at G's canonical return system the
+coverage test fails (its literal negation at the same pinned returns). -/
+def PairRealizabilityFailsStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ returns, canonicalPairDemandReturns data object = some returns ∧
+    ¬ Nonempty (PairSystemRealizabilityOutcome returns)
 
-/-- **Node `[179]`, alternatives (i)--(iv)**: the canonical outcome of the
-canonical return system is one of the routed alternatives. -/
+/-- **Node `[179]`, alternatives (i)--(iv)** (`lem:pair-system-realizability`,
+tex 5110-5130, listed before (v)): one of the already-routed alternatives
+occurs for G's canonical return system. -/
 def PairSystemEarlyOutcomeStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  ∃ returns early, canonicalPairDemandReturns data object = some returns ∧
-    canonicalRealizabilityOutcome data object returns = some (.early early)
+  ∃ returns, canonicalPairDemandReturns data object = some returns ∧
+    Nonempty (PairSystemEarlyOutcome returns)
 
-/-- Node `[179]`, serial arm: the canonical outcome is not one of (i)--(iv). -/
-noncomputable abbrev PairSystemNoEarlyOutcomeStatement
-    (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  ¬ PairSystemEarlyOutcomeStatement data object
+/-- Node `[179]`, serial arm: none of (i)--(iv) occurs for G's canonical return
+system (the literal negation at the same pinned returns). -/
+def PairSystemNoEarlyOutcomeStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ returns, canonicalPairDemandReturns data object = some returns ∧
+    ¬ Nonempty (PairSystemEarlyOutcome returns)
 
 /-- **Node `[179]`, alternative (v)**: G's canonical serial demand system. -/
 def PairSerialDemandSystemStatement (data : Parameters)
@@ -191,33 +192,34 @@ def PairIncrementCoveredStatement (data : Parameters)
   ∃ serial, canonicalPairSerialSystem data object = some serial ∧
     Nonempty (PairIncrementOutcome serial)
 
-/-- Node `[180]`, uncovered increment response: the negation of the test. -/
-noncomputable abbrev PairIncrementFailsStatement
-    (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  ¬ PairIncrementCoveredStatement data object
+/-- Node `[180]`, uncovered increment response: at G's canonical serial system
+the coverage test fails (its literal negation at the same pinned system). -/
+def PairIncrementFailsStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ serial, canonicalPairSerialSystem data object = some serial ∧
+    ¬ Nonempty (PairIncrementOutcome serial)
 
-/-- **Node `[180]`, periodic arm**: the canonical outcome of the canonical serial
-system is a routed periodic alternative. -/
+/-- **Node `[180]`, periodic arm** (diagram tex 1213, "covered increment split:
+periodic sparse-exit/Type B, or full-modulus arithmetic"): a routed periodic
+alternative occurs for G's canonical serial system. -/
 def PairIncrementEarlyOutcomeStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  ∃ serial early, canonicalPairSerialSystem data object = some serial ∧
-    canonicalIncrementOutcome data object serial = some (.early early)
+  ∃ serial, canonicalPairSerialSystem data object = some serial ∧
+    Nonempty (PairIncrementEarlyOutcome serial)
 
-/-- Node `[180]`, arithmetic arm: the canonical outcome is not periodic. -/
-noncomputable abbrev PairIncrementNoEarlyOutcomeStatement
-    (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    Prop :=
-  ¬ PairIncrementEarlyOutcomeStatement data object
+/-- Node `[180]`, arithmetic arm: no periodic routed alternative occurs for G's
+canonical serial system (the literal negation at the same pinned system). -/
+def PairIncrementNoEarlyOutcomeStatement (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Prop :=
+  ∃ serial, canonicalPairSerialSystem data object = some serial ∧
+    ¬ Nonempty (PairIncrementEarlyOutcome serial)
 
-/-- **Node `[180]`, the arithmetic input**: the canonical outcome of G's canonical
-serial system is the full-modulus arithmetic. -/
+/-- **Node `[180]`, the arithmetic input**: G's canonical serial system carries
+the full-modulus arithmetic data. -/
 def PairSerialArithmeticStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  ∃ serial arithmetic, canonicalPairSerialSystem data object = some serial ∧
-    canonicalIncrementOutcome data object serial = some (.arithmetic arithmetic)
+  ∃ serial, canonicalPairSerialSystem data object = some serial ∧
+    Nonempty (PairSerialArithmetic serial)
 
 /-- The actual accepted cycle published by node `[180]` before the standard
 incompatibility closure against node `[1]`. -/

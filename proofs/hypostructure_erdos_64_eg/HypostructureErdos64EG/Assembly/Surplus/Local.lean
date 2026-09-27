@@ -238,8 +238,10 @@ noncomputable def selectedPairCodeChain
 published by the geometric audit `[140]`/`[142]`/`[143]`: decide the fixed caps.
 On the failing arm `lem:same-token-bottleneck-routing` routes the pattern to the
 decorated same-token Type B handoff and node `[65]` appends the common Type B
-entry, reaching `[144a]`; the caps arm gives node `[138]`'s
-`σ(G) ≤ C_sp ⌈√n⌉`, which closes against node `[19]`. -/
+entry, reaching `[144a]`.  The caps arm is dead at G: it is closed at the node
+with `closeIncompatible` against the audited pattern
+`K .homogeneousBottleneckPattern` on the same ledger, which refutes the caps at
+G's canonical certified ledger. -/
 -- EG-NODE [144] same-token bottleneck: Type B handoff or capped route?
 -- EG-NODE [138] no coupled overload: explicit quadratic bound on \(\sigma\); near-cubic spine
 noncomputable def selectedBottleneckDischarge
@@ -263,9 +265,8 @@ noncomputable def selectedBottleneckDischarge
     (handoffFresh : K .typeBHandoff ∉ known := by key_fresh)
     (handoffFailsFresh : K .typeBHandoffFails ∉ known := by key_fresh)
     (unresolvedFresh : K .sameTokenPatternUnresolved ∉ known := by key_fresh)
+    (readingsFresh : K .sameTokenReadingsNotReplacement ∉ known := by key_fresh)
     (fanEntryFresh : K .typeBFanEntry ∉ known := by key_fresh)
-    (capsCloseFresh : K .homogeneousBottleneck ∉ known := by key_fresh)
-    (estimateFresh : K .spineSurplusEstimate ∉ known := by key_fresh)
     (closedFresh : closed ∉ known := by key_fresh) :
     StrictSurplusBoundaryResult selected := by
   match homogeneousBottleneckDichotomy (data := spineData) history
@@ -294,11 +295,18 @@ noncomputable def selectedBottleneckDischarge
             (entered.get (K .surplusAbove)).down,
             (entered.get (K .sparseSurplusSurvivor)).down⟩
       | .right failsHistory =>
-          let unresolved :=
+          let unresolvedOnly :=
             (sameTokenPatternUnresolvedRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
               (data := spineData)).run failsHistory (by key_fresh)
+          -- `[144a]`: the explicit replacement candidates of tex 5594 at G,
+          -- checked against the survivor and published.
+          let unresolved :=
+            (sameTokenReadingsNotReplacementRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile)
+              (data := spineData)).run unresolvedOnly (by key_fresh)
           exact Or.inl ⟨
             Or.inr ⟨(unresolved.get (K .typeBHandoffFails)).down,
               (unresolved.get (K .sameTokenPatternUnresolved)).down⟩,
@@ -309,13 +317,10 @@ noncomputable def selectedBottleneckDischarge
             (unresolved.get (K .surplusAbove)).down,
             (unresolved.get (K .sparseSurplusSurvivor)).down⟩
   | .right capsHistory =>
-      let closedHistory :=
-        (homogeneousCapsCloseRow (BranchState := BranchState)
-          (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-          (presentation := erdosReceiverLoadProfile)
-          (data := spineData)).runAndCloseIncompatible capsHistory
-            (K .surplusAbove) (K .spineSurplusEstimate) (by key_fresh)
-            (by key_fresh)
-      exact (closedHistory.elimClosed (by infer_instance)).elim
+      -- The caps arm, closed at G: the audited pattern at G's overloading
+      -- token refutes the caps at the same ledger.
+      exact (closeIncompatible capsHistory (K .homogeneousBottleneckPattern)
+        (K .homogeneousCapsHold) (by key_fresh)).elimClosed
+        (by infer_instance) |>.elim
 
 end HypostructureErdos64EG

@@ -6,9 +6,9 @@ import Hypostructure.Graph.Statements.CanonicalPairHandoff
 `lem:pair-system-increment-arithmetic` (nodes `[179]`, `[180]`)
 
 The alternatives of the pair-system lemmas for G's canonical return system and
-serial system.  Their Type B alternative is the same-token handoff of G, node
-`[144]`'s pinned statement (`Statements/SurplusPairRouting.lean`), so these
-outcomes are stated after it.
+serial system.  Their Type B alternative is the first-separator handoff of the
+retained obstruction's own overlap support toward its two demands, at `P₀`
+(`PairObstructionHandoff`, `Statements/CanonicalPairHandoff.lean`).
 
 This module imports no strategy, row, or vocabulary module.
 -/

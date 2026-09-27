@@ -16,26 +16,6 @@ variable {data : Data.{u}}
 
 variable [FactSystem (Input BranchState Presentation presentation data)]
 
-/-! ## Node `[67]`, the standing law: the high-neighbourhood normal form
-
-`lem:heavy-neighbourhood-normal-form`.  At a high centre `h` -- one whose degree
-is strictly above the baseline -- the manuscript proves three things, and the
-whole Type B fan analysis runs on them:
-
-* (a) every vertex of `N_G(h)` has degree exactly the baseline;
-* (b) `G[N_G(h)]` is a matching;
-* (c) two nonadjacent neighbours of `h` have no common neighbour outside `{h}`.
-
-(a) is the tight-endpoint law of node `[9]` read at the edge `hx`: one endpoint
-sits exactly at the baseline, and it is not `h`.  (b) and (c) are the two
-quadrilaterals `hxyzh` and `hxzyh`, excluded because the selected object avoids
-the accepted lengths and the quadrilateral is one of them -- the registered
-`Data.quadrilateralAccepted`, which is where "no power-of-two cycle" enters at
-its own interface.
-
-The fact is stated of the *object*, at every high centre at once, because that
-is what the manuscript proves and because a centre is data: no fact can carry
-one.  Both arms of the degree split below read it. -/
 /-! ## The presentation laws of G, published once at the entry
 
 `cubicBaselineRow` is the one row that reads the registered presentation's
