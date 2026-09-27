@@ -3,8 +3,8 @@
 Serial preparation for the parallel contract-lemma migration.  Every key of
 `Graph.Strategy.Spine.Key` belongs to exactly one family; every file below has
 exactly one owning family.  A family edits only the files it owns, plus its own
-lines in the shared files listed at the end.  Current maximum key index: `3102`
-(337 keys).
+lines in the shared files listed at the end.  Current maximum key index: `3205`
+(343 keys).
 
 ## Library statement modules
 
@@ -25,6 +25,7 @@ instantiates its statement at `data.toParameters` and the object.
 | `hypostructure/Hypostructure/Graph/Statements/TypeB.lean` | F2 | TypeA |
 | `hypostructure/Hypostructure/Graph/Statements/RouteEight.lean` | F3 | TypeA |
 | `hypostructure/Hypostructure/Graph/Statements/SurplusPair.lean` | F4 | TypeB |
+| `hypostructure/Hypostructure/Graph/Statements/ColdResiduals.lean` | F5 | Spine, SurplusPair |
 
 A family that needs a new statement from a module above its own in this chain
 adds it to the lowest module that every consumer imports and records the edit
@@ -50,6 +51,7 @@ with that module's owner.  `SurplusPair` sees `TypeB`, `TypeA` and `Spine`;
 | Round 2 TB (Type B) | 2800-2899 |
 | Round 2 SP (Surplus / Pair) | 2900-2999 |
 | Round 2 [177] split | 3100-3199 |
+| fix3 returned residuals ([153], [162], [54]) | 3200-3299 |
 
 A new key takes the next unused index of its family's range; existing indices
 (0-608) are never renumbered.
@@ -64,7 +66,7 @@ reused.  Keys deleted in the final pass: 439, 500, 501, 502 (SD); 511, 513, 516,
 1007 (TA); 188 (TB); 2200, 2302 (unification).
 
 Round-2 (fix2) allocations: SC 2700, 2701; TB 2800, 2801; SP 2900-2905;
-[177] split 3100-3102; TR added no key.  Keys deleted in round 2: 81
+[177] split 3100-3102; TR added no key.  fix3 (returned residuals): 3200-3205.  Keys deleted in round 2: 81
 (`typeBDirectCycle`) and 442 (`fanClosedPort`) (TB); 160
 (`route8GlobalSqueeze`) (TR).
 
@@ -479,7 +481,7 @@ Round-2 (fix2) allocations: SC 2700, 2701; TB 2800, 2801; SP 2900-2905;
 - Library statement module: `hypostructure/Hypostructure/Graph/Statements/Spine.lean` (and `hypostructure/Hypostructure/Graph/Statements/Parameters.lean`)
 - Reserved new-key range: 1800-1999
 
-### Keys (127)
+### Keys (133)
 
 | idx | Key | Statement | Statement module |
 |---|---|---|---|
@@ -610,8 +612,14 @@ Round-2 (fix2) allocations: SC 2700, 2701; TB 2800, 2801; SP 2900-2905;
 | 2303 | `hssTargetCycle` | `HssTargetCycleStatement` | Spine |
 | 2700 | `coldAbsorbedNeutralConfiguration` | `NeutralConfigurationStatement` | Spine |
 | 2701 | `coldSelectedFamilyEmpty` | `ColdSelectedFamilyEmptyStatement` | Spine |
+| 3200 | `coldCutStatesDistinct` | `ColdCutStatesDistinctStatement` | ColdResiduals |
+| 3201 | `coldRepeatedStateResidual` | `ColdRepeatedStateResidualStatement` | ColdResiduals |
+| 3202 | `coldHeavyEntryTerminal` | `ColdHeavyEntryTerminalStatement` | ColdResiduals |
+| 3203 | `coldDenseHeavyEntryResidual` | `ColdDenseHeavyEntryResidualStatement` | ColdResiduals |
+| 3204 | `entropyJointRealization` | `EntropyJointRealizationStatement` | ColdResiduals |
+| 3205 | `allColdEntropyResidual` | `AllColdEntropyResidualStatement` | ColdResiduals |
 
-### Row and decision modules (68)
+### Row and decision modules (69)
 
 - `hypostructure/Hypostructure/Graph/Strategy/BlockedCompressionRows.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/BranchDClosure.lean`
@@ -621,6 +629,7 @@ Round-2 (fix2) allocations: SC 2700, 2701; TB 2800, 2801; SP 2900-2905;
 - `hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows/ColdFamilyClosure.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows/ColdMass.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows/CorridorState.lean`
+- `hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows/CutStates.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows/DenseTerminal.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows/EntryDichotomies.lean`
 - `hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows/FailureClauses.lean`
