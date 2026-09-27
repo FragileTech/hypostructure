@@ -1,0 +1,89 @@
+import Hypostructure.Graph.Strategy.SpineVocabulary
+import Hypostructure.Graph.Strategy.ColdCorridorRows.Basic
+import Hypostructure.Graph.Contracts.Spine.ColdFirstFailure
+import Hypostructure.Graph.Contracts.Spine.ColdMass
+
+namespace Hypostructure.Graph.Strategy.Spine
+
+open Hypostructure
+open Hypostructure.Core.Residual
+open Hypostructure.Core.Strategy
+
+universe u v
+
+variable {BranchState : Graph.FiniteObject.{u} → Type v}
+variable {Presentation : Type} {presentation : Presentation}
+variable {data : Data.{u}}
+
+/-! ## Node `[153]`: the exact decision behind `lem:cold-corridor-first-failure` (ii)
+
+At G the paper's exclusion of (F2) (tex 7265-7270) is equivalent to (★): G's
+pinned cut states along each retained cold corridor are pairwise distinct up to
+the first failure (`Contracts.Spine.coldFirstFailureDefectAt_iff`).  The
+decision reads G's retained first-failure occurrence (`K .coldFirstFailureOccurrence`)
+and splits (★) / ¬(★) at G.  On the (★) arm (F2) is excluded and routing
+continues; on the ¬(★) arm the explicitly constructed first equal-state pair
+of G, with its separating path context and profile separation
+(`Contracts.Spine.coldRepeatedStateResidual_of_not_distinct`), is published as
+the returned residual `K .coldRepeatedStateResidual`.  Target avoidance
+(`K .selection`) and the dyadic target (`K .cubicBaseline`) are the two G
+facts the construction reads. -/
+noncomputable def coldCutStatesDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger
+      (Input BranchState Presentation presentation data) current known)
+    [FactKeys.Has (K .coldFirstFailureOccurrence) known]
+    [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .cubicBaseline) known]
+    (distinctFresh : K .coldCutStatesDistinct ∉ known)
+    (residualFresh : K .coldRepeatedStateResidual ∉ known) :
+    Decision (K .coldCutStatesDistinct) (K .coldRepeatedStateResidual) previous := by
+  classical
+  -- The decision reads its predecessor fact at the one object it splits.
+  have _occurrence := (previous.get (K .coldFirstFailureOccurrence)).down
+  exact Decision.run previous (K .coldCutStatesDistinct) (K .coldRepeatedStateResidual)
+    `Hypostructure.Graph.Strategy.Spine.coldCutStatesDichotomy
+    (if distinct : ColdCutStatesDistinctStatement data.toParameters current.object then
+      .inl ⟨distinct⟩
+    else
+      .inr ⟨Contracts.Spine.coldRepeatedStateResidual_of_not_distinct
+        data.toParameters current.object
+        (Contracts.Spine.lengthOK_twoPow data.toParameters
+          (previous.get (K .cubicBaseline)).down.2.1.2.1)
+        (previous.get (K .selection)).down.1 distinct⟩)
+    distinctFresh residualFresh
+
+/-! ## Node `[162]`: the exact decision on the distinct-states arm
+
+On the (★) arm the first failure of every retained corridor of G is read within
+`Q_cold` states (`ColdEqualStates.first_lt_stateBound`) and is either the
+terminal (F5) event or an (F4) heavy centre.  The only sub-case in which the
+corridor can fail to be terminal is an (F4) heavy centre strictly before the
+terminal segment on a corridor reading more than `Q_cold` states.  The
+decision reads (★) (`K .coldCutStatesDistinct`) and splits that sub-case
+exactly: every such corridor is terminal (`K .coldHeavyEntryTerminal`), or the
+explicitly constructed long corridor through a heavy centre of G
+(`Contracts.Spine.coldDenseHeavyEntryResidual_of_not_terminal`) is the
+returned residual `K .coldDenseHeavyEntryResidual`. -/
+noncomputable def coldHeavyEntryDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger
+      (Input BranchState Presentation presentation data) current known)
+    [FactKeys.Has (K .coldCutStatesDistinct) known]
+    (terminalFresh : K .coldHeavyEntryTerminal ∉ known)
+    (residualFresh : K .coldDenseHeavyEntryResidual ∉ known) :
+    Decision (K .coldHeavyEntryTerminal) (K .coldDenseHeavyEntryResidual) previous := by
+  classical
+  exact Decision.run previous (K .coldHeavyEntryTerminal) (K .coldDenseHeavyEntryResidual)
+    `Hypostructure.Graph.Strategy.Spine.coldHeavyEntryDichotomy
+    (if terminal : ColdHeavyEntryTerminalStatement data.toParameters current.object then
+      .inl ⟨terminal⟩
+    else
+      .inr ⟨Contracts.Spine.coldDenseHeavyEntryResidual_of_not_terminal
+        data.toParameters current.object
+        (previous.get (K .coldCutStatesDistinct)).down terminal⟩)
+    terminalFresh residualFresh
+
+end Hypostructure.Graph.Strategy.Spine

@@ -69,7 +69,7 @@ arm whose route-8 rate is already decided. -/
 noncomputable abbrev nearCubicResidualBKeys : FactKeys EGInput.{u} :=
   [K .forcedCurvatureCost, K .remainderEntropyHigh, K .remainderEntropyLow,
     K .entropyPackageDemand, K .entropyCapActive, K .largeBudgetResidual,
-    K .entropyCapBound, K .localTypeCoordinateRepetitive,
+    K .entropyCapBound, K .entropyJointRealization, K .allColdEntropyResidual, K .localTypeCoordinateRepetitive,
     K .localTypeCoordinateNonrepetitive, K .dominantRootedType,
     K .dominantRootedWedgeType, K .dominantRootedTypeWedgeFree,
     K .independentObstructionTranslates, K .netDeficiencyCap] ++
@@ -331,12 +331,21 @@ noncomputable def nearCubicLargeBudgetColdRate
       match entropyCapDichotomy (data := spineData) package
           (by key_fresh) (by key_fresh) with
       | .left activeHistory =>
-          exact ((entropyCapBoundRow (BranchState := BranchState)
-            (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-            (presentation := erdosReceiverLoadProfile)
-            (data := spineData)).runAndCloseIncompatible activeHistory
-              (K .entropyCapActive) (K .entropyCapBound)
-              (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
+          -- `[54]`: the exact decision on the joint realization inequality at G.
+          match entropyJointRealizationDichotomy (data := spineData) activeHistory
+              (by key_fresh) (by key_fresh) with
+          | .left jointHistory =>
+              exact ((entropyCapBoundRow (BranchState := BranchState)
+                (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                (presentation := erdosReceiverLoadProfile)
+                (data := spineData)).runAndCloseIncompatible jointHistory
+                  (K .entropyCapActive) (K .entropyCapBound)
+                  (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
+          | .right residualHistory =>
+              -- the configuration at G where the joint realization fails,
+              -- returned.
+              exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
+                (residualHistory.get (K .allColdEntropyResidual)).down)))))
       | .right boundHistory =>
           -- `[55]`: Residual C on the high-entropy arm.
           let largeHistory :=
@@ -449,12 +458,21 @@ noncomputable def nearCubicLargeBudgetDenseRate
       match entropyCapDichotomy (data := spineData) package
           (by key_fresh) (by key_fresh) with
       | .left activeHistory =>
-          exact ((entropyCapBoundRow (BranchState := BranchState)
-            (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-            (presentation := erdosReceiverLoadProfile)
-            (data := spineData)).runAndCloseIncompatible activeHistory
-              (K .entropyCapActive) (K .entropyCapBound)
-              (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
+          -- `[54]`: the exact decision on the joint realization inequality at G.
+          match entropyJointRealizationDichotomy (data := spineData) activeHistory
+              (by key_fresh) (by key_fresh) with
+          | .left jointHistory =>
+              exact ((entropyCapBoundRow (BranchState := BranchState)
+                (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                (presentation := erdosReceiverLoadProfile)
+                (data := spineData)).runAndCloseIncompatible jointHistory
+                  (K .entropyCapActive) (K .entropyCapBound)
+                  (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
+          | .right residualHistory =>
+              -- the configuration at G where the joint realization fails,
+              -- returned.
+              exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
+                (residualHistory.get (K .allColdEntropyResidual)).down)))))
       | .right boundHistory =>
           -- `[55]`: Residual C on the high-entropy arm.
           let largeHistory :=
@@ -570,12 +588,21 @@ noncomputable def nearCubicLargeBudgetDensityCap
       match entropyCapDichotomy (data := spineData) package
           (by key_fresh) (by key_fresh) with
       | .left activeHistory =>
-          exact ((entropyCapBoundRow (BranchState := BranchState)
-            (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-            (presentation := erdosReceiverLoadProfile)
-            (data := spineData)).runAndCloseIncompatible activeHistory
-              (K .entropyCapActive) (K .entropyCapBound)
-              (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
+          -- `[54]`: the exact decision on the joint realization inequality at G.
+          match entropyJointRealizationDichotomy (data := spineData) activeHistory
+              (by key_fresh) (by key_fresh) with
+          | .left jointHistory =>
+              exact ((entropyCapBoundRow (BranchState := BranchState)
+                (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                (presentation := erdosReceiverLoadProfile)
+                (data := spineData)).runAndCloseIncompatible jointHistory
+                  (K .entropyCapActive) (K .entropyCapBound)
+                  (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
+          | .right residualHistory =>
+              -- the configuration at G where the joint realization fails,
+              -- returned.
+              exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
+                (residualHistory.get (K .allColdEntropyResidual)).down)))))
       | .right boundHistory =>
           -- `[55]`: Residual C on the high-entropy arm.
           let largeHistory :=
@@ -685,12 +712,21 @@ noncomputable def nearCubicLargeBudgetRateFailed
       match entropyCapDichotomy (data := spineData) package
           (by key_fresh) (by key_fresh) with
       | .left activeHistory =>
-          exact ((entropyCapBoundRow (BranchState := BranchState)
-            (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
-            (presentation := erdosReceiverLoadProfile)
-            (data := spineData)).runAndCloseIncompatible activeHistory
-              (K .entropyCapActive) (K .entropyCapBound)
-              (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
+          -- `[54]`: the exact decision on the joint realization inequality at G.
+          match entropyJointRealizationDichotomy (data := spineData) activeHistory
+              (by key_fresh) (by key_fresh) with
+          | .left jointHistory =>
+              exact ((entropyCapBoundRow (BranchState := BranchState)
+                (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                (presentation := erdosReceiverLoadProfile)
+                (data := spineData)).runAndCloseIncompatible jointHistory
+                  (K .entropyCapActive) (K .entropyCapBound)
+                  (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
+          | .right residualHistory =>
+              -- the configuration at G where the joint realization fails,
+              -- returned.
+              exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
+                (residualHistory.get (K .allColdEntropyResidual)).down)))))
       | .right boundHistory =>
           -- `[55]`: Residual C on the high-entropy arm.
           let largeHistory :=

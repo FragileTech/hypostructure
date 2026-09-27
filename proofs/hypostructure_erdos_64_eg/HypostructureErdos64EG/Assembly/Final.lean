@@ -86,8 +86,40 @@ abbrev OtherReturnedOutcome (selected : EGInput.{u}) :=
     Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .surplusAtOrBelow selected.object)
 
-/-- Exact selected-root reduction: five individually identified residuals
-and the explicit remaining disjunction at `[187]`. -/
+/-- **Node `[153]`, returned residual** (`lem:cold-corridor-first-failure`
+(ii), tex 7265-7270): G's first equal-state pair on a retained cold corridor,
+constructed with its separating path context and its profile separation
+(`K .coldRepeatedStateResidual`), on the near-cubic branch. -/
+abbrev Node153ResidualOutcome (selected : EGInput.{u}) :=
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .coldRepeatedStateResidual selected.object ∧
+    Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .surplusAtOrBelow selected.object
+
+/-- **Node `[162]`, returned residual** (`lem:dense-cold-pass`, tex
+7692-7694): a retained cold corridor of G whose first failure is a heavy centre
+of G strictly before its terminal segment and which reads more than `Q_cold`
+states, constructed (`K .coldDenseHeavyEntryResidual`), on the near-cubic
+branch. -/
+abbrev Node162ResidualOutcome (selected : EGInput.{u}) :=
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .coldDenseHeavyEntryResidual selected.object ∧
+    Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .surplusAtOrBelow selected.object
+
+/-- **Node `[54]`, returned residual** (`prop:entropy-high-theta`, tex 9921):
+the configuration at G where the joint realization inequality
+`RS(R₀)·2^{rate·s·p₁₃}·2^F ≤ B` fails, constructed
+(`K .allColdEntropyResidual`), on the near-cubic branch. -/
+abbrev Node54ResidualOutcome (selected : EGInput.{u}) :=
+  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .allColdEntropyResidual selected.object ∧
+    Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .surplusAtOrBelow selected.object
+
+/-- Exact selected-root reduction: five individually identified residuals,
+the explicit remaining disjunction at `[187]`, and the three residuals returned
+by the structural exhaustion at `[153]`, `[162]` and `[54]`. -/
 abbrev SelectedLedgerBoundaryResult (selected : EGInput.{u}) :=
   Node20aOutcome selected ∨
   Node144aOutcome selected ∨
@@ -98,12 +130,17 @@ abbrev SelectedLedgerBoundaryResult (selected : EGInput.{u}) :=
         .pairConditionalFactorizationResidual selected.object ∨
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
       erdosReceiverLoadProfile spineData .route8JointBalance selected.object ∨
-  OtherReturnedOutcome selected
+  OtherReturnedOutcome selected ∨
+  Node153ResidualOutcome selected ∨
+  Node162ResidualOutcome selected ∨
+  Node54ResidualOutcome selected
 
 noncomputable def selectedLedgerBoundary
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected [EGSelectionKey]) :
     SelectedLedgerBoundaryResult selected := by
+  have other : OtherReturnedOutcome selected → SelectedLedgerBoundaryResult selected :=
+    fun outcome => Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl outcome)))))
   match selectedSurplusDichotomy history with
   | .left strictHistory =>
       -- EG-NODE [20] surplus-pair accounting branch
@@ -136,45 +173,51 @@ noncomputable def selectedLedgerBoundary
           match selectedStrictSurplusBranch survivorHistory with
           | .inl handoff => exact Or.inr (Or.inl handoff)
           | .inr (.inl pairEntry) =>
-              exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
-                (Or.inr (Or.inl pairEntry))))))
+              exact other (Or.inr (Or.inl pairEntry))
           | .inr (.inr pair) =>
               exact Or.inr (Or.inr (Or.inr (Or.inl pair)))
   | .right nearCubicHistory =>
+      have surplus := (nearCubicHistory.get (K .surplusAtOrBelow)).down
       match selectedNearCubicBranch nearCubicHistory with
       | .inl targetDefect =>
-          exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
-            (Or.inl ⟨targetDefect.1, targetDefect.2,
-              (nearCubicHistory.get (K .surplusAtOrBelow)).down⟩)))))
+          exact other (Or.inl ⟨targetDefect.1, targetDefect.2, surplus⟩)
       | .inr survivor =>
           have liftRoute : SelectedRouteEightBoundary selected →
               SelectedLedgerBoundaryResult selected := by
             intro route
             match route with
             | .inl sublinear =>
-                exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
-                  (Or.inr (Or.inr (Or.inl ⟨sublinear, (nearCubicHistory.get (K .surplusAtOrBelow)).down⟩)))))))
+                exact other (Or.inr (Or.inr (Or.inl ⟨sublinear, surplus⟩)))
             | .inr (.inl quotient) =>
-                exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
-                  (Or.inr (Or.inr (Or.inr (Or.inl ⟨quotient, (nearCubicHistory.get (K .surplusAtOrBelow)).down⟩))))))))
+                exact other (Or.inr (Or.inr (Or.inr (Or.inl ⟨quotient, surplus⟩))))
             | .inr (.inr joint) =>
                 exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inl joint))))
+          have repeatedOut : Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+              erdosReceiverLoadProfile spineData .coldRepeatedStateResidual
+                selected.object → SelectedLedgerBoundaryResult selected :=
+            fun repeated => Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
+              (Or.inl ⟨repeated, surplus⟩))))))
           match survivor with
           | .inl (.inl route) => exact liftRoute route
-          | .inl (.inr (.inl absorbed)) => exact liftRoute absorbed
-          | .inl (.inr (.inr cold)) =>
-              exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
-                (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr ⟨cold, (nearCubicHistory.get (K .surplusAtOrBelow)).down⟩)))))))))
+          | .inl (.inr (.inl (.inl absorbed))) => exact liftRoute absorbed
+          | .inl (.inr (.inl (.inr cold))) =>
+              exact other (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr ⟨cold, surplus⟩)))))
+          | .inl (.inr (.inr repeated)) => exact repeatedOut repeated
           | .inr (.inl rate) =>
-              exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
-                (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl ⟨rate, (nearCubicHistory.get (K .surplusAtOrBelow)).down⟩)))))))))
+              exact other (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl ⟨rate, surplus⟩)))))
           | .inr (.inr (.inl blocked)) =>
               exact Or.inr (Or.inr (Or.inl blocked))
-          | .inr (.inr (.inr cold)) =>
-              exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
-                (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr ⟨cold, (nearCubicHistory.get (K .surplusAtOrBelow)).down⟩)))))))))
+          | .inr (.inr (.inr (.inl cold))) =>
+              exact other (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr ⟨cold, surplus⟩)))))
+          | .inr (.inr (.inr (.inr (.inl repeated)))) => exact repeatedOut repeated
+          | .inr (.inr (.inr (.inr (.inr (.inl heavy))))) =>
+              exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
+                (Or.inl ⟨heavy, surplus⟩)))))))
+          | .inr (.inr (.inr (.inr (.inr (.inr entropy))))) =>
+              exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
+                (Or.inr ⟨entropy, surplus⟩)))))))
 
-/-- The selected minimal counterexample has one of the six exact boundary
+/-- The selected minimal counterexample has one of the nine exact boundary
 outcomes, with each source fact read from its producer's retained ledger. -/
 theorem selectedCounterexample_reaches_exactBoundary
     {selected : EGInput.{u}}
@@ -183,7 +226,7 @@ theorem selectedCounterexample_reaches_exactBoundary
   selectedLedgerBoundary history
 
 /-- Every counterexample to the public finite-graph statement reaches one of
-the six displayed boundary alternatives through the selected ledger. -/
+the nine displayed boundary alternatives through the selected ledger. -/
 theorem officialCounterexample_reaches_selectedLedgerBoundary
     (counterexample : ¬ OfficialStatement.{u}) :
     ∃ selected : EGInput.{u}, SelectedLedgerBoundaryResult selected := by

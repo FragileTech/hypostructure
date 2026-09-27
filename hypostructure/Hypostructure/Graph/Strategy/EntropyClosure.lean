@@ -19,16 +19,16 @@ exceed the number of labelled skeletons, contradicting
 `lem:independent-target-entropy`, `lem:skeleton-dominates`."*
 
 The premise "form one independently target-testable coordinate family" is the
-retention of the window package of the whole fixed packing `P₀`
-(`WindowFamilyRealized P₀`, `def:cold-window-ledger`).  A sealed fact row reads
-the package-rate inequality, the skeleton state-count bound and node `[48]`'s
-forced cost.  When the package of `P₀` is retained it proves
-`demand · 2^{K|R|−o(|R|)} ≤ retainedCode P₀ ≤ #realized states ≤ budget`; on
-the arm where it is not retained the paper's independence claim is an open
-construction (`OPEN-CONSTRUCTION [54] tex:9921`).  The row publishes only `K .entropyCapBound`, the
-exact inequality `demand · 2^{K|R|−o(|R|)} ≤ budget`.  Core then closes it against
-`K .entropyCapActive`, its strict negation.  No numeral, threshold, rate, or
-out-of-ledger branch witness is supplied here.
+joint realization inequality `RS(R₀)·2^{rate·s·p₁₃}·2^F ≤ B` at G (in its finite
+form, `jointRealization_iff_entropyCapBound`).  Node `[54]` is the exact
+decision on it (`entropyJointRealizationDichotomy`).  On the arm where it holds
+the sealed row `entropyCapBoundRow` publishes `K .entropyCapBound`, and Core
+closes it against `K .entropyCapActive`, its strict negation.  On the arm where
+it fails the explicitly constructed configuration at G
+(`K .allColdEntropyResidual`: the unretained package of `P₀`, the remainder
+glue, the outer room, the forced bits and the failing inequality) is the
+returned residual.  No numeral, threshold, rate, or out-of-ledger branch
+witness is supplied here.
 -/
 
 namespace Hypostructure.Graph.Strategy.Spine
@@ -88,22 +88,47 @@ noncomputable instance instIncompatibleEntropyCapActiveBound :
   contradiction := fun _residual active bound =>
     (Nat.not_lt_of_ge bound.down) active.down
 
-/-! **The sealed proof row for terminal `[54]`** (`prop:entropy-high-theta`).
+/-- **Node `[54]`, the exact decision** (`prop:entropy-high-theta`, tex 9921):
+on `[53]`'s active arm (`K .entropyCapActive`, read here), does the paper's
+joint realization inequality `RS(R₀)·2^{rate·s·p₁₃}·2^F ≤ B` hold at G
+(`K .entropyJointRealization`)?  If not, the configuration at G is constructed
+(`Contracts.Spine.allColdEntropyResidual_of_not_jointRealization`, from the
+package rate `K .windowPackageSeparated`, the skeleton count
+`K .skeletonDominates` and node `[48]`'s cost `K .forcedCurvatureCost`) and
+published as `K .allColdEntropyResidual`. -/
+noncomputable def entropyJointRealizationDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger
+      (Input BranchState Presentation presentation data) current known)
+    [FactKeys.Has (K .entropyCapActive) known]
+    [FactKeys.Has (K .windowPackageSeparated) known]
+    [FactKeys.Has (K .skeletonDominates) known]
+    [FactKeys.Has (K .forcedCurvatureCost) known]
+    (jointFresh : K .entropyJointRealization ∉ known)
+    (residualFresh : K .allColdEntropyResidual ∉ known) :
+    Decision (K .entropyJointRealization) (K .allColdEntropyResidual) previous := by
+  classical
+  -- The decision reads its predecessor fact at the one object it splits.
+  have _active := (previous.get (K .entropyCapActive)).down
+  exact Decision.run previous (K .entropyJointRealization) (K .allColdEntropyResidual)
+    `Hypostructure.Graph.Strategy.Spine.entropyJointRealizationDichotomy
+    (if joint : EntropyJointRealizationStatement data.toParameters current.object then
+      .inl ⟨joint⟩
+    else
+      .inr ⟨Contracts.Spine.allColdEntropyResidual_of_not_jointRealization
+        data.toParameters current.object
+        (previous.get (K .windowPackageSeparated)).down
+        (previous.get (K .skeletonDominates)).down
+        (previous.get (K .forcedCurvatureCost)).down joint⟩)
+    jointFresh residualFresh
 
-On the active arm of node `[53]` the row reads the package-rate inequality, the
-skeleton state-count bound, node `[48]`'s forced obstruction cost and node
-`[52]`'s joint account.  The demand is the package of every window of `P₀`
-(`eq:entropy-cap`).  If that package is retained, the registered package rate
-puts the window part below its retained code, node `[48]` puts the forced bits
-below the curvature code that retained code carries, and the realized-code and
-skeleton-dominance clauses put the code below the labelled skeleton budget.  If
-it is not retained, the glue on disjoint supports realizes the product when the
-window package and the forced bits fit the outer room of `G` at `R₀`
-(`entropyCapBound_of_outerRoom`); otherwise the bound is the paper's
-independence claim (`entropyCapBound_unretained`,
-`OPEN-CONSTRUCTION [54] tex:9921`).  Both alternatives produce exactly
-`K .entropyCapBound`; the terminal itself is Core's incompatibility closure
-against `K .entropyCapActive`. -/
+/-! **The sealed proof row for terminal `[54]`** (`prop:entropy-high-theta`), on
+the joint-realization arm of node `[54]`'s decision: the joint realization
+inequality at G, read through `jointRealization_iff_entropyCapBound` (the
+finite form of `lem:independent-target-entropy` with `lem:skeleton-dominates`),
+is the bound `K .entropyCapBound`.  The terminal itself is Core's
+incompatibility closure against `K .entropyCapActive`. -/
 @[reducible] noncomputable def entropyCapBoundRow :
     @AtomicStrategy (Input BranchState Presentation presentation data) _
       (instFactSystem (BranchState := BranchState)
@@ -117,23 +142,17 @@ against `K .entropyCapActive`. -/
       (Presentation := Presentation) (presentation := presentation)
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.entropyCapBound
-    { Requires :=
-        [K .selection, K .windowPackageSeparated,
-          K .skeletonDominates, K .forcedCurvatureCost, K .remainderEntropyHigh,
-          K .entropyPackageDemand]
+    { Requires := [K .entropyJointRealization, K .skeletonDominates]
       Produces := [K .entropyCapBound]
       requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .entropyCapBound)
-        ⟨Contracts.Spine.entropyCapBound_of_hotColdPartition data.toParameters
-          inputs.current.object (inputs.get (K .selection)).down
-          (inputs.get (K .windowPackageSeparated)).down
+        ⟨Contracts.Spine.entropyCapBound_of_jointRealization data.toParameters
+          inputs.current.object
           (inputs.get (K .skeletonDominates)).down
-          (inputs.get (K .forcedCurvatureCost)).down
-          (inputs.get (K .remainderEntropyHigh)).down
-          (inputs.get (K .entropyPackageDemand)).down⟩
+          (inputs.get (K .entropyJointRealization)).down⟩
         .nil)
     0 0
 

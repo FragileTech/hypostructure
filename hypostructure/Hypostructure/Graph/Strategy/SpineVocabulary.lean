@@ -12,6 +12,7 @@ import Hypostructure.Graph.Statements.SurplusPairRouting
 import Hypostructure.Graph.Statements.SurplusPairCode
 import Hypostructure.Graph.Statements.ColdGerm
 import Hypostructure.Graph.Statements.SpineDominantType
+import Hypostructure.Graph.Statements.ColdResiduals
 
 /-!
 # The minimum-degree cycle spine: fact vocabulary
@@ -1631,6 +1632,19 @@ inductive Key where
   | pairNoProfileObstruction
   /-- Node `[144a]`: no reading of G's piece at the pattern support is a replacement representative. -/
   | sameTokenReadingsNotReplacement
+  -- Returned residuals (fix3, 3200-3249)
+  /-- Node `[153]`, distinct-states arm: G's pinned cut states along each retained cold corridor are pairwise distinct up to the first failure. -/
+  | coldCutStatesDistinct
+  /-- Node `[153]`, returned residual: G's first equal-state pair on a retained cold corridor, with its separating context and profile separation. -/
+  | coldRepeatedStateResidual
+  /-- Node `[162]`, test arm: a retained corridor of G first failing at a heavy centre before its terminal segment is still terminal. -/
+  | coldHeavyEntryTerminal
+  /-- Node `[162]`, returned residual: a non-terminal retained corridor of G first failing at a heavy centre before its terminal segment. -/
+  | coldDenseHeavyEntryResidual
+  /-- Node `[54]`, joint arm: `RS(R₀)·2^{rate·s·p₁₃}·2^F ≤ B` at G. -/
+  | entropyJointRealization
+  /-- Node `[54]`, returned residual: the configuration at G where the joint realization inequality fails. -/
+  | allColdEntropyResidual
   -- TA keys
   /-- Node `[102]` → `[89]`, yes arm: the terminal receiver of `X₀` is saturated at its terminal peeling set. -/
   | typeAPeeledSaturatedReceiver
@@ -2442,6 +2456,18 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       PairNoProfileObstructionStatement data.toParameters object
   | .sameTokenReadingsNotReplacement, object =>
       SameTokenReadingsNotReplacementStatement data.toParameters object
+  | .coldCutStatesDistinct, object =>
+      ColdCutStatesDistinctStatement data.toParameters object
+  | .coldRepeatedStateResidual, object =>
+      ColdRepeatedStateResidualStatement data.toParameters object
+  | .coldHeavyEntryTerminal, object =>
+      ColdHeavyEntryTerminalStatement data.toParameters object
+  | .coldDenseHeavyEntryResidual, object =>
+      ColdDenseHeavyEntryResidualStatement data.toParameters object
+  | .entropyJointRealization, object =>
+      EntropyJointRealizationStatement data.toParameters object
+  | .allColdEntropyResidual, object =>
+      AllColdEntropyResidualStatement data.toParameters object
   -- TA keys
   | .typeAPeeledSaturatedReceiver, object =>
       TypeAPeeledSaturatedReceiverStatement data.toParameters object
@@ -2805,6 +2831,12 @@ def label : Key → String
   | .pairProfileObstruction => "pairProfileObstruction"
   | .pairNoProfileObstruction => "pairNoProfileObstruction"
   | .sameTokenReadingsNotReplacement => "sameTokenReadingsNotReplacement"
+  | .coldCutStatesDistinct => "coldCutStatesDistinct"
+  | .coldRepeatedStateResidual => "coldRepeatedStateResidual"
+  | .coldHeavyEntryTerminal => "coldHeavyEntryTerminal"
+  | .coldDenseHeavyEntryResidual => "coldDenseHeavyEntryResidual"
+  | .entropyJointRealization => "entropyJointRealization"
+  | .allColdEntropyResidual => "allColdEntropyResidual"
   -- TA keys
   | .typeAPeeledSaturatedReceiver => "typeAPeeledSaturatedReceiver"
   | .typeAPeeledUnsaturatedDischarge => "typeAPeeledUnsaturatedDischarge"
@@ -3174,6 +3206,12 @@ example : label .pairDegreeProfileFibres = "pairDegreeProfileFibres" := rfl
 example : label .pairProfileObstruction = "pairProfileObstruction" := rfl
 example : label .pairNoProfileObstruction = "pairNoProfileObstruction" := rfl
 example : label .sameTokenReadingsNotReplacement = "sameTokenReadingsNotReplacement" := rfl
+example : label .coldCutStatesDistinct = "coldCutStatesDistinct" := rfl
+example : label .coldRepeatedStateResidual = "coldRepeatedStateResidual" := rfl
+example : label .coldHeavyEntryTerminal = "coldHeavyEntryTerminal" := rfl
+example : label .coldDenseHeavyEntryResidual = "coldDenseHeavyEntryResidual" := rfl
+example : label .entropyJointRealization = "entropyJointRealization" := rfl
+example : label .allColdEntropyResidual = "allColdEntropyResidual" := rfl
 example : label .typeAPeeledSaturatedReceiver = "typeAPeeledSaturatedReceiver" := rfl
 example : label .typeAPeeledUnsaturatedDischarge = "typeAPeeledUnsaturatedDischarge" := rfl
 example : label .typeAPeeledVisibleEntry = "typeAPeeledVisibleEntry" := rfl
@@ -3531,6 +3569,12 @@ def idx : Key → Nat
   | .pairProfileObstruction => 2903
   | .pairNoProfileObstruction => 2904
   | .sameTokenReadingsNotReplacement => 2905
+  | .coldCutStatesDistinct => 3200
+  | .coldRepeatedStateResidual => 3201
+  | .coldHeavyEntryTerminal => 3202
+  | .coldDenseHeavyEntryResidual => 3203
+  | .entropyJointRealization => 3204
+  | .allColdEntropyResidual => 3205
   -- TA keys
   | .typeAPeeledSaturatedReceiver => 2000
   | .typeAPeeledUnsaturatedDischarge => 2001
@@ -3877,6 +3921,12 @@ def ofIdx : Nat → Key
   | 2903 => .pairProfileObstruction
   | 2904 => .pairNoProfileObstruction
   | 2905 => .sameTokenReadingsNotReplacement
+  | 3200 => .coldCutStatesDistinct
+  | 3201 => .coldRepeatedStateResidual
+  | 3202 => .coldHeavyEntryTerminal
+  | 3203 => .coldDenseHeavyEntryResidual
+  | 3204 => .entropyJointRealization
+  | 3205 => .allColdEntropyResidual
   -- TA keys
   | 2000 => .typeAPeeledSaturatedReceiver
   | 2001 => .typeAPeeledUnsaturatedDischarge
@@ -4670,6 +4720,18 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "pairNoProfileObstruction") 2904
   | .sameTokenReadingsNotReplacement =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "sameTokenReadingsNotReplacement") 2905
+  | .coldCutStatesDistinct =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldCutStatesDistinct") 3200
+  | .coldRepeatedStateResidual =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldRepeatedStateResidual") 3201
+  | .coldHeavyEntryTerminal =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldHeavyEntryTerminal") 3202
+  | .coldDenseHeavyEntryResidual =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "coldDenseHeavyEntryResidual") 3203
+  | .entropyJointRealization =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "entropyJointRealization") 3204
+  | .allColdEntropyResidual =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "allColdEntropyResidual") 3205
   -- TA keys
   | .typeAPeeledSaturatedReceiver =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeAPeeledSaturatedReceiver") 2000

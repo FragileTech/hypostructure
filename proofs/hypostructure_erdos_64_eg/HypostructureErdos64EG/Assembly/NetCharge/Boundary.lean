@@ -16,9 +16,12 @@ open Hypostructure.Graph.Strategy.Spine
 universe u w
 
 /-- The only live conclusions of the net-charge continuation are the literal
-Route-8 residuals or the literal absorbed-germ residuals published by their
-own ledger owners. -/
+Route-8 residuals, the literal absorbed-germ residuals published by their
+own ledger owners, or the returned residual of node `[153]` on the absorbed
+lane (G's first equal-state pair, `K .coldRepeatedStateResidual`). -/
 abbrev SelectedNetChargeBoundary (selected : EGInput.{u}) :=
-  SelectedRouteEightBoundary selected ∨ SelectedAbsorbedGermBoundary selected
+  SelectedRouteEightBoundary selected ∨ SelectedAbsorbedGermBoundary selected ∨
+    Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .coldRepeatedStateResidual selected.object
 
 end HypostructureErdos64EG

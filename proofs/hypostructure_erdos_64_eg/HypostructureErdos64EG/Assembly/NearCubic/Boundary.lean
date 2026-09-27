@@ -18,8 +18,11 @@ universe u w
 /-- The outcomes of the near-cubic survivor after node `[21]`: the net-charge
 continuation's residuals, the failed private-carrier rate retained at the
 entry of the route-8 continuation (`[187]`), the blocked-class overlap
-residual `[172a]`, and the local cold-terminal exclusion of the realized
-package's silent cold configurations (`[157]`, retained at `[187]`). -/
+residual `[172a]`, the local cold-terminal exclusion of the realized
+package's silent cold configurations (`[157]`, retained at `[187]`), and the
+three returned residuals of the structural exhaustion at `[153]` (G's first
+equal-state pair), `[162]` (a long corridor of G through a heavy centre) and
+`[54]` (the configuration at G where the joint realization fails). -/
 abbrev SelectedNearCubicSurvivorBoundary (selected : EGInput.{u}) :=
   SelectedNetChargeBoundary selected ∨
     Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -27,7 +30,16 @@ abbrev SelectedNearCubicSurvivorBoundary (selected : EGInput.{u}) :=
       Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
           erdosReceiverLoadProfile spineData .blockedBarrierOverlap selected.object ∨
         Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-          erdosReceiverLoadProfile spineData .coldBranchClosed selected.object
+          erdosReceiverLoadProfile spineData .coldBranchClosed selected.object ∨
+        Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+          erdosReceiverLoadProfile spineData .coldRepeatedStateResidual
+            selected.object ∨
+        Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+          erdosReceiverLoadProfile spineData .coldDenseHeavyEntryResidual
+            selected.object ∨
+        Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+          erdosReceiverLoadProfile spineData .allColdEntropyResidual
+            selected.object
 
 /-- The literal target-defect exit left by the enclosing `[20]` sparse-exit
 classification.  It is an outgoing residual, not a contradiction, not a

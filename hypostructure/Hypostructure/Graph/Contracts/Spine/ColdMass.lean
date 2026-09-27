@@ -1,6 +1,7 @@
 import Hypostructure.Graph.Statements.Spine
 import Hypostructure.Graph.ColdIncrementArithmetic
 import Hypostructure.Graph.ColdGermFamily
+import Hypostructure.Graph.Contracts.Spine.ColdFirstFailure
 
 /-!
 # Contracts: the cold mass `[149]`--`[153]`, `[162]`, `[24]`, `[176]`
@@ -337,31 +338,90 @@ theorem coldGermFamilyPositive_of_linear (data : Parameters)
   exact ⟨(disjointFamily, corridorLoss), extractionEq,
     disjointPositive⟩
 
-/-- **Node `[162]`, `lem:dense-cold-pass`** (tex 7692-7694): on the dense
-residual every retained cold return corridor of G is terminal in the sense of
-the (F5) terminal subcase.
+/-- **Node `[162]`, `lem:dense-cold-pass`** (tex 7692-7694), on the
+distinct-states arm of `[153]` and the heavy-entry arm of `[162]`'s test: every
+retained cold return corridor of G is terminal in the sense of the (F5)
+terminal subcase.
 
-Recorded as an open construction (`lean-vs-paper-discrepancies.md#open-constructions`,
-[162] tex:7694).  The paper's reason is that "the boundaried pieces of `R` are
-induced-`P₁₃`-free and subcubic, [so] they have bounded diameter".  But the
-corridors of `def:cold-corridor-first-failure` live in `G − X_cold`, which
-keeps the hot and non-ambient-cubic cold windows of `P₀`; a corridor may run
-through them, where `R`'s `P₁₃`-freeness says nothing, and no ledger fact
-bounds its length by `Q_cold`.  The missing fact at G is that the corridor path
-of every eligible `ε` lies in `R(P₀)`.  It is the same missing fact about G's
-corridors as the one behind the `[153]` (F2) hook: that hook at G is
-"pairwise distinct cut states up to the first failure", which bounds the first
-failure by `Q_cold` (`ColdF2Refutation.EqualStates.first_lt_stateBound`) but
-not a corridor that first meets a heavy centre. -/
-theorem denseColdCorridorsTerminal_of_state (data : Parameters)
+The paper's reason ("the boundaried pieces of `R` are induced-`P₁₃`-free and
+subcubic, [so] they have bounded diameter") does not reach corridors of
+`G − X_cold`; the proof here is by G's first failures.  Each retained corridor
+of G has a first failure (`K .coldFirstFailureOccurrence`).  (F1) is excluded
+by target avoidance and (F3) by uncompressibility; (F2) and the repeat subcase
+of (F5) carry two equal states up to the first failure, excluded by (★)
+(`ColdCutStatesDistinctStatement`); the terminal subcase of (F5) is terminal;
+an (F4) heavy centre at the terminal segment is terminal because the distinct
+states force it within `Q_cold` states (`ColdEqualStates.first_lt_stateBound`);
+an (F4) heavy centre strictly before the terminal segment is terminal by the
+decided heavy-entry test (`ColdHeavyEntryTerminalStatement`). -/
+theorem denseColdCorridorsTerminal_of_distinct (data : Parameters)
     (object : Graph.FiniteObject.{u})
-    (_threeLeOrder : 3 ≤ data.windowOrder)
-    (_state : ColdCorridorStateStatement data object)
-    (_normalized : RemainderNormalizedStatement data object)
-    (_split : HotColdWindowStatement data object) :
+    (occurrence : ColdFirstFailureOccurrenceStatement data object)
+    (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
+    (uncompressible : UncompressibleStatement data object)
+    (distinct : ColdCutStatesDistinctStatement data object)
+    (heavy : ColdHeavyEntryTerminalStatement data object) :
     DenseColdCorridorsTerminalStatement data object := by
-  -- OPEN-CONSTRUCTION [162] tex:7694 — see lean-vs-paper-discrepancies.md#open-constructions
-  sorry
+  classical
+  let occurrenceData := Classical.choice occurrence
+  refine ⟨occurrenceData.state, ?_⟩
+  intro _ _ _ _ epsilon
+  change (coldOccurrenceCorridorAt data object occurrenceData epsilon).TerminalCorridor
+    data.coldSignature
+  obtain ⟨first, event, minimal⟩ := occurrenceData.occurs epsilon
+  have short : first.1 < Graph.ColdCorridor.stateBound data.coldSignature :=
+    Graph.ColdEqualStates.first_lt_stateBound _ _ _ first
+      (distinct occurrenceData epsilon first minimal)
+  cases event with
+  | cycle cycle =>
+      exact (coldFailureCycle_of_avoids data object avoids occurrenceData epsilon
+        first cycle).elim
+  | defect defect =>
+      exact (coldFailureDefect_excluded data object distinct occurrenceData epsilon
+        first minimal defect).elim
+  | compression compression =>
+      exact (coldFailureCompression_of_uncompressible data object uncompressible
+        occurrenceData epsilon first compression).elim
+  | handoff handoff =>
+      by_cases before : first.1 <
+          (coldOccurrenceCorridorAt data object occurrenceData epsilon).inside.1.length
+      · exact heavy occurrenceData epsilon first minimal handoff before
+      · have atEnd := first.2
+        unfold Graph.ColdCorridor.Corridor.TerminalCorridor
+          Graph.ColdCorridor.Corridor.statesRead
+        omega
+  | germ germ =>
+      rcases germ with ⟨terminal, _⟩ |
+          ⟨left, right, _, lt, same, _, _, _, _, _, rightEq⟩
+      · exact terminal
+      · subst rightEq
+        exact (distinct occurrenceData epsilon first minimal left first lt le_rfl
+          same).elim
+
+/-- **The residual of `[162]`, constructed at G.**  If the heavy-entry test
+fails, some retained corridor of G has its first failure at an (F4) heavy
+centre `z = head first` of G (`d_G(z) > δ`) strictly before its terminal
+segment, and is not terminal.  On the distinct-states arm its states up to
+`first` are pairwise distinct, so `first < Q_cold ≤ |C_ε|`. -/
+theorem coldDenseHeavyEntryResidual_of_not_terminal (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (distinct : ColdCutStatesDistinctStatement data object)
+    (notTerminal : ¬ ColdHeavyEntryTerminalStatement data object) :
+    ColdDenseHeavyEntryResidualStatement data object := by
+  classical
+  unfold ColdHeavyEntryTerminalStatement at notTerminal
+  push Not at notTerminal
+  obtain ⟨occurrence, epsilon, first, minimal, handoff, before, long⟩ := notTerminal
+  obtain ⟨support, ⟨centre, supportEq, heavyCentre⟩, member⟩ := handoff.1
+  rw [supportEq, Finset.mem_singleton] at member
+  have states := distinct occurrence epsilon first minimal
+  have short : first.1 < Graph.ColdCorridor.stateBound data.coldSignature :=
+    Graph.ColdEqualStates.first_lt_stateBound _ _ _ first states
+  refine ⟨occurrence, epsilon, first, centre, member, heavyCentre, handoff, minimal,
+    states, short, before, ?_, long⟩
+  unfold Graph.ColdCorridor.Corridor.TerminalCorridor
+    Graph.ColdCorridor.Corridor.statesRead at long
+  omega
 
 /-- **`thm:cold-branch-quantitative-closure`: no terminal cold residual.**
 With the germs extracted and routed and the same-interface table closed, no

@@ -1,5 +1,6 @@
 import Hypostructure.Graph.Statements.Spine
 import Hypostructure.Graph.Statements.SurplusPair
+import Hypostructure.Graph.Statements.ColdResiduals
 
 /-!
 # Contracts: forced curvature cost and the two-budget entropy split, `[47]`--`[54]`
@@ -157,16 +158,6 @@ theorem unretained_package_overflow (data : Parameters) (object : Graph.FiniteOb
   exact ⟨ULift.{u} (Graph.PackedWindowRealization.Skeleton object.vertexCount
     object.edgeCount), ULift.up, range ▸ fits.1, range ▸ fits.2⟩
 
-/-- **The outer room of `G` at `R₀`**: `C(C(n,2) − C(|R₀|,2), m − e(G[R₀]))`, the
-number of ways to place `G`'s `m − e(G[R₀])` edges not inside the remainder
-`R₀ = R(P₀)` of the fixed packing on the pairs not inside `R₀`. -/
-noncomputable def remainderOuterRoom (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Nat :=
-  (object.vertexCount.choose 2 -
-      (object.remainderSupport (canonicalWindowPacking data object)).card.choose 2).choose
-    (object.edgeCount -
-      object.internalEdgeCount (object.remainderSupport (canonicalWindowPacking data object)))
-
 /-- **The remainder glue at `G`, on disjoint supports**
 (`lem:remainder-glue-injection`, every outer edge set): the remainder states of
 `R₀` on the pairs inside `R₀`, times every placement of `G`'s outer edges on the
@@ -257,91 +248,86 @@ theorem jointRealization_iff_entropyCapBound (data : Parameters)
     rw [range]
     exact bound
 
-/-- **Node `[54]`, `prop:entropy-high-theta`'s independence claim, on the arm
-where the window package of `P₀` is not retained and the outer room of `G` at
-`R₀` cannot carry it.**
-
-The paper's claim (tex 9921): *"the window package of
-`lem:p13-window-package`, the remainder bits, and the forced-obstruction bits
-together strictly exceed the near-cubic skeleton budget.  These bits form one
-independently target-testable coordinate family, so the number of realized
-target-complete states would exceed the number of labelled skeletons,
-contradicting `lem:independent-target-entropy`, `lem:skeleton-dominates`."*
-`eq:entropy-cap` counts the package of **all** `p₁₃` packed windows
-(`jointPackageDemand`).  `lem:independent-target-entropy` needs a family
-"arising canonically from graphs in a labelled graph class"; the paper never
-constructs a realization of the window package of `P₀`, the remainder states
-and the forced obstruction bits by one labelled class -- it asserts it.  The
-joint realization *is* constructed at `G` whenever it fits the outer pairs of
-`R₀` (`entropyCapBound_of_outerRoom`, the glue on disjoint supports); this hook
-is the complementary configuration `remainderOuterRoom < 2^{rate·s·p₁₃}·2^F`,
-which is exactly the one reached on `[54]`'s branch
-(`outerRoom_lt_of_entropyCapActive`).  There the premise is equivalent to the
-conclusion (`jointRealization_iff_entropyCapBound`).  Stated at the selected
-minimal counterexample `G`; its negation does not follow from its hypotheses
-(`lean-vs-paper-discrepancies.md#open-constructions`). -/
-theorem entropyCapBound_unretained
-    {BranchState : Graph.FiniteObject.{u} → Type v}
-    {Presentation : Type} {presentation : Presentation}
-    (data : Parameters) (object : Graph.FiniteObject.{u})
-    (_selected : SelectionStatement BranchState Presentation presentation data object)
-    (_unretained : ¬ WindowFamilyRealized data object (canonicalWindowPacking data object))
-    (_noRoom :
-      remainderOuterRoom data object <
-        2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
-              (canonicalWindowPacking data object).card) *
-          2 ^ forcedObstructionBits data object)
-    (_cost : ForcedCurvatureCostStatement data object)
-    (_high : RemainderEntropyHighStatement data object)
-    (_package : EntropyPackageDemandStatement data object) :
-    jointPackageDemand data object * 2 ^ forcedObstructionBits data object ≤
-      Graph.skeletonBudget object := by
-  sorry -- OPEN-CONSTRUCTION [54] tex:9921 — see lean-vs-paper-discrepancies.md#open-constructions
-
-/-- **Node `[54]`, `prop:entropy-high-theta`: the joint package of all the
-windows of `P₀`, with the remainder states and the forced obstruction bits,
-fits the labelled skeleton budget.**  If the window package of `P₀` is retained,
-the package rate puts the window part below its retained code, node `[48]` puts
-the forced bits below the exact curvature code the retained code carries, and
-the realized-code and skeleton-dominance clauses put that code below the
-budget.  If it is not retained and the window package with the forced bits fits
-the outer room of `G` at `R₀`, the glue on disjoint supports realizes the
-product (`entropyCapBound_of_outerRoom`); otherwise the bound is the paper's
-independence claim on that configuration (`entropyCapBound_unretained`). -/
-theorem entropyCapBound_of_hotColdPartition
-    {BranchState : Graph.FiniteObject.{u} → Type v}
-    {Presentation : Type} {presentation : Presentation}
-    (data : Parameters)
+/-- **Node `[54]` on a retained package** (`prop:entropy-high-theta`): if the
+window package of `P₀` is retained (`WindowFamilyRealized P₀`), the package
+rate puts the window part below its retained code, node `[48]` puts the forced
+bits below the exact curvature code that retained code carries, and the
+realized-code and skeleton-dominance clauses put that code below the budget. -/
+theorem entropyCapBound_of_retained (data : Parameters)
     (object : Graph.FiniteObject.{u})
-    (selected : SelectionStatement BranchState Presentation presentation data object)
     (package : WindowPackageSeparatedStatement data object)
     (dominates : SkeletonDominatesStatement object)
     (cost : ForcedCurvatureCostStatement data object)
-    (high : RemainderEntropyHighStatement data object)
-    (demand : EntropyPackageDemandStatement data object) :
+    (retained : WindowFamilyRealized data object (canonicalWindowPacking data object)) :
     EntropyCapBoundStatement data object := by
   change jointPackageDemand data object * 2 ^ forcedObstructionBits data object ≤
     Graph.skeletonBudget object
   obtain ⟨_packageCard, _packagesDisjoint, _familyCard, rateLe, _⟩ := package
   have forcedLe := forcedObstructionBits_le_cost data object cost
-  by_cases retained : WindowFamilyRealized data object (canonicalWindowPacking data object)
-  · obtain ⟨State, stateOf, _packageStates, retainedCodeLe⟩ := retained
-    have demandLe : jointPackageDemand data object *
-          2 ^ forcedObstructionBits data object ≤
-        retainedCode data object (canonicalWindowPacking data object) := by
-      unfold jointPackageDemand retainedCode
-      exact Nat.mul_le_mul
-        (Nat.mul_le_mul_right _
-          (Nat.pow_le_pow_right (by omega) (Nat.mul_le_mul_right _ rateLe)))
-        (Nat.pow_le_pow_right (by omega) forcedLe)
-    exact demandLe.trans (retainedCodeLe.trans (dominates.2 State stateOf))
-  · by_cases room :
-        2 ^ (data.windowRate * data.separatedScaleCount object.vertexCount *
-              (canonicalWindowPacking data object).card) *
-            2 ^ forcedObstructionBits data object ≤
-          remainderOuterRoom data object
-    · exact entropyCapBound_of_outerRoom data object room
-    · exact entropyCapBound_unretained data object selected retained
-        (Nat.lt_of_not_le room) cost high demand
+  obtain ⟨State, stateOf, _packageStates, retainedCodeLe⟩ := retained
+  have demandLe : jointPackageDemand data object *
+        2 ^ forcedObstructionBits data object ≤
+      retainedCode data object (canonicalWindowPacking data object) := by
+    unfold jointPackageDemand retainedCode
+    exact Nat.mul_le_mul
+      (Nat.mul_le_mul_right _
+        (Nat.pow_le_pow_right (by omega) (Nat.mul_le_mul_right _ rateLe)))
+      (Nat.pow_le_pow_right (by omega) forcedLe)
+  exact demandLe.trans (retainedCodeLe.trans (dominates.2 State stateOf))
+
+/-- The joint realization inequality is node `[54]`'s bound, with the factors
+of the joint package demand written in the paper's order. -/
+theorem entropyJointRealization_iff_entropyCapBound (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    EntropyJointRealizationStatement data object ↔
+      EntropyCapBoundStatement data object := by
+  unfold EntropyJointRealizationStatement
+  change _ ↔ jointPackageDemand data object * 2 ^ forcedObstructionBits data object ≤
+    Graph.skeletonBudget object
+  unfold jointPackageDemand
+  rw [Nat.mul_comm (remainderStates data object (canonicalWindowPacking data object))]
+
+/-- **Node `[54]`, `prop:entropy-high-theta`, on the arm where the joint
+realization holds** (tex 9921): the remainder states of `R₀`, the window
+package of `P₀` and the forced obstruction bits are realized by one state map
+on G's labelled skeleton class (`jointRealization_iff_entropyCapBound`, the
+finite form of `lem:independent-target-entropy`), so the joint package fits the
+labelled skeleton budget (`lem:skeleton-dominates`). -/
+theorem entropyCapBound_of_jointRealization (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (dominates : SkeletonDominatesStatement object)
+    (joint : EntropyJointRealizationStatement data object) :
+    EntropyCapBoundStatement data object := by
+  have realized := (jointRealization_iff_entropyCapBound data object dominates).2
+    ((entropyJointRealization_iff_entropyCapBound data object).1 joint)
+  exact (jointRealization_iff_entropyCapBound data object dominates).1 realized
+
+/-- **The residual of `[54]`, constructed at G.**  If the joint realization
+inequality `RS(R₀)·2^{rate·s·p₁₃}·2^F ≤ B` fails at G, then: the window package
+of `P₀` is not retained (a retained package proves the inequality,
+`entropyCapBound_of_retained`); the remainder glue on disjoint supports gives
+`RS(R₀)·room ≤ B` (`remainderStates_mul_outerRoom_le`), and the window package
+with the forced bits does not fit the outer room (a fit proves the inequality,
+`entropyCapBound_of_outerRoom`); node `[48]` bounds `F ≤ c_Ω·r_Ω(R₀)`; and `[53]`
+is active. -/
+theorem allColdEntropyResidual_of_not_jointRealization (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (package : WindowPackageSeparatedStatement data object)
+    (dominates : SkeletonDominatesStatement object)
+    (cost : ForcedCurvatureCostStatement data object)
+    (fails : ¬ EntropyJointRealizationStatement data object) :
+    AllColdEntropyResidualStatement data object := by
+  have notBound : ¬ EntropyCapBoundStatement data object := fun bound =>
+    fails ((entropyJointRealization_iff_entropyCapBound data object).2 bound)
+  refine ⟨fun retained => notBound
+      (entropyCapBound_of_retained data object package dominates cost retained),
+    remainderStates_mul_outerRoom_le data object, rfl,
+    forcedObstructionBits_le_cost data object cost, ?_, ?_, fails⟩
+  · by_contra fits
+    push Not at fits
+    exact notBound (entropyCapBound_of_outerRoom data object fits)
+  · change ¬ (jointPackageDemand data object * 2 ^ forcedObstructionBits data object ≤
+      Graph.skeletonBudget object) at notBound
+    exact Nat.lt_of_not_le notBound
 
 end Hypostructure.Graph.Contracts.Spine
