@@ -101,10 +101,11 @@ theorem typeBDecoratedLane_of_handoff
     unfold canonicalTypeBDecoratedEnvelope
     rw [pieceEq, Option.bind_some]
     exact canonicalHandoffEnvelopeAt_isSome avoids
-      (fun vertex high => by
-        show data.threshold < object.degree vertex
-        rw [cubic]
-        exact high)
+      (fun separated _ => by
+        have four := Graph.DecoratedHandoff.four_le_degree_of_surviving
+          separated.2.surviving
+        show data.threshold < object.degree separated.2.separation.separator
+        omega)
       (fun _centre _first _second collision =>
         avoids (Graph.WindowLabelCollision.hasCycleWithLength_of_labelCollision
           degenerate collision))
@@ -437,12 +438,16 @@ theorem typeBFanEntry_of_absorbedGermFanData
     exact ⟨⟨centre, Finset.mem_singleton_self centre⟩,
       TypeBAbsorbedLane.high lane⟩
 
-/-- Node `[144]` → `[65]`: the same-token handoff on the strict-surplus arm of
-`[19]` enters the common Type B entry. -/
+/-- Node `[144]` → `[65]`: the same-token handoff of G on the strict-surplus arm
+of `[19]` enters the common Type B entry at G's canonical same-token support. -/
 theorem typeBFanEntry_of_sameTokenHandoff
     (above : SurplusAboveStatement data object)
     (handoff : SameTokenTypeBHandoffStatement data object) :
-    TypeBFanEntryStatement data object :=
-  Or.inr ⟨above, handoff⟩
+    TypeBFanEntryStatement data object := by
+  obtain ⟨core, centres, handoffAt⟩ := handoff
+  obtain ⟨⟨core', centres'⟩, selected, handoffAt'⟩ :=
+    canonicalChoice_spec (spec := fun support : Finset object.Vertex × Finset object.Vertex =>
+      SameTokenHandoffAt data object support.1 support.2) ⟨(core, centres), handoffAt⟩
+  exact Or.inr ⟨above, core', centres', selected, handoffAt'⟩
 
 end Hypostructure.Graph.Contracts.TypeB

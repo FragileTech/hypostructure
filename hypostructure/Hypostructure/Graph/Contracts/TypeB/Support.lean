@@ -59,10 +59,13 @@ theorem decoratedEnvelope_eq_some
   refine ⟨core, coreEq, canonicalHandoffEnvelopeAt_core atCore, ?_⟩
   unfold canonicalHandoffEnvelopeAt at atCore
   split at atCore
-  · obtain ⟨separated, separatedEq, rfl⟩ := Option.map_eq_some_iff.mp atCore
-    refine ⟨separated.2.separation.separator, ?_, ?_⟩
-    · simp [canonicalHandoffSeparatorAt, separatedEq]
-    · exact ExitSevenSeparation.envelope_decorations _ _ _ _
+  · obtain ⟨separated, separatedEq, built⟩ := Option.bind_eq_some_iff.mp atCore
+    split at built
+    · cases built
+      refine ⟨separated.2.separation.separator, ?_, ?_⟩
+      · simp [canonicalHandoffSeparatorAt, separatedEq]
+      · exact ExitSevenSeparation.envelope_decorations _ _ _ _
+    · cases built
   · cases atCore
 
 theorem absorbedSupport_eq_some {epsilon : ColdEligibleHalfEdge data object}

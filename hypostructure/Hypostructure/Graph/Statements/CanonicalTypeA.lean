@@ -681,7 +681,7 @@ noncomputable def ExitSevenSeparation.envelope {data : Parameters}
     {Absorbing : object.Vertex → object.Vertex → object.Vertex → Prop}
     (separated : ExitSevenSeparation data object piece receiver load)
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
-    (high : ∀ vertex : object.Vertex, 3 < object.degree vertex → HighDegree vertex)
+    (high : HighDegree separated.separation.separator)
     (denied : ∀ centre first second : object.Vertex, ¬ Absorbing centre first second) :
     Graph.DecoratedHandoff.Envelope object data.LengthOK HighDegree Absorbing :=
   let separation := separated.separation
@@ -752,9 +752,7 @@ noncomputable def ExitSevenSeparation.envelope {data : Parameters}
     ⟨separation.left.terminal, leftLast, separation.left.terminal_inside⟩
     ⟨separation.right.terminal, rightLast, separation.right.terminal_inside⟩
     leftInterior rightInterior
-    (high separation.separator
-      (Graph.DecoratedHandoff.four_le_degree_of_surviving separated.surviving))
-    avoids (denied _ _ _) (denied _ _ _)
+    high avoids (denied _ _ _) (denied _ _ _)
 
 theorem ExitSevenSeparation.envelope_core {data : Parameters}
     {object : Graph.FiniteObject.{u}} {piece : Finset object.Vertex}
@@ -763,7 +761,7 @@ theorem ExitSevenSeparation.envelope_core {data : Parameters}
     {Absorbing : object.Vertex → object.Vertex → object.Vertex → Prop}
     (separated : ExitSevenSeparation data object piece receiver load)
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
-    (high : ∀ vertex : object.Vertex, 3 < object.degree vertex → HighDegree vertex)
+    (high : HighDegree separated.separation.separator)
     (denied : ∀ centre first second : object.Vertex, ¬ Absorbing centre first second) :
     (separated.envelope (HighDegree := HighDegree) avoids high denied).core = piece :=
   rfl
@@ -775,7 +773,7 @@ theorem ExitSevenSeparation.envelope_decorations {data : Parameters}
     {Absorbing : object.Vertex → object.Vertex → object.Vertex → Prop}
     (separated : ExitSevenSeparation data object piece receiver load)
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
-    (high : ∀ vertex : object.Vertex, 3 < object.degree vertex → HighDegree vertex)
+    (high : HighDegree separated.separation.separator)
     (denied : ∀ centre first second : object.Vertex, ¬ Absorbing centre first second) :
     (separated.envelope (HighDegree := HighDegree) avoids high denied).decorations =
       {separated.separation.separator} := by
@@ -784,8 +782,10 @@ theorem ExitSevenSeparation.envelope_decorations {data : Parameters}
 /-- **The canonical exit-`(7)` envelope of a piece** (node `[108]`,
 `def:decorated-fan-envelope`): the envelope of the canonical surviving
 separation.  It exists exactly when the separation exists and the envelope's
-three standing hypotheses hold on `G` (target avoidance from `K .selection`,
-the high-degree registration, the denied absorbing clause of exit `(3)`). -/
+standing hypotheses hold on `G`: target avoidance from `K .selection`, the
+denied absorbing clause of exit `(3)`, and the high-degree registration
+`HighDegree` at the separator (for `handoffHighDegree`, the separator's degree
+exceeds the registered baseline `data.threshold`). -/
 noncomputable def canonicalHandoffEnvelopeAt (data : Parameters)
     (object : Graph.FiniteObject.{u}) (piece : Finset object.Vertex)
     (HighDegree : object.Vertex → Prop)
@@ -793,10 +793,11 @@ noncomputable def canonicalHandoffEnvelopeAt (data : Parameters)
     Option (Graph.DecoratedHandoff.Envelope object data.LengthOK HighDegree Absorbing) := by
   classical
   exact if standing : ¬ Graph.HasCycleWithLength data.LengthOK object ∧
-      (∀ vertex : object.Vertex, 3 < object.degree vertex → HighDegree vertex) ∧
       (∀ centre first second : object.Vertex, ¬ Absorbing centre first second) then
-    (canonicalHandoffSeparationAt data object piece).map fun separated =>
-      separated.2.envelope standing.1 standing.2.1 standing.2.2
+    (canonicalHandoffSeparationAt data object piece).bind fun separated =>
+      if high : HighDegree separated.2.separation.separator then
+        some (separated.2.envelope standing.1 high standing.2)
+      else none
   else none
 
 theorem canonicalHandoffEnvelopeAt_core {data : Parameters}
@@ -809,8 +810,11 @@ theorem canonicalHandoffEnvelopeAt_core {data : Parameters}
   classical
   unfold canonicalHandoffEnvelopeAt at h
   split at h
-  · obtain ⟨separated, _, rfl⟩ := Option.map_eq_some_iff.mp h
-    rfl
+  · obtain ⟨separated, _, built⟩ := Option.bind_eq_some_iff.mp h
+    split at built
+    · cases built
+      rfl
+    · cases built
   · cases h
 
 theorem canonicalHandoffEnvelopeAt_isSome {data : Parameters}
@@ -818,18 +822,18 @@ theorem canonicalHandoffEnvelopeAt_isSome {data : Parameters}
     {HighDegree : object.Vertex → Prop}
     {Absorbing : object.Vertex → object.Vertex → object.Vertex → Prop}
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
-    (high : ∀ vertex : object.Vertex, 3 < object.degree vertex → HighDegree vertex)
+    (high : ∀ separated, canonicalHandoffSeparationAt data object piece = some separated →
+      HighDegree separated.2.separation.separator)
     (denied : ∀ centre first second : object.Vertex, ¬ Absorbing centre first second)
     (handoff : ∃ pair, SeparatorHandoffSpec data object piece pair) :
     (canonicalHandoffEnvelopeAt data object piece HighDegree Absorbing).isSome := by
   classical
   obtain ⟨separated, eq, _⟩ := canonicalHandoffSeparationAt_spec handoff
   have standing : ¬ Graph.HasCycleWithLength data.LengthOK object ∧
-      (∀ vertex : object.Vertex, 3 < object.degree vertex → HighDegree vertex) ∧
       (∀ centre first second : object.Vertex, ¬ Absorbing centre first second) :=
-    ⟨avoids, high, denied⟩
+    ⟨avoids, denied⟩
   unfold canonicalHandoffEnvelopeAt
-  rw [dif_pos standing, eq]
+  rw [dif_pos standing, eq, Option.bind_some, dif_pos (high separated eq)]
   rfl
 
 /-- The canonical exit-`(7)` separation of `X₀`. -/

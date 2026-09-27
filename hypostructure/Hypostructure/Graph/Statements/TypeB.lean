@@ -117,21 +117,6 @@ noncomputable def AbsorbedGermDecoratedAssignedSupportStatement (data : Paramete
       ∃ centre, AbsorbedGermFanEnvelopeWitness data object
         (incidence epsilon) centre
 
-/-- **The Type B envelope produced by
-`lem:same-token-bottleneck-routing`.**  This is the downstream payload consumed
-by the common Type B entry.  The exact-ledger handoff below additionally keeps
-the certified source witness from which this envelope was routed. -/
-def SameTokenTypeBHandoffEnvelopeStatement (data : Parameters)
-    (object : Graph.FiniteObject.{u}) : Prop :=
-  ∃ packing : Finset (Finset object.Vertex),
-    object.IsWindowPacking data.windowOrder packing ∧
-      packing.card = object.windowPackingNumber data.windowOrder ∧
-      ∃ core : Finset object.Vertex,
-        ∃ envelope : Graph.DecoratedHandoff.Envelope object data.LengthOK
-            (handoffHighDegree data object)
-            (handoffAbsorbing data object packing),
-          envelope.core = core ∧ envelope.decorations.Nonempty
-
 /-- `cor:compatible-pair-typeB-routing` at one assigned profile and one
 fan-compatible open pair. -/
 def CompatiblePairRoutes (object : Graph.FiniteObject.{u})

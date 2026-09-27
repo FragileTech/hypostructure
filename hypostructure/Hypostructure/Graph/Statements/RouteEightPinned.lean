@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Statements.CanonicalRouteEight
+import Hypostructure.Graph.Statements.CanonicalTypeB
 
 /-!
 # Route 8: statements pinned at the canonical objects of `G`
@@ -252,5 +253,75 @@ def Route8JointBalanceStatement : Prop :=
 end Route8Pinned
 
 end
+
+/-- `thm:branch-kill`'s all-pieces classification: every negative piece of
+the canonical decomposition is silent-first when it has no ambient surplus,
+and is a Type B bridge component when it has positive surplus.  This is not
+node `[111]`. -/
+noncomputable abbrev Route8PiecesClassifiedStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop :=
+  -- `thm:branch-kill`'s all-pieces classification, exactly as stated: at a
+  -- negative zero-surplus piece, an exit-(4) witness for a routed load,
+  -- the route-8 residual profile — per saturated receiver, every unpaid
+  -- silent-excess and overloaded-port visible load is a route-8 entry or
+  -- realizes the exit-(5) plain response quotient (cased), the exact
+  -- per-load conclusion `K .typeAExclusion`'s arm 2 delivers
+  -- (`lem:typeA-reduced-silent-residual`, `rem:unified-covers-exit4`) —
+  -- or a produced decorated Type B handoff; at a negative positive-surplus
+  -- piece, the Type B bridge component pair.
+  Graph.Route8Deficit.PieceClassification object
+    (Graph.HasCycleWithLength data.LengthOK)
+    (fun piece =>
+      ∀ receiver ∈ Graph.VisibleEntry.saturatedReceivers object piece
+          data.threshold data.dischargeScale,
+        (∀ load ∈ Graph.VisibleEntry.silentExcess object piece
+            data.threshold data.dischargeScale receiver,
+          Graph.Route8.TraceBasin.Route8Entry object piece data.threshold
+              data.LengthOK receiver load ∨
+            ∃ basin : Finset object.Vertex,
+              Graph.Route8.TraceBasin.select? object piece data.threshold
+                  receiver load = some basin ∧
+                ∃ retained,
+                  Graph.Route8.TraceBasin.TraceResponseQuotient object
+                    piece data.threshold data.LengthOK receiver load basin
+                    retained) ∧
+          ∀ outside ∈ Graph.VisibleEntry.completionPorts object piece
+              receiver,
+            data.dischargeScale ≤
+              (Graph.VisibleEntry.visibleLoadsAt object piece
+                data.threshold receiver outside).card →
+            ∀ load ∈ Graph.ExitFour.selectedVisibleUnpeeledLoads piece
+                data.threshold data.dischargeScale receiver outside ∅,
+              Graph.Route8.TraceBasin.Route8Entry object piece
+                  data.threshold data.LengthOK receiver load ∨
+                ∃ basin : Finset object.Vertex,
+                  Graph.Route8.TraceBasin.select? object piece
+                      data.threshold receiver load = some basin ∧
+                    ∃ retained,
+                      Graph.Route8.TraceBasin.TraceResponseQuotient object
+                        piece data.threshold data.LengthOK receiver load
+                        basin retained)
+    (fun piece =>
+      SeparatorHandoffAt data object piece)
+    (fun piece =>
+      -- `def:typeB-bridge-statements` at the piece: G's canonical B2
+      -- disjoint ledger of the piece (`canonicalTypeBDisjointChoice`, the
+      -- ledger `K .typeBBridgeReduction` fixed) with strictly negative
+      -- remaining scaled core charge, or a minimal
+      -- overlap obstruction (`K .typeBBridgeReduction`'s dichotomy; the
+      -- post-ledger hygiene and grouped coverage stay on that key and are
+      -- not republished here).
+      (∃ ledger, canonicalTypeBDisjointChoice data object piece
+          (Graph.TypeBRefinedSupport.centres object data.threshold piece) =
+            some ledger ∧
+        ledger.ExactAugmentedLedgerRefinement ∧
+          ¬ 0 ≤ RemainingCoreCharge data object ledger) ∨
+        Nonempty (Graph.TypeBRefinedSupport.OverlapObstruction object
+          data.threshold data.dischargeScale
+          (canonicalWindowPacking data object) piece
+          (Graph.TypeBRefinedSupport.centres object data.threshold piece)))
+    (canonicalWindowPacking data object) data.threshold data.dischargeScale
 
 end Hypostructure.Graph.Strategy.Spine

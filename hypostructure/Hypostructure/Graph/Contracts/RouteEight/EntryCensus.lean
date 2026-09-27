@@ -314,7 +314,7 @@ theorem route8ExtractedEntryCensus (data : Parameters)
 packing.**  The contrapositive of clauses (a) and (b) at every negative piece
 of the canonical decomposition: the zero-surplus arm is `lem:typeA-exclusion`'s
 "Consequently" trichotomy, and the positive-surplus arm is
-`prop:typeB-bridge-reduction`'s contrapositive — the B2 disjoint ledger with
+`prop:typeB-bridge-reduction`'s contrapositive — G's canonical B2 disjoint ledger with
 strictly negative remaining core, or a minimal overlap obstruction; the
 post-ledger hygiene and grouped coverage are not republished.  Maximality of
 the canonical packing is derived, not assumed. -/
@@ -336,9 +336,9 @@ theorem route8PiecesClassified (data : Parameters) (object : FiniteObject.{u})
       negative zeroSurplus).1
   · -- `thm:branch-kill`(b): the bridge-residual dichotomy at this piece.
     rcases bridge ⟨piece, pieceMem⟩ negative positiveSurplus with
-      ⟨ledger, _ledgerEq, exactRefinement, notClean, _postLedger, _grouped⟩ |
+      ⟨ledger, ledgerEq, exactRefinement, notClean, _postLedger, _grouped⟩ |
         obstruction
-    · exact Or.inl ⟨ledger, exactRefinement, notClean⟩
+    · exact Or.inl ⟨ledger, ledgerEq, exactRefinement, notClean⟩
     · exact Or.inr obstruction
 
 end Hypostructure.Graph.Contracts.RouteEight

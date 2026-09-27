@@ -17,8 +17,9 @@ on `G`:
   `canonicalTypeBDecoratedSupport`, on the `K .netChargeCap` arm of `[57]`;
 * absorbed (`[173]` no → `[177]`): for each selected half-edge `ε`,
   `X_ε = canonicalTypeBAbsorbedSupport ε`, on the `K .exactCollisionFails` arm;
-* same-token (`[144]` → `[144a]`): the `[144]` handoff on the `K .surplusAbove`
-  arm of `[19]`.  No part of the continuation `[67]`--`[85]` runs there.
+* same-token (`[144]` → `[144a]`): `X = canonicalSameTokenSupport`, at which
+  the `[144]` handoff holds, on the `K .surplusAbove` arm of `[19]`.  No part
+  of the continuation `[67]`--`[85]` runs there.
 
 Every key of the continuation `[67]`--`[85]` is `TypeBLaneAll P` (a fact at
 the lane's support) or `TypeBLaneSome P` (a decision's positive arm): the
@@ -117,17 +118,21 @@ end Lanes
 /-! ## Node `[65]` -/
 
 /-- **Node `[65]`, the common Type B entry** (tex 961).  On the continuation
-lanes the assigned centres are nonempty and high; on the `[144]` lane the entry
-is the handoff key's own statement on the strict-surplus arm.  The same-token
-support is `canonicalSameTokenSupport` (`Statements/CanonicalSameToken.lean`)
-once node `[144]` publishes it. -/
+lanes the assigned centres are nonempty and high; on the `[144]` lane, on the
+strict-surplus arm, the support is G's canonical same-token support
+`(Y, H) = canonicalSameTokenSupport` (`Statements/CanonicalSameToken.lean`), at
+which the `[144]` handoff key's statement holds: the canonical envelope of G's
+canonical first separator escapes physically, with core `Y` and decorations
+`H`. -/
 def TypeBFanEntryStatement (data : Parameters) (object : Graph.FiniteObject.{u}) :
     Prop :=
   TypeBLaneAll data object (fun _core centres =>
       centres.Nonempty ∧
         ∀ centre ∈ centres, Graph.IsHighCentre object data.threshold centre) ∨
     (SurplusAboveStatement data object ∧
-      SameTokenTypeBHandoffStatement data object)
+      ∃ core centres,
+        canonicalSameTokenSupport data object = some (core, centres) ∧
+          SameTokenHandoffAt data object core centres)
 
 /-- Node `[65]` at the `[64]` entry: the ordinary Type B support `(X₀, H(X₀))`
 is negative and carries a high centre (`def:canonical-decomp`). -/
