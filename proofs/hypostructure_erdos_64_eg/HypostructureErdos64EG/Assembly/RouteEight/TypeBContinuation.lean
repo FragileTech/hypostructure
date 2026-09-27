@@ -225,7 +225,7 @@ blocks; the chain's entry block completes the net-charge continuation. -/
 noncomputable def selectedTypeBRoute8Entry
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
-    (arm : BChainArms selected ∧ BChainFan selected ∧ BChainCertificate selected)
+    (arm : BChainArms selected ∧ BChainFanCertificate selected)
     [FactKeys.Has (K .compatiblePairFanClosure) known]
     [FactKeys.Has (K .compatiblePairTypeBRouting) known]
     [FactKeys.Has (K .fanCertificateCap) known]
@@ -352,6 +352,6 @@ noncomputable def selectedTypeBRoute8Entry
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       burdened (by key_fresh)
   selectedTypeBRoute8Continuation cored
-    (arm.1.route8 ⟨BChainEntryBlock.ret entry, arm.2.1, arm.2.2⟩)
+    (arm.1.route8 ⟨BChainEntryBlock.ret entry, arm.2⟩)
 
 end HypostructureErdos64EG

@@ -6,8 +6,9 @@ import HypostructureErdos64EG.Assembly.Basic
 The arm blocks of the route-`8` lane, shared by every residual returned from
 `selectedRouteEightUnifiedResidual` (`Route8QuotientOutcome`,
 `TypeBSublinearOutcome`, ...).  The paths into that return site form the
-product `5 prefix × 4 entropy × 104 continuation`, with
-`104 = 2·37 + 20 + 10` (Type A lane, absorbed lane, Type B high-surplus lane).
+product `5 prefix × 4 entropy × 68 continuation`, with
+`68 = 2·25 + 12 + 6` (Type A lane, absorbed lane, Type B high-surplus lane;
+the B-chain has 6 fan/certificate arms).
 Each block is an explicit conjunction of EVERY key of its arm as a `Holds`
 conjunct, with a `.ret` theorem that reads each key with one `get` from the
 single ledger.  Keys common to all paths are not listed here: they belong to
@@ -243,7 +244,7 @@ abbrev EntropyArm (selected : EGInput.{u}) : Prop :=
   EntropyArmBlock_lowRepetitiveWedgeFree selected ∨
   EntropyArmBlock_lowRepetitiveWedge selected
 
--- B-chain: the Type B fan entry, 2 fan blocks × 5 certificate blocks.
+-- B-chain: the Type B fan entry and the 6 fan/certificate arms.
 /-- B-chain entry: the Type B route-8 entry and fan/certificate routing facts carried on every B-chain arm (7 facts). -/
 abbrev BChainEntryBlock (selected : EGInput.{u}) : Prop :=
   Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
@@ -330,11 +331,6 @@ theorem BChainFanBlock_heavyCentre.ret
     (history.get (K .triangularPortTypeBRouting)).down,
     (history.get (K .typeBFanHeavyCentre)).down,
     (history.get (K .typeBFanLocalDichotomy)).down⟩
-
-/-- The B-chain fan factor. -/
-abbrev BChainFan (selected : EGInput.{u}) : Prop :=
-  BChainFanBlock_degreeFour selected ∨
-  BChainFanBlock_heavyCentre selected
 
 /-- B-chain certificate arm: residual (2 facts). -/
 abbrev BChainCertificateBlock_residual (selected : EGInput.{u}) : Prop :=
@@ -481,17 +477,30 @@ theorem BChainCertificateBlock_overlapObstruction.ret
     (history.get (K .typeBOverlapObstruction)).down,
     (history.get (K .typeBOverlapObstructionMass)).down⟩
 
-/-- The B-chain certificate factor. -/
-abbrev BChainCertificate (selected : EGInput.{u}) : Prop :=
+/-- The certificate arms reached after a heavy-centre fan (`[72]`: B2 holds
+or the minimal overlap obstruction `[73]`; or the certificate residual). -/
+abbrev BChainHeavyCertificate (selected : EGInput.{u}) : Prop :=
   BChainCertificateBlock_residual selected ∨
   BChainCertificateBlock_b2Choice selected ∨
-  BChainCertificateBlock_degreeFourClosed selected ∨
-  BChainCertificateBlock_degreeFourOverlap selected ∨
   BChainCertificateBlock_overlapObstruction selected
 
-/-- The B-chain: entry, one fan block, one certificate block. -/
+/-- The certificate arms reached after a degree-four fan (`[81]`: `[82]` or
+`[83]`; or the certificate residual). -/
+abbrev BChainDegreeFourCertificate (selected : EGInput.{u}) : Prop :=
+  BChainCertificateBlock_residual selected ∨
+  BChainCertificateBlock_degreeFourClosed selected ∨
+  BChainCertificateBlock_degreeFourOverlap selected
+
+/-- The fan and certificate arms of the B-chain: each fan arm with the three
+certificate arms its walk reaches (6 arms; the B2 test `[72]` runs only after a
+heavy-centre fan and the `[81]` test only after a degree-four fan). -/
+abbrev BChainFanCertificate (selected : EGInput.{u}) : Prop :=
+  (BChainFanBlock_heavyCentre selected ∧ BChainHeavyCertificate selected) ∨
+  (BChainFanBlock_degreeFour selected ∧ BChainDegreeFourCertificate selected)
+
+/-- The B-chain: the entry block and one fan/certificate arm (6 arms). -/
 abbrev BChain (selected : EGInput.{u}) : Prop :=
-  BChainEntryBlock selected ∧ BChainFan selected ∧ BChainCertificate selected
+  BChainEntryBlock selected ∧ BChainFanCertificate selected
 
 -- Net-charge continuation lanes.
 /-- Net-charge lane: Type A low surplus (`selectedTypeALowSurplusContinuation`) (11 facts). -/
@@ -895,7 +904,7 @@ abbrev Route8Deficit (selected : EGInput.{u}) : Prop :=
   Route8DeficitBlock_holds selected ∨
   Route8DeficitBlock_fails selected
 
-/-- The 37 Type A continuation arms: decorated (3 exit-four blocks × B-chain),
+/-- The 25 Type A continuation arms: decorated (3 exit-four blocks × B-chain),
 route-8 residual (3 exit-four blocks × 2 deficit blocks), discharged retest. -/
 abbrev TypeAArm (selected : EGInput.{u}) : Prop :=
   (TypeAArmBlock_decorated selected ∧ TypeAExitFour selected ∧ BChain selected) ∨
@@ -1000,7 +1009,7 @@ abbrev AbsorbedLane (selected : EGInput.{u}) : Prop :=
 abbrev TypeBHighSurplusLane (selected : EGInput.{u}) : Prop :=
   NetChargeLaneBlock_typeBHighSurplus selected ∧ BChain selected
 
-/-- The continuation factor (104 arms = 2·37 + 20 + 10). -/
+/-- The continuation factor (68 arms = 2·25 + 12 + 6). -/
 abbrev NetChargeContinuation (selected : EGInput.{u}) : Prop :=
   TypeALane selected ∨ AbsorbedLane selected ∨ TypeBHighSurplusLane selected
 

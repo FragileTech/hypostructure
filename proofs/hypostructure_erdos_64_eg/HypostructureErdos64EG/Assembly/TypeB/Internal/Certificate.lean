@@ -48,8 +48,9 @@ published.
 Every arm enters the route-8 cores `[77]` through the Type B entry, which reads
 the `[76]`/`[85]` fact on its own ledger.
 
-`arm` names the arms fixed before the chain and the fan block; each
-certificate arm adds its block at the route-8 entry. -/
+`arm` names the arms fixed before the chain and the block of the fan arm named
+by `degreeFour`; each certificate arm adds its block, paired with that fan
+block, at the route-8 entry. -/
 -- EG-NODE [71] certificate labelling present?
 -- EG-NODE [72] local fan-window ledger complete; B2 disjointness holds?
 -- EG-NODE [73] B2 disjointness fails: minimal Type B overlap obstruction
@@ -65,12 +66,12 @@ certificate arm adds its block at the route-8 entry. -/
 noncomputable def Assembly.Internal.selectedTypeBCertificateContinuation
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
-    (arm : BChainArms selected ∧ BChainFan selected)
     [FactKeys.Has (K .compatiblePairFanClosure) known]
     [FactKeys.Has (K .compatiblePairTypeBRouting) known]
     [FactKeys.Has (K .fanClosedPortTypeBRouting) known]
     [FactKeys.Has (K .typeBFanEntry) known]
     (degreeFour : Option (FactKeys.Has (K .typeBFanDegreeFourCentres) known))
+    (arm : BChainArms selected ∧ BChainFanFor selected degreeFour)
     [FactKeys.Has (K .fanCertificateCap) known]
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .uncompressible) known]
@@ -204,7 +205,7 @@ noncomputable def Assembly.Internal.selectedTypeBCertificateContinuation
       let closedMass := (typeBCertificateMassExclusionRow (data := spineData)).run
         mass (by key_fresh)
       exact selectedTypeBRoute8Entry closedMass
-        ⟨arm.1, arm.2, Or.inl (BChainCertificateBlock_residual.ret closedMass)⟩
+        ⟨arm.1, arm.2.residual (BChainCertificateBlock_residual.ret closedMass)⟩
   | .left markedHistory =>
       -- The local fan-window ledger: the direct fan-window cycles are excluded
       -- at every assigned centre, and the local B1 ledger is published.
@@ -229,8 +230,8 @@ noncomputable def Assembly.Internal.selectedTypeBCertificateContinuation
                 (typeBExclusionResidualRow (data := spineData)).run
                   excluded (by key_fresh)
               exact selectedTypeBRoute8Entry residual
-                ⟨arm.1, arm.2,
-                  Or.inr (Or.inl (BChainCertificateBlock_b2Choice.ret residual))⟩
+                ⟨arm.1, Or.inl ⟨arm.2,
+                  Or.inr (Or.inl (BChainCertificateBlock_b2Choice.ret residual))⟩⟩
           | .right obstructionHistory =>
               -- `[73]`: the minimal overlap obstruction and its
               -- global-to-local reflection; `[75]`: charged to the fan
@@ -245,8 +246,8 @@ noncomputable def Assembly.Internal.selectedTypeBCertificateContinuation
                 (typeBObstructionMassExclusionRow (data := spineData)).run
                   mass (by key_fresh)
               exact selectedTypeBRoute8Entry closedMass
-                ⟨arm.1, arm.2, Or.inr (Or.inr (Or.inr (Or.inr
-                  (BChainCertificateBlock_overlapObstruction.ret closedMass))))⟩
+                ⟨arm.1, Or.inl ⟨arm.2, Or.inr (Or.inr
+                  (BChainCertificateBlock_overlapObstruction.ret closedMass))⟩⟩
       | some degreeFourCentres =>
           letI := degreeFourCentres
           -- `[81]`: `c ≤ 1`, or `c ≥ 2` with B2 disjoint ledger?
@@ -262,8 +263,8 @@ noncomputable def Assembly.Internal.selectedTypeBCertificateContinuation
                 (typeBDegreeFourExclusionResidualRow (data := spineData)).run
                   closedHistory (by key_fresh)
               exact selectedTypeBRoute8Entry residual
-                ⟨arm.1, arm.2, Or.inr (Or.inr (Or.inl
-                  (BChainCertificateBlock_degreeFourClosed.ret residual)))⟩
+                ⟨arm.1, Or.inr ⟨arm.2, Or.inr (Or.inl
+                  (BChainCertificateBlock_degreeFourClosed.ret residual))⟩⟩
           | .right overlapHistory =>
               -- `[83]`: `c ≥ 2` and B2 fails, the minimal overlap
               -- obstruction and its reflection; `[84]`: charged to the fan
@@ -278,7 +279,7 @@ noncomputable def Assembly.Internal.selectedTypeBCertificateContinuation
                 (typeBObstructionMassExclusionRow (data := spineData)).run
                   mass (by key_fresh)
               exact selectedTypeBRoute8Entry closedMass
-                ⟨arm.1, arm.2, Or.inr (Or.inr (Or.inr (Or.inl
-                  (BChainCertificateBlock_degreeFourOverlap.ret closedMass))))⟩
+                ⟨arm.1, Or.inr ⟨arm.2, Or.inr (Or.inr
+                  (BChainCertificateBlock_degreeFourOverlap.ret closedMass))⟩⟩
 
 end HypostructureErdos64EG

@@ -237,7 +237,7 @@ noncomputable def Assembly.Internal.selectedTypeBFanContinuation
       let capped := (fanCertificateCapRow (data := spineData)).run
         localDichotomy (by key_fresh)
       exact Assembly.Internal.selectedTypeBCertificateContinuation capped
-        ⟨arm, Or.inr (BChainFanBlock_heavyCentre.ret capped)⟩ none
+        none ⟨arm, BChainFanBlock_heavyCentre.ret capped⟩
   | .right degreeFourHistory =>
       -- `[78]`--`[79]`: the degree-four fan profile and the fan-closed port
       -- routing of `cor:degree-four-local-activation` (tex 2336): alternative
@@ -264,6 +264,6 @@ noncomputable def Assembly.Internal.selectedTypeBFanContinuation
       let capped := (degreeFourFanCertificateCapRow (data := spineData)).run
         pairRouting (by key_fresh)
       exact Assembly.Internal.selectedTypeBCertificateContinuation capped
-        ⟨arm, Or.inl (BChainFanBlock_degreeFour.ret capped)⟩ (some inferInstance)
+        (some inferInstance) ⟨arm, BChainFanBlock_degreeFour.ret capped⟩
 
 end HypostructureErdos64EG

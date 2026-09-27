@@ -123,6 +123,24 @@ abbrev BChainLane (selected : EGInput.{u}) : Prop :=
 abbrev BChainArms (selected : EGInput.{u}) : Prop :=
   NetChargeArms selected ∧ BChainLane selected
 
+/-- The fan block of the fan arm the Type B chain took, named by the
+certificate walk's `degreeFour` argument (`none`: heavy centre, `some`: the
+degree-four centres of `[78]`). -/
+def BChainFanFor (selected : EGInput.{u}) {known : FactKeys EGInput.{u}} :
+    Option (FactKeys.Has (K .typeBFanDegreeFourCentres) known) → Prop
+  | none => BChainFanBlock_heavyCentre selected
+  | some _ => BChainFanBlock_degreeFour selected
+
+/-- The certificate residual arm `[75]`/`[84]` after either fan arm. -/
+theorem BChainFanFor.residual {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    {degreeFour : Option (FactKeys.Has (K .typeBFanDegreeFourCentres) known)}
+    (fan : BChainFanFor selected degreeFour)
+    (residual : BChainCertificateBlock_residual selected) :
+    BChainFanCertificate selected := by
+  cases degreeFour with
+  | none => exact Or.inl ⟨fan, Or.inl residual⟩
+  | some _ => exact Or.inr ⟨fan, Or.inl residual⟩
+
 /-- A B-chain lane together with the B-chain it ran is one net-charge
 continuation arm. -/
 theorem BChainLane.continuation {selected : EGInput.{u}}

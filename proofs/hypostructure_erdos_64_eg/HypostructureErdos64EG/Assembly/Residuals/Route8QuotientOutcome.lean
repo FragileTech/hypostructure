@@ -6,13 +6,13 @@ import HypostructureErdos64EG.Assembly.Residuals.Route8Blocks
 
 Node `[187] ([348], route-8 quotient failure)` as a PRODUCT OF ARM BLOCKS.
 
-The 2080 paths from `selectedLedgerBoundary` to the one return site
+The 1360 paths from `selectedLedgerBoundary` to the one return site
 (`route8QuotientReturn` in `selectedRouteEightUnifiedResidual`,
-`Assembly/RouteEight/Local.lean`) carry 2080 distinct fact sets.  Each is
+`Assembly/RouteEight/Local.lean`) carry 1360 distinct fact sets.  Each is
 exactly the 64 common keys of `Route8QuotientOutcome` together with one block
 per factor of
 
-  `5 prefix × 4 entropy × 104 continuation`,  `104 = 2·37 + 20 + 10`,
+  `5 prefix × 4 entropy × 68 continuation`,  `68 = 2·25 + 12 + 6`,
 
 and every combination occurs (checked against the elaborated ledger of every
 path).  The blocks live in `Residuals/Route8Blocks.lean`.

@@ -7,11 +7,11 @@ import HypostructureErdos64EG.Assembly.Residuals.Route8Blocks
 `TypeBSublinearOutcome` (node `[187]`, Type B sublinear failure) is returned
 at one Lean site, the negative arm of `typeBSublinearDichotomy` in
 `selectedRouteEightUnifiedResidual` (`Assembly/RouteEight/Local.lean`), and
-is reached there by 2080 selected-root paths whose ledgers hold 2080 distinct
+is reached there by 1360 selected-root paths whose ledgers hold 1360 distinct
 fact sets.  Those fact sets are exactly the 62 common keys of the generic
 residual `TypeBSublinearOutcome` together with one choice in each factor of the
 nested arm-block product of `Assembly/Residuals/Route8Blocks.lean`; the
-product is full (all 5 × 4 × 104 combinations occur, each on one path).
+product is full (all 5 × 4 × 68 combinations occur, each on one path).
 -/
 
 namespace HypostructureErdos64EG
@@ -25,7 +25,7 @@ universe u
 
 /-- **Node `[187]` (Type B sublinear failure), as a product of arm blocks**:
 the 62 common facts of the generic residual, one of the 5 prefix blocks, one of
-the 4 entropy blocks and one of the 104 continuation combinations. -/
+the 4 entropy blocks and one of the 68 continuation combinations. -/
 abbrev TypeBSublinearOutcome_product (selected : EGInput.{u}) : Prop :=
   TypeBSublinearOutcome selected ∧
   Route8LanePrefix selected ∧
