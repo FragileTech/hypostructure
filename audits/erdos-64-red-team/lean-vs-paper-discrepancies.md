@@ -1234,6 +1234,35 @@ and argument path; no `sorry` is involved.
   deleted.  No `sorry`.  The census of `lem:typeA-unified-carriers` still gets
   `α(ξ) ≥ 2` on the free arm (`route8EntryFacts`), from G's own
   quotient-freeness.
+- **User-approved construction attempt (fix2-TR step 2): fails at the
+  response clause.**  Evidence: `audits/erdos-64-red-team/fix2-TR/Step2Evidence348.lean`
+  (compiles; axioms propext, Classical.choice, Quot.sound).  At an entry
+  `ξ = (X, w, u, B_u)` of G's unified set with (b), take `S := B_u` and the
+  explicit smaller representative `R :=` the interior fold
+  `identifyInternal keep remove` of `B_u`'s piece (a realization of the
+  quotient, with the fold map as label-fixing placement, when no retained
+  declared support contains `keep`/`remove`).  Clauses of
+  `CompressibleSupport G S` (`InterfaceReplacement.lean:415`):
+  connected (holds: `B_u` is connected), proper (holds), boundary degree
+  profile (holds, `fold_clauses`), baseline `δ(R ⊕ Y) ≥ 3` (holds,
+  `foldRealization_baseline_and_smaller`), strictly smaller (holds, same
+  lemma); **response-preserving `∀ Y, Target(R ⊕ Y) ↔ Target(B_u ⊕ Y)`
+  fails.**  Precisely: at G's own context `Y_G`, *every* smaller baseline
+  representative `R` has an accepted cycle in `R ⊕ Y_G` (G's minimality)
+  while `B_u ⊕ Y_G ≅ G` has none (`response_clause_fails_at_G_context`); for
+  the fold, `K .uncompressible` refutes full-target completeness outright
+  (`fold_not_fullTarget_complete`).  Alternative (b) supplies only
+  equivalence on the declared `u`-supported algebra (`declaredAlgebra`), and
+  at `Y_G` that algebra is false on both sides
+  (`declaredAlgebra_false_at_G_context`), so (b) is consistent with the
+  identification creating a power-of-two cycle through `Y_G`.  **Missing
+  fact about G:** "every accepted cycle of `R ⊕ Y_G` passes through a boundary
+  label of `∂B_u` lying on the event walk of a core-retained crossing
+  coordinate of `ξ`" (i.e. `R`'s cycle is visible to the declared algebra),
+  together with the existence of a fold pair `keep ≠ remove` in
+  `B_u - ∂B_u`, off every retained declared support, with no common
+  neighbour.  Neither is on G's ledger at `[348]`.  So the Step-1 routing is
+  kept and `[348]` stays a returned outcome at `[187]`.
 - **Scope of `[347]`.**  The former second conjunct of
   `Route8QuotientFreeStatement` (every negative no-handoff core of a deleted
   region, any `σ`, every receiver, `excessBasinReduced` loads) went beyond
