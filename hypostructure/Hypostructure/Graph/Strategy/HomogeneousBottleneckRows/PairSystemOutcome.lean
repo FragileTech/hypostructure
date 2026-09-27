@@ -60,10 +60,7 @@ noncomputable def pairSystemRealizabilityDichotomy
       obtain ⟨returns, selected⟩ := (previous.get (K .pairDemandReturns)).down
       by_cases covered : Nonempty (PairSystemRealizabilityOutcome returns)
       · exact ⟨.inl ⟨⟨returns, selected, covered⟩⟩⟩
-      · refine ⟨.inr ⟨?_⟩⟩
-        rintro ⟨returns', selected', covered'⟩
-        obtain rfl := Option.some.inj (selected'.symm.trans selected)
-        exact covered covered'))
+      · exact ⟨.inr ⟨⟨returns, selected, covered⟩⟩⟩))
     coveredFresh failsFresh
 
 /-- Node `[182]` from `[179]`: the failed coverage test retains the literal
@@ -83,9 +80,12 @@ canonical demand returns as the uncovered pair-code residual. -/
           (inputs.get (K .pairRealizabilityFails)).down⟩
         .nil)
 
-/-- Node `[179]`: is the canonical outcome of G's covered canonical return
-system (read from `K .pairSystemRealizability`) one of alternatives (i)--(iv)?
-The split is on that one outcome; the negative arm is its literal negation. -/
+/-- Node `[179]`: does one of alternatives (i)--(iv) of
+`lem:pair-system-realizability` occur for G's covered canonical return system
+(read from `K .pairSystemRealizability`)?  The paper lists (i)--(iv) before the
+serial alternative (v) (tex 5110-5130), so the routed alternatives take
+precedence; the split is `Nonempty (PairSystemEarlyOutcome returns)` against
+its literal negation at those one pinned returns. -/
 noncomputable def pairSystemOutcomeDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
@@ -103,19 +103,11 @@ noncomputable def pairSystemOutcomeDichotomy
     (Classical.choice (show Nonempty
         ((K .pairSystemEarlyOutcome).At current ⊕
           (K .pairSystemNoEarlyOutcome).At current) from by
-      obtain ⟨returns, returnsSelected, covered⟩ :=
+      obtain ⟨returns, returnsSelected, _covered⟩ :=
         (previous.get (K .pairSystemRealizability)).down
-      obtain ⟨outcome, outcomeSelected⟩ :=
-        canonicalRealizabilityOutcome_spec data.toParameters current.object
-          returns covered
-      cases outcome with
-      | early early =>
-          exact ⟨.inl ⟨⟨returns, early, returnsSelected, outcomeSelected⟩⟩⟩
-      | serial serial same =>
-          refine ⟨.inr ⟨?_⟩⟩
-          rintro ⟨returns', early', returnsSelected', outcomeSelected'⟩
-          obtain rfl := Option.some.inj (returnsSelected'.symm.trans returnsSelected)
-          cases outcomeSelected'.symm.trans outcomeSelected))
+      by_cases early : Nonempty (PairSystemEarlyOutcome returns)
+      · exact ⟨.inl ⟨⟨returns, returnsSelected, early⟩⟩⟩
+      · exact ⟨.inr ⟨⟨returns, returnsSelected, early⟩⟩⟩))
     earlyFresh noEarlyFresh
 
 /-- Node `[179]`, serial arm: with coverage and none of (i)--(iv),
@@ -180,10 +172,7 @@ noncomputable def pairIncrementCoveredDichotomy
       obtain ⟨serial, selected⟩ := (previous.get (K .pairSerialDemandSystem)).down
       by_cases covered : Nonempty (PairIncrementOutcome serial)
       · exact ⟨.inl ⟨⟨serial, selected, covered⟩⟩⟩
-      · refine ⟨.inr ⟨?_⟩⟩
-        rintro ⟨serial', selected', covered'⟩
-        obtain rfl := Option.some.inj (selected'.symm.trans selected)
-        exact covered covered'))
+      · exact ⟨.inr ⟨⟨serial, selected, covered⟩⟩⟩))
     coveredFresh failsFresh
 
 /-- Node `[182]` from `[180]`: the failed coverage test retains the literal
@@ -203,9 +192,12 @@ serial demand system as the uncovered pair-code residual. -/
           (inputs.get (K .pairIncrementFails)).down⟩
         .nil)
 
-/-- Node `[180]`: is the canonical outcome of G's covered canonical serial
-system (read from `K .pairIncrementCovered`) a periodic routed alternative?
-The split is on that one outcome; the negative arm is its literal negation. -/
+/-- Node `[180]`: does a periodic routed alternative of
+`lem:pair-system-increment-arithmetic` occur for G's covered canonical serial
+system (read from `K .pairIncrementCovered`)?  The node's split (diagram
+tex 1213: "periodic sparse-exit/Type B, or full-modulus arithmetic") takes the
+periodic outcome first; the split is `Nonempty (PairIncrementEarlyOutcome
+serial)` against its literal negation at that one pinned system. -/
 noncomputable def pairIncrementOutcomeDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
@@ -223,19 +215,11 @@ noncomputable def pairIncrementOutcomeDichotomy
     (Classical.choice (show Nonempty
         ((K .pairIncrementEarlyOutcome).At current ⊕
           (K .pairIncrementNoEarlyOutcome).At current) from by
-      obtain ⟨serial, serialSelected, covered⟩ :=
+      obtain ⟨serial, serialSelected, _covered⟩ :=
         (previous.get (K .pairIncrementCovered)).down
-      obtain ⟨outcome, outcomeSelected⟩ :=
-        canonicalIncrementOutcome_spec data.toParameters current.object
-          serial covered
-      cases outcome with
-      | early early =>
-          exact ⟨.inl ⟨⟨serial, early, serialSelected, outcomeSelected⟩⟩⟩
-      | arithmetic arithmetic =>
-          refine ⟨.inr ⟨?_⟩⟩
-          rintro ⟨serial', early', serialSelected', outcomeSelected'⟩
-          obtain rfl := Option.some.inj (serialSelected'.symm.trans serialSelected)
-          cases outcomeSelected'.symm.trans outcomeSelected))
+      by_cases early : Nonempty (PairIncrementEarlyOutcome serial)
+      · exact ⟨.inl ⟨⟨serial, serialSelected, early⟩⟩⟩
+      · exact ⟨.inr ⟨⟨serial, serialSelected, early⟩⟩⟩))
     earlyFresh noEarlyFresh
 
 /-- Node `[180]`, arithmetic arm: with coverage and no periodic route, the

@@ -50,19 +50,26 @@ theorem mixedSparseSpineDependence_of_baseline
     (baselineDemand : BaselineSpineDemandStatement data object) :
     MixedSparseSpineDependenceStatement data object := by
   classical
-  obtain ⟨⟨Coordinate, family, coordinateSupport⟩, spineSelected, _spec⟩ :=
-    baselineDemand
+  obtain ⟨spine, spineSelected, _spec⟩ := baselineDemand
   refine ⟨Graph.pairResponseActivation active,
-    canonicalPairActivation_eq data object active,
-    ⟨Coordinate, family, coordinateSupport⟩, spineSelected, ?_⟩
-  dsimp only
-  intro notIndependent
-  push Not at notIndependent
-  obtain ⟨declared, _functional, reducing⟩ := notIndependent
+    canonicalPairActivation_eq data object active, spine, spineSelected, ?_⟩
+  intro declared selected
+  obtain ⟨_functional, reducing⟩ := canonicalChoice_spec_of_eq_some selected
   rcases declared.localize reducing with replacement |
       ⟨representative, smaller, baseline, transfer⟩
   · exact Or.inl (.compression declared.support replacement)
   · exact Or.inl (.delocalization representative smaller baseline transfer)
+
+/-- Node `[130]`, clause (e) at G: a type-(e) obstruction of a scheduled pair
+at G's canonical activation is a named sparse surplus exit of G's declared
+family (`declaredSparseSurplusExit_of_responseObstruction`), so G's survivor
+fact refutes it. -/
+theorem not_pairResponseObstruction_of_survivor
+    (survivor : SparseSurplusSurvivorStatement data object)
+    (obstruction : PairResponseObstructionStatement data object) : False := by
+  obtain ⟨activation, selected, _pair, _member, obstruction⟩ := obstruction
+  obtain ⟨active, rfl⟩ := exists_active_of_canonicalPairActivation_eq_some selected
+  exact survivor (declaredSparseSurplusExit_of_responseObstruction active obstruction)
 
 /-- Node `[131]`, `lem:exact-cubic-baseline-budget`, two-sided with
 logarithms cleared. -/

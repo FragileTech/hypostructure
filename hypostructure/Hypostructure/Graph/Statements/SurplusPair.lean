@@ -93,7 +93,8 @@ theorem declaredSparseSurplusExit_of_responseObstruction {data : Parameters}
       (object.portPairSchedule data.threshold) pair) :
     DeclaredSparseSurplusExit data object := by
   obtain ⟨attempt, determiners, ⟨_functional, _reducing, coordinateMem,
-      determinersSubset, _outside, _determines, _minimal⟩, event⟩ := obstruction
+      determinersSubset, _outside, _determines, _minimal, _reads⟩, event⟩ :=
+    obstruction
   rcases event with defect | replacement |
       ⟨_covers, representative, smaller, baseline, transfer⟩
   · refine declaredSparseSurplusExit_of_pairDefect data object active ?_ defect
@@ -1192,40 +1193,96 @@ noncomputable abbrev IndependentPairFamilyStatement
       (LengthOK := data.LengthOK) activation
         (object.portPairSchedule data.threshold)
 
+/-- The mixed family `ℐ_spine ∪ ℛ_{𝒜₀}` of `lem:mixed-sparse-spine-dependence`
+at a spine family and an activation of G. -/
+noncomputable def mixedSparseSpineFamily {object : Graph.FiniteObject.{u}}
+    (threshold : Nat)
+    (activation : object.DemandActivation object.PairCoordinate
+      (object.Vertex × object.Vertex))
+    (spine : DeclaredCoordinateFamily object) :
+    Finset (Sum spine.Coordinate object.PairCoordinate) := by
+  classical
+  exact spine.family.image Sum.inl ∪
+    (activation.pairFamily (object.portPairSchedule threshold)).image Sum.inr
+
+/-- The declared supports of the mixed family. -/
+noncomputable def mixedSparseSpineSupport {object : Graph.FiniteObject.{u}}
+    (spine : DeclaredCoordinateFamily object) :
+    Sum spine.Coordinate object.PairCoordinate → Finset object.Vertex :=
+  Sum.elim spine.coordinateSupport (by
+    letI := object.vertices.decEq
+    exact Graph.DeclaredSignature.Coordinate.support)
+
+/-- **G's rank-reducing quotient of the mixed family** (the quotient
+`lem:mixed-sparse-spine-dependence` speaks about, tex 4872-4887): the canonical
+functional admissible declared quotient of `ℐ_spine ∪ ℛ_{𝒜₀}` that is not
+label-injective on it, when one exists.  "The union is not independently
+target-testable" is exactly the existence of this quotient. -/
+noncomputable def canonicalMixedDependenceQuotient (data : Parameters)
+    {object : Graph.FiniteObject.{u}}
+    (activation : object.DemandActivation object.PairCoordinate
+      (object.Vertex × object.Vertex))
+    (spine : DeclaredCoordinateFamily object) :
+    Option (Graph.DeclaredQuotient (Graph.MinimumDegreeAtLeast data.threshold)
+      (Graph.HasCycleWithLength data.LengthOK) object
+      (mixedSparseSpineFamily data.threshold activation spine)
+      (mixedSparseSpineSupport spine)) :=
+  canonicalChoice fun declared =>
+    declared.toRankQuotient.FunctionalOn
+        ↑(mixedSparseSpineFamily data.threshold activation spine) ∧
+      ¬ Set.InjOn declared.label
+        ↑(mixedSparseSpineFamily data.threshold activation spine)
+
 /-- Node `[131]`, `lem:mixed-sparse-spine-dependence` (tex 4872-4887), on G's
 canonical baseline spine family (node `[129]`) and G's full pair-response
-schedule at its canonical activation (node `[125]`): if the union
-`ℐ_spine ∪ ℛ_{𝒜₀}` is not independently target-testable (some functional
-admissible declared quotient of the mixed family is rank-reducing), then G has
-a sparse surplus exit of its declared family, or some scheduled pair `{p,q}`
-has a sparse surplus blocker of type (d) or (e) at that activation. -/
+schedule at its canonical activation (node `[125]`), at G's own rank-reducing
+quotient of the mixed family (`canonicalMixedDependenceQuotient`): if that
+quotient exists -- the union `ℐ_spine ∪ ℛ_{𝒜₀}` is not independently
+target-testable -- then G has a sparse surplus exit of its declared family, or
+some scheduled pair `{p,q}` has a sparse surplus blocker of type (d) or (e) at
+that activation. -/
 noncomputable abbrev MixedSparseSpineDependenceStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  by
-  classical
-  exact ∃ activation, canonicalPairActivation data object = some activation ∧
+  ∃ activation, canonicalPairActivation data object = some activation ∧
     ∃ spine, canonicalBaselineSpineFamily data object = some spine ∧
-      let pairs := object.portPairSchedule data.threshold
-      let pairFamily := activation.pairFamily pairs
-      let mixedFamily : Finset (Sum spine.Coordinate object.PairCoordinate) :=
-        spine.family.image Sum.inl ∪ pairFamily.image Sum.inr
-      let mixedSupport : Sum spine.Coordinate object.PairCoordinate →
-          Finset object.Vertex :=
-        Sum.elim spine.coordinateSupport (by
-          letI := object.vertices.decEq
-          exact Graph.DeclaredSignature.Coordinate.support)
-      (¬ ∀ declared : Graph.DeclaredQuotient
-          (Graph.MinimumDegreeAtLeast data.threshold)
-          (Graph.HasCycleWithLength data.LengthOK) object
-          mixedFamily mixedSupport,
-          declared.toRankQuotient.FunctionalOn ↑mixedFamily →
-            Set.InjOn declared.label ↑mixedFamily) →
+      ∀ declared, canonicalMixedDependenceQuotient data activation spine =
+          some declared →
         DeclaredSparseSurplusExit data object ∨
           Graph.HasSparsePairDEBlocker
             (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-            (LengthOK := data.LengthOK) activation pairs
+            (LengthOK := data.LengthOK) activation
+            (object.portPairSchedule data.threshold)
+
+/-- Node `[130]`, clause (e) of `Blk(π)` at G: at G's canonical activation some
+scheduled pair has a type-(e) obstruction of `def:surplus-blockers` (a
+target-response coordinate witnessing a target-defective quotient,
+target-complete compression or support-dependence event). -/
+noncomputable abbrev PairResponseObstructionStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop :=
+  ∃ activation, canonicalPairActivation data object = some activation ∧
+    ∃ pair ∈ object.portPairSchedule data.threshold,
+      Graph.SparsePairDEResponseObstructionAt
+        (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+        (LengthOK := data.LengthOK) activation
+        (object.portPairSchedule data.threshold) pair
+
+/-- Node `[130]`, clause (e) absent: at the same canonical activation no
+scheduled pair has a type-(e) obstruction (the literal negation at the one
+pinned activation). -/
+noncomputable abbrev PairNoResponseObstructionStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop :=
+  ∃ activation, canonicalPairActivation data object = some activation ∧
+    ∀ pair ∈ object.portPairSchedule data.threshold,
+      ¬ Graph.SparsePairDEResponseObstructionAt
+        (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+        (LengthOK := data.LengthOK) activation
+        (object.portPairSchedule data.threshold) pair
 
 /-- Node `[131]`, the two-sided exact cubic baseline budget at the current
 residual's order and registered baseline. -/

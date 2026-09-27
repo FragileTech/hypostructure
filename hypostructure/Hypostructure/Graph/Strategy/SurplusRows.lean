@@ -195,17 +195,20 @@ deficit is bounded linearly using the registered coefficient inequality. -/
 
 /-! ## Node `[132]`: route the dependent pair family -/
 
-/-- Node `[130]`, canonical pair split "blocker-free?": read the node-`[125]`
-active family on the literal ledger, form G's canonical pair-response
-activation from it, and decide whether some pair of its full schedule is
-blocked -- has a nonempty blocker set `𝖡𝗅𝗄(π)` over all six clauses (a)--(f)
-of `def:surplus-blockers` (`prop:sparse-pair-independence-dichotomy`,
-`def:canonical-blocker-ledger`).  Both arms are about that one activation. -/
+/-- Node `[130]`, canonical pair split "blocker-free?": read the diagram
+predecessor `[129]` (`K .baselineSpineDemand`, the baseline spine demand the
+split continues) and the node-`[125]` active family on the literal ledger, form
+G's canonical pair-response activation from it, and decide whether some pair
+of its full schedule is blocked -- has a nonempty blocker set `𝖡𝗅𝗄(π)` over all
+six clauses (a)--(f) of `def:surplus-blockers`
+(`prop:sparse-pair-independence-dichotomy`, `def:canonical-blocker-ledger`).
+Both arms are about that one activation. -/
 noncomputable def pairResponseIndependenceDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger (Input BranchState Presentation presentation data)
       current known)
+    [FactKeys.Has (K .baselineSpineDemand) known]
     [FactKeys.Has (K .activeSurplusDemands) known]
     (independentFresh : K .independentPairFamily ∉ known)
     (dependentFresh : K .dependentPairFamily ∉ known) :
@@ -215,6 +218,8 @@ noncomputable def pairResponseIndependenceDichotomy
     (Classical.choice (show Nonempty
         ((K .independentPairFamily).At current ⊕
           (K .dependentPairFamily).At current) from by
+      -- `[129]`: the diagram predecessor on the same ledger.
+      have _baselineDemand := (previous.get (K .baselineSpineDemand)).down
       let active := (previous.get (K .activeSurplusDemands)).down
       let activation := Graph.pairResponseActivation active
       let pairs := current.object.portPairSchedule data.threshold
@@ -226,6 +231,50 @@ noncomputable def pairResponseIndependenceDichotomy
       · exact ⟨.inr ⟨activation, selected, blocked⟩⟩
       · exact ⟨.inl ⟨activation, selected, blocked⟩⟩))
     independentFresh dependentFresh
+
+/-- Node `[130]`, blocked arm: blocker clause (e) of `def:surplus-blockers` at
+G's canonical activation, read from `K .dependentPairFamily` (which pins that
+activation).  Does some scheduled pair have a type-(e) obstruction?  The
+negative arm is the literal negation at the same activation. -/
+noncomputable def pairResponseObstructionDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger (Input BranchState Presentation presentation data)
+      current known)
+    [FactKeys.Has (K .dependentPairFamily) known]
+    (obstructionFresh : K .pairResponseObstruction ∉ known)
+    (noObstructionFresh : K .pairNoResponseObstruction ∉ known) :
+    Decision (K .pairResponseObstruction) (K .pairNoResponseObstruction)
+      previous :=
+  Decision.run previous (K .pairResponseObstruction)
+    (K .pairNoResponseObstruction)
+    `Hypostructure.Graph.Strategy.Spine.pairResponseObstructionDichotomy
+    (Classical.choice (show Nonempty
+        ((K .pairResponseObstruction).At current ⊕
+          (K .pairNoResponseObstruction).At current) from by
+      classical
+      obtain ⟨activation, selected, _blocked⟩ :=
+        (previous.get (K .dependentPairFamily)).down
+      by_cases obstruction : ∃ pair ∈ current.object.portPairSchedule
+          data.threshold,
+        Graph.SparsePairDEResponseObstructionAt
+          (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+          (LengthOK := data.LengthOK) activation
+          (current.object.portPairSchedule data.threshold) pair
+      · exact ⟨.inl ⟨⟨activation, selected, obstruction⟩⟩⟩
+      · refine ⟨.inr ⟨⟨activation, selected, fun pair member present => ?_⟩⟩⟩
+        exact obstruction ⟨pair, member, present⟩))
+    obstructionFresh noObstructionFresh
+
+/-- Node `[130]`, clause (e) closed at G: a type-(e) obstruction at G's
+canonical activation is a named sparse surplus exit of G's declared family, so
+it contradicts node `[125]`'s survivor fact on the same ledger. -/
+noncomputable instance instIncompatibleSparseSurplusSurvivorPairResponseObstruction :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K .sparseSurplusSurvivor) (K .pairResponseObstruction) where
+  contradiction := fun _current survivor obstruction =>
+    Graph.Contracts.SurplusPair.not_pairResponseObstruction_of_survivor
+      survivor.down obstruction.down
 
 /-! ## Node `[131]`: mixed sparse-spine dependence -/
 

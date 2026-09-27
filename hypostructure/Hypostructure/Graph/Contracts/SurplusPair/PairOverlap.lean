@@ -802,7 +802,7 @@ theorem pairPowerOfTwoCycle_of_arithmetic
       Core.DyadicLength.PowerOfTwoLength length) :
     PairPowerOfTwoCycleStatement data object := by
   classical
-  obtain ⟨_serial, arithmetic, -, -⟩ := arithmeticFact
+  obtain ⟨_serial, -, ⟨arithmetic⟩⟩ := arithmeticFact
   let spectrum := arithmetic.spectrum
   letI : NeZero arithmetic.modulus := arithmetic.modulus_neZero
   letI : NeZero spectrum.modulus :=

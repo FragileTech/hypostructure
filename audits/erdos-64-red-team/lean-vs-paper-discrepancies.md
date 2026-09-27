@@ -524,27 +524,26 @@ The former split of node `[109]` by the node-`[94]` silent provenance
 
 *Family F4 (Surplus / Homogeneous / Pair).*
 
-This entry supersedes the `freePairCoupledExcessDichotomy` entry of
-`lean-vs-paper-discrepancies.md` ("[137] on the independent branch").
-
 - **Paper** (diagram tex:1204, 1229-1246; `prop:single-graph-sparse-pressure-routing`).
   The [131] "count holds: free pairs" edge enters the [137] diamond
   "coupled excess D_all>0?"; D_all = 0 goes to [138], D_all > 0 to [139].
-- **Lean.** The free side runs the same exact decision as the blocked side,
-  `coupledExcessDichotomy`
-  (`hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows/FibrePressure.lean`):
-  `K .sparsePressureOverload` versus its literal negation
-  `K .sparsePressureNearCubic`.  On the independent branch both arms run
-  `freePairSurplusEstimateRow`
+- **Lean.** The free side runs `freePairCoupledExcessDichotomy`
+  (`hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows/FibrePressure.lean`),
+  which reads its predecessor `K .freePairEntropySandwich` ([131] "count holds")
+  and splits the same overload predicate as the blocked side's
+  `coupledExcessDichotomy`: `K .sparsePressureOverload` versus its literal
+  negation `K .sparsePressureNearCubic` at G's canonical certified ledger.  On
+  the independent branch both arms run `freePairSurplusEstimateRow`
   (`HomogeneousBottleneckRows/FreePairCoupledExcess.lean`, contract lemma
   `Graph.Contracts.SurplusPair.spineSurplusEstimate_of_pairSandwich`) and close
   through `runAndCloseIncompatible … (K .surplusAbove) (K .spineSurplusEstimate)`.
   Caller: `Assembly.Internal.strictSurplusIndependent`
   (`proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Strict/Independent.lean`).
 - **Difference.** The D_all > 0 arm on the free side is closed by [138]'s
-  estimate instead of continuing to [139].  The earlier Lean
+  estimate instead of continuing to [139].  An earlier version of
   `freePairCoupledExcessDichotomy` published the estimate itself as its no-arm
-  key, so its keys were not complements; it is deleted.
+  key, so its keys were not complements; it now has the exact complement keys
+  above.
 - **Why the Lean prevails.** The [131] count gives σ(G) ≤ C_sp⌈√n⌉ on the whole
   count-holds branch, whatever D_all is, which contradicts [19]; the paper's
   "no blocked pairs, so D_all = 0" needs a link between the overload ledger's
@@ -597,10 +596,22 @@ canonical homogeneous pattern at that token
   (`pairFactorizationResidualRow`, `pairRealizabilityResidualRow`,
   `pairIncrementResidualRow`) publishes the one [182] outcome
   `K .pairConditionalFactorizationResidual` with the literal object on which
-  the implication fails.  The [179] and [180] outcome splits are likewise
-  exact (`K .pairSystemNoEarlyOutcome`, `K .pairIncrementNoEarlyOutcome`), and
-  the serial system / arithmetic input is derived on the negative arm
-  (`pairSerialDemandSystemRow`, `pairSerialArithmeticRow`).
+  the implication fails.  Each failure key is pinned to the same canonical
+  object as its test (`∃ x, canonicalX = some x ∧ ¬ Q x`).  The [179] and [180]
+  outcome splits are exact P/¬P at the pinned object:
+  `Nonempty (PairSystemEarlyOutcome returns)` at G's canonical return system
+  (`K .pairSystemEarlyOutcome` / `K .pairSystemNoEarlyOutcome`) and
+  `Nonempty (PairIncrementEarlyOutcome serial)` at G's canonical serial system
+  (`K .pairIncrementEarlyOutcome` / `K .pairIncrementNoEarlyOutcome`).  No
+  outcome is chosen by `canonicalChoice`.  The paper's precedence is kept:
+  [179] lists the routed alternatives (i)--(iv) before the serial (v) (tex
+  5110-5130), and [180] reads "periodic sparse-exit/Type B, or full-modulus
+  arithmetic" (diagram tex 1213).  On the negative arm coverage yields the
+  serial system (`canonicalPairSerialSystem`, a serial system on exactly the
+  canonical returns) or the arithmetic input (`pairSerialDemandSystemRow`,
+  `pairSerialArithmeticRow`).  The paper claims "exactly one" occurs.  The Lean
+  does not prove exclusivity; the precedence decides, and when both (iv) and
+  (v) hold the branch takes the Type B continuation, as the paper does.
 - **Difference.** None in topology: the three failures still meet at [182].
   The paper leaves the three implications unproved and declares [182] open;
   the root boundary `SelectedLedgerBoundaryResult` keeps that outcome, and
@@ -624,7 +635,8 @@ gone.
   `def:canonical-blocker-ledger`, tex 2926-2934).  A pair is blocked when
   `Blk(π) ≠ ∅` over all six clause types.
 - **Lean.** `pairResponseIndependenceDichotomy` (`Strategy/SurplusRows.lean`)
-  splits `Graph.HasSparsePairBlocker activation Π(𝒜₀)`
+  reads its diagram predecessor [129] (`K .baselineSpineDemand`) and the [125]
+  active family, and splits `Graph.HasSparsePairBlocker activation Π(𝒜₀)`
   (`Graph/SparseEntropySandwich.lean`): some scheduled pair has a nonempty
   `(recordSparsePairDEBlockers activation Π).blockers π`, the same recorded
   activation that [134] (`canonicalPairLedger`) and [136] (`CapacityLedgerSpec`)
@@ -635,7 +647,12 @@ gone.
   (`CanonicalPairLedgerStatement`) all read the same six-clause predicate, and
   the first failed pair set of [178] is `Π ⊆ Π_free`
   (`PairOverlapFirstFailure.pairSet_blockerFree`).
-- **Difference.** None.  Earlier the test read clauses (d)/(e) only.
+- **Difference.** Earlier the test read clauses (d)/(e) only.  One addition:
+  on the blocked arm, before [132], the exact decision
+  `pairResponseObstructionDichotomy` (keys 2900/2901) tests clause (e) at the
+  same activation and closes its positive arm against the [125] survivor.
+  That arm is the paper's own dead clause (see Paper errors, "[130]--[134]
+  blocker (e)"), closed at the node from G's ledger rather than only asserted.
 
 ## `def:surplus-blockers` (d), (e): the determination certificate of `r_π`
 
@@ -647,19 +664,38 @@ gone.
   coordinate witnessing a target-defective quotient, target-complete
   compression, or support-dependence event".  In the lemma both arise from an
   inclusion-minimal determination of `r_π` from a subfamily `B`.
-- **Lean.** `SparsePairDetermination` is that determination (a functional,
+- **Lean.** `SparsePairDetermination` is that determination: a functional,
   rank-reducing attempted declared quotient of G's pair-response family at the
-  activation, with an inclusion-minimal certificate of `r_π`).
-  `SparsePairDEProfileObstructionAt` (d) adds that two of G's own coordinates
-  `{r_π} ∪ B`, read on G's piece at their canonical support, lie in different
-  boundary-degree fibres.  `SparsePairDEResponseObstructionAt` (e) adds one of
-  the three events: `ResidualTargetDefect` among `{r_π} ∪ B`,
+  activation, with an inclusion-minimal certificate of `r_π`, whose labels
+  carry G's canonical coordinate response (`SparsePairCanonicalValuation`: a
+  valuation of the quotient labels equal, at every `c ∈ ℛ_Π`, to
+  `canonicalCoordinateResponse` of `c` read on G's piece at the determination
+  support `Z`).  So two coordinates the quotient identifies have the same
+  response on G (`SparsePairDetermination.canonicalResponse_eq_of_label_eq`).
+  `SparsePairDEProfileObstructionAt` (d) adds that the quotient identifies
+  `r_π` with a determiner `b` (`label b = label r_π`, the case `ℬ = {b}` of
+  `lem:target-rank-circuit`) and that these two identified states, `r_π` and
+  `b` read on G's piece at `Z`, lie in different boundary-degree fibres
+  (`lem:degree-profile-fibres`).  `SparsePairDEResponseObstructionAt` (e) adds
+  one of the three events: `ResidualTargetDefect` among `{r_π} ∪ B`,
   `ReplacementSupport` of the determination support, or a whole-graph support
   with a strictly smaller closed representative.
 - **Difference.** Earlier, (d) compared the two demands' declared supports of
-  every pair with no attempted identification (true for almost every pair), and
-  (e) omitted the support-dependence event.  (e) is empty on the survivor
-  branch; see Paper errors.
+  every pair with no attempted identification, and later it compared any two
+  coordinates of `{r_π} ∪ B` under a quotient with a free labelling and
+  valuation.  Both were generically true: the round-2 audit
+  (`audit2-F4/ProfileDReduces.lean`) manufactured the free determination for
+  every `b` profile-separated from `r_π`.  With the valuation tied to G's
+  response, the manufactured quotient no longer qualifies: it would identify
+  `b` with `r_π` only if G's two readings at `Z` respond identically to every
+  `∂Z`-context.  (e) omitted the support-dependence event.
+- **Is (d) dead at G?** No ledger fact at [130] refutes it.  The survivor
+  refutes exits (b), (c) and (d), and (d)'s event is none of them: two
+  identified readings in *different* fibres are not a clause-(b) defect,
+  which needs one fibre.  The quotient's completeness antecedent fails, so its
+  representative clauses supply no replacement or closed representative.
+  (d) stays a live test of [130], about G's readings.  (e) is dead at G; see
+  Paper errors.
 
 ## [131]: `lem:mixed-sparse-spine-dependence` is the paper's statement, with no consumer
 
@@ -669,8 +705,11 @@ gone.
   target-testable, G has a sparse surplus exit or some pair has a blocker of
   type (d) or (e).
 - **Lean.** `MixedSparseSpineDependenceStatement` (key 203) is exactly that at
-  G's canonical spine family and canonical activation:
-  `¬ (∀ functional admissible quotient, label-injective) →
+  G's canonical spine family and canonical activation, at G's own quotient:
+  `canonicalMixedDependenceQuotient` is the canonical functional admissible
+  declared quotient of `ℐ_spine ∪ ℛ_{𝒜₀}` that is not label-injective (it
+  exists exactly when the union is not independently target-testable), and
+  the statement is `∀ q, canonicalMixedDependenceQuotient … = some q →
   DeclaredSparseSurplusExit ∨ HasSparsePairDEBlocker activation Π`.  The
   contract `mixedSparseSpineDependence_of_baseline` proves it through the exit
   disjunct: the quotient is admissible (fibrewise and context-universal), so
@@ -720,12 +759,15 @@ gone.
 
 *Group SP (Surplus / Pair / [144]).*
 
-- **Lean.** `K .surplusPresentation` (idx 2200,
-  `SurplusPresentationStatement`) is published once at the start of [125]'s
-  activation (`surplusPresentationRow`); the surplus, pair and [144] rows read
-  the deficit safety, join slack, dyadic target, routing-label count and spine
-  scale from it, and `3 ≤ δ` / `¬ LengthOK 2` from `K .cubicBaseline`, with
-  `inputs.get`.  No surplus/pair/[144] row reads a `Data` field.
+- **Lean.** The surplus presentation identities (`SurplusPresentationStatement`,
+  the third component of `PresentationLawsStatement`) are part of the one entry
+  fact `K .cubicBaseline`, published once by `cubicBaselineRow` in
+  `selectedEntryPrefix` (`Assembly/Entry.lean`).  The surplus, pair and [144]
+  rows read the deficit safety, join slack, routing-label count and spine scale
+  (`(inputs.get (K .cubicBaseline)).down.2.2.1`), and `δ = 3` / `¬ LengthOK 2`
+  (`.1.1`, `.1.2.2.1`), with `inputs.get`.  No surplus/pair/[144] row reads a
+  `Data` field.  The former key `K .surplusPresentation` (idx 2200) and its row
+  are deleted.
 
 ## Remaining divergences (not admitted under the exception), family F5
 
@@ -769,7 +811,9 @@ gone.
 - **Presentation laws on the ledger (final pass, group SD).** The HSS closure
   law (`thm:p13free`, at G and G's induced subgraphs), the dyadic target, the
   scale family, the net-cap slack and the barrier label semantics are published
-  once at the entry as `K .spinePresentationLaws` (idx 2302); node `[16]` is the
+  once at the entry as the fourth component of `PresentationLawsStatement`
+  (`SpinePresentationLawsStatement`) inside the entry fact `K .cubicBaseline`
+  (the former key `K .spinePresentationLaws`, idx 2302, is deleted); node `[16]` is the
   row `hssTargetCycleRow` (`K .hssTargetCycle`, idx 2303) closed against
   `K .selection`.  `3 ≤ δ` / `δ = 3` are read from `K .cubicBaseline`.
 
@@ -885,14 +929,50 @@ where the user decided so, a residual carried by the node's open leaf.
   - the readings lie in different fibres; the routing label records the `T(p)`
     profile, not the reading at `Z`;
   - the readings are context-equivalent.
-- **Why it fails.** `def:admissible-rank-quotient` (tex 6026-6029): "a
-  target-complete proper-support correlation that has no smaller graph
-  representative is not an admissible rank reduction."  The paper never
-  constructs the smaller representative that exit (c) needs.
-- **Counterexample.** `Quarantine/PaperRepairs/Node144Gap.lean` gives the
-  survivor dichotomy L1′ (a target-complete pair adds no exit, L3) and two
-  locally G-valid configurations, F1 (a shoulder star) and F2 (a binary cubic
-  funnel), that reach [144] with no exit.
+- **Why it fails at G (the failing steps, about G's ledger at [144]).** At
+  the node, G's ledger carries `K .homogeneousBottleneckPattern` (the audited
+  role-homogeneous pattern at G's overloading token), `K .bottleneckRouting`
+  (G's canonical same-token routing: the two equal-label pattern edges `π₁`,
+  `π₂` and their demands), the capacity-token ledger, `K .bridgeless`,
+  `K .highCentreNormalForm`, `K .selection` and `K .sparseSurplusSurvivor`.
+  Let `Z = select?(X_{π₁} ∪ X_{π₂})` be the canonical connected support of the
+  two response coordinates `r_{π₁} ≠ r_{π₂}` of G, and read each on G's own
+  piece at `Z` (`SupportAtom.retainedPiece G Z X_{π_i}`).
+  1. **tex 5589, "[the two coordinates] lie in the same boundary-degree
+     fibre".**  The only equality the step has is the routing label's: equal
+     token, blocker type, subtype and the boundary-degree entry of the
+     demands' connector data at `T(p)`.  The step needs
+     `(retainedPiece G Z X_{π₁}).boundaryDegreeProfile =
+     (retainedPiece G Z X_{π₂}).boundaryDegreeProfile`, the profile of the
+     two readings at `Z`.  No fact on G's ledger at [144] gives it, and the
+     paper does not derive it from the label.
+  2. **tex 5594 (and 5614 at a cubic first separator), "target-complete on a
+     proper support ⇒ the target-complete compression exit".**  When the two
+     readings are context-equivalent at `Z`, exit (c) of G needs
+     `ReplacementSupport G Z`: a strictly smaller proper representative `Z'`
+     of `Z` in G with the five hypotheses of `lem:replacement`.
+     `def:admissible-rank-quotient` (tex 6026-6029) makes such a
+     representative a condition of admissibility ("a target-complete
+     proper-support correlation that has no smaller graph representative is
+     not an admissible rank reduction"), not a consequence of
+     context-equivalence.  The paper never constructs `Z'` for G's two
+     readings, and no fact on G's ledger at [144] supplies it.
+  The third case (same fibre and a separating context) is exit (b) at G's
+  declared family (`declaredSparseSurplusExit_of_pairDefect`), which G's
+  survivor refutes.  So on the no-handoff arm, G's ledger proves exactly the
+  two cases above.  That is `SameTokenPatternPairUnresolvedStatement`
+  (`sameTokenPatternUnresolvedRow`), pinned to G's canonical routing.
+- **Missing facts about G.** Either the profile equality of step 1 for G's
+  two readings at `Z`, or, for context-equivalent readings, a smaller proper
+  representative of `Z` in G (`ReplacementSupport` at `Z`).  With either one,
+  the paper's closure at [144] would follow from G's ledger.
+- **Sanity check only (not evidence about G).**
+  `Quarantine/PaperRepairs/Node144Gap.lean` contains the survivor dichotomy
+  L1′ (a target-complete pair adds no exit, L3) and two small configurations
+  on other graphs, F1 (a shoulder star) and F2 (a binary cubic funnel).  They
+  check that the definitions admit both residual cases.  They say nothing
+  about G, and they are not the justification of this entry: the
+  justification is the two failing steps above.
 - **Representation (user decision).** No `sorry`.  The two remaining cases are
   `SameTokenPatternPairUnresolvedStatement` (key
   `K .sameTokenPatternUnresolved`), published on the no-handoff arm of the exact
@@ -936,9 +1016,20 @@ where the user decided so, a residual carried by the node's open leaf.
   checked, no `sorry`); with the survivor fact it refutes every (e)
   obstruction.  The same map is used at [144]
   (`Contracts/SurplusPair/Routing.lean`, `responseObstructionRoutes`).
+- **Closed at the node, from G's ledger.** On [130]'s blocked arm the exact
+  decision `pairResponseObstructionDichotomy` (`Strategy/SurplusRows.lean`)
+  reads `K .dependentPairFamily`, which pins G's canonical activation, and
+  splits "some scheduled pair has a type-(e) obstruction at that activation"
+  (`K .pairResponseObstruction`, idx 2900) against its literal negation
+  (`K .pairNoResponseObstruction`, idx 2901).  The (e) arm is closed in
+  `Assembly.Internal.strictSurplusDependent` by
+  `closeIncompatible … (K .sparseSurplusSurvivor) (K .pairResponseObstruction)`
+  (`instIncompatibleSparseSurplusSurvivorPairResponseObstruction`, contract
+  `not_pairResponseObstruction_of_survivor`).  [132] then runs on the
+  no-(e) ledger.
 - **Representation.** No `sorry` (nothing unprovable is claimed).  The clause
-  is kept as the paper states it; it is simply never inhabited on the branch.
-  No other predicate replaces it.
+  is kept as the paper states it.  Its arm is closed at [130] against G's
+  survivor.  No other predicate replaces it.
 
 ### [144] the capped arm is unreachable after the audits (tex 1238-1252, 5653-5690, 5805-5812)
 
@@ -954,9 +1045,8 @@ where the user decided so, a residual carried by the node's open leaf.
 - **Faithful Lean statement.** `homogeneousBottleneckDichotomy`
   (`Strategy/HomogeneousBottleneckRows/FibrePressure.lean`) decides the fixed
   caps `HomogeneousCapsHoldAt` at G's canonical certified ledger, after the
-  audit, in the paper's order; the capped arm runs `homogeneousCapsCloseRow`
-  to [138] (`Assembly/Surplus/Local.lean`, `selectedBottleneckDischarge`).
-  d2ded0e has the same order.
+  audit, in the paper's order (d2ded0e has the same order).  The paper sends
+  the capped arm to [138].
 - **Why it fails.** The audit's own output, `K .homogeneousBottleneckPattern`,
   is a role-homogeneous same-token pattern of size at least `L_geom` in the
   role fibre of G's overloading token at that same ledger; the caps say no
@@ -967,8 +1057,17 @@ where the user decided so, a residual carried by the node's open leaf.
 - **Evidence.** `Contracts.SurplusPair.not_homogeneousCapsHold_of_pattern`
   (`Graph/Contracts/SurplusPair/OverloadClass.lean`, kernel-checked):
   `HomogeneousBottleneckPatternSchema → HomogeneousCapsHoldStatement → False`.
-- **Representation.** No `sorry`.  The decision and its capped arm are kept
-  exactly as the paper draws them; the arm is dead.  [144a] is unchanged.
+- **Closed at the node, from G's ledger.** The decision
+  `homogeneousBottleneckDichotomy` is kept in the paper's order.  Its caps arm
+  is closed in `selectedBottleneckDischarge` (`Assembly/Surplus/Local.lean`) by
+  `closeIncompatible … (K .homogeneousBottleneckPattern) (K .homogeneousCapsHold)`
+  (`instIncompatibleHomogeneousBottleneckPatternCapsHold`,
+  `Strategy/HomogeneousBottleneckRows/FibrePressure.lean`).  That is the
+  decision's own predecessor fact about G's overloading token, refuting the
+  caps at the same canonical certified ledger.  The paper's `[138]` route
+  from this arm (`homogeneousCapsCloseRow`) is no longer run.  The row module
+  is kept, unwired.
+- **Representation.** No `sorry`.  [144a] is unchanged.
 
 ### [153] (F2) exclusion, `lem:cold-corridor-first-failure` (ii) (tex 7265-7270)
 
