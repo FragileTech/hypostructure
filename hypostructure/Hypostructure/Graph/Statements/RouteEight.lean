@@ -78,58 +78,23 @@ noncomputable def route8UnifiedEntries (data : Parameters)
     (canonicalWindowPacking data object) (route8UnifiedComponents data object)
     data.threshold data.dischargeScale
 
-/-- The `[113]`-tested quotient-freeness of the unified census
-(`def:typeA-trace-basin` (b) at every unified entry's selected basin): the
-plain trace-response quotient occurs at no entry.  It is decided by a
-`Decision`; the no arm retains its literal negation. -/
+/-- The quotient-freeness of the unified census (`lem:typeA-unified-carriers`,
+tex 15360-15364: alternative (b) of `def:typeA-trace-basin` at the entries of
+`\tilde\Xi`): no unified entry's selected basin carries a nontrivial
+target-complete response quotient.  It is decided by a `Decision`; the no arm
+retains its literal negation, which `thm:main` returns at `[187]` as the
+failure of route-8 quotient freeness. -/
 def Route8QuotientFreeStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop := by
   classical
   letI : DecidableEq object.Vertex := object.vertices.decEq
-  exact (∀ index ∈ route8UnifiedEntries data object,
+  exact ∀ index ∈ route8UnifiedEntries data object,
       ∀ basin : Finset object.Vertex,
         Graph.Route8.TraceBasin.select? object index.1 data.threshold
             index.2.1 index.2.2 = some basin →
           ¬ ∃ retained,
             Graph.Route8.TraceBasin.TraceResponseQuotient object index.1
-              data.threshold data.LengthOK index.2.1 index.2.2 basin retained) ∧
-    -- the same clause-(b) state at every candidate extracted core of the
-    -- bridge pieces (`lem:typeB-bridge-with-route8-core`'s deleted regions):
-    -- on the free arm every negative no-handoff core of a deleted region is
-    -- exactly a member of `route8ExtractedCores`.
-    ∀ component ∈ (object.canonicalPieces
-        (object.remainderSupport (canonicalWindowPacking data object))).filter
-          fun component =>
-            object.NegativeNetCharge
-                (object.pieceSupport
-                  (object.remainderSupport (canonicalWindowPacking data object))
-                  component)
-                data.threshold data.dischargeScale ∧
-              0 < object.ambientSurplus
-                (object.pieceSupport
-                  (object.remainderSupport (canonicalWindowPacking data object))
-                  component)
-                data.threshold,
-      let deleted := object.pieceSupport
-          (object.remainderSupport (canonicalWindowPacking data object))
-          component \
-        Graph.TypeBRefinedSupport.centres object data.threshold
-          (object.pieceSupport
-            (object.remainderSupport (canonicalWindowPacking data object))
-            component)
-      ∀ core ∈ (object.canonicalPieces deleted).image
-          (object.pieceSupport deleted),
-        object.NegativeNetCharge core data.threshold data.dischargeScale →
-        ¬ SeparatorHandoffAt data object core →
-        ∀ receiver ∈ object.receivers core data.threshold,
-          ∀ load ∈ Graph.VisibleEntry.excessBasinReduced object core
-              data.threshold data.dischargeScale receiver ∅,
-            ∀ basin : Finset object.Vertex,
-              Graph.Route8.TraceBasin.select? object core data.threshold
-                  receiver load = some basin →
-                ¬ ∃ retained,
-                  Graph.Route8.TraceBasin.TraceResponseQuotient object core
-                    data.threshold data.LengthOK receiver load basin retained
+              data.threshold data.LengthOK index.2.1 index.2.2 basin retained
 
 /-- **`def:typeA-pressure-ledger` with `lem:typeA-pressure-ledger-no-overcount`
 and `lem:typeA-pressure-records-canonical`**, on the unified collection: a

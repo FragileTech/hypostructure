@@ -22,7 +22,7 @@ universe u v
     (fun inputs =>
       .cons (key := K .route8UnifiedEntryCensus)
         ⟨Graph.Contracts.RouteEight.route8UnifiedEntryCensus data.toParameters inputs.current.object
-          (inputs.get (K .route8QuotientFree)).down.1
+          (inputs.get (K .route8QuotientFree)).down
           (inputs.get (K .selection)).down.1
           (inputs.get (K .selection)).down.2
           (inputs.get (K .replacementExclusion)).down⟩ .nil)

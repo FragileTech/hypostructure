@@ -1171,96 +1171,6 @@ where the user decided so, a residual carried by the node's open leaf.
   (`selectedTypeAExitFourDischargedRetest`,
   `Assembly/TypeA/ExitFourDischargedRetest.lean`).  No `sorry`.
 
-### [348] `lem:typeA-unified-carriers`: alternative (b) of `def:typeA-trace-basin` at the unified entries is "a standing-invariant contradiction" (tex 15360-15364, 15336-15339)
-
-*Final fix pass R8 (supersedes the TA entry "[123] / key 348").*
-
-- **Paper's claim.**  `lem:typeA-unified-carriers` (tex 15360-15364): at an
-  entry of `\tilde\Xi`, "Alternatives (b)--(d) are exits (5),(6),(7): the first
-  two are standing-invariant contradictions (`cor:uncompressible`,
-  `lem:proper-smearing`, `lem:no-silent-global-smearing`)"; the census of
-  `lem:typeA-unified-deficit` (tex 15336-15339): "exits (5),(6) are
-  contradictions".
-- **Faithful formal statement.**
-  `Contracts.RouteEight.route8QuotientFree_of_uncompressible`
-  (`Graph/Contracts/RouteEight/EntryCensus.lean`), a library contract applied
-  only at G (`instIncompatibleRoute8QuotientResidualSelection`, fed by G's
-  selection fact, G's baseline, the registered cubic/dyadic presentation and
-  G's uncompressibility): no entry of G's unified collection (and no entry of
-  G's extracted route-8 cores) carries a nontrivial target-complete response
-  quotient -- `Route8QuotientFreeStatement` at G, the node-`[347]` predicate.  Its proof is
-  `sorry -- PAPER-ERROR [348] tex:15362`.
-- **The failing step, about G.**  The paper's argument at `[123]` is: an entry
-  `ξ = (X, w, u, B_u)` of G's unified collection whose trace basin `B_u`
-  realizes alternative (b) contradicts `cor:uncompressible` for G.  That
-  contradiction needs the fact *"G's response quotient at `ξ` is realized by a
-  smaller connected boundaried piece of G"* -- i.e. a support `S` of G with
-  `CompressibleSupport G S` -- which is what `K .uncompressible` refutes.  The
-  paper supplies it only "when this quotient is realized by a smaller connected
-  representative" (`def:typeA-trace-basin` (b), tex 10773-10775);
-  `lem:typeA-exits-discharged` (tex 11690-11694) says a compression occurring
-  "only at the trace-basin response level" is "not an admissible route-8
-  residual" and derives no contradiction.  No fact on G's ledger at `[348]`
-  (`[339]` unified deficit, the selection fact, `K .replacementExclusion`,
-  `K .uncompressible`, the Type B sublinear ledger) produces such a
-  representative from the quotient at `ξ`.
-- **Why the missing fact is substantive at G.**  At every entry of G's unified
-  collection with `α(ξ) ≤ 1`, forgetting the trace incidence *is* a nontrivial
-  target-complete response quotient of G's basin
-  (`route8Entry_smallCoreQuotient`, applied at G's entries in
-  `route8EntryFacts`); so the claim contains "every unified entry of G has
-  `α(ξ) ≥ 2`", which the paper obtains (`lem:typeA-unified-carriers`) only
-  through this same claim.
-- **Neither side derivable from G's ledger at `[348]`.**  The decision
-  `route8QuotientDichotomy` reads `[339]` and asks (b) at G's own entries
-  (`route8UnifiedEntries` over P₀'s remainder).  No ledger fact at that node
-  asserts a response quotient at any of G's basins, and none bounds `α` at
-  G's entries (that bound is derived downstream, at the census, *from* the
-  quotient-free arm); the only closure the ledger offers against (b) is
-  `K .uncompressible`, which needs the missing representative above.
-- **Lean.**  `route8QuotientDichotomy` stays (it reads `[339]`); its no arm
-  `K .route8QuotientResidual` is closed by `closeIncompatible` against
-  `K .selection` (`instIncompatibleRoute8QuotientResidualSelection`,
-  `Strategy/SpineRows/Route8QuotientDichotomy.lean`; uncompressibility is
-  derived from the selection fact through `replacementExclusion_of_selection`).
-  `[348]` is no longer an outcome of Part IX: `SelectedRouteEightBoundary` has
-  two disjuncts (Type B sublinear residual, `[186]` joint balance).  The
-  `.route8QuotientResidual` disjunct of `OtherReturnedOutcome`
-  (`Assembly/Final.lean`, part of the protected six-outcome result) is now never
-  produced; it was left in place because that type is not to be edited here.
-- **The TA vacuity claim is withdrawn.**  The TA entry stated that
-  `Route8.TraceBasin.exists_traceResponseQuotient_of_selected`
-  (`Graph/TraceIncidenceQuotient.lean`) makes `¬ Route8Entry` hold whenever
-  `load ≠ receiver`.  That file was imported by no module and does not compile
-  against the live `TraceResponseQuotient` (whose third clause is the
-  all-realizations clause since `21dd850`); the scratch check succeeded only
-  because Lean loaded a stale `TraceIncidenceQuotient.olean` of 2026-09-04,
-  whose proof had been checked against the pre-`21dd850` clause
-  (`TargetComplete` of `retainedReading retained` against `retainedReading` of
-  the full family, which erasing the trace incidence satisfies trivially).
-  The file is deleted.  At G the route-8 entry is `Route8Entry` at G's pinned
-  objects (`X₀`/`P₀`, the receiver and load of G's census, the basin
-  `select?` of G); of its clauses, trace-completeness holds by selection,
-  (c) is refuted from G's `K .replacementExclusion` and selection
-  (`not_traceDelocalization`), (d) from G's no-handoff filter, (b) at the
-  unified entries by `[347]`/`[348]` above, and (a) is the exit-(4) witness
-  that G's own decisions ask ([101], [181]); none of G's ledger facts decides
-  (a) at G's entries, so neither `Route8Entry` nor its negation follows from
-  them.  The erased-trace-incidence quotient is target-complete at G's basin
-  only if every realization, including states differing on `T_u` off the
-  retained supports, answers G's declared target algebra alike in every
-  context; nothing on G's ledger states that.
-- **Realization class restated.**  `QuotientRealization`
-  (`Graph/Route8Residual.lean`) is now the paper's: a boundaried state in the
-  basin's boundary-degree fibre "whose image under the quotient map is the
-  given quotient", i.e. which carries every retained entry exactly as
-  `\rho_u(B_u)` does (a label-fixing placement, injective on each retained
-  declared support and preserving and reflecting its incidences).  The earlier
-  class (label-fixing surjective images of the basin piece) read the sentence
-  in the opposite direction.  Nontriviality is the paper's too: a forgotten
-  coordinate whose declared support meets `B_u - ∂B_u` or contains an edge of
-  `B_u` (the earlier third clause asked both endpoints off `∂B_u`).
-
 ### [82] `c ≤ 1` without B2: "`N₀(X) ≥ 0`" (tex 1020, `lem:typeB-exclusion` tex 14349, `rem:typeB-status`)
 
 - **Paper claim.** Node [82]: "yes: certificate-closed or B2-paid;
@@ -1284,6 +1194,56 @@ where the user decided so, a residual carried by the node's open leaf.
   there.  No `sorry` is used: the node's proved content (Step 1 and the B2-paid
   bridge reduction) is on the ledger, and the continuation [85] is the same
   `K .typeBExclusionResidual` fact as on the other arms.
+
+## Paper findings (no sorry)
+
+Each entry is a place where the paper is internally inconsistent or routes a
+case differently from its diagram.  The Lean follows the paper's main theorem
+and argument path; no `sorry` is involved.
+
+### [348] paper inconsistency: `lem:typeA-unified-carriers` (tex 15362) vs `thm:main` (tex 369-372)
+
+*Fix pass fix2-TR (supersedes the R8 entry "PAPER-ERROR [348] tex:15362").*
+
+- **The two statements.**  `thm:main` (tex 369-372, 388-390), the diagram
+  (tex 1215, `[187] OPEN aggregate`), its caption (tex 1255: "`[187]` collects
+  ... `route8QuotientResidual` ... and `[187]` does not assert closure of any
+  survivor") and the outcome table (tex 1432) list *failure of route-8
+  quotient freeness* as a returned outcome of `[187]`.  The proof of
+  `lem:typeA-unified-carriers` (tex 15360-15364) instead dismisses alternative
+  (b) of `def:typeA-trace-basin` at an entry of `\tilde\Xi` as exit (5), "a
+  standing-invariant contradiction (`cor:uncompressible`)".
+- **Why they disagree.**  Exit (5) and alternative (b) yield a compression of
+  G only "when this quotient is realized by a smaller connected
+  representative" (tex 10773-10775, 10824-10826); `lem:typeA-exits-discharged`
+  (tex 11690-11694) derives no contradiction from a response-level (b).  The
+  step at tex 15362 therefore needs "G's quotient at `ξ` is realized by a
+  smaller connected boundaried piece of G", which neither the paper nor G's
+  ledger at `[348]` supplies.  `thm:main` does not use that step: it returns
+  the outcome instead.
+- **Lean (follows `thm:main`).**  `route8QuotientDichotomy` reads `[339]` and
+  splits on `Route8QuotientFreeStatement` at G's unified entries (tex
+  15360-15364 content only: every entry of `route8UnifiedEntries`, its
+  `select?` basin, no `TraceResponseQuotient`).  Its no arm
+  `K .route8QuotientResidual` is routed through `SelectedRouteEightBoundary`
+  (`Assembly/RouteEight/Boundary.lean`, three disjuncts) to the existing
+  `OtherReturnedOutcome.route8QuotientResidual` disjunct of
+  `SelectedLedgerBoundaryResult` (`Assembly/Final.lean`, unchanged).  The
+  former closure `instIncompatibleRoute8QuotientResidualSelection` and the
+  sorry'd `Contracts.RouteEight.route8QuotientFree_of_uncompressible` are
+  deleted.  No `sorry`.  The census of `lem:typeA-unified-carriers` still gets
+  `α(ξ) ≥ 2` on the free arm (`route8EntryFacts`), from G's own
+  quotient-freeness.
+- **Scope of `[347]`.**  The former second conjunct of
+  `Route8QuotientFreeStatement` (every negative no-handoff core of a deleted
+  region, any `σ`, every receiver, `excessBasinReduced` loads) went beyond
+  tex 15360-15364 and had no reader; it is removed.  The extracted cores carry
+  their own quotient-free clause in `route8ExtractedCores`.
+- **Realization class (unchanged from R8).**  `QuotientRealization`
+  (`Graph/Route8Residual.lean`) is a boundaried state in the basin's
+  boundary-degree fibre "whose image under the quotient map is the given
+  quotient"; nontriviality is a forgotten coordinate whose declared support
+  meets `B_u - ∂B_u` or contains an edge of `B_u`.
 
 ## User-approved repairs
 

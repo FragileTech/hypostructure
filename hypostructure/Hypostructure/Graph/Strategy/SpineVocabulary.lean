@@ -725,15 +725,14 @@ inductive Key where
   /-- The exact negation of the sublinear hypotheses, retained as the tested
   residual state (the manuscript's Part IX bridge-residual continuation). -/
   | typeBSublinearResidual
-  /-- The `[113]`-tested quotient-freeness of the unified census: no entry's
-  selected basin carries the plain trace-response quotient (the cased
-  exit-`(5)` state).  The yes arm makes every unified entry route-8 or
-  alternative-(a); the no arm is exit `(5)` at a unified entry. -/
+  /-- The quotient-freeness of the unified census (tex 15360-15364): no
+  entry's selected basin carries a nontrivial target-complete response
+  quotient.  The yes arm makes every unified entry route-8 or alternative-(a);
+  the no arm is alternative (b) at a unified entry. -/
   | route8QuotientFree
-  /-- The exact negation: some unified entry realizes alternative (b).  The
-  paper declares it a standing-invariant contradiction
-  (`lem:typeA-unified-carriers`, `cor:uncompressible`); it is closed against
-  `K .selection` (PAPER-ERROR [348]). -/
+  /-- The exact negation: some unified entry realizes alternative (b).
+  `thm:main` returns it at `[187]` as the failure of route-8 quotient freeness
+  (tex 369-372, 388-390). -/
   | route8QuotientResidual
   /-- `def:typeA-pressure-ledger` at the failed-rate stage: the maximal pinned
   2/3-demand ledger over the unified collection, with its no-overcount counts
