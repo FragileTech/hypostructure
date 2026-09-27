@@ -236,4 +236,28 @@ theorem homogeneousBottleneckPattern_of_class
   exact ⟨⟨⟨capacity, certified⟩, (token, role)⟩, pattern, overloadSelected,
     patternSelected, patternSpec⟩
 
+/-- **The `[144]` caps arm is unreachable after the audits** (paper error at
+`[144]`, `thm:homogeneous-overload-geometric-closure` with the diagram order
+tex 1238-1252).  The geometric audit `[140]`/`[142]`/`[143]` publishes a
+role-homogeneous same-token pattern of size at least `L_geom` in the role
+fibre of G's overloading token at G's canonical certified ledger; the fixed
+caps at that same ledger say no token carries such a pattern.  So the caps
+test of `[144]`, drawn after the audits, has only its failing arm. -/
+theorem not_homogeneousCapsHold_of_pattern
+    (pattern : HomogeneousBottleneckPatternSchema data object)
+    (caps : HomogeneousCapsHoldStatement data object) : False := by
+  obtain ⟨⟨⟨capacity, certified⟩, token, role⟩, pat, overloadSelected,
+    _patternSelected, spec⟩ := pattern
+  obtain ⟨ledgerSelected, tokenSelected⟩ :=
+    canonicalOverload_selected overloadSelected
+  obtain ⟨capacity', certified', ledgerSelected', capsAt⟩ := caps
+  rw [ledgerSelected] at ledgerSelected'
+  cases ledgerSelected'
+  have tokenMem :=
+    (canonicalOverloadTokenAt_spec_of_eq_some data object tokenSelected).1
+  obtain ⟨subset, shape, large, _⟩ := spec
+  rcases shape with matching | ⟨centre, star⟩
+  · exact capsAt.1 _ tokenMem _ ⟨pat, subset, matching, large⟩
+  · exact capsAt.2 _ tokenMem _ ⟨centre, pat, subset, star, large⟩
+
 end Hypostructure.Graph.Contracts.SurplusPair

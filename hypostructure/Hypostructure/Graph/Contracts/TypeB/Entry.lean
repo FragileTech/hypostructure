@@ -434,6 +434,6 @@ theorem typeBFanEntry_of_sameTokenHandoff
   obtain ⟨⟨core', centres'⟩, selected, handoffAt'⟩ :=
     canonicalChoice_spec (spec := fun support : Finset object.Vertex × Finset object.Vertex =>
       SameTokenHandoffAt data object support.1 support.2) ⟨(core, centres), handoffAt⟩
-  exact Or.inr ⟨above, core', centres', selected, handoffAt'⟩
+  exact Or.inr ⟨above, Or.inl ⟨core', centres', selected, handoffAt'⟩⟩
 
 end Hypostructure.Graph.Contracts.TypeB

@@ -24,12 +24,18 @@ the current object survives all five exits.  This is the manuscript's
 "after sparse exits" branch point: selection and replacement facts are not
 re-proved here.  The exits are tested at G's declared sparse family
 (`DeclaredSparseSurplusExit`): clause (b) is a target-defective identification
-of two of G's own declared coordinates read on G's own piece. -/
+of two of G's own declared coordinates read on G's own piece.
+
+The node's box reads "after `P₁₃` label algebra and sparse exits": the decision
+reads that predecessor fact (`K .localAlgebra`) from the ledger.  The exit test
+itself is a property of G's declared sparse family, with no further witness to
+pin, so its two arms are the exit and its literal negation. -/
 noncomputable def sparseSurplusSurvivorDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger (Input BranchState Presentation presentation data)
       current known)
+    [FactKeys.Has (K .localAlgebra) known]
     (exitFresh : K .sparsePairExit ∉ known)
     (survivorFresh : K .sparseSurplusSurvivor ∉ known) :
     Decision (K .sparsePairExit) (K .sparseSurplusSurvivor) previous :=
@@ -38,6 +44,7 @@ noncomputable def sparseSurplusSurvivorDichotomy
     (Classical.choice (show Nonempty
         ((K .sparsePairExit).At current ⊕
           (K .sparseSurplusSurvivor).At current) from by
+      have _labelAlgebra := (previous.get (K .localAlgebra)).down
       by_cases exit : DeclaredSparseSurplusExit data.toParameters current.object
       · exact ⟨.inl ⟨exit⟩⟩
       · exact ⟨.inr ⟨exit⟩⟩))

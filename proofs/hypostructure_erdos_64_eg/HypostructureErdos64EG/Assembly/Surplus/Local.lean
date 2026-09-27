@@ -45,16 +45,23 @@ noncomputable def selectedSparseSurplusActivation
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .suppressedFamilyCriticalCycle,
         K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
-        K .openPortSuppression,
+        K .openPortSuppression, K .surplusPresentation,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .cycleRankConstraint, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
         K .selection] := by
+  -- The presentation identities the surplus rows spend, published once on
+  -- node `[125]`'s ledger (as `K .cubicBaseline` is at the entry).
+  let presented :=
+    (surplusPresentationRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      history (by key_fresh)
   let suppressionDefined :=
     (openPortSuppressionRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
-      history (by key_fresh)
+      presented (by key_fresh)
   let suppressionSafe :=
     (openPortSuppressionSafeRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -113,6 +120,7 @@ noncomputable def selectedPairCodeChain
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .surplusAbove) known]
+    [FactKeys.Has (K .surplusPresentation) known]
     (systemFresh : K .pairOverlapSystem ∉ known := by key_fresh)
     (factorizationFresh : K .pairConditionalFactorization ∉ known := by key_fresh)
     (factorizationFailsFresh : K .pairFactorizationFails ∉ known := by key_fresh)
@@ -255,6 +263,7 @@ noncomputable def selectedBottleneckDischarge
     [FactKeys.Has (K .surplusAbove) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .surplusPresentation) known]
     (failFresh : K .homogeneousCapsFail ∉ known := by key_fresh)
     (capsFresh : K .homogeneousCapsHold ∉ known := by key_fresh)
     (routingFresh : K .bottleneckRouting ∉ known := by key_fresh)

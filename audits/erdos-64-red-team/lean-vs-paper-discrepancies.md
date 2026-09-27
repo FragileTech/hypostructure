@@ -547,6 +547,118 @@ canonical homogeneous pattern at that token
   contradiction stated one node later.  Kernel-checked; the visible lane still
   reaches the open node `[186]`.
 
+## [130]: now paper-exact, the full blocker set `Blk(π)` over clauses (a)--(f)
+
+*Group SP (Surplus / Pair / [144]).*
+
+- **Paper** (diagram tex 1195 "canonical pair split: blocker-free?";
+  `prop:sparse-pair-independence-dichotomy`, tex 4721-4726;
+  `def:canonical-blocker-ledger`, tex 2926-2934).  A pair is blocked when
+  `Blk(π) ≠ ∅` over all six clause types.
+- **Lean.** `pairResponseIndependenceDichotomy` (`Strategy/SurplusRows.lean`)
+  splits `Graph.HasSparsePairBlocker activation Π(𝒜₀)`
+  (`Graph/SparseEntropySandwich.lean`): some scheduled pair has a nonempty
+  `(recordSparsePairDEBlockers activation Π).blockers π`, the same recorded
+  activation that [134] (`canonicalPairLedger`) and [136] (`CapacityLedgerSpec`)
+  use.  `IndependentPairFamilyStatement` is its literal negation at G's
+  canonical activation; the [131] code pair set (`canonicalCodePairSet`), the
+  [131] count-fails input (`FreePairCodeUnrealizedStatement`), the [132]
+  blocker arm (`CanonicalBlockerRouteStatement`) and the [134] ledger
+  (`CanonicalPairLedgerStatement`) all read the same six-clause predicate, and
+  the first failed pair set of [178] is `Π ⊆ Π_free`
+  (`PairOverlapFirstFailure.pairSet_blockerFree`).
+- **Difference.** None.  Earlier the test read clauses (d)/(e) only.
+
+## `def:surplus-blockers` (d), (e): the determination certificate of `r_π`
+
+*Group SP (Surplus / Pair / [144]).*
+
+- **Paper** (tex 2897-2903; `lem:sparse-pair-dependence-exit`, tex 4675-4718).
+  (d) is "a boundary-degree-profile coordinate which prevents a quotient or
+  replacement from staying in a single fibre"; (e) is "a target-response
+  coordinate witnessing a target-defective quotient, target-complete
+  compression, or support-dependence event".  In the lemma both arise from an
+  inclusion-minimal determination of `r_π` from a subfamily `B`.
+- **Lean.** `SparsePairDetermination` is that determination (a functional,
+  rank-reducing attempted declared quotient of G's pair-response family at the
+  activation, with an inclusion-minimal certificate of `r_π`).
+  `SparsePairDEProfileObstructionAt` (d) adds that two of G's own coordinates
+  `{r_π} ∪ B`, read on G's piece at their canonical support, lie in different
+  boundary-degree fibres.  `SparsePairDEResponseObstructionAt` (e) adds one of
+  the three events: `ResidualTargetDefect` among `{r_π} ∪ B`,
+  `ReplacementSupport` of the determination support, or a whole-graph support
+  with a strictly smaller closed representative.
+- **Difference.** Earlier, (d) compared the two demands' declared supports of
+  every pair with no attempted identification (true for almost every pair), and
+  (e) omitted the support-dependence event.  (e) is empty on the survivor
+  branch; see Paper errors.
+
+## [131]: `lem:mixed-sparse-spine-dependence` is the paper's statement, with no consumer
+
+*Group SP (Surplus / Pair / [144]).*
+
+- **Paper** (tex 4872-4887).  If `ℐ_spine ∪ ℛ_{𝒜₀}` is not independently
+  target-testable, G has a sparse surplus exit or some pair has a blocker of
+  type (d) or (e).
+- **Lean.** `MixedSparseSpineDependenceStatement` (key 203) is exactly that at
+  G's canonical spine family and canonical activation:
+  `¬ (∀ functional admissible quotient, label-injective) →
+  DeclaredSparseSurplusExit ∨ HasSparsePairDEBlocker activation Π`.  The
+  contract `mixedSparseSpineDependence_of_baseline` proves it through the exit
+  disjunct: the quotient is admissible (fibrewise and context-universal), so
+  `DeclaredQuotient.localize` gives exit (c) or exit (d).
+- **Difference.** The fact is published on [131]'s ledger
+  (`mixedSparseSpineDependenceRow`) and no row requires it: the [131] entropy
+  count is a registered branch test ("[131] and [137]: the count-fails arm is
+  the negation of the count"), so the independence it would justify is not
+  consumed.  Earlier the conclusion did not mention the pair and re-chose the
+  quotient.
+
+## [132]: the exit arm reads [130] and is closed by the [125] survivor
+
+*Group SP (Surplus / Pair / [144]).*
+
+- **Paper** (diagram tex 1197-1199, 1224; `lem:sparse-pair-dependence-exit`).
+  "blocked-pair routing: exit or canonical blocker?"; the exit closes at [133].
+- **Lean.** `blockedPairRoutingDichotomy` reads `K .dependentPairFamily` and
+  splits `DeclaredSparseSurplusExit` against its negation; the exit arm closes
+  at [133] against `K .sparseSurplusSurvivor` (`closeIncompatible`).
+- **Difference.** The exit predicate is a property of G's declared family, so
+  there is no witness to pin.  On this branch the exit arm is dead because
+  [125] already excludes every exit; this is the paper's own [133].
+
+## [179]/[180]: the Type B alternative is the obstruction's own first-separator handoff
+
+*Group SP (Surplus / Pair / [144]).*
+
+- **Paper** (`lem:pair-system-realizability` (iv), tex 5110-5130, proof tex
+  5147-5153; `lem:pair-system-increment-arithmetic`, tex 5207-5220).  "The first
+  nonserial intersection is a same-token routed bottleneck whose first
+  separator is a high-degree vertex: the decorated Type B fan data".
+- **Lean.** `PairSystemEarlyOutcome.typeB` and `PairIncrementEarlyOutcome.typeB`
+  carry `PairObstructionHandoff returns`
+  (`Statements/CanonicalPairHandoff.lean`): the canonical routes inside the
+  retained obstruction's overlap support to its two demands `d_p`, `d_q`, their
+  canonical first separator, and `envelopeOfFirstSeparator` on the core
+  `{d_p, d_q}` at `P₀` under the node-[144] handoff conditions, escaping
+  physically.  The Type B entry `TypeBFanEntryStatement`
+  (`Statements/TypeBLanes.lean`) has a matching strict-surplus lane at
+  `canonicalPairObstructionSupport` of `canonicalPairDemandReturns`
+  (`typeBFanEntry_of_pairObstructionHandoff`).
+- **Difference.** Earlier the alternative was node [144]'s same-token handoff
+  of G, unrelated to the obstruction.
+
+## Presentation identities of the surplus branch on the ledger
+
+*Group SP (Surplus / Pair / [144]).*
+
+- **Lean.** `K .surplusPresentation` (idx 2200,
+  `SurplusPresentationStatement`) is published once at the start of [125]'s
+  activation (`surplusPresentationRow`); the surplus, pair and [144] rows read
+  the deficit safety, join slack, dyadic target, routing-label count and spine
+  scale from it, and `3 ≤ δ` / `¬ LengthOK 2` from `K .cubicBaseline`, with
+  `inputs.get`.  No surplus/pair/[144] row reads a `Data` field.
+
 ## Remaining divergences (not admitted under the exception), family F5
 
 - **[49]** `Graph.RemainderClass` drops the paper's subcubicity on the
@@ -603,6 +715,75 @@ where the user decided so, a residual carried by the node's open leaf.
   `K .typeBHandoffFails`).  They are carried by the open leaf [144a]:
   `Node144aOutcome` is the handoff, or the unresolved pattern pair, together
   with every [144] retained fact.
+
+### [130]--[134] blocker (e) of `def:surplus-blockers` is empty on the surplus survivor (tex 2900; tex 4686-4718, 4899-4925)
+
+*Group SP (Surplus / Pair / [144]).*
+
+- **Paper claim.** `def:surplus-blockers` (e) is "a target-response coordinate
+  witnessing a target-defective quotient, target-complete compression, or
+  support-dependence event, in the sense of `lem:context-universality`,
+  `cor:uncompressible`, `lem:proper-smearing`,
+  `lem:no-silent-global-smearing`".  [130] tests `Blk(π) = ∅` over all six
+  clauses, and (e) is one of the ways a pair can be blocked at [130]/[134].
+- **Faithful Lean statement.** `Graph.SparsePairDEResponseObstructionAt
+  activation Π π` (`Graph/SparseEntropySandwich.lean`): an inclusion-minimal
+  determination certificate of `r_π` from its determiners
+  (`SparsePairDetermination`, the certificate of
+  `lem:sparse-pair-dependence-exit`, tex 4675-4684) together with one of the
+  clause's three events: a target-defective identification among G's own
+  coordinates `{r_π} ∪ determiners` (`ResidualTargetDefect`), a target-complete
+  replacement of the determination support (`ReplacementSupport`, compression
+  and proper support dependence), or a whole-graph support with a strictly
+  smaller closed representative.  It is read at G's canonical activation at
+  every node that uses the blocker set.
+- **Why it is empty.** Each of the three events is a named sparse surplus exit
+  of G's declared family: exit (b), (c), (d) respectively
+  (`declaredSparseSurplusExit_of_responseObstruction`,
+  `Statements/SurplusPair.lean`).  The paper says so itself: "This is a sparse
+  surplus exit of type (b), and the distinguishing target-response coordinate
+  is also a blocker of type (e)" (tex 4690-4691; for (c) tex 4700-4701, and
+  in `lem:mixed-sparse-spine-dependence` tex 4906-4914).  Every node that reads the blocker set ([130]--[136], [144]) runs
+  on the survivor `K .sparseSurplusSurvivor` of [125], which is the negation of
+  every such exit.  So on this branch no pair has a blocker of type (e); [130]'s
+  blocked arm is driven by clauses (a)--(d) and (f).
+- **Evidence.** `declaredSparseSurplusExit_of_responseObstruction` (kernel-
+  checked, no `sorry`); with the survivor fact it refutes every (e)
+  obstruction.  The same map is used at [144]
+  (`Contracts/SurplusPair/Routing.lean`, `responseObstructionRoutes`).
+- **Representation.** No `sorry` (nothing unprovable is claimed).  The clause
+  is kept as the paper states it; it is simply never inhabited on the branch.
+  No other predicate replaces it.
+
+### [144] the capped arm is unreachable after the audits (tex 1238-1252, 5653-5690, 5805-5812)
+
+*Group SP (Surplus / Pair / [144]).*
+
+- **Paper claim.** The diagram routes [137] `D_all > 0` → [139]/[141] → the
+  geometric audits [140]/[142]/[143] "homogeneous matching/star" → [144]
+  "same-token bottleneck: Type B handoff or capped route?", whose capped arm
+  goes to [138].  `prop:nonnear-cubic-sharp-overload-routing` reads it as "if
+  no homogeneous same-token pattern reaches size `L_geom`, the fixed caps hold
+  ...; if such a pattern exists, `lem:same-token-bottleneck-routing` gives
+  either a sparse surplus exit or decorated Type B handoff data".
+- **Faithful Lean statement.** `homogeneousBottleneckDichotomy`
+  (`Strategy/HomogeneousBottleneckRows/FibrePressure.lean`) decides the fixed
+  caps `HomogeneousCapsHoldAt` at G's canonical certified ledger, after the
+  audit, in the paper's order; the capped arm runs `homogeneousCapsCloseRow`
+  to [138] (`Assembly/Surplus/Local.lean`, `selectedBottleneckDischarge`).
+  d2ded0e has the same order.
+- **Why it fails.** The audit's own output, `K .homogeneousBottleneckPattern`,
+  is a role-homogeneous same-token pattern of size at least `L_geom` in the
+  role fibre of G's overloading token at that same ledger; the caps say no
+  token carries one.  So on the paper's own path the caps test has only its
+  failing arm (and `D_all > 0` at [137] already forces the audits to find the
+  pattern).  The paper's capped route to [138] is the [137] no-arm, not a
+  [144] arm.
+- **Evidence.** `Contracts.SurplusPair.not_homogeneousCapsHold_of_pattern`
+  (`Graph/Contracts/SurplusPair/OverloadClass.lean`, kernel-checked):
+  `HomogeneousBottleneckPatternSchema → HomogeneousCapsHoldStatement → False`.
+- **Representation.** No `sorry`.  The decision and its capped arm are kept
+  exactly as the paper draws them; the arm is dead.  [144a] is unchanged.
 
 ### [153] (F2) exclusion, `lem:cold-corridor-first-failure` (ii) (tex 7265-7270)
 

@@ -305,15 +305,15 @@ theorem sameTokenBottleneckRouting_of_pattern
         exact card
       · exact absurd (pairFacts.1 (Finset.mem_toList.mp (List.get_mem _ _))) hu
 
-  -- Every recorded type-(e) obstruction of a scheduled pair is a
-  -- target-defective identification of the pair's two demands on G's own
-  -- piece, or a target-complete compression of the pair's canonical support
-  -- `X_π` (`def:surplus-blockers` (e)): literally sparse exit (b) or (c) of
-  -- G.  This applies even when an earlier blocker clause (a)--(d) is the
-  -- pair's canonical capacity charge.
+  -- Every recorded type-(e) obstruction of a scheduled pair witnesses a
+  -- target-defective identification among G's own pair coordinates, a
+  -- target-complete compression of the determination support, or a
+  -- whole-graph closed representative (`def:surplus-blockers` (e)):
+  -- literally sparse exit (b), (c) or (d) of G.  This applies even when an
+  -- earlier blocker clause (a)--(d) is the pair's canonical capacity charge.
   have responseObstructionRoutes
       (pair : Finset (object.Vertex × object.Vertex))
-      (pairSchedule : pair ∈ object.portPairSchedule data.threshold)
+      (_pairSchedule : pair ∈ object.portPairSchedule data.threshold)
       (coordinate : Graph.FiniteObject.PairCoordinate object)
       (obstructs : coordinate ∈
         capacity.activation.responseObstructions pair) :
@@ -332,19 +332,12 @@ theorem sameTokenBottleneckRouting_of_pattern
           (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
           (LengthOK := data.LengthOK)
           (Graph.pairResponseActivation active)
-          pair := by
+          (object.portPairSchedule data.threshold) pair := by
       simp only [Graph.recordSparsePairDEBlockers] at recordedObstructs
       split at recordedObstructs
       next present => exact present
       next absent => simp at recordedObstructs
-    rcases obstruction with defect | ⟨support, _supportEq, replacement⟩
-    · -- A target-defective identification of the pair's two demands on G's
-      -- own piece: sparse exit (b) of G's declared family.
-      exact declaredSparseSurplusExit_of_demandDefect active
-        (object.subset_excessPorts_of_mem_portPairSchedule data.threshold
-          pairSchedule) defect
-    · -- A target-complete compression of `X_π`: sparse exit (c).
-      exact .compression support replacement
+    exact declaredSparseSurplusExit_of_responseObstruction active obstruction
 
   -- If type (e) is the canonical role, canonical-blocker membership
   -- supplies the recorded response coordinate consumed above.

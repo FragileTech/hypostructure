@@ -28,11 +28,23 @@ universe u
 
 variable {data : Parameters} {object : Graph.FiniteObject.{u}}
 
-/-- Node `[131]`, `lem:mixed-sparse-spine-dependence`: on the node-`[129]`
-baseline spine family of G and G's full pair-response schedule at its canonical
-activation, a functional admissible rank quotient that reduces the mixed family
-yields a sparse surplus exit of G or a clause-(e) blocker at an actual
-scheduled pair. -/
+/-- Node `[131]`, `lem:mixed-sparse-spine-dependence` (tex 4872-4930): on the
+node-`[129]` baseline spine family of G and G's full pair-response schedule at
+its canonical activation, if the mixed family is not independently
+target-testable then G has a sparse surplus exit of its declared family or a
+scheduled pair has a blocker of type (d) or (e).
+
+The proof follows the paper's case order.  The rank-reducing quotient is an
+admissible declared quotient, so it preserves the boundary-degree profile and is
+context-universal (`DeclaredQuotient.fibrewise`, `contextUniversal`): the
+paper's first two cases (a profile-crossing or a target-defective
+determination) do not arise.  It is therefore target-complete, and
+`DeclaredQuotient.localize` gives the remaining two: a proper determination
+support admits a target-complete replacement (exit (c)), and the whole-graph
+support has a strictly smaller closed representative (the whole-graph
+support-dependence exit (d)).  In both cases the exit disjunct of the paper's
+conclusion holds; for a pair coordinate the paper additionally reads the same
+event as a blocker of type (e), which is not needed for the disjunction. -/
 theorem mixedSparseSpineDependence_of_baseline
     (active : ActiveSurplusDemandsStatement data object)
     (baselineDemand : BaselineSpineDemandStatement data object) :
@@ -45,149 +57,12 @@ theorem mixedSparseSpineDependence_of_baseline
     ⟨Coordinate, family, coordinateSupport⟩, spineSelected, ?_⟩
   dsimp only
   intro notIndependent
-  let activation := Graph.pairResponseActivation active
-  let pairs := object.portPairSchedule data.threshold
-  let pairFamily := activation.pairFamily pairs
-  let mixedFamily : Finset (Sum Coordinate object.PairCoordinate) :=
-    family.image Sum.inl ∪ pairFamily.image Sum.inr
-  let mixedSupport : Sum Coordinate object.PairCoordinate →
-      Finset object.Vertex :=
-    Sum.elim coordinateSupport (by
-      letI := object.vertices.decEq
-      exact Graph.DeclaredSignature.Coordinate.support)
   push Not at notIndependent
-  obtain ⟨attempt, functional, reducing⟩ := notIndependent
-  change ¬ Set.InjOn attempt.label ↑mixedFamily at reducing
-  let quotient : Core.TargetRank.RankQuotient.{u, u + 1}
-      (Sum Coordinate object.PairCoordinate) :=
-    attempt.toRankQuotient
-  change quotient.FunctionalOn ↑mixedFamily at functional
-  let candidates :
-      Finset (Finset (Sum Coordinate object.PairCoordinate)) :=
-    mixedFamily.powerset.filter fun independent =>
-      Set.InjOn attempt.label ↑independent
-  have candidatesNonempty : candidates.Nonempty := by
-    refine ⟨∅, ?_⟩
-    simp [candidates]
-  obtain ⟨independent, independentMember, maximum⟩ :=
-    Finset.exists_mem_eq_sup candidates candidatesNonempty Finset.card
-  have independentFacts : independent ⊆ mixedFamily ∧
-      Set.InjOn attempt.label ↑independent := by
-    simpa [candidates] using independentMember
-  obtain ⟨coordinate, coordinateMember, coordinateOutside⟩ :
-      ∃ coordinate ∈ mixedFamily, coordinate ∉ independent := by
-    by_contra absent
-    push Not at absent
-    have equal : independent = mixedFamily :=
-      Finset.Subset.antisymm independentFacts.1 absent
-    apply reducing
-    rw [← equal]
-    exact independentFacts.2
-  let candidate := insert coordinate independent
-  have candidateSubset : candidate ⊆ mixedFamily := by
-    intro member membership
-    simp only [candidate, Finset.mem_insert] at membership
-    rcases membership with rfl | membership
-    · exact coordinateMember
-    · exact independentFacts.1 membership
-  have candidateNotInjective :
-      ¬ Set.InjOn attempt.label ↑candidate := by
-    intro candidateInjective
-    have candidateMember : candidate ∈ candidates := by
-      simp only [candidates, Finset.mem_filter,
-        Finset.mem_powerset]
-      exact ⟨candidateSubset, candidateInjective⟩
-    have bound := Finset.le_sup (f := Finset.card) candidateMember
-    rw [maximum] at bound
-    have larger : independent.card < candidate.card := by
-      simp [candidate, coordinateOutside]
-    omega
-  have independentInjective :
-      quotient.LabelInjectiveOn ↑independent :=
-    independentFacts.2
-  have candidateReducing :
-      ¬ quotient.LabelInjectiveOn ↑candidate :=
-    candidateNotInjective
-  obtain ⟨determiners, finite, determinersSubset, determines⟩ :=
-    functional independentFacts.1 coordinateMember coordinateOutside
-      independentInjective (by
-        simpa [candidate] using candidateReducing)
-  let certificates :
-      Finset (Finset (Sum Coordinate object.PairCoordinate)) :=
-    finite.toFinset.powerset.filter fun certificate =>
-      quotient.Determines coordinate ↑certificate
-  have certificatesNonempty : certificates.Nonempty := by
-    refine ⟨finite.toFinset, ?_⟩
-    simp [certificates, determines]
-  obtain ⟨minimalDeterminers, minimal⟩ :=
-    certificates.exists_minimal certificatesNonempty
-  have minimalFacts : minimalDeterminers ⊆ finite.toFinset ∧
-      quotient.Determines coordinate ↑minimalDeterminers := by
-    simpa [certificates] using minimal.1
-  have _inclusionMinimal : ∀ candidate ⊆ minimalDeterminers,
-      quotient.Determines coordinate ↑candidate →
-        minimalDeterminers ⊆ candidate := by
-    intro candidate candidateSubset candidateDetermines
-    apply minimal.2
-    · simp only [certificates, Finset.mem_filter,
-        Finset.mem_powerset]
-      exact ⟨candidateSubset.trans minimalFacts.1,
-        candidateDetermines⟩
-    · exact candidateSubset
-  have _circuit : (↑minimalDeterminers : Set _) ⊆
-      (↑mixedFamily : Set
-        (Sum Coordinate object.PairCoordinate)) ∧
-      Set.Finite (↑minimalDeterminers : Set
-        (Sum Coordinate object.PairCoordinate)) ∧
-        coordinate ∉ minimalDeterminers ∧
-          quotient.Determines coordinate ↑minimalDeterminers := by
-    refine ⟨?_, minimalDeterminers.finite_toSet, ?_, minimalFacts.2⟩
-    · intro member membership
-      exact independentFacts.1
-        (determinersSubset (by simpa using minimalFacts.1 membership))
-    · intro coordinateInDeterminers
-      exact coordinateOutside
-        (determinersSubset (by
-          apply minimalFacts.1 at coordinateInDeterminers
-          simpa using coordinateInDeterminers))
-  have pair_of_mem (pairCoordinate : object.PairCoordinate)
-      (membership : Sum.inr pairCoordinate ∈ mixedFamily) :
-      ∃ pair ∈ pairs,
-        Graph.FiniteObject.DemandActivation.pairCoordinate pair
-            ((activation.pairSupport pair).getD ∅) = pairCoordinate := by
-    change Sum.inr pairCoordinate ∈
-      family.image Sum.inl ∪ pairFamily.image Sum.inr at membership
-    rcases Finset.mem_union.mp membership with spineMem | pairMem
-    · obtain ⟨spine, _, impossible⟩ := Finset.mem_image.mp spineMem
-      cases impossible
-    · obtain ⟨candidate, candidateMem, candidateEq⟩ :=
-        Finset.mem_image.mp pairMem
-      injection candidateEq with candidateEq
-      subst pairCoordinate
-      change candidate ∈ activation.pairFamily pairs at candidateMem
-      rw [Graph.FiniteObject.DemandActivation.pairFamily] at candidateMem
-      exact Finset.mem_image.mp candidateMem
-  -- The determination is an admissible rank quotient
-  -- (`lem:target-rank-circuit`), so it is fibrewise and
-  -- context-universal (`lem:degree-profile-fibres`,
-  -- `lem:context-universality`); `def:admissible-rank-quotient`'s
-  -- representative clauses leave the two remaining alternatives:
-  -- a target-complete compression of a proper support (exit (c), and
-  -- for a pair coordinate the blocker of type (e)) or a strictly
-  -- smaller closed representative (exit (d)).
-  rcases attempt.localize reducing with replacement |
+  obtain ⟨declared, _functional, reducing⟩ := notIndependent
+  rcases declared.localize reducing with replacement |
       ⟨representative, smaller, baseline, transfer⟩
-  · cases coordinate with
-    | inl spine =>
-        exact Or.inl (.compression attempt.support replacement)
-    | inr pairCoordinate =>
-        obtain ⟨pair, pairMem, pairEq⟩ :=
-          pair_of_mem pairCoordinate coordinateMember
-        subst pairCoordinate
-        exact Or.inr
-          ⟨pair, pairMem, attempt.toAttempt, Or.inr (Or.inr replacement)⟩
-  · exact Or.inl
-      (.delocalization representative smaller baseline transfer)
+  · exact Or.inl (.compression declared.support replacement)
+  · exact Or.inl (.delocalization representative smaller baseline transfer)
 
 /-- Node `[131]`, `lem:exact-cubic-baseline-budget`, two-sided with
 logarithms cleared. -/
@@ -276,8 +151,7 @@ theorem canonicalPairLedger_of_blockerRoute
   · exact recorded.card_canonicalIncidenceLedger data.threshold
   · exact recorded.card_blockedPairs_eq_sum_blockerMultiplicity
       data.threshold
-  · exact Graph.recordedSparsePairDEBlocker_nonempty activation pairs
-      certificate
+  · exact certificate
 
 /-- Node `[135]`, `lem:sparse-upper-envelope` with
 `lem:exact-window-join-identity`: `m + 2 ≤ (δ − 1)n`, and the fixed maximal

@@ -42,7 +42,8 @@ noncomputable abbrev FreePairCountFailsStatement
   ¬ FreePairEntropySandwichStatement data object
 
 /-- **Node `[131]`, count fails, input of `[178]`** (tex 5046-5058): at G's
-canonical activation, blocker-free on the full schedule, and at the canonical
+canonical activation, with no blocked pair on the full schedule (all six
+clauses of `def:surplus-blockers`), and at the canonical
 realization of G's spine family's code, the count fails on the literal
 schedule. -/
 def FreePairCodeUnrealizedStatement (data : Parameters)
@@ -51,7 +52,7 @@ def FreePairCodeUnrealizedStatement (data : Parameters)
     canonicalPairActivation data object = some activation ∧
     canonicalBaselineSpineFamily data object = some spine ∧
     canonicalBaselineRealizationAt object spine = some realization ∧
-    ¬ Graph.HasSparsePairDEBlocker
+    ¬ Graph.HasSparsePairBlocker
         (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
         (LengthOK := data.LengthOK) activation (codeSchedule data object) ∧
     (codeSchedule data object).card = (object.degreeSurplus data.threshold).choose 2 ∧

@@ -25,13 +25,17 @@ specialization monotonically.
 The row reads exactly the earlier manuscript facts used by the routing
 argument: the sealed active-demand value (activation and the two-shoulder
 description), the node-`[125]` sparse-exit survival of G's declared family,
-target avoidance from the selection, cubic baseline, and
-the sealed capacity/token presentation with its connectedness proof.  The
-parallel and cubic-switch cases construct their attempted declared quotient
-locally on the connected support already proved in the case, and route it
-through the framework's target-defect/compression/delocalization alternatives.
-The row publishes only the paper's literal sparse-exit-or-Type-B conclusion.
-No selector, callback, route record, or side carrier is postulated. -/
+target avoidance from the selection, the cubic baseline (with the rejected
+degenerate closure), and the sealed capacity/token presentation with its
+connectedness proof.  It routes G's canonical same-token routing
+(`Statements/CanonicalSameToken.lean`): the parallel and cubic-first-separator
+cases read the two pattern coordinates on G's piece at their canonical support
+`Z`; a separating context there is exit (b), and the remaining profile-crossing
+or context-equivalent readings are the unresolved pair of the paper error at
+`[144]`; a high-degree first separator gives the handoff envelope.  The row
+publishes `exit ∨ handoff ∨ unresolved` (`BottleneckRoutingStatement`) and
+constructs no quotient.  No selector, callback, route record, or side carrier
+is postulated. -/
 
 @[reducible] noncomputable def sameTokenBottleneckRoutingRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
@@ -51,20 +55,24 @@ No selector, callback, route record, or side carrier is postulated. -/
         (inputs.get (K .capacityTokenLedger)).down
         (inputs.get (K .bridgeless)).down
         (inputs.get (K .highCentreNormalForm)).down
-        inputs.current.baseline data.three_le_threshold
-        data.degenerateClosureRejected
+        inputs.current.baseline
+        (by have := (inputs.get (K .cubicBaseline)).down.1; omega)
+        (inputs.get (K .cubicBaseline)).down.2.2.1
         (inputs.get (K .selection)).down.1
         (inputs.get (K .sparseSurplusSurvivor)).down
       .cons (key := K .bottleneckRouting) ⟨routed.1⟩ .nil)
 
 /-- Node `[144]`, handoff test: the routed pattern does or does not produce the
-decorated same-token Type B handoff.  Exact classical case analysis on the
-handoff statement; the no arm is its literal negation. -/
+decorated same-token Type B handoff.  The decision reads its predecessor
+`K .bottleneckRouting` (the routed canonical pattern of G) and splits the
+handoff at G's canonical first separator and envelope
+(`SameTokenHandoffAt`); the no arm is its literal negation. -/
 noncomputable def sameTokenHandoffDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
     (previous : ExactLedger (Input BranchState Presentation presentation data)
       current known)
+    [FactKeys.Has (K .bottleneckRouting) known]
     (handoffFresh : K .typeBHandoff ∉ known)
     (failsFresh : K .typeBHandoffFails ∉ known) :
     Decision (K .typeBHandoff) (K .typeBHandoffFails) previous :=
@@ -74,6 +82,7 @@ noncomputable def sameTokenHandoffDichotomy
         ((K .typeBHandoff).At current ⊕
           (K .typeBHandoffFails).At current) from by
       classical
+      have _routed := (previous.get (K .bottleneckRouting)).down
       by_cases handoff : Holds BranchState Presentation presentation data
           .typeBHandoff current.object
       · exact ⟨.inl ⟨handoff⟩⟩
@@ -103,8 +112,9 @@ unresolved pair that the paper error at `[144]` leaves to the open leaf
         (inputs.get (K .capacityTokenLedger)).down
         (inputs.get (K .bridgeless)).down
         (inputs.get (K .highCentreNormalForm)).down
-        inputs.current.baseline data.three_le_threshold
-        data.degenerateClosureRejected
+        inputs.current.baseline
+        (by have := (inputs.get (K .cubicBaseline)).down.1; omega)
+        (inputs.get (K .cubicBaseline)).down.2.2.1
         (inputs.get (K .selection)).down.1
         (inputs.get (K .sparseSurplusSurvivor)).down
       .cons (key := K .sameTokenPatternUnresolved)

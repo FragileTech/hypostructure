@@ -71,6 +71,40 @@ theorem declaredSparseSurplusExit_of_demandDefect {data : Parameters}
     rw [canonicalPairActivation_eq data object active]
     rfl
 
+/-- **Blocker (e) is a named exit** (`def:surplus-blockers` (e) with
+`def:named-surplus-exits` (b)--(d)): each of the three events a clause-(e)
+target-response coordinate witnesses at a scheduled pair of G's canonical
+activation is a sparse surplus exit of G's declared family -- the
+target-defective identification among G's own pair coordinates is exit (b),
+the compression of the determination support is exit (c), and the whole-graph
+closed representative is exit (d).  This is the paper's own reading
+("This is a sparse surplus exit of type (b), and the distinguishing
+target-response coordinate is also a blocker of type (e)", tex 4693-4695). -/
+theorem declaredSparseSurplusExit_of_responseObstruction {data : Parameters}
+    {object : Graph.FiniteObject.{u}}
+    (active : Graph.ActiveSurplusDemands
+      (Graph.MinimumDegreeAtLeast data.threshold)
+      (Graph.HasCycleWithLength data.LengthOK) data.LengthOK object
+      data.threshold)
+    {pair : Finset (object.Vertex × object.Vertex)}
+    (obstruction : Graph.SparsePairDEResponseObstructionAt
+      (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+      (LengthOK := data.LengthOK) (Graph.pairResponseActivation active)
+      (object.portPairSchedule data.threshold) pair) :
+    DeclaredSparseSurplusExit data object := by
+  obtain ⟨attempt, determiners, ⟨_functional, _reducing, coordinateMem,
+      determinersSubset, _outside, _determines, _minimal⟩, event⟩ := obstruction
+  rcases event with defect | replacement |
+      ⟨_covers, representative, smaller, baseline, transfer⟩
+  · refine declaredSparseSurplusExit_of_pairDefect data object active ?_ defect
+    intro coordinate member
+    rcases (@Finset.mem_insert _ (Classical.decEq _) _ _ _).mp member with
+      rfl | member
+    · exact coordinateMem
+    · exact determinersSubset member
+  · exact .compression attempt.support replacement
+  · exact .delocalization representative smaller baseline transfer
+
 /-- The actual seven-coordinate routing label on a pair of the certified
 source pattern. The cubic baseline and the same active shoulder witnesses bound
 its true internal degrees; no profile values or label map are supplied by a caller.
@@ -282,15 +316,14 @@ structure PairOverlapFirstFailure (data : Parameters)
   pairSet_nonempty : pairSet.Nonempty
   pairSet_subset_schedule :
     pairSet ⊆ object.portPairSchedule data.threshold
+  /-- Every pair of `Π` is free: its blocker set `𝖡𝗅𝗄(π)` over the six clauses
+  of `def:surplus-blockers` is empty at the recorded activation
+  (`Π ⊆ Π_free`, `def:pair-overlap-system`). -/
   pairSet_blockerFree : ∀ pair, pair ∈ pairSet →
-    ¬ Graph.SparsePairDEProfileObstructionAt
+    ¬ ((Graph.recordSparsePairDEBlockers
         (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
         (LengthOK := data.LengthOK) (Graph.pairResponseActivation active)
-          pair ∧
-      ¬ Graph.SparsePairDEResponseObstructionAt
-        (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-        (LengthOK := data.LengthOK) (Graph.pairResponseActivation active)
-          pair
+        (object.portPairSchedule data.threshold)).blockers pair).Nonempty
   firstFailure : FirstFailedPairExtension object baselineFamily pairSet
   responseSupport : Finset object.Vertex
   responseSupport_selected :
@@ -328,14 +361,10 @@ noncomputable def of
     (pairSet_subset_schedule :
       pairSet ⊆ object.portPairSchedule data.threshold)
     (pairSet_blockerFree : ∀ pair, pair ∈ pairSet →
-      ¬ Graph.SparsePairDEProfileObstructionAt
+      ¬ ((Graph.recordSparsePairDEBlockers
           (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
           (LengthOK := data.LengthOK) (Graph.pairResponseActivation active)
-            pair ∧
-        ¬ Graph.SparsePairDEResponseObstructionAt
-          (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-          (LengthOK := data.LengthOK) (Graph.pairResponseActivation active)
-            pair)
+          (object.portPairSchedule data.threshold)).blockers pair).Nonempty)
     (firstFailure : FirstFailedPairExtension object baselineFamily pairSet)
     (connected : object.graph.Connected) :
     PairOverlapFirstFailure data object := by
@@ -1042,7 +1071,7 @@ noncomputable abbrev CanonicalPairLedgerStatement
     (object : Graph.FiniteObject.{u}) :
     Prop :=
   ∃ activation, canonicalPairActivation data object = some activation ∧
-    Graph.HasSparsePairDEBlocker
+    Graph.HasSparsePairBlocker
       (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
       (LengthOK := data.LengthOK) activation
         (object.portPairSchedule data.threshold) ∧
@@ -1103,14 +1132,11 @@ noncomputable abbrev SparseTargetDefectStructureStatement
           (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
             support (sparseDeclaredSupport data object second))
 
-/-- Node `[132]`, blocker arm of `lem:sparse-pair-dependence-exit` with
-`lem:mixed-sparse-spine-dependence` and
-`prop:sparse-pair-independence-dichotomy`: no sparse surplus exit settles the
-dependence, so at an object admitting no proper-support replacement a
-rank-reducing attempted determination exhibits the blocker of type (d) or (e)
-as concrete separated realizations, and the declared family attains full
-target rank.  This is the arm the canonical blocker ledger `[134]` is
-levied on. -/
+/-- Node `[132]`, blocker arm ("exit or canonical blocker?", tex 1197): no
+sparse surplus exit of G's declared family occurs, and the blocked pair family
+of `[130]` at G's canonical activation has a pair `π ∈ Π_blk` with its
+canonical blocker `Φ_can(π) = min_≺ 𝖡𝗅𝗄(π)` of `def:canonical-blocker-ledger`.
+This is the arm the canonical blocker ledger `[134]` is levied on. -/
 noncomputable abbrev CanonicalBlockerRouteStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
@@ -1121,7 +1147,7 @@ noncomputable abbrev CanonicalBlockerRouteStatement
   -- `def:canonical-blocker-ledger`.
   DeclaredSparseSurvivor data object ∧
     ∃ activation, canonicalPairActivation data object = some activation ∧
-      Graph.HasSparsePairDEBlocker
+      Graph.HasSparsePairBlocker
         (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
         (LengthOK := data.LengthOK) activation
           (object.portPairSchedule data.threshold) ∧
@@ -1134,39 +1160,45 @@ noncomputable abbrev CanonicalBlockerRouteStatement
           ∃ blocker, Graph.FiniteObject.canonicalBlocker recorded pair =
             some blocker
 
-/-- Node `[130]`, blocked/dependent arm
-(`prop:sparse-pair-independence-dichotomy`, tex 4721): at G's canonical
-pair-response activation (node `[125]`), the full schedule `Π(𝒜₀)` carries a
-clause-(d)/(e) blocker of `def:surplus-blockers`. -/
+/-- Node `[130]`, blocked arm of the canonical pair split "blocker-free?"
+(`prop:sparse-pair-independence-dichotomy`, tex 4721-4726;
+`def:canonical-blocker-ledger`, tex 2926-2934): at G's canonical pair-response
+activation (node `[125]`), some pair `π` of the full schedule `Π(𝒜₀)` has a
+nonempty blocker set `𝖡𝗅𝗄(π)`, over all six clauses (a)--(f) of
+`def:surplus-blockers`. -/
 noncomputable abbrev DependentPairFamilyStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- Node `[130]`, no: at G's canonical activation, one pair of the full
-  -- schedule carries a literal clause-(d)/(e) obstruction.
+  -- Node `[130]`, no: at G's canonical activation, `Π_blk ≠ ∅`.
   ∃ activation, canonicalPairActivation data object = some activation ∧
-    Graph.HasSparsePairDEBlocker
+    Graph.HasSparsePairBlocker
       (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
       (LengthOK := data.LengthOK) activation
         (object.portPairSchedule data.threshold)
 
-/-- Node `[130]`, independent arm: at the same canonical activation of G, the
-full schedule carries no clause-(d)/(e) blocker -- the exact complement of the
-dependent arm about the one pair-response family `ℛ_Π` of G. -/
+/-- Node `[130]`, blocker-free arm: at the same canonical activation of G, no
+pair of the full schedule has a blocker of any clause of
+`def:surplus-blockers` (`Π_blk = ∅`) -- the exact complement of the blocked arm
+at the one activation of G. -/
 noncomputable abbrev IndependentPairFamilyStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- Node `[130]`, yes: the same activation, and no blocker on the schedule.
+  -- Node `[130]`, yes: the same activation, and no blocked pair.
   ∃ activation, canonicalPairActivation data object = some activation ∧
-    ¬ Graph.HasSparsePairDEBlocker
+    ¬ Graph.HasSparsePairBlocker
       (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
       (LengthOK := data.LengthOK) activation
         (object.portPairSchedule data.threshold)
 
-/-- Node `[131]`, `lem:mixed-sparse-spine-dependence` (tex 4872), on G's
+/-- Node `[131]`, `lem:mixed-sparse-spine-dependence` (tex 4872-4887), on G's
 canonical baseline spine family (node `[129]`) and G's full pair-response
-schedule at its canonical activation (node `[125]`). -/
+schedule at its canonical activation (node `[125]`): if the union
+`ℐ_spine ∪ ℛ_{𝒜₀}` is not independently target-testable (some functional
+admissible declared quotient of the mixed family is rank-reducing), then G has
+a sparse surplus exit of its declared family, or some scheduled pair `{p,q}`
+has a sparse surplus blocker of type (d) or (e) at that activation. -/
 noncomputable abbrev MixedSparseSpineDependenceStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
@@ -1184,13 +1216,6 @@ noncomputable abbrev MixedSparseSpineDependenceStatement
         Sum.elim spine.coordinateSupport (by
           letI := object.vertices.decEq
           exact Graph.DeclaredSignature.Coordinate.support)
-      -- `lem:mixed-sparse-spine-dependence`: if the union of G's spine
-      -- family and G's pair-response family does not survive the admissible
-      -- quotient system, a sparse exit of G's declared family occurs, or a
-      -- scheduled pair carries a blocker of type (d)/(e): two of the mixed
-      -- coordinates read on G's own piece at their canonical support are
-      -- profile-separated or target-defective, or the attempted
-      -- determination's support admits a target-complete replacement.
       (¬ ∀ declared : Graph.DeclaredQuotient
           (Graph.MinimumDegreeAtLeast data.threshold)
           (Graph.HasCycleWithLength data.LengthOK) object
@@ -1198,19 +1223,9 @@ noncomputable abbrev MixedSparseSpineDependenceStatement
           declared.toRankQuotient.FunctionalOn ↑mixedFamily →
             Set.InjOn declared.label ↑mixedFamily) →
         DeclaredSparseSurplusExit data object ∨
-          ∃ pair ∈ pairs,
-            ∃ attempt : Graph.AttemptedQuotient
-                (Graph.MinimumDegreeAtLeast data.threshold)
-                (Graph.HasCycleWithLength data.LengthOK) object
-                mixedFamily mixedSupport,
-              (Graph.ResidualProfileSeparation object mixedFamily mixedSupport ∨
-                Graph.ResidualTargetDefect
-                  (Graph.HasCycleWithLength data.LengthOK) object
-                  mixedFamily mixedSupport ∨
-                Graph.Strategy.InterfaceReplacement.ReplacementSupport
-                  (Graph.MinimumDegreeAtLeast data.threshold)
-                  (Graph.HasCycleWithLength data.LengthOK) object
-                  attempt.support)
+          Graph.HasSparsePairDEBlocker
+            (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+            (LengthOK := data.LengthOK) activation pairs
 
 /-- Node `[131]`, the two-sided exact cubic baseline budget at the current
 residual's order and registered baseline. -/
@@ -1522,5 +1537,24 @@ noncomputable abbrev BlockedPairNoExitStatement
     (object : Graph.FiniteObject.{u}) :
     Prop :=
   ¬ SparsePairExitStatement data object
+
+/-- **The presentation identities the sparse-surplus rows spend**, published
+once on the ledger at node `[125]` (the analogue of `K .cubicBaseline`): the
+node-`[129]` deficit scale covers the binomial loss; the join comparison
+`δ·order + 2 ≤ 4·order` of `lem:capacity-token-supply`; the target is exactly
+the dyadic lengths (node `[180]`); the registered routing-label count is the
+cardinality of the seven-coordinate label alphabet (nodes `[140]`--`[144]`);
+and the spine scale `C_sp` absorbs the quadratic safety coefficient (node
+`[138]`).  Each is a fact about the registered presentation, never about a
+graph; rows read it with `inputs.get` rather than from the ambient record. -/
+noncomputable abbrev SurplusPresentationStatement (data : Parameters) : Prop :=
+  Graph.baselineDeficitCoefficient data.threshold ≤ data.surplusScale ∧
+    data.threshold * data.windowOrder + 2 ≤ 4 * data.windowOrder ∧
+    (∀ length, data.LengthOK length ↔ Core.DyadicLength.PowerOfTwoLength length) ∧
+    data.routingLabelBound = Fintype.card
+      (Graph.SameTokenRoutingGerms.RoutingLabel
+        (Fin data.threshold → Fin data.threshold)
+        (Graph.WindowCurvature.Label data.windowOrder)) ∧
+    Graph.TokenLoad.quadraticSafetyScale ≤ data.spineScale
 
 end Hypostructure.Graph.Strategy.Spine

@@ -1331,14 +1331,10 @@ inductive Key where
   /-- Node `[20]`: the same identified target-defect pair with its bound
   outside context and proved target-free negative constituents. -/
   | sparseTargetDefectStructure
-  /-- Node `[132]`, blocker arm of `lem:sparse-pair-dependence-exit` with
-  `lem:mixed-sparse-spine-dependence` and
-  `prop:sparse-pair-independence-dichotomy`: no sparse surplus exit settles the
-  dependence, so at an object admitting no proper-support replacement a
-  rank-reducing attempted determination exhibits the blocker of type (d) or (e)
-  as concrete separated realizations, and the declared family attains full
-  target rank.  This is the arm the canonical blocker ledger `[134]` is
-  levied on. -/
+  /-- Node `[132]`, blocker arm: no sparse surplus exit occurs, and the blocked
+  pair of `[130]` at G's canonical activation has its canonical blocker
+  `Φ_can(π) = min_≺ 𝖡𝗅𝗄(π)` of `def:canonical-blocker-ledger`.  This is the arm
+  the canonical blocker ledger `[134]` is levied on. -/
   | canonicalBlockerRoute
   /-- `lem:sparse-upper-envelope`: `m + 2 ≤ (δ − 1)·n`, the manuscript's
   `m ≤ 2n − 2` at its own `δ = 3`.  It is `lem:no-proper-core`'s degeneracy --
@@ -1434,7 +1430,9 @@ inductive Key where
   /-- Node `[179]`: the exact obstruction satisfies one of the five outcomes
   of `lem:pair-system-realizability`. -/
   | pairSystemRealizability
-  /-- Node `[179]`, alternatives (i)--(iv), retained for their literal route. -/
+  /-- Node `[179]`, alternatives (i)--(iv), retained for their literal route;
+  (iv) is the first-separator handoff of the obstruction's own overlap support
+  at `P₀`. -/
   | pairSystemEarlyOutcome
   /-- Node `[179]`, alternative (v): the graph-realized serial demand system. -/
   | pairSerialDemandSystem
@@ -1462,7 +1460,10 @@ inductive Key where
   `thm:homogeneous-overload-geometric-closure`: no capacity token of the object
   supports a role-homogeneous same-token `L_geom`-matching or `L_geom`-star, at
   the counted routing-label alphabet.  This is the subbranch the manuscript's
-  fixed caps `L_W = L_R = L_P = L_geom` hold on. -/
+  fixed caps `L_W = L_R = L_P = L_geom` hold on.  After the audits it is
+  refuted by `K .homogeneousBottleneckPattern` (paper error at `[144]`,
+  `not_homogeneousCapsHold_of_pattern`); the arm is kept as the paper draws
+  it. -/
   | homogeneousCapsHold
   /-- Node `[144]`, the other arm: the exact complement of the fixed caps.
   Some capacity presentation and ledger of the object has a token supporting a
@@ -1509,14 +1510,17 @@ inductive Key where
   | remainderRelabelingEntropy
   /-- Exact finite invariant-state cap under relabellings fixing packed windows. -/
   | relabelingDensityCap
-  /-- Node `[130]`, blocked/dependent arm: a concrete `Π`, its declared
-  response family `ℛ_Π`, and the rank-reducing attempted quotient consumed by
-  node `[132]`. -/
+  /-- Node `[130]`, blocked arm of "blocker-free?": at G's canonical
+  activation some scheduled pair has a nonempty blocker set over all six
+  clauses of `def:surplus-blockers` (`Π_blk ≠ ∅`). -/
   | dependentPairFamily
-  /-- Node `[130]`, independent arm for the same concrete full response family. -/
+  /-- Node `[130]`, blocker-free arm: the exact negation at the same
+  activation (`Π_blk = ∅`). -/
   | independentPairFamily
-  /-- Node `[131]`, `lem:mixed-sparse-spine-dependence` on the concrete
-  baseline spine family and full pair-response schedule. -/
+  /-- Node `[131]`, `lem:mixed-sparse-spine-dependence` at G's canonical spine
+  family and activation: a non-independent mixed family gives a sparse exit
+  or a type-(d)/(e) blocker.  No row consumes it: `[131]`'s count is a
+  registered branch test. -/
   | mixedSparseSpineDependence
   /-- Node `[131]`, the two-sided exact cubic baseline budget at the current
   residual's order and registered baseline. -/
@@ -1553,6 +1557,11 @@ inductive Key where
   /-- Node `[180]`, arithmetic arm: the exact negation of
   `pairIncrementEarlyOutcome`. -/
   | pairIncrementNoEarlyOutcome
+  -- SP keys
+  /-- Node `[125]`: the presentation identities the sparse-surplus rows spend
+  (deficit scale, join slack, dyadic target, routing-label count, spine
+  scale), published once so that rows read them with `inputs.get`. -/
+  | surplusPresentation
   -- F1 keys
   /-- Node `[86]`: the Type A support `X₀`, `s·def⁺(X₀) < |V(X₀)|`. -/
   | typeASupport
@@ -2305,6 +2314,9 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       PairIncrementFailsStatement data.toParameters object
   | .pairIncrementNoEarlyOutcome, object =>
       PairIncrementNoEarlyOutcomeStatement data.toParameters object
+  -- SP keys
+  | .surplusPresentation, _object =>
+      SurplusPresentationStatement data.toParameters
   -- F1 keys
   | .typeASupport, object =>
       TypeASupportStatement data.toParameters object
@@ -2641,6 +2653,8 @@ def label : Key → String
   | .pairSystemNoEarlyOutcome => "pairSystemNoEarlyOutcome"
   | .pairIncrementFails => "pairIncrementFails"
   | .pairIncrementNoEarlyOutcome => "pairIncrementNoEarlyOutcome"
+  -- SP keys
+  | .surplusPresentation => "surplusPresentation"
   -- F1 keys
   | .typeASupport => "typeASupport"
   | .typeANoVisibleEntry => "typeANoVisibleEntry"
@@ -2983,6 +2997,8 @@ example : label .pairRealizabilityFails = "pairRealizabilityFails" := rfl
 example : label .pairSystemNoEarlyOutcome = "pairSystemNoEarlyOutcome" := rfl
 example : label .pairIncrementFails = "pairIncrementFails" := rfl
 example : label .pairIncrementNoEarlyOutcome = "pairIncrementNoEarlyOutcome" := rfl
+-- SP keys
+example : label .surplusPresentation = "surplusPresentation" := rfl
 -- F1 keys
 example : label .typeASupport = "typeASupport" := rfl
 example : label .typeANoVisibleEntry = "typeANoVisibleEntry" := rfl
@@ -3316,6 +3332,8 @@ def idx : Key → Nat
   | .pairSystemNoEarlyOutcome => 1606
   | .pairIncrementFails => 1607
   | .pairIncrementNoEarlyOutcome => 1608
+  -- SP keys
+  | .surplusPresentation => 2200
   -- F1 keys
   | .typeASupport => 1000
   | .typeANoVisibleEntry => 1001
@@ -3638,6 +3656,8 @@ def ofIdx : Nat → Key
   | 1606 => .pairSystemNoEarlyOutcome
   | 1607 => .pairIncrementFails
   | 1608 => .pairIncrementNoEarlyOutcome
+  -- SP keys
+  | 2200 => .surplusPresentation
   -- F1 keys
   | 1000 => .typeASupport
   | 1001 => .typeANoVisibleEntry
@@ -4386,6 +4406,9 @@ def name : Key → Lean.Name
       .num (.str `Hypostructure.Graph.Strategy.Spine "pairIncrementFails") 1607
   | .pairIncrementNoEarlyOutcome =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "pairIncrementNoEarlyOutcome") 1608
+  -- SP keys
+  | .surplusPresentation =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine "surplusPresentation") 2200
   -- F1 keys
   | .typeASupport =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeASupport") 1000

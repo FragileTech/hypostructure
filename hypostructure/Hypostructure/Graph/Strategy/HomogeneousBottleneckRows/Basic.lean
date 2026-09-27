@@ -61,4 +61,22 @@ theorem Data.quadraticSafetyScale_le_spineScale (data : Data.{u}) :
           data.routingLabelBound * (3 * (data.threshold - 1) + 2))
   omega
 
+/-- Node `[125]`: publish, once, the presentation identities the
+sparse-surplus rows spend (`SurplusPresentationStatement`), exactly as
+`cubicBaselineRow` publishes the cubic baseline.  Every later surplus, pair and
+`[144]` row reads them from the ledger with `inputs.get`. -/
+@[reducible] noncomputable def surplusPresentationRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.surplusPresentation
+    { Requires := []
+      Produces := [K .surplusPresentation]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun _inputs =>
+      .cons (key := K .surplusPresentation)
+        ⟨data.baselineDeficitSafety, data.joinSlack, data.lengthOK_iff_powerOfTwo,
+          data.routingLabelBound_eq, data.quadraticSafetyScale_le_spineScale⟩
+        .nil)
+
 end Hypostructure.Graph.Strategy.Spine

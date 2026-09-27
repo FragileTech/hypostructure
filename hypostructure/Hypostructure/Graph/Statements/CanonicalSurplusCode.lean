@@ -76,14 +76,15 @@ abbrev codeFreeSide (capacity : SurplusCapacity data object) :
 
 /-- **The canonical pair set `Π` of the pair code** (`def:pair-overlap-system`,
 tex 5061-5066): at G's canonical activation, the full schedule when node
-`[130]` finds no clause-(d)/(e) blocker, and otherwise the free side of G's
-canonical capacity charge (node `[137]`). -/
+`[130]` finds no blocked pair (no pair has a blocker of any of the six clauses
+of `def:surplus-blockers`), and otherwise the free side of G's canonical
+capacity charge (node `[137]`). -/
 def canonicalCodePairSet : Option (Finset (Finset (object.Vertex × object.Vertex))) := by
   classical
   exact match canonicalPairActivation data object with
     | none => none
     | some activation =>
-        if Graph.HasSparsePairDEBlocker
+        if Graph.HasSparsePairBlocker
             (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
             (LengthOK := data.LengthOK) activation (codeSchedule data object) then
           (canonicalCapacity data object).map (codeFreeSide data object)
@@ -93,7 +94,7 @@ theorem canonicalCodePairSet_eq_schedule
     {activation : object.DemandActivation object.PairCoordinate
       (object.Vertex × object.Vertex)}
     (selected : canonicalPairActivation data object = some activation)
-    (free : ¬ Graph.HasSparsePairDEBlocker
+    (free : ¬ Graph.HasSparsePairBlocker
       (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
       (LengthOK := data.LengthOK) activation (codeSchedule data object)) :
     canonicalCodePairSet data object = some (codeSchedule data object) := by
@@ -107,7 +108,7 @@ theorem canonicalCodePairSet_eq_freeSide
       (object.Vertex × object.Vertex)}
     {capacity : SurplusCapacity data object}
     (selected : canonicalPairActivation data object = some activation)
-    (blocked : Graph.HasSparsePairDEBlocker
+    (blocked : Graph.HasSparsePairBlocker
       (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
       (LengthOK := data.LengthOK) activation (codeSchedule data object))
     (capacitySelected : canonicalCapacity data object = some capacity) :
@@ -120,8 +121,8 @@ theorem canonicalCodePairSet_eq_freeSide
 /-! ## The first failed extension -/
 
 /-- The conditions under which the pair code's first failure is packaged: the
-active family, a nonempty pair set inside the schedule on which no
-clause-(d)/(e) blocker sits, the count failure at the realized baseline family,
+active family, a nonempty pair set of free pairs of the schedule (no blocker
+of any clause of `def:surplus-blockers`), the count failure at the realized baseline family,
 and connectedness (node `[8]`). -/
 def PairFirstFailureConditions (spine : DeclaredCoordinateFamily object)
     (pairSet : Finset (Finset (object.Vertex × object.Vertex))) : Prop :=
@@ -131,14 +132,10 @@ def PairFirstFailureConditions (spine : DeclaredCoordinateFamily object)
     pairSet.Nonempty ∧
     pairSet ⊆ codeSchedule data object ∧
     (∀ pair, pair ∈ pairSet →
-      ¬ Graph.SparsePairDEProfileObstructionAt
+      ¬ ((Graph.recordSparsePairDEBlockers
           (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
           (LengthOK := data.LengthOK) (Graph.pairResponseActivation active)
-            pair ∧
-        ¬ Graph.SparsePairDEResponseObstructionAt
-          (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-          (LengthOK := data.LengthOK) (Graph.pairResponseActivation active)
-            pair) ∧
+          (codeSchedule data object)).blockers pair).Nonempty) ∧
     ¬ 2 ^ (spine.family.card + pairSet.card) ≤ Graph.skeletonBudget object ∧
     object.graph.Connected
 
