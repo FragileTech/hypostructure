@@ -31,6 +31,7 @@ noncomputable def selectedAbsorbedGermPrerequisites
     [FactKeys.Has (K .remainderNormalized) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .bridgeless) known]
+    [FactKeys.Has (K .cubicBaseline) known]
     (fresh : List.Disjoint
       [K .coldReturnCorridors, K .coldCorridorState,
         K .denseColdCorridorsTerminal, K .coldFirstFailureOccurrence,

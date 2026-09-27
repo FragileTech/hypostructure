@@ -16,15 +16,14 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
-/-! ## Node `[162]`, `lem:dense-cold-pass`: terminality in the remainder
+/-! ## Node `[162]`, `lem:dense-cold-pass`: terminality of the return corridors
 
-The corridor producer records that its component and selected path lie in the
-normalized remainder of the fixed maximal packing.  This row consumes that
-literal state together with node `[27]`'s normalization fact.  The canonical
-path is shortest by `FinitePathSelection.selectOfReachable_length_le`; an
-induced-`P_windowOrder`-free remainder therefore bounds its length by
-`windowOrder - 2`, which is below the registered cold-state bound
-(`Contracts.Spine.denseColdCorridorsTerminal_of_state`). -/
+The row reads G's retained corridor state, node `[27]`'s normalization and the
+hot/cold split, and publishes the paper's claim that every return corridor is
+terminal (`Contracts.Spine.denseColdCorridorsTerminal_of_state`).  The paper's
+reason -- the pieces of `R` have bounded diameter -- does not reach corridors
+of `G − X_cold` that cross hot or non-ambient-cubic cold windows: PAPER-ERROR
+[162] tex:7694 (`lean-vs-paper-discrepancies.md#paper-errors`). -/
 @[reducible] noncomputable def denseColdCorridorsTerminalRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.denseColdCorridorsTerminal

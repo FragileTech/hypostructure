@@ -60,14 +60,8 @@ theorem coldReturnCorridors_of_bridgeless (data : Parameters)
         Graph.ColdCorridor.foot_mem_outsideComponentOf object windows
           epsilon.1.2 outsideFoot
       have sourceInWindows : epsilon.1.1 ∈ windows := by
-        obtain ⟨window, windowMember, sourceMember⟩ :=
-          (Graph.ColdCorridor.mem_windowsOf object cubic epsilon.1.1).1
-            selected.1
-        have windowPacking : window ∈ packing :=
-          ((coldIff window).1 (Finset.mem_filter.1 windowMember).1).1
-        change epsilon.1.1 ∈ Graph.ColdCorridor.windowsOf object packing
-        exact (Graph.ColdCorridor.mem_windowsOf object packing _).2
-          ⟨window, windowPacking, sourceMember⟩
+        change epsilon.1.1 ∈ Graph.ColdCorridor.windowsOf object cubic
+        exact selected.1
       have boundaryMember : (epsilon.1.2, epsilon.1.1) ∈
           Graph.ColdCorridor.boundaryStubs object windows component :=
         (Graph.ColdCorridor.mem_boundaryStubs_iff object windows component

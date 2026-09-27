@@ -42,15 +42,16 @@ consumed by `[168]`. -/
 @[reducible] noncomputable def symmetricPairEndpointExclusionRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.symmetricPairEndpointExclusion
-    { Requires := [K .coldWindowStubStructure]
+    { Requires := [K .coldWindowStubStructure, K .cubicBaseline]
       Produces := [K .coldSymmetricPairExcluded]
-      requiresUnique := by simp
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .coldSymmetricPairExcluded)
         ⟨Contracts.Spine.coldSymmetricPairExcluded_of_stubStructure
-          data.toParameters inputs.current.object data.threshold_eq_three
+          data.toParameters inputs.current.object
+          (inputs.get (K .cubicBaseline)).down.1
           (inputs.get (K .coldWindowStubStructure)).down⟩
         .nil)
 

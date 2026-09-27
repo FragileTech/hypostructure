@@ -22,50 +22,35 @@ open Hypostructure.Graph.Strategy.Spine
 
 universe u v
 
-/-- **(G1) never occurs.**  A hit-realizing germ gives an accepted cycle of the
-target-avoiding object; every germ of the retained family satisfies the
-trichotomy. -/
+/-- **(G1) never occurs** at node `[153]`'s extracted family.  A
+hit-realizing germ gives an accepted cycle of the target-avoiding object. -/
 theorem coldGermRealized_of_avoids (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object) :
     ColdGermRealizedStatement data object :=
-  ⟨fun germ realizing =>
-      avoids (germ.target_of_realizing
-        (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant realizing),
-    fun germ => germ.trichotomy⟩
+  fun germ _active realizing =>
+    avoids (germ.target_of_realizing
+      (Graph.cycleTargetInterface data.LengthOK).isomorphismInvariant realizing)
 
 /-- **(G2) is target-defective.**  A distinguishing context makes the germ's
 identification not target-complete. -/
 theorem coldGermDistinguished_holds (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     ColdGermDistinguishedStatement data object :=
-  fun germ Profile profile distinguishing =>
+  fun germ _active Profile profile distinguishing =>
     germ.not_targetComplete_of_distinguishing profile distinguishing
 
-/-- **(G3) never occurs, with the increment arithmetic.**  A shortening
+/-- **(G3) never occurs** at node `[153]`'s extracted family.  A shortening
 neutral germ is a target-complete compression of a proper support, which
-`cor:uncompressible` forbids; the increment clauses are
-`lem:cold-increment-arithmetic`. -/
+`cor:uncompressible` forbids. -/
 theorem coldGermSilent_of_uncompressible (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (uncompressible : UncompressibleStatement data object) :
     ColdGermSilentStatement data object :=
-  ⟨fun germ shorter neutral =>
+  ⟨fun germ _active shorter neutral =>
       uncompressible germ.support
           (germ.compressibleSupport_of_not_distinguishing shorter neutral.2),
-    fun germ => germ.not_lengthChanging_iff,
-    fun increment base copies length positive overlapping lower upper
-        accepted =>
-      Graph.ColdCorridor.exists_not_survivesSmear_of_mem_interval
-        positive overlapping lower upper accepted,
-    fun increment base exponent residue positive small reached congruent
-        accepted =>
-      Graph.ColdCorridor.exists_not_survivesSmear_of_pow_congruent
-        positive small reached congruent accepted,
-    fun increment base _ wide criterion =>
-      Graph.ColdCorridor.exists_hit_of_orderOf_lt (base := base) wide criterion,
-    fun transient exponent odd past =>
-      Graph.ColdCorridor.pow_mod_of_le past⟩
+    fun germ _active => germ.not_lengthChanging_iff⟩
 
 /-- **Nodes `[154]`--`[156]`: every surviving length-changing germ is (G2).**
 (G1) is refuted by target avoidance and (G3) by uncompressibility, so every
@@ -101,8 +86,8 @@ theorem coldGermRouted_of_uncompressible (data : Parameters)
 /-- **Node `[157]`, `lem:cold-same-interface-table` and
 `lem:cold-short-self-return-filter`.**  No table row is realizing, and a row
 is handed off or distinguishing (otherwise it compresses its own proper
-support); the short self-return exceptions are routed the same way; the table
-is finite. -/
+support); the short self-return exceptions are routed the same way; every row
+has increment `0`. -/
 theorem coldSameInterfaceTable_of_uncompressible (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
@@ -116,9 +101,6 @@ theorem coldSameInterfaceTable_of_uncompressible (data : Parameters)
       Graph.ColdCorridor.row_closed targetInvariant avoids compression row,
     fun self =>
       Graph.ColdCorridor.selfReturn_closed targetInvariant avoids compression self,
-    fun length failed =>
-      Graph.ColdCorridor.exists_accepted_of_not_survivesSmear failed,
-    rfl,
     fun row => row.increment_eq_zero⟩
 
 /-- **Node `[168]`: the stub structure of the ambient-cubic cold windows.**

@@ -337,62 +337,26 @@ theorem coldGermFamilyPositive_of_linear (data : Parameters)
   exact ⟨(disjointFamily, corridorLoss), extractionEq,
     disjointPositive⟩
 
-/-- **Node `[162]`, `lem:dense-cold-pass`: terminality in the remainder.**
-Each retained corridor lies in the normalized remainder of the fixed maximal
-packing, which is induced-`P_windowOrder`-free; its canonical path is shortest,
-so its length is at most `windowOrder - 2`, below the cold-state bound. -/
+/-- **Node `[162]`, `lem:dense-cold-pass`** (tex 7692-7694): on the dense
+residual every retained cold return corridor of G is terminal in the sense of
+the (F5) terminal subcase.
+
+Recorded as a paper error (`lean-vs-paper-discrepancies.md#paper-errors`,
+[162] tex:7694).  The paper's reason is that "the boundaried pieces of `R` are
+induced-`P₁₃`-free and subcubic, [so] they have bounded diameter".  But the
+corridors of `def:cold-corridor-first-failure` live in `G − X_cold`, which
+keeps the hot and non-ambient-cubic cold windows of `P₀`; a corridor may run
+through them, where `R`'s `P₁₃`-freeness says nothing, and no ledger fact
+bounds its length by `Q_cold`. -/
 theorem denseColdCorridorsTerminal_of_state (data : Parameters)
     (object : Graph.FiniteObject.{u})
-    (threeLeOrder : 3 ≤ data.windowOrder)
-    (state : ColdCorridorStateStatement data object)
-    (normalized : RemainderNormalizedStatement data object)
-    (split : HotColdWindowStatement data object) :
+    (_threeLeOrder : 3 ≤ data.windowOrder)
+    (_state : ColdCorridorStateStatement data object)
+    (_normalized : RemainderNormalizedStatement data object)
+    (_split : HotColdWindowStatement data object) :
     DenseColdCorridorsTerminalStatement data object := by
-  classical
-  letI : FinEnum object.Vertex := object.vertices
-  change HotColdWindowStatement data object at split
-  change ColdCorridorStateStatement data object at state
-  obtain ⟨_valid, _attains, _maximal, _hot,
-    _coldIff, _disjoint, _cover⟩ := split
-  change DenseColdCorridorsTerminalStatement data object
-  refine ⟨state, ?_⟩
-  let stateOne := Classical.choose_spec state
-  let componentAt := Classical.choose stateOne
-  let stateTwo := Classical.choose_spec stateOne
-  let corridorAt := Classical.choose stateTwo
-  let stateTail := Classical.choose_spec stateTwo
-  let stateBundle := Classical.choose_spec
-    (Classical.choose_spec stateTail)
-  have componentInR := stateBundle.2.2.2.1
-  change ∀ epsilon : ColdEligibleHalfEdge data object,
-    Graph.ColdCorridor.Corridor.TerminalCorridor
-      (corridorAt epsilon) data.coldSignature
-  intro epsilon
-  let component := componentAt epsilon
-  let corridor := corridorAt epsilon
-  have componentFree : Graph.InducedPathFree (object.induce component)
-      data.windowOrder :=
-    object.inducedPathFree_induce_of_forall
-      (fun support inside =>
-        (normalized support
-          (inside.trans (componentInR epsilon))).1)
-  obtain ⟨shortest, shortestPath, shortestLength⟩ :=
-    corridor.connected.exists_path_of_dist
-  have shortestBound : shortest.length ≤ data.windowOrder - 2 :=
-    Graph.shortestPath_length_le_order_sub_two
-      (object.induce component) data.windowOrder
-      threeLeOrder shortest shortestPath shortestLength
-      componentFree
-  have selectedBound : corridor.inside.1.length ≤ shortest.length := by
-    exact corridor.inside_length_le ⟨shortest, shortestPath⟩
-  change corridor.statesRead ≤
-    Graph.ColdCorridor.stateBound data.coldSignature
-  have orderBound :=
-    Graph.ColdCorridor.windowOrder_le_stateBound data.coldSignature
-  change corridor.inside.1.length + 1 ≤
-    Graph.ColdCorridor.stateBound data.coldSignature
-  rw [data.coldSignature_windowOrder] at orderBound
-  omega
+  -- PAPER-ERROR [162] tex:7694 — see lean-vs-paper-discrepancies.md#paper-errors
+  sorry
 
 /-- **`thm:cold-branch-quantitative-closure`: no terminal cold residual.**
 With the germs extracted and routed and the same-interface table closed, no

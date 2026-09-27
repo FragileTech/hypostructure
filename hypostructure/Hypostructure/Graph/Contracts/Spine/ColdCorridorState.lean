@@ -90,118 +90,9 @@ theorem coldCorridorState_of_corridors (data : Parameters)
     intro epsilon
     exact Classical.choose_spec (Classical.choose_spec
       (corridorExists epsilon))
-  let entryWindowAt : ColdEligibleHalfEdge data object →
-      Finset object.Vertex := fun epsilon =>
-    Classical.choose
-      ((Graph.ColdCorridor.mem_windowsOf object cubic epsilon.1.1).1
-        (Graph.ColdCorridor.selected_facts object cubic
-          (⟨epsilon.1, epsilon.2.1⟩ :
-            ColdSelectedHalfEdge data object)).1)
-  let successorWindowAt : (epsilon : ColdEligibleHalfEdge data object) →
-      Finset object.Vertex := fun epsilon => by
-    have boundaryMember : (corridorAt epsilon).successorStub ∈
-        Graph.ColdCorridor.boundaryStubs object windows
-          (componentAt epsilon) := List.get_mem _ _
-    have inWindows : (corridorAt epsilon).successorStub.2 ∈ windows :=
-      ((Graph.ColdCorridor.mem_boundaryStubs_iff object windows
-        (componentAt epsilon) _).1 boundaryMember).2.1
-    exact Classical.choose
-      ((Graph.ColdCorridor.mem_windowsOf object packing
-        (corridorAt epsilon).successorStub.2).1 inWindows)
-  let activeAt := fun (epsilon : ColdEligibleHalfEdge data object)
-      (segment : (corridorAt epsilon).Segment) =>
-    entryWindowAt epsilon ∪ successorWindowAt epsilon ∪
-      ({(corridorAt epsilon).entryStub.1,
-        (corridorAt epsilon).head segment} : Finset object.Vertex)
-  let offsetAt : object.Vertex → Fin data.coldSignature.windowOrder :=
-    fun vertex => by
-      by_cases contained : ∃ window ∈ packing, vertex ∈ window
-      · let window := Classical.choose contained
-        have windowFacts := Classical.choose_spec contained
-        have windowMember : window ∈ packing := windowFacts.1
-        have vertexMember : vertex ∈ window := windowFacts.2
-        have induced := packingWindow window windowMember
-        letI : FinEnum (object.induce window).Vertex :=
-          (object.induce window).vertices
-        let embedding := Classical.choice induced.1
-        have cardInduced :
-            Fintype.card (object.induce window).Vertex = window.card := by
-          simpa [FiniteObject.vertexCount,
-            FinEnum.card_eq_fintypeCard] using
-            object.vertexCount_induce window
-        have embeddingSurjective : Function.Surjective embedding := by
-          exact ((Fintype.bijective_iff_injective_and_card embedding).2
-            ⟨embedding.injective, by
-              rw [Fintype.card_fin, cardInduced, induced.2]⟩).2
-        exact Classical.choose (embeddingSurjective ⟨vertex, vertexMember⟩)
-      · exact
-          ⟨(FinEnum.equiv vertex).1 % data.coldSignature.windowOrder,
-            Nat.mod_lt _ data.coldSignature.windowOrder_pos⟩
-  let supportOn := fun (activeSet : Finset object.Vertex)
-      (_clause : data.coldSignature.Clause)
-      (generator : Graph.ColdCorridor.Coordinate
-        (Graph.ColdCorridor.interfaceWidth data.windowOrder)) => by
-    let active := activeSet.toList
-    let valid := generator.support.filter fun position =>
-      position.1 < active.length
-    exact valid.attach.image fun position => by
-      have member := position.property
-      change position.1 ∈ generator.support.filter
-        (fun slot => slot.1 < active.length) at member
-      exact active.get ⟨position.1.1,
-        (Finset.mem_filter.1 member).2⟩
-  let valueOn : (activeSet : Finset object.Vertex) →
-      (clause : data.coldSignature.Clause) →
-      (generator : data.coldSignature.Generator clause) →
-      data.coldSignature.Value clause generator :=
-    fun activeSet clause generator => by
-    let width := Graph.ColdCorridor.interfaceWidth data.windowOrder
-    let active := activeSet.toList
-    let activePositions : Finset (Fin width) :=
-      Finset.univ.filter fun position => position.1 < active.length
-    let supportPositions : Finset (Fin width) :=
-      generator.support.filter fun position => position.1 < active.length
-    let incidences : Finset (Fin width × Fin width) :=
-      (generator.support.product activePositions).filter fun incidence =>
-        if leftBound : incidence.1.1 < active.length then
-          if rightBound : incidence.2.1 < active.length then
-            object.graph.Adj
-              (active.get ⟨incidence.1.1, leftBound⟩)
-              (active.get ⟨incidence.2.1, rightBound⟩)
-          else False
-        else False
-    let labelNeighbors : Finset (Fin width) :=
-      activePositions.filter fun position =>
-        if labelBound : generator.anchor.1 < active.length then
-          if positionBound : position.1 < active.length then
-            object.graph.Adj
-              (active.get ⟨generator.anchor.1, labelBound⟩)
-              (active.get ⟨position.1, positionBound⟩)
-          else False
-        else False
-    have labelDegreeBound : labelNeighbors.card ≤ width := by
-      calc
-        labelNeighbors.card ≤ activePositions.card :=
-          Finset.card_le_card (Finset.filter_subset _ _)
-        _ ≤ (Finset.univ : Finset (Fin width)).card :=
-          Finset.card_le_card (Finset.subset_univ _)
-        _ = width := Fintype.card_fin width
-    change Graph.ColdCorridor.EmbeddedCoordinateValue width clause generator
-    exact (supportPositions, incidences,
-      ⟨labelNeighbors.card, Nat.lt_succ_of_le labelDegreeBound⟩)
-  let supportAt := fun (epsilon : ColdEligibleHalfEdge data object)
-      (segment : (corridorAt epsilon).Segment) =>
-    supportOn (activeAt epsilon segment)
-  let valueAt : (epsilon : ColdEligibleHalfEdge data object) →
-      (corridorAt epsilon).Segment →
-      (clause : data.coldSignature.Clause) →
-      (generator : data.coldSignature.Generator clause) →
-      data.coldSignature.Value clause generator :=
-    fun epsilon segment => valueOn (activeAt epsilon segment)
   let presentationAt : ColdEligibleHalfEdge data object →
       Graph.ColdCorridor.Presentation data.coldSignature object :=
-    fun epsilon => (corridorAt epsilon).presentation data.coldSignature
-      (activeAt epsilon) offsetAt (supportAt epsilon) (valueAt epsilon)
+    fun epsilon => coldCutStatePresentation data object (corridorAt epsilon)
   let indexAt : (epsilon : ColdEligibleHalfEdge data object) →
       (corridorAt epsilon).Segment → (presentationAt epsilon).Segment :=
     fun _epsilon segment => ULift.up segment
@@ -384,7 +275,7 @@ theorem coldCorridorState_of_corridors (data : Parameters)
       (Graph.ColdCorridor.mem_windowsOf object cubic epsilon.1.1).1
         selectedFacts.1
     obtain ⟨targetWindow, targetWindowMem, targetMem⟩ :=
-      (Graph.ColdCorridor.mem_windowsOf object packing epsilon.1.2).1
+      (Graph.ColdCorridor.mem_windowsOf object cubic epsilon.1.2).1
         epsilon.property.2
     let support : Finset object.Vertex := {epsilon.1.1, epsilon.1.2}
     have adjacent : object.graph.Adj epsilon.1.1 epsilon.1.2 := by
@@ -451,98 +342,37 @@ theorem coldCorridorState_of_corridors (data : Parameters)
     let directState : Graph.ColdCorridor.CutState data.coldSignature :=
       { boundaryDegrees := boundedDegree
         halfEdges := halfEdgeCode
-        offsets := fun position => offsetAt (endpointAt position)
+        offsets := fun position => coldWindowOffset data object (endpointAt position)
         declared := fun clause generator =>
-          some (valueOn support clause generator) }
+          some (coldDeclaredValue data object support clause generator) }
     let record : Graph.ColdCorridor.Record data.coldSignature :=
       { boundaryDegrees := boundedDegree
         stubs := halfEdgeCode
-        offsets := fun position => offsetAt (endpointAt position)
+        offsets := fun position => coldWindowOffset data object (endpointAt position)
         state := directState
         truth := false }
     let germ := makeGerm support bounded connected proper record
     exact ⟨germ, rfl⟩
   let crossIncidence := fun epsilon =>
     Classical.choose (crossGermExists epsilon)
-  have componentInR : ∀ epsilon : ColdEligibleHalfEdge data object,
-      componentAt epsilon ⊆ object.remainderSupport packing := by
-    intro epsilon vertex vertexMember
-    apply Finset.mem_sdiff.2
-    refine ⟨Finset.mem_univ vertex, ?_⟩
-    have outsideWindows : vertex ∉ windows :=
-      Finset.disjoint_left.1 (corridorFacts epsilon).1.1
-        vertexMember
-    intro inPackedSupport
-    apply outsideWindows
-    exact inPackedSupport
   refine ⟨outsideIncidence, componentAt, corridorAt, presentationAt, indexAt,
-    ?_, ?_, ?_, componentInR, ?_, crossIncidence, ?_⟩
+    ?_, ?_, ?_, crossIncidence, ?_⟩
   · intro epsilon
     refine ⟨(corridorFacts epsilon).1, (corridorFacts epsilon).2,
-      ULift.up_injective, Classical.choose_spec (germExists epsilon)⟩
+      ⟨ULift.up_injective, rfl⟩, Classical.choose_spec (germExists epsilon)⟩
   · intro epsilon segment
-    change (activeAt epsilon segment).card ≤
-      Graph.ColdCorridor.interfaceWidth data.windowOrder
-    have entryFacts := Classical.choose_spec
-      ((Graph.ColdCorridor.mem_windowsOf object cubic epsilon.1.1).1
-        (Graph.ColdCorridor.selected_facts object cubic
-          (⟨epsilon.1, epsilon.2.1⟩ :
-            ColdSelectedHalfEdge data object)).1)
-    have entryCard : (entryWindowAt epsilon).card = data.windowOrder :=
-      (cubicWindow (entryWindowAt epsilon) entryFacts.1).2
-    have boundaryMember : (corridorAt epsilon).successorStub ∈
-        Graph.ColdCorridor.boundaryStubs object windows
-          (componentAt epsilon) := List.get_mem _ _
-    have successorInside : (corridorAt epsilon).successorStub.2 ∈ windows :=
-      ((Graph.ColdCorridor.mem_boundaryStubs_iff object windows
-        (componentAt epsilon) _).1 boundaryMember).2.1
-    have successorFacts := Classical.choose_spec
-      ((Graph.ColdCorridor.mem_windowsOf object packing
-        (corridorAt epsilon).successorStub.2).1 successorInside)
-    have successorCard : (successorWindowAt epsilon).card =
-        data.windowOrder :=
-      (packingWindow (successorWindowAt epsilon) successorFacts.1).2
-    have pairCard :
-        ({(corridorAt epsilon).entryStub.1,
-          (corridorAt epsilon).head segment} :
-            Finset object.Vertex).card ≤ 2 := by
-      exact (Finset.card_insert_le _ _).trans
-        (Nat.succ_le_succ (Finset.card_singleton _).le)
-    calc
-      (activeAt epsilon segment).card ≤
-          (entryWindowAt epsilon ∪ successorWindowAt epsilon).card +
-            ({(corridorAt epsilon).entryStub.1,
-              (corridorAt epsilon).head segment} :
-                Finset object.Vertex).card := by
-        simpa [activeAt] using
-          (Finset.card_union_le
-            (entryWindowAt epsilon ∪ successorWindowAt epsilon)
-            ({(corridorAt epsilon).entryStub.1,
-              (corridorAt epsilon).head segment} :
-                Finset object.Vertex))
-      _ ≤ ((entryWindowAt epsilon).card +
-            (successorWindowAt epsilon).card) + 2 :=
-        Nat.add_le_add
-          (Finset.card_union_le (entryWindowAt epsilon)
-            (successorWindowAt epsilon)) pairCard
-      _ ≤ Graph.ColdCorridor.interfaceWidth data.windowOrder := by
-        rw [entryCard, successorCard]
-        unfold Graph.ColdCorridor.interfaceWidth
-        omega
+    exact coldActiveInterface_card_le data object packingWindow
+      (corridorAt epsilon) segment
   · intro epsilon crossWindow
     obtain ⟨sourceWindow, sourceMember, sourceInside⟩ :=
       (Graph.ColdCorridor.mem_windowsOf object cubic epsilon.1.1).1
         (Graph.ColdCorridor.selected_facts object cubic epsilon).1
     obtain ⟨targetWindow, targetMember, targetInside⟩ :=
-      (Graph.ColdCorridor.mem_windowsOf object packing epsilon.1.2).1
+      (Graph.ColdCorridor.mem_windowsOf object cubic epsilon.1.2).1
         crossWindow
     exact ⟨sourceWindow, sourceMember, targetWindow, targetMember,
       sourceInside, targetInside,
       (Graph.ColdCorridor.selected_facts object cubic epsilon).2⟩
-  · intro epsilon vertex vertexMember
-    apply componentInR epsilon
-    obtain ⟨inner, _innerMember, rfl⟩ := List.mem_map.1 vertexMember
-    exact inner.2
   · intro epsilon
     exact Classical.choose_spec (crossGermExists epsilon)
 
@@ -602,7 +432,7 @@ theorem coldGermCandidates_of_routing (data : Parameters)
   let stateTwo := Classical.choose_spec (Classical.choose_spec stateOne)
   let stateBundle := Classical.choose_spec (Classical.choose_spec stateTwo)
   let crossIncidence := coldRoutedCrossIncidence data object routing
-  let crossFacts := Classical.choose_spec stateBundle.2.2.2.2.2
+  let crossFacts := Classical.choose_spec stateBundle.2.2.2
   let incidence := coldRoutedOccurrenceIncidence data object routing
   let candidates := coldRoutedCandidates data object routing
   have occurrenceStubInjective : Function.Injective

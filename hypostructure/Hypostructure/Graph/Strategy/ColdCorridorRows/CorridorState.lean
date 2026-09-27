@@ -20,9 +20,9 @@ variable {data : Data.{u}}
 
 This is the joint owner of `K .coldCorridorState` and
 `K .coldFailureRouting`.  It reads the selected-stub partition from
-`K .coldReturnCorridors`, constructs the current finite prefix-code
-presentation from the literal corridor and its bounded active interface, and
-performs the terminal-or-first-repeat construction locally in this atomic
+`K .coldReturnCorridors`, reads every corridor through G's own cut-state
+presentation `coldCutStatePresentation` (pinned in the published statement),
+and performs the terminal-or-first-repeat construction locally in this atomic
 executor.  Its support, offset, relational label, embedded-incidence, and
 labelled-degree data are all read from the current graph.  In particular, the
 former `(support.card, head ∈ support)` surrogate is absent: equal retained

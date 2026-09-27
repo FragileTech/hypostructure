@@ -65,6 +65,7 @@ noncomputable def nearCubicDenseLinear
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .hotColdPartition) known]

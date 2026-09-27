@@ -27,7 +27,7 @@ unbounded cross-window loss (`Contracts.Spine.coldGermCandidates_of_routing`). -
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldGermCandidates
     { Requires := [K .coldFailureRouting, K .coldExchangeBound,
-        K .coldHandoffTransfer]
+        K .coldHandoffTransfer, K .cubicBaseline]
       Produces := [K .coldGermCandidates]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -35,7 +35,8 @@ unbounded cross-window loss (`Contracts.Spine.coldGermCandidates_of_routing`). -
     (fun inputs =>
       .cons (key := K .coldGermCandidates)
         ⟨Contracts.Spine.coldGermCandidates_of_routing data.toParameters
-          inputs.current.object inputs.current.baseline data.threshold_eq_three
+          inputs.current.object inputs.current.baseline
+          (inputs.get (K .cubicBaseline)).down.1
           data.three_le_windowOrder (inputs.get (K .coldFailureRouting)).down
           (inputs.get (K .coldHandoffTransfer)).down⟩
         .nil)
