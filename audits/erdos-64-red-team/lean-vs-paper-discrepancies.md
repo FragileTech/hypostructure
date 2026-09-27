@@ -2147,6 +2147,204 @@ G's piece at `Z` with only the edges inside `Xᵢ`.
   at the fold of a (b)-entry of G, together with the fold pair.  Until it is
   constructed, `[348]` is routed as `thm:main` routes it: a returned outcome at
   `[187]` (no `sorry`).
+- **fix2-348: what target-completeness gives, and the exact obstruction.**
+  Evidence: `audits/erdos-64-red-team/fix2-348/Obstruction348.lean` (compiles,
+  axioms propext, Classical.choice, Quot.sound; no sorry).
+  - *Inventory of target-completeness (tex).*
+
+    | source | tex | what it says | gives `Visibility(R)`? |
+    |---|---|---|---|
+    | `def:target-complete-quotient` | 5858-5866 | an identification preserves the profile and the *full* target predicate against every `T`-context | no: a property a quotient may have, not a fact about `B_u` |
+    | `def:typeA-trace-basin`, declared family | 10738-10743 | `R_u(B_u)` is complete for the *declared* `u`-supported events; route-8 quotients "are tested only against this declared `u`-supported target algebra" | no: completeness is for declared events; an accepted cycle of `R ⊕ Y_G` need not be one |
+    | `def:typeA-trace-basin`, (b) target-complete | 10757-10764 | all realizations give "the same target predicate" as `ρ_u(B_u)` at every compatible context | Lean `TraceResponseQuotient` clause 3 = declared-algebra equivalence (the declared reading of 10741-10743) |
+    | target-complete-minimality | 10776-10796 | TCM = none of (a)-(d) | no: a (b)-entry is by definition not TCM (it is a target-defect entry); TCM is never available on `[348]`'s arm |
+    | `lem:typeA-internal-quotient-mixed` | 12422-12457 | "a distinguishing event must use at least one coordinate forgotten ... Hence the chosen event is `u`-supported" | this sentence IS `Visibility` for full-target events, asserted without construction; under the declared reading it is `distinguishingEventCrosses` (trivial) |
+    | `lem:typeA-one-terminal-collapse` | 12459-12500 | `α(ξ) ≤ 1` ⇒ a nontrivial target-complete quotient, i.e. (b) | Lean `route8Entry_smallCoreQuotient`: (b) HOLDS at every `α ≤ 1` entry |
+
+  - *Is Lean's (b) weaker than the paper's?*  No restatement helps.  The
+    full-target reading of 10760-10764 makes (b) empty at G (the realization
+    `B_u` plus a disjoint internal cycle of accepted length responds with a
+    cycle at `Y_G`, while `B_u ⊕ Y_G ≅ G` has none).  That would close `[348]`
+    trivially but falsify `lem:typeA-one-terminal-collapse` at G, so the
+    census `α ≥ 2` of `K .route8UnifiedEntryCensus` (340), proved from
+    quotient-freeness through `route8Entry_smallCoreQuotient`, would lose its
+    proof: the same gap moves to `[340]`.  The Lean keeps the declared reading,
+    under which the collapse lemma is a theorem.  `TargetComplete`,
+    `TargetCompleteMinimal`, `QuotientRealization` are unchanged.
+  - *Exact obstruction (configuration at G).*  A unified entry `ξ` of G with
+    `α(ξ) ≤ 1`.  At such `ξ`:
+    1. the declared algebra is identically false, at every piece and context
+       (`declaredAlgebra_empty_of_alpha_le_one`: a visible declared event is a
+       core-retained crossing coordinate, two carriers, `α ≥ 2`);
+    2. (b) holds (`b_of_alpha_le_one`, the project's
+       `route8Entry_smallCoreQuotient` with empty crossing family), so G's
+       ledger takes the `[348]` arm (`residual_of_alpha_le_one`:
+       `¬ Route8QuotientFreeStatement`);
+    3. `Visibility(R)` reduces to `¬ Target(R ⊕ Y_G)`, and for every fold `R`
+       of `B_u` minimality refutes it (`not_visibility_of_alpha_le_one`).
+    Conversely, the free arm gives `α ≥ 2` at every unified entry
+    (`route8EntryFacts`).  So closing `[348]` is at least as strong as
+    `α(ξ) ≥ 2` at every unified entry, which is the conclusion of
+    `lem:typeA-unified-carriers` itself; its proof for target-defect entries
+    is the step at tex 15362 (circular), and for route-8 entries it uses TCM,
+    which a (b)-entry does not have.
+  - *Three routes at that configuration.*  (1) Incompatible structure: the
+    (b)-clause is vacuous there (empty algebra); (c) and (d) are already
+    refuted (`not_traceDelocalization`, no-handoff filter); target avoidance
+    is not contradicted (the fold cycle unfolds to a `keep`-`remove` path of
+    G); [11]/[12] as in step 2b.  (2) Bound overload: at `[348]` G's ledger
+    carries the deficit `K .route8UnifiedDeficit` (339), which counts entries,
+    not `α`; every bound using `α ≥ 2` is downstream of `[348]`'s free arm.
+    (3) Compressibility: the core restriction `ρ|_{C_ess}` is full-target
+    equivalent to `ρ` (`Entry.essentialCore_complete`), but it is a
+    deletion-type reading (internal edges outside retained supports dropped),
+    so it breaks `δ ≥ 3` and is not a `CompressibleSupport`; the fold needs
+    `Visibility`, false by 3.
+  - *Remark (not formalized, not used).*  At an entry whose declared algebra
+    has a core-retained crossing coordinate whose event passes through a
+    label `ℓ ∈ ∂B_u` lying on a cycle of G with two interior vertices `a ≠ b`
+    of `B_u`, (b) is refuted directly at `Y_G` without minimality: `B_u` plus
+    a fresh `a`-`b` path of tuned length realizes every response quotient
+    (identity placement, no old incidence changed) and closes an accepted
+    cycle through `ℓ`.  So the (b)-arm lives on entries whose declared algebra
+    is effectively empty, of which `α ≤ 1` is the formalized case.
+  - *Status.*  OPEN CONSTRUCTION, unchanged: `[348]` stays a returned outcome
+    at `[187]`.  The missing fact about G is `α(ξ) ≥ 2` at every unified
+    target-defect entry (no unified entry with `α ≤ 1`).
+  - *Follow-up (user): is `B_u` at an `α ≤ 1` entry compressible?*  No, and
+    the reason is the same as at [144] step 2 below
+    (`audits/erdos-64-red-team/fix2-348/Obstruction144.lean`; the lemmas are
+    generic in the support, instantiated at `S = B_u`).
+    - The `α ≤ 1` information is the core completeness
+      `ρ|_{C_ess} ~ ρ` (`Entry.essentialCore_complete`, full target, every
+      `∂B_u`-context).  It relates two *readings* of `B_u`, both built from
+      `retainedBasinPiece`.  It does not relate G's piece at `B_u` to a
+      smaller piece.
+    - Candidate `Z' = retainedBasinPiece B_u (retained supports)`.  It keeps
+      every label edge, so the profile holds
+      (`retainedBasinPiece_boundaryDegreeProfile`).  It is a subgraph, so the
+      response clause holds in every context without using `α`
+      (`subgraph_response`).  G refutes `δ ≥ 3 ∧ smaller` for it
+      (`subgraph_not_baseline_and_smaller`).
+    - Any non-subgraph candidate, the fold included, fails the response
+      clause at `Y_G`.
+    - With a single carrier, the path spectra through it only restate the
+      core equivalence.  They feed no clause.
+    So `α ≤ 1` yields no compression of `B_u`.  [348] does not close.
+
+### [144] step 2 (tex 5594/5614, 6026): the fold analysis of [348] applied (fix2-348)
+
+*Handed over from fix2-SP (d69424b); complements fix2-SP's "[144] step 2"
+open construction and changes no Lean.*  Evidence:
+`audits/erdos-64-red-team/fix2-348/Obstruction144.lean` (compiles; axioms
+propext, Classical.choice, Quot.sound; no sorry).  Setting: G's [144a] arm,
+`Z = select?(X₁ ∪ X₂)`, readings `ρᵢ = retainedPiece G Z Xᵢ`, residual
+disjunct `ContextEquivalent ρ₁ ρ₂`.
+
+- **Clause check of any representative `Z'` of `Z` (the fold included).**
+  Profile, `δ ≥ 3` and "smaller" can hold for a fold, but the response clause
+  of `ReplacementSupport` fails at G's own context `Y_G` for EVERY smaller
+  baseline `Z'` (`representative_not_responsive_at_G`: minimality gives an
+  accepted cycle in `Z' ⊕ Y_G`, and `Z ⊕ Y_G ≅ G` has none).  So exit (c) at
+  [144] can only arise as a contradiction derived from `ContextEquivalent ρ₁
+  ρ₂`, through the analogue of `Visibility`: every accepted cycle of
+  `Z' ⊕ Y_G` yields a context separating `ρ₁` from `ρ₂`.
+- **What G's facts give.**  Spectral separation refutes context equivalence at
+  G (`readings_not_contextEquivalent_of_spectra`, through the synthetic path
+  context of `GluedCrossingCycle.lean`; `ρ₂ ⊆ G` has no internal accepted
+  cycle): if two labels of `∂Z` are joined in `ρ₁` by a path whose length
+  plus `k + 1` is accepted and `ρ₂` has no such path, the disjunct is false.
+  So the residual disjunct forces equal accepted-complement label-path
+  spectra of the two readings.
+- **Where it fails (configuration at G).**  `X₁ = X₂` with
+  `r_{π₁} ≠ r_{π₂}` (more generally, readings with no label-to-label
+  structure that any context sees): the readings are equal, the disjunct holds
+  (`readings_contextEquivalent_of_support_eq`), no context separates them, and
+  the identification is label-only, "not an admissible rank reduction"
+  (tex 6031-6035).  Visibility is false there; the ledger at [144] has no
+  fact on the declared supports of the two pattern coordinates beyond the
+  routing label, so no route closes it.  (The two coordinates differ by their
+  label, the demand pair, `pairCoordinate label support`, so `first ≠ second`
+  does not separate their supports: both are the canonical connected
+  superset of their own seeds, and nothing on the ledger makes those
+  differ.)
+- **Follow-up (user): equal spectra as a compression candidate.**
+  1. *Response determinacy.*  Pairwise label-to-label spectra do not
+     determine the response of a target-free piece: a multi-crossing cycle
+     uses a vertex-disjoint system of piece paths.  Two readings can have the
+     same pairwise spectra with `a`-`b` and `c`-`d` paths disjoint in one and
+     meeting in the other; a context with an `b`-`c` and a `d`-`a` path of
+     tuned lengths then separates them.  The data that determine the response
+     are the linkage spectra (vertex-disjoint path systems between labels,
+     with their pairing, lengths and the labels they meet).  This needs no
+     separate theorem here: `ContextEquivalent` quantifies over every context,
+     multi-crossing ones included, so the residual disjunct already IS
+     response equality of `ρ₁` and `ρ₂`, i.e. linkage equality.
+  2. *Compression, clause by clause.*  Every representative `Z'` of `Z` is
+     one of two kinds:
+     - A subgraph of G's piece at `Z`.  This covers "replace `ρ₁` by `ρ₂`",
+       i.e. delete the edges inside `X₁` not inside `X₂`, and every reading.
+       The response clause holds for free in every context
+       (`subgraph_response`), so the equivalence `ρ₁ ~ ρ₂` is not used.
+       G's minimality refutes `δ ≥ 3 ∧ smaller` for it
+       (`subgraph_not_baseline_and_smaller`): a deletion that keeps
+       `δ ≥ 3` would be a smaller target-free graph.  The profile clause
+       additionally fails whenever a deleted edge meets `∂Z`.
+     - Not a subgraph (a fold).  Then the response clause fails at `Y_G`
+       (`representative_not_responsive_at_G`).
+     So no clause of `ReplacementSupport` or `CompressibleSupport` reads the
+     equivalence of the two readings.  That equivalence relates two readings
+     of `Z` to each other, never G's piece to a smaller piece, and equal
+     linkage spectra of `ρ₁`, `ρ₂` build no compression of G.
+  3. *[144a].*  The disjunct carries `ContextEquivalent` (full target, all
+     contexts), i.e. already linkage equality.  That is consistent at G
+     (configuration `X₁ = X₂`).
+- **Follow-up (user): routes 1 and 2 at the configuration `X₁ = X₂`.**
+  *Configuration at G.*
+  - `canonicalSameTokenRouting G = some routing`, with pattern edges
+    `π₁ = routing.demands.first ≠ π₂ = routing.demands.second` in the
+    canonical homogeneous pattern (matching or star, `HomogeneousPatternSpec`).
+  - `Xᵢ = (canonicalPairActivation.pairSupport πᵢ).getD ∅`, i.e. `select?`
+    of the seed `pairSeed πᵢ = ⋃_{d ∈ πᵢ} (T(d) ∪ Γ(d))`, with `X₁ = X₂`.
+  - The coordinates `pairCoordinate πᵢ Xᵢ` differ only in their label `πᵢ`.
+
+  *Route 1, incompatible structure.  Fails; nothing G constructs separates
+  the two supports.*
+  - **Distinct endpoints and ports.**  `SameTokenDemandsSpec` asks
+    `π₁ ≠ π₂` and equal actual routing labels.  In the matching case the
+    pattern edges are disjoint as demand sets (`IsMatching`), but nothing
+    makes the declared supports `T(d) ∪ Γ(d)` of distinct demands disjoint or
+    distinct.  In the star case the two edges share the centre demand, so the
+    seeds share `T(c) ∪ Γ(c)`.  Either way both seeds may lie in one minimum
+    connected set.
+  - **Activation injectivity.**  `DemandActivation` (`SurplusBlockers.lean:142`)
+    has no injectivity field.  `declaredSupport` is a function of the
+    demand, so it can repeat.
+  - **Canonical support selection.**  `select?` returns the lexicographically
+    first minimum-cardinality connected superset of the seed.  It is not
+    injective on seeds (`select? S = X` only gives `S ⊆ X`), so equal outputs
+    from distinct seeds are allowed.
+  - **Maximal routes and first separator.**  The routes run from the token
+    root to the demand endpoints `dᵢ.2`.  `SameTokenRoutesSpec` and the
+    separator never read `Xᵢ`, so `X₁ = X₂` gives no information on them.
+    Conversely, a trivial separator (e.g. equal demands `d₁ = d₂` at a star
+    centre) does not force or exclude `X₁ = X₂`.  The [144a] statement pins
+    the routing, not the separator, so no closed parallel case absorbs the
+    configuration.
+  - **Target and minimality.**  `X₁ = X₂` gives equal readings.  Neither is a
+    replacement of G's piece (subgraph lemmas above), so there is nothing to
+    contradict.
+
+  *Route 2, bound overload.  Fails; no counted quantity reads the supports.*
+  The token load and role fibre count pattern edges (Finsets of demands),
+  and `Q_geom` / `patternBound` counts routing labels.  Two pattern edges
+  with one support are still two edges with two labels, so no count
+  doubles.  The only cap in play, `patternBound ≤ pattern.card`, is a lower
+  bound that the configuration keeps.
+
+  *Route 3* is as in the compression analysis above.  So the configuration is
+  not refuted at G, and [144a]'s context-equivalence disjunct stays open.
+- **Status.**  OPEN CONSTRUCTION, unchanged; [144a] keeps the disjunct.
 
 ## User-approved repairs
 
