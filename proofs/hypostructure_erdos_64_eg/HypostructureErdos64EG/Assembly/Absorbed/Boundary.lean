@@ -16,9 +16,12 @@ open Hypostructure.Graph.Strategy.Spine
 universe u w
 
 /-- The outcomes of the absorbed-configuration residual `[174]`--`[177]`: its
-genuine configurations close at `[176]`, and its fan data continues through
-Type B to the route-8 residuals. -/
+fan data continues through Type B to the route-8 residuals, and its genuine
+configurations `[176]` run `[154]`--`[157]`, whose G2 outcome `[156]` is the
+local cold exclusion `K .coldBranchClosed` retained at `[187]`. -/
 abbrev SelectedAbsorbedGermBoundary (selected : EGInput.{u}) :=
-  SelectedRouteEightBoundary selected
+  SelectedRouteEightBoundary selected ∨
+    Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
+      erdosReceiverLoadProfile spineData .coldBranchClosed selected.object
 
 end HypostructureErdos64EG

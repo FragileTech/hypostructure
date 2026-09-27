@@ -564,7 +564,36 @@ canonical homogeneous pattern at that token
   repair)" was reverted at integration: the closure went through sparse exit
   clause (b), which appears to accept any two boundary pieces and would close
   the branch vacuously.  G2 is recorded again and the cold outcome returns to
-  `[187]` (`K .coldBranchClosed`), as at `d2ded0e`.
+  `[187]` (`K .coldBranchClosed`), as at `d2ded0e`.  Since 2026-09-27 the
+  absorbed branch `[176]` runs the same `[154]` G2 test
+  (`coldGermDistinctionDichotomy`) before `[163]`: its G2 arm is the same
+  `[187]` cold outcome (`SelectedAbsorbedGermBoundary` gained that disjunct),
+  and `[406]` runs only on the silent arm, as in the dense pass.
+
+- **[153] corridor windows (registered 2026-09-27; needs a user decision).**
+  `def:cold-corridor-first-failure` (tex 7165-7167) deletes the interiors of
+  the ambient-cubic cold windows only (`X_cold`) and takes the components of
+  `G − X_cold`.  The Lean (`coldCorridorWindows`, unchanged since d2ded0e)
+  deletes the whole fixed packing `⋃P₀`, so every corridor lives in the
+  normalized remainder `R = G − ⋃P₀`; a selected stub whose foot is in any
+  packed window is the explicit cross-window incidence.  The paper itself
+  needs this reading at `[162]`: `lem:dense-cold-pass` (tex 7689-7696) bounds
+  every return corridor by the diameter of "the boundaried pieces of `R`",
+  which holds only for corridors inside `R`
+  (`Contracts.Spine.denseColdCorridorsTerminal_of_state` reads
+  `componentAt ε ⊆ R(P₀)` from `[30]`).  With `G − X_cold` a corridor may cross
+  hot or non-cubic cold windows and `[162]` is not established.  The two paper
+  readings are inconsistent; the Lean keeps the `R` reading.  Not changed in
+  this pass.
+- **[165]/[166] size split `[244]`/[245]** (`canonicalSwapSizeDichotomy`,
+  `coldCanonicalSwapSmaller` / `coldCanonicalSwapSameSize`).  The paper gives it
+  no placement: `lem:refined-minimality-swap` (tex 7732-7757) splits only
+  `E ≠ Q` against `E = Q`, and `E` has `|E| = |Q|` by
+  `def:neutral-equal-length-germ` (the Lean records
+  `representative.size = germ.piece.internalVertexCount` at `[406]`).  A
+  strictly smaller canonical representative is a target-complete compression,
+  already excluded by (F3)/G3.  The decision is left unwired (as at d2ded0e);
+  it is dead code, reported, not deleted.
 
 ## Paper errors
 
@@ -664,6 +693,36 @@ where the user decided so, a residual carried by the node's open leaf.
     no event at segment 0 -- but whether G's retained presentation is such is
     not determined, so the statement is not refutable.  The tag stays
     `sorry -- PAPER-ERROR [153] tex:7268`.
+- **Addendum (2026-09-27): G's cut-state presentation pinned.**
+  `ColdCorridorStateStatement` ([30]) now pins the retained presentation and
+  index of every eligible `ε` to G's own cut-state presentation of its corridor,
+  `coldCutStatePresentation data G corridor` with the identity index (a
+  `Sigma` equation in the per-`ε` clause).  That presentation reads, from G, the
+  boundary-degree profile (G-degrees of the foot and the prefix head), the two
+  boundary stubs, the cold-window offsets at the two window interfaces
+  (`coldWindowOffset`, the position on the induced `P₁₃` of `P₀`), and the
+  declared coordinates on `T(J) = coldActiveInterface` (the two packed windows
+  of the stubs and the foot/head), read as their exact embedded datum
+  (`coldDeclaredSupport` / `coldDeclaredValue`).  The hook
+  `coldFailureDefect_excluded` keeps its tag and its statement form; it is now
+  a claim about G's actual corridor states.
+  - Not provable: at a first repeat of G's states, the (F2) clause is the
+    Part-0 size separation of `retainedPiece(J_r, J_l)` and `piece(J_r)`, so the
+    claim holds for G only if G's states do not repeat before a terminal or
+    (F4) event, which nothing on the ledger decides.
+  - Not refuted: the Part-2 refutation needs state 0 = state 1.  At the pinned
+    presentation `T(J_1) = T(J_0) ∪ {head 1}` with `head 1` outside `T(J_0)`, so
+    the retained declared value of the full-support coordinate differs; scratch
+    check `coldCutState_zero_ne_one` (group CO, `F3_stateCheck.lean`, standard
+    axioms).  No other refutation is known.
+  - Node `[422]` (`coldFailureDefectRoute`) is restated at the same retained
+    occurrence with the paper's (ii) conclusion: an (F2) first failure of G is
+    a named sparse surplus exit of G (`DeclaredSparseSurplusExit`), as at
+    d2ded0e.  It is discharged on the survivor through this hook
+    (`coldFailureDefectRoutes_of_survivor`), and the routing row `[68]` now reads
+    it (`K .coldFailureDefectRoute`) together with `K .sparseSurplusSurvivor`
+    to exclude (F2).  The former `[422]` (`defect → ¬ TargetComplete` over
+    every corridor and presentation) was true by definition and read by no row.
 
 ### [153]/[175] full charge of a subcubic cold half-edge, `lem:absorbed-germ-fan-data` (i) (tex 7920-7922) with `lem:cold-germ-extraction` (tex 7318-7322)
 

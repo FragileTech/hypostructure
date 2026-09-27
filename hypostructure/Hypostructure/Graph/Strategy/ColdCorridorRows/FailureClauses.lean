@@ -16,20 +16,24 @@ variable {BranchState : Graph.FiniteObject.{u} → Type v}
 variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
-/-- Node `[153]`, (F2): an (F2) pair of prefixes of one of G's corridors is a
-target-defective quotient (`Contracts.Spine.coldFailureDefectRoutes`). -/
+/-- Node `[153]`, (F2), `lem:cold-corridor-first-failure` (ii) at G's retained
+occurrence: an (F2) first failure of G's retained corridor is a named sparse
+surplus exit of G (`Contracts.Spine.coldFailureDefectRoutes_of_survivor`,
+discharged on the surviving branch from `K .sparseSurplusSurvivor` through the
+paper's exclusion claim, PAPER-ERROR [153] tex:7268). -/
 @[reducible] noncomputable def coldFailureDefectRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldFailureDefect
-    { Requires := []
+    { Requires := [K .sparseSurplusSurvivor]
       Produces := [K .coldFailureDefectRoute]
       requiresUnique := by simp
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .coldFailureDefectRoute)
-        ⟨Contracts.Spine.coldFailureDefectRoutes data.toParameters
-          inputs.current.object⟩ .nil)
+        ⟨Contracts.Spine.coldFailureDefectRoutes_of_survivor data.toParameters
+          inputs.current.object
+          (inputs.get (K .sparseSurplusSurvivor)).down⟩ .nil)
 
 /-- Node `[153]`, (F1): the selected residual contains no target cycle. -/
 @[reducible] noncomputable def coldFailureCycleRow :

@@ -71,7 +71,7 @@ from the literal ledger and publish the exact live-hot entropy cap
       (Presentation := Presentation) (presentation := presentation)
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.coldHotEntropyCap
-    { Requires := [K .barrierCap, K .surplusAtOrBelow]
+    { Requires := [K .barrierCap, K .surplusAtOrBelow, K .cubicBaseline]
       Produces := [K .coldHotEntropyCap]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -79,7 +79,8 @@ from the literal ledger and publish the exact live-hot entropy cap
     (fun inputs =>
       .cons (key := K .coldHotEntropyCap)
         ⟨Contracts.Spine.coldHotEntropyCap_of_barrierCap data.toParameters
-          inputs.current.object inputs.current.baseline data.three_le_threshold
+          inputs.current.object inputs.current.baseline
+          (by have := (inputs.get (K .cubicBaseline)).down.1; omega)
           (inputs.get (K .barrierCap)).down
           (inputs.get (K .surplusAtOrBelow)).down⟩
         .nil)

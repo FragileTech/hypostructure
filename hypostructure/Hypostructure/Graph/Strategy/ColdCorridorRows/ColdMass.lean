@@ -57,7 +57,7 @@ positive-surplus vertex of the current object. -/
 @[reducible] noncomputable def coldStubExcessRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.coldStubExcess
-    { Requires := [K .hotColdPartition, K .coldAmbientCubic]
+    { Requires := [K .hotColdPartition, K .coldAmbientCubic, K .cubicBaseline]
       Produces := [K .coldSelectedBranchExcess,
         K .coldAmbientCubicStubExcess, K .coldStubExcess]
       requiresUnique := by key_fresh
@@ -67,8 +67,8 @@ positive-surplus vertex of the current object. -/
       let split := (inputs.get (K .hotColdPartition)).down
       .cons (key := K .coldSelectedBranchExcess)
         ⟨Contracts.Spine.coldSelectedBranchExcess_of_split data.toParameters
-          inputs.current.object data.threshold_eq_three data.three_le_windowOrder
-          split⟩
+          inputs.current.object (inputs.get (K .cubicBaseline)).down.1
+          data.three_le_windowOrder split⟩
         (.cons (key := K .coldAmbientCubicStubExcess)
           ⟨Contracts.Spine.coldAmbientCubicStubExcess_of_split data.toParameters
             inputs.current.object split⟩

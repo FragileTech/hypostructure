@@ -21,7 +21,7 @@ fan data at the first high centre of every retained corridor. -/
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.absorbedGermFanEnvelope
     { Requires := [K .selection, K .uncompressible, K .remainderNormalized,
-        K .absorbedGermFanData, K .exactCollisionFails]
+        K .absorbedGermFanData, K .exactCollisionFails, K .cubicBaseline]
       Produces := [K .typeBFanEntry]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -35,8 +35,9 @@ fan data at the first high centre of every retained corridor. -/
             (inputs.get (K .selection)).down.1
             (inputs.get (K .uncompressible)).down
             (inputs.get (K .remainderNormalized)).down
-            (inputs.get (K .absorbedGermFanData)).down data.three_le_threshold
-            data.degenerateClosureRejected)⟩
+            (inputs.get (K .absorbedGermFanData)).down
+            (by have := (inputs.get (K .cubicBaseline)).down.1; omega)
+            (inputs.get (K .cubicBaseline)).down.2.2.1)⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

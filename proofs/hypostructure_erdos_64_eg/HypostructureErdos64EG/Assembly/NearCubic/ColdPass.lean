@@ -91,6 +91,7 @@ noncomputable def nearCubicColdStubs
     [FactKeys.Has (K .barrierCap) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .cubicBaseline) known]
     (fresh : List.Disjoint
       [K .coldHotEntropyOverflow, K .coldHotEntropyCap, closed, K .coldMass,
         K .coldAmbientCubic, K .coldSelectedBranchExcess,
@@ -141,6 +142,7 @@ noncomputable def nearCubicColdCandidates
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .coldCorridorState) known]
@@ -181,6 +183,7 @@ noncomputable def nearCubicColdGermFamily
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
     [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .uncompressible) known]
     [FactKeys.Has (K .sparseSurplusSurvivor) known]
     [FactKeys.Has (K .coldCorridorState) known]

@@ -20,20 +20,6 @@ open Hypostructure.Graph.Strategy.Spine
 
 universe u
 
-/-- **(F2) is a target-defective quotient** (`lem:cold-corridor-first-failure`
-(ii), through `lem:context-universality`): the separating context of an (F2)
-pair shows that its identification on G's own prefix piece is target-complete
-in no immutable profile fibre. -/
-theorem coldFailureDefectRoutes
-    (data : Parameters) (object : Graph.FiniteObject.{u}) :
-    ColdFailureDefectRoutesStatement data object := by
-  unfold ColdFailureDefectRoutesStatement
-  intro _windows _component corridor _presentation _index _left _right failure
-    _Profile profile
-  exact Graph.ColdCorridor.Corridor.not_targetComplete_of_firstFailureDefect
-    (support := fun stage => corridor.prefixSupport stage.1)
-    (profile := profile) failure
-
 /-- **(F1) never occurs.**  An (F1) completion is a target cycle of the object;
 an object avoiding the target has none. -/
 theorem coldFailureCycle_of_avoids
@@ -178,8 +164,11 @@ of `def:named-surplus-exits` and the survivor fact does not refute it
 The statement is quantified only over G's retained objects: the earlier
 all-presentations/all-indices form is false
 (`ColdF2Refutation.coldFailureDefect_excluded_is_false`, with a constant
-index), while the retained index is injective and its states are G's
-chosen ones. -/
+index).  The retained presentation is G's own cut-state presentation
+`coldCutStatePresentation` with the identity index (pinned by
+`ColdCorridorStateStatement`); there the states of segments `0` and `1` differ
+(their active interfaces have different sizes), so that construction does not
+apply. -/
 theorem coldFailureDefect_excluded (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (_survivor : DeclaredSparseSurvivor data object)
@@ -202,11 +191,24 @@ theorem coldFailureDefect_excluded (data : Parameters)
   -- PAPER-ERROR [153] tex:7268 — see lean-vs-paper-discrepancies.md#paper-errors
   sorry
 
+/-- **Node `[153]`, `lem:cold-corridor-first-failure` (ii)** (tex 7240,
+7265-7270), at G's retained occurrence: an (F2) first failure of G's retained
+corridor is a named sparse surplus exit of G.  On the surviving branch it is
+discharged by the paper's exclusion claim `coldFailureDefect_excluded`
+(PAPER-ERROR [153] tex:7268), which makes the (F2) arm empty. -/
+theorem coldFailureDefectRoutes_of_survivor (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (survivor : DeclaredSparseSurvivor data object) :
+    ColdFailureDefectRoutesStatement data object :=
+  fun occurrence epsilon first minimal defect =>
+    (coldFailureDefect_excluded data object survivor occurrence epsilon first
+      minimal defect).elim
+
 /-- **`lem:cold-corridor-first-failure`, the routing** (tex 7234-7295): (F1)
 is a target cycle and (F3) a target-complete compression, both excluded by the
-ledger; (F2) is a sparse exit excluded by the node-`[125]` survivor
-(`coldFailureDefect_excluded`, applied at G's retained occurrence and first
-failure; PAPER-ERROR [153] tex:7268); every other first failure is routed as
+ledger; (F2) is a sparse exit (node `[422]`, `ColdFailureDefectRoutesStatement`,
+at G's retained occurrence and first failure) excluded by the node-`[125]`
+survivor; every other first failure is routed as
 the lemma states -- (F5) a cold bounded configuration or (F4) an already named
 handoff of the declared registry `ColdDeclaredHandoffSupport` (G's heavy
 handoff centres). -/
@@ -215,6 +217,7 @@ theorem coldFailureRouting_of_failures
     (occurrence : ColdFirstFailureOccurrenceStatement data object)
     (failureCycle : ColdFailureCycleStatement data object)
     (failureCompression : ColdFailureCompressionStatement data object)
+    (defectRoutes : ColdFailureDefectRoutesStatement data object)
     (survivor : DeclaredSparseSurvivor data object) :
     ColdFailureRoutingStatement data object := by
   let occurrenceData := Classical.choice occurrence
@@ -225,8 +228,8 @@ theorem coldFailureRouting_of_failures
   | cycle cycle =>
       exact (failureCycle occurrenceData epsilon first cycle).elim
   | defect defect =>
-      exact (coldFailureDefect_excluded data object survivor occurrenceData epsilon
-        first minimal defect).elim
+      exact (survivor (defectRoutes occurrenceData epsilon first minimal
+        defect)).elim
   | compression compression =>
       exact (failureCompression occurrenceData epsilon first compression).elim
   | handoff handoff => exact Or.inr ⟨first, handoff, minimal⟩

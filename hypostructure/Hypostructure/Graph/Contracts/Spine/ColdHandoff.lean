@@ -75,6 +75,7 @@ theorem coldFirstHighOfNotBounded
   have firstLeEarlier := Finset.min'_le highSegments earlier earlierMember
   exact (Nat.not_lt_of_ge firstLeEarlier) earlierBefore
 
+set_option maxHeartbeats 800000 in
 /-- The first-high handoff conclusion obtained from the retained corridor
 state.  This is the manuscript's bounded-prefix/high-degree dichotomy. -/
 theorem coldHandoffTransfer_of_state
