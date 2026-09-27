@@ -23,7 +23,7 @@ noncomputable def Assembly.Internal.strictSurplusIndependent
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .suppressedFamilyCriticalCycle,
         K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
-        K .openPortSuppression,
+        K .openPortSuppression, K .surplusPresentation,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .cycleRankConstraint, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
@@ -59,7 +59,7 @@ noncomputable def Assembly.Internal.strictSurplusIndependent
       -- `[131]` count holds → `[137]`: coupled excess `D_all > 0?`.  Both
       -- arms reach node `[138]`'s `σ(G) ≤ C_sp ⌈√n⌉`, which closes against
       -- node `[19]`.
-      match coupledExcessDichotomy (data := spineData) sandwichHistory
+      match freePairCoupledExcessDichotomy (data := spineData) sandwichHistory
           (by key_fresh) (by key_fresh) with
       | .left nearCubicHistory =>
           let closedHistory :=

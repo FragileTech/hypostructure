@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Statements.SurplusPairCode
+import Hypostructure.Graph.Statements.TypeBLanes
 
 /-!
 # Contract lemmas: the pair-code chain `[178]`--`[180]`
@@ -106,14 +107,15 @@ theorem declaredSparseSurplusExit_of_obstructionDefect
 
 /-- Alternatives (i)--(iv) of `lem:pair-system-realizability` for G's canonical
 return system, on an object with no accepted cycle that survives the sparse
-exits of its declared family: only alternative (iv), the same-token Type B
-handoff of G (`lem:same-token-bottleneck-routing`), remains. -/
-theorem sameTokenHandoff_of_pairSystemEarlyOutcome
+exits of its declared family: only alternative (iv) remains, the first-separator
+handoff of that return system's own obstruction. -/
+theorem pairObstructionHandoff_of_pairSystemEarlyOutcome
     (early : PairSystemEarlyOutcomeStatement data object)
     (noCycle : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (survives : SparseSurplusSurvivorStatement data object) :
-    SameTokenTypeBHandoffStatement data object := by
-  obtain ⟨returns, early, -, -⟩ := early
+    ∃ returns, canonicalPairDemandReturns data object = some returns ∧
+      PairObstructionHandoff data object returns := by
+  obtain ⟨returns, early, returnsSelected, -⟩ := early
   cases early with
   | targetCycle cycle => exact (noCycle cycle).elim
   | targetDefect defect =>
@@ -121,22 +123,58 @@ theorem sameTokenHandoff_of_pairSystemEarlyOutcome
         defect)).elim
   | compression support _inside replacement =>
       exact (survives (.compression support replacement)).elim
-  | typeB handoff => exact handoff
+  | typeB handoff => exact ⟨returns, returnsSelected, handoff⟩
+
+/-- G's canonical serial system is built on G's canonical return system. -/
+theorem canonicalPairDemandReturns_of_serial
+    {serial : PairSerialDemandSystem data object}
+    (selected : canonicalPairSerialSystem data object = some serial) :
+    canonicalPairDemandReturns data object = some serial.returns := by
+  unfold canonicalPairSerialSystem at selected
+  cases hReturns : canonicalPairDemandReturns data object with
+  | none => simp [hReturns] at selected
+  | some returns =>
+      rw [hReturns, Option.bind_some] at selected
+      split at selected
+      · next system same _ =>
+          cases selected
+          rw [same]
+      · cases selected
 
 /-- The periodic alternatives of `lem:pair-system-increment-arithmetic` for G's
 canonical serial system, on an object surviving the sparse exits of its
-declared family: only the same-token Type B handoff of G remains. -/
-theorem sameTokenHandoff_of_pairIncrementEarlyOutcome
+declared family: only the first-separator handoff of the serial system's own
+obstruction remains. -/
+theorem pairObstructionHandoff_of_pairIncrementEarlyOutcome
     (early : PairIncrementEarlyOutcomeStatement data object)
     (survives : SparseSurplusSurvivorStatement data object) :
-    SameTokenTypeBHandoffStatement data object := by
-  obtain ⟨serial, early, -, -⟩ := early
+    ∃ returns, canonicalPairDemandReturns data object = some returns ∧
+      PairObstructionHandoff data object returns := by
+  obtain ⟨serial, early, serialSelected, -⟩ := early
   cases early with
   | targetDefect defect =>
       exact (survives (declaredSparseSurplusExit_of_obstructionDefect
         serial.returns defect)).elim
   | compression support _inside replacement =>
       exact (survives (.compression support replacement)).elim
-  | typeB handoff => exact handoff
+  | typeB handoff =>
+      exact ⟨serial.returns, canonicalPairDemandReturns_of_serial serialSelected,
+        handoff⟩
+
+/-- Node `[179]`/`[180]` → `[65]`: the first-separator handoff of G's retained
+pair obstruction, on the strict-surplus arm of `[19]`, enters the common Type B
+entry at the obstruction's canonical handoff support. -/
+theorem typeBFanEntry_of_pairObstructionHandoff
+    (above : SurplusAboveStatement data object)
+    (handoff : ∃ returns, canonicalPairDemandReturns data object = some returns ∧
+      PairObstructionHandoff data object returns) :
+    TypeBFanEntryStatement data object := by
+  obtain ⟨returns, returnsSelected, core, centres, handoffAt⟩ := handoff
+  obtain ⟨⟨core', centres'⟩, selected, handoffAt'⟩ :=
+    canonicalChoice_spec (spec := fun support : Finset object.Vertex × Finset object.Vertex =>
+      PairObstructionHandoffAt data object returns support.1 support.2)
+      ⟨(core, centres), handoffAt⟩
+  exact Or.inr ⟨above, Or.inr ⟨returns, returnsSelected, core', centres', selected,
+    handoffAt'⟩⟩
 
 end Hypostructure.Graph.Contracts.SurplusPair

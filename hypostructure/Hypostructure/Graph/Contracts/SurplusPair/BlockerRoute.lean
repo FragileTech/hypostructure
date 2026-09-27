@@ -3,10 +3,10 @@ import Hypostructure.Graph.Statements.SurplusPair
 /-!
 # Contract lemma: the blocker arm of `[132]`
 
-`lem:sparse-pair-dependence-exit`, blocker arm: when no sparse surplus exit
-settles the dependence of the blocked pair family of `[130]`, its recorded
-blocker set is nonempty at some scheduled pair, which therefore has the
-canonical blocker `Φ_can(π) = min_≺ Blk(π)` of `def:canonical-blocker-ledger`.
+Node `[132]`, blocker arm: when no sparse surplus exit occurs, the blocked pair
+`π ∈ Π_blk` of `[130]` (nonempty recorded blocker set over the six clauses of
+`def:surplus-blockers`) has the canonical blocker `Φ_can(π) = min_≺ 𝖡𝗅𝗄(π)` of
+`def:canonical-blocker-ledger`.
 -/
 
 namespace Hypostructure.Graph.Contracts.SurplusPair
@@ -28,8 +28,7 @@ theorem canonicalBlockerRoute_of_noExit
   let recorded := Graph.recordSparsePairDEBlockers
     (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
     (LengthOK := data.LengthOK) activation pairs
-  obtain ⟨pair, pairMem, blocked⟩ :=
-    Graph.recordedSparsePairDEBlocker_nonempty activation pairs certificate
+  obtain ⟨pair, pairMem, blocked⟩ := id certificate
   obtain ⟨blocker, canonical⟩ := Option.isSome_iff_exists.mp
     (Graph.FiniteObject.isSome_canonicalBlocker recorded blocked)
   exact ⟨noExit, activation, selected, certificate, pair, pairMem, blocked,

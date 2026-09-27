@@ -39,12 +39,8 @@ theorem pairOverlapFirstFailure_of_freeCodeUnrealized
     (canonicalCodePairSet_eq_schedule data object activationSelected blockerFree)
     ⟨active, pairSetNonempty, fun _ member => member, ?_, countFailure,
       noProperBaseline.2⟩
-  intro pair pairMem
-  constructor
-  · intro obstruction
-    exact blockerFree ⟨pair, pairMem, Or.inl obstruction⟩
-  · intro obstruction
-    exact blockerFree ⟨pair, pairMem, Or.inr obstruction⟩
+  intro pair pairMem blocked
+  exact blockerFree ⟨pair, pairMem, blocked⟩
 
 /-- Node `[178]` on the capacity-free side of `[137]`: on the dependent arm of
 `[130]` the canonical pair set is the free side of G's canonical capacity
@@ -69,14 +65,7 @@ theorem pairOverlapFirstFailure_of_blockedCodeUnrealized
     (LengthOK := data.LengthOK) activation
     (object.portPairSchedule data.threshold)
   have pairSetBlockerFree : ∀ pair, pair ∈ pairSet →
-      ¬ Graph.SparsePairDEProfileObstructionAt
-          (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-          (LengthOK := data.LengthOK) activation
-            pair ∧
-        ¬ Graph.SparsePairDEResponseObstructionAt
-          (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
-          (LengthOK := data.LengthOK) activation
-            pair := by
+      ¬ (recorded.blockers pair).Nonempty := by
     intro pair pairMem
     have freeRecorded : pair ∈ capacity.activation.freePairs
         data.threshold :=
@@ -89,46 +78,21 @@ theorem pairOverlapFirstFailure_of_blockedCodeUnrealized
       simpa [Graph.FiniteObject.DemandActivation.freePairs,
         Graph.FiniteObject.freePairs,
         Graph.CanonicalFibreLedger.unassigned] using freeRecorded
-    have noRecordedBlocker :
-        ¬ (recorded.blockers pair).Nonempty := by
-      have noCapacityBlocker :
-          ¬ (capacity.activation.blockers pair).Nonempty := by
-        intro blocked
-        obtain ⟨kind, blocks⟩ :=
-          (capacity.activation.exists_blocks_iff_blockers_nonempty
-            pair).mpr blocked
-        apply freeParts.2
-        exact (Graph.CanonicalFibreLedger.isSome_canonicalLabel_iff
-          Graph.SameTokenBlockerRoles.canonicalBlockerOrder
-          capacity.activation.Blocks pair).mpr
-            ⟨kind, capacity.activation.blocks_mem_canonicalBlockerOrder
-              blocks, blocks⟩
-      simpa [recorded, activation, activationEq] using
-        (show ¬ (capacity.activation.blockers pair).Nonempty from
-          noCapacityBlocker)
-    constructor
-    · intro obstruction
-      apply noRecordedBlocker
-      let coordinate :=
-        Graph.FiniteObject.DemandActivation.pairCoordinate pair
-          ((activation.pairSupport pair).getD ∅)
-      have member : coordinate ∈
-          recorded.profileObstructions pair := by
-        simp [recorded, Graph.recordSparsePairDEBlockers,
-          obstruction, coordinate]
-      exact (recorded.exists_blocks_iff_blockers_nonempty pair).mp
-        ⟨.boundaryProfile, recorded.blocks_boundaryProfile member⟩
-    · intro obstruction
-      apply noRecordedBlocker
-      let coordinate :=
-        Graph.FiniteObject.DemandActivation.pairCoordinate pair
-          ((activation.pairSupport pair).getD ∅)
-      have member : coordinate ∈
-          recorded.responseObstructions pair := by
-        simp [recorded, Graph.recordSparsePairDEBlockers,
-          obstruction, coordinate]
-      exact (recorded.exists_blocks_iff_blockers_nonempty pair).mp
-        ⟨.targetResponse, recorded.blocks_targetResponse member⟩
+    have noCapacityBlocker :
+        ¬ (capacity.activation.blockers pair).Nonempty := by
+      intro blocked
+      obtain ⟨kind, blocks⟩ :=
+        (capacity.activation.exists_blocks_iff_blockers_nonempty
+          pair).mpr blocked
+      apply freeParts.2
+      exact (Graph.CanonicalFibreLedger.isSome_canonicalLabel_iff
+        Graph.SameTokenBlockerRoles.canonicalBlockerOrder
+        capacity.activation.Blocks pair).mpr
+          ⟨kind, capacity.activation.blocks_mem_canonicalBlockerOrder
+            blocks, blocks⟩
+    simpa [recorded, activation, activationEq] using
+      (show ¬ (capacity.activation.blockers pair).Nonempty from
+        noCapacityBlocker)
   refine canonicalPairFirstFailure_isSome data object spineSelected
     realizationSelected
     (canonicalCodePairSet_eq_freeSide data object activationSelected blocked

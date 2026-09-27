@@ -1,4 +1,5 @@
 import Hypostructure.Graph.Statements.SurplusPairRouting
+import Hypostructure.Graph.Statements.CanonicalPairHandoff
 
 /-!
 # Statements: the outcomes of `lem:pair-system-realizability` and
@@ -41,8 +42,10 @@ of the minimal overlap obstruction: (i) a target cycle; (ii) two of the
 obstruction's own response coordinates read on G's piece at their canonical
 support are distinguished by a context (a target-defective quotient, sparse
 exit (b)); (iii) a target-complete proper-support representative inside the
-obstruction's overlap support (sparse exit (c)); (iv) the same-token Type B
-handoff of G (`lem:same-token-bottleneck-routing`). -/
+obstruction's overlap support (sparse exit (c)); (iv) the first nonserial
+intersection is a routed bottleneck whose first separator is a high-degree
+vertex: the first-separator handoff of the obstruction's own overlap support
+toward its two demands, at `P₀` (`PairObstructionHandoff`). -/
 inductive PairSystemEarlyOutcome {data : Parameters}
     {object : Graph.FiniteObject.{u}}
     (returns : PairDemandReturns data object) : Type (u + 1) where
@@ -56,7 +59,7 @@ inductive PairSystemEarlyOutcome {data : Parameters}
       (replacement : Graph.Strategy.InterfaceReplacement.ReplacementSupport
         (Graph.MinimumDegreeAtLeast data.threshold)
         (Graph.HasCycleWithLength data.LengthOK) object support)
-  | typeB (handoff : SameTokenTypeBHandoffStatement data object)
+  | typeB (handoff : PairObstructionHandoff data object returns)
 
 /-- The five alternatives of `lem:pair-system-realizability`, tied to the
 literal overlap obstruction read from the ledger. -/
@@ -107,8 +110,9 @@ routed by the paper (`lem:pair-system-increment-arithmetic`, tex 5207-5220),
 for the exact serial system: two equal-residue states distinguished by a
 context -- a target-defective identification of the obstruction's own response
 coordinates (sparse exit (b)); a target-complete proper representative inside
-the overlap support (sparse exit (c)); or the same-token Type B handoff of G
-(`lem:same-token-bottleneck-routing`). -/
+the overlap support (sparse exit (c)); or a class reaching a routed bottleneck,
+whose first-separator reading is the Type B handoff of the serial system's own
+obstruction at `P₀` (`PairObstructionHandoff`). -/
 inductive PairIncrementEarlyOutcome {data : Parameters}
     {object : Graph.FiniteObject.{u}}
     (serial : PairSerialDemandSystem data object) : Type (u + 1) where
@@ -121,7 +125,7 @@ inductive PairIncrementEarlyOutcome {data : Parameters}
       (replacement : Graph.Strategy.InterfaceReplacement.ReplacementSupport
         (Graph.MinimumDegreeAtLeast data.threshold)
         (Graph.HasCycleWithLength data.LengthOK) object support)
-  | typeB (handoff : SameTokenTypeBHandoffStatement data object)
+  | typeB (handoff : PairObstructionHandoff data object serial.returns)
 
 /-- The exhaustive conclusion claimed by
 `lem:pair-system-increment-arithmetic`: either the corrected full-modulus

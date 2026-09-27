@@ -26,7 +26,7 @@ free-side entropy count already written to the incoming ledger. -/
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.roleFibrePartition
     { Requires := [K .blockedPairEntropySandwich, K .canonicalPairLedger,
-        K .sparseSlackSurplus, K .surplusAbove]
+        K .sparseSlackSurplus, K .surplusAbove, K .cubicBaseline]
       Produces := [K .roleFibrePartition]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -38,7 +38,7 @@ free-side entropy count already written to the incoming ledger. -/
           (inputs.get (K .canonicalPairLedger)).down
           (inputs.get (K .sparseSlackSurplus)).down
           (inputs.get (K .surplusAbove)).down
-          data.three_le_threshold⟩
+          (by have := (inputs.get (K .cubicBaseline)).down.1; omega)⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

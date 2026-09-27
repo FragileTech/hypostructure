@@ -24,7 +24,7 @@ it is the sparse-pressure cap at `M₀ = Cap_hom(L_geom)`, which gives node
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.homogeneousCapsClose
     { Requires := [K .homogeneousCapsHold, K .sparseSlackSurplus,
-        K .surplusAbove]
+        K .surplusAbove, K .surplusPresentation]
       Produces := [K .homogeneousBottleneck, K .spineSurplusEstimate]
       requiresUnique := by key_fresh
       producesUnique := by key_fresh
@@ -39,7 +39,8 @@ it is the sparse-pressure cap at `M₀ = Cap_hom(L_geom)`, which gives node
         (.cons (key := K .spineSurplusEstimate)
           ⟨Graph.Contracts.SurplusPair.spineSurplusEstimate_of_capsClose close
             (inputs.get (K .surplusAbove)).down
-            data.routingLabelBound_eq data.quadraticSafetyScale_le_spineScale⟩
+            (inputs.get (K .surplusPresentation)).down.2.2.2.1
+            (inputs.get (K .surplusPresentation)).down.2.2.2.2⟩
           .nil))
 
 end Hypostructure.Graph.Strategy.Spine

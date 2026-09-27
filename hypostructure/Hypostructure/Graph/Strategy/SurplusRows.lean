@@ -145,14 +145,15 @@ they close the suppression.  Its first edge after `x(p)` is a shoulder. -/
 @[reducible] noncomputable def activeSurplusDemandsRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.activeSurplusDemands
-    { Requires := [K .activeSurplusFamily, K .sparsePortActivation]
+    { Requires := [K .activeSurplusFamily, K .sparsePortActivation, K .cubicBaseline]
       Produces := [K .activeSurplusDemands]
       requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .activeSurplusDemands)
-        ⟨Graph.Contracts.SurplusPair.activeSurplusDemands_of_activation data.threshold_eq_three
+        ⟨Graph.Contracts.SurplusPair.activeSurplusDemands_of_activation
+          (inputs.get (K .cubicBaseline)).down.1
           (inputs.get (K .activeSurplusFamily)).down
           (inputs.get (K .sparsePortActivation)).down⟩
         .nil)
@@ -175,7 +176,8 @@ deficit is bounded linearly using the registered coefficient inequality. -/
 @[reducible] noncomputable def baselineSpineDemandRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.baselineSpineDemand
-    { Requires := [K .sparseSurplusSurvivor, K .surplusAbove, K .noProperBaseline, K .tightEndpoint]
+    { Requires := [K .sparseSurplusSurvivor, K .surplusAbove, K .noProperBaseline, K .tightEndpoint,
+        K .cubicBaseline, K .surplusPresentation]
       Produces := [K .baselineSpineDemand]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -187,15 +189,18 @@ deficit is bounded linearly using the registered coefficient inequality. -/
           (inputs.get (K .surplusAbove)).down
           (inputs.get (K .noProperBaseline)).down
           (inputs.get (K .tightEndpoint)).down
-          data.three_le_threshold data.baselineDeficitSafety⟩
+          (by have := (inputs.get (K .cubicBaseline)).down.1; omega)
+          (inputs.get (K .surplusPresentation)).down.1⟩
         .nil)
 
 /-! ## Node `[132]`: route the dependent pair family -/
 
 /-- Node `[130]`, canonical pair split "blocker-free?": read the node-`[125]`
 active family on the literal ledger, form G's canonical pair-response
-activation from it, and decide whether its full schedule carries a
-clause-(d)/(e) blocker.  Both arms are about that one activation. -/
+activation from it, and decide whether some pair of its full schedule is
+blocked -- has a nonempty blocker set `𝖡𝗅𝗄(π)` over all six clauses (a)--(f)
+of `def:surplus-blockers` (`prop:sparse-pair-independence-dichotomy`,
+`def:canonical-blocker-ledger`).  Both arms are about that one activation. -/
 noncomputable def pairResponseIndependenceDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
@@ -215,7 +220,7 @@ noncomputable def pairResponseIndependenceDichotomy
       let pairs := current.object.portPairSchedule data.threshold
       have selected := canonicalPairActivation_eq data.toParameters
         current.object active
-      by_cases blocked : Graph.HasSparsePairDEBlocker
+      by_cases blocked : Graph.HasSparsePairBlocker
           (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
           (LengthOK := data.LengthOK) activation pairs
       · exact ⟨.inr ⟨activation, selected, blocked⟩⟩
@@ -224,10 +229,12 @@ noncomputable def pairResponseIndependenceDichotomy
 
 /-! ## Node `[131]`: mixed sparse-spine dependence -/
 
-/-- `lem:mixed-sparse-spine-dependence` on the literal independent residual of
-`[130]`.  The concrete spine family and active pair schedule are read from the
-same incoming ledger; the four-case circuit proof is published as one exact
-semantic fact. -/
+/-- `lem:mixed-sparse-spine-dependence` on the literal blocker-free residual of
+`[130]`: at G's canonical spine family and canonical activation, a failure of
+independent target-testability of `ℐ_spine ∪ ℛ_{𝒜₀}` gives a sparse exit or a
+blocker of type (d)/(e).  Node `[131]`'s count is a registered branch test, so
+no later row consumes this fact; it is the paper's lemma at `[131]`, published
+on that node's ledger. -/
 @[reducible] noncomputable def mixedSparseSpineDependenceRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.mixedSparseSpineDependence
@@ -249,14 +256,15 @@ logarithms cleared, published from the literal `[131]` residual. -/
 @[reducible] noncomputable def exactCubicBaselineBudgetRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.exactCubicBaselineBudget
-    { Requires := []
+    { Requires := [K .cubicBaseline]
       Produces := [K .exactCubicBaselineBudget]
       requiresUnique := by simp
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .exactCubicBaselineBudget)
-        ⟨Graph.Contracts.SurplusPair.exactCubicBaselineBudget_of_threshold data.three_le_threshold⟩
+        ⟨Graph.Contracts.SurplusPair.exactCubicBaselineBudget_of_threshold
+          (by have := (inputs.get (K .cubicBaseline)).down.1; omega)⟩
         .nil)
 
 /-- `lem:incremental-skeleton-room` at the current object's edge count.  Both
@@ -265,7 +273,7 @@ division cleared. -/
 @[reducible] noncomputable def incrementalSkeletonRoomRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.incrementalSkeletonRoom
-    { Requires := []
+    { Requires := [K .cubicBaseline]
       Produces := [K .incrementalSkeletonRoom]
       requiresUnique := by simp
       producesUnique := by simp
@@ -273,7 +281,7 @@ division cleared. -/
     (fun inputs =>
       .cons (key := K .incrementalSkeletonRoom)
         ⟨Graph.Contracts.SurplusPair.incrementalSkeletonRoom_of_baseline inputs.current.baseline
-          data.three_le_threshold⟩
+          (by have := (inputs.get (K .cubicBaseline)).down.1; omega)⟩
         .nil)
 
 /-- `lem:skeleton-dominates` at the current residual's exact edge stratum.
@@ -292,9 +300,13 @@ proved inside this executor and published on the same exact ledger. -/
         ⟨Graph.Contracts.SurplusPair.skeletonDominates_of_object⟩
         .nil)
 
-/-- Node `[132]`, blocked-pair routing "exit or canonical blocker?": exact case
-analysis on the sparse-exit predicate of `def:named-surplus-exits`.  The exit
-arm closes at `[133]`; the blocker arm is its literal negation. -/
+/-- Node `[132]`, blocked-pair routing "exit or canonical blocker?": it reads
+its predecessor, the blocked arm of `[130]` (`K .dependentPairFamily`: a pair of
+G's canonical activation with a nonempty blocker set), and splits on the
+sparse-exit predicate of `def:named-surplus-exits` at G's declared family.  The
+exit arm closes at `[133]` against the survivor of `[125]` (so it is dead on
+this branch, exactly as the paper's `[133]` "exit closes"); the blocker arm is
+its literal negation and carries the `[130]` blocked pair to `[134]`. -/
 noncomputable def blockedPairRoutingDichotomy
     {current : Input BranchState Presentation presentation data}
     {known : FactKeys (Input BranchState Presentation presentation data)}
@@ -307,11 +319,13 @@ noncomputable def blockedPairRoutingDichotomy
   classical
   exact Decision.run previous (K .sparsePairExit) (K .blockedPairNoExit)
     `Hypostructure.Graph.Strategy.Spine.blockedPairRoutingDichotomy
-    (if exit : Holds BranchState Presentation presentation data
-        .sparsePairExit current.object then
-      .inl ⟨exit⟩
-    else
-      .inr ⟨exit⟩)
+    (Classical.choice (show Nonempty
+        ((K .sparsePairExit).At current ⊕ (K .blockedPairNoExit).At current) from by
+      have _blocked := (previous.get (K .dependentPairFamily)).down
+      by_cases exit : Holds BranchState Presentation presentation data
+          .sparsePairExit current.object
+      · exact ⟨.inl ⟨exit⟩⟩
+      · exact ⟨.inr ⟨exit⟩⟩))
     exitFresh noExitFresh
 
 /-- Node `[132]`, blocker arm (`lem:sparse-pair-dependence-exit`): with no
@@ -359,7 +373,8 @@ canonical-fibre no-overcount identities. -/
 @[reducible] noncomputable def exactWindowJoinPressureRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.exactWindowJoinPressure
-    { Requires := [K .noProperBaseline, K .tightEndpoint, K .surplusAbove]
+    { Requires := [K .noProperBaseline, K .tightEndpoint, K .surplusAbove,
+        K .cubicBaseline]
       Produces := [K .sparseUpperEnvelope]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -370,7 +385,7 @@ canonical-fibre no-overcount identities. -/
           (inputs.get (K .noProperBaseline)).down
           (inputs.get (K .tightEndpoint)).down
           (inputs.get (K .surplusAbove)).down
-          data.three_le_threshold⟩
+          (by have := (inputs.get (K .cubicBaseline)).down.1; omega)⟩
         .nil)
 
 /-! ## Node `[136]`: capacity-token ledger -/
@@ -379,7 +394,7 @@ canonical-fibre no-overcount identities. -/
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.capacityTokenLedger
     { Requires := [K .canonicalPairLedger, K .sparseUpperEnvelope, K .noProperBaseline,
-        K .selection]
+        K .selection, K .cubicBaseline, K .surplusPresentation]
       Produces := [K .capacityTokenLedger]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -391,7 +406,8 @@ canonical-fibre no-overcount identities. -/
           (inputs.get (K .sparseUpperEnvelope)).down
           (inputs.get (K .noProperBaseline)).down
           (inputs.get (K .selection)).down.1
-          data.three_le_threshold data.joinSlack⟩
+          (by have := (inputs.get (K .cubicBaseline)).down.1; omega)
+          (inputs.get (K .surplusPresentation)).down.2.1⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

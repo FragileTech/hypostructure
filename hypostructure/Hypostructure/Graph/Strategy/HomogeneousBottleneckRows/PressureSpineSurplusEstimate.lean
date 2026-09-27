@@ -20,7 +20,8 @@ positive coupled excess, so the object's own certified ledger is capped and
 @[reducible] noncomputable def pressureSpineSurplusEstimateRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.pressureSpineSurplusEstimate
-    { Requires := [K .sparsePressureNearCubic, K .fibrePressure, K .surplusAbove]
+    { Requires := [K .sparsePressureNearCubic, K .fibrePressure, K .surplusAbove,
+        K .surplusPresentation]
       Produces := [K .spineSurplusEstimate]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -31,7 +32,7 @@ positive coupled excess, so the object's own certified ledger is capped and
           (inputs.get (K .sparsePressureNearCubic)).down
           (inputs.get (K .fibrePressure)).down
           (inputs.get (K .surplusAbove)).down
-          data.quadraticSafetyScale_le_spineScale⟩
+          (inputs.get (K .surplusPresentation)).down.2.2.2.2⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

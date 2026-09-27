@@ -4,7 +4,6 @@ import Hypostructure.Graph.SparsePressureLedger
 import Hypostructure.Graph.GluedCrossingCycle
 import Hypostructure.Graph.Strategy.HomogeneousBottleneckRows.Basic
 import Hypostructure.Graph.Contracts.SurplusPair.PairCode
-import Hypostructure.Graph.Contracts.TypeB.Entry
 import Hypostructure.Graph.Contracts.SurplusPair.PairOverlap
 
 namespace Hypostructure.Graph.Strategy.Spine
@@ -137,8 +136,9 @@ alternative (v) supplies the graph-realized serial demand system. -/
         .nil)
 
 /-- Alternatives (i)--(iv) of node `[179]`: the target cycle and the sparse
-exit are excluded by the selection and survivor facts, so the literal common
-Type B entry remains. -/
+exit are excluded by the selection and survivor facts, so alternative (iv), the
+first-separator handoff of the retained obstruction at `P₀`, remains and enters
+the common Type B entry at its canonical support. -/
 @[reducible] noncomputable def pairSystemEarlyTypeBEntryRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.pairSystemEarlyTypeBEntry
@@ -150,9 +150,9 @@ Type B entry remains. -/
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .typeBFanEntry)
-        ⟨Contracts.TypeB.typeBFanEntry_of_sameTokenHandoff
+        ⟨Graph.Contracts.SurplusPair.typeBFanEntry_of_pairObstructionHandoff
           (inputs.get (K .surplusAbove)).down
-          (Graph.Contracts.SurplusPair.sameTokenHandoff_of_pairSystemEarlyOutcome
+          (Graph.Contracts.SurplusPair.pairObstructionHandoff_of_pairSystemEarlyOutcome
             (inputs.get (K .pairSystemEarlyOutcome)).down
             (inputs.get (K .selection)).down.1
             (inputs.get (K .sparseSurplusSurvivor)).down)⟩
@@ -256,7 +256,9 @@ corrected full-modulus arithmetic input exists. -/
         .nil)
 
 /-- The periodic alternatives of node `[180]`: the sparse exit is excluded by
-the survivor fact, so the literal common Type B entry remains. -/
+the survivor fact, so the first-separator handoff of the serial system's own
+obstruction remains and enters the common Type B entry at its canonical
+support. -/
 @[reducible] noncomputable def pairIncrementEarlyTypeBEntryRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.pairIncrementEarlyTypeBEntry
@@ -268,9 +270,9 @@ the survivor fact, so the literal common Type B entry remains. -/
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .typeBFanEntry)
-        ⟨Contracts.TypeB.typeBFanEntry_of_sameTokenHandoff
+        ⟨Graph.Contracts.SurplusPair.typeBFanEntry_of_pairObstructionHandoff
           (inputs.get (K .surplusAbove)).down
-          (Graph.Contracts.SurplusPair.sameTokenHandoff_of_pairIncrementEarlyOutcome
+          (Graph.Contracts.SurplusPair.pairObstructionHandoff_of_pairIncrementEarlyOutcome
             (inputs.get (K .pairIncrementEarlyOutcome)).down
             (inputs.get (K .sparseSurplusSurvivor)).down)⟩
         .nil)

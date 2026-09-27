@@ -1,5 +1,6 @@
 import Hypostructure.Graph.Statements.CanonicalTypeB
 import Hypostructure.Graph.Statements.SurplusPairRouting
+import Hypostructure.Graph.Statements.CanonicalSurplusCode
 
 /-!
 # Statements: the Type B support of the selected counterexample
@@ -18,7 +19,11 @@ on `G`:
 * absorbed (`[173]` no → `[177]`): for each selected half-edge `ε`,
   `X_ε = canonicalTypeBAbsorbedSupport ε`, on the `K .exactCollisionFails` arm;
 * same-token (`[144]` → `[144a]`): `X = canonicalSameTokenSupport`, at which
-  the `[144]` handoff holds, on the `K .surplusAbove` arm of `[19]`.  No part
+  the `[144]` handoff holds, on the `K .surplusAbove` arm of `[19]`;
+* pair obstruction (`[179]`/`[180]` → `[187]`): `X` is the canonical support
+  of the first-separator handoff of G's retained pair obstruction
+  (`canonicalPairObstructionSupport` at `canonicalPairDemandReturns`), on the
+  `K .surplusAbove` arm of `[19]`.  No part
   of the continuation `[67]`--`[85]` runs there.
 
 Every key of the continuation `[67]`--`[85]` is `TypeBLaneAll P` (a fact at
@@ -118,21 +123,28 @@ end Lanes
 /-! ## Node `[65]` -/
 
 /-- **Node `[65]`, the common Type B entry** (tex 961).  On the continuation
-lanes the assigned centres are nonempty and high; on the `[144]` lane, on the
-strict-surplus arm, the support is G's canonical same-token support
-`(Y, H) = canonicalSameTokenSupport` (`Statements/CanonicalSameToken.lean`), at
-which the `[144]` handoff key's statement holds: the canonical envelope of G's
-canonical first separator escapes physically, with core `Y` and decorations
-`H`. -/
+lanes the assigned centres are nonempty and high.  On the strict-surplus arm
+there are two lanes, each at its own canonical support: the `[144]` lane, at
+G's canonical same-token support `(Y, H) = canonicalSameTokenSupport`
+(`Statements/CanonicalSameToken.lean`), where the canonical envelope of G's
+canonical first separator escapes physically with core `Y` and decorations
+`H`; and the `[179]`/`[180]` lane, at the canonical support of the first-
+separator handoff of G's retained pair obstruction
+(`canonicalPairObstructionSupport`, `Statements/CanonicalPairHandoff.lean`). -/
 def TypeBFanEntryStatement (data : Parameters) (object : Graph.FiniteObject.{u}) :
     Prop :=
   TypeBLaneAll data object (fun _core centres =>
       centres.Nonempty ∧
         ∀ centre ∈ centres, Graph.IsHighCentre object data.threshold centre) ∨
     (SurplusAboveStatement data object ∧
-      ∃ core centres,
-        canonicalSameTokenSupport data object = some (core, centres) ∧
-          SameTokenHandoffAt data object core centres)
+      ((∃ core centres,
+          canonicalSameTokenSupport data object = some (core, centres) ∧
+            SameTokenHandoffAt data object core centres) ∨
+        ∃ returns, canonicalPairDemandReturns data object = some returns ∧
+          ∃ core centres,
+            canonicalPairObstructionSupport data object returns =
+                some (core, centres) ∧
+              PairObstructionHandoffAt data object returns core centres))
 
 /-- Node `[65]` at the `[64]` entry: the ordinary Type B support `(X₀, H(X₀))`
 is negative and carries a high centre (`def:canonical-decomp`). -/

@@ -36,7 +36,7 @@ noncomputable def Assembly.Internal.strictSurplusDependent
         K .activeSurplusFamily, K .sparseSlackSurplus,
         K .suppressedFamilyCriticalCycle,
         K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
-        K .openPortSuppression,
+        K .openPortSuppression, K .surplusPresentation,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
         K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .cycleRankConstraint, K .tightEndpoint,
         K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
