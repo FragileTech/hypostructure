@@ -653,22 +653,70 @@ where the user decided so, a residual carried by the node's open leaf.
 
 ### [54] on the all-cold arm of [22], `prop:entropy-high-theta` (tex 9919-9921)
 
-- **Paper claim.** On the active arm of `eq:entropy-cap`, "the window package,
-  the remainder bits, and the forced-obstruction bits ... form one
-  independently target-testable coordinate family", realized within the
-  labelled skeleton budget.
-- **Faithful Lean statement.** `Contracts.Spine.entropyCapBound_allCold`: at
-  the selected G, on the arm of `[22]` where no window family of `P₀` is
-  retained (`canonicalHotWindows = ∅`, `¬ WindowFamilyRealized ∅`), with `[48]`,
-  `[51]`, `[52]`: `remainderStates(R₀) · 2^{K|R|−o(|R|)} ≤ skeletonBudget`.
-- **Why it fails.** On the retained arm the claim is proved
-  (`entropyCapBound_of_hotColdPartition`: the retained code carries the exact
-  curvature code `c_Ω·r_Ω(R₀)`, which bounds the forced bits by `[48]`).  On the
-  all-cold arm the arm's defining fact is that the remainder states together
-  with the full curvature code are *not* realized by the labelled skeletons;
-  the manuscript gives no other realization argument for the forced part, so
-  the independence claim is not established there.  The statement carries the
-  selection hypothesis, so its negation is not derivable.
+- **Paper claim** (`prop:entropy-high-theta`, proof, tex 9921): "Suppose
+  `θ > Θ(n) + o(1)`.  By the definition of `Θ(n)` this is precisely
+  inequality (`eq:entropy-cap`), that is, the remaining non-obstruction budget
+  is strictly smaller than the forced full-rank obstruction cost of
+  `cor:forced-curvature-cost`.  Then the window package of
+  `lem:p13-window-package`, the remainder bits, and the forced-obstruction bits
+  together strictly exceed the near-cubic skeleton budget.  **These bits form
+  one independently target-testable coordinate family**, so the number of
+  realized target-complete states would exceed the number of labelled
+  skeletons, contradicting `lem:independent-target-entropy`,
+  `lem:skeleton-dominates`."
+- **The paper's argument on the all-cold arm.** The paper does not split `[54]`
+  by the hot/cold ledger of `[22]` (`def:cold-window-ledger`, tex 6937, is about
+  windows only).  Its one argument is the displayed chain.  On the arm of `[22]`
+  where no window family of `P₀` is retained, the family is the remainder states
+  of `R₀` and the forced obstruction bits.  The chain has three steps: (1) the
+  bit count exceeds the budget -- this is the active arm of `[53]`; (2) the bits
+  form one independently target-testable family arising canonically from the
+  labelled class -- the premise of `lem:independent-target-entropy` (tex 6241);
+  (3) `lem:independent-target-entropy` + `lem:skeleton-dominates`.  Steps (1)
+  and (3) are in the Lean (`K .entropyCapActive`; `K .skeletonDominates` with the
+  realization form `WindowFamilyRealized`).
+- **Where it fails: step (2) is asserted, never proved.** The remainder states
+  are realized alone (`RemainderGlue`, which is how the `K = 0` version closed
+  this arm), and the rank coordinates are independently target-testable alone
+  (`def:curvature-target-rank`, `rem:rank-coordinate-entropy-interface`).  No
+  lemma of the paper shows the *product* family is realized by one labelled
+  skeleton class.  It is not a false step as stated for the forced part, but
+  on this arm the Lean shows the same assertion is false for the full
+  curvature code: `Contracts.Spine.allCold_code_overflow` (live, proved) derives
+  from the arm's own fact `¬ WindowFamilyRealized ∅` and `K .skeletonDominates`
+  that `skeletonBudget < remainderStates(R₀) · 2^{c_Ω·r_Ω(R₀)}`, i.e. the
+  remainder states together with the full curvature code are *not* realized.
+  The paper's step (2) for the forced part `K|R| − o(|R|) ≤ c_Ω·r_Ω(R₀)`
+  (node `[48]`) therefore rests on a fact the paper never proves, and the arm
+  exists exactly when its stronger form fails.
+- **Tried in Lean first.** On the retained-hot arm step (2) is the ledger fact
+  `WindowFamilyRealized 𝒫_hot`, and `[54]` is proved
+  (`entropyCapBound_of_hotColdPartition`: window rate ≤ package bits, forced bits
+  ≤ `c_Ω·r_Ω` by `[48]`, retained code ≤ realized ≤ budget).  On the all-cold arm
+  no ledger fact there (`[22]`, `[48]`, `[51]`, `[52]`, `K .skeletonDominates`,
+  `K .uncompressible`, the cold-corridor keys of the arm) bounds a joint
+  realization of remainder states with rank coordinates, so there is nothing to
+  derive it from.
+- **Negation not derivable.** The ledger constrains the four quantities of the
+  claim (`RS` = remainder states, `B` = skeleton budget, `cr = c_Ω·r_Ω(R₀)`,
+  `F` = forced bits) only by `RS ≤ B` (glue), `1 ≤ B`, `B < RS·2^{cr}`
+  (`allCold_code_overflow`), `F ≤ cr` (`[48]`) and `n^{|R|} ≤ RS^d` (`[51]`/
+  `[52]`).  `Quarantine/PaperRepairs/EntropyCapAllCold.lean` checks (`decide`)
+  that both `RS·2^F ≤ B` and its negation are consistent with all of them
+  (e.g. `RS=2, B=5, cr=3` with `F=1`, resp. `F=3`).  The statement also carries
+  the selection hypothesis (a minimal counterexample), so no concrete model of
+  the full hypothesis set is available to refute it.
+- **Faithful Lean statement.** `Contracts.Spine.entropyCapBound_allCold`: at the
+  selected G, on that arm, with `[48]`, `[51]`, `[52]`:
+  `remainderStates(R₀) · 2^{K|R|−o(|R|)} ≤ skeletonBudget`.
+- **K = 0 at d2ded0e.** The gap is exposed exactly by restoring the paper's
+  `K > 0` test.  d2ded0e's `[53]` compared the joint window/remainder package
+  with the budget (`K = 0`): a different, stronger premise, so the cases
+  `demand ≤ budget < demand·2^{K|R|−o(|R|)}` that the paper closes at `[54]`
+  were routed to `[55]` instead.  That was a deviation from the paper's `[53]`
+  (registered at the time with `rem:closure-robust` as rationale), and it
+  avoided step (2): on the all-cold arm the `K = 0` bound needs only
+  `RemainderGlue`.  The faithful `K > 0` version is kept.
 - **Tag.** `sorry`, `PAPER-ERROR [54] tex:9921`, in
   `Graph/Contracts/Spine/RemainderEntropy.lean`.
 

@@ -87,3 +87,4 @@ Hypostructure.PDE.Strategy.Official.TotalExecutionBoundary
 Hypostructure.Quarantine.PaperRepairs.Node144Gap
 Hypostructure.Quarantine.PaperRepairs.ColdF4Charge
 Hypostructure.Quarantine.PaperRepairs.ColdF2Refutation
+Hypostructure.Quarantine.PaperRepairs.EntropyCapAllCold

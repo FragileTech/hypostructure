@@ -100,24 +100,56 @@ theorem forcedObstructionBits_le_cost (data : Parameters)
   unfold forcedObstructionBits
   exact Nat.sub_le_iff_le_add.mpr cost
 
+/-- **The all-cold arm of node `[22]` overflows with the full curvature code.**
+On that arm the empty window family is not retained
+(`¬ WindowFamilyRealized ∅`); reading the skeletons themselves as states
+(`K .skeletonDominates`, `.1`), this says exactly that the remainder states of
+`R₀` together with the full curvature code `2^{c_Ω·r_Ω(R₀)}` exceed the labelled
+skeleton budget.  This is the Lean evidence recorded for
+`PAPER-ERROR [54] tex:9921`: on this arm the joint realization
+`prop:entropy-high-theta` asserts is false for the full code, and only its
+smaller forced part `K|R| − o(|R|) ≤ c_Ω·r_Ω(R₀)` remains undecided. -/
+theorem allCold_code_overflow (data : Parameters) (object : Graph.FiniteObject.{u})
+    (dominates : SkeletonDominatesStatement object)
+    (allCold : ¬ WindowFamilyRealized data object ∅) :
+    Graph.skeletonBudget object <
+      remainderStates data object (canonicalWindowPacking data object) *
+        2 ^ (data.curvatureCost *
+          remainderCurvatureTargetRank data object (canonicalWindowPacking data object)) := by
+  by_contra le
+  push Not at le
+  apply allCold
+  refine ⟨ULift.{u} (Graph.PackedWindowRealization.Skeleton object.vertexCount
+    object.edgeCount), ULift.up, ?_, ?_⟩ <;>
+  · have range : Nat.card (Set.range (ULift.up.{u} :
+        Graph.PackedWindowRealization.Skeleton object.vertexCount object.edgeCount →
+          _)) = Graph.skeletonBudget object := by
+      rw [Set.range_eq_univ.mpr (fun x => ⟨x.down, rfl⟩), Nat.card_univ,
+        Nat.card_ulift, dominates.1]
+    rw [range]
+    first
+    | simpa using Nat.succ_le_of_lt (Graph.skeletonBudget_pos object)
+    | simpa [retainedCode] using le
+
 /-- **Node `[54]` on the all-cold arm of node `[22]`: `prop:entropy-high-theta`'s
 independence claim.**
 
-*"These bits form one independently target-testable coordinate family, so the
-number of realized target-complete states would exceed the number of labelled
-skeletons, contradicting `lem:independent-target-entropy`,
-`lem:skeleton-dominates`."* (tex 9921).  On the arm of node `[22]` where no
-window family of `P₀` is retained (`canonicalHotWindows = ∅` and the empty
-family's code -- the remainder states and the exact curvature code -- is not
-realized by the labelled skeletons), the paper's family is the remainder states
-of `R₀` together with the forced obstruction bits `K|R| − o(|R|)` of node
-`[48]`, and the claim is that this family is realized within the skeleton
-budget.  Nothing in the manuscript establishes that realization on this arm: the
-arm's own defining fact is that the remainder states together with the full
-curvature code `c_Ω·r_Ω(R₀) ≥ K|R| − o(|R|)` are *not* realized, and the
-manuscript supplies no separate argument for the smaller forced part.  Stated at
-the selected minimal counterexample `G`, on the high-entropy full-rank residual,
-so its negation is not derivable. -/
+The paper's claim (tex 9921): *"the window package of
+`lem:p13-window-package`, the remainder bits, and the forced-obstruction bits
+together strictly exceed the near-cubic skeleton budget.  These bits form one
+independently target-testable coordinate family, so the number of realized
+target-complete states would exceed the number of labelled skeletons,
+contradicting `lem:independent-target-entropy`, `lem:skeleton-dominates`."*
+`lem:independent-target-entropy` needs a family "arising canonically from graphs
+in a labelled graph class"; the paper never proves that the remainder states and
+the forced obstruction bits jointly form such a family -- it asserts it.  On the
+arm of node `[22]` where no window family of `P₀` is retained that is the whole
+family (no window bits), and `allCold_code_overflow` shows the arm's defining
+fact is the failure of that joint realization for the full curvature code.  The
+claim below is the same assertion for the smaller forced part
+`K|R| − o(|R|)` of node `[48]`.  Stated at the selected minimal counterexample
+`G`; the ledger's numeric relations at this point do not decide it either way
+(`Quarantine/PaperRepairs/EntropyCapAllCold.lean`). -/
 theorem entropyCapBound_allCold
     {BranchState : Graph.FiniteObject.{u} → Type v}
     {Presentation : Type} {presentation : Presentation}
