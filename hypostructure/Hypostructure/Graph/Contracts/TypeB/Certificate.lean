@@ -76,7 +76,7 @@ theorem hasCycleWithLength_of_typeBFanDirectCycle
   obtain ⟨_core, _centres, _member, _centre, _centreMember, _high, configuration⟩ :=
     TypeBLaneSome.exists cycle
   exact Graph.TypeBDirectCycle.hasCycleWithLength_of_directCycleConfiguration
-    (Contracts.RouteEight.canonicalWindowPacking_valid_maximal data object).1
+    (canonicalWindowPacking_spec data object).1
     configuration
 
 /-! ## The hybrid B1 fan ledger -/
@@ -172,7 +172,7 @@ theorem typeBGlobalLocalBridge
     intro _hub _hubMem configuration
     exact avoids
       (Graph.TypeBDirectCycle.hasCycleWithLength_of_directCycleConfiguration
-        (Contracts.RouteEight.canonicalWindowPacking_valid_maximal data object).1
+        (canonicalWindowPacking_spec data object).1
         configuration)
   exact Graph.TypeBRefinedSupport.globalLocalReflectionACE
     (presentation := data.typeABPresentation)
@@ -207,10 +207,8 @@ theorem typeBDisjointLedger
     subst pieceEq
     obtain ⟨ledger, ledgerEq⟩ := canonicalTypeBDisjointChoice_spec
       ⟨hasChoice, TypeBLaneMember.high member, subset⟩
-    obtain ⟨valid, maximal⟩ :=
-      Contracts.RouteEight.canonicalWindowPacking_valid_maximal data object
     obtain ⟨components, grouped⟩ := disjointLedgerCoreClosure avoids baseline
-      uncompressible normalized valid maximal ledger
+      uncompressible normalized ledger
     exact ⟨ledger, ledgerEq, ledger.exactAugmentedLedgerRefinement, components,
       grouped⟩
 

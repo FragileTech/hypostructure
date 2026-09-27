@@ -37,7 +37,7 @@ theorem route8UnifiedDeficit (data : Parameters) (object : FiniteObject.{u})
     Route8UnifiedDeficitFact data object := by
   classical
   letI : DecidableEq object.Vertex := object.vertices.decEq
-  obtain ⟨valid, maximal⟩ := canonicalWindowPacking_valid_maximal data object
+  obtain ⟨valid, -, maximal⟩ := canonicalWindowPacking_spec data object
   have degreeAt : ∀ vertex : object.Vertex, data.threshold ≤ object.degree vertex :=
     degree_ge_of_minDegree data object baseline
   obtain ⟨pairAt, handoffPieces, handoffChar, centres, _centresEq, high,

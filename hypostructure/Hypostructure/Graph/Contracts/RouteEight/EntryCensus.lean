@@ -323,7 +323,7 @@ theorem route8PiecesClassified (data : Parameters) (object : FiniteObject.{u})
     (bridge : TypeBBridgeReductionStatement data object) :
     Route8PiecesClassifiedStatement data object := by
   classical
-  obtain ⟨valid, maximal⟩ := canonicalWindowPacking_valid_maximal data object
+  obtain ⟨valid, -, maximal⟩ := canonicalWindowPacking_spec data object
   intro piece pieceMem negative
   refine ⟨fun zeroSurplus => ?_, fun positiveSurplus => ?_⟩
   · -- `thm:branch-kill`(a): the `[86]` trichotomy at this exact piece.

@@ -60,7 +60,7 @@ theorem route8BasinBurden (data : Parameters) (object : FiniteObject.{u})
   classical
   letI : DecidableEq object.Vertex := object.vertices.decEq
   let packing := canonicalWindowPacking data object
-  obtain ⟨valid, maximal⟩ := canonicalWindowPacking_valid_maximal data object
+  obtain ⟨valid, -, maximal⟩ := canonicalWindowPacking_spec data object
   let support := object.remainderSupport packing
   let routeEight := (object.canonicalPieces support).filter
     (Route8Survives data object packing)
@@ -78,7 +78,7 @@ theorem route8BasinBurden (data : Parameters) (object : FiniteObject.{u})
   obtain ⟨_negative, zero, silentFirst, _entries⟩ := survives
   have inside : piece ⊆ object.remainderSupport packing :=
     object.pieceSupport_subset (object.remainderSupport packing) component
-  have routed := routing packing valid maximal piece inside zero
+  have routed := routing piece inside zero
   have exactDegree :=
     degree_eq_threshold_of_ambientSurplus_eq_zero data object baseline zero
   have capped : ∀ vertex ∈ piece,

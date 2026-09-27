@@ -50,7 +50,7 @@ theorem exists_route8StageOutcome (data : Parameters)
   have degreeBaseline : ∀ vertex : object.Vertex,
       data.threshold ≤ object.degree vertex :=
     degree_ge_of_minDegree data object baseline
-  obtain ⟨valid, maximal⟩ := canonicalWindowPacking_valid_maximal data object
+  obtain ⟨valid, -, maximal⟩ := canonicalWindowPacking_spec data object
   have componentsSub : components ⊆ object.canonicalPieces support :=
     Finset.filter_subset _ _
   have surplusZero : ∀ component ∈ components,
@@ -65,7 +65,7 @@ theorem exists_route8StageOutcome (data : Parameters)
         ∃ receiver : object.Vertex,
           object.traceReceiver? piece data.threshold vertex = some receiver ∧
             object.IsReceiver piece data.threshold receiver :=
-    fun piece sub zero => (routing packing valid maximal piece sub zero).1
+    fun piece sub zero => (routing piece sub zero).1
   have entriesSubset : entries ⊆
       Route8Census.entries object packing data.threshold data.dischargeScale :=
     route8UnifiedEntries_subset_entries data object

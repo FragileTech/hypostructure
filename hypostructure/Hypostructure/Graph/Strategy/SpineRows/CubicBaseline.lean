@@ -57,7 +57,8 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       producesNonempty := by simp }
     (fun _inputs =>
       .cons (key := K .cubicBaseline)
-        ⟨data.threshold_eq_three, data.dischargeScale_eq_four⟩ .nil)
+        ⟨data.threshold_eq_three, data.dischargeScale_eq_four,
+          data.degenerateClosureRejected, data.windowRate_eq_barrier⟩ .nil)
     0 0
 
 end Hypostructure.Graph.Strategy.Spine

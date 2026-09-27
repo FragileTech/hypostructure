@@ -31,13 +31,15 @@ Type B entry. -/
       .cons (key := K .typeBDecoratedAssignedSupport)
         ⟨Contracts.TypeB.typeBDecoratedAssignedSupport_of_handoff
           (inputs.get (K .netChargeCap)).down (inputs.get (K .selection)).down.1
-          (inputs.get (K .cubicBaseline)).down.1 data.degenerateClosureRejected
+          (inputs.get (K .cubicBaseline)).down.1
+            (inputs.get (K .cubicBaseline)).down.2.2.1
           (inputs.get (K .uncompressible)).down (inputs.get (K .remainderNormalized)).down
           (inputs.get (K .typeAExitSevenHandoff)).down⟩
         (.cons (key := K .typeBFanEntry)
           ⟨Contracts.TypeB.typeBFanEntry_of_decoratedHandoff
             (inputs.get (K .netChargeCap)).down (inputs.get (K .selection)).down.1
-            (inputs.get (K .cubicBaseline)).down.1 data.degenerateClosureRejected
+            (inputs.get (K .cubicBaseline)).down.1
+            (inputs.get (K .cubicBaseline)).down.2.2.1
             (inputs.get (K .typeAExitSevenHandoff)).down⟩
           .nil))
 

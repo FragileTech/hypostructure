@@ -444,21 +444,17 @@ noncomputable abbrev TypeAReceiverRoutingStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- Node `[88]`.  Stated at every Type A support the object carries, in
-  -- the same way node `[27]` is stated at every subregion of a remainder:
+  -- Node `[88]`.  Stated at every zero-surplus subregion of the remainder
+  -- `R₀` of G's fixed packing `P₀`, as node `[27]` is stated at every
+  -- subregion of `R₀`:
   -- a support is data and cannot travel, so what the ledger records is the
   -- statement about all of them.
   --
   -- `def:typeA-support` is `def:admissible` with `σ(X) = 0`; the two
   -- clauses below are `def:typeA-receiver-load`'s own consequences at such
   -- a support.
-  (∀ packing : Finset (Finset object.Vertex),
-    object.IsWindowPacking data.windowOrder packing →
-    (∀ window : Finset object.Vertex,
-      object.InducesWindow data.windowOrder window →
-      ∃ member ∈ packing, ¬ Disjoint window member) →
-    ∀ piece : Finset object.Vertex,
-      piece ⊆ object.remainderSupport packing →
+  (∀ piece : Finset object.Vertex,
+      piece ⊆ object.remainderSupport (canonicalWindowPacking data object) →
       object.ambientSurplus piece data.threshold = 0 →
       -- `lem:typeA-receiver-loads`: `r(u)` is defined for every vertex of
       -- internal degree `δ`, and it is a receiver.  Uniqueness is the

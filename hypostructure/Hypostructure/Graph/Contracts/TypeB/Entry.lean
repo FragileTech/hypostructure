@@ -125,8 +125,6 @@ theorem typeBDecoratedAssignedSupport
     TypeBDecoratedLane.envelope lane
   obtain ⟨component, _componentEq, _member, pieceEq, _negative, _subset⟩ :=
     TypeBDecoratedLane.canonical lane
-  obtain ⟨valid, maximal⟩ :=
-    Contracts.RouteEight.canonicalWindowPacking_valid_maximal data object
   have coreInside : envelope.core ⊆
       object.remainderSupport (canonicalWindowPacking data object) := by
     rw [coreEq, ← pieceEq]
@@ -134,10 +132,10 @@ theorem typeBDecoratedAssignedSupport
   have windowFree : handoffWindowFree data object envelope.core := by
     constructor
     · intro window subset windowInduces
-      exact (normalized _ valid maximal window
+      exact (normalized window
         (subset.trans coreInside)).1 windowInduces
     · intro internal subset
-      exact (normalized _ valid maximal internal
+      exact (normalized internal
         (subset.trans coreInside)).2
   have admissible :
       Graph.DecoratedHandoff.Admissible object
@@ -367,24 +365,13 @@ theorem absorbedGermDecoratedAssignedSupport
         exact ⟨Graph.DecoratedHandoff.fanSafe_geometric firstAdj secondAdj
             different avoids,
           denied centre first second⟩ }
-  have packingSpec := Classical.choose_spec
-    (object.exists_windowPacking_card_eq data.windowOrder)
-  have packingMaximal : ∀ window : Finset object.Vertex,
-      object.InducesWindow data.windowOrder window →
-        ∃ member ∈ canonicalWindowPacking data object,
-          ¬ Disjoint window member := by
-    intro window induced
-    exact object.exists_mem_not_disjoint_of_card_eq
-      data.windowOrder_pos packingSpec.1 packingSpec.2 induced
   have coreSafe : handoffWindowFree data object core := by
     constructor
     · intro window subset induced
-      exact (normalized (canonicalWindowPacking data object)
-        packingSpec.1 packingMaximal window
+      exact (normalized window
           (subset.trans coreInside)).1 induced
     · intro internal subset
-      exact (normalized (canonicalWindowPacking data object)
-        packingSpec.1 packingMaximal internal
+      exact (normalized internal
           (subset.trans coreInside)).2
   have admissible : Graph.DecoratedHandoff.Admissible
       object data.LengthOK

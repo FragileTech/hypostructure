@@ -135,7 +135,7 @@ theorem typeABoundedSupport
   have pieceFree : Graph.InducedPathFree (object.induce piece) data.windowOrder :=
     object.inducedPathFree_induce_of_forall
       (fun inner contained =>
-        (normalized _ valid maximal inner (contained.trans inside)).1)
+        (normalized inner (contained.trans inside)).1)
   have exactDegree : ∀ vertex ∈ piece, object.degree vertex = data.threshold :=
     degree_eq_threshold_of_ambientSurplus_eq_zero object baseline zeroSurplus
   letI : FinEnum object.Vertex := object.vertices
@@ -205,16 +205,16 @@ theorem typeABoundedSupport
 /-! ## Node `[88]`: receiver routing and the threshold algebra -/
 
 /-- `lem:typeA-receiver-loads` and `lem:typeA-threshold-algebra` at every
-zero-surplus subregion of a maximal packing's remainder. -/
+zero-surplus subregion of the remainder `R₀` of G's fixed packing `P₀`. -/
 theorem typeAReceiverRouting
     (normalized : RemainderNormalizedStatement data object) :
     TypeAReceiverRoutingStatement data object := by
   classical
-  intro packing valid maximal piece inside surplus
+  intro piece inside surplus
   have noCore : ∀ inner : Finset object.Vertex, inner ⊆ piece →
       ¬ Graph.MinimumDegreeAtLeast data.threshold (object.induce inner) :=
     fun inner contained =>
-      (normalized packing valid maximal inner (contained.trans inside)).2
+      (normalized inner (contained.trans inside)).2
   refine ⟨fun vertex member full => ?_, fun receiver isReceiver => ?_⟩
   · obtain ⟨_target, trace⟩ :=
       object.exists_traceTo_of_no_baseline_subsupport piece data.threshold
@@ -246,7 +246,7 @@ theorem typeAReceiverRouting_at
     canonicalWindowPacking_valid_maximal_of_negativeSupport data object
       negativeSupport
   obtain ⟨_, _, _, inside, _, _⟩ := canonicalNegativePiece_facts data object pinned
-  exact (routing _ valid maximal piece inside zero).1
+  exact (routing piece inside zero).1
 
 /-! ## Node `[89]`: the saturation split -/
 

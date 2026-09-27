@@ -77,7 +77,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       (Presentation := Presentation) (presentation := presentation)
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.windowPackage
-    { Requires := [K .replacementExclusion, K .selection]
+    { Requires := [K .replacementExclusion, K .selection, K .cubicBaseline]
       Produces := [K .windowPackageSeparated]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -85,7 +85,7 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
     (fun inputs =>
       .cons (key := K .windowPackageSeparated)
         ⟨Contracts.Spine.windowPackageSeparated_of_maximalPacking data.toParameters
-          inputs.current.object data.windowRate_eq_barrier
+          inputs.current.object (inputs.get (K .cubicBaseline)).down.2.2.2
           (inputs.get (K .replacementExclusion)).down
           (inputs.get (K .selection)).down⟩
         .nil)

@@ -84,9 +84,9 @@ Run `python3 .agents/skills/eg-proof-expansion/scripts/api_catalog.py refresh
 --repo-root .` to populate this section.
 
 <!-- BEGIN GENERATED API -->
-Compiled declarations: **820**.
+Compiled declarations: **817**.
 
-Category counts: **Canonical execution** 33, **Canonical exhaustive decisions** 11, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 35, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 168, **Minimum-degree cycle spine vocabulary** 414, **Sealed topology** 6, **Sealed total closure** 12, **Typed partial topology and sealed completion** 16.
+Category counts: **Canonical execution** 33, **Canonical exhaustive decisions** 11, **Canonical fact-only steps and branch decisions** 5, **Canonical ledger** 98, **Canonical manifest** 35, **Canonical residual domain** 16, **Canonical scope initialization** 6, **Minimum-degree cycle spine rows** 165, **Minimum-degree cycle spine vocabulary** 414, **Sealed topology** 6, **Sealed total closure** 12, **Typed partial topology and sealed completion** 16.
 
 The `type` fields below come from the compiled Lean environment.  Docstrings
 and comments are deliberately excluded.
@@ -8232,23 +8232,6 @@ Expr → optParam (Array Expr) #[] → MetaM (Array Expr)
         Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
-### `Hypostructure.Graph.Strategy.SpineRows.DegreeProfileFibres`
-
-#### `Hypostructure.Graph.Strategy.Spine.degreeProfileFibresRow`
-
-- Category: Minimum-degree cycle spine rows
-- Kind: `definition`
-- Source: `Hypostructure/Graph/Strategy/SpineRows/DegreeProfileFibres.lean`
-- Compiled type:
-
-```lean
-{BranchState : Graph.FiniteObject → Type v} →
-  {Presentation : Type} →
-    {presentation : Presentation} →
-      {data : Graph.Strategy.Spine.Data} →
-        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-```
-
 ### `Hypostructure.Graph.Strategy.SpineRows.DeletionCriticality`
 
 #### `Hypostructure.Graph.Strategy.Spine.deletionCriticalityRow`
@@ -10231,23 +10214,6 @@ Function.Injective Graph.Strategy.Spine.name
         Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
-### `Hypostructure.Graph.Strategy.SpineRows.SeparatedTesters`
-
-#### `Hypostructure.Graph.Strategy.Spine.separatedTestersRow`
-
-- Category: Minimum-degree cycle spine rows
-- Kind: `definition`
-- Source: `Hypostructure/Graph/Strategy/SpineRows/SeparatedTesters.lean`
-- Compiled type:
-
-```lean
-{BranchState : Graph.FiniteObject → Type v} →
-  {Presentation : Type} →
-    {presentation : Presentation} →
-      (data : Graph.Strategy.Spine.Data) →
-        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
-```
-
 ### `Hypostructure.Graph.Strategy.SpineRows.SingleOpenPortSuppressionWitness`
 
 #### `Hypostructure.Graph.Strategy.Spine.singleOpenPortSuppressionWitnessRow`
@@ -10329,23 +10295,6 @@ Function.Injective Graph.Strategy.Spine.name
 
 ```lean
 ParserDescr
-```
-
-### `Hypostructure.Graph.Strategy.SpineRows.TargetCompleteContextUniversality`
-
-#### `Hypostructure.Graph.Strategy.Spine.targetCompleteContextUniversalityRow`
-
-- Category: Minimum-degree cycle spine rows
-- Kind: `definition`
-- Source: `Hypostructure/Graph/Strategy/SpineRows/TargetCompleteContextUniversality.lean`
-- Compiled type:
-
-```lean
-{BranchState : Graph.FiniteObject → Type v} →
-  {Presentation : Type} →
-    {presentation : Presentation} →
-      {data : Graph.Strategy.Spine.Data} →
-        Core.Strategy.AtomicStrategy (Graph.Strategy.Spine.Input BranchState Presentation presentation data)
 ```
 
 ### `Hypostructure.Graph.Strategy.SpineRows.TargetRankCircuit`

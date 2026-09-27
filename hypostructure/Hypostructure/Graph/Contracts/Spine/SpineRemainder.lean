@@ -19,8 +19,8 @@ open Hypostructure.Graph.Strategy.Spine
 
 universe u v
 
-/-- **Nodes `[25]`--`[27]`, `sec:remainder`.**  The remainder of a maximal
-packing carries no induced window (it would extend the packing), and no subset
+/-- **Nodes `[25]`--`[27]`, `sec:remainder`.**  The remainder `R₀` of G's fixed
+maximum packing `P₀` carries no induced window (it would extend the packing), and no subset
 of it induces a baseline subgraph: that subgraph would be window-free, so the
 cited closure law gives it an accepted cycle, which is a cycle of the
 target-avoiding object. -/
@@ -34,10 +34,12 @@ theorem remainderNormalized_of_selection
       Graph.HasCycleWithLength data.LengthOK other)
     (selection : SelectionStatement BranchState Presentation presentation data object) :
     RemainderNormalizedStatement data object :=
-  fun _packing _valid maximal _support inside =>
-    ⟨object.not_inducesWindow_of_subset_remainderSupport maximal inside,
+  fun _support inside =>
+    ⟨object.not_inducesWindow_of_subset_remainderSupport
+        (canonicalWindowPacking_spec data object).2.2 inside,
       object.not_baseline_induce_of_subset_remainderSupport
-        freeForcesTarget selection.1 maximal inside⟩
+        freeForcesTarget selection.1 (canonicalWindowPacking_spec data object).2.2
+        inside⟩
 
 /-- **Remainder relabelling entropy.**  Every support inside a normalized
 remainder is window-free and core-free at every sub-support, so its labelled
@@ -47,18 +49,17 @@ theorem remainderRelabelingEntropy_of_normalized (data : Parameters)
     (normalized : RemainderNormalizedStatement data object) :
     RemainderRelabelingEntropyStatement data object :=
   fun support inside => by
-    have spec := canonicalWindowPacking_spec data object
     have windowFree : ∀ inner : Finset object.Vertex,
         inner ⊆ support →
         ¬ object.InducesWindow data.windowOrder inner := by
       intro inner innerInside
-      exact (normalized _ spec.1 spec.2.2 inner
+      exact (normalized inner
         (innerInside.trans inside)).1
     have coreFree : ∀ inner : Finset object.Vertex,
         inner ⊆ support →
         ¬ Graph.MinimumDegreeAtLeast data.threshold (object.induce inner) := by
       intro inner innerInside
-      exact (normalized _ spec.1 spec.2.2 inner
+      exact (normalized inner
         (innerInside.trans inside)).2
     have orbit :=
       Graph.LabelledRelabeling.factorial_le_remainderStateCount_mul_stabilizer

@@ -40,7 +40,7 @@ theorem coldFailureCycle_of_avoids
     (data : Parameters) (object : Graph.FiniteObject.{u})
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object) :
     ColdFailureCycleStatement data object := by
-  intro windows component corridor order window segment failure
+  intro _occurrence _epsilon _segment ⟨_member, _memberMem, _window, _placed, failure⟩
   exact avoids
     (Graph.ColdCorridor.Corridor.hasCycleWithLength_of_firstFailureCycle
       failure)
@@ -51,9 +51,9 @@ theorem coldFailureCompression_of_uncompressible
     (data : Parameters) (object : Graph.FiniteObject.{u})
     (uncompressible : UncompressibleStatement data object) :
     ColdFailureCompressionStatement data object := by
-  intro windows component corridor presentation index support
+  intro _occurrence _epsilon _segment ⟨failure, _stage⟩
   exact Graph.ColdCorridor.Corridor.FirstFailureCompression.not_occurs
-    (fun support compressible => uncompressible support compressible)
+    (fun support compressible => uncompressible support compressible) ⟨failure⟩
 
 /-- **The ordered first failure.**  On the retained cold corridor state, with
 the declared handoff registry `ColdDeclaredHandoffSupport`, every eligible half-edge has a first event
@@ -223,15 +223,12 @@ theorem coldFailureRouting_of_failures
   obtain ⟨first, event, minimal⟩ := occurrenceData.occurs epsilon
   cases event with
   | cycle cycle =>
-      exact (failureCycle _ _ _ _ _ _
-        (Classical.choose_spec
-          (Classical.choose_spec cycle).2).2).elim
+      exact (failureCycle occurrenceData epsilon first cycle).elim
   | defect defect =>
       exact (coldFailureDefect_excluded data object survivor occurrenceData epsilon
         first minimal defect).elim
   | compression compression =>
-      exact (failureCompression _ _ _ _ _ _
-        ⟨Classical.choose compression⟩).elim
+      exact (failureCompression occurrenceData epsilon first compression).elim
   | handoff handoff => exact Or.inr ⟨first, handoff, minimal⟩
   | germ germ => exact Or.inl ⟨⟨first, germ, minimal⟩⟩
 

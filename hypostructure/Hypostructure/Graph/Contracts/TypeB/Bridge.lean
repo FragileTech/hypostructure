@@ -30,8 +30,6 @@ theorem typeBBridgeReduction
     TypeBBridgeReductionStatement data object := by
   classical
   intro canonicalPiece negative _surplusPos
-  obtain ⟨valid, maximal⟩ :=
-    Contracts.RouteEight.canonicalWindowPacking_valid_maximal data object
   rcases Graph.TypeBRefinedSupport.b2_or_overlap object
       data.threshold data.dischargeScale (canonicalWindowPacking data object)
       canonicalPiece.vertices
@@ -44,7 +42,7 @@ theorem typeBBridgeReduction
       ⟨choice, Graph.TypeBRefinedSupport.centres_high object data.threshold
         canonicalPiece.vertices, Finset.Subset.refl _⟩
     obtain ⟨components, grouped⟩ := disjointLedgerCoreClosure avoids baseline
-      uncompressible normalized valid maximal ledger
+      uncompressible normalized ledger
     have notClean : ¬ 0 ≤ RemainingCoreCharge data object ledger := by
       intro clean
       exact (object.not_negativeNetCharge_iff canonicalPiece.vertices

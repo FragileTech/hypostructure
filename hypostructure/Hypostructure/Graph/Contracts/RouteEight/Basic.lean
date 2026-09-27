@@ -4,8 +4,9 @@ import Hypostructure.Graph.Statements.RouteEightPinned
 # Contracts: route-8 basic facts
 
 Small proof-agnostic facts shared by the route-`8` contract lemmas: the
-canonical window packing is a maximal valid packing, and the unified entry
-family is a family of census entries.
+degree baseline at every vertex, and the unified entry family is a family of
+census entries.  The canonical packing's validity and maximality are
+`canonicalWindowPacking_spec`.
 -/
 
 namespace Hypostructure.Graph.Contracts.RouteEight
@@ -15,20 +16,6 @@ open Hypostructure.Graph
 open Hypostructure.Graph.Strategy.Spine
 
 universe u
-
-/-- The canonical window packing is a valid packing of maximum size, hence
-maximal: every induced window meets one of its windows. -/
-theorem canonicalWindowPacking_valid_maximal (data : Parameters)
-    (object : FiniteObject.{u}) :
-    object.IsWindowPacking data.windowOrder (canonicalWindowPacking data object) ∧
-      ∀ window : Finset object.Vertex,
-        object.InducesWindow data.windowOrder window →
-          ∃ member ∈ canonicalWindowPacking data object, ¬ Disjoint window member := by
-  have packingSpec := Classical.choose_spec
-    (object.exists_windowPacking_card_eq data.windowOrder)
-  refine ⟨packingSpec.1, fun window induces => ?_⟩
-  exact object.exists_mem_not_disjoint_of_card_eq data.windowOrder_pos
-    packingSpec.1 packingSpec.2 induces
 
 /-- The minimum-degree baseline at every vertex. -/
 theorem degree_ge_of_minDegree (data : Parameters) (object : FiniteObject.{u})

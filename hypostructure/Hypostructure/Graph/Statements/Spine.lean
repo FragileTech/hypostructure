@@ -1835,14 +1835,17 @@ noncomputable def ColdAmbientCubicStubExcessStatement (data : Parameters)
     (Graph.ColdCorridor.externalStubList object window).length =
       coldExternalStubCount data
 
-/-- The exact exclusion of clause F1 on the selected current object. -/
+/-- Node `[153]`, clause (F1) excluded (`lem:cold-corridor-first-failure` (i)):
+no segment of G's retained cold corridor at any eligible half-edge
+(`coldOccurrenceCorridorAt`, the corridor of the retained occurrence) closes a
+completion through a placed window of `P₀`. -/
 noncomputable def ColdFailureCycleStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  ∀ (windows component : Finset object.Vertex)
-    (corridor : Graph.ColdCorridor.Corridor object windows component)
-    (order : Nat) (window : Graph.ColdCorridor.Window object order)
-    (segment : corridor.Segment),
-    ¬ corridor.FirstFailureCycle window data.LengthOK segment
+  ∀ (occurrence : ColdFirstFailureOccurrenceData data object)
+    (epsilon : ColdEligibleHalfEdge data object)
+    (segment : (coldOccurrenceCorridorAt data object occurrence epsilon).Segment),
+    ¬ ColdFirstFailureCycleAt data object
+      (coldOccurrenceCorridorAt data object occurrence epsilon) segment
 
 /-- `lem:cold-corridor-first-failure` (ii) through `lem:context-universality`
 (tex 7240, 7265-7270): an (F2) pair of prefixes of one of G's corridors is a
@@ -1870,18 +1873,19 @@ noncomputable def ColdFailureDefectRoutesStatement (data : Parameters)
           (Graph.Strategy.InterfaceReplacement.SupportAtom.piece object
             (corridor.prefixSupport right.1))
 
-/-- The exact exclusion of clause F3 by uncompressibility. -/
+/-- Node `[153]`, clause (F3) excluded by uncompressibility
+(`lem:cold-corridor-first-failure` (iii)): no segment of G's retained cold
+corridor, read with its retained presentation and index, carries a
+target-complete compression of a proper prefix support. -/
 noncomputable def ColdFailureCompressionStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
-  ∀ (windows component : Finset object.Vertex)
-    (corridor : Graph.ColdCorridor.Corridor object windows component)
-    (presentation :
-      Graph.ColdCorridor.Presentation data.coldSignature object)
-    (index : corridor.Segment → presentation.Segment)
-    (support : corridor.Segment → Finset object.Vertex),
-    ¬ Graph.ColdCorridor.Corridor.FirstFailureCompression.Occurs corridor
-      presentation index (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) support
+  ∀ (occurrence : ColdFirstFailureOccurrenceData data object)
+    (epsilon : ColdEligibleHalfEdge data object)
+    (segment : (coldOccurrenceCorridorAt data object occurrence epsilon).Segment),
+    ¬ ColdFirstFailureCompressionAt data object
+      (coldOccurrenceCorridorAt data object occurrence epsilon)
+      (coldOccurrencePresentationAt data object occurrence epsilon)
+      (coldOccurrenceIndexAt data object occurrence epsilon) segment
 
 /-- The concrete first-high subcase of (F4), on the exact corridor state
 retained by node `[153]`.  If the bounded prefix is not subcubic, the fact
@@ -2203,9 +2207,14 @@ noncomputable abbrev SelectionStatement
     SelectionMinimality BranchState Presentation presentation data object)
 
 /-- The registered problem presentation identifies the spine threshold with
-the paper's cubic baseline. -/
+the paper's cubic baseline and the discharge scale with four, rejects the
+degenerate closure (`lem:labels`: a closing length `2` is not a cycle length),
+and certifies the registered window rate as the aggregate rate of the public
+barrier table (`lem:p13-window-package`).  Nodes read these presentation
+identities from this ledger fact, never from the presentation's spelling. -/
 noncomputable abbrev CubicBaselineStatement (data : Parameters) : Prop :=
-  data.threshold = 3 ∧ data.dischargeScale = 4
+  data.threshold = 3 ∧ data.dischargeScale = 4 ∧ ¬ data.LengthOK 2 ∧
+    data.windowRate = data.windowBarrier.binaryRateFloor
 
 /-- A two-terminal closure lemma with every piece condition bound internally.
 The manuscript has no such lemma and no label for it. -/
@@ -2432,18 +2441,13 @@ noncomputable abbrev RemainderNormalizedStatement
     (data : Parameters)
     (object : Graph.FiniteObject.{u}) :
     Prop :=
-  -- Quantified over every maximal packing, so no family has to travel from
-  -- the row that produced one: the statement is about all of them.
-  (∀ packing : Finset (Finset object.Vertex),
-    object.IsWindowPacking data.windowOrder packing →
-    (∀ window : Finset object.Vertex,
-      object.InducesWindow data.windowOrder window →
-      ∃ member ∈ packing, ¬ Disjoint window member) →
-    ∀ support : Finset object.Vertex,
-      support ⊆ object.remainderSupport packing →
-      ¬ object.InducesWindow data.windowOrder support ∧
-        ¬ Graph.MinimumDegreeAtLeast data.threshold
-          (object.induce support))
+  -- At the remainder `R₀` of G's fixed maximum packing `P₀ =
+  -- canonicalWindowPacking` (node `[19]`): every subregion is window-free
+  -- and carries no baseline subgraph.
+  ∀ support : Finset object.Vertex,
+    support ⊆ object.remainderSupport (canonicalWindowPacking data object) →
+    ¬ object.InducesWindow data.windowOrder support ∧
+      ¬ Graph.MinimumDegreeAtLeast data.threshold (object.induce support)
 
 /-- Nodes `[28]`--`[29]`: the remainder's positive deficiency is supplied by
 its boundary incidences (`lem:surplus-aware-window-stub`). -/

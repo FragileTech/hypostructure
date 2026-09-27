@@ -352,7 +352,7 @@ theorem denseColdCorridorsTerminal_of_state (data : Parameters)
   letI : FinEnum object.Vertex := object.vertices
   change HotColdWindowStatement data object at split
   change ColdCorridorStateStatement data object at state
-  obtain ⟨validPacking, _attains, maximal, _hot,
+  obtain ⟨_valid, _attains, _maximal, _hot,
     _coldIff, _disjoint, _cover⟩ := split
   change DenseColdCorridorsTerminalStatement data object
   refine ⟨state, ?_⟩
@@ -374,8 +374,7 @@ theorem denseColdCorridorsTerminal_of_state (data : Parameters)
       data.windowOrder :=
     object.inducedPathFree_induce_of_forall
       (fun support inside =>
-        (normalized (canonicalWindowPacking data object) validPacking
-          maximal support
+        (normalized support
           (inside.trans (componentInR epsilon))).1)
   obtain ⟨shortest, shortestPath, shortestLength⟩ :=
     corridor.connected.exists_path_of_dist
