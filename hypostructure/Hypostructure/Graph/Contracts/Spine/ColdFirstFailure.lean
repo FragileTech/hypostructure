@@ -168,7 +168,17 @@ index).  The retained presentation is G's own cut-state presentation
 `coldCutStatePresentation` with the identity index (pinned by
 `ColdCorridorStateStatement`); there the states of segments `0` and `1` differ
 (their active interfaces have different sizes), so that construction does not
-apply. -/
+apply.
+
+The exact obstruction at G (`ColdF2Refutation`, Part 4): since G has no target
+cycle, the (F2) clause at a segment holds iff an earlier segment has the same
+cut state (`EqualStates.coldFirstFailureDefectAt_iff`, path context of length
+`2^(right+2) − right` from the head to the foot), and every such pair is a
+`d_∂` separation, never a clause-(b) exit
+(`EqualStates.not_residualTargetDefect_prefixPair`).  So this claim at G is
+exactly "G's cut states along each retained corridor are pairwise distinct up
+to its first failure", which forces that failure within `Q_cold` states
+(`EqualStates.first_lt_stateBound`).  No ledger fact of G decides it. -/
 theorem coldFailureDefect_excluded (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (_survivor : DeclaredSparseSurvivor data object)

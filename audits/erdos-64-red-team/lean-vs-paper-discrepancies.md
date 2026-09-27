@@ -1331,6 +1331,63 @@ only for a claim proved false at G.
     length `≥ 2` (`edge_twoPath_sameFibre_targetDefect`) and empty the
     surviving branch.  So route 1 fails as well; the hook stays open, and so
     does `[162]`, whose length bound needs (F2) excluded.
+- **Addendum (2026-09-27, fix2-F2): the hook at G, Lean-checked, and the
+  remaining routes.**  `Quarantine/PaperRepairs/ColdF2Refutation.lean`, Part 4
+  (standard axioms):
+  - **The equivalence, proved.**  `EqualStates.coldFirstFailureDefectAt_iff`:
+    on an object with no accepted cycle (G, `.targetAvoidance`) and a target
+    accepting every `2^k`, `k ≥ 2` (`lengthOK_iff_powerOfTwo`), for every
+    corridor, presentation and index, the Lean (F2) at `right` holds iff some
+    `left < right` has the same state.  The separating context is the path of
+    length `2^(right+2) − right` from `head right` to the foot.  In
+    `retainedPiece J_right J_left`, `head right` is isolated, so every cycle of
+    that gluing lifts to G.  `EqualStates.first_lt_stateBound`: pairwise
+    distinct states up to `first` force `first < Q_cold`.  So the hook at G is
+    exactly **(★) G's pinned cut states along each retained corridor are
+    pairwise distinct up to its first failure** (a terminal or (F4) event).
+    The (F5) repeat subcase is never a first failure.  The paper's existence
+    proof ("two states are equal ... gives the repeat subcase of (F5)",
+    tex 7259-7262) produces exactly the configuration its (ii) must exclude.
+  - **The paper's map, read exactly.**  Tex 7265-7270 maps an (F2) pair to the
+    identification `q_J(J_l) = q_J(J_r)` made by the cut-state map
+    `q_J : ρ^ex_{T(J)}(J) → CutState`.  That identification is target-defective
+    (`not_targetComplete_of_firstFailureDefect`, the only object the sentence
+    constructs), and the sentence asserts that it is a sparse exit or an
+    exit-(4) peel.  That assertion is type-incorrect at every pair:
+    `EqualStates.prefix_profile_ne` / `not_residualTargetDefect_prefixPair`
+    (all `left < right`, generalizing the `left = 0` case) show that the two
+    readings are always a `d_∂` separation, while clause (b) and `Q₄(w)` are
+    same-fibre defects of declared coordinates (no declared sparse or exit-(4)
+    coordinate is supported on a corridor prefix).  So the missing object is
+    not an unimplemented construction.  The closing object would be ¬(★)
+    itself, and the paper maps that to nothing.
+  - **Route 1 through profile structure** (explicit witness: G's retained
+    corridor, `l < r ≤ first` with equal pinned states, the path context
+    above).  `[11]` (`degreeProfileFibres`, 2300) and `[12]` constrain
+    identifications made by a `CurvatureQuotient` (field `fibrewise`); the
+    fix2-SP closure of blocker (d) (key 2902, `SparseEntropySandwich.lean`
+    665-809) relies on the determination quotient carrying G's exact response
+    (`SparsePairExactValuation`).  `q_J` is neither.  By tex 7192 it is a
+    finite projection, and giving it an exact valuation makes `CutState`
+    infinite, so `Q_cold` is no longer a signature constant.
+    `def:admissible-rank-quotient` and rem. 6084 allow such non-admissible
+    identifications to exist ("does not reduce `r_Ω`").  `[12]`'s second
+    conjunct produces the defect and forbids nothing.  G1/G2 and
+    `[604]`/`[605]` are downstream of the routing that consumes this hook
+    (circular).  The (F4) registry is never met before the repeat under ¬(★).
+    No contradiction.
+  - **Route 2 (overload).**  `coldMassBounded`/`coldMassLinear` count windows;
+    `corridorLoss ≤ (δ+1)·B_cold·σ(G)` and `#(F4) ≤ corridorLoss` are
+    downstream of the routing and count (F4) and loss stubs, not repeats;
+    `Q_cold` bounds distinct states per corridor, and one repeat per corridor
+    overloads nothing; `[174]`/`[22]` and `|𝒫_hot| ≤ θ_win n` count windows,
+    and a hot window can be crossed by every corridor of its component; the
+    maximality of `P₀` forces window visits (the corridor is shortest in `K`,
+    hence induced), not distinct states.  No contradiction.
+  - **Verdict.**  Still an OPEN CONSTRUCTION, with the missing fact about G
+    Lean-equivalent to the hook: (★).  It is not refutable (that needs a
+    G-corridor with a repeat, which the ledger does not place) and not shown
+    false.  Analysis: `f2-analysis.md` (group F2 scratchpad).
 
 ### [153]/[175] full charge of a subcubic cold half-edge, `lem:absorbed-germ-fan-data` (i) (tex 7920-7922) with `lem:cold-germ-extraction` (tex 7318-7322)
 
@@ -1426,6 +1483,16 @@ only for a claim proved false at G.
 - **Tag.** `sorry`, `OPEN-CONSTRUCTION [162] tex:7694`, in
   `Graph/Contracts/Spine/ColdMass.lean`.  Node `[162]` is no longer consumed on
   the absorbed branch (see "the cold chain at G's objects").
+- **Relation to `[153]` (2026-09-27, fix2-F2).**  The `[153]` hook at G is
+  (★) "pinned cut states pairwise distinct up to the first failure"
+  (`ColdF2Refutation.EqualStates.coldFirstFailureDefectAt_iff`).  By
+  `EqualStates.first_lt_stateBound`, (★) puts the first failure within
+  `Q_cold` states.  So `[153]` together with "no (F4) event before the
+  terminal segment" gives `[162]`'s conclusion.  Both hooks rest on one
+  missing fact about G: its cold corridors are short.  Profile structure
+  (`[11]`/`[12]`, key 2902) and overload (cold mass, corridor loss, hot/cold
+  caps, maximality of `P₀`) give nothing for `[162]` either.  The gap stays
+  "the corridor path of every eligible `ε` lies in `R(P₀)`".
 
 ### [177] the counted core of the absorbed fan data, `lem:absorbed-germ-fan-data` (ii) (tex 7926-7952)
 
