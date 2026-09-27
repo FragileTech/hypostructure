@@ -668,9 +668,6 @@ inductive Key where
   has an accepted suppressed cycle using added chords, and every such cycle
   expands to a forbidden source-cycle length. -/
   | suppressedFamilyCriticalCycle
-  /-- `def:fan-closed-port`: the canonical assigned-profile predicate, exposed
-  with all three manuscript clauses. -/
-  | fanClosedPort
   /-- `lem:compatible-pair-fan-closure`: compatible open ports recorded by one
   assigned profile are distinct fan-closed ports. -/
   | compatiblePairFanClosure
@@ -1040,18 +1037,19 @@ inductive Key where
   own packing number -- the manuscript's `d_G(h) ≤ 8`
   (`lem:fan-certificate`, `rem:fan-finite`). -/
   | fanCertificateCap
-  /-- Node `[71]`/`[80]`, yes arm: every high centre of the object carries a
-  fan-certificate labelling, so every Type B fan it supports is
-  certificate-marked (`def:marked-typeB-fan`). -/
+  /-- Node `[71]`/`[80]`, yes arm: every assigned centre of the Type B support
+  carries G's canonical fan-certificate labelling, under the label-packing cap
+  (`def:marked-typeB-fan`). -/
   | fanCertificateMarked
-  /-- Node `[71]`/`[80]`, no arm: some high centre carries no fan-certificate
-  labelling.  `def:marked-typeB-fan` calls it a *fan-certificate residual
+  /-- Node `[71]`/`[80]`, no arm: some assigned centre of the Type B support
+  carries no fan-certificate labelling (G's canonical labelling is absent).  `def:marked-typeB-fan` calls it a *fan-certificate residual
   center*; it is charged to the Type B bridge-residual mass of
   `def:typeB-residual-mass` and takes no part in the certificate-closed local
   discharging step. -/
   | fanCertificateResidual
-  /-- Node `[74]`/`[82]`: the hybrid B1 fan ledger.  At every certificate-marked
-  centre of an assigned Type B support, the non-`h` incidences of its cubic-closed
+  /-- Nodes `[72]`/`[81]`: the hybrid B1 fan ledger.  At every assigned centre
+  of the direct-cycle-free, certificate-marked Type B support, on its assigned
+  fan envelope, the non-`h` incidences of its cubic-closed
   neighbours are pairwise distinct carriers, they split into the window count
   `I_W` and the non-window count `I_N` of `def:typeB-hybrid-incidence`, their
   half-credit pays the closed-neighbour deficit `D_B`, the non-window half-credit
@@ -1059,42 +1057,37 @@ inductive Key where
   `D_B` positive (`lem:typeB-hybrid-incidence-budget`, `lem:typeB-hybrid-B1`,
   `prop:fan-closed-port-typeB-routing`). -/
   | typeBHybridEntry
-  /-- Node `[72]`, the closing arm: some assigned centre carries one of the four
-  direct fan-window configurations of
-  `lem:typeB-direct-fan-window-cycles`/`lem:typeB-two-window-cycles`, so the
-  envelope contains a cycle of accepted length.  The branch that commits this is
-  uninhabited: the object was selected to avoid those lengths. -/
-  | typeBDirectCycle
-  /-- Node `[72]`, the surviving arm — the entry of the B2 question: every closed
-  fan-window pair at every assigned centre is direct-cycle-free
-  (`def:direct-cycle-free-closed-pair`), so the local fan-window ledger is
-  complete and the incidence payment may be counted. -/
+  /-- Nodes `[72]`/`[81]`, inside the local fan-window ledger: every assigned
+  centre of the marked Type B support is direct-cycle-free at `P₀`
+  (`lem:typeB-direct-fan-window-cycles`, `def:direct-cycle-free-closed-pair`);
+  a direct configuration would be a cycle of accepted length. -/
   | typeBDirectCycleFree
-  /-- Node `[72]`/`[81]`, yes arm: the selected canonical Type B component has
-  a pairwise-disjoint choice from the finite candidate family at every assigned
-  high centre. -/
+  /-- Node `[72]`, yes arm: the local B1 ledger is complete and B2 holds at the
+  Type B support: its certificate-marked assigned centres have a
+  pairwise-disjoint choice of candidate entries on the assigned fan envelopes of
+  the support. -/
   | typeBB2Choice
-  /-- The B2-success arm: the selected canonical piece carries the one disjoint
-  candidate ledger, its exact augmented-ledger refinement, the inherited Type A
+  /-- Node `[74]`, B2(a)--(d): the Type B support is B2-paid; its canonical B2
+  ledger exists with its exact augmented-ledger refinement, the inherited Type A
   hygiene of every remaining component, and the grouped exit-`(7)` handoff
   coverage used by B2(d). -/
   | typeBDisjointLedger
-  /-- Node `[72]`/`[81]`, no arm — the entry of `[73]`/`[83]`: B2's
-  disjoint-carrier clause fails on some assigned support, which by
-  `lem:typeB-bridge-to-overlap` carries a minimal Type B overlap obstruction of
-  `def:typeB-overlap-obstruction`.  The fact records the obstruction, not the
-  bare failure: the minimality is what the fan-mass accounting consumes. -/
+  /-- Node `[72]`, no arm — the entry of `[73]`: B2's disjoint-carrier clause
+  fails at the certificate-marked Type B support, which by
+  `lem:typeB-bridge-to-overlap` carries G's canonical minimal Type B overlap
+  obstruction of `def:typeB-overlap-obstruction`. -/
   | typeBOverlapObstruction
   /-- Node `[73]`/`[83]`: the canonical minimal obstruction together with all
   five global-to-local reflection clauses.  Auxiliary indexed and same-token
   obstruction carriers are retained unchanged because they enter fan mass
   directly rather than asserting a canonical remainder component. -/
   | typeBGlobalLocalBridge
-  /-- Nodes `[73]`/`[75]`: the fan-mass bound instantiated at the certificate
-  residual selected by the incoming ledger. -/
+  /-- Nodes `[75]`/`[84]` on the certificate-residual arm: the support-level
+  bound `lem:typeB-bridge-deficit-bound` at the fan-certificate residual
+  support. -/
   | fanCertificateResidualMass
-  /-- Nodes `[83]`/`[84]`: the fan-mass bound instantiated at the selected
-  minimal overlap obstruction. -/
+  /-- Nodes `[75]`/`[84]` on the B2-failure arm: the support-level bound
+  `lem:typeB-bridge-deficit-bound` at the reflected obstructed support. -/
   | typeBOverlapObstructionMass
   /-- Node `[175]`, yes, read at `[177]`: some selected corridor meets a
   high-degree vertex --- `G`'s canonical absorbed half-edge exists. -/
@@ -1109,8 +1102,16 @@ inductive Key where
   minimal Type B overlap obstruction. -/
   | typeBDegreeFourOverlap
   /-- Node `[82]`: certificate-closed (`c ≤ 1`, `lem:typeB-exclusion` Step 1)
-  or B2-paid, at the degree-four Type B support. -/
+  or B2-paid with its remaining core carrying the whole deficit, at the
+  degree-four Type B support. -/
   | typeBDegreeFourClosed
+  /-- Node `[177]`: every selected half-edge outside the subcubic candidates has
+  its pinned absorbed Type B support, charged to the surplus of its centre. -/
+  | typeBAbsorbedCharge
+  /-- Node `[77]`: the Type B entry into route `8`; a negative Type B support
+  hands a negative remaining core to route `8` or is a bridge residual charged
+  to its surplus. -/
+  | typeBRoute8Entry
   /-- Nodes `[73]`/`[75]` and `[83]`/`[84]`: the Type B residual fan-mass facts
   for certificate residuals, overlap obstructions, and grouped decorated
   envelope residuals. -/
@@ -1119,11 +1120,12 @@ inductive Key where
   extracted into the Type A ledger, the remaining Type B bridge residual mass is
   paid by the assigned high-centre surplus. -/
   | typeBBridgeSublinear
-  /-- Node `[76]`/`[85]`, closed arm: the selected Type B ledger gives
-  nonnegative net charge. -/
+  /-- Node `[74]`, `prop:typeB-bridge-reduction`: the remaining core of the Type
+  B support's canonical B2 ledger carries the whole deficit. -/
   | typeBExcluded
-  /-- Node `[76]`/`[85]`, surviving arm: the Type B exclusion hypotheses are not
-  all discharged on the selected B2 branch. -/
+  /-- Node `[76]`/`[85]`: Type B cannot carry the linear deficit outside route
+  `8`; the B2-paid support keeps its deficit in its remaining core, and a
+  bridge-residual support is charged to its assigned surplus. -/
   | typeBExclusionResidual
   /-- Node `[102]`: the exit-`(4)` witness has been charged to the peeling
   ledger by adjoining its routed load to `P₄(w)`, preserving the routed-load
@@ -1997,8 +1999,6 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       SingleOpenPortSuppressionWitnessStatement data.toParameters object
   | .suppressedFamilyCriticalCycle, object =>
       SuppressedFamilyCriticalCycleStatement data.toParameters object
-  | .fanClosedPort, object =>
-      FanClosedPortStatement data.toParameters object
   | .compatiblePairFanClosure, object =>
       CompatiblePairFanClosureStatement data.toParameters object
   | .fanClosedPortTypeBRouting, object =>
@@ -2060,56 +2060,47 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
   | .highCentreNormalForm, object =>
       HighCentreNormalFormStatement data.toParameters object
   | .fanCertificateCap, object =>
-      -- Node `[70]`, `lem:fan-certificate`, on the literal assigned-centre
-      -- support entering the node.  The bound is the label algebra's own
+      -- Node `[70]`, `lem:fan-certificate`, at the Type B support of the
+      -- `[69]`/`[79]` arm fact.  The bound is the label algebra's own
       -- packing number at the registered window order, never a numeral: at the
-      -- manuscript's order it evaluates to `8`.  It is conditional on the
-      -- certificate labelling, exactly as in the manuscript.
+      -- manuscript's order it evaluates to `8`.  It is conditional on G's
+      -- canonical certificate labelling, exactly as in the manuscript.
       TypeBFanCertificateCapStatement data.toParameters object
   | .fanCertificateMarked, object =>
-      -- Node `[71]`/`[80]`, yes arm, on either common Type B input.  The
-      -- indexed absorbed form retains the literal corridor and envelope
-      -- witness rather than manufacturing a canonical support.
+      -- Node `[71]`/`[80]`, yes arm, at G's canonical labelling of every
+      -- assigned centre of the Type B support.
       TypeBFanCertificateMarkedStatement data.toParameters object
   | .fanCertificateResidual, object =>
-      -- Node `[71]`/`[80]`, no arm, retaining the same literal carrier on
-      -- which the missing fan-certificate labelling was observed.
+      -- Node `[71]`/`[80]`, no arm: G's canonical labelling is absent at an
+      -- assigned centre of the same Type B support.
       TypeBFanCertificateResidualStatement data.toParameters object
   | .typeBHybridEntry, object =>
-      -- Node `[74]`/`[82]`.  Scoped to the assigned centres of the Type B fan
+      -- Nodes `[72]`/`[81]`, B1.  At the assigned centres of the Type B fan
       -- support, because `k ≤ α(D)` is available only at a certificate-marked
-      -- fan, and quantified over the envelope and the packed-window union
-      -- because both are fan data.
+      -- fan, on the assigned fan envelope and `W₀ = windowSupport P₀`.
       TypeBFanHybridEntryStatement data.toParameters object
-  | .typeBDirectCycle, object =>
-      -- Node `[72]`/`[81]`, the closing arm.  On either literal Type B carrier,
-      -- an applicable centre carries one of the four direct configurations;
-      -- the absorbed lane uses the object's canonical window packing without
-      -- manufacturing a canonical remainder component.
-      TypeBFanDirectCycleStatement data.toParameters object
   | .typeBDirectCycleFree, object =>
-      -- Node `[72]`/`[81]`, surviving arm, retaining the same canonical or
-      -- indexed absorbed carrier read by the direct-cycle decision.
+      -- Nodes `[72]`/`[81]`: the direct fan-window cycles are excluded inside
+      -- the local fan-window ledger, at the marked Type B support.
       TypeBFanDirectCycleFreeStatement data.toParameters object
   | .typeBB2Choice, object =>
-      -- Node `[72]`/`[81]`, yes: the B2 disjoint choice at the assigned
-      -- centres `H_X` of the literal fan support.  The absorbed lane retains
-      -- its actual first-failure support and heavy centre rather than inventing
-      -- either a decorated Type A envelope core or a canonical piece.
+      -- Node `[72]`, yes: B1 and B2 at the Type B support `(Y_X, H_X)`, the
+      -- candidate entries evaluated on the assigned fan envelopes of the
+      -- support, at G's canonical `[71]` labelling.
       TypeBB2ChoiceStatement data.toParameters object
   | .typeBDisjointLedger, object =>
       TypeBDisjointLedgerStatement data.toParameters object
   | .typeBOverlapObstruction, object =>
-      -- Node `[72]`/`[81]`, no.  `lem:typeB-bridge-to-overlap`: the
-      -- disjoint-carrier clause fails on some assigned support, and what that
-      -- support then carries is a *minimal* Type B overlap obstruction among
-      -- its assigned centres.
+      -- Node `[72]`, no.  `lem:typeB-bridge-to-overlap`: the disjoint-carrier
+      -- clause fails at the marked Type B support, which then carries G's
+      -- canonical *minimal* Type B overlap obstruction among its centres.
       TypeBB2ObstructionStatement data.toParameters object
   | .typeBGlobalLocalBridge, object =>
       TypeBGlobalLocalBridgeStatement data.toParameters object
   | .fanCertificateResidualMass, object =>
-      -- Node `[75]`/`[84]`: the residual centre's fan mass is charged to the
-      -- bridge mass (`def:typeB-residual-mass`).
+      -- Node `[75]`/`[84]`: the fan-certificate residual support's negative
+      -- part is charged to its assigned surplus
+      -- (`lem:typeB-bridge-deficit-bound`).
       TypeBFanCertificateResidualMassStatement data.toParameters object
   | .typeBOverlapObstructionMass, object =>
       TypeBOverlapObstructionMassStatement data.toParameters object
@@ -2123,6 +2114,10 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       TypeBDegreeFourOverlapStatement data.toParameters object
   | .typeBDegreeFourClosed, object =>
       TypeBDegreeFourClosedStatement data.toParameters object
+  | .typeBAbsorbedCharge, object =>
+      TypeBAbsorbedChargeStatement data.toParameters object
+  | .typeBRoute8Entry, object =>
+      TypeBRoute8EntryStatement data.toParameters object
   | .typeBBridgeMass, object =>
       TypeBBridgeMassStatement data.toParameters object
   | .typeBBridgeSublinear, object =>
@@ -2533,7 +2528,6 @@ def label : Key → String
   | .openPortSuppressionSafe => "openPortSuppressionSafe"
   | .singleOpenPortSuppressionWitness => "singleOpenPortSuppressionWitness"
   | .suppressedFamilyCriticalCycle => "suppressedFamilyCriticalCycle"
-  | .fanClosedPort => "fanClosedPort"
   | .compatiblePairFanClosure => "compatiblePairFanClosure"
   | .fanClosedPortTypeBRouting => "fanClosedPortTypeBRouting"
   | .compatiblePairTypeBRouting => "compatiblePairTypeBRouting"
@@ -2621,7 +2615,6 @@ def label : Key → String
   | .fanCertificateMarked => "fanCertificateMarked"
   | .fanCertificateResidual => "fanCertificateResidual"
   | .typeBHybridEntry => "typeBHybridEntry"
-  | .typeBDirectCycle => "typeBDirectCycle"
   | .typeBDirectCycleFree => "typeBDirectCycleFree"
   | .typeBB2Choice => "typeBB2Choice"
   | .typeBDisjointLedger => "typeBDisjointLedger"
@@ -2634,6 +2627,8 @@ def label : Key → String
   | .typeBDegreeFourLedger => "typeBDegreeFourLedger"
   | .typeBDegreeFourOverlap => "typeBDegreeFourOverlap"
   | .typeBDegreeFourClosed => "typeBDegreeFourClosed"
+  | .typeBAbsorbedCharge => "typeBAbsorbedCharge"
+  | .typeBRoute8Entry => "typeBRoute8Entry"
   | .typeBBridgeMass => "typeBBridgeMass"
   | .typeBBridgeSublinear => "typeBBridgeSublinear"
   | .typeBExcluded => "typeBExcluded"
@@ -2889,7 +2884,6 @@ example : label .singleOpenPortSuppressionWitness =
     "singleOpenPortSuppressionWitness" := rfl
 example : label .suppressedFamilyCriticalCycle =
     "suppressedFamilyCriticalCycle" := rfl
-example : label .fanClosedPort = "fanClosedPort" := rfl
 example : label .compatiblePairFanClosure = "compatiblePairFanClosure" := rfl
 example : label .fanClosedPortTypeBRouting = "fanClosedPortTypeBRouting" := rfl
 example : label .compatiblePairTypeBRouting = "compatiblePairTypeBRouting" := rfl
@@ -2966,7 +2960,6 @@ example : label .fanCertificateCap = "fanCertificateCap" := rfl
 example : label .fanCertificateMarked = "fanCertificateMarked" := rfl
 example : label .fanCertificateResidual = "fanCertificateResidual" := rfl
 example : label .typeBHybridEntry = "typeBHybridEntry" := rfl
-example : label .typeBDirectCycle = "typeBDirectCycle" := rfl
 example : label .typeBDirectCycleFree = "typeBDirectCycleFree" := rfl
 example : label .typeBB2Choice = "typeBB2Choice" := rfl
 example : label .typeBDisjointLedger = "typeBDisjointLedger" := rfl
@@ -2979,6 +2972,8 @@ example : label .typeBAbsorbedHalfEdgeAbsent = "typeBAbsorbedHalfEdgeAbsent" := 
 example : label .typeBDegreeFourLedger = "typeBDegreeFourLedger" := rfl
 example : label .typeBDegreeFourOverlap = "typeBDegreeFourOverlap" := rfl
 example : label .typeBDegreeFourClosed = "typeBDegreeFourClosed" := rfl
+example : label .typeBAbsorbedCharge = "typeBAbsorbedCharge" := rfl
+example : label .typeBRoute8Entry = "typeBRoute8Entry" := rfl
 example : label .typeBBridgeMass = "typeBBridgeMass" := rfl
 example : label .typeBBridgeSublinear = "typeBBridgeSublinear" := rfl
 example : label .typeBExcluded = "typeBExcluded" := rfl
@@ -3270,7 +3265,6 @@ def idx : Key → Nat
   | .openPortSuppressionSafe => 436
   | .singleOpenPortSuppressionWitness => 437
   | .suppressedFamilyCriticalCycle => 438
-  | .fanClosedPort => 442
   | .compatiblePairFanClosure => 443
   | .fanClosedPortTypeBRouting => 444
   | .compatiblePairTypeBRouting => 445
@@ -3330,7 +3324,6 @@ def idx : Key → Nat
   | .fanCertificateMarked => 77
   | .fanCertificateResidual => 78
   | .typeBHybridEntry => 80
-  | .typeBDirectCycle => 81
   | .typeBDirectCycleFree => 82
   | .typeBB2Choice => 149
   | .typeBDisjointLedger => 150
@@ -3343,6 +3336,8 @@ def idx : Key → Nat
   | .typeBDegreeFourLedger => 2102
   | .typeBDegreeFourOverlap => 2103
   | .typeBDegreeFourClosed => 2104
+  | .typeBAbsorbedCharge => 2800
+  | .typeBRoute8Entry => 2801
   | .typeBBridgeMass => 85
   | .typeBBridgeSublinear => 189
   | .typeBExcluded => 166
@@ -3607,7 +3602,6 @@ def ofIdx : Nat → Key
   | 436 => .openPortSuppressionSafe
   | 437 => .singleOpenPortSuppressionWitness
   | 438 => .suppressedFamilyCriticalCycle
-  | 442 => .fanClosedPort
   | 443 => .compatiblePairFanClosure
   | 444 => .fanClosedPortTypeBRouting
   | 445 => .compatiblePairTypeBRouting
@@ -3662,7 +3656,6 @@ def ofIdx : Nat → Key
   | 77 => .fanCertificateMarked
   | 78 => .fanCertificateResidual
   | 80 => .typeBHybridEntry
-  | 81 => .typeBDirectCycle
   | 82 => .typeBDirectCycleFree
   | 149 => .typeBB2Choice
   | 150 => .typeBDisjointLedger
@@ -3675,6 +3668,8 @@ def ofIdx : Nat → Key
   | 2102 => .typeBDegreeFourLedger
   | 2103 => .typeBDegreeFourOverlap
   | 2104 => .typeBDegreeFourClosed
+  | 2800 => .typeBAbsorbedCharge
+  | 2801 => .typeBRoute8Entry
   | 85 => .typeBBridgeMass
   | 189 => .typeBBridgeSublinear
   | 166 => .typeBExcluded
@@ -4092,8 +4087,6 @@ def name : Key → Lean.Name
   | .suppressedFamilyCriticalCycle =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "suppressedFamilyCriticalCycle") 438
-  | .fanClosedPort =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "fanClosedPort") 442
   | .compatiblePairFanClosure =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "compatiblePairFanClosure") 443
@@ -4240,8 +4233,6 @@ def name : Key → Lean.Name
         "fanCertificateResidual") 78
   | .typeBHybridEntry =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeBHybridEntry") 80
-  | .typeBDirectCycle =>
-      .num (.str `Hypostructure.Graph.Strategy.Spine "typeBDirectCycle") 81
   | .typeBDirectCycleFree =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeBDirectCycleFree") 82
   | .typeBB2Choice =>
@@ -4277,6 +4268,12 @@ def name : Key → Lean.Name
   | .typeBDegreeFourClosed =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "typeBDegreeFourClosed") 2104
+  | .typeBAbsorbedCharge =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "typeBAbsorbedCharge") 2800
+  | .typeBRoute8Entry =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "typeBRoute8Entry") 2801
   | .typeBBridgeMass =>
       .num (.str `Hypostructure.Graph.Strategy.Spine "typeBBridgeMass") 85
   | .typeBBridgeSublinear =>

@@ -16,11 +16,12 @@ variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
 /-- Nodes `[72]`/`[81]`, the local B1 fan ledger (`lem:typeB-hybrid-incidence-budget`,
-`lem:typeB-hybrid-B1`) at every certificate-marked assigned centre. -/
+`lem:typeB-hybrid-B1`) at every assigned centre of the direct-cycle-free,
+certificate-marked Type B support. -/
 @[reducible] noncomputable def hybridEntryRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.hybridEntry
-    { Requires := [K .selection, K .fanCertificateMarked, K .cubicBaseline]
+    { Requires := [K .selection, K .typeBDirectCycleFree, K .cubicBaseline]
       Produces := [K .typeBHybridEntry]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -30,7 +31,7 @@ variable {data : Data.{u}}
         ⟨Contracts.TypeB.typeBFanHybridEntry (inputs.get (K .selection)).down.1
           (inputs.get (K .cubicBaseline)).down.2.1.1 (le_of_eq (inputs.get (K .cubicBaseline)).down.1.1.symm)
           (inputs.get (K .cubicBaseline)).down.2.1.2.2.1
-          (inputs.get (K .cubicBaseline)).down.2.1.2.2.2.1 (inputs.get (K .fanCertificateMarked)).down⟩
+          (inputs.get (K .cubicBaseline)).down.2.1.2.2.2.1 (inputs.get (K .typeBDirectCycleFree)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

@@ -330,9 +330,9 @@ theorem route8PiecesClassified (data : Parameters) (object : FiniteObject.{u})
   · -- `thm:branch-kill`(b): the bridge-residual dichotomy at this piece.
     rcases bridge ⟨piece, pieceMem⟩ negative positiveSurplus with
       ⟨ledger, ledgerEq, exactRefinement, notClean, _postLedger, _grouped⟩ |
-        obstruction
+        ⟨obstruction, _obstructionEq⟩
     · exact Or.inl ⟨ledger, ledgerEq, exactRefinement, notClean⟩
-    · exact Or.inr obstruction
+    · exact Or.inr ⟨obstruction⟩
 
 /-- **`lem:typeA-unified-carriers` / the census of `lem:typeA-unified-deficit`,
 alternative (b) at the unified entries** (tex 15336-15339, 15360-15364): *"exits

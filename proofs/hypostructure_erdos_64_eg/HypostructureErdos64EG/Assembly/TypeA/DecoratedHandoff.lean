@@ -31,7 +31,7 @@ noncomputable abbrev typeADecoratedHandoffKeys : FactKeys EGInput.{u} :=
     K .fanCertificateMarked,
     K .fanCertificateResidual,
     K .fanCertificateResidualMass,
-    K .typeBDirectCycle,
+    K .typeBRoute8Entry,
     K .typeBDirectCycleFree,
     K .typeBB2Choice,
     K .typeBOverlapObstruction,
@@ -70,7 +70,6 @@ noncomputable abbrev typeADecoratedHandoffKeys : FactKeys EGInput.{u} :=
     K .typeBDegreeFourOverlap,
     K .typeBDegreeFourClosed,
     K .typeBOverlapObstructionMass,
-    K .fanClosedPort,
     K .compatiblePairFanClosure,
     K .fanClosedPortTypeBRouting,
     K .compatiblePairTypeBRouting,
@@ -120,7 +119,13 @@ noncomputable def selectedTypeADecoratedHandoff
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run
       history (by key_fresh)
-  exact selectedTypeBDecoratedContinuation assigned
+  -- `[65]`: the Type B entry read from the decorated assigned support.
+  let entry :=
+    (typeBDecoratedEntryRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile) (data := spineData)).run
+      assigned (by key_fresh)
+  exact selectedTypeBDecoratedContinuation entry
     (normalFormFresh := by key_fresh)
     (decoratedHeavyFresh := by key_fresh)
     (decoratedDegreeFourFresh := by key_fresh)
@@ -132,7 +137,7 @@ noncomputable def selectedTypeADecoratedHandoff
     (decoratedMarkedFresh := by key_fresh)
     (decoratedResidualFresh := by key_fresh)
     (decoratedCertificateMassFresh := by key_fresh)
-    (decoratedCycleFresh := by key_fresh)
+    (route8EntryFresh := by key_fresh)
     (decoratedFreeFresh := by key_fresh)
     (decoratedB2ChoiceFresh := by key_fresh)
     (decoratedB2ObstructionFresh := by key_fresh)
@@ -173,7 +178,6 @@ noncomputable def selectedTypeADecoratedHandoff
     (decoratedDegreeFourOverlapFresh := by key_fresh)
     (decoratedDegreeFourClosedFresh := by key_fresh)
     (decoratedObstructionMassFresh := by key_fresh)
-    (fanClosedFresh := by key_fresh)
     (compatibleClosureFresh := by key_fresh)
     (fanClosedRoutingFresh := by key_fresh)
     (compatibleRoutingFresh := by key_fresh)

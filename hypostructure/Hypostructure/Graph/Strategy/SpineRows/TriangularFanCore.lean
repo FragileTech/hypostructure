@@ -19,7 +19,7 @@ variable {data : Data.{u}}
 @[reducible] noncomputable def triangularFanCoreRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.triangularFanCore
-    { Requires := [K .highCentreNormalForm, K .cubicBaseline]
+    { Requires := [K .highCentreNormalForm, K .cubicBaseline, K .typeBFanHeavyCentre]
       Produces := [K .triangularFanCore]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -27,7 +27,8 @@ variable {data : Data.{u}}
     (fun inputs =>
       .cons (key := K .triangularFanCore)
         ⟨Contracts.TypeB.triangularFanCore (inputs.get (K .highCentreNormalForm)).down
-          (inputs.get (K .cubicBaseline)).down.1.1⟩
+          (inputs.get (K .cubicBaseline)).down.1.1
+          (inputs.get (K .typeBFanHeavyCentre)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine

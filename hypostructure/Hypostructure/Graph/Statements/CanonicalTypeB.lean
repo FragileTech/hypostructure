@@ -79,38 +79,55 @@ theorem canonicalTypeBDecoratedEnvelope_core {data : Parameters}
 
 /-! ## The absorbed support of node `[177]` -/
 
-/-- The first-high centre of one selected half-edge `ε`: the canonical choice of
-node `[177]`'s `∃ centre` at `ε` itself (`AbsorbedHandoffAt`,
-`lem:absorbed-germ-fan-data` (ii)), read at the node-`[153]` routing
+/-- The case-(ii) handoff of one selected half-edge `ε`: the canonical choice of
+node `[177]`'s `∃ centre core` at `ε` itself (`AbsorbedHandoffAt`,
+`lem:absorbed-germ-fan-data` (ii)) --- the first high centre `z` of `ε`'s corridor
+and the prefix through `z` --- read at the node-`[153]` routing
 (`K .coldFailureRouting`, a proposition, so its classified data is
 canonical). -/
-noncomputable def canonicalAbsorbedCentre (data : Parameters)
+noncomputable def canonicalAbsorbedHandoff (data : Parameters)
     (object : Graph.FiniteObject.{u}) (epsilon : ColdEligibleHalfEdge data object) :
-    Option object.Vertex := by
+    Option (object.Vertex × Finset object.Vertex) := by
   classical
   exact if routing : ColdFailureRoutingStatement data object then
-    canonicalChoice (AbsorbedHandoffAt data object routing epsilon)
+    canonicalChoice (fun pair : object.Vertex × Finset object.Vertex =>
+      AbsorbedHandoffAt data object routing epsilon pair.1 pair.2)
   else none
 
-theorem canonicalAbsorbedCentre_spec {data : Parameters}
+/-- The first-high centre of one selected half-edge `ε`. -/
+noncomputable def canonicalAbsorbedCentre (data : Parameters)
+    (object : Graph.FiniteObject.{u}) (epsilon : ColdEligibleHalfEdge data object) :
+    Option object.Vertex :=
+  (canonicalAbsorbedHandoff data object epsilon).map Prod.fst
+
+theorem canonicalAbsorbedHandoff_spec {data : Parameters}
     {object : Graph.FiniteObject.{u}} {epsilon : ColdEligibleHalfEdge data object}
     (routing : ColdFailureRoutingStatement data object)
-    (h : ∃ centre, AbsorbedHandoffAt data object routing epsilon centre) :
-    ∃ centre, canonicalAbsorbedCentre data object epsilon = some centre ∧
-      AbsorbedHandoffAt data object routing epsilon centre := by
+    (h : ∃ centre core, AbsorbedHandoffAt data object routing epsilon centre core) :
+    ∃ centre core, canonicalAbsorbedHandoff data object epsilon = some (centre, core) ∧
+      AbsorbedHandoffAt data object routing epsilon centre core := by
   classical
-  simpa [canonicalAbsorbedCentre, routing] using canonicalChoice_spec h
+  obtain ⟨centre, core, holds⟩ := h
+  obtain ⟨pair, pairEq, pairHolds⟩ :=
+    canonicalChoice_spec (spec := fun pair : object.Vertex × Finset object.Vertex =>
+      AbsorbedHandoffAt data object routing epsilon pair.1 pair.2)
+      ⟨(centre, core), holds⟩
+  refine ⟨pair.1, pair.2, ?_, pairHolds⟩
+  simpa [canonicalAbsorbedHandoff, routing] using pairEq
 
-theorem canonicalAbsorbedCentre_spec_of_eq_some {data : Parameters}
+theorem canonicalAbsorbedHandoff_spec_of_eq_some {data : Parameters}
     {object : Graph.FiniteObject.{u}} {epsilon : ColdEligibleHalfEdge data object}
-    {centre : object.Vertex}
-    (h : canonicalAbsorbedCentre data object epsilon = some centre) :
+    {centre : object.Vertex} {core : Finset object.Vertex}
+    (h : canonicalAbsorbedHandoff data object epsilon = some (centre, core)) :
     ∃ routing : ColdFailureRoutingStatement data object,
-      AbsorbedHandoffAt data object routing epsilon centre := by
+      AbsorbedHandoffAt data object routing epsilon centre core := by
   classical
-  unfold canonicalAbsorbedCentre at h
+  unfold canonicalAbsorbedHandoff at h
   split at h
-  · next routing => exact ⟨routing, canonicalChoice_spec_of_eq_some h⟩
+  · next routing =>
+      exact ⟨routing, canonicalChoice_spec_of_eq_some
+        (spec := fun pair : object.Vertex × Finset object.Vertex =>
+          AbsorbedHandoffAt data object routing epsilon pair.1 pair.2) h⟩
   · cases h
 
 /-- **A selected half-edge whose corridor meets a high-degree vertex**
@@ -128,19 +145,13 @@ noncomputable def canonicalTypeBAbsorbedHalfEdge (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Option (ColdEligibleHalfEdge data object) :=
   canonicalChoice (AbsorbedHalfEdgeOutside data object)
 
-/-- The absorbed Type B support at one selected half-edge `ε`: its retained
-first-failure prefix (the counted core of node `[177]`'s envelope) and its
-first high centre. -/
+/-- The absorbed Type B support at one selected half-edge `ε`: the prefix of its
+corridor through its first high centre `z` (the counted core of node `[177]`'s
+envelope) and `{z}`. -/
 noncomputable def canonicalTypeBAbsorbedSupportAt (data : Parameters)
     (object : Graph.FiniteObject.{u}) (epsilon : ColdEligibleHalfEdge data object) :
-    Option (Finset object.Vertex × Finset object.Vertex) := by
-  classical
-  exact if routing : ColdFailureRoutingStatement data object then
-    (canonicalAbsorbedCentre data object epsilon).map fun centre =>
-      ((coldOccurrenceCorridorAt data object
-          (coldRoutedClassified data object routing) epsilon).prefixSupport
-        (coldRoutedTraceEnd data object routing epsilon), {centre})
-  else none
+    Option (Finset object.Vertex × Finset object.Vertex) :=
+  (canonicalAbsorbedHandoff data object epsilon).map fun pair => (pair.2, {pair.1})
 
 /-- **The absorbed Type B support of `G`** (node `[177]` → `[65]`): the support
 `(Y_X, H_X)` of the canonical absorbed half-edge. -/

@@ -1,6 +1,6 @@
 import Hypostructure.Graph.Strategy.SpineRows.CompatiblePairFanClosure
 import Hypostructure.Graph.Strategy.SpineRows.CompatiblePairTypeBRouting
-import Hypostructure.Graph.Strategy.SpineRows.FanClosedPort
+import Hypostructure.Graph.Strategy.SpineRows.FanCertificateCap
 import Hypostructure.Graph.Strategy.SpineRows.FanClosedPortTypeBRouting
 import Hypostructure.Graph.Strategy.SpineRows.HighCentreNormalForm
 import Hypostructure.Graph.Strategy.SpineRows.SameCenterOpenPortCompatibility
@@ -47,6 +47,7 @@ fan-closed port routing of `cor:degree-four-local-activation`.  Both arms enter
 -- EG-NODE [68] some center has \(d_G(h)>4\)?
 -- EG-NODE [69] degree \(>4\) local dichotomy: fan-compatible open pair or \(k-2\) triangular ports gives fan-closed ports
 -- EG-NODE [78] degree-\(4\) branch: \(d_G(h)=4\)
+-- EG-NODE [70] fan-safe graph, \(P_{13}\) certificate graph, and certificate-marked cap \(d_G(h)\le8\)
 -- EG-NODE [79] degree-\(4\) fan profile: center surplus \(1\), \(0\le c\le4\), \(D_B=c-\frac74\)
 noncomputable def Assembly.Internal.selectedTypeBFanContinuation
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
@@ -66,7 +67,7 @@ noncomputable def Assembly.Internal.selectedTypeBFanContinuation
     (degreeFourFresh : K .typeBFanDegreeFourCentres ∉ known := by key_fresh)
     (compatibilityFresh : K .sameCenterOpenPortCompatibility ∉ known := by
       key_fresh)
-    (fanClosedFresh : K .fanClosedPort ∉ known := by key_fresh)
+    (route8EntryFresh : K .typeBRoute8Entry ∉ known := by key_fresh)
     (compatibleClosureFresh : K .compatiblePairFanClosure ∉ known := by
       key_fresh)
     (fanClosedRoutingFresh : K .fanClosedPortTypeBRouting ∉ known := by
@@ -88,7 +89,6 @@ noncomputable def Assembly.Internal.selectedTypeBFanContinuation
     (residualFresh : K .fanCertificateResidual ∉ known := by key_fresh)
     (certificateMassFresh : K .fanCertificateResidualMass ∉ known := by
       key_fresh)
-    (cycleFresh : K .typeBDirectCycle ∉ known := by key_fresh)
     (freeFresh : K .typeBDirectCycleFree ∉ known := by key_fresh)
     (hybridFresh : K .typeBHybridEntry ∉ known := by key_fresh)
     (choiceFresh : K .typeBB2Choice ∉ known := by key_fresh)
@@ -175,10 +175,8 @@ noncomputable def Assembly.Internal.selectedTypeBFanContinuation
         (by key_fresh)
       let crossed := (triangularCrossShoulderRow (data := spineData)).run landed
         (by key_fresh)
-      let fanClosed := (fanClosedPortRow (data := spineData)).run crossed
-        (by key_fresh)
       let pairClosure := (compatiblePairFanClosureRow (data := spineData)).run
-        fanClosed (by key_fresh)
+        crossed (by key_fresh)
       let fanClosedRouting := (fanClosedPortTypeBRoutingRow (data := spineData)).run
         pairClosure (by key_fresh)
       let pairRouting := (compatiblePairTypeBRoutingRow (data := spineData)).run
@@ -188,7 +186,11 @@ noncomputable def Assembly.Internal.selectedTypeBFanContinuation
           (by key_fresh)
       let localDichotomy := (typeBFanLocalDichotomyRow (data := spineData)).run
         triangularRouting (by key_fresh)
-      exact Assembly.Internal.selectedTypeBCertificateContinuation localDichotomy
+      -- `[70]`: the fan-safe graph and the certificate-marked cap at the Type B
+      -- support of the `[69]` fact.
+      let capped := (fanCertificateCapRow (data := spineData)).run
+        localDichotomy (by key_fresh)
+      exact Assembly.Internal.selectedTypeBCertificateContinuation capped
         none
   | .right degreeFourHistory =>
       -- `[78]`--`[79]`: the degree-four fan profile and the fan-closed port
@@ -197,15 +199,17 @@ noncomputable def Assembly.Internal.selectedTypeBFanContinuation
       -- `prop:fan-closed-port-typeB-routing` with `r = 2`.
       let profile := (typeBFanDegreeFourProfileRow (data := spineData)).run
         degreeFourHistory (by key_fresh)
-      let fanClosed := (fanClosedPortRow (data := spineData)).run profile
-        (by key_fresh)
       let pairClosure := (compatiblePairFanClosureRow (data := spineData)).run
-        fanClosed (by key_fresh)
+        profile (by key_fresh)
       let fanClosedRouting := (fanClosedPortTypeBRoutingRow (data := spineData)).run
         pairClosure (by key_fresh)
       let pairRouting := (compatiblePairTypeBRoutingRow (data := spineData)).run
         fanClosedRouting (by key_fresh)
-      exact Assembly.Internal.selectedTypeBCertificateContinuation pairRouting
+      -- `[70]`: the fan-safe graph and the certificate-marked cap at the Type B
+      -- support of the `[79]` fact.
+      let capped := (degreeFourFanCertificateCapRow (data := spineData)).run
+        pairRouting (by key_fresh)
+      exact Assembly.Internal.selectedTypeBCertificateContinuation capped
         (some inferInstance)
 
 end HypostructureErdos64EG

@@ -1125,4 +1125,112 @@ theorem envelopeFamilyNegativePart_le_degreeSurplus
   have paid := Nat.mul_le_mul_left (massFactor * dischargeScale) global
   omega
 
+
+/-! ## The assigned support `X = (Y_X, H_X)` -/
+
+/-- **`(B-ledger)` at an assigned support `X = (Y_X, H_X)`**: with
+`σ(X) = Σ_{h ∈ H_X}(d_G(h) − δ)` (the ambient surplus of `H_X`),
+`s·No(X) = Ĉh_B(X) + |H_X| = s·def⁺(Y_X) − s·σ(X) − |Y_X|`, at the discharge
+scale (`def:typeB-assigned-ledger`). -/
+theorem augmentedLedgerWith_add_card (object : FiniteObject.{u})
+    (threshold dischargeScale : Nat) (piece assigned : Finset object.Vertex) :
+    TypeBRefinedSupport.augmentedLedgerWith object threshold dischargeScale
+        piece assigned + (assigned.card : Int) =
+      ((dischargeScale * object.positiveDeficiency piece threshold : Nat) : Int) -
+        ((dischargeScale * object.ambientSurplus assigned threshold : Nat) : Int) -
+        (piece.card : Int) := by
+  classical
+  have core : ∑ vertex ∈ piece,
+      scaledCoreCharge object threshold dischargeScale piece vertex =
+        ((dischargeScale * object.positiveDeficiency piece threshold : Nat) : Int) -
+          (piece.card : Int) := by
+    unfold scaledCoreCharge FiniteObject.positiveDeficiency
+    rw [Finset.sum_sub_distrib, Finset.sum_const, nsmul_eq_mul, mul_one,
+      Finset.mul_sum]
+    push_cast
+    rfl
+  have centres : ∑ centre ∈ assigned,
+      scaledCentreCharge object threshold dischargeScale centre =
+        - ((dischargeScale * object.ambientSurplus assigned threshold : Nat) : Int) -
+          (assigned.card : Int) := by
+    unfold scaledCentreCharge FiniteObject.ambientSurplus
+    rw [Finset.sum_sub_distrib, Finset.sum_const, nsmul_eq_mul, mul_one,
+      Finset.sum_neg_distrib, ← Nat.cast_sum, ← Finset.mul_sum]
+  rw [TypeBRefinedSupport.augmentedLedgerWith, core, centres]
+  ring
+
+/-- **The B2-paid deficit stays in the remaining core** (`prop:typeB-bridge-reduction`
+read as an inequality, node `[76]` on the B2 arm): on an exact B2 ledger of
+`X = (Y_X, H_X)`, the remaining core charge is at most `s·No(X)`.  The selected
+entries are nonnegative (B2(a)--(c)) and every assigned centre inside the core
+contributes at worst `−1` as a core vertex, which its `¼` absorbs. -/
+theorem remainingCore_le_scaledNetCharge
+    {threshold dischargeScale : Nat}
+    {packing : Finset (Finset object.Vertex)}
+    {piece assigned : Finset object.Vertex}
+    (ledger : TypeBRefinedSupport.DisjointLedger object threshold dischargeScale
+      packing piece assigned)
+    (exact : ledger.ExactAugmentedLedgerRefinement) :
+    ∑ vertex ∈ ledger.remainingCore,
+        scaledCoreCharge object threshold dischargeScale piece vertex ≤
+      ((dischargeScale * object.positiveDeficiency piece threshold : Nat) : Int) -
+        ((dischargeScale * object.ambientSurplus assigned threshold : Nat) : Int) -
+        (piece.card : Int) := by
+  classical
+  have centreCoreFloor :
+      0 ≤ (∑ centre ∈ assigned ∩ piece,
+        scaledCoreCharge object threshold dischargeScale piece centre) +
+          (assigned.card : Int) := by
+    have pointwise : ∀ centre ∈ assigned ∩ piece,
+        (-1 : Int) ≤ scaledCoreCharge object threshold dischargeScale piece centre := by
+      intro centre _member
+      rw [scaledCoreCharge]
+      have nonneg :
+          (0 : Int) ≤
+            ((dischargeScale *
+              (threshold - object.internalDegree piece centre) : Nat) :
+              Int) := Int.natCast_nonneg _
+      linarith
+    have sumBound := Finset.sum_le_sum pointwise
+    rw [Finset.sum_const, nsmul_eq_mul, mul_neg, mul_one] at sumBound
+    have cardLe : ((assigned ∩ piece).card : Int) ≤ (assigned.card : Int) := by
+      exact_mod_cast Finset.card_le_card Finset.inter_subset_left
+    linarith
+  have partition := exact.partition
+  have paymentNonneg := exact.selectedNonnegative
+  have identity := augmentedLedgerWith_add_card object threshold dischargeScale
+    piece assigned
+  linarith
+
+/-- **`lem:typeB-bridge-deficit-bound` at an assigned support `X = (Y_X, H_X)`**:
+when the counted core carries the Type A routing and unsaturation pair off its
+own centres (the manuscript's hypothesis that the non-window core left after the
+fan envelopes carries no route-8 residual profile), and `H_X` contains the high
+centres of `Y_X`, then `No₋(X) ≤ F·σ(X)` with `σ(X) = Σ_{h ∈ H_X}(d_G(h) − δ)`,
+written subtraction-free at the discharge scale:
+`|Y_X| + s·σ(X) ≤ s·def⁺(Y_X) + F·s·σ(X)`. -/
+theorem bridgeDeficitBound_assigned {threshold dischargeScale massFactor : Nat}
+    (object : FiniteObject.{u}) (piece assigned : Finset object.Vertex)
+    (slack : threshold + 2 + dischargeScale ≤ massFactor * dischargeScale)
+    (baseline : ∀ vertex : object.Vertex, threshold ≤ object.degree vertex)
+    (subset : TypeBRefinedSupport.centres object threshold piece ⊆ assigned)
+    (residual : BridgeResidualComponentAt object piece threshold dischargeScale) :
+    piece.card + dischargeScale * object.ambientSurplus assigned threshold ≤
+      dischargeScale * object.positiveDeficiency piece threshold +
+        massFactor * dischargeScale * object.ambientSurplus assigned threshold := by
+  classical
+  have own := bridgeDeficitBound (massFactor := massFactor) object piece slack
+    baseline residual.1 residual.2
+  have monotone : object.ambientSurplus piece threshold ≤
+      object.ambientSurplus assigned threshold := by
+    rw [← sum_centres_surplus object threshold piece]
+    unfold FiniteObject.ambientSurplus
+    exact Finset.sum_le_sum_of_subset subset
+  have scaleLe : dischargeScale ≤ massFactor * dischargeScale := by omega
+  obtain ⟨extra, extraEq⟩ : ∃ extra, massFactor * dischargeScale =
+      dischargeScale + extra := ⟨massFactor * dischargeScale - dischargeScale, by omega⟩
+  rw [extraEq] at own ⊢
+  have grow := Nat.mul_le_mul_left extra monotone
+  nlinarith [own, grow]
+
 end Hypostructure.Graph.TypeBEnvelopeCharge

@@ -22,7 +22,7 @@ import Hypostructure.Graph.Strategy.SpineRows.DegreeProfileFibres
 import Hypostructure.Graph.Strategy.SpineRows.DeletionCriticality
 import Hypostructure.Graph.Strategy.SpineRows.DelocalizationScopeDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.DenseNetDeficiencyCap
-import Hypostructure.Graph.Strategy.SpineRows.DirectCycleDichotomy
+import Hypostructure.Graph.Strategy.SpineRows.TypeBDirectCycleFree
 import Hypostructure.Graph.Strategy.SpineRows.DisjointPostLedgerComponents
 import Hypostructure.Graph.Strategy.SpineRows.DominantRootedType
 import Hypostructure.Graph.Strategy.SpineRows.DominantRootedTypeWedgeDichotomy
@@ -32,7 +32,6 @@ import Hypostructure.Graph.Strategy.SpineRows.ExactCollisionDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.FanCertificateCap
 import Hypostructure.Graph.Strategy.SpineRows.FanCertificateDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.FanCertificateResidualMass
-import Hypostructure.Graph.Strategy.SpineRows.FanClosedPort
 import Hypostructure.Graph.Strategy.SpineRows.FanClosedPortTypeBRouting
 import Hypostructure.Graph.Strategy.SpineRows.ForcedCurvatureCost
 import Hypostructure.Graph.Strategy.SpineRows.GlobalBarrier

@@ -28,6 +28,8 @@ to assigned surplus. -/
     (fun inputs =>
       .cons (key := K .fanCertificateResidualMass)
         ⟨Contracts.TypeB.typeBFanCertificateResidualMass
+          (fun vertex => le_trans inputs.current.baseline
+            (inputs.current.object.minDegree_le_degree vertex))
           (inputs.get (K .cubicBaseline)).down.2.1.2.2.2.2
           (inputs.get (K .fanCertificateResidual)).down⟩
         .nil)

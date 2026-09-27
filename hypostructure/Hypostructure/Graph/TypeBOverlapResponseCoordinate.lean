@@ -37,11 +37,11 @@ def carrierVertexSupport {object : FiniteObject.{u}}
     (atoms : Finset (SupportAtom object)) : Finset object.Vertex :=
   atoms.biUnion supportAtomVertices
 
-/-- All paths in the canonical decorated fan retained by a candidate profile. -/
-def profilePathSupport {object : FiniteObject.{u}}
-    (profile : TypeBFanClosedPorts.Profile object) : Finset object.Vertex :=
-  profile.marked.fan.rim.attach.biUnion fun rim =>
-    (profile.marked.fan.decoration rim.1 rim.2).walk.support.toFinset
+/-- The fan paths of a demand `h`: the wedges `u — h — v` through the fan
+neighbours, which witness the fan-safe relations of the demand. -/
+def fanPathSupport (object : FiniteObject.{u}) (hub : object.Vertex) :
+    Finset object.Vertex :=
+  insert hub (object.orderedNeighbors hub).toFinset
 
 /-- Packed windows actually touched by the selected incidence carriers. -/
 def selectedWindowSupport {object : FiniteObject.{u}}
@@ -57,8 +57,8 @@ def CandidateData.witnessSupport {object : FiniteObject.{u}}
     (packing : Finset (Finset object.Vertex)) (hub : object.Vertex) :
     Finset object.Vertex :=
   insert hub <|
-    data.profile.envelope ∪
-      profilePathSupport data.profile ∪
+    data.envelope ∪
+      fanPathSupport object hub ∪
         carrierVertexSupport (data.supportAtoms threshold packing hub) ∪
           selectedWindowSupport packing
             (data.selectedIncidences threshold packing hub)

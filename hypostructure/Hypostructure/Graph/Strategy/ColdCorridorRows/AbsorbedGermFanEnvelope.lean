@@ -41,16 +41,45 @@ noncomputable def typeBAbsorbedHalfEdgeDichotomy
       · exact ⟨.inr ⟨holds⟩⟩))
     outsideFresh absentFresh
 
+/-- **Node `[177]`, `lem:absorbed-germ-fan-data`: every half-edge the bounded arm
+of `[153]` discards is charged to the Type B ledger.**  Every selected
+half-edge outside node `[153]`'s subcubic candidates has its own pinned absorbed
+Type B support `(J_ε, {z_ε})` --- the prefix of its corridor through its first
+high centre `z_ε` --- and that support's negative part is charged to the
+surplus of `z_ε` (`lem:typeB-bridge-deficit-bound`). -/
+@[reducible] noncomputable def typeBAbsorbedChargeRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.typeBAbsorbedCharge
+    { Requires := [K .selection, K .uncompressible, K .remainderNormalized,
+        K .absorbedGermFanData, K .cubicBaseline]
+      Produces := [K .typeBAbsorbedCharge]
+      requiresUnique := by key_fresh
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .typeBAbsorbedCharge)
+        ⟨Contracts.TypeB.typeBAbsorbedCharge
+          (Contracts.TypeB.absorbedGermDecoratedAssignedSupport
+            (inputs.get (K .selection)).down.1
+            (inputs.get (K .uncompressible)).down
+            (inputs.get (K .remainderNormalized)).down
+            (inputs.get (K .absorbedGermFanData)).down
+            (le_of_eq (inputs.get (K .cubicBaseline)).down.1.1.symm)
+            (inputs.get (K .cubicBaseline)).down.1.2.2.1)
+          (fun vertex => le_trans inputs.current.baseline
+            (inputs.current.object.minDegree_le_degree vertex))
+          (inputs.get (K .cubicBaseline)).down.2.1.2.2.2.2⟩
+        .nil)
+
 /-- Node `[177]` → `[65]`, `lem:absorbed-germ-fan-data` (ii): at `G`'s canonical
-absorbed half-edge (the `[175]` yes arm), the decorated handoff fan data at the
-first high centre of its retained corridor enters the common Type B entry with
-the support (first-failure prefix, `{centre}`). -/
+absorbed half-edge (the `[175]` yes arm), its pinned charge
+(`K .typeBAbsorbedCharge`) enters the common Type B entry with the support
+(prefix through the first high centre `z`, `{z}`). -/
 @[reducible] noncomputable def absorbedGermFanEnvelopeRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.absorbedGermFanEnvelope
-    { Requires := [K .selection, K .uncompressible, K .remainderNormalized,
-        K .absorbedGermFanData, K .exactCollisionFails, K .typeBAbsorbedHalfEdge,
-        K .cubicBaseline]
+    { Requires := [K .absorbedGermFanData, K .exactCollisionFails,
+        K .typeBAbsorbedCharge, K .typeBAbsorbedHalfEdge]
       Produces := [K .typeBFanEntry]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -60,13 +89,7 @@ the support (first-failure prefix, `{centre}`). -/
         ⟨Contracts.TypeB.typeBFanEntry_of_absorbedHalfEdge
           (inputs.get (K .exactCollisionFails)).down
           (inputs.get (K .absorbedGermFanData)).down
-          (Contracts.TypeB.absorbedGermDecoratedAssignedSupport
-            (inputs.get (K .selection)).down.1
-            (inputs.get (K .uncompressible)).down
-            (inputs.get (K .remainderNormalized)).down
-            (inputs.get (K .absorbedGermFanData)).down
-            (le_of_eq (inputs.get (K .cubicBaseline)).down.1.1.symm)
-            (inputs.get (K .cubicBaseline)).down.1.2.2.1)
+          (inputs.get (K .typeBAbsorbedCharge)).down
           (inputs.get (K .typeBAbsorbedHalfEdge)).down⟩
         .nil)
 

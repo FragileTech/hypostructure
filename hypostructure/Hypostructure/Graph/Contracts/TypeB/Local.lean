@@ -160,15 +160,17 @@ theorem fanSafeAt
     avoids
 
 /-- **Node `[70]`**: the fan-safe graph and `lem:fan-certificate` at every
-assigned centre of the Type B support of the entry. -/
+assigned centre of the Type B support of the `[69]`/`[79]` arm fact: G's
+canonical fan-certificate labelling, when present, caps the degree. -/
 theorem typeBFanCertificateCap
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
-    (entry : TypeBFanEntryStatement data object)
-    (atOrBelow : SurplusAtOrBelowStatement data object) :
+    {Q : Finset object.Vertex → Finset object.Vertex → Prop}
+    (arm : TypeBLaneAt data object Q) :
     TypeBFanCertificateCapStatement data object :=
-  TypeBLaneAt.imp (fun _core _centres _member _entry centre _centreMember =>
-      ⟨fanSafeAt avoids centre, fun marking => marking.degree_le_fanPackingCap⟩)
-    (typeBLanes_of_entry entry atOrBelow)
+  TypeBLaneAt.imp (fun _core _centres _member _arm centre _centreMember =>
+      ⟨fanSafeAt avoids centre, fun marking _markingEq =>
+        marking.degree_le_fanPackingCap⟩)
+    arm
 
 /-- `def:fan-closed-port`, with clause (c) derived. -/
 theorem fanClosedPortAt {core centres : Finset object.Vertex} :
@@ -274,28 +276,23 @@ theorem triangularPortTypeBRoutingAt {core centres : Finset object.Vertex}
 
 /-! ### The routings at the Type B support of `G` -/
 
-/-- `def:fan-closed-port` at the assigned profiles of the Type B support of the
-node-`[65]` entry. -/
-theorem fanClosedPort
+/-- `lem:compatible-pair-fan-closure` at the Type B support of the node-`[65]`
+entry, read through `def:fan-closed-port` (`fanClosedPortAt`). -/
+theorem compatiblePairFanClosure
     (entry : TypeBFanEntryStatement data object)
     (atOrBelow : SurplusAtOrBelowStatement data object) :
-    FanClosedPortStatement data object :=
-  TypeBLaneAt.imp (fun _ _ _ _ => fanClosedPortAt)
+    CompatiblePairFanClosureStatement data object :=
+  TypeBLaneAt.imp (fun _ _ _ _ => compatiblePairFanClosureAt fanClosedPortAt)
     (typeBLanes_of_entry entry atOrBelow)
 
-/-- `lem:compatible-pair-fan-closure` at the Type B support. -/
-theorem compatiblePairFanClosure
-    (definition : FanClosedPortStatement data object) :
-    CompatiblePairFanClosureStatement data object :=
-  TypeBLaneAt.imp (fun _ _ _ holds => compatiblePairFanClosureAt holds) definition
-
-/-- `prop:fan-closed-port-typeB-routing` at the Type B support. -/
+/-- `prop:fan-closed-port-typeB-routing` at the Type B support of the pair
+closure fact, read through `def:fan-closed-port`. -/
 theorem fanClosedPortTypeBRouting
     (thresholdEq : data.threshold = 3) (scaleEq : data.dischargeScale = 4)
-    (definition : FanClosedPortStatement data object) :
+    (pairClosure : CompatiblePairFanClosureStatement data object) :
     FanClosedPortTypeBRoutingStatement data object :=
-  TypeBLaneAt.imp (fun _ _ _ holds =>
-    fanClosedPortTypeBRoutingAt thresholdEq scaleEq holds) definition
+  TypeBLaneAt.imp (fun _ _ _ _ =>
+    fanClosedPortTypeBRoutingAt thresholdEq scaleEq fanClosedPortAt) pairClosure
 
 /-- `cor:compatible-pair-typeB-routing` at the Type B support. -/
 theorem compatiblePairTypeBRouting
@@ -305,14 +302,14 @@ theorem compatiblePairTypeBRouting
   TypeBLaneAt.imp (fun _ _ _ both => compatiblePairTypeBRoutingAt both.1 both.2)
     (TypeBLaneAt.and pairClosure fanClosedRouting)
 
-/-- `prop:triangular-port-typeB-routing` at the Type B support. -/
+/-- `prop:triangular-port-typeB-routing` at the Type B support, read through
+`def:fan-closed-port`. -/
 theorem triangularPortTypeBRouting
     (thresholdEq : data.threshold = 3) (scaleEq : data.dischargeScale = 4)
-    (definition : FanClosedPortStatement data object)
     (fanClosedRouting : FanClosedPortTypeBRoutingStatement data object) :
     TriangularPortTypeBRoutingStatement data object :=
-  TypeBLaneAt.imp (fun _ _ _ both =>
-      triangularPortTypeBRoutingAt thresholdEq scaleEq both.1 both.2)
-    (TypeBLaneAt.and definition fanClosedRouting)
+  TypeBLaneAt.imp (fun _ _ _ holds =>
+      triangularPortTypeBRoutingAt thresholdEq scaleEq fanClosedPortAt holds)
+    fanClosedRouting
 
 end Hypostructure.Graph.Contracts.TypeB

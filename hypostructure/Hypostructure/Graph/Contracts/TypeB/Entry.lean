@@ -195,6 +195,27 @@ theorem typeBFanEntry_of_decoratedLane {core centres : Finset object.Vertex}
   exact Or.inl ⟨core, centres, Or.inr (Or.inl lane),
     ⟨separator, by simp [centresEq]⟩, TypeBDecoratedLane.high lane⟩
 
+/-- **Node `[65]`, ordinary entry**, read from the assigned support
+(`def:typeB-assigned-ledger`, `def:canonical-decomp`): the ordinary support
+`(X₀, H(X₀))` enters with its own high centres, one of which exists. -/
+theorem typeBFanEntry_of_assignedSupport
+    (assigned : TypeBAssignedSupportStatement data object) :
+    TypeBFanEntryStatement data object := by
+  obtain ⟨core, centres, lane, _negative, centre, member, high⟩ := assigned
+  obtain ⟨_piece, centresEq⟩ := ordinarySupport_eq_some lane.2.1
+  exact Or.inl ⟨core, centres, Or.inl lane,
+    ⟨centre, centresEq ▸ Graph.TypeBRefinedSupport.mem_centres.2 ⟨member, high⟩⟩,
+    TypeBOrdinaryLane.high lane⟩
+
+/-- **Node `[65]`, decorated entry**, read from the decorated assigned support
+(`def:decorated-fan-envelope`): the decoration `{z}` enters as the assigned
+centres. -/
+theorem typeBFanEntry_of_decoratedAssignedSupport
+    (assigned : TypeBDecoratedAssignedSupportStatement data object) :
+    TypeBFanEntryStatement data object := by
+  obtain ⟨_core, _centres, lane, _rest⟩ := assigned
+  exact typeBFanEntry_of_decoratedLane lane
+
 /-- The decorated handoff of node `[108]` enters node `[65]`. -/
 theorem typeBFanEntry_of_decoratedHandoff
     (cap : NetChargeCapStatement data object)
@@ -254,22 +275,50 @@ theorem absorbedGermDecoratedAssignedSupport
   change (∀ neighbour : object.Vertex,
     object.graph.Adj centre neighbour →
       object.degree neighbour = data.threshold) at neighboursCubic
-  refine ⟨centre, firstIndex, rfl, firstBound, high, earlierBound,
-    neighboursCubic, ?_⟩
   let traceEnd := coldRoutedTraceEnd data object routing epsilon
   change firstIndex.1 ≤ traceEnd at firstBound
-  let core := corridor.prefixSupport traceEnd
+  -- The first failure occurs on entering `z` (F4): the counted core is the
+  -- prefix of the corridor through `z`.
+  let core := corridor.prefixSupport firstIndex.1
+  refine ⟨centre, core, firstIndex, rfl, firstBound, high, earlierBound,
+    neighboursCubic, rfl, ?_⟩
   have centreCore : centre ∈ core := by
-    apply (corridor.mem_prefixSupport traceEnd centre).2
+    apply (corridor.mem_prefixSupport firstIndex.1 centre).2
     refine ⟨corridor.inside.1.getVert firstIndex.1, ?_, rfl⟩
     have member := SimpleGraph.Walk.getVert_mem_support
-      (corridor.inside.1.take traceEnd) firstIndex.1
-    simpa only [SimpleGraph.Walk.take_getVert,
-      Nat.min_eq_right firstBound] using member
+      (corridor.inside.1.take firstIndex.1) firstIndex.1
+    simpa only [SimpleGraph.Walk.take_getVert, Nat.min_self] using member
+  -- `z` is the only high vertex of the prefix through `z`.
+  have onlyCentre : Graph.TypeBRefinedSupport.centres object data.threshold core ⊆
+      {centre} := by
+    intro vertex member
+    obtain ⟨inCore, vertexHigh⟩ := Graph.TypeBRefinedSupport.mem_centres.mp member
+    obtain ⟨inner, innerMem, rfl⟩ :=
+      (corridor.mem_prefixSupport firstIndex.1 vertex).1 inCore
+    obtain ⟨index, indexEq, indexLe⟩ :=
+      (SimpleGraph.Walk.mem_support_iff_exists_getVert).1 innerMem
+    rw [SimpleGraph.Walk.take_getVert] at indexEq
+    have takeLength := SimpleGraph.Walk.take_length corridor.inside.1 firstIndex.1
+    have indexLeFirst : index ≤ firstIndex.1 := by omega
+    have indexLt : index < corridor.inside.1.length + 1 := by
+      have := firstIndex.2
+      omega
+    rw [Nat.min_eq_right indexLeFirst] at indexEq
+    rcases Nat.lt_or_eq_of_le indexLeFirst with before | same
+    · exfalso
+      have low : object.degree (corridor.inside.1.getVert index).1 ≤
+          data.threshold := earlierBound ⟨index, indexLt⟩ before
+      rw [indexEq] at low
+      simp only [Graph.IsHighCentre] at vertexHigh
+      omega
+    · rw [Finset.mem_singleton, ← indexEq, same]
+      rfl
+  refine ⟨centreCore, onlyCentre, ?_⟩
   have coreInside : core ⊆ object.remainderSupport
       (canonicalWindowPacking data object) := by
-    exact Contracts.Spine.coldAbsorbedPrefix_subset_remainder data object
-      routing epsilon notCandidate
+    exact (corridor.prefixSupport_mono firstBound).trans
+      (Contracts.Spine.coldAbsorbedPrefix_subset_remainder data object
+        routing epsilon notCandidate)
   have avoids : ¬ Graph.HasCycleWithLength data.LengthOK
       object := avoids
   have denied : ∀ c a b,
@@ -393,7 +442,7 @@ theorem absorbedGermDecoratedAssignedSupport
     simpa [envelope] using firstMember
   have secondAssigned : second ∈ envelope.assigned centre := by
     simpa [envelope] using secondMember
-  refine And.intro (corridor.prefixSupport_connectedOn traceEnd) ?_
+  refine And.intro (corridor.prefixSupport_connectedOn firstIndex.1) ?_
   refine And.intro coreInside ?_
   refine Exists.intro envelope ?_
   refine And.intro rfl ?_
@@ -417,27 +466,46 @@ theorem typeBAbsorbedHalfEdge_split
   | none => exact Or.inr selected
   | some epsilon => exact Or.inl ⟨epsilon, selected⟩
 
+/-- **Node `[177]`, the charge of every discarded half-edge**
+(`lem:absorbed-germ-fan-data`: "every half-edge it discards is charged to the
+Type B ledger"): every selected half-edge outside the subcubic candidates has its
+own pinned absorbed Type B support `(J_ε, {z_ε})`, and that support's negative
+part is charged to the surplus of `z_ε` (`lem:typeB-bridge-deficit-bound`). -/
+theorem typeBAbsorbedCharge
+    (supports : AbsorbedGermDecoratedAssignedSupportStatement data object)
+    (baseline : ∀ vertex : object.Vertex, data.threshold ≤ object.degree vertex)
+    (massSlack :
+      data.threshold + 2 + data.dischargeScale ≤
+        data.bridgeMassFactor * data.dischargeScale) :
+    TypeBAbsorbedChargeStatement data object := by
+  classical
+  intro epsilon outside
+  obtain ⟨routing, notCandidate⟩ := outside
+  obtain ⟨_routing, witnesses⟩ := supports
+  obtain ⟨centre, core, handoffEq, _handoff⟩ :=
+    canonicalAbsorbedHandoff_spec routing (witnesses epsilon notCandidate)
+  obtain ⟨high, centreCore, onlyCentre, inside⟩ := absorbedHandoff_facts handoffEq
+  refine ⟨core, centre, ?_, high, centreCore, onlyCentre, inside, ?_⟩
+  · simp [canonicalTypeBAbsorbedSupportAt, handoffEq]
+  · intro residual
+    exact Graph.TypeBEnvelopeCharge.bridgeDeficitBound_assigned object core
+      {centre} massSlack baseline onlyCentre residual
+
 /-- Node `[177]`: at `G`'s canonical absorbed half-edge `ε`, which lies outside
-the subcubic candidates, node `[177]`'s decorated handoff at `ε` gives the
-absorbed Type B support `(prefix of ε, {first high centre})`. -/
+the subcubic candidates, its pinned charge (`typeBAbsorbedCharge`) gives the
+absorbed Type B support `(prefix of ε through z, {z})`. -/
 theorem typeBAbsorbedLane_of_halfEdge
     (fails : ExactCollisionFailsStatement data object)
     (fanData : AbsorbedGermFanDataStatement data object)
-    (supports : AbsorbedGermDecoratedAssignedSupportStatement data object)
+    (charge : TypeBAbsorbedChargeStatement data object)
     (outside : TypeBAbsorbedHalfEdgeStatement data object) :
     ∃ core centres, TypeBAbsorbedLane data object core centres := by
   classical
   obtain ⟨epsilon, edgeEq⟩ := outside
-  obtain ⟨routing, notCandidate⟩ := canonicalChoice_spec_of_eq_some edgeEq
-  obtain ⟨_routing, witnesses⟩ := supports
-  obtain ⟨centre, centreEq, _handoff⟩ :=
-    canonicalAbsorbedCentre_spec routing (witnesses epsilon notCandidate)
-  refine ⟨(coldOccurrenceCorridorAt data object
-      (coldRoutedClassified data object routing) epsilon).prefixSupport
-        (coldRoutedTraceEnd data object routing epsilon), {centre}, fails,
-    fanData, ?_⟩
-  simp [canonicalTypeBAbsorbedSupport, edgeEq, canonicalTypeBAbsorbedSupportAt,
-    routing, centreEq]
+  obtain ⟨core, centre, supportEq, _facts⟩ :=
+    charge epsilon (canonicalChoice_spec_of_eq_some edgeEq)
+  refine ⟨core, {centre}, fails, fanData, ?_⟩
+  simp [canonicalTypeBAbsorbedSupport, edgeEq, supportEq]
 
 /-- Node `[177]` → `[65]`: the absorbed Type B support enters the common Type B
 entry with its single high centre. -/
@@ -445,8 +513,7 @@ theorem typeBFanEntry_of_absorbedLane {core centres : Finset object.Vertex}
     (lane : TypeBAbsorbedLane data object core centres) :
     TypeBFanEntryStatement data object := by
   obtain ⟨_epsilon, _edgeEq, supportAt⟩ := absorbedSupport_eq_some lane.2.2
-  obtain ⟨_routing, centre, _centreEq, rfl, _coreEq⟩ :=
-    absorbedSupportAt_eq_some supportAt
+  obtain ⟨centre, _handoffEq, rfl⟩ := absorbedSupportAt_eq_some supportAt
   exact Or.inl ⟨core, {centre}, Or.inr (Or.inr lane),
     ⟨centre, Finset.mem_singleton_self centre⟩, TypeBAbsorbedLane.high lane⟩
 
@@ -454,11 +521,11 @@ theorem typeBFanEntry_of_absorbedLane {core centres : Finset object.Vertex}
 theorem typeBFanEntry_of_absorbedHalfEdge
     (fails : ExactCollisionFailsStatement data object)
     (fanData : AbsorbedGermFanDataStatement data object)
-    (supports : AbsorbedGermDecoratedAssignedSupportStatement data object)
+    (charge : TypeBAbsorbedChargeStatement data object)
     (outside : TypeBAbsorbedHalfEdgeStatement data object) :
     TypeBFanEntryStatement data object := by
   obtain ⟨_core, _centres, lane⟩ :=
-    typeBAbsorbedLane_of_halfEdge fails fanData supports outside
+    typeBAbsorbedLane_of_halfEdge fails fanData charge outside
   exact typeBFanEntry_of_absorbedLane lane
 
 /-- Node `[144]` → `[65]`: the same-token handoff of G on the strict-surplus arm

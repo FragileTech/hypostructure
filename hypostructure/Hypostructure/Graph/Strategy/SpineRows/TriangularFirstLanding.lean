@@ -19,7 +19,8 @@ variable {data : Data.{u}}
 @[reducible] noncomputable def triangularFirstLandingRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.triangularFirstLanding
-    { Requires := [K .triangularShoulderCompletion, K .triangularPortReturn]
+    { Requires := [K .triangularShoulderCompletion, K .triangularPortReturn,
+        K .triangularFanCore]
       Produces := [K .triangularFirstLanding]
       requiresUnique := by key_fresh
       producesUnique := by simp
@@ -28,7 +29,9 @@ variable {data : Data.{u}}
       -- tex 1880: first landing is read after `lem:triangular-port-return`.
       let _portReturn := (inputs.get (K .triangularPortReturn)).down
       .cons (key := K .triangularFirstLanding)
-        ⟨Contracts.TypeB.triangularFirstLanding (inputs.get (K .triangularShoulderCompletion)).down⟩
+        ⟨Contracts.TypeB.triangularFirstLanding
+          (inputs.get (K .triangularShoulderCompletion)).down
+          (inputs.get (K .triangularFanCore)).down⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine
