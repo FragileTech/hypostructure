@@ -75,6 +75,40 @@ noncomputable abbrev SameTokenPatternPairUnresolvedStatement
             (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
               support (Graph.DeclaredSignature.Coordinate.support second)))
 
+/-- **Node `[144a]`, the explicit replacement candidates of tex 5594 at G.**
+At G's canonical routing and the canonical support `Z` of the two pattern
+coordinates, no reading of G's piece at `Z` restricted to a vertex set (in
+particular neither coordinate's declared support) is a replacement
+representative of `Z`: when `Z` is proper, the reading does not keep the
+piece's boundary-degree profile, or the glued graph loses the baseline, or it
+is not lexicographically smaller than G.  (Any reading meeting all three would
+be the compression exit (c) of G, via `replacementSupport_of_retainedReading`.) -/
+noncomputable abbrev SameTokenReadingsNotReplacementStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop := by
+  letI : DecidableEq object.Vertex := object.vertices.decEq
+  exact ∃ routing, canonicalSameTokenRouting data object = some routing ∧
+    let first := sameTokenPairCoordinate routing.capacity routing.demands.first
+    let second := sameTokenPairCoordinate routing.capacity routing.demands.second
+    ∃ support : Finset object.Vertex,
+      Graph.CanonicalSupport.select? object
+          (Graph.DeclaredSignature.Coordinate.support first ∪
+            Graph.DeclaredSignature.Coordinate.support second) = some support ∧
+      ∀ retained : Finset object.Vertex, (∃ vertex, vertex ∉ support) →
+        ¬ ((Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
+              support retained).boundaryDegreeProfile =
+            (Graph.Strategy.InterfaceReplacement.SupportAtom.piece object
+              support).boundaryDegreeProfile ∧
+          Graph.MinimumDegreeAtLeast data.threshold
+            (Graph.glue (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece
+                object support retained)
+              (Graph.Strategy.InterfaceReplacement.SupportAtom.outside object support)) ∧
+          (Graph.glue (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece
+                object support retained)
+              (Graph.Strategy.InterfaceReplacement.SupportAtom.outside object
+                support)).LexicographicallySmaller object)
+
 /-- **Node `[144]`, `lem:same-token-bottleneck-routing` at G**: the canonical
 homogeneous pattern of G's overloading token routes to a sparse surplus exit of
 G's declared family, to G's same-token Type B handoff, or to the unresolved

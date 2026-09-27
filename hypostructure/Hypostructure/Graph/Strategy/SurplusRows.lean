@@ -232,6 +232,68 @@ noncomputable def pairResponseIndependenceDichotomy
       · exact ⟨.inl ⟨activation, selected, blocked⟩⟩))
     independentFresh dependentFresh
 
+/-- Node `[130]`, blocked arm: `lem:degree-profile-fibres` instantiated at G's
+pair family, at the canonical activation pinned by `K .dependentPairFamily`:
+every determination certificate of a scheduled pair identifies only
+coordinates whose readings on G's piece lie in one boundary-degree fibre. -/
+@[reducible] noncomputable def pairDegreeProfileFibresRow :
+    AtomicStrategy (Input BranchState Presentation presentation data) :=
+  factOnly `Hypostructure.Graph.Strategy.Spine.pairDegreeProfileFibres
+    { Requires := [K .dependentPairFamily]
+      Produces := [K .pairDegreeProfileFibres]
+      requiresUnique := by simp
+      producesUnique := by simp
+      producesNonempty := by simp }
+    (fun inputs =>
+      .cons (key := K .pairDegreeProfileFibres)
+        ⟨Graph.Contracts.SurplusPair.pairDegreeProfileFibres_of_activation
+          (inputs.get (K .dependentPairFamily)).down.choose_spec.1⟩
+        .nil)
+
+/-- Node `[130]`, blocked arm: blocker clause (d) of `def:surplus-blockers` at
+G's canonical activation, read from `K .dependentPairFamily`.  Does some
+scheduled pair have a type-(d) obstruction?  The negative arm is the literal
+negation at the same activation. -/
+noncomputable def pairProfileObstructionDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger (Input BranchState Presentation presentation data)
+      current known)
+    [FactKeys.Has (K .dependentPairFamily) known]
+    (obstructionFresh : K .pairProfileObstruction ∉ known)
+    (noObstructionFresh : K .pairNoProfileObstruction ∉ known) :
+    Decision (K .pairProfileObstruction) (K .pairNoProfileObstruction)
+      previous :=
+  Decision.run previous (K .pairProfileObstruction)
+    (K .pairNoProfileObstruction)
+    `Hypostructure.Graph.Strategy.Spine.pairProfileObstructionDichotomy
+    (Classical.choice (show Nonempty
+        ((K .pairProfileObstruction).At current ⊕
+          (K .pairNoProfileObstruction).At current) from by
+      classical
+      obtain ⟨activation, selected, _blocked⟩ :=
+        (previous.get (K .dependentPairFamily)).down
+      by_cases obstruction : ∃ pair ∈ current.object.portPairSchedule
+          data.threshold,
+        Graph.SparsePairDEProfileObstructionAt
+          (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+          (LengthOK := data.LengthOK) activation
+          (current.object.portPairSchedule data.threshold) pair
+      · exact ⟨.inl ⟨⟨activation, selected, obstruction⟩⟩⟩
+      · refine ⟨.inr ⟨⟨activation, selected, fun pair member present => ?_⟩⟩⟩
+        exact obstruction ⟨pair, member, present⟩))
+    obstructionFresh noObstructionFresh
+
+/-- Node `[130]`, clause (d) closed at G: `lem:degree-profile-fibres` at G's pair
+family, on the same ledger, refutes a type-(d) obstruction at the same
+canonical activation. -/
+noncomputable instance instIncompatiblePairDegreeProfileFibresPairProfileObstruction :
+    Incompatible (Input BranchState Presentation presentation data)
+      (K .pairDegreeProfileFibres) (K .pairProfileObstruction) where
+  contradiction := fun _current fibres obstruction =>
+    Graph.Contracts.SurplusPair.not_pairProfileObstruction_of_fibres
+      fibres.down obstruction.down
+
 /-- Node `[130]`, blocked arm: blocker clause (e) of `def:surplus-blockers` at
 G's canonical activation, read from `K .dependentPairFamily` (which pins that
 activation).  Does some scheduled pair have a type-(e) obstruction?  The

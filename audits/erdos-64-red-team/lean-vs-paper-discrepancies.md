@@ -667,11 +667,17 @@ gone.
 - **Lean.** `SparsePairDetermination` is that determination: a functional,
   rank-reducing attempted declared quotient of G's pair-response family at the
   activation, with an inclusion-minimal certificate of `r_π`, whose labels
-  carry G's canonical coordinate response (`SparsePairCanonicalValuation`: a
-  valuation of the quotient labels equal, at every `c ∈ ℛ_Π`, to
-  `canonicalCoordinateResponse` of `c` read on G's piece at the determination
-  support `Z`).  So two coordinates the quotient identifies have the same
-  response on G (`SparsePairDetermination.canonicalResponse_eq_of_label_eq`).
+  carry G's exact response data (`SparsePairExactValuation`: a valuation of
+  the quotient labels equal, at every `c ∈ ℛ_Π`, to the pair (boundary-degree
+  profile, `canonicalCoordinateResponse`) of `c` read on G's piece at the
+  determination support `Z` -- the `𝐝_∂` and response components of
+  `ρ^ex`, `def:exact-response-profile`).  So two coordinates the quotient
+  identifies have the same response and the same boundary-degree profile on G
+  (`SparsePairDetermination.canonicalResponse_eq_of_label_eq`,
+  `SparsePairDetermination.profile_eq_of_label_eq`): the quotient is
+  target-complete on G's coordinates, as the paper's determination quotient
+  is (it comes from `lem:target-rank-circuit`, a *functional admissible* rank
+  quotient; `def:target-complete-quotient` (a), (b)).
   `SparsePairDEProfileObstructionAt` (d) adds that the quotient identifies
   `r_π` with a determiner `b` (`label b = label r_π`, the case `ℬ = {b}` of
   `lem:target-rank-circuit`) and that these two identified states, `r_π` and
@@ -689,13 +695,15 @@ gone.
   response, the manufactured quotient no longer qualifies: it would identify
   `b` with `r_π` only if G's two readings at `Z` respond identically to every
   `∂Z`-context.  (e) omitted the support-dependence event.
-- **Is (d) dead at G?** No ledger fact at [130] refutes it.  The survivor
-  refutes exits (b), (c) and (d), and (d)'s event is none of them: two
-  identified readings in *different* fibres are not a clause-(b) defect,
-  which needs one fibre.  The quotient's completeness antecedent fails, so its
-  representative clauses supply no replacement or closed representative.
-  (d) stays a live test of [130], about G's readings.  (e) is dead at G; see
-  Paper errors.
+- **Is (d) dead at G?** Yes, after the completeness check (fix2 follow-up).
+  An earlier verdict in this pass ("no ledger fact refutes (d), live test")
+  rested on an incomplete construction: the determination quotient's
+  valuation read only the response component of `ρ^ex`, not the `𝐝_∂`
+  component, i.e. the admissibility the paper requires of it was missing.
+  With it built, [130] publishes `lem:degree-profile-fibres` at G's pair
+  family (`K .pairDegreeProfileFibres`, idx 2902) and closes clause (d)
+  against it (keys 2903/2904); see Paper errors, "[130] blocker (d)".  (e) is
+  dead at G as well; see Paper errors.
 
 ## [131]: `lem:mixed-sparse-spine-dependence` is the paper's statement, with no consumer
 
@@ -916,6 +924,9 @@ where the user decided so, a residual carried by the node's open leaf.
 
 ### [144] `lem:same-token-bottleneck-routing`, parallel and cubic-first-separator cases (tex 5585-5620)
 
+Step 1 is an open construction (see "Open constructions"); step 2 is false
+at G as stated (below).
+
 - **Paper claim.** The two same-label demands' response coordinates "lie in the
   same boundary-degree fibre" (tex 5589).  Their identification is either
   target-defective (exit (b)) or "target-complete on a proper support", which
@@ -962,10 +973,46 @@ where the user decided so, a residual carried by the node's open leaf.
   survivor refutes.  So on the no-handoff arm, G's ledger proves exactly the
   two cases above.  That is `SameTokenPatternPairUnresolvedStatement`
   (`sameTokenPatternUnresolvedRow`), pinned to G's canonical routing.
+- **Step 2 attempted explicitly at G (fix2 follow-up).**  The representative
+  exit (c) needs must replace G's piece at `Z`.  The only candidates G itself
+  supplies are the readings of that piece restricted to a vertex set -- in
+  particular `r_{π₁}`'s and `r_{π₂}`'s own readings.
+  `replacementSupport_of_retainedReading` (`Graph/NamedSurplusExits.lean`)
+  builds the replacement from such a reading: the target transfer is
+  automatic (the reading is a subgraph of the piece).  What remains are
+  exactly three conditions on G: the reading keeps the piece's boundary-degree
+  profile, the glued graph keeps `δ ≥ 3`, and it is lexicographically smaller.
+  Context-equivalence of the two readings supplies none of the three.  At G
+  the construction is checked and published on the [144a] arm:
+  `sameTokenReadingsNotReplacementRow` (`K .sameTokenReadingsNotReplacement`,
+  idx 2905, contract `sameTokenReadingsNotReplacement_of_unresolved`) proves
+  from G's survivor that no reading of G's piece at `Z` meets all three
+  conditions (it would be G's exit (c)).  So the paper's step cannot be
+  completed with any representative built from G's piece at `Z`; it would
+  need a representative that is not a reading of G, and the paper does not
+  construct one.
+- **Step 2 under the ¬X rule: X is false at G.**  X is "a replacement
+  representative of `Z` exists" (`ReplacementSupport G Z`), which the paper
+  derives from context-equivalent readings.  ¬X holds at G: `ReplacementSupport
+  G Z` is G's exit (c), refuted by `K .sparseSurplusSurvivor`, and for the
+  representatives built from G's piece it is published at [144a]
+  (`K .sameTokenReadingsNotReplacement`).  Clause by clause for a reading
+  `Zᵢ'`: the response clause holds (subgraph; at G's own context `G − Z` both
+  sides are target-free, `not_target_retainedGlue`, the [12] reading at G's
+  context); `δ(Zᵢ' ⊕ (G − Z)) ≥ 3` fails whenever an internal vertex of `Z`
+  lies outside `Xᵢ` (it keeps no edge); otherwise a reading that drops an edge
+  at `∂Z` changes `𝐝_∂`, and one that drops none is not smaller.  ¬X gives no
+  contradiction: it is a ledger consequence, and context universality ([12])
+  concerns admissible quotients, whereas tex 6026 says a target-complete
+  identification without a smaller representative is "only an abstract
+  identification of labels".  So the paper's step "context-equivalent ⇒
+  compression" is false at G as stated.  What survives is the case itself
+  (context-equivalent readings), the second disjunct of [144a].
 - **Missing facts about G.** Either the profile equality of step 1 for G's
   two readings at `Z`, or, for context-equivalent readings, a smaller proper
-  representative of `Z` in G (`ReplacementSupport` at `Z`).  With either one,
-  the paper's closure at [144] would follow from G's ledger.
+  representative of `Z` (`ReplacementSupport` at `Z`) that is not a reading of
+  G's piece (those are refuted at G, above).  With either one, the paper's
+  closure at [144] would follow from G's ledger.
 - **Sanity check only (not evidence about G).**
   `Quarantine/PaperRepairs/Node144Gap.lean` contains the survivor dichotomy
   L1′ (a target-complete pair adds no exit, L3) and two small configurations
@@ -1030,6 +1077,44 @@ where the user decided so, a residual carried by the node's open leaf.
 - **Representation.** No `sorry` (nothing unprovable is claimed).  The clause
   is kept as the paper states it.  Its arm is closed at [130] against G's
   survivor.  No other predicate replaces it.
+
+### [130] blocker (d) of `def:surplus-blockers` is empty: the determination quotient is admissible (tex 2897; tex 4673-4689; tex 5839, 5876-5883, 6018-6029, 9160-9180)
+
+*Group SP (Surplus / Pair / [144]).*
+
+- **Paper claim.** (d) is "a boundary-degree-profile coordinate which prevents
+  a quotient or replacement from staying in a single fibre"; in
+  `lem:sparse-pair-dependence-exit` it is produced when "the determination
+  attempts to identify states with different boundary degree profiles"
+  (tex 4686-4689).
+- **Faithful Lean statement.** `SparsePairDEProfileObstructionAt`: the
+  determination's quotient identifies `r_π` with a determiner `b`, and the two
+  readings on G's piece at the determination support lie in different fibres.
+  The determination (`SparsePairDetermination`) is the paper's: its quotient
+  comes from `lem:target-rank-circuit`, which extracts it from a *functional
+  admissible* rank quotient (tex 9160-9180, `def:curvature-target-dependence`
+  (b)), and an admissible quotient is target-complete
+  (`def:admissible-rank-quotient`, tex 6018-6029): every identification
+  preserves the boundary-degree profile (`def:target-complete-quotient` (a),
+  tex 5876-5883; `def:boundary-degree-profile`, tex 5839: "two boundaried
+  states with different boundary degree profiles are never eligible to be
+  identified").  In the Lean this is `SparsePairExactValuation`.
+- **Why it is empty.** The determination's own quotient cannot identify two
+  states in different fibres, which is the only way (d) arises.  Lean
+  evidence: `not_sparsePairDEProfileObstructionAt`
+  (`Graph/SparseEntropySandwich.lean`), and at G
+  `not_pairProfileObstruction_of_fibres`
+  (`Contracts/SurplusPair/PairSchedule.lean`).
+- **Closed at the node, from G's ledger.** On [130]'s blocked arm,
+  `pairDegreeProfileFibresRow` publishes `lem:degree-profile-fibres` at G's
+  pair family and G's canonical activation (`K .pairDegreeProfileFibres`,
+  idx 2902, read from `K .dependentPairFamily`).  The exact decision
+  `pairProfileObstructionDichotomy` then splits clause (d) at that activation
+  (`K .pairProfileObstruction` 2903 / `K .pairNoProfileObstruction` 2904), and
+  `strictSurplusDependent` closes its positive arm by `closeIncompatible …
+  (K .pairDegreeProfileFibres) (K .pairProfileObstruction)`.
+- **Representation.** No `sorry`.  The clause is kept as the paper states it;
+  [130]'s blocked arm is driven by clauses (a)--(c) and (f).
 
 ### [144] the capped arm is unreachable after the audits (tex 1238-1252, 5653-5690, 5805-5812)
 
@@ -1383,6 +1468,48 @@ where the user decided so, a residual carried by the node's open leaf.
   there.  No `sorry` is used: the node's proved content (Step 1 and the B2-paid
   bridge reduction) is on the ledger, and the continuation [85] is the same
   `K .typeBExclusionResidual` fact as on the other arms.
+
+## Open constructions
+
+Each entry is a claim X that the paper asserts about G without constructing
+it.  For each, ¬X was assumed at G, its witness built from G's objects, and
+the three routes run (incompatible structure, bound overload,
+compressibility).  An entry is here only if all three fail; if X is shown
+false at G it is under Paper errors instead.
+
+### [144] step 1 of `lem:same-token-bottleneck-routing`: equal boundary-degree profiles (tex 5589)
+
+*Group SP (Surplus / Pair / [144]).*  Setting: G's ledger at the [144a] arm;
+G's canonical routing, the equal-label pattern edges `π₁ ≠ π₂`, their
+coordinates `r_{π₁} ≠ r_{π₂}` with declared supports `X₁ = X_{π₁}`,
+`X₂ = X_{π₂}`, and `Z = select?(X₁ ∪ X₂)` with boundary `∂Z` (the vertices of
+`Z` with an edge of G leaving `Z`).  Reading `i` is `retainedPiece G Z Xᵢ`:
+G's piece at `Z` with only the edges inside `Xᵢ`.
+
+- **X.** `𝐝_∂(reading 1) = 𝐝_∂(reading 2)`.
+- **¬X witness at G.** A vertex `v ∈ ∂Z` whose number of G-neighbours in `Z`
+  along edges inside `X₁` differs from that along edges inside `X₂`.  For
+  example, `v ∈ ∂Z ∩ (X₁ ∖ X₂)` with a G-neighbour in `X₁ ∩ Z` has degree
+  `≥ 1` in reading 1 and `0` in reading 2.
+- **Route 1, incompatible structure: fails.**  The ledger's facts about the
+  pair are the routing label (`def:same-token-routing-germs`, tex 5555-5562:
+  token, role, subtype, open/triangular status, the profile of the *bounded
+  port supports* `T(p), T(q)`, `P₁₃` labels, suppressed-chord flag), the
+  canonical routes and first separator, the role-homogeneous pattern,
+  `K .bridgeless`, `K .highCentreNormalForm`, `δ ≥ 3` and target avoidance.
+  None of them constrains the degrees at `∂Z` of the unbounded response parts
+  `Γ(p)`.  Two readings in different fibres are also not an exit: exit (b)
+  needs one fibre.
+- **Route 2, bound overload: fails.**  A degree difference at one boundary
+  vertex changes no counted quantity of the [136]/[137] budgets (token loads,
+  role fibres, `Q_geom`, the pattern size); the routing label, and so the
+  pigeonhole that produced `π₁, π₂`, is unchanged.
+- **Route 3, compressibility: fails.**  Readings in different fibres cannot
+  be identified by a target-complete quotient (`lem:degree-profile-fibres`),
+  so no quotient-based smaller representative arises; and no reading of G's
+  piece at `Z` is a replacement at all (step 2 below).
+- **Status.** OPEN CONSTRUCTION: the first disjunct of the [144a] residual
+  `SameTokenPatternPairUnresolvedStatement`.
 
 ## User-approved repairs
 

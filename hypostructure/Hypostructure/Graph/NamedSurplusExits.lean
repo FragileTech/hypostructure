@@ -91,6 +91,40 @@ theorem not_target_retainedGlue {LengthOK : Nat → Prop}
   obtain ⟨hom, injective⟩ := retainedGlue_hom object support retained
   exact avoids (hasCycleWithLength_of_hom hom injective cycle)
 
+/-- **A retained reading of G's piece is an explicit replacement candidate**
+(`lem:replacement` with `def:proper-quotient-representative`, the
+representative `Z'` that exit (c) needs): replacing G's piece at a connected
+proper support `Z` by its reading restricted to `retained` is a
+`ReplacementSupport` of `Z` as soon as the reading keeps the piece's
+boundary-degree profile, the glued graph keeps the baseline, and it is
+lexicographically smaller.  The target transfer is automatic: the reading is a
+subgraph of the piece, so a cycle after gluing any context survives in the
+piece glued to that context. -/
+theorem replacementSupport_of_retainedReading {Baseline : FiniteObject.{u} → Prop}
+    {LengthOK : Nat → Prop} (object : FiniteObject.{u})
+    (support retained : Finset object.Vertex)
+    (connected : SupportComponents.Connected.ConnectedOn object support)
+    (proper : ∃ vertex, vertex ∉ support)
+    (profile : (SupportAtom.retainedPiece object support retained).boundaryDegreeProfile =
+      (SupportAtom.piece object support).boundaryDegreeProfile)
+    (baseline : Baseline (glue (SupportAtom.retainedPiece object support retained)
+      (SupportAtom.outside object support)))
+    (smaller : (glue (SupportAtom.retainedPiece object support retained)
+      (SupportAtom.outside object support)).LexicographicallySmaller object) :
+    ReplacementSupport Baseline (HasCycleWithLength LengthOK) object support := by
+  refine ⟨connected, proper, SupportAtom.retainedPiece object support retained,
+    profile, baseline, smaller, ?_⟩
+  intro outside cycle
+  have le : glueGraph (SupportAtom.retainedPiece object support retained) outside ≤
+      glueGraph (SupportAtom.piece object support) outside := by
+    apply glueGraph_mono (piece := SupportAtom.piece object support) outside
+    intro left right adjacent
+    exact adjacent.1
+  exact hasCycleWithLength_of_hom
+    (left := glue (SupportAtom.retainedPiece object support retained) outside)
+    (right := glue (SupportAtom.piece object support) outside)
+    (SimpleGraph.Hom.ofLE le) (fun _ _ equal => equal) cycle
+
 /-- **The canonical response of a declared coordinate of G at a support `Z`**
 (`def:declared-coordinate-signature`, `val_X(r)`): the coordinate read on G's
 own piece at `Z` restricted to its declared support (`retainedPiece`), on the

@@ -265,6 +265,7 @@ noncomputable def selectedBottleneckDischarge
     (handoffFresh : K .typeBHandoff ∉ known := by key_fresh)
     (handoffFailsFresh : K .typeBHandoffFails ∉ known := by key_fresh)
     (unresolvedFresh : K .sameTokenPatternUnresolved ∉ known := by key_fresh)
+    (readingsFresh : K .sameTokenReadingsNotReplacement ∉ known := by key_fresh)
     (fanEntryFresh : K .typeBFanEntry ∉ known := by key_fresh)
     (closedFresh : closed ∉ known := by key_fresh) :
     StrictSurplusBoundaryResult selected := by
@@ -294,11 +295,18 @@ noncomputable def selectedBottleneckDischarge
             (entered.get (K .surplusAbove)).down,
             (entered.get (K .sparseSurplusSurvivor)).down⟩
       | .right failsHistory =>
-          let unresolved :=
+          let unresolvedOnly :=
             (sameTokenPatternUnresolvedRow (BranchState := BranchState)
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
               (data := spineData)).run failsHistory (by key_fresh)
+          -- `[144a]`: the explicit replacement candidates of tex 5594 at G,
+          -- checked against the survivor and published.
+          let unresolved :=
+            (sameTokenReadingsNotReplacementRow (BranchState := BranchState)
+              (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+              (presentation := erdosReceiverLoadProfile)
+              (data := spineData)).run unresolvedOnly (by key_fresh)
           exact Or.inl ⟨
             Or.inr ⟨(unresolved.get (K .typeBHandoffFails)).down,
               (unresolved.get (K .sameTokenPatternUnresolved)).down⟩,

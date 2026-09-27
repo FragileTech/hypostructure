@@ -648,16 +648,21 @@ noncomputable abbrev sparsePairCoordinateSupport {object : FiniteObject.{u}} :
   letI := object.vertices.decEq
   exact DeclaredSignature.Coordinate.support
 
-/-- **The quotient reads G's canonical coordinate response**
-(`def:declared-coordinate-signature`, `val_X(r)`; `lem:target-rank-circuit`,
-tex 9170-9180: "the q-image vector of `ℬ` determines the q-image of `a`"): the
-attempt's quotient labels carry a target-response value, and at every
-coordinate `c ∈ ℛ_Π` that value is G's own canonical response of `c` at the
-determination support `Z` -- `c` read on G's piece at `Z` restricted to its
-declared support, tested against every `∂Z`-boundaried context
-(`canonicalCoordinateResponse`).  Two coordinates the quotient identifies
-therefore have the same response on G; the labelling is not free. -/
-def SparsePairCanonicalValuation
+/-- **The quotient reads G's exact response data**
+(`def:exact-response-profile`, `ρ^ex_T(X) = (𝐝_∂(X), profile_T(X), ℛ^ex_T(X))`;
+`def:declared-coordinate-signature`, `val_X(r)`; `def:target-complete-quotient`;
+`lem:target-rank-circuit`, tex 9160-9180, whose quotient is a *functional
+admissible* rank quotient).  The attempt's quotient labels carry a value, and
+at every coordinate `c ∈ ℛ_Π` that value is G's own exact response data of `c`
+at the determination support `Z`: the boundary-degree profile of `c` read on
+G's piece at `Z` restricted to its declared support, and the target response of
+that reading against every `∂Z`-boundaried context
+(`canonicalCoordinateResponse`).  An identification of two coordinates by the
+quotient therefore preserves both components, as a target-complete quotient
+must (`def:target-complete-quotient` (a), (b); `def:boundary-degree-profile`:
+"All target-response states in this paper are taken fibrewise over `𝐝_∂`").
+The labelling is not free. -/
+def SparsePairExactValuation
     {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
     {object : FiniteObject.{u}} {Coordinate Chord : Type u}
     (activation : object.DemandActivation Coordinate Chord)
@@ -665,17 +670,20 @@ def SparsePairCanonicalValuation
     (attempt : AttemptedQuotient Baseline (Graph.HasCycleWithLength LengthOK)
       object (activation.pairFamily pairs) sparsePairCoordinateSupport) : Prop :=
   ∃ valuation : attempt.Label →
-      OutsideContext (SupportAtom.boundary object attempt.support) → Prop,
+      ((SupportAtom.boundary object attempt.support).Vertex → Nat) ×
+        (OutsideContext (SupportAtom.boundary object attempt.support) → Prop),
     ∀ coordinate ∈ activation.pairFamily pairs,
       valuation (attempt.label coordinate) =
-        canonicalCoordinateResponse (Graph.HasCycleWithLength LengthOK) object
-          attempt.support (sparsePairCoordinateSupport coordinate)
+        ((SupportAtom.retainedPiece object attempt.support
+            (sparsePairCoordinateSupport coordinate)).boundaryDegreeProfile,
+          canonicalCoordinateResponse (Graph.HasCycleWithLength LengthOK) object
+            attempt.support (sparsePairCoordinateSupport coordinate))
 
 /-- **An inclusion-minimal determination certificate of `r_π`**
 (`lem:sparse-pair-dependence-exit`, tex 4675-4684; `lem:target-rank-circuit`):
 a functional attempted declared quotient of G's pair-response family `ℛ_Π` at
-the activation, whose labels carry G's canonical coordinate response
-(`SparsePairCanonicalValuation`), is rank-reducing, and on its connected
+the activation, whose labels carry G's exact response data
+(`SparsePairExactValuation`), is rank-reducing, and on its connected
 determination support `Z` it determines the pair's own response coordinate
 `r_π` from the inclusion-minimal subfamily `determiners ⊆ ℛ_Π ∖ {r_π}`.  This
 is the determination `def:surplus-blockers` (d) and (e) speak about: "a
@@ -701,7 +709,7 @@ def SparsePairDetermination
     (∀ candidate ⊆ determiners,
       attempt.toRankQuotient.Determines coordinate ↑candidate →
         determiners ⊆ candidate) ∧
-    SparsePairCanonicalValuation (Baseline := Baseline) (LengthOK := LengthOK)
+    SparsePairExactValuation (Baseline := Baseline) (LengthOK := LengthOK)
       activation pairs attempt
 
 /-- **Clause (d) at a specified pair** (`def:surplus-blockers` (d), tex 2897:
@@ -717,7 +725,9 @@ determiner `b` (`label b = label r_π`, the case `ℬ = {b}` of
 read on G's own piece at the determination support `Z` -- lie in different
 boundary-degree fibres (`lem:degree-profile-fibres`).  The separated
 coordinates are exactly the ones the quotient identifies, at the quotient's
-own support. -/
+own support.  Because the paper's determination quotient is admissible
+(target-complete), the clause is never inhabited
+(`not_sparsePairDEProfileObstructionAt`; registered as a paper error). -/
 def SparsePairDEProfileObstructionAt
     {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
     {object : FiniteObject.{u}} {Coordinate Chord : Type u}
@@ -762,7 +772,53 @@ theorem SparsePairDetermination.canonicalResponse_eq_of_label_eq
       canonicalCoordinateResponse (Graph.HasCycleWithLength LengthOK) object
         attempt.support (sparsePairCoordinateSupport second) := by
   obtain ⟨-, -, -, -, -, -, -, valuation, reads⟩ := determination
-  rw [← reads first firstMem, ← reads second secondMem, same]
+  exact (Prod.mk.inj ((reads first firstMem).symm.trans
+    ((congrArg valuation same).trans (reads second secondMem)))).2
+
+/-- **`lem:degree-profile-fibres` for a determination of G's pair family**
+(tex 6088-6100): two coordinates a determination identifies are read on G's
+piece at the determination support in one boundary-degree fibre -- the
+profile component of the shared label's value is both profiles. -/
+theorem SparsePairDetermination.profile_eq_of_label_eq
+    {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {Coordinate Chord : Type u}
+    {activation : object.DemandActivation Coordinate Chord}
+    {pairs : Finset (Finset (object.Vertex × object.Vertex))}
+    {pair : Finset (object.Vertex × object.Vertex)}
+    {attempt : AttemptedQuotient Baseline (Graph.HasCycleWithLength LengthOK)
+      object (activation.pairFamily pairs) sparsePairCoordinateSupport}
+    {determiners : Finset object.PairCoordinate}
+    (determination : SparsePairDetermination (Baseline := Baseline)
+      (LengthOK := LengthOK) activation pairs pair attempt determiners)
+    {first second : object.PairCoordinate}
+    (firstMem : first ∈ activation.pairFamily pairs)
+    (secondMem : second ∈ activation.pairFamily pairs)
+    (same : attempt.label first = attempt.label second) :
+    (SupportAtom.retainedPiece object attempt.support
+        (sparsePairCoordinateSupport first)).boundaryDegreeProfile =
+      (SupportAtom.retainedPiece object attempt.support
+        (sparsePairCoordinateSupport second)).boundaryDegreeProfile := by
+  obtain ⟨-, -, -, -, -, -, -, valuation, reads⟩ := determination
+  exact (Prod.mk.inj ((reads first firstMem).symm.trans
+    ((congrArg valuation same).trans (reads second secondMem)))).1
+
+/-- **Clause (d) is empty at every determination** (`def:surplus-blockers` (d)
+with `lem:sparse-pair-dependence-exit`, tex 4686-4689): the determination's
+quotient reads G's exact response data, so the two states it identifies lie in
+one boundary-degree fibre (`profile_eq_of_label_eq`). -/
+theorem not_sparsePairDEProfileObstructionAt
+    {Baseline : FiniteObject.{u} → Prop} {LengthOK : Nat → Prop}
+    {object : FiniteObject.{u}} {Coordinate Chord : Type u}
+    (activation : object.DemandActivation Coordinate Chord)
+    (pairs : Finset (Finset (object.Vertex × object.Vertex)))
+    (pair : Finset (object.Vertex × object.Vertex)) :
+    ¬ SparsePairDEProfileObstructionAt (Baseline := Baseline)
+      (LengthOK := LengthOK) activation pairs pair := by
+  rintro ⟨attempt, determiners, determination, identified, identifiedMem,
+    same, different⟩
+  have rMem := determination.2.2.1
+  have bMem := determination.2.2.2.1 identifiedMem
+  exact different (determination.profile_eq_of_label_eq rMem bMem same.symm)
 
 /-- **Clause (e) at a specified pair** (`def:surplus-blockers` (e), tex 2900:
 "a target-response coordinate witnessing a target-defective quotient,

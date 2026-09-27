@@ -1255,6 +1255,63 @@ noncomputable abbrev MixedSparseSpineDependenceStatement
             (LengthOK := data.LengthOK) activation
             (object.portPairSchedule data.threshold)
 
+/-- Node `[130]`, `lem:degree-profile-fibres` (tex 6088-6100) at G's pair
+family: at G's canonical activation, every determination certificate of a
+scheduled pair (`SparsePairDetermination`, whose quotient reads G's exact
+response data) identifies only coordinates whose readings on G's piece at the
+determination support lie in one boundary-degree fibre. -/
+noncomputable abbrev PairDegreeProfileFibresStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop :=
+  ∃ activation, canonicalPairActivation data object = some activation ∧
+    ∀ (pair : Finset (object.Vertex × object.Vertex))
+      (attempt : Graph.AttemptedQuotient
+        (Graph.MinimumDegreeAtLeast data.threshold)
+        (Graph.HasCycleWithLength data.LengthOK) object
+        (activation.pairFamily (object.portPairSchedule data.threshold))
+        Graph.sparsePairCoordinateSupport)
+      (determiners : Finset object.PairCoordinate),
+      Graph.SparsePairDetermination
+          (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+          (LengthOK := data.LengthOK) activation
+          (object.portPairSchedule data.threshold) pair attempt determiners →
+        ∀ first ∈ activation.pairFamily (object.portPairSchedule data.threshold),
+        ∀ second ∈ activation.pairFamily (object.portPairSchedule data.threshold),
+          attempt.label first = attempt.label second →
+            (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
+                attempt.support
+                (Graph.sparsePairCoordinateSupport first)).boundaryDegreeProfile =
+              (Graph.Strategy.InterfaceReplacement.SupportAtom.retainedPiece object
+                attempt.support
+                (Graph.sparsePairCoordinateSupport second)).boundaryDegreeProfile
+
+/-- Node `[130]`, clause (d) of `Blk(π)` at G: at G's canonical activation some
+scheduled pair has a type-(d) obstruction of `def:surplus-blockers`. -/
+noncomputable abbrev PairProfileObstructionStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop :=
+  ∃ activation, canonicalPairActivation data object = some activation ∧
+    ∃ pair ∈ object.portPairSchedule data.threshold,
+      Graph.SparsePairDEProfileObstructionAt
+        (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+        (LengthOK := data.LengthOK) activation
+        (object.portPairSchedule data.threshold) pair
+
+/-- Node `[130]`, clause (d) absent: the literal negation at the same pinned
+activation. -/
+noncomputable abbrev PairNoProfileObstructionStatement
+    (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Prop :=
+  ∃ activation, canonicalPairActivation data object = some activation ∧
+    ∀ pair ∈ object.portPairSchedule data.threshold,
+      ¬ Graph.SparsePairDEProfileObstructionAt
+        (Baseline := Graph.MinimumDegreeAtLeast data.threshold)
+        (LengthOK := data.LengthOK) activation
+        (object.portPairSchedule data.threshold) pair
+
 /-- Node `[130]`, clause (e) of `Blk(π)` at G: at G's canonical activation some
 scheduled pair has a type-(e) obstruction of `def:surplus-blockers` (a
 target-response coordinate witnessing a target-defective quotient,
