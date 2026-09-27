@@ -264,17 +264,14 @@ theorem netChargeLocalization (data : Parameters)
       (object.remainderSupport (canonicalWindowPacking data object))
       data.threshold data.dischargeScale negative
 
-/-- **Node `[59]`, yes arm.**  `N₀(R) ≥ 0` at the fixed maximum packing, which
-meets every induced window. -/
+/-- **Node `[59]`, yes arm.**  `N₀(R₀) ≥ 0` at the fixed maximum packing `P₀`. -/
 theorem netChargeNonNegative_of_nonNegative (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (nonNegative : object.NonNegativeNetCharge
       (object.remainderSupport (canonicalWindowPacking data object))
       data.threshold data.dischargeScale) :
-    NetChargeNonNegativeStatement data object := by
-  have packingSpec := canonicalWindowPacking_spec data object
-  exact ⟨canonicalWindowPacking data object, rfl, packingSpec.1, packingSpec.2.1,
-    packingSpec.2.2, nonNegative⟩
+    NetChargeNonNegativeStatement data object :=
+  nonNegative
 
 /-- **Node `[59]`, no arm.**  `N₀(R) < 0` at the fixed maximum packing. -/
 theorem netChargeNegative_of_not_nonNegative (data : Parameters)
@@ -282,10 +279,8 @@ theorem netChargeNegative_of_not_nonNegative (data : Parameters)
     (notNonNegative : ¬ object.NonNegativeNetCharge
       (object.remainderSupport (canonicalWindowPacking data object))
       data.threshold data.dischargeScale) :
-    NetChargeNegativeStatement data object := by
-  have packingSpec := canonicalWindowPacking_spec data object
-  exact ⟨canonicalWindowPacking data object, rfl, packingSpec.1, packingSpec.2.1,
-    packingSpec.2.2, Nat.lt_of_not_le notNonNegative⟩
+    NetChargeNegativeStatement data object :=
+  Nat.lt_of_not_le notNonNegative
 
 /-- **Node `[61]`, `prop:negative-net-charge`.**  The negative remainder of the
 fixed maximum packing, localized through the canonical component
@@ -295,10 +290,8 @@ theorem negativeSupport_of_netChargeNegative (data : Parameters)
     (negativeFact : NetChargeNegativeStatement data object)
     (localization : NetChargeLocalizationStatement data object) :
     NegativeSupportStatement data object := by
-  obtain ⟨packing, canonical, valid, _cardinality, maximal, negative⟩ := negativeFact
-  subst canonical
-  obtain ⟨component, present, charge⟩ := localization negative
-  exact ⟨_, rfl, valid, maximal, component, present, charge⟩
+  obtain ⟨component, present, charge⟩ := localization negativeFact
+  exact ⟨component, present, charge⟩
 
 /-- **`lem:bridgeless`.**  A bridge of the selected minimal counterexample
 contracts to a smaller counterexample; the degree side condition is the

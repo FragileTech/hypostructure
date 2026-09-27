@@ -136,12 +136,16 @@ noncomputable abbrev RepairIdentityStatement (data : Parameters)
         (delayedCompensationRegion certificate) component
 
 /-- Node `[45]`, `lem:no-silent-global-smearing` (tex 9323): the certificate's
-whole-graph rank-reducing quotient has, by the closed clause of
-`def:admissible-rank-quotient`, a strictly smaller admissible closed
-representative. -/
+quotient `q` is a whole-graph (`Z = G`) quotient that is not label-injective on
+`𝒲₂(R₀)`, and the strictly smaller admissible closed representative of that
+`q` -- the closed clause of `def:admissible-rank-quotient` (tex 6035-6040) read
+at this certificate's support and rank reduction -- exists. -/
 noncomputable abbrev GlobalBarrierStatement (data : Parameters)
     (object : Graph.FiniteObject.{u}) : Prop :=
   ∃ certificate, branchCertificate? data object = some certificate ∧
+    (∀ vertex, vertex ∈ certificate.quotient.support) ∧
+    ¬ Set.InjOn certificate.quotient.label
+      ↑(remainderCurvatureTests object (canonicalWindowPacking data object)) ∧
     ∃ representative : Graph.FiniteObject.{u},
       representative.LexicographicallySmaller object ∧
         Graph.MinimumDegreeAtLeast data.threshold representative ∧

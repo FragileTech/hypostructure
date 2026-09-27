@@ -37,15 +37,15 @@ noncomputable def selectedNearCubicNode21
     (history : ExactLedger EGInput.{u} selected
       [K .sparseSurplusSurvivor, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
-        K .replacementExclusion, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
+        K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .spinePresentationLaws, K .cubicBaseline,
         K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .skeletonDominates, K .windowPackageSeparated, K .barrierEnumeration,
         K .sparseSurplusSurvivor, K .surplusAtOrBelow,
         K .localAlgebra, K .maximalPacking, K .windowPresent, K .uncompressible,
-        K .replacementExclusion, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
+        K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .spinePresentationLaws, K .cubicBaseline,
         K .selection] :=
   let enumerated :=
     (barrierEnumerationRow (BranchState := BranchState)

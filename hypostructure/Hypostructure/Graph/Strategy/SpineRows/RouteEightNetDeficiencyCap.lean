@@ -39,15 +39,17 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       (Presentation := Presentation) (presentation := presentation)
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.routeEightNetDeficiencyCap
-    { Requires := [K .coldRoute8Below]
+    { Requires := [K .largeBudgetResidual, K .coldRoute8Below, K .cubicBaseline]
       Produces := [K .netDeficiencyCap]
-      requiresUnique := by simp
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
+      -- `[55]` → `[56]`: the Residual C ledger fact is this node's predecessor.
+      let _residualC := (inputs.get (K .largeBudgetResidual)).down
       .cons (key := K .netDeficiencyCap)
         ⟨Contracts.Spine.netDeficiencyCap_of_coldRoute8Below data.toParameters
-          inputs.current.object data.threshold_eq_three
+          inputs.current.object (inputs.get (K .cubicBaseline)).down.1
           (inputs.get (K .coldRoute8Below)).down⟩
         .nil)
     0 0

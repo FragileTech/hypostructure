@@ -292,33 +292,4 @@ theorem barrierCap_of_hotColdPartition (data : Parameters)
     simp only [Finset.card_empty, Nat.mul_zero, pow_zero]
     exact Graph.skeletonBudget_pos object
 
-/-- **The relabelling density cap.**  For relabellings fixing the packed window
-support pointwise, the invariant-state image times the remainder factorial is
-at most the skeleton count times the stabilizer bound. -/
-theorem relabelingDensityCap_of_orbitCount (data : Parameters)
-    (object : Graph.FiniteObject.{u}) :
-    RelabelingDensityCapStatement data object :=
-  fun labels => by
-    dsimp only
-    let packing := canonicalWindowPacking data object
-    intro State stateDecidable skeletons state stabilizerBound
-      closed invariant bounded
-    classical
-    letI : DecidableEq State := stateDecidable
-    have cap :=
-      Core.FiniteRelabelingOrbit.card_image_mul_card_group_le_card_mul_stabilizerBound
-        skeletons state stabilizerBound closed invariant bounded
-    rw [Graph.LabelledRelabeling.card_fixedSupportPermutations] at cap
-    have complementCard :
-        object.vertexCount -
-            ((object.windowSupport packing).map
-              labels.toEmbedding).card =
-          (Finset.univ \ ((object.windowSupport packing).map
-            labels.toEmbedding)).card := by
-      rw [Finset.card_sdiff, Finset.inter_univ, Finset.card_univ,
-        Finset.card_map]
-      simp only [Fintype.card_fin]
-    rw [complementCard] at cap
-    exact cap
-
 end Hypostructure.Graph.Contracts.Spine

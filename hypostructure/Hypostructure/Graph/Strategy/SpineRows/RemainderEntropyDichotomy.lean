@@ -36,6 +36,10 @@ noncomputable def remainderEntropyDichotomy
     (previous :
       @ExactLedger (Input BranchState Presentation presentation data)
         _ (factSystem BranchState Presentation presentation data) current known)
+    [@Core.Residual.FactKeys.Has
+      (Input BranchState Presentation presentation data) _
+      (factSystem BranchState Presentation presentation data)
+      (K .forcedCurvatureCost) known]
     (highFresh : K .remainderEntropyHigh ∉ known)
     (lowFresh : K .remainderEntropyLow ∉ known) :
     @Decision (Input BranchState Presentation presentation data) _
@@ -47,6 +51,11 @@ noncomputable def remainderEntropyDichotomy
     `Hypostructure.Graph.Strategy.Spine.remainderEntropyDichotomy
     (by
       classical
+      -- `[48]` → `[49]`/`[50]`: the forced-cost fact at `P₀` is the predecessor.
+      let _cost := (@ExactLedger.get
+        (Input BranchState Presentation presentation data) _
+        (factSystem BranchState Presentation presentation data)
+        current known previous (K .forcedCurvatureCost)).down
       -- `[50]` is asked of the remainder of the fixed maximum packing.
       let packing := canonicalWindowPacking data.toParameters current.object
       by_cases high :

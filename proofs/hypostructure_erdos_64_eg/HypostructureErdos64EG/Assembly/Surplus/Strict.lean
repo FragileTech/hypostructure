@@ -20,8 +20,8 @@ noncomputable def selectedStrictSurplusBranch
     (history : ExactLedger EGInput.{u} selected
       [K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
         K .maximalPacking,
-        K .windowPresent, K .uncompressible, K .replacementExclusion, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
-        K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline, K .selection]) :
+        K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint, K .slackIndependent,
+        K .noProperBaseline, K .returnAvoidance, K .spinePresentationLaws, K .cubicBaseline, K .selection]) :
     StrictSurplusBoundaryResult selected := by
   -- The enclosing `[20]` decision has already selected the survivor arm;
   -- its literal ledger is node `[125]`, which enters `[126]`--`[128]`.

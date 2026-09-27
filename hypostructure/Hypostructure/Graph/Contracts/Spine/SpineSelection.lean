@@ -185,4 +185,38 @@ theorem replacementExclusion_of_selection
     ((profile.targetInvariant.target_iff
       (profile.assembly.reconstruct context.G site)).mp sourceTarget)
 
+/-- **Node `[11]`, `lem:degree-profile-fibres`** (tex 6088), at G's own
+boundaried pieces.  The paper's proof: "condition (a) in the definition of a
+target-complete quotient requires the quotient to preserve the boundary degree
+profile ... an identification of `X₁` with `X₂` would identify two different
+boundary-degree profiles, so it violates condition (a)".  Every admissible
+quotient of G's declared coordinates carries condition (a) as its `fibrewise`
+clause (`def:admissible-rank-quotient`, which requires target-completeness). -/
+theorem degreeProfileFibres_holds (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    DegreeProfileFibresStatement data object :=
+  fun _region quotient left right different identified =>
+    different (quotient.fibrewise left right identified)
+
+/-- **Node `[12]`, `lem:context-universality`** (tex 6106), at G's own
+boundaried pieces, reading node `[11]`.  An identification made by an admissible
+quotient of G's declared coordinates lies in one boundary-degree fibre (node
+`[11]`, contrapositive) and, by condition (b) of target-completeness ("this is
+precisely the meaning of target-completeness"), has the same power-of-two-cycle
+response after gluing to every boundaried context: it is target-complete.  An
+identification that some context separates -- in particular one valid only at
+G's own outside context `G − X` -- has a distinguishing context and is not
+target-complete (target-defective). -/
+theorem targetCompleteContextUniversality_of_degreeProfileFibres (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (fibres : DegreeProfileFibresStatement data object) :
+    TargetCompleteContextUniversalityStatement data object := by
+  refine ⟨fun region quotient left right identified => ⟨?_, ?_⟩,
+    fun _support left right _actual notUniversal => ⟨?_, ?_⟩⟩
+  · by_contra different
+    exact fibres region quotient left right different identified
+  · exact fun outside => quotient.contextUniversal left right identified outside
+  · exact Graph.Response.targetDefect_of_not_contextEquivalent notUniversal
+  · exact fun complete => notUniversal complete.contextEquivalent
+
 end Hypostructure.Graph.Contracts.Spine

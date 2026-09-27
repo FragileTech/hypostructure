@@ -38,15 +38,16 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       (Presentation := Presentation) (presentation := presentation)
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.noProperBaseline
-    { Requires := [K .selection]
+    { Requires := [K .selection, K .cubicBaseline]
       Produces := [K .noProperBaseline]
-      requiresUnique := by simp
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .noProperBaseline)
         ⟨Contracts.Spine.noProperBaseline_of_selection data.toParameters
-          inputs.current.object inputs.current.baseline data.three_le_threshold
+          inputs.current.object inputs.current.baseline
+          (Nat.le_of_eq (inputs.get (K .cubicBaseline)).down.1.symm)
           (inputs.get (K .selection)).down⟩
         .nil)
     0 0

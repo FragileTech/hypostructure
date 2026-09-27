@@ -144,10 +144,11 @@ theorem negativeSupportStatement_iff (data : Parameters)
           ∃ member ∈ canonicalWindowPacking data object, ¬ Disjoint window member)) ∧
       ∃ component, NegativeComponentSpec data object component := by
   constructor
-  · rintro ⟨packing, rfl, valid, maximal, component, member, negative⟩
-    exact ⟨⟨valid, maximal⟩, component, member, negative⟩
-  · rintro ⟨⟨valid, maximal⟩, component, member, negative⟩
-    exact ⟨_, rfl, valid, maximal, component, member, negative⟩
+  · rintro ⟨component, member, negative⟩
+    exact ⟨⟨(canonicalWindowPacking_spec data object).1,
+      (canonicalWindowPacking_spec data object).2.2⟩, component, member, negative⟩
+  · rintro ⟨-, component, member, negative⟩
+    exact ⟨component, member, negative⟩
 
 /-! ## `w₀`: the saturated receiver of node `[89]` -/
 

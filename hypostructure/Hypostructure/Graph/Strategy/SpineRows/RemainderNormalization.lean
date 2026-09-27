@@ -34,11 +34,9 @@ the induced closure of such a subgraph is still window-free, so it has an
 accepted cycle, and a cycle of an induced subgraph is a cycle of the selected
 object, which avoids the target.
 
-The row quantifies over every maximal packing rather than naming one.  That is
-what the manuscript's statement actually says, and it is also what the ledger
-permits: a packing is data, and no fact can carry it.  The row's manifest
-therefore lists `selection` alone -- the avoidance half of it is the only thing
-the derivation consumes. -/
+The row is stated at the remainder `R₀` of G's fixed packing `P₀`.  It reads
+`selection` (the avoidance half) and the cited closure law at G's induced
+subgraphs from `K .spinePresentationLaws`. -/
 omit [FactSystem (Input BranchState Presentation presentation data)] in
 @[reducible] noncomputable def remainderNormalizationRow :
     @AtomicStrategy (Input BranchState Presentation presentation data) _
@@ -53,15 +51,15 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       (Presentation := Presentation) (presentation := presentation)
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.remainderNormalization
-    { Requires := [K .selection]
+    { Requires := [K .selection, K .spinePresentationLaws]
       Produces := [K .remainderNormalized]
-      requiresUnique := by simp
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .remainderNormalized)
         ⟨Contracts.Spine.remainderNormalized_of_selection data.toParameters
-          inputs.current.object data.freeForcesTarget
+          inputs.current.object (inputs.get (K .spinePresentationLaws)).down.2.1
           (inputs.get (K .selection)).down⟩
         .nil)
     0 0

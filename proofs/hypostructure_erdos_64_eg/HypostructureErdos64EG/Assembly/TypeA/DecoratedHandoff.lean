@@ -109,7 +109,6 @@ noncomputable def selectedTypeADecoratedHandoff
     [FactKeys.Has (K .tightEndpoint) known]
     [FactKeys.Has (K .largeBudgetResidual) known]
     [FactKeys.Has (K .negativeSupport) known]
-    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .typeAReceiverRouting) known]
     (fresh : List.Disjoint typeADecoratedHandoffKeys known := by key_fresh) :

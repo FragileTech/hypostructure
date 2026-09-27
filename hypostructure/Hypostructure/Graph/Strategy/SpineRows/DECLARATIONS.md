@@ -11,8 +11,6 @@ Public names remain in `Hypostructure.Graph.Strategy.Spine`.
 | `sourceFreeManifest` | 78 | [Basic.lean:61](Basic.lean#L61) |
 | `pairManifest` | 88 | [Basic.lean:71](Basic.lean#L71) |
 | `returnAvoidanceRow` | 111 | [ReturnAvoidance.lean:30](ReturnAvoidance.lean#L30) |
-| `contractionCriticalRow` | 149 | [ContractionCritical.lean:28](ContractionCritical.lean#L28) |
-| `gadgetClosureRow` | 477 | [GadgetClosure.lean:21](GadgetClosure.lean#L21) |
 | `openPortSuppressionRow` | 583 | [OpenPortSuppression.lean:25](OpenPortSuppression.lean#L25) |
 | `openPortSuppressionSafeRow` | 670 | [OpenPortSuppressionSafe.lean:27](OpenPortSuppressionSafe.lean#L27) |
 | `singleOpenPortSuppressionWitnessRow` | 721 | [SingleOpenPortSuppressionWitness.lean:27](SingleOpenPortSuppressionWitness.lean#L27) |
@@ -33,8 +31,6 @@ Public names remain in `Hypostructure.Graph.Strategy.Spine`.
 | `hotColdPartitionRow` | 2297 | [HotColdPartition.lean:29](HotColdPartition.lean#L29) |
 | `liveHotBarrierCapRow` | 2375 | [LiveHotBarrierCap.lean:34](LiveHotBarrierCap.lean#L34) |
 | `remainderNormalizationRow` | 2454 | [RemainderNormalization.lean:42](RemainderNormalization.lean#L42) |
-| `remainderRelabelingEntropyRow` | 2488 | [RemainderRelabelingEntropy.lean:22](RemainderRelabelingEntropy.lean#L22) |
-| `relabelingDensityCapRow` | 2540 | [RelabelingDensityCap.lean:23](RelabelingDensityCap.lean#L23) |
 | `boundaryDemandRow` | 2599 | [BoundaryDemand.lean:36](BoundaryDemand.lean#L36) |
 | `stubSupplyRow` | 2646 | [StubSupply.lean:24](StubSupply.lean#L24) |
 | `wedgeSupplyRow` | 2719 | [WedgeSupply.lean:52](WedgeSupply.lean#L52) |
@@ -162,3 +158,7 @@ Public names remain in `Hypostructure.Graph.Strategy.Spine`.
 | `windowShadowSingletonTailRow` | — | [WindowShadowSingletonTail.lean:13](WindowShadowSingletonTail.lean#L13) |
 | `windowShadowHitCycleRow` | — | [WindowShadowHitCycle.lean:12](WindowShadowHitCycle.lean#L12) |
 | `windowShadowHitExcludedRow` | — | [WindowShadowHitExcluded.lean:11](WindowShadowHitExcluded.lean#L11) |
+| `degreeProfileFibresRow` | — | [DegreeProfileFibres.lean:30](DegreeProfileFibres.lean#L30) |
+| `targetCompleteContextUniversalityRow` | — | [TargetCompleteContextUniversality.lean:30](TargetCompleteContextUniversality.lean#L30) |
+| `spinePresentationLawsRow` | — | [SpinePresentationLaws.lean:29](SpinePresentationLaws.lean#L29) |
+| `hssTargetCycleRow` | — | [ObstructionPacking.lean:49](ObstructionPacking.lean#L49) |

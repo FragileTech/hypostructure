@@ -60,7 +60,6 @@ noncomputable def Assembly.Internal.selectedTypeBFanContinuation
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .typeAReceiverRouting) known]
     [FactKeys.Has (K .replacementExclusion) known]
-    [FactKeys.Has (K .remainderRelabelingEntropy) known]
     [FactKeys.Has (K .cubicBaseline) known]
     (closureFresh : closed ∉ known := by key_fresh)
     (normalFormFresh : K .highCentreNormalForm ∉ known := by key_fresh)

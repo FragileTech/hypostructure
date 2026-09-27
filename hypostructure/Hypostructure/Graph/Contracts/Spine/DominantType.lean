@@ -24,10 +24,8 @@ theorem localTypeCoordinateRepetitive_of_fullRank (data : Parameters)
     (fullRank : CurvatureFullRankStatement data object)
     (repetitive : RemainderTypeCoordinateRepetitive data object
       (canonicalWindowPacking data object)) :
-    LocalTypeCoordinateRepetitiveStatement data object := by
-  obtain ⟨packing, canonical, valid, maximal, rankEq⟩ := fullRank
-  subst canonical
-  exact ⟨_, rfl, valid, maximal, rankEq, repetitive⟩
+    LocalTypeCoordinateRepetitiveStatement data object :=
+  ⟨fullRank, repetitive⟩
 
 /-- **Node `[50]`, `prop:two-budget` (c).**  On the full-rank remainder of the
 fixed maximum packing, the radius-two type coordinate is not structurally
@@ -37,10 +35,8 @@ theorem localTypeCoordinateNonrepetitive_of_fullRank (data : Parameters)
     (fullRank : CurvatureFullRankStatement data object)
     (nonrepetitive : ¬ RemainderTypeCoordinateRepetitive data object
       (canonicalWindowPacking data object)) :
-    LocalTypeCoordinateNonrepetitiveStatement data object := by
-  obtain ⟨packing, canonical, valid, maximal, rankEq⟩ := fullRank
-  subst canonical
-  exact ⟨_, rfl, valid, maximal, rankEq, nonrepetitive⟩
+    LocalTypeCoordinateNonrepetitiveStatement data object :=
+  ⟨fullRank, nonrepetitive⟩
 
 set_option maxHeartbeats 1000000 in
 /-- **Node `[51]`, `lem:dominant-type`.**  The repetitive maximum-packing
@@ -55,8 +51,7 @@ theorem dominantRootedType_of_repetitive (data : Parameters)
     (nearCubic : SurplusAtOrBelowStatement data object) :
     DominantRootedTypeSchema data object := by
   classical
-  obtain ⟨packing', canonical, _valid, _maximal, rankEq, repetitive⟩ := repetitiveInput
-  subst canonical
+  obtain ⟨rankEq, repetitive⟩ := repetitiveInput
   set packing := canonicalWindowPacking data object with packingDef
   letI : FinEnum object.Vertex := object.vertices
   letI : Fintype object.Vertex := inferInstance

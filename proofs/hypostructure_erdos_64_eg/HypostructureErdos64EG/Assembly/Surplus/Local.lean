@@ -37,8 +37,8 @@ noncomputable def selectedSparseSurplusActivation
     {selected : EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected
       [K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
+        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .spinePresentationLaws, K .cubicBaseline,
         K .selection]) :
     ExactLedger EGInput.{u} selected
       [K .activeSurplusDemands, K .sparsePortActivation,
@@ -47,8 +47,8 @@ noncomputable def selectedSparseSurplusActivation
         K .singleOpenPortSuppressionWitness, K .openPortSuppressionSafe,
         K .openPortSuppression, K .surplusPresentation,
         K .sparseSurplusSurvivor, K .surplusAbove, K .localAlgebra,
-        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .cycleRankConstraint, K .tightEndpoint,
-        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .contractionCritical, K .gadgetClosure, K .relabelingDensityCap, K .cubicBaseline,
+        K .maximalPacking, K .windowPresent, K .uncompressible, K .replacementExclusion, K .targetCompleteContextUniversality, K .degreeProfileFibres, K .cycleRankConstraint, K .tightEndpoint,
+        K .slackIndependent, K .noProperBaseline, K .returnAvoidance, K .spinePresentationLaws, K .cubicBaseline,
         K .selection] := by
   -- The presentation identities the surplus rows spend, published once on
   -- node `[125]`'s ledger (as `K .cubicBaseline` is at the entry).

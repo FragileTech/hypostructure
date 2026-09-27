@@ -26,6 +26,7 @@ independent family, and the circuit lemma determines it by a concrete proper
 declared quotient. -/
 theorem curvatureRankDrop_of_rankBelow (data : Parameters)
     (object : Graph.FiniteObject.{u})
+    (rankFact : CurvatureTargetRankStatement data object)
     (circuit : TargetRankCircuitStatement data object)
     (below :
       remainderCurvatureTargetRank data object
@@ -34,25 +35,10 @@ theorem curvatureRankDrop_of_rankBelow (data : Parameters)
     CurvatureRankDropStatement data object := by
   classical
   let packing := canonicalWindowPacking data object
-  have valid : object.IsWindowPacking data.windowOrder packing :=
-    (canonicalWindowPacking_spec data object).1
-  have packingCard : packing.card = object.windowPackingNumber data.windowOrder :=
-    (canonicalWindowPacking_spec data object).2.1
   have extract := circuit.1
-  have attained := Graph.FiniteObject.exists_attaining_curvatureTargetRank
-    (Graph.MinimumDegreeAtLeast data.threshold)
-    (Graph.HasCycleWithLength data.LengthOK) object
-    (object.remainderSupport packing)
-  let independent := Classical.choose attained
-  have independentSpec := Classical.choose_spec attained
-  have independentSubset : independent ⊆ _ := independentSpec.1
-  have survives : Graph.FiniteObject.SurvivesCurvatureSystem
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) object
-      (object.remainderSupport packing) independent := independentSpec.2.1
-  have rank : independent.card = _ := independentSpec.2.2
-  clear_value independent
-  refine ⟨packing, rfl, valid, packingCard, below, ?_⟩
+  obtain ⟨independent, independentEq, independentSubset, survives, rank⟩ :=
+    canonicalSurvivingFamily?_spec data object rankFact.1
+  refine ⟨below, independent, independentEq, ?_⟩
   have outside : ∃ test ∈
       object.internalWedgeFamily (object.remainderSupport packing),
       test ∉ independent := by
@@ -71,9 +57,8 @@ theorem curvatureRankDrop_of_rankBelow (data : Parameters)
   obtain ⟨determiners, determinersSubset, finite, proper, declared,
     functional, reducing, determines⟩ :=
     extract independent independentSubset survives rank test testMember testOutside
-  exact ⟨test, testMember, determiners,
-    determinersSubset.trans independentSubset, finite, proper,
-    declared, functional, reducing, determines⟩
+  exact ⟨test, testMember, testOutside, determiners, determinersSubset, finite,
+    proper, declared, functional, reducing, determines⟩
 
 /-- **Node `[32]`, full-rank arm.**  Without a strict drop at the fixed maximal
 packing, the curvature target rank equals the wedge supply: it never exceeds
@@ -87,10 +72,6 @@ theorem curvatureFullRank_of_not_rankBelow (data : Parameters)
     CurvatureFullRankStatement data object := by
   classical
   let packing := canonicalWindowPacking data object
-  have valid : object.IsWindowPacking data.windowOrder packing :=
-    (canonicalWindowPacking_spec data object).1
-  have packingCard : packing.card = object.windowPackingNumber data.windowOrder :=
-    (canonicalWindowPacking_spec data object).2.1
   have attained := Graph.FiniteObject.exists_attaining_curvatureTargetRank
     (Graph.MinimumDegreeAtLeast data.threshold)
     (Graph.HasCycleWithLength data.LengthOK) object
@@ -100,7 +81,6 @@ theorem curvatureFullRank_of_not_rankBelow (data : Parameters)
   have independentSubset : independent ⊆ _ := independentSpec.1
   have rank : independent.card = _ := independentSpec.2.2
   clear_value independent
-  refine ⟨packing, rfl, valid, packingCard, ?_⟩
   apply Nat.le_antisymm
   · change
       object.curvatureTargetRank
@@ -128,11 +108,16 @@ theorem branchDependence_of_curvatureRankDrop (data : Parameters)
     BranchDependenceStatement data object := by
   classical
   letI : Fintype object.Vertex := @FinEnum.instFintype _ object.vertices
-  obtain ⟨test, testEq, valid, packingCard, below, testMember, determiners,
-      determinersSubset, finite, proper, declared, functional, reducing,
-      determines⟩ :=
+  obtain ⟨test, testEq, below, independent, independentEq, testMember, _testOutside,
+      determiners, determinersInside, finite, proper, declared, functional,
+      reducing, determines⟩ :=
     curvatureRankDropTest?_spec data object
       ((curvatureRankDrop_iff_exists_testSpec data object).1 drop)
+  have determinersSubset := determinersInside.trans
+    (Finset.coe_subset.mpr
+      (canonicalSurvivingFamily?_spec_of_eq_some data object independentEq).1)
+  have valid := (canonicalWindowPacking_spec data object).1
+  have packingCard := (canonicalWindowPacking_spec data object).2.1
   let packing := canonicalWindowPacking data object
   let support := object.remainderSupport packing
   let family := object.internalWedgeFamily support
@@ -208,16 +193,19 @@ theorem contextDefect_or_contextUniversal (data : Parameters)
     exact ⟨left, right, identified,
       Graph.Response.targetDefect_of_not_contextEquivalent failure⟩
 
-/-- **The terminal `[37]` is uninhabited** (`lem:context-universality`;
-`lem:no-silent-global-smearing`, second paragraph).  The certificate's quotient
-is admissible, hence context-universal on its identified pairs, so no outside
-context distinguishes an identified pair. -/
-theorem contextDefect_false (data : Parameters) (object : Graph.FiniteObject.{u})
+/-- **The terminal `[37]` closes against node `[12]`** (`lem:context-universality`;
+`lem:full-rank`, tex 9388: "the first is excluded by the definition of
+target-completeness").  The certificate's quotient is an admissible rank
+quotient of G's declared coordinates at `R₀`, so node `[12]` makes every pair it
+identifies target-complete, and a target-complete pair has no distinguishing
+outside context. -/
+theorem contextDefect_false_of_contextUniversality (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (universality : TargetCompleteContextUniversalityStatement data object)
     (defect : ContextDefectStatement data object) : False := by
-  obtain ⟨certificate, _eq, left, right, identified, outside, distinguishes⟩ :=
-    defect
-  exact distinguishes
-    (certificate.quotient.contextUniversal left right identified outside)
+  obtain ⟨certificate, _eq, left, right, identified, targetDefect⟩ := defect
+  exact Graph.Response.notTargetComplete_of_targetDefect targetDefect
+    (universality.1 _ certificate.quotient left right identified)
 
 /-- **Node `[38]`: is the determination certified already at `C = R(P₀)`?**
 If the certificate's support lies in the remainder, it misses a window vertex of
@@ -300,62 +288,32 @@ theorem globalBarrier_of_globalDelocalization (data : Parameters)
     (global : GlobalDelocalizationStatement data object) :
     GlobalBarrierStatement data object := by
   obtain ⟨certificate, eq, covers⟩ := global
-  exact ⟨certificate, eq,
+  exact ⟨certificate, eq, covers, branchCertificate_rankReducing eq,
     certificate.quotient.closedRepresentative covers
       (branchCertificate_rankReducing eq)⟩
 
-/-- The selected minimal counterexample, as the context the replacement
-lemma is stated against. -/
-private theorem not_replacementSupport_of_selection
-    (BranchState : Graph.FiniteObject.{u} → Type v)
-    (Presentation : Type) (presentation : Presentation) (data : Parameters)
-    (object : Graph.FiniteObject.{u}) (state : BranchState object)
-    (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
-    (selected : SelectionStatement BranchState Presentation presentation data object)
-    (support : Finset object.Vertex)
-    (replacement : Graph.Strategy.InterfaceReplacement.ReplacementSupport
-      (Graph.MinimumDegreeAtLeast data.threshold)
-      (Graph.HasCycleWithLength data.LengthOK) object support) : False :=
-  Graph.Strategy.InterfaceReplacement.not_replacementSupport
-    (Graph.MinimumDegreeAtLeast data.threshold) BranchState
-    (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold)
-    Presentation presentation
-    (Core.Target.ofPredicate _ (Graph.HasCycleWithLength data.LengthOK))
-    ((Graph.cycleTargetInterface data.LengthOK).coreInvariantWithPresentation
-      (Graph.MinimumDegreeAtLeast data.threshold) BranchState
-      Presentation presentation
-      (Graph.minimumDegreeAtLeast_isomorphismInvariant data.threshold))
-    { G := object, baseline := baseline, state := state,
-      avoids := selected.1, minimal := selected.2.sizeMinimal }
-    support replacement
-
-/-- **The terminal `[39]`** (`cor:uncompressible`).  The proper-support
-replacement derived at `[38]` is forbidden at the selected minimal
-counterexample (`lem:replacement`). -/
-theorem atomCompression_selection_false
-    (BranchState : Graph.FiniteObject.{u} → Type v)
-    (Presentation : Type) (presentation : Presentation) (data : Parameters)
-    (object : Graph.FiniteObject.{u}) (state : BranchState object)
-    (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
-    (selected : SelectionStatement BranchState Presentation presentation data object)
+/-- **The terminal `[39]`** (`lem:replacement`, node `[13]`; tex 9226
+`cor:uncompressible`).  The strictly smaller proper representative the
+certificate's admissible quotient supplies at `C = R(P₀)` is a one-way
+replacement of its support (`def:proper-quotient-representative` (a):
+`Π_T(X′) ⊆ Π_T(X)`), which node `[13]` excludes on G. -/
+theorem atomCompression_replacementExclusion_false (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (exclusion : ReplacementExclusionStatement data object)
     (compression : AtomCompressionStatement data object) : False := by
   obtain ⟨certificate, _eq, _inside, replacement⟩ := compression
-  exact not_replacementSupport_of_selection BranchState Presentation presentation
-    data object state baseline selected certificate.quotient.support replacement
+  exact exclusion certificate.quotient.support replacement
 
-/-- **The terminal `[42]`** (`lem:proper-smearing`).  The proper enlarged
-support `Z ⊊ G` carries a target-complete rank reduction, hence a
-replacement, forbidden by `cor:uncompressible`. -/
-theorem properDelocalization_selection_false
-    (BranchState : Graph.FiniteObject.{u} → Type v)
-    (Presentation : Type) (presentation : Presentation) (data : Parameters)
-    (object : Graph.FiniteObject.{u}) (state : BranchState object)
-    (baseline : Graph.MinimumDegreeAtLeast data.threshold object)
-    (selected : SelectionStatement BranchState Presentation presentation data object)
+/-- **The terminal `[42]`** (`lem:proper-smearing`, tex 9264).  The proper
+support `Z ⊊ G` carries the certificate's rank-reducing admissible quotient,
+whose strictly smaller proper representative is a replacement of `Z`, excluded
+by node `[13]`. -/
+theorem properDelocalization_replacementExclusion_false (data : Parameters)
+    (object : Graph.FiniteObject.{u})
+    (exclusion : ReplacementExclusionStatement data object)
     (smearing : ProperDelocalizationStatement data object) : False := by
   obtain ⟨certificate, _eq, _proper, replacement⟩ := smearing
-  exact not_replacementSupport_of_selection BranchState Presentation presentation
-    data object state baseline selected certificate.quotient.support replacement
+  exact exclusion certificate.quotient.support replacement
 
 /-- **The terminal `[46]`** (`lem:no-silent-global-smearing`).  Selection
 minimality puts the target in the strictly smaller closed representative,
@@ -367,8 +325,8 @@ theorem globalBarrier_selection_false
     (object : Graph.FiniteObject.{u})
     (selected : SelectionStatement BranchState Presentation presentation data object)
     (barrier : GlobalBarrierStatement data object) : False := by
-  obtain ⟨_certificate, _eq, representative, smaller, representativeBaseline,
-    transfer⟩ := barrier
+  obtain ⟨_certificate, _eq, _covers, _reducing, representative, smaller,
+    representativeBaseline, transfer⟩ := barrier
   exact selected.1 (transfer (selected.2 representative smaller representativeBaseline))
 
 end Hypostructure.Graph.Contracts.Spine

@@ -22,9 +22,7 @@ noncomputable instance instIncompatibleNetChargeNonNegativeCap :
     Incompatible (Input BranchState Presentation presentation data)
       (K .netChargeNonNegative) (K .netChargeCap) where
   contradiction := fun residual nonNegative cap => by
-    obtain ⟨packing, canonical, _valid, _cardinality, _maximal, nonnegative⟩ :=
-      nonNegative.down
-    subst canonical
+    have nonnegative := nonNegative.down
     exact ((residual.object.not_negativeNetCharge_iff
       (residual.object.remainderSupport
         (canonicalWindowPacking data.toParameters residual.object))

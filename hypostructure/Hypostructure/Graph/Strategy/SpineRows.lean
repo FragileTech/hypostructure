@@ -15,11 +15,13 @@ import Hypostructure.Graph.Strategy.SpineRows.Bridgeless
 import Hypostructure.Graph.Strategy.SpineRows.CompatiblePairFanClosure
 import Hypostructure.Graph.Strategy.SpineRows.CompatiblePairTypeBRouting
 import Hypostructure.Graph.Strategy.SpineRows.ContextValidityDichotomy
-import Hypostructure.Graph.Strategy.SpineRows.ContractionCritical
 import Hypostructure.Graph.Strategy.SpineRows.CubicBaseline
+import Hypostructure.Graph.Strategy.SpineRows.SpinePresentationLaws
+import Hypostructure.Graph.Strategy.SpineRows.TargetCompleteContextUniversality
 import Hypostructure.Graph.Strategy.SpineRows.CurvatureRankDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.CurvatureTargetRank
 import Hypostructure.Graph.Strategy.SpineRows.CycleRankConstraint
+import Hypostructure.Graph.Strategy.SpineRows.DegreeProfileFibres
 import Hypostructure.Graph.Strategy.SpineRows.DeletionCriticality
 import Hypostructure.Graph.Strategy.SpineRows.DelocalizationScopeDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.DenseNetDeficiencyCap
@@ -36,7 +38,6 @@ import Hypostructure.Graph.Strategy.SpineRows.FanCertificateResidualMass
 import Hypostructure.Graph.Strategy.SpineRows.FanClosedPort
 import Hypostructure.Graph.Strategy.SpineRows.FanClosedPortTypeBRouting
 import Hypostructure.Graph.Strategy.SpineRows.ForcedCurvatureCost
-import Hypostructure.Graph.Strategy.SpineRows.GadgetClosure
 import Hypostructure.Graph.Strategy.SpineRows.GlobalBarrier
 import Hypostructure.Graph.Strategy.SpineRows.HighCentreNormalForm
 import Hypostructure.Graph.Strategy.SpineRows.HotColdPartition
@@ -55,10 +56,8 @@ import Hypostructure.Graph.Strategy.SpineRows.NoProperBaseline
 import Hypostructure.Graph.Strategy.SpineRows.ObstructionPacking
 import Hypostructure.Graph.Strategy.SpineRows.OpenPortSuppression
 import Hypostructure.Graph.Strategy.SpineRows.OpenPortSuppressionSafe
-import Hypostructure.Graph.Strategy.SpineRows.RelabelingDensityCap
 import Hypostructure.Graph.Strategy.SpineRows.RemainderEntropyDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.RemainderNormalization
-import Hypostructure.Graph.Strategy.SpineRows.RemainderRelabelingEntropy
 import Hypostructure.Graph.Strategy.SpineRows.RepairIdentity
 import Hypostructure.Graph.Strategy.SpineRows.ReplacementExclusion
 import Hypostructure.Graph.Strategy.SpineRows.ReturnAvoidance

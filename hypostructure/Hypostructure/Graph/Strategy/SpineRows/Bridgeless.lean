@@ -39,16 +39,17 @@ omit [FactSystem (Input BranchState Presentation presentation data)] in
       (Presentation := Presentation) (presentation := presentation)
       (data := data))
     `Hypostructure.Graph.Strategy.Spine.bridgeless
-    { Requires := [K .selection]
+    { Requires := [K .selection, K .cubicBaseline]
       Produces := [K .bridgeless]
-      requiresUnique := by simp
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .bridgeless)
         ⟨Contracts.Spine.bridgeless_of_selection BranchState Presentation presentation
           data.toParameters inputs.current.object inputs.current.baseline
-          data.three_le_threshold (inputs.get (K .selection)).down⟩
+          (Nat.le_of_eq (inputs.get (K .cubicBaseline)).down.1.symm)
+          (inputs.get (K .selection)).down⟩
         .nil)
     0 0
 
