@@ -1337,6 +1337,104 @@ were run and failed at a concrete configuration of G.
   at the fold of a (b)-entry of G, together with the fold pair.  Until it is
   constructed, `[348]` is routed as `thm:main` routes it: a returned outcome at
   `[187]` (no `sorry`).
+- **fix2-348: what target-completeness gives, and the exact obstruction.**
+  Evidence: `audits/erdos-64-red-team/fix2-348/Obstruction348.lean` (compiles,
+  axioms propext, Classical.choice, Quot.sound; no sorry).
+  - *Inventory of target-completeness (tex).*
+
+    | source | tex | what it says | gives `Visibility(R)`? |
+    |---|---|---|---|
+    | `def:target-complete-quotient` | 5858-5866 | an identification preserves the profile and the *full* target predicate against every `T`-context | no: a property a quotient may have, not a fact about `B_u` |
+    | `def:typeA-trace-basin`, declared family | 10738-10743 | `R_u(B_u)` is complete for the *declared* `u`-supported events; route-8 quotients "are tested only against this declared `u`-supported target algebra" | no: completeness is for declared events; an accepted cycle of `R ⊕ Y_G` need not be one |
+    | `def:typeA-trace-basin`, (b) target-complete | 10757-10764 | all realizations give "the same target predicate" as `ρ_u(B_u)` at every compatible context | Lean `TraceResponseQuotient` clause 3 = declared-algebra equivalence (the declared reading of 10741-10743) |
+    | target-complete-minimality | 10776-10796 | TCM = none of (a)-(d) | no: a (b)-entry is by definition not TCM (it is a target-defect entry); TCM is never available on `[348]`'s arm |
+    | `lem:typeA-internal-quotient-mixed` | 12422-12457 | "a distinguishing event must use at least one coordinate forgotten ... Hence the chosen event is `u`-supported" | this sentence IS `Visibility` for full-target events, asserted without construction; under the declared reading it is `distinguishingEventCrosses` (trivial) |
+    | `lem:typeA-one-terminal-collapse` | 12459-12500 | `α(ξ) ≤ 1` ⇒ a nontrivial target-complete quotient, i.e. (b) | Lean `route8Entry_smallCoreQuotient`: (b) HOLDS at every `α ≤ 1` entry |
+
+  - *Is Lean's (b) weaker than the paper's?*  No restatement helps.  The
+    full-target reading of 10760-10764 makes (b) empty at G (the realization
+    `B_u` plus a disjoint internal cycle of accepted length responds with a
+    cycle at `Y_G`, while `B_u ⊕ Y_G ≅ G` has none).  That would close `[348]`
+    trivially but falsify `lem:typeA-one-terminal-collapse` at G, so the
+    census `α ≥ 2` of `K .route8UnifiedEntryCensus` (340), proved from
+    quotient-freeness through `route8Entry_smallCoreQuotient`, would lose its
+    proof: the same gap moves to `[340]`.  The Lean keeps the declared reading,
+    under which the collapse lemma is a theorem.  `TargetComplete`,
+    `TargetCompleteMinimal`, `QuotientRealization` are unchanged.
+  - *Exact obstruction (configuration at G).*  A unified entry `ξ` of G with
+    `α(ξ) ≤ 1`.  At such `ξ`:
+    1. the declared algebra is identically false, at every piece and context
+       (`declaredAlgebra_empty_of_alpha_le_one`: a visible declared event is a
+       core-retained crossing coordinate, two carriers, `α ≥ 2`);
+    2. (b) holds (`b_of_alpha_le_one`, the project's
+       `route8Entry_smallCoreQuotient` with empty crossing family), so G's
+       ledger takes the `[348]` arm (`residual_of_alpha_le_one`:
+       `¬ Route8QuotientFreeStatement`);
+    3. `Visibility(R)` reduces to `¬ Target(R ⊕ Y_G)`, and for every fold `R`
+       of `B_u` minimality refutes it (`not_visibility_of_alpha_le_one`).
+    Conversely, the free arm gives `α ≥ 2` at every unified entry
+    (`route8EntryFacts`).  So closing `[348]` is at least as strong as
+    `α(ξ) ≥ 2` at every unified entry, which is the conclusion of
+    `lem:typeA-unified-carriers` itself; its proof for target-defect entries
+    is the step at tex 15362 (circular), and for route-8 entries it uses TCM,
+    which a (b)-entry does not have.
+  - *Three routes at that configuration.*  (1) Incompatible structure: the
+    (b)-clause is vacuous there (empty algebra); (c) and (d) are already
+    refuted (`not_traceDelocalization`, no-handoff filter); target avoidance
+    is not contradicted (the fold cycle unfolds to a `keep`-`remove` path of
+    G); [11]/[12] as in step 2b.  (2) Bound overload: at `[348]` G's ledger
+    carries the deficit `K .route8UnifiedDeficit` (339), which counts entries,
+    not `α`; every bound using `α ≥ 2` is downstream of `[348]`'s free arm.
+    (3) Compressibility: the core restriction `ρ|_{C_ess}` is full-target
+    equivalent to `ρ` (`Entry.essentialCore_complete`), but it is a
+    deletion-type reading (internal edges outside retained supports dropped),
+    so it breaks `δ ≥ 3` and is not a `CompressibleSupport`; the fold needs
+    `Visibility`, false by 3.
+  - *Remark (not formalized, not used).*  At an entry whose declared algebra
+    has a core-retained crossing coordinate whose event passes through a
+    label `ℓ ∈ ∂B_u` lying on a cycle of G with two interior vertices `a ≠ b`
+    of `B_u`, (b) is refuted directly at `Y_G` without minimality: `B_u` plus
+    a fresh `a`-`b` path of tuned length realizes every response quotient
+    (identity placement, no old incidence changed) and closes an accepted
+    cycle through `ℓ`.  So the (b)-arm lives on entries whose declared algebra
+    is effectively empty, of which `α ≤ 1` is the formalized case.
+  - *Status.*  OPEN CONSTRUCTION, unchanged: `[348]` stays a returned outcome
+    at `[187]`.  The missing fact about G is `α(ξ) ≥ 2` at every unified
+    target-defect entry (no unified entry with `α ≤ 1`).
+
+### [144] step 2 (tex 5594/5614, 6026): the fold analysis of [348] applied (fix2-348)
+
+*Handed over from fix2-SP (d69424b); complements fix2-SP's "[144] step 2"
+open construction and changes no Lean.*  Evidence:
+`audits/erdos-64-red-team/fix2-348/Obstruction144.lean` (compiles; axioms
+propext, Classical.choice, Quot.sound; no sorry).  Setting: G's [144a] arm,
+`Z = select?(X₁ ∪ X₂)`, readings `ρᵢ = retainedPiece G Z Xᵢ`, residual
+disjunct `ContextEquivalent ρ₁ ρ₂`.
+
+- **Clause check of any representative `Z'` of `Z` (the fold included).**
+  Profile, `δ ≥ 3` and "smaller" can hold for a fold, but the response clause
+  of `ReplacementSupport` fails at G's own context `Y_G` for EVERY smaller
+  baseline `Z'` (`representative_not_responsive_at_G`: minimality gives an
+  accepted cycle in `Z' ⊕ Y_G`, and `Z ⊕ Y_G ≅ G` has none).  So exit (c) at
+  [144] can only arise as a contradiction derived from `ContextEquivalent ρ₁
+  ρ₂`, through the analogue of `Visibility`: every accepted cycle of
+  `Z' ⊕ Y_G` yields a context separating `ρ₁` from `ρ₂`.
+- **What G's facts give.**  Spectral separation refutes context equivalence at
+  G (`readings_not_contextEquivalent_of_spectra`, through the synthetic path
+  context of `GluedCrossingCycle.lean`; `ρ₂ ⊆ G` has no internal accepted
+  cycle): if two labels of `∂Z` are joined in `ρ₁` by a path whose length
+  plus `k + 1` is accepted and `ρ₂` has no such path, the disjunct is false.
+  So the residual disjunct forces equal accepted-complement label-path
+  spectra of the two readings.
+- **Where it fails (configuration at G).**  `X₁ = X₂` with
+  `r_{π₁} ≠ r_{π₂}` (more generally, readings with no label-to-label
+  structure that any context sees): the readings are equal, the disjunct holds
+  (`readings_contextEquivalent_of_support_eq`), no context separates them, and
+  the identification is label-only, "not an admissible rank reduction"
+  (tex 6031-6035).  Visibility is false there; the ledger at [144] has no
+  fact on the declared supports of the two pattern coordinates beyond the
+  routing label, so no route closes it.
+- **Status.**  OPEN CONSTRUCTION, unchanged; [144a] keeps the disjunct.
 
 ## User-approved repairs
 
