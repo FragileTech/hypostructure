@@ -2431,15 +2431,33 @@ noncomputable abbrev SelectionStatement
   (¬ Graph.HasCycleWithLength data.LengthOK object ∧
     SelectionMinimality BranchState Presentation presentation data object)
 
+/-- **The registered presentation facts of the Type B fan analysis**, published
+with the cubic baseline: the quadrilateral is an accepted length
+(`lem:heavy-neighbourhood-normal-form`), the accepted lengths are exactly the
+dyadic ones (`lem:triangular-port-return`), the marked-fan and deficit slacks of
+`lem:typeB-multiclosed-budget` / `prop:fan-closed-port-typeB-routing`, and the
+bridge-mass slack of `def:typeB-residual-mass`. -/
+noncomputable abbrev TypeBPresentationStatement (data : Parameters) : Prop :=
+  data.LengthOK 4 ∧
+    (∀ length, data.LengthOK length ↔ Core.DyadicLength.PowerOfTwoLength length) ∧
+    Graph.WindowCurvature.fanPackingCap data.windowOrder + 1 ≤
+      data.dischargeScale * data.threshold ∧
+    data.dischargeScale * data.threshold <
+      2 * data.dischargeScale + (data.threshold + 2) ∧
+    data.threshold + 2 + data.dischargeScale ≤
+      data.bridgeMassFactor * data.dischargeScale
+
 /-- The registered problem presentation identifies the spine threshold with
 the paper's cubic baseline and the discharge scale with four, rejects the
 degenerate closure (`lem:labels`: a closing length `2` is not a cycle length),
 and certifies the registered window rate as the aggregate rate of the public
-barrier table (`lem:p13-window-package`).  Nodes read these presentation
+barrier table (`lem:p13-window-package`), together with the Type B
+presentation facts (`TypeBPresentationStatement`).  Nodes read these presentation
 identities from this ledger fact, never from the presentation's spelling. -/
 noncomputable abbrev CubicBaselineStatement (data : Parameters) : Prop :=
   data.threshold = 3 ∧ data.dischargeScale = 4 ∧ ¬ data.LengthOK 2 ∧
-    data.windowRate = data.windowBarrier.binaryRateFloor
+    data.windowRate = data.windowBarrier.binaryRateFloor ∧
+    TypeBPresentationStatement data
 
 /-- **The presentation laws the spine reads, published once at the entry.**
 

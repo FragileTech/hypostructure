@@ -24,14 +24,16 @@ either alternative gives fan-closed ports. -/
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.typeBFanLocalDichotomy
     { Requires := [K .highCentreNormalForm, K .typeBFanHeavyCentre,
-        K .compatiblePairTypeBRouting, K .triangularPortTypeBRouting]
+        K .compatiblePairTypeBRouting, K .triangularPortTypeBRouting,
+        K .cubicBaseline]
       Produces := [K .typeBFanLocalDichotomy]
       requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .typeBFanLocalDichotomy)
-        ⟨Contracts.TypeB.typeBFanLocalDichotomy data.three_le_threshold
+        ⟨Contracts.TypeB.typeBFanLocalDichotomy
+          (le_of_eq (inputs.get (K .cubicBaseline)).down.1.symm)
           (inputs.get (K .highCentreNormalForm)).down
           (inputs.get (K .compatiblePairTypeBRouting)).down
           (inputs.get (K .triangularPortTypeBRouting)).down

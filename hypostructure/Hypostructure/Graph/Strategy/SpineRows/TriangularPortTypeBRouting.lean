@@ -16,18 +16,21 @@ variable {Presentation : Type} {presentation : Presentation}
 variable {data : Data.{u}}
 
 /-- Node `[69]`, `prop:triangular-port-typeB-routing`: the heavy triangular
-alternative routes to fan-closed ports with `D_B ≥ (5k - 19)/4`. -/
+alternative routes to fan-closed ports with
+`D_B ≥ ((s+1)k - (s(δ+2) - 1))/s`, the manuscript's `(5k - 19)/4`. -/
 @[reducible] noncomputable def triangularPortTypeBRoutingRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.triangularPortTypeBRouting
-    { Requires := [K .fanClosedPort, K .fanClosedPortTypeBRouting]
+    { Requires := [K .fanClosedPort, K .fanClosedPortTypeBRouting, K .cubicBaseline]
       Produces := [K .triangularPortTypeBRouting]
       requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .triangularPortTypeBRouting)
-        ⟨Contracts.TypeB.triangularPortTypeBRouting (data := data.toParameters) (inputs.get (K .fanClosedPort)).down
+        ⟨Contracts.TypeB.triangularPortTypeBRouting (data := data.toParameters)
+          (inputs.get (K .cubicBaseline)).down.1 (inputs.get (K .cubicBaseline)).down.2.1
+          (inputs.get (K .fanClosedPort)).down
           (inputs.get (K .fanClosedPortTypeBRouting)).down⟩
         .nil)
 

@@ -17,8 +17,10 @@ universe u w
 
 /-- The outcomes of the absorbed-configuration residual `[174]`--`[177]`: its
 fan data continues through Type B to the route-8 residuals, and its genuine
-configurations `[176]` run `[154]`--`[157]`, whose G2 outcome `[156]` is the
-local cold exclusion `K .coldBranchClosed` retained at `[187]`. -/
+configurations `[176]` run `[154]`--`[157]`, `[165]`--`[168]`: the G2 outcome
+`[156]`, and the arm of `[175]` read at `[177]` on which every selected corridor
+is subcubic, are the local cold exclusion `K .coldBranchClosed` retained at
+`[187]`. -/
 abbrev SelectedAbsorbedGermBoundary (selected : EGInput.{u}) :=
   SelectedRouteEightBoundary selected ∨
     Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile

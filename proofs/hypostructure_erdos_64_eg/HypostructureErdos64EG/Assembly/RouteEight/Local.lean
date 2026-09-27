@@ -208,6 +208,7 @@ noncomputable def selectedRouteEightUnifiedResidual
     [FactKeys.Has (K .selection) known]
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .typeBBridgeSublinear) known]
     (sublinearLedgerFresh : K .typeBSublinearLedger ∉ known := by key_fresh)
     (sublinearResidualFresh : K .typeBSublinearResidual ∉ known := by
       key_fresh)

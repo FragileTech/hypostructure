@@ -68,38 +68,41 @@ theorem decoratedEnvelope_eq_some
     · cases built
   · cases atCore
 
-theorem absorbedSupport_eq_some {epsilon : ColdEligibleHalfEdge data object}
+theorem absorbedSupportAt_eq_some {epsilon : ColdEligibleHalfEdge data object}
     {core centres : Finset object.Vertex}
-    (support : canonicalTypeBAbsorbedSupport data object epsilon =
+    (support : canonicalTypeBAbsorbedSupportAt data object epsilon =
       some (core, centres)) :
-    ∃ centre, canonicalAbsorbedCentre data object epsilon = some centre ∧
-      centres = {centre} := by
+    ∃ routing : ColdFailureRoutingStatement data object,
+      ∃ centre, canonicalAbsorbedCentre data object epsilon = some centre ∧
+        centres = {centre} ∧
+        core = (coldOccurrenceCorridorAt data object
+          (coldRoutedClassified data object routing) epsilon).prefixSupport
+            (coldRoutedTraceEnd data object routing epsilon) := by
   classical
-  unfold canonicalTypeBAbsorbedSupport at support
+  unfold canonicalTypeBAbsorbedSupportAt at support
   split at support
-  · obtain ⟨centre, centreEq, pair⟩ := Option.map_eq_some_iff.mp support
-    simp only [Prod.mk.injEq] at pair
-    exact ⟨centre, centreEq, pair.2.symm⟩
+  · next routing =>
+      obtain ⟨centre, centreEq, pair⟩ := Option.map_eq_some_iff.mp support
+      simp only [Prod.mk.injEq] at pair
+      exact ⟨routing, centre, centreEq, pair.2.symm, pair.1.symm⟩
   · cases support
 
-/-- The first-high centre of an absorbed germ is high. -/
+theorem absorbedSupport_eq_some {core centres : Finset object.Vertex}
+    (support : canonicalTypeBAbsorbedSupport data object = some (core, centres)) :
+    ∃ epsilon, canonicalTypeBAbsorbedHalfEdge data object = some epsilon ∧
+      canonicalTypeBAbsorbedSupportAt data object epsilon = some (core, centres) :=
+  Option.bind_eq_some_iff.mp support
+
+/-- The first-high centre of an absorbed half-edge is high. -/
 theorem absorbedCentre_high {epsilon : ColdEligibleHalfEdge data object}
     {centre : object.Vertex}
     (selected : canonicalAbsorbedCentre data object epsilon = some centre) :
     Graph.IsHighCentre object data.threshold centre := by
   obtain ⟨_routing, witness⟩ := canonicalAbsorbedCentre_spec_of_eq_some selected
-  rcases witness with ⟨_routing', _epsilon', _germEq, _firstIndex, _centreEq,
-    _indexLe, high, _tail⟩
+  obtain ⟨_firstIndex, _centreEq, _indexLe, high, _tail⟩ := witness
   exact high
 
 /-! ## Lane membership -/
-
-/-- `(Y, H)` is the Type B support of `G` in one of the continuation lanes. -/
-def TypeBLaneMember (data : Parameters) (object : Graph.FiniteObject.{u})
-    (core centres : Finset object.Vertex) : Prop :=
-  TypeBOrdinaryLane data object core centres ∨
-    TypeBDecoratedLane data object core centres ∨
-    ∃ epsilon, TypeBAbsorbedLane data object epsilon core centres
 
 /-- On the ordinary and decorated lanes the core is the canonical negative piece
 `X₀` of `P₀`, it is negative, and its own high centres are assigned. -/
@@ -182,12 +185,13 @@ theorem TypeBDecoratedLane.high {core centres : Finset object.Vertex}
   intro centre member
   exact envelope.decorations_high centre member
 
-theorem TypeBAbsorbedLane.high {epsilon : ColdEligibleHalfEdge data object}
-    {core centres : Finset object.Vertex}
-    (lane : TypeBAbsorbedLane data object epsilon core centres) :
+theorem TypeBAbsorbedLane.high {core centres : Finset object.Vertex}
+    (lane : TypeBAbsorbedLane data object core centres) :
     ∀ centre ∈ centres, Graph.IsHighCentre object data.threshold centre := by
-  obtain ⟨_routing, _notCandidate, support⟩ := lane
-  obtain ⟨centre, centreEq, rfl⟩ := absorbedSupport_eq_some support
+  obtain ⟨_fails, _fanData, support⟩ := lane
+  obtain ⟨_epsilon, _edgeEq, supportAt⟩ := absorbedSupport_eq_some support
+  obtain ⟨_routing, centre, centreEq, rfl, _coreEq⟩ :=
+    absorbedSupportAt_eq_some supportAt
   intro vertex member
   rw [Finset.mem_singleton] at member
   subst member
@@ -196,10 +200,36 @@ theorem TypeBAbsorbedLane.high {epsilon : ColdEligibleHalfEdge data object}
 theorem TypeBLaneMember.high {core centres : Finset object.Vertex}
     (member : TypeBLaneMember data object core centres) :
     ∀ centre ∈ centres, Graph.IsHighCentre object data.threshold centre := by
-  rcases member with lane | lane | ⟨_epsilon, lane⟩
+  rcases member with lane | lane | lane
   · exact TypeBOrdinaryLane.high lane
   · exact TypeBDecoratedLane.high lane
   · exact TypeBAbsorbedLane.high lane
+
+/-- The core of the Type B support lies in the remainder `R(P₀)` of the fixed
+packing: on the ordinary and decorated lanes it is the canonical piece `X₀`, and
+on the absorbed lane it is the retained first-failure prefix, which node
+`[177]` places inside the canonical remainder. -/
+theorem TypeBLaneMember.core_subset_remainder {core centres : Finset object.Vertex}
+    (member : TypeBLaneMember data object core centres) :
+    core ⊆ object.remainderSupport (canonicalWindowPacking data object) := by
+  rcases member with lane | lane | lane
+  · obtain ⟨component, _componentEq, _member, pieceEq, _negative, _subset⟩ :=
+      TypeBOrdinaryLane.canonical lane
+    rw [← pieceEq]
+    exact object.pieceSupport_subset _ component
+  · obtain ⟨component, _componentEq, _member, pieceEq, _negative, _subset⟩ :=
+      TypeBDecoratedLane.canonical lane
+    rw [← pieceEq]
+    exact object.pieceSupport_subset _ component
+  · obtain ⟨_fails, _fanData, support⟩ := lane
+    obtain ⟨epsilon, _edgeEq, supportAt⟩ := absorbedSupport_eq_some support
+    obtain ⟨routing, centre, centreEq, _centresEq, coreEq⟩ :=
+      absorbedSupportAt_eq_some supportAt
+    obtain ⟨_routing', handoff⟩ := canonicalAbsorbedCentre_spec_of_eq_some centreEq
+    obtain ⟨_firstIndex, _centreEq', _indexLe, _high, _earlier, _cubic,
+      _connected, inside, _envelope⟩ := handoff
+    rw [coreEq]
+    exact inside
 
 /-! ## Exclusivity of the lanes -/
 
@@ -223,15 +253,15 @@ theorem ordinary_decorated_exclusive
   subst piece'
   omega
 
-theorem ordinary_absorbed_exclusive {core centres : Finset object.Vertex}
+theorem ordinary_absorbed_exclusive {core centres core' centres' : Finset object.Vertex}
     (ordinary : TypeBOrdinaryLane data object core centres)
-    (entered : TypeBAbsorbedEntered data object) : False :=
-  netChargeCap_not_exactCollisionFails ordinary.1 entered.1
+    (absorbed : TypeBAbsorbedLane data object core' centres') : False :=
+  netChargeCap_not_exactCollisionFails ordinary.1 absorbed.1
 
-theorem decorated_absorbed_exclusive {core centres : Finset object.Vertex}
+theorem decorated_absorbed_exclusive {core centres core' centres' : Finset object.Vertex}
     (decorated : TypeBDecoratedLane data object core centres)
-    (entered : TypeBAbsorbedEntered data object) : False :=
-  netChargeCap_not_exactCollisionFails decorated.1 entered.1
+    (absorbed : TypeBAbsorbedLane data object core' centres') : False :=
+  netChargeCap_not_exactCollisionFails decorated.1 absorbed.1
 
 theorem ordinary_unique {core centres core' centres' : Finset object.Vertex}
     (first : TypeBOrdinaryLane data object core centres)
@@ -249,124 +279,72 @@ theorem decorated_unique {core centres core' centres' : Finset object.Vertex}
   simp only [Option.some.injEq, Prod.mk.injEq] at this
   exact this
 
+theorem absorbed_unique {core centres core' centres' : Finset object.Vertex}
+    (first : TypeBAbsorbedLane data object core centres)
+    (second : TypeBAbsorbedLane data object core' centres') :
+    core = core' ∧ centres = centres' := by
+  have := first.2.2.symm.trans second.2.2
+  simp only [Option.some.injEq, Prod.mk.injEq] at this
+  exact this
+
+/-- **The Type B support of `G` is unique**: the lanes are mutually exclusive and
+each lane has one canonical support. -/
+theorem TypeBLaneMember.unique {core centres core' centres' : Finset object.Vertex}
+    (first : TypeBLaneMember data object core centres)
+    (second : TypeBLaneMember data object core' centres') :
+    core = core' ∧ centres = centres' := by
+  rcases first with lane | lane | lane <;> rcases second with lane' | lane' | lane'
+  · exact ordinary_unique lane lane'
+  · exact (ordinary_decorated_exclusive lane lane').elim
+  · exact (ordinary_absorbed_exclusive lane lane').elim
+  · exact (ordinary_decorated_exclusive lane' lane).elim
+  · exact decorated_unique lane lane'
+  · exact (decorated_absorbed_exclusive lane lane').elim
+  · exact (ordinary_absorbed_exclusive lane' lane).elim
+  · exact (decorated_absorbed_exclusive lane' lane).elim
+  · exact absorbed_unique lane lane'
+
 /-! ## The lane combinators -/
 
-theorem TypeBLaneAll.imp {P Q : Finset object.Vertex → Finset object.Vertex → Prop}
+theorem TypeBLaneAt.imp {P Q : Finset object.Vertex → Finset object.Vertex → Prop}
     (step : ∀ core centres, TypeBLaneMember data object core centres →
       P core centres → Q core centres)
-    (fact : TypeBLaneAll data object P) : TypeBLaneAll data object Q := by
-  rcases fact with ⟨core, centres, lane, holds⟩ | ⟨core, centres, lane, holds⟩ |
-      ⟨entered, holds⟩
-  · exact Or.inl ⟨core, centres, lane, step core centres (Or.inl lane) holds⟩
-  · exact Or.inr (Or.inl ⟨core, centres, lane,
-      step core centres (Or.inr (Or.inl lane)) holds⟩)
-  · exact Or.inr (Or.inr ⟨entered, fun epsilon core centres lane =>
-      step core centres (Or.inr (Or.inr ⟨epsilon, lane⟩))
-        (holds epsilon core centres lane)⟩)
+    (fact : TypeBLaneAt data object P) : TypeBLaneAt data object Q := by
+  obtain ⟨core, centres, member, holds⟩ := fact
+  exact ⟨core, centres, member, step core centres member holds⟩
 
-theorem TypeBLaneSome.imp {P Q : Finset object.Vertex → Finset object.Vertex → Prop}
-    (step : ∀ core centres, TypeBLaneMember data object core centres →
-      P core centres → Q core centres)
-    (fact : TypeBLaneSome data object P) : TypeBLaneSome data object Q := by
-  rcases fact with ⟨core, centres, lane, holds⟩ | ⟨core, centres, lane, holds⟩ |
-      ⟨entered, epsilon, core, centres, lane, holds⟩
-  · exact Or.inl ⟨core, centres, lane, step core centres (Or.inl lane) holds⟩
-  · exact Or.inr (Or.inl ⟨core, centres, lane,
-      step core centres (Or.inr (Or.inl lane)) holds⟩)
-  · exact Or.inr (Or.inr ⟨entered, epsilon, core, centres, lane,
-      step core centres (Or.inr (Or.inr ⟨epsilon, lane⟩)) holds⟩)
+/-- Two facts at the Type B support of `G` hold together at that one support. -/
+theorem TypeBLaneAt.and {P Q : Finset object.Vertex → Finset object.Vertex → Prop}
+    (first : TypeBLaneAt data object P) (second : TypeBLaneAt data object Q) :
+    TypeBLaneAt data object (fun core centres => P core centres ∧ Q core centres) := by
+  obtain ⟨core, centres, member, holds⟩ := first
+  obtain ⟨core', centres', member', holds'⟩ := second
+  obtain ⟨rfl, rfl⟩ := TypeBLaneMember.unique member member'
+  exact ⟨core, centres, member, holds, holds'⟩
 
-/-- Two facts at the Type B support of `G` hold together at that support: the
-lanes are exclusive and each lane's support is unique. -/
-theorem TypeBLaneAll.and {P Q : Finset object.Vertex → Finset object.Vertex → Prop}
-    (first : TypeBLaneAll data object P) (second : TypeBLaneAll data object Q) :
-    TypeBLaneAll data object (fun core centres => P core centres ∧ Q core centres) := by
-  rcases first with ⟨core, centres, lane, holds⟩ | ⟨core, centres, lane, holds⟩ |
-      ⟨entered, holds⟩ <;>
-    rcases second with ⟨core', centres', lane', holds'⟩ |
-      ⟨core', centres', lane', holds'⟩ | ⟨entered', holds'⟩
-  · obtain ⟨rfl, rfl⟩ := ordinary_unique lane lane'
-    exact Or.inl ⟨core, centres, lane, holds, holds'⟩
-  · exact (ordinary_decorated_exclusive lane lane').elim
-  · exact (ordinary_absorbed_exclusive lane entered').elim
-  · exact (ordinary_decorated_exclusive lane' lane).elim
-  · obtain ⟨rfl, rfl⟩ := decorated_unique lane lane'
-    exact Or.inr (Or.inl ⟨core, centres, lane, holds, holds'⟩)
-  · exact (decorated_absorbed_exclusive lane entered').elim
-  · exact (ordinary_absorbed_exclusive lane' entered).elim
-  · exact (decorated_absorbed_exclusive lane' entered).elim
-  · exact Or.inr (Or.inr ⟨entered, fun epsilon core centres lane =>
-      ⟨holds epsilon core centres lane, holds' epsilon core centres lane⟩⟩)
-
-/-- A fact at the Type B support of `G` holds at the support of a positive
-decision arm. -/
-theorem TypeBLaneSome.and_all
-    {P Q : Finset object.Vertex → Finset object.Vertex → Prop}
-    (first : TypeBLaneSome data object P) (second : TypeBLaneAll data object Q) :
-    TypeBLaneSome data object (fun core centres => P core centres ∧ Q core centres) := by
-  rcases first with ⟨core, centres, lane, holds⟩ | ⟨core, centres, lane, holds⟩ |
-      ⟨entered, epsilon, core, centres, lane, holds⟩ <;>
-    rcases second with ⟨core', centres', lane', holds'⟩ |
-      ⟨core', centres', lane', holds'⟩ | ⟨entered', holds'⟩
-  · obtain ⟨rfl, rfl⟩ := ordinary_unique lane lane'
-    exact Or.inl ⟨core, centres, lane, holds, holds'⟩
-  · exact (ordinary_decorated_exclusive lane lane').elim
-  · exact (ordinary_absorbed_exclusive lane entered').elim
-  · exact (ordinary_decorated_exclusive lane' lane).elim
-  · obtain ⟨rfl, rfl⟩ := decorated_unique lane lane'
-    exact Or.inr (Or.inl ⟨core, centres, lane, holds, holds'⟩)
-  · exact (decorated_absorbed_exclusive lane entered').elim
-  · exact (ordinary_absorbed_exclusive lane' entered).elim
-  · exact (decorated_absorbed_exclusive lane' entered).elim
-  · exact Or.inr (Or.inr ⟨entered, epsilon, core, centres, lane, holds,
-      holds' epsilon core centres lane⟩)
-
-/-- **The decision split at the Type B support of `G`**: on the lane of the
-predecessor fact, `P` holds at the lane's support (at some absorbed support), or
-fails at it (at every absorbed support).  The two conclusions are exact
-complements on that support (`TypeBLaneSome.not_all`). -/
-theorem TypeBLaneAll.split {Q : Finset object.Vertex → Finset object.Vertex → Prop}
+/-- **The decision split at the Type B support of `G`**: at the one support of
+the predecessor fact, `P` holds or fails.  The two arms are exact complements
+(`TypeBLaneAt.not_and_not`). -/
+theorem TypeBLaneAt.split {Q : Finset object.Vertex → Finset object.Vertex → Prop}
     (P : Finset object.Vertex → Finset object.Vertex → Prop)
-    (fact : TypeBLaneAll data object Q) :
-    TypeBLaneSome data object (fun core centres => Q core centres ∧ P core centres) ∨
-      TypeBLaneAll data object
+    (fact : TypeBLaneAt data object Q) :
+    TypeBLaneAt data object (fun core centres => Q core centres ∧ P core centres) ∨
+      TypeBLaneAt data object
         (fun core centres => Q core centres ∧ ¬ P core centres) := by
   classical
-  rcases fact with ⟨core, centres, lane, holds⟩ | ⟨core, centres, lane, holds⟩ |
-      ⟨entered, holds⟩
-  · by_cases positive : P core centres
-    · exact Or.inl (Or.inl ⟨core, centres, lane, holds, positive⟩)
-    · exact Or.inr (Or.inl ⟨core, centres, lane, holds, positive⟩)
-  · by_cases positive : P core centres
-    · exact Or.inl (Or.inr (Or.inl ⟨core, centres, lane, holds, positive⟩))
-    · exact Or.inr (Or.inr (Or.inl ⟨core, centres, lane, holds, positive⟩))
-  · by_cases positive : ∃ epsilon core centres,
-        TypeBAbsorbedLane data object epsilon core centres ∧ P core centres
-    · obtain ⟨epsilon, core, centres, lane, holds'⟩ := positive
-      exact Or.inl (Or.inr (Or.inr ⟨entered, epsilon, core, centres, lane,
-        holds epsilon core centres lane, holds'⟩))
-    · exact Or.inr (Or.inr (Or.inr ⟨entered, fun epsilon core centres lane =>
-        ⟨holds epsilon core centres lane,
-          fun holds' => positive ⟨epsilon, core, centres, lane, holds'⟩⟩⟩))
-
-/-- A positive decision arm names a lane support where its predicate holds. -/
-theorem TypeBLaneSome.exists {P : Finset object.Vertex → Finset object.Vertex → Prop}
-    (fact : TypeBLaneSome data object P) :
-    ∃ core centres, TypeBLaneMember data object core centres ∧ P core centres := by
-  rcases fact with ⟨core, centres, lane, holds⟩ | ⟨core, centres, lane, holds⟩ |
-      ⟨_entered, epsilon, core, centres, lane, holds⟩
-  · exact ⟨core, centres, Or.inl lane, holds⟩
-  · exact ⟨core, centres, Or.inr (Or.inl lane), holds⟩
-  · exact ⟨core, centres, Or.inr (Or.inr ⟨epsilon, lane⟩), holds⟩
+  obtain ⟨core, centres, member, holds⟩ := fact
+  by_cases positive : P core centres
+  · exact Or.inl ⟨core, centres, member, holds, positive⟩
+  · exact Or.inr ⟨core, centres, member, holds, positive⟩
 
 /-- The two arms of a decision at the Type B support of `G` exclude each
 other. -/
-theorem TypeBLaneSome.not_all {P : Finset object.Vertex → Finset object.Vertex → Prop}
-    (positive : TypeBLaneSome data object P)
-    (negative : TypeBLaneAll data object fun core centres => ¬ P core centres) :
+theorem TypeBLaneAt.not_and_not
+    {P : Finset object.Vertex → Finset object.Vertex → Prop}
+    (positive : TypeBLaneAt data object P)
+    (negative : TypeBLaneAt data object fun core centres => ¬ P core centres) :
     False := by
-  obtain ⟨_core, _centres, _member, both⟩ :=
-    TypeBLaneSome.exists (TypeBLaneSome.and_all positive negative)
+  obtain ⟨_core, _centres, _member, both⟩ := TypeBLaneAt.and positive negative
   exact both.2 both.1
 
 /-! ## The B2 disjoint choice -/

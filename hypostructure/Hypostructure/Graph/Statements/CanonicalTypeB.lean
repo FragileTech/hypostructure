@@ -13,14 +13,14 @@ to the upstream object that produced it:
 * decorated (`[108]`, `def:decorated-fan-envelope`, tex 10898): `Y_X = X₀` and
   `H_X = {z}` for the canonical surviving exit-`(7)` separator `z` of `X₀`
   (`canonicalHandoffSeparatorAt`), with the envelope `envelopeOfSeparation`;
-* absorbed (`[177]`, `lem:absorbed-germ-fan-data` (ii), tex 7915): for each
-  selected half-edge `ε`, `Y_X` is the support of `ε`'s routed germ and `H_X`
-  its first high centre, chosen from node `[177]`'s own `∃ centre`;
+* absorbed (`[177]`, `lem:absorbed-germ-fan-data` (ii), tex 7915): at the
+  canonical selected half-edge `ε` outside the subcubic candidates, `Y_X` is
+  `ε`'s retained first-failure prefix (the counted core of the `[177]`
+  envelope) and `H_X` its first high centre, chosen from node `[177]`'s own
+  `∃ centre` at `ε`;
 * same-token (`[144]`): see the note at the end of this file.
 
-Also named here, once: the Type B fan-window profile at a centre over the
-fixed packed-window union `W₀ = windowSupport P₀`, and the B2 disjoint ledger
-of a support at `P₀`.
+Also named here, once: the B2 disjoint ledger of a support at `P₀`.
 
 The design is the one of `CanonicalTypeA`: every guarded object is
 `canonicalChoice` of the literal `∃`-body of its upstream key (`Option`
@@ -77,32 +77,27 @@ theorem canonicalTypeBDecoratedEnvelope_core {data : Parameters}
   obtain ⟨core, coreEq, envelopeEq⟩ := Option.bind_eq_some_iff.mp h
   exact ⟨core, coreEq, canonicalHandoffEnvelopeAt_core envelopeEq⟩
 
-/-! ## Absorbed supports of node `[177]` -/
+/-! ## The absorbed support of node `[177]` -/
 
-/-- The first-high centre of one selected half-edge's absorbed germ: the
-`∃ centre` of node `[177]` (`AbsorbedGermDecoratedAssignedSupportStatement`,
-`lem:absorbed-germ-fan-data` (ii)) at `ε`, read at the node-`[153]` routing
-(`K .coldFailureRouting`, a proposition, so its classified data is canonical). -/
+/-- The first-high centre of one selected half-edge `ε`: the canonical choice of
+node `[177]`'s `∃ centre` at `ε` itself (`AbsorbedHandoffAt`,
+`lem:absorbed-germ-fan-data` (ii)), read at the node-`[153]` routing
+(`K .coldFailureRouting`, a proposition, so its classified data is
+canonical). -/
 noncomputable def canonicalAbsorbedCentre (data : Parameters)
     (object : Graph.FiniteObject.{u}) (epsilon : ColdEligibleHalfEdge data object) :
     Option object.Vertex := by
   classical
   exact if routing : ColdFailureRoutingStatement data object then
-    canonicalChoice (AbsorbedGermFanEnvelopeWitness data object
-      (coldOccurrenceIncidence data object
-        (coldRoutedClassified data object routing) epsilon))
+    canonicalChoice (AbsorbedHandoffAt data object routing epsilon)
   else none
 
 theorem canonicalAbsorbedCentre_spec {data : Parameters}
     {object : Graph.FiniteObject.{u}} {epsilon : ColdEligibleHalfEdge data object}
     (routing : ColdFailureRoutingStatement data object)
-    (h : ∃ centre, AbsorbedGermFanEnvelopeWitness data object
-      (coldOccurrenceIncidence data object
-        (coldRoutedClassified data object routing) epsilon) centre) :
+    (h : ∃ centre, AbsorbedHandoffAt data object routing epsilon centre) :
     ∃ centre, canonicalAbsorbedCentre data object epsilon = some centre ∧
-      AbsorbedGermFanEnvelopeWitness data object
-        (coldOccurrenceIncidence data object
-          (coldRoutedClassified data object routing) epsilon) centre := by
+      AbsorbedHandoffAt data object routing epsilon centre := by
   classical
   simpa [canonicalAbsorbedCentre, routing] using canonicalChoice_spec h
 
@@ -111,57 +106,49 @@ theorem canonicalAbsorbedCentre_spec_of_eq_some {data : Parameters}
     {centre : object.Vertex}
     (h : canonicalAbsorbedCentre data object epsilon = some centre) :
     ∃ routing : ColdFailureRoutingStatement data object,
-      AbsorbedGermFanEnvelopeWitness data object
-        (coldOccurrenceIncidence data object
-          (coldRoutedClassified data object routing) epsilon) centre := by
+      AbsorbedHandoffAt data object routing epsilon centre := by
   classical
   unfold canonicalAbsorbedCentre at h
   split at h
   · next routing => exact ⟨routing, canonicalChoice_spec_of_eq_some h⟩
   · cases h
 
-theorem canonicalAbsorbedCentre_eq_none_iff {data : Parameters}
-    {object : Graph.FiniteObject.{u}} {epsilon : ColdEligibleHalfEdge data object} :
-    canonicalAbsorbedCentre data object epsilon = none ↔
-      ∀ routing : ColdFailureRoutingStatement data object,
-        ¬ ∃ centre, AbsorbedGermFanEnvelopeWitness data object
-          (coldOccurrenceIncidence data object
-            (coldRoutedClassified data object routing) epsilon) centre := by
-  classical
-  unfold canonicalAbsorbedCentre
-  split
-  · next routing =>
-      rw [canonicalChoice_eq_none_iff]
-      exact ⟨fun h _ => h, fun h => h routing⟩
-  · next noRouting =>
-      exact ⟨fun _ routing => absurd routing noRouting, fun _ => rfl⟩
+/-- **A selected half-edge whose corridor meets a high-degree vertex**
+(`lem:absorbed-germ-fan-data` (ii), the yes arm of node `[175]`): it lies
+outside node `[153]`'s routed subcubic candidate set. -/
+def AbsorbedHalfEdgeOutside (data : Parameters) (object : Graph.FiniteObject.{u})
+    (epsilon : ColdEligibleHalfEdge data object) : Prop :=
+  ∃ routing : ColdFailureRoutingStatement data object,
+    Sum.inl epsilon ∉ coldRoutedCandidates data object routing
 
-/-- **The absorbed Type B support of `ε`** `(V(germ ε), {first high centre})`
-(`TypeBAbsorbedForm`: `core = germ.support`, `centres = {centre}`). -/
-noncomputable def canonicalTypeBAbsorbedSupport (data : Parameters)
+/-- **The absorbed half-edge of `G`**: the canonical choice of a selected
+half-edge outside the subcubic candidates (`none` when every selected corridor
+is subcubic). -/
+noncomputable def canonicalTypeBAbsorbedHalfEdge (data : Parameters)
+    (object : Graph.FiniteObject.{u}) : Option (ColdEligibleHalfEdge data object) :=
+  canonicalChoice (AbsorbedHalfEdgeOutside data object)
+
+/-- The absorbed Type B support at one selected half-edge `ε`: its retained
+first-failure prefix (the counted core of node `[177]`'s envelope) and its
+first high centre. -/
+noncomputable def canonicalTypeBAbsorbedSupportAt (data : Parameters)
     (object : Graph.FiniteObject.{u}) (epsilon : ColdEligibleHalfEdge data object) :
     Option (Finset object.Vertex × Finset object.Vertex) := by
   classical
   exact if routing : ColdFailureRoutingStatement data object then
     (canonicalAbsorbedCentre data object epsilon).map fun centre =>
-      ((coldOccurrenceIncidence data object
-        (coldRoutedClassified data object routing) epsilon).support, {centre})
+      ((coldOccurrenceCorridorAt data object
+          (coldRoutedClassified data object routing) epsilon).prefixSupport
+        (coldRoutedTraceEnd data object routing epsilon), {centre})
   else none
 
-/-! ## The Type B fan-window profile at `W₀` -/
-
-/-- **The canonical Type B profile** at a centre of the fan degree window, over
-the packed-window union `W₀ = windowSupport P₀` of the fixed maximal packing
-(`def:fan-closed-port`, tex 13158; `lem:typeB-hybrid-B1`, tex 13125). -/
-noncomputable def canonicalTypeBProfile (data : Parameters)
-    (object : Graph.FiniteObject.{u}) (centre : object.Vertex) :
-    Option (Graph.TypeBFanClosedPorts.Profile object) := by
-  classical
-  exact if degrees : 4 ≤ object.degree centre ∧ object.degree centre ≤ 8 then
-    some (Graph.TypeBProfileSchedule.canonicalProfile object
-      (Graph.FiniteObject.windowSupport (canonicalWindowPacking data object))
-      centre degrees.1 degrees.2)
-  else none
+/-- **The absorbed Type B support of `G`** (node `[177]` → `[65]`): the support
+`(Y_X, H_X)` of the canonical absorbed half-edge. -/
+noncomputable def canonicalTypeBAbsorbedSupport (data : Parameters)
+    (object : Graph.FiniteObject.{u}) :
+    Option (Finset object.Vertex × Finset object.Vertex) :=
+  (canonicalTypeBAbsorbedHalfEdge data object).bind
+    (canonicalTypeBAbsorbedSupportAt data object)
 
 /-! ## The B2 disjoint ledger -/
 
@@ -201,14 +188,10 @@ theorem canonicalTypeBDisjointChoice_isSome_iff {data : Parameters}
 
 /-! ## Note: the same-token support of node `[144]`
 
-`SameTokenTypeBHandoffStatement` (Statements/SurplusPair.lean) buries its
-envelope `envelopeOfFirstSeparator {dp.2, dq.2} h …` (core `{dp.2, dq.2}`,
-decorations `{h}`) under the whole `∃ active ∃ capacity … ∃ pattern` chain, so
-its support is not an `∃`-body over `(Y, H)` and cannot be `Classical.choose`d
-without restating the key.  It is deliberately not defined here: once node
-`[144]` is restated as `∃ core centres, SameTokenHandoffAt data G core centres`,
-the object is `canonicalChoice (fun support =>
-SameTokenHandoffAt data G support.1 support.2)` in a module after
-`Statements/SurplusPair.lean`. -/
+The same-token support is `canonicalSameTokenSupport`
+(`Statements/CanonicalSameToken.lean`): the canonical choice of the
+`∃ core centres, SameTokenHandoffAt data G core centres` body of node `[144]`.
+It is defined after `Statements/SurplusPair.lean`, which this module does not
+import. -/
 
 end Hypostructure.Graph.Strategy.Spine

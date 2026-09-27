@@ -57,7 +57,7 @@ lane: its same-token disjunct lives on the strict-surplus arm. -/
 theorem typeBLanes_of_entry
     (entry : TypeBFanEntryStatement data object)
     (atOrBelow : SurplusAtOrBelowStatement data object) :
-    TypeBLaneAll data object (fun _core centres =>
+    TypeBLaneAt data object (fun _core centres =>
       centres.Nonempty ∧
         ∀ centre ∈ centres, Graph.IsHighCentre object data.threshold centre) := by
   rcases entry with lanes | ⟨above, _handoff⟩
@@ -71,11 +71,11 @@ theorem typeBFanDegree_split
     (atOrBelow : SurplusAtOrBelowStatement data object) :
     TypeBFanHeavyCentreStatement data object ∨
       TypeBFanDegreeFourCentresStatement data object := by
-  rcases TypeBLaneAll.split (fun _core centres =>
+  rcases TypeBLaneAt.split (fun _core centres =>
       ∃ centre ∈ centres, data.threshold + 1 < object.degree centre)
       (typeBLanes_of_entry entry atOrBelow) with heavy | degreeFour
-  · exact Or.inl (TypeBLaneSome.imp (fun _ _ _ holds => holds.2) heavy)
-  · refine Or.inr (TypeBLaneAll.imp (fun _core centres member holds => ?_) degreeFour)
+  · exact Or.inl (TypeBLaneAt.imp (fun _ _ _ holds => holds.2) heavy)
+  · refine Or.inr (TypeBLaneAt.imp (fun _core centres member holds => ?_) degreeFour)
     intro centre centreMember
     have high := TypeBLaneMember.high member centre centreMember
     have notHeavy : ¬ data.threshold + 1 < object.degree centre :=
@@ -91,11 +91,12 @@ triangular, and a family of exactly `d_G(h) - 2` of them routes by
 theorem heavyCentreRoutedAlternative
     (three : 3 ≤ data.threshold)
     (normal : HighCentreNormalFormStatement data object)
-    (compatibleRouting : CompatiblePairTypeBRoutingStatement data object)
-    (triangularRouting : TriangularPortTypeBRoutingStatement data object)
+    {core centres : Finset object.Vertex}
+    (compatibleRouting : CompatiblePairTypeBRoutingAt data object core centres)
+    (triangularRouting : TriangularPortTypeBRoutingAt data object core centres)
     {centre : object.Vertex}
     (heavy : data.threshold + 1 < object.degree centre) :
-    HeavyCentreRoutedAlternative data object centre := by
+    HeavyCentreRoutedAlternative data object core centres centre := by
   have high : Graph.IsHighCentre object data.threshold centre := by
     simp only [Graph.IsHighCentre]
     omega
@@ -111,7 +112,7 @@ theorem heavyCentreRoutedAlternative
     omega
 
 /-- **Node `[69]`**: at the heavy arm's Type B support, every heavy assigned
-centre carries the routed local dichotomy. -/
+centre carries the routed local dichotomy at the support's assigned profiles. -/
 theorem typeBFanLocalDichotomy
     (three : 3 ≤ data.threshold)
     (normal : HighCentreNormalFormStatement data object)
@@ -119,10 +120,10 @@ theorem typeBFanLocalDichotomy
     (triangularRouting : TriangularPortTypeBRoutingStatement data object)
     (heavy : TypeBFanHeavyCentreStatement data object) :
     TypeBFanLocalDichotomyStatement data object :=
-  TypeBLaneSome.imp (fun _core _centres _member exists_ =>
-      ⟨exists_, fun _centre _member heavy =>
-        heavyCentreRoutedAlternative three normal compatibleRouting
-          triangularRouting heavy⟩) heavy
+  TypeBLaneAt.imp (fun _core _centres _member both =>
+      ⟨both.1, fun _centre _member heavy =>
+        heavyCentreRoutedAlternative three normal both.2.1 both.2.2 heavy⟩)
+    (TypeBLaneAt.and heavy (TypeBLaneAt.and compatibleRouting triangularRouting))
 
 /-- **Node `[79]`**: `cor:degree-four-local-activation` and the degree-four fan
 profile at every assigned centre of the Type B support, all of degree `δ + 1`. -/
@@ -130,14 +131,14 @@ theorem typeBFanDegreeFourProfile
     (normal : HighCentreNormalFormStatement data object)
     (degreeFour : TypeBFanDegreeFourCentresStatement data object) :
     TypeBFanDegreeFourProfileStatement data object := by
-  refine TypeBLaneAll.imp (fun _core centres member degrees => ?_) degreeFour
+  refine TypeBLaneAt.imp (fun _core centres member degrees => ?_) degreeFour
   intro centre centreMember
   have high := TypeBLaneMember.high member centre centreMember
   have degree := degrees centre centreMember
   obtain ⟨_surplus, counted, identity, _range⟩ :=
     Graph.TypeBFanIncidence.degreeFourProfile object data.threshold
       data.dischargeScale
-      (Graph.TypeBProfileSchedule.canonicalEnvelope object centre) degree
+      (typeBFanEnvelope _core centres centre) degree
   refine ⟨degree, ?_, ?_, counted, identity⟩
   · rcases Graph.heavyCentreLocalDichotomy (normal centre high) with
       compatible | triangular
@@ -165,12 +166,13 @@ theorem typeBFanCertificateCap
     (entry : TypeBFanEntryStatement data object)
     (atOrBelow : SurplusAtOrBelowStatement data object) :
     TypeBFanCertificateCapStatement data object :=
-  TypeBLaneAll.imp (fun _core _centres _member _entry centre _centreMember =>
+  TypeBLaneAt.imp (fun _core _centres _member _entry centre _centreMember =>
       ⟨fanSafeAt avoids centre, fun marking => marking.degree_le_fanPackingCap⟩)
     (typeBLanes_of_entry entry atOrBelow)
 
 /-- `def:fan-closed-port`, with clause (c) derived. -/
-theorem fanClosedPort : FanClosedPortStatement data object := by
+theorem fanClosedPortAt {core centres : Finset object.Vertex} :
+    FanClosedPortAt data object core centres := by
   intro profile _fixed endpoint
   constructor
   · intro closed
@@ -180,9 +182,9 @@ theorem fanClosedPort : FanClosedPortStatement data object := by
     exact ⟨remainder, envelope⟩
 
 /-- `lem:compatible-pair-fan-closure`, read through `def:fan-closed-port`. -/
-theorem compatiblePairFanClosure
-    (definition : FanClosedPortStatement data object) :
-    CompatiblePairFanClosureStatement data object := by
+theorem compatiblePairFanClosureAt {core centres : Finset object.Vertex}
+    (definition : FanClosedPortAt data object core centres) :
+    CompatiblePairFanClosureAt data object core centres := by
   intro profile fixed left right compatible leftRemainder rightRemainder
     leftAssigned rightAssigned
   have closed := Graph.TypeBFanClosedPorts.compatiblePairFanClosure
@@ -193,27 +195,34 @@ theorem compatiblePairFanClosure
       ((definition profile fixed right).1 closed.2.1),
     closed.2.2⟩
 
-/-- `prop:fan-closed-port-typeB-routing`, parts (a) and (b). -/
-theorem fanClosedPortTypeBRouting
-    (definition : FanClosedPortStatement data object) :
-    FanClosedPortTypeBRoutingStatement data object := by
-  intro profile fixed ledger normal scale ports fanClosed two
-  apply Graph.TypeBFanClosedPorts.fanClosedPortTypeBRouting
-    profile ledger normal scale
-  · intro vertex member
-    exact (definition profile fixed vertex).2
-      ((definition profile fixed vertex).1 (fanClosed vertex member))
-  · exact two
+/-- `prop:fan-closed-port-typeB-routing`, parts (a) and (b), at the registered
+discharge rate: the library bound at `δ = 3`, `α = 1/4`, with both identities
+read from the published cubic baseline. -/
+theorem fanClosedPortTypeBRoutingAt {core centres : Finset object.Vertex}
+    (thresholdEq : data.threshold = 3) (scaleEq : data.dischargeScale = 4)
+    (definition : FanClosedPortAt data object core centres) :
+    FanClosedPortTypeBRoutingAt data object core centres := by
+  intro profile fixed normal ports fanClosed two
+  have normalThree : Graph.NormalForm object 3 profile.marked.fan.hub :=
+    thresholdEq ▸ normal
+  obtain ⟨counted, familyBound, deficitBound, positive⟩ :=
+    Graph.TypeBFanClosedPorts.fanClosedPortTypeBRouting profile
+      (typeBDischargeProfile data) normalThree scaleEq
+      (fun vertex member => (definition profile fixed vertex).2
+        ((definition profile fixed vertex).1 (fanClosed vertex member))) two
+  refine ⟨counted, ?_, deficitBound, positive⟩
+  rw [thresholdEq]
+  exact_mod_cast familyBound
 
 /-- `cor:compatible-pair-typeB-routing`: the two fan-closed ports of
 `lem:compatible-pair-fan-closure` route through
 `prop:fan-closed-port-typeB-routing`. -/
-theorem compatiblePairTypeBRouting
-    (pairClosure : CompatiblePairFanClosureStatement data object)
-    (fanClosedRouting : FanClosedPortTypeBRoutingStatement data object) :
-    CompatiblePairTypeBRoutingStatement data object := by
+theorem compatiblePairTypeBRoutingAt {core centres : Finset object.Vertex}
+    (pairClosure : CompatiblePairFanClosureAt data object core centres)
+    (fanClosedRouting : FanClosedPortTypeBRoutingAt data object core centres) :
+    CompatiblePairTypeBRoutingAt data object core centres := by
   classical
-  intro profile fixed left right ledger normal scale compatible leftRemainder
+  intro profile fixed left right normal compatible leftRemainder
     rightRemainder leftAssigned rightAssigned
   obtain ⟨leftClosed, rightClosed, distinct⟩ :=
     pairClosure profile fixed left right compatible leftRemainder rightRemainder
@@ -228,32 +237,82 @@ theorem compatiblePairTypeBRouting
     · rw [Finset.mem_singleton] at member
       subst member
       exact rightClosed
-  have routed := fanClosedRouting profile fixed ledger normal scale
+  have routed := fanClosedRouting profile fixed normal
     ({left, right} : Finset object.Vertex) fanClosed (by rw [pairCard])
   rw [pairCard] at routed
   exact ⟨routed.1, routed.2.2.1, routed.2.2.2⟩
 
 /-- `prop:triangular-port-typeB-routing`: a recorded and assigned family of
-`k - 2` triangular ports is fan-closed and routes through
-`prop:fan-closed-port-typeB-routing` with `D_B ≥ (5k - 19)/4`. -/
-theorem triangularPortTypeBRouting
-    (definition : FanClosedPortStatement data object)
-    (fanClosedRouting : FanClosedPortTypeBRoutingStatement data object) :
-    TriangularPortTypeBRoutingStatement data object := by
+`k - 2` triangular ports at a heavy centre is fan-closed and routes through
+`prop:fan-closed-port-typeB-routing` with
+`D_B ≥ ((s+1)k - (s(δ+2) - 1))/s`, the manuscript's `(5k - 19)/4`. -/
+theorem triangularPortTypeBRoutingAt {core centres : Finset object.Vertex}
+    (thresholdEq : data.threshold = 3) (scaleEq : data.dischargeScale = 4)
+    (definition : FanClosedPortAt data object core centres)
+    (fanClosedRouting : FanClosedPortTypeBRoutingAt data object core centres) :
+    TriangularPortTypeBRoutingAt data object core centres := by
   classical
-  intro profile fixed ports ledger normal scale triangular cardPorts degreeFive
-    remainder assigned
+  intro profile fixed ports normal triangular cardPorts heavy remainder assigned
   have fanClosed : ∀ endpoint ∈ ports, profile.IsFanClosed endpoint := by
     intro endpoint member
     have direct : profile.IsFanClosed endpoint :=
       ⟨remainder endpoint member, assigned endpoint member⟩
     exact (definition profile fixed endpoint).2
       ((definition profile fixed endpoint).1 direct)
-  have routed := fanClosedRouting profile fixed ledger normal scale ports fanClosed
+  have routed := fanClosedRouting profile fixed normal ports fanClosed
     (by omega)
+  have normalThree : Graph.NormalForm object 3 profile.marked.fan.hub :=
+    thresholdEq ▸ normal
   have canonical := Graph.TypeBFanClosedPorts.triangularPortTypeBRouting
-    profile ledger normal scale triangular cardPorts degreeFive remainder
-      assigned
-  exact ⟨routed.1, canonical.2⟩
+    profile (typeBDischargeProfile data) normalThree scaleEq triangular
+      cardPorts (by omega) remainder assigned
+  refine ⟨routed.1, ?_, canonical.2.2⟩
+  have bound := canonical.2.1
+  rw [scaleEq, thresholdEq]
+  convert bound using 1
+  norm_num
+
+/-! ### The routings at the Type B support of `G` -/
+
+/-- `def:fan-closed-port` at the assigned profiles of the Type B support of the
+node-`[65]` entry. -/
+theorem fanClosedPort
+    (entry : TypeBFanEntryStatement data object)
+    (atOrBelow : SurplusAtOrBelowStatement data object) :
+    FanClosedPortStatement data object :=
+  TypeBLaneAt.imp (fun _ _ _ _ => fanClosedPortAt)
+    (typeBLanes_of_entry entry atOrBelow)
+
+/-- `lem:compatible-pair-fan-closure` at the Type B support. -/
+theorem compatiblePairFanClosure
+    (definition : FanClosedPortStatement data object) :
+    CompatiblePairFanClosureStatement data object :=
+  TypeBLaneAt.imp (fun _ _ _ holds => compatiblePairFanClosureAt holds) definition
+
+/-- `prop:fan-closed-port-typeB-routing` at the Type B support. -/
+theorem fanClosedPortTypeBRouting
+    (thresholdEq : data.threshold = 3) (scaleEq : data.dischargeScale = 4)
+    (definition : FanClosedPortStatement data object) :
+    FanClosedPortTypeBRoutingStatement data object :=
+  TypeBLaneAt.imp (fun _ _ _ holds =>
+    fanClosedPortTypeBRoutingAt thresholdEq scaleEq holds) definition
+
+/-- `cor:compatible-pair-typeB-routing` at the Type B support. -/
+theorem compatiblePairTypeBRouting
+    (pairClosure : CompatiblePairFanClosureStatement data object)
+    (fanClosedRouting : FanClosedPortTypeBRoutingStatement data object) :
+    CompatiblePairTypeBRoutingStatement data object :=
+  TypeBLaneAt.imp (fun _ _ _ both => compatiblePairTypeBRoutingAt both.1 both.2)
+    (TypeBLaneAt.and pairClosure fanClosedRouting)
+
+/-- `prop:triangular-port-typeB-routing` at the Type B support. -/
+theorem triangularPortTypeBRouting
+    (thresholdEq : data.threshold = 3) (scaleEq : data.dischargeScale = 4)
+    (definition : FanClosedPortStatement data object)
+    (fanClosedRouting : FanClosedPortTypeBRoutingStatement data object) :
+    TriangularPortTypeBRoutingStatement data object :=
+  TypeBLaneAt.imp (fun _ _ _ both =>
+      triangularPortTypeBRoutingAt thresholdEq scaleEq both.1 both.2)
+    (TypeBLaneAt.and definition fanClosedRouting)
 
 end Hypostructure.Graph.Contracts.TypeB

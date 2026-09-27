@@ -40,4 +40,30 @@ noncomputable def b2AssignmentDichotomy
       · exact ⟨.inr ⟨holds⟩⟩))
     choiceFresh obstructionFresh
 
+/-- **Node `[81]` (degree-four arm): `c ≤ 1`, or `c ≥ 2` with B2 disjoint
+ledger?**  The decision reads the direct-cycle-free fact
+(`K .typeBDirectCycleFree`) and splits at its Type B support `X`: every assigned
+centre has at most one cubic-closed neighbour or the assigned centres admit a B2
+disjoint choice (`[82]`), or some centre has `c ≥ 2` and `X` carries a minimal
+overlap obstruction (`[83]`). -/
+noncomputable def degreeFourLedgerDichotomy
+    {current : Input BranchState Presentation presentation data}
+    {known : FactKeys (Input BranchState Presentation presentation data)}
+    (previous : ExactLedger (Input BranchState Presentation presentation data)
+      current known)
+    [FactKeys.Has (K .typeBDirectCycleFree) known]
+    (ledgerFresh : K .typeBDegreeFourLedger ∉ known)
+    (overlapFresh : K .typeBDegreeFourOverlap ∉ known) :
+    Decision (K .typeBDegreeFourLedger) (K .typeBDegreeFourOverlap) previous :=
+  Decision.run previous (K .typeBDegreeFourLedger) (K .typeBDegreeFourOverlap)
+    `Hypostructure.Graph.Strategy.Spine.degreeFourLedgerDichotomy
+    (Classical.choice (show Nonempty
+        ((K .typeBDegreeFourLedger).At current ⊕
+          (K .typeBDegreeFourOverlap).At current) from by
+      rcases Contracts.TypeB.degreeFourLedger_split
+          (ExactLedger.get previous (K .typeBDirectCycleFree)).down with holds | holds
+      · exact ⟨.inl ⟨holds⟩⟩
+      · exact ⟨.inr ⟨holds⟩⟩))
+    ledgerFresh overlapFresh
+
 end Hypostructure.Graph.Strategy.Spine

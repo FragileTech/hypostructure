@@ -25,10 +25,10 @@ open Hypostructure.Graph.Strategy.Spine
 
 universe u w
 
-/-- Every key committed from `[177]` on: the fan data, its Type B entry, and the
+/-- Every key committed from the `[177]` entry on: the Type B entry and the
 Type B / route-8 charge tail. -/
-noncomputable abbrev netChargeFanDataKeys : FactKeys EGInput.{u} :=
-  [K .absorbedGermFanData, K .typeBFanEntry, K .netChargeLocalization,
+noncomputable abbrev netChargeFanEntryKeys : FactKeys EGInput.{u} :=
+  [K .typeBFanEntry, K .netChargeLocalization,
     K .netChargeNonNegative, K .netChargeNegative, K .negativeSupport,
     K .typeALowSurplus, K .typeBHighSurplus, K .typeABoundedSupport,
     K .typeAReceiverRouting, K .typeASaturatedReceiver,
@@ -53,7 +53,9 @@ noncomputable abbrev netChargeFanDataKeys : FactKeys EGInput.{u} :=
     K .fanCertificateResidualMass, K .typeBDirectCycle, K .typeBDirectCycleFree,
     K .typeBB2Choice, K .typeBOverlapObstruction, K .typeBHybridEntry,
     K .typeBDisjointLedger, K .typeBBridgeMass, K .typeBBridgeSublinear,
-    K .typeBExcluded, K .typeBExclusionResidual, K .typeBExclusionResidualMass,
+    K .typeBExcluded, K .typeBExclusionResidual, K .typeBDegreeFourLedger,
+    K .typeBDegreeFourOverlap,
+    K .typeBDegreeFourClosed,
     K .typeBOverlapObstructionMass, K .typeBFanDegreeFourProfile,
     K .triangularFanCore, K .typeBDecoratedAssignedSupport,
     K .route8ResidualProfile, K .route8BasinBurden,
@@ -96,9 +98,16 @@ noncomputable abbrev netChargeFanDataKeys : FactKeys EGInput.{u} :=
     K .typeAExitSevenEnvelope,
     K .route8GlobalSqueeze]
 
-/-- **Node `[177]`**: decorated handoff fan data at the heavy centres of the
-selected corridors outside the candidate class, entering Type B at `[65]`, and
-the common registered charge tail. -/
+/-- Every key committed from `[177]` on: the fan data, its Type B entry, and the
+Type B / route-8 charge tail. -/
+noncomputable abbrev netChargeFanDataKeys : FactKeys EGInput.{u} :=
+  K .absorbedGermFanData :: K .typeBAbsorbedHalfEdge ::
+    K .typeBAbsorbedHalfEdgeAbsent :: netChargeFanEntryKeys.{u}
+
+/-- **Node `[177]`**: on the `[175]` yes arm (`K .typeBAbsorbedHalfEdge`), the
+decorated handoff fan data at the first high centre of `G`'s canonical absorbed
+half-edge enters Type B at `[65]`, followed by the common registered charge
+tail. -/
 -- EG-NODE [177] decorated handoff fan data at the heavy centre \(z\): continue at Type B [65]
 noncomputable def selectedAbsorbedFanData
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
@@ -120,13 +129,16 @@ noncomputable def selectedAbsorbedFanData
     [FactKeys.Has (K .bridgeless) known]
     [FactKeys.Has (K .cubicBaseline) known]
     [FactKeys.Has (K .absorbedGermSplit) known]
-    (fresh : List.Disjoint netChargeFanDataKeys.{u} known := by key_fresh) :
-    SelectedRouteEightBoundary selected :=
-  let fanData :=
-    (absorbedGermFanDataRow (data := spineData)).run history (by key_fresh)
+    [FactKeys.Has (K .absorbedGermFanData) known]
+    [FactKeys.Has (K .typeBAbsorbedHalfEdge) known]
+    (fresh : List.Disjoint netChargeFanEntryKeys.{u} known := by key_fresh) :
+    SelectedAbsorbedGermBoundary selected := by
   let fanEntry :=
-    (absorbedGermFanEnvelopeRow (data := spineData)).run fanData (by key_fresh)
-  Assembly.Internal.selectedAbsorbedFanChargeContinuation fanEntry
+    (absorbedGermFanEnvelopeRow (data := spineData)).run history
+      (by key_fresh)
+  exact Or.inl <| Assembly.Internal.selectedAbsorbedFanChargeContinuation fanEntry
+        (by key_fresh)
+        (by key_fresh)
         (by key_fresh)
         (by key_fresh)
         (by key_fresh)
@@ -242,7 +254,22 @@ noncomputable def selectedAbsorbedGermResidual
   match absorbedGermDichotomy (data := spineData) split
       (by key_fresh) (by key_fresh) with
   | .right noPositiveHistory =>
-      exact Or.inl (selectedAbsorbedFanData noPositiveHistory)
+      let fanData :=
+        (absorbedGermFanDataRow (data := spineData)).run noPositiveHistory
+          (by key_fresh)
+      -- `[175]` read at `[177]`: does some selected corridor meet a
+      -- high-degree vertex?
+      match typeBAbsorbedHalfEdgeDichotomy (data := spineData) fanData
+          (by key_fresh) (by key_fresh) with
+      | .left outsideHistory => exact selectedAbsorbedFanData outsideHistory
+      | .right subcubicHistory =>
+          -- `[176]`: every selected corridor is subcubic, so every selected
+          -- configuration is a genuine (F5) configuration (here the family
+          -- is empty: no candidate and no outside half-edge); it is closed by
+          -- `[154]`--`[157]` (G1 is vacuous) with the local cold-terminal
+          -- exclusion retained at `[187]`.
+          let closedHistory := nearCubicColdTable subcubicHistory
+          exact Or.inr (closedHistory.get (K .coldBranchClosed)).down
   | .left positiveHistory =>
       let positiveFamily :=
         (absorbedGermFamilyPositiveRow (data := spineData)).run positiveHistory
@@ -286,6 +313,19 @@ noncomputable def selectedAbsorbedGermResidual
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                   swapped (by key_fresh)
-              exact Or.inl (selectedAbsorbedFanData trivial)
+              let fanData :=
+                (absorbedGermFanDataRow (data := spineData)).run trivial
+                  (by key_fresh)
+              -- `[175]` read at `[177]`: does some selected corridor meet a
+              -- high-degree vertex (the case-(ii) complement of the family)?
+              match typeBAbsorbedHalfEdgeDichotomy (data := spineData) fanData
+                  (by key_fresh) (by key_fresh) with
+              | .left outsideHistory => exact selectedAbsorbedFanData outsideHistory
+              | .right subcubicHistory =>
+                  -- `[176]`: every selected corridor is a genuine (F5)
+                  -- configuration, closed above by `[154]`--`[157]` and
+                  -- `[165]`--`[168]`; the local cold-terminal exclusion is
+                  -- retained at `[187]`.
+                  exact Or.inr (subcubicHistory.get (K .coldBranchClosed)).down
 
 end HypostructureErdos64EG

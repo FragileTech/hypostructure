@@ -37,13 +37,14 @@ literal remainder-to-window incidence counted by the ordinary stub supply. -/
 theorem CandidateData.packedWindowIncidences_subset_localWindowBoundaryIncidences
     {object : FiniteObject.{u}} {threshold dischargeScale : ℕ}
     {packing : Finset (Finset object.Vertex)}
-    {piece : CanonicalPiece object packing}
+    {core : Finset object.Vertex}
     {assigned : Finset object.Vertex}
     {hub : object.Vertex} {data : CandidateData object}
+    (inside : core ⊆ object.remainderSupport packing)
     (eligible : data ∈ candidateFamily object threshold dischargeScale
-      packing piece.vertices assigned hub) :
+      packing core assigned hub) :
     data.packedWindowIncidences threshold packing hub ⊆
-      object.localWindowBoundaryIncidences packing piece.vertices := by
+      object.localWindowBoundaryIncidences packing core := by
   intro incidence member
   have candidate := (mem_candidateFamily_iff.mp eligible).2
   have selected := (Finset.mem_filter.mp member).1
@@ -56,7 +57,7 @@ theorem CandidateData.packedWindowIncidences_subset_localWindowBoundaryIncidence
       have chargedSubset :
           CandidateData.chargedVertices
               (.positive profile localReserve chosenNonWindow)
-              threshold hub ⊆ piece.vertices :=
+              threshold hub ⊆ core :=
         candidate.2.2.2.1
       have chosenSubset :
           chosenNonWindow ⊆
@@ -75,16 +76,16 @@ theorem CandidateData.packedWindowIncidences_subset_localWindowBoundaryIncidence
       rcases (TypeBHybridIncidence.mem_incidences_iff
           object threshold profile.envelope (object.windowSupport packing)
             hub incidence).mp incidenceMember with ⟨ownerClosed, farMember⟩
-      have ownerInPiece : incidence.1 ∈ piece.vertices := by
+      have ownerInPiece : incidence.1 ∈ core := by
         apply chargedSubset
         simp only [CandidateData.chargedVertices, Finset.mem_union]
         exact Or.inl ownerClosed
       have adjacent : object.graph.Adj incidence.1 incidence.2 :=
         (TypeBHybridIncidence.mem_nonHubIncidences_iff.mp farMember).2
       exact (object.mem_localWindowBoundaryIncidences_iff
-        packing piece.vertices incidence).mpr
+        packing core incidence).mpr
           ⟨ownerInPiece, adjacent,
-            piece.vertices_subset_remainder ownerInPiece, window⟩
+            inside ownerInPiece, window⟩
 
 /-- All five clauses of the manuscript's Type B global-to-local reflection. -/
 structure GlobalLocalReflectionACE
@@ -92,10 +93,10 @@ structure GlobalLocalReflectionACE
     (object : FiniteObject.{u}) (order : ℕ) (LengthOK : ℕ → Prop)
     (threshold dischargeScale : ℕ)
     {packing : Finset (Finset object.Vertex)}
-    (piece : CanonicalPiece object packing)
+    (core : Finset object.Vertex)
     (assigned : Finset object.Vertex)
     (obstruction : OverlapObstruction object threshold dischargeScale
-      packing piece.vertices assigned) : Prop where
+      packing core assigned) : Prop where
   /-- Manuscript clause (a). -/
   contextualDyadicSafety : TypeAB.ContextuallyDyadicSafe presentation object
   /-- Manuscript clause (b), first assertion. -/
@@ -110,9 +111,9 @@ structure GlobalLocalReflectionACE
   packedWindowCompatible :
     ∀ hub ∈ obstruction.demands, ∀ data,
       data ∈ candidateFamily object threshold dischargeScale
-          packing piece.vertices assigned hub →
+          packing core assigned hub →
         data.packedWindowIncidences threshold packing hub ⊆
-          object.localWindowBoundaryIncidences packing piece.vertices
+          object.localWindowBoundaryIncidences packing core
   /-- Manuscript clause (c), direct same-window and two-window exclusion. -/
   directCycleFree :
     ∀ hub ∈ obstruction.demands,
@@ -125,12 +126,12 @@ structure GlobalLocalReflectionACE
     ∀ attempt : AttemptedQuotient (TypeAB.Baseline presentation)
         presentation.Target object
         (overlapCoordinateSchedule object threshold dischargeScale packing
-          piece.vertices assigned obstruction).toFinset
+          core assigned obstruction).toFinset
         (fun _ => obstruction.overlapSupport),
       attempt.support = obstruction.overlapSupport →
       ¬ Set.InjOn attempt.label
         ↑(overlapCoordinateSchedule object threshold dischargeScale packing
-          piece.vertices assigned obstruction).toFinset →
+          core assigned obstruction).toFinset →
       (∃ left right, attempt.Identifies left right ∧
           left.boundaryDegreeProfile ≠ right.boundaryDegreeProfile) ∨
         (∃ left right, attempt.Identifies left right ∧
@@ -147,7 +148,7 @@ structure GlobalLocalReflectionACE
   minimalOverlap :
     ∀ sub : Finset object.Vertex, sub ⊂ obstruction.demands → sub.Nonempty →
       HasDisjointChoice object threshold dischargeScale
-        packing piece.vertices assigned sub
+        packing core assigned sub
 
 /-- Clauses (a)--(c) and (e) are inherited or derived on the literal overlap
 support.  Normal form supplies clause (b); candidate provenance and the
@@ -159,17 +160,18 @@ theorem globalLocalReflectionACE
     {object : FiniteObject.{u}} {order : ℕ} {LengthOK : ℕ → Prop}
     {threshold dischargeScale : ℕ}
     {packing : Finset (Finset object.Vertex)}
-    {piece : CanonicalPiece object packing}
+    {core : Finset object.Vertex}
     {assigned : Finset object.Vertex}
     (obstruction : OverlapObstruction object threshold dischargeScale
-      packing piece.vertices assigned)
+      packing core assigned)
+    (inside : core ⊆ object.remainderSupport packing)
     (targetSafe : TypeAB.ContextuallyDyadicSafe presentation object)
     (normalForms : ∀ hub ∈ obstruction.demands,
       NormalForm object threshold hub)
     (cycleFree : ∀ hub ∈ obstruction.demands,
       TypeBDirectCycle.DirectCycleFree object order LengthOK packing hub) :
     GlobalLocalReflectionACE presentation object order LengthOK threshold
-      dischargeScale piece assigned obstruction where
+      dischargeScale core assigned obstruction where
   contextualDyadicSafety := targetSafe
   centresIndependent := by
     intro left leftMem right rightMem different adjacent
@@ -183,7 +185,8 @@ theorem globalLocalReflectionACE
     exact (normalForms hub hubMem).neighbourTight adjacent
   packedWindowCompatible := by
     intro hub _hubMem data eligible
-    exact data.packedWindowIncidences_subset_localWindowBoundaryIncidences eligible
+    exact data.packedWindowIncidences_subset_localWindowBoundaryIncidences inside
+      eligible
   directCycleFree := cycleFree
   replacementObstruction := by
     intro attempt _supportEq reducing

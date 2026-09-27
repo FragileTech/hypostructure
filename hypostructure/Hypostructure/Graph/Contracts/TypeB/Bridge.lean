@@ -42,7 +42,7 @@ theorem typeBBridgeReduction
       ⟨choice, Graph.TypeBRefinedSupport.centres_high object data.threshold
         canonicalPiece.vertices, Finset.Subset.refl _⟩
     obtain ⟨components, grouped⟩ := disjointLedgerCoreClosure avoids baseline
-      uncompressible normalized ledger
+      uncompressible normalized canonicalPiece.vertices_subset_remainder ledger
     have notClean : ¬ 0 ≤ RemainingCoreCharge data object ledger := by
       intro clean
       exact (object.not_negativeNetCharge_iff canonicalPiece.vertices
@@ -92,5 +92,16 @@ theorem typeBBridgeSublinear
     (fun piece pieceMem _pieceNotEmpty => ordinaryComponents piece pieceMem)
     (fun piece pieceMem _pieceNotEmpty => groupedComponents piece pieceMem)
   simpa [Graph.TypeBEnvelopeCharge.route8Deficit] using atMostTwice
+
+/-- The `[113]`-style test of `prop:typeB-bridge-sublinear`, read after the
+bridge-sublinear fact at the same fixed packing `P₀` and the same canonical role
+unions: the tested hypotheses hold, or they fail (the Part IX bridge-residual
+state). -/
+theorem typeBSublinear_split
+    (_bridge : TypeBBridgeSublinearStatement data object) :
+    TypeBSublinearHypotheses data object ∨
+      TypeBSublinearResidualStatement data object := by
+  classical
+  exact em _
 
 end Hypostructure.Graph.Contracts.TypeB

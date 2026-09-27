@@ -18,19 +18,18 @@ universe u
 variable {data : Parameters} {object : Graph.FiniteObject.{u}}
 
 /-- On a target-avoiding, uncompressible, remainder-normalized object, every
-remaining component of a B2 disjoint ledger on a canonical piece of G's fixed
-packing `P₀` carries the post-ledger Type A hygiene, and the exit-`(7)` productions
+remaining component of a B2 disjoint ledger on a core inside the remainder of
+G's fixed packing `P₀` carries the post-ledger Type A hygiene, and the exit-`(7)` productions
 of any remaining components form the grouped decorated envelope. -/
 theorem disjointLedgerCoreClosure
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
     (baseline : ∀ vertex : object.Vertex, data.threshold ≤ object.degree vertex)
     (uncompressible : UncompressibleStatement data object)
     (normalized : RemainderNormalizedStatement data object)
-    {piece : Graph.TypeBRefinedSupport.CanonicalPiece object
-      (canonicalWindowPacking data object)}
-    {centres : Finset object.Vertex}
+    {core centres : Finset object.Vertex}
+    (coreInside : core ⊆ object.remainderSupport (canonicalWindowPacking data object))
     (ledger : Graph.TypeBRefinedSupport.DisjointLedger object data.threshold
-      data.dischargeScale (canonicalWindowPacking data object) piece.vertices centres) :
+      data.dischargeScale (canonicalWindowPacking data object) core centres) :
     PostLedgerComponents data object ledger ∧
       GroupedEnvelopeCoverage data object ledger := by
   classical
@@ -38,31 +37,31 @@ theorem disjointLedgerCoreClosure
       subset ⊆ object.remainderSupport (canonicalWindowPacking data object) →
         ¬ Graph.MinimumDegreeAtLeast data.threshold (object.induce subset) :=
     fun subset inside => (normalized subset inside).2
-  have pieceFree : Graph.InducedPathFree (object.induce piece.vertices)
+  have pieceFree : Graph.InducedPathFree (object.induce core)
       data.windowOrder :=
     Graph.FiniteObject.inducedPathFree_induce_of_forall object
       (fun subset inside =>
         (normalized subset
-          (inside.trans piece.vertices_subset_remainder)).1)
+          (inside.trans coreInside)).1)
   have emptyInternal : Graph.TypeAB.EmptyInternalThreeCore
-      data.typeABPresentation object piece.vertices :=
+      data.typeABPresentation object core :=
     Graph.TypeBPostLedgerCore.emptyInternalThreeCore_of_noBaselineSubsupport
       (threshold := data.threshold) rfl
       (fun subset inside =>
         noBaselineSubsupport subset
-          (inside.trans piece.vertices_subset_remainder))
+          (inside.trans coreInside))
   have targetSafe : Graph.TypeAB.ContextuallyDyadicSafe
       data.typeABPresentation object := by
     simpa [Graph.TypeAB.ContextuallyDyadicSafe,
       Parameters.typeABPresentation] using avoids
   have hereditary : Graph.TypeAB.HereditarilyTargetUncompressible
-      data.typeABPresentation object piece.vertices :=
+      data.typeABPresentation object core :=
     Graph.TypeAB.hereditarilyTargetUncompressible_of_emptyInternalThreeCore
       emptyInternal
   have components : PostLedgerComponents data object ledger :=
     fun component member =>
       Graph.TypeBPostLedgerCore.postLedgerCoreHygiene
-        data.typeABPresentation ledger component member rfl
+        data.typeABPresentation ledger component member coreInside rfl
         noBaselineSubsupport pieceFree targetSafe hereditary baseline
   refine ⟨components, ?_⟩
   intro selectedComponents subset production

@@ -707,10 +707,13 @@ theorem triangularFirstLanding
         outsideNotCross external⟩)
 
 
-/-- `lem:triangular-cross-shoulder` on a target-avoiding object. -/
+/-- `lem:triangular-cross-shoulder` on a target-avoiding object: at the cubic
+baseline `δ = 3` a shoulder with four distinct neighbours is above the
+baseline. -/
 theorem triangularCrossShoulder
     (avoids : ¬ Graph.HasCycleWithLength data.LengthOK object)
-    (quadrilateral : data.LengthOK 4) :
+    (quadrilateral : data.LengthOK 4)
+    (thresholdEq : data.threshold = 3) :
     TriangularCrossShoulderStatement data object := by
   classical
   intro centre centreHeavy ports portsNonempty portsSubset shoulders
@@ -780,7 +783,7 @@ theorem triangularCrossShoulder
       (source ≠ source' ∨ target ≠ target') →
         ∃ shoulder,
           (shoulder ∈ shoulders first ∨ shoulder ∈ shoulders second) ∧
-            4 ≤ object.degree shoulder := by
+            data.threshold < object.degree shoulder := by
     intro source target source' target' edge edge' distinct
     have firstEdge := (crossSpec first source target).mp edge.1
     have secondEdge := (crossSpec second target source).mp edge.2
@@ -816,6 +819,7 @@ theorem triangularCrossShoulder
         · exact ⟨right, rightMem, leftNeRight.symm, chord⟩
         · exact ⟨left, leftMem, leftNeRight, chord.symm⟩
       refine ⟨source, Or.inl firstEdge.2.1, ?_⟩
+      rw [thresholdEq]
       exact fourNeighbours source first other target target'
         (((shoulderSpec first firstMem).1 source).mp firstEdge.2.1).1.symm
         sourceOther firstEdge.2.2.1 firstEdge'.2.2.1
@@ -850,6 +854,7 @@ theorem triangularCrossShoulder
           · exact ⟨right, rightMem, leftNeRight.symm, chord⟩
           · exact ⟨left, leftMem, leftNeRight, chord.symm⟩
         refine ⟨target, Or.inr secondEdge.2.1, ?_⟩
+        rw [thresholdEq]
         exact fourNeighbours target second other source source'
           (((shoulderSpec second secondMem).1 target).mp secondEdge.2.1).1.symm
           targetOther secondEdge.2.2.1 secondEdge'.2.2.1
@@ -878,11 +883,11 @@ theorem triangularCrossShoulder
     obtain ⟨shoulder, shoulderMem, high⟩ :=
       highOfDistinct source target source' target' edge edge'
         (Or.inr targetNe)
-    exact (Nat.not_lt_of_ge high) (low shoulder shoulderMem)
+    exact (Nat.not_le_of_lt high) (low shoulder shoulderMem)
   · obtain ⟨shoulder, shoulderMem, high⟩ :=
       highOfDistinct source target source' target' edge edge'
         (Or.inl sameSource)
-    exact ((Nat.not_lt_of_ge high) (low shoulder shoulderMem)).elim
+    exact ((Nat.not_le_of_lt high) (low shoulder shoulderMem)).elim
 
 
 end Hypostructure.Graph.Contracts.TypeB

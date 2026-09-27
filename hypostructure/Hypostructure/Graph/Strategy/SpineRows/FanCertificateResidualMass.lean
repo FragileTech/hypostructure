@@ -20,14 +20,15 @@ to assigned surplus. -/
 @[reducible] noncomputable def fanCertificateResidualMassRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.fanCertificateResidualMass
-    { Requires := [K .fanCertificateResidual]
+    { Requires := [K .fanCertificateResidual, K .cubicBaseline]
       Produces := [K .fanCertificateResidualMass]
-      requiresUnique := by simp
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .fanCertificateResidualMass)
-        ⟨Contracts.TypeB.typeBFanCertificateResidualMass data.bridgeMassSlack
+        ⟨Contracts.TypeB.typeBFanCertificateResidualMass
+          (inputs.get (K .cubicBaseline)).down.2.2.2.2.2.2.2.2
           (inputs.get (K .fanCertificateResidual)).down⟩
         .nil)
 

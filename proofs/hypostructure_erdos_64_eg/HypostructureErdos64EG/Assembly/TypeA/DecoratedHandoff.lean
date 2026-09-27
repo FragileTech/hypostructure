@@ -66,7 +66,9 @@ noncomputable abbrev typeADecoratedHandoffKeys : FactKeys EGInput.{u} :=
     K .route8JointBalance,
     K .typeBExcluded,
     K .typeBExclusionResidual,
-    K .typeBExclusionResidualMass,
+    K .typeBDegreeFourLedger,
+    K .typeBDegreeFourOverlap,
+    K .typeBDegreeFourClosed,
     K .typeBOverlapObstructionMass,
     K .fanClosedPort,
     K .compatiblePairFanClosure,
@@ -167,7 +169,9 @@ noncomputable def selectedTypeADecoratedHandoff
     (unifiedTerminalFresh := by key_fresh)
     (decoratedExcludedFresh := by key_fresh)
     (decoratedExclusionResidualFresh := by key_fresh)
-    (decoratedExclusionMassFresh := by key_fresh)
+    (decoratedDegreeFourLedgerFresh := by key_fresh)
+    (decoratedDegreeFourOverlapFresh := by key_fresh)
+    (decoratedDegreeFourClosedFresh := by key_fresh)
     (decoratedObstructionMassFresh := by key_fresh)
     (fanClosedFresh := by key_fresh)
     (compatibleClosureFresh := by key_fresh)

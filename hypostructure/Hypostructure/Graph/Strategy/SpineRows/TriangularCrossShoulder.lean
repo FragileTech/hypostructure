@@ -19,15 +19,16 @@ variable {data : Data.{u}}
 @[reducible] noncomputable def triangularCrossShoulderRow :
     AtomicStrategy (Input BranchState Presentation presentation data) :=
   factOnly `Hypostructure.Graph.Strategy.Spine.triangularCrossShoulder
-    { Requires := [K .selection]
+    { Requires := [K .selection, K .cubicBaseline]
       Produces := [K .triangularCrossShoulder]
-      requiresUnique := by simp
+      requiresUnique := by key_fresh
       producesUnique := by simp
       producesNonempty := by simp }
     (fun inputs =>
       .cons (key := K .triangularCrossShoulder)
         ⟨Contracts.TypeB.triangularCrossShoulder (inputs.get (K .selection)).down.1
-          data.quadrilateralAccepted⟩
+          (inputs.get (K .cubicBaseline)).down.2.2.2.2.1
+          (inputs.get (K .cubicBaseline)).down.1⟩
         .nil)
 
 end Hypostructure.Graph.Strategy.Spine
