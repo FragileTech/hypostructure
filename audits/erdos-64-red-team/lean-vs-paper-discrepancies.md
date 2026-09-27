@@ -1508,6 +1508,31 @@ only for a claim proved false at G.
   **false** there: `entryTail 0 = [ε.1]` with `ε.1 ∈ X_cold ⊆ ⋃P₀`, so it meets
   no subset of `R(P₀)`.  Hence, at G, the hook is equivalent on this
   configuration to "no selected half-edge of G has a heavy foot".
+- **The paper claims `i = 0` (checked 2026-09-27).**  The tex has no separate
+  treatment of a heavy foot.  `def:cold-corridor-first-failure` defines the
+  first failure as "the first initial segment ... at which ... (F4) the corridor
+  first enters a declared Type B handoff envelope" (tex 7213, 7222), with
+  segment `0` an initial segment; `lem:cold-germ-extraction` removes "Type B,
+  and route-8 handoff incidences" wholesale and says "If a candidate support
+  contains a vertex of degree at least `4`, then the corresponding corridor
+  first enters the high-degree handoff ledger" (tex 7318, 7330-7331); and
+  `lem:absorbed-germ-fan-data` (ii) covers every `J` that "contains a vertex
+  `z` of degree at least `4`" with "the corridor enters `z` through one of its
+  incidences and leaves through another ... the segments of the corridor on
+  either side of `z` are two connector tails separated at `z`, which is the
+  decorated handoff configuration of `lem:typeA-high-degree-handoff`"
+  (tex 7926-7930, 7948-7951).  At `i = 0` the entering incidence is `ε`
+  itself, and no other core, envelope, or `σ(G)` charge is given for it
+  (the only `σ(G)` charge is node `[153]`'s bounded-arm loss, which (ii) says
+  is "charged to the Type B ledger", tex 7934-7937).  So the hook is not an
+  overstatement at `i = 0`: it is the paper's claim, restated faithfully.
+- **`i ≥ 1` is not rescued.**  Removing `i = 0` would not remove the failure of
+  "each arm reaches `R`": for `i ≥ 1` the entry side is inside vertices
+  `0..i−1` of `K ⊆ G − X_cold`, and the exit side inside vertices `i+1..` of
+  `K`, each ending at a stub endpoint in `X_cold`.  Under the C2 ruling these
+  inside vertices may all lie in hot or non-ambient-cubic windows of `P₀`
+  (maximality of `P₀` even pushes corridor vertices into windows), and no
+  ledger fact at `[177]` places one of them in `R`.
 - **Three routes on "some selected `ε` of G has a heavy foot `z`"**, run at
   G's objects: the configuration is `z ∈ V_{≥4}(G)` adjacent to an interior
   vertex `x` of an ambient-cubic cold window `P ∈ P₀ \ P_hot`, via a selected
