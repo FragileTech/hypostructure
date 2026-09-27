@@ -25,38 +25,18 @@ equal-state pair), `[162]` (a long corridor of G through a heavy centre) and
 `[54]` (the configuration at G where the joint realization fails). -/
 abbrev SelectedNearCubicSurvivorBoundary (selected : EGInput.{u}) :=
   SelectedNetChargeBoundary selected ∨
-    Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-        erdosReceiverLoadProfile spineData .route8RateFails selected.object ∨
-      Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-          erdosReceiverLoadProfile spineData .blockedBarrierOverlap selected.object ∨
-        Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-          erdosReceiverLoadProfile spineData .coldBranchClosed selected.object ∨
-        Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-          erdosReceiverLoadProfile spineData .coldRepeatedStateResidual
-            selected.object ∨
-        Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-          erdosReceiverLoadProfile spineData .coldDenseHeavyEntryResidual
-            selected.object ∨
-        Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-          erdosReceiverLoadProfile spineData .allColdEntropyResidual
-            selected.object
-
-/-- The literal target-defect exit left by the enclosing `[20]` sparse-exit
-classification.  It is an outgoing residual, not a contradiction, not a
-survivor fact, and not an output of routing-only node `[125]`. -/
-abbrev SelectedSparseTargetDefectBoundary (selected : EGInput.{u}) :=
-  Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-    erdosReceiverLoadProfile spineData .sparseTargetDefectResidual
-      selected.object
+    Route8RateFailsOutcome selected ∨
+      BlockedBarrierOverlapOutcome selected ∨
+        ColdBranchClosedOutcome selected ∨
+        Node153ResidualOutcome selected ∨
+        Node162ResidualOutcome selected ∨
+        Node54ResidualOutcome selected
 
 /-- The near-cubic branch either leaves through the paper's named
 target-defect exit or, after all sparse exits have been excluded, follows the
 surviving-cold/net-charge continuation. -/
 abbrev SelectedNearCubicBoundary (selected : EGInput.{u}) :=
-  (SelectedSparseTargetDefectBoundary selected ∧
-    Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .sparseTargetDefectStructure
-        selected.object) ∨
+  NearCubicTargetDefectOutcome selected ∨
     SelectedNearCubicSurvivorBoundary selected
 
 end HypostructureErdos64EG

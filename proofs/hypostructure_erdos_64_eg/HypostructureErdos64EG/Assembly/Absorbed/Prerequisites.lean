@@ -16,6 +16,7 @@ open Hypostructure.Graph.Strategy.Spine
 
 universe u w
 
+set_option maxHeartbeats 8000000 in
 /-- **Node `[174]`**: the absorbed configurations are the cold corridors whose
 charge node `[153]`'s bounded arm discarded.  Their return corridors
 (`lem:bridgeless`), states, first failures and candidate family are published
@@ -43,7 +44,38 @@ noncomputable def selectedAbsorbedGermPrerequisites
         K .coldFailureCycle, K .coldFailureDefectRoute,
         K .coldFailureCompression, K .coldHandoffTransfer,
         K .coldFailureRouting, K .coldExchangeBound,
-        K .coldGermCandidates] known := by key_fresh) :
+        K .coldGermCandidates] known := by key_fresh)
+    [FactKeys.Has (K .barrierCap) known]
+    [FactKeys.Has (K .barrierEnumeration) known]
+    [FactKeys.Has (K .boundaryDemand) known]
+    [FactKeys.Has (K .coldAmbientCubic) known]
+    [FactKeys.Has (K .coldAmbientCubicStubExcess) known]
+    [FactKeys.Has (K .coldHotEntropyCap) known]
+    [FactKeys.Has (K .coldMass) known]
+    [FactKeys.Has (K .coldSelectedBranchExcess) known]
+    [FactKeys.Has (K .coldStubExcess) known]
+    [FactKeys.Has (K .curvatureFullRank) known]
+    [FactKeys.Has (K .curvatureTargetRank) known]
+    [FactKeys.Has (K .cycleRankConstraint) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .exactResponseProfile) known]
+    [FactKeys.Has (K .forcedCurvatureCost) known]
+    [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .netChargeLocalization) known]
+    [FactKeys.Has (K .noProperBaseline) known]
+    [FactKeys.Has (K .replacementExclusion) known]
+    [FactKeys.Has (K .returnAvoidance) known]
+    [FactKeys.Has (K .skeletonDominates) known]
+    [FactKeys.Has (K .slackIndependent) known]
+    [FactKeys.Has (K .stubSupply) known]
+    [FactKeys.Has (K .surplusAtOrBelow) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .targetRankCircuit) known]
+    [FactKeys.Has (K .tightEndpoint) known]
+    [FactKeys.Has (K .wedgeSupply) known]
+    [FactKeys.Has (K .windowPackageSeparated) known]
+    [FactKeys.Has (K .windowPresent) known] :
     PSum
       (ExactLedger EGInput.{u} selected
         (K .coldGermCandidates :: K .coldExchangeBound ::
@@ -52,9 +84,7 @@ noncomputable def selectedAbsorbedGermPrerequisites
           K .coldFailureDefectRoute :: K .coldFailureCycle ::
           K .coldCutStatesDistinct :: K .coldFirstFailureOccurrence ::
           K .coldCorridorState :: K .coldReturnCorridors :: known))
-      (Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-        erdosReceiverLoadProfile spineData .coldRepeatedStateResidual
-          selected.object) :=
+      (Node153ResidualOutcome selected) :=
   let state := nearCubicColdCorridorState history
   match nearCubicColdOccurrence state with
   | .inl distinct => .inl (nearCubicColdCandidates distinct)

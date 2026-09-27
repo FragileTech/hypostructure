@@ -1,7 +1,7 @@
 import Hypostructure.Graph.Strategy.BlockedCompressionRows
 import Hypostructure.Graph.Strategy.ColdCorridorRows.CanonicalReplacement
 import Hypostructure.Graph.Strategy.ColdCorridorRows.GermTrichotomy
-import HypostructureErdos64EG.Assembly.Basic
+import HypostructureErdos64EG.Assembly.Residuals
 
 /-!
 # Assembly: NearCubic / Replacement
@@ -18,6 +18,7 @@ open Hypostructure.Graph.Strategy.Spine
 
 universe u w
 
+set_option maxHeartbeats 8000000 in
 /-- Nodes `[166]` and `[169]`: consume the exact canonical-replacement swap,
 publish the forced equality `Q = E`, and enter the blocked-class continuation
 on that literal residual.
@@ -73,10 +74,71 @@ noncomputable def selectedCanonicalReplacementContinuation
       [K .coldCanonicalReplacementTrivial, K .blockedClassMember,
         K .blockedScaleAdditive, K .blockedBarrierOverlap,
         K .blockedCompressionBound, K .blockedCompressionCap, closed] known := by
-        key_fresh) :
-    Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .blockedBarrierOverlap
-      selected.object := by
+        key_fresh)
+    [FactKeys.Has (K .absorbedGermFanData) known]
+    [FactKeys.Has (K .absorbedGermSplit) known]
+    [FactKeys.Has (K .barrierCap) known]
+    [FactKeys.Has (K .barrierEnumeration) known]
+    [FactKeys.Has (K .boundaryDemand) known]
+    [FactKeys.Has (K .bridgeless) known]
+    [FactKeys.Has (K .coldAmbientCubic) known]
+    [FactKeys.Has (K .coldAmbientCubicStubExcess) known]
+    [FactKeys.Has (K .coldBranchClosed) known]
+    [FactKeys.Has (K .coldCanonicalNeutralConfiguration) known]
+    [FactKeys.Has (K .coldCorridorState) known]
+    [FactKeys.Has (K .coldCutStatesDistinct) known]
+    [FactKeys.Has (K .coldExchangeBound) known]
+    [FactKeys.Has (K .coldFailureCompression) known]
+    [FactKeys.Has (K .coldFailureCycle) known]
+    [FactKeys.Has (K .coldFailureDefectRoute) known]
+    [FactKeys.Has (K .coldFailureRouting) known]
+    [FactKeys.Has (K .coldFirstFailureOccurrence) known]
+    [FactKeys.Has (K .coldGermCandidates) known]
+    [FactKeys.Has (K .coldGermDistinguished) known]
+    [FactKeys.Has (K .coldGermFamilyPositive) known]
+    [FactKeys.Has (K .coldGermNoneDistinguishing) known]
+    [FactKeys.Has (K .coldGermNoneRealizing) known]
+    [FactKeys.Has (K .coldGermRealized) known]
+    [FactKeys.Has (K .coldGermRouted) known]
+    [FactKeys.Has (K .coldGermSilent) known]
+    [FactKeys.Has (K .coldHandoffTransfer) known]
+    [FactKeys.Has (K .coldHeavyEntryTerminal) known]
+    [FactKeys.Has (K .coldHotEntropyCap) known]
+    [FactKeys.Has (K .coldMass) known]
+    [FactKeys.Has (K .coldMassLinear) known]
+    [FactKeys.Has (K .coldNeutralEqualLengthTerminal) known]
+    [FactKeys.Has (K .coldReturnCorridors) known]
+    [FactKeys.Has (K .coldRoute8AtOrAbove) known]
+    [FactKeys.Has (K .coldSameInterfaceTable) known]
+    [FactKeys.Has (K .coldSelectedBranchExcess) known]
+    [FactKeys.Has (K .coldStubExcess) known]
+    [FactKeys.Has (K .curvatureFullRank) known]
+    [FactKeys.Has (K .curvatureTargetRank) known]
+    [FactKeys.Has (K .cycleRankConstraint) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .denseColdCorridorsTerminal) known]
+    [FactKeys.Has (K .exactResponseProfile) known]
+    [FactKeys.Has (K .forcedCurvatureCost) known]
+    [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .netChargeLocalization) known]
+    [FactKeys.Has (K .noProperBaseline) known]
+    [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .replacementExclusion) known]
+    [FactKeys.Has (K .returnAvoidance) known]
+    [FactKeys.Has (K .skeletonDominates) known]
+    [FactKeys.Has (K .slackIndependent) known]
+    [FactKeys.Has (K .sparseSurplusSurvivor) known]
+    [FactKeys.Has (K .stubSupply) known]
+    [FactKeys.Has (K .surplusAtOrBelow) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .targetRankCircuit) known]
+    [FactKeys.Has (K .tightEndpoint) known]
+    [FactKeys.Has (K .uncompressible) known]
+    [FactKeys.Has (K .wedgeSupply) known]
+    [FactKeys.Has (K .windowPackageSeparated) known]
+    [FactKeys.Has (K .windowPresent) known] :
+    BlockedBarrierOverlapOutcome selected := by
   let trivial :=
     (canonicalReplacementTrivialRow (BranchState := BranchState)
       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
@@ -98,6 +160,6 @@ noncomputable def selectedCanonicalReplacementContinuation
           (K .windowPackageUnrealized) (K .blockedCompressionCap)
           (by key_fresh) (by key_fresh)).elimClosed (by infer_instance) |>.elim
   | .right overlapHistory =>
-      exact (overlapHistory.get (K .blockedBarrierOverlap)).down
+      exact blockedBarrierOverlapReturn overlapHistory
 
 end HypostructureErdos64EG

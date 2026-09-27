@@ -96,6 +96,7 @@ noncomputable def selectedSparseSurplusActivation
       (presentation := erdosReceiverLoadProfile) (data := spineData)).run h4 (by
         key_fresh)
 
+set_option maxHeartbeats 8000000 in
 /-- Nodes `[178]`--`[180]`, the pair-code chain on any ledger that already
 carries the node-`[178]` first failure `K .pairOverlapFirstFailure` (from the
 free side of `[131]` or of `[137]`).  Each paper test is a `Decision`; each
@@ -133,7 +134,32 @@ noncomputable def selectedPairCodeChain
     (incrementNoEarlyFresh : K .pairIncrementNoEarlyOutcome ∉ known := by key_fresh)
     (arithmeticFresh : K .pairSerialArithmetic ∉ known := by key_fresh)
     (cycleFresh : K .pairPowerOfTwoCycle ∉ known := by key_fresh)
-    (closedFresh : closed ∉ known := by key_fresh) :
+    (closedFresh : closed ∉ known := by key_fresh)
+    [FactKeys.Has (K .activeSurplusDemands) known]
+    [FactKeys.Has (K .activeSurplusFamily) known]
+    [FactKeys.Has (K .baselineSpineDemand) known]
+    [FactKeys.Has (K .cycleRankConstraint) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .exactCubicBaselineBudget) known]
+    [FactKeys.Has (K .incrementalSkeletonRoom) known]
+    [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .mixedSparseSpineDependence) known]
+    [FactKeys.Has (K .openPortSuppression) known]
+    [FactKeys.Has (K .openPortSuppressionSafe) known]
+    [FactKeys.Has (K .replacementExclusion) known]
+    [FactKeys.Has (K .returnAvoidance) known]
+    [FactKeys.Has (K .singleOpenPortSuppressionWitness) known]
+    [FactKeys.Has (K .skeletonDominates) known]
+    [FactKeys.Has (K .slackIndependent) known]
+    [FactKeys.Has (K .sparsePortActivation) known]
+    [FactKeys.Has (K .sparseSlackSurplus) known]
+    [FactKeys.Has (K .sparseUpperEnvelope) known]
+    [FactKeys.Has (K .suppressedFamilyCriticalCycle) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .tightEndpoint) known]
+    [FactKeys.Has (K .uncompressible) known]
+    [FactKeys.Has (K .windowPresent) known] :
     StrictSurplusBoundaryResult selected := by
   let overlapSystem :=
     (pairOverlapSystemRow (BranchState := BranchState)
@@ -148,8 +174,7 @@ noncomputable def selectedPairCodeChain
           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
           (presentation := erdosReceiverLoadProfile)
           (data := spineData)).run failsHistory (by key_fresh)
-      exact Or.inr (Or.inr
-        (residualHistory.get (K .pairConditionalFactorizationResidual)).down)
+      exact Or.inr (Or.inr (pairConditionalFactorizationReturn residualHistory))
   | .left factorizationHistory =>
       let overlapFailure :=
         (pairFailureOverlapRow (BranchState := BranchState)
@@ -169,8 +194,7 @@ noncomputable def selectedPairCodeChain
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
               (data := spineData)).run failsHistory (by key_fresh)
-          exact Or.inr (Or.inr
-            (residualHistory.get (K .pairConditionalFactorizationResidual)).down)
+          exact Or.inr (Or.inr (pairConditionalFactorizationReturn residualHistory))
       | .left coveredHistory =>
           match pairSystemOutcomeDichotomy (data := spineData)
               coveredHistory (by key_fresh) (by key_fresh) with
@@ -180,11 +204,7 @@ noncomputable def selectedPairCodeChain
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile)
                   (data := spineData)).run earlyHistory (by key_fresh)
-              exact Or.inr (Or.inl ⟨
-                Or.inl (typeBHistory.get (K .pairSystemEarlyOutcome)).down,
-                (typeBHistory.get (K .typeBFanEntry)).down,
-                (typeBHistory.get (K .surplusAbove)).down,
-                (typeBHistory.get (K .sparseSurplusSurvivor)).down⟩)
+              exact Or.inr (Or.inl (pairTypeBSystemReturn typeBHistory))
           | .right noEarlyHistory =>
               let serialHistory :=
                 (pairSerialDemandSystemRow (BranchState := BranchState)
@@ -200,8 +220,7 @@ noncomputable def selectedPairCodeChain
                       (presentation := erdosReceiverLoadProfile)
                       (data := spineData)).run failsHistory (by key_fresh)
                   exact Or.inr (Or.inr
-                    (residualHistory.get
-                      (K .pairConditionalFactorizationResidual)).down)
+                    (pairConditionalFactorizationReturn residualHistory))
               | .left incrementHistory =>
                   match pairIncrementOutcomeDichotomy (data := spineData)
                       incrementHistory (by key_fresh) (by key_fresh) with
@@ -212,12 +231,7 @@ noncomputable def selectedPairCodeChain
                           (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                           (presentation := erdosReceiverLoadProfile)
                           (data := spineData)).run earlyHistory (by key_fresh)
-                      exact Or.inr (Or.inl ⟨
-                        Or.inr (typeBHistory.get
-                          (K .pairIncrementEarlyOutcome)).down,
-                        (typeBHistory.get (K .typeBFanEntry)).down,
-                        (typeBHistory.get (K .surplusAbove)).down,
-                        (typeBHistory.get (K .sparseSurplusSurvivor)).down⟩)
+                      exact Or.inr (Or.inl (pairTypeBIncrementReturn typeBHistory))
                   | .right noEarlyHistory =>
                       let arithmeticHistory :=
                         (pairSerialArithmeticRow (BranchState := BranchState)
@@ -234,6 +248,7 @@ noncomputable def selectedPairCodeChain
                             (by key_fresh)
                       exact (closedHistory.elimClosed (by infer_instance)).elim
 
+set_option maxHeartbeats 8000000 in
 /-- Node `[144]` on any ledger carrying the homogeneous bottleneck pattern
 published by the geometric audit `[140]`/`[142]`/`[143]`: decide the fixed caps.
 On the failing arm `lem:same-token-bottleneck-routing` routes the pattern to the
@@ -267,7 +282,37 @@ noncomputable def selectedBottleneckDischarge
     (unresolvedFresh : K .sameTokenPatternUnresolved ∉ known := by key_fresh)
     (readingsFresh : K .sameTokenReadingsNotReplacement ∉ known := by key_fresh)
     (fanEntryFresh : K .typeBFanEntry ∉ known := by key_fresh)
-    (closedFresh : closed ∉ known := by key_fresh) :
+    (closedFresh : closed ∉ known := by key_fresh)
+    [FactKeys.Has (K .activeSurplusFamily) known]
+    [FactKeys.Has (K .baselineSpineDemand) known]
+    [FactKeys.Has (K .blockedPairEntropySandwich) known]
+    [FactKeys.Has (K .blockedPairEntropySetup) known]
+    [FactKeys.Has (K .blockedPairNoExit) known]
+    [FactKeys.Has (K .canonicalBlockerRoute) known]
+    [FactKeys.Has (K .canonicalPairLedger) known]
+    [FactKeys.Has (K .cycleRankConstraint) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .dependentPairFamily) known]
+    [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .noProperBaseline) known]
+    [FactKeys.Has (K .openPortSuppression) known]
+    [FactKeys.Has (K .openPortSuppressionSafe) known]
+    [FactKeys.Has (K .pairDegreeProfileFibres) known]
+    [FactKeys.Has (K .pairNoProfileObstruction) known]
+    [FactKeys.Has (K .pairNoResponseObstruction) known]
+    [FactKeys.Has (K .replacementExclusion) known]
+    [FactKeys.Has (K .returnAvoidance) known]
+    [FactKeys.Has (K .roleFibrePartition) known]
+    [FactKeys.Has (K .singleOpenPortSuppressionWitness) known]
+    [FactKeys.Has (K .slackIndependent) known]
+    [FactKeys.Has (K .sparsePortActivation) known]
+    [FactKeys.Has (K .sparseUpperEnvelope) known]
+    [FactKeys.Has (K .suppressedFamilyCriticalCycle) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .tightEndpoint) known]
+    [FactKeys.Has (K .uncompressible) known]
+    [FactKeys.Has (K .windowPresent) known] :
     StrictSurplusBoundaryResult selected := by
   match homogeneousBottleneckDichotomy (data := spineData) history
       (by key_fresh) (by key_fresh) with
@@ -285,15 +330,7 @@ noncomputable def selectedBottleneckDischarge
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
               (data := spineData)).run handoffHistory (by key_fresh)
-          exact Or.inl ⟨
-            Or.inl ⟨(entered.get (K .typeBHandoff)).down,
-              (entered.get (K .typeBFanEntry)).down⟩,
-            (entered.get (K .bottleneckRouting)).down,
-            (entered.get (K .homogeneousBottleneckPattern)).down,
-            (entered.get (K .sparsePressureOverload)).down,
-            (entered.get (K .capacityTokenLedger)).down,
-            (entered.get (K .surplusAbove)).down,
-            (entered.get (K .sparseSurplusSurvivor)).down⟩
+          exact Or.inl (node144aHandoffReturn entered)
       | .right failsHistory =>
           let unresolvedOnly :=
             (sameTokenPatternUnresolvedRow (BranchState := BranchState)
@@ -307,15 +344,7 @@ noncomputable def selectedBottleneckDischarge
               (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
               (presentation := erdosReceiverLoadProfile)
               (data := spineData)).run unresolvedOnly (by key_fresh)
-          exact Or.inl ⟨
-            Or.inr ⟨(unresolved.get (K .typeBHandoffFails)).down,
-              (unresolved.get (K .sameTokenPatternUnresolved)).down⟩,
-            (unresolved.get (K .bottleneckRouting)).down,
-            (unresolved.get (K .homogeneousBottleneckPattern)).down,
-            (unresolved.get (K .sparsePressureOverload)).down,
-            (unresolved.get (K .capacityTokenLedger)).down,
-            (unresolved.get (K .surplusAbove)).down,
-            (unresolved.get (K .sparseSurplusSurvivor)).down⟩
+          exact Or.inl (node144aFailsReturn unresolved)
   | .right capsHistory =>
       -- The caps arm, closed at G: the audited pattern at G's overloading
       -- token refutes the caps at the same ledger.

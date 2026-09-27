@@ -5,6 +5,10 @@ import Hypostructure.Graph.Strategy.SpineRows.TypeAExitSixDichotomy
 import Hypostructure.Graph.Strategy.SpineRows.TypeAExitSixScopeDichotomy
 import HypostructureErdos64EG.Assembly.RouteEight.Residual
 import HypostructureErdos64EG.Assembly.TypeA.DecoratedHandoff
+import Hypostructure.Graph.Strategy.SpineRows.SameCenterOpenPortCompatibility
+import Hypostructure.Graph.Strategy.SpineRows.TriangularShoulderCompletion
+import Hypostructure.Graph.Strategy.SpineRows.TriangularPortReturn
+import Hypostructure.Graph.Strategy.ColdCorridorRows.AbsorbedGermFanEnvelope
 
 /-!
 # Assembly: TypeA / ExitFiveToSeven
@@ -116,8 +120,10 @@ noncomputable abbrev typeAExitFiveToEightKeys : FactKeys EGInput.{u} :=
     K .route8StageRate,
     K .route8UnpaidTwoCarrier,
     K .route8UnpaidWitnessFree,
-    K .typeAExitSevenEnvelope]
+    K .typeAExitSevenEnvelope,
+    K .typeBAbsorbedCharge]
 
+set_option maxHeartbeats 8000000 in
 /-- **Nodes `[103]`--`[109]`: exits `(5)`--`(7)` and the route-`8` residual**, on
 a saturated exit-`(4)`-free state of the exit segment (index-polymorphic).
 `[103]` exit `(5)`: a target-complete response compression closes at `[104]`
@@ -153,7 +159,44 @@ noncomputable def selectedTypeAExitFiveToEight
     [FactKeys.Has (K .surplusAtOrBelow) known]
     [FactKeys.Has (K .typeAReceiverRouting) known]
     [FactKeys.Has (K .route8Rate) known]
-    (fresh : List.Disjoint typeAExitFiveToEightKeys known := by key_fresh) :
+    (fresh : List.Disjoint typeAExitFiveToEightKeys known := by key_fresh)
+    [FactKeys.Has (K .barrierCap) known]
+    [FactKeys.Has (K .barrierEnumeration) known]
+    [FactKeys.Has (K .boundaryDemand) known]
+    [FactKeys.Has (K .coldAmbientCubic) known]
+    [FactKeys.Has (K .coldAmbientCubicStubExcess) known]
+    [FactKeys.Has (K .coldCorridorState) known]
+    [FactKeys.Has (K .coldFailureCompression) known]
+    [FactKeys.Has (K .coldFailureCycle) known]
+    [FactKeys.Has (K .coldFirstFailureOccurrence) known]
+    [FactKeys.Has (K .coldHandoffTransfer) known]
+    [FactKeys.Has (K .coldHotEntropyCap) known]
+    [FactKeys.Has (K .coldMass) known]
+    [FactKeys.Has (K .coldReturnCorridors) known]
+    [FactKeys.Has (K .coldSelectedBranchExcess) known]
+    [FactKeys.Has (K .coldStubExcess) known]
+    [FactKeys.Has (K .curvatureFullRank) known]
+    [FactKeys.Has (K .curvatureTargetRank) known]
+    [FactKeys.Has (K .cycleRankConstraint) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .exactResponseProfile) known]
+    [FactKeys.Has (K .forcedCurvatureCost) known]
+    [FactKeys.Has (K .hotColdPartition) known]
+    [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .netChargeLocalization) known]
+    [FactKeys.Has (K .netDeficiencyCap) known]
+    [FactKeys.Has (K .noProperBaseline) known]
+    [FactKeys.Has (K .returnAvoidance) known]
+    [FactKeys.Has (K .skeletonDominates) known]
+    [FactKeys.Has (K .slackIndependent) known]
+    [FactKeys.Has (K .sparseSurplusSurvivor) known]
+    [FactKeys.Has (K .stubSupply) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .targetRankCircuit) known]
+    [FactKeys.Has (K .wedgeSupply) known]
+    [FactKeys.Has (K .windowPackageSeparated) known]
+    [FactKeys.Has (K .windowPresent) known] :
     SelectedRouteEightBoundary selected := by
   have fresh' := fresh
   repeat (rw [List.disjoint_cons_left] at fresh'; obtain ⟨_fresh, fresh'⟩ := fresh')
@@ -207,6 +250,20 @@ noncomputable def selectedTypeAExitFiveToEight
                   (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                   (presentation := erdosReceiverLoadProfile)
                   (data := spineData)).run residual (by key_fresh)
-              exact selectedRouteEightResidual normal
+              -- The `[69]` landing lemmas and the absorbed Type B charge
+              -- `[177]` are facts of G on this lane too.
+              let compatible :=
+                (sameCenterOpenPortCompatibilityRow (data := spineData)).run
+                  normal (by key_fresh)
+              let completed :=
+                (triangularShoulderCompletionRow (data := spineData)).run
+                  compatible (by key_fresh)
+              let returned :=
+                (triangularPortReturnRow (data := spineData)).run completed
+                  (by key_fresh)
+              let charged :=
+                (typeBAbsorbedChargeRow (data := spineData)).run returned
+                  (by key_fresh)
+              exact selectedRouteEightResidual charged
 
 end HypostructureErdos64EG

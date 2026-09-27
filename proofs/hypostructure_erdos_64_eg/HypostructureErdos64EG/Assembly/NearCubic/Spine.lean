@@ -225,6 +225,7 @@ noncomputable def nearCubicFullRank
       (nearCubicRankDropCloses dependence).elim
   | .right fullRankHistory => fullRankHistory
 
+set_option maxHeartbeats 8000000 in
 /-- The route-8 continuation `[57]`--`[124]` entered from the `[24]` arm.  It
 consumes the private-carrier rate at `[120]`--`[122]`, and `[24]`'s density cap
 does not decide it (`Hypostructure.Fixtures.Route8RateDensityCapGap`); its exact
@@ -252,13 +253,38 @@ noncomputable def nearCubicRouteEightEntry
     [FactKeys.Has (K .cubicBaseline) known]
     (fresh : List.Disjoint
       (K .route8Rate :: K .route8RateFails :: netChargeContinuationKeys.{u}) known := by
-        key_fresh) :
+        key_fresh)
+    [FactKeys.Has (K .barrierCap) known]
+    [FactKeys.Has (K .barrierEnumeration) known]
+    [FactKeys.Has (K .coldAmbientCubic) known]
+    [FactKeys.Has (K .coldAmbientCubicStubExcess) known]
+    [FactKeys.Has (K .coldHotEntropyCap) known]
+    [FactKeys.Has (K .coldMass) known]
+    [FactKeys.Has (K .coldMassBounded) known]
+    [FactKeys.Has (K .coldRoute8AtOrAbove) known]
+    [FactKeys.Has (K .coldSelectedBranchExcess) known]
+    [FactKeys.Has (K .coldStubExcess) known]
+    [FactKeys.Has (K .curvatureFullRank) known]
+    [FactKeys.Has (K .curvatureTargetRank) known]
+    [FactKeys.Has (K .cycleRankConstraint) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .densityCap) known]
+    [FactKeys.Has (K .exactResponseProfile) known]
+    [FactKeys.Has (K .forcedCurvatureCost) known]
+    [FactKeys.Has (K .noProperBaseline) known]
+    [FactKeys.Has (K .skeletonDominates) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .targetRankCircuit) known]
+    [FactKeys.Has (K .wedgeSupply) known]
+    [FactKeys.Has (K .windowPackageSeparated) known]
+    [FactKeys.Has (K .windowPresent) known] :
     SelectedNearCubicSurvivorBoundary selected :=
   match route8RateDichotomy (data := spineData) history .netDeficiencyCap
       (Or.inl rfl) (by key_fresh) (by key_fresh) with
   | .left rated => Or.inl (selectedNetChargeContinuation rated)
-  | .right rateFails => Or.inr (Or.inl (rateFails.get (K .route8RateFails)).down)
+  | .right rateFails => Or.inr (Or.inl (route8RateFailsReturn rateFails))
 
+set_option maxHeartbeats 8000000 in
 /-- The route-8 continuation `[57]`--`[124]` on the `[162]` arm entered from
 `[160]`'s second complement: the ledger retains the failed private-carrier rate
 the continuation would consume at `[120]`--`[122]`, and the retained failure is
@@ -266,10 +292,52 @@ the `[187]` outcome. -/
 noncomputable def nearCubicRateFailedExit
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
     (history : ExactLedger EGInput.{u} selected known)
-    [FactKeys.Has (K .route8RateFails) known] :
+    [FactKeys.Has (K .route8RateFails) known]
+    [FactKeys.Has (K .barrierCap) known]
+    [FactKeys.Has (K .barrierEnumeration) known]
+    [FactKeys.Has (K .boundaryDemand) known]
+    [FactKeys.Has (K .coldAmbientCubic) known]
+    [FactKeys.Has (K .coldAmbientCubicStubExcess) known]
+    [FactKeys.Has (K .coldHotEntropyCap) known]
+    [FactKeys.Has (K .coldMass) known]
+    [FactKeys.Has (K .coldMassBounded) known]
+    [FactKeys.Has (K .coldRoute8AtOrAbove) known]
+    [FactKeys.Has (K .coldSelectedBranchExcess) known]
+    [FactKeys.Has (K .coldStubExcess) known]
+    [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .curvatureFullRank) known]
+    [FactKeys.Has (K .curvatureTargetRank) known]
+    [FactKeys.Has (K .cycleRankConstraint) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .densityCap) known]
+    [FactKeys.Has (K .exactResponseProfile) known]
+    [FactKeys.Has (K .forcedCurvatureCost) known]
+    [FactKeys.Has (K .hotColdPartition) known]
+    [FactKeys.Has (K .largeBudgetResidual) known]
+    [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .netDeficiencyCap) known]
+    [FactKeys.Has (K .noProperBaseline) known]
+    [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .replacementExclusion) known]
+    [FactKeys.Has (K .returnAvoidance) known]
+    [FactKeys.Has (K .selection) known]
+    [FactKeys.Has (K .skeletonDominates) known]
+    [FactKeys.Has (K .slackIndependent) known]
+    [FactKeys.Has (K .sparseSurplusSurvivor) known]
+    [FactKeys.Has (K .stubSupply) known]
+    [FactKeys.Has (K .surplusAtOrBelow) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .targetRankCircuit) known]
+    [FactKeys.Has (K .tightEndpoint) known]
+    [FactKeys.Has (K .uncompressible) known]
+    [FactKeys.Has (K .wedgeSupply) known]
+    [FactKeys.Has (K .windowPackageSeparated) known]
+    [FactKeys.Has (K .windowPresent) known] :
     SelectedNearCubicSurvivorBoundary selected :=
-  Or.inr (Or.inl (history.get (K .route8RateFails)).down)
+  Or.inr (Or.inl (route8RateFailsReturn history))
 
+set_option maxHeartbeats 8000000 in
 /-- **Nodes `[47]`--`[56]`** on the full-rank arm `[34]`, `[147]` arm (`θ < 1/78`): `[56]` reads the strict cap from `K .coldRoute8Below`,
 the route-8 carrier inequality `τ(θ) < 3/13 < 1/4`; the private-carrier rate
 `K .route8Rate` consumed at `[120]`--`[122]` is already on this ledger.
@@ -313,7 +381,23 @@ noncomputable def nearCubicLargeBudgetColdRate
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .tightEndpoint) known]
     [FactKeys.Has (K .cubicBaseline) known]
-    (fresh : List.Disjoint nearCubicResidualBKeys.{u} known := by key_fresh) :
+    (fresh : List.Disjoint nearCubicResidualBKeys.{u} known := by key_fresh)
+    [FactKeys.Has (K .barrierCap) known]
+    [FactKeys.Has (K .barrierEnumeration) known]
+    [FactKeys.Has (K .coldAmbientCubic) known]
+    [FactKeys.Has (K .coldAmbientCubicStubExcess) known]
+    [FactKeys.Has (K .coldHotEntropyCap) known]
+    [FactKeys.Has (K .coldMass) known]
+    [FactKeys.Has (K .coldSelectedBranchExcess) known]
+    [FactKeys.Has (K .coldStubExcess) known]
+    [FactKeys.Has (K .curvatureTargetRank) known]
+    [FactKeys.Has (K .cycleRankConstraint) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .exactResponseProfile) known]
+    [FactKeys.Has (K .noProperBaseline) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .targetRankCircuit) known]
+    [FactKeys.Has (K .windowPresent) known] :
     SelectedNearCubicSurvivorBoundary selected := by
   let cost :=
     (forcedCurvatureCostRow (BranchState := BranchState)
@@ -345,7 +429,7 @@ noncomputable def nearCubicLargeBudgetColdRate
               -- the configuration at G where the joint realization fails,
               -- returned.
               exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
-                (residualHistory.get (K .allColdEntropyResidual)).down)))))
+                (node54Return residualHistory))))))
       | .right boundHistory =>
           -- `[55]`: Residual C on the high-entropy arm.
           let largeHistory :=
@@ -408,6 +492,7 @@ noncomputable def nearCubicLargeBudgetColdRate
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                   large (by key_fresh)))
 
+set_option maxHeartbeats 8000000 in
 /-- **Nodes `[47]`--`[56]`** on the full-rank arm `[34]`, `[161]` arm: `[56]` reads `[160]`'s deficiency cap `K .denseDeficiencyBelow` in place
 of `[24]` (`lem:dense-deficiency-routing`); `[160]`'s second test left
 `K .route8Rate` on this ledger.
@@ -440,7 +525,23 @@ noncomputable def nearCubicLargeBudgetDenseRate
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .tightEndpoint) known]
     [FactKeys.Has (K .cubicBaseline) known]
-    (fresh : List.Disjoint nearCubicResidualBKeys.{u} known := by key_fresh) :
+    (fresh : List.Disjoint nearCubicResidualBKeys.{u} known := by key_fresh)
+    [FactKeys.Has (K .barrierCap) known]
+    [FactKeys.Has (K .barrierEnumeration) known]
+    [FactKeys.Has (K .coldAmbientCubic) known]
+    [FactKeys.Has (K .coldAmbientCubicStubExcess) known]
+    [FactKeys.Has (K .coldHotEntropyCap) known]
+    [FactKeys.Has (K .coldMass) known]
+    [FactKeys.Has (K .coldSelectedBranchExcess) known]
+    [FactKeys.Has (K .coldStubExcess) known]
+    [FactKeys.Has (K .curvatureTargetRank) known]
+    [FactKeys.Has (K .cycleRankConstraint) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .exactResponseProfile) known]
+    [FactKeys.Has (K .noProperBaseline) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .targetRankCircuit) known]
+    [FactKeys.Has (K .windowPresent) known] :
     SelectedNearCubicSurvivorBoundary selected := by
   let cost :=
     (forcedCurvatureCostRow (BranchState := BranchState)
@@ -472,7 +573,7 @@ noncomputable def nearCubicLargeBudgetDenseRate
               -- the configuration at G where the joint realization fails,
               -- returned.
               exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
-                (residualHistory.get (K .allColdEntropyResidual)).down)))))
+                (node54Return residualHistory))))))
       | .right boundHistory =>
           -- `[55]`: Residual C on the high-entropy arm.
           let largeHistory :=
@@ -535,6 +636,7 @@ noncomputable def nearCubicLargeBudgetDenseRate
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                   large (by key_fresh)))
 
+set_option maxHeartbeats 8000000 in
 /-- **Nodes `[47]`--`[56]`** on the full-rank arm `[34]`, `[24]` arm (bounded arm of `[153]`): `[56]` reads `[24]`'s density cap
 `K .densityCap`.  The density cap does not decide the private-carrier rate
 consumed at `[120]`--`[122]` (`Hypostructure.Fixtures.Route8RateDensityCapGap`),
@@ -570,7 +672,25 @@ noncomputable def nearCubicLargeBudgetDensityCap
     [FactKeys.Has (K .cubicBaseline) known]
     (fresh : List.Disjoint
       (K .route8Rate :: K .route8RateFails :: nearCubicResidualBKeys.{u}) known := by
-        key_fresh) :
+        key_fresh)
+    [FactKeys.Has (K .barrierCap) known]
+    [FactKeys.Has (K .barrierEnumeration) known]
+    [FactKeys.Has (K .coldAmbientCubic) known]
+    [FactKeys.Has (K .coldAmbientCubicStubExcess) known]
+    [FactKeys.Has (K .coldHotEntropyCap) known]
+    [FactKeys.Has (K .coldMass) known]
+    [FactKeys.Has (K .coldMassBounded) known]
+    [FactKeys.Has (K .coldRoute8AtOrAbove) known]
+    [FactKeys.Has (K .coldSelectedBranchExcess) known]
+    [FactKeys.Has (K .coldStubExcess) known]
+    [FactKeys.Has (K .curvatureTargetRank) known]
+    [FactKeys.Has (K .cycleRankConstraint) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .exactResponseProfile) known]
+    [FactKeys.Has (K .noProperBaseline) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .targetRankCircuit) known]
+    [FactKeys.Has (K .windowPresent) known] :
     SelectedNearCubicSurvivorBoundary selected := by
   let cost :=
     (forcedCurvatureCostRow (BranchState := BranchState)
@@ -602,7 +722,7 @@ noncomputable def nearCubicLargeBudgetDensityCap
               -- the configuration at G where the joint realization fails,
               -- returned.
               exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
-                (residualHistory.get (K .allColdEntropyResidual)).down)))))
+                (node54Return residualHistory))))))
       | .right boundHistory =>
           -- `[55]`: Residual C on the high-entropy arm.
           let largeHistory :=
@@ -661,6 +781,7 @@ noncomputable def nearCubicLargeBudgetDensityCap
                   (presentation := erdosReceiverLoadProfile) (data := spineData)).run
                   large (by key_fresh))
 
+set_option maxHeartbeats 8000000 in
 /-- **Nodes `[47]`--`[56]`** on the full-rank arm `[34]`, `[24]` arm of the `[162]` pass entered from `[160]`'s second complement:
 `[56]` reads `[24]`'s density cap, and the ledger retains `[160]`'s failed
 private-carrier rate `K .route8RateFails`, which the route-8 continuation would
@@ -694,7 +815,25 @@ noncomputable def nearCubicLargeBudgetRateFailed
     [FactKeys.Has (K .replacementExclusion) known]
     [FactKeys.Has (K .tightEndpoint) known]
     [FactKeys.Has (K .cubicBaseline) known]
-    (fresh : List.Disjoint nearCubicResidualBKeys.{u} known := by key_fresh) :
+    (fresh : List.Disjoint nearCubicResidualBKeys.{u} known := by key_fresh)
+    [FactKeys.Has (K .barrierCap) known]
+    [FactKeys.Has (K .barrierEnumeration) known]
+    [FactKeys.Has (K .coldAmbientCubic) known]
+    [FactKeys.Has (K .coldAmbientCubicStubExcess) known]
+    [FactKeys.Has (K .coldHotEntropyCap) known]
+    [FactKeys.Has (K .coldMass) known]
+    [FactKeys.Has (K .coldMassBounded) known]
+    [FactKeys.Has (K .coldRoute8AtOrAbove) known]
+    [FactKeys.Has (K .coldSelectedBranchExcess) known]
+    [FactKeys.Has (K .coldStubExcess) known]
+    [FactKeys.Has (K .curvatureTargetRank) known]
+    [FactKeys.Has (K .cycleRankConstraint) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .exactResponseProfile) known]
+    [FactKeys.Has (K .noProperBaseline) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .targetRankCircuit) known]
+    [FactKeys.Has (K .windowPresent) known] :
     SelectedNearCubicSurvivorBoundary selected := by
   let cost :=
     (forcedCurvatureCostRow (BranchState := BranchState)
@@ -726,7 +865,7 @@ noncomputable def nearCubicLargeBudgetRateFailed
               -- the configuration at G where the joint realization fails,
               -- returned.
               exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr
-                (residualHistory.get (K .allColdEntropyResidual)).down)))))
+                (node54Return residualHistory))))))
       | .right boundHistory =>
           -- `[55]`: Residual C on the high-entropy arm.
           let largeHistory :=

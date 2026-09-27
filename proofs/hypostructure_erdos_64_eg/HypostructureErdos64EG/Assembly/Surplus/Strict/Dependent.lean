@@ -115,7 +115,29 @@ noncomputable def Assembly.Internal.strictSurplusDependent
                       (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
                       (presentation := erdosReceiverLoadProfile)
                       (data := spineData)).run unrealizedHistory (by key_fresh)
-                  exact selectedPairCodeChain firstFailure
+                  -- `[131]`'s dependence prefix, cubic budget, skeleton room and
+                  -- `[21]`'s skeleton domination are facts of G on this side too.
+                  let mixed :=
+                    (mixedSparseSpineDependenceRow (BranchState := BranchState)
+                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                      (presentation := erdosReceiverLoadProfile)
+                      (data := spineData)).run firstFailure (by key_fresh)
+                  let cubic :=
+                    (exactCubicBaselineBudgetRow (BranchState := BranchState)
+                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                      (presentation := erdosReceiverLoadProfile)
+                      (data := spineData)).run mixed (by key_fresh)
+                  let room :=
+                    (incrementalSkeletonRoomRow (BranchState := BranchState)
+                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                      (presentation := erdosReceiverLoadProfile)
+                      (data := spineData)).run cubic (by key_fresh)
+                  let dominated :=
+                    (skeletonDominatesRow (BranchState := BranchState)
+                      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+                      (presentation := erdosReceiverLoadProfile)
+                      (data := spineData)).run room (by key_fresh)
+                  exact selectedPairCodeChain dominated
               | .left sandwichHistory =>
                   let fibres :=
                     (roleFibrePartitionRow (BranchState := BranchState)

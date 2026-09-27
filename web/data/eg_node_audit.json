@@ -1,6 +1,6 @@
 {
  "status": "exact selected-root reduction to [20a], [144a], [172a], [182], [186], and [187]",
- "updated_at": "2026-09-27T12:48:56.496695+00:00",
+ "updated_at": "2026-09-27T18:08:02.080565+00:00",
  "aggregate_validation": "Full HypostructureErdos64EG package build passed on the working tree at ae44b9b plus the removal of Assembly/Surplus/TypeBContinuation.lean and TypeBCertificateOutcome, the [132] exit/blocker decision, the single [140]/[142]/[143] audit row `homogeneousBottleneckAuditRow`, and the [144] caps-fail/caps-hold decision (9029 jobs); every node entry re-derived on 2026-09-25 from the live Lean producers and the manuscript. Kernel axiom audit (web/tools/lean_axiom_audit.py): 153 assembly declarations, all clean, no frontier stubs.",
  "nodes": {
   "1": {
@@ -534,13 +534,13 @@
    "on_probed_closed_arm": true
   },
   "54": {
-   "producer": "`entropyCapBoundRow` (hypostructure/Hypostructure/Graph/Strategy/EntropyClosure.lean:104) via `runAndCloseIncompatible`",
+   "producer": "`entropyJointRealizationDichotomy` on [53]'s active arm in the four `nearCubicLargeBudget*` spines (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Spine.lean); joint arm closed by `entropyCapBoundRow.runAndCloseIncompatible`; `Node54ResidualOutcome` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean:2868), `node54Return`",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`K .entropyCapBound`: jointPackageDemand·2^F ≤ B. Proved when the window package of P₀ is retained; otherwise `entropyCapBound_unretained`, OPEN-CONSTRUCTION [54] tex:9921 (the joint realization of the all-window package, remainder states and forced bits is never constructed).",
-   "complete": "YES (OPEN-CONSTRUCTION hook)",
+   "fidelity_note": "[54] is the exact decision on the joint realization inequality at G; its failing arm returns `Node54ResidualOutcome` (40 facts).",
+   "complete": "YES: exact decision; returned residual",
    "local": "YES",
    "api": "OK",
-   "difference": "All-cold arm is a PAPER-ERROR sorry (independence claim not established).",
+   "difference": "The residual is returned rather than closed (the paper's step is not established at G).",
    "on_probed_closed_arm": true
   },
   "55": {
@@ -1522,8 +1522,8 @@
   "153": {
    "producer": "`coldMassDichotomy` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows.lean:350) at proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/RealizedAtOrAbove.lean:46, proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/DenseAtOrAbove.lean:45, proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/BelowRateFailure.lean:143; linear-arm rows bridgeless/`coldReturnCorridorRow` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows.lean:390)/first-failure/`coldGermExtractionRow`/`coldGermCandidatesRow`/`coldGermFamilyPositiveRow` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows.lean:2408), run in proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Survivor/RealizedAtOrAbove/Linear.lean:36-80",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "Corridor state [30] at G's cut-state presentation (T(J) = entry and head interfaces, moving head half-edge and offset, clause-read declared coordinates), second representative pinned to `rowRepresentative`; (F2) exclusion is OPEN-CONSTRUCTION [153] tex:7268 (equivalent at G to: every corridor terminal or heavy before its first state repeat); [219] publishes the (F4) exact count; `K .coldExchangeBound` at G's routed corridors.",
-   "complete": "YES (OPEN-CONSTRUCTION hook)",
+   "fidelity_note": "Corridor state [30] at G's cut-state presentation, second representative pinned to `rowRepresentative`; [153]'s (★) is an exact decision (`coldCutStatesDichotomy`): the (★) arm continues, the other arm returns `Node153ResidualOutcome` (42 facts, Assembly/Residuals.lean:2490) through `node153Return`.",
+   "complete": "YES: exact decision; returned residual",
    "local": "YES",
    "api": "OK",
    "difference": "The asymptotic 'sufficiently large n' is replaced by an exact finite threshold comparison, which is sound. The first-failure rows are unannotated (`EG-NODE none`) sub-steps of this node. The wrapper `selectedColdMassDichotomy` is uninvoked.",
@@ -1610,13 +1610,13 @@
    "on_probed_closed_arm": false
   },
   "162": {
-   "producer": "`denseColdCorridorsTerminalRow` (hypostructure/Hypostructure/Graph/Strategy/ColdCorridorRows/DenseTerminal.lean:27)",
+   "producer": "`coldHeavyEntryDichotomy` and `denseColdCorridorsTerminalRow` in `nearCubicDenseLinear` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/DensePass.lean:76); `Node162ResidualOutcome` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean:2671), `node162Return`",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`K .denseColdCorridorsTerminal` on the dense residual only: OPEN-CONSTRUCTION [162] tex:7694 (needs every corridor inside R; not consumed on the absorbed branch).",
-   "complete": "YES (OPEN-CONSTRUCTION hook)",
+   "fidelity_note": "On the (★) arm of the dense pass, the heavy-entry test decides [162]: its test arm proves terminality (`denseColdCorridorsTerminal_of_distinct`), its other arm returns `Node162ResidualOutcome` (46 facts).",
+   "complete": "YES: exact decision; returned residual",
    "local": "YES",
    "api": "OK",
-   "difference": "The dense linear arm additionally runs `remainderNormalizationRow`/`remainderRelabelingEntropyRow` and `denseColdCorridorsTerminalRow` (the (F5) terminality of lem:dense-cold-pass) before the first-failure rows. G2 germs are not discharged here either (see [156]).",
+   "difference": "The dense linear arm also runs [25]-[34], [48] and [58]'s localization before the corridor rows, and [175]/[177] on its family, so the returned residuals carry them.",
    "on_probed_closed_arm": false
   },
   "163": {
@@ -1790,13 +1790,13 @@
    "on_probed_closed_arm": false
   },
   "172a": {
-   "producer": "`scaleAdditivityDichotomy` .right arm (hypostructure/Hypostructure/Graph/Strategy/BlockedCompressionRows.lean:35) publishing `K .blockedBarrierOverlap` = `BlockedBarrierFailureStatement` (hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean:2592); `selectedCanonicalReplacementContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Replacement.lean:71); `selectedLedgerBoundary` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:129)",
+   "producer": "`BlockedBarrierOverlapOutcome` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean:504), `blockedBarrierOverlapReturn` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean:650), returned by `selectedCanonicalReplacementContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/NearCubic/Replacement.lean:65); `selectedLedgerBoundary` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:71)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "The leaf publishes `K .blockedBarrierOverlap`. Its Holds is `BlockedBarrierFailureStatement`: a coordinate with every rank-earlier coordinate satisfying the cleared F/W bound, and a member₀ (fixed outside record/prefix) whose surviving-vs-a-priori fibre cardinalities violate the bound, plus the state-fibre and monotonicity facts. This matches thm:main (iii); no overlap support is claimed.",
+   "fidelity_note": "The outcome carries all 71 facts of the dense-pass ledger at [172a] (including [25]-[34], [48], the cold stubs [149]-[152], the corridor chain, the family, [163]-[169] and `K .blockedBarrierOverlap`), one `get` each; matches thm:main (iii).",
    "complete": "YES: exact routing; endpoint remains open",
-   "local": "PARTIAL: the failing member₀ ranges over `blockedClassAt` (comparison graphs in 𝓑(𝒫)), not necessarily the selected graph; the manuscript notes the same gap",
+   "local": "YES",
    "api": "OK",
-   "difference": "`selectedCanonicalReplacementContinuation` and the root result return only the single Holds proposition, not the inherited ExactLedger. The manuscript says [172a] retains the incoming selected residual. The key name says 'overlap' but the content is the graph-count failure.",
+   "difference": "The [160] arm facts (`denseDeficiencyBelow`/`AtOrAbove`, `route8RateFails`) differ between the two dense passes and are not carried.",
    "on_probed_closed_arm": false
   },
   "181": {
@@ -1809,13 +1809,13 @@
    "on_probed_closed_arm": false
   },
   "182": {
-   "producer": "`PairUncoveredResidual` / `PairConditionalFactorizationResidualStatement` (hypostructure/Hypostructure/Graph/Strategy/SpineVocabulary.lean:8231, 8240), published on the `.right` arms of `pairConditionalFactorizationDichotomy` (:5196), `pairSystemRealizabilityDichotomy` (:5529) and `pairIncrementCoveredDichotomy` (:5605) in hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean; `selectedLedgerBoundary` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:129)",
+   "producer": "`PairConditionalFactorizationOutcome` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean:801), `pairConditionalFactorizationReturn` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean:871), called at the three residual arms of `selectedPairCodeChain` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Local.lean:110); `selectedLedgerBoundary` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:71)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`K .pairConditionalFactorizationResidual` holds one constructor: `.factorization` (the system and ¬ConditionalFactorization), `.systemRealizability` (the returns and ¬ any realizability outcome) or `.incrementArithmetic` (the serial system and ¬ any increment outcome). This is the exact input plus the negation of the first failed [178]-[180] implication, as in thm:main (iv).",
+   "fidelity_note": "The outcome carries the 33 facts common to the six pair-code paths (strict-surplus prefix, activation, baseline, [135]'s envelope, [131]'s dependence prefix/budget/room, [21]'s domination, the [178] first failure and system) and `K .pairConditionalFactorizationResidual`, one `get` each; matches thm:main (iv).",
    "complete": "YES: exact routing; endpoint remains open",
    "local": "YES",
    "api": "OK",
-   "difference": "The strict-surplus branch returns only the single `(K ...).At` value, not its ExactLedger, so the strict-surplus/survivor ancestry is not carried to the root on this outcome. The manuscript retains the incoming branch.",
+   "difference": "The [130]/[131]/[137] side facts and the [178]-[180] arm facts are not common to all six paths and are not carried (see the register).",
    "on_probed_closed_arm": false
   },
   "183": {
@@ -1848,39 +1848,39 @@
    "on_probed_closed_arm": false
   },
   "186": {
-   "producer": "`route8JointBalanceRow`",
+   "producer": "`Route8JointBalanceOutcome` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean:946), `route8JointBalanceReturn` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean:1108), called by `selectedRouteEightUnifiedResidual` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/RouteEight/Local.lean:205) after `route8JointBalanceRow`; `selectedLedgerBoundary` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:71)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "(168.22) at recorded peeling sets of the descent; [185] not republished; demand weights δ, δ−1.",
-   "complete": "YES",
+   "fidelity_note": "The outcome carries the 79 facts common to all 2080 paths into [186] (near-cubic prefix, cold stubs, spine [25]-[56], cold corridors, landing lemmas, bridge prefix, unified census, descent, [181], [183]-[185], `K .route8JointBalance`), one `get` each; matches thm:main (v).",
+   "complete": "YES: exact routing; endpoint remains open",
    "local": "YES",
    "api": "OK",
    "difference": "None",
    "on_probed_closed_arm": false
   },
   "20a": {
-   "producer": "`selectedSparseSurplusExitContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Entry.lean:214) running `sparseSurplusExitRoutingRow` (hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean:3964); `selectedSparseTargetDefectStructureContinuation` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Entry.lean:235) running `sparseTargetDefectStructureRow` (hypostructure/Hypostructure/Graph/Strategy/HomogeneousBottleneckRows.lean:4008); `Node20aOutcome` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:61); `selectedLedgerBoundary` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:129)",
+   "producer": "`Node20aOutcome` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean:29), `node20aReturn` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean:69); `selectedLedgerBoundary` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:71)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "On the `surplusAbove` arm of [19] and the `sparsePairExit` arm of [20]: the dyadic, compression, delocalization and suppression-chord exits are refuted against the ledger, and only the target-defect exit survives as `K .sparseTargetDefectResidual` (attempted quotient, rank-reducing label map, identified reduced/full realizations with differing target response). `K .sparseTargetDefectStructure` is then appended. `Node20aOutcome` returns these two facts with `sparsePairExit` and `surplusAbove`, which matches thm:main (i).",
+   "fidelity_note": "`Node20aOutcome` is the explicit conjunction of all 18 facts on the [20a] ledger (entry prefix, `K .surplusAbove`, `K .sparsePairExit`, `K .sparseTargetDefectResidual`, `K .sparseTargetDefectStructure`), one `get` per fact; matches thm:main (i).",
    "complete": "YES: exact routing; endpoint remains open",
    "local": "YES",
    "api": "OK",
-   "difference": "None. The at-or-below-surplus target defect is a separate [187] case, and `node20a_nearCubicTargetDefect_disjoint` (Final.lean:79) proves the two cannot coincide.",
+   "difference": "None. The at-or-below-surplus target defect is the separate [187] outcome `NearCubicTargetDefectOutcome`.",
    "on_probed_closed_arm": false
   },
   "144a": {
-   "producer": "`Node144aOutcome` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Boundary.lean:35); `Assembly.Internal.strictSurplusDependent` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Strict/Dependent.lean:28; window-incidence arm :285-296, remainder-surplus arm :321-332, primitive-carrier arm :354-365, each on the caps-fail arm of `homogeneousBottleneckDichotomy`); `selectedBottleneckDischarge` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Local.lean:333); `selectedStrictSurplusBranch` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Strict.lean:17); `selectedLedgerBoundary` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:129; outcome disjunct at :119)",
+   "producer": "`Node144aOutcome` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean:200), `node144aHandoffReturn` / `node144aFailsReturn` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean:302, 401), called by `selectedBottleneckDischarge` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Local.lean:262); `selectedLedgerBoundary` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:71)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`Node144aOutcome` is exactly the content thm:main (ii) lists for [144a]: `K .typeBHandoff` (the same-token handoff with its maximal packing, core and decorated envelope), `K .typeBFanEntry` (the appended common fan entry, named `StrictSurplusTypeBOutcome`, Boundary.lean:23), `K .bottleneckRouting` (the overloaded token/role fibre), `K .homogeneousBottleneckPattern` (the selected matching or star), `K .sparsePressureOverload` and `K .capacityTokenLedger` (active-demand and capacity presentations), and the strict-surplus ancestry `K .surplusAbove` and `K .sparseSurplusSurvivor`. `Assembly.Internal.strictSurplusDependent` builds it on the window-incidence, remainder-surplus and primitive-carrier arms, on the caps-fail arm of [144], from the ledger returned by `selectedBottleneckDischarge` (`sameTokenBottleneckRoutingRow` then `sameTokenTypeBFanEntryRow`). No cap, near-cubic estimate or Type B certificate outcome is part of it, as in the manuscript.",
+   "fidelity_note": "`Node144aOutcome` carries the 44 facts common to the three audit arms ([140]/[142]/[143]) of the strict-surplus ledger (entry prefix, activation, pair split, blocker ledger, capacity tokens, fibre pressure, overload, `K .bridgeless`, `K .highCentreNormalForm`, pattern, caps-fail, routing), then [144]'s own arms: (`K .typeBHandoff`, `K .typeBFanEntry`) or (`K .typeBHandoffFails`, `K .sameTokenPatternUnresolved`, `K .sameTokenReadingsNotReplacement`); 49 facts, one `get` each.",
    "complete": "YES: exact routing; endpoint remains open",
    "local": "YES",
    "api": "OK. No carrier: each of the eight conjuncts is read with `.get (K …) .down` from the literal routed ExactLedger returned by `selectedBottleneckDischarge` (Dependent.lean:288-296, 324-332, 357-365), at the leaf boundary, as the other root outcomes are. No wrapper or Prop projection of a continuation remains on this lane.",
-   "difference": "None in content. The Type B continuation [67]-[85] is not run on this leaf, matching the manuscript, which stops at the appended fan entry and leaves [144a] OPEN. The same outcome is produced on all three strict-surplus arms.",
+   "difference": "The class-test keys of [139]/[141] (`windowClassOverload`/`Absent`, `remainderClassOverload`/`Absent`, `primitiveClassOverload`) are arm facts of those decisions and are not carried (see lean-vs-paper-discrepancies.md#residual-144a).",
    "on_probed_closed_arm": false
   },
   "187": {
-   "producer": "`OtherReturnedOutcome` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:95); `selectedLedgerBoundary` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:129); `PairTypeBOutcome` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Surplus/Boundary.lean:54)",
+   "producer": "`OtherReturnedOutcome` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:49) over `NearCubicTargetDefectOutcome`, `PairTypeBOutcome`, `TypeBSublinearOutcome`, `Route8QuotientOutcome`, `Route8RateFailsOutcome`, `ColdBranchClosedOutcome` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Residuals.lean); `selectedLedgerBoundary` (proofs/hypostructure_erdos_64_eg/HypostructureErdos64EG/Assembly/Final.lean:71)",
    "fidelity": "FAITHFUL",
-   "fidelity_note": "`K .coldBranchClosed`: no shortening silent germ of the extracted family; no table row / self-return that neither enters a registry support nor is distinguishing.",
+   "fidelity_note": "Each disjunct is the explicit conjunction of every fact on its maximal ledger (18, 42, 62, 64, 42, 57 facts), one `get` per fact; the pair-system entry keeps its [179]/[180] arm facts as its own disjunction.",
    "complete": "YES: exact routing; endpoint remains open",
    "local": "YES",
    "api": "OK",

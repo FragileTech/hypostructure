@@ -21,7 +21,6 @@ own ledger owners, or the returned residual of node `[153]` on the absorbed
 lane (G's first equal-state pair, `K .coldRepeatedStateResidual`). -/
 abbrev SelectedNetChargeBoundary (selected : EGInput.{u}) :=
   SelectedRouteEightBoundary selected ∨ SelectedAbsorbedGermBoundary selected ∨
-    Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-      erdosReceiverLoadProfile spineData .coldRepeatedStateResidual selected.object
+    Node153ResidualOutcome selected
 
 end HypostructureErdos64EG

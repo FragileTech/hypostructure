@@ -17,7 +17,7 @@ import Hypostructure.Graph.Strategy.EntropyClosure
 import Hypostructure.Graph.Strategy.SpineRows.Bridgeless
 import Hypostructure.Graph.Strategy.SpineRows.HotColdPartition
 import Hypostructure.Graph.Strategy.SpineRows.LiveHotBarrierCap
-import HypostructureErdos64EG.Assembly.Basic
+import HypostructureErdos64EG.Assembly.Residuals
 
 /-!
 # Assembly: NearCubic / ColdPass
@@ -117,6 +117,37 @@ noncomputable def nearCubicColdStubs
         (coldAmbientCubicRow (data := spineData)).run mass (by key_fresh)
       (coldStubExcessRow (data := spineData)).run cubic (by key_fresh)
 
+/-- **Nodes `[149]`--`[152]` as facts of G on an arm that did not run `[148]`**
+(the `[146]` yes arm `[147]` and the `[160]` double-yes arm `[161]`).  Every
+requirement is on the incoming ledger: `[22]`'s live-hot cap `K .barrierCap`,
+the canonical partition and the near-cubic spine.  `coldHotEntropyCapRow`
+publishes the exact live-hot entropy cap from them, and the rows of
+`[150]`--`[152]` follow.  The ledger shape equals the cap arm of
+`nearCubicColdStubs`, so every arm of `[146]` carries the same cold facts. -/
+noncomputable def nearCubicColdStubFacts
+    {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
+    (history : ExactLedger EGInput.{u} selected known)
+    [FactKeys.Has (K .hotColdPartition) known]
+    [FactKeys.Has (K .barrierCap) known]
+    [FactKeys.Has (K .surplusAtOrBelow) known]
+    [FactKeys.Has (K .cubicBaseline) known]
+    (fresh : List.Disjoint
+      [K .coldHotEntropyCap, K .coldMass,
+        K .coldAmbientCubic, K .coldSelectedBranchExcess,
+        K .coldAmbientCubicStubExcess, K .coldStubExcess] known := by key_fresh) :
+    ExactLedger EGInput.{u} selected
+      (K .coldSelectedBranchExcess :: K .coldAmbientCubicStubExcess ::
+        K .coldStubExcess :: K .coldAmbientCubic :: K .coldMass ::
+        K .coldHotEntropyCap :: known) :=
+  let capped :=
+    (coldHotEntropyCapRow (BranchState := BranchState)
+      (Presentation := Graph.ReceiverLoad.LoadCapacityProfile)
+      (presentation := erdosReceiverLoadProfile)
+      (data := spineData)).run history (by key_fresh)
+  let mass := (coldMassRow (data := spineData)).run capped (by key_fresh)
+  let cubic := (coldAmbientCubicRow (data := spineData)).run mass (by key_fresh)
+  (coldStubExcessRow (data := spineData)).run cubic (by key_fresh)
+
 /-- **Node `[153]`, linear arm: the return corridors and their states.**
 The cold return corridors of `def:cold-corridor-first-failure` (which exist by
 `lem:bridgeless`), the declared handoff interfaces, and the cold corridor
@@ -136,6 +167,7 @@ noncomputable def nearCubicColdCorridorState
     (coldReturnCorridorRow (data := spineData)).run history (by key_fresh)
   (coldCorridorStateRow (data := spineData)).run corridors (by key_fresh)
 
+set_option maxHeartbeats 8000000 in
 /-- **Node `[153]`, linear arm: the first failures and the exact (★)
 decision.**  `lem:cold-corridor-first-failure`: every retained corridor of G has
 a first failure (`K .coldFirstFailureOccurrence`).  The paper's (ii) (tex
@@ -153,20 +185,55 @@ noncomputable def nearCubicColdOccurrence
     [FactKeys.Has (K .coldCorridorState) known]
     (fresh : List.Disjoint
       [K .coldFirstFailureOccurrence, K .coldCutStatesDistinct,
-        K .coldRepeatedStateResidual] known := by key_fresh) :
+        K .coldRepeatedStateResidual] known := by key_fresh)
+    [FactKeys.Has (K .barrierCap) known]
+    [FactKeys.Has (K .barrierEnumeration) known]
+    [FactKeys.Has (K .boundaryDemand) known]
+    [FactKeys.Has (K .bridgeless) known]
+    [FactKeys.Has (K .coldAmbientCubic) known]
+    [FactKeys.Has (K .coldAmbientCubicStubExcess) known]
+    [FactKeys.Has (K .coldHotEntropyCap) known]
+    [FactKeys.Has (K .coldMass) known]
+    [FactKeys.Has (K .coldReturnCorridors) known]
+    [FactKeys.Has (K .coldSelectedBranchExcess) known]
+    [FactKeys.Has (K .coldStubExcess) known]
+    [FactKeys.Has (K .curvatureFullRank) known]
+    [FactKeys.Has (K .curvatureTargetRank) known]
+    [FactKeys.Has (K .cycleRankConstraint) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .exactResponseProfile) known]
+    [FactKeys.Has (K .forcedCurvatureCost) known]
+    [FactKeys.Has (K .hotColdPartition) known]
+    [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .netChargeLocalization) known]
+    [FactKeys.Has (K .noProperBaseline) known]
+    [FactKeys.Has (K .remainderNormalized) known]
+    [FactKeys.Has (K .replacementExclusion) known]
+    [FactKeys.Has (K .returnAvoidance) known]
+    [FactKeys.Has (K .skeletonDominates) known]
+    [FactKeys.Has (K .slackIndependent) known]
+    [FactKeys.Has (K .sparseSurplusSurvivor) known]
+    [FactKeys.Has (K .stubSupply) known]
+    [FactKeys.Has (K .surplusAtOrBelow) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .targetRankCircuit) known]
+    [FactKeys.Has (K .tightEndpoint) known]
+    [FactKeys.Has (K .uncompressible) known]
+    [FactKeys.Has (K .wedgeSupply) known]
+    [FactKeys.Has (K .windowPackageSeparated) known]
+    [FactKeys.Has (K .windowPresent) known] :
     PSum
       (ExactLedger EGInput.{u} selected
         (K .coldCutStatesDistinct :: K .coldFirstFailureOccurrence :: known))
-      (Holds BranchState Graph.ReceiverLoad.LoadCapacityProfile
-        erdosReceiverLoadProfile spineData .coldRepeatedStateResidual
-          selected.object) :=
+      (Node153ResidualOutcome selected) :=
   let occurrence :=
     (coldFirstFailureOccurrenceRow (data := spineData)).run history (by key_fresh)
   match coldCutStatesDichotomy (data := spineData) occurrence
       (by key_fresh) (by key_fresh) with
   | .left distinctHistory => .inl distinctHistory
   | .right repeatedHistory =>
-      .inr (repeatedHistory.get (K .coldRepeatedStateResidual)).down
+      .inr (node153Return repeatedHistory)
 
 /-- **Node `[153]`, linear arm: the routing and the candidate family**, on the
 (★) arm.  `lem:cold-corridor-first-failure`: the routing (F1)--(F5) of the

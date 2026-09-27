@@ -28,7 +28,7 @@ universe u w
 /-- Every key committed from the `[177]` entry on: the Type B entry and the
 Type B / route-8 charge tail. -/
 noncomputable abbrev netChargeFanEntryKeys : FactKeys EGInput.{u} :=
-  [K .typeBFanEntry, K .netChargeLocalization,
+  [K .typeBFanEntry,
     K .netChargeNonNegative, K .netChargeNegative, K .negativeSupport,
     K .typeALowSurplus, K .typeBHighSurplus, K .typeABoundedSupport,
     K .typeAReceiverRouting, K .typeASaturatedReceiver,
@@ -105,6 +105,7 @@ noncomputable abbrev netChargeFanDataKeys : FactKeys EGInput.{u} :=
     K .absorbedHandoffCoreAbsent :: K .absorbedF4Charge :: K .typeBAbsorbedCharge ::
     netChargeFanEntryKeys.{u}
 
+set_option maxHeartbeats 8000000 in
 /-- **Node `[177]`, yes**: on the `[175]` yes arm with a counted remainder core
 at the heavy centre (`K .absorbedHandoffCore`), the decorated handoff fan data
 at the first high centre of `G`'s canonical absorbed half-edge enters Type B at
@@ -133,7 +134,42 @@ noncomputable def selectedAbsorbedFanData
     [FactKeys.Has (K .typeBAbsorbedHalfEdge) known]
     [FactKeys.Has (K .absorbedHandoffCore) known]
     (fresh : List.Disjoint netChargeFanEntryKeys.{u} known := by key_fresh)
-    (chargeFresh : K .typeBAbsorbedCharge ∉ known := by key_fresh) :
+    (chargeFresh : K .typeBAbsorbedCharge ∉ known := by key_fresh)
+    [FactKeys.Has (K .barrierCap) known]
+    [FactKeys.Has (K .barrierEnumeration) known]
+    [FactKeys.Has (K .boundaryDemand) known]
+    [FactKeys.Has (K .coldAmbientCubic) known]
+    [FactKeys.Has (K .coldAmbientCubicStubExcess) known]
+    [FactKeys.Has (K .coldFailureCompression) known]
+    [FactKeys.Has (K .coldFailureCycle) known]
+    [FactKeys.Has (K .coldFirstFailureOccurrence) known]
+    [FactKeys.Has (K .coldHotEntropyCap) known]
+    [FactKeys.Has (K .coldMass) known]
+    [FactKeys.Has (K .coldReturnCorridors) known]
+    [FactKeys.Has (K .coldSelectedBranchExcess) known]
+    [FactKeys.Has (K .coldStubExcess) known]
+    [FactKeys.Has (K .curvatureFullRank) known]
+    [FactKeys.Has (K .curvatureTargetRank) known]
+    [FactKeys.Has (K .cycleRankConstraint) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .exactResponseProfile) known]
+    [FactKeys.Has (K .forcedCurvatureCost) known]
+    [FactKeys.Has (K .largeBudgetResidual) known]
+    [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .netChargeLocalization) known]
+    [FactKeys.Has (K .netDeficiencyCap) known]
+    [FactKeys.Has (K .noProperBaseline) known]
+    [FactKeys.Has (K .returnAvoidance) known]
+    [FactKeys.Has (K .route8Rate) known]
+    [FactKeys.Has (K .skeletonDominates) known]
+    [FactKeys.Has (K .sparseSurplusSurvivor) known]
+    [FactKeys.Has (K .stubSupply) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .targetRankCircuit) known]
+    [FactKeys.Has (K .wedgeSupply) known]
+    [FactKeys.Has (K .windowPackageSeparated) known]
+    [FactKeys.Has (K .windowPresent) known] :
     SelectedAbsorbedGermBoundary selected := by
   -- `[177]` yes: every selected half-edge outside the subcubic candidates with a
   -- counted core is charged to the Type B ledger at its own pinned absorbed
@@ -210,6 +246,7 @@ noncomputable def selectedAbsorbedFanData
         (jointBalanceFresh := by key_fresh)
         (unifiedTerminalFresh := by key_fresh)
 
+set_option maxHeartbeats 8000000 in
 /-- **Nodes `[175]`--`[177]`, `lem:absorbed-germ-fan-data`.**  `[175]` publishes
 the per-half-edge case split and decides whether some selected corridor avoids
 the high-degree vertices.  On its yes arm the genuine (F5) configurations
@@ -255,7 +292,44 @@ noncomputable def selectedAbsorbedGermResidual
         K .coldCanonicalReplacementSwap :: K .coldCanonicalReplacementTrivial ::
         K .coldTwoStrandSurvivor :: K .coldWindowStubStructure ::
         K .coldSymmetricPairExcluded :: netChargeFanDataKeys.{u}) known := by
-        key_fresh) :
+        key_fresh)
+    [FactKeys.Has (K .barrierCap) known]
+    [FactKeys.Has (K .barrierEnumeration) known]
+    [FactKeys.Has (K .boundaryDemand) known]
+    [FactKeys.Has (K .coldAmbientCubic) known]
+    [FactKeys.Has (K .coldAmbientCubicStubExcess) known]
+    [FactKeys.Has (K .coldCutStatesDistinct) known]
+    [FactKeys.Has (K .coldExchangeBound) known]
+    [FactKeys.Has (K .coldFailureCompression) known]
+    [FactKeys.Has (K .coldFailureCycle) known]
+    [FactKeys.Has (K .coldFailureDefectRoute) known]
+    [FactKeys.Has (K .coldFirstFailureOccurrence) known]
+    [FactKeys.Has (K .coldHotEntropyCap) known]
+    [FactKeys.Has (K .coldMass) known]
+    [FactKeys.Has (K .coldReturnCorridors) known]
+    [FactKeys.Has (K .coldSelectedBranchExcess) known]
+    [FactKeys.Has (K .coldStubExcess) known]
+    [FactKeys.Has (K .curvatureFullRank) known]
+    [FactKeys.Has (K .curvatureTargetRank) known]
+    [FactKeys.Has (K .cycleRankConstraint) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .exactResponseProfile) known]
+    [FactKeys.Has (K .forcedCurvatureCost) known]
+    [FactKeys.Has (K .largeBudgetResidual) known]
+    [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .netChargeLocalization) known]
+    [FactKeys.Has (K .netDeficiencyCap) known]
+    [FactKeys.Has (K .noProperBaseline) known]
+    [FactKeys.Has (K .returnAvoidance) known]
+    [FactKeys.Has (K .route8Rate) known]
+    [FactKeys.Has (K .skeletonDominates) known]
+    [FactKeys.Has (K .stubSupply) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .targetRankCircuit) known]
+    [FactKeys.Has (K .wedgeSupply) known]
+    [FactKeys.Has (K .windowPackageSeparated) known]
+    [FactKeys.Has (K .windowPresent) known] :
     SelectedAbsorbedGermBoundary selected := by
   let split :=
     (absorbedGermSplitRow (data := spineData)).run history (by key_fresh)
@@ -283,7 +357,7 @@ noncomputable def selectedAbsorbedGermResidual
                 (absorbedF4ChargeRow (data := spineData)).run noCoreHistory
                   (by key_fresh)
               let closedHistory := nearCubicColdTable charged
-              exact Or.inr (closedHistory.get (K .coldBranchClosed)).down
+              exact Or.inr (coldBranchClosedReturn closedHistory)
       | .right subcubicHistory =>
           -- `[176]` on this arm: no candidate and no absorbed half-edge, so
           -- G's selected family is empty and G has no ambient-cubic cold
@@ -293,7 +367,7 @@ noncomputable def selectedAbsorbedGermResidual
             (coldSelectedFamilyEmptyRow (data := spineData)).run subcubicHistory
               (by key_fresh)
           let closedHistory := nearCubicColdTable emptyHistory
-          exact Or.inr (closedHistory.get (K .coldBranchClosed)).down
+          exact Or.inr (coldBranchClosedReturn closedHistory)
   | .left positiveHistory =>
       let positiveFamily :=
         (absorbedGermFamilyPositiveRow (data := spineData)).run positiveHistory
@@ -307,9 +381,11 @@ noncomputable def selectedAbsorbedGermResidual
       match coldGermDistinctionDichotomy (data := spineData) unhit
           (by key_fresh) (by key_fresh) with
       | .left distinguishedHistory =>
-          exact Or.inr
-            ((nearCubicColdTable distinguishedHistory).get
-              (K .coldBranchClosed)).down
+          -- `[177]`'s fan data is a fact of G on this arm too.
+          let fanData :=
+            (absorbedGermFanDataRow (data := spineData)).run
+              distinguishedHistory (by key_fresh)
+          exact Or.inr (coldBranchClosedReturn (nearCubicColdTable fanData))
       | .right silentHistory =>
           -- `[176]` on the absorbed residual: the silent family's neutral
           -- (F5) configuration, without the dense-residual terminality of
@@ -360,12 +436,12 @@ noncomputable def selectedAbsorbedGermResidual
                       let charged :=
                         (absorbedF4ChargeRow (data := spineData)).run
                           noCoreHistory (by key_fresh)
-                      exact Or.inr (charged.get (K .coldBranchClosed)).down
+                      exact Or.inr (coldBranchClosedReturn charged)
               | .right subcubicHistory =>
                   -- `[176]`: every selected corridor is a genuine (F5)
                   -- configuration, closed above by `[154]`--`[157]` and
                   -- `[165]`--`[168]`; the local cold-terminal exclusion is
                   -- retained at `[187]`.
-                  exact Or.inr (subcubicHistory.get (K .coldBranchClosed)).down
+                  exact Or.inr (coldBranchClosedReturn subcubicHistory)
 
 end HypostructureErdos64EG

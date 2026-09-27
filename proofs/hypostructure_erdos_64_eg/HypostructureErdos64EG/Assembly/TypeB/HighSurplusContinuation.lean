@@ -1,6 +1,7 @@
 import Hypostructure.Graph.Strategy.SpineRows.TypeAReceiverRouting
 import Hypostructure.Graph.Strategy.SpineRows.TypeBAssignedSupport
 import HypostructureErdos64EG.Assembly.TypeB.Continuation
+import Hypostructure.Graph.Strategy.ColdCorridorRows.AbsorbedGermFanEnvelope
 
 /-!
 # Assembly: TypeB / HighSurplusContinuation
@@ -17,6 +18,7 @@ open Hypostructure.Graph.Strategy.Spine
 
 universe u w
 
+set_option maxHeartbeats 8000000 in
 /-- **Node `[64]`: the ordinary Type B entry**, on the `[62]` yes-residual of any
 arm.  The object-wide receiver routing of `[88]`, read by the common Part IX
 census, is published on this literal residual; `[65]`
@@ -112,6 +114,48 @@ noncomputable def selectedTypeBHighSurplusContinuation
     (triangularRoutingFresh : K .triangularPortTypeBRouting ∉ known := by key_fresh)
     (globalLocalBridgeFresh : K .typeBGlobalLocalBridge ∉ known := by key_fresh)
     (closureFresh : closed ∉ known := by key_fresh)
+    (route8BasinBurdenFresh_ : K .route8BasinBurden ∉ known := by key_fresh)
+    (route8CarrierCoreFresh_ : K .route8CarrierCore ∉ known := by key_fresh)
+    (typeBAbsorbedChargeFresh_ : K .typeBAbsorbedCharge ∉ known := by key_fresh)
+    [FactKeys.Has (K .barrierCap) known]
+    [FactKeys.Has (K .barrierEnumeration) known]
+    [FactKeys.Has (K .boundaryDemand) known]
+    [FactKeys.Has (K .coldAmbientCubic) known]
+    [FactKeys.Has (K .coldAmbientCubicStubExcess) known]
+    [FactKeys.Has (K .coldCorridorState) known]
+    [FactKeys.Has (K .coldFailureCompression) known]
+    [FactKeys.Has (K .coldFailureCycle) known]
+    [FactKeys.Has (K .coldFirstFailureOccurrence) known]
+    [FactKeys.Has (K .coldHandoffTransfer) known]
+    [FactKeys.Has (K .coldHotEntropyCap) known]
+    [FactKeys.Has (K .coldMass) known]
+    [FactKeys.Has (K .coldReturnCorridors) known]
+    [FactKeys.Has (K .coldSelectedBranchExcess) known]
+    [FactKeys.Has (K .coldStubExcess) known]
+    [FactKeys.Has (K .cubicBaseline) known]
+    [FactKeys.Has (K .curvatureFullRank) known]
+    [FactKeys.Has (K .curvatureTargetRank) known]
+    [FactKeys.Has (K .cycleRankConstraint) known]
+    [FactKeys.Has (K .degreeProfileFibres) known]
+    [FactKeys.Has (K .exactResponseProfile) known]
+    [FactKeys.Has (K .forcedCurvatureCost) known]
+    [FactKeys.Has (K .hotColdPartition) known]
+    [FactKeys.Has (K .localAlgebra) known]
+    [FactKeys.Has (K .maximalPacking) known]
+    [FactKeys.Has (K .netChargeLocalization) known]
+    [FactKeys.Has (K .netDeficiencyCap) known]
+    [FactKeys.Has (K .noProperBaseline) known]
+    [FactKeys.Has (K .returnAvoidance) known]
+    [FactKeys.Has (K .route8Rate) known]
+    [FactKeys.Has (K .skeletonDominates) known]
+    [FactKeys.Has (K .slackIndependent) known]
+    [FactKeys.Has (K .sparseSurplusSurvivor) known]
+    [FactKeys.Has (K .stubSupply) known]
+    [FactKeys.Has (K .targetCompleteContextUniversality) known]
+    [FactKeys.Has (K .targetRankCircuit) known]
+    [FactKeys.Has (K .wedgeSupply) known]
+    [FactKeys.Has (K .windowPackageSeparated) known]
+    [FactKeys.Has (K .windowPresent) known]
    :
     SelectedRouteEightBoundary selected := by
   letI := cubicFresh
@@ -121,6 +165,9 @@ noncomputable def selectedTypeBHighSurplusContinuation
   -- `[65]`: the Type B entry read from the assigned support.
   let entry := (typeBAssignedEntryRow (data := spineData)).run assigned
     (by key_fresh)
-  exact Assembly.Internal.selectedTypeBFanContinuation entry
+  -- The absorbed Type B charge of `[177]` is a fact of G on this lane too.
+  let charged := (typeBAbsorbedChargeRow (data := spineData)).run entry
+    (by key_fresh)
+  exact Assembly.Internal.selectedTypeBFanContinuation charged
 
 end HypostructureErdos64EG
