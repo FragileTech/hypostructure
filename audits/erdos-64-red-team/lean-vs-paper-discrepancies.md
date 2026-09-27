@@ -1521,10 +1521,10 @@ only for a claim proved false at G.
   incidences and leaves through another ... the segments of the corridor on
   either side of `z` are two connector tails separated at `z`, which is the
   decorated handoff configuration of `lem:typeA-high-degree-handoff`"
-  (tex 7926-7930, 7948-7951).  At `i = 0` the entering incidence is `ε`
+  (tex 7926-7930, 7949-7951).  At `i = 0` the entering incidence is `ε`
   itself, and no other core, envelope, or `σ(G)` charge is given for it
   (the only `σ(G)` charge is node `[153]`'s bounded-arm loss, which (ii) says
-  is "charged to the Type B ledger", tex 7934-7937).  So the hook is not an
+  is "charged to the Type B ledger", tex 7937-7939).  So the hook is not an
   overstatement at `i = 0`: it is the paper's claim, restated faithfully.
 - **`i ≥ 1` is not rescued.**  Removing `i = 0` would not remove the failure of
   "each arm reaches `R`": for `i ≥ 1` the entry side is inside vertices
