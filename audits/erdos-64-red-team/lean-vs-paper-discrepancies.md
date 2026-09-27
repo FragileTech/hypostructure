@@ -2437,9 +2437,31 @@ free side.
   44. `K .coldFirstFailureOccurrence`: `lem:cold-corridor-first-failure`: every retained cold return corridor of G has a first failure, an (F1)--(F5) event at its first failing segment.
   45. `K .coldCutStatesDistinct`: Node `[153]`, distinct-states arm: G's pinned cut states along each retained cold corridor are pairwise distinct up to the first failure.
   46. `K .coldDenseHeavyEntryResidual`: Node `[162]`, returned residual: a non-terminal retained corridor of G first failing at a heavy centre before its terminal segment.
-- **On some paths only, not carried (3).** Gated by an arm of:
-  - [160] first test (tau < 1/4): `denseDeficiencyAtOrAbove`, `denseDeficiencyBelow`.
-  - [160] second test / route-8 entry rate: `route8RateFails`.
+- **Distinct fact sets: 2** (2 paths, one per set).  Both paths reach the
+  return in `nearCubicDenseLinear` (`Assembly/NearCubic/DensePass.lean`) from
+  the no-arm of `[158]` (`nearCubicUnrealized`); their ledgers differ only by
+  the arm of `[160]` (`lem:dense-deficiency-routing`).  Each set is its own
+  subtype of the generic residual, in
+  `Assembly/Residuals/Node162ResidualOutcome.lean`, with `.toGeneric` and a
+  return theorem reading one `get` per key.
+- **Subtype `Node162ResidualOutcome_tauAtOrAbove`** (`[160]` first test fails,
+  `τ(θ) ≥ 1/4`; caller `nearCubicDensePassAtOrAbove`; return theorem
+  `node162Return_tauAtOrAbove`).  Extra facts:
+  - `K .denseDeficiencyAtOrAbove`
+  Total: 47 facts.
+- **Subtype `Node162ResidualOutcome_tauBelowRateFails`** (`[160]` first test
+  holds, `τ(θ) < 1/4`, and the private-carrier rate `τ(θ) < 3/13` fails;
+  caller `nearCubicDensePassRateFailed`; return theorem
+  `node162Return_tauBelowRateFails`).  Extra facts:
+  - `K .denseDeficiencyBelow`
+  - `K .route8RateFails`
+  Total: 48 facts.
+- **Wiring pending.** The return site sits in the shared
+  `nearCubicDenseLinear`, which is generic in `known` and carries no
+  `FactKeys.Has` for the `[160]` keys; calling the subtype return theorems
+  there needs a signature change of that shared function, so the return site
+  and the `SelectedLedgerBoundaryResult` / `SelectedNearCubicSurvivorBoundary`
+  disjunct still use the generic `Node162ResidualOutcome`.
 
 <a id="residual-54"></a>
 

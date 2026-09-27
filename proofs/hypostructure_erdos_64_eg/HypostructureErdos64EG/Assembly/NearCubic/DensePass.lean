@@ -9,6 +9,7 @@ import HypostructureErdos64EG.Assembly.NearCubic.Boundary
 import HypostructureErdos64EG.Assembly.NearCubic.ColdPass
 import HypostructureErdos64EG.Assembly.NearCubic.Replacement
 import HypostructureErdos64EG.Assembly.NearCubic.Spine
+import HypostructureErdos64EG.Assembly.Residuals.Node162ResidualOutcome
 
 /-!
 # Assembly: NearCubic / DensePass
