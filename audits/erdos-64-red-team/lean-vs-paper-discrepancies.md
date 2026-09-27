@@ -1570,8 +1570,12 @@ only for a claim proved false at G.
   an OPEN CONSTRUCTION whose exact content is now "G has no selected half-edge
   with a heavy foot" (for `i = 0`) together with the hot-window case for
   `i > 0`.
-- **Tag.** `sorry`, `OPEN-CONSTRUCTION [177] tex:7932`, in
-  `Graph/Contracts/Spine/ColdSubcubicCharge.lean` (`coldAbsorbedRemainderCore`).
+- **Status (2026-09-27): closed by user-approved repair.**  The hook
+  `coldAbsorbedRemainderCore` and its `sorry` are deleted.  Node `[177]` now
+  decides the existence of `Y` at G's canonical absorbed half-edge; the no arm
+  is charged by the exact (F4) count (see "User-approved repairs", "[177]
+  extension of the (F4) exact-count repair").  The obstruction analysis above
+  is kept as the reason for the repair.
 
 ### [92] after peeling: the unsaturated charge does not close once a load is peeled (tex 1095, 11753, 11785)
 
@@ -1759,3 +1763,54 @@ only for a claim proved false at G.
   (tex 7326-7329, 7926-7930) uses exactly "the corridor reaches a vertex of
   degree ≥ 4"; with this registry the paper's charge argument goes through as
   written.
+
+### [177] extension of the (F4) exact-count repair: absorbed half-edges without a counted core (user-approved, 2026-09-27)
+
+- **Paper.** `lem:absorbed-germ-fan-data` (ii) (tex 7926-7952) routes every
+  absorbed half-edge `ε` (first-failure support meeting `V_{≥4}(G)`) through
+  the decorated handoff of `lem:typeA-high-degree-handoff` at its heavy centre
+  `z`, which needs a counted remainder core `Y ⊆ R(P₀)`, `z ∉ Y`, entered by
+  both corridor segments at `z`.  The paper never constructs `Y` for a cold
+  corridor, and at G it can fail to exist: the heavy entry foot (`i = 0`,
+  `Contracts.Spine.coldAbsorbedRemainderCore_heavyEntryFoot`) and segments whose
+  vertices all lie in windows of `P₀` (open construction [177], below).
+- **Ruling.** When `Y` exists, keep the paper's Type B handoff.  When it does
+  not, charge `ε` by the exact (F4) count
+  `#{ε ∉ candidates} ≤ corridorLoss ≤ (δ+1)·B_cold·σ(G)` published at `[219]`
+  (`K .coldGermCandidates`), not through Type B.
+- **Lean (live).**
+  - `Statements/TypeB.lean`: `AbsorbedRemainderCoreAt` (the core `Y` at the
+    heavy centre).  `Statements/TypeBLanes.lean`: `AbsorbedHandoffCoreStatement`
+    / `AbsorbedHandoffCoreAbsentStatement` (node `[177]`'s decision at G's
+    canonical absorbed half-edge: its canonical absorbed handoff is defined or
+    not) and `AbsorbedF4ChargeStatement` (no arm).
+  - Keys (idx 3100-3102): `K .absorbedHandoffCore`, `K .absorbedHandoffCoreAbsent`
+    (decision `absorbedHandoffCoreDichotomy`, reading `K .typeBAbsorbedHalfEdge`,
+    split at the one pinned `ε`), `K .absorbedF4Charge` (row
+    `absorbedF4ChargeRow`).
+  - Contracts (`Contracts/TypeB/Entry.lean`):
+    `absorbedHandoffAt_of_remainderCore` (given `Y`, the admissible envelope
+    `AbsorbedHandoffAt (z, Y)` from G's facts), `absorbedFirstIndex_unique`,
+    `canonicalAbsorbedHandoff_isSome_iff_core` (the decision is exactly "a core
+    `Y` exists at `z`"), `absorbedHandoffCore_split`, `typeBAbsorbedLane_of_core`,
+    `typeBFanEntry_of_absorbedCore` (yes arm, `[177]` → `[65]`, support
+    `(Y, {z})`), `absorbedF4Charge` (no arm).
+  - Assembly (`Assembly/Absorbed/Residual.lean`): at both `[175]` yes sites,
+    `[177]` yes runs the Type B entry and charge tail; `[177]` no publishes
+    `K .absorbedF4Charge` and ends at the local cold exclusion
+    `K .coldBranchClosed` (`[187]`), as the `[175]` no arm does.
+- **Why the (F4) bound absorbs these half-edges, with no double count.**  The
+  cold argument's inequalities never used the Type B charge: node `[153]`'s
+  witness (`ColdGermFamilyWitness`) partitions the selected occurrences exactly
+  as `#selected = #candidates + corridorLoss` (every non-candidate, in
+  particular every absorbed `ε`, is one corridor-loss unit, counted once), and
+  the linear arm (`coldGermFamilyPositive`: `corridorLoss < #selected`) and the
+  bounded arm (`densityCapLinear_of_coldMassBounded`) use only
+  `corridorLoss ≤ (δ+1)·B_cold·σ(G)`.  `AbsorbedF4ChargeStatement` records at
+  G that `ε ∈ univ \ candidates`, that `#(univ \ candidates) = corridorLoss`
+  of the canonical extraction `coldGermExtraction?`, and the bound.  No extra
+  term arises, and on the no arm `ε` is not also sent to Type B.
+- **Merge note.**  The split is on `canonicalAbsorbedHandoff ε` only; the
+  absorbed support built from it on the yes arm (`canonicalTypeBAbsorbedSupportAt`,
+  now `(Y, {z})`) can be widened to `H := {z} ∪ centres(Y)` without touching
+  the split.

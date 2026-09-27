@@ -129,79 +129,21 @@ theorem coldSubcubicFirstFailureGerm (data : Parameters)
   · exact (coldHandoffOccurrence_not_subcubic data object routing epsilon
       handoff subcubic).elim
 
-/-- **`lem:absorbed-germ-fan-data` (ii), the counted remainder core at `z`**
-(tex 7926-7952; `lem:typeA-high-degree-handoff`, tex 11110-11131;
-`def:decorated-fan-envelope`, tex 10898-10925; `lem:decorated-fan-admissibility`,
-tex 11150-11158).
+/-- **A configuration of G on node `[177]`'s no arm: the heavy entry foot.**
 
-The paper's claim at G: for a selected half-edge `ε` of G outside node `[153]`'s
-subcubic candidates, whose retained corridor first meets a vertex `z` of degree
-above the baseline at index `i` (`firstIndex`), "the segments of the corridor on
-either side of `z` are two connector tails separated at `z`, which is the
-decorated handoff configuration of `lem:typeA-high-degree-handoff`".  That
-configuration is an envelope `(Y, {z})` whose arms are the connector tails from
-the two first neighbours of `z` "to their first-entry data in" the counted core
-`Y`, with `Y ⊆ R` a connected `P₁₃`-free remainder core (`def:decorated-fan-envelope`)
-and `z ∉ Y` ("the only new vertices counted outside `Y` are the decorations",
-tex 11155).  So the claim needs a connected remainder core `Y ⊆ R(P₀)`, `z ∉ Y`,
-which both corridor segments at `z` (`Corridor.entryTail` / `Corridor.exitTail`)
-enter.
-
-Recorded as an open construction (`lean-vs-paper-discrepancies.md#open-constructions`,
-[177] tex:7932): in `lem:typeA-high-degree-handoff` the core is the Type A
-support `X` the tails return to; a cold corridor has no such support.  Its two
-segments at `z` run to the corridor's two boundary stubs, whose window endpoints
-lie in ambient-cubic cold windows of `P₀`, outside `R`; nothing on G's ledger at
-this node (the routed classification, `[10]`, the remainder normalization)
-provides a connected remainder core avoiding `z` that both segments enter.
-When `z` is the entry foot (`i = 0`) the entry-side segment is the stub `ε`
-itself and enters no vertex of `R` at all: `coldAbsorbedRemainderCore_heavyEntryFoot`
-proves, at G, that every selected half-edge with a heavy foot meets all the
-hypotheses below at index `0` and falsifies the conclusion there. -/
-theorem coldAbsorbedRemainderCore (data : Parameters)
-    (object : Graph.FiniteObject.{u})
-    (routing : ColdFailureRoutingStatement data object)
-    (epsilon : ColdEligibleHalfEdge data object)
-    (_notCandidate : Sum.inl epsilon ∉ coldRoutedCandidates data object routing)
-    (firstIndex : (coldOccurrenceCorridorAt data object
-      (coldRoutedClassified data object routing) epsilon).Segment)
-    (_firstBound : firstIndex.1 ≤ coldRoutedTraceEnd data object routing epsilon)
-    (_high : data.threshold < object.degree
-      ((coldOccurrenceCorridorAt data object
-        (coldRoutedClassified data object routing) epsilon).head firstIndex))
-    (_earlier : ∀ earlier : (coldOccurrenceCorridorAt data object
-        (coldRoutedClassified data object routing) epsilon).Segment,
-      earlier.1 < firstIndex.1 →
-        object.degree ((coldOccurrenceCorridorAt data object
-          (coldRoutedClassified data object routing) epsilon).head earlier) ≤
-          data.threshold) :
-    ∃ core : Finset object.Vertex,
-      Graph.SupportComponents.Connected.ConnectedOn object core ∧
-        core ⊆ object.remainderSupport (canonicalWindowPacking data object) ∧
-        (coldOccurrenceCorridorAt data object
-          (coldRoutedClassified data object routing) epsilon).head firstIndex ∉ core ∧
-        (∃ vertex ∈ (coldOccurrenceCorridorAt data object
-            (coldRoutedClassified data object routing) epsilon).entryTail firstIndex.1,
-          vertex ∈ core) ∧
-        ∃ vertex ∈ (coldOccurrenceCorridorAt data object
-            (coldRoutedClassified data object routing) epsilon).exitTail firstIndex.1,
-          vertex ∈ core := by
-  -- OPEN-CONSTRUCTION [177] tex:7932 — see lean-vs-paper-discrepancies.md#open-constructions
-  sorry
-
-/-- **The obstruction to `[177]`'s core at G: the heavy entry foot.**
-
+`lem:absorbed-germ-fan-data` (ii) asserts a counted remainder core `Y ⊆ R(P₀)`,
+`z ∉ Y`, entered by both corridor segments at `ε`'s heavy centre `z`
+(`AbsorbedRemainderCoreAt`); the paper never constructs it for a cold corridor.
 At G's retained classification (`K .coldFailureRouting`), let `ε` be a
 selected half-edge of G whose outside endpoint (the foot of its corridor) has
-degree above the baseline.  Then `ε` meets every hypothesis of
-`coldAbsorbedRemainderCore` at `firstIndex = 0` -- it is not one of node
-`[153]`'s subcubic candidates, index `0` is within the trace prefix, its head is
-the heavy foot, and there is no earlier index -- and the hook's conclusion
-fails there: the entry-side corridor segment at the foot is `[ε's window
-endpoint]`, which lies in `X_cold ⊆ ⋃P₀` and so meets no subset of
-`R(P₀)`.  Hence, at G, `coldAbsorbedRemainderCore` holds for such `ε` exactly
-when G has no selected half-edge with a heavy foot; nothing on G's ledger at
-`[177]` excludes one (`lean-vs-paper-discrepancies.md`, [177]). -/
+degree above the baseline.  Then `ε` is not one of node `[153]`'s subcubic
+candidates, its heavy centre is the foot (`firstIndex = 0`: within the trace
+prefix, no earlier index), and no such core exists there: the entry-side
+corridor segment at the foot is `[ε's window endpoint]`, which lies in
+`X_cold ⊆ ⋃P₀` and so meets no subset of `R(P₀)`.  Such `ε` fall on node
+`[177]`'s no arm and are charged by the exact (F4) count
+(`AbsorbedF4ChargeStatement`; `lean-vs-paper-discrepancies.md`, "User-approved
+repairs"). -/
 theorem coldAbsorbedRemainderCore_heavyEntryFoot (data : Parameters)
     (object : Graph.FiniteObject.{u})
     (routing : ColdFailureRoutingStatement data object)

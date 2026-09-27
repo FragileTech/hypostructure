@@ -102,12 +102,14 @@ noncomputable abbrev netChargeFanEntryKeys : FactKeys EGInput.{u} :=
 Type B / route-8 charge tail. -/
 noncomputable abbrev netChargeFanDataKeys : FactKeys EGInput.{u} :=
   K .absorbedGermFanData :: K .typeBAbsorbedHalfEdge ::
-    K .typeBAbsorbedHalfEdgeAbsent :: netChargeFanEntryKeys.{u}
+    K .typeBAbsorbedHalfEdgeAbsent :: K .absorbedHandoffCore ::
+    K .absorbedHandoffCoreAbsent :: K .absorbedF4Charge ::
+    netChargeFanEntryKeys.{u}
 
-/-- **Node `[177]`**: on the `[175]` yes arm (`K .typeBAbsorbedHalfEdge`), the
-decorated handoff fan data at the first high centre of `G`'s canonical absorbed
-half-edge enters Type B at `[65]`, followed by the common registered charge
-tail. -/
+/-- **Node `[177]`, yes**: on the `[175]` yes arm with a counted remainder core
+at the heavy centre (`K .absorbedHandoffCore`), the decorated handoff fan data
+at the first high centre of `G`'s canonical absorbed half-edge enters Type B at
+`[65]`, followed by the common registered charge tail. -/
 -- EG-NODE [177] decorated handoff fan data at the heavy centre \(z\): continue at Type B [65]
 noncomputable def selectedAbsorbedFanData
     {selected : EGInput.{u}} {known : FactKeys EGInput.{u}}
@@ -130,6 +132,7 @@ noncomputable def selectedAbsorbedFanData
     [FactKeys.Has (K .absorbedGermSplit) known]
     [FactKeys.Has (K .absorbedGermFanData) known]
     [FactKeys.Has (K .typeBAbsorbedHalfEdge) known]
+    [FactKeys.Has (K .absorbedHandoffCore) known]
     (fresh : List.Disjoint netChargeFanEntryKeys.{u} known := by key_fresh) :
     SelectedAbsorbedGermBoundary selected := by
   let fanEntry :=
@@ -261,7 +264,21 @@ noncomputable def selectedAbsorbedGermResidual
       -- high-degree vertex?
       match typeBAbsorbedHalfEdgeDichotomy (data := spineData) fanData
           (by key_fresh) (by key_fresh) with
-      | .left outsideHistory => exact selectedAbsorbedFanData outsideHistory
+      | .left outsideHistory =>
+          -- `[177]`: does a counted remainder core exist at the heavy centre?
+          match absorbedHandoffCoreDichotomy (data := spineData) outsideHistory
+              (by key_fresh) (by key_fresh) with
+          | .left coreHistory => exact selectedAbsorbedFanData coreHistory
+          | .right noCoreHistory =>
+              -- `[177]` no: the half-edge is charged by the exact (F4) count to
+              -- node `[219]`'s corridor loss (user-approved (F4) repair
+              -- extension); the local cold-terminal exclusion is retained at
+              -- `[187]`.
+              let charged :=
+                (absorbedF4ChargeRow (data := spineData)).run noCoreHistory
+                  (by key_fresh)
+              let closedHistory := nearCubicColdTable charged
+              exact Or.inr (closedHistory.get (K .coldBranchClosed)).down
       | .right subcubicHistory =>
           -- `[176]` on this arm: no candidate and no absorbed half-edge, so
           -- G's selected family is empty and G has no ambient-cubic cold
@@ -325,7 +342,20 @@ noncomputable def selectedAbsorbedGermResidual
               -- high-degree vertex (the case-(ii) complement of the family)?
               match typeBAbsorbedHalfEdgeDichotomy (data := spineData) fanData
                   (by key_fresh) (by key_fresh) with
-              | .left outsideHistory => exact selectedAbsorbedFanData outsideHistory
+              | .left outsideHistory =>
+                  -- `[177]`: does a counted remainder core exist at the
+                  -- heavy centre?
+                  match absorbedHandoffCoreDichotomy (data := spineData)
+                      outsideHistory (by key_fresh) (by key_fresh) with
+                  | .left coreHistory => exact selectedAbsorbedFanData coreHistory
+                  | .right noCoreHistory =>
+                      -- `[177]` no: the (F4) charge to node `[219]`'s corridor
+                      -- loss; the local cold-terminal exclusion was retained
+                      -- above at `[187]`.
+                      let charged :=
+                        (absorbedF4ChargeRow (data := spineData)).run
+                          noCoreHistory (by key_fresh)
+                      exact Or.inr (charged.get (K .coldBranchClosed)).down
               | .right subcubicHistory =>
                   -- `[176]`: every selected corridor is a genuine (F5)
                   -- configuration, closed above by `[154]`--`[157]` and

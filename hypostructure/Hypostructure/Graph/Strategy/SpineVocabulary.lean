@@ -1102,6 +1102,14 @@ inductive Key where
   /-- Node `[175]`, no: every selected corridor is subcubic (no absorbed
   half-edge). -/
   | typeBAbsorbedHalfEdgeAbsent
+  /-- Node `[177]`, yes: a counted remainder core exists at the heavy centre
+  of `G`'s canonical absorbed half-edge. -/
+  | absorbedHandoffCore
+  /-- Node `[177]`, no: no counted remainder core at that heavy centre. -/
+  | absorbedHandoffCoreAbsent
+  /-- Node `[177]`, no arm: the half-edge is charged by the exact (F4) count to
+  node `[219]`'s corridor loss (user-approved (F4) repair extension). -/
+  | absorbedF4Charge
   /-- Node `[81]`, yes: `c ≤ 1` at every assigned centre, or `c ≥ 2` with the B2
   disjoint choice, at the degree-four Type B support. -/
   | typeBDegreeFourLedger
@@ -2128,6 +2136,12 @@ def Holds (BranchState : Graph.FiniteObject.{u} → Type v)
       TypeBAbsorbedHalfEdgeStatement data.toParameters object
   | .typeBAbsorbedHalfEdgeAbsent, object =>
       TypeBAbsorbedHalfEdgeAbsentStatement data.toParameters object
+  | .absorbedHandoffCore, object =>
+      AbsorbedHandoffCoreStatement data.toParameters object
+  | .absorbedHandoffCoreAbsent, object =>
+      AbsorbedHandoffCoreAbsentStatement data.toParameters object
+  | .absorbedF4Charge, object =>
+      AbsorbedF4ChargeStatement data.toParameters object
   | .typeBDegreeFourLedger, object =>
       TypeBDegreeFourLedgerStatement data.toParameters object
   | .typeBDegreeFourOverlap, object =>
@@ -2646,6 +2660,9 @@ def label : Key → String
   | .typeBOverlapObstructionMass => "typeBOverlapObstructionMass"
   | .typeBAbsorbedHalfEdge => "typeBAbsorbedHalfEdge"
   | .typeBAbsorbedHalfEdgeAbsent => "typeBAbsorbedHalfEdgeAbsent"
+  | .absorbedHandoffCore => "absorbedHandoffCore"
+  | .absorbedHandoffCoreAbsent => "absorbedHandoffCoreAbsent"
+  | .absorbedF4Charge => "absorbedF4Charge"
   | .typeBDegreeFourLedger => "typeBDegreeFourLedger"
   | .typeBDegreeFourOverlap => "typeBDegreeFourOverlap"
   | .typeBDegreeFourClosed => "typeBDegreeFourClosed"
@@ -2993,6 +3010,9 @@ example : label .fanCertificateResidualMass = "fanCertificateResidualMass" := rf
 example : label .typeBOverlapObstructionMass = "typeBOverlapObstructionMass" := rfl
 example : label .typeBAbsorbedHalfEdge = "typeBAbsorbedHalfEdge" := rfl
 example : label .typeBAbsorbedHalfEdgeAbsent = "typeBAbsorbedHalfEdgeAbsent" := rfl
+example : label .absorbedHandoffCore = "absorbedHandoffCore" := rfl
+example : label .absorbedHandoffCoreAbsent = "absorbedHandoffCoreAbsent" := rfl
+example : label .absorbedF4Charge = "absorbedF4Charge" := rfl
 example : label .typeBDegreeFourLedger = "typeBDegreeFourLedger" := rfl
 example : label .typeBDegreeFourOverlap = "typeBDegreeFourOverlap" := rfl
 example : label .typeBDegreeFourClosed = "typeBDegreeFourClosed" := rfl
@@ -3360,6 +3380,9 @@ def idx : Key → Nat
   | .typeBOverlapObstructionMass => 187
   | .typeBAbsorbedHalfEdge => 2100
   | .typeBAbsorbedHalfEdgeAbsent => 2101
+  | .absorbedHandoffCore => 3100
+  | .absorbedHandoffCoreAbsent => 3101
+  | .absorbedF4Charge => 3102
   | .typeBDegreeFourLedger => 2102
   | .typeBDegreeFourOverlap => 2103
   | .typeBDegreeFourClosed => 2104
@@ -3694,6 +3717,9 @@ def ofIdx : Nat → Key
   | 187 => .typeBOverlapObstructionMass
   | 2100 => .typeBAbsorbedHalfEdge
   | 2101 => .typeBAbsorbedHalfEdgeAbsent
+  | 3100 => .absorbedHandoffCore
+  | 3101 => .absorbedHandoffCoreAbsent
+  | 3102 => .absorbedF4Charge
   | 2102 => .typeBDegreeFourLedger
   | 2103 => .typeBDegreeFourOverlap
   | 2104 => .typeBDegreeFourClosed
@@ -4292,6 +4318,15 @@ def name : Key → Lean.Name
   | .typeBAbsorbedHalfEdgeAbsent =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "typeBAbsorbedHalfEdgeAbsent") 2101
+  | .absorbedHandoffCore =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "absorbedHandoffCore") 3100
+  | .absorbedHandoffCoreAbsent =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "absorbedHandoffCoreAbsent") 3101
+  | .absorbedF4Charge =>
+      .num (.str `Hypostructure.Graph.Strategy.Spine
+        "absorbedF4Charge") 3102
   | .typeBDegreeFourLedger =>
       .num (.str `Hypostructure.Graph.Strategy.Spine
         "typeBDegreeFourLedger") 2102
